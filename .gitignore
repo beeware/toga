@@ -7,5 +7,8 @@ dist
 build
 _build
 distribute-*
+<<<<<<< HEAD
 local
 .tox
+=======
+>>>>>>> Initial code commit

@@ -1,0 +1,10 @@
+include README.rst
+include AUTHORS
+include LICENSE
+include requirements*.txt
+recursive-include tailor *.py
+recursive-include docs *.bat
+recursive-include docs *.py
+recursive-include docs *.rst
+recursive-include docs Makefile
+recursive-include tests *.py
