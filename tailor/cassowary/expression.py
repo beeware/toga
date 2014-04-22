@@ -1,5 +1,5 @@
 from .variable import Variable, AbstractVariable
-from .error import NonExpression, InternalError
+from .error import InternalError
 from .utils import approx_equal
 
 
@@ -43,13 +43,13 @@ class Expression(object):
             elif x.is_constant:
                 result = self * x.constant
             else:
-                raise NonExpression()
+                raise TypeError('Cannot multiply expression by non-constant')
         return result
 
     def __div__(self, x):
         if isinstance(x, (float, int)):
             if approx_equal(x, 0):
-                raise NonExpression()
+                raise ZeroDivisionError()
             result = Expression(constant=self.constant / x)
             for clv, value in self.terms.items():
                 result.set_variable(clv, value / x)
@@ -57,7 +57,7 @@ class Expression(object):
             if x.is_constant:
                 result = self / x.constant
             else:
-                raise NonExpression()
+                raise TypeError('Cannot divide expression by non-constant')
         return result
 
     def __add__(self, x):
@@ -65,12 +65,20 @@ class Expression(object):
             return self.clone().add_expression(x, 1.0)
         elif isinstance(x, Variable):
             return self.clone().add_variable(x, 1.0)
+        elif isinstance(x, (int, float)):
+            return self.clone().add_expression(Expression(constant=x), 1.0)
+        else:
+            raise TypeError('Cannot add object of type %s to expression' % type(x))
 
     def __sub__(self, x):
         if isinstance(x, Expression):
             return self.clone().add_expression(x, -1.0)
         elif isinstance(x, Variable):
             return self.clone().add_variable(x, -1.0)
+        elif isinstance(x, (int, float)):
+            return self.clone().add_expression(Expression(constant=x), -1.0)
+        else:
+            raise TypeError('Cannot subtract object of type %s from expression' % type(x))
 
     def add_expression(self, expr, n, subject=None, solver=None):
         if isinstance(expr, AbstractVariable):

@@ -29,13 +29,18 @@ class Container(Widget):
     def __init__(self):
         super(Container, self).__init__()
         self._impl = NSView.alloc().init()
-        self.constraints = []
+        self.children = []
+        self.constraints = {}
 
     def add(self, widget):
+        self.children.append(widget)
         self._impl.addSubview_(widget._impl)
 
     def constrain(self, constraint):
         "Add the given constraint to the widget."
+        if constraint in self.constraints:
+            return
+
         widget = constraint.attr.widget._impl
         identifier = constraint.attr.identifier
 
@@ -62,4 +67,4 @@ class Container(Widget):
 
         self._impl.addConstraint_(constraint._impl)
 
-        self.constraints.append(constraint)
+        self.constraints[constraint] = constraint._impl

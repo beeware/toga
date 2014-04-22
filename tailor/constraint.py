@@ -72,29 +72,6 @@ class Attribute(object):
         self.constant = float(constant)
 
     @property
-    def update_strategy(self):
-        update_strategies = {
-            Attribute.LEFT: Value.MINIMUM,
-            Attribute.RIGHT: Value.MAXIMUM,
-            Attribute.TOP: Value.MINIMUM,
-            Attribute.BOTTOM: Value.MAXIMUM,
-            Attribute.WIDTH: Value.MAXIMUM,
-            Attribute.HEIGHT: Value.MAXIMUM,
-            Attribute.CENTER_X: Value.AVERAGE,
-            Attribute.CENTER_Y: Value.AVERAGE,
-            # Attribute.BASELINE: Value.AVERAGE,
-        }
-
-        if True:  # Check for RTL
-            update_strategies[Attribute.LEADING] = Value.MINIMUM
-            update_strategies[Attribute.TRAILING] = Value.MAXIMUM
-        else:
-            update_strategies[Attribute.LEADING] = Value.MAXIMUM
-            update_strategies[Attribute.TRAILING] = Value.MINIMUM
-
-        return update_strategies[self.identifier]
-
-    @property
     def identifier_label(self):
         return {
             Attribute.LEFT: "LEFT",
