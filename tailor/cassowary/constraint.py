@@ -70,7 +70,7 @@ class Inequality(LinearConstraint):
                 if operator == self.LEQ:
                     self.expression.add_expression(param1, -1.0)
                 elif operator == self.GEQ:
-                    self.expression.multply(-1)
+                    self.expression.multiply(-1)
                     self.expression.add_expression(param1, 1.0)
                 else:
                     raise InternalError("Invalid operator in Inequality constructor")
@@ -84,7 +84,15 @@ class Inequality(LinearConstraint):
                 else:
                     raise InternalError("Invalid operator in Inequality constructor")
 
-            # elif isinstance(param2, (float, int)):
+            elif isinstance(param2, (float, int)):
+                super(Inequality, self).__init__(param1.clone(), strength=strength, weight=weight)
+                if operator == self.LEQ:
+                    self.expression.multiply(-1.0)
+                    self.expression.add_expression(Expression(constant=param2), 1.0)
+                elif operator == self.GEQ:
+                    self.expression.add_expression(Expression(constant=param2), -1.0)
+                else:
+                    raise InternalError("Invalid operator in Inequality constructor")
             else:
                 raise InternalError("Invalid parameters to Inequality constructor")
 
@@ -142,7 +150,9 @@ class Equation(LinearConstraint):
             elif isinstance(param2, Variable):
                 super(Equation, self).__init__(param1.clone(), strength=strength, weight=weight)
                 self.expression.add_variable(param2, -1.0)
-            # elif isinstance(param2, (float, int)):
+            elif isinstance(param2, (float, int)):
+                super(Equation, self).__init__(param1.clone(), strength=strength, weight=weight)
+                self.expression.add_expression(Expression(constant=param2), -1.0)
             else:
                 raise InternalError("Invalid parameters to Equation constructor")
 
@@ -153,9 +163,10 @@ class Equation(LinearConstraint):
             elif isinstance(param2, Variable):
                 super(Equation, self).__init__(Expression(variable=param2), strength=strength, weight=weight)
             elif isinstance(param2, (float, int)):
-                super(Equation, self).__init__(Expression(value=param2), strength=strength, weight=weight)
+                super(Equation, self).__init__(Expression(constant=param2), strength=strength, weight=weight)
                 self.expression.add_variable(param1, -1.0)
             else:
                 raise InternalError("Invalid parameters to Equation constructor")
+
         else:
             raise InternalError("Invalid parameters to Equation constructor")

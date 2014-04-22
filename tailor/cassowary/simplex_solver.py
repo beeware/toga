@@ -12,8 +12,7 @@ class SimplexSolver(Tableau):
     def __init__(self):
         super(SimplexSolver, self).__init__()
 
-        self.stay_minus_error_vars = []
-        self.stay_plus_error_vars = []
+        self.stay_error_vars = []
 
         self.error_vars = {}
         self.marker_vars = {}
@@ -34,8 +33,7 @@ class SimplexSolver(Tableau):
 
     def __repr__(self):
         parts = []
-        parts.append('stay_plus_error_vars: %s' % self.stay_plus_error_vars)
-        parts.append('stay_minus_error_vars: %s' % self.stay_minus_error_vars)
+        parts.append('stay_error_vars: %s' % self.stay_error_vars)
         parts.append('edit_var_map: %s' % self.edit_var_map)
         return super(SimplexSolver, self).__repr__() + '\n' + '\n'.join(parts)
 
@@ -96,7 +94,7 @@ class SimplexSolver(Tableau):
                 z_row = self.rows[self.objective]
                 # print "z_row", z_row
                 sw_coeff = cn.strength * cn.weight
-                if sw_coeff == 0:
+                # if sw_coeff == 0:
                     # print "cn ==", cn
                     # print "adding ", eplus, "and", eminus, "with sw_coeff", sw_coeff
                 z_row.set_variable(eplus, sw_coeff)
@@ -108,8 +106,7 @@ class SimplexSolver(Tableau):
                 self.insert_error_var(cn, eplus)
 
                 if cn.is_stay_constraint:
-                    self.stay_plus_error_vars.append(eplus)
-                    self.stay_minus_error_vars.append(eminus)
+                    self.stay_error_vars.append((eplus, eminus))
                 elif cn.is_edit_constraint:
                     prev_edit_constant = cn.expression.constant
 
@@ -135,6 +132,8 @@ class SimplexSolver(Tableau):
         if self.auto_solve:
             self.optimize(self.objective)
             self.set_external_variables()
+
+        return cn
 
     def add_constraint_no_exception(self, cn):
         try:
@@ -174,7 +173,7 @@ class SimplexSolver(Tableau):
             assert len(self.edit_var_map) == n
 
         except ConstraintNotFound:
-            raise InternalError('Constraint not found')
+            raise InternalError('Constraint not found during internal removal')
 
     def add_point_stays(self, points):
         # print "add_point_stays", points
@@ -201,8 +200,10 @@ class SimplexSolver(Tableau):
             for cv in e_vars:
                 try:
                     z_row.add_expression(self.rows[cv], -cn.weight * cn.strength, self.objective, self)
+                    # print 'add expression', self.rows[cv]
                 except KeyError:
                     z_row.add_variable(cv, -cn.weight * cn.strength, self.objective, self)
+                    # print 'add variable', cv
 
         try:
             marker = self.marker_vars.pop(cn)
@@ -216,59 +217,94 @@ class SimplexSolver(Tableau):
             exit_var = None
             min_ratio = 0.0
             for v in col:
+                # print 'check var', v
                 if v.is_restricted:
+                    # print 'var', v, ' is restricted'
                     expr = self.rows[v]
                     coeff = expr.coefficient_for(marker)
                     # print "Marker", marker, "'s coefficient in", expr, "is", coeff
                     if coeff < 0:
                         r = -expr.constant / coeff
                         if exit_var is None or r < min_ratio: # EXTRA BITS IN JS?
+                            # print 'set exit var = ',v,r
                             min_ratio = r
                             exit_var = v
 
             if exit_var is None:
                 # print "exit_var is still None"
                 for v in col:
+                    # print 'check var', v
                     if v.is_restricted:
+                        # print 'var', v, ' is restricted'
                         expr = self.rows[v]
                         coeff = expr.coefficient_for(marker)
+                        # print "Marker", marker, "'s coefficient in", expr, "is", coeff
                         r = expr.constant / coeff
                         if exit_var is None or r < min_ratio:
+                            # print 'set exit var = ',v,r
                             min_ratio = r
                             exit_var = v
 
             if exit_var is None:
+                # print "exit_var is still None (again)"
                 if len(col) == 0:
+                    # print 'remove column',marker
                     self.remove_column(marker)
                 else:
                     exit_var = [v for v in col if v != self.objective][-1] # ??
+                    # print 'set exit var', exit_var
 
             if exit_var is not None:
+                # print 'Pivot', marker, exit_var,
                 self.pivot(marker, exit_var)
 
-        if not self.rows.get(marker):
+        if self.rows.get(marker):
+            # print 'remove row', marker
             expr = self.remove_row(marker)
 
         if e_vars:
+            # print 'e_vars exist'
             for v in e_vars:
                 if v != marker:
+                    # print 'remove column',v
                     self.remove_column(v)
 
         if cn.is_stay_constraint:
             if e_vars:
-                for p_evar, m_evar in zip(self.stay_plus_error_vars):
-                    e_vars.remove(p_evar)
-                    e_vars.remove(m_evar)
+                # for p_evar, m_evar in self.stay_error_vars:
+                remaining = []
+                while self.stay_error_vars:
+                    p_evar, m_evar = self.stay_error_vars.pop()
+                    found = False
+                    try:
+                        # print 'stay constraint - remove plus evar', p_evar
+                        e_vars.remove(p_evar)
+                        found = True
+                    except KeyError:
+                        pass
+                    try:
+                        # print 'stay constraint - remove minus evar', m_evar
+                        e_vars.remove(m_evar)
+                        found = True
+                    except KeyError:
+                        pass
+                    if not found:
+                        remaining.append((p_evar, m_evar))
+                self.stay_error_vars = remaining
+
         elif cn.is_edit_constraint:
             assert e_vars is not None
+            # print 'edit constraint - remove column', self.edit_var_map[cn.variable].edit_minus
             self.remove_column(self.edit_var_map[cn.variable].edit_minus)
             del self.edit_var_map[cn.variable]
 
         if e_vars:
             for e_var in e_vars:
+                # print 'Remove error var', e_var
                 del self.error_vars[e_var]
 
         if self.auto_solve:
+            # print 'final auto solve'
             self.optimize(self.objective)
             self.set_external_variables()
 
@@ -510,7 +546,7 @@ class SimplexSolver(Tableau):
                             exit_var = v
 
             if min_ratio == float('inf'):
-                raise InternalError('Objective function is unbounded in optimize')
+                raise RequiredFailure('Objective function is unbounded')
 
             self.pivot(entry_var, exit_var)
 
@@ -530,7 +566,7 @@ class SimplexSolver(Tableau):
 
     def reset_stay_constants(self):
         # print "reset_stay_constants"
-        for p_var, m_var in zip(self.stay_plus_error_vars, self.stay_minus_error_vars):
+        for p_var, m_var in self.stay_error_vars:
             expr = self.rows.get(p_var)
             if expr is None:
                 expr = self.rows.get(m_var)
