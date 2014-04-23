@@ -8,7 +8,11 @@ build
 _build
 distribute-*
 <<<<<<< HEAD
+<<<<<<< HEAD
 local
 .tox
 =======
 >>>>>>> Initial code commit
+=======
+local
+>>>>>>> Added the local storage area to gitignore.
