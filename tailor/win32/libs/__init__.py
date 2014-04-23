@@ -34,7 +34,8 @@
 # POSSIBILITY OF SUCH DAMAGE.
 # ----------------------------------------------------------------------------
 
+from .constants import *
 from .debug import *
-from .gdi import *
-from .kernel import *
-from .user import *
+from .gdi32 import *
+from .kernel32 import *
+from .user32 import *
