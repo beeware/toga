@@ -1,6 +1,6 @@
-from tailor.cocoa.libs import *
 from tailor.constraint import Attribute, Constraint
-from tailor.cocoa.widgets.base import Widget
+from tailor.platform.cocoa.libs import *
+from .base import Widget
 
 
 class Container(Widget):

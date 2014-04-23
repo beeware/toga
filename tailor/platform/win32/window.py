@@ -1,4 +1,4 @@
-from tailor.win32.libs import *
+from tailor.platform.win32.libs import *
 
 
 class Window(object):

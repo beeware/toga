@@ -2,7 +2,7 @@ from gi.repository import Gtk, cairo
 
 from tailor.constraint import Constraint
 from tailor.cassowary import SimplexSolver, StayConstraint, WEAK, STRONG, REQUIRED, Equation, Inequality, Expression, approx_equal
-from tailor.gtk.widgets.base import Widget
+from .base import Widget
 
 
 class LayoutManager(SimplexSolver):

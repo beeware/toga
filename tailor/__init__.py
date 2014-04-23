@@ -7,7 +7,7 @@
 # NUM_VERSION = (0, 1, 3, ('b', 1), 'dev')
 # NUM_VERSION = (0, 1, 3)
 
-NUM_VERSION = (0, 1, 0, 'dev')
+NUM_VERSION = (0, 0, 0, 'dev')
 
 
 def get_git_changeset():
@@ -68,19 +68,19 @@ VERSION = "".join(part_string(nv, i) for i, nv in enumerate(NUM_VERSION))
 import sys
 
 if sys.platform == 'darwin':
-    from cocoa.app import *
-    from cocoa.window import *
-    from cocoa.widgets import *
+    from platform.cocoa.app import *
+    from platform.cocoa.window import *
+    from platform.cocoa.widgets import *
 
 elif sys.platform == 'linux2':
-    from gtk.app import *
-    from gtk.window import *
-    from gtk.widgets import *
+    from platform.gtk.app import *
+    from platform.gtk.window import *
+    from platform.gtk.widgets import *
 
 elif sys.platform == 'win32':
-    from win32.app import *
-    from win32.window import *
-    from win32.widgets import *
+    from platform.win32.app import *
+    from platform.win32.window import *
+    from platform.win32.widgets import *
 
 else:
     raise NotImplemented('Platform is not currently supported')
