@@ -2,7 +2,7 @@ import sys
 
 from gi.repository import Gtk, Gio, GLib
 
-from tailor.gtk.window import Window
+from .window import Window
 
 
 class MainWindow(Window):
