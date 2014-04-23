@@ -1,3 +1,4 @@
+from .debug import DebugLibrary
 from .types import *
 
 kernel32 = DebugLibrary(windll.kernel32)
