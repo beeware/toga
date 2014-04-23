@@ -1,7 +1,8 @@
-# This code was originally drawn from:
-#
+# ----------------------------------------------------------------------------
+# The original version of this Cocoa wrapper library was drawn from
+# Pyglet, which, in turn, derived its code from objective-ctypes.
+# ----------------------------------------------------------------------------
 # objective-ctypes
-#
 # Copyright (c) 2011, Phillip Nguyen
 # All rights reserved.
 #
@@ -30,6 +31,7 @@
 # LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
+# ----------------------------------------------------------------------------
 
 from .objc import objc, send_message, send_super
 from .objc import get_selector
