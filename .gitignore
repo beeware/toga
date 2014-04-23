@@ -7,3 +7,4 @@ dist
 build
 _build
 distribute-*
+local
