@@ -1,7 +1,7 @@
 import sys
 
-from tailor.cocoa.libs import *
-from tailor.cocoa.window import Window
+from tailor.platform.cocoa.libs import *
+from tailor.platform.cocoa.window import Window
 
 
 NSMenu = ObjCClass('NSMenu')

@@ -1,5 +1,5 @@
 #/usr/bin/env python
-import sys
+# import sys
 
 from setuptools import setup
 from tailor import VERSION
@@ -13,8 +13,8 @@ finally:
 required_pkgs = [
 
 ]
-if sys.version_info < (2, 7):
-    required_pkgs.append('argparse')
+# if sys.version_info < (2, 7):
+#     required_pkgs.append('argparse')
 
 setup(
     name='tailor',

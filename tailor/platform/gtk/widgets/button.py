@@ -1,6 +1,6 @@
 from gi.repository import Gtk
 
-from tailor.gtk.widgets.base import Widget
+from .base import Widget
 
 
 def wrapped_handler(widget, handler):

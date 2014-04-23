@@ -1,4 +1,4 @@
-from tailor.cocoa.libs import *
+from tailor.platform.cocoa.libs import *
 
 
 NSWindow = ObjCClass('NSWindow')

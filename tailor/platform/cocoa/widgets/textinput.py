@@ -1,14 +1,14 @@
-from tailor.cocoa.libs import *
-from tailor.cocoa.widgets.base import Widget
+from tailor.platform.cocoa.libs import *
+from .base import Widget
 
 
-class PasswordInput(Widget):
+class TextInput(Widget):
     def __init__(self, value=None, placeholder=None, command=None):
-        super(PasswordInput, self).__init__()
+        super(TextInput, self).__init__()
 
         self.command = command
 
-        self._impl = NSSecureTextField.new()
+        self._impl = NSTextField.new()
 
         self._impl.setEditable_(True)
 
