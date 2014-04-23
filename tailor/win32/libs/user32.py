@@ -1,5 +1,6 @@
 import struct
 
+from .debug import DebugLibrary
 from .types import *
 
 
@@ -61,6 +62,8 @@ user32.MsgWaitForMultipleObjects.restype = DWORD
 user32.MsgWaitForMultipleObjects.argtypes = [DWORD, POINTER(HANDLE), BOOL, DWORD, DWORD]
 user32.PeekMessageW.restype = BOOL
 user32.PeekMessageW.argtypes = [LPMSG, HWND, UINT, UINT, UINT]
+user32.PostQuitMessage.restype = BOOL
+user32.PostQuitMessage.argtypes = [INT]
 user32.PostThreadMessageW.restype = BOOL
 user32.PostThreadMessageW.argtypes = [DWORD, UINT, WPARAM, LPARAM]
 user32.RegisterClassW.restype = ATOM
