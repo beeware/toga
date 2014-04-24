@@ -1,5 +1,4 @@
 import ctypes
-
 from tailor.platform.win32.libs import *
 
 from .window import Window

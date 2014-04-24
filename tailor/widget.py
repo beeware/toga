@@ -1,16 +1,4 @@
-from tailor.cassowary import Variable
 from tailor.constraint import Attribute
-
-
-class BoundingBox(object):
-    def __init__(self):
-        self.x = Variable('x', 0.0)
-        self.y = Variable('y', 0.0)
-        self.width = Variable('width', 0.0)
-        self.height = Variable('height', 0.0)
-
-    def __repr__(self):
-        return u'%sx%s @ %s,%s' % (self.width.value, self.height.value, self.x.value, self.y.value)
 
 
 class WidgetBase(object):

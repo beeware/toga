@@ -28,6 +28,11 @@ MONITORENUMPROC = WINFUNCTYPE(BOOL, HMONITOR, HDC, LPRECT, LPARAM)
 def MAKEINTRESOURCE(i):
     return cast(c_void_p(i&0xFFFF), c_wchar_p)
 
+def LOWORD(dword):
+    return dword & 0x0000ffff
+
+def HIWORD(dword):
+    return dword >> 16
 
 class WNDCLASS(Structure):
     _fields_ = [

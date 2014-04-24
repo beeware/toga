@@ -1,6 +1,6 @@
-from tailor.cassowary import Expression
+from tailor.cassowary import Expression, BoundingBox
 from tailor.constraint import Attribute
-from tailor.widget import WidgetBase, BoundingBox
+from tailor.widget import WidgetBase
 
 
 def wrapped_handler(widget, handler):

@@ -3,6 +3,7 @@
 
 from .constraint import Equation, Inequality, StayConstraint, EditConstraint
 from .expression import Expression
+from .layout import BoundingBox, LayoutManager
 from .simplex_solver import SimplexSolver
 from .strength import REQUIRED, STRONG, MEDIUM, WEAK
 from .variable import Variable
