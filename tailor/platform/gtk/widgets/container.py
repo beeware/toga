@@ -1,104 +1,8 @@
 from gi.repository import Gtk, cairo
 
+from tailor.cassowary import LayoutManager, Equation, Inequality, approx_equal
 from tailor.constraint import Constraint
-from tailor.cassowary import SimplexSolver, StayConstraint, WEAK, STRONG, REQUIRED, Equation, Inequality, Expression, approx_equal
 from .base import Widget
-
-
-class LayoutManager(SimplexSolver):
-    def __init__(self, bounding_box):
-        super(LayoutManager, self).__init__()
-        self.bounding_box = bounding_box
-
-        self.children = {}
-
-        # Enforce a hard constraint that the container starts at 0,0
-        self.add_constraint(StayConstraint(self.bounding_box.x, strength=REQUIRED))
-        self.add_constraint(StayConstraint(self.bounding_box.y, strength=REQUIRED))
-
-        # # Add a weak constraint for the bounds of the container.
-        self.width_constraint = StayConstraint(self.bounding_box.width, strength=WEAK)
-        self.height_constraint = StayConstraint(self.bounding_box.height, strength=WEAK)
-
-        self.add_constraint(self.width_constraint)
-        self.add_constraint(self.height_constraint)
-
-    def add_constraint(self, constraint):
-        print constraint
-        return super(LayoutManager, self).add_constraint(constraint)
-
-    def add_widget(self, widget):
-        constraints = set()
-
-        min_width, preferred_width = widget._width_hint
-        min_height, preferred_height = widget._height_hint
-
-        print min_width, preferred_width
-        print min_height, preferred_height
-        # REQUIRED: Widget width must exceed minimum.
-        constraints.add(self.add_constraint(
-            Inequality(
-                Expression(variable=widget._bounding_box.width),
-                Inequality.GEQ,
-                min_width,
-            )
-        ))
-
-        # REQUIRED: Widget height must exceed minimum
-        constraints.add(self.add_constraint(
-            Inequality(
-                Expression(variable=widget._bounding_box.height),
-                Inequality.GEQ,
-                min_height,
-            )
-        ))
-
-        # STRONG: Adhere to preferred widget width
-        constraints.add(self.add_constraint(
-            Equation(
-                Expression(variable=widget._bounding_box.width),
-                preferred_width,
-                strength=STRONG
-            )
-        ))
-
-        # STRONG: Try to adhere to preferred widget height
-        constraints.add(self.add_constraint(
-            Equation(
-                Expression(variable=widget._bounding_box.height),
-                preferred_height,
-                strength=STRONG
-            )
-        ))
-
-        print constraints
-        self.children[widget] = constraints
-
-    def enforce(self, width, height):
-        self.remove_constraint(self.width_constraint)
-        self.remove_constraint(self.height_constraint)
-
-        self.bounding_box.width.value = width
-        self.bounding_box.height.value = height
-
-        self.width_constraint = StayConstraint(self.bounding_box.width, strength=REQUIRED)
-        self.height_constraint = StayConstraint(self.bounding_box.height, strength=REQUIRED)
-
-        self.add_constraint(self.width_constraint)
-        self.add_constraint(self.height_constraint)
-
-    def relax(self):
-        self.remove_constraint(self.width_constraint)
-        self.remove_constraint(self.height_constraint)
-
-        self.bounding_box.width.value = 0
-        self.bounding_box.height.value = 0
-
-        self.width_constraint = StayConstraint(self.bounding_box.width, strength=WEAK)
-        self.height_constraint = StayConstraint(self.bounding_box.height, strength=WEAK)
-
-        self.add_constraint(self.width_constraint)
-        self.add_constraint(self.height_constraint)
 
 
 class TContainer(Gtk.Fixed):
@@ -119,7 +23,7 @@ class TContainer(Gtk.Fixed):
         return height, height
 
     def do_size_allocate(self, allocation):
-        print "Size allocate", allocation.width, 'x', allocation.height, ' @ ', allocation.x, 'x', allocation.y
+        # print "Size allocate", allocation.width, 'x', allocation.height, ' @ ', allocation.x, 'x', allocation.y
 
         self.set_allocation(allocation)
 
@@ -131,8 +35,6 @@ class TContainer(Gtk.Fixed):
             if not widget._impl.get_visible():
                 print "CHILD NOT VISIBLE"
             else:
-                print "CHILD", widget
-
                 min_width, preferred_width = widget._width_hint
                 min_height, preferred_height = widget._height_hint
 
@@ -198,9 +100,6 @@ class Container(Widget):
             if not approx_equal(constraint.related_attr.constant, 0.0):
                 expr2 = expr2 + constraint.related_attr.constant
 
-            print 'E1', expr1
-            print 'E2', expr2
-
             if constraint.relation == Constraint.EQUAL:
                 self._layout_manager.add_constraint(Equation(expr1, expr2))
             else:
@@ -209,8 +108,6 @@ class Container(Widget):
             expr = widget._expression(identifier)
             if not approx_equal(constraint.attr.multiplier, 1.0):
                 expr = expr * constraint.attr.multiplier
-
-            print 'E', expr
 
             if constraint.relation == Constraint.EQUAL:
                 self._layout_manager.add_constraint(Equation(expr, constraint.attr.constant))
