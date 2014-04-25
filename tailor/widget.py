@@ -1,7 +1,7 @@
 from tailor.constraint import Attribute
 
 
-class WidgetBase(object):
+class Widget(object):
     def __init__(self):
         self.LEFT = Attribute(self, Attribute.LEFT)
         self.RIGHT = Attribute(self, Attribute.RIGHT)

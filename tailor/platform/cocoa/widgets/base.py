@@ -1,4 +1,4 @@
-from tailor.widget import WidgetBase
+from tailor.widget import Widget as WidgetBase
 
 
 class Widget(WidgetBase):

@@ -1,8 +1,6 @@
 from gi.repository import Gtk, cairo
 
-from tailor.cassowary import LayoutManager, Equation, Inequality, approx_equal
-from tailor.constraint import Constraint
-from .base import Widget
+from tailor.cassowary.widget import Container as CassowaryContainer
 
 
 class TContainer(Gtk.Fixed):
@@ -61,52 +59,19 @@ class TContainer(Gtk.Fixed):
                     widget._impl.size_allocate(child_allocation)
 
 
-class Container(Widget):
-    _RELATION = {
-        Constraint.LTE: Inequality.LEQ,
-        Constraint.GTE: Inequality.GEQ
-    }
-
+class Container(CassowaryContainer):
     def __init__(self):
         super(Container, self).__init__()
-        self._layout_manager = LayoutManager(self._bounding_box)
         self._impl = TContainer(self._layout_manager)
 
     def add(self, widget):
         self._impl.add(widget._impl)
         self._layout_manager.add_widget(widget)
 
-    def constrain(self, constraint):
-        "Add the given constraint to the widget."
-        widget = constraint.attr.widget
-        identifier = constraint.attr.identifier
+    @property
+    def _width_hint(self):
+        return self._impl.get_preferred_width()
 
-        if constraint.related_attr:
-            related_widget = constraint.related_attr.widget
-            related_identifier = constraint.related_attr.identifier
-
-            expr1 = widget._expression(identifier)
-            if not approx_equal(constraint.attr.multiplier, 1.0):
-                expr1 = expr1 * constraint.attr.multiplier
-            if not approx_equal(constraint.attr.constant, 0.0):
-                expr1 = expr1 + constraint.attr.constant
-
-            expr2 = related_widget._expression(related_identifier)
-            if not approx_equal(constraint.related_attr.multiplier, 1.0):
-                expr2 = expr2 * constraint.related_attr.multiplier
-            if not approx_equal(constraint.related_attr.constant, 0.0):
-                expr2 = expr2 + constraint.related_attr.constant
-
-            if constraint.relation == Constraint.EQUAL:
-                self._layout_manager.add_constraint(Equation(expr1, expr2))
-            else:
-                self._layout_manager.add_constraint(Inequality(expr1, self._RELATION[constraint.relation], expr2))
-        else:
-            expr = widget._expression(identifier)
-            if not approx_equal(constraint.attr.multiplier, 1.0):
-                expr = expr * constraint.attr.multiplier
-
-            if constraint.relation == Constraint.EQUAL:
-                self._layout_manager.add_constraint(Equation(expr, constraint.attr.constant))
-            else:
-                self._layout_manager.add_constraint(Equation(expr, self._RELATION[constraint.relation], constraint.attr.constant))
+    @property
+    def _height_hint(self):
+        return self._impl.get_preferred_height()
