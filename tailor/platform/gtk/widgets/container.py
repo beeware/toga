@@ -28,40 +28,37 @@ class TContainer(Gtk.Fixed):
         self.set_allocation(allocation)
 
         # Temporarily enforce a size requirement based on the allocation
-        self.layout_manager.enforce(allocation.width, allocation.height)
+        with self.layout_manager.layout(allocation.width, allocation.height):
 
-        for widget in self.layout_manager.children:
-            print widget, widget._bounding_box
-            if not widget._impl.get_visible():
-                print "CHILD NOT VISIBLE"
-            else:
-                min_width, preferred_width = widget._width_hint
-                min_height, preferred_height = widget._height_hint
-
-                x_pos = widget._bounding_box.x.value
-                if widget._expand_horizontal:
-                    width = widget._bounding_box.width.value
+            for widget in self.layout_manager.children:
+                print widget, widget._bounding_box
+                if not widget._impl.get_visible():
+                    print "CHILD NOT VISIBLE"
                 else:
-                    x_pos = x_pos + ((widget._bounding_box.width.value - preferred_width) / 2.0)
-                    width = preferred_width
+                    min_width, preferred_width = widget._width_hint
+                    min_height, preferred_height = widget._height_hint
 
-                y_pos = widget._bounding_box.y.value
-                if widget._expand_vertical:
-                    height = widget._bounding_box.height.value
-                else:
-                    y_pos = y_pos + ((widget._bounding_box.height.value - preferred_height) / 2.0)
-                    height = preferred_height
+                    x_pos = widget._bounding_box.x.value
+                    if widget._expand_horizontal:
+                        width = widget._bounding_box.width.value
+                    else:
+                        x_pos = x_pos + ((widget._bounding_box.width.value - preferred_width) / 2.0)
+                        width = preferred_width
 
-                child_allocation = cairo.RectangleInt()
-                child_allocation.x = x_pos
-                child_allocation.y = y_pos
-                child_allocation.width = width
-                child_allocation.height = height
+                    y_pos = widget._bounding_box.y.value
+                    if widget._expand_vertical:
+                        height = widget._bounding_box.height.value
+                    else:
+                        y_pos = y_pos + ((widget._bounding_box.height.value - preferred_height) / 2.0)
+                        height = preferred_height
 
-                widget._impl.size_allocate(child_allocation)
+                    child_allocation = cairo.RectangleInt()
+                    child_allocation.x = x_pos
+                    child_allocation.y = y_pos
+                    child_allocation.width = width
+                    child_allocation.height = height
 
-        # Restore the unbounded allocation
-        self.layout_manager.relax()
+                    widget._impl.size_allocate(child_allocation)
 
 
 class Container(Widget):

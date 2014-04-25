@@ -81,7 +81,18 @@ class LayoutManager(SimplexSolver):
 
         self.children[widget] = constraints
 
-    def enforce(self, width, height):
+    def layout(self, width, height):
+        self.bounding_box.width.value = width
+        self.bounding_box.height.value = height
+        return self
+
+    def __enter__(self):
+        # Removing a constraint resets the value. Save the current value
+        # of the width/height constraint temporarily, and restore after
+        # removing the constraints.
+        width = self.bounding_box.width.value
+        height = self.bounding_box.height.value
+
         self.remove_constraint(self.width_constraint)
         self.remove_constraint(self.height_constraint)
 
@@ -94,7 +105,7 @@ class LayoutManager(SimplexSolver):
         self.add_constraint(self.width_constraint)
         self.add_constraint(self.height_constraint)
 
-    def relax(self):
+    def __exit__(self, type, value, traceback):
         self.remove_constraint(self.width_constraint)
         self.remove_constraint(self.height_constraint)
 

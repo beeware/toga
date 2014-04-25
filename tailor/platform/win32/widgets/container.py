@@ -79,29 +79,27 @@ class Container(Widget):
             widget._create(window, x_pos, y_pos, width, height)
 
     def _resize(self, x, y, width, height):
-        self._layout_manager.enforce(width, height)
 
-        for widget in self._layout_manager.children:
-            min_width, preferred_width = widget._width_hint
-            min_height, preferred_height = widget._height_hint
+        with self._layout_manager.layout(width, height):
+            for widget in self._layout_manager.children:
+                min_width, preferred_width = widget._width_hint
+                min_height, preferred_height = widget._height_hint
 
-            x_pos = widget._bounding_box.x.value
-            if widget._expand_horizontal:
-                width = widget._bounding_box.width.value
-            else:
-                x_pos = x_pos + ((widget._bounding_box.width.value - preferred_width) / 2.0)
-                width = preferred_width
+                x_pos = widget._bounding_box.x.value
+                if widget._expand_horizontal:
+                    width = widget._bounding_box.width.value
+                else:
+                    x_pos = x_pos + ((widget._bounding_box.width.value - preferred_width) / 2.0)
+                    width = preferred_width
 
-            y_pos = widget._bounding_box.y.value
-            if widget._expand_vertical:
-                height = widget._bounding_box.height.value
-            else:
-                y_pos = y_pos + ((widget._bounding_box.height.value - preferred_height) / 2.0)
-                height = preferred_height
+                y_pos = widget._bounding_box.y.value
+                if widget._expand_vertical:
+                    height = widget._bounding_box.height.value
+                else:
+                    y_pos = y_pos + ((widget._bounding_box.height.value - preferred_height) / 2.0)
+                    height = preferred_height
 
-            widget._resize(x_pos, y_pos, width, height)
-
-        self._layout_manager.relax()
+                widget._resize(x_pos, y_pos, width, height)
 
     @property
     def _width_hint(self):
