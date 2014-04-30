@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from tailor.constraint import Attribute, Constraint, InvalidConstraint
+from toga.constraint import Attribute, Constraint, InvalidConstraint
 
 
 class AttributeTestCase(TestCase):

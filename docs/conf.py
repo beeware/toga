@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Tailor documentation build configuration file, created by
+# Toga documentation build configuration file, created by
 # sphinx-quickstart on Sat Jul 27 14:58:42 2013.
 #
 # This file is execfile()d with the current directory set to its containing dir.
@@ -40,7 +40,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Tailor'
+project = u'Toga'
 copyright = u'2013, Russell Keith-Magee'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -164,7 +164,7 @@ html_static_path = ['_static']
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'tailordoc'
+htmlhelp_basename = 'togadoc'
 
 
 # -- Options for LaTeX output --------------------------------------------------
@@ -183,7 +183,7 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'tailor.tex', u'Tailor Documentation',
+  ('index', 'toga.tex', u'Toga Documentation',
    u'Russell Keith-Magee', 'manual'),
 ]
 
@@ -213,7 +213,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'tailor', u'Tailor Documentation',
+    ('index', 'toga', u'Toga Documentation',
      [u'Russell Keith-Magee'], 1)
 ]
 
@@ -227,8 +227,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'tailor', u'Tailor Documentation',
-   u'Russell Keith-Magee', 'Tailor', 'A Python native, OS native GUI toolkit.',
+  ('index', 'toga', u'Toga Documentation',
+   u'Russell Keith-Magee', 'Toga', 'A Python native, OS native GUI toolkit.',
    'Miscellaneous'),
 ]
 

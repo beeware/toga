@@ -2,7 +2,7 @@
 # import sys
 
 from setuptools import setup
-from tailor import VERSION
+from toga import VERSION
 
 try:
     readme = open('README.rst')
@@ -17,15 +17,15 @@ required_pkgs = [
 #     required_pkgs.append('argparse')
 
 setup(
-    name='tailor',
+    name='toga',
     version=VERSION,
     description='A Python native, OS native GUI toolkit.',
     long_description=long_description,
     author='Russell Keith-Magee',
     author_email='russell@keith-magee.com',
-    url='http://pybee.org/tailor',
+    url='http://pybee.org/toga',
     packages=[
-        'tailor',
+        'toga',
     ],
     install_requires=required_pkgs,
     license='New BSD',

@@ -1,22 +1,22 @@
-Tailor
-======
+Toga
+====
 
 A Python native, OS native GUI toolkit.
 
 Quickstart
 ----------
 
-To get a demonstration of the capabilities of Tailor, run the following::
+To get a demonstration of the capabilities of Toga, run the following::
 
-    $ pip install savilerow
-    $ savilerow
+    $ pip install toga-demo
+    $ toga-demo
 
 This will pop up a GUI window with some sample widgets.
 
 Problems using virtualenv under Ubuntu
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Tailor uses the system native python GTK+3 bindings for display purposes.
+Toga uses the system native python GTK+3 bindings for display purposes.
 However, if you're using a `--no-site-packages` virtualenv, the Python bindings
 for GTK won't be in your `PYTHONPATH`.
 
@@ -32,12 +32,12 @@ virtualenv's site-packages:
 Documentation
 -------------
 
-Documentation for Tailor can be found on `Read The Docs`_.
+Documentation for Toga can be found on `Read The Docs`_.
 
 Community
 ---------
 
-Tailor is part of the `BeeWare suite`_. You can talk to the community through:
+Toga is part of the `BeeWare suite`_. You can talk to the community through:
 
  * `@pybeeware on Twitter`_
 
@@ -48,14 +48,14 @@ Tailor is part of the `BeeWare suite`_. You can talk to the community through:
 Contributing
 ------------
 
-If you experience problems with Tailor, `log them on GitHub`_. If you
+If you experience problems with Toga, `log them on GitHub`_. If you
 want to contribute code, please `fork the code`_ and `submit a pull request`_.
 
 .. _BeeWare suite: http://pybee.org
-.. _Read The Docs: http://tailor.readthedocs.org
+.. _Read The Docs: http://toga.readthedocs.org
 .. _@pybeeware on Twitter: https://twitter.com/pybeeware
 .. _BeeWare Users Mailing list: https://groups.google.com/forum/#!forum/beeware-users
 .. _BeeWare Developers Mailing list: https://groups.google.com/forum/#!forum/beeware-developers
-.. _log them on Github: https://github.com/pybee/tailor/issues
-.. _fork the code: https://github.com/pybee/tailor
-.. _submit a pull request: https://github.com/pybee/tailor/pulls
+.. _log them on Github: https://github.com/pybee/toga/issues
+.. _fork the code: https://github.com/pybee/toga
+.. _submit a pull request: https://github.com/pybee/toga/pulls

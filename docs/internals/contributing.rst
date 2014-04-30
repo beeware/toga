@@ -1,29 +1,29 @@
-Contributing to Tailor
-======================
+Contributing to Toga
+====================
 
 
-If you experience problems with Tailor, `log them on GitHub`_. If you want to contribute code, please `fork the code`_ and `submit a pull request`_.
+If you experience problems with Toga, `log them on GitHub`_. If you want to contribute code, please `fork the code`_ and `submit a pull request`_.
 
-.. _log them on Github: https://github.com/pybee/tailor/issues
-.. _fork the code: https://github.com/pybee/tailor
-.. _submit a pull request: https://github.com/pybee/tailor/pulls
+.. _log them on Github: https://github.com/pybee/toga/issues
+.. _fork the code: https://github.com/pybee/toga
+.. _submit a pull request: https://github.com/pybee/toga/pulls
 
 
 Setting up your development environment
 ---------------------------------------
 
-The recommended way of setting up your development envrionment for Tailor
+The recommended way of setting up your development envrionment for Toga
 is to install a virtual environment, install the required dependencies and
 start coding. Assuming that you are using ``virtualenvwrapper``, you only have
 to run::
 
-    $ git clone git@github.com:pybee/tailor.git
-    $ cd tailor
-    $ mkvirtualenv tailor
+    $ git clone git@github.com:pybee/toga.git
+    $ cd toga
+    $ mkvirtualenv toga
 
-Tailor uses ``unittest`` (or ``unittest2`` for Python < 2.7) for its own test
+Toga uses ``unittest`` (or ``unittest2`` for Python < 2.7) for its own test
 suite as well as additional helper modules for testing. To install all the
-requirements for Tailor, you have to run the following commands within your
+requirements for Toga, you have to run the following commands within your
 virutal envrionment::
 
     $ pip install -e .
