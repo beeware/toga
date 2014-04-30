@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from tailor.widget import WidgetBase
+from toga.widget import WidgetBase
 
 
 class TestWidget(WidgetBase):
