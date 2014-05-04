@@ -46,7 +46,6 @@ class Widget(WidgetBase):
         raise NotImplemented()
 
 
-
 class Container(Widget):
     def __init__(self):
         super(Container, self).__init__()
