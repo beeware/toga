@@ -1,3 +1,5 @@
+from __future__ import print_function, unicode_literals, absolute_import, division
+
 import sys
 
 from gi.repository import Gtk, Gio, GLib
@@ -12,7 +14,7 @@ class MainWindow(Window):
 class App(object):
 
     def __init__(self, name, app_id):
-        GLib.set_application_name(name)
+        # GLib.set_application_name(name.encode('ascii'))
         self._impl = Gtk.Application(application_id=app_id, flags=Gio.ApplicationFlags.FLAGS_NONE)
 
         self.main_window = MainWindow(self)
@@ -22,7 +24,6 @@ class App(object):
         self._impl.connect('shutdown', self._shutdown)
 
     def _startup(self, data=None):
-        print "STARTUP"
         self._impl.add_window(self.main_window._impl)
 
         action = Gio.SimpleAction.new('stuff', None)

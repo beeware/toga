@@ -1,3 +1,5 @@
+from __future__ import print_function, unicode_literals, absolute_import, division
+
 from toga.cassowary.widget import Container as CassowaryContainer
 
 
@@ -60,11 +62,11 @@ class Container(CassowaryContainer):
     @property
     def _width_hint(self):
         width = self._layout_manager.bounding_box.width.value
-        print "PREFERRED WIDTH", width
+        print("PREFERRED WIDTH", width)
         return width, width
 
     @property
     def _height_hint(self):
         height = self._layout_manager.bounding_box.height.value
-        print "PREFERRED HEIGHT", height
+        print("PREFERRED HEIGHT", height)
         return height, height

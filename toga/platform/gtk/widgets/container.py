@@ -1,11 +1,13 @@
+from __future__ import print_function, unicode_literals, absolute_import, division
+
 from gi.repository import Gtk, cairo
 
 from toga.cassowary.widget import Container as CassowaryContainer
 
 
-class TContainer(Gtk.Fixed):
+class GtkContainer(Gtk.Fixed):
     def __init__(self, layout_manager):
-        super(TContainer, self).__init__()
+        super(GtkContainer, self).__init__()
         self.layout_manager = layout_manager
 
     def do_get_preferred_width(self):
@@ -29,9 +31,9 @@ class TContainer(Gtk.Fixed):
         with self.layout_manager.layout(allocation.width, allocation.height):
 
             for widget in self.layout_manager.children:
-                print widget, widget._bounding_box
+                print(widget, widget._bounding_box)
                 if not widget._impl.get_visible():
-                    print "CHILD NOT VISIBLE"
+                    print("CHILD NOT VISIBLE")
                 else:
                     min_width, preferred_width = widget._width_hint
                     min_height, preferred_height = widget._height_hint
@@ -62,7 +64,7 @@ class TContainer(Gtk.Fixed):
 class Container(CassowaryContainer):
     def __init__(self):
         super(Container, self).__init__()
-        self._impl = TContainer(self._layout_manager)
+        self._impl = GtkContainer(self._layout_manager)
 
     def add(self, widget):
         self._impl.add(widget._impl)

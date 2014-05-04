@@ -1,3 +1,5 @@
+from __future__ import print_function, unicode_literals, absolute_import, division
+
 from toga.platform.win32.libs import *
 
 import ctypes
@@ -35,14 +37,14 @@ class Window(object):
             self._window_class.hInstance,
             0)
 
-        print 1,self._impl
+        print(1,self._impl)
         # user32.SetWindowPos(self._impl, HWND_NOTOPMOST,
                 # position[0], position[1], size[0], size[1], SWP_NOMOVE | SWP_FRAMECHANGED)
 
         ctypes.windll.UxTheme.SetWindowTheme(self._impl, c_wchar_p('Explorer'), 0)
 
         user32.SetWindowTextW(self._impl, c_wchar_p("Hello World"))
-        print 2,self._impl
+        print(2,self._impl)
 
     @property
     def content(self):
@@ -59,9 +61,9 @@ class Window(object):
         widget._create(self, 0, 0, preferred_width, preferred_height)
 
     def show(self):
-        print 3,self._impl
+        print(3,self._impl)
         user32.ShowWindow(self._impl, SW_SHOWDEFAULT)
-        print 4,self._impl
+        print(4,self._impl)
 
     def _allocate_id(self):
         self._allocated = self._allocated + 1
@@ -85,7 +87,7 @@ class Window(object):
         return result
 
     def _wm_command(self, msg, wParam, lParam):
-        print "COMMAND RECEIVED", wParam
+        print("COMMAND RECEIVED", wParam)
         try:
             widget = self._widgets[wParam]
             if widget.on_press:
@@ -96,10 +98,10 @@ class Window(object):
         return 0
 
     def _wm_size(self, msg, wParam, lParam):
-        print "RESIZE"
+        print("RESIZE")
         width = LOWORD(lParam)
         height = HIWORD(lParam)
-        print "REQUESTED SIZE", width, height
+        print("REQUESTED SIZE", width, height)
         if self._content:
             self._content._resize(0, 0, width, height)
         return 0
@@ -109,12 +111,12 @@ class Window(object):
         return 0
 
     def _wm_getminmaxinfo(self, msg, wParam, lParam):
-        print "REQUEST FOR MIN MAX INFO"
+        print("REQUEST FOR MIN MAX INFO")
         info = MINMAXINFO.from_address(lParam)
         if self._content:
             min_width, preferred_width = self.content._width_hint
             min_height, preferred_height = self.content._height_hint
-            print "SET MIN to %sx%s" % (min_width, min_height)
+            print("SET MIN to %sx%s" % (min_width, min_height))
             info.ptMinTrackSize.x = int(min_width)
             info.ptMinTrackSize.y = int(min_height)
 
