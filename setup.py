@@ -1,6 +1,5 @@
 #/usr/bin/env python
 # import sys
-
 from setuptools import setup
 from toga import VERSION
 
@@ -11,7 +10,7 @@ finally:
     readme.close()
 
 required_pkgs = [
-
+    'cassowary',
 ]
 # if sys.version_info < (2, 7):
 #     required_pkgs.append('argparse')
@@ -35,8 +34,13 @@ setup(
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 2.6',
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.3',
         'Topic :: Software Development',
-        'Topic :: Utilities',
+        'Topic :: Software Development :: User Interfaces',
+        'Topic :: Software Development :: Widget Sets',
     ],
-    test_suite='tests'
+    test_suite='tests',
 )

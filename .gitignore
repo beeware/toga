@@ -11,8 +11,11 @@ distribute-*
 <<<<<<< HEAD
 local
 .tox
+<<<<<<< HEAD
 =======
 >>>>>>> Initial code commit
 =======
 local
 >>>>>>> Added the local storage area to gitignore.
+=======
+>>>>>>> Migrate to external Cassowary library.

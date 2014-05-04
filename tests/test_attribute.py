@@ -1,4 +1,7 @@
 from unittest import TestCase
+if not hasattr(TestCase, 'assertIsNotNone'):
+    # For Python2.6 compatibility
+    from unittest2 import TestCase
 
 from toga.constraint import Attribute, Constraint, InvalidConstraint
 

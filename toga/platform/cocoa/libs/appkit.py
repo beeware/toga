@@ -1,3 +1,5 @@
+from __future__ import print_function, unicode_literals, absolute_import, division
+
 from ctypes import *
 from ctypes import util
 
@@ -18,7 +20,7 @@ NSApplicationDidHideNotification = c_void_p.in_dll(appkit, 'NSApplicationDidHide
 NSApplicationDidUnhideNotification = c_void_p.in_dll(appkit, 'NSApplicationDidUnhideNotification')
 
 # NSEvent.h
-NSAnyEventMask = 0xFFFFFFFFL  # NSUIntegerMax
+NSAnyEventMask = 0xFFFFFFFF  # NSUIntegerMax
 
 NSKeyDown = 10
 NSKeyUp = 11

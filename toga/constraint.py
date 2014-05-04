@@ -1,3 +1,5 @@
+from __future__ import print_function, unicode_literals, absolute_import, division
+
 
 class InvalidConstraint(Exception):
     "Raised when a constraint cannot be satisfied"
@@ -26,7 +28,7 @@ class Constraint(object):
 
     def __repr__(self):
         if self.related_attr is not None:
-            return u'<Constraint: %s%s.%s%s %s %s%s.%s%s>' % (
+            return '<Constraint: %s%s.%s%s %s %s%s.%s%s>' % (
                 '%s * ' % self.attr.multiplier if self.attr.multiplier != 1 else '',
                 self.attr.widget, self.attr.identifier_label,
                 ' + %s' % self.attr.constant if self.attr.constant else '',
@@ -36,7 +38,7 @@ class Constraint(object):
                 ' + %s' % self.related_attr.constant if self.related_attr.constant else '',
             )
         else:
-            return u'<Constraint: %s%s.%s %s %s>' % (
+            return '<Constraint: %s%s.%s %s %s>' % (
                 '%s * ' % self.attr.multiplier if self.attr.multiplier != 1 else '',
                 self.attr.widget, self.attr.identifier_label, self.relation_label, self.attr.constant,
             )
@@ -88,7 +90,7 @@ class Attribute(object):
         }[self.identifier]
 
     def __repr__(self):
-        return u'<Attr %s * %s.%s + %s>' % (self.multiplier, self.widget, self.identifier_label, self.constant)
+        return '<Attr %s * %s.%s + %s>' % (self.multiplier, self.widget, self.identifier_label, self.constant)
 
     def copy(self, multiplier=None, constant=None):
         attr = Attribute(self.widget, self.identifier)
@@ -106,6 +108,9 @@ class Attribute(object):
             multiplier=self.multiplier * value,
             constant=self.constant * value
         )
+
+    def __truediv__(self, value):
+        return self.__div__(value)
 
     def __div__(self, value):
         return self.copy(
@@ -156,6 +161,8 @@ class Attribute(object):
         else:
             raise InvalidConstraint('Cannot build a constraint with an object of type %s' % type(other))
 
+    __hash__ = object.__hash__
+
     def __eq__(self, other):
         if isinstance(other, Attribute):
             return Constraint(self, Constraint.EQUAL, other)
@@ -163,3 +170,4 @@ class Attribute(object):
             return Constraint(self.copy(multiplier=self.multiplier, constant=(other - self.constant)), Constraint.EQUAL)
         else:
             raise InvalidConstraint('Cannot build a constraint with an object of type %s' % type(other))
+

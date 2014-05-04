@@ -68,19 +68,19 @@ VERSION = "".join(part_string(nv, i) for i, nv in enumerate(NUM_VERSION))
 import sys
 
 if sys.platform == 'darwin':
-    from platform.cocoa.app import *
-    from platform.cocoa.window import *
-    from platform.cocoa.widgets import *
+    from .platform.cocoa.app import *
+    from .platform.cocoa.window import *
+    from .platform.cocoa.widgets import *
 
 elif sys.platform == 'linux2':
-    from platform.gtk.app import *
-    from platform.gtk.window import *
-    from platform.gtk.widgets import *
+    from .platform.gtk.app import *
+    from .platform.gtk.window import *
+    from .platform.gtk.widgets import *
 
 elif sys.platform == 'win32':
-    from platform.win32.app import *
-    from platform.win32.window import *
-    from platform.win32.widgets import *
+    from .platform.win32.app import *
+    from .platform.win32.window import *
+    from .platform.win32.widgets import *
 
 else:
     raise NotImplemented('Platform is not currently supported')
