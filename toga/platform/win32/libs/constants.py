@@ -1,3 +1,5 @@
+from __future__ import print_function, unicode_literals, absolute_import, division
+
 # Most of this file is win32con.py from Python for Windows Extensions:
 # http://www.python.net/crew/mhammond/win32/
 

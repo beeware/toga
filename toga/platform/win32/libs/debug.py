@@ -1,5 +1,8 @@
+from __future__ import print_function, unicode_literals, absolute_import, division
+
 from ctypes import *
 from . import constants
+
 
 _debug_win32 = True
 
