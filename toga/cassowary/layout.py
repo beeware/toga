@@ -1,8 +1,6 @@
-from .simplex_solver import SimplexSolver
-from .constraint import StayConstraint, Equation, Inequality
-from .strength import WEAK, STRONG, REQUIRED
-from .expression import Expression
-from .variable import Variable
+from __future__ import print_function, unicode_literals, absolute_import, division
+
+from cassowary import SimplexSolver, Variable, WEAK, STRONG, REQUIRED
 
 
 class BoundingBox(object):
@@ -24,18 +22,15 @@ class LayoutManager(SimplexSolver):
         self.children = {}
 
         # Enforce a hard constraint that the container starts at 0,0
-        self.add_constraint(StayConstraint(self.bounding_box.x, strength=REQUIRED))
-        self.add_constraint(StayConstraint(self.bounding_box.y, strength=REQUIRED))
+        self.add_stay(self.bounding_box.x, strength=REQUIRED)
+        self.add_stay(self.bounding_box.y, strength=REQUIRED)
 
-        # # Add a weak constraint for the bounds of the container.
-        self.width_constraint = StayConstraint(self.bounding_box.width, strength=WEAK)
-        self.height_constraint = StayConstraint(self.bounding_box.height, strength=WEAK)
+        # Add a weak constraint for the bounds of the container.
+        self.width_constraint = self.add_stay(self.bounding_box.width, strength=WEAK)
+        self.height_constraint = self.add_stay(self.bounding_box.height, strength=WEAK)
 
-        self.add_constraint(self.width_constraint)
-        self.add_constraint(self.height_constraint)
-
-    def add_constraint(self, constraint):
-        return super(LayoutManager, self).add_constraint(constraint)
+    def add_constraint(self, constraint, strength=None):
+        return super(LayoutManager, self).add_constraint(constraint, strength=strength)
 
     def add_widget(self, widget):
         constraints = set()
@@ -44,40 +39,16 @@ class LayoutManager(SimplexSolver):
         min_height, preferred_height = widget._height_hint
 
         # REQUIRED: Widget width must exceed minimum.
-        constraints.add(self.add_constraint(
-            Inequality(
-                Expression(variable=widget._bounding_box.width),
-                Inequality.GEQ,
-                min_width,
-            )
-        ))
+        constraints.add(self.add_constraint(widget._bounding_box.width >= min_width))
 
         # REQUIRED: Widget height must exceed minimum
-        constraints.add(self.add_constraint(
-            Inequality(
-                Expression(variable=widget._bounding_box.height),
-                Inequality.GEQ,
-                min_height,
-            )
-        ))
+        constraints.add(self.add_constraint(widget._bounding_box.height >= min_height))
 
         # STRONG: Adhere to preferred widget width
-        constraints.add(self.add_constraint(
-            Equation(
-                Expression(variable=widget._bounding_box.width),
-                preferred_width,
-                strength=STRONG
-            )
-        ))
+        constraints.add(self.add_constraint(widget._bounding_box.width == preferred_width, strength=STRONG))
 
         # STRONG: Try to adhere to preferred widget height
-        constraints.add(self.add_constraint(
-            Equation(
-                Expression(variable=widget._bounding_box.height),
-                preferred_height,
-                strength=STRONG
-            )
-        ))
+        constraints.add(self.add_constraint(widget._bounding_box.height == preferred_height, strength=STRONG))
 
         self.children[widget] = constraints
 
@@ -99,11 +70,8 @@ class LayoutManager(SimplexSolver):
         self.bounding_box.width.value = width
         self.bounding_box.height.value = height
 
-        self.width_constraint = StayConstraint(self.bounding_box.width, strength=REQUIRED)
-        self.height_constraint = StayConstraint(self.bounding_box.height, strength=REQUIRED)
-
-        self.add_constraint(self.width_constraint)
-        self.add_constraint(self.height_constraint)
+        self.width_constraint = self.add_stay(self.bounding_box.width, strength=REQUIRED)
+        self.height_constraint = self.add_stay(self.bounding_box.height, strength=REQUIRED)
 
     def __exit__(self, type, value, traceback):
         self.remove_constraint(self.width_constraint)
@@ -112,8 +80,5 @@ class LayoutManager(SimplexSolver):
         self.bounding_box.width.value = 0
         self.bounding_box.height.value = 0
 
-        self.width_constraint = StayConstraint(self.bounding_box.width, strength=WEAK)
-        self.height_constraint = StayConstraint(self.bounding_box.height, strength=WEAK)
-
-        self.add_constraint(self.width_constraint)
-        self.add_constraint(self.height_constraint)
+        self.width_constraint = self.add_stay(self.bounding_box.width, strength=WEAK)
+        self.height_constraint = self.add_stay(self.bounding_box.height, strength=WEAK)

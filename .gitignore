@@ -8,3 +8,4 @@ build
 _build
 distribute-*
 local
+.tox

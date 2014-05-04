@@ -1,3 +1,4 @@
+from __future__ import print_function, unicode_literals, absolute_import, division
 
 # /System/Library/Frameworks/ApplicationServices.framework/Frameworks/CoreGraphics.framework/Headers/CGImage.h
 kCGImageAlphaNone = 0
