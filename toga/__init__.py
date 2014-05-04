@@ -9,7 +9,7 @@ from __future__ import print_function, unicode_literals, absolute_import, divisi
 # NUM_VERSION = (0, 1, 3, ('b', 1), 'dev')
 # NUM_VERSION = (0, 1, 3)
 
-NUM_VERSION = (0, 0, 0, 'dev')
+NUM_VERSION = (0, 0, 0)
 
 
 def get_git_changeset():
