@@ -67,12 +67,16 @@ def part_string(part, i):
 
 VERSION = "".join(part_string(nv, i) for i, nv in enumerate(NUM_VERSION))
 
-import sys
+import sys, os
 
 if sys.platform == 'darwin':
-    from .platform.cocoa.app import *
-    from .platform.cocoa.window import *
-    from .platform.cocoa.widgets import *
+    if os.environ.get('TARGET_IPHONE_SIMULATOR') or os.environ.get('TARGET_IPHONE'):
+        from .platform.ios.app import *
+        from .platform.ios.widgets import *
+    else:
+        from .platform.cocoa.app import *
+        from .platform.cocoa.window import *
+        from .platform.cocoa.widgets import *
 
 elif sys.platform == 'linux2':
     from .platform.gtk.app import *
