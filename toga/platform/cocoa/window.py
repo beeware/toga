@@ -1,6 +1,6 @@
 from __future__ import print_function, absolute_import, division
 
-from toga.platform.cocoa.libs import *
+from .libs import *
 
 
 NSWindow = ObjCClass('NSWindow')
