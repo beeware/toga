@@ -1,5 +1,7 @@
 from __future__ import print_function, absolute_import, division
 
+from .types import *
+
 # /System/Library/Frameworks/ApplicationServices.framework/Frameworks/CoreGraphics.framework/Headers/CGImage.h
 kCGImageAlphaNone = 0
 kCGImageAlphaPremultipliedLast = 1
@@ -21,3 +23,11 @@ kCGBitmapByteOrder16Little = 1 << 12
 kCGBitmapByteOrder32Little = 2 << 12
 kCGBitmapByteOrder16Big = 3 << 12
 kCGBitmapByteOrder32Big = 4 << 12
+
+
+CGPoint = NSPoint
+CGSize = NSSize
+CGRect = NSRect
+CGRectMake = NSMakeRect
+CGPointMake = NSMakePoint
+CGSizeMake = NSMakeSize

@@ -951,7 +951,7 @@ class ObjCInstance(object):
 
     def __setattr__(self, name, value):
         # Cre
-        if name in ('objc_class', 'ptr', '_as_parameter_', 'objc_cmd'):
+        if name in ('objc_class', 'ptr', '_as_parameter_', 'objc_cmd', 'interface'):
             return super(ObjCInstance, self).__setattr__(name, value)
 
         # Set the value of an attribute.

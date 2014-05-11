@@ -43,21 +43,18 @@ class NSPoint(Structure):
         ("x", CGFloat),
         ("y", CGFloat)
     ]
-CGPoint = NSPoint
 
 class NSSize(Structure):
     _fields_ = [
         ("width", CGFloat),
         ("height", CGFloat)
     ]
-CGSize = NSSize
 
 class NSRect(Structure):
     _fields_ = [
         ("origin", NSPoint),
         ("size", NSSize)
     ]
-CGRect = NSRect
 
 def NSMakeSize(w, h):
     return NSSize(w, h)
@@ -67,6 +64,7 @@ def NSMakeRect(x, y, w, h):
 
 def NSMakePoint(x, y):
     return NSPoint(x, y)
+
 
 # NSDate.h
 NSTimeInterval = c_double
