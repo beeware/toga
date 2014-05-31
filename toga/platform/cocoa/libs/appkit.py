@@ -6,6 +6,8 @@ from ctypes import util
 from .objc import ObjCClass
 from .types import *
 
+from toga.constants import *
+
 ######################################################################
 
 # APPLICATION KIT
@@ -207,6 +209,22 @@ NSApplicationActivationPolicyRegular = 0
 NSApplicationActivationPolicyAccessory = 1
 NSApplicationActivationPolicyProhibited = 2
 
+# NSText.h
+NSLeftTextAlignment = 0
+NSRightTextAlignment = 1
+NSCenterTextAlignment = 2
+NSJustifiedTextAlignment = 3
+NSNaturalTextAlignment = 4
+
+def NSTextAlignment(alignment):
+    return {
+        LEFT_ALIGNED: NSLeftTextAlignment,
+        RIGHT_ALIGNED: NSRightTextAlignment,
+        CENTER_ALIGNED: NSCenterTextAlignment,
+        JUSTIFIED_ALIGNED: NSJustifiedTextAlignment,
+        NATURAL_ALIGNED: NSNaturalTextAlignment,
+    }[alignment]
+
 # NSTextField.h
 NSTextField = ObjCClass('NSTextField')
 
@@ -219,3 +237,6 @@ NSView = ObjCClass('NSView')
 
 # NSSplitView.h
 NSSplitView = ObjCClass('NSSplitView')
+
+# NSSecureTextField.h
+NSSecureTextField = ObjCClass('NSSecureTextField')

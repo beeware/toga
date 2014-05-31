@@ -5,8 +5,9 @@ from toga.constraint import Attribute
 
 class Widget(object):
     def __init__(self):
-        self._app = None
         self.window = None
+        self._app = None
+        self._impl = None
 
         self.LEFT = Attribute(self, Attribute.LEFT)
         self.RIGHT = Attribute(self, Attribute.RIGHT)
