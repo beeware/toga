@@ -72,6 +72,7 @@ import sys, os
 if sys.platform == 'darwin':
     if os.environ.get('TARGET_IPHONE_SIMULATOR') or os.environ.get('TARGET_IPHONE'):
         from .platform.ios.app import *
+        from .platform.ios.window import *
         from .platform.ios.widgets import *
     else:
         from .platform.cocoa.app import *
