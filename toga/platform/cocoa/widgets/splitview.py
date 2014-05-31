@@ -10,6 +10,7 @@ class SplitView(Widget):
     def __init__(self, direction=VERTICAL):
         super(SplitView, self).__init__()
         self.direction = direction
+
         self._impl = NSSplitView.alloc().init()
         self._impl.setVertical_(direction)
 

@@ -3,61 +3,24 @@ from __future__ import print_function, absolute_import, division
 from toga.cassowary.widget import Container as CassowaryContainer
 
 
+class Win32Container(object):
+    def add(self, widget):
+        pass
+
 class Container(CassowaryContainer):
     def __init__(self):
         super(Container, self).__init__()
-        self._window = None
+        self.window = None
 
-    def add(self, widget):
-        self._layout_manager.add_widget(widget)
-        if self._window:
-            widget._create(self._window)
+    def _create_container(self):
+        # No impl is requried for a container, but we need a placeholder
+        # to keep the cross-platform logic happy.
+        return Win32Container()
 
-    def _create(self, window, x, y, width, height):
-        self._window = window
-        for widget in self._layout_manager.children:
-
-            min_width, preferred_width = widget._width_hint
-            min_height, preferred_height = widget._height_hint
-
-            x_pos = widget._bounding_box.x.value
-            if widget._expand_horizontal:
-                width = widget._bounding_box.width.value
-            else:
-                x_pos = x_pos + ((widget._bounding_box.width.value - preferred_width) / 2.0)
-                width = preferred_width
-
-            y_pos = widget._bounding_box.y.value
-            if widget._expand_vertical:
-                height = widget._bounding_box.height.value
-            else:
-                y_pos = y_pos + ((widget._bounding_box.height.value - preferred_height) / 2.0)
-                height = preferred_height
-
-            widget._create(window, x_pos, y_pos, width, height)
-
-    def _resize(self, x, y, width, height):
-
+    def _resize(self, width, height):
         with self._layout_manager.layout(width, height):
             for widget in self._layout_manager.children:
-                min_width, preferred_width = widget._width_hint
-                min_height, preferred_height = widget._height_hint
-
-                x_pos = widget._bounding_box.x.value
-                if widget._expand_horizontal:
-                    width = widget._bounding_box.width.value
-                else:
-                    x_pos = x_pos + ((widget._bounding_box.width.value - preferred_width) / 2.0)
-                    width = preferred_width
-
-                y_pos = widget._bounding_box.y.value
-                if widget._expand_vertical:
-                    height = widget._bounding_box.height.value
-                else:
-                    y_pos = y_pos + ((widget._bounding_box.height.value - preferred_height) / 2.0)
-                    height = preferred_height
-
-                widget._resize(x_pos, y_pos, width, height)
+                widget._resize()
 
     @property
     def _width_hint(self):

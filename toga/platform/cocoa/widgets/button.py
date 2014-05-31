@@ -20,13 +20,16 @@ class Button(Widget):
         super(Button, self).__init__()
 
         self.on_press = on_press
+        self.label = label
+        self._impl = None
 
+    def _startup(self):
         self._impl = ButtonImpl.alloc().init()
         self._impl.interface = self
 
         self._impl.setBezelStyle_(NSRoundedBezelStyle)
         self._impl.setButtonType_(NSMomentaryPushInButton)
-        self._impl.setTitle_(get_NSString(label))
+        self._impl.setTitle_(get_NSString(self.label))
         self._impl.setTarget_(self._impl)
         self._impl.setAction_(get_selector('onPress:'))
         self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)

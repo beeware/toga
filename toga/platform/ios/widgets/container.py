@@ -45,19 +45,23 @@ class Container(Widget):
         self._controller.view = self._impl
 
         for child in self.children:
-            child._startup()
-            self._impl.addSubview_(child._impl)
+            self._add(child)
 
         for constraint, impl in ((c, i) for c, i in self.constraints.items() if i is None):
             self._constrain(constraint)
-            self._impl.addConstraint_(constraint._impl)
-            self.constraints[constraint] = constraint._impl
 
     def add(self, widget):
         print("ADD SUBVIEW")
         self.children.append(widget)
         if self._impl:
-            self._impl.addSubview_(widget._impl)
+            self._add(widget)
+
+    def _add(self, widget):
+        # Assign the widget to the same app as the window.
+        # This initiates startup logic.
+        widget.app = self.app
+
+        self._impl.addSubview_(widget._impl)
 
     def constrain(self, constraint):
         "Add the given constraint to the widget."
@@ -67,8 +71,6 @@ class Container(Widget):
         if self._impl:
             print ("Add constraint")
             self._constrain(constraint)
-            self._impl.addConstraint_(constraint._impl)
-            self.constraints[constraint] = constraint._impl
         else:
             print("Defer constraint until later")
             self.constraints[constraint] = None
@@ -98,3 +100,6 @@ class Container(Widget):
             related_widget, self._IDENTIFIER[related_identifier],
             multiplier, constant,
         )
+
+        self._impl.addConstraint_(constraint._impl)
+        self.constraints[constraint] = constraint._impl
