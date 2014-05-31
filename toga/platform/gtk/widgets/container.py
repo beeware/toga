@@ -31,7 +31,7 @@ class GtkContainer(Gtk.Fixed):
         with self.layout_manager.layout(allocation.width, allocation.height):
 
             for widget in self.layout_manager.children:
-                print(widget, widget._bounding_box)
+                # print(widget, widget._bounding_box)
                 if not widget._impl.get_visible():
                     print("CHILD NOT VISIBLE")
                 else:
@@ -64,11 +64,9 @@ class GtkContainer(Gtk.Fixed):
 class Container(CassowaryContainer):
     def __init__(self):
         super(Container, self).__init__()
-        self._impl = GtkContainer(self._layout_manager)
 
-    def add(self, widget):
-        self._impl.add(widget._impl)
-        self._layout_manager.add_widget(widget)
+    def _create_container(self):
+        return GtkContainer(self._layout_manager)
 
     @property
     def _width_hint(self):

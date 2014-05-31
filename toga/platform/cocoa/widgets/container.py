@@ -31,12 +31,28 @@ class Container(Widget):
 
     def __init__(self):
         super(Container, self).__init__()
-        self._impl = NSView.alloc().init()
         self.children = []
         self.constraints = {}
+        self._impl = None
+
+    def _startup(self):
+        self._impl = NSView.alloc().init()
+
+        for child in self.children:
+            self._add(child)
+
+        for constraint, impl in ((c, i) for c, i in self.constraints.items() if i is None):
+            self._constrain(constraint)
 
     def add(self, widget):
         self.children.append(widget)
+        if self._impl:
+            self._add(widget)
+
+    def _add(self, widget):
+        # Assign the widget to the same app as the window.
+        # This initiates startup logic.
+        widget.app = self.app
         self._impl.addSubview_(widget._impl)
 
     def constrain(self, constraint):
@@ -44,6 +60,15 @@ class Container(Widget):
         if constraint in self.constraints:
             return
 
+        if self._impl:
+            print ("Add constraint")
+            self._constrain(constraint)
+
+        else:
+            print("Defer constraint until later")
+            self.constraints[constraint] = None
+
+    def _constrain(self, constraint):
         widget = constraint.attr.widget._impl
         identifier = constraint.attr.identifier
 
@@ -69,5 +94,4 @@ class Container(Widget):
         )
 
         self._impl.addConstraint_(constraint._impl)
-
         self.constraints[constraint] = constraint._impl

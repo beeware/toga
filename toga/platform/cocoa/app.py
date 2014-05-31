@@ -23,10 +23,14 @@ class MainWindow(Window):
 class App(object):
 
     def __init__(self, name, app_id):
-        self._impl = NSApplication.sharedApplication()
-        self._impl.setActivationPolicy_(NSApplicationActivationPolicyRegular)
+        self.name = name
+        self.app_id = app_id
 
         self.main_window = MainWindow()
+
+    def _startup(self):
+        self._impl = NSApplication.sharedApplication()
+        self._impl.setActivationPolicy_(NSApplicationActivationPolicyRegular)
 
         app_name = sys.argv[0]
 
@@ -78,6 +82,8 @@ class App(object):
         self._impl.setMainMenu_(self.menu)
 
     def main_loop(self):
+        self._startup()
+        self.main_window.app = self
         self.main_window.show()
         self._impl.activateIgnoringOtherApps_(True)
         self._impl.run()

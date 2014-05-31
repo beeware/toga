@@ -4,17 +4,16 @@ from .libs import *
 from .window import Window
 from .widgets import *
 
-
-_apps = {}
+# The global variable used to store the app instance.
+_app = None
 
 
 class MainWindow(Window):
     def __init__(self):
-        super(MainWindow, self).__init__(self)
+        super(MainWindow, self).__init__()
         print ("SET BACKGROUND COLOR")
 
-    def _startup(self):
-        super(MainWindow, self)._startup()
+    def on_startup(self):
         self._impl.backgroundColor = UIColor.whiteColor()
 
 
@@ -28,11 +27,7 @@ class AppDelegate_impl(object):
     @AppDelegate.method('B@@')
     def application_didFinishLaunchingWithOptions_(self, application, launchOptions):
         print("FINISHED LAUNCHING")
-
-        # FIXME - there's got to be a better way to pass the Toga instance
-        # into the delegate.
-        app = _apps[None]
-        app._startup()
+        _app._startup()
 
         return True
 
@@ -42,15 +37,17 @@ AppDelegate = ObjCClass('AppDelegate')
 class App(object):
 
     def __init__(self, name, app_id):
+        global _app
+        _app = self
+
         self.name = name
         self.app_id = app_id
-
-        _apps[None] = self
 
         self.main_window = MainWindow()
 
     def _startup(self):
-        self.main_window._startup()
+        # Assign the window to the app; this initiates startup
+        self.main_window.app = self
         self.main_window.show()
 
     def main_loop(self):

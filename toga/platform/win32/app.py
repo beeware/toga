@@ -16,6 +16,7 @@ class App(object):
         self.main_window = MainWindow()
 
     def main_loop(self):
+        self.main_window.app = self
         self.main_window.show()
 
         # Main message handling loop.

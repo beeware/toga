@@ -22,6 +22,7 @@ class Button(Widget):
 
         self.on_press = on_press
         self.label = label
+
         self._impl = None
 
     def _startup(self):

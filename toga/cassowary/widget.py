@@ -49,14 +49,49 @@ class Widget(WidgetBase):
 class Container(Widget):
     def __init__(self):
         super(Container, self).__init__()
+        self.children = []
+        self.constraints = {}
+        self._impl = None
+
+    def _startup(self):
         self._layout_manager = LayoutManager(self._bounding_box)
+        self._impl = self._create_container()
+
+        for child in self.children:
+            self._add(child)
+
+        for constraint, impl in ((c, i) for c, i in self.constraints.items() if i is None):
+            self._constrain(constraint)
 
     def add(self, widget):
-        self._impl.add(widget._impl)
+        self.children.append(widget)
+        print("Add widget to container")
+
+        if self._impl:
+            self._add(widget)
+
+    def _add(self, widget):
+        # Assign the widget to the same app and window as the container.
+        # This initiates startup logic.
+        widget.window = self.window
+        widget.app = self.app
         self._layout_manager.add_widget(widget)
+        self._impl.add(widget._impl)
 
     def constrain(self, constraint):
         "Add the given constraint to the widget."
+        if constraint in self.constraints:
+            return
+
+        if self._impl:
+            print ("Add constraint")
+            self._constrain(constraint)
+
+        else:
+            print("Defer constraint until later")
+            self.constraints[constraint] = None
+
+    def _constrain(self, constraint):
         widget = constraint.attr.widget
         identifier = constraint.attr.identifier
 

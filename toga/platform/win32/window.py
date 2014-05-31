@@ -4,11 +4,17 @@ from toga.platform.win32.libs import *
 
 import ctypes
 
+
 class Window(object):
     def __init__(self, position=(100, 100), size=(640, 480)):
-
         self._allocated = 0
+        self._widgets = {}
+        self.position = position
+        self.size = size
+        self._impl = None
+        self._app = None
 
+    def _startup(self):
         module = kernel32.GetModuleHandleW(None)
         brush = user32.GetSysColorBrush(COLOR_WINDOW)
         self._window_class = WNDCLASS()
@@ -28,10 +34,10 @@ class Window(object):
             self._window_class.lpszClassName,
             u'',
             WS_OVERLAPPEDWINDOW,
-            position[0],
-            position[0], # CW_USEDEFAULT,
-            size[0],
-            size[1],
+            self.position[0],
+            self.position[1], # CW_USEDEFAULT,
+            self.size[0],
+            self.size[1],
             0,
             0,
             self._window_class.hInstance,
@@ -44,7 +50,27 @@ class Window(object):
         ctypes.windll.UxTheme.SetWindowTheme(self._impl, c_wchar_p('Explorer'), 0)
 
         user32.SetWindowTextW(self._impl, c_wchar_p("Hello World"))
-        print(2,self._impl)
+        print(2, self._impl)
+
+        self.on_startup()
+
+        if self.content:
+            self.content.app = self.app
+
+    def on_startup(self):
+        pass
+
+    @property
+    def app(self):
+        return self._app
+
+    @app.setter
+    def app(self, app):
+        if self._app:
+            raise Exception("Window is already associated with an App")
+
+        self._app = app
+        self._startup()
 
     @property
     def content(self):
@@ -52,13 +78,10 @@ class Window(object):
 
     @content.setter
     def content(self, widget):
-        self._widgets = {}
         self._content = widget
-
-        min_width, preferred_width = self._content._width_hint
-        min_height, preferred_height = self._content._height_hint
-
-        widget._create(self, 0, 0, preferred_width, preferred_height)
+        self._content.window = self
+        if self._impl:
+            widget.app = self.app
 
     def show(self):
         print(3,self._impl)
@@ -103,7 +126,7 @@ class Window(object):
         height = HIWORD(lParam)
         print("REQUESTED SIZE", width, height)
         if self._content:
-            self._content._resize(0, 0, width, height)
+            self._content._resize(width, height)
         return 0
 
     def _wm_close(self, msg, wParam, lParam):

@@ -17,17 +17,19 @@ class App(object):
         # GLib.set_application_name(name.encode('ascii'))
         self._impl = Gtk.Application(application_id=app_id, flags=Gio.ApplicationFlags.FLAGS_NONE)
 
-        self.main_window = MainWindow(self)
+        self.main_window = MainWindow()
 
         self._impl.connect('startup', self._startup)
         self._impl.connect('activate', self._activate)
         self._impl.connect('shutdown', self._shutdown)
 
     def _startup(self, data=None):
+        self.main_window.app = self
+
         self._impl.add_window(self.main_window._impl)
 
         action = Gio.SimpleAction.new('stuff', None)
-        action.connect('activate', self._on_quit)
+        action.connect('activate', self._quit)
         self._impl.add_action(action)
 
         app_name = sys.argv[0]
@@ -71,18 +73,28 @@ class App(object):
         self._impl.set_menubar(self.menu_bar)
 
         self.main_window.show()
+        self.on_startup()
+
+    def on_startup(self):
+        pass
 
     def _activate(self, data=None):
+        self.on_activate()
+
+    def on_activate(self):
         pass
 
     def _shutdown(self, data=None):
+        self.on_shutdown()
+
+    def on_shutdown(self):
         pass
 
     def main_loop(self):
         self._impl.run(None)
 
-    def _on_quit(self, widget, data=None):
-        self.quit()
+    def _quit(self, widget, data=None):
+        self.on_quit()
 
-    def quit(self):
+    def on_quit(self):
         self._impl.quit()
