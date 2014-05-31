@@ -5,17 +5,16 @@ from .base import Widget
 
 
 class PasswordInput(Widget):
-    def __init__(self, value=None, placeholder=None, command=None):
+    def __init__(self):
         super(PasswordInput, self).__init__()
 
-        self.command = command
-
+    def _startup(self):
         self._impl = NSSecureTextField.new()
 
         self._impl.setEditable_(True)
-
         self._impl.setBezeled_(True)
         self._impl.setBezelStyle_(NSTextFieldSquareBezel)
+        self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
 
     def value(self):
-        return cfstring_to_string(self._impl.stringValue())
+        return cfstring_to_string(self._impl.stringValue)

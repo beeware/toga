@@ -18,9 +18,9 @@ ButtonImpl = ObjCClass('ButtonImpl')
 class Button(Widget):
     def __init__(self, label, on_press=None):
         super(Button, self).__init__()
-
-        self.on_press = on_press
         self.label = label
+        self.on_press = on_press
+
         self._impl = None
 
     def _startup(self):
