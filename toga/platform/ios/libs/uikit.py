@@ -6,6 +6,8 @@ from ctypes import util
 from .objc import ObjCClass
 from .types import *
 
+from toga.constants import *
+
 ######################################################################
 
 # UIKit
@@ -80,6 +82,22 @@ NSLayoutPriorityDragThatCannotResizeWindow = 490
 NSLayoutPriorityDefaultLow = 250
 NSLayoutPriorityFittingSizeCompression = 50
 
+# NSText.h
+NSLeftTextAlignment = 0
+NSRightTextAlignment = 1
+NSCenterTextAlignment = 2
+NSJustifiedTextAlignment = 3
+NSNaturalTextAlignment = 4
+
+def NSTextAlignment(alignment):
+    return {
+        LEFT_ALIGNMENT: NSLeftTextAlignment,
+        RIGHT_ALIGNMENT: NSRightTextAlignment,
+        CENTER_ALIGNMENT: NSCenterTextAlignment,
+        JUSTIFIED_ALIGNMENT: NSJustifiedTextAlignment,
+        NATURAL_ALIGNMENT: NSNaturalTextAlignment,
+    }[alignment]
+
 # UIControl.h
 
 # UIControlEvents
@@ -127,12 +145,35 @@ UIControlStateApplication = 0x00FF0000
 UIControlStateReserved = 0xFF000000
 
 
+# UIWindow.h
+UIWindow = ObjCClass('UIWindow')
 
-UIWindow = ObjCClass('UIWindow')
+# UIScreen.h
 UIScreen = ObjCClass('UIScreen')
+
+# UIColor.h
 UIColor = ObjCClass('UIColor')
+
+# UIView.h
 UIView = ObjCClass('UIView')
+
+# UIWindow.h
 UIWindow = ObjCClass('UIWindow')
+
+# UILabel.h
 UILabel = ObjCClass('UILabel')
+
+# UIButton.h
 UIButton = ObjCClass('UIButton')
+
+# UIViewController.h
 UIViewController = ObjCClass('UIViewController')
+
+# UITextField.h
+UITextField = ObjCClass('UITextField')
+
+UITextBorderStyleNone = 0
+UITextBorderStyleLine = 1
+UITextBorderStyleBezel = 2
+UITextBorderStyleRoundedRect = 3
+
