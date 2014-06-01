@@ -1,7 +1,9 @@
 from __future__ import print_function, absolute_import, division
 
-from ..libs import *
+from gi.repository import Gtk
+
 from .base import Widget
+from ..libs import gtk_alignment
 from toga.constants import *
 
 
@@ -20,14 +22,9 @@ class Label(Widget):
     def alignment(self, value):
         self._alignment = value
         if self._impl:
-            self._impl.setAlignment_(NSTextAlignment(self._alignment))
+            self._impl.set_alignment(*gtk_alignment(self._alignment))
 
     def _startup(self):
-        self._impl = NSTextField.new()
-        self._impl.setStringValue_(get_NSString(self.text))
-
-        self._impl.setDrawsBackground_(False)
-        self._impl.setEditable_(False)
-        self._impl.setBezeled_(False)
-        self._impl.setAlignment_(NSTextAlignment(self._alignment))
-        self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
+        self._impl = Gtk.Label(self.text)
+        self._impl.set_line_wrap(False)
+        self._impl.set_alignment(*gtk_alignment(self._alignment))
