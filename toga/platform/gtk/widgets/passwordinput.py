@@ -1,11 +1,12 @@
 from __future__ import print_function, absolute_import, division
 
-from ..libs import NSSecureTextField
 from .textinput import TextInput
 
 
 class PasswordInput(TextInput):
-    _IMPL_CLASS = NSSecureTextField
-
     def __init__(self):
         super(PasswordInput, self).__init__()
+
+    def _startup(self):
+        super(PasswordInput, self)._startup()
+        self._impl.set_visibility(False)

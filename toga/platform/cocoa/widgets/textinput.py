@@ -1,17 +1,19 @@
 from __future__ import print_function, absolute_import, division
 
-from ..libs import *
+from ..libs import get_NSString, cfstring_to_string, NSTextField, NSTextFieldSquareBezel
 from .base import Widget
 
 
 class TextInput(Widget):
+    _IMPL_CLASS = NSTextField
+
     def __init__(self, initial=None, placeholder=None):
         super(TextInput, self).__init__()
         self.initial = initial
         self.placeholder = placeholder
 
     def _startup(self):
-        self._impl = NSTextField.new()
+        self._impl = self._IMPL_CLASS.new()
         if self.initial:
             self._impl.setStringValue_(get_NSString(self.initial))
         if self.placeholder:

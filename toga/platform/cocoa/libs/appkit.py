@@ -218,11 +218,11 @@ NSNaturalTextAlignment = 4
 
 def NSTextAlignment(alignment):
     return {
-        LEFT_ALIGNED: NSLeftTextAlignment,
-        RIGHT_ALIGNED: NSRightTextAlignment,
-        CENTER_ALIGNED: NSCenterTextAlignment,
-        JUSTIFIED_ALIGNED: NSJustifiedTextAlignment,
-        NATURAL_ALIGNED: NSNaturalTextAlignment,
+        LEFT_ALIGNMENT: NSLeftTextAlignment,
+        RIGHT_ALIGNMENT: NSRightTextAlignment,
+        CENTER_ALIGNMENT: NSCenterTextAlignment,
+        JUSTIFIED_ALIGNMENT: NSJustifiedTextAlignment,
+        NATURAL_ALIGNMENT: NSNaturalTextAlignment,
     }[alignment]
 
 # NSTextField.h
