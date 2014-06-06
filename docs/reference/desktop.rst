@@ -1,0 +1,7 @@
+===============
+Desktop widgets
+===============
+
+Window
+
+SplitPanel
