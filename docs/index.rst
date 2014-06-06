@@ -8,10 +8,11 @@ Quickstart
 
 In your virtualenv, install Toga, and then run it::
 
-    $ pip install toga
-    $ toga
+    $ pip install toga-demo
+    $ toga-demo
 
-This will pop up a GUI window.
+This will pop up a GUI window showing the full range of widgets available
+to an application using Toga.
 
 Problems using virtualenv under Ubuntu
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -23,7 +24,7 @@ for GTK won't be in your `PYTHONPATH`.
 Unfortunately, you can't `pip install` GTK+ bindings, so you have to use a
 workaround. To make the system GTK+ bindings available to your virtualenv,
 symlinking the `gi` module from the system dist-packages directory into your
-virtualenv's site-packages:
+virtualenv's site-packages::
 
     $ cd <your virtualenv dir>/lib/python2.7/site-packages
     $ ln -si /usr/lib/python2.7/dist-packages/gi
@@ -56,10 +57,20 @@ Contents:
    :maxdepth: 2
    :glob:
 
+   introduction/philosophy
+   introduction/tutorial-0
+
+   reference/core
+   reference/desktop
+   reference/mobile
+
    internals/contributing
    internals/roadmap
-   releases
-
+   internals/releases
+   internals/platforms/desktop/cocoa
+   internals/platforms/desktop/gtk
+   internals/platforms/desktop/win32
+   internals/platforms/mobile/ios
 
 Indices and tables
 ==================
