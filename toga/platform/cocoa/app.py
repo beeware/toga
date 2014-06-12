@@ -8,8 +8,8 @@ from .window import Window
 
 
 class MainWindow(Window):
-    def __init__(self, position=(100, 100), size=(640, 480)):
-        super(MainWindow, self).__init__(position, size)
+    def __init__(self, title=None, position=(100, 100), size=(640, 480)):
+        super(MainWindow, self).__init__(title, position, size)
 
     def on_close(self):
         app = NSApplication.sharedApplication()
@@ -22,7 +22,7 @@ class App(object):
         self.name = name
         self.app_id = app_id
 
-        self.main_window = MainWindow()
+        self.main_window = MainWindow(name)
 
     def _startup(self):
         self._impl = NSApplication.sharedApplication()
