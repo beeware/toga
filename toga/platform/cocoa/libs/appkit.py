@@ -199,6 +199,8 @@ NSLayoutPriorityDragThatCannotResizeWindow = 490
 NSLayoutPriorityDefaultLow = 250
 NSLayoutPriorityFittingSizeCompression = 50
 
+# NSAlert.h
+NSAlert = ObjCClass('NSAlert')
 
 # NSApplication.h
 NSApplication = ObjCClass('NSApplication')
@@ -211,6 +213,9 @@ NSApplicationPresentationDisableHideApplication = 1 << 8
 
 # NSColor.h
 NSColor = ObjCClass('NSColor')
+
+# NSImage.h
+NSImage = ObjCClass('NSImage')
 
 # NSMenu.h
 NSMenu = ObjCClass('NSMenu')

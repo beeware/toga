@@ -1,5 +1,6 @@
 from __future__ import print_function, absolute_import, division
 
+import os
 import sys
 
 from .libs import *
@@ -18,15 +19,26 @@ class MainWindow(Window):
 
 class App(object):
 
-    def __init__(self, name, app_id):
+    def __init__(self, name, app_id, icon=None):
         self.name = name
         self.app_id = app_id
 
         self.main_window = MainWindow(name)
 
+        if not icon:
+            root_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+            icon = os.path.join(root_dir, 'resources', 'tiberius.icns')
+        self.icon = NSImage.alloc().initWithContentsOfFile_(get_NSString(icon))
+
     def _startup(self):
         self._impl = NSApplication.sharedApplication()
         self._impl.setActivationPolicy_(NSApplicationActivationPolicyRegular)
+
+        self._impl.setApplicationIconImage_(self.icon)
+
+        # alert = NSAlert.alloc().init()
+        # alert.icon = self.icon
+        # alert.runModal()
 
         app_name = sys.argv[0]
 

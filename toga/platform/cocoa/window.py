@@ -39,7 +39,8 @@ class Window(object):
             position,
             NSTitledWindowMask | NSClosableWindowMask | NSResizableWindowMask | NSMiniaturizableWindowMask,
             NSBackingStoreBuffered,
-            False)
+            False
+        )
         self._set_title()
         self._impl.setFrame_display_animate_(position, True, False)
 
