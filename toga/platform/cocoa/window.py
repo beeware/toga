@@ -17,11 +17,13 @@ WindowDelegate = ObjCClass('WindowDelegate')
 
 
 class Window(object):
-    def __init__(self, position=(100, 100), size=(640, 480)):
-        self.position = position
-        self.size = size
+    def __init__(self, title=None, position=(100, 100), size=(640, 480)):
         self._impl = None
         self._app = None
+
+        self.title = title
+        self.position = position
+        self.size = size
 
     def _startup(self):
         # OSX origin is bottom left of screen, and the screen might be
@@ -38,6 +40,7 @@ class Window(object):
             NSTitledWindowMask | NSClosableWindowMask | NSResizableWindowMask | NSMiniaturizableWindowMask,
             NSBackingStoreBuffered,
             False)
+        self._set_title()
         self._impl.setFrame_display_animate_(position, True, False)
 
         self._delegate = WindowDelegate.alloc().init()
@@ -78,6 +81,20 @@ class Window(object):
         # This initiates startup logic.
         self.content.app = self.app
         self._impl.setContentView_(self._content._impl)
+
+    @property
+    def title(self):
+        return self._title
+
+    @title.setter
+    def title(self, title):
+        self._title = title
+        if self._impl:
+            self._set_title()
+
+    def _set_title(self):
+        if self._title:
+            self._impl.setTitle_(get_NSString(self._title))
 
     def show(self):
         self._impl.makeKeyAndOrderFront_(None)
