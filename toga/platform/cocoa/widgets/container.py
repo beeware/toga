@@ -37,6 +37,7 @@ class Container(Widget):
 
     def _startup(self):
         self._impl = NSView.alloc().init()
+        self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
 
         for child in self.children:
             self._add(child)
@@ -61,11 +62,9 @@ class Container(Widget):
             return
 
         if self._impl:
-            print ("Add constraint")
             self._constrain(constraint)
 
         else:
-            print("Defer constraint until later")
             self.constraints[constraint] = None
 
     def _constrain(self, constraint):

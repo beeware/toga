@@ -53,6 +53,11 @@ NSClosableWindowMask = 1 << 1
 NSMiniaturizableWindowMask = 1 << 2
 NSResizableWindowMask = 1 << 3
 
+NSWindow = ObjCClass('NSWindow')
+
+# NSButton.h
+NSButton = ObjCClass('NSButton')
+
 # NSButtonCell.h
 NSMomentaryLightButton = 0
 NSPushOnPushOffButton = 1
@@ -204,6 +209,13 @@ NSApplicationPresentationHideMenuBar = 1 << 3
 NSApplicationPresentationDisableProcessSwitching = 1 << 5
 NSApplicationPresentationDisableHideApplication = 1 << 8
 
+# NSColor.h
+NSColor = ObjCClass('NSColor')
+
+# NSMenu.h
+NSMenu = ObjCClass('NSMenu')
+NSMenuItem = ObjCClass('NSMenuItem')
+
 # NSRunningApplication.h
 NSApplicationActivationPolicyRegular = 0
 NSApplicationActivationPolicyAccessory = 1
@@ -234,6 +246,25 @@ NSTextFieldRoundedBezel = 1
 
 # NSView.h
 NSView = ObjCClass('NSView')
+
+NSViewNotSizable = 0
+NSViewMinXMargin = 1
+NSViewWidthSizable = 2
+NSViewMaxXMargin = 4
+NSViewMinYMargin = 8
+NSViewHeightSizable = 16
+NSViewMaxYMargin = 32
+
+NSNoBorder = 0
+NSLineBorder = 1
+NSBezelBorder = 2
+NSGrooveBorder = 3
+
+# NSScreen.h
+NSScreen = ObjCClass('NSScreen')
+
+# NSScrollView.h
+NSScrollView = ObjCClass('NSScrollView')
 
 # NSSplitView.h
 NSSplitView = ObjCClass('NSSplitView')

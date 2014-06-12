@@ -6,10 +6,6 @@ from .libs import *
 from .window import Window
 
 
-NSMenu = ObjCClass('NSMenu')
-NSMenuItem = ObjCClass('NSMenuItem')
-
-
 
 class MainWindow(Window):
     def __init__(self, position=(100, 100), size=(640, 480)):

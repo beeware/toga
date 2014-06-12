@@ -3,7 +3,7 @@ from __future__ import print_function, absolute_import, division
 from .libs import *
 
 
-NSWindow = ObjCClass('NSWindow')
+
 
 
 class WindowDelegate_impl(object):
@@ -24,11 +24,21 @@ class Window(object):
         self._app = None
 
     def _startup(self):
+        # OSX origin is bottom left of screen, and the screen might be
+        # offset relative to other screens. Adjust for this.
+        screen = NSScreen.mainScreen().visibleFrame()
+        position = NSMakeRect(
+            screen.origin.x + self.position[0],
+            screen.size.height + screen.origin.y - self.position[1] - self.size[1],
+            self.size[0],
+            self.size[1]
+        )
         self._impl = NSWindow.alloc().initWithContentRect_styleMask_backing_defer_(
-            NSMakeRect(self.position[0], self.position[1], self.size[0], self.size[1]),
+            position,
             NSTitledWindowMask | NSClosableWindowMask | NSResizableWindowMask | NSMiniaturizableWindowMask,
             NSBackingStoreBuffered,
             False)
+        self._impl.setFrame_display_animate_(position, True, False)
 
         self._delegate = WindowDelegate.alloc().init()
         self._delegate.interface = self
@@ -38,11 +48,7 @@ class Window(object):
         self.on_startup()
 
         if self.content:
-            # Assign the widget to the same app as the window.
-            # This initiates startup logic.
-            self.content.app = self.app
-
-            self._impl.setContentView_(self._content._impl)
+            self._set_content()
 
     @property
     def app(self):
@@ -65,15 +71,17 @@ class Window(object):
         self._content = widget
         self._content.window = self
         if self._impl:
-            # Assign the widget to the same app as the window.
-            # This initiates startup logic.
-            widget.app = self.app
+            self._set_content()
 
-            self._impl.setContentView_(self._content._impl)
+    def _set_content(self):
+        # Assign the widget to the same app as the window.
+        # This initiates startup logic.
+        self.content.app = self.app
+        self._impl.setContentView_(self._content._impl)
 
     def show(self):
         self._impl.makeKeyAndOrderFront_(None)
-        # self._impl.visualizeConstraints_(self._impl.contentView().constraints())
+        # self._impl.visualizeConstraints_(self._impl.contentView.constraints())
 
     def on_startup(self):
         pass
