@@ -1,6 +1,6 @@
-==================
-You first Toga app
-==================
+===================
+Your first Toga app
+===================
 
 In this example, we're going to build a desktop app with a single
 button, that prints to the console when you press the button.
@@ -158,8 +158,10 @@ toga by just running::
 
     $ pip install toga
 
-We strongly suggest that you **don't** do this. We'd suggest creating a virtual
-environment first, and running ``pip install toga`` in that virtual environment.
+We strongly suggest that you **don't** do this. We'd suggest creating a `virtual
+environment`_ first, and installing toga in that virtual environment.
+
+.. _virtual environment: http://docs.python-guide.org/en/latest/dev/virtualenvs/
 
 .. note:: Problems under Linux
 
@@ -182,4 +184,6 @@ Once you've got toga installed, you can run your script::
 This should pop up a window with a button. If you click on the button, you
 should see messages appear in the console. Even though we didn't define anything
 about menus, the app will have default menu entries to quit the app, and an About
-page.
+page. The keyboard bindings to quit the app, plus the "close" button on the window
+will also work as expected. The app will have a default Toga icon (a picture of
+Tiberius the yak).
