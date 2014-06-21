@@ -28,10 +28,13 @@ class Widget(object):
     @app.setter
     def app(self, app):
         if self._app:
-            raise Exception("Widget is already associated with an App")
+            raise Exception("Widget %r is already associated with an App" % self)
 
         self._app = app
         self._startup()
 
     def _startup(self):
         pass
+
+    def __repr__(self):
+        return "<%s:%s>" % (self.__class__.__name__, id(self))
