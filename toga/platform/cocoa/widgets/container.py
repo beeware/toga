@@ -6,6 +6,17 @@ from ..libs import *
 from .base import Widget
 
 
+class NSContainer_impl(object):
+    NSContainer = ObjCSubclass('NSView', 'NSContainer')
+
+    @NSContainer.method('B')
+    def isFlipped(self):
+        # Default Cocoa coordinate frame is around the wrong way.
+        return True
+
+NSContainer = ObjCClass('NSContainer')
+
+
 class Container(Widget):
 
     _IDENTIFIER = {
@@ -36,7 +47,7 @@ class Container(Widget):
         self._impl = None
 
     def _startup(self):
-        self._impl = NSView.alloc().init()
+        self._impl = NSContainer.alloc().init()
         self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
 
         for child in self.children:
