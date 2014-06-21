@@ -29,12 +29,6 @@ class ScrollView(Widget):
         self._impl.setDocumentView_(self._content._impl)
 
     def _startup(self):
-        # print(self._content._impl.frame)
-        # print(self._content._impl.frame.size)
-        # print(NSMakeRect(0.0, 0.0, self._content._impl.getSize().width, self._content._impl.getSize().width))
-
-        # self._impl = NSScrollView.alloc().initWithFrame_(NSMakeRect(0.0, 0.0, self._content._impl.size.width, self._content._impl.size.width))
-        # self._impl = NSScrollView.alloc().initWithFrame_(NSMakeRect(0.0, 0.0, 600.0, 2000.0))
         self._impl = NSScrollView.alloc().init()
         self._impl.setHasVerticalScroller_(self.vertical)
         self._impl.setHasHorizontalScroller_(self.horizontal)
@@ -42,7 +36,7 @@ class ScrollView(Widget):
         self._impl.setBorderType_(NSNoBorder)
         self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
 
-        # self._impl.backgroundColor = NSColor.blueColor()
+        self._impl.backgroundColor = NSColor.windowBackgroundColor()
 
         if self.content:
             self._set_content()
