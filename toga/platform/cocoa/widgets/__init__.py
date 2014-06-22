@@ -6,4 +6,5 @@ from .label import Label
 from .passwordinput import PasswordInput
 from .scrollview import ScrollView
 from .splitview import SplitView
+from .table import Table
 from .textinput import TextInput
