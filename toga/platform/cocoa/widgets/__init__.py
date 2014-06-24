@@ -8,3 +8,4 @@ from .scrollview import ScrollView
 from .splitview import SplitView
 from .table import Table
 from .textinput import TextInput
+from .tree import Tree
