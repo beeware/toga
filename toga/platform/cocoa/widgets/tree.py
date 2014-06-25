@@ -93,6 +93,9 @@ class Tree(Widget):
 
         for heading, column in zip(self.headings, self._columns):
             self._tree.addTableColumn_(column)
+            cell = column.dataCell
+            cell.setEditable_(False)
+            cell.setSelectable_(False)
             column.headerCell.setStringValue_(get_NSString(heading))
 
         # Put the tree arrows in the first column.

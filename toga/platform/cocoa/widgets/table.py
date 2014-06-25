@@ -10,11 +10,12 @@ class TableImpl_impl(object):
     # TableDataSource methods
     @TableImpl.method('i@')
     def numberOfRowsInTableView_(self, table):
-        return 100
+        return len(self.interface._data)
 
     @TableImpl.method('@@@i')
     def tableView_objectValueForTableColumn_row_(self, table, column, row):
-        return get_NSString('Data %d' % row)
+        column_index = int(cfstring_to_string(column.identifier))
+        return get_NSString(self.interface._data[row][column_index])
 
     # TableDelegate methods
     @TableImpl.method('v@')
@@ -32,6 +33,7 @@ class Table(Widget):
         self._impl = None
         self._table = None
         self._columns = None
+        self._data = []
 
     def _startup(self):
         # Create a table view, and put it in a scroll view.
@@ -49,12 +51,15 @@ class Table(Widget):
 
         # Create columns for the table
         self._columns = [
-            NSTableColumn.alloc().initWithIdentifier_(get_NSString('col-%d' % i))
+            NSTableColumn.alloc().initWithIdentifier_(get_NSString('%d' % i))
             for i, heading in enumerate(self.headings)
         ]
 
         for heading, column in zip(self.headings, self._columns):
             self._table.addTableColumn_(column)
+            cell = column.dataCell
+            cell.setEditable_(False)
+            cell.setSelectable_(False)
             column.headerCell.setStringValue_(get_NSString(heading))
 
         self._table.setDelegate_(self._table)
@@ -62,3 +67,9 @@ class Table(Widget):
 
         # Embed the table view in the scroll view
         self._impl.setDocumentView_(self._table)
+
+    def insert(self, index, *data):
+        if index is None:
+            self._data.append(data)
+        else:
+            self._data.insert(index, data)
