@@ -78,6 +78,7 @@ if sys.platform == 'darwin':
         from .platform.cocoa.app import *
         from .platform.cocoa.window import *
         from .platform.cocoa.widgets import *
+        from .platform.cocoa.command import *
 
 elif sys.platform == 'linux2':
     from .platform.gtk.app import *

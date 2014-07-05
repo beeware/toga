@@ -221,6 +221,9 @@ NSImage = ObjCClass('NSImage')
 NSMenu = ObjCClass('NSMenu')
 NSMenuItem = ObjCClass('NSMenuItem')
 
+# NSMutableArray
+NSMutableArray = ObjCClass('NSMutableArray')
+
 # NSRunningApplication.h
 NSApplicationActivationPolicyRegular = 0
 NSApplicationActivationPolicyAccessory = 1
@@ -289,3 +292,7 @@ NSTableViewFirstColumnOnlyAutoresizingStyle = 5
 NSTableView = ObjCClass('NSTableView')
 NSTableColumn = ObjCClass('NSTableColumn')
 
+# NSToolbar.h
+
+NSToolbar = ObjCClass('NSToolbar')
+NSToolbarItem = ObjCClass('NSToolbarItem')

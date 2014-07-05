@@ -1,11 +1,10 @@
 from __future__ import print_function, absolute_import, division
 
-import os
 import sys
 
 from .libs import *
 from .window import Window
-
+from .widgets import Image, TIBERIUS_ICON
 
 
 class MainWindow(Window):
@@ -25,16 +24,19 @@ class App(object):
 
         self.main_window = MainWindow(name)
 
-        if not icon:
-            root_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-            icon = os.path.join(root_dir, 'resources', 'tiberius.icns')
-        self.icon = NSImage.alloc().initWithContentsOfFile_(get_NSString(icon))
+        if icon:
+            if isinstance(icon, Image):
+                self.icon = icon
+            else:
+                self.icon = Image(icon)
+        else:
+            self.icon = TIBERIUS_ICON
 
     def _startup(self):
         self._impl = NSApplication.sharedApplication()
         self._impl.setActivationPolicy_(NSApplicationActivationPolicyRegular)
 
-        self._impl.setApplicationIconImage_(self.icon)
+        self._impl.setApplicationIconImage_(self.icon._impl)
 
         # alert = NSAlert.alloc().init()
         # alert.icon = self.icon
