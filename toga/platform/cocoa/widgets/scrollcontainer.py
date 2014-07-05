@@ -4,9 +4,9 @@ from ..libs import *
 from .base import Widget
 
 
-class ScrollView(Widget):
+class ScrollContainer(Widget):
     def __init__(self, horizontal=True, vertical=True):
-        super(ScrollView, self).__init__()
+        super(ScrollContainer, self).__init__()
         self.horizontal = horizontal
         self.vertical = vertical
 
