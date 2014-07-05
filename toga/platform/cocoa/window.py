@@ -3,9 +3,6 @@ from __future__ import print_function, absolute_import, division
 from .libs import *
 
 
-
-
-
 class WindowDelegate_impl(object):
     WindowDelegate = ObjCSubclass('NSObject', 'WindowDelegate')
 
@@ -13,17 +10,74 @@ class WindowDelegate_impl(object):
     def windowWillClose_(self, notification):
         self.interface.on_close()
 
+    ######################################################################
+    # Toolbar delegate methods
+    ######################################################################
+
+    @WindowDelegate.method('@@')
+    def toolbarAllowedItemIdentifiers_(self, toolbar):
+        "Determine the list of available toolbar items"
+        # This method is required by the Cocoa API, but isn't actually invoked,
+        # because customizable toolbars are no longer a thing.
+        allowed = NSMutableArray.alloc().init()
+        for item in self.interface.toolbar:
+            allowed.addObject_(get_NSString(item.toolbar_identifier))
+        return allowed
+
+    @WindowDelegate.method('@@')
+    def toolbarDefaultItemIdentifiers_(self, toolbar):
+        "Determine the list of toolbar items that will display by default"
+        default = NSMutableArray.alloc().init()
+        for item in self.interface.toolbar:
+            default.addObject_(get_NSString(item.toolbar_identifier))
+        return default
+
+    @WindowDelegate.method('@@@B')
+    def toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar_(self, toolbar, identifier, insert):
+        "Create the requested toolbar button"
+        item = self.interface._toolbar_items[cfstring_to_string(identifier)]
+        _item = NSToolbarItem.alloc().initWithItemIdentifier_(identifier)
+        if item.label:
+            _item.setLabel_(get_NSString(item.label))
+            _item.setPaletteLabel_(get_NSString(item.label))
+        if item.tooltip:
+            _item.setToolTip_(get_NSString(item.tooltip))
+        if item.icon:
+            _item.setImage_(item.icon._impl)
+
+        _item.setTarget_(self)
+        _item.setAction_(get_selector('onToolbarButtonPress:'))
+
+        return _item
+
+    @WindowDelegate.method('B@')
+    def validateToolbarItem_(self, item):
+        "Confirm if the toolbar item should be enabled"
+        return self.interface._toolbar_items[cfstring_to_string(item.itemIdentifier())].enabled
+
+    ######################################################################
+    # Toolbar button press delegate methods
+    ######################################################################
+
+    @WindowDelegate.method('v@')
+    def onToolbarButtonPress_(self, obj):
+        "Invoke the action tied to the toolbar button"
+        item = self.interface._toolbar_items[cfstring_to_string(obj.itemIdentifier())]
+        item.action()
+
+
 WindowDelegate = ObjCClass('WindowDelegate')
 
 
 class Window(object):
-    def __init__(self, title=None, position=(100, 100), size=(640, 480)):
+    def __init__(self, title=None, position=(100, 100), size=(640, 480), toolbar=None):
         self._impl = None
         self._app = None
-
+        self._toolbar = None
         self.title = title
         self.position = position
         self.size = size
+        self.toolbar = toolbar
 
     def _startup(self):
         # OSX origin is bottom left of screen, and the screen might be
@@ -48,6 +102,13 @@ class Window(object):
         self._delegate.interface = self
 
         self._impl.setDelegate_(self._delegate)
+
+        # If there are toolbar items defined, add a toolbar to the window
+        if self.toolbar:
+            self._toolbar_items = dict((item.toolbar_identifier, item) for item in self.toolbar)
+            self._toolbar = NSToolbar.alloc().initWithIdentifier_(get_NSString('Toolbar-%s' % id(self)))
+            self._toolbar.setDelegate_(self._delegate)
+            self._impl.setToolbar_(self._toolbar)
 
         self.on_startup()
 
