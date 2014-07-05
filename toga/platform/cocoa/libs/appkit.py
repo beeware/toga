@@ -292,6 +292,9 @@ NSTableViewFirstColumnOnlyAutoresizingStyle = 5
 NSTableView = ObjCClass('NSTableView')
 NSTableColumn = ObjCClass('NSTableColumn')
 
+# NSTimer
+NSTimer = ObjCClass('NSTimer')
+
 # NSToolbar.h
 
 NSToolbar = ObjCClass('NSToolbar')
