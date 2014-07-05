@@ -58,8 +58,8 @@ Inputs are mechanisms for displaying and editing input provided by the user.
     - Cocoa: NSSlider
     - GTK+: Gtk.Scale
     - iOS: UISlider
-* SteppedInput - A widget to allow entry of a numerical value, with helper
-  buttons to make it easy to increase/decrease the value.
+* NumberInput - A widget to allow entry of a numerical value, possibly with
+  helper buttons to make it easy to increase/decrease the value.
     - Cocoa: NSTextField with NSStepper
     - GTK+: GTKSpinButton
     - iOS: UITextField with UIStepper
