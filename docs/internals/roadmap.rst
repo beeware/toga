@@ -211,6 +211,11 @@ One of the aims of Toga is to provide a rich, feature-driven approach to
 app development. This requires the development of APIs to support rich
 features.
 
+* Long running tasks - GUI toolkits have a common pattern of needing to
+  periodically update a GUI based on some long running background task.
+  They usually accomplish this with some sort of timer-based API to ensure
+  that the main event loop keeps running. Python has a "yield" keyword that
+  can be prepurposed for this.
 * Toolbar - support for adding a toolbar to an app definition. Interpretation
   in mobile will be difficult; maybe some sort of top level action menu available
   via a slideout tray (e.g., GMail account selection tray)

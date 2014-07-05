@@ -1,6 +1,7 @@
 from __future__ import print_function, absolute_import, division
 
 from .libs import *
+from .utils import process_callback
 
 
 class WindowDelegate_impl(object):
@@ -63,7 +64,7 @@ class WindowDelegate_impl(object):
     def onToolbarButtonPress_(self, obj):
         "Invoke the action tied to the toolbar button"
         item = self.interface._toolbar_items[cfstring_to_string(obj.itemIdentifier())]
-        item.action()
+        process_callback(item.action())
 
 
 WindowDelegate = ObjCClass('WindowDelegate')

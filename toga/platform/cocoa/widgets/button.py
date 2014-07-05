@@ -1,7 +1,9 @@
 from __future__ import print_function, absolute_import, division
 
-from ..libs import *
+
 from .base import Widget
+from ..libs import *
+from ..utils import process_callback
 
 
 class ButtonImpl_impl(object):
@@ -10,7 +12,8 @@ class ButtonImpl_impl(object):
     @ButtonImpl.method('v@')
     def onPress_(self, obj):
         if self.interface.on_press:
-            self.interface.on_press(self.interface)
+            process_callback(self.interface.on_press(self.interface))
+
 
 ButtonImpl = ObjCClass('ButtonImpl')
 
