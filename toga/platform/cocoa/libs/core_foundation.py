@@ -3,7 +3,7 @@ from __future__ import print_function, absolute_import, division
 from ctypes import *
 from ctypes import util
 
-from .objc import ObjCInstance
+from .objc import ObjCInstance, ObjCClass
 from .types import *
 
 ######################################################################
@@ -187,3 +187,17 @@ cf.CFRunLoopGetCurrent.argtypes = []
 
 cf.CFRunLoopGetMain.restype = c_void_p
 cf.CFRunLoopGetMain.argtypes = []
+
+
+# NSArray.h
+
+NSMutableArray = ObjCClass('NSMutableArray')
+
+# NSURL.h
+
+NSURL = ObjCClass('NSURL')
+
+# NSURLRequest.h
+
+NSURLRequest = ObjCClass('NSURLRequest')
+
