@@ -6,6 +6,14 @@ from .base import Widget
 
 NSObject = ObjCClass('NSObject')
 
+class TreeNode(object):
+    def __init__(self, *data):
+        self._impl = NSObject.alloc().init()
+        self._tree = None
+        self.data = data
+        self.children = []
+
+
 class TreeImpl_impl(object):
     TreeImpl = ObjCSubclass('NSOutlineView', 'TreeImpl')
 

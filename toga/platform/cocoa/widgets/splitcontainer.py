@@ -4,11 +4,11 @@ from ..libs import *
 from .base import Widget
 
 
-class SplitView(Widget):
+class SplitContainer(Widget):
     HORIZONTAL = False
     VERTICAL = True
     def __init__(self, direction=VERTICAL):
-        super(SplitView, self).__init__()
+        super(SplitContainer, self).__init__()
         self._impl = None
         self._content = None
 
