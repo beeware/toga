@@ -179,7 +179,7 @@ the user.
     - Cocoa: NSAlert
     - GTK+: Gtk.MessageDialog, type Gtk.MessageType.INFO, buttons Gtk.ButtonsType.OK
     - iOS:
-* Alert - a modal dialog providing a "Cancel" option
+* Error - a modal dialog showing an error, and a continue option.
     - Cocoa: NSAlert
     - GTK+: Gtk.MessageDialog, type Gtk.MessageType.ERROR, buttons Gtk.ButtonsType.CANCEL
     - iOS:
@@ -187,7 +187,7 @@ the user.
     - Cocoa: NSAlert with pre-canned buttons
     - GTK+: Gtk.MessageDialog, type Gtk.MessageType.QUESTION, buttons Gtk.ButtonsType.YES_NO
     - iOS:
-* Confirmation - a modal dialog confirming "proceed" or "cancel"
+* Confirm - a modal dialog confirming "OK" or "cancel"
     - Cocoa: NSAlert with pre-canned buttons, "proceed" name
     - GTK+: Gtk.MessageDialog, type Gtk.MessageType.WARNING, buttons Gtk.ButtonsType.OK_CANCEL
     - iOS:

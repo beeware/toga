@@ -7,13 +7,7 @@ class Command(object):
         self.action = action
         self.label = label
         self.tooltip = tooltip
-        if icon:
-            if isinstance(icon, Image):
-                self.icon = icon
-            else:
-                self.icon = Image(icon)
-        else:
-            self.icon = None
+        self.icon = Image.load(icon)
 
         self._enabled = True
         self._widgets = []
