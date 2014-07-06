@@ -273,6 +273,13 @@ NSLineBorder = 1
 NSBezelBorder = 2
 NSGrooveBorder = 3
 
+# NSProgressIndicator.h
+
+NSProgressIndicatorBarStyle = 0
+NSProgressIndicatorSpinningStyle = 1
+
+NSProgressIndicator = ObjCClass('NSProgressIndicator')
+
 # NSScreen.h
 NSScreen = ObjCClass('NSScreen')
 
