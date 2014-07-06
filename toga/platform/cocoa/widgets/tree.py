@@ -69,7 +69,6 @@ class Tree(Widget):
         super(Tree, self).__init__()
         self.headings = headings
 
-        self._impl = None
         self._tree = None
         self._columns = None
 

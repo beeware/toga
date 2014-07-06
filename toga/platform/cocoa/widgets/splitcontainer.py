@@ -17,6 +17,7 @@ class SplitContainer(Widget):
     def _startup(self):
         self._impl = NSSplitView.alloc().init()
         self._impl.setVertical_(self.direction)
+        self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
 
         if self.content:
             self._set_content()
