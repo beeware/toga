@@ -30,7 +30,6 @@ class Table(Widget):
         super(Table, self).__init__()
         self.headings = headings
 
-        self._impl = None
         self._table = None
         self._columns = None
         self._data = []
