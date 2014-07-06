@@ -24,23 +24,14 @@ class App(object):
 
         self.main_window = MainWindow(name)
 
-        if icon:
-            if isinstance(icon, Image):
-                self.icon = icon
-            else:
-                self.icon = Image(icon)
-        else:
-            self.icon = TIBERIUS_ICON
+        Image.app_icon = Image.load(icon, default=TIBERIUS_ICON)
+        self.icon = Image.app_icon
 
     def _startup(self):
         self._impl = NSApplication.sharedApplication()
         self._impl.setActivationPolicy_(NSApplicationActivationPolicyRegular)
 
         self._impl.setApplicationIconImage_(self.icon._impl)
-
-        # alert = NSAlert.alloc().init()
-        # alert.icon = self.icon
-        # alert.runModal()
 
         app_name = sys.argv[0]
 
