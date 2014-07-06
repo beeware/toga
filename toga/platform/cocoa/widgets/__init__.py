@@ -4,6 +4,7 @@ from .button import Button
 from .container import Container
 from .image import *
 from .label import Label
+from .dialog import Dialog
 from .multilinetextinput import MultilineTextInput
 from .passwordinput import PasswordInput
 from .scrollcontainer import ScrollContainer

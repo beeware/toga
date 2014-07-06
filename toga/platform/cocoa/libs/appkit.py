@@ -200,6 +200,14 @@ NSLayoutPriorityDefaultLow = 250
 NSLayoutPriorityFittingSizeCompression = 50
 
 # NSAlert.h
+NSWarningAlertStyle = 0
+NSInformationalAlertStyle = 1
+NSCriticalAlertStyle = 2
+
+NSAlertFirstButtonReturn = 1000
+NSAlertSecondButtonReturn = 1001
+NSAlertThirdButtonReturn = 1002
+
 NSAlert = ObjCClass('NSAlert')
 
 # NSApplication.h
