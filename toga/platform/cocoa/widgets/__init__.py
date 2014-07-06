@@ -7,6 +7,7 @@ from .label import Label
 from .dialog import Dialog
 from .multilinetextinput import MultilineTextInput
 from .passwordinput import PasswordInput
+from .progressbar import ProgressBar
 from .scrollcontainer import ScrollContainer
 from .splitcontainer import SplitContainer
 from .table import Table
