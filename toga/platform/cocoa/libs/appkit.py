@@ -292,8 +292,11 @@ NSSplitView = ObjCClass('NSSplitView')
 # NSSecureTextField.h
 NSSecureTextField = ObjCClass('NSSecureTextField')
 
-# NSTableView.h
+# NSTabView.h
+NSTabView = ObjCClass('NSTabView')
+NSTabViewItem = ObjCClass('NSTabViewItem')
 
+# NSTableView.h
 NSTableViewNoColumnAutoresizing = 0
 NSTableViewUniformColumnAutoresizingStyle = 1
 NSTableViewSequentialColumnAutoresizingStyle = 2
