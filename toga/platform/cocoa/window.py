@@ -143,6 +143,12 @@ class Window(object):
         # Assign the widget to the same app as the window.
         # This initiates startup logic.
         self.content.app = self.app
+
+        # Top level widnow items don't layout well with autolayout (especially when
+        # they are scroll views); so revert to old-style autoresize masks for the
+        # main content view.
+        self._content._impl.setTranslatesAutoresizingMaskIntoConstraints_(True)
+
         self._impl.setContentView_(self._content._impl)
 
     @property
