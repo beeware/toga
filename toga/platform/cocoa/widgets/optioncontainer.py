@@ -24,8 +24,14 @@ class OptionContainer(Widget):
             self._add_panel(label, container)
 
     def _add_panel(self, label, container):
-        item = NSTabViewItem.alloc().initWithIdentifier_(get_NSString('Tab-%s' % id(container)))
+        item = NSTabViewItem.alloc().initWithIdentifier_(get_NSString('%s-Tab-%s' % (id(self), id(container))))
         item.setLabel_(get_NSString(label))
         container.app = self.app
+
+        # TabView items don't layout well with autolayout (especially when
+        # they are scroll views); so revert to old-style autoresize masks for the
+        # content views.
+        container._impl.setTranslatesAutoresizingMaskIntoConstraints_(True)
         item.setView_(container._impl)
+
         self._impl.addTabViewItem_(item)
