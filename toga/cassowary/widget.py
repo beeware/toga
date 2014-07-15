@@ -65,7 +65,6 @@ class Container(Widget):
 
     def add(self, widget):
         self.children.append(widget)
-        print("Add widget to container")
 
         if self._impl:
             self._add(widget)
@@ -84,11 +83,9 @@ class Container(Widget):
             return
 
         if self._impl:
-            print ("Add constraint")
             self._constrain(constraint)
 
         else:
-            print("Defer constraint until later")
             self.constraints[constraint] = None
 
     def _constrain(self, constraint):
