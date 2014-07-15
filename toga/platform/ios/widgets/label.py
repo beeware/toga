@@ -6,7 +6,7 @@ from toga.constants import *
 
 
 class Label(Widget):
-    def __init__(self, text=None, alignment=LEFT_ALIGNMENT):
+    def __init__(self, text=None, alignment=LEFT_ALIGNED):
         super(Label, self).__init__()
 
         self.text = text
