@@ -16,17 +16,18 @@ WebViewImpl = ObjCClass('WebViewImpl')
 
 
 class WebView(Widget):
-    def __init__(self, url):
+    def __init__(self, url=None):
         super(WebView, self).__init__()
-        self.url = url
+        self._url = url
 
         self._impl = None
 
     def _startup(self):
         self._impl = WebViewImpl.alloc().init()
 
-        request = NSURLRequest.requestWithURL_(NSURL.URLWithString_(get_NSString(self.url)))
-        self._impl.mainFrame().loadRequest_(request)
+        if self._url:
+            request = NSURLRequest.requestWithURL_(NSURL.URLWithString_(get_NSString(self._url)))
+            self._impl.mainFrame().loadRequest_(request)
 
         self._impl.setDownloadDelegate_(self._impl)
         self._impl.setFrameLoadDelegate_(self._impl)
@@ -34,3 +35,14 @@ class WebView(Widget):
         self._impl.setResourceLoadDelegate_(self._impl)
         self._impl.setUIDelegate_(self._impl)
         self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
+
+    @property
+    def url(self):
+        return self._url
+
+    @url.setter
+    def url(self, value):
+        self._url = value
+        if self._impl:
+            request = NSURLRequest.requestWithURL_(NSURL.URLWithString_(get_NSString(self._url)))
+            self._impl.mainFrame().loadRequest_(request)
