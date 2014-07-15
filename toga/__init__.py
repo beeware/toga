@@ -69,6 +69,8 @@ VERSION = "".join(part_string(nv, i) for i, nv in enumerate(NUM_VERSION))
 
 import sys, os
 
+from .constants import *
+
 if sys.platform == 'darwin':
     if os.environ.get('TARGET_IPHONE_SIMULATOR') or os.environ.get('TARGET_IPHONE'):
         from .platform.ios.app import *

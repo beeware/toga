@@ -91,11 +91,11 @@ NSNaturalTextAlignment = 4
 
 def NSTextAlignment(alignment):
     return {
-        LEFT_ALIGNMENT: NSLeftTextAlignment,
-        RIGHT_ALIGNMENT: NSRightTextAlignment,
-        CENTER_ALIGNMENT: NSCenterTextAlignment,
-        JUSTIFIED_ALIGNMENT: NSJustifiedTextAlignment,
-        NATURAL_ALIGNMENT: NSNaturalTextAlignment,
+        LEFT_ALIGNED: NSLeftTextAlignment,
+        RIGHT_ALIGNED: NSRightTextAlignment,
+        CENTER_ALIGNED: NSCenterTextAlignment,
+        JUSTIFIED_ALIGNED: NSJustifiedTextAlignment,
+        NATURAL_ALIGNED: NSNaturalTextAlignment,
     }[alignment]
 
 # UIControl.h
