@@ -1,9 +1,13 @@
-=====================
-Lets build a browser!
-=====================
+======================
+Let's build a browser!
+======================
 
-Although it's possible to build complex APIs, it isn't always necessary.
-This example builds a simple web browser, in less than 40 lines of code!
+Although it's possible to build complex GUI layouts, you can get a lot
+of functionality with very little code, utilizing the rich components that
+are native on modern platforms.
+
+So - lets build a tool that lets our pet yak graze the web - a primitive
+web browser, in less than 40 lines of code!
 
     #!/usr/bin/env python
     from __future__ import print_function, unicode_literals, absolute_import
@@ -11,7 +15,7 @@ This example builds a simple web browser, in less than 40 lines of code!
     import toga
 
     if __name__ == '__main__':
-        app = toga.App('Cricket', 'org.pybee.cricket')
+        app = toga.App('Graze', 'org.pybee.graze')
 
         container = toga.Container()
 
