@@ -1,6 +1,5 @@
 #/usr/bin/env python
-# import sys
-from setuptools import setup
+from setuptools import setup, find_packages
 from toga import VERSION
 
 try:
@@ -12,8 +11,6 @@ finally:
 required_pkgs = [
     'cassowary',
 ]
-# if sys.version_info < (2, 7):
-#     required_pkgs.append('argparse')
 
 setup(
     name='toga',
@@ -23,9 +20,10 @@ setup(
     author='Russell Keith-Magee',
     author_email='russell@keith-magee.com',
     url='http://pybee.org/toga',
-    packages=[
-        'toga',
-    ],
+    packages=find_packages(exclude=['docs', 'tests']),
+    package_data={
+        'toga': ['resources/*.icns', 'resources/*.png'],
+    },
     install_requires=required_pkgs,
     license='New BSD',
     classifiers=[
