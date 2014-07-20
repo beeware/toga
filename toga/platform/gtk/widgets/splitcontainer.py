@@ -1,6 +1,7 @@
 from __future__ import print_function, absolute_import, division
 
-from ..libs import *
+from gi.repository import Gtk
+
 from .base import Widget
 
 
@@ -15,9 +16,10 @@ class SplitContainer(Widget):
         self.direction = direction
 
     def _startup(self):
-        self._impl = NSSplitView.alloc().init()
-        self._impl.setVertical_(self.direction)
-        self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
+        if self.direction == self.HORIZONTAL:
+            self._impl = Gtk.VPaned()
+        else:
+            self._impl = Gtk.HPaned()
 
         if self.content:
             self._set_content()
@@ -37,8 +39,8 @@ class SplitContainer(Widget):
     def _set_content(self):
         self._content[0].window = self.window
         self._content[0].app = self.app
-        self._impl.addSubview_(self._content[0]._impl)
+        self._impl.add1(self._content[0]._impl)
 
         self._content[1].window = self.window
         self._content[1].app = self.app
-        self._impl.addSubview_(self._content[1]._impl)
+        self._impl.add2(self._content[1]._impl)

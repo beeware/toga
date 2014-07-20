@@ -6,7 +6,7 @@ from .image import *
 from .label import Label
 from .passwordinput import PasswordInput
 from .scrollcontainer import ScrollContainer
-# from .splitview import SplitView
+from .splitcontainer import SplitContainer
 from .table import Table
 from .textinput import TextInput
 from .tree import Tree
