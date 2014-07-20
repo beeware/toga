@@ -28,6 +28,7 @@ class Table(Widget):
         self._impl = Gtk.ScrolledWindow()
         self._impl.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
         self._impl.add(self._table)
+        self._impl.set_min_content_width(200)
         self._impl.set_min_content_height(200)
 
     def insert(self, index, *data):
