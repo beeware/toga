@@ -5,6 +5,7 @@ from .container import Container
 from .image import *
 from .label import Label
 from .passwordinput import PasswordInput
+from .scrollcontainer import ScrollContainer
 # from .splitview import SplitView
 from .table import Table
 from .textinput import TextInput
