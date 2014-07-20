@@ -86,6 +86,7 @@ elif sys.platform == 'linux2':
     from .platform.gtk.app import *
     from .platform.gtk.window import *
     from .platform.gtk.widgets import *
+    from .platform.gtk.command import *
 
 elif sys.platform == 'win32':
     from .platform.win32.app import *
