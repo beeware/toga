@@ -2,6 +2,8 @@ from __future__ import print_function, absolute_import, division
 
 from gi.repository import Gtk
 
+from .command import SEPARATOR, SPACER, EXPANDING_SPACER
+
 
 class Window(object):
     _IMPL_CLASS = Gtk.Window
@@ -9,20 +11,39 @@ class Window(object):
     def __init__(self, position=(100, 100), size=(640, 480)):
         self._app = None
         self._impl = None
+        self._container = None
         self._size = size
 
     def _startup(self):
         self._impl = self._IMPL_CLASS()
         self._impl.connect("delete-event", self._on_close)
         self._impl.set_default_size(self._size[0], self._size[1])
+
+        # If there are toolbar items defined, add a toolbar to the window
+        if self.toolbar:
+            self._container = Gtk.VBox()
+            self._toolbar = Gtk.Toolbar()
+            self._toolbar.set_style(Gtk.ToolbarStyle.BOTH)
+            for toolbar_item in self.toolbar:
+                if toolbar_item in (SEPARATOR, SPACER, EXPANDING_SPACER):
+                    item_impl = Gtk.SeparatorToolItem()
+                    if toolbar_item == EXPANDING_SPACER:
+                        item_impl.set_expand(True)
+                    item_impl.set_draw(toolbar_item == SEPARATOR)
+                else:
+                    item_impl = Gtk.ToolButton()
+                    item_impl.set_icon_name("gtk-paste")
+                    item_impl.set_label(toolbar_item.label)
+                    item_impl.set_tooltip_text(toolbar_item.tooltip)
+                self._toolbar.insert(item_impl, -1)
+
         self.on_startup()
 
         if self.content:
             # Assign the widget to the same app as the window.
             # This initiates startup logic.
             self.content.app = self.app
-
-            self._impl.add(self.content._impl)
+            self._set_content()
 
     @property
     def app(self):
@@ -48,8 +69,15 @@ class Window(object):
             # Assign the widget to the same app as the window.
             # This initiates startup logic.
             widget.app = self.app
+            self._set_content()
 
-            self._impl.add(self._content._impl)
+    def _set_content(self):
+        if self._container:
+            self._container.pack_start(self._toolbar, True, True, 0)
+            self._container.pack_start(self.content._impl, True, True, 0)
+            self._impl.add(self._container)
+        else:
+            self._impl.add(self.content._impl)
 
     def show(self):
         self._impl.show_all()
