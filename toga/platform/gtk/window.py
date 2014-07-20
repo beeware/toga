@@ -9,6 +9,7 @@ class Window(object):
     def __init__(self, position=(100, 100), size=(640, 480)):
         self._app = None
         self._impl = None
+        self._size = size
 
     def _startup(self):
         self._impl = self._IMPL_CLASS()
