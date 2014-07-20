@@ -14,6 +14,7 @@ class Window(object):
     def _startup(self):
         self._impl = self._IMPL_CLASS()
         self._impl.connect("delete-event", self._on_close)
+        self._impl.set_default_size(self._size[0], self._size[1])
         self.on_startup()
 
         if self.content:
