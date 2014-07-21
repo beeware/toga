@@ -2,14 +2,8 @@ from __future__ import print_function, absolute_import, division
 
 from gi.repository import Gtk
 
+from ..utils import wrapped_handler
 from .base import Widget
-
-
-def wrapped_handler(widget, handler):
-    def _handler(impl, data=None):
-        if handler:
-            return handler(widget)
-    return _handler
 
 
 class Button(Widget):

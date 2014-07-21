@@ -1,7 +1,5 @@
 import os
 
-from ..libs import *
-
 
 class Image(object):
     app_icon = None

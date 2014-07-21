@@ -64,7 +64,7 @@ class WindowDelegate_impl(object):
     def onToolbarButtonPress_(self, obj):
         "Invoke the action tied to the toolbar button"
         item = self.interface._toolbar_items[cfstring_to_string(obj.itemIdentifier())]
-        process_callback(item.action())
+        process_callback(item.action(obj))
 
 
 WindowDelegate = ObjCClass('WindowDelegate')
