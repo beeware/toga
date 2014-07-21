@@ -2,6 +2,7 @@ from __future__ import print_function, absolute_import, division
 
 from gi.repository import Gtk
 
+from .utils import wrapped_handler
 from .command import SEPARATOR, SPACER, EXPANDING_SPACER
 
 
@@ -35,6 +36,8 @@ class Window(object):
                     item_impl.set_icon_name("gtk-paste")
                     item_impl.set_label(toolbar_item.label)
                     item_impl.set_tooltip_text(toolbar_item.tooltip)
+                    item_impl.connect("clicked", wrapped_handler(toolbar_item, toolbar_item.action))
+
                 self._toolbar.insert(item_impl, -1)
 
         self.on_startup()
