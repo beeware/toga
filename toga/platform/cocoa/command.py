@@ -1,5 +1,5 @@
 from .libs import *
-from .widgets import Image
+from .widgets import Icon
 
 
 class Command(object):
@@ -7,7 +7,7 @@ class Command(object):
         self.action = action
         self.label = label
         self.tooltip = tooltip
-        self.icon = Image.load(icon)
+        self.icon = Icon.load(icon)
 
         self._enabled = True
         self._widgets = []

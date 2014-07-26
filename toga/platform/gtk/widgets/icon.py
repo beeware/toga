@@ -3,7 +3,7 @@ import os
 from gi.repository import Gtk, GdkPixbuf
 
 
-class Image(object):
+class Icon(object):
     app_icon = None
 
     def __init__(self, path, system=False):
@@ -37,13 +37,13 @@ class Image(object):
     @staticmethod
     def load(path_or_icon, default=None):
         if path_or_icon:
-            if isinstance(path_or_icon, Image):
+            if isinstance(path_or_icon, Icon):
                 obj = path_or_icon
             else:
-                obj = Image(path_or_icon)
+                obj = Icon(path_or_icon)
         elif default:
             obj = default
         return obj
 
 
-TIBERIUS_ICON = Image('tiberius.icns', system=True)
+TIBERIUS_ICON = Icon('tiberius.icns', system=True)
