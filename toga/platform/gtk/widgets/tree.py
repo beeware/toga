@@ -32,6 +32,9 @@ class Tree(Widget):
         self._impl.set_min_content_height(200)
 
     def insert(self, parent, index, *data):
+        if len(data) != len(self.headings):
+            raise Exception('Data size does not match number of headings')
+
         if index is None:
             node = self._data.append(parent, data)
         else:

@@ -115,6 +115,9 @@ class Tree(Widget):
         self._impl.setDocumentView_(self._tree)
 
     def insert(self, parent, index, *data):
+        if len(data) != len(self.headings):
+            raise Exception('Data size does not match number of headings')
+
         node = NSObject.alloc().init()
 
         parent_node = self._data[parent]
