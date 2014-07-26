@@ -4,7 +4,7 @@ import sys
 
 from .libs import *
 from .window import Window
-from .widgets import Image, TIBERIUS_ICON
+from .widgets import Icon, TIBERIUS_ICON
 
 
 class MainWindow(Window):
@@ -24,8 +24,8 @@ class App(object):
 
         self.main_window = MainWindow(name)
 
-        Image.app_icon = Image.load(icon, default=TIBERIUS_ICON)
-        self.icon = Image.app_icon
+        Icon.app_icon = Icon.load(icon, default=TIBERIUS_ICON)
+        self.icon = Icon.app_icon
 
     def _startup(self):
         self._impl = NSApplication.sharedApplication()

@@ -1,13 +1,13 @@
 from ..libs import *
 
-from .image import Image
+from .icon import Icon
 
 
 class Dialog(object):
     @staticmethod
     def info(title, message):
         alert = NSAlert.alloc().init()
-        alert.icon = Image.app_icon._impl
+        alert.icon = Icon.app_icon._impl
         alert.setAlertStyle_(NSInformationalAlertStyle)
         alert.setMessageText_(get_NSString(title))
         alert.setInformativeText_(get_NSString(message))
@@ -17,7 +17,7 @@ class Dialog(object):
     @staticmethod
     def question(title, message):
         alert = NSAlert.alloc().init()
-        alert.icon = Image.app_icon._impl
+        alert.icon = Icon.app_icon._impl
         alert.setAlertStyle_(NSInformationalAlertStyle)
         alert.setMessageText_(get_NSString(title))
         alert.setInformativeText_(get_NSString(message))
@@ -31,7 +31,7 @@ class Dialog(object):
     @staticmethod
     def confirm(title, message):
         alert = NSAlert.alloc().init()
-        alert.icon = Image.app_icon._impl
+        alert.icon = Icon.app_icon._impl
         alert.setAlertStyle_(NSWarningAlertStyle)
         alert.setMessageText_(get_NSString(title))
         alert.setInformativeText_(get_NSString(message))
@@ -45,7 +45,7 @@ class Dialog(object):
     @staticmethod
     def error(title, message):
         alert = NSAlert.alloc().init()
-        alert.icon = Image.app_icon._impl
+        alert.icon = Icon.app_icon._impl
         alert.setAlertStyle_(NSCriticalAlertStyle)
         alert.setMessageText_(get_NSString(title))
         alert.setInformativeText_(get_NSString(message))
@@ -55,7 +55,7 @@ class Dialog(object):
     @staticmethod
     def stack_trace(title, message, content, retry=False):
         alert = NSAlert.alloc().init()
-        alert.icon = Image.app_icon._impl
+        alert.icon = Icon.app_icon._impl
         alert.setAlertStyle_(NSCriticalAlertStyle)
         alert.setMessageText_(get_NSString(title))
         alert.setInformativeText_(get_NSString(message))
