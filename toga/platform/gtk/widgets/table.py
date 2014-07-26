@@ -32,6 +32,9 @@ class Table(Widget):
         self._impl.set_min_content_height(200)
 
     def insert(self, index, *data):
+        if len(data) != len(self.headings):
+            raise Exception('Data size does not match number of headings')
+
         if index is None:
             self._data.append(data)
         else:
