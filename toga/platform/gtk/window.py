@@ -33,7 +33,7 @@ class Window(object):
                     item_impl.set_draw(toolbar_item == SEPARATOR)
                 else:
                     item_impl = Gtk.ToolButton()
-                    item_impl.set_icon_name("gtk-paste")
+                    item_impl.set_icon_widget(toolbar_item.icon._impl_32)
                     item_impl.set_label(toolbar_item.label)
                     item_impl.set_tooltip_text(toolbar_item.tooltip)
                     item_impl.connect("clicked", wrapped_handler(toolbar_item, toolbar_item.action))
