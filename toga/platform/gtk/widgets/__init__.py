@@ -5,6 +5,7 @@ from .container import Container
 from .dialog import Dialog
 from .icon import *
 from .label import Label
+from .optioncontainer import OptionContainer
 from .passwordinput import PasswordInput
 from .scrollcontainer import ScrollContainer
 from .splitcontainer import SplitContainer
