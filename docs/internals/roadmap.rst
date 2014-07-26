@@ -126,7 +126,7 @@ Containers are widgets that can contain other widgets.
     - iOS:
 * ButtonContainer - A layout for a group of radio/checkbox options
     - Cocoa: NSMatrix, or NSView with pre-set constraints.
-    - GTK+:
+    - GTK+: ListBox?
     - iOS:
 * ScrollContainer - A container whose internal content can be scrolled.
     - Cocoa: Done
@@ -147,26 +147,26 @@ Containers are widgets that can contain other widgets.
   multiple options (e.g., Keyboard settings have an option layout for "Keyboard",
   "Text", "Shortcuts" and "Input sources")
     - Cocoa: NSTabView
-    - GTK+:
+    - GTK+: GtkNotebook (Maybe GtkStack on 3.10+?)
     - iOS: ?
 * SectionContainer - (suggestions for better name welcome) A container view that
-  holds a small subviews, only one of which is visible at any
+  holds a small number of subviews, only one of which is visible at any
   given time. Each "section" has a name and icon. Examples of use: top level
   navigation in Safari's preferences panel.
     - Cocoa: NSTabView
-    - GTK+:
+    - GTK+: ?
     - iOS: ?
 * TabContainer - A container view for holding an unknown number of subviews, each
   of which is of the same type - e.g., web browser tabs.
     - Cocoa: ?
-    - GTK+: ?
+    - GTK+: GtkNotebook
     - iOS: ?
 * NavigationContainer - A container view that holds a navigable tree of subviews;
   essentially a view that has a "back" button to return to the previous view
   in a heirarchy. Example of use: Top level navigation in the OS X System
   Preferences panel.
     - Cocoa: No native control
-    - GTK+: No native control
+    - GTK+: No native control; Gtk.HeaderBar in 3.10+
     - iOS: UINavigationBar + NavigationController
 
 Dialogs and windows
