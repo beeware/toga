@@ -1,7 +1,6 @@
 from ..libs import *
 
 from gi.repository import Gtk
-from .icon import Icon
 
 
 class Dialog(object):
