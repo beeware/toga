@@ -6,7 +6,9 @@ from .dialog import Dialog
 from .icon import *
 from .label import Label
 from .optioncontainer import OptionContainer
+from .multilinetextinput import MultilineTextInput
 from .passwordinput import PasswordInput
+from .progressbar import ProgressBar
 from .scrollcontainer import ScrollContainer
 from .splitcontainer import SplitContainer
 from .table import Table
