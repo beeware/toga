@@ -840,6 +840,7 @@ class ObjCClass(object):
         try:
             return self.properties[name]
         except KeyError:
+            name = name.decode('utf-8')
             selector = get_selector('set' + name[0].upper() + name[1:] + ':')
             responds = objc.class_respondsToSelector(self.ptr, selector)
             self.properties[name] = responds
