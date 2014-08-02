@@ -30,6 +30,8 @@ Here's a complete code listing for our "Hello world" app::
         container.constrain(button.BOTTOM + 50 < container.BOTTOM)
 
         app.main_window.content = container
+        
+        app.main_window.toolbar = []
 
         app.main_loop()
 
