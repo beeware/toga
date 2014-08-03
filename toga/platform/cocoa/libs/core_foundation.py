@@ -59,7 +59,7 @@ def cfstring_to_string(cfstring):
     buffer = c_buffer(size + 1)
     result = cf.CFStringGetCString(cfstring, buffer, len(buffer), kCFStringEncodingUTF8)
     if result:
-        return unicode(buffer.value, 'utf-8')
+        return text(buffer.value, 'utf-8')
 
 cf.CFDataCreate.restype = c_void_p
 cf.CFDataCreate.argtypes = [c_void_p, c_void_p, CFIndex]

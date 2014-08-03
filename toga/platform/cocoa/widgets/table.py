@@ -57,9 +57,9 @@ class Table(Widget):
         for heading, column in zip(self.headings, self._columns):
             self._table.addTableColumn_(column)
             cell = column.dataCell
-            cell.setEditable_(False)
-            cell.setSelectable_(False)
-            column.headerCell.setStringValue_(get_NSString(heading))
+            cell.editable = False
+            cell.selectable = False
+            column.headerCell.stringValue = get_NSString(heading)
 
         self._table.setDelegate_(self._table)
         self._table.setDataSource_(self._table)

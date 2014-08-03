@@ -36,7 +36,7 @@ class ScrollContainer(Widget):
         self._impl.setBorderType_(NSNoBorder)
         self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
 
-        self._impl.backgroundColor = NSColor.windowBackgroundColor()
+        self._impl.setBackgroundColor_(NSColor.windowBackgroundColor())
 
         if self.content:
             self._set_content()
