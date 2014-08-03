@@ -9,11 +9,15 @@ from .command import SEPARATOR, SPACER, EXPANDING_SPACER
 class Window(object):
     _IMPL_CLASS = Gtk.Window
 
-    def __init__(self, position=(100, 100), size=(640, 480)):
+    def __init__(self, title=None, position=(100, 100), size=(640, 480), toolbar=None):
         self._app = None
         self._impl = None
         self._container = None
         self._size = size
+        self._toolbar = None
+        self.title = title
+        self.position = position
+        self.toolbar = toolbar
 
     def _startup(self):
         self._impl = self._IMPL_CLASS()
