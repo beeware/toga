@@ -16,6 +16,12 @@ def encoding_for_ctype(vartype):
                  py_object:PyObjectEncoding}
     return typecodes.get(vartype, b'?')
 
+try:
+    text = unicode
+except NameError:
+    text = str
+
+
 # Note CGBase.h located at
 # /System/Library/Frameworks/ApplicationServices.framework/Frameworks/CoreGraphics.framework/Headers/CGBase.h
 # defines CGFloat as double if __LP64__, otherwise it's a float.

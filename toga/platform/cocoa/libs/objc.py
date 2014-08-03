@@ -811,7 +811,7 @@ class ObjCClass(object):
         try:
             return self.instance_methods[name]
         except KeyError:
-            selector = get_selector(name.replace(b'_', b':'))
+            selector = get_selector(name.replace('_', ':'))
             method = c_void_p(objc.class_getInstanceMethod(self.ptr, selector))
             if method.value:
                 objc_method = ObjCMethod(method)
@@ -826,7 +826,7 @@ class ObjCClass(object):
         try:
             return self.class_methods[name]
         except KeyError:
-            selector = get_selector(name.replace(b'_', b':'))
+            selector = get_selector(name.replace('_', ':'))
             method = c_void_p(objc.class_getClassMethod(self.ptr, selector))
             if method.value:
                 objc_method = ObjCMethod(method)
@@ -840,7 +840,7 @@ class ObjCClass(object):
         try:
             return self.properties[name]
         except KeyError:
-            selector = get_selector('set' + name[0].upper() + name[1:] + ':')
+            selector = get_selector('set' + name.title() + ':')
             responds = objc.class_respondsToSelector(self.ptr, selector)
             self.properties[name] = responds
             return responds
@@ -850,7 +850,6 @@ class ObjCClass(object):
         """Returns a callable method object with the given name."""
         # If name refers to a class method, then return a callable object
         # for the class method with self.ptr as hidden first parameter.
-        name = ensure_bytes(name)
         method = self.get_class_method(name)
         if method:
             return ObjCBoundMethod(method, self.ptr)
@@ -930,7 +929,6 @@ class ObjCInstance(object):
         # ObjCBoundMethod, so that it will be able to keep the ObjCInstance
         # alive for chained calls like MyClass.alloc().init() where the
         # object created by alloc() is not assigned to a variable.
-        name = ensure_bytes(name)
 
         # If there's a property with this name; return the value directly
         if self.objc_class.has_property(name):
