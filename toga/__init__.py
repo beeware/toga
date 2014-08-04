@@ -94,4 +94,4 @@ elif sys.platform == 'win32':
     from .platform.win32.widgets import *
 
 else:
-    raise NotImplemented('Platform is not currently supported')
+    raise NotImplementedError('Platform is not currently supported')
