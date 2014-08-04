@@ -82,7 +82,7 @@ if sys.platform == 'darwin':
         from .platform.cocoa.widgets import *
         from .platform.cocoa.command import *
 
-elif sys.platform == 'linux2':
+elif sys.platform.startswith('linux'):
     from .platform.gtk.app import *
     from .platform.gtk.window import *
     from .platform.gtk.widgets import *
