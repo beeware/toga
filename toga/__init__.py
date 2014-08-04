@@ -82,7 +82,7 @@ if sys.platform == 'darwin':
         from .platform.cocoa.widgets import *
         from .platform.cocoa.command import *
 
-elif sys.platform == 'linux2':
+elif sys.platform.startswith('linux'):
     from .platform.gtk.app import *
     from .platform.gtk.window import *
     from .platform.gtk.widgets import *
@@ -94,4 +94,4 @@ elif sys.platform == 'win32':
     from .platform.win32.widgets import *
 
 else:
-    raise NotImplemented('Platform is not currently supported')
+    raise NotImplementedError('Platform is not currently supported')

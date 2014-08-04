@@ -39,11 +39,11 @@ class Widget(WidgetBase):
 
     @property
     def _width_hint(self):
-        raise NotImplemented()
+        raise NotImplementedError()
 
     @property
     def _height_hint(self):
-        raise NotImplemented()
+        raise NotImplementedError()
 
 
 class Container(Widget):

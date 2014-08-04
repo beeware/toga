@@ -46,4 +46,4 @@ class Dialog(object):
 
     @staticmethod
     def stack_trace(title, message, content, retry=False):
-        raise NotImplemented()
+        raise NotImplementedError()
