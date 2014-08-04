@@ -17,12 +17,11 @@ end user with the mess.
 It's easy to spot apps that have been built using themed widget sets - they're
 the ones that don't behave quite like any other app. Widgets don't look
 *quite* right, or there's a menu bar on a window in an OS X app. Themes can
-get quite close - but there's always telltale signs.
+get quite close - but there are always telltale signs.
 
-On top of that, native widgets are almost faster than a themed generic widget.
+On top of that, native widgets are always faster than a themed generic widget.
 After all, you're using native system capability that has been tuned and
-optimized, not a drawing engine layered that's been layered on top of a
-generic widget.
+optimized, not a drawing engine that's been layered on top of a generic widget.
 
 Abstract the broad concepts
 ---------------------------
@@ -40,15 +39,15 @@ widget toolkit provide a quit option pre-installed, out of the box?
 
 Although Toga uses 100% native system widgets, that doesn't mean Toga is just
 a wrapper around system widgets. Wherever possible, Toga attempts to abstract
-the broader concepts underpinning the construction of GUI apps, and build and
-API for *that*. So - every toga app has the basic set of menu options you'd
+the broader concepts underpinning the construction of GUI apps, and build an
+API for *that*. So - every Toga app has the basic set of menu options you'd
 expect of every app - Quit, About, and so on - all in the places you'd expect
 to see them in a native app.
 
 When it comes to widgets, sometimes the abstraction is simple - after all, a
 button is a button, no matter what platform you're on. But other widgets may
 not be exposed so literally. What the Toga API aims to expose is a set of
-mechanisms for achieving a UI goals, not a literal widget set.
+mechanisms for achieving UI goals, not a literal widget set.
 
 Python native
 -------------
@@ -62,7 +61,8 @@ toolkit. This means the API is able to exploit language level features like
 generators and context managers in a way that a wrapper around a C library
 wouldn't be able to (at least, not easily).
 
-This also means supporting Python 3. Toga supports both Python 2 and Python 3.
+This also means supporting Python 3. Toga supports both Python 2 and Python 3,
+in a unified codebase by following established conventions.
 
 `pip install` and nothing more
 ------------------------------
@@ -119,7 +119,7 @@ appropriate.
 .. _yak shaving: http://en.wiktionary.org/wiki/yak_shaving
 .. _PyBee: http://pybee.org
 
-Lets get started!
-=================
+Let's get started!
+==================
 
-Enough theory (and bad puns...) - lets get started with your first Toga app!
+Enough theory (and bad puns...) - let's get started with your first Toga app!
