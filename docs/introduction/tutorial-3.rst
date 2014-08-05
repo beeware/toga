@@ -7,7 +7,7 @@ of functionality with very little code, utilizing the rich components that
 are native on modern platforms.
 
 So - lets build a tool that lets our pet yak graze the web - a primitive
-web browser, in less than 40 lines of code!
+web browser, in less than 40 lines of code!::
 
     #!/usr/bin/env python
     from __future__ import print_function, unicode_literals, absolute_import
