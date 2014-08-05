@@ -731,9 +731,9 @@ class ObjCMethod(object):
             return result
         except ArgumentError as error:
             # Add more useful info to argument error exceptions, then reraise.
-            error.args += ('selector = ' + self.name,
-                           'argtypes =' + str(self.argtypes),
-                           'encoding = ' + self.encoding)
+            error.args += (b'selector = ' + self.name,
+                           b'argtypes =' + str(self.argtypes).encode(),
+                           b'encoding = ' + self.encoding)
             raise
 
 ######################################################################
