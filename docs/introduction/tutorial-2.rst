@@ -4,7 +4,7 @@ You put the box inside another box...
 
 The biggest conceptual idea in Toga is constructing a constraint-based layout.
 So, lets look at a more complex example, involving layouts, scrollers, and
-containers inside other containers.
+containers inside other containers.::
 
     from __future__ import print_function, unicode_literals, absolute_import
 
