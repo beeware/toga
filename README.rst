@@ -25,7 +25,7 @@ workaround. To make the system GTK+ bindings available to your virtualenv,
 symlinking the `gi` module from the system dist-packages directory into your
 virtualenv's site-packages::
 
-    $ cd <your virtualenv dir>/lib/python2.7/site-packages
+    $ cd $VIRTUAL_ENV/lib/python2.7/site-packages
     $ ln -si /usr/lib/python2.7/dist-packages/gi
 
 
