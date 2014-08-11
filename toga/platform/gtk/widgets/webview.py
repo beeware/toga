@@ -1,6 +1,13 @@
 from __future__ import print_function, absolute_import, division
 
-from gi.repository import Gtk, WebKit
+from gi.repository import Gtk
+
+# The following import sometimes fails; handle failure gracefully
+# (see https://github.com/pybee/toga/issues/26)
+try:
+    from gi.repository import WebKit
+except ImportError:
+    WebKit = None
 
 from .base import Widget
 
@@ -13,6 +20,12 @@ class WebView(Widget):
         self._webview = None
 
     def _startup(self):
+
+        if WebKit is None:
+            raise RuntimeError(
+                "Import 'from gi.repository import WebKit' failed;" +
+                " may need to install gir1.2-webkit-3.0 or similar.")
+
         self._impl = Gtk.ScrolledWindow()
         self._impl.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
 
