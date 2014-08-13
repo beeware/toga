@@ -9,11 +9,8 @@ _app = None
 
 
 class MainWindow(Window):
-    def __init__(self):
-        super(MainWindow, self).__init__()
-        print ("SET BACKGROUND COLOR")
-
-    def on_startup(self):
+    def startup(self):
+        super(MainWindow, self).startup()
         self._impl.backgroundColor = UIColor.whiteColor()
 
 
@@ -36,19 +33,25 @@ AppDelegate = ObjCClass('AppDelegate')
 
 class App(object):
 
-    def __init__(self, name, app_id):
+    def __init__(self, name, app_id, startup=None):
         global _app
         _app = self
 
         self.name = name
         self.app_id = app_id
-
-        self.main_window = MainWindow()
+        self._startup_method = startup
 
     def _startup(self):
-        # Assign the window to the app; this initiates startup
+        self.main_window = MainWindow()
         self.main_window.app = self
+
+        self.startup()
+
         self.main_window.show()
+
+    def startup(self):
+        if self._startup_method:
+            self.main_window.content = self._startup_method(self)
 
     def main_loop(self):
         print ("START MAIN LOOP")
