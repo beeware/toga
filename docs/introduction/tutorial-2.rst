@@ -22,9 +22,7 @@ containers inside other containers.::
     def action3():
         print("action 3")
 
-    if __name__ == '__main__':
-        app = toga.App('First App', 'org.pybee.helloworld')
-
+    def build(app):
         left_container = toga.Table(['Hello', 'World'])
 
         left_container.insert(None, 'root1', 'value1')
@@ -58,8 +56,6 @@ containers inside other containers.::
 
         split.content = [left_container, right_container]
 
-        app.main_window.content = split
-
         cmd1 = toga.Command(action1, 'Action 1', tooltip='Perform action 1', icon='icons/brutus.icns')
         cmd2 = toga.Command(action2, 'Action 2', tooltip='Perform action 2', icon=toga.TIBERIUS_ICON)
         cmd3 = toga.Command(action3, 'Action 3', tooltip='Perform action 3', icon='icons/brutus.icns')
@@ -71,5 +67,10 @@ containers inside other containers.::
         cmd4 = toga.Command(action4, 'Action 4', tooltip='Perform action 4', icon='icons/brutus.icns')
 
         app.main_window.toolbar = [cmd1, toga.SEPARATOR, cmd2, toga.SPACER, cmd3, toga.EXPANDING_SPACER, cmd4]
+
+        return split
+
+    if __name__ == '__main__':
+        app = toga.App('First App', 'org.pybee.helloworld', startup=build)
 
         app.main_loop()

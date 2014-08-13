@@ -9,11 +9,7 @@ build a slightly more complex example - a Fahrenheit to Celcius converter.
 
     import toga
 
-
-    if __name__ == '__main__':
-
-        app = toga.App('Temperature Converter', 'org.pybee.f_to_c')
-
+    def build(app):
         container = toga.Container()
 
         c_input = toga.TextInput(readonly=True)
@@ -63,6 +59,10 @@ build a slightly more complex example - a Fahrenheit to Celcius converter.
         container.constrain(button.TRAILING == c_label.TRAILING)
         container.constrain(button.BOTTOM + 20 == container.BOTTOM)
 
-        app.main_window.content = container
+        return container
+
+
+    if __name__ == '__main__':
+        app = toga.App('Temperature Converter', 'org.pybee.f_to_c', startup=build)
 
         app.main_loop()
