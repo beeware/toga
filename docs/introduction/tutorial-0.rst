@@ -11,13 +11,12 @@ Here's a complete code listing for our "Hello world" app::
 
     import toga
 
+
     def button_handler(widget):
         print("hello")
 
-    if __name__ == '__main__':
 
-        app = toga.App('First App', 'org.pybee.helloworld')
-
+    def build(app):
         container = toga.Container()
 
         button = toga.Button('Hello world', on_press=button_handler)
@@ -29,7 +28,11 @@ Here's a complete code listing for our "Hello world" app::
         container.constrain(button.TRAILING + 50 == container.TRAILING)
         container.constrain(button.BOTTOM + 50 < container.BOTTOM)
 
-        app.main_window.content = container
+        return container
+
+
+    if __name__ == '__main__':
+        app = toga.App('First App', 'org.pybee.helloworld', startup=build)
 
         app.main_loop()
 
@@ -55,18 +58,12 @@ of a simple button press, however, there are no extra arguments::
     def button_handler(widget):
         print("hello")
 
-Now we get into the main body of the app, where we lay out the UI. First, we
-create the app itself - this is a high level container representing the
-executable. The app has a name, and a unique identifier. The identifier is
-used when registering any app-specific system resources. By convention, the
-identifier is a  "reversed domain name"::
-
-    if __name__ == '__main__':
-
-        app = toga.App('First App', 'org.pybee.helloworld')
-
 By creating an app, we're declaring that we want to have a main window, with a
-main menu. However, we've said nothing about the content of the main window.
+main menu. However, Toga doesn't know what we want content we want in that
+main window. The next step is to define a method that describes the UI that we
+want our app to have. This method is a callable that accepts an app instance::
+
+    def build(app):
 
 We want to put a button in the window. However, unless we want the button to
 fill the entire app window, we can't just put the button into the app window.
@@ -138,13 +135,23 @@ will go into the space below the button.
 
 .. _Cassowary: http://www.cs.washington.edu/research/constraints/cassowary/
 
-Now we've set up the container, we can set the container as the content of the
-main app window::
+Now we've set up the container, we return the outer container that holds all
+the UI content. This container will be the content of the app's main window::
 
-        app.main_window.content = container
+        return container
 
-Lastly, we can start the main app loop. This is a blocking call; it won't return
-until you quit the main app::
+Lastly, we get into the main body of the program, where we create the app itself.
+The app is a high level container representing the executable. The app has a name,
+and a unique identifier. The identifier is used when registering any app-specific
+system resources. By convention, the identifier is a  "reversed domain name".
+The app also accepts our callable defining the main window contents::
+
+    if __name__ == '__main__':
+
+        app = toga.App('First App', 'org.pybee.helloworld', startup=build)
+
+Having created the app, we can start the main app loop. This is a blocking
+call; it won't return until you quit the main app::
 
         app.main_loop()
 
@@ -174,7 +181,7 @@ environment`_ first, and installing toga in that virtual environment.
     symlinking the `gi` module from the system dist-packages directory into your
     virtualenv's site-packages::
 
-        $ cd <your virtualenv dir>/lib/python2.7/site-packages
+        $ cd $VIRTUALENV_DIR/lib/python2.7/site-packages
         $ ln -si /usr/lib/python2.7/dist-packages/gi
 
 Once you've got toga installed, you can run your script::

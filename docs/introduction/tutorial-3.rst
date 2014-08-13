@@ -14,35 +14,37 @@ web browser, in less than 40 lines of code!::
 
     import toga
 
-    if __name__ == '__main__':
-        app = toga.App('Graze', 'org.pybee.graze')
+    class Graze(toga.App):
+        def startup(self):
+            container = toga.Container()
 
-        container = toga.Container()
+            webview = toga.WebView()
+            url_input = toga.TextInput('http://pybee.org/')
 
-        webview = toga.WebView()
-        url_input = toga.TextInput('http://pybee.org/')
+            go_button = toga.Button('Go', on_press=self.load_page)
 
-        def load_page(widget):
+            container.add(webview)
+            container.add(url_input)
+            container.add(go_button)
+
+            container.constrain(url_input.TOP == container.TOP + 5)
+            container.constrain(url_input.LEFT == container.LEFT + 5)
+            container.constrain(url_input.RIGHT + 5 == go_button.LEFT)
+
+            container.constrain(go_button.TOP == container.TOP + 5)
+            container.constrain(go_button.RIGHT + 5 == container.RIGHT)
+
+            container.constrain(webview.TOP == url_input.BOTTOM + 20)
+            container.constrain(webview.BOTTOM == container.BOTTOM)
+            container.constrain(webview.RIGHT == container.RIGHT)
+            container.constrain(webview.LEFT == container.LEFT)
+
+            app.main_window.content = container
+
+        def load_page(self, widget):
             webview.url = url_input.value
 
-        go_button = toga.Button('Go', on_press=load_page)
-
-        container.add(webview)
-        container.add(url_input)
-        container.add(go_button)
-
-        container.constrain(url_input.TOP == container.TOP + 5)
-        container.constrain(url_input.LEFT == container.LEFT + 5)
-        container.constrain(url_input.RIGHT + 5 == go_button.LEFT)
-
-        container.constrain(go_button.TOP == container.TOP + 5)
-        container.constrain(go_button.RIGHT + 5 == container.RIGHT)
-
-        container.constrain(webview.TOP == url_input.BOTTOM + 20)
-        container.constrain(webview.BOTTOM == container.BOTTOM)
-        container.constrain(webview.RIGHT == container.RIGHT)
-        container.constrain(webview.LEFT == container.LEFT)
-
-        app.main_window.content = container
+    if __name__ == '__main__':
+        app = Graze('Graze', 'org.pybee.graze')
 
         app.main_loop()
