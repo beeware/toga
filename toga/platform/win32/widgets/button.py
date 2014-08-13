@@ -17,10 +17,8 @@ class Button(Widget):
         self._expand_vertical = False
         self.label = label
         self.on_press = on_press
-        self._impl = None
-        self.window = None
 
-    def _startup(self):
+    def startup(self):
         x, y, width, height = self._geometry
         print("CREATE AT ", x, y, width, height)
         identifier = self.window._allocate_id()
