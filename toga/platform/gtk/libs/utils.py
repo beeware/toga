@@ -1,6 +1,12 @@
 from toga.constants import *
 
 
+try:
+    text = unicode
+except NameError:
+    text = str
+
+
 def gtk_alignment(alignment):
     "Convert Toga alignments in to arguments compatible with Gtk.set_alignment"
     return {

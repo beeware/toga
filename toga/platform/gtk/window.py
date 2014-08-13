@@ -11,7 +11,6 @@ class Window(object):
 
     def __init__(self, title=None, position=(100, 100), size=(640, 480), toolbar=None):
         self._app = None
-        self._impl = None
         self._container = None
         self._size = size
         self._toolbar = None

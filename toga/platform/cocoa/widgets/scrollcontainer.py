@@ -32,5 +32,13 @@ class ScrollContainer(Widget):
     def content(self, widget):
         self._content = widget
         self._content.window = self.window
-        self.content.app = self.app
+        self._content.app = self.app
         self._impl.setDocumentView_(self._content._impl)
+
+    def _set_app(self, app):
+        if self._content:
+            self._content.app = self.app
+
+    def _set_window(self, window):
+        if self._content:
+            self._content.window = self.window

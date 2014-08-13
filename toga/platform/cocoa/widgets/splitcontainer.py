@@ -38,3 +38,13 @@ class SplitContainer(Widget):
         self._content[1].window = self.window
         self._content[1].app = self.app
         self._impl.addSubview_(self._content[1]._impl)
+
+    def _set_app(self, app):
+        if self._content:
+            self._content[0].app = self.app
+            self._content[1].app = self.app
+
+    def _set_window(self, window):
+        if self._content:
+            self._content[0].window = self.window
+            self._content[1].window = self.window
