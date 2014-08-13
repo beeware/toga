@@ -17,9 +17,9 @@ to an application using Toga.
 Problems using virtualenv under Ubuntu
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Toga uses the system native python GTK+3 bindings for display purposes.
-However, if you're using a `--no-site-packages` virtualenv, the Python bindings
-for GTK won't be in your `PYTHONPATH`.
+When on Ubuntu, Toga uses the system native python GTK+3 bindings for display
+purposes. However, if you're using a `--no-site-packages` virtualenv, the
+Python bindings for GTK won't be in your `PYTHONPATH`.
 
 Unfortunately, you can't `pip install` GTK+ bindings, so you have to use a
 workaround. To make the system GTK+ bindings available to your virtualenv,
