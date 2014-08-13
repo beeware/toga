@@ -24,9 +24,9 @@ class Button(Widget):
         self.label = label
         self.on_press = on_press
 
-        self._impl = None
+        self.startup()
 
-    def _startup(self):
+    def startup(self):
         self._impl = ButtonImpl.alloc().init()
         self._impl.interface = self
 

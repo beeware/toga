@@ -9,20 +9,16 @@ class OptionContainer(Widget):
         super(OptionContainer, self).__init__()
         self._content = []
 
-    def _startup(self):
+        self.startup()
+
+    def startup(self):
         self._impl = NSTabView.alloc().init()
         self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
-
-        for label, container in self._content:
-            self._add_panel(label, container)
 
     def add(self, label, container):
         self._content.append((label, container))
         container.window = self.window
-        if self._impl:
-            self._add_panel(label, container)
 
-    def _add_panel(self, label, container):
         item = NSTabViewItem.alloc().initWithIdentifier_(get_NSString('%s-Tab-%s' % (id(self), id(container))))
         item.setLabel_(get_NSString(label))
         container.app = self.app

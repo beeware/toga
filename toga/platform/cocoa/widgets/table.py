@@ -30,11 +30,11 @@ class Table(Widget):
         super(Table, self).__init__()
         self.headings = headings
 
-        self._table = None
-        self._columns = None
         self._data = []
 
-    def _startup(self):
+        self.startup()
+
+    def startup(self):
         # Create a table view, and put it in a scroll view.
         # The scroll view is the _impl, because it's the outer container.
         self._impl = NSScrollView.alloc().init()

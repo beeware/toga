@@ -8,22 +8,13 @@ from toga.constants import *
 class ProgressBar(Widget):
     def __init__(self, max=None, value=None):
         super(ProgressBar, self).__init__()
-
         self.max = max
+
+        self.startup()
+
         self.value = value
 
-    @property
-    def value(self):
-        return self._value
-
-    @value.setter
-    def value(self, value):
-        self._value = value
-        self._running = self._value is not None
-        if self._impl:
-            self._impl.setDoubleValue_(value)
-
-    def _startup(self):
+    def startup(self):
         self._impl = NSProgressIndicator.new()
         self._impl.setStyle_(NSProgressIndicatorBarStyle)
         self._impl.setDisplayedWhenStopped_(False)
@@ -33,10 +24,18 @@ class ProgressBar(Widget):
         else:
             self._impl.setIndeterminate_(True)
 
-        if self._running:
-            self._impl.startAnimation()
-
         self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
+
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, value):
+        self._value = value
+        self._running = self._value is not None
+        if value is not None:
+            self._impl.setDoubleValue_(value)
 
     def start(self):
         if self._impl and not self._running:

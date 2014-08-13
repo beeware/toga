@@ -78,7 +78,9 @@ class Tree(Widget):
             }
         }
 
-    def _startup(self):
+        self.startup()
+
+    def startup(self):
         # Create a tree view, and put it in a scroll view.
         # The scroll view is the _impl, because it's the outer container.
         self._impl = NSScrollView.alloc().init()
