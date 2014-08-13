@@ -75,12 +75,16 @@ class Window(object):
         self._impl = None
         self._app = None
         self._toolbar = None
-        self.title = title
+
         self.position = position
         self.size = size
+
+        self.startup()
+
+        self.title = title
         self.toolbar = toolbar
 
-    def _startup(self):
+    def startup(self):
         # OSX origin is bottom left of screen, and the screen might be
         # offset relative to other screens. Adjust for this.
         screen = NSScreen.mainScreen().visibleFrame()
@@ -96,25 +100,12 @@ class Window(object):
             NSBackingStoreBuffered,
             False
         )
-        self._set_title()
         self._impl.setFrame_display_animate_(position, True, False)
 
         self._delegate = WindowDelegate.alloc().init()
         self._delegate.interface = self
 
         self._impl.setDelegate_(self._delegate)
-
-        # If there are toolbar items defined, add a toolbar to the window
-        if self.toolbar:
-            self._toolbar_items = dict((item.toolbar_identifier, item) for item in self.toolbar)
-            self._toolbar = NSToolbar.alloc().initWithIdentifier_(get_NSString('Toolbar-%s' % id(self)))
-            self._toolbar.setDelegate_(self._delegate)
-            self._impl.setToolbar_(self._toolbar)
-
-        self.on_startup()
-
-        if self.content:
-            self._set_content()
 
     @property
     def app(self):
@@ -126,7 +117,19 @@ class Window(object):
             raise Exception("Window is already associated with an App")
 
         self._app = app
-        self._startup()
+
+    @property
+    def toolbar(self):
+        return self._toolbar
+
+    @toolbar.setter
+    def toolbar(self, toolbar):
+        self._toolbar = toolbar
+        if self._toolbar:
+            self._toolbar_items = dict((item.toolbar_identifier, item) for item in self._toolbar)
+            self._toolbar_impl = NSToolbar.alloc().initWithIdentifier_(get_NSString('Toolbar-%s' % id(self)))
+            self._toolbar_impl.setDelegate_(self._delegate)
+            self._impl.setToolbar_(self._toolbar_impl)
 
     @property
     def content(self):
@@ -136,12 +139,8 @@ class Window(object):
     def content(self, widget):
         self._content = widget
         self._content.window = self
-        if self._impl:
-            self._set_content()
 
-    def _set_content(self):
         # Assign the widget to the same app as the window.
-        # This initiates startup logic.
         self.content.app = self.app
 
         # Top level widnow items don't layout well with autolayout (especially when
@@ -158,19 +157,14 @@ class Window(object):
     @title.setter
     def title(self, title):
         self._title = title
-        if self._impl:
-            self._set_title()
-
-    def _set_title(self):
         if self._title:
             self._impl.setTitle_(get_NSString(self._title))
+        else:
+            self._impl.setTitle_(get_NSString(''))
 
     def show(self):
         self._impl.makeKeyAndOrderFront_(None)
         # self._impl.visualizeConstraints_(self._impl.contentView.constraints())
-
-    def on_startup(self):
-        pass
 
     def on_close(self):
         pass

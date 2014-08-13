@@ -18,14 +18,15 @@ class MainWindow(Window):
 
 class App(object):
 
-    def __init__(self, name, app_id, icon=None):
+    def __init__(self, name, app_id, icon=None, startup=None):
         self.name = name
         self.app_id = app_id
 
-        self.main_window = MainWindow(name)
-
+        # Set the icon for the app
         Icon.app_icon = Icon.load(icon, default=TIBERIUS_ICON)
         self.icon = Icon.app_icon
+
+        self._startup_method = startup
 
     def _startup(self):
         self._impl = NSApplication.sharedApplication()
@@ -82,9 +83,22 @@ class App(object):
         # Set the menu for the app.
         self._impl.setMainMenu_(self.menu)
 
+        # Create the main window
+        self.main_window = MainWindow(self.name)
+        self.main_window.app = self
+
+        # Call user code to populat the main window
+        self.startup()
+
+        # Show the main window
+        self.main_window.show()
+
+    def startup(self):
+        if self._startup_method:
+            self.main_window.content = self._startup_method(self)
+
     def main_loop(self):
         self._startup()
-        self.main_window.app = self
-        self.main_window.show()
+
         self._impl.activateIgnoringOtherApps_(True)
         self._impl.run()

@@ -12,7 +12,9 @@ class MultilineTextInput(Widget):
 
         self._text = None
 
-    def _startup(self):
+        self.startup()
+
+    def startup(self):
         # Create a multiline view, and put it in a scroll view.
         # The scroll view is the _impl, because it's the outer container.
         self._impl = NSScrollView.alloc().init()

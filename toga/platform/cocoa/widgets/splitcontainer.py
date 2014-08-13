@@ -14,13 +14,12 @@ class SplitContainer(Widget):
 
         self.direction = direction
 
-    def _startup(self):
+        self.startup()
+
+    def startup(self):
         self._impl = NSSplitView.alloc().init()
         self._impl.setVertical_(self.direction)
         self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
-
-        if self.content:
-            self._set_content()
 
     @property
     def content(self):
@@ -31,10 +30,7 @@ class SplitContainer(Widget):
         if len(content) != 2:
             raise ValueError('SplitContainer content must be a 2-tuple')
         self._content = content
-        if self._impl:
-            self._set_content()
 
-    def _set_content(self):
         self._content[0].window = self.window
         self._content[0].app = self.app
         self._impl.addSubview_(self._content[0]._impl)

@@ -10,25 +10,11 @@ class ScrollContainer(Widget):
         self.horizontal = horizontal
         self.vertical = vertical
 
-        self._impl = None
         self._content = None
 
-    @property
-    def content(self):
-        return self._content
+        self.startup()
 
-    @content.setter
-    def content(self, widget):
-        self._content = widget
-        self._content.window = self.window
-        if self._impl:
-            self._set_content()
-
-    def _set_content(self):
-        self.content.app = self.app
-        self._impl.setDocumentView_(self._content._impl)
-
-    def _startup(self):
+    def startup(self):
         self._impl = NSScrollView.alloc().init()
         self._impl.setHasVerticalScroller_(self.vertical)
         self._impl.setHasHorizontalScroller_(self.horizontal)
@@ -38,5 +24,13 @@ class ScrollContainer(Widget):
 
         self._impl.setBackgroundColor_(NSColor.windowBackgroundColor())
 
-        if self.content:
-            self._set_content()
+    @property
+    def content(self):
+        return self._content
+
+    @content.setter
+    def content(self, widget):
+        self._content = widget
+        self._content.window = self.window
+        self.content.app = self.app
+        self._impl.setDocumentView_(self._content._impl)
