@@ -10,19 +10,17 @@ class SplitContainer(Widget):
     VERTICAL = True
     def __init__(self, direction=VERTICAL):
         super(SplitContainer, self).__init__()
-        self._impl = None
         self._content = None
 
         self.direction = direction
 
-    def _startup(self):
+        self.startup()
+
+    def startup(self):
         if self.direction == self.HORIZONTAL:
             self._impl = Gtk.VPaned()
         else:
             self._impl = Gtk.HPaned()
-
-        if self.content:
-            self._set_content()
 
     @property
     def content(self):
@@ -33,10 +31,8 @@ class SplitContainer(Widget):
         if len(content) != 2:
             raise ValueError('SplitContainer content must be a 2-tuple')
         self._content = content
-        if self._impl:
-            self._set_content()
+        print ('splitcontainer', self.window, self.app)
 
-    def _set_content(self):
         self._content[0].window = self.window
         self._content[0].app = self.app
         self._impl.add1(self._content[0]._impl)
@@ -44,3 +40,17 @@ class SplitContainer(Widget):
         self._content[1].window = self.window
         self._content[1].app = self.app
         self._impl.add2(self._content[1]._impl)
+
+        if self._content:
+            self._content[0].window = self.window
+            self._content[1].window = self.window
+
+    def _set_app(self, app):
+        if self._content:
+            self._content[0].app = self.app
+            self._content[1].app = self.app
+
+    def _set_window(self, window):
+        if self._content:
+            self._content[0].window = self.window
+            self._content[1].window = self.window

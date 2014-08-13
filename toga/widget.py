@@ -5,7 +5,7 @@ from toga.constraint import Attribute
 
 class Widget(object):
     def __init__(self):
-        self.window = None
+        self._window = None
         self._app = None
         self._impl = None
 
@@ -29,11 +29,22 @@ class Widget(object):
     def app(self, app):
         if self._app:
             raise Exception("Widget %r is already associated with an App" % self)
-
         self._app = app
-        self._startup()
+        self._set_app(app)
 
-    def _startup(self):
+    def _set_app(self, app):
+        pass
+
+    @property
+    def window(self):
+        return self._window
+
+    @window.setter
+    def window(self, window):
+        self._window = window
+        self._set_window(window)
+
+    def _set_window(self, window):
         pass
 
     def __repr__(self):

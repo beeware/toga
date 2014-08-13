@@ -12,7 +12,14 @@ class Label(Widget):
         super(Label, self).__init__()
 
         self.text = text
-        self._alignment = alignment
+
+        self.startup()
+
+        self.alignment = alignment
+
+    def startup(self):
+        self._impl = Gtk.Label(self.text)
+        self._impl.set_line_wrap(False)
 
     @property
     def alignment(self):
@@ -24,7 +31,3 @@ class Label(Widget):
         if self._impl:
             self._impl.set_alignment(*gtk_alignment(self._alignment))
 
-    def _startup(self):
-        self._impl = Gtk.Label(self.text)
-        self._impl.set_line_wrap(False)
-        self._impl.set_alignment(*gtk_alignment(self._alignment))

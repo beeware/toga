@@ -15,11 +15,14 @@ class Window(object):
         self._container = None
         self._size = size
         self._toolbar = None
+
         self.title = title
         self.position = position
         self.toolbar = toolbar
 
-    def _startup(self):
+        self.startup()
+
+    def startup(self):
         self._impl = self._IMPL_CLASS()
         self._impl.connect("delete-event", self._on_close)
         self._impl.set_default_size(self._size[0], self._size[1])
@@ -44,14 +47,6 @@ class Window(object):
 
                 self._toolbar.insert(item_impl, -1)
 
-        self.on_startup()
-
-        if self.content:
-            # Assign the widget to the same app as the window.
-            # This initiates startup logic.
-            self.content.app = self.app
-            self._set_content()
-
     @property
     def app(self):
         return self._app
@@ -62,7 +57,6 @@ class Window(object):
             raise Exception("Window is already associated with an App")
 
         self._app = app
-        self._startup()
 
     @property
     def content(self):
@@ -72,13 +66,9 @@ class Window(object):
     def content(self, widget):
         self._content = widget
         self._content.window = self
-        if self._impl:
-            # Assign the widget to the same app as the window.
-            # This initiates startup logic.
-            widget.app = self.app
-            self._set_content()
+        self._content.app = self.app
+        print ('window', self, self.app)
 
-    def _set_content(self):
         if self._container:
             self._container.pack_start(self._toolbar, True, True, 0)
             self._container.pack_start(self.content._impl, True, True, 0)
@@ -88,9 +78,6 @@ class Window(object):
 
     def show(self):
         self._impl.show_all()
-
-    def on_startup(self):
-        pass
 
     def _on_close(self, widget, data):
         self.on_close()
