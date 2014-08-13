@@ -56,6 +56,14 @@ class Container(Widget):
         widget.app = self.app
         self._impl.addSubview_(widget._impl)
 
+    def _set_app(self, app):
+        for child in self.children:
+            child.app = app
+
+    def _set_window(self, window):
+        for child in self.children:
+            child.window = window
+
     def constrain(self, constraint):
         "Add the given constraint to the widget."
         if constraint in self.constraints:
