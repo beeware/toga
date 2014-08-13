@@ -2,7 +2,8 @@ from __future__ import print_function, absolute_import, division
 
 from gi.repository import Gtk
 
-# The following import sometimes fails; handle failure gracefully
+# The following import will fail if WebKit or it's API wrappers aren't
+# installed; handle failure gracefully
 # (see https://github.com/pybee/toga/issues/26)
 try:
     from gi.repository import WebKit
@@ -15,12 +16,12 @@ from .base import Widget
 class WebView(Widget):
     def __init__(self, url=None):
         super(WebView, self).__init__()
-        self._url = url
 
-        self._webview = None
+        self.startup()
 
-    def _startup(self):
+        self.url = url
 
+    def startup(self):
         if WebKit is None:
             raise RuntimeError(
                 "Import 'from gi.repository import WebKit' failed;" +
@@ -30,9 +31,6 @@ class WebView(Widget):
         self._impl.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
 
         self._webview = WebKit.WebView()
-
-        if self._url:
-            self._webview.load_uri(self._url)
 
         self._impl.add(self._webview)
         self._impl.set_min_content_width(200)
@@ -45,5 +43,5 @@ class WebView(Widget):
     @url.setter
     def url(self, value):
         self._url = value
-        if self._impl:
+        if self._url:
             self._webview.load_uri(self._url)

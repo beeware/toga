@@ -5,6 +5,7 @@ import sys
 from gi.repository import Gtk, Gio, GLib
 
 from .window import Window
+from .widgets import Icon, TIBERIUS_ICON
 
 
 class MainWindow(Window):
@@ -13,19 +14,29 @@ class MainWindow(Window):
 
 class App(object):
 
-    def __init__(self, name, app_id):
+    def __init__(self, name, app_id, icon=None, startup=None):
         # GLib.set_application_name(name.encode('ascii'))
         self._impl = Gtk.Application(application_id=app_id, flags=Gio.ApplicationFlags.FLAGS_NONE)
 
-        self.main_window = MainWindow()
+        # Set the icon for the app
+        Icon.app_icon = Icon.load(icon, default=TIBERIUS_ICON)
+        self.icon = Icon.app_icon
 
+        self._startup_method = startup
+
+        # Connect the GTK signal that will cause app startup to occur
         self._impl.connect('startup', self._startup)
         self._impl.connect('activate', self._activate)
-        self._impl.connect('shutdown', self._shutdown)
+        # self._impl.connect('shutdown', self._shutdown)
 
     def _startup(self, data=None):
+        print ('create main window')
+        self.main_window = MainWindow()
+
+        print ('set window app')
         self.main_window.app = self
 
+        print ('build app detils')
         self._impl.add_window(self.main_window._impl)
 
         action = Gio.SimpleAction.new('stuff', None)
@@ -72,22 +83,18 @@ class App(object):
 
         self._impl.set_menubar(self.menu_bar)
 
-        self.main_window.show()
-        self.on_startup()
+        print ('call setup')
 
-    def on_startup(self):
-        pass
+        self.startup()
+
+        print ('show window')
+        self.main_window.show()
+
+    def startup(self):
+        if self._startup_method:
+            self.main_window.content = self._startup_method(self)
 
     def _activate(self, data=None):
-        self.on_activate()
-
-    def on_activate(self):
-        pass
-
-    def _shutdown(self, data=None):
-        self.on_shutdown()
-
-    def on_shutdown(self):
         pass
 
     def main_loop(self):

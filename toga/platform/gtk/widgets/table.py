@@ -14,7 +14,9 @@ class Table(Widget):
         self._columns = None
         self._data = Gtk.ListStore(*[str for h in headings])
 
-    def _startup(self):
+        self.startup()
+
+    def startup(self):
         # Create a table view, and put it in a scroll view.
         # The scroll view is the _impl, because it's the outer container.
         self._table = Gtk.TreeView(self._data)

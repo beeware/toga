@@ -51,27 +51,17 @@ class Container(Widget):
         super(Container, self).__init__()
         self.children = []
         self.constraints = {}
-        self._impl = None
 
-    def _startup(self):
+        self.startup()
+
+    def startup(self):
         self._layout_manager = LayoutManager(self._bounding_box)
         self._impl = self._create_container()
-
-        for child in self.children:
-            self._add(child)
-
-        for constraint, impl in ((c, i) for c, i in self.constraints.items() if i is None):
-            self._constrain(constraint)
 
     def add(self, widget):
         self.children.append(widget)
 
-        if self._impl:
-            self._add(widget)
-
-    def _add(self, widget):
         # Assign the widget to the same app and window as the container.
-        # This initiates startup logic.
         widget.window = self.window
         widget.app = self.app
         self._layout_manager.add_widget(widget)
@@ -82,13 +72,6 @@ class Container(Widget):
         if constraint in self.constraints:
             return
 
-        if self._impl:
-            self._constrain(constraint)
-
-        else:
-            self.constraints[constraint] = None
-
-    def _constrain(self, constraint):
         widget = constraint.attr.widget
         identifier = constraint.attr.identifier
 

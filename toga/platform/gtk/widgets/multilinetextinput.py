@@ -8,14 +8,16 @@ from .base import Widget
 class MultilineTextInput(Widget):
     def __init__(self, initial=None, readonly=False):
         super(MultilineTextInput, self).__init__()
-        self.initial = initial
-        self._readonly = readonly
-        self._buffer = None
+
+        self.startup()
+
+        self.readonly = readonly
+        self.value = initial
 
         self.expand_width = True
         self.expand_height = True
 
-    def _startup(self):
+    def startup(self):
         self._buffer = Gtk.TextBuffer()
 
         if self.initial:
@@ -23,8 +25,6 @@ class MultilineTextInput(Widget):
 
         self._impl = Gtk.TextView()
         self._impl.set_buffer(self._buffer)
-
-        self._impl.editable = not self._readonly
 
     @property
     def _width_hint(self):
@@ -43,8 +43,7 @@ class MultilineTextInput(Widget):
     @readonly.setter
     def readonly(self, value):
         self._readonly = value
-        if self._impl:
-            self._impl.editable = not self._readonly
+        self._impl.editable = not self._readonly
 
     @property
     def value(self):

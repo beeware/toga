@@ -8,17 +8,17 @@ from .base import Widget
 class TextInput(Widget):
     def __init__(self, initial=None, placeholder=None, readonly=False):
         super(TextInput, self).__init__()
-        self.initial = initial
         self.placeholder = placeholder
-        self._readonly = readonly
 
-    def _startup(self):
+        self.startup()
+
+        self.value = initial
+        self.readonly = readonly
+
+    def startup(self):
         self._impl = Gtk.Entry()
-        if self.initial:
-            self._impl.set_text(self.initial)
         if self.placeholder:
             self._impl.set_placeholder_text(self.placeholder)
-        self._impl.editable = not self._readonly
 
     @property
     def readonly(self):
@@ -27,8 +27,7 @@ class TextInput(Widget):
     @readonly.setter
     def readonly(self, value):
         self._readonly = value
-        if self._impl:
-            self._impl.editable = not self._readonly
+        self._impl.editable = not self._readonly
 
     @property
     def value(self):
