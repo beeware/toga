@@ -7,14 +7,16 @@ import ctypes
 
 class Window(object):
     def __init__(self, position=(100, 100), size=(640, 480)):
+        self._app = None
         self._allocated = 0
         self._widgets = {}
         self.position = position
         self.size = size
-        self._impl = None
-        self._app = None
+        self._content = None
 
-    def _startup(self):
+        self.startup()
+
+    def startup(self):
         module = kernel32.GetModuleHandleW(None)
         brush = user32.GetSysColorBrush(COLOR_WINDOW)
         self._window_class = WNDCLASS()
@@ -52,13 +54,8 @@ class Window(object):
         user32.SetWindowTextW(self._impl, c_wchar_p("Hello World"))
         print(2, self._impl)
 
-        self.on_startup()
-
         if self.content:
             self.content.app = self.app
-
-    def on_startup(self):
-        pass
 
     @property
     def app(self):
@@ -70,7 +67,6 @@ class Window(object):
             raise Exception("Window is already associated with an App")
 
         self._app = app
-        self._startup()
 
     @property
     def content(self):
@@ -79,9 +75,8 @@ class Window(object):
     @content.setter
     def content(self, widget):
         self._content = widget
+        self._content.app = self.app
         self._content.window = self
-        if self._impl:
-            widget.app = self.app
 
     def show(self):
         print(3,self._impl)

@@ -8,9 +8,6 @@ class Win32Container(object):
         pass
 
 class Container(CassowaryContainer):
-    def __init__(self):
-        super(Container, self).__init__()
-        self.window = None
 
     def _create_container(self):
         # No impl is requried for a container, but we need a placeholder
@@ -21,6 +18,15 @@ class Container(CassowaryContainer):
         with self._layout_manager.layout(width, height):
             for widget in self._layout_manager.children:
                 widget._resize()
+
+    def _set_app(self, app):
+        for child in self.children:
+            child.app = app
+
+    def _set_window(self, window):
+        for child in self.children:
+            child.window = window
+            child.startup()
 
     @property
     def _width_hint(self):
