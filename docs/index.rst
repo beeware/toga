@@ -14,10 +14,10 @@ In your virtualenv, install Toga, and then run it::
 This will pop up a GUI window showing the full range of widgets available
 to an application using Toga.
 
-Problems using virtualenv under Ubuntu
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Problems using virtualenv under Linux
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-When on Ubuntu, Toga uses the system native python GTK+3 bindings for display
+When on Linux, Toga uses the system native python GTK+3 bindings for display
 purposes. However, if you're using a `--no-site-packages` virtualenv, the
 Python bindings for GTK won't be in your `PYTHONPATH`.
 
@@ -59,6 +59,9 @@ Contents:
 
    introduction/philosophy
    introduction/tutorial-0
+   introduction/tutorial-1
+   introduction/tutorial-2
+   introduction/tutorial-3
 
    reference/core
    reference/desktop

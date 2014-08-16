@@ -20,7 +20,7 @@ Input
 Inputs are mechanisms for displaying and editing input provided by the user.
 
 * ComboBox - A free entry TextField that provides options (e.g., text with
-  past choices)
+    past choices)
     - Cocoa: NSComboBox
     - GTK+: Gtk.ComboBox.new_with_model_and_entry
     - iOS: ?
@@ -41,12 +41,12 @@ Inputs are mechanisms for displaying and editing input provided by the user.
     - GTK+: Gtk.Calendar + ?
     - iOS: UIDatePicker
 * MultilineTextInput - A widget for displaying multiline text, optionally
-  editable.
+    editable.
     - Cocoa: NSTextView inside an NSScrollView
     - GTK+: Gtk.TextView? (is there a simpler version than a full text editor?)
     - iOS: UITextView
 * Selection - A button that allows the user to choose from one of a fixed
-  number of options
+    number of options
     - Cocoa: NSPopupButton, with NSMenu for options.
     - GTK+: Gtk.ComboBox.new_with_model
     - iOS: UIPickerView
@@ -59,7 +59,7 @@ Inputs are mechanisms for displaying and editing input provided by the user.
     - GTK+: Gtk.Scale
     - iOS: UISlider
 * NumberInput - A widget to allow entry of a numerical value, possibly with
-  helper buttons to make it easy to increase/decrease the value.
+    helper buttons to make it easy to increase/decrease the value.
     - Cocoa: NSTextField with NSStepper
     - GTK+: GTKSpinButton
     - iOS: UITextField with UIStepper
@@ -86,7 +86,7 @@ Views are mechanisms for displaying rich content, usually in a readonly manner.
     - GTK+:
     - iOS:
 * ProgressBar - A horizontal bar that displays progress, either progress
-  against a known value, or indeterminiate
+    against a known value, or indeterminiate
     - Cocoa: NSProgressIndicator, Bar style
     - GTK+: Gtk.ProgressBar
     - iOS: UIProgressView
@@ -141,30 +141,30 @@ Containers are widgets that can contain other widgets.
     - GTK+:
     - iOS:
 * OptionContainer - (suggestions for better name welcome) A container view that
-  holds a small, fixed number of subviews, only one of which is visible at any
-  given time. Generally rendered as something with "lozenge" style buttons
-  over a box. Examples of use: OS X System preference panes that contain
-  multiple options (e.g., Keyboard settings have an option layout for "Keyboard",
-  "Text", "Shortcuts" and "Input sources")
+    holds a small, fixed number of subviews, only one of which is visible at any
+    given time. Generally rendered as something with "lozenge" style buttons
+    over a box. Examples of use: OS X System preference panes that contain
+    multiple options (e.g., Keyboard settings have an option layout for "Keyboard",
+    "Text", "Shortcuts" and "Input sources")
     - Cocoa: NSTabView
     - GTK+: GtkNotebook (Maybe GtkStack on 3.10+?)
     - iOS: ?
 * SectionContainer - (suggestions for better name welcome) A container view that
-  holds a small number of subviews, only one of which is visible at any
-  given time. Each "section" has a name and icon. Examples of use: top level
-  navigation in Safari's preferences panel.
+    holds a small number of subviews, only one of which is visible at any
+    given time. Each "section" has a name and icon. Examples of use: top level
+    navigation in Safari's preferences panel.
     - Cocoa: NSTabView
     - GTK+: ?
     - iOS: ?
 * TabContainer - A container view for holding an unknown number of subviews, each
-  of which is of the same type - e.g., web browser tabs.
+    of which is of the same type - e.g., web browser tabs.
     - Cocoa: ?
     - GTK+: GtkNotebook
     - iOS: ?
 * NavigationContainer - A container view that holds a navigable tree of subviews;
-  essentially a view that has a "back" button to return to the previous view
-  in a heirarchy. Example of use: Top level navigation in the OS X System
-  Preferences panel.
+    essentially a view that has a "back" button to return to the previous view
+    in a heirarchy. Example of use: Top level navigation in the OS X System
+    Preferences panel.
     - Cocoa: No native control
     - GTK+: No native control; Gtk.HeaderBar in 3.10+
     - iOS: UINavigationBar + NavigationController

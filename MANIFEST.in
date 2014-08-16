@@ -1,7 +1,6 @@
-include README.rst
-include AUTHORS
 include LICENSE
-include requirements*.txt
+include README.rst
+include tox.ini
 recursive-include toga *.py
 recursive-include docs *.bat
 recursive-include docs *.py
