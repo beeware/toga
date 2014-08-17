@@ -5,7 +5,7 @@ import sys
 from gi.repository import Gtk, Gio, GLib
 
 from .window import Window
-from .widgets import Icon, TIBERIUS_ICON
+from .widgets.icon import Icon, TIBERIUS_ICON
 
 
 class MainWindow(Window):

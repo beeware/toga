@@ -1,4 +1,4 @@
-from .widgets import Icon
+from .widgets.icon import Icon
 
 
 class Command(object):
