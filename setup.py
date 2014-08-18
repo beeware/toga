@@ -30,12 +30,18 @@ setup(
     },
     install_requires=[],
     extras_require={
-        'cocoa': 'toga-cocoa',
-        'gtk': 'toga-gtk',
-        'win32': 'toga-win32',
-        'iOS': 'toga-iOS',
-        # 'android': 'toga-android',
-        # 'qt': 'toga-qt',
+        # Automatically installed platform backends
+        ':sys_platform=="win32"': ['toga-win32'],
+        ':sys_platform=="linux2"': ['toga-gtk'],
+        ':sys_platform=="darwin"': ['toga-cocoa'],
+
+        # Manually requested platform backends
+        'cocoa': ['toga-cocoa'],
+        'gtk': ['toga-gtk'],
+        'win32': ['toga-win32'],
+        'ios': ['toga-iOS'],
+        # 'android': ['toga-android'],
+        # 'qt': ['toga-qt'],
     },
     license='New BSD',
     classifiers=[
