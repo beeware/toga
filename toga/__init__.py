@@ -1,6 +1,8 @@
 from __future__ import print_function, unicode_literals, absolute_import, division
 
-import sys, os
+import importlib
+import os
+import sys
 
 from .constants import *
 
@@ -21,48 +23,56 @@ __version__ = '0.1.2.dev'
 
 platform = None
 
-toga_locals = locals()
 
-
-def set_platform(platform_name):
+def set_platform(module_name=None, locals=locals()):
     "Configures toga to use the specfied platform module"
+    # Note - locals is deliberately passed in as an argument; because it is
+    # a dictionary, this results in the module level locals dictionary being
+    # bound as a local variable in this method -- and a persistent one,
+    # because it was evaluated and bound at time of method import.
+
+    # First check for an environment variable setting the platform
+    if module_name is None:
+        module_name = os.environ.get('TOGA_PLATFORM')
+
+    # If we don't have a manually defined platform, attempt to
+    # autodetect and set the platform
+    if module_name is None:
+        if sys.platform == 'darwin':
+            if os.environ.get('TARGET_IPHONE_SIMULATOR') or os.environ.get('TARGET_IPHONE'):
+                module_name = 'toga_iOS'
+            else:
+                module_name = 'toga_cocoa'
+        elif sys.platform in ('linux', 'linux2'):
+            module_name = 'toga_gtk'
+        elif sys.platform == 'win32':
+            module_name = 'toga_win32'
+        else:
+            raise RuntimeError("Couldn't identify a supported host platform.")
+
     # Purge any existing platform symbols in the toga module
-    if toga_locals['platform']:
-        for symbol in toga_locals['platform'].__all__:
-            __all__.remove(symbol)
-            toga_locals.pop(symbol)
+    if locals['platform']:
+        for symbol in locals['platform'].__all__:
+            # Exclude __version__ from the list of symbols that is
+            # ported, because toga itself has a __version__ identifier.
+            if symbol != '__version__':
+                locals.pop(symbol)
 
     # Import the new platform module
-    if platform_name == 'iOS':
-        import toga_iOS as platform
-    elif platform_name == 'cocoa':
-        import toga_cocoa as platform
-    elif platform_name == 'gtk':
-        import toga_gtk as platform
-    elif platform_name == 'win32':
-        import toga_win32 as platform
-    else:
-        raise AttributeError('Unknown platform')
+    try:
+        # Set the new platform module into the module namespace
+        locals['platform'] = importlib.import_module(module_name)
 
-    # Set the new platform module into the module namespace
-    toga_locals['platform'] = platform
+        # Export all the symbols *except* for __version__ from the platform module
+        # The platform has it's own version identifier.
+        locals.update(dict(
+            (symbol, getattr(platform, symbol))
+            for symbol in locals['platform'].__all__
+            if symbol != '__version__'
+        ))
+    except ImportError:
+        locals['platform'] = None
+        raise RuntimeError("Couldn't find %s platform module; try running 'pip install %s'." % (module_name, module_name))
 
-    # Export all the symbols from the platform module
-    toga_locals.update(dict(
-        (symbol, getattr(platform, symbol))
-        for symbol in toga_locals['platform'].__all__
-    ))
-
-
-# Attempt to autodetect and set the platform
-if sys.platform == 'darwin':
-    if os.environ.get('TARGET_IPHONE_SIMULATOR') or os.environ.get('TARGET_IPHONE'):
-        set_platform('iOS')
-    else:
-        set_platform('cocoa')
-elif sys.platform in ('linux', 'linux2'):
-    set_platform('gtk')
-elif sys.platform == 'win32':
-    set_platform('win32')
-else:
-    raise NotImplementedError('Platform is not currently supported')
+# On first import, do an autodetection of platform.
+set_platform()
