@@ -31,7 +31,7 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
         'Environment :: Handhelds/PDA\'s',
-        # 'Operating System :: Android',
+        'Operating System :: Android',
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
