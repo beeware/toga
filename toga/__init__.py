@@ -60,7 +60,7 @@ if sys.platform == 'darwin':
         set_platform('iOS')
     else:
         set_platform('cocoa')
-elif sys.platform == 'linux2':
+elif sys.platform in ('linux', 'linux2'):
     set_platform('gtk')
 elif sys.platform == 'win32':
     set_platform('win32')
