@@ -3,7 +3,7 @@ A slightly less toy example
 ===========================
 
 Most applications require a little more than a button on a page. Lets
-build a slightly more complex example - a Fahrenheit to Celcius converter.
+build a slightly more complex example - a Fahrenheit to Celcius converter::
 
     from __future__ import print_function, unicode_literals, absolute_import
 
