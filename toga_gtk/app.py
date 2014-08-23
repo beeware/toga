@@ -1,5 +1,6 @@
 from __future__ import print_function, absolute_import, division
 
+import signal
 import sys
 
 from gi.repository import Gtk, Gio, GLib
@@ -92,6 +93,10 @@ class App(object):
         pass
 
     def main_loop(self):
+
+        # Modify signal handlers to make sure Ctrl-C is caught and handled.
+        signal.signal(signal.SIGINT, signal.SIG_DFL)
+
         self._impl.run(None)
 
     def _quit(self, widget, data=None):
