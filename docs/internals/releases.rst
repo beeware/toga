@@ -1,14 +1,15 @@
 Release History
 ===============
 
-0.1.2 - In development
+0.1.3 - In development
 ----------------------
 
+0.1.2
+-----
+
 * Further improvements to multiple-repository packaging strategy.
-
-* Cocoa:
-
-    - Added runtime warnings when minimum OS X version is not met.
+* Ensure Ctrl-C is honored by apps.
+* **Cocoa:** Added runtime warnings when minimum OS X version is not met.
 
 0.1.1
 -----
