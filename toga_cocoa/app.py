@@ -1,5 +1,6 @@
 from __future__ import print_function, absolute_import, division
 
+import signal
 import sys
 
 from .libs import *
@@ -87,7 +88,7 @@ class App(object):
         self.main_window = MainWindow(self.name)
         self.main_window.app = self
 
-        # Call user code to populat the main window
+        # Call user code to populate the main window
         self.startup()
 
         # Show the main window
@@ -98,7 +99,11 @@ class App(object):
             self.main_window.content = self._startup_method(self)
 
     def main_loop(self):
+        # Stimulate the build of the app
         self._startup()
+
+        # Modify signal handlers to make sure Ctrl-C is caught and handled.
+        signal.signal(signal.SIGINT, signal.SIG_DFL)
 
         self._impl.activateIgnoringOtherApps_(True)
         self._impl.run()
