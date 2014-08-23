@@ -2,7 +2,7 @@
 Why Toga?
 =========
 
-Toga isn't the worlds first widget toolkit - there are dozens of other
+Toga isn't the world's first widget toolkit - there are dozens of other
 options. So why build a new one?
 
 Native widgets - not themes
