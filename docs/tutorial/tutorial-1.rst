@@ -36,7 +36,7 @@ build a slightly more complex example - a Fahrenheit to Celcius converter::
 
         container.add(button)
 
-        # container.constrain(f_input.WIDTH == 100)
+        container.constrain(f_input.WIDTH == 100)
         container.constrain(f_input.TRAILING + 20 == f_label.LEADING)
         container.constrain(f_label.TRAILING + 20 == container.TRAILING)
         container.constrain(f_input.TOP == container.TOP + 20)
