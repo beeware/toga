@@ -170,6 +170,20 @@ environment`_ first, and installing toga in that virtual environment.
 
 .. _virtual environment: http://docs.python-guide.org/en/latest/dev/virtualenvs/
 
+.. note:: Minimum versions
+
+    Toga has some minimum requirements:
+
+    * If you're on OS X, you need to be on 10.7 (Lion) or newer.
+
+    * If you're on Linux, you need to have GTK+ 3.4 or later. This is the
+      version that ships with Ubuntu 12.04. If you want to use the WebView
+      widget, you'll also need to have WebKit, plus the GI bindings to WebKit
+      (gir1.2-webkit-3.0) installed.
+
+    If these requirements aren't met, Toga either won't work at all, or won't
+    have full functionality.
+
 .. note:: Problems under Linux
 
     Unfortunately, GTK+3 doesn't provide a pip-installable version of it's Python
