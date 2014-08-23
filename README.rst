@@ -7,6 +7,11 @@ This package isn't much use by itself; it needs to be combined with `the core To
 
 For more details, see the `Toga project on Github`_.
 
+Prerequisites
+~~~~~~~~~~~~~
+
+This backend requires OS X 10.7 (Lion) as a minimum requriement.
+
 Community
 ---------
 
