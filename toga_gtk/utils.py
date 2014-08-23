@@ -7,7 +7,7 @@ from toga.constants import *
 
 def long_running_task(task):
     try:
-        delay = next(task.next)
+        delay = next(task)
         GLib.timeout_add_seconds(int(delay), long_running_task, task)
     except StopIteration:
         pass
