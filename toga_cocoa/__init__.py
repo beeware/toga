@@ -51,3 +51,10 @@ __all__ = [
 # __version__ = '1.2.3.post1' # Post Release 1
 
 __version__ = '0.1.1'
+
+# Toga uses the autolayout features introduced in
+# OS X 10.7 (Lion). Earlier versions won't work.
+import platform
+
+if tuple(int(v) for v in platform.mac_ver()[0].split('.')[:2]) < (10, 7):
+    raise RuntimeError('Toga requires OS X 10.7 (Lion) or greater.')
