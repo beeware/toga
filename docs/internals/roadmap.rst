@@ -5,7 +5,7 @@ Toga is a new project - we have lots of things that we'd like to do. If
 you'd like to contribute, providing a patch for one of these features.
 
 Widgets
-=======
+-------
 
 The core of Toga is it's widget set. Modern GUI apps have lots of native
 controls that need to be represented. The following widgets have no
@@ -15,7 +15,7 @@ There's also the task of porting widgets available on one platform to
 another platform.
 
 Input
-------
+~~~~~
 
 Inputs are mechanisms for displaying and editing input provided by the user.
 
@@ -77,7 +77,7 @@ Inputs are mechanisms for displaying and editing input provided by the user.
     - iOS: UISearchBar?
 
 Views
------
+~~~~~
 
 Views are mechanisms for displaying rich content, usually in a readonly manner.
 
@@ -116,7 +116,7 @@ Views are mechanisms for displaying rich content, usually in a readonly manner.
     - iOS: MKMapView
 
 Container widgets
------------------
+~~~~~~~~~~~~~~~~~
 
 Containers are widgets that can contain other widgets.
 
@@ -170,7 +170,7 @@ Containers are widgets that can contain other widgets.
     - iOS: UINavigationBar + NavigationController
 
 Dialogs and windows
--------------------
+~~~~~~~~~~~~~~~~~~~
 
 GUIs aren't all about widgets - sometimes you need to pop up a dialog to query
 the user.
@@ -205,7 +205,7 @@ the user.
     - iOS:
 
 Miscellaneous
--------------
+~~~~~~~~~~~~~
 
 One of the aims of Toga is to provide a rich, feature-driven approach to
 app development. This requires the development of APIs to support rich
@@ -228,7 +228,7 @@ features.
   shouldn't be mutually exclusive with open source.
 
 Platforms
-=========
+---------
 
 Toga currently has good support for Cocoa on OS X, GTK+, and iOS.
 Proof-of-concept support exists for Windows Win32. Support for a more

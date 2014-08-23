@@ -210,7 +210,7 @@ environment`_ first, and installing toga in that virtual environment.
     symlinking the `gi` module from the system dist-packages directory into your
     virtualenv's site-packages::
 
-        $ cd $VIRTUALENV_DIR/lib/python2.7/site-packages
+        $ cd $VIRTUAL_ENV/lib/python2.7/site-packages
         $ ln -si /usr/lib/python2.7/dist-packages/gi
 
 Once you've got toga installed, you can run your script::
