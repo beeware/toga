@@ -6,7 +6,7 @@ A Win32 (Microsoft Windows) backend for the `Toga widget toolkit`_.
 **THIS MODULE IS A PRE-ALPHA** - it does not yet have all the widgets needed to
 run the Toga demonstration program.
 
-This package isn't much use by itself; it needs to be combined with `toga-core`_.
+This package isn't much use by itself; it needs to be combined with `the core Toga library`_.
 
 For more details, see the `Toga project on Github`_.
 
@@ -28,7 +28,7 @@ If you experience problems with this backend, `log them on GitHub`_. If you
 want to contribute code, please `fork the code`_ and `submit a pull request`_.
 
 .. _Toga widget toolkit: http://pybee.org/toga
-.. _toga-core: https://github.com/pybee/toga-core
+.. _the core Toga library: https://github.com/pybee/toga
 .. _Toga project on Github: https://github.com/pybee/toga
 .. _BeeWare suite: http://pybee.org
 .. _@pybeeware on Twitter: https://twitter.com/pybeeware
