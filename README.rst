@@ -7,6 +7,15 @@ This package isn't much use by itself; it needs to be combined with `the core To
 
 For more details, see the `Toga project on Github`_.
 
+Prerequisites
+~~~~~~~~~~~~~
+
+This backend requires GTK+ 3.4 as a minimum. This is the version provided
+out of the box by Ubunutu 12.04.
+
+If you want to use a WebView, you'll also need to have WebKit, plus the
+GI bindings to WebKit (gir1.2-webkit-3.0) installed.
+
 Problems using virtualenv under Linux
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
