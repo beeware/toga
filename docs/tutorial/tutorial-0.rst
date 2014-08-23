@@ -217,9 +217,12 @@ Once you've got toga installed, you can run your script::
 
     $ python helloworld.py
 
-This should pop up a window with a button. If you click on the button, you
-should see messages appear in the console. Even though we didn't define anything
-about menus, the app will have default menu entries to quit the app, and an About
-page. The keyboard bindings to quit the app, plus the "close" button on the window
-will also work as expected. The app will have a default Toga icon (a picture of
-Tiberius the yak).
+This should pop up a window with a button:
+
+.. image:: screenshots/tutorial-0.png
+
+If you click on the button, you should see messages appear in the console.
+Even though we didn't define anything about menus, the app will have default
+menu entries to quit the app, and an About page. The keyboard bindings to quit
+the app, plus the "close" button on the window will also work as expected. The
+app will have a default Toga icon (a picture of Tiberius the yak).

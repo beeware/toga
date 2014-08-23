@@ -11,6 +11,8 @@ Desktop platforms
 OS X
 ~~~~
 
+.. image:: screenshots/cocoa.png
+
 The backend for OS X is named `toga-cocoa`_. It supports OS X 10.7 (Lion)
 and later. It is installed automatically on OS X machines (machines that
 report ``sys.platform == 'darwin'``), or can be manually installed by invoking::
@@ -23,6 +25,8 @@ The OS X backend has seen the most development to date.
 
 Linux
 ~~~~~
+
+.. image:: screenshots/gtk.png
 
 The backend for Linux platforms is named `toga-gtk`_. It supports GTK+ 3.4
 and later. It is installed automatically on Linux machines (machines that
