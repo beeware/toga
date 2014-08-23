@@ -184,6 +184,21 @@ environment`_ first, and installing toga in that virtual environment.
     If these requirements aren't met, Toga either won't work at all, or won't
     have full functionality.
 
+.. note:: Problems with source installs
+
+    Internally, Toga is comprised of a number of subpackages - one for each
+    platform it supports. If you install using wheels, the install process will
+    correctly identify the required packages and install them. However, if you
+    install from source using pip, there is a `known bug in pip`_ that causes
+    dependencies to not be installed. It may be necessary to manually install
+    the following pre-requisites:
+
+    * OS X: ``pip install toga-cocoa``
+    * Linux: ``pip install toga-gtk toga-cassowary cassowary``
+    * Win32: ``pip install toga-win32 toga-cassowary cassowary``
+
+.. _known bug in pip: https://github.com/pypa/pip/issues/1951
+
 .. note:: Problems under Linux
 
     Unfortunately, GTK+3 doesn't provide a pip-installable version of it's Python
