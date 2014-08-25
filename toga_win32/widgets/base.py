@@ -67,3 +67,7 @@ class Widget(CassowaryWidget):
                   int(x), int(y), int(width), int(height),
                   0)
 
+
+    def _on_wm_command(self, msg, wParam, lParam):
+        "Called when a WM_COMMAND message is received referencing this widget."
+        pass

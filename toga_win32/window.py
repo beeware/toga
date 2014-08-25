@@ -109,8 +109,7 @@ class Window(object):
         print("COMMAND RECEIVED", wParam)
         try:
             widget = self._widgets[wParam]
-            if widget.on_press:
-                widget.on_press(widget)
+            widget._on_wm_command(msg, wParam, lParam)
         except KeyError:
             pass
 
