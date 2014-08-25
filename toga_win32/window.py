@@ -13,6 +13,12 @@ class Window(object):
         self.position = position
         self.size = size
         self._content = None
+        self.message_handlers = {
+            WM_CLOSE: self._wm_close,
+            WM_COMMAND: self._wm_command,
+            WM_SIZE: self._wm_size,
+            WM_GETMINMAXINFO: self._wm_getminmaxinfo,
+        }
 
         self.startup()
 
@@ -89,12 +95,7 @@ class Window(object):
 
     def _wnd_proc(self, hwnd, msg, wParam, lParam):
         try:
-            result = {
-                WM_CLOSE: self._wm_close,
-                WM_COMMAND: self._wm_command,
-                WM_SIZE: self._wm_size,
-                WM_GETMINMAXINFO: self._wm_getminmaxinfo,
-            }[msg](msg, wParam, lParam)
+            result = self.message_handlers[msg](msg, wParam, lParam)
         except KeyError:
             # print "no handler for", msg
             result = 0
@@ -147,3 +148,9 @@ class Window(object):
 
     def on_close(self):
         pass
+
+    def register_message_handler(self, message, handler):
+        self.message_handlers[message] = handler
+
+    def unregister_message_handler(self, message, handler):
+        del self.message_handlers[message]
