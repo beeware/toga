@@ -16,7 +16,7 @@ from .widgets.label import *
 # from .widgets.scrollcontainer import *
 # from .widgets.splitcontainer import *
 # from .widgets.table import *
-# from .widgets.textinput import *
+from .widgets.textinput import *
 # from .widgets.tree import *
 # from .widgets.webview import *
 
@@ -37,7 +37,7 @@ __all__ = [
     # 'ScrollContainer',
     # 'SplitContainer',
     # 'Table',
-    # 'TextInput',
+    'TextInput',
     # 'Tree',
     # 'WebView',
 ]
