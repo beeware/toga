@@ -7,8 +7,7 @@ from .base import Widget
 
 class TextInput(Widget):
     window_class = 'edit'
-    default_style = WS_VISIBLE | WS_CHILD | WS_TABSTOP
-    control_style = ES_AUTOHSCROLL
+    default_style = WS_VISIBLE | WS_CHILD | WS_TABSTOP| ES_AUTOHSCROLL
 
     def __init__(self, initial=None, placeholder=None, readonly=False):
         super(TextInput, self).__init__(text=initial)
