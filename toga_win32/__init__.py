@@ -9,7 +9,7 @@ from .widgets.container import *
 # from .widgets.icon import *
 from .widgets.label import *
 # from .widgets.dialog import *
-# from .widgets.multilinetextinput import *
+from .widgets.multilinetextinput import *
 # from .widgets.optioncontainer import *
 from .widgets.passwordinput import *
 # from .widgets.progressbar import *
@@ -30,7 +30,7 @@ __all__ = [
     # 'Icon', 'TIBERIUS_ICON',
     'Label',
     # 'Dialog',
-    # 'MultilineTextInput',
+    'MultilineTextInput',
     # 'OptionContainer',
     'PasswordInput',
     # 'ProgressBar',
