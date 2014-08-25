@@ -7,7 +7,7 @@ from ctypes import c_wchar_p
 
 class Widget(CassowaryWidget):
     window_class = None
-    default_style = WS_VISIBLE | WS_CHILD
+    default_style = WS_VISIBLE | WS_CHILD | WS_TABSTOP
     control_style = 0
 
     def __init__(self, text=''):
