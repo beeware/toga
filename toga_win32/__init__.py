@@ -10,6 +10,7 @@ from .widgets.container import *
 from .widgets.label import *
 # from .widgets.dialog import *
 from .widgets.multilinetextinput import *
+from .widgets.numberinput import *
 # from .widgets.optioncontainer import *
 from .widgets.passwordinput import *
 # from .widgets.progressbar import *
@@ -31,6 +32,7 @@ __all__ = [
     'Label',
     # 'Dialog',
     'MultilineTextInput',
+    'NumberInput',
     # 'OptionContainer',
     'PasswordInput',
     # 'ProgressBar',
