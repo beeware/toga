@@ -29,15 +29,16 @@ class Widget(CassowaryWidget):
         text = c_wchar_p(text)
         style |= self.default_style
         style |= self.control_style
-        x, y, width, height = [int(i) for i in self._geometry]
+        x, y, width, height = self.geometry
         parent = self.window._impl
-        self._impl = user32.CreateWindowExW(0, window_class, text, style, x, y, width, height, parent, identifier, 0, 0)
+        self._impl = user32.CreateWindowExW(0, window_class, text, style,
+            x, y, width, height,
+            parent, identifier, 0, 0)
 
     def startup(self):
         identifier = self.window._allocate_id()
         self.create_win32_window(text=self.text, identifier=identifier)
         self.window._widgets[identifier] = self
-
 
     @property
     def _geometry(self):
