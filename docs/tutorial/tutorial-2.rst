@@ -17,13 +17,13 @@ Here's the source code::
     def button_handler(widget):
         print("hello")
 
-    def action1():
+    def action1(widget):
         print("action 1")
 
-    def action2():
+    def action2(widget):
         print("action 2")
 
-    def action3():
+    def action3(widget):
         print("action 3")
 
     def build(app):
@@ -64,7 +64,7 @@ Here's the source code::
         cmd2 = toga.Command(action2, 'Action 2', tooltip='Perform action 2', icon=toga.TIBERIUS_ICON)
         cmd3 = toga.Command(action3, 'Action 3', tooltip='Perform action 3', icon='icons/brutus.icns')
 
-        def action4():
+        def action4(widget):
             print ("CALLING ACtion 4")
             cmd3.enabled = not cmd3.enabled
 
