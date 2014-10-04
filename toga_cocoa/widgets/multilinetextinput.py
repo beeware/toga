@@ -1,6 +1,6 @@
 from __future__ import print_function, absolute_import, division
 
-from ..libs import get_NSString, NSTextView, NSScrollView, NSBezelBorder
+from ..libs import get_NSString, NSTextView, NSScrollView, NSBezelBorder, text, cfstring_to_string
 from .base import Widget
 
 
@@ -34,3 +34,12 @@ class MultilineTextInput(Widget):
         self._text.setHorizontallyResizable_(True)
 
         self._impl.setDocumentView_(self._text)
+
+    @property
+    def value(self):
+        return cfstring_to_string(self._text.string)
+
+    @value.setter
+    def value(self, value):
+        if value:
+            self._text.insertText_(get_NSString(text(value)))
