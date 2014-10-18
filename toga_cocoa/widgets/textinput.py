@@ -1,6 +1,6 @@
 from __future__ import print_function, absolute_import, division
 
-from ..libs import get_NSString, cfstring_to_string, NSTextField, NSTextFieldSquareBezel, text
+from ..libs import NSTextField, NSTextFieldSquareBezel
 from .base import Widget
 
 
@@ -40,13 +40,13 @@ class TextInput(Widget):
     def placeholder(self, value):
         self._placeholder = value
         if value:
-            self._impl.cell.setPlaceholderString_(get_NSString(self.placeholder))
+            self._impl.cell.setPlaceholderString_(self.placeholder)
 
     @property
     def value(self):
-        return cfstring_to_string(self._impl.stringValue())
+        return self._impl.stringValue()
 
     @value.setter
     def value(self, value):
         if value:
-            self._impl.setStringValue_(get_NSString(text(value)))
+            self._impl.setStringValue_(value)

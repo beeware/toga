@@ -1,4 +1,4 @@
-from __future__ import print_function, absolute_import, division
+from __future__ import print_function, absolute_import, division, unicode_literals
 
 import signal
 import sys
@@ -37,46 +37,30 @@ class App(object):
 
         app_name = sys.argv[0]
 
-        self.menu = NSMenu.alloc().initWithTitle_(get_NSString('MainMenu'))
+        self.menu = NSMenu.alloc().initWithTitle_('MainMenu')
 
         # App menu
-        self.app_menuItem = self.menu.addItemWithTitle_action_keyEquivalent_(get_NSString(app_name), None, get_NSString(''))
-        submenu = NSMenu.alloc().initWithTitle_(get_NSString(app_name))
+        self.app_menuItem = self.menu.addItemWithTitle_action_keyEquivalent_(app_name, None, '')
+        submenu = NSMenu.alloc().initWithTitle_(app_name)
 
-        menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(
-            get_NSString('About ' + app_name),
-            None,
-            get_NSString('')
-        )
+        menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('About ' + app_name, None, '')
         submenu.addItem_(menu_item)
 
-        menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(
-            get_NSString('Preferences'),
-            None,
-            get_NSString('')
-        )
+        menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('Preferences', None, '')
         submenu.addItem_(menu_item)
 
         submenu.addItem_(NSMenuItem.separatorItem())
 
-        menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(
-            get_NSString('Quit ' + app_name),
-            get_selector('terminate:'),
-            get_NSString("q")
-        )
+        menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('Quit ' + app_name, get_selector('terminate:'), "q")
         submenu.addItem_(menu_item)
 
         self.menu.setSubmenu_forItem_(submenu, self.app_menuItem)
 
         # Help menu
-        self.help_menuItem = self.menu.addItemWithTitle_action_keyEquivalent_(get_NSString('Apple'), None, get_NSString(''))
-        submenu = NSMenu.alloc().initWithTitle_(get_NSString('Help'))
+        self.help_menuItem = self.menu.addItemWithTitle_action_keyEquivalent_('Apple', None, '')
+        submenu = NSMenu.alloc().initWithTitle_('Help')
 
-        menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(
-            get_NSString('Visit homepage'),
-            None,
-            get_NSString('')
-        )
+        menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('Visit homepage', None, '')
         submenu.addItem_(menu_item)
 
         self.menu.setSubmenu_forItem_(submenu, self.help_menuItem)

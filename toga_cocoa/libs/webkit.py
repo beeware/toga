@@ -1,10 +1,9 @@
-from __future__ import print_function, absolute_import, division
+from __future__ import print_function, absolute_import, division, unicode_literals
 
 from ctypes import *
 from ctypes import util
 
-from .objc import ObjCClass
-from .types import *
+from rubicon.objc import *
 
 from toga.constants import *
 
@@ -16,4 +15,4 @@ from toga.constants import *
 # we can find the WebKit class.
 webkit = cdll.LoadLibrary(util.find_library('WebKit'))
 
-# WebView = ObjCClass('WebView')
+WebView = ObjCClass('WebView')

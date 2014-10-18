@@ -1,10 +1,9 @@
-from __future__ import print_function, absolute_import, division
+from __future__ import print_function, absolute_import, division, unicode_literals
 
 from ctypes import *
 from ctypes import util
 
-from .objc import ObjCClass
-from .types import *
+from rubicon.objc import *
 
 from toga.constants import *
 
@@ -228,6 +227,9 @@ NSImage = ObjCClass('NSImage')
 # NSMenu.h
 NSMenu = ObjCClass('NSMenu')
 NSMenuItem = ObjCClass('NSMenuItem')
+
+# NSOutlineView.h
+NSOutlineView = ObjCClass('NSOutlineView')
 
 # NSRunningApplication.h
 NSApplicationActivationPolicyRegular = 0

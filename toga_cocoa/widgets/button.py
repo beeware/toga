@@ -1,21 +1,17 @@
-from __future__ import print_function, absolute_import, division
+from __future__ import print_function, absolute_import, division, unicode_literals
 
+from rubicon.objc import objc_method, get_selector
 
 from .base import Widget
 from ..libs import *
 from ..utils import process_callback
 
 
-class ButtonImpl_impl(object):
-    ButtonImpl = ObjCSubclass('NSButton', 'ButtonImpl')
-
-    @ButtonImpl.method('v@')
+class ButtonImpl(NSButton):
+    @objc_method('v@')
     def onPress_(self, obj):
-        if self.interface.on_press:
-            process_callback(self.interface.on_press(self.interface))
-
-
-ButtonImpl = ObjCClass('ButtonImpl')
+        if self.__dict__['interface'].on_press:
+            process_callback(self.__dict__['interface'].on_press(self.__dict__['interface']))
 
 
 class Button(Widget):
@@ -28,11 +24,11 @@ class Button(Widget):
 
     def startup(self):
         self._impl = ButtonImpl.alloc().init()
-        self._impl.interface = self
+        self._impl.__dict__['interface'] = self
 
         self._impl.setBezelStyle_(NSRoundedBezelStyle)
         self._impl.setButtonType_(NSMomentaryPushInButton)
-        self._impl.setTitle_(get_NSString(self.label))
+        self._impl.setTitle_(at(self.label))
         self._impl.setTarget_(self._impl)
         self._impl.setAction_(get_selector('onPress:'))
         self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)

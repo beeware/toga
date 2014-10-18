@@ -1,10 +1,10 @@
 from __future__ import print_function, absolute_import, division
 
+from rubicon.objc import *
+
 from ..libs import *
 from .base import Widget
 
-
-NSObject = ObjCClass('NSObject')
 
 class TreeNode(object):
     def __init__(self, *data):
@@ -14,11 +14,10 @@ class TreeNode(object):
         self.children = []
 
 
-class TreeImpl_impl(object):
-    TreeImpl = ObjCSubclass('NSOutlineView', 'TreeImpl')
+class TreeImpl(NSOutlineView):
 
     # OutlineViewDataSource methods
-    @TreeImpl.method('@@i@')
+    @objc_method('@@i@')
     def outlineView_child_ofItem_(self, tree, child, item):
         if item is None:
             key = None
@@ -29,7 +28,7 @@ class TreeImpl_impl(object):
         node = self.interface._data[node_id]['node']
         return node
 
-    @TreeImpl.method('B@@')
+    @objc_method('B@@')
     def outlineView_isItemExpandable_(self, tree, item):
         if item is None:
             key = None
@@ -38,7 +37,7 @@ class TreeImpl_impl(object):
 
         return self.interface._data[key]['children'] is not None
 
-    @TreeImpl.method('i@@')
+    @objc_method('i@@')
     def outlineView_numberOfChildrenOfItem_(self, tree, item):
         if item is None:
             key = None
@@ -50,18 +49,15 @@ class TreeImpl_impl(object):
         except TypeError:
             return 0
 
-    @TreeImpl.method('@@@@')
+    @objc_method('@@@@')
     def outlineView_objectValueForTableColumn_byItem_(self, tree, column, item):
-        column_index = int(cfstring_to_string(column.identifier))
-        return get_NSString(str(self.interface._data[id(item)]['data'][column_index]))
+        column_index = int(column.identifier)
+        return text(self.interface._data[id(item)]['data'][column_index])
 
     # OutlineViewDelegate methods
-    @TreeImpl.method('v@')
+    @objc_method('v@')
     def outlineViewSelectionDidChange_(self, notification):
         print ("tree selection changed")
-
-
-TreeImpl = ObjCClass('TreeImpl')
 
 
 class Tree(Widget):
@@ -96,7 +92,7 @@ class Tree(Widget):
 
         # Create columns for the tree
         self._columns = [
-            NSTableColumn.alloc().initWithIdentifier_(get_NSString('%d' % i))
+            NSTableColumn.alloc().initWithIdentifier_('%d' % i)
             for i, heading in enumerate(self.headings)
         ]
 
@@ -105,7 +101,7 @@ class Tree(Widget):
             cell = column.dataCell()
             cell.setEditable_(False)
             cell.setSelectable_(False)
-            column.headerCell.stringValue = get_NSString(heading)
+            column.headerCell.stringValue = heading
 
         # Put the tree arrows in the first column.
         self._tree.setOutlineTableColumn_(self._columns[0])

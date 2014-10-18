@@ -1,4 +1,4 @@
-from __future__ import print_function, absolute_import, division
+from __future__ import print_function, absolute_import, division, unicode_literals
 
 from ..libs import *
 from .base import Widget
@@ -16,7 +16,7 @@ class Label(Widget):
 
     def startup(self):
         self._impl = NSTextField.new()
-        self._impl.setStringValue_(get_NSString(self.text))
+        self._impl.setStringValue_(self.text)
 
         self._impl.setDrawsBackground_(False)
         self._impl.setEditable_(False)

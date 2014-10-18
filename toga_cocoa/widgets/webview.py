@@ -1,18 +1,16 @@
 from __future__ import print_function, absolute_import, division
 
+from rubicon.objc import objc_method
 
 from .base import Widget
 from ..libs import *
 
 
-class WebView_impl(object):
-    WebViewImpl = ObjCSubclass('WebView', 'WebViewImpl')
+class WebViewImpl(WebView):
 
-    @WebViewImpl.method('v@@')
+    @objc_method('v@@')
     def webView_didFinishLoadForFrame_(self, sender, frame):
         pass
-
-WebViewImpl = ObjCClass('WebViewImpl')
 
 
 class WebView(Widget):
@@ -41,5 +39,5 @@ class WebView(Widget):
     def url(self, value):
         self._url = value
         if value:
-            request = NSURLRequest.requestWithURL_(NSURL.URLWithString_(get_NSString(self._url)))
+            request = NSURLRequest.requestWithURL_(NSURL.URLWithString_(self._url))
             self._impl.mainFrame().loadRequest_(request)

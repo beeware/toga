@@ -1,4 +1,4 @@
-from __future__ import print_function, absolute_import, division
+from __future__ import print_function, absolute_import, division, unicode_literals
 
 from ..libs import *
 from .base import Widget
@@ -19,8 +19,8 @@ class OptionContainer(Widget):
         self._content.append((label, container))
         container.window = self.window
 
-        item = NSTabViewItem.alloc().initWithIdentifier_(get_NSString('%s-Tab-%s' % (id(self), id(container))))
-        item.setLabel_(get_NSString(label))
+        item = NSTabViewItem.alloc().initWithIdentifier_('%s-Tab-%s' % (id(self), id(container)))
+        item.setLabel_(label)
         container.app = self.app
 
         # TabView items don't layout well with autolayout (especially when

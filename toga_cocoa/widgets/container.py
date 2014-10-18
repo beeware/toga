@@ -1,20 +1,18 @@
-from __future__ import print_function, absolute_import, division
+from __future__ import print_function, absolute_import, division, unicode_literals
 
 from toga.constraint import Attribute, Constraint
+
+from rubicon.objc import *
 
 from ..libs import *
 from .base import Widget
 
 
-class NSContainer_impl(object):
-    NSContainer = ObjCSubclass('NSView', 'NSContainer')
-
-    @NSContainer.method('B')
+class ContainerImpl(NSView):
+    @objc_method('B')
     def isFlipped(self):
         # Default Cocoa coordinate frame is around the wrong way.
         return True
-
-NSContainer = ObjCClass('NSContainer')
 
 
 class Container(Widget):
@@ -48,7 +46,7 @@ class Container(Widget):
         self.startup()
 
     def startup(self):
-        self._impl = NSContainer.alloc().init()
+        self._impl = ContainerImpl.alloc().init()
         self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
 
     def add(self, widget):

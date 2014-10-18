@@ -1,28 +1,25 @@
-from __future__ import print_function, absolute_import, division
+from __future__ import print_function, absolute_import, division, unicode_literals
 
 from ..libs import *
 from .base import Widget
 
 
-class TableImpl_impl(object):
-    TableImpl = ObjCSubclass('NSTableView', 'TableImpl')
+class TableImpl(NSTableView):
 
     # TableDataSource methods
-    @TableImpl.method('i@')
+    @objc_method('i@')
     def numberOfRowsInTableView_(self, table):
-        return len(self.interface._data)
+        return len(self.__dict__['interface']._data)
 
-    @TableImpl.method('@@@i')
+    @objc_method('@@@i')
     def tableView_objectValueForTableColumn_row_(self, table, column, row):
-        column_index = int(cfstring_to_string(column.identifier))
-        return get_NSString(self.interface._data[row][column_index])
+        column_index = int(column.identifier)
+        return self.__dict__['interface']._data[row][column_index]
 
     # TableDelegate methods
-    @TableImpl.method('v@')
+    @objc_method('v@')
     def tableViewSelectionDidChange_(self, notification):
         print ("selection changed")
-
-TableImpl = ObjCClass('TableImpl')
 
 
 class Table(Widget):
@@ -45,12 +42,12 @@ class Table(Widget):
         self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
 
         self._table = TableImpl.alloc().init()
-        self._table.interface = self
+        self._table.__dict__['interface'] = self
         self._table.setColumnAutoresizingStyle_(NSTableViewUniformColumnAutoresizingStyle)
 
         # Create columns for the table
         self._columns = [
-            NSTableColumn.alloc().initWithIdentifier_(get_NSString('%d' % i))
+            NSTableColumn.alloc().initWithIdentifier_('%d' % i)
             for i, heading in enumerate(self.headings)
         ]
 
@@ -59,7 +56,7 @@ class Table(Widget):
             cell = column.dataCell
             cell.editable = False
             cell.selectable = False
-            column.headerCell.stringValue = get_NSString(heading)
+            column.headerCell.stringValue = heading
 
         self._table.setDelegate_(self._table)
         self._table.setDataSource_(self._table)

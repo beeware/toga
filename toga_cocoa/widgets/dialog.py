@@ -1,3 +1,5 @@
+from __future__ import print_function, absolute_import, division, unicode_literals
+
 from ..libs import *
 
 from .icon import Icon
@@ -9,8 +11,8 @@ class Dialog(object):
         alert = NSAlert.alloc().init()
         alert.icon = Icon.app_icon._impl
         alert.setAlertStyle_(NSInformationalAlertStyle)
-        alert.setMessageText_(get_NSString(title))
-        alert.setInformativeText_(get_NSString(message))
+        alert.setMessageText_(title)
+        alert.setInformativeText_(message)
 
         alert.runModal()
 
@@ -19,11 +21,11 @@ class Dialog(object):
         alert = NSAlert.alloc().init()
         alert.icon = Icon.app_icon._impl
         alert.setAlertStyle_(NSInformationalAlertStyle)
-        alert.setMessageText_(get_NSString(title))
-        alert.setInformativeText_(get_NSString(message))
+        alert.setMessageText_(title)
+        alert.setInformativeText_(message)
 
-        alert.addButtonWithTitle_(get_NSString('Yes'))
-        alert.addButtonWithTitle_(get_NSString('No'))
+        alert.addButtonWithTitle_('Yes')
+        alert.addButtonWithTitle_('No')
 
         result = alert.runModal()
         return result == NSAlertFirstButtonReturn
@@ -33,11 +35,11 @@ class Dialog(object):
         alert = NSAlert.alloc().init()
         alert.icon = Icon.app_icon._impl
         alert.setAlertStyle_(NSWarningAlertStyle)
-        alert.setMessageText_(get_NSString(title))
-        alert.setInformativeText_(get_NSString(message))
+        alert.setMessageText_(title)
+        alert.setInformativeText_(message)
 
-        alert.addButtonWithTitle_(get_NSString('OK'))
-        alert.addButtonWithTitle_(get_NSString('Cancel'))
+        alert.addButtonWithTitle_('OK')
+        alert.addButtonWithTitle_('Cancel')
 
         result = alert.runModal()
         return result == NSAlertFirstButtonReturn
@@ -47,8 +49,8 @@ class Dialog(object):
         alert = NSAlert.alloc().init()
         alert.icon = Icon.app_icon._impl
         alert.setAlertStyle_(NSCriticalAlertStyle)
-        alert.setMessageText_(get_NSString(title))
-        alert.setInformativeText_(get_NSString(message))
+        alert.setMessageText_(title)
+        alert.setInformativeText_(message)
 
         alert.runModal()
 
@@ -57,8 +59,8 @@ class Dialog(object):
         alert = NSAlert.alloc().init()
         alert.icon = Icon.app_icon._impl
         alert.setAlertStyle_(NSCriticalAlertStyle)
-        alert.setMessageText_(get_NSString(title))
-        alert.setInformativeText_(get_NSString(message))
+        alert.setMessageText_(title)
+        alert.setInformativeText_(message)
 
         scroll = NSScrollView.alloc().initWithFrame_(NSMakeRect(0,0,350,200))
         scroll.setHasVerticalScroller_(True)
@@ -67,7 +69,7 @@ class Dialog(object):
         scroll.setBorderType_(NSBezelBorder)
 
         trace = NSTextView.alloc().init()
-        trace.insertText_(get_NSString(content))
+        trace.insertText_(content)
         trace.setEditable_(False)
         trace.setVerticallyResizable_(True)
         trace.setHorizontallyResizable_(True)
@@ -76,8 +78,8 @@ class Dialog(object):
         alert.setAccessoryView_(scroll)
 
         if retry:
-            alert.addButtonWithTitle_(get_NSString('Retry'))
-            alert.addButtonWithTitle_(get_NSString('Cancel'))
+            alert.addButtonWithTitle_('Retry')
+            alert.addButtonWithTitle_('Cancel')
             result = alert.runModal()
             return result == NSAlertFirstButtonReturn
         else:

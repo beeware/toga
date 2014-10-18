@@ -1,4 +1,4 @@
-from __future__ import print_function, absolute_import, division
+from __future__ import print_function, absolute_import, division, unicode_literals
 
 import os
 
@@ -19,7 +19,7 @@ class Icon(object):
         else:
             filename = self.path
 
-        self._impl = NSImage.alloc().initWithContentsOfFile_(get_NSString(filename))
+        self._impl = NSImage.alloc().initWithContentsOfFile_(filename)
 
     @staticmethod
     def load(path_or_icon, default=None):
