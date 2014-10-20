@@ -41,6 +41,8 @@ def set_platform(module_name=None, locals=locals()):
         if sys.platform == 'darwin':
             if os.environ.get('TARGET_IPHONE_SIMULATOR') or os.environ.get('TARGET_IPHONE'):
                 module_name = 'toga_iOS'
+            elif os.environ.get('TARGET_ANDROID'):
+                module_name = 'toga_android'
             else:
                 module_name = 'toga_cocoa'
         elif sys.platform in ('linux', 'linux2'):
