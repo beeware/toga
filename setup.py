@@ -25,6 +25,9 @@ setup(
     author_email='russell@keith-magee.com',
     url='http://pybee.org/toga',
     packages=find_packages(exclude=['tests']),
+    install_requires=[
+        'rubicon-objc',
+    ],
     license='New BSD',
     classifiers=[
         'Development Status :: 3 - Alpha',

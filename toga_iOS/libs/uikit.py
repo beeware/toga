@@ -1,10 +1,9 @@
-from __future__ import print_function, absolute_import, division
+from __future__ import print_function, absolute_import, division, unicode_literals
 
 from ctypes import *
 from ctypes import util
 
-from .objc import ObjCClass
-from .types import *
+from rubicon.objc import *
 
 from toga.constants import *
 
@@ -17,9 +16,6 @@ uikit = cdll.LoadLibrary(util.find_library('UIKit'))
 uikit.UIApplicationMain.restype = c_int
 uikit.UIApplicationMain.argtypes = [c_int, POINTER(c_char_p), c_void_p, c_void_p]
 
-
-# NSView.h
-NSView = ObjCClass('UIView')
 
 # NSLayoutConstraint.h
 NSLayoutConstraint = ObjCClass('NSLayoutConstraint')
@@ -144,6 +140,11 @@ UIControlStateSelected = 1 << 2
 UIControlStateApplication = 0x00FF0000
 UIControlStateReserved = 0xFF000000
 
+# UIResponder.h
+UIResponder = ObjCClass('UIResponder')
+
+# UIWindow.h
+UIWindow = ObjCClass('UIWindow')
 
 # UIWindow.h
 UIWindow = ObjCClass('UIWindow')
@@ -161,6 +162,14 @@ UIView = ObjCClass('UIView')
 UIWindow = ObjCClass('UIWindow')
 
 # UILabel.h
+
+NSLineBreakByWordWrapping = 0
+NSLineBreakByCharWrapping = 1
+NSLineBreakByClipping = 2
+NSLineBreakByTruncatingHead = 3
+NSLineBreakByTruncatingTail = 4
+NSLineBreakByTruncatingMiddle = 5
+
 UILabel = ObjCClass('UILabel')
 
 # UIButton.h

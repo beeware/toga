@@ -22,7 +22,7 @@ from .widgets.textinput import *
 
 __all__ = [
     '__version__',
-    'App',
+    'MobileApp',
     'Window',
     # 'Command', 'SEPARATOR', 'SPACER', 'EXPANDING_SPACER',
     'Button',

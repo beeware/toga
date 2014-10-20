@@ -7,6 +7,6 @@ class PasswordInput(TextInput):
     def __init__(self):
         super(PasswordInput, self).__init__()
 
-    def _startup(self):
-        super(PasswordInput, self)._startup()
+    def startup(self):
+        super(PasswordInput, self).startup()
         self._impl.setSecureTextEntry_(True)

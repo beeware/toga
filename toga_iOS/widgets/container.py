@@ -1,4 +1,4 @@
-from __future__ import print_function, absolute_import, division
+from __future__ import print_function, absolute_import, division, unicode_literals
 
 from toga.constraint import Attribute, Constraint
 
@@ -37,7 +37,7 @@ class Container(Widget):
 
     def startup(self):
         self._controller = UIViewController.alloc().init()
-        self._impl = UIView.alloc().initWithFrame_(UIScreen.mainScreen().bounds())
+        self._impl = UIView.alloc().initWithFrame_(UIScreen.mainScreen().bounds)
 
         self._controller.view = self._impl
 

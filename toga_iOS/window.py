@@ -1,4 +1,4 @@
-from __future__ import print_function, absolute_import, division
+from __future__ import print_function, absolute_import, division, unicode_literals
 
 from .libs import *
 
@@ -11,7 +11,7 @@ class Window(object):
         self.startup()
 
     def startup(self):
-        self._impl = UIWindow.alloc().initWithFrame_(UIScreen.mainScreen().bounds())
+        self._impl = UIWindow.alloc().initWithFrame_(UIScreen.mainScreen().bounds)
 
     @property
     def app(self):

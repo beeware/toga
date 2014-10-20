@@ -1,6 +1,6 @@
-from __future__ import print_function, absolute_import, division
+from __future__ import print_function, absolute_import, division, unicode_literals
 
-from ..libs import get_NSString, cfstring_to_string, UITextField, UITextBorderStyleRoundedRect, text
+from ..libs import UITextField, UITextBorderStyleRoundedRect
 from .base import Widget
 
 
@@ -17,7 +17,7 @@ class TextInput(Widget):
     def startup(self):
         self._impl = UITextField.new()
         if self.placeholder:
-            self._impl.setPlaceholder_(get_NSString(self.placeholder))
+            self._impl.setPlaceholder_(self.placeholder)
 
         self._impl.setBorderStyle_(UITextBorderStyleRoundedRect)
         self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
@@ -33,9 +33,9 @@ class TextInput(Widget):
 
     @property
     def value(self):
-        return cfstring_to_string(self._impl.text)
+        return self._impl.text
 
     @value.setter
     def value(self, value):
         if value:
-            self._impl.setText_(get_NSString(text(value)))
+            self._impl.setText_(value)
