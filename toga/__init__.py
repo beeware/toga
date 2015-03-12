@@ -38,13 +38,12 @@ def set_platform(module_name=None, locals=locals()):
     # If we don't have a manually defined platform, attempt to
     # autodetect and set the platform
     if module_name is None:
-        if sys.platform == 'darwin':
-            if os.environ.get('TARGET_IPHONE_SIMULATOR') or os.environ.get('TARGET_IPHONE'):
-                module_name = 'toga_iOS'
-            elif os.environ.get('TARGET_ANDROID'):
-                module_name = 'toga_android'
-            else:
-                module_name = 'toga_cocoa'
+        if sys.platform == 'ios':
+            module_name = 'toga_iOS'
+        elif sys.platform == 'android':
+            module_name = 'toga_android'
+        elif sys.platform == 'darwin':
+            module_name = 'toga_cocoa'
         elif sys.platform in ('linux', 'linux2'):
             module_name = 'toga_gtk'
         elif sys.platform == 'win32':
@@ -72,9 +71,7 @@ def set_platform(module_name=None, locals=locals()):
             for symbol in locals['platform'].__all__
             if symbol != '__version__'
         ))
-    except ImportError, e:
-        import traceback
-        traceback.print_exc(e)
+    except ImportError:
         locals['platform'] = None
         raise RuntimeError("Couldn't import %s platform module; try running 'pip install %s'." % (module_name[5:], module_name))
 
