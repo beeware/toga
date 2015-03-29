@@ -9,6 +9,21 @@ class WindowDelegate(NSObject):
     def windowWillClose_(self, notification):
         self.__dict__['interface'].on_close()
 
+    # Ideally, we'd use this method, not windowDidResize_, as it
+    # allows you to enforce a minimum size for the window. Unfortunately,
+    # ctypes can't return a structure from a callback.
+    # @objc_method(NSSizeEncoding + b'@' + NSSizeEncoding)
+    # def windowWillResize_toSize_(self, window, size):
+    #     return size
+
+    @objc_method('v@')
+    def windowDidResize_(self, notification):
+        self.__dict__['interface'].content.style(
+            width=notification.object().contentView().frame().size.width,
+            height=notification.object().contentView().frame().size.height
+        )
+        self.__dict__['interface'].content._update_layout()
+
     ######################################################################
     # Toolbar delegate methods
     ######################################################################
@@ -160,6 +175,12 @@ class Window(object):
     def show(self):
         self._impl.makeKeyAndOrderFront_(None)
         # self._impl.visualizeConstraints_(self._impl.contentView.constraints())
+
+        self.content.style(
+            width=self.content._impl.frame().size.width,
+            height=self.content._impl.frame().size.height
+        )
+        self.content._update_layout()
 
     def on_close(self):
         pass

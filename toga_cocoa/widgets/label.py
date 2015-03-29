@@ -3,6 +3,7 @@ from __future__ import print_function, absolute_import, division, unicode_litera
 from ..libs import *
 from .base import Widget
 from toga.constants import *
+from .textinput import TextFieldImpl
 
 
 class Label(Widget):
@@ -15,13 +16,18 @@ class Label(Widget):
         self.alignment = alignment
 
     def startup(self):
-        self._impl = NSTextField.new()
+        self._impl = TextFieldImpl.alloc().init()
+        self._impl.__dict__['interface'] = self
         self._impl.setStringValue_(self.text)
 
         self._impl.setDrawsBackground_(False)
         self._impl.setEditable_(False)
         self._impl.setBezeled_(False)
         self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
+
+        # Width & height of a label is known and fixed.
+        self.style(width=self._impl.fittingSize().width)
+        self.style(height=self._impl.fittingSize().height)
 
     @property
     def alignment(self):
