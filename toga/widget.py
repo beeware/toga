@@ -1,6 +1,8 @@
 from __future__ import print_function, absolute_import, division
 
-from toga.constraint import Attribute
+from colosseum import CSSNode
+
+from rubicon.objc import NSSize, NSRect, NSPoint
 
 
 class Widget(object):
@@ -8,18 +10,7 @@ class Widget(object):
         self._window = None
         self._app = None
         self._impl = None
-
-        self.LEFT = Attribute(self, Attribute.LEFT)
-        self.RIGHT = Attribute(self, Attribute.RIGHT)
-        self.TOP = Attribute(self, Attribute.TOP)
-        self.BOTTOM = Attribute(self, Attribute.BOTTOM)
-        self.LEADING = Attribute(self, Attribute.LEADING)
-        self.TRAILING = Attribute(self, Attribute.TRAILING)
-        self.WIDTH = Attribute(self, Attribute.WIDTH)
-        self.HEIGHT = Attribute(self, Attribute.HEIGHT)
-        self.CENTER_X = Attribute(self, Attribute.CENTER_X)
-        self.CENTER_Y = Attribute(self, Attribute.CENTER_Y)
-        # self.BASELINE = Attribute(self, Attribute.BASELINE)
+        self._css = CSSNode()
 
     @property
     def app(self):
@@ -49,3 +40,48 @@ class Widget(object):
 
     def __repr__(self):
         return "<%s:%s>" % (self.__class__.__name__, id(self))
+
+    def style(self, **styles):
+        for style, value in styles.items():
+            if style in ('margin', 'borderWidth', 'padding'):
+                if style == 'borderWidth':
+                    pre = 'border'
+                    post = 'Width'
+                else:
+                    pre = style
+                    post = ''
+
+                try:
+                    if len(value) == 4:
+                        setattr(self._css, pre + 'Top' + post, value)
+                        setattr(self._css, pre + 'Right' + post, value)
+                        setattr(self._css, pre + 'Bottom' + post, value)
+                        setattr(self._css, pre + 'Left' + post, value)
+                    elif len(value) == 3:
+                        setattr(self._css, pre + 'Top' + post, value)
+                        setattr(self._css, pre + 'Right' + post, value)
+                        setattr(self._css, pre + 'Bottom' + post, value)
+                        setattr(self._css, pre + 'Left' + post, value)
+                    elif len(value) == 2:
+                        setattr(self._css, pre + 'Top' + post, value)
+                        setattr(self._css, pre + 'Right' + post, value)
+                        setattr(self._css, pre + 'Bottom' + post, value)
+                        setattr(self._css, pre + 'Left' + post, value)
+                    elif len(value) == 1:
+                        setattr(self._css, pre + 'Top' + post, value)
+                        setattr(self._css, pre + 'Right' + post, value)
+                        setattr(self._css, pre + 'Bottom' + post, value)
+                        setattr(self._css, pre + 'Left' + post, value)
+                    else:
+                        raise Exception('Invalid %s definition' % style)
+                except TypeError:
+                    setattr(self._css, pre + 'Top' + post, value)
+                    setattr(self._css, pre + 'Right' + post, value)
+                    setattr(self._css, pre + 'Bottom' + post, value)
+                    setattr(self._css, pre + 'Left' + post, value)
+            else:
+                setattr(self._css, style, value)
+
+    def _update_layout(self):
+        layout = self._css.layout
+        self._impl.setFrame_(NSRect(NSPoint(layout.left, layout.top), NSSize(layout.width, layout.height)))
