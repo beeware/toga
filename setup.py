@@ -28,7 +28,7 @@ setup(
     package_data={
         'toga': ['resources/*.icns', 'resources/*.png'],
     },
-    install_requires=[],
+    install_requires=['colosseum'],
     extras_require={
         # Automatically installed platform backends
         ':sys_platform=="win32"': ['toga-win32'],
