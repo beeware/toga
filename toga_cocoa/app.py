@@ -79,6 +79,7 @@ class App(object):
         self.main_window.show()
 
     def startup(self):
+        print("STARTUP APP")
         if self._startup_method:
             self.main_window.content = self._startup_method(self)
 

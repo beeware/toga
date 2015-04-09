@@ -15,13 +15,13 @@ class ButtonImpl(NSButton):
 
     @objc_method('v')
     def viewWillDraw(self):
-        layout = self.__dict__['interface']._css.layout
+        layout = self.__dict__['interface'].layout
         self.setFrame_(NSRect(NSPoint(layout.left, layout.top), NSSize(layout.width, layout.height)))
 
 
 class Button(Widget):
-    def __init__(self, label, on_press=None):
-        super(Button, self).__init__()
+    def __init__(self, label, on_press=None, **style):
+        super(Button, self).__init__(**style)
         self.label = label
         self.on_press = on_press
 
@@ -36,7 +36,13 @@ class Button(Widget):
         self._impl.setTitle_(at(self.label))
         self._impl.setTarget_(self._impl)
         self._impl.setAction_(get_selector('onPress:'))
+
+        # Disable all autolayout functionality
         self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
 
-        # Height of a button is known and fixed.
-        self.style(height=self._impl.fittingSize().height)
+        # Height of a button is known.
+        if self.height is None:
+            self.height = self._impl.fittingSize().height
+        # Set the minimum width of a button to be a square
+        if self.min_width is None:
+            self.min_width = self._impl.fittingSize().width

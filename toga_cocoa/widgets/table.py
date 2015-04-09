@@ -23,8 +23,8 @@ class TableImpl(NSTableView):
 
 
 class Table(Widget):
-    def __init__(self, headings):
-        super(Table, self).__init__()
+    def __init__(self, headings, **style):
+        super(Table, self).__init__(**style)
         self.headings = headings
 
         self._data = []
@@ -39,11 +39,12 @@ class Table(Widget):
         self._impl.setHasHorizontalScroller_(True)
         self._impl.setAutohidesScrollers_(False)
         self._impl.setBorderType_(NSBezelBorder)
-        self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
 
         self._table = TableImpl.alloc().init()
         self._table.__dict__['interface'] = self
         self._table.setColumnAutoresizingStyle_(NSTableViewUniformColumnAutoresizingStyle)
+        # Use autolayout for the inner widget.
+        self._table.setTranslatesAutoresizingMaskIntoConstraints_(True)
 
         # Create columns for the table
         self._columns = [
@@ -54,8 +55,8 @@ class Table(Widget):
         for heading, column in zip(self.headings, self._columns):
             self._table.addTableColumn_(column)
             cell = column.dataCell
-            cell.editable = False
-            cell.selectable = False
+            cell.setEditable_(False)
+            cell.setSelectable_(False)
             column.headerCell.stringValue = heading
 
         self._table.setDelegate_(self._table)

@@ -18,11 +18,15 @@ class WindowDelegate(NSObject):
 
     @objc_method('v@')
     def windowDidResize_(self, notification):
-        self.__dict__['interface'].content.style(
-            width=notification.object().contentView().frame().size.width,
-            height=notification.object().contentView().frame().size.height
-        )
-        self.__dict__['interface'].content._update_layout()
+        if self.__dict__['interface'].content:
+            print("Window resize", (notification.object().contentView.frame.size.width, notification.object().contentView.frame.size.height))
+            # Force a re-layout of widgets
+            self.__dict__['interface'].content._update_layout(
+                width=notification.object().contentView.frame.size.width,
+                height=notification.object().contentView.frame.size.height
+            )
+            # Force a redraw with the new widget locations
+            self.__dict__['interface'].content._impl.setNeedsDisplay_(True)
 
     ######################################################################
     # Toolbar delegate methods
@@ -85,6 +89,7 @@ class Window(object):
         self._impl = None
         self._app = None
         self._toolbar = None
+        self._content = None
 
         self.position = position
         self.size = size
@@ -153,11 +158,6 @@ class Window(object):
         # Assign the widget to the same app as the window.
         self.content.app = self.app
 
-        # Top level widnow items don't layout well with autolayout (especially when
-        # they are scroll views); so revert to old-style autoresize masks for the
-        # main content view.
-        self._content._impl.setTranslatesAutoresizingMaskIntoConstraints_(True)
-
         self._impl.setContentView_(self._content._impl)
 
     @property
@@ -173,14 +173,18 @@ class Window(object):
             self._impl.setTitle_('')
 
     def show(self):
-        self._impl.makeKeyAndOrderFront_(None)
+        print ('frame2: ', (self.content._impl.frame.size.width, self.content._impl.frame.size.height))
+        self._impl.makeKeyAndOrderFront_(self._impl)
         # self._impl.visualizeConstraints_(self._impl.contentView.constraints())
 
-        self.content.style(
-            width=self.content._impl.frame().size.width,
-            height=self.content._impl.frame().size.height
+        # Do the first layout render.
+        print ("SHOW WINDOW", '*'*40)
+        print ('frame1: ', (self.content._impl.frame.size.width, self.content._impl.frame.size.height))
+        self.content._update_layout(
+            width=self.content._impl.frame.size.width,
+            height=self.content._impl.frame.size.height
         )
-        self.content._update_layout()
+        print ('frame3: ', (self.content._impl.frame.size.width, self.content._impl.frame.size.height))
 
     def on_close(self):
         pass

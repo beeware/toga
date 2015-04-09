@@ -7,8 +7,8 @@ from .textinput import TextFieldImpl
 
 
 class Label(Widget):
-    def __init__(self, text=None, alignment=LEFT_ALIGNED):
-        super(Label, self).__init__()
+    def __init__(self, text=None, alignment=LEFT_ALIGNED, **style):
+        super(Label, self).__init__(**style)
         self.text = text
 
         self.startup()
@@ -23,11 +23,15 @@ class Label(Widget):
         self._impl.setDrawsBackground_(False)
         self._impl.setEditable_(False)
         self._impl.setBezeled_(False)
+
+        # Disable all autolayout functionality
         self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
 
         # Width & height of a label is known and fixed.
-        self.style(width=self._impl.fittingSize().width)
-        self.style(height=self._impl.fittingSize().height)
+        if self.width is None:
+            self.width = self._impl.fittingSize().width
+        if self.height is None:
+            self.height = self._impl.fittingSize().height
 
     @property
     def alignment(self):

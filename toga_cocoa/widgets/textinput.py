@@ -9,15 +9,15 @@ from .base import Widget
 class TextFieldImpl(NSTextField):
     @objc_method('v')
     def viewWillDraw(self):
-        layout = self.__dict__['interface']._css.layout
+        layout = self.__dict__['interface'].layout
         self.setFrame_(NSRect(NSPoint(layout.left, layout.top), NSSize(layout.width, layout.height)))
 
 
 class TextInput(Widget):
     _IMPL_CLASS = TextFieldImpl
 
-    def __init__(self, initial=None, placeholder=None, readonly=False):
-        super(TextInput, self).__init__()
+    def __init__(self, initial=None, placeholder=None, readonly=False, **style):
+        super(TextInput, self).__init__(**style)
 
         self.startup()
 
@@ -31,10 +31,15 @@ class TextInput(Widget):
 
         self._impl.setBezeled_(True)
         self._impl.setBezelStyle_(NSTextFieldSquareBezel)
+
+        # Disable all autolayout functionality
         self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
 
         # Height of a text input is known and fixed.
-        self.style(height=self._impl.fittingSize().height)
+        if self.height is None:
+            self.height = self._impl.fittingSize().height
+        if self.min_width is None:
+            self.min_width = 100
 
     @property
     def readonly(self):
@@ -57,9 +62,9 @@ class TextInput(Widget):
 
     @property
     def value(self):
-        return self._impl.stringValue()
+        return self._impl.stringValue
 
     @value.setter
     def value(self, value):
         if value:
-            self._impl.setStringValue_(text(value))
+            self._impl.stringValue = text(value)

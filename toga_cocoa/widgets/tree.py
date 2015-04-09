@@ -61,8 +61,8 @@ class TreeImpl(NSOutlineView):
 
 
 class Tree(Widget):
-    def __init__(self, headings):
-        super(Tree, self).__init__()
+    def __init__(self, headings, **style):
+        super(Tree, self).__init__(**style)
         self.headings = headings
 
         self._tree = None
@@ -84,11 +84,13 @@ class Tree(Widget):
         self._impl.setHasHorizontalScroller_(True)
         self._impl.setAutohidesScrollers_(False)
         self._impl.setBorderType_(NSBezelBorder)
-        self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
+        # self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
 
         self._tree = TreeImpl.alloc().init()
-        self._tree.interface = self
+        self._tree.__dict__['interface'] = self
         self._tree.setColumnAutoresizingStyle_(NSTableViewUniformColumnAutoresizingStyle)
+        # Use autolayout for the inner widget.
+        self._tree.setTranslatesAutoresizingMaskIntoConstraints_(True)
 
         # Create columns for the tree
         self._columns = [
@@ -98,7 +100,7 @@ class Tree(Widget):
 
         for heading, column in zip(self.headings, self._columns):
             self._tree.addTableColumn_(column)
-            cell = column.dataCell()
+            cell = column.dataCell
             cell.setEditable_(False)
             cell.setSelectable_(False)
             column.headerCell.stringValue = heading

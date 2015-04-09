@@ -10,8 +10,8 @@ from .base import Widget
 
 class MultilineTextInput(Widget):
 
-    def __init__(self, initial=None):
-        super(MultilineTextInput, self).__init__()
+    def __init__(self, initial=None, **style):
+        super(MultilineTextInput, self).__init__(**style)
         self.initial = initial
 
         self._text = None
@@ -26,9 +26,12 @@ class MultilineTextInput(Widget):
         self._impl.setHasHorizontalScroller_(False)
         self._impl.setAutohidesScrollers_(False)
         self._impl.setBorderType_(NSBezelBorder)
-        self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
+
 
         self._text = NSTextView.alloc().init()
+
+        # Use autolayout for the inner widget.
+        self._text.setTranslatesAutoresizingMaskIntoConstraints_(True)
 
         if self.initial:
             self._text.insertText_(self.initial)

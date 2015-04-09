@@ -6,8 +6,8 @@ from toga.constants import *
 
 
 class ProgressBar(Widget):
-    def __init__(self, max=None, value=None):
-        super(ProgressBar, self).__init__()
+    def __init__(self, max=None, value=None, **style):
+        super(ProgressBar, self).__init__(**style)
         self.max = max
 
         self.startup()
@@ -24,6 +24,7 @@ class ProgressBar(Widget):
         else:
             self._impl.setIndeterminate_(True)
 
+        # Disable all autolayout functionality
         self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
 
     @property
