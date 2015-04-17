@@ -2,7 +2,6 @@ from __future__ import print_function, absolute_import, division, unicode_litera
 
 from ..libs import *
 from .base import Widget
-from toga.constants import *
 
 
 class ProgressBar(Widget):
@@ -26,6 +25,7 @@ class ProgressBar(Widget):
 
         # Disable all autolayout functionality
         self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
+        self._impl.setAutoresizesSubviews_(False)
 
     @property
     def value(self):

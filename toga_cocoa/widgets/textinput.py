@@ -6,7 +6,7 @@ from ..libs import NSTextField, NSTextFieldSquareBezel, NSRect, NSSize, NSPoint
 from .base import Widget
 
 
-class TextFieldImpl(NSTextField):
+class TogaTextField(NSTextField):
     @objc_method('v')
     def viewWillDraw(self):
         layout = self.__dict__['interface'].layout
@@ -14,7 +14,7 @@ class TextFieldImpl(NSTextField):
 
 
 class TextInput(Widget):
-    _IMPL_CLASS = TextFieldImpl
+    _IMPL_CLASS = TogaTextField
 
     def __init__(self, initial=None, placeholder=None, readonly=False, **style):
         super(TextInput, self).__init__(**style)
@@ -34,6 +34,7 @@ class TextInput(Widget):
 
         # Disable all autolayout functionality
         self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
+        self._impl.setAutoresizesSubviews_(False)
 
         # Height of a text input is known and fixed.
         if self.height is None:

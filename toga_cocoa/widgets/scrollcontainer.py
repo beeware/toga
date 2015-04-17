@@ -7,6 +7,7 @@ from .base import Widget
 class ScrollContainer(Widget):
     def __init__(self, horizontal=True, vertical=True, **style):
         super(ScrollContainer, self).__init__(**style)
+        self.is_container = True
         self.horizontal = horizontal
         self.vertical = vertical
 
@@ -15,14 +16,15 @@ class ScrollContainer(Widget):
         self.startup()
 
     def startup(self):
-        print("STARTUP SCROLL CONTAINER", self.layout)
         self._impl = NSScrollView.alloc().init()
         self._impl.setHasVerticalScroller_(self.vertical)
         self._impl.setHasHorizontalScroller_(self.horizontal)
         self._impl.setAutohidesScrollers_(True)
         self._impl.setBorderType_(NSNoBorder)
+
         # Disable all autolayout functionality
         self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
+        self._impl.setAutoresizesSubviews_(False)
 
         self._impl.setBackgroundColor_(NSColor.windowBackgroundColor())
 
@@ -73,3 +75,7 @@ class ScrollContainer(Widget):
                 child_style[key] = value
 
         self._content._update_layout(**child_style)
+
+    def set_child_frames(self):
+        layout = self._content.layout
+        self._content._set_frame(NSRect(NSPoint(layout.left, layout.top), NSSize(layout.width, layout.height)))

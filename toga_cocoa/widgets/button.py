@@ -7,16 +7,11 @@ from ..libs import *
 from ..utils import process_callback
 
 
-class ButtonImpl(NSButton):
+class TogaButton(NSButton):
     @objc_method('v@')
     def onPress_(self, obj):
         if self.__dict__['interface'].on_press:
             process_callback(self.__dict__['interface'].on_press(self.__dict__['interface']))
-
-    @objc_method('v')
-    def viewWillDraw(self):
-        layout = self.__dict__['interface'].layout
-        self.setFrame_(NSRect(NSPoint(layout.left, layout.top), NSSize(layout.width, layout.height)))
 
 
 class Button(Widget):
@@ -28,7 +23,7 @@ class Button(Widget):
         self.startup()
 
     def startup(self):
-        self._impl = ButtonImpl.alloc().init()
+        self._impl = TogaButton.alloc().init()
         self._impl.__dict__['interface'] = self
 
         self._impl.setBezelStyle_(NSRoundedBezelStyle)
@@ -39,6 +34,7 @@ class Button(Widget):
 
         # Disable all autolayout functionality
         self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
+        self._impl.setAutoresizesSubviews_(False)
 
         # Height of a button is known.
         if self.height is None:

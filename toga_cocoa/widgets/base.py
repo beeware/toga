@@ -4,9 +4,13 @@ from toga.widget import Widget as WidgetBase
 
 from rubicon.objc import NSRect, NSPoint, NSSize
 
-_level = 0
 
 class Widget(WidgetBase):
+    def __init__(self, *args, **kwargs):
+        super(Widget, self).__init__(*args, **kwargs)
+        self.is_container = False
+        self._in_progress = False
+
     def _update_layout(self, **style):
         """Force a layout update on the widget.
 
@@ -14,14 +18,10 @@ class Widget(WidgetBase):
         (probably min_width, min_height, width or height) to control the
         layout.
         """
-        global _level
-        print ('    ' * _level, 'update %s:' % self, style, (self.left, self.top), (self.width, self.height))
-        print ('    ' * _level, '%s pre frame: ' % self, (self._impl.frame.size.width, self._impl.frame.size.height), (self._impl.frame.origin.x, self._impl.frame.origin.y))
+        if self._in_progress:
+            return
+        self._in_progress = True
 
-        # import traceback, sys
-        # traceback.print_stack()
-
-        # Apply the style hints to the widget
         self.style(**style)
 
         # Recompute layout
@@ -30,14 +30,16 @@ class Widget(WidgetBase):
         # Set the frame for the widget to adhere to the new style.
         self._set_frame(NSRect(NSPoint(layout.left, layout.top), NSSize(layout.width, layout.height)))
 
-        _level = _level + 1
         self._update_child_layout(**style)
-        _level = _level - 1
 
-        print ('    ' * _level, '%s post frame:' % self, (self._impl.frame.size.width, self._impl.frame.size.height), (self._impl.frame.origin.x, self._impl.frame.origin.y))
+        # Set the frame for the widget to adhere to the new style.
+        self._set_child_frames()
+
+        self._in_progress = False
 
     def _set_frame(self, frame):
         self._impl.setFrame_(frame)
+        self._impl.setNeedsDisplay_(True)
 
     def _update_child_layout(self, **style):
         """Force a layout update on children of this widget.
@@ -46,3 +48,5 @@ class Widget(WidgetBase):
         """
         pass
 
+    def _set_child_frames(self):
+        pass

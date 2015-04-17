@@ -6,11 +6,16 @@ from ..libs import *
 from .base import Widget
 
 
-class ContainerImpl(NSView):
+class TogaContainer(NSView):
     @objc_method('B')
     def isFlipped(self):
         # Default Cocoa coordinate frame is around the wrong way.
         return True
+
+    @objc_method('v')
+    def display(self):
+        self.layer.setNeedsDisplay_(True)
+        self.layer.displayIfNeeded()
 
 
 class Container(Widget):
@@ -22,10 +27,11 @@ class Container(Widget):
         self.startup()
 
     def startup(self):
-        print("STARTUP CONTAINER", self.layout)
-        self._impl = ContainerImpl.alloc().init()
+        self._impl = TogaContainer.alloc().init()
+
         # Disable all autolayout functionality
         self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
+        self._impl.setAutoresizesSubviews_(False)
 
         for child in self._children:
             self.add(child)
@@ -79,8 +85,13 @@ class Container(Widget):
         layout.
         """
         for child in self.children:
-            # print ('   ',self,' child:', child)
-            child._update_layout(
-                # width=self._impl.frame().size.width,
-                # height=self._impl.frame().size.height
-            )
+            if child.is_container:
+                child._update_layout()
+
+    def _set_frame(self, frame):
+        self._impl.setFrame_(frame)
+        self._impl.setNeedsDisplay_(True)
+
+        for child in self.children:
+            layout = child.layout
+            child._set_frame(NSRect(NSPoint(layout.left, layout.top), NSSize(layout.width, layout.height)))

@@ -14,7 +14,7 @@ class TreeNode(object):
         self.children = []
 
 
-class TreeImpl(NSOutlineView):
+class TogaTree(NSOutlineView):
 
     # OutlineViewDataSource methods
     @objc_method('@@i@')
@@ -84,9 +84,11 @@ class Tree(Widget):
         self._impl.setHasHorizontalScroller_(True)
         self._impl.setAutohidesScrollers_(False)
         self._impl.setBorderType_(NSBezelBorder)
-        # self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
 
-        self._tree = TreeImpl.alloc().init()
+        # Disable all autolayout functionality on the outer widget
+        self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
+
+        self._tree = TogaTree.alloc().init()
         self._tree.__dict__['interface'] = self
         self._tree.setColumnAutoresizingStyle_(NSTableViewUniformColumnAutoresizingStyle)
         # Use autolayout for the inner widget.

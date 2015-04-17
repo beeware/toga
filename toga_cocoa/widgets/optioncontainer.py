@@ -4,18 +4,32 @@ from ..libs import *
 from .base import Widget
 
 
+class TogaTabViewDelegate(NSObject):
+    @objc_method('v@@')
+    def tabView_didSelectTabViewItem_(self, view, item):
+        pass
+        # print ("Select tab view item")
+
+
 class OptionContainer(Widget):
     def __init__(self, **style):
         super(OptionContainer, self).__init__(**style)
+        self.is_container = True
         self._content = []
 
         self.startup()
 
     def startup(self):
-        print("STARTUP OPTION CONTAINER", self.layout)
         self._impl = NSTabView.alloc().init()
+
         # Disable all autolayout functionality
         self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
+        self._impl.setAutoresizesSubviews_(False)
+
+        self._delegate = TogaTabViewDelegate.alloc().init()
+        self._delegate.__dict__['interface'] = self
+
+        self._impl.setDelegate_(self._delegate)
 
     def add(self, label, container):
         self._content.append((label, container))
@@ -29,6 +43,9 @@ class OptionContainer(Widget):
 
         self._impl.addTabViewItem_(item)
 
+        # Make the content autoresize to the option container item frame
+        container._impl.setTranslatesAutoresizingMaskIntoConstraints_(True)
+
     def _update_child_layout(self, **style):
         """Force a layout update on the children of this widget.
 
@@ -37,10 +54,10 @@ class OptionContainer(Widget):
         layout.
         """
         for label, content in self._content:
-            # print ('    %s frame:' % label, (content._impl.frame.size.width, content._impl.frame.size.height), (content._impl.frame.origin.x, content._impl.frame.origin.y))
+            frame = self._impl.contentRect()
             content._update_layout(
-                left=self._impl.contentRect().origin.x,
-                top=self._impl.contentRect().origin.y,
-                width=self._impl.contentRect().size.width,
-                height=self._impl.contentRect().size.height
+                left=frame.origin.x,
+                top=frame.origin.y,
+                width=frame.size.width,
+                height=frame.size.height
             )

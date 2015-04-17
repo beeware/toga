@@ -4,7 +4,7 @@ from ..libs import *
 from .base import Widget
 
 
-class TableImpl(NSTableView):
+class TogaTable(NSTableView):
 
     # TableDataSource methods
     @objc_method('i@')
@@ -40,9 +40,13 @@ class Table(Widget):
         self._impl.setAutohidesScrollers_(False)
         self._impl.setBorderType_(NSBezelBorder)
 
-        self._table = TableImpl.alloc().init()
+        # Disable all autolayout functionality on the outer widget
+        self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
+
+        self._table = TogaTable.alloc().init()
         self._table.__dict__['interface'] = self
         self._table.setColumnAutoresizingStyle_(NSTableViewUniformColumnAutoresizingStyle)
+
         # Use autolayout for the inner widget.
         self._table.setTranslatesAutoresizingMaskIntoConstraints_(True)
 

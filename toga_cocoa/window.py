@@ -19,14 +19,14 @@ class WindowDelegate(NSObject):
     @objc_method('v@')
     def windowDidResize_(self, notification):
         if self.__dict__['interface'].content:
-            print("Window resize", (notification.object().contentView.frame.size.width, notification.object().contentView.frame.size.height))
-            # Force a re-layout of widgets
-            self.__dict__['interface'].content._update_layout(
-                width=notification.object().contentView.frame.size.width,
-                height=notification.object().contentView.frame.size.height
-            )
-            # Force a redraw with the new widget locations
-            self.__dict__['interface'].content._impl.setNeedsDisplay_(True)
+            if notification.object().contentView.frame.size.width > 0.0 and notification.object().contentView.frame.size.height > 0.0:
+                # Force a re-layout of widgets
+                self.__dict__['interface'].content._update_layout(
+                    width=notification.object().contentView.frame.size.width,
+                    height=notification.object().contentView.frame.size.height
+                )
+                # Force a redraw with the new widget locations
+                # self.__dict__['interface'].content._impl.setNeedsDisplay_(True)
 
     ######################################################################
     # Toolbar delegate methods
@@ -173,18 +173,13 @@ class Window(object):
             self._impl.setTitle_('')
 
     def show(self):
-        print ('frame2: ', (self.content._impl.frame.size.width, self.content._impl.frame.size.height))
-        self._impl.makeKeyAndOrderFront_(self._impl)
-        # self._impl.visualizeConstraints_(self._impl.contentView.constraints())
+        self._impl.makeKeyAndOrderFront_(None)
 
         # Do the first layout render.
-        print ("SHOW WINDOW", '*'*40)
-        print ('frame1: ', (self.content._impl.frame.size.width, self.content._impl.frame.size.height))
         self.content._update_layout(
             width=self.content._impl.frame.size.width,
             height=self.content._impl.frame.size.height
         )
-        print ('frame3: ', (self.content._impl.frame.size.width, self.content._impl.frame.size.height))
 
     def on_close(self):
         pass
