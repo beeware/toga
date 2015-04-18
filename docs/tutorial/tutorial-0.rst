@@ -21,12 +21,9 @@ Here's a complete code listing for our "Hello world" app::
 
         button = toga.Button('Hello world', on_press=button_handler)
 
-        container.add(button)
+        button.style(margin=50)
 
-        container.constrain(button.TOP == container.TOP + 50)
-        container.constrain(button.LEADING == container.LEADING + 50)
-        container.constrain(button.TRAILING + 50 == container.TRAILING)
-        container.constrain(button.BOTTOM + 50 < container.BOTTOM)
+        container.add(button)
 
         return container
 
@@ -80,71 +77,39 @@ pressed, referencing the handler that we defined earlier::
 
         button = toga.Button('Hello world', on_press=button_handler)
 
-Then, we add the button to the container::
+Now we have to define how the button will appear in the window. Toga uses a
+CSS-based layout scheme, so we can apply CSS styles to each widget::
+
+        button.style(margin=50)
+
+Each widget is a "block" in CSS terms, what we've done here is say that the
+button with have a margin of 50 pixels on each side. If we wanted to define a
+margin of 20 pixels on top of the button, we could have defined ``margin_top=20``,
+or we could have specified the ``margin=(20,50,50,50)``.
+
+The next step is to add the button to the container::
 
         container.add(button)
 
-Now we have to define where the button will sit inside the container. Many
-widget toolkits do this by specifying an exact pixel position, or by
-specifying a box model (usually a grid, or some sort of box packing
-structure).
-
-Toga, however, uses a constraint-based approach. To define how a container is
-laid out, you specify the spatial relationships between the container and the
-widget, or between the widget and other widgets.
-
-This is done using the `constrain()` method on a container; the `constrain()`
-call takes expressions that define the relationships you want to impose::
-
-        container.constrain(button.TOP == container.TOP + 50)
-        container.constrain(button.LEADING == container.LEADING + 50)
-        container.constrain(button.TRAILING + 50 == container.TRAILING)
-        container.constrain(button.BOTTOM + 50 < container.BOTTOM)
-
-In this case, we've defined 4 constraints:
-
-    * The top of the button is 50 pixels lower than the top of the container
-
-    * The leading edge of the button is 50 pixels further to the right than
-      the leading edge of the container. The "leading" edge is a localization-
-      sensitive way of saying "left" or "right" - in a left-to-right language
-      like English, the leading edge is the left hand side; in a right-to-left
-      language like Hebrew or Arabic, the leading edge is the right hand side.
-      If you really want to use the left or right edge, regardless of language
-      direction, the identifiers ``LEFT`` and ``RIGHT`` can be used.
-
-    * The trailing edge of the container is 50 pixels further to the right
-      than the trailing end of the button. The "trailing" edge is the right
-      hand side in a right-to-left language.
-
-    * The bottom of the container must be more than 50 pixel further down than
-      the bottom of the button.
-
-This set of constraints is enough to uniquely place the button - but it also
-describes how the button will change size as the window changes size. As the
-window gets wider, the button will get wider to ensure that constraints 2 and
-3 are satisfied. However, the vertical position of the button won't change as
-the  window gets taller; the fourth constraint ensures that any extra height
-will go into the space below the button.
-
-.. note:: The Cassowary Algorithm
-
-    This approach to GUI layout has a strong mathematical basis - it's based on
-    an algorithm called `Cassowary`_. It's also the basis of the widget
-    auto-layouts tools introduced in OS X 10.7 and iOS 6.
-
-.. _Cassowary: http://www.cs.washington.edu/research/constraints/cassowary/
+The button will, by default, stretch to the size of the container it is placed
+in. The outer container is also a block, which will stretch to the size of
+container it is placed in - which, in our case, is the window itself. The
+button has a default height, defined by the way that the underlying platform
+draws buttons). As a result, this means we'll see a single button in the app
+window that stretches to the width of the screen, but has a 50 pixel margin
+surrounding it.
 
 Now we've set up the container, we return the outer container that holds all
 the UI content. This container will be the content of the app's main window::
 
         return container
 
-Lastly, we get into the main body of the program, where we create the app itself.
-The app is a high level container representing the executable. The app has a name,
-and a unique identifier. The identifier is used when registering any app-specific
-system resources. By convention, the identifier is a  "reversed domain name".
-The app also accepts our callable defining the main window contents::
+Lastly, we get into the main body of the program, where we create the app
+itself. The app is a high level container representing the executable. The app
+has a name, and a unique identifier. The identifier is used when registering
+any app-specific system resources. By convention, the identifier is a
+"reversed domain name". The app also accepts our callable defining the main
+window contents::
 
     if __name__ == '__main__':
 

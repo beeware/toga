@@ -18,30 +18,22 @@ Here's the source code::
 
     import toga
 
+
     class Graze(toga.App):
         def startup(self):
-            container = toga.Container()
 
-            self.webview = toga.WebView()
-            self.url_input = toga.TextInput('http://pybee.org/')
+            self.webview = toga.WebView(flex=1)
+            self.url_input = toga.TextInput('http://pybee.org/', flex=1, margin=5)
 
-            go_button = toga.Button('Go', on_press=self.load_page)
-
-            container.add(self.webview)
-            container.add(self.url_input)
-            container.add(go_button)
-
-            container.constrain(self.url_input.TOP == container.TOP + 5)
-            container.constrain(self.url_input.LEFT == container.LEFT + 5)
-            container.constrain(self.url_input.RIGHT + 5 == go_button.LEFT)
-
-            container.constrain(go_button.TOP == container.TOP + 5)
-            container.constrain(go_button.RIGHT + 5 == container.RIGHT)
-
-            container.constrain(self.webview.TOP == self.url_input.BOTTOM + 20)
-            container.constrain(self.webview.BOTTOM == container.BOTTOM)
-            container.constrain(self.webview.RIGHT == container.RIGHT)
-            container.constrain(self.webview.LEFT == container.LEFT)
+            container = toga.Container(
+                toga.Container(
+                    self.url_input,
+                    toga.Button('Go', on_press=self.load_page, width=50),
+                    flex_direction='row'
+                ),
+                self.webview,
+                flex_direction='column'
+            )
 
             app.main_window.content = container
 
@@ -52,3 +44,9 @@ Here's the source code::
         app = Graze('Graze', 'org.pybee.graze')
 
         app.main_loop()
+
+In this example, you can see an application being developed as a class, rather
+than as a build method. You can also see containers defined in a declarative
+manner - if you don't need to retain a reference to a particular widget, you
+can define a widget inline, and pass it as an argument to a container, and it
+will become a child of that container.
