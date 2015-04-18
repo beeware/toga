@@ -33,7 +33,9 @@ class MultilineTextInput(Widget):
         # Disable all autolayout functionality on the outer widget
         # self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
         # self._impl.setAutoresizesSubviews_(False)
-        # self._impl.setAutoresizesSubviews_(True)
+
+        # self._impl.contentView.setTranslatesAutoresizingMaskIntoConstraints_(False)
+        # self._impl.contentView.setAutoresizesSubviews_(False)
 
         # Use a dummy size initially.
         self._text = NSTextView.alloc().init()

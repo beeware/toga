@@ -26,6 +26,10 @@ class ScrollContainer(Widget):
         self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
         self._impl.setAutoresizesSubviews_(False)
 
+        # Also disable autolayout on the clip view.
+        self._impl.contentView.setTranslatesAutoresizingMaskIntoConstraints_(False)
+        self._impl.contentView.setAutoresizesSubviews_(False)
+
         self._impl.setBackgroundColor_(NSColor.windowBackgroundColor())
 
     @property

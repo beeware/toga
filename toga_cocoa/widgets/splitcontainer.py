@@ -14,7 +14,7 @@ class TogaSplitViewDelegate(NSObject):
         # If the window is actually visible, and the split has moved,
         # a resize of all the content panels is required.
         if self.__dict__['interface'].window._impl.isVisible:
-            # print ("SPLIT CONTAINER LAYOUT CHILDREN")
+            # print ("SPLIT CONTAINER LAYOUT CHILDREN", self.__dict__['interface']._content[0]._impl.frame.size.width, self.__dict__['interface']._content[1]._impl.frame.size.width)
             self.__dict__['interface']._update_child_layout()
 
 
