@@ -16,7 +16,7 @@ class ProgressBar(Widget):
     def startup(self):
         self._impl = NSProgressIndicator.new()
         self._impl.setStyle_(NSProgressIndicatorBarStyle)
-        self._impl.setDisplayedWhenStopped_(False)
+        self._impl.setDisplayedWhenStopped_(True)
         if self.max:
             self._impl.setIndeterminate_(False)
             self._impl.setMaxValue_(self.max)
