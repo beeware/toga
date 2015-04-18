@@ -34,25 +34,14 @@ Here's the source code::
         left_container.insert(None, 'root3', 'value3')
         left_container.insert(1, 'root4', 'value4')
 
-        right_content = toga.Container()
-        buttons = [
-            toga.Button('Hello world %s' % b, on_press=button_handler)
-            for b in range(0, 10)
-        ]
+        right_content = toga.Container(flex_direction='column', padding_top=50)
 
-        for i, button in enumerate(buttons):
-            right_content.add(button)
+        for b in range(0, 10):
+            right_content.add(
+                toga.Button('Hello world %s' % b, on_press=button_handler, width=200, margin=20)
+            )
 
-            if i == 0:
-                right_content.constrain(button.TOP == right_content.TOP + 50)
-            else:
-                right_content.constrain(button.TOP == buttons[i-1].BOTTOM + 50)
-            right_content.constrain(button.LEADING == right_content.LEADING + 50)
-            right_content.constrain(button.TRAILING + 50 == right_content.TRAILING)
-
-        right_content.constrain(buttons[-1].BOTTOM + 50 < right_content.BOTTOM)
-
-        right_container = toga.ScrollContainer()
+        right_container = toga.ScrollContainer(horizontal=False)
 
         right_container.content = right_content
 
@@ -78,3 +67,8 @@ Here's the source code::
         app = toga.App('First App', 'org.pybee.helloworld', startup=build)
 
         app.main_loop()
+
+In this example, we see a couple of new Toga widgets - ``Table``,
+``SplitContainer``, and ``ScrollContainer``. You can also see that
+CSS styles can be added in the widget constructor. Lastly, you can
+see that windows can have toolbars.
