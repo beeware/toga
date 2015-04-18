@@ -1,8 +1,10 @@
 Release History
 ===============
 
-0.1.3 - In development
-----------------------
+0.2 - In development
+--------------------
+
+* Migrated to CSS-based layout, rather than Cassowary/constraint layout.
 
 0.1.2
 -----
