@@ -16,7 +16,7 @@ class ProgressBar(Widget):
 
         self.value = value
 
-    def _startup(self):
+    def startup(self):
         self._impl = Gtk.ProgressBar()
 
         if self._running:
