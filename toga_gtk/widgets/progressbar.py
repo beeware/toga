@@ -30,7 +30,7 @@ class ProgressBar(Widget):
     def value(self, value):
         self._value = value
         self._running = self._value is not None
-        self._impl.set_fraction(float(value) / float(max))
+        self._impl.set_fraction(float(value) / float(self.max))
 
     def start(self):
         if not self._running:
