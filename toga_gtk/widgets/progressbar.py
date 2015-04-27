@@ -11,16 +11,16 @@ class ProgressBar(Widget):
         super(ProgressBar, self).__init__()
 
         self.max = max
-
+        self._running = True
+        self._value = value
+    
         self.startup()
-
-        self.value = value
 
     def startup(self):
         self._impl = Gtk.ProgressBar()
 
         if self._running:
-            self._impl.set_fraction(float(value) / float(max))
+            self._impl.set_fraction(float(self._value) / float(self.max))
 
     @property
     def value(self):
