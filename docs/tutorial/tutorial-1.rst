@@ -13,6 +13,7 @@ Here's the source code::
 
     import toga
 
+
     def build(app):
         container = toga.Container()
 
@@ -25,7 +26,7 @@ Here's the source code::
 
         def calculate(widget):
             try:
-                c_input.value = (float(f_input.value)- 32.0) * 5.0 / 9.0
+                c_input.value = (float(f_input.value) - 32.0) * 5.0 / 9.0
             except:
                 c_input.value = '???'
 

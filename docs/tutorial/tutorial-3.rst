@@ -18,6 +18,7 @@ Here's the source code::
 
     import toga
 
+
     class Graze(toga.App):
         def startup(self):
             container = toga.Container()
