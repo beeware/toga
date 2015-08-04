@@ -20,13 +20,20 @@ Toga has some minimum requirements:
 
 * If you're on OS X, you need to be on 10.7 (Lion) or newer.
 
-* If you're on Linux, you need to have GTK+ 3.4 or later. This is the
-  version that ships with Ubuntu 12.04. If you want to use the WebView
-  widget, you'll also need to have WebKit, plus the GI bindings to WebKit
-  (``gir1.2-webkit-3.0``) installed.
+* If you're on Linux, you need to have GTK+ 3.4 or later. This is the version
+  that ships starting with Ubuntu 12.04 and Fedora 17.
 
-If these requirements aren't met, Toga either won't work at all, or won't
-have full functionality.
+* If you want to use the WebView widget, you'll also need to have WebKit, plus
+  the GI bindings to WebKit installed.
+
+    * For Ubuntu that's provided by the (``libwebkitgtk-3.0-0``) and
+      (``gir1.2-webkit-3.0``) packages.
+
+    * For Fedora it's all provided in the (``webkitgtk3``) package.
+
+If these requirements aren't met, Toga either won't work at all, or won't have
+full functionality.
+
 
 Problems with source installs
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -56,8 +63,15 @@ workaround. To make the system GTK+ bindings available to your virtualenv,
 symlinking the ``gi`` module from the system dist-packages directory into your
 virtualenv's site-packages::
 
-    $ cd $VIRTUAL_ENV/lib/python2.7/site-packages
-    $ ln -si /usr/lib/python2.7/dist-packages/gi
+    For a Ubuntu 32bit system::
+
+        $ cd $VIRTUAL_ENV/lib/python2.7/site-packages
+        $ ln -si /usr/lib/python2.7/dist-packages/gi
+
+    For a Fedora 64bit system::
+
+        $ cd $VIRTUAL_ENV/lib/python2.7/site-packages
+        $ ln -si /usr/lib64/python2.7/site-packages/gi/
 
 
 Documentation
