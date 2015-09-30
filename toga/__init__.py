@@ -72,7 +72,7 @@ def set_platform(module_name=None, locals=locals()):
             for symbol in locals['platform'].__all__
             if symbol != '__version__'
         ))
-    except ImportError, e:
+    except ImportError as e:
         import traceback
         traceback.print_exc(e)
         locals['platform'] = None
