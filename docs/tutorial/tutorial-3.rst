@@ -43,7 +43,7 @@ Here's the source code::
             container.constrain(self.webview.RIGHT == container.RIGHT)
             container.constrain(self.webview.LEFT == container.LEFT)
 
-            app.main_window.content = container
+            self.main_window.content = container
 
         def load_page(self, widget):
             self.webview.url = self.url_input.value
