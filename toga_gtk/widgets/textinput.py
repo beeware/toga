@@ -4,6 +4,8 @@ from gi.repository import Gtk
 
 from .base import Widget
 
+from toga import compat
+
 
 class TextInput(Widget):
     def __init__(self, initial=None, placeholder=None, readonly=False):
@@ -35,4 +37,4 @@ class TextInput(Widget):
 
     @value.setter
     def value(self, value):
-        self._impl.set_text(unicode(value))
+        self._impl.set_text(compat.text(value))
