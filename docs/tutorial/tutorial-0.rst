@@ -59,7 +59,7 @@ of a simple button press, however, there are no extra arguments::
         print("hello")
 
 By creating an app, we're declaring that we want to have a main window, with a
-main menu. However, Toga doesn't know what we want content we want in that
+main menu. However, Toga doesn't know what content we want in that
 main window. The next step is to define a method that describes the UI that we
 want our app to have. This method is a callable that accepts an app instance::
 
@@ -74,7 +74,7 @@ define padding around widgets. So, we define a container::
 
         container = toga.Container()
 
-We can then define a button. When we create the button, we set can the button
+We can then define a button. When we create the button, we can set the button
 text, and we also set the behavior that we want to invoke when the button is
 pressed, referencing the handler that we defined earlier::
 
