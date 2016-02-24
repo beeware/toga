@@ -35,7 +35,7 @@ Here's the source code::
                 flex_direction='column'
             )
 
-            app.main_window.content = container
+            self.main_window.content = container
 
         def load_page(self, widget):
             self.webview.url = self.url_input.value
