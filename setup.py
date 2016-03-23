@@ -31,10 +31,10 @@ setup(
     install_requires=['colosseum>=0.1.0'],
     extras_require={
         # Automatically installed platform backends
-        ':sys_platform=="win32"': ['toga-win32'],
-        ':sys_platform=="linux"': ['toga-gtk'],
-        ':sys_platform=="linux2"': ['toga-gtk'],
-        ':sys_platform=="darwin"': ['toga-cocoa'],
+        # ':sys_platform=="win32"': ['toga-win32'],
+        # ':sys_platform=="linux"': ['toga-gtk'],
+        # ':sys_platform=="linux2"': ['toga-gtk'],
+        # ':sys_platform=="darwin"': ['toga-cocoa'],
 
         # Manually requested platform backends
         'cocoa': ['toga-cocoa'],
@@ -50,9 +50,6 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.6',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
