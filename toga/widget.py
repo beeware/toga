@@ -1,6 +1,5 @@
-from __future__ import print_function, absolute_import, division
-
 from colosseum import CSSNode
+
 
 class Widget(CSSNode):
     def __init__(self, **style):

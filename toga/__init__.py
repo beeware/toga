@@ -1,5 +1,3 @@
-from __future__ import print_function, unicode_literals, absolute_import, division
-
 import importlib
 import os
 import sys
@@ -19,7 +17,7 @@ __all__ = [
 # __version__ = '1.2.3'       # Final Release
 # __version__ = '1.2.3.post1' # Post Release 1
 
-__version__ = '0.2.0.dev1'
+__version__ = '0.2.0.dev'
 
 platform = None
 
@@ -33,7 +31,7 @@ def set_platform(module_name=None, locals=locals()):
 
     # First check for an environment variable setting the platform
     if module_name is None:
-        module_name = os.environ.get('TOGA_PLATFORM')
+        module_name = 'toga_' + os.environ.get('TOGA_PLATFORM')
 
     # If we don't have a manually defined platform, attempt to
     # autodetect and set the platform
