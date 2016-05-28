@@ -1,5 +1,3 @@
-from __future__ import print_function, absolute_import, division, unicode_literals
-
 from .libs import *
 
 
@@ -34,12 +32,14 @@ class Window(object):
         self._content.window = self
         self._content.app = self.app
 
-        # We now know the widget impl exists; add it.
-        self._impl.addSubview_(widget._impl)
-
-        self._impl.rootViewController = self._content._controller
+        self._impl.rootViewController = self._content._impl
 
     def show(self):
         self._impl.makeKeyAndVisible()
 
         # self._impl.visualizeConstraints_(self._impl.contentView().constraints())
+        # Do the first layout render.
+        self.content._update_layout(
+            width=self.content._impl.view.frame.size.width,
+            height=self.content._impl.view.frame.size.height
+        )

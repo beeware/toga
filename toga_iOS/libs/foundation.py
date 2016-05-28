@@ -1,5 +1,3 @@
-from __future__ import print_function, absolute_import, division, unicode_literals
-
 from ctypes import *
 from ctypes import util
 
@@ -20,6 +18,10 @@ foundation.NSMouseInRect.argtypes = [NSPoint, NSRect, c_bool]
 
 NSMutableArray = ObjCClass('NSMutableArray')
 
+# NSData.h
+
+NSData = ObjCClass('NSData')
+
 # NSURL.h
 
 NSURL = ObjCClass('NSURL')
@@ -27,4 +29,3 @@ NSURL = ObjCClass('NSURL')
 # NSURLRequest.h
 
 NSURLRequest = ObjCClass('NSURLRequest')
-

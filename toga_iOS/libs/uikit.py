@@ -1,5 +1,3 @@
-from __future__ import print_function, absolute_import, division, unicode_literals
-
 from ctypes import *
 from ctypes import util
 
@@ -16,6 +14,8 @@ uikit = cdll.LoadLibrary(util.find_library('UIKit'))
 uikit.UIApplicationMain.restype = c_int
 uikit.UIApplicationMain.argtypes = [c_int, POINTER(c_char_p), c_void_p, c_void_p]
 
+NSArray = ObjCClass('NSArray')
+NSMutableArray = ObjCClass('NSMutableArray')
 
 # NSLayoutConstraint.h
 NSLayoutConstraint = ObjCClass('NSLayoutConstraint')
@@ -140,6 +140,12 @@ UIControlStateSelected = 1 << 2
 UIControlStateApplication = 0x00FF0000
 UIControlStateReserved = 0xFF000000
 
+# UIImage.h
+UIImage = ObjCClass('UIImage')
+
+# UIImageView.h
+UIImageView = ObjCClass('UIImageView')
+
 # UIResponder.h
 UIResponder = ObjCClass('UIResponder')
 
@@ -162,7 +168,6 @@ UIView = ObjCClass('UIView')
 UIWindow = ObjCClass('UIWindow')
 
 # UILabel.h
-
 NSLineBreakByWordWrapping = 0
 NSLineBreakByCharWrapping = 1
 NSLineBreakByClipping = 2
@@ -172,11 +177,72 @@ NSLineBreakByTruncatingMiddle = 5
 
 UILabel = ObjCClass('UILabel')
 
+# UINavigationController.h
+UINavigationController = ObjCClass('UINavigationController')
+
 # UIButton.h
 UIButton = ObjCClass('UIButton')
 
+# UIBarButtonItem.h
+UIBarButtonItem = ObjCClass('UIBarButtonItem')
+
+UIBarButtonSystemItemDone = 0
+UIBarButtonSystemItemCancel = 1
+UIBarButtonSystemItemEdit = 2
+UIBarButtonSystemItemSave = 3
+UIBarButtonSystemItemAdd = 4
+UIBarButtonSystemItemFlexibleSpace = 5
+UIBarButtonSystemItemFixedSpace = 6
+UIBarButtonSystemItemCompose = 7
+UIBarButtonSystemItemReply = 8
+UIBarButtonSystemItemAction = 9
+UIBarButtonSystemItemOrganize = 10
+UIBarButtonSystemItemBookmarks = 11
+UIBarButtonSystemItemSearch = 12
+UIBarButtonSystemItemRefresh = 13
+UIBarButtonSystemItemStop = 14
+UIBarButtonSystemItemCamera = 15
+UIBarButtonSystemItemTrash = 16
+UIBarButtonSystemItemPlay = 17
+UIBarButtonSystemItemPause = 18
+UIBarButtonSystemItemRewind = 19
+UIBarButtonSystemItemFastForward = 20
+UIBarButtonSystemItemUndo = 21
+UIBarButtonSystemItemRedo = 22
+UIBarButtonSystemItemPageCurl = 23
+
 # UIViewController.h
 UIViewController = ObjCClass('UIViewController')
+
+# UIRefreshControl.h
+UIRefreshControl = ObjCClass('UIRefreshControl')
+
+# UITableView.h
+UITableView = ObjCClass('UITableView')
+UITableViewController = ObjCClass('UITableViewController')
+
+NSIndexPath = ObjCClass('NSIndexPath')
+
+UITableViewRowAnimationFade = 0
+UITableViewRowAnimationRight = 1
+UITableViewRowAnimationLeft = 2
+UITableViewRowAnimationTop = 3
+UITableViewRowAnimationBottom = 4
+UITableViewRowAnimationNone = 5
+UITableViewRowAnimationMiddle = 6
+UITableViewRowAnimationAutomatic = 100
+
+# UITableViewCell.h
+UITableViewCell = ObjCClass('UITableViewCell')
+
+UITableViewCellStyleDefault = 0
+UITableViewCellStyleValue1 = 1
+UITableViewCellStyleValue2 = 2
+UITableViewCellStyleSubtitle = 3
+
+UITableViewCellEditingStyleNone = 0
+UITableViewCellEditingStyleDelete = 1
+UITableViewCellEditingStyleInsert = 2
 
 # UITextField.h
 UITextField = ObjCClass('UITextField')
@@ -185,4 +251,3 @@ UITextBorderStyleNone = 0
 UITextBorderStyleLine = 1
 UITextBorderStyleBezel = 2
 UITextBorderStyleRoundedRect = 3
-

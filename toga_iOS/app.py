@@ -1,5 +1,3 @@
-from __future__ import print_function, absolute_import, division, unicode_literals
-
 from rubicon.objc import objc_method
 
 from .libs import *
@@ -13,23 +11,31 @@ class MainWindow(Window):
 
 
 class PythonAppDelegate(UIResponder):
-    @objc_method('v')
-    def applicationDidBecomeActive(self):
+    @objc_method
+    def applicationDidBecomeActive(self) -> None:
         print("BECAME ACTIVE")
 
-    @objc_method('B@@')
-    def application_didFinishLaunchingWithOptions_(self, application, launchOptions):
+    @objc_method
+    def application_didFinishLaunchingWithOptions_(self, application, launchOptions) -> bool:
         print("FINISHED LAUNCHING")
-        MobileApp._app._startup()
+        App._app._startup()
 
         return True
 
+    # @objc_method
+    # def application_didChangeStatusBarOrientation_(self, application, oldStatusBarOrientation: int) -> None:
+    #     print("ROTATED", oldStatusBarOrientation)
+    #     App._app.main_window.content._update_layout(
+    #         width=App._app.main_window.content._impl.frame.size.width,
+    #         height=App._app.main_window.content._impl.frame.size.height,
+    #     )
 
-class MobileApp(object):
+
+class App(object):
     _app = None
 
     def __init__(self, name, app_id, startup=None):
-        MobileApp._app = self
+        App._app = self
 
         self.name = name
         self.app_id = app_id
