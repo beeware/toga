@@ -3,6 +3,7 @@ from colosseum import CSSNode
 
 class Widget(CSSNode):
     def __init__(self, **style):
+        self.widget_id = style.pop('widget_id', None)
         super(Widget, self).__init__(**style)
         self._window = None
         self._app = None
