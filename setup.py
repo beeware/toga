@@ -30,18 +30,12 @@ setup(
     },
     install_requires=['colosseum>=0.1.0'],
     extras_require={
-        # Automatically installed platform backends
-        # ':sys_platform=="win32"': ['toga-win32'],
-        # ':sys_platform=="linux"': ['toga-gtk'],
-        # ':sys_platform=="linux2"': ['toga-gtk'],
-        # ':sys_platform=="darwin"': ['toga-cocoa'],
-
         # Manually requested platform backends
         'cocoa': ['toga-cocoa'],
         'gtk': ['toga-gtk'],
         'win32': ['toga-win32'],
         'ios': ['toga-iOS'],
-        # 'android': ['toga-android'],
+        'android': ['toga-android'],
         # 'qt': ['toga-qt'],
     },
     license='New BSD',
