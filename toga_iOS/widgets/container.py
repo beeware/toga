@@ -4,12 +4,6 @@ from ..libs import *
 from .base import Widget
 
 
-class TogaViewController(UIViewController):
-    @objc_method
-    def viewDidAppear_(self, animated: bool) -> None:
-        print("VIEW APPEARED", animated)
-        self.interface._update_layout()
-
 
 class Container(Widget):
     def __init__(self, *children, **style):
@@ -23,12 +17,8 @@ class Container(Widget):
         self.startup()
 
     def startup(self):
-        self._controller = TogaViewController.alloc().init()
-        self._controller.interface = self
         self._impl = UIView.alloc().init()
         self._impl.interface = self
-
-        self._controller.view = self._impl
 
         # Disable all autolayout functionality
         self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
@@ -39,7 +29,7 @@ class Container(Widget):
         # del(self._children)
 
         # self._impl.setWantsLayer_(True)
-        # self._impl.setBackgroundColor_(NSColor.blueColor())
+        self._impl.setBackgroundColor_(UIColor.whiteColor())
 
     def add(self, child):
         self.children.append(child)
@@ -91,7 +81,7 @@ class Container(Widget):
                 child._update_layout()
 
     def _set_frame(self, frame):
-        print("SET FRAME", self, frame.origin.x, frame.origin.y, frame.size.width, frame.size.height)
+        # print("SET FRAME", self, frame.origin.x, frame.origin.y, frame.size.width, frame.size.height)
         self._impl.setFrame_(frame)
 
         for child in self.children:

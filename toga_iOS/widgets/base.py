@@ -16,7 +16,7 @@ class Widget(WidgetBase):
         (probably min_width, min_height, width or height) to control the
         layout.
         """
-        print("DO WIDGET LAYOUT", self)
+        # print("DO WIDGET LAYOUT", self)
         if self._in_progress:
             return
         self._in_progress = True
@@ -25,7 +25,7 @@ class Widget(WidgetBase):
 
         # Recompute layout
         layout = self.layout
-        print("WIDGET LAYOUT", layout)
+        # print("WIDGET LAYOUT", layout)
 
         # Set the frame for the widget to adhere to the new style.
         self._set_frame(CGRect(CGPoint(layout.left, layout.top), CGSize(layout.width, layout.height)))
@@ -38,7 +38,7 @@ class Widget(WidgetBase):
         self._in_progress = False
 
     def _set_frame(self, frame):
-        print("SET FRAME", self, frame.origin.x, frame.origin.y, frame.size.width, frame.size.height)
+        # print("SET FRAME", self, frame.origin.x, frame.origin.y, frame.size.width, frame.size.height)
         self._impl.setFrame_(frame)
         self._impl.setNeedsDisplay()
 

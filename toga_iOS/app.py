@@ -52,3 +52,7 @@ class App(object):
     def startup(self):
         if self._startup_method:
             self.main_window.content = self._startup_method(self)
+
+    def show_dialog(self, dialog):
+        controller = UINavigationController.alloc().initWithRootViewController_(dialog._impl)
+        self.main_window.content._impl.presentModalViewController_animated_(controller, True)

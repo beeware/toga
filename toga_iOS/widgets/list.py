@@ -20,7 +20,7 @@ class TogaTableViewController(UITableViewController):
         if cell is None:
             cell = UITableViewCell.alloc().initWithStyle_reuseIdentifier_(UITableViewCellStyleDefault, "row")
 
-        cell.textLabel.text = self.interface.data[indexPath.item]
+        cell.textLabel.text = self.interface.data[indexPath.item]['description']
         return cell
 
     @objc_method
@@ -38,18 +38,10 @@ class TogaTableViewController(UITableViewController):
 
     @objc_method
     def refresh(self):
-        if self.interface.on_press:
-            self.interface.on_press(self.interface)
+        if self.interface.on_refresh:
+            self.interface.on_refresh(self.interface)
         self.refreshControl.endRefreshing()
         self.tableView.reloadData()
-
-    @objc_method
-    def add(self):
-        self.additemcontroller = AddItemController.alloc().init()
-        self.additemcontroller.tablecontroller = self
-
-        navigationController = UINavigationController.alloc().initWithRootViewController_(self.additemcontroller)
-        self.presentModalViewController_animated_(navigationController, True)
 
 
 class List(Widget):
@@ -73,3 +65,7 @@ class List(Widget):
         )
 
         self._impl.data = self.data
+
+    def add(self, item):
+        self.data.append(item)
+        self._impl.tableView.reloadData()

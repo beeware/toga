@@ -63,3 +63,6 @@ class TextInput(Widget):
     def value(self, value):
         if value:
             self._impl.setText_(text(value))
+
+    def clear(self):
+        self._impl.setText_(text(''))
