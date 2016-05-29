@@ -60,7 +60,7 @@ Toga is part of the `BeeWare suite`_. You can talk to the community through:
  * The `BeeWare Developers Mailing list`_, for discussing the development of new features in the BeeWare suite, and ideas for new tools for the suite.
 
 .. _BeeWare suite: http://pybee.org
-.. _Read The Docs: http://toga.readthedocs.org
+.. _Read The Docs: https://toga.readthedocs.io
 .. _@pybeeware on Twitter: https://twitter.com/pybeeware
 .. _BeeWare Users Mailing list: https://groups.google.com/forum/#!forum/beeware-users
 .. _BeeWare Developers Mailing list: https://groups.google.com/forum/#!forum/beeware-developers
