@@ -109,7 +109,7 @@ If you experience problems with Toga, `log them on GitHub`_. If you
 want to contribute code, please `fork the code`_ and `submit a pull request`_.
 
 .. _BeeWare suite: http://pybee.org
-.. _Read The Docs: http://toga.readthedocs.org
+.. _Read The Docs: https://toga.readthedocs.io
 .. _toga-cocoa: http://github.com/pybee/toga-cocoa
 .. _toga-gtk: http://github.com/pybee/toga-gtk
 .. _toga-win32: http://github.com/pybee/toga-win32
