@@ -213,7 +213,7 @@ environment`_ first, and installing toga in that virtual environment.
     a virtual environment.
 
     To make the system GTK+ bindings available to your virtualenv,
-    symlinking the `gi` module from the system dist-packages directory into your
+    symlink the `gi` module from the system dist-packages directory into your
     virtualenv's site-packages.
     
         For a Ubuntu 32bit system::
