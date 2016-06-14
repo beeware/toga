@@ -55,7 +55,7 @@ Python bindings for GTK won't be in your ``PYTHONPATH``.
 
 Unfortunately, you can't ``pip install`` GTK+ bindings, so you have to use a
 workaround. To make the system GTK+ bindings available to your virtualenv,
-symlinking the ``gi`` module from the system dist-packages directory into your
+symlink the ``gi`` module from the system dist-packages directory into your
 virtualenv's site-packages::
 
     $ cd $VIRTUAL_ENV/lib/python2.7/site-packages
