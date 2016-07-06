@@ -1,6 +1,6 @@
 from __future__ import print_function, absolute_import, division
 
-from gi.repository import Gtk, cairo
+from gi.repository import Gdk, Gtk, cairo
 
 from toga_cassowary.widget import Container as CassowaryContainer
 
@@ -52,7 +52,7 @@ class GtkContainer(Gtk.Fixed):
                         y_pos = y_pos + ((widget._bounding_box.height.value - preferred_height) / 2.0)
                         height = preferred_height
 
-                    child_allocation = cairo.RectangleInt()
+                    child_allocation = Gdk.Rectangle()
                     child_allocation.x = x_pos
                     child_allocation.y = y_pos
                     child_allocation.width = width
