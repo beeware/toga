@@ -1,5 +1,3 @@
-from __future__ import print_function, unicode_literals, absolute_import, division
-
 import importlib
 import os
 import sys
@@ -19,7 +17,7 @@ __all__ = [
 # __version__ = '1.2.3'       # Final Release
 # __version__ = '1.2.3.post1' # Post Release 1
 
-__version__ = '0.1.3.dev'
+__version__ = '0.2.0.dev1'
 
 platform = None
 
@@ -33,23 +31,29 @@ def set_platform(module_name=None, locals=locals()):
 
     # First check for an environment variable setting the platform
     if module_name is None:
-        module_name = os.environ.get('TOGA_PLATFORM')
+        platform_name = os.environ.get('TOGA_PLATFORM')
 
-    # If we don't have a manually defined platform, attempt to
-    # autodetect and set the platform
-    if module_name is None:
-        if sys.platform == 'ios':
-            module_name = 'toga_iOS'
-        elif sys.platform == 'android':
-            module_name = 'toga_android'
-        elif sys.platform == 'darwin':
-            module_name = 'toga_cocoa'
-        elif sys.platform in ('linux', 'linux2'):
-            module_name = 'toga_gtk'
-        elif sys.platform == 'win32':
-            module_name = 'toga_win32'
-        else:
-            raise RuntimeError("Couldn't identify a supported host platform.")
+        # If we don't have a manually defined platform, attempt to
+        # autodetect and set the platform
+        if platform_name is None:
+            if sys.platform == 'ios':
+                platform_name = 'iOS'
+            elif sys.platform == 'tvos':
+                platform_name = 'tvOS'
+            elif sys.platform == 'watchos':
+                platform_name = 'watchOS'
+            elif sys.platform == 'android':
+                platform_name = 'android'
+            elif sys.platform == 'darwin':
+                platform_name = 'cocoa'
+            elif sys.platform in ('linux', 'linux2'):
+                platform_name = 'gtk'
+            elif sys.platform == 'win32':
+                platform_name = 'win32'
+            else:
+                raise RuntimeError("Couldn't identify a supported host platform.")
+
+        module_name = 'toga_' + platform_name
 
     # Purge any existing platform symbols in the toga module
     if locals['platform']:

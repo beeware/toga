@@ -25,7 +25,7 @@ Inputs are mechanisms for displaying and editing input provided by the user.
     - GTK+: Gtk.ComboBox.new_with_model_and_entry
     - iOS: ?
 * Switch - A native control for enabled/disabled
-    - Cocoa: NSBUtton with checkbox style
+    - Cocoa: NSButton with checkbox style
     - GTK+: Gtk.CheckButton (maybe Gtk.Switch?)
     - iOS: UISwitch
 * DateInput - A widget for selecting a date

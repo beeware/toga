@@ -18,7 +18,7 @@ Prerequisites
 
 Toga has some minimum requirements:
 
-* If you're on OS X, you need to be on 10.7 (Lion) or newer.
+* If you're on macOS, you need to be on 10.7 (Lion) or newer.
 
 * If you're on Linux, you need to have GTK+ 3.4 or later. This is the version
   that ships starting with Ubuntu 12.04 and Fedora 17.
@@ -51,6 +51,7 @@ the following pre-requisites:
 
 .. _known bug in pip: https://github.com/pypa/pip/issues/1951
 
+<<<<<<< HEAD
 Problems using virtualenv under Linux
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -74,6 +75,8 @@ virtualenv's site-packages::
         $ ln -si /usr/lib64/python2.7/site-packages/gi/
 
 
+=======
+>>>>>>> colosseum
 Documentation
 -------------
 
