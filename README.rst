@@ -51,7 +51,6 @@ the following pre-requisites:
 
 .. _known bug in pip: https://github.com/pypa/pip/issues/1951
 
-<<<<<<< HEAD
 Problems using virtualenv under Linux
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -75,8 +74,6 @@ virtualenv's site-packages::
         $ ln -si /usr/lib64/python2.7/site-packages/gi/
 
 
-=======
->>>>>>> colosseum
 Documentation
 -------------
 
