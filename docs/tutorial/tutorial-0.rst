@@ -21,7 +21,7 @@ Here's a complete code listing for our "Hello world" app::
 
         button = toga.Button('Hello world', on_press=button_handler)
 
-        button.style(margin=50)
+        button.style.set(margin=50)
 
         container.add(button)
 
@@ -80,7 +80,7 @@ pressed, referencing the handler that we defined earlier::
 Now we have to define how the button will appear in the window. Toga uses a
 CSS-based layout scheme, so we can apply CSS styles to each widget::
 
-        button.style(margin=50)
+        button.style.set(margin=50)
 
 Each widget is a "block" in CSS terms, what we've done here is say that the
 button with have a margin of 50 pixels on each side. If we wanted to define a

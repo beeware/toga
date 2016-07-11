@@ -28,7 +28,9 @@ setup(
     package_data={
         'toga': ['resources/*.icns', 'resources/*.png'],
     },
-    install_requires=['colosseum>=0.1.0'],
+    install_requires=[
+        'colosseum>=0.1.0'
+    ],
     extras_require={
         # Manually requested platform backends
         'cocoa': ['toga-cocoa'],
@@ -36,6 +38,7 @@ setup(
         'win32': ['toga-win32'],
         'ios': ['toga-iOS'],
         'android': ['toga-android'],
+        'django': ['toga-django'],
         # 'qt': ['toga-qt'],
     },
     license='New BSD',
