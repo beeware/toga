@@ -17,22 +17,27 @@ Here's the source code::
     from __future__ import print_function, unicode_literals, absolute_import
 
     import toga
+    from colosseum import CSS
 
 
     class Graze(toga.App):
         def startup(self):
 
-            self.webview = toga.WebView(flex=1)
-            self.url_input = toga.TextInput('http://pybee.org/', flex=1, margin=5)
+            self.webview = toga.WebView(style=CSS(flex=1))
+            self.url_input = toga.TextInput('http://pybee.org/', style=CSS(flex=1, margin=5))
 
             container = toga.Container(
                 toga.Container(
                     self.url_input,
                     toga.Button('Go', on_press=self.load_page, width=50),
-                    flex_direction='row'
+                    style=CSS(
+                        flex_direction='row'
+                    )
                 ),
                 self.webview,
-                flex_direction='column'
+                style=CSS(
+                    flex_direction='column'
+                )
             )
 
             self.main_window.content = container

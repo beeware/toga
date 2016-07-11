@@ -17,7 +17,7 @@ __all__ = [
 # __version__ = '1.2.3'       # Final Release
 # __version__ = '1.2.3.post1' # Post Release 1
 
-__version__ = '0.2.0.dev'
+__version__ = '0.2.0.dev1'
 
 platform = None
 
@@ -38,6 +38,10 @@ def set_platform(module_name=None, locals=locals()):
         if platform_name is None:
             if sys.platform == 'ios':
                 platform_name = 'iOS'
+            elif sys.platform == 'tvos':
+                platform_name = 'tvOS'
+            elif sys.platform == 'watchos':
+                platform_name = 'watchOS'
             elif sys.platform == 'android':
                 platform_name = 'android'
             elif sys.platform == 'darwin':
