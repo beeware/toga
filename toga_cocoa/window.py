@@ -1,61 +1,59 @@
-from __future__ import print_function, absolute_import, division, unicode_literals
-
 from .libs import *
 from .utils import process_callback
 
 
 class WindowDelegate(NSObject):
-    @objc_method('v@')
-    def windowWillClose_(self, notification):
-        self.__dict__['interface'].on_close()
+    @objc_method
+    def windowWillClose_(self, notification) -> None:
+        self.interface.on_close()
 
     # Ideally, we'd use this method, not windowDidResize_, as it
     # allows you to enforce a minimum size for the window. Unfortunately,
     # ctypes can't return a structure from a callback.
-    # @objc_method(NSSizeEncoding + b'@' + NSSizeEncoding)
-    # def windowWillResize_toSize_(self, window, size):
+    # @objc_method
+    # def windowWillResize_toSize_(self, window, size: NSSize) -> NSSize:
     #     return size
 
-    @objc_method('v@')
-    def windowDidResize_(self, notification):
-        if self.__dict__['interface'].content:
+    @objc_method
+    def windowDidResize_(self, notification) -> None:
+        if self.interface.content:
             # print()
             # print("Window resize", (notification.object().contentView.frame.size.width, notification.object().contentView.frame.size.height))
-            if notification.object().contentView.frame.size.width > 0.0 and notification.object().contentView.frame.size.height > 0.0:
+            if notification.object.contentView.frame.size.width > 0.0 and notification.object.contentView.frame.size.height > 0.0:
                 # Force a re-layout of widgets
-                self.__dict__['interface'].content._update_layout(
-                    width=notification.object().contentView.frame.size.width,
-                    height=notification.object().contentView.frame.size.height
+                self.interface.content._update_layout(
+                    width=notification.object.contentView.frame.size.width,
+                    height=notification.object.contentView.frame.size.height
                 )
                 # Force a redraw with the new widget locations
-                # self.__dict__['interface'].content._impl.setNeedsDisplay_(True)
+                self.interface.content._impl.setNeedsDisplay_(True)
 
     ######################################################################
     # Toolbar delegate methods
     ######################################################################
 
-    @objc_method('@@')
+    @objc_method
     def toolbarAllowedItemIdentifiers_(self, toolbar):
         "Determine the list of available toolbar items"
         # This method is required by the Cocoa API, but isn't actually invoked,
         # because customizable toolbars are no longer a thing.
         allowed = NSMutableArray.alloc().init()
-        for item in self.__dict__['interface'].toolbar:
+        for item in self.interface.toolbar:
             allowed.addObject_(item.toolbar_identifier)
         return allowed
 
-    @objc_method('@@')
+    @objc_method
     def toolbarDefaultItemIdentifiers_(self, toolbar):
         "Determine the list of toolbar items that will display by default"
         default = NSMutableArray.alloc().init()
-        for item in self.__dict__['interface'].toolbar:
+        for item in self.interface.toolbar:
             default.addObject_(item.toolbar_identifier)
         return default
 
-    @objc_method('@@@B')
-    def toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar_(self, toolbar, identifier, insert):
+    @objc_method
+    def toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar_(self, toolbar, identifier, insert: bool):
         "Create the requested toolbar button"
-        item = self.__dict__['interface']._toolbar_items[identifier]
+        item = self.interface._toolbar_items[identifier]
         _item = NSToolbarItem.alloc().initWithItemIdentifier_(identifier)
         if item.label:
             _item.setLabel_(item.label)
@@ -70,19 +68,19 @@ class WindowDelegate(NSObject):
 
         return _item
 
-    @objc_method('B@')
-    def validateToolbarItem_(self, item):
+    @objc_method
+    def validateToolbarItem_(self, item) -> bool:
         "Confirm if the toolbar item should be enabled"
-        return self.__dict__['interface']._toolbar_items[item.itemIdentifier()].enabled
+        return self.interface._toolbar_items[item.itemIdentifier].enabled
 
     ######################################################################
     # Toolbar button press delegate methods
     ######################################################################
 
-    @objc_method('v@')
-    def onToolbarButtonPress_(self, obj):
+    @objc_method
+    def onToolbarButtonPress_(self, obj) -> None:
         "Invoke the action tied to the toolbar button"
-        item = self.__dict__['interface']._toolbar_items[obj.itemIdentifier()]
+        item = self.interface._toolbar_items[obj.itemIdentifier]
         process_callback(item.action(obj))
 
 
@@ -104,7 +102,7 @@ class Window(object):
     def startup(self):
         # OSX origin is bottom left of screen, and the screen might be
         # offset relative to other screens. Adjust for this.
-        screen = NSScreen.mainScreen().visibleFrame()
+        screen = NSScreen.mainScreen().visibleFrame
         position = NSMakeRect(
             screen.origin.x + self.position[0],
             screen.size.height + screen.origin.y - self.position[1] - self.size[1],
@@ -120,7 +118,7 @@ class Window(object):
         self._impl.setFrame_display_animate_(position, True, False)
 
         self._delegate = WindowDelegate.alloc().init()
-        self._delegate.__dict__['interface'] = self
+        self._delegate.interface = self
 
         self._impl.setDelegate_(self._delegate)
 
@@ -169,10 +167,10 @@ class Window(object):
     @title.setter
     def title(self, title):
         self._title = title
-        if self._title:
+        if self._title is not None:
             self._impl.setTitle_(self._title)
         else:
-            self._impl.setTitle_('')
+            self._impl.setTitle_('Toga')
 
     def show(self):
         self._impl.makeKeyAndOrderFront_(None)

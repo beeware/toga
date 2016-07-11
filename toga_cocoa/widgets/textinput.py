@@ -1,23 +1,14 @@
-from __future__ import print_function, absolute_import, division
+from rubicon.objc import text
 
-from rubicon.objc import text, objc_method
-
-from ..libs import NSTextField, NSTextFieldSquareBezel, NSRect, NSSize, NSPoint
+from ..libs import NSTextField, NSTextFieldSquareBezel
 from .base import Widget
 
 
-class TogaTextField(NSTextField):
-    @objc_method('v')
-    def viewWillDraw(self):
-        layout = self.__dict__['interface'].layout
-        self.setFrame_(NSRect(NSPoint(layout.left, layout.top), NSSize(layout.width, layout.height)))
-
-
 class TextInput(Widget):
-    _IMPL_CLASS = TogaTextField
+    _IMPL_CLASS = NSTextField
 
-    def __init__(self, initial=None, placeholder=None, readonly=False, **style):
-        super(TextInput, self).__init__(**style)
+    def __init__(self, initial=None, placeholder=None, readonly=False, style=None):
+        super(TextInput, self).__init__(style=style)
 
         self.startup()
 
@@ -27,7 +18,7 @@ class TextInput(Widget):
 
     def startup(self):
         self._impl = self._IMPL_CLASS.new()
-        self._impl.__dict__['interface'] = self
+        self._impl.interface = self
 
         self._impl.setBezeled_(True)
         self._impl.setBezelStyle_(NSTextFieldSquareBezel)
@@ -37,10 +28,11 @@ class TextInput(Widget):
         self._impl.setAutoresizesSubviews_(False)
 
         # Height of a text input is known and fixed.
-        if self.height is None:
-            self.height = self._impl.fittingSize().height
-        if self.min_width is None:
-            self.min_width = 100
+        # Width must be > 100
+        self.style.hint(
+            height=self._impl.fittingSize().height,
+            width=(100, None)
+        )
 
     @property
     def readonly(self):

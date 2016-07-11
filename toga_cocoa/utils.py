@@ -1,13 +1,11 @@
-from __future__ import print_function, absolute_import, division, unicode_literals
-
 import inspect
 
 from .libs import *
 
 
 class LongRunningTask(NSObject):
-    @objc_method('v@')
-    def performIteration_(self, info):
+    @objc_method
+    def performIteration_(self, info) -> None:
         try:
             delay = next(self.__dict__['interface'])
             NSTimer.scheduledTimerWithTimeInterval_target_selector_userInfo_repeats_(delay, self, get_selector('performIteration:'), None, False)

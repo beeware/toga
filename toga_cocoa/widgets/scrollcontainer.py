@@ -1,12 +1,10 @@
-from __future__ import print_function, absolute_import, division, unicode_literals
-
 from ..libs import *
 from .base import Widget
 
 
 class ScrollContainer(Widget):
-    def __init__(self, horizontal=True, vertical=True, **style):
-        super(ScrollContainer, self).__init__(**style)
+    def __init__(self, horizontal=True, vertical=True, style=None):
+        super(ScrollContainer, self).__init__(style=style)
         self.is_container = True
         self.horizontal = horizontal
         self.vertical = vertical
@@ -79,7 +77,4 @@ class ScrollContainer(Widget):
                 child_style[key] = value
 
         self._content._update_layout(**child_style)
-
-    def set_child_frames(self):
-        layout = self._content.layout
-        self._content._set_frame(NSRect(NSPoint(layout.left, layout.top), NSSize(layout.width, layout.height)))
+        self._content._apply_layout(self._content.style.layout)

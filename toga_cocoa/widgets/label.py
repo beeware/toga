@@ -3,12 +3,11 @@ from __future__ import print_function, absolute_import, division, unicode_litera
 from ..libs import *
 from .base import Widget
 from toga.constants import *
-from .textinput import TogaTextField
 
 
 class Label(Widget):
-    def __init__(self, text=None, alignment=LEFT_ALIGNED, **style):
-        super(Label, self).__init__(**style)
+    def __init__(self, text=None, alignment=LEFT_ALIGNED, style=None):
+        super(Label, self).__init__(style=None)
 
         self.startup()
 
@@ -16,8 +15,8 @@ class Label(Widget):
         self.value = text
 
     def startup(self):
-        self._impl = TogaTextField.alloc().init()
-        self._impl.__dict__['interface'] = self
+        self._impl = NSTextField.alloc().init()
+        self._impl.interface = self
 
         self._impl.setDrawsBackground_(False)
         self._impl.setEditable_(False)
@@ -28,10 +27,10 @@ class Label(Widget):
         self._impl.setAutoresizesSubviews_(False)
 
         # Width & height of a label is known and fixed.
-        if self.width is None:
-            self.width = self._impl.fittingSize().width
-        if self.height is None:
-            self.height = self._impl.fittingSize().height
+        self.style.hint(
+            height=self._impl.fittingSize().height,
+            width=self._impl.fittingSize().width
+        )
 
     @property
     def alignment(self):

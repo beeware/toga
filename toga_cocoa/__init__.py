@@ -7,6 +7,8 @@ from .command import *
 from .widgets.button import *
 from .widgets.container import *
 from .widgets.icon import *
+from .widgets.image import *
+from .widgets.imageview import *
 from .widgets.label import *
 from .widgets.dialog import *
 from .widgets.multilinetextinput import *
@@ -28,6 +30,8 @@ __all__ = [
     'Button',
     'Container',
     'Icon', 'TIBERIUS_ICON',
+    'Image',
+    'ImageView',
     'Label',
     'Dialog',
     'MultilineTextInput',
@@ -50,11 +54,4 @@ __all__ = [
 # __version__ = '1.2.3'       # Final Release
 # __version__ = '1.2.3.post1' # Post Release 1
 
-__version__ = '0.1.3.dev'
-
-# Toga uses the autolayout features introduced in
-# OS X 10.7 (Lion). Earlier versions won't work.
-import platform
-
-if tuple(int(v) for v in platform.mac_ver()[0].split('.')[:2]) < (10, 7):
-    raise RuntimeError('Toga requires OS X 10.7 (Lion) or greater.')
+__version__ = '0.2.0.dev1'

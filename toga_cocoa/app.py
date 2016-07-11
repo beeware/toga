@@ -85,7 +85,6 @@ class App(object):
     def main_loop(self):
         # Stimulate the build of the app
         self._startup()
-
         # Modify signal handlers to make sure Ctrl-C is caught and handled.
         signal.signal(signal.SIGINT, signal.SIG_DFL)
 

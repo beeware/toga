@@ -1,5 +1,3 @@
-from __future__ import print_function, absolute_import, division
-
 from rubicon.objc import *
 
 from ..libs import *
@@ -17,8 +15,8 @@ class TreeNode(object):
 class TogaTree(NSOutlineView):
 
     # OutlineViewDataSource methods
-    @objc_method('@@i@')
-    def outlineView_child_ofItem_(self, tree, child, item):
+    @objc_method
+    def outlineView_child_ofItem_(self, tree, child: int, item):
         if item is None:
             key = None
         else:
@@ -28,8 +26,8 @@ class TogaTree(NSOutlineView):
         node = self.interface._data[node_id]['node']
         return node
 
-    @objc_method('B@@')
-    def outlineView_isItemExpandable_(self, tree, item):
+    @objc_method
+    def outlineView_isItemExpandable_(self, tree, item) -> bool:
         if item is None:
             key = None
         else:
@@ -37,8 +35,8 @@ class TogaTree(NSOutlineView):
 
         return self.interface._data[key]['children'] is not None
 
-    @objc_method('i@@')
-    def outlineView_numberOfChildrenOfItem_(self, tree, item):
+    @objc_method
+    def outlineView_numberOfChildrenOfItem_(self, tree, item) -> int:
         if item is None:
             key = None
         else:
@@ -49,20 +47,20 @@ class TogaTree(NSOutlineView):
         except TypeError:
             return 0
 
-    @objc_method('@@@@')
+    @objc_method
     def outlineView_objectValueForTableColumn_byItem_(self, tree, column, item):
         column_index = int(column.identifier)
         return text(self.interface._data[id(item)]['data'][column_index])
 
     # OutlineViewDelegate methods
-    @objc_method('v@')
-    def outlineViewSelectionDidChange_(self, notification):
+    @objc_method
+    def outlineViewSelectionDidChange_(self, notification) -> None:
         print ("tree selection changed")
 
 
 class Tree(Widget):
-    def __init__(self, headings, **style):
-        super(Tree, self).__init__(**style)
+    def __init__(self, headings, style=None):
+        super(Tree, self).__init__(style=None)
         self.headings = headings
 
         self._tree = None

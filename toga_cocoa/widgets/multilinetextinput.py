@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from __future__ import print_function, absolute_import, division, unicode_literals
 
 <<<<<<< HEAD
@@ -7,6 +8,8 @@ from ..libs import get_NSString, NSTextView, NSScrollView, NSBezelBorder, text, 
 from ..libs import NSTextView, NSScrollView, NSBezelBorder
 >>>>>>> Factored Objective C interface into Rubicon library.
 =======
+=======
+>>>>>>> Updated to use new Colosseum API.
 from ..libs import NSTextView, NSScrollView, NSBezelBorder, NSViewWidthSizable, NSViewHeightSizable
 >>>>>>> Port all widgets to use CSS layout.
 from .base import Widget
@@ -14,8 +17,8 @@ from .base import Widget
 
 class MultilineTextInput(Widget):
 
-    def __init__(self, initial=None, **style):
-        super(MultilineTextInput, self).__init__(**style)
+    def __init__(self, initial=None, style=None):
+        super(MultilineTextInput, self).__init__(style=style)
         self.startup()
 
         self.value = initial
@@ -63,7 +66,8 @@ class MultilineTextInput(Widget):
 =======
             self._text.insertText_(value)
 
-    def _set_frame(self, frame):
+    def _apply_layout(self, layout):
+        frame = NSRect(NSPoint(layout.left, layout.top), NSSize(layout.width, layout.height))
         self._impl.setFrame_(frame)
         self._impl.contentView.setFrame_(frame)
         self._impl.setNeedsDisplay_(True)

@@ -1,5 +1,3 @@
-from __future__ import print_function, absolute_import, division, unicode_literals
-
 from ..libs import *
 from .base import Widget
 
@@ -7,24 +5,24 @@ from .base import Widget
 class TogaTable(NSTableView):
 
     # TableDataSource methods
-    @objc_method('i@')
-    def numberOfRowsInTableView_(self, table):
+    @objc_method
+    def numberOfRowsInTableView_(self, table) -> int:
         return len(self.__dict__['interface']._data)
 
-    @objc_method('@@@i')
-    def tableView_objectValueForTableColumn_row_(self, table, column, row):
+    @objc_method
+    def tableView_objectValueForTableColumn_row_(self, table, column, row: int):
         column_index = int(column.identifier)
         return self.__dict__['interface']._data[row][column_index]
 
     # TableDelegate methods
-    @objc_method('v@')
-    def tableViewSelectionDidChange_(self, notification):
+    @objc_method
+    def tableViewSelectionDidChange_(self, notification) -> None:
         print ("selection changed")
 
 
 class Table(Widget):
-    def __init__(self, headings, **style):
-        super(Table, self).__init__(**style)
+    def __init__(self, headings, style=None):
+        super(Table, self).__init__(style=style)
         self.headings = headings
 
         self._data = []

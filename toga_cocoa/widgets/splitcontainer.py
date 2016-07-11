@@ -1,29 +1,27 @@
-from __future__ import print_function, absolute_import, division, unicode_literals
-
 from ..libs import *
 from .base import Widget
 
 
 class TogaSplitViewDelegate(NSObject):
-    @objc_method('v@' + NSSizeEncoding)
-    def splitView_resizeSubviewsWithOldSize_(self, view, size):
+    @objc_method
+    def splitView_resizeSubviewsWithOldSize_(self, view, size: NSSize) -> None:
         view.adjustSubviews()
 
-    @objc_method('v@')
-    def splitViewDidResizeSubviews_(self, notification):
+    @objc_method
+    def splitViewDidResizeSubviews_(self, notification) -> None:
         # If the window is actually visible, and the split has moved,
         # a resize of all the content panels is required.
-        if self.__dict__['interface'].window._impl.isVisible:
-            # print ("SPLIT CONTAINER LAYOUT CHILDREN", self.__dict__['interface']._content[0]._impl.frame.size.width, self.__dict__['interface']._content[1]._impl.frame.size.width)
-            self.__dict__['interface']._update_child_layout()
+        if self.interface.window._impl.isVisible:
+            # print ("SPLIT CONTAINER LAYOUT CHILDREN", self.interface._content[0]._impl.frame.size.width, self.interface._content[1]._impl.frame.size.width)
+            self.interface._update_child_layout()
 
 
 class SplitContainer(Widget):
     HORIZONTAL = False
     VERTICAL = True
 
-    def __init__(self, direction=VERTICAL, **style):
-        super(SplitContainer, self).__init__(**style)
+    def __init__(self, direction=VERTICAL, style=None):
+        super(SplitContainer, self).__init__(style=style)
         self.is_container = True
         self._impl = None
         self._content = None
@@ -42,7 +40,7 @@ class SplitContainer(Widget):
         self._impl.setAutoresizesSubviews_(True)
 
         self._delegate = TogaSplitViewDelegate.alloc().init()
-        self._delegate.__dict__['interface'] = self
+        self._delegate.interface = self
 
         self._impl.setDelegate_(self._delegate)
 

@@ -1,19 +1,17 @@
-from __future__ import print_function, absolute_import, division, unicode_literals
-
 from ..libs import *
 from .base import Widget
 
 
 class TogaTabViewDelegate(NSObject):
-    @objc_method('v@@')
-    def tabView_didSelectTabViewItem_(self, view, item):
+    @objc_method
+    def tabView_didSelectTabViewItem_(self, view, item) -> None:
         pass
         # print ("Select tab view item")
 
 
 class OptionContainer(Widget):
-    def __init__(self, **style):
-        super(OptionContainer, self).__init__(**style)
+    def __init__(self, style=None):
+        super(OptionContainer, self).__init__(style=None)
         self.is_container = True
         self._content = []
 

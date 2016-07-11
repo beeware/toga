@@ -19,7 +19,7 @@ with io.open('README.rst', encoding='utf8') as readme:
 setup(
     name='toga-cocoa',
     version=version,
-    description='A Cocoa (OS X) backend for the Toga widget toolkit.',
+    description='A Cocoa (macOS) backend for the Toga widget toolkit.',
     long_description=long_description,
     author='Russell Keith-Magee',
     author_email='russell@keith-magee.com',
@@ -27,6 +27,7 @@ setup(
     packages=find_packages(exclude=['tests']),
     install_requires=[
         'rubicon-objc',
+        'toga',
     ],
     license='New BSD',
     classifiers=[

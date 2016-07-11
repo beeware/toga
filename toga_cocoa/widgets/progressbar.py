@@ -1,12 +1,10 @@
-from __future__ import print_function, absolute_import, division, unicode_literals
-
 from ..libs import *
 from .base import Widget
 
 
 class ProgressBar(Widget):
-    def __init__(self, max=None, value=None, **style):
-        super(ProgressBar, self).__init__(**style)
+    def __init__(self, max=None, value=None, style=None):
+        super(ProgressBar, self).__init__(style=style)
         self.max = max
 
         self.startup()

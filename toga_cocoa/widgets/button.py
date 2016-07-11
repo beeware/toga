@@ -1,5 +1,3 @@
-from __future__ import print_function, absolute_import, division, unicode_literals
-
 from rubicon.objc import objc_method, get_selector
 
 from .base import Widget
@@ -8,15 +6,15 @@ from ..utils import process_callback
 
 
 class TogaButton(NSButton):
-    @objc_method('v@')
-    def onPress_(self, obj):
-        if self.__dict__['interface'].on_press:
-            process_callback(self.__dict__['interface'].on_press(self.__dict__['interface']))
+    @objc_method
+    def onPress_(self, obj) -> None:
+        if self.interface.on_press:
+            process_callback(self.interface.on_press(self.interface))
 
 
 class Button(Widget):
-    def __init__(self, label, on_press=None, **style):
-        super(Button, self).__init__(**style)
+    def __init__(self, label, on_press=None, style=None):
+        super(Button, self).__init__(style=style)
         self.label = label
         self.on_press = on_press
 
@@ -24,7 +22,7 @@ class Button(Widget):
 
     def startup(self):
         self._impl = TogaButton.alloc().init()
-        self._impl.__dict__['interface'] = self
+        self._impl.interface = self
 
         self._impl.setBezelStyle_(NSRoundedBezelStyle)
         self._impl.setButtonType_(NSMomentaryPushInButton)
@@ -36,9 +34,9 @@ class Button(Widget):
         self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
         self._impl.setAutoresizesSubviews_(False)
 
-        # Height of a button is known.
-        if self.height is None:
-            self.height = self._impl.fittingSize().height
-        # Set the minimum width of a button to be a square
-        if self.min_width is None:
-            self.min_width = self._impl.fittingSize().width
+        # Height of a button is known. Set the minimum width
+        # of a button to be a square
+        self.style.hint(
+            height=self._impl.fittingSize().height,
+            width=(self._impl.fittingSize().width, None)
+        )

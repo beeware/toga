@@ -1,5 +1,3 @@
-from __future__ import print_function, absolute_import, division
-
 from rubicon.objc import objc_method
 
 from .base import Widget
@@ -7,15 +5,15 @@ from ..libs import *
 
 
 class TogaWebView(WebView):
-    @objc_method('v@@')
-    def webView_didFinishLoadForFrame_(self, sender, frame):
+    @objc_method
+    def webView_didFinishLoadForFrame_(self, sender, frame) -> None:
         # print ("FINISHED LOADING")
         pass
 
 
 class WebView(Widget):
-    def __init__(self, url=None, **style):
-        super(WebView, self).__init__(**style)
+    def __init__(self, url=None, style=None):
+        super(WebView, self).__init__(style=style)
 
         self.startup()
 
@@ -43,10 +41,11 @@ class WebView(Widget):
         self._url = value
         if value:
             request = NSURLRequest.requestWithURL_(NSURL.URLWithString_(self._url))
-            self._impl.mainFrame().loadRequest_(request)
+            self._impl.mainFrame.loadRequest_(request)
 
-    def _set_frame(self, frame):
+    def _apply_layout(self, layout):
         # When you change the frame of the webview, you also need to chnge
         # the size of the main frame that is part of the webview.
+        frame = NSRect(NSPoint(layout.left, layout.top), NSSize(layout.width, layout.height))
         self._impl.setFrame_(frame)
-        self._impl.mainFrame().frameView().setFrameSize_(frame.size)
+        self._impl.mainFrame.frameView.setFrameSize_(frame.size)
