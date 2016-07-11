@@ -52,7 +52,7 @@ class OptionContainer(Widget):
         layout.
         """
         for label, content in self._content:
-            frame = self._impl.contentRect()
+            frame = self._impl.contentRect
             content._update_layout(
                 left=frame.origin.x,
                 top=frame.origin.y,

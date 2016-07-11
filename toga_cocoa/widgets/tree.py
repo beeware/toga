@@ -13,7 +13,6 @@ class TreeNode(object):
 
 
 class TogaTree(NSOutlineView):
-
     # OutlineViewDataSource methods
     @objc_method
     def outlineView_child_ofItem_(self, tree, child: int, item):
@@ -87,7 +86,7 @@ class Tree(Widget):
         self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
 
         self._tree = TogaTree.alloc().init()
-        self._tree.__dict__['interface'] = self
+        self._tree.interface = self
         self._tree.setColumnAutoresizingStyle_(NSTableViewUniformColumnAutoresizingStyle)
         # Use autolayout for the inner widget.
         self._tree.setTranslatesAutoresizingMaskIntoConstraints_(True)
@@ -134,4 +133,5 @@ class Tree(Widget):
             'children': None,
         }
 
+        self._tree.reloadData()
         return id(node)
