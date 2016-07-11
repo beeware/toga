@@ -3,8 +3,9 @@ A slightly less toy example
 ===========================
 
 Most applications require a little more than a button on a page. Lets
-build a slightly more complex example - a Fahrenheit to Celcius converter:
+build a slightly more complex example - a Fahrenheit to Celcius converter (on Linux see `issue 38`_):
 
+.. _issue 38: https://github.com/pybee/toga/issues/38
 .. image:: screenshots/tutorial-1.png
 
 Here's the source code::
