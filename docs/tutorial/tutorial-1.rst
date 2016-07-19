@@ -3,7 +3,7 @@ A slightly less toy example
 ===========================
 
 Most applications require a little more than a button on a page. Lets
-build a slightly more complex example - a Fahrenheit to Celcius converter:
+build a slightly more complex example - a Fahrenheit to Celsius converter:
 
 .. image:: screenshots/tutorial-1.png
 
@@ -21,7 +21,7 @@ Here's the source code::
         c_input = toga.TextInput(readonly=True)
         f_input = toga.TextInput()
 
-        c_label = toga.Label('Celcius', alignment=toga.LEFT_ALIGNED)
+        c_label = toga.Label('Celsius', alignment=toga.LEFT_ALIGNED)
         f_label = toga.Label('Fahrenheit', alignment=toga.LEFT_ALIGNED)
         join_label = toga.Label('is equivalent to', alignment=toga.RIGHT_ALIGNED)
 
