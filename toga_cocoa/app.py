@@ -3,6 +3,8 @@ from __future__ import print_function, absolute_import, division, unicode_litera
 import signal
 import sys
 
+from toga.interface.app import App as AppInterface
+
 from .libs import *
 from .window import Window
 from .widgets.icon import Icon, TIBERIUS_ICON
@@ -17,7 +19,7 @@ class MainWindow(Window):
         app.terminate_(self._delegate)
 
 
-class App(object):
+class App(AppInterface):
 
     def __init__(self, name, app_id, icon=None, startup=None):
         self.name = name
