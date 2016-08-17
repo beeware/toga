@@ -7,6 +7,7 @@ from .constants import *
 # Work around import loop issues (toga -> platform -> toga.interface) import
 # all these things before we import the platform stuff
 import toga.interface.app
+import toga.interface.widgets.container
 
 __all__ = [
     '__version__',
