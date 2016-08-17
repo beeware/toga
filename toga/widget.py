@@ -2,6 +2,19 @@ from colosseum import CSSNode
 
 
 class Widget(object):
+    '''This is the base widget implementation that all widgets in Toga
+    derive from.
+
+    It defines the interface for core functionality for children, styling,
+    layout and ownership by specific App and Window.
+
+    Apart from the above, this is an abstract implementation which must
+    be made concrete by some platform-specific code for the _apply_layout
+    method.
+
+    :param style: an optional CSSNode object; if none is provided then a
+                  new one will be created for the widget.
+    '''
     def __init__(self, style=None):
         self._parent = None
         self._children = None
@@ -20,20 +33,28 @@ class Widget(object):
 
     @property
     def style(self):
+        '''The CSSNode style for this widget.
+        '''
         return self._style
 
     @property
     def parent(self):
+        '''The parent of this widget.
+        '''
         return self._parent
 
     @property
     def children(self):
+        '''The list of child Widgets for this widget.
+        '''
         if self._children is None:
             return []
         else:
             return self._children
 
     def add(self, child):
+        '''Add a new child Widget to this one.
+        '''
         if self._children is None:
             raise ValueError('Widget cannot have children')
         self._children.append(child)
@@ -44,6 +65,8 @@ class Widget(object):
 
     @property
     def app(self):
+        '''The App to which this widget belongs.
+        '''
         return self._app
 
     @app.setter
@@ -61,6 +84,8 @@ class Widget(object):
 
     @property
     def window(self):
+        '''The Window to which this widget belongs.
+        '''
         return self._window
 
     @window.setter
