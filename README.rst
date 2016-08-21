@@ -45,9 +45,9 @@ install from source using pip, there is a `known bug in pip`_ that causes
 dependencies to not be installed. It may be necessary to manually install
 the following pre-requisites:
 
-* OS X: ``pip install toga-cocoa``
-* Linux: ``pip install toga-gtk toga-cassowary cassowary``
-* Win32: ``pip install toga-win32 toga-cassowary cassowary``
+* OS X: ``pip install toga-cocoa colosseum rubicon-objc``
+* Linux: ``pip install toga-gtk colosseum``
+* Win32: ``pip install toga-win32 colosseum``
 
 .. _known bug in pip: https://github.com/pypa/pip/issues/1951
 

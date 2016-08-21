@@ -1,15 +1,6 @@
 #/usr/bin/env python
 import io
-import re
-from setuptools import setup, find_packages
-
-
-with io.open('./toga/__init__.py', encoding='utf8') as version_file:
-    version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]", version_file.read(), re.M)
-    if version_match:
-        version = version_match.group(1)
-    else:
-        raise RuntimeError("Unable to find version string.")
+from setuptools import setup
 
 
 with io.open('README.rst', encoding='utf8') as readme:
@@ -18,28 +9,29 @@ with io.open('README.rst', encoding='utf8') as readme:
 
 setup(
     name='toga',
-    version=version,
+    version='0.2.0',
     description='A Python native, OS native GUI toolkit.',
     long_description=long_description,
     author='Russell Keith-Magee',
     author_email='russell@keith-magee.com',
     url='http://pybee.org/toga',
-    packages=find_packages(exclude=['docs', 'tests']),
-    package_data={
-        'toga': ['resources/*.icns', 'resources/*.png'],
-    },
-    install_requires=[
-        'colosseum>=0.1.0'
-    ],
     extras_require={
-        # Manually requested platform backends
-        'cocoa': ['toga-cocoa'],
-        'gtk': ['toga-gtk'],
-        'win32': ['toga-win32'],
-        'ios': ['toga-iOS'],
-        'android': ['toga-android'],
-        'django': ['toga-django'],
-        # 'qt': ['toga-qt'],
+        # Automatically installed platform backends
+        ':sys_platform=="win32"': ['toga-win32'],
+        ':sys_platform=="linux"': ['toga-gtk'],
+        ':sys_platform=="linux2"': ['toga-gtk'],
+        ':sys_platform=="darwin"': ['toga-cocoa'],
+
+        # # Manually requested platform backends
+        # 'cocoa': ['toga-cocoa'],
+        # 'macos': ['toga-cocoa'],
+        # 'gtk': ['toga-gtk'],
+        # 'linux': ['toga-gtk'],
+        # 'win32': ['toga-win32'],
+        # 'ios': ['toga-iOS'],
+        # 'android': ['toga-android'],
+        # 'django': ['toga-django'],
+        # # 'qt': ['toga-qt'],
     },
     license='New BSD',
     classifiers=[
@@ -54,5 +46,4 @@ setup(
         'Topic :: Software Development :: User Interfaces',
         'Topic :: Software Development :: Widget Sets',
     ],
-    test_suite='tests',
 )
