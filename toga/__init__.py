@@ -4,6 +4,10 @@ import sys
 
 from .constants import *
 
+# Work around import loop issues (toga -> platform -> toga.interface) import
+# all these things before we import the platform stuff
+import toga.interface.app
+
 __all__ = [
     '__version__',
     'platform'
