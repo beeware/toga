@@ -17,7 +17,7 @@ with io.open('README.rst', encoding='utf8') as readme:
 
 
 setup(
-    name='toga',
+    name='toga-core',
     version=version,
     description='A Python native, OS native GUI toolkit.',
     long_description=long_description,
@@ -31,16 +31,6 @@ setup(
     install_requires=[
         'colosseum>=0.1.0'
     ],
-    extras_require={
-        # Manually requested platform backends
-        'cocoa': ['toga-cocoa'],
-        'gtk': ['toga-gtk'],
-        'win32': ['toga-win32'],
-        'ios': ['toga-iOS'],
-        'android': ['toga-android'],
-        'django': ['toga-django'],
-        # 'qt': ['toga-qt'],
-    },
     license='New BSD',
     classifiers=[
         'Development Status :: 3 - Alpha',
