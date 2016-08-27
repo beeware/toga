@@ -1,7 +1,7 @@
 from __future__ import print_function, absolute_import, division, unicode_literals
 
+import os
 import signal
-import sys
 
 from toga.interface.app import App as AppInterface
 
@@ -15,13 +15,73 @@ class MainWindow(Window):
         super(MainWindow, self).__init__(title, position, size)
 
     def on_close(self):
-        app = NSApplication.sharedApplication()
-        app.terminate_(self._delegate)
+        self.app._impl.terminate_(self._delegate)
 
 
+<<<<<<< HEAD
 class App(AppInterface):
+=======
+class AppDelegate(NSObject):
+    @objc_method
+    def applicationOpenUntitledFile_(self, sender) -> bool:
+        # controller = NSDocumentController.sharedDocumentController()
+        # with open('../../../../types.log', 'w') as out:
+        #     out.write("CLASSNAMES:\n")
+        # for i in range(0, controller.documentClassNames.count):
+        #     classname = controller.documentClassNames.objectAtIndex_(i)
+        #     out.write("CLASSNAME", classname)
 
-    def __init__(self, name, app_id, icon=None, startup=None):
+        # NSDocumentController.sharedDocumentController().openDocument_(None)
+
+        panel = NSOpenPanel.openPanel()
+
+        # panel.showsResizeIndicator = True
+        # panel.showsHiddenFiles = False
+        # panel.canChooseDirectories = False
+        # panel.canCreateDirectories = False
+        # panel.allowsMultipleSelection = False
+
+
+        # panel.allowedFileTypes = NSArray.alloc().initWithObjects_("podium", None)
+
+        print("Open documents of type", NSDocumentController.sharedDocumentController().defaultType)
+
+        fileTypes = NSArray.alloc().initWithObjects_(*([d for d in self._interface.document_types] + [None]))
+        NSDocumentController.sharedDocumentController().runModalOpenPanel_forTypes_(panel, fileTypes)
+        # panel.runModal()
+>>>>>>> Updated toga to support Podium requirements.
+
+        print("Untitled File opened?", panel.URLs)
+        self.application_openFiles_(None, panel.URLs)
+
+        return True
+
+    @objc_method
+    def addDocument_(self, document) -> None:
+        print("Add Document", document)
+        super().addDocument_(document)
+
+    @objc_method
+    def applicationShouldOpenUntitledFile_(self, sender) -> bool:
+        return True
+
+    @objc_method
+    def application_openFiles_(self, app, filenames) -> None:
+        print("open file ", filenames)
+        for i in range(0, filenames.count):
+            filename = filenames.objectAtIndex_(i)
+            if filename.__dict__['objc_class'].__dict__['name'] == 'NSURL':
+                print("ALREADY A URL")
+                fileURL = filename
+            else:
+                print("convert", filename, 'to URL')
+                fileURL = NSURL.fileURLWithPath_(filename)
+            self._interface.openFile(fileURL.absoluteString)
+            # NSDocumentController.sharedDocumentController().openDocumentWithContentsOfURL_display_completionHandler_(fileURL, True, None)
+
+
+class App(object):
+    def __init__(self, name, app_id, icon=None, startup=None, document_types=None):
         self.name = name
         self.app_id = app_id
 
@@ -31,13 +91,23 @@ class App(AppInterface):
 
         self._startup_method = startup
 
+        self.document_types = document_types
+        self._documents = []
+
     def _startup(self):
         self._impl = NSApplication.sharedApplication()
         self._impl.setActivationPolicy_(NSApplicationActivationPolicyRegular)
 
         self._impl.setApplicationIconImage_(self.icon._impl)
 
-        app_name = sys.argv[0]
+        self.resource_path = os.path.dirname(os.path.dirname(NSBundle.mainBundle().bundlePath))
+        print("RESOURCE PATH", self.resource_path)
+
+        appDelegate = AppDelegate.alloc().init()
+        appDelegate._interface = self
+        self._impl.setDelegate_(appDelegate)
+
+        app_name = self.name
 
         self.menu = NSMenu.alloc().initWithTitle_('MainMenu')
 
@@ -70,19 +140,27 @@ class App(AppInterface):
         # Set the menu for the app.
         self._impl.setMainMenu_(self.menu)
 
+        # Call user code to populate the main window
+        self.startup()
+
+    def startup(self):
         # Create the main window
         self.main_window = MainWindow(self.name)
         self.main_window.app = self
 
-        # Call user code to populate the main window
-        self.startup()
+        if self._startup_method:
+            self.main_window.content = self._startup_method(self)
 
         # Show the main window
         self.main_window.show()
 
-    def startup(self):
-        if self._startup_method:
-            self.main_window.content = self._startup_method(self)
+    @property
+    def documents(self):
+        return self._documents
+
+    def add_document(self, doc):
+        doc.app = self
+        self._documents.append(doc)
 
     def main_loop(self):
         # Stimulate the build of the app

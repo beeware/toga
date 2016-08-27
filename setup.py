@@ -27,7 +27,7 @@ setup(
     packages=find_packages(exclude=['tests']),
     install_requires=[
         'rubicon-objc',
-        'toga',
+        'toga-core',
     ],
     license='New BSD',
     classifiers=[

@@ -85,7 +85,7 @@ class WindowDelegate(NSObject):
 
 
 class Window(object):
-    def __init__(self, title=None, position=(100, 100), size=(640, 480), toolbar=None):
+    def __init__(self, title=None, position=(100, 100), size=(640, 480), toolbar=None, resizeable=True, closeable=True, minimizable=True):
         self._impl = None
         self._app = None
         self._toolbar = None
@@ -93,6 +93,10 @@ class Window(object):
 
         self.position = position
         self.size = size
+
+        self.resizeable = resizeable
+        self.closeable = closeable
+        self.minimizable = minimizable
 
         self.startup()
 
@@ -109,9 +113,20 @@ class Window(object):
             self.size[0],
             self.size[1]
         )
+
+        mask = NSTitledWindowMask
+        if self.closeable:
+            mask |= NSClosableWindowMask
+
+        if self.resizeable:
+            mask |= NSResizableWindowMask
+
+        if self.minimizable:
+            mask |= NSMiniaturizableWindowMask
+
         self._impl = NSWindow.alloc().initWithContentRect_styleMask_backing_defer_(
             position,
-            NSTitledWindowMask | NSClosableWindowMask | NSResizableWindowMask | NSMiniaturizableWindowMask,
+            mask,
             NSBackingStoreBuffered,
             False
         )
@@ -180,6 +195,9 @@ class Window(object):
             width=self.content._impl.frame.size.width,
             height=self.content._impl.frame.size.height
         )
+
+    def close(self):
+        self._impl.close()
 
     def on_close(self):
         pass
