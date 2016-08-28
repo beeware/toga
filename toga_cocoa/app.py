@@ -41,7 +41,6 @@ class AppDelegate(NSObject):
         # panel.canCreateDirectories = False
         # panel.allowsMultipleSelection = False
 
-
         # panel.allowedFileTypes = NSArray.alloc().initWithObjects_("podium", None)
 
         print("Open documents of type", NSDocumentController.sharedDocumentController().defaultType)
@@ -70,12 +69,20 @@ class AppDelegate(NSObject):
         print("open file ", filenames)
         for i in range(0, filenames.count):
             filename = filenames.objectAtIndex_(i)
-            if filename.__dict__['objc_class'].__dict__['name'] == 'NSURL':
+            if isinstance(filename, str):
+                print("convert", filename, 'to URL')
+                fileURL = NSURL.fileURLWithPath_(filename)
+
+            elif filename.__dict__['objc_class'].__dict__['name'] == 'NSURL':
+                # This case only exists because we aren't using the
+                # DocumentController to display the file open dialog.
+                # If we were, *all* filenames passed in would be
+                # string paths.
                 print("ALREADY A URL")
                 fileURL = filename
             else:
-                print("convert", filename, 'to URL')
-                fileURL = NSURL.fileURLWithPath_(filename)
+                return
+
             self._interface.openFile(fileURL.absoluteString)
             # NSDocumentController.sharedDocumentController().openDocumentWithContentsOfURL_display_completionHandler_(fileURL, True, None)
 
