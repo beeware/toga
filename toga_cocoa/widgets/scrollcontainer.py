@@ -52,7 +52,7 @@ class ScrollContainer(Widget):
             self._content.window = self.window
 
     def _apply_layout(self):
-        print("SET SCROLL CONTAINER FRAME", self, self.style.layout, self.content.style.layout)
+        # print("SET SCROLL CONTAINER FRAME", self, self.style.layout, self.content.style.layout)
         # content_frame = NSRect(
         #     NSPoint(self.style.layout.left, self.style.layout.top),
         #     NSSize(self.style.layout.width, self.style.layout.height)
@@ -68,9 +68,9 @@ class ScrollContainer(Widget):
         # print("BOUNDS SET")
         self._constraints.update()
 
-        print("SELF", (self._impl.frame.size.width, self._impl.frame.size.height), (self._impl.frame.origin.x, self._impl.frame.origin.y))
-        print("CONTENT", (self._impl.contentView.frame.size.width, self._impl.contentView.frame.size.height), (self._impl.contentView.frame.origin.x, self._impl.contentView.frame.origin.y))
-        print("DOC", (self._impl.documentView.frame.size.width, self._impl.documentView.frame.size.height), (self._impl.documentView.frame.origin.x, self._impl.documentView.frame.origin.y))
+        # print("SELF", (self._impl.frame.size.width, self._impl.frame.size.height), (self._impl.frame.origin.x, self._impl.frame.origin.y))
+        # print("CONTENT", (self._impl.contentView.frame.size.width, self._impl.contentView.frame.size.height), (self._impl.contentView.frame.origin.x, self._impl.contentView.frame.origin.y))
+        # print("DOC", (self._impl.documentView.frame.size.width, self._impl.documentView.frame.size.height), (self._impl.documentView.frame.origin.x, self._impl.documentView.frame.origin.y))
 
     # def _update_child_layout(self, **style):
     #     """Force a layout update on the children of the scroll container.
@@ -104,6 +104,6 @@ class ScrollContainer(Widget):
     #     self._content._apply_layout()
 
     def _update_child_layout(self):
-        print("UPDATE CHILD LAYOUT - scrollcontainer")
+        # print("UPDATE CHILD LAYOUT - scrollcontainer")
         if self._content is not None:
             self._content._update_layout()
