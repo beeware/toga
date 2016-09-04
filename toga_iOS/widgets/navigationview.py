@@ -22,8 +22,8 @@ class TogaNavigationController(UINavigationController):
 
 
 class NavigationView(Widget):
-    def __init__(self, title, content, on_action=None, **style):
-        super(NavigationView, self).__init__(**style)
+    def __init__(self, title, content, on_action=None, style=None):
+        super().__init__(style=style)
         self.title = title
         self.content = content
         self.on_action = on_action

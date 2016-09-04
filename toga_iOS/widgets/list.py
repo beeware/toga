@@ -45,8 +45,8 @@ class TogaTableViewController(UITableViewController):
 
 
 class List(Widget):
-    def __init__(self, data=None, on_delete=None, on_refresh=None, **style):
-        super(Widget, self).__init__(**style)
+    def __init__(self, data=None, on_delete=None, on_refresh=None, style=None):
+        super().__init__(style=style)
         self.data = data
         self.on_delete = on_delete
         self.on_refresh = on_refresh

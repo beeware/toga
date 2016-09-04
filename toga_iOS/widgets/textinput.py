@@ -5,12 +5,8 @@ from .base import Widget
 
 
 class TextInput(Widget):
-    def __init__(self, initial=None, placeholder=None, readonly=False, **style):
-        default_style = {
-            'margin': 8
-        }
-        default_style.update(style)
-        super(TextInput, self).__init__(**default_style)
+    def __init__(self, initial=None, placeholder=None, readonly=False, style=None):
+        super(TextInput, self).__init__(style=None)
 
         self.startup()
 

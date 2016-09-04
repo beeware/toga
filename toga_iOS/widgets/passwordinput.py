@@ -2,9 +2,9 @@ from .textinput import TextInput
 
 
 class PasswordInput(TextInput):
-    def __init__(self):
-        super(PasswordInput, self).__init__()
+    def __init__(self, placeholder=None, style=None):
+        super().__init__(placeholder=placeholder, style=style)
 
     def startup(self):
-        super(PasswordInput, self).startup()
+        super().startup()
         self._impl.setSecureTextEntry_(True)

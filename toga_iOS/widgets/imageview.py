@@ -4,13 +4,8 @@ from toga.constants import *
 
 
 class ImageView(Widget):
-    def __init__(self, image=None, **style):
-        default_style = {
-            'width': 200,
-            'height': 200,
-        }
-        default_style.update(style)
-        super(ImageView, self).__init__(**default_style)
+    def __init__(self, image=None, style=None):
+        super().__init__(style=style)
 
         self.startup()
 

@@ -1,5 +1,7 @@
 from rubicon.objc import objc_method
 
+from toga.interface.app import App as AppInterface
+
 from .libs import *
 from .window import Window
 
@@ -31,10 +33,10 @@ class PythonAppDelegate(UIResponder):
     #     )
 
 
-class App(object):
+class App(AppInterface):
     _app = None
 
-    def __init__(self, name, app_id, startup=None):
+    def __init__(self, name, app_id, startup=None, document_types=None):
         App._app = self
 
         self.name = name
@@ -56,3 +58,8 @@ class App(object):
     def show_dialog(self, dialog):
         controller = UINavigationController.alloc().initWithRootViewController_(dialog._impl)
         self.main_window.content._impl.presentModalViewController_animated_(controller, True)
+
+    def main_loop(self):
+        # Main loop is a no-op on iOS; the app loop is integrated with the
+        # main iOS event loop.
+        pass

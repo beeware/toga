@@ -32,14 +32,16 @@ class Window(object):
         self._content.window = self
         self._content.app = self.app
 
-        self._impl.rootViewController = self._content._impl
+        self._controller = UIViewController.alloc().init()
+        self._impl.rootViewController = self._controller
 
     def show(self):
         self._impl.makeKeyAndVisible()
 
         # self._impl.visualizeConstraints_(self._impl.contentView().constraints())
         # Do the first layout render.
+        print("SHOW")
         self.content._update_layout(
-            width=self.content._impl.view.frame.size.width,
-            height=self.content._impl.view.frame.size.height
+            width=self.content._impl.frame.size.width,
+            height=self.content._impl.frame.size.height
         )

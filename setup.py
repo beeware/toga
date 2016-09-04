@@ -26,8 +26,8 @@ setup(
     url='http://pybee.org/toga',
     packages=find_packages(exclude=['tests']),
     install_requires=[
-        'toga',
         'rubicon-objc',
+        'toga-core',
     ],
     license='New BSD',
     classifiers=[
@@ -37,8 +37,9 @@ setup(
         'Environment :: Handhelds/PDA\'s',
         'Operating System :: iOS ',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: Only',
         'Topic :: Software Development',
         'Topic :: Software Development :: User Interfaces',
         'Topic :: Software Development :: Widget Sets',
