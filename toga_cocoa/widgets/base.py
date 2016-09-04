@@ -123,6 +123,10 @@ class Constraints:
 
 
 class Widget(WidgetBase):
+    def _add_child(self, child):
+        self._impl.addSubview_(child._impl)
+        child._constraints.container = self
+
     def _add_constraints(self):
         self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
         self._constraints = Constraints(self)
