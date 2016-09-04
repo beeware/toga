@@ -11,9 +11,9 @@ class TogaSplitViewDelegate(NSObject):
     def splitViewDidResizeSubviews_(self, notification) -> None:
         # If the window is actually visible, and the split has moved,
         # a resize of all the content panels is required.
-        if self.interface.window._impl.isVisible:
-            # print ("SPLIT CONTAINER LAYOUT CHILDREN", self.interface._content[0]._impl.frame.size.width, self.interface._content[1]._impl.frame.size.width)
-            self.interface._update_child_layout()
+        if self._interface.window._impl.isVisible:
+            # print ("SPLIT CONTAINER LAYOUT CHILDREN", self._interface._content[0]._impl.frame.size.width, self._interface._content[1]._impl.frame.size.width)
+            self._interface._update_child_layout()
 
 
 class SplitContainer(Widget):
@@ -22,7 +22,6 @@ class SplitContainer(Widget):
 
     def __init__(self, direction=VERTICAL, style=None):
         super(SplitContainer, self).__init__(style=style)
-        self.is_container = True
         self._impl = None
         self._content = None
         self._right_content = None
@@ -35,14 +34,13 @@ class SplitContainer(Widget):
         self._impl = NSSplitView.alloc().init()
         self._impl.setVertical_(self.direction)
 
-        # Disable all autolayout functionality
-        self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
-        self._impl.setAutoresizesSubviews_(True)
-
         self._delegate = TogaSplitViewDelegate.alloc().init()
-        self._delegate.interface = self
+        self._delegate._interface = self
 
         self._impl.setDelegate_(self._delegate)
+
+        # Add the layout constraints
+        self._add_constraints()
 
     @property
     def content(self):
@@ -59,7 +57,7 @@ class SplitContainer(Widget):
             cont.window = self.window
             cont.app = self.app
             self._impl.addSubview_(cont._impl)
-            cont._impl.setTranslatesAutoresizingMaskIntoConstraints_(True)
+            # cont._constraints.container = self
 
     def _set_app(self, app):
         if self._content:
@@ -71,7 +69,7 @@ class SplitContainer(Widget):
             for content in self._content:
                 content.window = self.window
 
-    def _update_child_layout(self, **style):
+    def _update_child_layout(self):
         """Force a layout update on the widget.
 
         The update request can be accompanied by additional style information

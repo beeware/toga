@@ -54,6 +54,9 @@ class MultilineTextInput(Widget):
 
         self._impl.setDocumentView_(self._text)
 
+        # Add the layout constraints
+        self._add_constraints()
+
     @property
     def value(self):
         return cfstring_to_string(self._text.string)

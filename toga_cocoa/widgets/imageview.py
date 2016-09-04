@@ -13,16 +13,12 @@ class ImageView(Widget):
 
     def startup(self):
         self._impl = NSImageView.alloc().init()
-        self._impl.__dict__['interface'] = self
+        self._impl._interface = self
 
         # self._impl.setImageFrameStyle_(NSImageFrameGrayBezel)
         self._impl.setImageFrameStyle_(NSImageFrameNone)
         self._impl.setImageAlignment_(NSImageAlignCenter)
         self._impl.setImageScaling_(NSImageScaleProportionallyUpOrDown)
-
-        # Disable all autolayout functionality
-        self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
-        self._impl.setAutoresizesSubviews_(False)
 
         # self._impl.setWantsLayer_(True)
         # self._impl.setBackgroundColor_(NSColor.blueColor())
@@ -31,6 +27,9 @@ class ImageView(Widget):
         #     self.width = self._impl.fittingSize().width
         # if self.height is None:
         #     self.height = self._impl.fittingSize().height
+
+        # Add the layout constraints
+        self._add_constraints()
 
     # @property
     # def alignment(self):

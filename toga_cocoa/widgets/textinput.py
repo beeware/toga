@@ -18,14 +18,10 @@ class TextInput(Widget):
 
     def startup(self):
         self._impl = self._IMPL_CLASS.new()
-        self._impl.interface = self
+        self._impl._interface = self
 
         self._impl.setBezeled_(True)
         self._impl.setBezelStyle_(NSTextFieldSquareBezel)
-
-        # Disable all autolayout functionality
-        self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
-        self._impl.setAutoresizesSubviews_(False)
 
         # Height of a text input is known and fixed.
         # Width must be > 100
@@ -33,6 +29,9 @@ class TextInput(Widget):
             height=self._impl.fittingSize().height,
             width=(100, None)
         )
+
+        # Add the layout constraints
+        self._add_constraints()
 
     @property
     def readonly(self):

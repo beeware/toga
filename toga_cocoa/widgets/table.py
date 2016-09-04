@@ -7,12 +7,12 @@ class TogaTable(NSTableView):
     # TableDataSource methods
     @objc_method
     def numberOfRowsInTableView_(self, table) -> int:
-        return len(self.__dict__['interface']._data)
+        return len(self._interface._data)
 
     @objc_method
     def tableView_objectValueForTableColumn_row_(self, table, column, row: int):
         column_index = int(column.identifier)
-        return self.__dict__['interface']._data[row][column_index]
+        return self._interface._data[row][column_index]
 
     # TableDelegate methods
     @objc_method
@@ -38,15 +38,15 @@ class Table(Widget):
         self._impl.setAutohidesScrollers_(False)
         self._impl.setBorderType_(NSBezelBorder)
 
-        # Disable all autolayout functionality on the outer widget
-        self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
+        # # Disable all autolayout functionality on the outer widget
+        # self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
 
         self._table = TogaTable.alloc().init()
-        self._table.__dict__['interface'] = self
+        self._table._interface = self
         self._table.setColumnAutoresizingStyle_(NSTableViewUniformColumnAutoresizingStyle)
 
-        # Use autolayout for the inner widget.
-        self._table.setTranslatesAutoresizingMaskIntoConstraints_(True)
+        # # Use autolayout for the inner widget.
+        # self._table.setTranslatesAutoresizingMaskIntoConstraints_(True)
 
         # Create columns for the table
         self._columns = [
@@ -66,6 +66,9 @@ class Table(Widget):
 
         # Embed the table view in the scroll view
         self._impl.setDocumentView_(self._table)
+
+        # Add the layout constraints
+        self._add_constraints()
 
     def insert(self, index, *data):
         if len(data) != len(self.headings):

@@ -113,6 +113,9 @@ class Tree(Widget):
         # Embed the tree view in the scroll view
         self._impl.setDocumentView_(self._tree)
 
+        # Add the layout constraints
+        self._add_constraints()
+
     def insert(self, parent, index, *data):
         if len(data) != len(self.headings):
             raise Exception('Data size does not match number of headings')

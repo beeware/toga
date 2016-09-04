@@ -1,3 +1,5 @@
+from enum import Enum
+
 from ctypes import *
 from ctypes import util
 
@@ -153,29 +155,29 @@ NSLayoutAttributeHeight = 8
 NSLayoutAttributeCenterX = 9
 NSLayoutAttributeCenterY = 10
 NSLayoutAttributeBaseline = 11
-
 NSLayoutAttributeNotAnAttribute = 0
 
-NSLayoutFormatAlignAllLeft = (1 << NSLayoutAttributeLeft)
-NSLayoutFormatAlignAllRight = (1 << NSLayoutAttributeRight)
-NSLayoutFormatAlignAllTop = (1 << NSLayoutAttributeTop)
-NSLayoutFormatAlignAllBottom = (1 << NSLayoutAttributeBottom)
-NSLayoutFormatAlignAllLeading = (1 << NSLayoutAttributeLeading)
-NSLayoutFormatAlignAllTrailing = (1 << NSLayoutAttributeTrailing)
-NSLayoutFormatAlignAllCenterX = (1 << NSLayoutAttributeCenterX)
-NSLayoutFormatAlignAllCenterY = (1 << NSLayoutAttributeCenterY)
-NSLayoutFormatAlignAllBaseline = (1 << NSLayoutAttributeBaseline)
+# NSLayoutFormatAlignAllLeft = (1 << NSLayoutAttributeLeft)
+# NSLayoutFormatAlignAllRight = (1 << NSLayoutAttributeRight)
+# NSLayoutFormatAlignAllTop = (1 << NSLayoutAttributeTop)
+# NSLayoutFormatAlignAllBottom = (1 << NSLayoutAttributeBottom)
+# NSLayoutFormatAlignAllLeading = (1 << NSLayoutAttributeLeading)
+# NSLayoutFormatAlignAllTrailing = (1 << NSLayoutAttributeTrailing)
+# NSLayoutFormatAlignAllCenterX = (1 << NSLayoutAttributeCenterX)
+# NSLayoutFormatAlignAllCenterY = (1 << NSLayoutAttributeCenterY)
+# NSLayoutFormatAlignAllBaseline = (1 << NSLayoutAttributeBaseline)
 
-NSLayoutFormatAlignmentMask = 0xFFFF
+# NSLayoutFormatAlignmentMask = 0xFFFF
 
-NSLayoutFormatDirectionLeadingToTrailing = 0 << 16
-NSLayoutFormatDirectionLeftToRight = 1 << 16
-NSLayoutFormatDirectionRightToLeft = 2 << 16
+# NSLayoutFormatDirectionLeadingToTrailing = 0 << 16
+# NSLayoutFormatDirectionLeftToRight = 1 << 16
+# NSLayoutFormatDirectionRightToLeft = 2 << 16
 
-NSLayoutFormatDirectionMask = 0x3 << 16
+# NSLayoutFormatDirectionMask = 0x3 << 16
 
-NSLayoutConstraintOrientationHorizontal = 0,
-NSLayoutConstraintOrientationVertical = 1
+# NSLayoutConstraintOrientationHorizontal = 0,
+# NSLayoutConstraintOrientationVertical = 1
+
 
 class NSEdgetInsets(Structure):
     _fields_ = [
@@ -185,16 +187,20 @@ class NSEdgetInsets(Structure):
         ("right", CGFloat),
     ]
 
+
 def NSEdgeInsetsMake(top, left, bottom, right):
     return NSEdgeInsets(top, left, bottom, right)
 
-NSLayoutPriorityRequired = 1000
-NSLayoutPriorityDefaultHigh = 750
-NSLayoutPriorityDragThatCanResizeWindow = 510
-NSLayoutPriorityWindowSizeStayPut = 500
-NSLayoutPriorityDragThatCannotResizeWindow = 490
-NSLayoutPriorityDefaultLow = 250
-NSLayoutPriorityFittingSizeCompression = 50
+
+class NSLayoutPriority(Enum):
+    Required = 1000
+    DefaultHigh = 750
+    DragThatCanResizeWindow = 510
+    WindowSizeStayPut = 500
+    DragThatCannotResizeWindow = 490
+    DefaultLow = 250
+    FittingSizeCompression = 50
+
 
 # NSAlert.h
 NSWarningAlertStyle = 0

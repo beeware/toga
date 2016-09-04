@@ -20,14 +20,13 @@ class OptionContainer(Widget):
     def startup(self):
         self._impl = NSTabView.alloc().init()
 
-        # Disable all autolayout functionality
-        self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
-        self._impl.setAutoresizesSubviews_(False)
-
         self._delegate = TogaTabViewDelegate.alloc().init()
         self._delegate.__dict__['interface'] = self
 
         self._impl.setDelegate_(self._delegate)
+
+        # Add the layout constraints
+        self._add_constraints()
 
     def add(self, label, container):
         self._content.append((label, container))

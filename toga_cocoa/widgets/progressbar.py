@@ -21,9 +21,8 @@ class ProgressBar(Widget):
         else:
             self._impl.setIndeterminate_(True)
 
-        # Disable all autolayout functionality
-        self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
-        self._impl.setAutoresizesSubviews_(False)
+        # Add the layout constraints
+        self._add_constraints()
 
     @property
     def value(self):

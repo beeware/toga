@@ -24,31 +24,21 @@ class App(AppInterface):
 class AppDelegate(NSObject):
     @objc_method
     def applicationOpenUntitledFile_(self, sender) -> bool:
-        # controller = NSDocumentController.sharedDocumentController()
-        # with open('../../../../types.log', 'w') as out:
-        #     out.write("CLASSNAMES:\n")
-        # for i in range(0, controller.documentClassNames.count):
-        #     classname = controller.documentClassNames.objectAtIndex_(i)
-        #     out.write("CLASSNAME", classname)
-
+        # FIXME This should be all we need; but for some reason, application types
+        # aren't being registered correctly..
         # NSDocumentController.sharedDocumentController().openDocument_(None)
 
+        # ...so we do this instead.
         panel = NSOpenPanel.openPanel()
-
-        # panel.showsResizeIndicator = True
-        # panel.showsHiddenFiles = False
-        # panel.canChooseDirectories = False
-        # panel.canCreateDirectories = False
-        # panel.allowsMultipleSelection = False
-
-        # panel.allowedFileTypes = NSArray.alloc().initWithObjects_("podium", None)
-
         print("Open documents of type", NSDocumentController.sharedDocumentController().defaultType)
 
         fileTypes = NSArray.alloc().initWithObjects_(*([d for d in self._interface.document_types] + [None]))
         NSDocumentController.sharedDocumentController().runModalOpenPanel_forTypes_(panel, fileTypes)
+<<<<<<< HEAD
         # panel.runModal()
 >>>>>>> Updated toga to support Podium requirements.
+=======
+>>>>>>> Modified layout to use constraints to set position.
 
         print("Untitled File opened?", panel.URLs)
         self.application_openFiles_(None, panel.URLs)
@@ -69,6 +59,7 @@ class AppDelegate(NSObject):
         print("open file ", filenames)
         for i in range(0, filenames.count):
             filename = filenames.objectAtIndex_(i)
+            print("OPEN", filename)
             if isinstance(filename, str):
                 print("convert", filename, 'to URL')
                 fileURL = NSURL.fileURLWithPath_(filename)
@@ -83,23 +74,23 @@ class AppDelegate(NSObject):
             else:
                 return
 
-            self._interface.openFile(fileURL.absoluteString)
+            self._interface.open_document(fileURL.absoluteString)
             # NSDocumentController.sharedDocumentController().openDocumentWithContentsOfURL_display_completionHandler_(fileURL, True, None)
 
 
 class App(object):
     def __init__(self, name, app_id, icon=None, startup=None, document_types=None):
-        self.name = name
-        self.app_id = app_id
 
         # Set the icon for the app
         Icon.app_icon = Icon.load(icon, default=TIBERIUS_ICON)
-        self.icon = Icon.app_icon
 
-        self._startup_method = startup
-
-        self.document_types = document_types
-        self._documents = []
+        super().__init__(
+            name=name,
+            app_id=app_id,
+            icon=Icon.app_icon,
+            startup=startup,
+            document_types=document_types
+        )
 
     def _startup(self):
         self._impl = NSApplication.sharedApplication()
@@ -108,7 +99,6 @@ class App(object):
         self._impl.setApplicationIconImage_(self.icon._impl)
 
         self.resource_path = os.path.dirname(os.path.dirname(NSBundle.mainBundle().bundlePath))
-        print("RESOURCE PATH", self.resource_path)
 
         appDelegate = AppDelegate.alloc().init()
         appDelegate._interface = self
@@ -160,14 +150,6 @@ class App(object):
 
         # Show the main window
         self.main_window.show()
-
-    @property
-    def documents(self):
-        return self._documents
-
-    def add_document(self, doc):
-        doc.app = self
-        self._documents.append(doc)
 
     def main_loop(self):
         # Stimulate the build of the app

@@ -22,15 +22,14 @@ class Label(Widget):
         self._impl.setEditable_(False)
         self._impl.setBezeled_(False)
 
-        # Disable all autolayout functionality
-        self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
-        self._impl.setAutoresizesSubviews_(False)
-
         # Width & height of a label is known and fixed.
         self.style.hint(
             height=self._impl.fittingSize().height,
             width=self._impl.fittingSize().width
         )
+
+        # Add the layout constraints
+        self._add_constraints()
 
     @property
     def alignment(self):

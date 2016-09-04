@@ -40,9 +40,8 @@ class WebView(Widget):
         self._impl.setResourceLoadDelegate_(self._impl)
         self._impl.setUIDelegate_(self._impl)
 
-        # Disable all autolayout functionality
-        self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
-        self._impl.setAutoresizesSubviews_(False)
+        # Add the layout constraints
+        self._add_constraints()
 
     @property
     def url(self):
@@ -61,10 +60,3 @@ class WebView(Widget):
 
     def evaluate(self, javascript):
         return self._impl.stringByEvaluatingJavaScriptFromString_(javascript)
-
-    def _apply_layout(self, layout):
-        # When you change the frame of the webview, you also need to chnge
-        # the size of the main frame that is part of the webview.
-        frame = NSRect(NSPoint(layout.left, layout.top), NSSize(layout.width, layout.height))
-        self._impl.setFrame_(frame)
-        self._impl.mainFrame.frameView.setFrameSize_(frame.size)
