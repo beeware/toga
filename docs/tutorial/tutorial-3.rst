@@ -14,7 +14,6 @@ web browser, in less than 40 lines of code!
 Here's the source code::
 
     #!/usr/bin/env python
-    from __future__ import print_function, unicode_literals, absolute_import
 
     import toga
     from colosseum import CSS

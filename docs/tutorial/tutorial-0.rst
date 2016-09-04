@@ -7,8 +7,6 @@ button, that prints to the console when you press the button.
 
 Here's a complete code listing for our "Hello world" app::
 
-    from __future__ import print_function, unicode_literals, absolute_import
-
     import toga
 
 
@@ -20,9 +18,7 @@ Here's a complete code listing for our "Hello world" app::
         container = toga.Container()
 
         button = toga.Button('Hello world', on_press=button_handler)
-
         button.style.set(margin=50)
-
         container.add(button)
 
         return container
@@ -30,19 +26,12 @@ Here's a complete code listing for our "Hello world" app::
 
     if __name__ == '__main__':
         app = toga.App('First App', 'org.pybee.helloworld', startup=build)
-
         app.main_loop()
 
 
 Lets walk through this one line at a time.
 
-The code starts with imports. First, we have some ``__future__`` imports.
-These to make Python 2 behave a bit more like Python 3. If you're using Python
-3, you can omit this line::
-
-    from __future__ import print_function, unicode_literals, absolute_import
-
-Next, we import toga::
+The code starts with imports. First, we import toga::
 
     import toga
 
@@ -56,9 +45,9 @@ of a simple button press, however, there are no extra arguments::
         print("hello")
 
 By creating an app, we're declaring that we want to have a main window, with a
-main menu. However, Toga doesn't know what content we want in that
-main window. The next step is to define a method that describes the UI that we
-want our app to have. This method is a callable that accepts an app instance::
+main menu. However, Toga doesn't know what content we want in that main
+window. The next step is to define a method that describes the UI that we want
+our app to have. This method is a callable that accepts an app instance::
 
     def build(app):
 
@@ -85,7 +74,7 @@ CSS-based layout scheme, so we can apply CSS styles to each widget::
 Each widget is a "block" in CSS terms, what we've done here is say that the
 button with have a margin of 50 pixels on each side. If we wanted to define a
 margin of 20 pixels on top of the button, we could have defined ``margin_top=20``,
-or we could have specified the ``margin=(20,50,50,50)``.
+or we could have specified the ``margin=(20, 50, 50, 50)``.
 
 The next step is to add the button to the container::
 
@@ -146,7 +135,7 @@ environment`_ first, and installing toga in that virtual environment.
 
     * If you want to use the WebView widget, you'll also need to
       have WebKit, plus the GI bindings to WebKit installed.
-      
+
         * For Ubuntu that's provided by the libwebkitgtk-3.0-0 and
           gir1.2-webkit-3.0 packages.
 
@@ -154,21 +143,6 @@ environment`_ first, and installing toga in that virtual environment.
 
     If these requirements aren't met, Toga either won't work at all, or won't
     have full functionality.
-
-.. note:: Problems with source installs
-
-    Internally, Toga is comprised of a number of subpackages - one for each
-    platform it supports. If you install using wheels, the install process will
-    correctly identify the required packages and install them. However, if you
-    install from source using pip, there is a `known bug in pip`_ that causes
-    dependencies to not be installed. It may be necessary to manually install
-    the following pre-requisites:
-
-    * OS X: ``pip install toga-cocoa``
-    * Linux: ``pip install toga-gtk toga-cassowary cassowary``
-    * Win32: ``pip install toga-win32 toga-cassowary cassowary``
-
-.. _known bug in pip: https://github.com/pypa/pip/issues/1951
 
 .. note:: Problems under Linux
 
@@ -180,7 +154,7 @@ environment`_ first, and installing toga in that virtual environment.
     To make the system GTK+ bindings available to your virtualenv,
     symlink the `gi` module from the system dist-packages directory into your
     virtualenv's site-packages.
-    
+
         For a Ubuntu 32bit system::
 
             $ cd $VIRTUAL_ENV/lib/python2.7/site-packages
@@ -193,7 +167,16 @@ environment`_ first, and installing toga in that virtual environment.
 
 Once you've got toga installed, you can run your script::
 
-    $ python helloworld.py
+    $ python -m helloworld
+
+.. note:: ``python -m helloworld`` vs ``python helloworld.py``
+
+    Note the ``-m`` flag and absence of the ``.py`` extension in this command
+    line. If you run ``python helloworld.py``, you may see some errors like::
+
+        NotImplementedError: Application does not define open_document()
+
+    Toga apps must be executed as modules - hence the ``-m`` flag.
 
 This should pop up a window with a button:
 

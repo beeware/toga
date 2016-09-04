@@ -19,12 +19,34 @@ class App(object):
         app = toga.App('Empty App', 'org.pybee.empty')
         app.main_loop()
     '''
-    def __init__(self, name, app_id, icon=None, startup=None):
-        raise NotImplemented
+    def __init__(self, name, app_id, icon=None, startup=None, document_types=None):
+        self.name = name
+        self.app_id = app_id
+
+        self.icon = icon
+
+        self.document_types = document_types
+        self._documents = []
+
+        self._startup_method = startup
+
+    @property
+    def documents(self):
+        '''Return the list of documents associated with this app.'''
+        return self._documents
+
+    def add_document(self, doc):
+        '''Add a new document to this app.'''
+        doc.app = self
+        self._documents.append(doc)
+
+    def open_document(self, fileURL):
+        '''Add a new document to this app.'''
+        raise NotImplementedError('Application does not define open_document()')
 
     def main_loop(self):
         '''Invoke the application to handle user input.
 
         This method typically only returns once the application is exiting.
         '''
-        raise NotImplemented
+        raise NotImplementedError('Application does not define main_loop()')
