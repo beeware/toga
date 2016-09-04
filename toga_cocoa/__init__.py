@@ -24,7 +24,7 @@ from .widgets.webview import *
 
 __all__ = [
     '__version__',
-    'App',
+    'App', 'MainWindow',
     'Window',
     'Command', 'SEPARATOR', 'SPACER', 'EXPANDING_SPACER',
     'Button',
