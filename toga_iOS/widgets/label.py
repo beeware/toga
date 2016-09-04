@@ -1,4 +1,4 @@
-from ..libs import UILabel, NSTextAlignment, NSLineBreakByWordWrapping
+from ..libs import UILabel, NSTextAlignment, NSLineBreakByWordWrapping, CGSize
 from .base import Widget
 from toga.constants import *
 
@@ -17,6 +17,17 @@ class Label(Widget):
 
         self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
         self._impl.setLineBreakMode_(NSLineBreakByWordWrapping)
+
+        # Height of a button is known. Set the minimum width
+        # of a button to be a square
+        fitting_size = self._impl.systemLayoutSizeFittingSize_(CGSize(0, 0))
+        self.style.hint(
+            height=fitting_size.height,
+            width=(fitting_size.width, None)
+        )
+
+        # Add the layout constraints
+        self._add_constraints()
 
     @property
     def alignment(self):

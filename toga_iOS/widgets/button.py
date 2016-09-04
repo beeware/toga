@@ -30,10 +30,6 @@ class Button(Widget):
         self._impl.setTitleColor_forState_(self._impl.tintColor, UIControlStateNormal)
         self._impl.addTarget_action_forControlEvents_(self._impl, get_selector('onPress:'), UIControlEventTouchDown)
 
-        # Disable all autolayout functionality
-        self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
-        self._impl.setAutoresizesSubviews_(False)
-
         # Height of a button is known. Set the minimum width
         # of a button to be a square
         fitting_size = self._impl.systemLayoutSizeFittingSize_(CGSize(0, 0))

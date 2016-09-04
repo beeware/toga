@@ -20,16 +20,15 @@ class TextInput(Widget):
 
         self._impl.setBorderStyle_(UITextBorderStyleRoundedRect)
 
-        # Disable all autolayout functionality
-        self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
-        self._impl.setAutoresizesSubviews_(False)
+        # Height of a text input is known.
+        fitting_size = self._impl.systemLayoutSizeFittingSize_(CGSize(0, 0))
+        self.style.hint(
+            height=fitting_size.height,
+            width=(fitting_size.width, None)
+        )
 
-        # Height of a text input is known and fixed.
-        if self.height is None:
-            # self.height = self._impl.fittingSize().height
-            self.height = self._impl.systemLayoutSizeFittingSize_(CGSize(0, 0)).height
-        if self.min_width is None:
-            self.min_width = 100
+        # Add the layout constraints
+        self._add_constraints()
 
     @property
     def readonly(self):

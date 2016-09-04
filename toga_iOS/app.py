@@ -24,13 +24,13 @@ class PythonAppDelegate(UIResponder):
 
         return True
 
-    # @objc_method
-    # def application_didChangeStatusBarOrientation_(self, application, oldStatusBarOrientation: int) -> None:
-    #     print("ROTATED", oldStatusBarOrientation)
-    #     App._app.main_window.content._update_layout(
-    #         width=App._app.main_window.content._impl.frame.size.width,
-    #         height=App._app.main_window.content._impl.frame.size.height,
-    #     )
+    @objc_method
+    def application_didChangeStatusBarOrientation_(self, application, oldStatusBarOrientation: int) -> None:
+        print("ROTATED", oldStatusBarOrientation)
+        App._app.main_window.content._update_layout(
+            width=App._app.main_window.content._impl.frame.size.width,
+            height=App._app.main_window.content._impl.frame.size.height,
+        )
 
 
 class App(AppInterface):

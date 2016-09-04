@@ -10,7 +10,7 @@ from .widgets.container import *
 from .widgets.dialog import *
 # from .widgets.image import *
 # from .widgets.imageview import *
-# from .widgets.label import *
+from .widgets.label import *
 from .widgets.list import *
 # # from .widgets.dialog import *
 # # from .widgets.multilinetextinput import *
@@ -37,7 +37,7 @@ __all__ = [
     # 'Image',
     # 'ImageView',
     'List',
-    # 'Label',
+    'Label',
     # 'Dialog',
     # 'MultilineTextInput',
     # 'OptionContainer',
