@@ -6,7 +6,7 @@ from .constants import *
 
 # Work around import loop issues (toga -> platform -> toga.interface) import
 # all these things before we import the platform stuff
-import toga.interface.app
+import toga.interface.app  # NOQA
 
 __all__ = [
     '__version__',
@@ -21,7 +21,7 @@ __all__ = [
 # __version__ = '1.2.3'       # Final Release
 # __version__ = '1.2.3.post1' # Post Release 1
 
-__version__ = '0.2.0.dev1'
+__version__ = '0.2.0'
 
 platform = None
 

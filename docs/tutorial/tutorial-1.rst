@@ -9,8 +9,6 @@ build a slightly more complex example - a Fahrenheit to Celsius converter:
 
 Here's the source code::
 
-    from __future__ import print_function, unicode_literals, absolute_import
-
     import toga
 
     def build(app):
@@ -54,7 +52,7 @@ Here's the source code::
         f_label.style(width=100, margin_left=10)
         join_label.style(width=150, margin_right=10)
 
-        button.style(margin=5)
+        button.style(margin=15)
 
         return container
 

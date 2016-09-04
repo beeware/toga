@@ -10,8 +10,6 @@ containers inside other containers.:
 
 Here's the source code::
 
-    from __future__ import print_function, unicode_literals, absolute_import
-
     import toga
     from colosseum import CSS
 

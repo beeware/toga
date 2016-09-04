@@ -29,7 +29,7 @@ setup(
         'toga': ['resources/*.icns', 'resources/*.png'],
     },
     install_requires=[
-        'colosseum>=0.1.0'
+        'colosseum'
     ],
     license='New BSD',
     classifiers=[
@@ -38,8 +38,9 @@ setup(
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: Only',
         'Topic :: Software Development',
         'Topic :: Software Development :: User Interfaces',
         'Topic :: Software Development :: Widget Sets',

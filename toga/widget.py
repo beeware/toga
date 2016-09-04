@@ -37,10 +37,15 @@ class Widget(object):
         if self._children is None:
             raise ValueError('Widget cannot have children')
         self._children.append(child)
-        child._parent = self._parent
+
+        child.app = self.app
+        child._parent = self
+
         if self._parent:
             self._parent.dirty = True
-        self._add_child(child)
+
+        self._impl.addSubview_(child._impl)
+        child._constraints.container = self
 
     @property
     def app(self):
@@ -81,6 +86,7 @@ class Widget(object):
         (probably min_width, min_height, width or height) to control the
         layout.
         """
+        # print("UPDATE LAYOUT OF ", self)
         if self._layout_in_progress:
             return
         self._layout_in_progress = True
@@ -88,16 +94,17 @@ class Widget(object):
         self.style.set(**style)
 
         # Recompute layout
-        layout = self.style.layout
+        self.style.recompute()
 
-        self._update_child_layout(**style)
+        self._update_child_layout()
 
         # Set the frame for the widget to adhere to the new style.
-        self._apply_layout(layout)
+        self._apply_layout()
 
         self._layout_in_progress = False
 
-    def _update_child_layout(self, **style):
+    def _update_child_layout(self):
+        # print("UPDATE CHILD LAYOUT - widget")
         if self._children is not None:
             for child in self.children:
                 # if child.is_container:
