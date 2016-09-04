@@ -33,6 +33,8 @@ class Window(object):
         self._content.app = self.app
 
         self._controller = UIViewController.alloc().init()
+        self._controller.view = widget._impl
+
         self._impl.rootViewController = self._controller
 
     def show(self):

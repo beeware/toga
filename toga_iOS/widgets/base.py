@@ -31,7 +31,7 @@ class Constraints:
     @container.setter
     def container(self, value):
         self._container = value
-        print("Add constraints for", self._view, 'in', self._container)
+        # print("Add constraints for", self._view, 'in', self._container)
         self._width_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
             self._view._impl, NSLayoutAttributeRight,
             NSLayoutRelationEqual,
@@ -132,5 +132,5 @@ class Widget(WidgetBase):
         self._constraints = Constraints(self)
 
     def _apply_layout(self):
-        print("SET WIDGET FRAME", self, self.style.layout)
+        # print("SET WIDGET FRAME", self, self.style.layout)
         self._constraints.update()
