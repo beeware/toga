@@ -44,8 +44,7 @@ class Widget(object):
         if self._parent:
             self._parent.dirty = True
 
-        self._impl.addSubview_(child._impl)
-        child._constraints.container = self
+        self._add_child(child)
 
     @property
     def app(self):
