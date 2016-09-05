@@ -79,9 +79,13 @@ def set_platform(module_name=None, locals=locals()):
             for symbol in locals['platform'].__all__
             if symbol != '__version__'
         ))
-    except ImportError:
-        locals['platform'] = None
-        raise RuntimeError("Couldn't import %s platform module; try running 'pip install %s'." % (module_name[5:], module_name))
+    except ImportError as e:
+        if e.name == module_name:
+            locals['platform'] = None
+            print("Couldn't import %s platform module; try running 'pip install %s'." % (module_name[5:], module_name))
+            sys.exit(-1)
+        else:
+            raise
 
 # On first import, do an autodetection of platform.
 set_platform()
