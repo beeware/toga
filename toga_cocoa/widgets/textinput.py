@@ -1,15 +1,14 @@
-from rubicon.objc import text
+from toga.interface import TextInput as TextInputInterface
 
+from .base import WidgetMixin
 from ..libs import NSTextField, NSTextFieldSquareBezel
-from .base import Widget
 
 
-class TextInput(Widget):
+class TextInput(TextInputInterface, WidgetMixin):
     _IMPL_CLASS = NSTextField
 
-    def __init__(self, initial=None, placeholder=None, readonly=False, style=None):
-        super(TextInput, self).__init__(style=style)
-
+    def __init__(self, id=None, style=None, initial=None, placeholder=None, readonly=False):
+        super().__init__(id=id, style=style)
         self.startup()
 
         self.readonly = readonly
@@ -33,30 +32,14 @@ class TextInput(Widget):
         # Add the layout constraints
         self._add_constraints()
 
-    @property
-    def readonly(self):
-        return self._readonly
+    def _set_readonly(self, value):
+        self._impl.editable = not value
 
-    @readonly.setter
-    def readonly(self, value):
-        self._readonly = value
-        self._impl.setEditable_(not self._readonly)
+    def _set_placeholder(self, value):
+        self._impl.cell.placeholderString = self._placeholder
 
-    @property
-    def placeholder(self):
-        return self._placeholder
-
-    @placeholder.setter
-    def placeholder(self, value):
-        self._placeholder = value
-        if value:
-            self._impl.cell.setPlaceholderString_(self.placeholder)
-
-    @property
-    def value(self):
+    def _get_value(self):
         return self._impl.stringValue
 
-    @value.setter
-    def value(self, value):
-        if value:
-            self._impl.stringValue = text(value)
+    def _set_value(self, value):
+        self._impl.stringValue = self._value

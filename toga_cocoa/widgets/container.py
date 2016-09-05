@@ -1,9 +1,9 @@
 from rubicon.objc import *
 
-from toga.interface.widgets.container import Container as ContainerInterface
+from toga.interface import Container as ContainerInterface
 
 from ..libs import *
-from .base import Widget, Constraints
+from .base import WidgetMixin
 
 
 class TogaContainer(NSView):
@@ -18,10 +18,9 @@ class TogaContainer(NSView):
         self.layer.displayIfNeeded()
 
 
-class Container(ContainerInterface, Widget):
-    def __init__(self, children=None, style=None):
-        super().__init__(style=style)
-        self._children = []
+class Container(ContainerInterface, WidgetMixin):
+    def __init__(self, id=id, style=None, children=None):
+        super().__init__(id=id, style=style, children=None)
         self.startup()
 
         if children:

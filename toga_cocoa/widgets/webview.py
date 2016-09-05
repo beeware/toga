@@ -1,6 +1,8 @@
 from rubicon.objc import objc_method
 
-from .base import Widget
+from toga.interface import WebView as WebViewInterface
+
+from .base import WidgetMixin
 from ..libs import *
 
 
@@ -20,12 +22,9 @@ class TogaWebView(WebView):
             self._interface.on_key_down(event.keyCode, event.modifierFlags)
 
 
-class WebView(Widget):
-    def __init__(self, url=None, style=None, on_key_down=None):
-        super(WebView, self).__init__(style=style)
-
-        self.on_key_down = on_key_down
-
+class WebView(WebViewInterface, WidgetMixin):
+    def __init__(self, id=None, style=None, url=None, on_key_down=None):
+        super().__init__(id=id, style=style, url=url, on_key_down=on_key_down)
         self.startup()
 
         self.url = url
@@ -43,19 +42,12 @@ class WebView(Widget):
         # Add the layout constraints
         self._add_constraints()
 
-    @property
-    def url(self):
-        return self._url
-
-    @url.setter
-    def url(self, value):
-        self._url = value
+    def _set_url(self, value):
         if value:
             request = NSURLRequest.requestWithURL_(NSURL.URLWithString_(self._url))
             self._impl.mainFrame.loadRequest_(request)
 
-    def set_content(self, root_url, content):
-        self._url = root_url
+    def _set_content(self, root_url, content):
         self._impl.mainFrame.loadHTMLString_baseURL_(content, NSURL.URLWithString_(root_url))
 
     def evaluate(self, javascript):

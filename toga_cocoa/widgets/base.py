@@ -1,5 +1,3 @@
-from toga.widget import Widget as WidgetBase
-
 from ..libs import (
     NSLayoutAttributeTop, NSLayoutAttributeLeft,
     NSLayoutAttributeRight, NSLayoutAttributeBottom,
@@ -89,6 +87,7 @@ class Constraints:
     @width.setter
     def width(self, value):
         if self._width_constraint:
+            # print("SET WIDTH", self._view, value)
             self._width_constraint.constant = value
 
     @property
@@ -99,6 +98,7 @@ class Constraints:
     @height.setter
     def height(self, value):
         if self._height_constraint:
+            # print("SET HEIGHT", self._view, value)
             self._height_constraint.constant = value
 
     @property
@@ -109,6 +109,7 @@ class Constraints:
     @left.setter
     def left(self, value):
         if self._left_constraint:
+            # print("SET LEFT", self._view, value)
             self._left_constraint.constant = value
 
     @property
@@ -119,10 +120,17 @@ class Constraints:
     @top.setter
     def top(self, value):
         if self._top_constraint:
+            # print("SET TOP", self._view, value)
             self._top_constraint.constant = value
 
 
-class Widget(WidgetBase):
+class WidgetMixin:
+    def _set_app(self, app):
+        pass
+
+    def _set_window(self, window):
+        pass
+
     def _add_child(self, child):
         self._impl.addSubview_(child._impl)
         child._constraints.container = self

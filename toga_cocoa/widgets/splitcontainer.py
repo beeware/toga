@@ -1,5 +1,7 @@
+from toga.interface import SplitContainer as SplitContainerInterface
+
 from ..libs import *
-from .base import Widget
+from .base import WidgetMixin
 
 
 class TogaSplitViewDelegate(NSObject):
@@ -16,18 +18,9 @@ class TogaSplitViewDelegate(NSObject):
             self._interface._update_child_layout()
 
 
-class SplitContainer(Widget):
-    HORIZONTAL = False
-    VERTICAL = True
-
-    def __init__(self, direction=VERTICAL, style=None):
-        super(SplitContainer, self).__init__(style=style)
-        self._impl = None
-        self._content = None
-        self._right_content = None
-
-        self.direction = direction
-
+class SplitContainer(SplitContainerInterface, WidgetMixin):
+    def __init__(self, id=None, style=None, direction=SplitContainerInterface.VERTICAL):
+        super().__init__(id=None, style=None, direction=direction)
         self.startup()
 
     def startup(self):
@@ -42,32 +35,8 @@ class SplitContainer(Widget):
         # Add the layout constraints
         self._add_constraints()
 
-    @property
-    def content(self):
-        return self._content
-
-    @content.setter
-    def content(self, content):
-        if len(content) < 2:
-            raise ValueError('SplitContainer content must have at least 2 elements')
-
-        self._content = content
-
-        for cont in self._content:
-            cont.window = self.window
-            cont.app = self.app
-            self._impl.addSubview_(cont._impl)
-            # cont._constraints.container = self
-
-    def _set_app(self, app):
-        if self._content:
-            for content in self._content:
-                content.app = self.app
-
-    def _set_window(self, window):
-        if self._content:
-            for content in self._content:
-                content.window = self.window
+    def _add_content(self, widget):
+        self._impl.addSubview_(widget._impl)
 
     def _update_child_layout(self):
         """Force a layout update on the widget.

@@ -1,15 +1,12 @@
+from toga.interface import ScrollContainer as ScrollContainerInterface
+
 from ..libs import *
-from .base import Widget
+from .base import WidgetMixin
 
 
-class ScrollContainer(Widget):
-    def __init__(self, horizontal=True, vertical=True, style=None):
-        super(ScrollContainer, self).__init__(style=style)
-        self.horizontal = horizontal
-        self.vertical = vertical
-
-        self._content = None
-
+class ScrollContainer(ScrollContainerInterface, WidgetMixin):
+    def __init__(self, id=None, style=None, horizontal=True, vertical=True):
+        super().__init__(id=None, style=None, horizontal=True, vertical=True)
         self.startup()
 
     def startup(self):
@@ -32,24 +29,8 @@ class ScrollContainer(Widget):
         # Add the layout constraints
         self._add_constraints()
 
-    @property
-    def content(self):
-        return self._content
-
-    @content.setter
-    def content(self, widget):
-        self._content = widget
-        self._content.window = self.window
-        self._content.app = self.app
-        self._impl.setDocumentView_(self._content._impl)
-
-    def _set_app(self, app):
-        if self._content:
-            self._content.app = self.app
-
-    def _set_window(self, window):
-        if self._content:
-            self._content.window = self.window
+    def _set_content(self, widget):
+        self._impl.setDocumentView_(widget._impl)
 
     def _apply_layout(self):
         # print("SET SCROLL CONTAINER FRAME", self, self.style.layout, self.content.style.layout)

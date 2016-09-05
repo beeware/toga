@@ -1,12 +1,12 @@
+from toga.interface import ImageView as ImageViewInterface
+
 from ..libs import *
-from .base import Widget
-from toga.constants import *
+from .base import WidgetMixin
 
 
-class ImageView(Widget):
-    def __init__(self, image=None, style=None):
-        super(ImageView, self).__init__(style=style)
-
+class ImageView(ImageViewInterface, WidgetMixin):
+    def __init__(self, id=None, style=None, image=None):
+        super(ImageView, self).__init__(id=None, style=None, image=None)
         self.startup()
 
         self.image = image

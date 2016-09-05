@@ -1,5 +1,7 @@
+from toga.interface import OptionContainer as OptionContainerInterface
+
 from ..libs import *
-from .base import Widget
+from .base import WidgetMixin
 
 
 class TogaTabViewDelegate(NSObject):
@@ -9,9 +11,9 @@ class TogaTabViewDelegate(NSObject):
         # print ("Select tab view item")
 
 
-class OptionContainer(Widget):
-    def __init__(self, style=None):
-        super(OptionContainer, self).__init__(style=None)
+class OptionContainer(OptionContainerInterface, WidgetMixin):
+    def __init__(self, id=None, style=None):
+        super(OptionContainer, self).__init__(id=id, style=style)
         self.is_container = True
         self._content = []
 
@@ -21,7 +23,7 @@ class OptionContainer(Widget):
         self._impl = NSTabView.alloc().init()
 
         self._delegate = TogaTabViewDelegate.alloc().init()
-        self._delegate.__dict__['interface'] = self
+        self._delegate.interface = self
 
         self._impl.setDelegate_(self._delegate)
 

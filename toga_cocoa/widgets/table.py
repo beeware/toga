@@ -1,9 +1,10 @@
+from toga.interface import Table as TableInterface
+
 from ..libs import *
-from .base import Widget
+from .base import WidgetMixin
 
 
 class TogaTable(NSTableView):
-
     # TableDataSource methods
     @objc_method
     def numberOfRowsInTableView_(self, table) -> int:
@@ -20,13 +21,9 @@ class TogaTable(NSTableView):
         print ("selection changed")
 
 
-class Table(Widget):
-    def __init__(self, headings, style=None):
-        super(Table, self).__init__(style=style)
-        self.headings = headings
-
-        self._data = []
-
+class Table(TableInterface, WidgetMixin):
+    def __init__(self, headings, id=None, style=None):
+        super(Table, self).__init__(headings, id=id, style=style)
         self.startup()
 
     def startup(self):
@@ -69,12 +66,3 @@ class Table(Widget):
 
         # Add the layout constraints
         self._add_constraints()
-
-    def insert(self, index, *data):
-        if len(data) != len(self.headings):
-            raise Exception('Data size does not match number of headings')
-
-        if index is None:
-            self._data.append(data)
-        else:
-            self._data.insert(index, data)

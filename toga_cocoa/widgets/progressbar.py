@@ -1,15 +1,13 @@
+from toga.interface import ProgressBar as ProgressBarInterface
+
 from ..libs import *
-from .base import Widget
+from .base import WidgetMixin
 
 
-class ProgressBar(Widget):
-    def __init__(self, max=None, value=None, style=None):
-        super(ProgressBar, self).__init__(style=style)
-        self.max = max
-
+class ProgressBar(ProgressBarInterface, WidgetMixin):
+    def __init__(self, id=None, style=None, max=None, value=None):
+        super().__init__(id=None, style=None, max=None, value=None)
         self.startup()
-
-        self.value = value
 
     def startup(self):
         self._impl = NSProgressIndicator.new()

@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 from __future__ import print_function, absolute_import, division, unicode_literals
 
 <<<<<<< HEAD
@@ -13,10 +14,15 @@ from ..libs import NSTextView, NSScrollView, NSBezelBorder
 from ..libs import NSTextView, NSScrollView, NSBezelBorder, NSViewWidthSizable, NSViewHeightSizable
 >>>>>>> Port all widgets to use CSS layout.
 from .base import Widget
+=======
+from toga.interface import MultilineTextInput as MultilineTextInputInterface
+>>>>>>> Update widgets to make better use of interfaces.
+
+from ..libs import NSTextView, NSScrollView, NSBezelBorder, NSViewWidthSizable, NSViewHeightSizable
+from .base import WidgetMixin
 
 
-class MultilineTextInput(Widget):
-
+class MultilineTextInput(MultilineTextInputInterface, WidgetMixin):
     def __init__(self, initial=None, style=None):
         super(MultilineTextInput, self).__init__(style=style)
         self.startup()

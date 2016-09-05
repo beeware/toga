@@ -1,22 +1,20 @@
-from __future__ import print_function, absolute_import, division, unicode_literals
+from toga.interface import Label as LabelInterface
 
-from ..libs import *
-from .base import Widget
-from toga.constants import *
+from ..libs import NSTextField, NSTextAlignment
+from .base import WidgetMixin
+from toga.constants import LEFT_ALIGNED
 
 
-class Label(Widget):
-    def __init__(self, text=None, alignment=LEFT_ALIGNED, style=None):
-        super(Label, self).__init__(style=None)
-
+class Label(LabelInterface, WidgetMixin):
+    def __init__(self, text, id=None, alignment=LEFT_ALIGNED, style=None):
+        super().__init__(text, id=id, alignment=alignment, style=style)
         self.startup()
-
         self.alignment = alignment
-        self.value = text
+        self.text = text
 
     def startup(self):
         self._impl = NSTextField.alloc().init()
-        self._impl.interface = self
+        self._impl._interface = self
 
         self._impl.setDrawsBackground_(False)
         self._impl.setEditable_(False)
@@ -31,20 +29,8 @@ class Label(Widget):
         # Add the layout constraints
         self._add_constraints()
 
-    @property
-    def alignment(self):
-        return self._alignment
+    def _set_alignment(self, value):
+        self._impl.setAlignment_(NSTextAlignment(value))
 
-    @alignment.setter
-    def alignment(self, value):
-        self._alignment = value
-        self._impl.setAlignment_(NSTextAlignment(self._alignment))
-
-    @property
-    def value(self):
-        return self._impl.stringValue
-
-    @value.setter
-    def value(self, value):
-        if value:
-            self._impl.stringValue = text(value)
+    def _set_text(self, value):
+        self._impl.stringValue = self._text
