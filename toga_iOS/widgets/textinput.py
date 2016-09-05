@@ -42,5 +42,4 @@ class TextInput(TextInputInterface, WidgetMixin):
         return self._impl.text
 
     def _set_value(self, value):
-        if value is not None:
-            self._impl.text = value
+        self._impl.text = value
