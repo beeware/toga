@@ -42,11 +42,11 @@ class App(object):
 
     def open_document(self, fileURL):
         '''Add a new document to this app.'''
-        raise NotImplementedError('Application does not define open_document()')
+        raise NotImplementedError('Application class must define open_document()')
 
     def main_loop(self):
         '''Invoke the application to handle user input.
 
         This method typically only returns once the application is exiting.
         '''
-        raise NotImplementedError('Application does not define main_loop()')
+        raise NotImplementedError('Application class must define main_loop()')

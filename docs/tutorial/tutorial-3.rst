@@ -25,7 +25,10 @@ Here's the source code::
             self.main_window.app = self
 
             self.webview = toga.WebView(style=CSS(flex=1))
-            self.url_input = toga.TextInput('https://github.com/', style=CSS(flex=1, margin=5))
+            self.url_input = toga.TextInput(
+                initial='https://github.com/',
+                style=CSS(flex=1, margin=5)
+            )
 
             container = toga.Container(
                 toga.Container(
