@@ -1,5 +1,7 @@
 from rubicon.objc import *
 
+from toga.interface import Tree as TreeInterface
+
 from ..libs import *
 from .base import WidgetMixin
 
@@ -57,9 +59,9 @@ class TogaTree(NSOutlineView):
         print ("tree selection changed")
 
 
-class Tree(WidgetMixin):
-    def __init__(self, headings, style=None):
-        super(Tree, self).__init__(style=None)
+class Tree(TreeInterface, WidgetMixin):
+    def __init__(self, headings, id=None, style=None):
+        super(Tree, self).__init__(headings, id=id, style=style)
         self.headings = headings
 
         self._tree = None
