@@ -1,8 +1,9 @@
 from colosseum import CSSNode
 
 
-class Widget(object):
-    def __init__(self, style=None):
+class Widget:
+    def __init__(self, id=None, style=None):
+        self._id = id
         self._parent = None
         self._children = None
         self._window = None
@@ -17,6 +18,10 @@ class Widget(object):
 
     def __repr__(self):
         return "<%s:%s>" % (self.__class__.__name__, id(self))
+
+    @property
+    def id(self):
+        return self._id
 
     @property
     def style(self):
@@ -60,9 +65,6 @@ class Widget(object):
             for child in self._children:
                 child.app = app
 
-    def _set_app(self, app):
-        pass
-
     @property
     def window(self):
         return self._window
@@ -74,9 +76,6 @@ class Widget(object):
         if self._children is not None:
             for child in self._children:
                 child.window = window
-
-    def _set_window(self, window):
-        pass
 
     def _update_layout(self, **style):
         """Force a layout update on the widget.
@@ -108,6 +107,3 @@ class Widget(object):
             for child in self.children:
                 # if child.is_container:
                 child._update_layout()
-
-    def _apply_layout(self):
-        raise NotImplementedError('Implementation must define _apply_layout()')
