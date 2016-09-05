@@ -21,9 +21,11 @@ Here's the source code::
 
     class Graze(toga.App):
         def startup(self):
+            self.main_window = MainWindow(self.name)
+            self.main_window.app = self
 
             self.webview = toga.WebView(style=CSS(flex=1))
-            self.url_input = toga.TextInput('http://pybee.org/', style=CSS(flex=1, margin=5))
+            self.url_input = toga.TextInput('https://github.com/', style=CSS(flex=1, margin=5))
 
             container = toga.Container(
                 toga.Container(
@@ -40,6 +42,10 @@ Here's the source code::
             )
 
             self.main_window.content = container
+            self.webview.url = self.url_input.value
+
+            # Show the main window
+            self.main_window.show()
 
         def load_page(self, widget):
             self.webview.url = self.url_input.value
