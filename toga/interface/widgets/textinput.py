@@ -35,10 +35,10 @@ class TextInput(Widget):
     @value.setter
     def value(self, value):
         if value is None:
-            self._value = ''
+            v = ''
         else:
-            self._value = str(value)
-        self._set_value(value)
+            v = str(value)
+        self._set_value(v)
 
     def clear(self):
         self.value = ''
