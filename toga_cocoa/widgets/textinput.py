@@ -42,4 +42,4 @@ class TextInput(TextInputInterface, WidgetMixin):
         return self._impl.stringValue
 
     def _set_value(self, value):
-        self._impl.stringValue = self._value
+        self._impl.stringValue = value
