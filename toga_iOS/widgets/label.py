@@ -6,8 +6,8 @@ from ..libs import UILabel, NSTextAlignment, NSLineBreakByWordWrapping, CGSize
 
 
 class Label(LabelInterface, WidgetMixin):
-    def __init__(self, id=None, style=None, text=None, alignment=LEFT_ALIGNED):
-        super().__init__(id=id, style=style, text=text, alignment=alignment)
+    def __init__(self, text, id=None, style=None, alignment=LEFT_ALIGNED):
+        super().__init__(text, id=id, style=style, alignment=alignment)
         self.startup()
         self.text = text
         self.alignment = alignment
