@@ -1,6 +1,8 @@
 from rubicon.objc import objc_method
 
-from .base import Widget
+from toga.interface import Button as ButtonInterface
+
+from .base import WidgetMixin
 from ..libs import *
 # from ..utils import process_callback
 
@@ -13,20 +15,16 @@ class TogaButton(UIButton):
             self._interface.on_press(self._interface)
 
 
-class Button(Widget):
-    def __init__(self, label, on_press=None, style=None):
-        super(Button, self).__init__(style=style)
-        self.label = label
-        self.on_press = on_press
-
+class Button(ButtonInterface, WidgetMixin):
+    def __init__(self, label, id=None, on_press=None, style=None):
+        super().__init__(label, id=id, style=style, on_press=on_press)
         self.startup()
+        self.label = label
 
     def startup(self):
         self._impl = TogaButton.alloc().init()
         self._impl._interface = self
 
-        self._impl.setTitle_forState_(self.label, UIControlStateNormal)
-        # self._impl.setTitleColor_forState_(UIColor.blackColor(), UIControlStateNormal)
         self._impl.setTitleColor_forState_(self._impl.tintColor, UIControlStateNormal)
         self._impl.addTarget_action_forControlEvents_(self._impl, get_selector('onPress:'), UIControlEventTouchDown)
 
@@ -40,3 +38,6 @@ class Button(Widget):
 
         # Add the layout constraints
         self._add_constraints()
+
+    def _set_label(self, value):
+        self._impl.setTitle_forState_(value, UIControlStateNormal)

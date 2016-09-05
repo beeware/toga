@@ -1,15 +1,14 @@
 from rubicon.objc import *
 
-from toga.interface.widgets.container import Container as ContainerInterface
+from toga.interface import Container as ContainerInterface
 
+from .base import WidgetMixin
 from ..libs import *
-from .base import Widget, Constraints
 
 
-class Container(ContainerInterface, Widget):
-    def __init__(self, children=None, style=None):
-        super().__init__(style=style)
-        self._children = []
+class Container(ContainerInterface, WidgetMixin):
+    def __init__(self, id=None, style=None, children=None):
+        super().__init__(id=id, style=style, children=children)
         self.startup()
 
         if children:
@@ -18,9 +17,8 @@ class Container(ContainerInterface, Widget):
 
     def startup(self):
         self._impl = UIView.alloc().init()
-        self._impl.interface = self
+        self._impl._interface = self
 
-        # self._impl.setWantsLayer_(True)
         self._impl.setBackgroundColor_(UIColor.whiteColor())
 
         self._add_constraints()

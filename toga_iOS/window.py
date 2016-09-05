@@ -2,7 +2,7 @@ from .libs import *
 
 
 class Window(object):
-    def __init__(self, position=(100, 100), size=(640, 480)):
+    def __init__(self, title, position=(100, 100), size=(640, 480)):
         self._app = None
         self._content = None
 
@@ -42,7 +42,6 @@ class Window(object):
 
         # self._impl.visualizeConstraints_(self._impl.contentView().constraints())
         # Do the first layout render.
-        print("SHOW")
         self.content._update_layout(
             width=self.content._impl.frame.size.width,
             height=self.content._impl.frame.size.height

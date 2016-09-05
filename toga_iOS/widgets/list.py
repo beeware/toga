@@ -1,6 +1,6 @@
 from rubicon.objc import objc_method
 
-from .base import Widget
+from .base import WidgetMixin
 from ..libs import *
 # from ..utils import process_callback
 
@@ -44,7 +44,7 @@ class TogaTableViewController(UITableViewController):
         self.tableView.reloadData()
 
 
-class List(Widget):
+class List(WidgetMixin):
     def __init__(self, data=None, on_delete=None, on_refresh=None, style=None):
         super().__init__(style=style)
         self.data = data

@@ -1,13 +1,14 @@
-from rubicon.objc import text
+from toga.interface import TextInput as TextInputInterface
 
 from ..libs import UITextField, UITextBorderStyleRoundedRect, CGSize
-from .base import Widget
+from .base import WidgetMixin
 
 
-class TextInput(Widget):
-    def __init__(self, initial=None, placeholder=None, readonly=False, style=None):
-        super(TextInput, self).__init__(style=None)
+class TextInput(TextInputInterface, WidgetMixin):
+    _IMPL_CLASS = UITextField
 
+    def __init__(self, id=None, initial=None, placeholder=None, readonly=False, style=None):
+        super().__init__(id=id, style=style)
         self.startup()
 
         self.readonly = readonly
@@ -15,8 +16,8 @@ class TextInput(Widget):
         self.value = initial
 
     def startup(self):
-        self._impl = UITextField.new()
-        self._impl.interface = self
+        self._impl = self._IMPL_CLASS.new()
+        self._impl._interface = self
 
         self._impl.setBorderStyle_(UITextBorderStyleRoundedRect)
 
@@ -24,40 +25,22 @@ class TextInput(Widget):
         fitting_size = self._impl.systemLayoutSizeFittingSize_(CGSize(0, 0))
         self.style.hint(
             height=fitting_size.height,
-            width=(fitting_size.width, None)
+            width=(100, None)
         )
 
         # Add the layout constraints
         self._add_constraints()
 
-    @property
-    def readonly(self):
-        return self._readonly
+    def _set_readonly(self, value):
+        self._impl.enabled = not value
 
-    @readonly.setter
-    def readonly(self, value):
-        self._readonly = value
-        self._impl.setEnabled_(not self._readonly)
-        # self._impl.setUserInteractionEnabled_(not self._readonly)
-
-    @property
-    def placeholder(self):
-        return self._placeholder
-
-    @placeholder.setter
-    def placeholder(self, value):
-        self._placeholder = value
+    def _set_placeholder(self, value):
         if value:
-            self._impl.setPlaceholder_(self.placeholder)
+            self._impl.placeholder = self._placeholder
 
-    @property
-    def value(self):
+    def _get_value(self):
         return self._impl.text
 
-    @value.setter
-    def value(self, value):
-        if value:
-            self._impl.setText_(text(value))
-
-    def clear(self):
-        self._impl.setText_(text(''))
+    def _set_value(self, value):
+        if value is not None:
+            self._impl.text = value

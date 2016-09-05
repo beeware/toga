@@ -1,7 +1,7 @@
 from rubicon.objc import *
 
 from ..libs import *
-from .base import Widget
+from .base import WidgetMixin
 
 
 def button_for_action(callback):
@@ -21,7 +21,7 @@ class TogaNavigationController(UINavigationController):
             self.interface.on_action(self.interface)
 
 
-class NavigationView(Widget):
+class NavigationView(WidgetMixin):
     def __init__(self, title, content, on_action=None, style=None):
         super().__init__(style=style)
         self.title = title

@@ -251,3 +251,6 @@ UITextBorderStyleNone = 0
 UITextBorderStyleLine = 1
 UITextBorderStyleBezel = 2
 UITextBorderStyleRoundedRect = 3
+
+# UIWebView.h
+UIWebView = ObjCClass('UIWebView')
