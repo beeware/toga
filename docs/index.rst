@@ -24,10 +24,9 @@ Toga has some minimum requirements:
 
 * If you're on Linux, you need to have GTK+ 3.4 or later. This is the
   version that ships with Ubuntu 12.04; you'll need to have the
-  ``python-gi`` (or ``python3-gi`` if you're using Python 3) package
-  installed. If you want to use the WebView widget, you'll also need
-  to have WebKit, plus the GI bindings to WebKit (``gir1.2-webkit-3.0``)
-  installed.
+  ``python3-gi`` package installed. If you want to use the WebView widget,
+  you'll also need to have WebKit, plus the GI bindings to WebKit
+  (``gir1.2-webkit-3.0``) installed.
 
 If these requirements aren't met, Toga either won't work at all, or won't
 have full functionality.
@@ -42,9 +41,9 @@ install from source using pip, there is a `known bug in pip`_ that causes
 dependencies to not be installed. It may be necessary to manually install
 the following pre-requisites:
 
-* OS X: ``pip install toga-cocoa``
-* Linux: ``pip install toga-gtk toga-cassowary cassowary``
-* Win32: ``pip install toga-win32 toga-cassowary cassowary``
+* OS X: ``pip install toga-cocoa toga-core colosseum``
+* Linux: ``pip install toga-gtk toga-core colosseum``
+* Win32: ``pip install toga-win32 toga-core colosseum``
 
 .. _known bug in pip: https://github.com/pypa/pip/issues/1951
 
