@@ -1,9 +1,7 @@
 class App(object):
-    '''Toga App
-
-    The App is the top level of any GUI program. It is the manager of all the
-    other bits of the GUI app: the main window and events that window generates
-    like user input.
+    '''The App is the top level of any GUI program. It is the manager of all
+    the other bits of the GUI app: the main window and events that window
+    generates like user input.
 
     When you create an App you need to provide it a name, an id for uniqueness
     (by convention, the identifier is a "reversed domain name".) and an

@@ -2,6 +2,20 @@ from colosseum import CSSNode
 
 
 class Widget:
+    '''This is the base widget implementation that all widgets in Toga
+    derive from.
+
+    It defines the interface for core functionality for children, styling,
+    layout and ownership by specific App and Window.
+
+    Apart from the above, this is an abstract implementation which must
+    be made concrete by some platform-specific code for the _apply_layout
+    method.
+
+    :param id: An identifier for this widget.
+    :param style: an optional style object. If no style is provided then a
+                  new one will be created for the widget.
+    '''
     def __init__(self, id=None, style=None):
         self._id = id
         self._parent = None
@@ -21,24 +35,42 @@ class Widget:
 
     @property
     def id(self):
+        '''The node identifier.
+
+        This id can be used to target CSS directives
+        '''
         return self._id
 
     @property
     def style(self):
+        '''The style object for this widget.
+        '''
         return self._style
 
     @property
     def parent(self):
+        '''The parent of this node.
+        '''
         return self._parent
 
     @property
     def children(self):
+        '''The children of this node.
+
+        This *always* returns a list, even if the node is a leaf
+        and cannot have children.
+        '''
         if self._children is None:
             return []
         else:
             return self._children
 
     def add(self, child):
+        '''Add a widget as a child of this one.
+
+        Raises an error if this widget is a leaf, and cannot
+        have children.
+        '''
         if self._children is None:
             raise ValueError('Widget cannot have children')
         self._children.append(child)
@@ -53,6 +85,8 @@ class Widget:
 
     @property
     def app(self):
+        '''The App to which this widget belongs.
+        '''
         return self._app
 
     @app.setter
@@ -67,6 +101,8 @@ class Widget:
 
     @property
     def window(self):
+        '''The Window to which this widget belongs.
+        '''
         return self._window
 
     @window.setter
