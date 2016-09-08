@@ -3,8 +3,10 @@ from .base import Widget
 
 class WebView(Widget):
     def __init__(self, id=None, style=None, url=None, on_key_down=None):
-        super(WebView, self).__init__(id=id, style=style)
-        self._url = url
+        super(WebView, self).__init__(id=id, style=style, url=url, on_key_down=on_key_down)
+
+    def _configure(self, url, on_key_down):
+        self.url = url
         self.on_key_down = on_key_down
 
     @property
