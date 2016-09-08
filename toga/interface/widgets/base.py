@@ -16,7 +16,7 @@ class Widget:
     :param style: an optional style object. If no style is provided then a
                   new one will be created for the widget.
     '''
-    def __init__(self, id=None, style=None):
+    def __init__(self, id=None, style=None, **config):
         self._id = id
         self._parent = None
         self._children = None
@@ -24,6 +24,7 @@ class Widget:
         self._app = None
         self.dirty = True
         self._layout_in_progress = False
+        self._config = config
 
         if style:
             self._style = style.apply(self)
@@ -113,6 +114,13 @@ class Widget:
             for child in self._children:
                 child.window = window
 
+    def _create(self):
+        self.create()
+        self._configure(**self._config)
+
+    def _initialize(self, **initial):
+        pass
+
     def _update_layout(self, **style):
         """Force a layout update on the widget.
 
@@ -143,3 +151,6 @@ class Widget:
             for child in self.children:
                 # if child.is_container:
                 child._update_layout()
+
+    def rehint(self):
+        pass

@@ -7,6 +7,9 @@ class Table(Widget):
         self.headings = headings
         self._data = []
 
+    def _configure(self):
+        pass
+        
     def insert(self, index, *data):
         if len(data) != len(self.headings):
             raise Exception('Data size does not match number of headings')

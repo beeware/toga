@@ -12,5 +12,10 @@ class Container(Widget):
                      container.
     '''
     def __init__(self, id=None, style=None, children=None):
-        super().__init__(id=id, style=style)
+        super().__init__(id=id, style=style, children=children)
         self._children = []
+
+    def _configure(self, children):
+        if children:
+            for child in children:
+                self.add(child)
