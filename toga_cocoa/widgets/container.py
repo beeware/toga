@@ -20,15 +20,19 @@ class TogaContainer(NSView):
 
 class Container(ContainerInterface, WidgetMixin):
     def __init__(self, id=id, style=None, children=None):
-        super().__init__(id=id, style=style, children=None)
-        self.startup()
+        super().__init__(id=id, style=style, children=children)
+        self._create()
 
+<<<<<<< HEAD
         if children:
             for child in children:
                 self.add(child)
 
 
     def startup(self):
+=======
+    def create(self):
+>>>>>>> Updated widgets to use new startup pattern.
         self._impl = TogaContainer.alloc().init()
         self._impl._interface = self
 

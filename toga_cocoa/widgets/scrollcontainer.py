@@ -5,14 +5,12 @@ from .base import WidgetMixin
 
 
 class ScrollContainer(ScrollContainerInterface, WidgetMixin):
-    def __init__(self, id=None, style=None, horizontal=True, vertical=True):
-        super().__init__(id=None, style=None, horizontal=True, vertical=True)
-        self.startup()
+    def __init__(self, id=None, style=None, horizontal=True, vertical=True, content=None):
+        super().__init__(id=None, style=None, horizontal=True, vertical=True, content=content)
+        self._create()
 
-    def startup(self):
+    def create(self):
         self._impl = NSScrollView.alloc().init()
-        self._impl.setHasVerticalScroller_(self.vertical)
-        self._impl.setHasHorizontalScroller_(self.horizontal)
         self._impl.setAutohidesScrollers_(True)
         self._impl.setBorderType_(NSNoBorder)
 
@@ -88,3 +86,9 @@ class ScrollContainer(ScrollContainerInterface, WidgetMixin):
         # print("UPDATE CHILD LAYOUT - scrollcontainer")
         if self._content is not None:
             self._content._update_layout()
+
+    def _set_vertical(self, value):
+        self._impl.setHasVerticalScroller_(value)
+        
+    def _set_horizontal(self, value):
+        self._impl.setHasHorizontalScroller_(value)

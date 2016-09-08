@@ -25,11 +25,9 @@ class TogaWebView(WebView):
 class WebView(WebViewInterface, WidgetMixin):
     def __init__(self, id=None, style=None, url=None, on_key_down=None):
         super().__init__(id=id, style=style, url=url, on_key_down=on_key_down)
-        self.startup()
+        self._create()
 
-        self.url = url
-
-    def startup(self):
+    def create(self):
         self._impl = TogaWebView.alloc().init()
         self._impl._interface = self
 

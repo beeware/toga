@@ -24,9 +24,9 @@ class TogaTable(NSTableView):
 class Table(TableInterface, WidgetMixin):
     def __init__(self, headings, id=None, style=None):
         super(Table, self).__init__(headings, id=id, style=style)
-        self.startup()
+        self._create()
 
-    def startup(self):
+    def create(self):
         # Create a table view, and put it in a scroll view.
         # The scroll view is the _impl, because it's the outer container.
         self._impl = NSScrollView.alloc().init()

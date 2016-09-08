@@ -21,11 +21,10 @@ class TogaSplitViewDelegate(NSObject):
 class SplitContainer(SplitContainerInterface, WidgetMixin):
     def __init__(self, id=None, style=None, direction=SplitContainerInterface.VERTICAL):
         super().__init__(id=None, style=None, direction=direction)
-        self.startup()
+        self._create()
 
-    def startup(self):
+    def create(self):
         self._impl = NSSplitView.alloc().init()
-        self._impl.setVertical_(self.direction)
 
         self._delegate = TogaSplitViewDelegate.alloc().init()
         self._delegate._interface = self
@@ -45,11 +44,15 @@ class SplitContainer(SplitContainerInterface, WidgetMixin):
         (probably min_width, min_height, width or height) to control the
         layout.
         """
-        for i, content in enumerate(self._content):
-            frame = content._impl.frame
-            content._update_layout(
-                left=frame.origin.x,
-                top=frame.origin.y,
-                width=frame.size.width,
-                height=frame.size.height
-            )
+        if self.content:
+            for i, content in enumerate(self._content):
+                frame = content._impl.frame
+                content._update_layout(
+                    left=frame.origin.x,
+                    top=frame.origin.y,
+                    width=frame.size.width,
+                    height=frame.size.height
+                )
+
+    def _set_direction(self, value):
+        self._impl.setVertical_(value)

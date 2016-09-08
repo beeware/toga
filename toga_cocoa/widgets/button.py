@@ -17,9 +17,9 @@ class TogaButton(NSButton):
 class Button(ButtonInterface, WidgetMixin):
     def __init__(self, label, id=None, style=None, on_press=None):
         super().__init__(label, id=id, style=style, on_press=on_press)
-        self.startup()
+        self._create()
 
-    def startup(self):
+    def create(self):
         self._impl = TogaButton.alloc().init()
         self._impl._interface = self
 
@@ -28,17 +28,19 @@ class Button(ButtonInterface, WidgetMixin):
         self._impl.setTarget_(self._impl)
         self._impl.setAction_(get_selector('onPress:'))
 
-        self._impl.setTitle_(self._label)
-
-        # Height of a button is known.
-        fitting_size = self._impl.fittingSize()
-        self.style.hint(
-            height=fitting_size.height,
-            width=(fitting_size.width, None)
-        )
-
         # Add the layout constraints
         self._add_constraints()
 
     def _set_label(self, label):
         self._impl.setTitle_(self.label)
+        self.rehint()
+
+    def _set_on_press(self, value):
+        pass
+
+    def rehint(self):
+        fitting_size = self._impl.fittingSize()
+        self.style.hint(
+            height=fitting_size.height,
+            width=(fitting_size.width, None)
+        )

@@ -7,29 +7,17 @@ from .base import WidgetMixin
 class ProgressBar(ProgressBarInterface, WidgetMixin):
     def __init__(self, id=None, style=None, max=None, value=None):
         super().__init__(id=None, style=None, max=None, value=None)
-        self.startup()
+        self._create()
 
-    def startup(self):
+    def create(self):
         self._impl = NSProgressIndicator.new()
         self._impl.setStyle_(NSProgressIndicatorBarStyle)
         self._impl.setDisplayedWhenStopped_(True)
-        if self.max:
-            self._impl.setIndeterminate_(False)
-            self._impl.setMaxValue_(self.max)
-        else:
-            self._impl.setIndeterminate_(True)
 
         # Add the layout constraints
         self._add_constraints()
 
-    @property
-    def value(self):
-        return self._value
-
-    @value.setter
-    def value(self, value):
-        self._value = value
-        self._running = self._value is not None
+    def _set_value(self, value):
         if value is not None:
             self._impl.setDoubleValue_(value)
 
@@ -42,3 +30,10 @@ class ProgressBar(ProgressBarInterface, WidgetMixin):
         if self._impl and self._running:
             self._impl.stopAnimation_(self._impl)
             self._running = False
+
+    def _set_max(self, value):
+        if value:
+            self._impl.setIndeterminate_(False)
+            self._impl.setMaxValue_(value)
+        else:
+            self._impl.setIndeterminate_(True)

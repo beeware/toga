@@ -8,26 +8,15 @@ class TextInput(TextInputInterface, WidgetMixin):
     _IMPL_CLASS = NSTextField
 
     def __init__(self, id=None, style=None, initial=None, placeholder=None, readonly=False):
-        super().__init__(id=id, style=style)
-        self.startup()
+        super().__init__(id=id, style=style, initial=initial, placeholder=placeholder, readonly=readonly)
+        self._create()
 
-        self.readonly = readonly
-        self.placeholder = placeholder
-        self.value = initial
-
-    def startup(self):
+    def create(self):
         self._impl = self._IMPL_CLASS.new()
         self._impl._interface = self
 
         self._impl.setBezeled_(True)
         self._impl.setBezelStyle_(NSTextFieldSquareBezel)
-
-        # Height of a text input is known and fixed.
-        # Width must be > 100
-        self.style.hint(
-            height=self._impl.fittingSize().height,
-            width=(100, None)
-        )
 
         # Add the layout constraints
         self._add_constraints()
@@ -43,3 +32,11 @@ class TextInput(TextInputInterface, WidgetMixin):
 
     def _set_value(self, value):
         self._impl.stringValue = value
+
+    def rehint(self):
+        # Height of a text input is known and fixed.
+        # Width must be > 100
+        self.style.hint(
+            height=self._impl.fittingSize().height,
+            width=(100, None)
+        )
