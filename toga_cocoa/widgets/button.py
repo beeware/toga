@@ -19,8 +19,6 @@ class Button(ButtonInterface, WidgetMixin):
         super().__init__(label, id=id, style=style, on_press=on_press)
         self.startup()
 
-        self.label = label
-
     def startup(self):
         self._impl = TogaButton.alloc().init()
         self._impl._interface = self
@@ -29,6 +27,8 @@ class Button(ButtonInterface, WidgetMixin):
         self._impl.setButtonType_(NSMomentaryPushInButton)
         self._impl.setTarget_(self._impl)
         self._impl.setAction_(get_selector('onPress:'))
+
+        self._impl.setTitle_(self._label)
 
         # Height of a button is known.
         fitting_size = self._impl.fittingSize()
