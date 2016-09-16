@@ -35,15 +35,9 @@ class Table(TableInterface, WidgetMixin):
         self._impl.setAutohidesScrollers_(False)
         self._impl.setBorderType_(NSBezelBorder)
 
-        # # Disable all autolayout functionality on the outer widget
-        # self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
-
         self._table = TogaTable.alloc().init()
         self._table._interface = self
         self._table.setColumnAutoresizingStyle_(NSTableViewUniformColumnAutoresizingStyle)
-
-        # # Use autolayout for the inner widget.
-        # self._table.setTranslatesAutoresizingMaskIntoConstraints_(True)
 
         # Create columns for the table
         self._columns = [

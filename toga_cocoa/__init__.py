@@ -4,8 +4,8 @@ from .window import *
 from .command import *
 
 # Widgets
+from .widgets.box import *
 from .widgets.button import *
-from .widgets.container import *
 from .widgets.icon import *
 from .widgets.image import *
 from .widgets.imageview import *
@@ -27,8 +27,8 @@ __all__ = [
     'App', 'MainWindow',
     'Window',
     'Command', 'SEPARATOR', 'SPACER', 'EXPANDING_SPACER',
+    'Box',
     'Button',
-    'Container',
     'Icon', 'TIBERIUS_ICON',
     'Image',
     'ImageView',

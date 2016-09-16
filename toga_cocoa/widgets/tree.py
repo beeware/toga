@@ -62,7 +62,6 @@ class TogaTree(NSOutlineView):
 class Tree(TreeInterface, WidgetMixin):
     def __init__(self, headings, id=None, style=None):
         super(Tree, self).__init__(headings, id=id, style=style)
-        self.headings = headings
 
         self._tree = None
         self._columns = None
@@ -73,9 +72,9 @@ class Tree(TreeInterface, WidgetMixin):
             }
         }
 
-        self.startup()
+        self._create()
 
-    def startup(self):
+    def create(self):
         # Create a tree view, and put it in a scroll view.
         # The scroll view is the _impl, because it's the outer container.
         self._impl = NSScrollView.alloc().init()

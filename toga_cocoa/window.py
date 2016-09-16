@@ -1,32 +1,26 @@
 from .libs import *
 from .utils import process_callback
+from .container import Container
 
 
 class WindowDelegate(NSObject):
     @objc_method
     def windowWillClose_(self, notification) -> None:
-        self.interface.on_close()
-
-    # Ideally, we'd use this method, not windowDidResize_, as it
-    # allows you to enforce a minimum size for the window. Unfortunately,
-    # ctypes can't return a structure from a callback.
-    # @objc_method
-    # def windowWillResize_toSize_(self, window, size: NSSize) -> NSSize:
-    #     return size
+        self._interface.on_close()
 
     @objc_method
     def windowDidResize_(self, notification) -> None:
-        if self.interface.content:
+        if self._interface.content:
             # print()
             # print("Window resize", (notification.object.contentView.frame.size.width, notification.object.contentView.frame.size.height))
             if notification.object.contentView.frame.size.width > 0.0 and notification.object.contentView.frame.size.height > 0.0:
                 # Force a re-layout of widgets
-                self.interface.content._update_layout(
+                self._interface.content._update_layout(
                     width=notification.object.contentView.frame.size.width,
                     height=notification.object.contentView.frame.size.height
                 )
-                # Force a redraw with the new widget locations
-                self.interface.content._impl.setNeedsDisplay_(True)
+
+            content = self._interface.content
 
     ######################################################################
     # Toolbar delegate methods
@@ -38,7 +32,7 @@ class WindowDelegate(NSObject):
         # This method is required by the Cocoa API, but isn't actually invoked,
         # because customizable toolbars are no longer a thing.
         allowed = NSMutableArray.alloc().init()
-        for item in self.interface.toolbar:
+        for item in self._interface.toolbar:
             allowed.addObject_(item.toolbar_identifier)
         return allowed
 
@@ -46,14 +40,14 @@ class WindowDelegate(NSObject):
     def toolbarDefaultItemIdentifiers_(self, toolbar):
         "Determine the list of toolbar items that will display by default"
         default = NSMutableArray.alloc().init()
-        for item in self.interface.toolbar:
+        for item in self._interface.toolbar:
             default.addObject_(item.toolbar_identifier)
         return default
 
     @objc_method
     def toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar_(self, toolbar, identifier, insert: bool):
         "Create the requested toolbar button"
-        item = self.interface._toolbar_items[identifier]
+        item = self._interface._toolbar_items[identifier]
         _item = NSToolbarItem.alloc().initWithItemIdentifier_(identifier)
         if item.label:
             _item.setLabel_(item.label)
@@ -71,7 +65,7 @@ class WindowDelegate(NSObject):
     @objc_method
     def validateToolbarItem_(self, item) -> bool:
         "Confirm if the toolbar item should be enabled"
-        return self.interface._toolbar_items[item.itemIdentifier].enabled
+        return self._interface._toolbar_items[item.itemIdentifier].enabled
 
     ######################################################################
     # Toolbar button press delegate methods
@@ -80,7 +74,7 @@ class WindowDelegate(NSObject):
     @objc_method
     def onToolbarButtonPress_(self, obj) -> None:
         "Invoke the action tied to the toolbar button"
-        item = self.interface._toolbar_items[obj.itemIdentifier]
+        item = self._interface._toolbar_items[obj.itemIdentifier]
         process_callback(item.action(obj))
 
 
@@ -90,6 +84,7 @@ class Window(object):
         self._app = None
         self._toolbar = None
         self._content = None
+        self._container = None
 
         self.position = position
         self.size = size
@@ -98,12 +93,12 @@ class Window(object):
         self.closeable = closeable
         self.minimizable = minimizable
 
-        self.startup()
+        self.create()
 
         self.title = title
         self.toolbar = toolbar
 
-    def startup(self):
+    def create(self):
         # OSX origin is bottom left of screen, and the screen might be
         # offset relative to other screens. Adjust for this.
         screen = NSScreen.mainScreen().visibleFrame
@@ -133,7 +128,7 @@ class Window(object):
         self._impl.setFrame_display_animate_(position, True, False)
 
         self._delegate = WindowDelegate.alloc().init()
-        self._delegate.interface = self
+        self._delegate._interface = self
 
         self._impl.setDelegate_(self._delegate)
 
@@ -167,13 +162,38 @@ class Window(object):
 
     @content.setter
     def content(self, widget):
+        # Save the content widget.
+        if widget._impl is None:
+            self._container = Container()
+            self._container.content = widget
+        else:
+            self._container = widget
+
         self._content = widget
-        self._content.window = self
+        self._impl.setContentView_(self._container._impl)
+
+        # Enforce a minimum size based on the content
+        self._min_width_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
+            self._container._impl, NSLayoutAttributeRight,
+            NSLayoutRelationGreaterThanOrEqual if self.resizeable else NSLayoutRelationEqual,
+            self._container._impl, NSLayoutAttributeLeft,
+            1.0, 0
+        )
+        self._container._impl.addConstraint_(self._min_width_constraint)
+
+        self._min_height_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
+            self._container._impl, NSLayoutAttributeBottom,
+            NSLayoutRelationGreaterThanOrEqual if self.resizeable else NSLayoutRelationEqual,
+            self._container._impl, NSLayoutAttributeTop,
+            1.0, 0
+        )
+        self._container._impl.addConstraint_(self._min_height_constraint)
+
+        # Assign the widget to window.
+        widget.window = self
 
         # Assign the widget to the same app as the window.
-        self.content.app = self.app
-
-        self._impl.setContentView_(self._content._impl)
+        widget.app = self.app
 
     @property
     def title(self):
@@ -190,10 +210,16 @@ class Window(object):
     def show(self):
         self._impl.makeKeyAndOrderFront_(None)
 
+        # The first render of the content will establish the
+        # minimum possible content size; use that to enforce
+        # a minimum window size.
+        self._min_width_constraint.constant = self.content.style.layout.width
+        self._min_height_constraint.constant = self.content.style.layout.height
+
         # Do the first layout render.
-        self.content._update_layout(
-            width=self.content._impl.frame.size.width,
-            height=self.content._impl.frame.size.height
+        self._container._update_layout(
+            width=self._impl.contentView.frame.size.width,
+            height=self._impl.contentView.frame.size.height,
         )
 
     def close(self):

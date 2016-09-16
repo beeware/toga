@@ -1,5 +1,6 @@
 from toga.interface import SplitContainer as SplitContainerInterface
 
+from ..container import TogaContainer
 from ..libs import *
 from .base import WidgetMixin
 
@@ -13,8 +14,8 @@ class TogaSplitViewDelegate(NSObject):
     def splitViewDidResizeSubviews_(self, notification) -> None:
         # If the window is actually visible, and the split has moved,
         # a resize of all the content panels is required.
-        if self._interface.window._impl.isVisible:
-            # print ("SPLIT CONTAINER LAYOUT CHILDREN", self._interface._content[0]._impl.frame.size.width, self._interface._content[1]._impl.frame.size.width)
+        if self._interface.window and self._interface.window._impl.isVisible:
+            # print("SPLIT CONTAINER LAYOUT CHILDREN", self._interface._containers[0]._impl.frame.size.width, self._interface._containers[1]._impl.frame.size.width)
             self._interface._update_child_layout()
 
 
@@ -31,25 +32,29 @@ class SplitContainer(SplitContainerInterface, WidgetMixin):
 
         self._impl.setDelegate_(self._delegate)
 
+        self._containers = []
+
         # Add the layout constraints
         self._add_constraints()
 
     def _add_content(self, widget):
-        self._impl.addSubview_(widget._impl)
+        if widget._impl is None:
+            container = Container()
+            container.root_content = widget
+            widget._container = container
+        else:
+            container = widget
+
+        self._impl.addSubview_(container._impl)
+        self._containers.append(container)
 
     def _update_child_layout(self):
         """Force a layout update on the widget.
-
-        The update request can be accompanied by additional style information
-        (probably min_width, min_height, width or height) to control the
-        layout.
         """
         if self.content:
-            for i, content in enumerate(self._content):
-                frame = content._impl.frame
+            for i, (container, content) in enumerate(zip(self._containers, self.content)):
+                frame = container._impl.frame
                 content._update_layout(
-                    left=frame.origin.x,
-                    top=frame.origin.y,
                     width=frame.size.width,
                     height=frame.size.height
                 )
