@@ -18,10 +18,9 @@ class TogaButton(UIButton):
 class Button(ButtonInterface, WidgetMixin):
     def __init__(self, label, id=None, on_press=None, style=None):
         super().__init__(label, id=id, style=style, on_press=on_press)
-        self.startup()
-        self.label = label
+        self._create()
 
-    def startup(self):
+    def create(self):
         self._impl = TogaButton.alloc().init()
         self._impl._interface = self
 
