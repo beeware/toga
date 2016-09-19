@@ -1,6 +1,9 @@
+from toga.interface.window import Window as WindowInterface
+
 from .libs import *
 from .utils import process_callback
 from .container import Container
+from . import dialogs
 
 
 class WindowDelegate(NSObject):
@@ -19,8 +22,6 @@ class WindowDelegate(NSObject):
                     width=notification.object.contentView.frame.size.width,
                     height=notification.object.contentView.frame.size.height
                 )
-
-            content = self._interface.content
 
     ######################################################################
     # Toolbar delegate methods
@@ -78,25 +79,14 @@ class WindowDelegate(NSObject):
         process_callback(item.action(obj))
 
 
-class Window(object):
+class Window(WindowInterface):
+    _IMPL_CLASS = NSWindow
+    _CONTAINER_CLASS = Container
+    _DIALOG_MODULE = dialogs
+
     def __init__(self, title=None, position=(100, 100), size=(640, 480), toolbar=None, resizeable=True, closeable=True, minimizable=True):
-        self._impl = None
-        self._app = None
-        self._toolbar = None
-        self._content = None
-        self._container = None
-
-        self.position = position
-        self.size = size
-
-        self.resizeable = resizeable
-        self.closeable = closeable
-        self.minimizable = minimizable
-
-        self.create()
-
-        self.title = title
-        self.toolbar = toolbar
+        super().__init__(title=None, position=(100, 100), size=(640, 480), toolbar=None, resizeable=True, closeable=True, minimizable=True)
+        self._create()
 
     def create(self):
         # OSX origin is bottom left of screen, and the screen might be
@@ -104,9 +94,9 @@ class Window(object):
         screen = NSScreen.mainScreen().visibleFrame
         position = NSMakeRect(
             screen.origin.x + self.position[0],
-            screen.size.height + screen.origin.y - self.position[1] - self.size[1],
-            self.size[0],
-            self.size[1]
+            screen.size.height + screen.origin.y - self.position[1] - self._size[1],
+            self._size[0],
+            self._size[1]
         )
 
         mask = NSTitledWindowMask
@@ -119,7 +109,7 @@ class Window(object):
         if self.minimizable:
             mask |= NSMiniaturizableWindowMask
 
-        self._impl = NSWindow.alloc().initWithContentRect_styleMask_backing_defer_(
+        self._impl = self._IMPL_CLASS.alloc().initWithContentRect_styleMask_backing_defer_(
             position,
             mask,
             NSBackingStoreBuffered,
@@ -132,44 +122,13 @@ class Window(object):
 
         self._impl.setDelegate_(self._delegate)
 
-    @property
-    def app(self):
-        return self._app
-
-    @app.setter
-    def app(self, app):
-        if self._app:
-            raise Exception("Window is already associated with an App")
-
-        self._app = app
-
-    @property
-    def toolbar(self):
-        return self._toolbar
-
-    @toolbar.setter
-    def toolbar(self, toolbar):
-        self._toolbar = toolbar
-        if self._toolbar:
-            self._toolbar_items = dict((item.toolbar_identifier, item) for item in self._toolbar)
+    def _set_toolbar(self, items):
+            self._toolbar_items = dict((item.toolbar_identifier, item) for item in items)
             self._toolbar_impl = NSToolbar.alloc().initWithIdentifier_('Toolbar-%s' % id(self))
             self._toolbar_impl.setDelegate_(self._delegate)
             self._impl.setToolbar_(self._toolbar_impl)
 
-    @property
-    def content(self):
-        return self._content
-
-    @content.setter
-    def content(self, widget):
-        # Save the content widget.
-        if widget._impl is None:
-            self._container = Container()
-            self._container.content = widget
-        else:
-            self._container = widget
-
-        self._content = widget
+    def _set_content(self, widget):
         self._impl.setContentView_(self._container._impl)
 
         # Enforce a minimum size based on the content
@@ -189,21 +148,9 @@ class Window(object):
         )
         self._container._impl.addConstraint_(self._min_height_constraint)
 
-        # Assign the widget to window.
-        widget.window = self
-
-        # Assign the widget to the same app as the window.
-        widget.app = self.app
-
-    @property
-    def title(self):
-        return self._title
-
-    @title.setter
-    def title(self, title):
-        self._title = title
-        if self._title is not None:
-            self._impl.setTitle_(self._title)
+    def _set_title(self, value):
+        if title is not None:
+            self._impl.setTitle_(title)
         else:
             self._impl.setTitle_('Toga')
 
@@ -224,6 +171,3 @@ class Window(object):
 
     def close(self):
         self._impl.close()
-
-    def on_close(self):
-        pass

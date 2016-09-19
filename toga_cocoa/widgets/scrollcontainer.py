@@ -6,6 +6,8 @@ from ..libs import *
 
 
 class ScrollContainer(ScrollContainerInterface, WidgetMixin):
+    _CONTAINER_CLASS = Container
+
     def __init__(self, id=None, style=None, horizontal=True, vertical=True, content=None):
         super().__init__(id=None, style=style, horizontal=horizontal, vertical=vertical, content=content)
         self._create()
@@ -23,14 +25,8 @@ class ScrollContainer(ScrollContainerInterface, WidgetMixin):
         # Add the layout constraints
         self._add_constraints()
 
-    def _set_content(self, widget):
-        if widget._impl is None:
-            self._inner_container = Container()
-            self._inner_container.root_content = widget
-        else:
-            self._inner_container = widget
-
-        self._impl.setDocumentView_(self._inner_container._impl)
+    def _set_content(self, container, widget):
+        self._impl.setDocumentView_(container._impl)
 
     def _update_child_layout(self):
         if self._content is not None:

@@ -42,5 +42,5 @@ class Button(ButtonInterface, WidgetMixin):
         fitting_size = self._impl.fittingSize()
         self.style.hint(
             height=fitting_size.height,
-            width=(fitting_size.width, None)
+            min_width=fitting_size.width,
         )

@@ -27,6 +27,7 @@ class Table(TableInterface, WidgetMixin):
         self._create()
 
     def create(self):
+        self._data = []
         # Create a table view, and put it in a scroll view.
         # The scroll view is the _impl, because it's the outer container.
         self._impl = NSScrollView.alloc().init()

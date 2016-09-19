@@ -13,9 +13,10 @@ class TogaTabViewDelegate(NSObject):
 
 
 class OptionContainer(OptionContainerInterface, WidgetMixin):
+    _CONTAINER_CLASS = Container
+
     def __init__(self, id=None, style=None, content=None):
         super(OptionContainer, self).__init__(id=id, style=style, content=content)
-        self._containers = []
         self._create()
 
     def create(self):
@@ -29,15 +30,9 @@ class OptionContainer(OptionContainerInterface, WidgetMixin):
         # Add the layout constraints
         self._add_constraints()
 
-    def _add_content(self, label, widget):
+    def _add_content(self, label, container, widget):
         item = NSTabViewItem.alloc().initWithIdentifier_('%s-Tab-%s' % (id(self), id(widget)))
         item.setLabel_(label)
-
-        if widget._impl is None:
-            container = Container()
-            container.content = widget
-        else:
-            container = widget
 
         # Turn the autoresizing mask into constraints.
         # This could be overcome by describing the specific constraints
@@ -46,9 +41,4 @@ class OptionContainer(OptionContainerInterface, WidgetMixin):
 
         item.setView_(container._impl)
 
-        self._containers.append(container)
         self._impl.addTabViewItem_(item)
-
-    def _update_child_layout(self):
-        for container in self._containers:
-            container._update_layout()

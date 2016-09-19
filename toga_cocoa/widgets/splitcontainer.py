@@ -32,21 +32,11 @@ class SplitContainer(SplitContainerInterface, WidgetMixin):
 
         self._impl.setDelegate_(self._delegate)
 
-        self._containers = []
-
         # Add the layout constraints
         self._add_constraints()
 
-    def _add_content(self, widget):
-        if widget._impl is None:
-            container = Container()
-            container.root_content = widget
-            widget._container = container
-        else:
-            container = widget
-
+    def _add_content(self, position, container):
         self._impl.addSubview_(container._impl)
-        self._containers.append(container)
 
     def _update_child_layout(self):
         """Force a layout update on the widget.
