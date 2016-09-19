@@ -1,7 +1,7 @@
 from .base import Widget
 
 
-class Container(Widget):
+class Box(Widget):
     '''This is a Widget that contains other widgets, but has no rendering or
     interaction of its own.
 
@@ -9,7 +9,7 @@ class Container(Widget):
     :param style: an optional style object. If no style is provided then a
                   new one will be created for the widget.
     :param children: An optional list of child Widgets that will be in this
-                     container.
+                     box.
     '''
     def __init__(self, id=None, style=None, children=None):
         super().__init__(id=id, style=style, children=children)

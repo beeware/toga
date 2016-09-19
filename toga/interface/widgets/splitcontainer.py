@@ -2,11 +2,14 @@ from .base import Widget
 
 
 class SplitContainer(Widget):
+    _CONTAINER_CLASS = None
     HORIZONTAL = False
     VERTICAL = True
 
     def __init__(self, id=None, style=None, direction=VERTICAL, content=None):
         super().__init__(id=None, style=None, direction=direction, content=content)
+        self._direction = direction
+        self._containers = []
 
     def _configure(self, direction, content):
         self.content = content
@@ -21,16 +24,26 @@ class SplitContainer(Widget):
         if content is None:
             self._content = None
             return
-            
+
         if len(content) < 2:
             raise ValueError('SplitContainer content must have at least 2 elements')
 
         self._content = content
 
-        for widget in self._content:
+        for position, widget in enumerate(self._content):
             widget.window = self.window
             widget.app = self.app
-            self._add_content(widget)
+
+            if widget._impl is None:
+                container = _CONTAINER_CLASS()
+                container.root_content = widget
+                widget._container = container
+            else:
+                container = widget
+
+            self._add_content(position, container)
+
+            self._containers.append(container)
 
     def _set_app(self, app):
         if self._content:
