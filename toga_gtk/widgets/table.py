@@ -1,22 +1,17 @@
-from __future__ import print_function, absolute_import, division
-
 from gi.repository import Gtk
 
-from .base import Widget
+from toga.interface import Table as TableInterface
+
+from .base import WidgetMixin
 
 
-class Table(Widget):
-    def __init__(self, headings):
-        super(Table, self).__init__()
-        self.headings = headings
+class Table(TableInterface, WidgetMixin):
+    def __init__(self, headings, id=None, style=None):
+        super(Table, self).__init__(headings, id=id, style=style)
+        self._create()
 
-        self._table = None
-        self._columns = None
-        self._data = Gtk.ListStore(*[str for h in headings])
-
-        self.startup()
-
-    def startup(self):
+    def create(self):
+        self._data = Gtk.ListStore(*[str for h in self.headings])
         # Create a table view, and put it in a scroll view.
         # The scroll view is the _impl, because it's the outer container.
         self._table = Gtk.TreeView(self._data)
@@ -32,6 +27,7 @@ class Table(Widget):
         self._impl.add(self._table)
         self._impl.set_min_content_width(200)
         self._impl.set_min_content_height(200)
+        self._impl._interface = self
 
     def insert(self, index, *data):
         if len(data) != len(self.headings):

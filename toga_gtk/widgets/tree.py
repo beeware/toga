@@ -1,22 +1,22 @@
-from __future__ import print_function, absolute_import, division
-
 from gi.repository import Gtk
 
-from .base import Widget
+from toga.interface import Tree as TreeInterface
+
+from .base import WidgetMixin
 
 
-class Tree(Widget):
-    def __init__(self, headings):
-        super(Tree, self).__init__()
-        self.headings = headings
+class Tree(TreeInterface, WidgetMixin):
+    def __init__(self, headings, id=None, style=None):
+        super(Tree, self).__init__(headings, id=id, style=style)
 
-        self._table = None
+        self._tree = None
         self._columns = None
+
         self._data = Gtk.TreeStore(*[str for h in headings])
 
-        self.startup()
+        self._create()
 
-    def startup(self):
+    def create(self):
         # Create a tree view, and put it in a scroll view.
         # The scroll view is the _impl, because it's the outer container.
         self._table = Gtk.TreeView(self._data)

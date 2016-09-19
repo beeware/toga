@@ -15,7 +15,7 @@ out of the box by Ubunutu 12.04, in the ``python-gi`` (or ``python3-gi``,
 if you're using Python 3) package.
 
 If you want to use a WebView, you'll also need to have WebKit, plus the
-GI bindings to WebKit (``gir1.2-webkit-3.0``) installed.
+GI bindings to WebKit (``gir1.2-webkit2-3.0``) installed.
 
 Community
 ---------

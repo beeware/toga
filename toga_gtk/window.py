@@ -1,91 +1,59 @@
-from __future__ import print_function, absolute_import, division
-
 from gi.repository import Gtk
 
-from .utils import wrapped_handler
+from toga.interface.window import Window as WindowInterface
+
 from .command import SEPARATOR, SPACER, EXPANDING_SPACER
+from .container import Container
+from .utils import wrapped_handler
+from . import dialogs
 
 
-class Window(object):
+class Window(WindowInterface):
     _IMPL_CLASS = Gtk.Window
+    _CONTAINER_CLASS = Container
+    _DIALOG_MODULE = dialogs
 
-    def __init__(self, title=None, position=(100, 100), size=(640, 480), toolbar=None):
-        self._app = None
-        self._container = None
-        self._size = size
-        self._toolbar_impl = None
+    def __init__(self, title=None, position=(100, 100), size=(640, 480), toolbar=None, resizeable=True, closeable=True, minimizable=True):
+        super().__init__(title=None, position=(100, 100), size=(640, 480), toolbar=None, resizeable=True, closeable=True, minimizable=True)
+        self._create()
 
-        self.title = title
-        self.position = position
-
-        self.startup()
-
-        self.toolbar = toolbar
-
-    def startup(self):
+    def create(self):
         self._impl = self._IMPL_CLASS()
         self._impl.connect("delete-event", self._on_close)
         self._impl.set_default_size(self._size[0], self._size[1])
 
-    @property
-    def app(self):
-        return self._app
+    def _set_app(self, app):
+        app._impl.add_window(self._impl)
 
-    @app.setter
-    def app(self, app):
-        if self._app:
-            raise Exception("Window is already associated with an App")
+    def _set_toolbar(self, items):
+        self._toolbar_impl = Gtk.Toolbar()
+        self._toolbar_impl.set_style(Gtk.ToolbarStyle.BOTH)
+        for toolbar_item in items:
+            if toolbar_item in (SEPARATOR, SPACER, EXPANDING_SPACER):
+                item_impl = Gtk.SeparatorToolItem()
+                if toolbar_item == EXPANDING_SPACER:
+                    item_impl.set_expand(True)
+                item_impl.set_draw(toolbar_item == SEPARATOR)
+            else:
+                item_impl = Gtk.ToolButton()
+                item_impl.set_icon_widget(toolbar_item.icon._impl_32)
+                item_impl.set_label(toolbar_item.label)
+                item_impl.set_tooltip_text(toolbar_item.tooltip)
+                item_impl.connect("clicked", wrapped_handler(toolbar_item, toolbar_item.action))
 
-        self._app = app
+            self._toolbar_impl.insert(item_impl, -1)
 
-    @property
-    def toolbar(self):
-        return self._toolbar
-
-    @toolbar.setter
-    def toolbar(self, value):
-        # If there are toolbar items defined, add a toolbar to the window
-        self._toolbar = value
-        if self._toolbar:
-            self._toolbar_impl = Gtk.Toolbar()
-            self._toolbar_impl.set_style(Gtk.ToolbarStyle.BOTH)
-            for toolbar_item in self._toolbar:
-                if toolbar_item in (SEPARATOR, SPACER, EXPANDING_SPACER):
-                    item_impl = Gtk.SeparatorToolItem()
-                    if toolbar_item == EXPANDING_SPACER:
-                        item_impl.set_expand(True)
-                    item_impl.set_draw(toolbar_item == SEPARATOR)
-                else:
-                    item_impl = Gtk.ToolButton()
-                    item_impl.set_icon_widget(toolbar_item.icon._impl_32)
-                    item_impl.set_label(toolbar_item.label)
-                    item_impl.set_tooltip_text(toolbar_item.tooltip)
-                    item_impl.connect("clicked", wrapped_handler(toolbar_item, toolbar_item.action))
-
-                self._toolbar_impl.insert(item_impl, -1)
-
-    @property
-    def content(self):
-        return self._content
-
-    @content.setter
-    def content(self, widget):
-        self._content = widget
-        self._content.window = self
-        self._content.app = self.app
-
-        self._container = Gtk.VBox()
+    def _set_content(self, widget):
+        self._window_layout = Gtk.VBox()
 
         if self._toolbar:
-            self._container.pack_start(self._toolbar_impl, True, True, 0)
-        self._container.pack_start(self.content._impl, True, True, 0)
-        self._impl.add(self._container)
+            self._window_layout.pack_start(self._toolbar_impl, False, False, 0)
+        self._window_layout.pack_start(self._container._impl, True, True, 0)
+
+        self._impl.add(self._window_layout)
 
     def show(self):
         self._impl.show_all()
 
     def _on_close(self, widget, data):
         self.on_close()
-
-    def on_close(self):
-        pass

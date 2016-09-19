@@ -1,40 +1,33 @@
-from __future__ import print_function, absolute_import, division
-
 from gi.repository import Gtk
 
-from .base import Widget
+from toga.interface import TextInput as TextInputInterface
 
-from toga import compat
+from .base import WidgetMixin
+from ..utils import wrapped_handler
 
 
-class TextInput(Widget):
-    def __init__(self, initial=None, placeholder=None, readonly=False):
-        super(TextInput, self).__init__()
-        self.placeholder = placeholder
+class TextInput(TextInputInterface, WidgetMixin):
+    def __init__(self, id=None, style=None, initial=None, placeholder=None, readonly=False):
+        super().__init__(id=id, style=style, initial=initial, placeholder=placeholder, readonly=readonly)
+        self._create()
 
-        self.startup()
+        # Text inputs have a fixed drawn height.
+        self._expand_vertical = False
 
-        self.value = initial
-        self.readonly = readonly
-
-    def startup(self):
+    def create(self):
         self._impl = Gtk.Entry()
-        if self.placeholder:
-            self._impl.set_placeholder_text(self.placeholder)
+        self._impl._interface = self
 
-    @property
-    def readonly(self):
-        return self._readonly
+        self._impl.connect('show', lambda event: self.rehint())
 
-    @readonly.setter
-    def readonly(self, value):
-        self._readonly = value
-        self._impl.editable = not self._readonly
+    def _set_readonly(self, value):
+        self._impl.editable = not value
 
-    @property
-    def value(self):
+    def _get_value(self):
         return self._impl.get_text()
 
-    @value.setter
-    def value(self, value):
-        self._impl.set_text(compat.text(value))
+    def _set_value(self, value):
+        self._impl.set_text(value)
+
+    def _set_placeholder(self, value):
+        self._impl.set_placeholder_text(self._placeholder)

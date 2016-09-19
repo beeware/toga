@@ -5,14 +5,13 @@ from .command import *
 
 # Widgets
 from .widgets.button import *
-from .widgets.container import *
-from .widgets.dialog import *
+from .widgets.box import *
 from .widgets.icon import *
 from .widgets.label import *
-from .widgets.multilinetextinput import *
+# from .widgets.multilinetextinput import *
 from .widgets.optioncontainer import *
-from .widgets.passwordinput import *
-from .widgets.progressbar import *
+# from .widgets.passwordinput import *
+# from .widgets.progressbar import *
 from .widgets.scrollcontainer import *
 from .widgets.splitcontainer import *
 from .widgets.table import *
@@ -22,18 +21,17 @@ from .widgets.webview import *
 
 __all__ = [
     '__version__',
-    'App',
+    'App', 'MainWindow',
     'Window',
     'Command', 'SEPARATOR', 'SPACER', 'EXPANDING_SPACER',
+    'Box',
     'Button',
-    'Container',
-    'Dialog',
     'Icon', 'TIBERIUS_ICON',
     'Label',
-    'MultilineTextInput',
+    # 'MultilineTextInput',
     'OptionContainer',
-    'PasswordInput',
-    'ProgressBar',
+    # 'PasswordInput',
+    # 'ProgressBar',
     'ScrollContainer',
     'SplitContainer',
     'Table',
@@ -50,4 +48,4 @@ __all__ = [
 # __version__ = '1.2.3'       # Final Release
 # __version__ = '1.2.3.post1' # Post Release 1
 
-__version__ = '0.1.3.dev'
+__version__ = '0.2.1'

@@ -26,7 +26,7 @@ setup(
     url='http://pybee.org/toga',
     packages=find_packages(exclude=['tests']),
     install_requires=[
-        'toga-cassowary',
+        'toga-core',
     ],
     license='New BSD',
     classifiers=[
@@ -35,12 +35,10 @@ setup(
         'License :: OSI Approved :: BSD License',
         'Environment :: X11 Applications :: GTK',
         'Operating System :: POSIX',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.6',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3 :: Only',
         'Topic :: Software Development',
         'Topic :: Software Development :: User Interfaces',
         'Topic :: Software Development :: Widget Sets',

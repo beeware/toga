@@ -1,48 +1,35 @@
-from __future__ import print_function, absolute_import, division
-
 from gi.repository import Gtk
 
-from .base import Widget
+from toga.interface import SplitContainer as SplitContainerInterface
+
+from ..container import Container
+from .base import WidgetMixin
 
 
-class SplitContainer(Widget):
-    HORIZONTAL = False
-    VERTICAL = True
-    def __init__(self, direction=VERTICAL):
-        super(SplitContainer, self).__init__()
-        self._content = None
+class SplitContainer(SplitContainerInterface, WidgetMixin):
+    _CONTAINER_CLASS = Container
 
-        self.direction = direction
+    def __init__(self, id=None, style=None, direction=SplitContainerInterface.VERTICAL):
+        super().__init__(id=None, style=None, direction=direction)
+        self._create()
 
-        self.startup()
-
-    def startup(self):
+    def create(self):
         if self.direction == self.HORIZONTAL:
             self._impl = Gtk.VPaned()
         else:
             self._impl = Gtk.HPaned()
+        self._impl._interface = self
 
-    @property
-    def content(self):
-        return self._content
-
-    @content.setter
-    def content(self, content):
-        if len(content) != 2:
+    def _add_content(self, position, container):
+        if position >= 2:
             raise ValueError('SplitContainer content must be a 2-tuple')
-        self._content = content
 
-        self._content[0].window = self.window
-        self._content[0].app = self.app
-        self._impl.add1(self._content[0]._impl)
+        if position == 0:
+            add = self._impl.add1
+        elif position == 1:
+            add = self._impl.add2
 
-        self._content[1].window = self.window
-        self._content[1].app = self.app
-        self._impl.add2(self._content[1]._impl)
-
-        if self._content:
-            self._content[0].window = self.window
-            self._content[1].window = self.window
+        add(container._impl)
 
     def _set_app(self, app):
         if self._content:
@@ -53,3 +40,6 @@ class SplitContainer(Widget):
         if self._content:
             self._content[0].window = self.window
             self._content[1].window = self.window
+
+    def _set_direction(self, value):
+        pass

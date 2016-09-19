@@ -1,33 +1,28 @@
-from __future__ import print_function, absolute_import, division
-
 from gi.repository import Gtk
 
-from .base import Widget
-from ..libs import gtk_alignment
 from toga.constants import *
+from toga.interface import Label as LabelInterface
+
+from .base import WidgetMixin
+from ..libs import gtk_alignment
 
 
-class Label(Widget):
-    def __init__(self, text=None, alignment=LEFT_ALIGNED):
-        super(Label, self).__init__()
+class Label(LabelInterface, WidgetMixin):
+    def __init__(self, text, id=None, style=None, alignment=LEFT_ALIGNED):
+        super().__init__(id=id, style=style, text=text, alignment=alignment)
+        self._create()
 
-        self.text = text
-
-        self.startup()
-
-        self.alignment = alignment
-
-    def startup(self):
-        self._impl = Gtk.Label(self.text)
+    def create(self):
+        self._impl = Gtk.Label()
         self._impl.set_line_wrap(False)
 
-    @property
-    def alignment(self):
-        return self._alignment
+        self._impl._interface = self
 
-    @alignment.setter
-    def alignment(self, value):
-        self._alignment = value
-        if self._impl:
-            self._impl.set_alignment(*gtk_alignment(self._alignment))
+        self._impl.connect('show', lambda event: self.rehint())
+
+    def _set_alignment(self, value):
+        self._impl.set_alignment(*gtk_alignment(self._alignment))
+
+    def _set_text(self, value):
+        self._impl.set_text(self._text)
 

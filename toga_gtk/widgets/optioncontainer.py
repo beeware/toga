@@ -1,23 +1,21 @@
-from __future__ import print_function, absolute_import, division
-
 from gi.repository import Gtk
 
-from .base import Widget
+from toga.interface import OptionContainer as OptionContainerInterface
+
+from ..container import Container
+from .base import WidgetMixin
 
 
-class OptionContainer(Widget):
-    def __init__(self, horizontal=True, vertical=True):
-        super(OptionContainer, self).__init__()
-        self._content = []
+class OptionContainer(OptionContainerInterface, WidgetMixin):
+    _CONTAINER_CLASS = Container
 
-        self.startup()
+    def __init__(self, id=None, style=None, content=None):
+        super(OptionContainer, self).__init__(id=id, style=style, content=content)
+        self._create()
 
-    def startup(self):
+    def create(self):
         # We want a single unified widget; the vbox is the representation of that widget.
         self._impl = Gtk.Notebook()
 
-    def add(self, label, container):
-        self._content.append((label, container))
-        container.window = self.window
-        container.app = self.app
+    def _add_content(self, label, container, widget):
         self._impl.append_page(container._impl, Gtk.Label(label))
