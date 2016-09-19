@@ -15,13 +15,13 @@ Here's a complete code listing for our "Hello world" app::
 
 
     def build(app):
-        container = toga.Container()
+        box = toga.Box()
 
         button = toga.Button('Hello world', on_press=button_handler)
         button.style.set(margin=50)
-        container.add(button)
+        box.add(button)
 
-        return container
+        return box
 
 
     if __name__ == '__main__':
@@ -53,12 +53,12 @@ our app to have. This method is a callable that accepts an app instance::
 
 We want to put a button in the window. However, unless we want the button to
 fill the entire app window, we can't just put the button into the app window.
-Instead, we need create a container, and put the button in the container.
+Instead, we need create a box, and put the button in the box.
 
-A container is an object that can be used to hold multiple widgets, and to
-define padding around widgets. So, we define a container::
+A box is an object that can be used to hold multiple widgets, and to
+define padding around widgets. So, we define a box::
 
-        container = toga.Container()
+        box = toga.Box()
 
 We can then define a button. When we create the button, we can set the button
 text, and we also set the behavior that we want to invoke when the button is
@@ -76,22 +76,22 @@ button with have a margin of 50 pixels on each side. If we wanted to define a
 margin of 20 pixels on top of the button, we could have defined ``margin_top=20``,
 or we could have specified the ``margin=(20, 50, 50, 50)``.
 
-The next step is to add the button to the container::
+The next step is to add the button to the box::
 
-        container.add(button)
+        box.add(button)
 
-The button will, by default, stretch to the size of the container it is placed
-in. The outer container is also a block, which will stretch to the size of
-container it is placed in - which, in our case, is the window itself. The
+The button will, by default, stretch to the size of the box it is placed
+in. The outer box is also a block, which will stretch to the size of
+box it is placed in - which, in our case, is the window itself. The
 button has a default height, defined by the way that the underlying platform
 draws buttons). As a result, this means we'll see a single button in the app
 window that stretches to the width of the screen, but has a 50 pixel margin
 surrounding it.
 
-Now we've set up the container, we return the outer container that holds all
-the UI content. This container will be the content of the app's main window::
+Now we've set up the box, we return the outer box that holds all
+the UI content. This box will be the content of the app's main window::
 
-        return container
+        return box
 
 Lastly, we get into the main body of the program, where we create the app
 itself. The app is a high level container representing the executable. The app

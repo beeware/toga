@@ -13,9 +13,9 @@ Here's the source code::
 
 
     def build(app):
-        c_container = toga.Container()
-        f_container = toga.Container()
-        container = toga.Container()
+        c_box = toga.Box()
+        f_box = toga.Box()
+        box = toga.Box()
 
         c_input = toga.TextInput(readonly=True)
         f_input = toga.TextInput()
@@ -32,20 +32,20 @@ Here's the source code::
 
         button = toga.Button('Calculate', on_press=calculate)
 
-        f_container.add(f_label)
-        f_container.add(f_input)
+        f_box.add(f_label)
+        f_box.add(f_input)
 
-        c_container.add(join_label)
-        c_container.add(c_input)
-        c_container.add(c_label)
+        c_box.add(join_label)
+        c_box.add(c_input)
+        c_box.add(c_label)
 
-        container.add(f_container)
-        container.add(c_container)
-        container.add(button)
+        box.add(f_box)
+        box.add(c_box)
+        box.add(button)
 
-        container.style(flex_direction='column', padding_top=10)
-        f_container.style(flex_direction='row', margin=5)
-        c_container.style(flex_direction='row', margin=5)
+        box.style(flex_direction='column', padding_top=10)
+        f_box.style(flex_direction='row', margin=5)
+        c_box.style(flex_direction='row', margin=5)
 
         c_input.style(flex=1)
         f_input.style(flex=1, margin_left=160)
@@ -55,7 +55,7 @@ Here's the source code::
 
         button.style(margin=15)
 
-        return container
+        return box
 
     if __name__ == '__main__':
         app = toga.App('Temperature Converter', 'org.pybee.f_to_c', startup=build)
@@ -72,10 +72,10 @@ provides a good tutorial on Flexbox`_ if you've never come across it before.
 
 .. _CSS-tricks provides a good tutorial on Flexbox: https://css-tricks.com/snippets/css/a-guide-to-flexbox/
 
-In this example app, we've set up an outer container that stacks vertically;
-inside that container, we've put 2 horizontal containers and a button.
+In this example app, we've set up an outer box that stacks vertically;
+inside that box, we've put 2 horizontal boxes and a button.
 
-Since there's no width styling on the horizontal containers, they'll try to
+Since there's no width styling on the horizontal boxes, they'll try to
 fit the widgets the contain into the available space. The ``TextInput``
 widgets have a style of ``flex=1``, but the ``Label`` widgets have a fixed
 width; as a result, the ``TextInput`` widgets will be stretched to fit the

@@ -2,6 +2,8 @@ from .base import Widget
 
 
 class ScrollContainer(Widget):
+    _CONTAINER_CLASS = None
+
     def __init__(self, id=None, style=None, horizontal=True, vertical=True, content=None):
         super().__init__(id=None, style=None, horizontal=True, vertical=True, content=None)
 
@@ -20,15 +22,14 @@ class ScrollContainer(Widget):
         if widget:
             self._content.window = self.window
             self._content.app = self.app
-            self._set_content(widget)
 
-    def _set_app(self, app):
-        if self._content:
-            self._content.app = self.app
+            if widget._impl is None:
+                self._inner_container = self._CONTAINER_CLASS()
+                self._inner_container.root_content = widget
+            else:
+                self._inner_container = widget
 
-    def _set_window(self, window):
-        if self._content:
-            self._content.window = self.window
+            self._set_content(self._inner_container, widget)
 
     @property
     def vertical(self):

@@ -22,6 +22,8 @@ class Widget:
         self._children = None
         self._window = None
         self._app = None
+        self._impl = None
+        self.__container = None
         self.dirty = True
         self._layout_in_progress = False
         self._config = config
@@ -74,6 +76,7 @@ class Widget:
         '''
         if self._children is None:
             raise ValueError('Widget cannot have children')
+
         self._children.append(child)
 
         child.app = self.app
@@ -114,6 +117,20 @@ class Widget:
             for child in self._children:
                 child.window = window
 
+    @property
+    def _container(self):
+        '''The display container to which this widget belongs.
+        '''
+        return self.__container
+
+    @_container.setter
+    def _container(self, container):
+        self.__container = container
+        self._set_container(container)
+        if self._children is not None:
+            for child in self._children:
+                child._container = container
+
     def _create(self):
         self.create()
         self._configure(**self._config)
@@ -128,19 +145,22 @@ class Widget:
         (probably min_width, min_height, width or height) to control the
         layout.
         """
-        # print("UPDATE LAYOUT OF ", self)
+        # print("UPDATE LAYOUT OF ", self, style)
         if self._layout_in_progress:
             return
         self._layout_in_progress = True
 
         self.style.set(**style)
 
-        # Recompute layout
+        # Recompute layout for this widget
         self.style.recompute()
 
+        # Update the layout parameters for all children.
+        # This will also perform a leaf-first update of
+        # the constraint on each widget.
         self._update_child_layout()
 
-        # Set the frame for the widget to adhere to the new style.
+        # Set the constraints the widget to adhere to the new style.
         self._apply_layout()
 
         self._layout_in_progress = False
@@ -151,6 +171,3 @@ class Widget:
             for child in self.children:
                 # if child.is_container:
                 child._update_layout()
-
-    def rehint(self):
-        pass

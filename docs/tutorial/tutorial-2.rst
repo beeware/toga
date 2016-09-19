@@ -58,7 +58,7 @@ Here's the source code::
             for i in range(0, 100):
                 left_container.insert(None, 'root%s' % (i+5), 'value%s' % (i+5))
 
-            right_content = toga.Container(
+            right_content = toga.Box(
                 style=CSS(flex_direction='column', padding_top=50)
             )
 

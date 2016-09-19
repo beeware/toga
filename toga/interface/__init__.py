@@ -1,6 +1,9 @@
+from .app import App
+from .window import Window
+
 # Widgets
+from .widgets.box import *
 from .widgets.button import *
-from .widgets.container import *
 # from .widgets.icon import *
 # from .widgets.image import *
 from .widgets.imageview import *
@@ -19,10 +22,11 @@ from .widgets.webview import *
 
 __all__ = [
     'App',
+    'Window',
 
     # WIDGETS
+    'Box',
     'Button',
-    'Container',
     # 'Icon', 'TIBERIUS_ICON',
     # 'Image',
     'ImageView',
