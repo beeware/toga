@@ -9,7 +9,7 @@ with io.open('README.rst', encoding='utf8') as readme:
 
 setup(
     name='toga',
-    version='0.2.1',
+    version='0.2.2',
     description='A Python native, OS native GUI toolkit.',
     long_description=long_description,
     author='Russell Keith-Magee',
