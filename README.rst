@@ -56,22 +56,29 @@ Problems using virtualenv under Linux
 
 When running under Linux, Toga uses the system native python GTK+3 bindings
 for display purposes. However, if you're using a ``--no-site-packages``
-virtualenv, the Python bindings for GTK won't be in your ``PYTHONPATH``.
+virtualenv (which is the default), the Python bindings for GTK won't be in
+your ``PYTHONPATH``.
 
-Unfortunately, you can't ``pip install`` GTK+ bindings, so you have to use a
-workaround. To make the system GTK+ bindings available to your virtualenv,
-symlink the ``gi`` module from the system dist-packages directory into your
-virtualenv's site-packages::
+If you install Toga in a virtual environment, Toga will attempt to
+automatically fix the problem; however, if this fails, you'll need to apply
+the fix manually. To make the system GTK+ bindings available to your
+virtualenv, symlink the ``gi`` module from the system dist-packages directory
+into your virtualenv's site-packages::
 
-    For a Ubuntu 32bit system::
+    For an Ubuntu 14.04 system::
 
-        $ cd $VIRTUAL_ENV/lib/python2.7/site-packages
-        $ ln -si /usr/lib/python2.7/dist-packages/gi
+        $ cd $VIRTUAL_ENV/lib/python3.4/site-packages
+        $ ln -si /usr/lib/python3/dist-packages/gi
+
+    For a Ubuntu 16.04 system::
+
+        $ cd $VIRTUAL_ENV/lib/python3.5/site-packages
+        $ ln -si /usr/lib/python3/dist-packages/gi
 
     For a Fedora 64bit system::
 
-        $ cd $VIRTUAL_ENV/lib/python2.7/site-packages
-        $ ln -si /usr/lib64/python2.7/site-packages/gi/
+        $ cd $VIRTUAL_ENV/lib/python3.5/site-packages
+        $ ln -si /usr/lib64/python3.5/site-packages/gi/
 
 
 Documentation
