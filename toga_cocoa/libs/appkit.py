@@ -1,7 +1,6 @@
-from enum import Enum
-
 from ctypes import *
 from ctypes import util
+from enum import Enum
 
 from rubicon.objc import *
 
