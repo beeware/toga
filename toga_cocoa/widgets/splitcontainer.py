@@ -17,10 +17,11 @@ class TogaSplitViewDelegate(NSObject):
         if self._interface.window and self._interface.window._impl.isVisible:
             # print("SPLIT CONTAINER LAYOUT CHILDREN", self._interface._containers[0]._impl.frame.size.width, self._interface._containers[1]._impl.frame.size.width)
             self._interface._update_child_layout()
+            self._interface.on_resize()
 
 
 class SplitContainer(SplitContainerInterface, WidgetMixin):
-    def __init__(self, id=None, style=None, direction=SplitContainerInterface.VERTICAL):
+    def __init__(self, id=None, style=None, direction=SplitContainer.VERTICAL):
         super().__init__(id=None, style=None, direction=direction)
         self._create()
 
