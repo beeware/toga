@@ -47,8 +47,8 @@ class CSSLayout(Gtk.Fixed):
             else:
                 # print("update ", widget._interface, widget._interface.style.layout)
                 child_allocation = Gdk.Rectangle()
-                child_allocation.x = widget._interface.style.layout.left
-                child_allocation.y = widget._interface.style.layout.top
+                child_allocation.x = widget._interface.style.layout.absolute.left
+                child_allocation.y = widget._interface.style.layout.absolute.top
                 child_allocation.width = widget._interface.style.layout.width
                 child_allocation.height = widget._interface.style.layout.height
 
