@@ -66,7 +66,3 @@ class App(object):
         This method typically only returns once the application is exiting.
         '''
         raise NotImplementedError('Application class must define main_loop()')
-
-    def show_dialog(self, dialog):
-        '''Show a modal dialog for the app.'''
-        dialog.show(self)

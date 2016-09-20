@@ -35,4 +35,4 @@ class Button(Widget):
         self._set_on_press(handler)
 
     def _set_on_press(self, value):
-        raise NotImplementedError('Button widget must define _set_on_press()')
+        pass

@@ -5,7 +5,7 @@ class ScrollContainer(Widget):
     _CONTAINER_CLASS = None
 
     def __init__(self, id=None, style=None, horizontal=True, vertical=True, content=None):
-        super().__init__(id=None, style=None, horizontal=True, vertical=True, content=None)
+        super().__init__(id=id, style=style, horizontal=horizontal, vertical=vertical, content=content)
 
     def _configure(self, horizontal, vertical, content):
         self.horizontal = horizontal
