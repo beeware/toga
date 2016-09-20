@@ -26,8 +26,8 @@ setup(
     url='http://pybee.org/toga',
     packages=find_packages(exclude=['tests']),
     install_requires=[
-        'rubicon-objc',
-        'toga-core',
+        'rubicon-objc>=0.2.2',
+        'toga-core>=%s' % version,
     ],
     license='New BSD',
     classifiers=[
