@@ -1,5 +1,6 @@
 from ctypes import *
 from ctypes import util
+from enum import Enum
 
 from rubicon.objc import *
 
@@ -70,13 +71,15 @@ class NSEdgetInsets(Structure):
 def NSEdgeInsetsMake(top, left, bottom, right):
     return NSEdgeInsets(top, left, bottom, right)
 
-NSLayoutPriorityRequired = 1000
-NSLayoutPriorityDefaultHigh = 750
-NSLayoutPriorityDragThatCanResizeWindow = 510
-NSLayoutPriorityWindowSizeStayPut = 500
-NSLayoutPriorityDragThatCannotResizeWindow = 490
-NSLayoutPriorityDefaultLow = 250
-NSLayoutPriorityFittingSizeCompression = 50
+
+class NSLayoutPriority(Enum):
+    Required = 1000
+    DefaultHigh = 750
+    DragThatCanResizeWindow = 510
+    WindowSizeStayPut = 500
+    DragThatCannotResizeWindow = 490
+    DefaultLow = 250
+    FittingSizeCompression = 50
 
 # NSText.h
 NSLeftTextAlignment = 0

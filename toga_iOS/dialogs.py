@@ -1,7 +1,7 @@
 from rubicon.objc import *
 
-from ..libs import *
-from .base import WidgetMixin
+from .libs import *
+from .widgets.base import WidgetMixin
 
 
 class TogaDialog(UIViewController):

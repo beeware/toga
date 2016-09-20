@@ -1,12 +1,12 @@
 from .libs import (
-    objc_classmethod, objc_method,
+    objc_method,
     NSLayoutAttributeTop, NSLayoutAttributeLeft,
     NSLayoutAttributeRight, NSLayoutAttributeBottom,
     NSLayoutRelationEqual, NSLayoutRelationGreaterThanOrEqual, NSLayoutRelationLessThanOrEqual,
     NSLayoutConstraint,
     NSLayoutPriority,
     NSRect, NSPoint, NSSize,
-    NSView
+    UIView, UIColor
 )
 
 
@@ -41,7 +41,7 @@ class Constraints:
             self._widget._impl, NSLayoutAttributeLeft,
             NSLayoutRelationEqual,
             self._container._impl, NSLayoutAttributeLeft,
-            1.0, self._widget.style.layout.left
+            1.0, self._widget.style.layout.absolute.left
         )
         self._container._impl.addConstraint_(self._left_constraint)
 
@@ -49,7 +49,7 @@ class Constraints:
             self._widget._impl, NSLayoutAttributeTop,
             NSLayoutRelationEqual,
             self._container._impl, NSLayoutAttributeTop,
-            1.0, self._widget.style.layout.top
+            1.0, self._widget.style.layout.absolute.top
         )
         self._container._impl.addConstraint_(self._top_constraint)
 
@@ -92,8 +92,8 @@ class Constraints:
         # print("UPDATE", self._widget, 'in', self._container, 'to', self._widget.style.layout)
         if self._container:
             # print("     in", self._container)
-            self.top = self._widget.style.layout.top
-            self.left = self._widget.style.layout.left
+            self.top = self._widget.style.layout.absolute.top
+            self.left = self._widget.style.layout.absolute.left
 
             self.width = self._widget.style.layout.width
             self.height = self._widget.style.layout.height
@@ -143,11 +143,7 @@ class Constraints:
             self._top_constraint.constant = value
 
 
-class TogaContainer(NSView):
-    @objc_classmethod
-    def create(self):
-        return container
-
+class TogaContainer(UIView):
     @objc_method
     def isFlipped(self) -> bool:
         # Default Cocoa coordinate frame is around the wrong way.
@@ -163,6 +159,7 @@ class Container:
     def __init__(self):
         self._impl = TogaContainer.alloc().init()
         self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
+        self._impl.setBackgroundColor_(UIColor.whiteColor())
 
         self._content = None
         self._constraints = Constraints(self)

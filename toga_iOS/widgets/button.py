@@ -27,16 +27,15 @@ class Button(ButtonInterface, WidgetMixin):
         self._impl.setTitleColor_forState_(self._impl.tintColor, UIControlStateNormal)
         self._impl.addTarget_action_forControlEvents_(self._impl, get_selector('onPress:'), UIControlEventTouchDown)
 
-        # Height of a button is known. Set the minimum width
-        # of a button to be a square
-        fitting_size = self._impl.systemLayoutSizeFittingSize_(CGSize(0, 0))
-        self.style.hint(
-            height=fitting_size.height,
-            width=(fitting_size.width, None)
-        )
-
         # Add the layout constraints
         self._add_constraints()
 
     def _set_label(self, value):
         self._impl.setTitle_forState_(value, UIControlStateNormal)
+
+    def rehint(self):
+        fitting_size = self._impl.systemLayoutSizeFittingSize_(CGSize(0, 0))
+        self.style.hint(
+            height=fitting_size.height,
+            min_width=fitting_size.width,
+        )
