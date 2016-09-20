@@ -1,8 +1,8 @@
 from toga.interface.window import Window as WindowInterface
 
+from .container import Container
 from .libs import *
 from .utils import process_callback
-from .container import Container
 from . import dialogs
 
 
@@ -85,7 +85,7 @@ class Window(WindowInterface):
     _DIALOG_MODULE = dialogs
 
     def __init__(self, title=None, position=(100, 100), size=(640, 480), toolbar=None, resizeable=True, closeable=True, minimizable=True):
-        super().__init__(title=None, position=(100, 100), size=(640, 480), toolbar=None, resizeable=True, closeable=True, minimizable=True)
+        super().__init__(title=title, position=position, size=size, toolbar=toolbar, resizeable=resizeable, closeable=closeable, minimizable=minimizable)
         self._create()
 
     def create(self):

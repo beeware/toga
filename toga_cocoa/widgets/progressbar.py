@@ -6,7 +6,7 @@ from .base import WidgetMixin
 
 class ProgressBar(ProgressBarInterface, WidgetMixin):
     def __init__(self, id=None, style=None, max=None, value=None):
-        super().__init__(id=None, style=None, max=None, value=None)
+        super().__init__(id=id, style=style, max=max, value=value)
         self._create()
 
     def create(self):

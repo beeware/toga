@@ -6,7 +6,7 @@ from .base import WidgetMixin
 
 class ImageView(ImageViewInterface, WidgetMixin):
     def __init__(self, id=None, style=None, image=None):
-        super(ImageView, self).__init__(id=None, style=None, image=None)
+        super().__init__(id=id, style=style, image=image)
         self._create()
 
     def create(self):
