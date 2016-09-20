@@ -12,15 +12,10 @@ a platform specific backend:
 * `toga-iOS`_: for iOS devices (iPhone, iPad, iPod)
 * `toga-android`_: for Android devices (limited support)
 * `toga-django`_: for Android devices (limited support)
-* `toga-qt`_: for Android devices (limited support)
-
+* `toga-qt`_: Qt backend for (no support)
+* `toga-winrt`_: for Windows desktops (no support)
 
 For more details, see the `Toga project on Github`_.
-
-Prerequisites
-~~~~~~~~~~~~~
-
-This backend requires OS X 10.7 (Lion) as a minimum requriement.
 
 Community
 ---------
@@ -47,6 +42,7 @@ want to contribute code, please `fork the code`_ and `submit a pull request`_.
 .. _toga-android: http://github.com/pybee/toga-android
 .. _toga-django: http://github.com/pybee/toga-django
 .. _toga-qt: http://github.com/pybee/toga-qt
+.. _toga-winrt: http://github.com/pybee/toga-winrt
 .. _Toga project on Github: https://github.com/pybee/toga
 .. _BeeWare suite: http://pybee.org
 .. _@pybeeware on Twitter: https://twitter.com/pybeeware
