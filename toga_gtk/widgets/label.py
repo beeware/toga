@@ -26,3 +26,16 @@ class Label(LabelInterface, WidgetMixin):
     def _set_text(self, value):
         self._impl.set_text(self._text)
 
+    def rehint(self):
+        # print("REHINT", self, self._impl.get_preferred_width(), self._impl.get_preferred_height(), getattr(self, '_fixed_height', False), getattr(self, '_fixed_width', False))
+        hints = {}
+        width = self._impl.get_preferred_width()
+        height = self._impl.get_preferred_height()
+
+        if width.minimum_width > 0:
+            hints['min_width'] = width.minimum_width
+        if height.minimum_height > 0:
+            hints['min_height'] = height.minimum_height
+
+        if hints:
+            self.style.hint(**hints)

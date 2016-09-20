@@ -11,9 +11,6 @@ class TextInput(TextInputInterface, WidgetMixin):
         super().__init__(id=id, style=style, initial=initial, placeholder=placeholder, readonly=readonly)
         self._create()
 
-        # Text inputs have a fixed drawn height.
-        self._expand_vertical = False
-
     def create(self):
         self._impl = Gtk.Entry()
         self._impl._interface = self
@@ -31,3 +28,19 @@ class TextInput(TextInputInterface, WidgetMixin):
 
     def _set_placeholder(self, value):
         self._impl.set_placeholder_text(self._placeholder)
+
+    def rehint(self):
+        # print("REHINT", self, self._impl.get_preferred_width(), self._impl.get_preferred_height(), getattr(self, '_fixed_height', False), getattr(self, '_fixed_width', False))
+        hints = {}
+        width = self._impl.get_preferred_width()
+        height = self._impl.get_preferred_height()
+
+        if width.minimum_width > 0:
+            hints['min_width'] = width.minimum_width
+        if height.minimum_height > 0:
+            hints['min_height'] = height.minimum_height
+        if height.natural_height > 0:
+            hints['height'] = height.natural_height
+
+        if hints:
+            self.style.hint(**hints)

@@ -43,10 +43,7 @@ class WebView(WebViewInterface, WidgetMixin):
             self._webview.load_uri(self._url)
 
     def _set_content(self, root_url, content):
-        # self._impl.mainFrame.loadHTMLString_baseURL_(content, NSURL.URLWithString_(root_url))
-        pass
+        self._webview.load_html(content, root_url)
 
     def evaluate(self, javascript):
-        # FIXME - work out how to run javascript in a webkit view.
-        return False
-        return self._impl.stringByEvaluatingJavaScriptFromString_(javascript)
+        self._webview.run_javascript(javascript, None, None, None)

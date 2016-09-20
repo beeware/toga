@@ -10,7 +10,7 @@ class ScrollContainer(ScrollContainerInterface, WidgetMixin):
     _CONTAINER_CLASS = Container
 
     def __init__(self, id=None, style=None, horizontal=True, vertical=True, content=None):
-        super().__init__(id=None, style=style, horizontal=horizontal, vertical=vertical, content=content)
+        super().__init__(id=id, style=style, horizontal=horizontal, vertical=vertical, content=content)
         self._create()
 
     def create(self):

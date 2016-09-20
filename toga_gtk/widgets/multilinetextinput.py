@@ -14,9 +14,6 @@ class MultilineTextInput(Widget):
         self.readonly = readonly
         self.value = initial
 
-        self.expand_width = True
-        self.expand_height = True
-
     def startup(self):
         self._buffer = Gtk.TextBuffer()
 

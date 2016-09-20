@@ -10,8 +10,9 @@ class SplitContainer(SplitContainerInterface, WidgetMixin):
     _CONTAINER_CLASS = Container
 
     def __init__(self, id=None, style=None, direction=SplitContainerInterface.VERTICAL):
-        super().__init__(id=None, style=None, direction=direction)
+        super().__init__(id=id, style=style, direction=direction)
         self._create()
+        self._ratio = None
 
     def create(self):
         if self.direction == self.HORIZONTAL:
@@ -43,3 +44,25 @@ class SplitContainer(SplitContainerInterface, WidgetMixin):
 
     def _set_direction(self, value):
         pass
+
+    def rehint(self):
+        pass
+
+    def _update_child_layout(self):
+        """Force a layout update on the widget.
+        """
+        if self.content:
+            if self.direction == SplitContainer.VERTICAL:
+                size = self._impl.get_allocation().width
+                if self._ratio == None:
+                    self._ratio = 0.5
+                    self._impl.set_position(size * self._ratio)
+                self._containers[0]._update_layout(width=size * self._ratio)
+                self._containers[1]._update_layout(width=(1.0 - (size * self._ratio)))
+            else:
+                size = self._impl.get_allcoation().height
+                if self._ratio == None:
+                    self._ratio = 0.5
+                    self._impl.set_position(size * self._ratio)
+                self._containers[0]._update_layout(height=size * self._ratio)
+                self._containers[1]._update_layout(height=(1.0 - (size * self._ratio)))

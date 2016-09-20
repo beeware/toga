@@ -14,7 +14,7 @@ class Window(WindowInterface):
     _DIALOG_MODULE = dialogs
 
     def __init__(self, title=None, position=(100, 100), size=(640, 480), toolbar=None, resizeable=True, closeable=True, minimizable=True):
-        super().__init__(title=None, position=(100, 100), size=(640, 480), toolbar=None, resizeable=True, closeable=True, minimizable=True)
+        super().__init__(title=title, position=position, size=size, toolbar=toolbar, resizeable=resizeable, closeable=closeable, minimizable=minimizable)
         self._create()
 
     def create(self):
@@ -52,8 +52,17 @@ class Window(WindowInterface):
 
         self._impl.add(self._window_layout)
 
+        self._container._impl.connect('size-allocate', self._on_size_allocate)
+
     def show(self):
         self._impl.show_all()
 
     def _on_close(self, widget, data):
         self.on_close()
+
+    def _on_size_allocate(self, widget, allocation):
+        # print("ON WINDOW SIZE ALLOCATION", allocation.width, allocation.height)
+        self.content._update_layout(
+            width=allocation.width,
+            height=allocation.height
+        )

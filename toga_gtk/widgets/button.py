@@ -11,10 +11,6 @@ class Button(ButtonInterface, WidgetMixin):
         super().__init__(label, id=id, style=style, on_press=on_press)
         self._create()
 
-        # Buttons have a fixed drawn height. If their space allocation is
-        # greater than what is provided, center the button vertically.
-        self._fixed_height = True
-
     def create(self):
         self._impl = Gtk.Button()
         self._impl._interface = self
@@ -27,3 +23,22 @@ class Button(ButtonInterface, WidgetMixin):
 
     def _set_on_press(self, handler):
         self._impl.connect("clicked", wrapped_handler(self, handler))
+
+    def rehint(self):
+        # print("REHINT", self, self._impl.get_preferred_width(), self._impl.get_preferred_height(), getattr(self, '_fixed_height', False), getattr(self, '_fixed_width', False))
+        hints = {}
+        width = self._impl.get_preferred_width()
+        height = self._impl.get_preferred_height()
+
+        if width.minimum_width > 0:
+            hints['min_width'] = width.minimum_width
+        # if width.natural_width > 0 and getattr(self, '_fixed_width', False):
+        #     hints['width'] = width.natural_width
+
+        if height.minimum_height > 0:
+            hints['min_height'] = height.minimum_height
+        if height.natural_height > 0:
+            hints['height'] = height.natural_height
+
+        if hints:
+            self.style.hint(**hints)
