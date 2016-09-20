@@ -36,7 +36,7 @@ class TextInput(TextInputInterface, WidgetMixin):
     def rehint(self):
         # Height of a text input is known and fixed.
         # Width must be > 100
-        print("REHINT TextInput", self, self._impl.fittingSize().width, self._impl.fittingSize().height)
+        # print("REHINT TextInput", self, self._impl.fittingSize().width, self._impl.fittingSize().height)
         self.style.hint(
             height=self._impl.fittingSize().height,
             min_width=100

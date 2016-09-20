@@ -29,7 +29,7 @@ class Label(LabelInterface, WidgetMixin):
 
     def rehint(self):
         # Width & height of a label is known and fixed.
-        print("REHINT label", self, self._impl.fittingSize().width, self._impl.fittingSize().height)
+        # print("REHINT label", self, self._impl.fittingSize().width, self._impl.fittingSize().height)
         self.style.hint(
             height=self._impl.fittingSize().height,
             width=self._impl.fittingSize().width
