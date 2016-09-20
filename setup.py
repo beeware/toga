@@ -29,7 +29,7 @@ setup(
         'toga': ['resources/*.icns', 'resources/*.png'],
     },
     install_requires=[
-        'colosseum'
+        'colosseum>=0.1.3'
     ],
     license='New BSD',
     classifiers=[
