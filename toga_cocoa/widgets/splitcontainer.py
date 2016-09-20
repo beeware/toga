@@ -21,7 +21,7 @@ class TogaSplitViewDelegate(NSObject):
 
 
 class SplitContainer(SplitContainerInterface, WidgetMixin):
-    def __init__(self, id=None, style=None, direction=SplitContainer.VERTICAL):
+    def __init__(self, id=None, style=None, direction=SplitContainerInterface.VERTICAL):
         super().__init__(id=None, style=None, direction=direction)
         self._create()
 
