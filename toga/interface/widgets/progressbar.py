@@ -3,14 +3,14 @@ from .base import Widget
 
 class ProgressBar(Widget):
     def __init__(self, id=None, style=None, max=None, value=None):
-        super().__init__(id=None, style=None, max=None, value=None)
+        super().__init__(id=id, style=style, max=max, value=value)
 
     def _configure(self, max, value):
         self.value = value
         self.max = max
         self.running = False
         self.rehint()
-        
+
     @property
     def value(self):
         return self._value

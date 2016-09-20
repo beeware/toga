@@ -7,7 +7,7 @@ class SplitContainer(Widget):
     VERTICAL = True
 
     def __init__(self, id=None, style=None, direction=VERTICAL, content=None):
-        super().__init__(id=None, style=None, direction=direction, content=content)
+        super().__init__(id=id, style=style, direction=direction, content=content)
         self._direction = direction
         self._containers = []
 
@@ -64,3 +64,6 @@ class SplitContainer(Widget):
         self._direction = value
         self._set_direction(value)
         self.rehint()
+
+    def on_resize(self):
+        pass
