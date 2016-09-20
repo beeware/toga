@@ -35,9 +35,6 @@ class Button(ButtonInterface, WidgetMixin):
         self._impl.setTitle_(self.label)
         self.rehint()
 
-    def _set_on_press(self, value):
-        pass
-
     def rehint(self):
         fitting_size = self._impl.fittingSize()
         self.style.hint(
