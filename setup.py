@@ -2,6 +2,11 @@
 import io
 import re
 from setuptools import setup, find_packages
+import sys
+
+
+if sys.version_info[:3] < (3, 4):
+    raise SystemExit("Toga requires Python 3.4+.")
 
 
 with io.open('./toga_android/__init__.py', encoding='utf8') as version_file:
@@ -32,12 +37,10 @@ setup(
         'License :: OSI Approved :: BSD License',
         'Environment :: Handhelds/PDA\'s',
         'Operating System :: Android',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.6',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3 :: Only',
         'Topic :: Software Development',
         'Topic :: Software Development :: User Interfaces',
         'Topic :: Software Development :: Widget Sets',
