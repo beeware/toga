@@ -2,6 +2,11 @@
 import io
 import re
 from setuptools import setup, find_packages
+import sys
+
+
+if sys.version_info[:3] < (3, 4):
+    raise SystemExit("Toga requires Python 3.4+.")
 
 
 with io.open('./toga_iOS/__init__.py', encoding='utf8') as version_file:
