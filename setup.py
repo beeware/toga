@@ -1,6 +1,11 @@
 #/usr/bin/env python
 import io
 from setuptools import setup
+import sys
+
+
+if sys.version_info[:3] < (3, 4):
+    raise SystemExit("Toga requires Python 3.4+.")
 
 
 with io.open('README.rst', encoding='utf8') as readme:
@@ -9,7 +14,7 @@ with io.open('README.rst', encoding='utf8') as readme:
 
 setup(
     name='toga',
-    version='0.2.2',
+    version='0.2.3.dev1',
     description='A Python native, OS native GUI toolkit.',
     long_description=long_description,
     author='Russell Keith-Magee',
