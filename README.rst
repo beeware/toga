@@ -3,7 +3,32 @@ Toga
 
 A Python native, OS native GUI toolkit.
 
-** Toga requires Python 3 **
+Prerequisites
+~~~~~~~~~~~~~
+
+Toga has some minimum requirements:
+
+* Toga requires **Python 3**. Python 2 is not supported.
+
+* If you're on macOS, you need to be on 10.7 (Lion) or newer.
+
+* If you're on Linux, you need to have GTK+ 3.10 or later. This is the version
+  that ships starting with Ubuntu 14.04 and Fedora 20. You also need to install
+  the Python 3 bindings to GTK+. If you want to use the WebView widget, you'll
+  also need to have WebKit, plus the GI bindings to WebKit installed. This means
+  you'll need to install the following:
+
+    * **Ubuntu 14.04** ``apt-get install python3-gi gir1.2-webkit-3.0``
+
+    * **Ubuntu 16.04** ``apt-get install python3-gi gir1.2-webkit-4.0``
+      or ``apt-get install python3-gi gir1.2-webkit-3.0``
+
+    * **Debian** ??
+
+    * **Fedora** ??
+
+If these requirements aren't met, Toga either won't work at all, or won't have
+full functionality.
 
 Quickstart
 ----------
@@ -14,74 +39,6 @@ To get a demonstration of the capabilities of Toga, run the following::
     $ toga-demo
 
 This will pop up a GUI window with some sample widgets.
-
-Prerequisites
-~~~~~~~~~~~~~
-
-Toga has some minimum requirements:
-
-* If you're on macOS, you need to be on 10.7 (Lion) or newer.
-
-* If you're on Linux, you need to have GTK+ 3.4 or later. This is the version
-  that ships starting with Ubuntu 12.04 and Fedora 17.
-
-* If you want to use the WebView widget, you'll also need to have WebKit, plus
-  the GI bindings to WebKit installed.
-
-    * For Ubuntu that's provided by the (``libwebkitgtk-3.0-0``) and
-      (``gir1.2-webkit-3.0``) packages.
-
-    * For Fedora it's all provided in the (``webkitgtk3``) package.
-
-If these requirements aren't met, Toga either won't work at all, or won't have
-full functionality.
-
-
-Problems with source installs
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Internally, Toga is comprised of a number of subpackages - one for each
-platform it supports. If you install using wheels, the install process will
-correctly identify the required packages and install them. However, if you
-install from source using pip, there is a `known bug in pip`_ that causes
-dependencies to not be installed. It may be necessary to manually install
-the following pre-requisites:
-
-* OS X: ``pip install toga-cocoa colosseum rubicon-objc``
-* Linux: ``pip install toga-gtk colosseum``
-* Win32: ``pip install toga-win32 colosseum``
-
-.. _known bug in pip: https://github.com/pypa/pip/issues/1951
-
-Problems using virtualenv under Linux
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-When running under Linux, Toga uses the system native python GTK+3 bindings
-for display purposes. However, if you're using a ``--no-site-packages``
-virtualenv (which is the default), the Python bindings for GTK won't be in
-your ``PYTHONPATH``.
-
-If you install Toga in a virtual environment, Toga will attempt to
-automatically fix the problem; however, if this fails, you'll need to apply
-the fix manually. To make the system GTK+ bindings available to your
-virtualenv, symlink the ``gi`` module from the system dist-packages directory
-into your virtualenv's site-packages::
-
-    For an Ubuntu 14.04 system::
-
-        $ cd $VIRTUAL_ENV/lib/python3.4/site-packages
-        $ ln -si /usr/lib/python3/dist-packages/gi
-
-    For a Ubuntu 16.04 system::
-
-        $ cd $VIRTUAL_ENV/lib/python3.5/site-packages
-        $ ln -si /usr/lib/python3/dist-packages/gi
-
-    For a Fedora 64bit system::
-
-        $ cd $VIRTUAL_ENV/lib/python3.5/site-packages
-        $ ln -si /usr/lib64/python3.5/site-packages/gi/
-
 
 Documentation
 -------------
@@ -107,9 +64,7 @@ Toga is part of the `BeeWare suite`_. You can talk to the community through:
 
 * `@pybeeware on Twitter`_
 
-* The `BeeWare Users Mailing list`_, for questions about how to use the BeeWare suite.
-
-* The `BeeWare Developers Mailing list`_, for discussing the development of new features in the BeeWare suite, and ideas for new tools for the suite.
+* The `pybee/general`_ channel on Gitter.
 
 Contributing
 ------------
@@ -125,8 +80,7 @@ want to contribute code, please `fork the code`_ and `submit a pull request`_.
 .. _toga-iOS: http://github.com/pybee/toga-iOS
 .. _toga-android: http://github.com/pybee/toga-android
 .. _@pybeeware on Twitter: https://twitter.com/pybeeware
-.. _BeeWare Users Mailing list: https://groups.google.com/forum/#!forum/beeware-users
-.. _BeeWare Developers Mailing list: https://groups.google.com/forum/#!forum/beeware-developers
+.. _pybee/general: https://gitter.im/pybee/general
 .. _log them on Github: https://github.com/pybee/toga/issues
 .. _fork the code: https://github.com/pybee/toga
 .. _submit a pull request: https://github.com/pybee/toga/pulls
