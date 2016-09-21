@@ -40,6 +40,7 @@ class Window(WindowInterface):
                 item_impl.set_label(toolbar_item.label)
                 item_impl.set_tooltip_text(toolbar_item.tooltip)
                 item_impl.connect("clicked", wrapped_handler(toolbar_item, toolbar_item.action))
+                toolbar_item._widgets.append(item_impl)
 
             self._toolbar_impl.insert(item_impl, -1)
 

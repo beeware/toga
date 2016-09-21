@@ -23,7 +23,7 @@ class Command(object):
     def enabled(self, value):
         self._enabled = value
         for widget in self._widgets:
-            widget.setEnabled_(value)
+            widget.set_sensitive(value)
 
 
 class SpecialCommand(object):
