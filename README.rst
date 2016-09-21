@@ -3,7 +3,7 @@ toga-iOS
 
 An iOS backend for the `Toga widget toolkit`_.
 
-** Toga requires Python 3 **
+**Toga requires Python 3**
 
 This package isn't much use by itself; it needs to be combined with `the core Toga library`_.
 
@@ -16,9 +16,7 @@ Toga is part of the `BeeWare suite`_. You can talk to the community through:
 
 * `@pybeeware on Twitter`_
 
-* The `BeeWare Users Mailing list`_, for questions about how to use the BeeWare suite.
-
-* The `BeeWare Developers Mailing list`_, for discussing the development of new features in the BeeWare suite, and ideas for new tools for the suite.
+* The `pybee/general`_ channel on Gitter.
 
 Contributing
 ------------
@@ -31,8 +29,7 @@ want to contribute code, please `fork the code`_ and `submit a pull request`_.
 .. _Toga project on Github: https://github.com/pybee/toga
 .. _BeeWare suite: http://pybee.org
 .. _@pybeeware on Twitter: https://twitter.com/pybeeware
-.. _BeeWare Users Mailing list: https://groups.google.com/forum/#!forum/beeware-users
-.. _BeeWare Developers Mailing list: https://groups.google.com/forum/#!forum/beeware-developers
+.. _pybee/general: https://gitter.im/pybee/general
 .. _log them on Github: https://github.com/pybee/toga-iOS/issues
 .. _fork the code: https://github.com/pybee/toga-iOS
 .. _submit a pull request: https://github.com/pybee/toga-iOS/pulls
