@@ -3,6 +3,8 @@ Toga
 
 A Python native, OS native GUI toolkit.
 
+** Toga requires Python 3 **
+
 Quickstart
 ----------
 
