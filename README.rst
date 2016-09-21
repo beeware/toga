@@ -3,11 +3,7 @@ toga-android
 
 An Android backend for the `Toga widget toolkit`_.
 
-**THIS IS A PLACEHOLDER PROJECT**
-
-At present, it has no functionality - it exists purely to reserve the PyPI namespace.
-
-This package isn't much use by itself; it needs to be combined with `the core Toga library`_.
+This package isn't much use by itself; it needs to be combined with `the core Toga library`_,
 
 For more details, see the `Toga project on Github`_.
 
