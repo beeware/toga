@@ -28,17 +28,19 @@ class Button(ButtonInterface, WidgetMixin):
         # print("REHINT", self, self._impl.get_preferred_width(), self._impl.get_preferred_height(), getattr(self, '_fixed_height', False), getattr(self, '_fixed_width', False))
         hints = {}
         width = self._impl.get_preferred_width()
+        minimum_width = width[0]
+        natural_width = width[1]
+
         height = self._impl.get_preferred_height()
+        minimum_height = height[0]
+        natural_height = height[1]
 
-        if width.minimum_width > 0:
-            hints['min_width'] = width.minimum_width
-        # if width.natural_width > 0 and getattr(self, '_fixed_width', False):
-        #     hints['width'] = width.natural_width
-
-        if height.minimum_height > 0:
-            hints['min_height'] = height.minimum_height
-        if height.natural_height > 0:
-            hints['height'] = height.natural_height
+        if minimum_width > 0:
+            hints['min_width'] = minimum_width
+        if minimum_height > 0:
+            hints['min_height'] = minimum_height
+        if natural_height > 0:
+            hints['height'] = natural_height
 
         if hints:
             self.style.hint(**hints)

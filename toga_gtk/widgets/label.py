@@ -30,12 +30,17 @@ class Label(LabelInterface, WidgetMixin):
         # print("REHINT", self, self._impl.get_preferred_width(), self._impl.get_preferred_height(), getattr(self, '_fixed_height', False), getattr(self, '_fixed_width', False))
         hints = {}
         width = self._impl.get_preferred_width()
-        height = self._impl.get_preferred_height()
+        minimum_width = width[0]
+        natural_width = width[1]
 
-        if width.minimum_width > 0:
-            hints['min_width'] = width.minimum_width
-        if height.minimum_height > 0:
-            hints['min_height'] = height.minimum_height
+        height = self._impl.get_preferred_height()
+        minimum_height = height[0]
+        natural_height = height[1]
+
+        if minimum_width > 0:
+            hints['min_width'] = minimum_width
+        if minimum_height > 0:
+            hints['min_height'] = minimum_height
 
         if hints:
             self.style.hint(**hints)
