@@ -4,11 +4,15 @@ from gi.repository import Gtk
 # The following import will fail if WebKit or it's API wrappers aren't
 # installed; handle failure gracefully
 # (see https://github.com/pybee/toga/issues/26)
-try:
-    gi.require_version('WebKit2', '3.0')
-    from gi.repository import WebKit2
-except ImportError:
-    WebKit2 = None
+# Accept any API version greater than 3.0
+WebKit2 = None
+for version in ['4.0', '3.0']:
+    try:
+        gi.require_version('WebKit2', '4.0')
+        from gi.repository import WebKit2
+        break
+    except (ImportError, ValueError):
+        pass
 
 from toga.interface import WebView as WebViewInterface
 
@@ -24,7 +28,7 @@ class WebView(WebViewInterface, WidgetMixin):
         if WebKit2 is None:
             raise RuntimeError(
                 "Import 'from gi.repository import WebKit' failed;" +
-                " may need to install gir1.2-webkit-3.0 or similar.")
+                " may need to install  gir1.2-webkit2-4.0 or gir1.2-webkit2-3.0.")
 
         self._impl = Gtk.ScrolledWindow()
         self._impl.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
@@ -36,7 +40,7 @@ class WebView(WebViewInterface, WidgetMixin):
         self._impl.set_min_content_width(200)
         self._impl.set_min_content_height(200)
 
-        self._impl.connect('show', lambda event: self.rehint())
+        # self._impl.connect('show', lambda event: self.rehint())
 
     def _set_url(self, value):
         if value:
