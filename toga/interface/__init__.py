@@ -1,5 +1,6 @@
 from .app import App
 from .window import Window
+from .font import Font
 
 # Widgets
 from .widgets.box import *
@@ -23,6 +24,9 @@ from .widgets.webview import *
 __all__ = [
     'App',
     'Window',
+
+    # Fonts
+    'Font',
 
     # WIDGETS
     'Box',

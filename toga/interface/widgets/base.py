@@ -171,3 +171,11 @@ class Widget:
             for child in self.children:
                 # if child.is_container:
                 child._update_layout()
+
+    def set_font(self, font):
+        """
+        Set a font on this widget.
+
+        See toga.Font.
+        """
+        self._set_font(font)
