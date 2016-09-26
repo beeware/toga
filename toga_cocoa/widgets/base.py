@@ -28,3 +28,6 @@ class WidgetMixin:
 
     def rehint(self):
         pass
+
+    def _set_font(self, font):
+        self._impl.setFont_(font._impl)
