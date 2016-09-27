@@ -1,3 +1,5 @@
+from android import PythonActivity
+
 from .window import Window
 
 
@@ -6,33 +8,56 @@ class MainWindow(Window):
         self.app._impl.setContentView(self.content._impl)
 
 
-class App(extends=android.app.Activity):
-    _app = None
-    _impl = None
+class TogaApp:
+    def __init__(self, app):
+        self._interface = app
 
-    def __init__(self, name, app_id, startup=None):
-        self.name = name
-        self.app_id = app_id
-        self._startup_method = startup
+    def onStart(self):
+        print("Toga app: onStart")
 
-    def _startup(self):
+    def onResume(self):
+        print("Toga app: onResume")
 
-        App._app = self
-        App._impl = self
+    def onResume(self):
+        print("Toga app: onResume")
 
-        self.main_window = MainWindow()
-        self.main_window.app = self
+    def onPause(self):
+        print("Toga app: onPause")
 
-        self.startup()
+    def onStop(self):
+        print("Toga app: onStop")
 
-        self.main_window.show()
+    def onDestroy(self):
+        print("Toga app: onDestroy")
 
-    def startup(self):
-        if self._startup_method:
-            self.main_window.content = self._startup_method(self)
+    def onRestart(self):
+        print("Toga app: onRestart")
 
-    def onCreate(self, savedInstanceState: android.os.Bundle) -> void:
-        super().onCreate(savedInstanceState)
 
+class App(AppInterface):
+    _MAIN_WINDOW_CLASS = MainWindow
+
+    def __init__(self, name, app_id, icon=None, startup=None, document_types=None):
+        # Set the icon for the app
+        # Icon.app_icon = Icon.load(icon, default=TIBERIUS_ICON)
+
+        super().__init__(
+            name=name,
+            app_id=app_id,
+            icon=Icon.app_icon,
+            startup=startup,
+            document_types=document_types
+        )
         self._startup()
 
+    def _startup(self):
+        # Connect this app to the PythonActivity
+        self._listener = TogaApp(self)
+        self._impl = PythonActivity.setApp(self._listener)
+        # Call user code to populate the main window
+        self.startup()
+
+    def main_loop(self):
+        # Main loop is a no-op on Android; the app loop is integrated with the
+        # main Android event loop.
+        pass

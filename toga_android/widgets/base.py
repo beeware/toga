@@ -1,50 +1,26 @@
-from toga.widget import Widget as WidgetBase
+
+def wrapped_handler(widget, handler):
+    def _handler(impl, data=None):
+        if handler:
+            return handler(widget)
+    return _handler
 
 
-class Widget(WidgetBase):
-    def __init__(self, *args, **kwargs):
-        super(Widget, self).__init__(*args, **kwargs)
-        self.is_container = False
-        self._in_progress = False
-
-    def _update_layout(self, **style):
-        """Force a layout update on the widget.
-
-        The update request can be accompanied by additional style information
-        (probably min_width, min_height, width or height) to control the
-        layout.
-        """
-        print("DO WIDGET LAYOUT", self)
-        if self._in_progress:
-            return
-        self._in_progress = True
-
-        self.style(**style)
-
-        # Recompute layout
-        layout = self.layout
-        print("WIDGET LAYOUT", layout)
-
-        # Set the frame for the widget to adhere to the new style.
-        self._set_frame(layout.left, layout.top, layout.left + layout.right, layout.top + layout.height)
-
-        self._update_child_layout(**style)
-
-        # Set the frame for the widget to adhere to the new style.
-        self._set_child_frames()
-
-        self._in_progress = False
-
-    def _set_frame(self, left, top, right, bottom):
-        print("SET FRAME", self, left, right, top, bottom)
-        self._impl.layout(left, right, top, bottom)
-
-    def _update_child_layout(self, **style):
-        """Force a layout update on children of this widget.
-
-        By default, do nothing; widgets have no children
-        """
+class WidgetMixin:
+    def _set_app(self, app):
         pass
 
-    def _set_child_frames(self):
+    def _set_window(self, window):
+        pass
+
+    def _set_container(self, container):
+        if self._impl:
+            self._container._impl.add(self._impl)
+
+    def _add_child(self, child):
+        if self._container:
+            child._set_container(self._container)
+        self.rehint()
+
+    def _apply_layout(self):
         pass

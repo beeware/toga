@@ -1,39 +1,56 @@
 from android.widget import Button as AndroidButton
 
-from ..app import MobileApp
-from .base import Widget
+from toga.interface import Button as ButtonInterface
+
+from .base import WidgetMixin
+from ..utils import wrapped_handler
 
 
-class TogaOnClickListener(implements=android.view.View[OnClickListener]):
-    def __init__(self, text_view):
-        self.text_view = text_view
-
-    def onClick(self, v: android.view.View) -> void:
-        Log.i("TESTAPP", "Push the button")
-        if self.interface.on_press:
-            self.interface.on_press(self.interface)
-        self.text_view.setText(self.text_view.getText().toString() + "\nPlease Stop touching me!\n")
+class TogaButtonListener(implements=android.view.View[OnClickListener]):
+    def onClick(self, v: android.view.View) -> None:
+        process_callback(self._interface.on_press(self._interface))
 
 
-class Button(Widget):
-    def __init__(self, label, on_press=None):
-        super(Button, self).__init__()
+class Button(ButtonInterface, WidgetMixin):
+    def __init__(self, label, id=None, style=None, on_press=None):
+        super().__init__(label, id=id, style=style, on_press=on_press)
+        self._create()
 
-        self.on_press = on_press
-        self.label = label
+    def create(self):
+        self._impl = AndroidButton()
 
-        self.startup()
-
-    def startup(self):
-        self._impl = AndroidButton(App._impl)
-        self._impl.setHint(self.label)
-
-        self._listener = TogaOnClickListener(self)
+        self._listener = TogaButtonListener()
+        self._listener._interface = self
         self._impl.setOnClickListener(self._listener)
 
-        # # Height of a button is known.
-        # if self.height is None:
-        #     self.height = self._impl.systemLayoutSizeFittingSize_(CGSize(0, 0)).height
-        # # Set the minimum width of a button to be a square
-        # if self.min_width is None:
-        #     self.min_width = self._impl.systemLayoutSizeFittingSize_(CGSize(0, 0)).width
+        self.rehint()
+
+    def _set_label(self, label):
+        self._impl.setText(self.label)
+        self.rehint()
+
+    def rehint(self):
+        # print("REHINT", self, self._impl.get_preferred_width(), self._impl.get_preferred_height(), getattr(self, '_fixed_height', False), getattr(self, '_fixed_width', False))
+        # hints = {}
+        # width = self._impl.get_preferred_width()
+        # minimum_width = width[0]
+        # natural_width = width[1]
+
+        # height = self._impl.get_preferred_height()
+        # minimum_height = height[0]
+        # natural_height = height[1]
+
+        # if minimum_width > 0:
+        #     hints['min_width'] = minimum_width
+        # if minimum_height > 0:
+        #     hints['min_height'] = minimum_height
+        # if natural_height > 0:
+        #     hints['height'] = natural_height
+
+        # if hints:
+        #     self.style.hint(**hints)
+
+        self.style.hint(
+            min_width=200,
+            height=30
+        )

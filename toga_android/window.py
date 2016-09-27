@@ -1,35 +1,34 @@
+from toga.interface.window import Window as WindowInterface
+
+from .container import Container
+from . import dialogs
 
 
-class Window(object):
-    def __init__(self):
-        self._app = None
-        self._content = None
+class Window(WindowInterface):
+    _IMPL_CLASS = UIWindow
+    _CONTAINER_CLASS = Container
+    _DIALOG_MODULE = dialogs
 
-        self.startup()
+    def __init__(self, title=None, position=(100, 100), size=(640, 480), toolbar=None, resizeable=True, closeable=True, minimizable=True):
+        super().__init__(title=None, position=(100, 100), size=(640, 480), toolbar=None, resizeable=True, closeable=False, minimizable=False)
+        self._create()
 
-    def startup(self):
+    def create(self):
         pass
+        # self._screen = UIScreen.mainScreen()
+        # self._impl = self._IMPL_CLASS.alloc().initWithFrame_(self._screen.bounds)
+        # self._impl._interface = self
 
-    @property
-    def app(self):
-        return self._app
+        # self._controller = UIViewController.alloc().init()
+        # self._impl.rootViewController = self._controller
 
-    @app.setter
-    def app(self, app):
-        if self._app:
-            raise Exception("Window is already associated with an App")
+    def _set_content(self, widget):
+        self._controller.view = self._container._impl
 
-        self._app = app
-
-    @property
-    def content(self):
-        return self._content
-
-    @content.setter
-    def content(self, widget):
-        self._content = widget
-        self._content.window = self
-        self._content.app = self.app
 
     def show(self):
-        pass
+        # Do the first layout render.
+        self.content._update_layout(
+            # width=self._screen.bounds.size.width,
+            # height=self._screen.bounds.size.height
+        )
