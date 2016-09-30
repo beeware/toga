@@ -29,3 +29,7 @@ NSURL = ObjCClass('NSURL')
 # NSURLRequest.h
 
 NSURLRequest = ObjCClass('NSURLRequest')
+
+# UIFont.h
+
+UIFont = ObjCClass('UIFont')

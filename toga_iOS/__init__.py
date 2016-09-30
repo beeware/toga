@@ -3,6 +3,9 @@ from .app import *
 from .window import *
 # from .command import *
 
+# Font support
+from .font import Font
+
 # # Widgets
 from .widgets.box import *
 from .widgets.button import *
@@ -31,6 +34,7 @@ __all__ = [
     'Box',
     'Button',
     # 'Icon', 'TIBERIUS_ICON',
+    'Font',
     # 'Image',
     # 'ImageView',
     'List',
