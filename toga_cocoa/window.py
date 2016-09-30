@@ -123,10 +123,10 @@ class Window(WindowInterface):
         self._impl.setDelegate_(self._delegate)
 
     def _set_toolbar(self, items):
-            self._toolbar_items = dict((item.toolbar_identifier, item) for item in items)
-            self._toolbar_impl = NSToolbar.alloc().initWithIdentifier_('Toolbar-%s' % id(self))
-            self._toolbar_impl.setDelegate_(self._delegate)
-            self._impl.setToolbar_(self._toolbar_impl)
+        self._toolbar_items = dict((item.toolbar_identifier, item) for item in items)
+        self._toolbar_impl = NSToolbar.alloc().initWithIdentifier_('Toolbar-%s' % id(self))
+        self._toolbar_impl.setDelegate_(self._delegate)
+        self._impl.setToolbar_(self._toolbar_impl)
 
     def _set_content(self, widget):
         self._impl.setContentView_(self._container._impl)
@@ -148,11 +148,8 @@ class Window(WindowInterface):
         )
         self._container._impl.addConstraint_(self._min_height_constraint)
 
-    def _set_title(self, value):
-        if title is not None:
-            self._impl.setTitle_(title)
-        else:
-            self._impl.setTitle_('Toga')
+    def _set_title(self, title):
+        self._impl.setTitle_(title)
 
     def show(self):
         self._impl.makeKeyAndOrderFront_(None)
