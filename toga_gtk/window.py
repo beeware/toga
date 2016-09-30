@@ -67,3 +67,6 @@ class Window(WindowInterface):
             width=allocation.width,
             height=allocation.height
         )
+
+    def close(self):
+        self._impl.close()
