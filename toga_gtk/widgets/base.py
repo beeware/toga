@@ -1,3 +1,4 @@
+from gi.repository import Gtk
 
 def wrapped_handler(widget, handler):
     def _handler(impl, data=None):
@@ -24,3 +25,6 @@ class WidgetMixin:
 
     def _apply_layout(self):
         pass
+
+    def _set_font(self, font):
+        self._impl.override_font(font._impl)

@@ -22,6 +22,9 @@ class Window(WindowInterface):
         self._impl.connect("delete-event", self._on_close)
         self._impl.set_default_size(self._size[0], self._size[1])
 
+    def _set_title(self, title):
+        self._impl.set_title(title)
+
     def _set_app(self, app):
         app._impl.add_window(self._impl)
 
@@ -67,3 +70,6 @@ class Window(WindowInterface):
             width=allocation.width,
             height=allocation.height
         )
+
+    def close(self):
+        self._impl.close()

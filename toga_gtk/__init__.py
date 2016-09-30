@@ -2,6 +2,7 @@
 from .app import *
 from .window import *
 from .command import *
+from .font import Font
 
 # Widgets
 from .widgets.button import *
@@ -27,6 +28,7 @@ __all__ = [
     'Box',
     'Button',
     'Icon', 'TIBERIUS_ICON',
+    'Font',
     'Label',
     # 'MultilineTextInput',
     'OptionContainer',

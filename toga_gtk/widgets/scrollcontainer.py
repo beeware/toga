@@ -15,9 +15,14 @@ class ScrollContainer(ScrollContainerInterface, WidgetMixin):
 
     def create(self):
         self._impl = Gtk.ScrolledWindow()
+        self._impl._interface = self
 
     def _set_content(self, container, widget):
-        self._impl.add_with_viewport(container._impl)
+        if self._impl.get_child():
+            self._impl.get_child().destroy()
+
+        self._impl.add(container._impl)
+        self._impl.show_all()
 
     def _set_app(self, app):
         if self._content:
