@@ -10,6 +10,7 @@ class Button(ButtonInterface, WidgetMixin):
     def __init__(self, label, id=None, style=None, on_press=None):
         super().__init__(label, id=id, style=style, on_press=on_press)
         self._create()
+        self._connections = []
 
     def create(self):
         self._impl = Gtk.Button()
@@ -22,7 +23,13 @@ class Button(ButtonInterface, WidgetMixin):
         self.rehint()
 
     def _set_on_press(self, handler):
-        self._impl.connect("clicked", wrapped_handler(self, handler))
+        for conn_id in self.connections:
+            # Disconnect all other on-click handlers, so that if you reassign
+            # the on_press, it doesn't trigger the old ones too.
+            self._impl.disconnect(conn_id)
+
+        self.connections.append(
+            self._impl.connect("clicked", wrapped_handler(self, handler)))
 
     def rehint(self):
         # print("REHINT", self, self._impl.get_preferred_width(), self._impl.get_preferred_height(), getattr(self, '_fixed_height', False), getattr(self, '_fixed_width', False))
