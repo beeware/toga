@@ -23,12 +23,12 @@ class Button(ButtonInterface, WidgetMixin):
         self.rehint()
 
     def _set_on_press(self, handler):
-        for conn_id in self.connections:
+        for conn_id in self._connections:
             # Disconnect all other on-click handlers, so that if you reassign
             # the on_press, it doesn't trigger the old ones too.
             self._impl.disconnect(conn_id)
 
-        self.connections.append(
+        self._connections.append(
             self._impl.connect("clicked", wrapped_handler(self, handler)))
 
     def rehint(self):
