@@ -18,7 +18,10 @@ class ScrollContainer(ScrollContainerInterface, WidgetMixin):
         self._impl._interface = self
 
     def _set_content(self, container, widget):
-        self._impl.add_with_viewport(container._impl)
+        if self._impl.get_child():
+            self._impl.remove(self._impl.get_child())
+
+        self._impl.add(container._impl)
 
     def _set_app(self, app):
         if self._content:
