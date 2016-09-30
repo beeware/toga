@@ -22,6 +22,7 @@ class ScrollContainer(ScrollContainerInterface, WidgetMixin):
             self._impl.get_child().destroy()
 
         self._impl.add(container._impl)
+        self._impl.show_all()
 
     def _set_app(self, app):
         if self._content:
