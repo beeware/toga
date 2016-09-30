@@ -53,6 +53,18 @@ class Window:
         pass
 
     @property
+    def title(self):
+        return self._title
+
+    @title.setter
+    def title(self, title):
+        if not title:
+            title = "Toga"
+
+        self._set_title(title)
+        self._title = title
+
+    @property
     def toolbar(self):
         return self._toolbar
 
