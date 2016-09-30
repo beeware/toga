@@ -8,9 +8,9 @@ from ..utils import wrapped_handler
 
 class Button(ButtonInterface, WidgetMixin):
     def __init__(self, label, id=None, style=None, on_press=None):
+        self._connections = []
         super().__init__(label, id=id, style=style, on_press=on_press)
         self._create()
-        self._connections = []
 
     def create(self):
         self._impl = Gtk.Button()
