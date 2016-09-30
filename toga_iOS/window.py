@@ -25,6 +25,8 @@ class Window(WindowInterface):
     def _set_content(self, widget):
         self._controller.view = self._container._impl
 
+    def _set_title(self, title):
+        pass
 
     def show(self):
         self._impl.makeKeyAndVisible()

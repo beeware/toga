@@ -50,10 +50,6 @@ class App(AppInterface):
     def _startup(self):
         self.startup()
 
-    # def show_dialog(self, dialog):
-    #     controller = UINavigationController.alloc().initWithRootViewController_(dialog._impl)
-    #     self.main_window.content._impl.presentModalViewController_animated_(controller, True)
-
     def main_loop(self):
         # Main loop is a no-op on iOS; the app loop is integrated with the
         # main iOS event loop.
