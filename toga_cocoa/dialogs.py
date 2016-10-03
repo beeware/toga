@@ -3,7 +3,7 @@ from .libs import *
 from .widgets.icon import Icon
 
 
-def info_dialog(window, title, message):
+def info(window, title, message):
     alert = NSAlert.alloc().init()
     alert.icon = Icon.app_icon._impl
     alert.setAlertStyle_(NSInformationalAlertStyle)
@@ -13,7 +13,7 @@ def info_dialog(window, title, message):
     alert.runModal()
 
 
-def question_dialog(window, title, message):
+def question(window, title, message):
     alert = NSAlert.alloc().init()
     alert.icon = Icon.app_icon._impl
     alert.setAlertStyle_(NSInformationalAlertStyle)
@@ -27,7 +27,7 @@ def question_dialog(window, title, message):
     return result == NSAlertFirstButtonReturn
 
 
-def confirm_dialog(window, title, message):
+def confirm(window, title, message):
     alert = NSAlert.alloc().init()
     alert.icon = Icon.app_icon._impl
     alert.setAlertStyle_(NSWarningAlertStyle)
@@ -41,7 +41,7 @@ def confirm_dialog(window, title, message):
     return result == NSAlertFirstButtonReturn
 
 
-def error_dialog(window, title, message):
+def error(window, title, message):
     alert = NSAlert.alloc().init()
     alert.icon = Icon.app_icon._impl
     alert.setAlertStyle_(NSCriticalAlertStyle)
@@ -51,7 +51,7 @@ def error_dialog(window, title, message):
     alert.runModal()
 
 
-def stack_trace_dialog(window, title, message, content, retry=False):
+def stack_trace(window, title, message, content, retry=False):
     alert = NSAlert.alloc().init()
     alert.icon = Icon.app_icon._impl
     alert.setAlertStyle_(NSCriticalAlertStyle)
@@ -82,7 +82,7 @@ def stack_trace_dialog(window, title, message, content, retry=False):
         alert.runModal()
 
 
-def save_file_dialog(window, title, suggested_filename, file_types):
+def save_file(window, title, suggested_filename, file_types):
     panel = NSSavePanel.alloc().init()
     panel.title = title
 
