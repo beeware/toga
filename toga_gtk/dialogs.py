@@ -52,7 +52,7 @@ def save_file_dialog(window, title, suggested_filename, file_types):
         title, window._impl,
         Gtk.FileChooserAction.SAVE,
         (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
-         Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
+         Gtk.STOCK_SAVE, Gtk.ResponseType.OK))
 
     for x in file_types:
         filter_filetype = Gtk.FileFilter()
