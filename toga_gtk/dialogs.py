@@ -1,7 +1,7 @@
 from gi.repository import Gtk
 
 
-def info_dialog(window, title, message):
+def info(window, title, message):
     dialog = Gtk.MessageDialog(window._impl, 0, Gtk.MessageType.INFO,
         Gtk.ButtonsType.OK, title)
     dialog.format_secondary_text(message)
@@ -10,7 +10,7 @@ def info_dialog(window, title, message):
     dialog.destroy()
 
 
-def question_dialog(window, title, message):
+def question(window, title, message):
     dialog = Gtk.MessageDialog(window._impl, 0, Gtk.MessageType.QUESTION,
         Gtk.ButtonsType.YES_NO, title)
     dialog.format_secondary_text(message)
@@ -21,7 +21,7 @@ def question_dialog(window, title, message):
     return result == Gtk.ResponseType.YES
 
 
-def confirm_dialog(window, title, message):
+def confirm(window, title, message):
     dialog = Gtk.MessageDialog(window._impl, 0, Gtk.MessageType.WARNING,
         Gtk.ButtonsType.OK_CANCEL, title)
     dialog.format_secondary_text(message)
@@ -32,7 +32,7 @@ def confirm_dialog(window, title, message):
     return result == Gtk.ResponseType.OK
 
 
-def error_dialog(window, title, message):
+def error(window, title, message):
     dialog = Gtk.MessageDialog(window._impl, 0, Gtk.MessageType.ERROR,
         Gtk.ButtonsType.CANCEL, title)
     dialog.format_secondary_text(message)
@@ -41,11 +41,11 @@ def error_dialog(window, title, message):
     dialog.destroy()
 
 
-def stack_trace_dialog(window, title, message, content, retry=False):
+def stack_trace(window, title, message, content, retry=False):
     raise NotImplementedError()
 
 
-def save_file_dialog(window, title, suggested_filename, file_types):
+def save_file(window, title, suggested_filename, file_types):
 
     filename = None
     dialog = Gtk.FileChooserDialog(
