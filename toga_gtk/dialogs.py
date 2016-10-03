@@ -60,7 +60,7 @@ def save_file_dialog(window, title, suggested_filename, file_types):
         filter_filetype.add_pattern("*." + x)
         dialog.add_filter(filter_filetype)
 
-    dialog.set_filename(suggested_filename + "." + file_types[0])
+    dialog.set_current_name(suggested_filename + "." + file_types[0])
 
     response = dialog.run()
 
