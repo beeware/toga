@@ -45,7 +45,7 @@ __all__ = [
     'WebView',
 
     # Dialogs
-    'info_dialog', 'question_dialog', 'conform_dialog', 'error_dialog',
+    'info_dialog', 'question_dialog', 'confirm_dialog', 'error_dialog',
     'stack_trace_dialog', 'save_file_dialog'
 ]
 
