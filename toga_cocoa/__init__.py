@@ -24,6 +24,9 @@ from .widgets.textinput import *
 from .widgets.tree import *
 from .widgets.webview import *
 
+# Dialogs
+from .dialogs import *
+
 __all__ = [
     '__version__',
     'App', 'MainWindow',

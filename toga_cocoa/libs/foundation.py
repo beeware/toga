@@ -58,6 +58,11 @@ NSFileWrapper = ObjCClass('NSFileWrapper')
 
 NSNumber = ObjCClass('NSNumber')
 
+# NSSavePanel.h
+
+NSSavePanel = ObjCClass('NSSavePanel')
+NSFileHandlingPanelOKButton = 1
+
 # NSOpenPanel.h
 
 NSOpenPanel = ObjCClass('NSOpenPanel')
