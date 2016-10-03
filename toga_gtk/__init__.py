@@ -43,6 +43,10 @@ __all__ = [
     'TextInput',
     'Tree',
     'WebView',
+
+    # Dialogs
+    'info_dialog', 'question_dialog', 'conform_dialog', 'error_dialog',
+    'stack_trace_dialog', 'save_file_dialog'
 ]
 
 # Examples of valid version strings
