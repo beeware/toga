@@ -50,7 +50,7 @@ def save_file_dialog(window, title, suggested_filename, file_types):
     filename = None
     dialog = Gtk.FileChooserDialog(
         title, window._impl,
-        Gtk.FileChooserAction.OPEN,
+        Gtk.FileChooserAction.SAVE,
         (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
          Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
 
