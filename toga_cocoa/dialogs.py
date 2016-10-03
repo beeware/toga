@@ -92,10 +92,10 @@ def save_file_dialog(window, title, suggested_filename, file_types):
         arr = arr.arrayByAddingObject_(x)
 
     panel.allowedFileTypes = arr
-    panel.nameFieldStringValue = message
+    panel.nameFieldStringValue = suggested_filename
 
     result = panel.runModal()
 
     if result == NSFileHandlingPanelOKButton:
-        return panel.URL.filename
+        return panel.URL.path
     return None
