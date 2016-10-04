@@ -148,3 +148,7 @@ class Window:
 
     def stack_trace_dialog(self, title, message):
         return self._DIALOG_MODULE.stack_trace(self, title, message)
+
+    def save_file_dialog(self, title, suggested_filename, file_types):
+        return self._DIALOG_MODULE.save_file(self, title, suggested_filename,
+                                             file_types)
