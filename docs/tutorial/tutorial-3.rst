@@ -31,14 +31,18 @@ Here's the source code::
             )
 
             box = toga.Box(
-                toga.Box(
-                    self.url_input,
-                    toga.Button('Go', on_press=self.load_page, width=50),
-                    style=CSS(
-                        flex_direction='row'
-                    )
-                ),
-                self.webview,
+                children = [
+                    toga.Box(
+                        children = [
+                            self.url_input,
+                            toga.Button('Go', on_press=self.load_page, style=CSS(width=50)),
+                        ],
+                        style=CSS(
+                            flex_direction='row'
+                        )
+                    ),
+                    self.webview,
+                ],
                 style=CSS(
                     flex_direction='column'
                 )

@@ -42,17 +42,17 @@ Here's the source code::
         box.add(c_box)
         box.add(button)
 
-        box.style(flex_direction='column', padding_top=10)
-        f_box.style(flex_direction='row', margin=5)
-        c_box.style(flex_direction='row', margin=5)
+        box.style.set(flex_direction='column', padding_top=10)
+        f_box.style.set(flex_direction='row', margin=5)
+        c_box.style.set(flex_direction='row', margin=5)
 
-        c_input.style(flex=1)
-        f_input.style(flex=1, margin_left=160)
-        c_label.style(width=100, margin_left=10)
-        f_label.style(width=100, margin_left=10)
-        join_label.style(width=150, margin_right=10)
+        c_input.style.set(flex=1)
+        f_input.style.set(flex=1, margin_left=160)
+        c_label.style.set(width=100, margin_left=10)
+        f_label.style.set(width=100, margin_left=10)
+        join_label.style.set(width=150, margin_right=10)
 
-        button.style(margin=15)
+        button.style.set(margin=15)
 
         return box
 
