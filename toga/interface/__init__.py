@@ -20,6 +20,8 @@ from .widgets.table import *
 from .widgets.textinput import *
 from .widgets.tree import *
 from .widgets.webview import *
+from .widgets.selection import Selection
+from .widgets.numberinput import NumberInput
 
 __all__ = [
     'App',
@@ -41,6 +43,7 @@ __all__ = [
     # 'PasswordInput',
     'ProgressBar',
     'ScrollContainer',
+    'Selection',
     'SplitContainer',
     'Table',
     'TextInput',
