@@ -348,3 +348,11 @@ NSTimer = ObjCClass('NSTimer')
 
 NSToolbar = ObjCClass('NSToolbar')
 NSToolbarItem = ObjCClass('NSToolbarItem')
+
+# NSPopUpButton
+
+NSPopUpButton = ObjCClass('NSPopUpButton')
+
+# NSStepper
+
+NSStepper = ObjCClass('NSStepper')
