@@ -7,13 +7,17 @@ from ..libs import NSTextField, NSTextFieldSquareBezel
 class TextInput(TextInputInterface, WidgetMixin):
     _IMPL_CLASS = NSTextField
 
-    def __init__(self, id=None, style=None, initial=None, placeholder=None, readonly=False):
+    def __init__(self, id=None, style=None, initial=None, placeholder=None, readonly=False, _delegate=None):
+        self._delegate = _delegate
         super().__init__(id=id, style=style, initial=initial, placeholder=placeholder, readonly=readonly)
         self._create()
 
     def create(self):
         self._impl = self._IMPL_CLASS.new()
         self._impl._interface = self
+
+        if self._delegate:
+            self._impl.setDelegate_(self._delegate)
 
         self._impl.setBezeled_(True)
         self._impl.setBezelStyle_(NSTextFieldSquareBezel)
