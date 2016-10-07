@@ -45,6 +45,7 @@ __all__ = [
     'ScrollContainer',
     'Selection',
     'SplitContainer',
+    'NumberInput',
     'Table',
     'TextInput',
     'Tree',
