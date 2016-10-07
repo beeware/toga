@@ -9,21 +9,22 @@ from .base import WidgetMixin
 
 from ..libs import NSStepper, NSView, NSMakeRect, NSObject
 from ..utils import process_callback
-from ..container import Constraints
-
 
 
 class TextInputVerifier(NSObject):
 
     @objc_method
-    def textShouldEndEditing_(self, text) -> int:
-        print('should end')
-        return 0
+    def control_textShouldEndEditing_(self, text) -> int:
+        try:
+            float(text.stringValue)
+            return 1
+        except Exception as e:
+            return 0
 
     @objc_method
-    def textDidEndEditing_(self, notification) -> None:
-        print('d')
-        self._controller._text_update()
+    def controlTextDidEndEditing_(self, notification) -> None:
+        if self._controller._text_update:
+            process_callback(self._controller._text_update(self._controller))
 
 
 class TogaStepper(NSStepper):
@@ -36,8 +37,8 @@ class TogaStepper(NSStepper):
 
 class Stepper(WidgetMixin, Widget):
 
-    def __init__(self, controller, id=None, style=None, min=0, max=100, step=1):
-        super().__init__(id=id, style=style, min=min, max=max, step=step)
+    def __init__(self, controller, id=None, style=None, min_value=0, max_value=100, step=1):
+        super().__init__(id=id, style=style, min_value=min_value, max_value=max_value, step=step)
         self._create()
         self.controller = controller
 
@@ -50,7 +51,7 @@ class Stepper(WidgetMixin, Widget):
 
     @value.setter
     def value(self, val):
-        self._impl.floatValue = val
+        self._impl.floatValue = float(val)
 
     def on_change(self, handler):
         self.controller._stepper_update()
@@ -60,8 +61,8 @@ class Stepper(WidgetMixin, Widget):
         self._impl = TogaStepper.alloc().init()
         self._impl._interface = self
 
-        self._impl.minValue = self._config["min"]
-        self._impl.maxValue = self._config["max"]
+        self._impl.minValue = self._config["min_value"]
+        self._impl.maxValue = self._config["max_value"]
         self._impl.increment = self._config["step"]
         self._impl.setTarget_(self._impl)
         self._impl.setAction_(get_selector('onChange:'))
@@ -79,20 +80,20 @@ class Stepper(WidgetMixin, Widget):
 
 class NumberInput(Box, NumberInputInterface):
 
-    def __init__(self, id=None, style=None, min=0, max=100, step=1, children=None):
+    def __init__(self, id=None, style=None, min_value=0, max_value=100, step=1, children=None):
+        self._min_value = min_value
+        self._max_value = max_value
+        self._step = step
         super().__init__(id=id, style=style, children=children)
-        self._config["min"] = min
-        self._config["max"] = max
-        self._config["step"] = step
 
     def _configure(self, **kw):
         pass
 
-    def _text_update(self):
+    def _text_update(self, handler):
         self._stepper.value = self._text.value
 
     def _stepper_update(self):
-        self._text.value = self._stepper.value
+        self._set_value(self._stepper.value)
 
     def create(self):
 
@@ -105,8 +106,8 @@ class NumberInput(Box, NumberInputInterface):
         self.add(self._text)
 
         self._stepper = Stepper(
-            self, min=self._config["min"], max=self._config["max"],
-            step=self._config["step"])
+            self, min_value=self._min_value, max_value=self._max_value,
+            step=self._step)
         self.add(self._stepper)
 
         self.style.flex_direction = 'row'
@@ -114,7 +115,10 @@ class NumberInput(Box, NumberInputInterface):
 
     def _set_value(self, value):
         self._stepper.value = value
-        self._text.value = value
+        self._text.value =  ('%f' % (value,)).rstrip('0').rstrip('.')
+
+    def _get_value(self):
+        return self._text.value
 
     def rehint(self):
         self._text.rehint()
