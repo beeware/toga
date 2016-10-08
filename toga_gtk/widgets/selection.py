@@ -9,6 +9,7 @@ class Selection(WidgetMixin, SelectionInterface):
     def __init__(self, id=None, style=None, items=list()):
         super().__init__(id=id, style=style, items=items)
         self._model = Gtk.ListStore(str)
+        self._items = items
         self._create()
 
     def create(self):
