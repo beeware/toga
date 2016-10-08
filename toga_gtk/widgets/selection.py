@@ -43,11 +43,11 @@ class Selection(SelectionInterface, WidgetMixin):
         # print("REHINT", self, self._impl.get_preferred_width(), self._impl.get_preferred_height(), getattr(self, '_fixed_height', False), getattr(self, '_fixed_width', False))
         hints = {}
         width = self._impl.get_preferred_width()
-        minimum_width = width[0]
+        minimum_width = 29
         natural_width = width[1]
 
         height = self._impl.get_preferred_height()
-        minimum_height = height[0]
+        minimum_height = 166
         natural_height = height[1]
 
         if minimum_width > 0:
