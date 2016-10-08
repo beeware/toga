@@ -7,7 +7,7 @@ class Selection(Widget):
         super().__init__(id=id, style=style, items=items)
 
     def _configure(self, items):
-        self.items = items
+        self._items = items
 
     @property
     def items(self):
@@ -28,7 +28,7 @@ class Selection(Widget):
 
     @value.setter
     def value(self, value):
-        if value not in self.items:
+        if value not in self._items:
             raise ValueError("Not an item in the list.")
 
         self._select_item(value)
