@@ -21,6 +21,8 @@ class Selection(SelectionInterface, WidgetMixin):
         self._comboimpl = Gtk.ComboBoxText.new()
         self._comboimpl._interface = self
         self._impl.pack_start(self._comboimpl, False, False, 0)
+        self.style.width = 166
+        self.style.height = 29
 
         for item in self._items:
             self._add_item(item)
@@ -38,22 +40,3 @@ class Selection(SelectionInterface, WidgetMixin):
 
     def _get_selected_item(self):
         return self._comboimpl.get_active_text()
-
-    def rehint(self):
-        # print("REHINT", self, self._impl.get_preferred_width(), self._impl.get_preferred_height(), getattr(self, '_fixed_height', False), getattr(self, '_fixed_width', False))
-        hints = {}
-        width = self._impl.get_preferred_width()
-        minimum_width = 29
-        natural_width = width[1]
-
-        height = self._impl.get_preferred_height()
-        minimum_height = 166
-        natural_height = height[1]
-
-        if minimum_width > 0:
-            hints['min_width'] = minimum_width
-        if minimum_height > 0:
-            hints['min_height'] = minimum_height
-
-        if hints:
-            self.style.hint(**hints)
