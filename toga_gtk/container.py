@@ -8,7 +8,7 @@ class CSSLayout(Gtk.Fixed):
 
     def do_get_preferred_width(self):
         # Calculate the minimum and natural width of the container.
-        # print("GET PREFERRED WIDTH")z
+        # print("GET PREFERRED WIDTH")
         width = self._interface.content.style.layout.width
         min_width = self._interface.min_width
         if min_width > width:
