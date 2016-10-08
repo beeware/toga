@@ -13,6 +13,8 @@ class NumberInput(WidgetMixin, NumberInputInterface):
 
         self._impl = Gtk.SpinButton.new_with_range(self._config["min_value"], self._config["max_value"], self._config["step"])
 
+        self._impl._interface = self
+
     def _get_value(self):
         return 0
 

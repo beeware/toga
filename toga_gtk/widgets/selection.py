@@ -18,6 +18,7 @@ class Selection(WidgetMixin, SelectionInterface):
             self._model.append([item])
 
         self._impl = Gtk.ComboBox.new_with_model_and_entry(self._model)
+        self._impl._interface = self
 
     def _remove_all_items(self):
         self._model.clear()
