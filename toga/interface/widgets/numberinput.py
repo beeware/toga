@@ -2,8 +2,8 @@ from .base import Widget
 
 
 class NumberInput(Widget):
-    def __init__(self, id=None, style=None, min=0, max=100, step=1, **ex):
-        super().__init__(id=id, style=style, min=min, max=max, step=step, **ex)
+    def __init__(self, id=None, style=None, min_value=0, max_value=100, step=1, **ex):
+        super().__init__(id=id, style=style, min_value=min_value, max_value=max_value, step=step, **ex)
 
     def _configure(self, min, max, step):
         self.min = min

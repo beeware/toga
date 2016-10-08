@@ -3,7 +3,7 @@ from .base import Widget
 
 class Selection(Widget):
 
-    def __init__(self, id=None, style=None, items=tuple()):
+    def __init__(self, id=None, style=None, items=list()):
         super().__init__(id=id, style=style, items=items)
 
     def _configure(self, items):
