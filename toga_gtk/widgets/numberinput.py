@@ -13,26 +13,21 @@ class NumberInput(WidgetMixin, NumberInputInterface):
         self._create()
 
     def create(self):
-
-        self._impl = Gtk.Box()
-        self._impl._interface = self
-
         adjustment = Gtk.Adjustment(0, self._min_value, self._max_value,
                                     self._step, 10, 0)
 
-        self._spinimpl = Gtk.SpinButton()
-        self._spinimpl.set_adjustment(adjustment)
-        self._spinimpl.set_numeric(True)
-        self._spinimpl._interface = self
-        self._impl.pack_start(self._spinimpl, False, False, 0)
+        self._impl = Gtk.SpinButton()
+        self._impl.set_adjustment(adjustment)
+        self._impl.set_numeric(True)
+        self._impl._interface = self
 
         self.rehint()
 
     def _get_value(self):
-        return self._spinimpl.get_value()
+        return self._impl.get_value()
 
     def _set_value(self, value):
-        self._spinimpl.set_value(value)
+        self._impl.set_value(value)
 
     def rehint(self):
         self.style.width = 120
