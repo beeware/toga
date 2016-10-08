@@ -14,8 +14,11 @@ class NumberInput(WidgetMixin, NumberInputInterface):
         self._impl = Gtk.Box()
         self._impl._interface = self
 
-        self._spinimpl = Gtk.SpinButton.new_with_range(
-            self._config["min_value"], self._config["max_value"], self._config["step"])
+        adjustment = Gtk.Adjustment(0, self._config["min_value"], self._config["max_value"], 1, 10, 0)
+
+        self._spinimpl = Gtk.SpinButton()
+        self._spinimpl.set_adjustment(adjustment)
+        self._spinimpl.set_numeric(True)
         self._spinimpl._interface = self
         self._impl.pack_start(self._spinimpl, False, False, 0)
 
