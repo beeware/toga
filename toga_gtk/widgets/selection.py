@@ -21,6 +21,8 @@ class Selection(SelectionInterface, WidgetMixin):
         for item in self._items:
             self._add_item(item)
 
+
+
     def _remove_all_items(self):
         self._text.clear()
         self._impl.remove_all()
@@ -34,3 +36,23 @@ class Selection(SelectionInterface, WidgetMixin):
 
     def _get_selected_item(self):
         return self._impl.get_active_text()
+
+
+    def rehint(self):
+        # print("REHINT", self, self._impl.get_preferred_width(), self._impl.get_preferred_height(), getattr(self, '_fixed_height', False), getattr(self, '_fixed_width', False))
+        hints = {}
+        width = self._impl.get_preferred_width()
+        minimum_width = width[0]
+        natural_width = width[1]
+
+        height = self._impl.get_preferred_height()
+        minimum_height = height[0]
+        natural_height = height[1]
+
+        if minimum_width > 0:
+            hints['min_width'] = minimum_width
+        if minimum_height > 0:
+            hints['min_height'] = minimum_height
+
+        if hints:
+            self.style.hint(**hints)
