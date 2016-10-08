@@ -25,6 +25,8 @@ class Selection(SelectionInterface, WidgetMixin):
         for item in self._items:
             self._add_item(item)
 
+        self.rehint()
+
     def _remove_all_items(self):
         self._text.clear()
         self._comboimpl.remove_all()
@@ -40,5 +42,5 @@ class Selection(SelectionInterface, WidgetMixin):
         return self._comboimpl.get_active_text()
 
     def rehint(self):
-        self.style.width = self._impl.get_preferred_width_for_height(32)[1]
+        self.style.width = 90
         self.style.height = 32
