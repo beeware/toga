@@ -19,8 +19,6 @@ class Selection(WidgetMixin, SelectionInterface):
 
         self._impl = Gtk.ComboBox.new_with_model_and_entry(self._model)
 
-        self.add_constraints()
-
     def _remove_all_items(self):
         self._model.clear()
 
