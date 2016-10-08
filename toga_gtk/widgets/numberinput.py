@@ -30,5 +30,5 @@ class NumberInput(WidgetMixin, NumberInputInterface):
         self._impl.set_value(value)
 
     def rehint(self):
-        self.style.width = 120
+        self.style.min_width = 120
         self.style.height = 32

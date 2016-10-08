@@ -14,13 +14,8 @@ class Selection(SelectionInterface, WidgetMixin):
         self._create()
 
     def create(self):
-
-        self._impl = Gtk.Box()
+        self._impl = Gtk.ComboBoxText.new()
         self._impl._interface = self
-
-        self._comboimpl = Gtk.ComboBoxText.new()
-        self._comboimpl._interface = self
-        self._impl.pack_start(self._comboimpl, False, False, 0)
 
         for item in self._items:
             self._add_item(item)
@@ -29,18 +24,18 @@ class Selection(SelectionInterface, WidgetMixin):
 
     def _remove_all_items(self):
         self._text.clear()
-        self._comboimpl.remove_all()
+        self._impl.remove_all()
 
     def _add_item(self, item):
         self._text.append(item)
-        self._comboimpl.append_text(item)
+        self._impl.append_text(item)
 
     def _select_item(self, item):
-        self._comboimpl.set_active(self._text.index(item))
+        self._impl.set_active(self._text.index(item))
 
     def _get_selected_item(self):
-        return self._comboimpl.get_active_text()
+        return self._impl.get_active_text()
 
     def rehint(self):
-        self.style.width = 90
+        self.style.min_width = 90
         self.style.height = 32
