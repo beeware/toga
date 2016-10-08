@@ -26,7 +26,7 @@ class Selection(WidgetMixin, SelectionInterface):
         self._model.append(item)
 
     def _select_item(self, item):
-        self._impl.set_active(self._model.index(item))
+        self._impl.set_active(self._items.index(item))
 
     def _get_selected_item(self):
         return self._model[self._impl.get_active]
