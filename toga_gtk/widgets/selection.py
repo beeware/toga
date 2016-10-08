@@ -17,8 +17,10 @@ class Selection(SelectionInterface, WidgetMixin):
         for item in self._items:
             self._model.append([item])
 
-        self._impl = Gtk.ComboBox.new_with_model_and_entry(self._model)
-        self._impl.set_entry_text_column(0)
+        self._impl = Gtk.ComboBox.new_with_model(self._model)
+        renderer_text = Gtk.CellRendererText()
+        self._impl.pack_start(renderer_text, True)
+        self._impl.add_attribute(renderer_text, "text", 0)
         self._impl._interface = self
 
     def _remove_all_items(self):
