@@ -6,11 +6,12 @@ from .base import WidgetMixin
 
 class NumberInput(WidgetMixin, NumberInputInterface):
 
-    def __init__(self, id=None, style=None, min=0, max=100, step=1, **ex):
+    def __init__(self, id=None, style=None, min_value=0, max_value=100, step=1,
+                 **ex):
         self._min_value = min_value
         self._max_value = max_value
         self._step = step
-        super().__init__(id=id, style=style, min=min, max=max, step=step, **ex)
+        super().__init__(id=id, style=style, min_value=min_value, max_value=max_value, step=step, **ex)
         self._create()
 
     def create(self):
