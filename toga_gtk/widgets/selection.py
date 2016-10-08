@@ -15,7 +15,7 @@ class Selection(SelectionInterface, WidgetMixin):
     def create(self):
 
         for item in self._items:
-            self._model.append(item)
+            self._model.append([item])
 
         self._impl = Gtk.ComboBox.new_with_model(self._model)
         renderer_text = Gtk.CellRendererText()
