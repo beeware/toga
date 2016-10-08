@@ -10,32 +10,27 @@ class Selection(SelectionInterface, WidgetMixin):
         super().__init__(id=id, style=style, items=items)
         self._model = Gtk.ListStore(str)
         self._items = items
+        self._text = []
         self._create()
 
     def create(self):
 
-        for item in self._items:
-            self._model.append([item])
-
-        self._impl = Gtk.ComboBox.new_with_model(self._model)
-        renderer_text = Gtk.CellRendererText()
-        self._impl.pack_start(renderer_text, True)
-        self._impl.add_attribute(renderer_text, "text", 0)
+        self._impl = Gtk.ComboBoxText.new()
         self._impl._interface = self
 
+        for item in self._items:
+            self._add_item(item)
+
     def _remove_all_items(self):
-        self._model.clear()
+        self._text.clear()
+        self._impl.remove_all()
 
     def _add_item(self, item):
-        self._model.append(item)
+        self._text.append(item)
+        self._impl.append_text(item)
 
     def _select_item(self, item):
-        self._impl.set_active(self._items.index(item))
+        self._impl.set_active(self._text.index(item))
 
     def _get_selected_item(self):
-        return self._model[self._impl.get_active]
-
-    def rehint(self):
-        # print("REHINT", self, self._impl.get_preferred_width(), self._impl.get_preferred_height(), getattr(self, '_fixed_height', False), getattr(self, '_fixed_width', False))
-
-        self.style.hint(width=120, height=26)
+        return self._impl.get_active_text()
