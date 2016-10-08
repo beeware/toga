@@ -29,11 +29,11 @@ class NumberInput(WidgetMixin, NumberInputInterface):
         self.rehint()
 
     def _get_value(self):
-        return 0
+        return self._spinimpl.get_value()
 
     def _set_value(self, value):
-        pass
+        self._spinimpl.set_value(value)
 
     def rehint(self):
-        self.style.width = 90
+        self.style.width = 120
         self.style.height = 32
