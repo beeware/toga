@@ -4,7 +4,7 @@ from toga.interface import Selection as SelectionInterface
 
 from .base import WidgetMixin
 
-class Selection(WidgetMixin, SelectionInterface):
+class Selection(SelectionInterface, WidgetMixin):
 
     def __init__(self, id=None, style=None, items=list()):
         super().__init__(id=id, style=style, items=items)
