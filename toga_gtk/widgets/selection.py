@@ -20,7 +20,7 @@ class Selection(SelectionInterface, WidgetMixin):
 
         self._comboimpl = Gtk.ComboBoxText.new()
         self._comboimpl._interface = self
-        self._impl.pack_start(name_combo, False, False, 0)
+        self._impl.pack_start(self._comboimpl, False, False, 0)
 
         for item in self._items:
             self._add_item(item)
