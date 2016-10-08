@@ -7,6 +7,9 @@ from .base import WidgetMixin
 class NumberInput(WidgetMixin, NumberInputInterface):
 
     def __init__(self, id=None, style=None, min=0, max=100, step=1, **ex):
+        self._min_value = min_value
+        self._max_value = max_value
+        self._step = step
         super().__init__(id=id, style=style, min=min, max=max, step=step, **ex)
         self._create()
 
@@ -15,7 +18,7 @@ class NumberInput(WidgetMixin, NumberInputInterface):
         self._impl = Gtk.Box()
         self._impl._interface = self
 
-        adjustment = Gtk.Adjustment(0, self._config["min_value"], self._config["max_value"], 1, 10, 0)
+        adjustment = Gtk.Adjustment(0, self._min_value, self._max_value, self._step, 10, 0)
 
         self._spinimpl = Gtk.SpinButton()
         self._spinimpl.set_adjustment(adjustment)
