@@ -19,6 +19,8 @@ from .widgets.table import *
 from .widgets.textinput import *
 from .widgets.tree import *
 from .widgets.webview import *
+from .widgets.selection import Selection
+from .widgets.numberinput import NumberInput
 
 __all__ = [
     '__version__',
@@ -34,6 +36,8 @@ __all__ = [
     'OptionContainer',
     # 'PasswordInput',
     # 'ProgressBar',
+    'Selection',
+    'NumberInput',
     'ScrollContainer',
     'SplitContainer',
     'Table',
