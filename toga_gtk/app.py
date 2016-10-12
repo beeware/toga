@@ -47,7 +47,7 @@ except ImportError:
         if os.path.exists(gi_path) and os.path.isdir(gi_path):
             # If we can identify the gi library, create a symlink to it.
             try:
-                print("Creating symlink (%s & %s) to system GTK+ libraries..." % gi_symlink_path, pygtkcompat_symlink_path)
+                print("Creating symlink (%s & %s) to system GTK+ libraries..." % (gi_symlink_path, pygtkcompat_symlink_path))
                 os.symlink(gi_path, gi_symlink_path)
                 os.symlink(pygtkcompat_path, pygtkcompat_symlink_path)
 
