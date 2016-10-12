@@ -1,5 +1,6 @@
 import signal
 import sys
+import os
 
 from toga.interface.app import App as AppInterface
 
@@ -17,31 +18,44 @@ except ImportError:
     # symlink_path is the full name of the symlink to create.
     import os
     if sys.version_info.major == 3:
-        package_name = 'python3-gi'
-        gi_path = '/usr/lib/python3/dist-packages/gi'
-        system_install_path = '/usr/local/lib/python3/dist-packages/gi'
+        if os.path.isdir('/usr/lib/python3/dist-packages/'):
+            # Ubuntu, Debian
+            base_packages_dir = '/usr/lib/python3/dist-packages/'
+            system_install_path = '/usr/local/lib/python3/dist-packages/gi'
+            package_name = 'apt-get install python3-gi'
+        elif os.path.isdir('/usr/lib/python3.5/site-packages/'):
+            # Arch
+            base_packages_dir = '/usr/lib/python3.5/site-packages/'
+            system_install_path = '/usr/lib/python3.5/site-packages/gi'
+            package_name = 'pacman -S python-gobject'
+        else:
+            raise RuntimeError("Unable to locate your Python packages dir.")
     else:
         raise RuntimeError("Toga requires Python 3.")
 
     # Use the location of this package to guide us to
     # the location of the virtualenv.
-    symlink_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'gi')
+    gi_symlink_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'gi')
+    pygtkcompat_symlink_path = os.path.join(os.path.dirname(os.path.dirname(__file__)),  'pygtkcompat')
 
-    if symlink_path == system_install_path:
+    if gi_symlink_path == system_install_path:
         # If we're not in a virtualenv, just raise the original import error.
         raise
     else:
+        gi_path = os.path.join(base_packages_dir, 'gi')
+        pygtkcompat_path = os.path.join(base_packages_dir, 'pygtkcompat')
         if os.path.exists(gi_path) and os.path.isdir(gi_path):
             # If we can identify the gi library, create a symlink to it.
             try:
-                print ("Creating symlink (%s) to system GTK+ libraries..." % symlink_path)
-                os.symlink(gi_path, symlink_path)
+                print("Creating symlink (%s & %s) to system GTK+ libraries..." % gi_symlink_path, pygtkcompat_symlink_path)
+                os.symlink(gi_path, gi_symlink_path)
+                os.symlink(pygtkcompat_path, pygtkcompat_symlink_path)
 
                 import gi
             except OSError:
                 raise RuntimeError("Unable to automatically create symlink to system Python GTK+ bindings.")
         else:
-            raise RuntimeError("Unable to locate the Python GTK+ bindings. Have you run 'apt-get install %s'?" % package_name)
+            raise RuntimeError("Unable to locate the Python GTK+ bindings. Have you run '%s'?" % package_name)
 
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gio, GLib
