@@ -17,7 +17,6 @@ except ImportError:
     # can be found.
     # gi_system_install_path is where gi can be found in the packages dir.
     # installer_command is the command the user can run to install gi.
-    import os
     py_version = "%d.%d" % (sys.version_info.major, sys.version_info.minor)
 
     if sys.version_info.major == 3:
