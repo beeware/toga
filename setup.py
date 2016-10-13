@@ -14,7 +14,7 @@ with io.open('README.rst', encoding='utf8') as readme:
 
 setup(
     name='toga',
-    version='0.2.3',
+    version='0.2.4',
     description='A Python native, OS native GUI toolkit.',
     long_description=long_description,
     author='Russell Keith-Magee',
