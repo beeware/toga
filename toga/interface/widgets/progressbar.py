@@ -2,6 +2,17 @@ from .base import Widget
 
 
 class ProgressBar(Widget):
+    """
+    Progressbar widget
+
+    :param id:          Identifier for this widget
+    :param style:       Style of the button
+    :type style:        colosseum.CSS
+    :param max:         Maximum of the progress bar
+    :type max:          int
+    :param value:       Current progress
+    :type value:        int
+    """
     def __init__(self, id=None, style=None, max=None, value=None):
         super().__init__(id=id, style=style, max=max, value=value)
 

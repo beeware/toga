@@ -3,6 +3,18 @@ from toga.constants import *
 
 
 class Label(Widget):
+    """
+    Label widget
+
+    :param text:        Text of the label
+    :type text:         str
+    :param id:          Identifier for this widget
+    :param style:       Style of the label
+    :type style:        colosseum.CSS
+    :param alignment:   Alignment of the label, default is left. Alignments can be found
+                        in toga.constants
+    :type alignment:    int
+    """
     def __init__(self, text, id=None, style=None, alignment=LEFT_ALIGNED):
         super().__init__(id=id, style=style, text=text, alignment=alignment)
 

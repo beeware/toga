@@ -2,6 +2,16 @@ from .base import Widget
 
 
 class WebView(Widget):
+    """
+    Widget for viewing web
+
+    :param id:              Identifier for this widget
+    :param style:           Style of the button
+    :type style:            colosseum.CSS
+    :param url:             URL of the webview
+    :type url:              str
+    """
+
     def __init__(self, id=None, style=None, url=None, on_key_down=None):
         super(WebView, self).__init__(id=id, style=style, url=url, on_key_down=on_key_down)
 

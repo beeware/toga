@@ -2,7 +2,8 @@ from colosseum import CSSNode
 
 
 class Widget:
-    '''This is the base widget implementation that all widgets in Toga
+    '''
+    This is the base widget implementation that all widgets in Toga
     derive from.
 
     It defines the interface for core functionality for children, styling,
@@ -12,9 +13,10 @@ class Widget:
     be made concrete by some platform-specific code for the _apply_layout
     method.
 
-    :param id: An identifier for this widget.
-    :param style: an optional style object. If no style is provided then a
-                  new one will be created for the widget.
+    :param id:      An identifier for this widget.
+    :param style:   An optional style object. If no style is provided then a
+                    new one will be created for the widget.
+    :type style:    colosseum.CSS
     '''
     def __init__(self, id=None, style=None, **config):
         self._id = id

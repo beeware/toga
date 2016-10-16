@@ -2,7 +2,15 @@ from .base import Widget
 
 
 class Selection(Widget):
+    """
+    Selection widget
 
+    :param id:          Identifier for this widget
+    :param style:       Style of the button
+    :type style:        colosseum.CSS
+    :param items:       Items for the selection:
+    :type items:        List[str]
+    """
     def __init__(self, id=None, style=None, items=list()):
         super().__init__(id=id, style=style, items=items)
 

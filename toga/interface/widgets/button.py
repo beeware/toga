@@ -1,7 +1,17 @@
 from .base import Widget
 
-
 class Button(Widget):
+    """
+    Button widget
+
+    :param label:       Text to be shown on the button
+    :type label:        str
+    :param id:          Identifier for this widget
+    :param style:       Style of the button
+    :type style:        colosseum.CSS
+    :param on_press:    Function to execute when pressed
+    :type on_press:     Callable
+    """
     def __init__(self, label, id=None, style=None, on_press=None):
         super().__init__(id=id, style=style, label=label, on_press=on_press)
 

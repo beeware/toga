@@ -2,6 +2,19 @@ from .base import Widget
 
 
 class TextInput(Widget):
+    """
+    Widget for input of a text
+
+    :param id:              Identifier for this widget
+    :param style:           Style of the button
+    :type style:            colosseum.CSS
+    :param initial:         Initial text
+    :type initial:          str
+    :param placeholder:     Placeholder text
+    :type placeholder:      str
+    :param readonly:        Whether a user can write into the text input
+    :type readonly:         bool
+    """
     def __init__(self, id=None, style=None, initial=None, placeholder=None, readonly=False):
         super().__init__(id=id, style=style, initial=initial, placeholder=placeholder, readonly=readonly)
 
