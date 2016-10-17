@@ -52,7 +52,7 @@ class App(object):
 
     def startup(self):
         '''Create and show the main window for the application'''
-        self.main_window = self._MAIN_WINDOW_CLASS()
+        self.main_window = self._MAIN_WINDOW_CLASS(self.name)
         self.main_window.app = self
 
         if self._startup_method:
