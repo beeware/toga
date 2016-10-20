@@ -3,7 +3,7 @@ from .base import Widget
 
 class ImageView(Widget):
     def __init__(self, id=None, style=None, image=None):
-        super().__init__(id=None, style=None, image=None)
+        super().__init__(id=id, style=style, image=image)
 
     def _configure(self, image):
         self.image = image
