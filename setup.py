@@ -1,5 +1,6 @@
 #/usr/bin/env python
 import io
+import re
 from setuptools import setup
 import sys
 
@@ -8,13 +9,21 @@ if sys.version_info[:3] < (3, 4):
     raise SystemExit("Toga requires Python 3.4+.")
 
 
+with io.open('src/core/toga/__init__.py', encoding='utf8') as version_file:
+    version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]", version_file.read(), re.M)
+    if version_match:
+        version = version_match.group(1)
+    else:
+        raise RuntimeError("Unable to find version string.")
+
+
 with io.open('README.rst', encoding='utf8') as readme:
     long_description = readme.read()
 
 
 setup(
     name='toga',
-    version='0.2.4',
+    version=version,
     description='A Python native, OS native GUI toolkit.',
     long_description=long_description,
     author='Russell Keith-Magee',

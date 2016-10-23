@@ -9,7 +9,7 @@ if sys.version_info[:3] < (3, 4):
     raise SystemExit("Toga requires Python 3.4+.")
 
 
-with io.open('src/win32/toga_win32/__init__.py', encoding='utf8') as version_file:
+with io.open('src/core/toga/__init__.py', encoding='utf8') as version_file:
     version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]", version_file.read(), re.M)
     if version_match:
         version = version_match.group(1)
@@ -17,7 +17,7 @@ with io.open('src/win32/toga_win32/__init__.py', encoding='utf8') as version_fil
         raise RuntimeError("Unable to find version string.")
 
 
-with io.open('src/web/README.rst', encoding='utf8') as readme:
+with io.open('src/win32/README.rst', encoding='utf8') as readme:
     long_description = readme.read()
 
 
@@ -32,7 +32,7 @@ setup(
     packages=find_packages('src/win32'),
     package_dir={'': 'src/win32'},
     install_requires=[
-        'toga-core',
+        'toga-core>=%s' % version,
     ],
     license='New BSD',
     classifiers=[
