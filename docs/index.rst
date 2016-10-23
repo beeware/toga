@@ -31,22 +31,6 @@ Toga has some minimum requirements:
 If these requirements aren't met, Toga either won't work at all, or won't
 have full functionality.
 
-Problems with source installs
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Internally, Toga is comprised of a number of subpackages - one for each
-platform it supports. If you install using wheels, the install process will
-correctly identify the required packages and install them. However, if you
-install from source using pip, there is a `known bug in pip`_ that causes
-dependencies to not be installed. It may be necessary to manually install
-the following pre-requisites:
-
-* OS X: ``pip install toga-cocoa toga-core colosseum``
-* Linux: ``pip install toga-gtk toga-core colosseum``
-* Win32: ``pip install toga-win32 toga-core colosseum``
-
-.. _known bug in pip: https://github.com/pypa/pip/issues/1951
-
 Community
 =========
 
