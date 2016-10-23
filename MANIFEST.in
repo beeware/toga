@@ -1,5 +1,0 @@
-include LICENSE
-include README.rst
-include tox.ini
-recursive-include toga_cocoa *.py
-recursive-include tests *.py
