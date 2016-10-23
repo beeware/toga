@@ -16,9 +16,6 @@ class MainWindow(Window):
         self.app._impl.terminate_(self._delegate)
 
 
-<<<<<<< HEAD
-class App(AppInterface):
-=======
 class AppDelegate(NSObject):
     @objc_method
     def applicationOpenUntitledFile_(self, sender) -> bool:
@@ -32,11 +29,6 @@ class AppDelegate(NSObject):
 
         fileTypes = NSArray.alloc().initWithObjects_(*([d for d in self._interface.document_types] + [None]))
         NSDocumentController.sharedDocumentController().runModalOpenPanel_forTypes_(panel, fileTypes)
-<<<<<<< HEAD
-        # panel.runModal()
->>>>>>> Updated toga to support Podium requirements.
-=======
->>>>>>> Modified layout to use constraints to set position.
 
         print("Untitled File opened?", panel.URLs)
         self.application_openFiles_(None, panel.URLs)
@@ -76,13 +68,8 @@ class AppDelegate(NSObject):
             # NSDocumentController.sharedDocumentController().openDocumentWithContentsOfURL_display_completionHandler_(fileURL, True, None)
 
 
-<<<<<<< HEAD
-class App(object):
-    def __init__(self, name, app_id, icon=None, startup=None, document_types=None):
-=======
 class App(AppInterface):
     _MAIN_WINDOW_CLASS = MainWindow
->>>>>>> Refactored widgets to use interface API.
 
     def __init__(self, name, app_id, icon=None, startup=None, document_types=None):
         # Set the icon for the app
