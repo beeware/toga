@@ -9,7 +9,7 @@ if sys.version_info[:3] < (3, 4):
     raise SystemExit("Toga requires Python 3.4+.")
 
 
-with io.open('./toga_android/__init__.py', encoding='utf8') as version_file:
+with io.open('src/android/toga_android/__init__.py', encoding='utf8') as version_file:
     version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]", version_file.read(), re.M)
     if version_match:
         version = version_match.group(1)
@@ -17,7 +17,7 @@ with io.open('./toga_android/__init__.py', encoding='utf8') as version_file:
         raise RuntimeError("Unable to find version string.")
 
 
-with io.open('README.rst', encoding='utf8') as readme:
+with io.open('src/android/README.rst', encoding='utf8') as readme:
     long_description = readme.read()
 
 
@@ -29,7 +29,8 @@ setup(
     author='Russell Keith-Magee',
     author_email='russell@keith-magee.com',
     url='http://pybee.org/toga',
-    packages=find_packages(exclude=['tests']),
+    packages=find_packages('src/android'),
+    package_dir={'': 'src/android'},
     install_requires=[
         'toga-core>=%s' % version,
     ],
