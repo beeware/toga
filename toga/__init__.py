@@ -26,7 +26,7 @@ __version__ = '0.2.4'
 platform = None
 
 
-def set_platform(module_name=None, locals=locals()):
+def set_platform(module_name=None, local_vars=locals()):
     "Configures toga to use the specfied platform module"
     # Note - locals is deliberately passed in as an argument; because it is
     # a dictionary, this results in the module level locals dictionary being
@@ -59,26 +59,24 @@ def set_platform(module_name=None, locals=locals()):
 
         module_name = 'toga_' + platform_name
 
-    # Purge any existing platform symbols in the toga module
-    if locals['platform']:
-        for symbol in locals['platform'].__all__:
-            # Exclude __version__ from the list of symbols that is
-            # ported, because toga itself has a __version__ identifier.
-            if symbol != '__version__':
-                locals.pop(symbol)
+    # # Purge any existing platform symbols in the toga module
+    # if local_vars['platform']:
+    #     for symbol in local_vars['platform'].__all__:
+    #         # Exclude __version__ from the list of symbols that is
+    #         # ported, because toga itself has a __version__ identifier.
+    #         if symbol != '__version__':
+    #             local_vars.pop(symbol)
 
     # Import the new platform module
     try:
         # Set the new platform module into the module namespace
-        locals['platform'] = importlib.import_module(module_name)
+        local_vars['platform'] = importlib.import_module(module_name)
 
         # Export all the symbols *except* for __version__ from the platform module
         # The platform has it's own version identifier.
-        locals.update(dict(
-            (symbol, getattr(platform, symbol))
-            for symbol in locals['platform'].__all__
-            if symbol != '__version__'
-        ))
+        for symbol in local_vars['platform'].__all__:
+            if symbol != '__version__':
+                local_vars[symbol] = getattr(platform, symbol)
     except ImportError as e:
         if e.name == module_name:
             locals['platform'] = None
