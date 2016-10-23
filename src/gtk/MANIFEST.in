@@ -1,0 +1,5 @@
+include LICENSE
+include tox.ini
+include src/gtk/README.rst
+recursive-include src/gtk *.py
+recursive-include tests *.py
