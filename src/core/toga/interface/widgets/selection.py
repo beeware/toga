@@ -15,7 +15,7 @@ class Selection(Widget):
         super().__init__(id=id, style=style, items=items)
 
     def _configure(self, items):
-        self._items = items
+        self.items = items
 
     @property
     def items(self):
