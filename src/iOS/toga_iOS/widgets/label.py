@@ -30,5 +30,5 @@ class Label(LabelInterface, WidgetMixin):
         fitting_size = self._impl.systemLayoutSizeFittingSize_(CGSize(0, 0))
         self.style.hint(
             height=fitting_size.height,
-            width=(fitting_size.width, None)
+            width=fitting_size.width
         )
