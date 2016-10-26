@@ -15,10 +15,10 @@ Widget
 .. autoclass:: toga.interface.widgets.base.Widget
    :members:
 
-Container
-=========
+Box
+===
 
-.. autoclass:: toga.interface.widgets.container.Container
+.. autoclass:: toga.interface.widgets.box.Box
    :members:
 
 Button
