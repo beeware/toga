@@ -1,9 +1,10 @@
+from toga.interface import ImageView as ImageViewInterface
+
 from ..libs import *
-from .base import Widget
-from toga.constants import *
+from .base import WidgetMixin
 
 
-class ImageView(Widget):
+class ImageView(ImageViewInterface, WidgetMixin):
     def __init__(self, image=None, style=None):
         super().__init__(style=style)
 
@@ -18,6 +19,9 @@ class ImageView(Widget):
         # Disable all autolayout functionality
         self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
         self._impl.setAutoresizesSubviews_(False)
+
+        # Add the layout constraints
+        self._add_constraints()
 
         # if self.width is None:
         #     self.width = self._impl.fittingSize().width
