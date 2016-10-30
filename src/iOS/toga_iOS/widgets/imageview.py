@@ -59,3 +59,10 @@ class ImageView(ImageViewInterface, WidgetMixin):
         print("SET IMAGE FRAME", self, frame.origin.x, frame.origin.y, frame.size.width, frame.size.height)
         self._impl.setFrame_(frame)
         self._impl.setNeedsDisplay()
+
+    def rehint(self):
+        fitting_size = self._impl.systemLayoutSizeFittingSize_(CGSize(0, 0))
+        self.style.hint(
+            height=fitting_size.height,
+            width=fitting_size.width
+        )
