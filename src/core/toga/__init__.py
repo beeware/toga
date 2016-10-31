@@ -79,7 +79,7 @@ def set_platform(module_name=None, local_vars=locals()):
                 local_vars[symbol] = getattr(platform, symbol)
     except ImportError as e:
         if e.name == module_name:
-            locals['platform'] = None
+            local_vars['platform'] = None
             print("Couldn't import %s platform module; try running 'pip install %s'." % (module_name[5:], module_name))
             sys.exit(-1)
         else:
