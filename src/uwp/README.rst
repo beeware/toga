@@ -1,7 +1,7 @@
-toga-web
+toga-uwp
 ========
 
-A common backend for the `Toga widget toolkit`_ on web platforms.
+A Univeral Windows Platform (UWP) backend for the `Toga widget toolkit`_.
 
 **Toga requires Python 3**
 

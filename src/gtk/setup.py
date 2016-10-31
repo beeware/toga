@@ -9,7 +9,7 @@ if sys.version_info[:3] < (3, 4):
     raise SystemExit("Toga requires Python 3.4+.")
 
 
-with io.open('src/core/toga/__init__.py', encoding='utf8') as version_file:
+with io.open('../src/core/toga/__init__.py', encoding='utf8') as version_file:
     version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]", version_file.read(), re.M)
     if version_match:
         version = version_match.group(1)
@@ -17,22 +17,20 @@ with io.open('src/core/toga/__init__.py', encoding='utf8') as version_file:
         raise RuntimeError("Unable to find version string.")
 
 
-with io.open('src/cocoa/README.rst', encoding='utf8') as readme:
+with io.open('README.rst', encoding='utf8') as readme:
     long_description = readme.read()
 
 
 setup(
-    name='toga-cocoa',
+    name='toga-gtk',
     version=version,
-    description='A Cocoa (macOS) backend for the Toga widget toolkit.',
+    description='A GTK+ backend for the Toga widget toolkit.',
     long_description=long_description,
     author='Russell Keith-Magee',
     author_email='russell@keith-magee.com',
     url='http://pybee.org/toga',
-    packages=find_packages('src/cocoa'),
-    package_dir={'': 'src/cocoa'},
+    packages=find_packages(exclude='tests'),
     install_requires=[
-        'rubicon-objc>=0.2.2',
         'toga-core>=%s' % version,
     ],
     license='New BSD',
@@ -40,8 +38,8 @@ setup(
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
-        'Environment :: MacOS X :: Cocoa',
-        'Operating System :: MacOS :: MacOS X',
+        'Environment :: X11 Applications :: GTK',
+        'Operating System :: POSIX',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',

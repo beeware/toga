@@ -9,7 +9,7 @@ if sys.version_info[:3] < (3, 4):
     raise SystemExit("Toga requires Python 3.4+.")
 
 
-with io.open('src/django/toga_django/__init__.py', encoding='utf8') as version_file:
+with io.open('toga/__init__.py', encoding='utf8') as version_file:
     version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]", version_file.read(), re.M)
     if version_match:
         version = version_match.group(1)
@@ -17,32 +17,35 @@ with io.open('src/django/toga_django/__init__.py', encoding='utf8') as version_f
         raise RuntimeError("Unable to find version string.")
 
 
-with io.open('src/django/README.rst', encoding='utf8') as readme:
+with io.open('README.rst', encoding='utf8') as readme:
     long_description = readme.read()
 
 
 setup(
-    name='toga-django',
+    name='toga-core',
     version=version,
-    description='A Django backend for the Toga widget toolkit.',
+    description='A Python native, OS native GUI toolkit.',
     long_description=long_description,
     author='Russell Keith-Magee',
     author_email='russell@keith-magee.com',
     url='http://pybee.org/toga',
-    packages=find_packages('src/django'),
-    package_dir={'': 'src/django'},
+    packages=find_packages(exclude='tests'),
+    package_data={
+        'toga': ['resources/*.icns', 'resources/*.png'],
+    },
     install_requires=[
+        'colosseum>=0.1.3'
     ],
     license='New BSD',
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
-        'Environment :: MacOS X :: Cocoa',
+        'Operating System :: OS Independent',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3 :: Only',
+        'Programming Language :: Python :: Only',
         'Topic :: Software Development',
         'Topic :: Software Development :: User Interfaces',
         'Topic :: Software Development :: Widget Sets',

@@ -1,9 +1,5 @@
 include LICENSE
 include tox.ini
-include src/core/README.rst
-recursive-include src/core *.py
-recursive-include docs *.bat
-recursive-include docs *.py
-recursive-include docs *.rst
-recursive-include docs Makefile
+include README.rst
+recursive-include toga *.py
 recursive-include tests *.py
