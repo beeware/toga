@@ -1,7 +1,7 @@
-toga-web
-========
+toga-winforms
+=============
 
-A common backend for the `Toga widget toolkit`_ on web platforms.
+A Microsoft Winforms backend for the `Toga widget toolkit`_.
 
 **Toga requires Python 3**
 

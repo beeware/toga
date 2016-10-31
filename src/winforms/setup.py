@@ -22,9 +22,9 @@ with io.open('README.rst', encoding='utf8') as readme:
 
 
 setup(
-    name='toga-flask',
+    name='toga-winforms',
     version=version,
-    description='A Flask backend for the Toga widget toolkit.',
+    description='A Microsoft Winforms backend for the Toga widget toolkit.',
     long_description=long_description,
     author='Russell Keith-Magee',
     author_email='russell@keith-magee.com',
@@ -35,6 +35,7 @@ setup(
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
+        'Operating System :: Microsoft :: Windows :: Windows 8',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',

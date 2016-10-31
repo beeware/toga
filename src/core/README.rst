@@ -20,14 +20,6 @@ Toga has some minimum requirements:
 
 * If you're on OS X, you need to be on 10.7 (Lion) or newer.
 
-<<<<<<< HEAD
-* If you're on Linux, you need to have GTK+ 3.4 or later. This is the
-  version that ships with Ubuntu 12.04; you'll need to have the
-  ``python-gi`` (or ``python3-gi`` if you're using Python 3) package
-  installed. If you want to use the WebView widget, you'll also need
-  to have WebKit, plus the GI bindings to WebKit (``gir1.2-webkit-3.0``)
-  installed.
-=======
 * If you're on Linux, you need to have GTK+ 3.4 or later. This is the version
   that ships starting with Ubuntu 12.04 and Fedora 17.
 
@@ -41,7 +33,6 @@ Toga has some minimum requirements:
 
 If these requirements aren't met, Toga either won't work at all, or won't have
 full functionality.
->>>>>>> Added details for installing on Fedora
 
 
 Problems with source installs
@@ -99,9 +90,11 @@ backends to provide real functionality:
 
 * `toga-cocoa`_: for OS/X
 * `toga-gtk`_: GTK+ backend for Linux desktops
-* `toga-win32`_: for Windows desktops (limited support)
 * `toga-iOS`_: for iOS devices (iPhone, iPad, iPod)
 * `toga-android`_: for Android devices (limited support)
+* `toga-win32`_: for old Windows desktops (limited support)
+* `toga-winforms`_: for recent Window devices (limited support)
+* `toga-uwp`_: for Windows 10 and Windows Mobile devices (limited support)
 
 Community
 ---------
@@ -110,9 +103,7 @@ Toga is part of the `BeeWare suite`_. You can talk to the community through:
 
 * `@pybeeware on Twitter`_
 
-* The `BeeWare Users Mailing list`_, for questions about how to use the BeeWare suite.
-
-* The `BeeWare Developers Mailing list`_, for discussing the development of new features in the BeeWare suite, and ideas for new tools for the suite.
+* The `pybee/general`_ channel on Gitter.
 
 Contributing
 ------------
@@ -122,14 +113,15 @@ want to contribute code, please `fork the code`_ and `submit a pull request`_.
 
 .. _BeeWare suite: http://pybee.org
 .. _Read The Docs: https://toga.readthedocs.io
-.. _toga-cocoa: http://github.com/pybee/toga-cocoa
-.. _toga-gtk: http://github.com/pybee/toga-gtk
-.. _toga-win32: http://github.com/pybee/toga-win32
-.. _toga-iOS: http://github.com/pybee/toga-iOS
-.. _toga-android: http://github.com/pybee/toga-android
+.. _toga-cocoa: https://pypi.python.org/pypi/toga-cocoa
+.. _toga-gtk: https://pypi.python.org/pypi/toga-gtk
+.. _toga-win32: https://pypi.python.org/pypi/toga-win32
+.. _toga-iOS: https://pypi.python.org/pypi/toga-iOS
+.. _toga-android: https://pypi.python.org/pypi/toga-android
+.. _toga-winforms: https://pypi.python.org/pypi/toga-winforms
+.. _toga-uwp: https://pypi.python.org/pypi/toga-uwp
 .. _@pybeeware on Twitter: https://twitter.com/pybeeware
-.. _BeeWare Users Mailing list: https://groups.google.com/forum/#!forum/beeware-users
-.. _BeeWare Developers Mailing list: https://groups.google.com/forum/#!forum/beeware-developers
+.. _pybee/general: https://gitter.im/pybee/general
 .. _log them on Github: https://github.com/pybee/toga/issues
 .. _fork the code: https://github.com/pybee/toga
 .. _submit a pull request: https://github.com/pybee/toga/pulls
