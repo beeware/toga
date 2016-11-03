@@ -57,6 +57,5 @@ Contents
 
    philosophy
    tutorial/index
-   howto/index
    reference/index
    internals/index
