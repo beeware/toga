@@ -19,6 +19,9 @@ class Selection(WidgetMixin, SelectionInterface):
 
         self._add_constraints()
 
+        for item in self.items:
+            self._add_item(item)
+
     def rehint(self):
         fitting_size = self._impl.fittingSize()
         self.style.hint(
