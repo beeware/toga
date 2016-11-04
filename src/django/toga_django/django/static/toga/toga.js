@@ -76,11 +76,12 @@ $(window).load(function() {
             console.log("Add children for " + widgets[w].dataset.togaClass + ':' + widgets[w].id);
             for (var c = 0; c < children.length; c++) {
                 console.log("    Add child " + children[c].dataset.togaClass + ':' + children[c].id);
-                // widgets[w].toga.add_child.__call__.apply(
-                //     new batavia.types.List([children[c].toga]),
-                //     new batavia.types.Dict(),
-                //     batavia.builtins.None
-                // );
+                widgets[w].toga.add_child.__call__.call(
+                    toga.vm,
+                    new batavia.types.List([widgets[w].toga, children[c].toga]),
+                    new batavia.types.JSDict(),
+                    null
+                );
             }
         // } else {
         //     console.log("Non-child widget - " + widgets[w].dataset.togaClass + ':' + widgets[w].id);
