@@ -1,5 +1,6 @@
 from colosseum import CSSNode
 
+identifier = id
 
 class Widget:
     '''
@@ -19,7 +20,7 @@ class Widget:
     :type style:    colosseum.CSS
     '''
     def __init__(self, id=None, style=None, **config):
-        self._id = id
+        self._id = id if id else identifier(self)
         self._parent = None
         self._children = None
         self._window = None

@@ -1,64 +1,49 @@
+from toga.interface.window import Window as WindowInterface
+
 import base64
 import marshal
 import os
 import py_compile
 from django.conf.urls import url
 from django.shortcuts import render
+from django.utils.safestring import mark_safe
 
-from .libs import Window as TogaWindow
-
-
-def bootstrap(element):
-    import toga
-
-    parts = element.dataset.togaClass.split('.')
-    bootstrap_method = getattr(toga, 'bootstrap_' + parts[1])
-    result = bootstrap_method(element)
-    return result
+from . import impl
+from . import dialogs
+from .bootstrap import bootstrap
+from .container import Container
 
 
-class Window:
-    def __init__(self, widget_id=None, title=None):
-        self.widget_id = widget_id if widget_id else id(self)
-        self._app = None
-        self._content = None
+class Window(WindowInterface):
+    _IMPL_CLASS = impl.Window
+    _CONTAINER_CLASS = Container
+    _DIALOG_MODULE = dialogs
 
-        self.title = title
-
+    def __init__(self, title=None, position=(100, 100), size=(640, 480), toolbar=None, resizeable=True, closeable=True, minimizable=True):
+        super().__init__(title=title, position=position, size=size, toolbar=toolbar, resizeable=resizeable, closeable=closeable, minimizable=minimizable)
+        self.id = id(self)
         self.callbacks = {}
 
-    @property
-    def app(self):
-        return self._app
+        self._create()
 
-    @app.setter
-    def app(self, app):
-        if self._app:
-            raise Exception("Window is already associated with an App")
-
-        self._app = app
-        # app.support_module.__dict__['TogaWindow'] = TogaWindow
-
-    @property
-    def content(self):
-        return self._content
-
-    @content.setter
-    def content(self, widget):
-        self._content = widget
-        self._content.window = self
-
-        # Assign the widget to the same app as the window.
-        self.content.app = self.app
-
-    def materialize(self):
-        content = self.content.materialize()
-
-        return TogaWindow(
-            widget_id=self.widget_id,
-            title=self.title,
-            content=content
+    def create(self):
+        self._impl = impl.Window(
+            id=self.id,
+            title=self._config['title']
         )
+
+    def _set_toolbar(self, items):
+        pass
+
+    def _set_content(self, widget):
+        self._impl.set_content(widget._impl)
+
+    def _set_title(self, title):
+        # self._impl.set_title(title)
+        pass
+
+    def __str__(self):
+        return mark_safe(self._impl.__html__())
 
     def get_urls(self):
         # def wrap(view, cacheable=False):
@@ -69,33 +54,33 @@ class Window:
 
         # Admin-site-wide views.
         urlpatterns = [
-            url(r'^$', self.home, name='home'),
         ]
         return urlpatterns
 
-    def home(self, request):
-        app = self.app.materialize()
-        if app.main_window.widget_id == self.widget_id:
-            window = app.main_window
-        else:
-            try:
-                window = app.windows[self.widget_id]
-            except KeyError:
-                raise Exception("Unknown window")
+    def show(self):
+        pass
 
-        sourcefile = os.path.join(os.path.dirname(__file__), 'libs.py')
-        py_compile.compile(sourcefile)
-        with open(os.path.join(
-                    os.path.dirname(sourcefile),
-                    '__pycache__/%s.cpython-34.pyc' % os.path.splitext(os.path.basename(sourcefile))[0]
-                ), 'rb') as compiled:
+    def home(self, request):
+        # app = self.app.materialize()
+        # if app.main_window.id == self.id:
+        #     window = app.main_window
+        # else:
+        #     try:
+        #         window = app.windows[self.id]
+        #     except KeyError:
+        #         raise Exception("Unknown window")
+
+        sourcefile = os.path.join(os.path.dirname(__file__), 'render', '__init__.py')
+
+        fd, tempname = tempfile.mkstemp()
+        py_compile.compile(sourcefile, cfile=tempname, doraise=True)
+        with open(os.path.join(os.path.dirname(sourcefile), tempname), 'rb') as compiled:
             toga = base64.encodebytes(compiled.read())
 
-        return render(request, 'toga/window.html', {
+        return render(request, 'toga/app.html', {
             'toga': toga,
             'bootstrap': base64.encodebytes(b'\xee\x0c\r\n00000000' + marshal.dumps(bootstrap.__code__)).strip(),
-            'app': app,
-            'window': window,
+            'window': self._impl,
             'callbacks': {
                 # 'sample': base64.encodebytes(b'\x08\x1c\xe8VU\x00\x00\x00' + marshal.dumps(sample.__code__)).strip()
                 '%s-%s' % (widget, message): base64.encodebytes(b'\xee\x0c\r\n00000000' + marshal.dumps(callback.__code__)).strip()

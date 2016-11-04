@@ -1,6 +1,7 @@
 import importlib
 import os
 import sys
+import types
 
 from .constants import *
 
@@ -24,7 +25,6 @@ __all__ = [
 __version__ = '0.2.4'
 
 platform = None
-
 
 def set_platform(module_name=None, local_vars=locals()):
     "Configures toga to use the specfied platform module"
@@ -65,6 +65,9 @@ def set_platform(module_name=None, local_vars=locals()):
     #         # Exclude __version__ from the list of symbols that is
     #         # ported, because toga itself has a __version__ identifier.
     #         if symbol != '__version__':
+    #             # Remove any modules from the importable module list
+    #             if isinstance(local_vars[symbol], types.ModuleType):
+    #                 del sys.modules['toga.%s' % symbol]
     #             local_vars.pop(symbol)
 
     # Import the new platform module
@@ -77,6 +80,9 @@ def set_platform(module_name=None, local_vars=locals()):
         for symbol in local_vars['platform'].__all__:
             if symbol != '__version__':
                 local_vars[symbol] = getattr(platform, symbol)
+                # Make sure any modules are added to the importable module list
+                if isinstance(local_vars[symbol], types.ModuleType):
+                    sys.modules['toga.%s' % symbol] = local_vars[symbol]
     except ImportError as e:
         if e.name == module_name:
             local_vars['platform'] = None

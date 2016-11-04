@@ -3,10 +3,11 @@ class Window:
     _CONTAINER_CLASS = None
     _DIALOG_MODULE = None
 
-    def __init__(self, title=None, position=(100, 100), size=(640, 480), toolbar=None, resizeable=True, closeable=True, minimizable=True):
+    def __init__(self, id_=None, title=None, position=(100, 100), size=(640, 480), toolbar=None, resizeable=True, closeable=True, minimizable=True):
         if self._CONTAINER_CLASS is None:
             raise NotImplementedError('Window class must define show()')
 
+        self._id = id_ if id_ else id(self)
         self._impl = None
         self._app = None
         self._container = None

@@ -1,0 +1,45 @@
+{% load staticfiles %}<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <!-- Required meta tags always come first -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+        <title>{{ app.main_window.title }}</title>
+
+        <link rel="stylesheet" href="{% static 'bootstrap/dist/css/bootstrap.min.css' %}">
+        <link rel="stylesheet" href="{% static 'components-font-awesome/css/font-awesome.min.css' %}">
+        <style>
+            body {
+                padding-top: 5rem;
+            }
+        </style>
+
+        <script id="batavia-toga" type="application/python-bytecode">
+{{ toga }}
+        </script>
+        <script id="batavia-bootstrap" type="application/python-bytecode">
+{{ bootstrap }}
+        </script>
+{% for name, payload in callbacks.items %}
+        <script id="batavia-{{ name }}" type="application/python-bytecode">
+{{ payload }}
+        </script>
+{% endfor %}
+    </head>
+        {{ app }}
+
+        <hr>
+        <pre id="stdout"></pre>
+
+        <script src="{% static 'jquery/dist/jquery.js' %}"></script>
+        <script src="{% static 'toga/batavia.js' %}"></script>
+        <script src="{% static 'toga/toga.js' %}"></script>
+        <script>
+        {% for window in app.windows %}
+            window.open('${{ window.id }}/', '_blank', 'location=yes,height=640,width=480,scrollbars=yes,status=no');
+        {% endfor %}
+        </script>
+    </body>
+</head>

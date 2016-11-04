@@ -1,30 +1,26 @@
-from .base import Widget
-from ..libs import Button as TogaButton
+from toga.interface import Button as ButtonInterface
+
+from .. import impl
+from .base import WidgetMixin
+# from ..utils import process_callback
 
 
-class Button(Widget):
-    def __init__(self, label, on_press=None, **style):
-        default_style = {
-            'margin': 7
-        }
-        default_style.update(style)
-        super(Button, self).__init__(**default_style)
-        self.label = label
+class Button(ButtonInterface, WidgetMixin):
+    def __init__(self, label, id=None, style=None, on_press=None):
+        super().__init__(label, id=id, style=style, on_press=on_press)
+        self._create()
 
-        self.on_press = on_press
-        self.startup()
-
-    def startup(self):
-        pass
-
-    def materialize(self):
-        return TogaButton(
-            widget_id=self.widget_id,
-            label=self.label,
-            on_press=self.handler(self.on_press, 'on_press') if self.on_press else None
+    def create(self):
+        self._impl = impl.Button(
+            id=self.id,
+            label=self._config['label'],
+            on_press=self.handler(self._config['on_press'], 'on_press') if self._config['on_press'] else None
         )
 
     def _set_window(self, window):
         super()._set_window(window)
         if self.on_press:
-            self.window.callbacks[(self.widget_id, 'on_press')] = self.on_press
+            self.window.callbacks[(self.id, 'on_press')] = self.on_press
+
+    def _set_label(self, label):
+        pass
