@@ -78,8 +78,16 @@ def set_platform(module_name=None, local_vars=locals()):
         # Export all the symbols *except* for __version__ from the platform module
         # The platform has it's own version identifier.
         for symbol in local_vars['platform'].__all__:
-            if symbol != '__version__':
-                local_vars[symbol] = getattr(platform, symbol)
+            if symbol == '__version__':
+                if local_vars['platform'].__version__ != __version__:
+                    raise RuntimeError('Toga core is version %s; %s platform backend is version %s.' % (
+                            local_vars['platform'].__version__,
+                            module_name,
+                            __version__
+                        )
+                    )
+            else:
+                local_vars[symbol] = getattr(local_vars['platform'], symbol)
                 # Make sure any modules are added to the importable module list
                 if isinstance(local_vars[symbol], types.ModuleType):
                     sys.modules['toga.%s' % symbol] = local_vars[symbol]
