@@ -112,7 +112,7 @@ elif [ "$action" = "bump" ]; then
         $action $module $version
     done
 
-    echo git commit -m "Bumped version number for v$1 release."
+    git commit -m "Bumped version number for v$version release."
 elif [ "$action" = "dev" ]; then
     version=$1
     shift
@@ -123,5 +123,5 @@ elif [ "$action" = "dev" ]; then
         $action $module $version
     done
 
-    echo git commit -m "Bumped version number for v$1 development."
+    git commit -m "Bumped version number for v$version development."
 fi
