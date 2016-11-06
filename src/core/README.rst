@@ -51,8 +51,6 @@ the following pre-requisites:
 
 .. _known bug in pip: https://github.com/pypa/pip/issues/1951
 
-<<<<<<< HEAD
-=======
 Problems using virtualenv under Linux
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -75,8 +73,6 @@ virtualenv's site-packages::
         $ cd $VIRTUAL_ENV/lib/python3.5/site-packages
         $ ln -si /usr/lib64/python3.5/site-packages/gi/
 
-
->>>>>>> Added details for installing on Fedora
 Documentation
 -------------
 
