@@ -65,15 +65,15 @@ workaround. To make the system GTK+ bindings available to your virtualenv,
 symlink the ``gi`` module from the system dist-packages directory into your
 virtualenv's site-packages::
 
-    For a Ubuntu 32bit system::
+    For a Ubuntu 32bit system (assuming Python 3.5)::
 
-        $ cd $VIRTUAL_ENV/lib/python2.7/site-packages
-        $ ln -si /usr/lib/python2.7/dist-packages/gi
+        $ cd $VIRTUAL_ENV/lib/python3.5/site-packages
+        $ ln -si /usr/lib/python3.5/dist-packages/gi
 
-    For a Fedora 64bit system::
+    For a Fedora 64bit system (assuming Python 3.5)::
 
-        $ cd $VIRTUAL_ENV/lib/python2.7/site-packages
-        $ ln -si /usr/lib64/python2.7/site-packages/gi/
+        $ cd $VIRTUAL_ENV/lib/python3.5/site-packages
+        $ ln -si /usr/lib64/python3.5/site-packages/gi/
 
 
 >>>>>>> Added details for installing on Fedora
