@@ -30,7 +30,7 @@ Linux
 
 The backend for Linux platforms is named `toga-gtk`_. It supports GTK+ 3.4
 and later. It is installed automatically on Linux machines (machines that
-report ``sys.platform in ('linux', 'linux2')``), or can be manually installed by
+report ``sys.platform == 'linux'``), or can be manually installed by
 invoking::
 
     $ pip install toga[gtk]

@@ -33,7 +33,6 @@ setup(
         # Automatically installed platform backends
         ':sys_platform=="win32"': ['toga-win32'],
         ':sys_platform=="linux"': ['toga-gtk'],
-        ':sys_platform=="linux2"': ['toga-gtk'],
         ':sys_platform=="darwin"': ['toga-cocoa'],
     },
     license='New BSD',

@@ -50,7 +50,7 @@ def set_platform(module_name=None, local_vars=locals()):
                 platform_name = 'android'
             elif sys.platform == 'darwin':
                 platform_name = 'cocoa'
-            elif sys.platform in ('linux', 'linux2'):
+            elif sys.platform == 'linux':
                 platform_name = 'gtk'
             elif sys.platform == 'win32':
                 platform_name = 'win32'
