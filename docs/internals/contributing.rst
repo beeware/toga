@@ -24,7 +24,7 @@ to run::
 Toga uses ``unittest`` (or ``unittest2`` for Python < 2.7) for its own test
 suite as well as additional helper modules for testing. To install all the
 requirements for Toga, you have to run the following commands within your
-virutal envrionment::
+virtual environment::
 
     $ pip install -e .
     $ pip install -r requirements_dev.txt
