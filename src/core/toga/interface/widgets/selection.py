@@ -12,10 +12,16 @@ class Selection(Widget):
     :type items:        List[str]
     """
     def __init__(self, id=None, style=None, items=list()):
+        self._items = items
         super().__init__(id=id, style=style, items=items)
 
     def _configure(self, items):
-        self.items = items
+        pass
+
+    def _create(self):
+        super()._create()
+        for item in self._items:
+            self._add_item(item)
 
     @property
     def items(self):
