@@ -1,6 +1,7 @@
 import importlib
 import os
 import sys
+import types
 
 from .constants import *
 
@@ -24,7 +25,6 @@ __all__ = [
 __version__ = '0.2.4'
 
 platform = None
-
 
 def set_platform(module_name=None, local_vars=locals()):
     "Configures toga to use the specfied platform module"
@@ -50,7 +50,7 @@ def set_platform(module_name=None, local_vars=locals()):
                 platform_name = 'android'
             elif sys.platform == 'darwin':
                 platform_name = 'cocoa'
-            elif sys.platform in ('linux', 'linux2'):
+            elif sys.platform == 'linux':
                 platform_name = 'gtk'
             elif sys.platform == 'win32':
                 platform_name = 'win32'
@@ -65,6 +65,9 @@ def set_platform(module_name=None, local_vars=locals()):
     #         # Exclude __version__ from the list of symbols that is
     #         # ported, because toga itself has a __version__ identifier.
     #         if symbol != '__version__':
+    #             # Remove any modules from the importable module list
+    #             if isinstance(local_vars[symbol], types.ModuleType):
+    #                 del sys.modules['toga.%s' % symbol]
     #             local_vars.pop(symbol)
 
     # Import the new platform module
@@ -75,8 +78,19 @@ def set_platform(module_name=None, local_vars=locals()):
         # Export all the symbols *except* for __version__ from the platform module
         # The platform has it's own version identifier.
         for symbol in local_vars['platform'].__all__:
-            if symbol != '__version__':
-                local_vars[symbol] = getattr(platform, symbol)
+            if symbol == '__version__':
+                if local_vars['platform'].__version__ != __version__:
+                    raise RuntimeError('Toga core is version %s; %s platform backend is version %s.' % (
+                            local_vars['platform'].__version__,
+                            module_name,
+                            __version__
+                        )
+                    )
+            else:
+                local_vars[symbol] = getattr(local_vars['platform'], symbol)
+                # Make sure any modules are added to the importable module list
+                if isinstance(local_vars[symbol], types.ModuleType):
+                    sys.modules['toga.%s' % symbol] = local_vars[symbol]
     except ImportError as e:
         if e.name == module_name:
             local_vars['platform'] = None

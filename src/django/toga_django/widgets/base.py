@@ -1,22 +1,57 @@
-from toga.widget import Widget as WidgetBase
+# from toga.widget import Widget as WidgetBase
 
 
-class Widget(WidgetBase):
-    def __init__(self, *args, **kwargs):
-        self.widget_id = kwargs.pop('widget_id', id(self))
-        super(Widget, self).__init__(*args, **kwargs)
-        self.is_container = False
-        self._in_progress = False
+class WidgetMixin:
+    # def __init__(self, *args, **kwargs):
+    #     self.widget_id = kwargs.pop('widget_id', id(self))
+    #     super(Widget, self).__init__(*args, **kwargs)
+    #     self.is_container = False
+    #     self._in_progress = False
 
     def handler(self, fn, name):
         if hasattr(fn, '__self__'):
-            ref = '(%s,%s-%s)' % (fn.__self__.widget_id, self.widget_id, name)
+            ref = '(%s,%s-%s)' % (fn.__self__.id, self.id, name)
         else:
-            ref = '%s-%s' % (self.widget_id, name)
+            ref = '%s-%s' % (self.id, name)
 
         return ref
 
-    # def _set_app(self, app):
+    def _set_app(self, app):
+        pass
+
+    def _set_window(self, window):
+        pass
+
+    def _set_container(self, container):
+        # if self._constraints and self._impl:
+            # self._container._impl.addSubview_(self._impl)
+            # self._constraints._container = container
+        self.rehint()
+
+    def _add_child(self, child):
+        pass
+        # if self._container:
+            # child._set_container(self._container)
+
+    def _add_constraints(self):
+        pass
+        # self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
+        # self._constraints = Constraints(self)
+
+    def _apply_layout(self):
+        pass
+        # if self._constraints:
+        #     self._constraints.update()
+
+    def rehint(self):
+        pass
+
+    def _set_font(self, font):
+        # self._impl.setFont_(font._impl)
+        pass
+
+    def _set_app(self, app):
+        pass
     #     app.support_module.__dict__[self.IMPL_CLASS.__name__] = self.IMPL_CLASS
 
     # def _update_layout(self, **style):

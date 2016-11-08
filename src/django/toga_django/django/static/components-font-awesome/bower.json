@@ -1,0 +1,26 @@
+{
+  "name": "components-font-awesome",
+  "description": "Font Awesome, the iconic font designed for use with Twitter Bootstrap.",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/components/font-awesome.git"
+  },
+  "main": [
+      "css/font-awesome.css",
+      "scss/font-awesome.scss",
+      "fonts/fontawesome-webfont.eot",
+      "fonts/fontawesome-webfont.woff",
+      "fonts/fontawesome-webfont.woff2",
+      "fonts/fontawesome-webfont.ttf",
+      "fonts/fontawesome-webfont.svg"
+  ],
+  "license": [
+    "MIT",
+    "OFL-1.1"
+  ],
+  "ignore": [
+    "Makefile",
+    "component.json",
+    "composer.json"
+  ]
+}

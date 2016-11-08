@@ -1,42 +1,30 @@
-from .base import Widget
-from ..libs import Container as TogaContainer
+from toga.interface import Box as BoxInterface
+
+from .. import impl
+from .base import WidgetMixin
 
 
-class Container(Widget):
-    def __init__(self, *children, **style):
-        super(Container, self).__init__(**style)
-        self._children = children
+class Box(BoxInterface, WidgetMixin):
+    def __init__(self, id=None, style=None, children=None):
+        super().__init__(id=id, style=style, children=children)
+        self._create()
 
-        self.startup()
-
-    def startup(self):
-        for child in self._children:
-            self.add(child)
-
-    def materialize(self):
-        children = []
-        for child in self._children:
-            children.append(child.materialize())
-
-        return TogaContainer(
-            widget_id=self.widget_id,
-            children=children,
-        )
-
-    def add(self, child):
-        self.children.append(child)
+    def create(self):
+        self._impl = impl.Box(id=self.id)
 
     def _add_child(self, child):
-        child.app = self.app
+        self._impl.add_child(child._impl)
 
     def _set_app(self, app):
-        for child in self.children:
-            child.app = app
-        # app.support_module.__dict__['TogaContainer'] = TogaContainer
+        # for child in self.children:
+            # child.app = app
+        # app.support_module.__dict__['TogaBox'] = TogaBox
+        pass
 
     def _set_window(self, window):
-        for child in self.children:
-            child.window = window
+        # for child in self.children:
+            # child.window = window
+        pass
 
     # def _hint_size(self, width, height, min_width=None, min_height=None):
     #     if width is not None:
