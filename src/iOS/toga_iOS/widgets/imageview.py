@@ -56,7 +56,6 @@ class ImageView(ImageViewInterface, WidgetMixin):
             self._impl.image = image._impl
 
     def _set_frame(self, frame):
-        print("SET IMAGE FRAME", self, frame.origin.x, frame.origin.y, frame.size.width, frame.size.height)
         self._impl.setFrame_(frame)
         self._impl.setNeedsDisplay()
 
