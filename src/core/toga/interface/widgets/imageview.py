@@ -8,6 +8,14 @@ class ImageView(Widget):
     def _configure(self, image):
         self.image = image
 
+    @property
+    def image(self):
+        return self.image
+
+    @image.setter
+    def image(self, image):
+        self.image = image
+
     # @property
     # def alignment(self):
     #     return self._alignment

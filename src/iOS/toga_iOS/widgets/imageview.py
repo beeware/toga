@@ -7,12 +7,11 @@ from .base import WidgetMixin
 class ImageView(ImageViewInterface, WidgetMixin):
     def __init__(self, image=None, style=None):
         super().__init__(style=style)
-
-        self.startup()
+        self._create()
 
         self.image = image
 
-    def startup(self):
+    def create(self):
         self._impl = UIImageView.alloc().init()
         self._impl.interface = self
 
@@ -54,10 +53,6 @@ class ImageView(ImageViewInterface, WidgetMixin):
     def image(self, image):
         if image:
             self._impl.image = image._impl
-
-    def _set_frame(self, frame):
-        self._impl.setFrame_(frame)
-        self._impl.setNeedsDisplay()
 
     def rehint(self):
         fitting_size = self._impl.systemLayoutSizeFittingSize_(CGSize(0, 0))
