@@ -40,7 +40,21 @@ to run::
 To get started, run the following commands within your virtual
 environment (ensure that you're using Python 3.4 or better)::
 
-    $ pip install -e .
-    $ pip install -r requirements_dev.txt
+    $ pip install -e src/core -e .
 
-Now you are ready to start hacking! Have fun!
+The somewhat odd command is required because the main Toga package is a
+sort of "metapackage" which pulls other parts in; if you just do::
+
+    $ pip install -e .  # Don't do this on its own
+
+it will install the dependencies -- like ``toga_core`` -- from released versions
+into your site packages, instead of using the sources.
+
+Now you are ready to start hacking on the core of toga!
+
+Of course, if you want to work on any specific platform, you need to do the
+same for it::
+
+    $ pip install -e src/core -e src/gtk -e .
+
+Have fun!
