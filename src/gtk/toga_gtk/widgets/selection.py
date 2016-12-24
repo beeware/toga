@@ -9,16 +9,12 @@ class Selection(SelectionInterface, WidgetMixin):
     def __init__(self, id=None, style=None, items=list()):
         super().__init__(id=id, style=style, items=items)
         self._model = Gtk.ListStore(str)
-        self._items = items
         self._text = []
         self._create()
 
     def create(self):
         self._impl = Gtk.ComboBoxText.new()
         self._impl._interface = self
-
-        for item in self._items:
-            self._add_item(item)
 
         self.rehint()
 

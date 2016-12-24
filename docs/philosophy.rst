@@ -61,8 +61,8 @@ toolkit. This means the API is able to exploit language level features like
 generators and context managers in a way that a wrapper around a C library
 wouldn't be able to (at least, not easily).
 
-This also means supporting Python 3. Toga supports both Python 2 and Python 3,
-in a unified codebase by following established conventions.
+This also means supporting Python 3, and 3 only because that's where the
+future of Python is at.
 
 `pip install` and nothing more
 ------------------------------

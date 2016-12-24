@@ -30,7 +30,7 @@ Linux
 
 The backend for Linux platforms is named `toga-gtk`_. It supports GTK+ 3.4
 and later. It is installed automatically on Linux machines (machines that
-report ``sys.platform in ('linux', 'linux2')``), or can be manually installed by
+report ``sys.platform == 'linux'``), or can be manually installed by
 invoking::
 
     $ pip install toga[gtk]
@@ -79,14 +79,17 @@ Planned platform support
 
 There are plans to provide support for the following platforms:
 
+ * Web (using Batavia_ to run Python on the browser)
  * Android
  * WinRT (Native Windows 8 and Windows mobile)
  * Qt (for KDE based desktops)
 
 If you are interested in these platforms and would like to contribute, please
-`get in touch using the beeware-developers mailing list`_.
+get in touch on Twitter_ or Gitter_.
 
-.. _get in touch using the beeware-developers mailing list: https://groups.google.com/forum/#!forum/beeware-developers
+.. _Batavia: https://github.com/pybee/batavia
+.. _Twitter: https://twitter.com/pybeeware
+.. _Gitter: https://gitter.im/pybee/general
 
 Unofficial platform support
 ===========================

@@ -21,16 +21,40 @@ to run::
     $ cd toga
     $ mkvirtualenv toga
 
-Toga uses ``unittest`` (or ``unittest2`` for Python < 2.7) for its own test
-suite as well as additional helper modules for testing. To install all the
-requirements for Toga, you have to run the following commands within your
-virutal envrionment::
+.. note::
 
-    $ pip install -e .
-    $ pip install -r requirements_dev.txt
+   Toga doesn't have a test suite yet. The high level plan is two add
+   two types of tests to the project:
 
-In case you are running a python version ``< 2.7`` please use the
-``requirements_dev.py26.txt`` instead because ``unittest2`` is not part
-of the standard library for these version.
+   1. Tests verifying that the core of Toga (contained in ``src/core/``
+      -- the abstract widgets -- actually do what they are supposed to
+      do.
 
-Now you are ready to start hacking! Have fun!
+   2. Tests for each backend.
+
+..
+   Toga uses ``unittest`` for its own test suite as well as additional
+   helper modules for testing. To install all the requirements for Toga,
+   you have to run the following commands within your virtual environment::
+
+To get started, run the following commands within your virtual
+environment (ensure that you're using Python 3.4 or better)::
+
+    $ pip install -e src/core -e .
+
+The somewhat odd command is required because the main Toga package is a
+sort of "metapackage" which pulls other parts in; if you just do::
+
+    $ pip install -e .  # Don't do this on its own
+
+it will install the dependencies -- like ``toga_core`` -- from released versions
+into your site packages, instead of using the sources.
+
+Now you are ready to start hacking on the core of toga!
+
+Of course, if you want to work on any specific platform, you need to do the
+same for it::
+
+    $ pip install -e src/core -e src/gtk -e .
+
+Have fun!
