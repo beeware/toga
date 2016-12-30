@@ -1,6 +1,6 @@
 {
   "name": "@pybee/toga",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A cross platform Python-native widget toolkit.",
   "author": "Russell Keith-Magee",
   "main": "toga.js",
@@ -45,7 +45,7 @@
   },
   "dev": "webpack-dev-server",
   "dependencies": {
-    "@pybee/batavia": "3.4.0-dev7",
+    "@pybee/batavia": "^3.4.0-dev8",
     "font-awesome": "4.7.0",
     "bootstrap": "4.0.0-alpha.5",
     "webpack": "1.13.3"
