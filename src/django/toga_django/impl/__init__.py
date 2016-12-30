@@ -1,4 +1,10 @@
+try:
+    import dom
+except ImportError:
+    pass
+
 # from .box import Box
+
 
 class Box:
     def __init__(self, id, ports=None):
@@ -13,21 +19,22 @@ class Box:
         child.parent = self
 
     def __html__(self):
-        lines = ['<div id="%s" data-toga-class="toga.Box" data-toga-parent="%s" data-toga-ports="%s" class="container">' % (
-            self.id,
-            self.parent.id,
-            ",".join(
-                "%s=%s" % (name, id)
-                for name, id in self.ports.items()
-            ),
-        )]
+        lines = [
+            '<div id="%s" data-toga-class="toga.Box" data-toga-parent="%s" data-toga-ports="%s" class="container">' % (
+                self.id,
+                self.parent.id,
+                ",".join(
+                    "%s=%s" % (name, id)
+                    for name, id in self.ports.items()
+                    ),
+                )
+        ]
         for child in self.children:
             lines.append(child.__html__())
         lines.append('</div>')
         return '\n'.join(lines)
 
 # from .button import Button
-
 
 
 class Button:
@@ -57,7 +64,6 @@ class Button:
 # from .window import Window
 
 
-
 class Window:
     def __init__(self, id, title, content=None, ports=None):
         self.id = id
@@ -85,7 +91,6 @@ class Window:
                 self.title
             ) + self.content.__html__()
 
-
     def set_title(self, title):
         self.title = title
         dom.window.title = title
@@ -105,12 +110,12 @@ class Window:
 #     return 'NEW%s' % _counter
 
 
-
 # def bootstrap_App(element):
 #     app = App(element.dataset.togaName, element.dataset.togaAppId)
 
 #     element.toga = app
 #     app.impl = element
+
 
 def bootstrap_Window(element):
     title = dom.document.title
@@ -163,4 +168,3 @@ def bootstrap_Button(element):
 
     element.toga = widget
     widget.impl = element
-

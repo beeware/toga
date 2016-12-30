@@ -1,34 +1,19 @@
-{% load staticfiles %}<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <!-- Required meta tags always come first -->
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <meta http-equiv="x-ua-compatible" content="ie=edge">
-
-        <title>{{ window.title }}</title>
-
-        <link rel="stylesheet" href="{% static 'bootstrap/dist/css/bootstrap.min.css' %}">
-        <link rel="stylesheet" href="{% static 'components-font-awesome/css/font-awesome.min.css' %}">
-        <style>
-            body {
-                padding-top: 5rem;
-            }
-        </style>
-
+{% extends 'toga/base.html' %}
+{% block title %}{{ window.title }}{% endblock %}
+{% block bytecode %}
         <script id="batavia-toga" type="application/python-bytecode">
 {{ toga }}
         </script>
         <script id="batavia-bootstrap" type="application/python-bytecode">
 {{ bootstrap }}
         </script>
-{% for name, payload in callbacks.items %}
+    {% for name, payload in callbacks.items %}
         <script id="batavia-{{ name }}" type="application/python-bytecode">
 {{ payload }}
         </script>
-{% endfor %}
-    </head>
-    {{ app|html }}
+    {% endfor %}
+{% endblock %}
+{% block content %}
         {{ window.html }}
 
         <hr>
@@ -37,5 +22,4 @@
         <script src="{% static 'jquery/dist/jquery.js' %}"></script>
         <script src="{% static 'toga/batavia.js' %}"></script>
         <script src="{% static 'toga/toga.js' %}"></script>
-    </body>
-</head>
+{% endblock %}

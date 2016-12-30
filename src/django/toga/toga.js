@@ -1,5 +1,11 @@
+// require('bootstrap');
+// require('font-awesome');
+// require('bootstrap/scss/bootstrap.scss');
 
-var toga = {
+
+var batavia = require('@pybee/batavia');
+
+window.toga = {
     handler: function(ref, widget) {
         if (ref === "None") {
             return function() {
@@ -22,18 +28,18 @@ var toga = {
                             '__package__': null,
                         });
                         var locals = new batavia.core.Dict({
-                            '__builtins__': batavia.builtins,
-                            '__name__': '__main__',
+                            // '__builtins__': batavia.builtins,
+                            '__name__': '__main__??',
                             '__doc__': null,
                             '__package__': null,
                             'self': context
                         });
-                        toga.vm.run_method(name, [context, widget], null, locals, globals);
+                        window.toga.vm.run_method(name, [context, widget], null, locals, globals);
                     };
                 }(widget);
             } else {
                 return function(evt) {
-                    toga.vm.run_method(ref, [widget], null);
+                    window.toga.vm.run_method(ref, [widget], null);
                 };
             }
         }
@@ -53,21 +59,20 @@ var toga = {
             'type': 'delete'
         });
     }
-
 };
 
-batavia.builtins['toga'] = toga;
 
-$(window).load(function() {
+window.onload = function() {
     console.log('Create VM...');
-    toga.vm = new batavia.VirtualMachine();
+    window.toga.vm = new batavia.VirtualMachine({});
+
     console.log('Instantiate Toga objects...');
     var widgets = document.querySelectorAll('[data-toga-class]');
     var w;
     // Create widgets
     for (w = 0; w < widgets.length; w++) {
         console.log("Create " + widgets[w].dataset.togaClass + ':' + widgets[w].id);
-        toga.vm.run_method('bootstrap', [widgets[w]]);
+        window.toga.vm.run_method('bootstrap', [widgets[w]]);
     }
     // Add child relationships
     for (w = 0; w < widgets.length; w++) {
@@ -77,7 +82,7 @@ $(window).load(function() {
             for (var c = 0; c < children.length; c++) {
                 console.log("    Add child " + children[c].dataset.togaClass + ':' + children[c].id);
                 widgets[w].toga.add_child.__call__.call(
-                    toga.vm,
+                    window.toga.vm,
                     new batavia.types.List([widgets[w].toga, children[c].toga]),
                     new batavia.types.JSDict(),
                     null
@@ -100,4 +105,4 @@ $(window).load(function() {
     //     }
     // }
     console.log('Toga is ready.');
-});
+};
