@@ -6,3 +6,7 @@ README.rst
 MANIFEST.in
 setup.cfg
 setup.py
+toga.js
+toga.min.js
+toga.js.map
+toga.min.js.map
