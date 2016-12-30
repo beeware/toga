@@ -1,0 +1,7 @@
+node_modules/
+toga_django/
+*.egg_info
+README.rst
+setup.cfg
+setup.py
+__pycache__/
