@@ -1,7 +1,8 @@
+__pycache__/
 node_modules/
 toga_django/
-*.egg_info
+*.egg-info
 README.rst
+MANIFEST.in
 setup.cfg
 setup.py
-__pycache__/
