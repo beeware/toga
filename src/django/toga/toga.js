@@ -1,6 +1,5 @@
-// require('bootstrap');
-// require('font-awesome');
-// require('bootstrap/scss/bootstrap.scss');
+require('bootstrap/scss/bootstrap.scss');
+require('font-awesome/scss/font-awesome.scss');
 
 
 var batavia = require('@pybee/batavia');
