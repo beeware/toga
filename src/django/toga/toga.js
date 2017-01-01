@@ -57,13 +57,59 @@ window.toga = {
             'url': url,
             'type': 'delete'
         });
-    }
+    },
+
+    // Define a stdout and stderr function that will output to the page.
+    PyConsole: function() {
+        function PyConsole(element) {
+            this.element = element;
+        }
+
+        PyConsole.prototype.write = function(args, kwargs) {
+            var text = document.createTextNode(args[0]);
+            this.element.appendChild(text);
+        }
+
+        PyConsole.prototype.flush = function(args, kwargs) {}
+
+        return PyConsole;
+    }(),
+
+    PyErrConsole: function() {
+        function PyErrConsole(element) {
+            this.element = element
+        }
+
+        PyErrConsole.prototype.write = function(args, kwargs) {
+            var err = document.createElement('span');
+            err.className = "error";
+            var text = document.createTextNode(args[0])
+
+            err.appendChild(text)
+            this.element.appendChild(err);
+        }
+
+        PyErrConsole.prototype.flush = function(args, kwargs) {}
+
+        return PyErrConsole;
+    }()
 };
 
 
 window.onload = function() {
     console.log('Create VM...');
-    window.toga.vm = new batavia.VirtualMachine({});
+    // If there is a console element on the page, use it
+    var toga_console = document.getElementById('toga-console');
+    var config;
+    if (toga_console !== null) {
+        config = {
+            'stdout': new window.toga.PyConsole(toga_console),
+            'stderr': new window.toga.PyErrConsole(toga_console),
+        }
+    } else {
+        config = {};
+    }
+    window.toga.vm = new batavia.VirtualMachine(config);
 
     console.log('Instantiate Toga objects...');
     var widgets = document.querySelectorAll('[data-toga-class]');
