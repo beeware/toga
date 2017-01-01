@@ -1,105 +1,15 @@
-try:
-    import dom
-except ImportError:
-    pass
+# try:
+#     import dom
+# except ImportError:
+#     # The dom module doesn't actually exist; it's a proxy for the browser DOM.
+#     # However, if we don't try to import it.
+#     pass
 
-# from .box import Box
-
-
-class Box:
-    def __init__(self, id, ports=None):
-        self.id = id
-
-        self.children = []
-
-        self.ports = ports if ports else {}
-
-    def add_child(self, child):
-        self.children.append(child)
-        child.parent = self
-
-    def __html__(self):
-        lines = [
-            '<div id="%s" data-toga-class="toga.Box" data-toga-parent="%s" data-toga-ports="%s" class="container">' % (
-                self.id,
-                self.parent.id,
-                ",".join(
-                    "%s=%s" % (name, id)
-                    for name, id in self.ports.items()
-                    ),
-                )
-        ]
-        for child in self.children:
-            lines.append(child.__html__())
-        lines.append('</div>')
-        return '\n'.join(lines)
-
-# from .button import Button
-
-
-class Button:
-    def __init__(self, id, label, ports=None, on_press=None):
-        self.id = id
-
-        self.label = label
-
-        self.ports = ports if ports else {}
-
-        self.on_press = on_press
-
-    def __html__(self):
-        return '<button id="%s" data-toga-class="toga.Button" data-toga-parent="%s" data-toga-ports="%s" data-toga-on-press="%s">%s</button>' % (
-            self.id,
-            self.parent.id,
-            ",".join(
-                "%s=%s" % (name, id)
-                for name, id in self.ports.items()
-            ),
-            self.on_press,
-            self.label
-        )
-
+from .box import Box
+from .button import Button
 # from .list import List, SimpleListElement
 # from .textinput import TextInput
-# from .window import Window
-
-
-class Window:
-    def __init__(self, id, title, content=None, ports=None):
-        self.id = id
-
-        self.title = title
-        self.set_content(content)
-
-        self.ports = ports if ports else {}
-
-    def __html__(self):
-        return """
-            <nav id="%s" data-toga-class="toga.Window" data-toga-ports="%s" class="navbar navbar-fixed-top navbar-dark bg-inverse">
-                <a class="navbar-brand" href="#">%s</a>
-                <ul class="nav navbar-nav">
-                    <!--li class="nav-item active">
-                      <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-                    </li-->
-                </ul>
-            </nav>""" % (
-                self.id,
-                ",".join(
-                    "%s=%s" % (name, id)
-                    for name, id in self.ports.items()
-                ),
-                self.title
-            ) + self.content.__html__()
-
-    def set_title(self, title):
-        self.title = title
-        dom.window.title = title
-
-    def set_content(self, content):
-        self.content = content
-        if content:
-            self.content.parent = self
-
+from .window import Window
 
 # _counter = 1000
 

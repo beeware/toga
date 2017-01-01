@@ -27,7 +27,6 @@ class Window:
                 self.title
             ) + self.content.__html__()
 
-
     def set_title(self, title):
         self.title = title
         dom.window.title = title

@@ -92,13 +92,31 @@ class App(AppInterface):
         with open(os.path.join(os.path.dirname(sourcefile), tempname), 'rb') as compiled:
             toga = base64.encodebytes(compiled.read())
 
-        return render(request, 'toga/app.html', {
+        widgets = {}
+        for  widget in ["box", "window", "button"]:
+            sourcefile = os.path.join(os.path.dirname(__file__), 'impl', "%s.py" % widget)
+
+            fd, tempname = tempfile.mkstemp()
+            py_compile.compile(sourcefile, cfile=tempname, doraise=True)
+            with open(os.path.join(os.path.dirname(sourcefile), tempname), 'rb') as compiled:
+                bytecode = base64.encodebytes(compiled.read())
+                widgets['toga.%s' % widget] = {
+                    'filename': sourcefile,
+                    'bytecode': bytecode,
+                }
+
+        context = {
             'toga': toga,
+            'widgets': widgets,
             'bootstrap': base64.encodebytes(b'\xee\x0c\r\n00000000' + marshal.dumps(bootstrap.__code__)).strip(),
             'app': self,
             'callbacks': {
                 # 'sample': base64.encodebytes(b'\x08\x1c\xe8VU\x00\x00\x00' + marshal.dumps(sample.__code__)).strip()
-                '%s-%s' % (widget, message): base64.encodebytes(b'\xee\x0c\r\n00000000' + marshal.dumps(callback.__code__)).strip()
+                '%s-%s' % (widget, message): {
+                    'filename': '<string>',
+                    'bytecode': base64.encodebytes(b'\xee\x0c\r\n00000000' + marshal.dumps(callback.__code__)).strip()
+                }
                 for (widget, message), callback in self.main_window.callbacks.items()
             }
-        })
+        }
+        return render(request, 'toga/app.html', context)
