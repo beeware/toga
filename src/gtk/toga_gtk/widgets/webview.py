@@ -8,7 +8,7 @@ from gi.repository import Gtk
 WebKit2 = None
 for version in ['4.0', '3.0']:
     try:
-        gi.require_version('WebKit2', '4.0')
+        gi.require_version('WebKit2', version)
         from gi.repository import WebKit2
         break
     except (ImportError, ValueError):
