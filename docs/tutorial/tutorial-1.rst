@@ -31,8 +31,8 @@ Here's the source code::
 
         button = toga.Button('Calculate', on_press=calculate)
 
-        f_box.add(f_label)
         f_box.add(f_input)
+        f_box.add(f_label)
 
         c_box.add(join_label)
         c_box.add(c_input)
