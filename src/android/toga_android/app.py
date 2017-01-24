@@ -1,5 +1,7 @@
 from android import PythonActivity
 
+from toga.interface.app import App as AppInterface
+
 from .window import Window
 
 
@@ -37,14 +39,11 @@ class TogaApp:
 class App(AppInterface):
     _MAIN_WINDOW_CLASS = MainWindow
 
-    def __init__(self, name, app_id, icon=None, startup=None, document_types=None):
-        # Set the icon for the app
-        # Icon.app_icon = Icon.load(icon, default=TIBERIUS_ICON)
-
+    def __init__(self, name, app_id, startup=None, document_types=None):
         super().__init__(
             name=name,
             app_id=app_id,
-            icon=Icon.app_icon,
+            icon=None,
             startup=startup,
             document_types=document_types
         )
@@ -56,6 +55,9 @@ class App(AppInterface):
         self._impl = PythonActivity.setApp(self._listener)
         # Call user code to populate the main window
         self.startup()
+
+    def open_document(self, fileURL):
+        print("Can't open document %s (yet)" % fileURL)
 
     def main_loop(self):
         # Main loop is a no-op on Android; the app loop is integrated with the

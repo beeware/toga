@@ -4,7 +4,7 @@ from .base import WidgetMixin
 
 
 class Box(BoxInterface, WidgetMixin):
-    def __init__(self, id=id, style=None, children=None):
+    def __init__(self, id=None, style=None, children=None):
         super().__init__(id=id, style=style, children=children)
         self._create()
 

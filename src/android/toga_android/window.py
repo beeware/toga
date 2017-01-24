@@ -1,11 +1,9 @@
 from toga.interface.window import Window as WindowInterface
-
 from .container import Container
 from . import dialogs
 
 
 class Window(WindowInterface):
-    _IMPL_CLASS = UIWindow
     _CONTAINER_CLASS = Container
     _DIALOG_MODULE = dialogs
 
@@ -15,16 +13,10 @@ class Window(WindowInterface):
 
     def create(self):
         pass
-        # self._screen = UIScreen.mainScreen()
-        # self._impl = self._IMPL_CLASS.alloc().initWithFrame_(self._screen.bounds)
-        # self._impl._interface = self
 
-        # self._controller = UIViewController.alloc().init()
-        # self._impl.rootViewController = self._controller
 
     def _set_content(self, widget):
-        self._controller.view = self._container._impl
-
+        self._impl.setContentView_(self._container._impl)
 
     def show(self):
         # Do the first layout render.
@@ -32,3 +24,7 @@ class Window(WindowInterface):
             # width=self._screen.bounds.size.width,
             # height=self._screen.bounds.size.height
         )
+        pass
+
+    def _set_title(self, title):
+        print("WINDOW TITLE", title)
