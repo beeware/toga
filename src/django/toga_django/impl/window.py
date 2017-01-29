@@ -11,7 +11,7 @@ class Window:
 
     def __html__(self):
         return """
-            <nav id="%s" data-toga-class="toga.Window" data-toga-ports="%s" class="navbar navbar-fixed-top navbar-dark bg-inverse">
+            <nav id="toga:%s" data-toga-class="toga.Window" data-toga-ports="%s" class="navbar navbar-fixed-top navbar-dark bg-inverse">
                 <a class="navbar-brand" href="#">%s</a>
                 <ul class="nav navbar-nav">
                     <!--li class="nav-item active">

@@ -1,4 +1,5 @@
-{% load staticfiles %}<!DOCTYPE html>
+{% load render_bundle from webpack_loader %}
+<!DOCTYPE html>
 <html lang="en">
     <head>
         <!-- Required meta tags always come first -->
@@ -6,10 +7,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <meta http-equiv="x-ua-compatible" content="ie=edge">
 
+        {% render_bundle 'main' %}
+
         <title>{% block title %}{{ app.main_window.title }}{% endblock %}</title>
 
-        <link rel="stylesheet" href="{% static 'bootstrap/dist/css/bootstrap.min.css' %}">
-        <link rel="stylesheet" href="{% static 'components-font-awesome/css/font-awesome.min.css' %}">
         <style>
             body {
                 padding-top: 5rem;
@@ -18,7 +19,12 @@
 {% block bytecode %}
 {% endblock %}
     </head>
-    <body>
+    <body id="toga:{{ app.id }}"
+        data-toga-class="toga.App"
+        data-toga-name="{{ app.name }}"
+        data-toga-app-id="{{ app.app_id }}"
+        data-toga-ports="{{ app.ports }}"
+        class="app">
 {% block content %}
 {% endblock %}
     </body>

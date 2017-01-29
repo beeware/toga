@@ -10,7 +10,7 @@ class SimpleListElement:
         self.ports = ports if ports else {}
 
     def __html__(self):
-        return '<tr id="%s" data-toga-class="toga.SimpleListElement" data-toga-parent="%s" data-toga-ports="%s" data-toga-delete-url="%s" data-toga-on-press="%s"><td>%s</td><td style="width:1em;">%s</td></tr>' % (
+        return '<tr id="toga:%s" data-toga-class="toga.SimpleListElement" data-toga-parent="%s" data-toga-ports="%s" data-toga-delete-url="%s" data-toga-on-press="%s"><td>%s</td><td style="width:1em;">%s</td></tr>' % (
             self.id,
             self.parent.id,
             # ",".join(

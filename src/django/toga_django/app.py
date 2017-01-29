@@ -24,16 +24,16 @@ class MainWindow(Window):
 class App(AppInterface):
     _MAIN_WINDOW_CLASS = MainWindow
 
-    def __init__(self, name, app_id, icon=None, startup=None):
+    def __init__(self, name, app_id, icon=None, id=None, startup=None):
         # Set the icon for the app
         # Icon.app_icon = Icon.load(icon, default=TIBERIUS_ICON)
-        self.app_id = app_id
         self.windows = []
 
         super().__init__(
             name=name,
             app_id=app_id,
             # icon=Icon.app_icon,
+            id=id,
             startup=startup,
         )
         self._startup()
@@ -70,11 +70,11 @@ class App(AppInterface):
 
     @property
     def ports(self):
-        return {
-            name: widget.id
+        return ",".join(
+            "%s=%s" % (name, widget.id)
             for name, widget in self.__dict__.items()
             if isinstance(widget, Widget)
-        }
+        )
 
     def home(self, request):
         # app = self.app.materialize()
@@ -93,7 +93,7 @@ class App(AppInterface):
             toga = base64.encodebytes(compiled.read())
 
         widgets = {}
-        for  widget in ["box", "window", "button"]:
+        for widget in ["box", "window", "button", "textinput"]:
             sourcefile = os.path.join(os.path.dirname(__file__), 'impl', "%s.py" % widget)
 
             fd, tempname = tempfile.mkstemp()

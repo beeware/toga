@@ -16,17 +16,17 @@ window.toga = {
 
             if (ref[0] === "(") {
                 var parts = ref.slice(1,-1).split(',');
-                context = document.getElementById(parts[0]).toga;
+                context = document.getElementById('toga:' + parts[0]).toga;
                 name = parts[1];
                 return function(widget) {
                     return function(evt) {
-                        var globals = new batavia.core.Dict({
+                        var globals = new batavia.types.JSDict({
                             '__builtins__': batavia.builtins,
                             '__name__': '__main__',
                             '__doc__': null,
                             '__package__': null,
                         });
-                        var locals = new batavia.core.Dict({
+                        var locals = new batavia.types.JSDict({
                             // '__builtins__': batavia.builtins,
                             '__name__': '__main__??',
                             '__doc__': null,
@@ -116,16 +116,16 @@ window.onload = function() {
     var w;
     // Create widgets
     for (w = 0; w < widgets.length; w++) {
-        console.log("Create " + widgets[w].dataset.togaClass + ':' + widgets[w].id);
+        console.log("Create " + widgets[w].dataset.togaClass + ':' + widgets[w].id.slice(5));
         window.toga.vm.run_method('bootstrap', [widgets[w]]);
     }
     // Add child relationships
     for (w = 0; w < widgets.length; w++) {
         if (widgets[w].toga.children) {
-            var children = document.querySelectorAll("[data-toga-parent='" + widgets[w].id + "']");
-            console.log("Add children for " + widgets[w].dataset.togaClass + ':' + widgets[w].id);
+            var children = document.querySelectorAll("[data-toga-parent='" + widgets[w].id.slice(5) + "']");
+            console.log("Add children for " + widgets[w].dataset.togaClass + ':' + widgets[w].id.slice(5));
             for (var c = 0; c < children.length; c++) {
-                console.log("    Add child " + children[c].dataset.togaClass + ':' + children[c].id);
+                console.log("    Add child " + children[c].dataset.togaClass + ':' + children[c].id.slice(5));
                 widgets[w].toga.add_child.__call__.call(
                     window.toga.vm,
                     new batavia.types.List([widgets[w].toga, children[c].toga]),
@@ -133,21 +133,19 @@ window.onload = function() {
                     null
                 );
             }
-        // } else {
-        //     console.log("Non-child widget - " + widgets[w].dataset.togaClass + ':' + widgets[w].id);
+        } else {
+            console.log("Widget " + widgets[w].dataset.togaClass + ':' + widgets[w].id.slice(5) + ' has no children');
+        }
+
+        // Hook up ports
+        console.log("Set ports for " + widgets[w].dataset.togaClass + ":" + widgets[w].id.slice(5));
+        var ports = widgets[w].dataset.togaPorts.split(',');
+        for (var port = 0; port < ports.length; port++) {
+            var parts = ports[port].split('=');
+            if (parts.length == 2 && parts[0] !== 'parent') {
+                widgets[w].toga[parts[0]] = document.getElementById('toga:' + parts[1]).toga;
+            }
         }
     }
-    // Hook up ports
-    // for (w = 0; w < widgets.length; w++) {
-    //     console.log("Set ports for " + widgets[w].dataset.togaClass + ":" + widgets[w].toga.id);
-    //     var ports = widgets[w].dataset.togaPorts.split(',');
-    //     for (var port = 0; port < ports.length; port++) {
-    //         var parts = ports[port].split('=');
-    //         if (parts.length == 2 && parts[0] !== 'parent') {
-    //             widgets[w].toga.ports[parts[0]] = parts[1];
-    //             widgets[w].toga[parts[0]] = document.getElementById(parts[1]).toga;
-    //         }
-    //     }
-    // }
     console.log('Toga is ready.');
 };

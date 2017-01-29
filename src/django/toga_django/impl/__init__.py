@@ -8,7 +8,7 @@
 from .box import Box
 from .button import Button
 # from .list import List, SimpleListElement
-# from .textinput import TextInput
+from .textinput import TextInput
 from .window import Window
 
 # _counter = 1000
@@ -20,17 +20,25 @@ from .window import Window
 #     return 'NEW%s' % _counter
 
 
-# def bootstrap_App(element):
-#     app = App(element.dataset.togaName, element.dataset.togaAppId)
 
-#     element.toga = app
-#     app.impl = element
+class App:
+    def __init__(self, name, app_id, icon=None, id=None):
+        self.app_id = app_id
+        self.name = name
+        self.id = id
+
+
+def bootstrap_App(element):
+    app = App(element.dataset.togaName, element.dataset.togaAppId, element.id[5:])
+
+    element.toga = app
+    app.impl = element
 
 
 def bootstrap_Window(element):
     title = dom.document.title
-    content = dom.document.querySelector('[data-toga-parent="' + element.id + '"]')
-    window = Window(element.id, title, content=content)
+    content = dom.document.querySelector('[data-toga-parent="' + element.id[5:] + '"]')
+    window = Window(element.id[5:], title, content=content)
     element.toga = window
     window.impl = element
 
@@ -42,19 +50,19 @@ def bootstrap_Box(element):
     widget.impl = element
 
 
-# def bootstrap_TextInput(element):
-#     initial = element.getAttribute('value')
-#     placeholder = element.getAttribute('placeholder')
-#     readonly = bool(element.getAttribute('disabled'))
+def bootstrap_TextInput(element):
+    initial = element.getAttribute('value')
+    placeholder = element.getAttribute('placeholder')
+    readonly = element.getAttribute('disabled') is not None
 
-#     widget = TextInput(element.id, initial, placeholder, readonly)
+    widget = TextInput(element.id[5:], initial, placeholder, readonly)
 
-#     element.toga = widget
-#     widget.impl = element
+    element.toga = widget
+    widget.impl = element
 
 
 # def bootstrap_SimpleListElement(element):
-#     widget = SimpleListElement(element.id, element.innerHTML, element.dataset.togaDeleteUrl)
+#     widget = SimpleListElement(element.id[5:], element.innerHTML, element.dataset.togaDeleteUrl)
 
 #     fn = dom.window.toga.handler(element.dataset.togaOnPress, widget)
 #     element.addEventListener('click', fn)
@@ -66,13 +74,13 @@ def bootstrap_Box(element):
 # def bootstrap_List(element):
 #     children = element.querySelectorAll('[data-toga-parent="' + element.id + '"]')
 
-#     widget = List(element.id, children, element.dataset.togaCreateUrl, element.dataset.togaOnItemPress)
+#     widget = List(element.id[5:], children, element.dataset.togaCreateUrl, element.dataset.togaOnItemPress)
 
 #     element.toga = widget
 #     widget.impl = element
 
 def bootstrap_Button(element):
-    widget = Button(element.id, element.innerHTML)
+    widget = Button(element.id[5:], element.innerHTML)
     fn = dom.window.toga.handler(element.dataset.togaOnPress, widget)
     element.addEventListener('click', fn)
 

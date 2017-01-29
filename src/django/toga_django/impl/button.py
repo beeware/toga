@@ -11,7 +11,7 @@ class Button:
         self.on_press = on_press
 
     def __html__(self):
-        return '<button id="%s" data-toga-class="toga.Button" data-toga-parent="%s" data-toga-ports="%s" data-toga-on-press="%s">%s</button>' % (
+        return '<button id="toga:%s" data-toga-class="toga.Button" data-toga-parent="%s" data-toga-ports="%s" data-toga-on-press="%s">%s</button>' % (
             self.id,
             self.parent.id,
             ",".join(

@@ -1,33 +1,37 @@
-from .base import Widget
-from ..libs import TextInput as TogaTextInput
+from toga.interface import TextInput as TextInputInterface
+
+from .. import impl
+from .base import WidgetMixin
+# from ..libs import TextInput as TogaTextInput
 
 
-class TextInput(Widget):
-    def __init__(self, initial='', placeholder=None, readonly=False, **style):
-        default_style = {
-            'margin': 7
-        }
-        default_style.update(style)
-        super(TextInput, self).__init__(**default_style)
+class TextInput(TextInputInterface, WidgetMixin):
+    def __init__(self, id=None, initial='', placeholder=None, readonly=False, style=None):
+        super().__init__(id=id, style=style, initial=initial, placeholder=placeholder, readonly=readonly)
+        self._create()
 
-        self.startup()
-
-        self.readonly = readonly
-        self.placeholder = placeholder
-        self.initial = initial
-
-    def startup(self):
-        pass
-        # Height of a text input is known and fixed.
-        # if self.height is None:
-        #     self.height = self._impl.fittingSize().height
-        # if self.min_width is None:
-        #     self.min_width = 100
-
-    def materialize(self):
-        return TogaTextInput(
-            widget_id=self.widget_id,
-            initial=self.initial,
-            placeholder=self.placeholder,
-            readonly=self.readonly,
+    def create(self):
+        self._impl = impl.TextInput(
+            id=self.id,
+            initial=self._config['initial'],
+            placeholder=self._config['placeholder'],
+            readonly=self._config['readonly'],
+            # on_press=self.handler(self._config['on_press'], 'on_press') if self._config['on_press'] else None
         )
+
+    # def _set_window(self, window):
+    #     super()._set_window(window)
+    #     if self.on_press:
+    #         self.window.callbacks[(self.id, 'on_press')] = self.on_press
+
+    def _set_placeholder(self, value):
+        pass
+
+    def _set_readonly(self, value):
+        pass
+
+    def _get_value(self):
+        return self._impl.value
+
+    def _set_value(self, value):
+        pass

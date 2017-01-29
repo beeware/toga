@@ -12,7 +12,7 @@ For more details, see the `Toga project on Github`_.
 Prerequisites
 ~~~~~~~~~~~~~
 
-This backend requires Django 1.9 as a minimum requirement.
+This backend requires Django 1.8 as a minimum requirement.
 
 Community
 ---------

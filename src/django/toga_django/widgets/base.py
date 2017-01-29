@@ -1,13 +1,7 @@
-# from toga.widget import Widget as WidgetBase
+from toga.interface.widgets.base import Widget
 
 
 class WidgetMixin:
-    # def __init__(self, *args, **kwargs):
-    #     self.widget_id = kwargs.pop('widget_id', id(self))
-    #     super(Widget, self).__init__(*args, **kwargs)
-    #     self.is_container = False
-    #     self._in_progress = False
-
     def handler(self, fn, name):
         if hasattr(fn, '__self__'):
             ref = '(%s,%s-%s)' % (fn.__self__.id, self.id, name)
@@ -15,6 +9,14 @@ class WidgetMixin:
             ref = '%s-%s' % (self.id, name)
 
         return ref
+
+    @property
+    def ports(self):
+        return ",".join(
+            "%s=%s" % (name, widget.id)
+            for name, widget in self.__dict__.items()
+            if isinstance(widget, Widget)
+        )
 
     def _set_app(self, app):
         pass

@@ -1,3 +1,6 @@
+identifier = id
+
+
 class App(object):
     '''The App is the top level of any GUI program. It is the manager of all
     the other bits of the GUI app: the main window and events that window
@@ -20,14 +23,15 @@ class App(object):
     _MAIN_WINDOW_CLASS = None
     app = None
 
-    def __init__(self, name, app_id, icon=None, startup=None, document_types=None):
+    def __init__(self, name, app_id, icon=None, id=None, startup=None, document_types=None):
         App.app = self
 
         if self._MAIN_WINDOW_CLASS is None:
             raise NotImplementedError('App class must define _MAIN_WINDOW_CLASS')
 
         self.name = name
-        self.app_id = app_id
+        self._app_id = app_id
+        self._id = id if id else identifier(self)
 
         self.icon = icon
 
@@ -35,6 +39,22 @@ class App(object):
         self._documents = []
 
         self._startup_method = startup
+
+    @property
+    def app_id(self):
+        '''The identifier for the app.
+
+        This is the reversed domain name, often used for targetting resources, etc.
+        '''
+        return self._id
+
+    @property
+    def id(self):
+        '''The DOM identifier for the app.
+
+        This id can be used to target CSS directives
+        '''
+        return self._id
 
     @property
     def documents(self):

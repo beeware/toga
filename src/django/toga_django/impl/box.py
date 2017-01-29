@@ -14,7 +14,7 @@ class Box:
 
     def __html__(self):
         lines = [
-            '<div id="%s" data-toga-class="toga.Box" data-toga-parent="%s" data-toga-ports="%s" class="container">' % (
+            '<div id="toga:%s" data-toga-class="toga.Box" data-toga-parent="%s" data-toga-ports="%s" class="container">' % (
                 self.id,
                 self.parent.id,
                 ",".join(
