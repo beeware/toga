@@ -93,7 +93,7 @@ class App(AppInterface):
             toga = base64.encodebytes(compiled.read())
 
         widgets = {}
-        for widget in ["box", "window", "button", "textinput"]:
+        for widget in ["app", "window", "box", "button", "textinput", "webview"]:
             sourcefile = os.path.join(os.path.dirname(__file__), 'impl', "%s.py" % widget)
 
             fd, tempname = tempfile.mkstemp()

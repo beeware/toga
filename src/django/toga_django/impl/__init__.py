@@ -5,11 +5,13 @@
 #     # However, if we don't try to import it.
 #     pass
 
+from .app import App
 from .box import Box
 from .button import Button
 # from .list import List, SimpleListElement
 from .textinput import TextInput
 from .window import Window
+from .webview import WebView
 
 # _counter = 1000
 
@@ -19,13 +21,6 @@ from .window import Window
 #     _counter += 1
 #     return 'NEW%s' % _counter
 
-
-
-class App:
-    def __init__(self, name, app_id, icon=None, id=None):
-        self.app_id = app_id
-        self.name = name
-        self.id = id
 
 
 def bootstrap_App(element):
@@ -38,6 +33,7 @@ def bootstrap_App(element):
 def bootstrap_Window(element):
     title = dom.document.title
     content = dom.document.querySelector('[data-toga-parent="' + element.id[5:] + '"]')
+
     window = Window(element.id[5:], title, content=content)
     element.toga = window
     window.impl = element
@@ -83,6 +79,13 @@ def bootstrap_Button(element):
     widget = Button(element.id[5:], element.innerHTML)
     fn = dom.window.toga.handler(element.dataset.togaOnPress, widget)
     element.addEventListener('click', fn)
+
+    element.toga = widget
+    widget.impl = element
+
+
+def bootstrap_WebView(element):
+    widget = WebView(element.id[5:])
 
     element.toga = widget
     widget.impl = element

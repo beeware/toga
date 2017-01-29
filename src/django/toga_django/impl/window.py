@@ -1,13 +1,11 @@
 
 
 class Window:
-    def __init__(self, id, title, content=None, ports=None):
+    def __init__(self, id, title, content=None):
         self.id = id
 
         self.title = title
         self.set_content(content)
-
-        self.ports = ports if ports else {}
 
     def __html__(self):
         return """
@@ -20,10 +18,7 @@ class Window:
                 </ul>
             </nav>""" % (
                 self.id,
-                ",".join(
-                    "%s=%s" % (name, id)
-                    for name, id in self.ports.items()
-                ),
+                '',  #  self.ports,
                 self.title
             ) + self.content.__html__()
 

@@ -14,10 +14,7 @@ class Button:
         return '<button id="toga:%s" data-toga-class="toga.Button" data-toga-parent="%s" data-toga-ports="%s" data-toga-on-press="%s">%s</button>' % (
             self.id,
             self.parent.id,
-            ",".join(
-                "%s=%s" % (name, id)
-                for name, id in self.ports.items()
-            ),
+            '',  #  self.ports,
             self.on_press,
             self.label
         )
