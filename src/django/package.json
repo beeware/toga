@@ -1,6 +1,6 @@
 {
   "name": "@pybee/toga",
-  "version": "0.0.6-dev.3",
+  "version": "0.0.6-dev.4",
   "description": "A cross platform Python-native widget toolkit.",
   "author": "Russell Keith-Magee",
   "main": "toga/toga.js",
@@ -10,7 +10,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "prepublish": "pandoc --from=rst --to=markdown_github README.rst -o README.md",
+    "prepublishOnly": "pandoc --from=rst --to=markdown_github README.rst -o README.md",
     "build": "node_modules/.bin/webpack --progress",
     "watch": "node_modules/.bin/webpack --progress --watch",
     "serve": "node_modules/.bin/webpack-dev-server --inline --hot --port 3000"
