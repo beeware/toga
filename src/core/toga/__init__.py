@@ -26,6 +26,9 @@ __version__ = '0.2.5.dev1'
 
 platform = None
 
+# alias the id generator
+identifier = id
+
 def set_platform(module_name=None, local_vars=locals()):
     "Configures toga to use the specfied platform module"
     # Note - locals is deliberately passed in as an argument; because it is
