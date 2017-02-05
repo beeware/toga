@@ -5,6 +5,9 @@ import types
 
 from .constants import *
 
+# alias the id generator
+identifier = id
+
 # Work around import loop issues (toga -> platform -> toga.interface) import
 # all these things before we import the platform stuff
 import toga.interface.app  # NOQA
@@ -25,9 +28,6 @@ __all__ = [
 __version__ = '0.2.5.dev1'
 
 platform = None
-
-# alias the id generator
-identifier = id
 
 def set_platform(module_name=None, local_vars=locals()):
     "Configures toga to use the specfied platform module"
@@ -103,4 +103,6 @@ def set_platform(module_name=None, local_vars=locals()):
             raise
 
 # On first import, do an autodetection of platform.
-set_platform()
+# Bypass this for docs.
+if not os.environ.get('IS_SPHINX'):
+    set_platform()
