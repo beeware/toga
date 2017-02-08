@@ -29,6 +29,37 @@ __version__ = '0.2.5.dev1'
 
 platform = None
 
+
+def get_platform_name():
+    """
+    Get the name of the current platform
+    :return: The name of the platform, e.g. tvOS
+    :rtype: ``str``
+    """
+    platform_name = os.environ.get('TOGA_PLATFORM')
+
+    # If we don't have a manually defined platform, attempt to
+    # autodetect and set the platform
+    if platform_name is None:
+        if sys.platform == 'ios':
+            platform_name = 'iOS'
+        elif sys.platform == 'tvos':
+            platform_name = 'tvOS'
+        elif sys.platform == 'watchos':
+            platform_name = 'watchOS'
+        elif sys.platform == 'android':
+            platform_name = 'android'
+        elif sys.platform == 'darwin':
+            platform_name = 'cocoa'
+        elif sys.platform == 'linux':
+            platform_name = 'gtk'
+        elif sys.platform == 'win32':
+            platform_name = 'win32'
+        else:
+            raise RuntimeError("Couldn't identify a supported host platform.")
+    return platform_name
+
+
 def set_platform(module_name=None, local_vars=locals()):
     "Configures toga to use the specfied platform module"
     # Note - locals is deliberately passed in as an argument; because it is
@@ -38,28 +69,7 @@ def set_platform(module_name=None, local_vars=locals()):
 
     # First check for an environment variable setting the platform
     if module_name is None:
-        platform_name = os.environ.get('TOGA_PLATFORM')
-
-        # If we don't have a manually defined platform, attempt to
-        # autodetect and set the platform
-        if platform_name is None:
-            if sys.platform == 'ios':
-                platform_name = 'iOS'
-            elif sys.platform == 'tvos':
-                platform_name = 'tvOS'
-            elif sys.platform == 'watchos':
-                platform_name = 'watchOS'
-            elif sys.platform == 'android':
-                platform_name = 'android'
-            elif sys.platform == 'darwin':
-                platform_name = 'cocoa'
-            elif sys.platform == 'linux':
-                platform_name = 'gtk'
-            elif sys.platform == 'win32':
-                platform_name = 'win32'
-            else:
-                raise RuntimeError("Couldn't identify a supported host platform.")
-
+        platform_name = get_platform_name()
         module_name = 'toga_' + platform_name
 
     # # Purge any existing platform symbols in the toga module
@@ -102,7 +112,6 @@ def set_platform(module_name=None, local_vars=locals()):
         else:
             raise
 
-# On first import, do an autodetection of platform.
-# Bypass this for docs.
-if not os.environ.get('IS_SPHINX'):
+# On first import, do an auto-detection of platform.
+if get_platform_name() != 'dummy':
     set_platform()

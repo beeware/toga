@@ -60,7 +60,7 @@ with io.open('../src/core/toga/__init__.py', encoding='utf8') as version_file:
 version = '.'.join(release.split('.')[:2])
 
 # Fix the autodoc import issues
-os.environ['IS_SPHINX'] = 'True'
+os.environ['TOGA_PLATFORM'] = 'dummy'
 
 autoclass_content = 'both'
 
