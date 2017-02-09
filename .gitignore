@@ -16,3 +16,4 @@ src/django/toga.min.js
 src/django/toga.js.map
 src/django/toga.min.js.map
 
+.DS_Store

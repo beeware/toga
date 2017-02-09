@@ -1,6 +1,6 @@
 from colosseum import CSSNode
+from toga import identifier
 
-identifier = id
 
 class Widget:
     '''
