@@ -56,16 +56,16 @@ for module, label in PLATFORM_LIST.items():
                 if _maps[name] is None:
                     _maps[name] = list()
                 _maps[name].append(module)
-
+_platforms = list(PLATFORM_LIST.keys())
 with open('../docs/supported_platforms.rst', 'w+') as doc:
     writer = pytablewriter.RstGridTableWriter()
     writer.stream = doc
     writer.table_name = "Supported platforms"
-    writer.header_list = ["Component"] + list(PLATFORM_LIST.keys())
+    writer.header_list = ["Component"] + _platforms
     writer.value_matrix = []
     for c, v in _maps.items():
         i = list([c])
-        for platform in PLATFORM_LIST.keys():
+        for platform in _platforms:
             if platform in v:
                 i.append('yes')
             else:
