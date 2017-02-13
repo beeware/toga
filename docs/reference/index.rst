@@ -47,3 +47,9 @@ Scroll Container     :doc:`Documentation </reference/widgets/scrollcontainer>`  
 Split Container      :doc:`Documentation </reference/widgets/splitcontainer>`     Split Container                        :mod:`toga.interface.widgets.splitcontainer.SplitContainer`           
 Web View             :doc:`Documentation </reference/widgets/webview>`            Web View                               :mod:`toga.interface.widgets.webview.WebView`           
 ==================== ============================================================ ====================================== ===================================================================
+
+-------------------
+Supported Platforms
+-------------------
+
+.. include:: ../supported_platforms.rst

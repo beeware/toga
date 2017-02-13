@@ -1,4 +1,4 @@
-identifier = id
+from toga import identifier
 
 
 class App(object):
