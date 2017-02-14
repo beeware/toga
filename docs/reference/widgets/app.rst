@@ -29,3 +29,5 @@ Reference
 
 .. autoclass:: toga.interface.app.App
    :members:
+   :undoc-members:
+   :inherited-members:
