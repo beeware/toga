@@ -1,4 +1,3 @@
-
 class Window:
     _CONTAINER_CLASS = None
     _DIALOG_MODULE = None
