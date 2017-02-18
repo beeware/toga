@@ -32,7 +32,6 @@ setup(
     packages=find_packages(exclude='tests'),
     install_requires=[
         'django>=1.8',
-        'django-webpack-loader>=0.4.1'
     ],
     license='New BSD',
     classifiers=[

@@ -5,7 +5,6 @@ var webpack = require('webpack');
 module.exports = {
     entry: {
         "toga": "./toga/toga.js",
-        "toga.min": "./toga/toga.js"
     },
     output: {
         path: path.join(__dirname, './dist'),
@@ -16,56 +15,70 @@ module.exports = {
     target: 'web',
     plugins: [
         new webpack.optimize.UglifyJsPlugin({
-            include: /\.min\.js$/,
-            minimize: true
+            minimize: true,
+            sourceMap: true
         }),
         // new ExtractTextPlugin("[name].css"),
         new webpack.HotModuleReplacementPlugin(),
-        new webpack.NoErrorsPlugin()
+        new webpack.NoEmitOnErrorsPlugin()
     ],
     devtool: 'source-map',
     module: {
-        // preLoaders: [
-        //     {
-        //         test: /\.js$/,
-        //         loader: 'eslint',
-        //         exclude: /node_modules/,
-        //     }
-        // ],
-        loaders: [
+        rules: [
             {
                 test: /\.js$/,
-                loader: "babel",
-                exclude: /node_modules/
-            },
-            {
-                include: /\.json$/,
-                loader: "json"
+                use: [
+                    {
+                        loader: "babel-loader"
+                    }
+                ],
+                exclude: "/node_modules/"
             },
             {
                 test: /\.css$/,
-                // loader: ExtractTextPlugin.extract('style', 'css', 'resolve-url')
-                loaders: ['style', 'css']
+                use: [
+                    {
+                        loader: 'style-loader'
+                    },
+                    {
+                        loader: 'css-loader'
+                    }
+                ]
             },
             {
-                test: /\.s?css$/,
-                // loader: ExtractTextPlugin.extract('style', 'css', 'sass', 'resolve-url')
-                loaders: ['style', 'css', 'sass']
+                test: /\.scss$/,
+                use: [
+                    {
+                        loader: 'style-loader'
+                    },
+                    {
+                        loader: 'css-loader'
+                    },
+                    {
+                        loader: 'sass-loader'
+                    }
+                ]
             },
             {
                 test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-                loader: 'url?limit=10000&mimetype=application/font-woff'
+                use: [
+                    {
+                        loader: 'url-loader'
+                        // options: {
+                        //     limit: '10000',
+                        //     mimetype: 'application/font-woff'
+                        // }
+                    }
+                ]
             },
             {
                 test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-                loader: 'file'
+                use: [
+                    {
+                        loader: 'file-loader'
+                    }
+                ]
             }
         ]
-
     }
-    // eslint: {
-    //     configFile: './.eslintrc',
-    //     failOnWarning: false,
-    //     failOnError: true
-    // }
 }
