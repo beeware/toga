@@ -18,6 +18,7 @@ class TextInput:
             ' disabled' if self.readonly else '',
         )
 
+    @property
     def value(self):
         return self.impl.value
 

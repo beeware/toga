@@ -1,10 +1,9 @@
 
-
 class WebView:
     def __init__(self, id=None, url=None, on_key_down=None):
         self.id = id
-
-        self.url = url
+        self.impl = None
+        self._url = url
 
     def __html__(self):
         return """
@@ -17,8 +16,15 @@ class WebView:
                 self.url if self.url else ''
             )
 
-    def set_url(self, value):
-        self.impl.src = value
+    @property
+    def url(self):
+        return self._url
+
+    @url.setter
+    def url(self, value):
+        self._url = value
+        if self.impl:
+            self.impl.src = value
 
     def set_content(self, root_url, content):
         pass
