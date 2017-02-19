@@ -1,6 +1,20 @@
 Selection
 =========
 
+The Selection widget is a simple control for allowing the user to choose between a list of string options.
+
+Usage
+-----
+
+.. code-block:: Python
+
+    import toga
+        
+    container = toga.Selection(items=['bob', 'jim', 'lilly'])
+
+Reference
+---------
+
 .. autoclass:: toga.interface.widgets.selection.Selection
    :members:
    :undoc-members:
