@@ -1,7 +1,7 @@
 Split Container
 ===============
 
-The split container
+The split container is a container with a movable split and the option for 2 or 3 elements. 
 
 Usage
 -----
