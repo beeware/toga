@@ -3,6 +3,10 @@ Button
 
 The button is a clickable node that fires a callback method when pressed or clicked.
 
+.. figure:: /reference/images/Button.jpeg
+    :align: center
+    :width: 300
+
 Usage
 -----
 

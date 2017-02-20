@@ -1,7 +1,12 @@
 .. table:: 
 
-    +----------+-------+---+-----+---+-----+---+------+
-    |Component |android|web|cocoa|gtk|win32|iOS|django|
-    +==========+=======+===+=====+===+=====+===+======+
-    |MainWindow|no     |no |yes  |yes|no   |yes|yes   |
-    +----------+-------+---+-----+---+-----+---+------+
+    +----------+-----+-----+-----+-------+------+----+-----+
+    |Component | gtk |win32|cocoa|android|django|web | iOS |
+    +==========+=====+=====+=====+=======+======+====+=====+
+    |MainWindow||yes|||no| ||yes|||no|   ||yes| ||no|||yes||
+    +----------+-----+-----+-----+-------+------+----+-----+
+
+.. |yes| image:: /_static/yes.png
+    :width: 32
+.. |no| image:: /_static/no.png
+    :width: 32

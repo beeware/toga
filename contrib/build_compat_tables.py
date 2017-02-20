@@ -34,6 +34,12 @@ PLATFORM_LIST = {
     'win32': 'Windows'
 }
 
+_footer = """
+.. |yes| image:: /_static/yes.png
+    :width: 32
+.. |no| image:: /_static/no.png
+    :width: 32
+"""
 
 # Credit http://stackoverflow.com/questions/42195468/how-can-i-inspect-an-attribute-of-a-module-without-importing-it?noredirect=1#comment71553012_42195468
 def get_declaration_from_source(text, name="__all__"):
@@ -70,12 +76,13 @@ with open('../docs/supported_platforms.rst', 'w+') as doc:
         i = list([c])
         for platform in _platforms:
             if platform in v:
-                i.append('yes')
+                i.append('|yes|')
             else:
-                i.append('no')
+                i.append('|no|')
         writer.value_matrix.append(i)
     
     writer.write_table()
+    doc.write(_footer)
 
 for component, value in _maps.items():
     with open('../docs/reference/supported_platforms/{0}.rst'.format(component), 'w+') as doc:
@@ -87,10 +94,12 @@ for component, value in _maps.items():
         i = list([component])
         for platform in _platforms:
             if platform in value:
-                i.append('yes')
+                i.append('|yes|')
             else:
-                i.append('no')
+                i.append('|no|')
         writer.value_matrix.append(i)
         writer.write_table()
+        
+        doc.write(_footer)
 
 print("Done.")
