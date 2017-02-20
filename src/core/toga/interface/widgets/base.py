@@ -43,21 +43,30 @@ class Widget:
 
     @property
     def id(self):
-        '''The node identifier.
+        '''
+        The node identifier.
 
         This id can be used to target CSS directives
+        :rtype: ``str``
         '''
         return self._id
 
     @property
     def style(self):
-        '''The style object for this widget.
+        '''
+        The style object for this widget.
+
+        :return: The style for this widget
+        :rtype: :class:`colosseum.CSSNode`
         '''
         return self._style
 
     @property
     def parent(self):
-        '''The parent of this node.
+        '''
+        The parent of this node.
+
+        :rtype: :class:`toga.Widget`
         '''
         return self._parent
 
