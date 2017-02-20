@@ -7,6 +7,10 @@ interface to simplify platform-agnostic GUI development.
 
 Toga is available on Mac OS, Windows, Linux (GTK), and mobile platforms such as Android and iOS.
 
+.. figure:: tutorial/screenshots/tutorial-2.png
+    :align: center
+    :width: 300
+
 Quickstart
 ==========
 
