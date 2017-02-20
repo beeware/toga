@@ -12,6 +12,11 @@ Usage
     
     textbox = toga.NumberInput(min_value=1, max_value=10)
 
+Supported Platforms
+-------------------
+
+.. include:: ../supported_platforms/NumberInput.rst
+
 Reference
 ---------
 

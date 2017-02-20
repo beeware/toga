@@ -49,6 +49,11 @@ Styling of boxes through colosseum can be done pre instantiation or post,
     style = CSS(padding_top=10)
     box = toga.Box('box', style=style)
 
+Supported Platforms
+-------------------
+
+.. include:: ../supported_platforms/Box.rst
+
 Reference
 ---------
 

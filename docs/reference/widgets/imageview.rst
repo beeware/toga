@@ -12,6 +12,11 @@ Usage
     
     view = toga.ImageView(id='view1', image=my_image)
 
+Supported Platforms
+-------------------
+
+.. include:: ../supported_platforms/ImageView.rst
+
 Reference
 ---------
 

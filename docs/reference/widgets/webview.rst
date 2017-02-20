@@ -12,6 +12,11 @@ Usage
 
     web = toga.WebView(url='https://google.com')
 
+Supported Platforms
+-------------------
+
+.. include:: ../supported_platforms/WebView.rst
+
 Reference
 ---------
 

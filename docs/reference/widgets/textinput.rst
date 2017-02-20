@@ -13,6 +13,11 @@ Usage
     input = toga.TextInput(placeholder='enter name here')
 
 
+Supported Platforms
+-------------------
+
+.. include:: ../supported_platforms/TextInput.rst
+
 Reference
 ---------
 

@@ -31,6 +31,11 @@ Split direction is set on instantiation using the `direction` keyword argument. 
     
     split.content = [left_container, right_container]
 
+Supported Platforms
+-------------------
+
+.. include:: ../supported_platforms/SplitContainer.rst
+
 Reference
 ---------
 

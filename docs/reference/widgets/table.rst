@@ -19,6 +19,11 @@ Usage
     # Insert to row 2
     table.insert(2, 'Value 1', 'Value 2')
 
+Supported Platforms
+-------------------
+
+.. include:: ../supported_platforms/Table.rst
+
 Reference
 ---------
 

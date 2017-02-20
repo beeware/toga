@@ -30,6 +30,11 @@ Horizontal or vertical scroll can be set via the initializer or using the proper
     
     container.vertical = False
 
+Supported Platforms
+-------------------
+
+.. include:: ../supported_platforms/ScrollContainer.rst
+
 Reference
 ---------
 

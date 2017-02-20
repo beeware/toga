@@ -15,6 +15,11 @@ Usage
     # Update progress
     p_bar.value = 10
 
+Supported Platforms
+-------------------
+
+.. include:: ../supported_platforms/ProgressBar.rst
+
 Reference
 ---------
 

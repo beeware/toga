@@ -12,6 +12,11 @@ Usage
         
     container = toga.Selection(items=['bob', 'jim', 'lilly'])
 
+Supported Platforms
+-------------------
+
+.. include:: ../supported_platforms/Selection.rst
+
 Reference
 ---------
 

@@ -12,6 +12,11 @@ Usage
     
     label = toga.Label('Hello world')
 
+Supported Platforms
+-------------------
+
+.. include:: ../supported_platforms/Label.rst
+
 Reference
 ---------
 

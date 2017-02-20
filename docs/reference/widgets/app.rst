@@ -24,6 +24,11 @@ To start a UI loop, call `app.main_loop()`
         app = toga.App('First App', 'org.pybee.helloworld', startup=build)
         app.main_loop()
 
+Supported Platforms
+-------------------
+
+.. include:: ../supported_platforms/App.rst
+
 Reference
 ---------
 

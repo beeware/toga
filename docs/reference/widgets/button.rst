@@ -18,6 +18,11 @@ The most basic button has a text label and a callback method for when it is pres
     
     button = toga.Button('Click me', on_press=my_callback)
 
+Supported Platforms
+-------------------
+
+.. include:: ../supported_platforms/Button.rst
+
 Reference
 ---------
 

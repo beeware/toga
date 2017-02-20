@@ -12,6 +12,11 @@ Usage
     
     textbox = toga.MultilineTextInput(id='view1')
 
+Supported Platforms
+-------------------
+
+.. include:: ../supported_platforms/MultilineTextInput.rst
+
 Reference
 ---------
 
