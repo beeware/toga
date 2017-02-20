@@ -18,6 +18,11 @@ In your virtualenv, install Toga, and then run it::
 This will pop up a GUI window showing the full range of widgets available
 to an application using Toga.
 
+Getting Started
+---------------
+
+To get started, you can dive into our :doc:`Tutorials </tutorial/index>` or check out the widget :doc:`Reference </reference/index>`.
+
 Prerequisites
 ~~~~~~~~~~~~~
 
