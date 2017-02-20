@@ -14,6 +14,7 @@ Component            Usage                                                      
 Application          :doc:`Documentation </reference/widgets/app>`                Primary host for UI components         :mod:`toga.interface.app.App`           
 Box                  :doc:`Documentation </reference/widgets/box>`                Container for components               :mod:`toga.interface.widgets.box.Box`           
 Widget               :doc:`Documentation </reference/widgets/widget>`             Base class for widgets                 :mod:`toga.interface.widgets.base.Widget`           
+Window               :doc:`Documentation </reference/widgets/window>`             Window object                          :mod:`toga.interface.window.Window`           
 ==================== ============================================================ ====================================== ===================================================================
 
 ---------------
