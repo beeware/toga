@@ -56,11 +56,14 @@ for module, label in PLATFORM_LIST.items():
                 if _maps[name] is None:
                     _maps[name] = list()
                 _maps[name].append(module)
+
 _platforms = list(PLATFORM_LIST.keys())
+
+# Write the overall component compatibility list
 with open('../docs/supported_platforms.rst', 'w+') as doc:
     writer = pytablewriter.RstGridTableWriter()
     writer.stream = doc
-    writer.table_name = "Supported platforms"
+    # writer.table_name = "Supported platforms"
     writer.header_list = ["Component"] + _platforms
     writer.value_matrix = []
     for c, v in _maps.items():
@@ -73,5 +76,21 @@ with open('../docs/supported_platforms.rst', 'w+') as doc:
         writer.value_matrix.append(i)
     
     writer.write_table()
+
+for component, value in _maps.items():
+    with open('../docs/reference/supported_platforms/{0}.rst'.format(component), 'w+') as doc:
+        writer = pytablewriter.RstGridTableWriter()
+        writer.stream = doc
+        # writer.table_name = "Supported platforms"
+        writer.header_list = ["Component"] + _platforms
+        writer.value_matrix = []
+        i = list([component])
+        for platform in _platforms:
+            if platform in value:
+                i.append('yes')
+            else:
+                i.append('no')
+        writer.value_matrix.append(i)
+        writer.write_table()
 
 print("Done.")
