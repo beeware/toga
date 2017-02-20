@@ -2,9 +2,32 @@ from .base import Widget
 
 
 class ScrollContainer(Widget):
+    '''
+    A scrollable container
+    '''
     _CONTAINER_CLASS = None
 
-    def __init__(self, id=None, style=None, horizontal=True, vertical=True, content=None):
+    def __init__(self, id=None, style=None, horizontal=True,
+                 vertical=True, content=None):
+        '''
+        Instantiate a new instance of the scrollable container widget
+
+        :param id:          An identifier for this widget.
+        :type  id:          ``str``
+
+        :param style:       an optional style object. If no style is provided then a
+                            new one will be created for the widget.
+        :type style:        :class:`colosseum.CSSNode`
+
+        :param horizontal: Enable horizontal scroll bar
+        :type  horizontal: ``bool``
+
+        :param vertical: Enable vertical scroll bar
+        :type  vertical: ``bool``
+
+        :param content: The content of the scroll window
+        :type  content: :class:`toga.Widget`
+        '''
         super().__init__(id=id, style=style, horizontal=horizontal, vertical=vertical, content=content)
 
     def _configure(self, horizontal, vertical, content):
@@ -14,6 +37,11 @@ class ScrollContainer(Widget):
 
     @property
     def content(self):
+        '''
+        Content of the scroll window
+        
+        :rtype: :class:`toga.Widget`
+        '''
         return self._content
 
     @content.setter
@@ -33,6 +61,11 @@ class ScrollContainer(Widget):
 
     @property
     def vertical(self):
+        '''
+        Enable vertical scaling
+        
+        :rtype: ``bool``
+        '''
         return self._vertical
 
     @vertical.setter
@@ -42,6 +75,11 @@ class ScrollContainer(Widget):
 
     @property
     def horizontal(self):
+        '''
+        Enable horizontal scaling
+        
+        :rtype: ``bool``
+        '''
         return self._horizontal
 
     @horizontal.setter
