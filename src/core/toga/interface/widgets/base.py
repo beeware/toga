@@ -44,9 +44,8 @@ class Widget:
     @property
     def id(self):
         '''
-        The node identifier.
+        The node identifier. This id can be used to target CSS directives
 
-        This id can be used to target CSS directives
         :rtype: ``str``
         '''
         return self._id
