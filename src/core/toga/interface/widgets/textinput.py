@@ -2,20 +2,29 @@ from .base import Widget
 
 
 class TextInput(Widget):
-    """
-    Widget for input of a text
-
-    :param id:              Identifier for this widget
-    :param style:           Style of the button
-    :type style:            colosseum.CSS
-    :param initial:         Initial text
-    :type initial:          str
-    :param placeholder:     Placeholder text
-    :type placeholder:      str
-    :param readonly:        Whether a user can write into the text input
-    :type readonly:         bool
-    """
+    '''
+    Text input widget
+    '''
     def __init__(self, id=None, style=None, initial=None, placeholder=None, readonly=False):
+        '''
+        Instantiate a new instance of the text input widget
+
+        :param id:          An identifier for this widget.
+        :type  id:          ``str``
+
+        :param style:       an optional style object. If no style is provided then a
+                            new one will be created for the widget.
+        :type style:        :class:`colosseum.CSSNode`
+
+        :param initial: The initial text
+        :type  initial: ``str``
+        
+        :param placeholder: The placeholder text
+        :type  placeholder: ``str``
+        
+        :param readonly: Whether a user can write into the text input, defaults to `False`
+        :type  readonly: ``bool``
+        '''
         super().__init__(id=id, style=style, initial=initial, placeholder=placeholder, readonly=readonly)
 
     def _configure(self, initial, placeholder, readonly):
@@ -26,6 +35,11 @@ class TextInput(Widget):
 
     @property
     def readonly(self):
+        '''
+        Whether a user can write into the text input
+        
+        :rtype: ``bool``
+        '''
         return self._readonly
 
     @readonly.setter
@@ -35,6 +49,11 @@ class TextInput(Widget):
 
     @property
     def placeholder(self):
+        '''
+        The placeholder text
+        
+        :rtype: ``str``
+        '''
         return self._placeholder
 
     @placeholder.setter
@@ -47,6 +66,11 @@ class TextInput(Widget):
 
     @property
     def value(self):
+        '''
+        The value of the text input field
+        
+        :rtype: ``str``
+        '''
         return self._get_value()
 
     @value.setter
@@ -59,6 +83,9 @@ class TextInput(Widget):
         self.rehint()
 
     def clear(self):
+        '''
+        Clear the value
+        '''
         self.value = ''
 
     def _set_readonly(self, value):
