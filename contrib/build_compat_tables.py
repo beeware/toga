@@ -11,15 +11,34 @@ import pytablewriter
 """
 A dictionary of components, index is the module name and value is the class name
 """
-COMPONENT_LIST =  ['App', 'MainWindow', 'Window',
-                   'Command', 'SEPARATOR', 'SPACER',
-                   'EXPANDING_SPACER', 'Box', 'Button',
-                   'Icon', 'TIBERIUS_ICON', 'Image',
-                   'ImageView', 'Font', 'Label', 'MultilineTextInput',
-                   'NumberInput', 'OptionContainer', 'PasswordInput',
-                   'ProgressBar', 'ScrollContainer', 'Selection',
-                   'SplitContainer', 'Table', 'TextInput',
-                   'Tree', 'WebView']
+COMPONENT_LIST =  [
+    ('App', 'toga.interface.app.App'),
+    ('MainWindow', 'toga.interface.window.Window'),
+    ('Window', 'toga.interface.window.Window'),
+    ('Command', None),
+    ('SEPARATOR', None),
+    ('SPACER', None),
+    ('EXPANDING_SPACER', None),
+    ('Box', 'toga.interface.widgets.box.Box'),
+    ('Button', 'toga.interface.widgets.box.Box'),
+    ('Icon', 'toga.interface.widgets.box.Box'),
+    ('TIBERIUS_ICON', None),
+    ('Image', None),
+    ('ImageView', 'toga.interface.widgets.imageview.ImageView'),
+    ('Font', 'toga.interface.font.Font'),
+    ('Label', 'toga.interface.widgets.label.Label'),
+    ('MultilineTextInput', 'toga.interface.widgets.multilinetextinput.MultilineTextInput'),
+    ('NumberInput','toga.interface.widgets.numberinput.NumberInput'),
+    ('OptionContainer','toga.interface.widgets.optioncontainer.OptionContainer'),
+    ('PasswordInput','toga.interface.widgets.passwordinput.PasswordInput'),
+    ('ProgressBar','toga.interface.widgets.progressbar.ProgressBar'),
+    ('ScrollContainer','toga.interface.widgets.scrollcontainer.ScrollContainer'),
+    ('Selection','toga.interface.widgets.selection.Selection'),
+    ('SplitContainer','toga.interface.widgets.splitcontainer.SplitContainer'),
+    ('Table','toga.interface.widgets.table.Table'),
+    ('TextInput','toga.interface.widgets.textinput.TextInput'),
+    ('Tree','toga.interface.widgets.tree.Tree'),
+    ('WebView', 'toga.interface.widgets.webview.WebView')]
 
 """
 Static list of potential platforms, index is the directory and value is the friendly name
@@ -57,11 +76,12 @@ for module, label in PLATFORM_LIST.items():
     path = os.path.join('../src', module, 'toga_'+module, '__init__.py')
     with open(path, 'r') as f:
         names = get_declaration_from_source(f.read())
-        for name in names:
-            if name in _maps.keys():
-                if _maps[name] is None:
-                    _maps[name] = list()
-                _maps[name].append(module)
+        for key in _maps.keys():
+            name, namespace = key
+            if name in names:
+                if _maps[key] is None:
+                    _maps[key] = list()
+                _maps[key].append(module)
 
 _platforms = list(PLATFORM_LIST.keys())
 
@@ -73,7 +93,8 @@ with open('../docs/supported_platforms.rst', 'w+') as doc:
     writer.header_list = ["Component"] + _platforms
     writer.value_matrix = []
     for c, v in _maps.items():
-        i = list([c])
+        label = ':mod:`{0}`'.format(c[1]) if c[1] is not None else c[0]
+        i = list([label])
         for platform in _platforms:
             if platform in v:
                 i.append('|yes|')
@@ -85,13 +106,13 @@ with open('../docs/supported_platforms.rst', 'w+') as doc:
     doc.write(_footer)
 
 for component, value in _maps.items():
-    with open('../docs/reference/supported_platforms/{0}.rst'.format(component), 'w+') as doc:
+    with open('../docs/reference/supported_platforms/{0}.rst'.format(component[0]), 'w+') as doc:
         writer = pytablewriter.RstGridTableWriter()
         writer.stream = doc
         # writer.table_name = "Supported platforms"
         writer.header_list = ["Component"] + _platforms
         writer.value_matrix = []
-        i = list([component])
+        i = list([component[0]])
         for platform in _platforms:
             if platform in value:
                 i.append('|yes|')
