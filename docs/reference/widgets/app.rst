@@ -24,6 +24,24 @@ To start a UI loop, call `app.main_loop()`
         app = toga.App('First App', 'org.pybee.helloworld', startup=build)
         app.main_loop()
 
+Alternatively, you can subclass App and implement the startup method
+
+.. code-block:: Python
+
+    import toga
+
+
+    class MyApp(toga.App):
+        def startup(self):
+            # build UI
+            pass
+
+
+    if __name__ == '__main__':
+        app = MyApp('First App', 'org.pybee.helloworld', startup=build)
+        app.main_loop()
+
+
 Supported Platforms
 -------------------
 
