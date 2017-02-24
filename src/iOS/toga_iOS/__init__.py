@@ -9,7 +9,7 @@ from .font import Font
 # # Widgets
 from .widgets.box import *
 from .widgets.button import *
-# # from .widgets.icon import *
+from .widgets.icon import *
 # from .widgets.image import *
 # from .widgets.imageview import *
 from .widgets.label import *
@@ -33,7 +33,7 @@ __all__ = [
     # 'Command', 'SEPARATOR', 'SPACER', 'EXPANDING_SPACER',
     'Box',
     'Button',
-    # 'Icon', 'TIBERIUS_ICON',
+    'Icon', 'TIBERIUS_ICON',
     'Font',
     # 'Image',
     # 'ImageView',

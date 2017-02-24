@@ -1,5 +1,5 @@
+from builtins import id as identifier
 from colosseum import CSSNode
-from toga import identifier
 
 
 class Widget:
