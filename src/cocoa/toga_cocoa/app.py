@@ -131,6 +131,10 @@ class App(AppInterface):
         # Call user code to populate the main window
         self.startup()
 
+    def open_document(self, fileURL):
+        '''Add a new document to this app.'''
+        print("STUB: If you want to handle opening documents, implement App.open_document(fileURL)")
+
     def main_loop(self):
         # Stimulate the build of the app
         self._startup()

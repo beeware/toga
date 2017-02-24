@@ -50,6 +50,10 @@ class App(AppInterface):
     def _startup(self):
         self.startup()
 
+    def open_document(self, fileURL):
+        '''Add a new document to this app.'''
+        print("")
+
     def main_loop(self):
         # Main loop is a no-op on iOS; the app loop is integrated with the
         # main iOS event loop.

@@ -5,9 +5,6 @@ import types
 
 from .constants import *
 
-# alias the id generator
-identifier = id
-
 # Work around import loop issues (toga -> platform -> toga.interface) import
 # all these things before we import the platform stuff
 import toga.interface.app  # NOQA

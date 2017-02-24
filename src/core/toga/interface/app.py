@@ -1,4 +1,4 @@
-from toga import identifier
+from builtins import id as identifier
 
 
 class App(object):
