@@ -1,4 +1,4 @@
-from .base import WidgetMixin
+from .base import Widget
 
 
 class NavigationView(Widget):
