@@ -6,6 +6,8 @@ from gi.repository import Gtk, GdkPixbuf
 
 
 class Icon(IconInterface):
+    EXTENSION = '.icns'
+
     def create(self, filename):
         # GTK can load ICNS and image files, but doesn't natively scale to the
         # appropriate size as required. So, we help it out. But to avoid loading
@@ -28,4 +30,4 @@ class Icon(IconInterface):
     _impl_72 = property(lambda self: self.__impl(72))
 
 
-TIBERIUS_ICON = Icon('tiberius.icns', system=True)
+TIBERIUS_ICON = Icon('tiberius', system=True)

@@ -1,3 +1,4 @@
+from pkg_resources import resource_string
 import os
 
 
@@ -9,9 +10,10 @@ class Icon:
         self.system = system
 
         if self.system:
-            filename = os.path.join(os.path.dirname(toga.__file__), 'resources', self.path)
+            toga_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+            filename = os.path.join(toga_dir, 'resources', self.path + self.EXTENSION)
         else:
-            filename = self.path
+            filename = self.path + self.EXTENSION
 
         self.create(filename)
 
