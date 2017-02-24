@@ -1,6 +1,6 @@
 from rubicon.objc import objc_method
 
-from toga.interface import List as ListInterface
+from toga.interface import DetailedList as DetailedListInterface
 
 from .base import WidgetMixin
 from ..libs import *
@@ -46,7 +46,7 @@ class TogaTableViewController(UITableViewController):
         self.tableView.reloadData()
 
 
-class List(WidgetMixin):
+class DetailedList(WidgetMixin):
     def __init__(self, id=None, data=None, on_delete=None, on_refresh=None, style=None):
         super().__init__(id=id, data=data, on_delete=on_delete, on_refresh=on_refresh, style=style)
         self._create()
@@ -64,6 +64,6 @@ class List(WidgetMixin):
 
         self._impl.data = self.data
 
-    def add(self, item):
+    def _add(self, item):
         self.data.append(item)
         self._impl.tableView.reloadData()

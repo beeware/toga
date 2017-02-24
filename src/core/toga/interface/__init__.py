@@ -33,6 +33,7 @@ __all__ = [
     # WIDGETS
     'Box',
     'Button',
+    'DetailedList',
     'Icon',
     # 'Image',
     'ImageView',
