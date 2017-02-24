@@ -71,6 +71,9 @@ Inputs are mechanisms for displaying and editing input provided by the user.
     - Cocoa: Done
     - GTK+: Gtk.TreeView with a Gtk.TreeStore
     - iOS: UITableView with navigation
+* DetailedList: A scrollable list of a single column of detailed data
+    - Cocoa: NSTableView with custom view?
+    - iOS: UITableView with navigation
 * SearchInput - A variant of TextField that is decorated as a search box.
     - Cocoa: NSSearchField
     - GTK+: ?
