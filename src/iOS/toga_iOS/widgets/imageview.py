@@ -7,11 +7,11 @@ class ImageView(Widget):
     def __init__(self, image=None, style=None):
         super().__init__(style=style)
 
-        self.startup()
+        self.create()
 
         self.image = image
 
-    def startup(self):
+    def create(self):
         self._impl = UIImageView.alloc().init()
         self._impl.interface = self
 

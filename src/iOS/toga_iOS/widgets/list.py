@@ -1,5 +1,7 @@
 from rubicon.objc import objc_method
 
+from toga.interface import List as ListInterface
+
 from .base import WidgetMixin
 from ..libs import *
 # from ..utils import process_callback
@@ -45,15 +47,11 @@ class TogaTableViewController(UITableViewController):
 
 
 class List(WidgetMixin):
-    def __init__(self, data=None, on_delete=None, on_refresh=None, style=None):
-        super().__init__(style=style)
-        self.data = data
-        self.on_delete = on_delete
-        self.on_refresh = on_refresh
+    def __init__(self, id=None, data=None, on_delete=None, on_refresh=None, style=None):
+        super().__init__(id=id, data=data, on_delete=on_delete, on_refresh=on_refresh, style=style)
+        self._create()
 
-        self.startup()
-
-    def startup(self):
+    def create(self):
         self._impl = TogaTableViewController.alloc().init()
         self._impl.interface = self
 

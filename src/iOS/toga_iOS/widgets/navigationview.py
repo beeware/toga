@@ -28,9 +28,9 @@ class NavigationView(WidgetMixin):
         self.content = content
         self.on_action = on_action
 
-        self.startup()
+        self.create()
 
-    def startup(self):
+    def create(self):
         self._impl = TogaNavigationController.alloc().initWithRootViewController_(self.content._impl)
         self._impl.interface = self
         self._impl.navigationBar.topItem.title = self.title
