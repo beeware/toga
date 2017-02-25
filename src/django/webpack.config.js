@@ -14,10 +14,6 @@ module.exports = {
     },
     target: 'web',
     plugins: [
-        new webpack.optimize.UglifyJsPlugin({
-            minimize: true,
-            sourceMap: true
-        }),
         // new ExtractTextPlugin("[name].css"),
         new webpack.HotModuleReplacementPlugin(),
         new webpack.NoEmitOnErrorsPlugin()
