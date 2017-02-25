@@ -1,4 +1,3 @@
-from pkg_resources import resource_string
 import os
 
 
