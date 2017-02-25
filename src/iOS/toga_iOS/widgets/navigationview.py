@@ -26,24 +26,28 @@ class TogaNavigationController(UINavigationController):
 class NavigationView(NavigationViewInterface, WidgetMixin):
     def __init__(self, title, content, on_action=None, style=None):
         super().__init__(title=title, content=content, on_action=on_action, style=style)
-
-        self.create()
+        self._create()
 
     def create(self):
-        self._impl = TogaNavigationController.alloc().initWithRootViewController_(self.config[content]._impl)
-        self._impl.interface = self
-        self._impl.navigationBar.topItem.title = self.title
+        self._controller = TogaNavigationController.alloc().initWithRootViewController_(self._config['content']._controller)
+        self._controller.interface = self
+        self._controller.navigationBar.topItem.title = self._config['title']
 
-        if self.on_action:
+        self._impl = self._controller.view
+
+        if self._config['on_action']:
             self._action_button = UIBarButtonItem.alloc().initWithBarButtonSystemItem_target_action_(
-                button_for_action(self.on_action),
-                self._impl,
+                button_for_action(self._config['on_action']),
+                self._controller,
                 get_selector('onAction')
             )
-            self._impl.navigationBar.topItem.rightBarButtonItem = self._action_button
+            self._controller.navigationBar.topItem.rightBarButtonItem = self._action_button
+
+        # Add the layout constraints
+        self._add_constraints()
 
     def _push(self, content):
-        self._impl.pushViewController_animated_(content._impl, True)
+        self._controller.pushViewController_animated_(content._controller, True)
 
     def _pop(self, content):
-        self._impl.popViewController_animated_(True)
+        self._controller.popViewController_animated_(True)

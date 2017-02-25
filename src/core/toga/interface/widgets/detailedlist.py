@@ -6,7 +6,7 @@ class DetailedList(Widget):
         super().__init__(id=id, data=data, on_delete=on_delete, on_refresh=on_refresh, style=style)
 
     def _configure(self, data, on_delete, on_refresh):
-        self.data = label
+        self.data = data
         self.on_delete = on_delete
         self.on_refresh = on_refresh
 

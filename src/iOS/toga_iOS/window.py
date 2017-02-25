@@ -19,10 +19,13 @@ class Window(WindowInterface):
         self._impl = self._IMPL_CLASS.alloc().initWithFrame_(self._screen.bounds)
         self._impl._interface = self
 
-        self._controller = UIViewController.alloc().init()
-        self._impl.rootViewController = self._controller
-
     def _set_content(self, widget):
+        if getattr(widget, '_controller', None):
+            self._controller = widget._controller
+        else:
+            self._controller = UIViewController.alloc().init()
+
+        self._impl.rootViewController = self._controller
         self._controller.view = self._container._impl
 
     def _set_title(self, title):
