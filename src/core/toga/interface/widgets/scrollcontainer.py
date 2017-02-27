@@ -23,6 +23,7 @@ class ScrollContainer(Widget):
             self._content.window = self.window
             self._content.app = self.app
 
+            widget._update_layout()
             if widget._impl is None:
                 self._inner_container = self._CONTAINER_CLASS()
                 self._inner_container.root_content = widget

@@ -15,7 +15,7 @@ class WindowDelegate(NSObject):
     def windowDidResize_(self, notification) -> None:
         if self._interface.content:
             # print()
-            # print("Window resize", (notification.object.contentView.frame.size.width, notification.object.contentView.frame.size.height))
+            print("Window resize", (notification.object.contentView.frame.size.width, notification.object.contentView.frame.size.height))
             if notification.object.contentView.frame.size.width > 0.0 and notification.object.contentView.frame.size.height > 0.0:
                 # Force a re-layout of widgets
                 self._interface.content._update_layout(
@@ -157,8 +157,8 @@ class Window(WindowInterface):
         # The first render of the content will establish the
         # minimum possible content size; use that to enforce
         # a minimum window size.
-        self._min_width_constraint.constant = self.content.style.layout.width
-        self._min_height_constraint.constant = self.content.style.layout.height
+        self._min_width_constraint.constant = self.content.layout.width
+        self._min_height_constraint.constant = self.content.layout.height
 
         # Do the first layout render.
         self._container._update_layout(

@@ -85,6 +85,7 @@ class Window:
     @content.setter
     def content(self, widget):
         # Save the content widget.
+        widget._update_layout()
         if widget._impl is None:
             self._container = self._CONTAINER_CLASS()
             self._container.content = widget
