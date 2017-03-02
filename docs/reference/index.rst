@@ -11,9 +11,11 @@ Toga includes a set of core widgets, that can be placed with a :doc:`Box </refer
 ==================== ============================================================ ====================================== =================================================================== 
 Component            Usage                                                        Purpose                                Class                                                      
 ==================== ============================================================ ====================================== ===================================================================
-Application          :doc:`Documentation </reference/widgets/app>`                Primary host for UI components         :mod:`toga.interface.app.App`           
+Application          :doc:`Documentation </reference/widgets/app>`                Primary host for UI components         :mod:`toga.interface.app.App`       
 Box                  :doc:`Documentation </reference/widgets/box>`                Container for components               :mod:`toga.interface.widgets.box.Box`           
+Font                 :doc:`Documentation </reference/widgets/font>`               Fonts                                  :mod:`toga.interface.font.Font`           
 Widget               :doc:`Documentation </reference/widgets/widget>`             Base class for widgets                 :mod:`toga.interface.widgets.base.Widget`           
+Window               :doc:`Documentation </reference/widgets/window>`             Window object                          :mod:`toga.interface.window.Window`           
 ==================== ============================================================ ====================================== ===================================================================
 
 ---------------

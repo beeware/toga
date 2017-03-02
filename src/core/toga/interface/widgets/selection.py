@@ -2,16 +2,23 @@ from .base import Widget
 
 
 class Selection(Widget):
-    """
+    '''
     Selection widget
-
-    :param id:          Identifier for this widget
-    :param style:       Style of the button
-    :type style:        colosseum.CSS
-    :param items:       Items for the selection:
-    :type items:        List[str]
-    """
+    '''
     def __init__(self, id=None, style=None, items=list()):
+        '''
+        Instantiate a new instance of the selection widget
+
+        :param id:          An identifier for this widget.
+        :type  id:          ``str``
+
+        :param style:       an optional style object. If no style is provided then a
+                            new one will be created for the widget.
+        :type style:        :class:`colosseum.CSSNode`
+
+        :param items:       Items for the selection:
+        :type  items:       ``list`` of ``str``
+        '''
         self._items = items
         super().__init__(id=id, style=style, items=items)
 
@@ -25,6 +32,11 @@ class Selection(Widget):
 
     @property
     def items(self):
+        '''
+        The list of items
+        
+        :rtype: ``list`` of ``str``
+        '''
         return self._items
 
     @items.setter
@@ -38,6 +50,11 @@ class Selection(Widget):
 
     @property
     def value(self):
+        '''
+        The value of the selected item
+        
+        :rtype: ``str``
+        '''
         return self._get_selected_item()
 
     @value.setter
