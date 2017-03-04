@@ -1,19 +1,19 @@
 
 class WebView:
-    def __init__(self, id=None, url=None, on_key_down=None):
+    def __init__(self, id=None, url=None, on_key_down=None, style=None):
         self.id = id
         self.impl = None
         self._url = url
+        self.style = style
 
     def __html__(self):
         return """
-            <div class="container">
-                <iframe id="toga:%s" data-toga-class="toga.WebView" data-toga-ports="%s" class="webview" src="%s">
-                </iframe>
-            </div>""" % (
+            <iframe id="toga:%s" class="toga WebView" style="%s" src="%s" data-toga-class="toga.WebView" data-toga-ports="%s">
+            </iframe>""" % (
                 self.id,
-                '',  #  self.ports,
+                self.style.render(),
                 self.url if self.url else ''
+                '',  #  self.ports,
             )
 
     @property

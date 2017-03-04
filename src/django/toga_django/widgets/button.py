@@ -14,7 +14,8 @@ class Button(ButtonInterface, WidgetMixin):
         self._impl = impl.Button(
             id=self.id,
             label=self._config['label'],
-            on_press=self.handler(self._config['on_press'], 'on_press') if self._config['on_press'] else None
+            on_press=self.handler(self._config['on_press'], 'on_press') if self._config['on_press'] else None,
+            style=self.style,
         )
 
     def _set_window(self, window):
