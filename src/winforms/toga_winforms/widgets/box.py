@@ -11,4 +11,4 @@ class Box(BoxInterface, WidgetMixin):
         self._create()
 
     def create(self):
-        self._constraints = None
+        pass

@@ -43,8 +43,8 @@ class Window(WindowInterface):
 
         # Do the first layout render.
         self._container._update_layout(
-            width=self._impl.Size.Width,
-            height=self._impl.Size.Height,
+            width=self._impl.ClientSize.Width,
+            height=self._impl.ClientSize.Height,
         )
 
     def close(self):
@@ -55,9 +55,8 @@ class Window(WindowInterface):
         if self.content:
             # Set the size of the container to be the same as the window
             self._container._impl.Size = self._impl.ClientSize
-
             # Re-layout the content
             self.content._update_layout(
-                width=sender.Size.Width,
-                height=sender.Size.Height,
+                width=sender.ClientSize.Width,
+                height=sender.ClientSize.Height,
             )

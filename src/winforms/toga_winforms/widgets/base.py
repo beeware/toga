@@ -19,13 +19,10 @@ class WidgetMixin:
         if self._container:
             child._set_container(self._container)
 
-    def _add_constraints(self):
-        pass
-
     def _apply_layout(self):
         if self._impl:
-            self._impl.Size = Size(self.layout.width, self.layout.height)
-            self._impl.Location = Point(int(self.layout.left), int(self.layout.top))
+            self._impl.Size = Size(int(self.layout.width), int(self.layout.height))
+            self._impl.Location = Point(int(self.layout.absolute.left), int(self.layout.absolute.top))
 
     def rehint(self):
         pass

@@ -24,16 +24,13 @@ class Button(ButtonInterface, WidgetMixin):
     def create(self):
         self._impl = TogaButton(self)
 
-        # Add the layout constraints
-        self._add_constraints()
-
     def _set_label(self, label):
         self._impl.Text = self.label
         self.rehint()
 
     def rehint(self):
-        # print(dir(self._impl))
-        self._impl.Size = Size(0, 0)
+        # self._impl.Size = Size(0, 0)
+        # print("REHINT Button", self, self._impl.PreferredSize)
         self.style.hint(
             height=self._impl.PreferredSize.Height,
             min_width=self._impl.PreferredSize.Width,

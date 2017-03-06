@@ -12,7 +12,7 @@ from .widgets.button import *
 # from .widgets.icon import *
 # from .widgets.image import *
 # from .widgets.imageview import *
-# from .widgets.label import *
+from .widgets.label import *
 # from .widgets.multilinetextinput import *
 # from .widgets.optioncontainer import *
 # from .widgets.passwordinput import *
@@ -20,7 +20,7 @@ from .widgets.button import *
 # from .widgets.scrollcontainer import *
 # from .widgets.splitcontainer import *
 # from .widgets.table import *
-# from .widgets.textinput import *
+from .widgets.textinput import *
 # from .widgets.tree import *
 # from .widgets.webview import *
 # from .widgets.selection import Selection
@@ -37,7 +37,7 @@ __all__ = [
     # 'Image',
     # 'ImageView',
     # 'Font',
-    # 'Label',
+    'Label',
     # 'MultilineTextInput',
     # 'NumberInput',
     # 'OptionContainer',
@@ -47,7 +47,7 @@ __all__ = [
     # 'Selection',
     # 'SplitContainer',
     # 'Table',
-    # 'TextInput',
+    'TextInput',
     # 'Tree',
     # 'WebView',
 ]
