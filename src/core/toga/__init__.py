@@ -51,7 +51,7 @@ def get_platform_name():
         elif sys.platform == 'linux':
             platform_name = 'gtk'
         elif sys.platform == 'win32':
-            platform_name = 'win32'
+            platform_name = 'winforms'
         else:
             raise RuntimeError("Couldn't identify a supported host platform.")
     return platform_name
