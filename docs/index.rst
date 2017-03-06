@@ -7,6 +7,10 @@ interface to simplify platform-agnostic GUI development.
 
 Toga is available on Mac OS, Windows, Linux (GTK), and mobile platforms such as Android and iOS.
 
+.. figure:: tutorial/screenshots/tutorial-2.png
+    :align: center
+    :width: 300
+
 Quickstart
 ==========
 
@@ -17,6 +21,11 @@ In your virtualenv, install Toga, and then run it::
 
 This will pop up a GUI window showing the full range of widgets available
 to an application using Toga.
+
+Getting Started
+---------------
+
+To get started, you can dive into our :doc:`Tutorials </tutorial/index>` or check out the widget :doc:`Reference </reference/index>`.
 
 Prerequisites
 ~~~~~~~~~~~~~

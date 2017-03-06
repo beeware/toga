@@ -120,9 +120,11 @@ class Widget:
     method.
 
     :param id:      An identifier for this widget.
+    :type  id:      ``str``
+
     :param style:   An optional style object. If no style is provided then a
                     new one will be created for the widget.
-    :type style:    colosseum.CSS
+    :type style:    :class:`colosseum.CSSNode`
     '''
     def __init__(self, id=None, style=None, **config):
         self._id = id if id else identifier(self)
@@ -147,15 +149,20 @@ class Widget:
 
     @property
     def id(self):
-        '''The node identifier.
+        '''
+        The node identifier. This id can be used to target CSS directives
 
-        This id can be used to target CSS directives
+        :rtype: ``str``
         '''
         return self._id
 
     @property
     def style(self):
-        '''The style object for this widget.
+        '''
+        The style object for this widget.
+
+        :return: The style for this widget
+        :rtype: :class:`colosseum.CSSNode`
         '''
         return self._style
 
@@ -179,16 +186,23 @@ class Widget:
 
     @property
     def parent(self):
-        '''The parent of this node.
+        '''
+        The parent of this node.
+
+        :rtype: :class:`toga.Widget`
         '''
         return self._parent
 
     @property
     def children(self):
-        '''The children of this node.
+        '''
+        The children of this node.
 
         This *always* returns a list, even if the node is a leaf
         and cannot have children.
+        
+        :rtype: ``list``
+        :return: A list of the children for this widget
         '''
         if self._children is None:
             return []
@@ -196,10 +210,14 @@ class Widget:
             return self._children
 
     def add(self, child):
-        '''Add a widget as a child of this one.
+        '''
+        Add a widget as a child of this one.
 
-        Raises an error if this widget is a leaf, and cannot
+        Raises an :class:`ValueError` if this widget is a leaf, and cannot
         have children.
+
+        :param child: The child to add to the widget
+        :type  child: :class:`toga.Widget`
         '''
         if self._children is None:
             raise ValueError('Widget cannot have children')
@@ -216,12 +234,21 @@ class Widget:
 
     @property
     def app(self):
-        '''The App to which this widget belongs.
+        '''
+        The App to which this widget belongs.
+        
+        :rtype: :class:`toga.App`
         '''
         return self._app
 
     @app.setter
     def app(self, app):
+        '''
+        Set the app to which this widget belongs
+        
+        :param app: The Application host
+        :type  app: :class:`toga.App`
+        '''
         if self._app:
             raise Exception("Widget %r is already associated with an App" % self)
         self._app = app
@@ -232,12 +259,21 @@ class Widget:
 
     @property
     def window(self):
-        '''The Window to which this widget belongs.
+        '''
+        The Window to which this widget belongs.
+        
+        :rtype: :class:`toga.Window`
         '''
         return self._window
 
     @window.setter
     def window(self, window):
+        '''
+        Set the Window to which this widget belongs.
+        
+        :param window: The new window
+        :type  window: :class:`toga.Window`
+        '''
         self._window = window
         self._set_window(window)
         if self._children is not None:
@@ -246,7 +282,8 @@ class Widget:
 
     @property
     def _container(self):
-        '''The display container to which this widget belongs.
+        '''
+        The display container to which this widget belongs.
         '''
         return self.__container
 
@@ -303,6 +340,7 @@ class Widget:
         """
         Set a font on this widget.
 
-        See toga.Font.
+        :param font: The new font
+        :type  font: :class:`toga.Font`
         """
         self._set_font(font)

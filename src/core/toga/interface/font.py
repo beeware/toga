@@ -9,13 +9,26 @@ class Font:
         self.create()
 
     def create(self):
+        '''
+        Create font
+        '''
         raise NotImplementedError(
             'Platform implementation must define create()')
 
     @property
     def family(self):
+        '''
+        Font family, e.g. Helvetica
+        
+        :rtype: ``str``
+        '''
         return self._family
 
     @property
     def size(self):
+        '''
+        Font size
+        
+        :rtype: ``int``
+        '''
         return self._size

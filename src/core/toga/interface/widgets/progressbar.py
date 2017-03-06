@@ -2,18 +2,26 @@ from .base import Widget
 
 
 class ProgressBar(Widget):
-    """
+    '''
     Progressbar widget
-
-    :param id:          Identifier for this widget
-    :param style:       Style of the button
-    :type style:        colosseum.CSS
-    :param max:         Maximum of the progress bar
-    :type max:          int
-    :param value:       Current progress
-    :type value:        int
-    """
+    '''
     def __init__(self, id=None, style=None, max=None, value=None):
+        '''
+        Instantiate a new instance of the progress bar widget
+
+        :param id:          An identifier for this widget.
+        :type  id:          ``str``
+
+        :param style:       an optional style object. If no style is provided then a
+                            new one will be created for the widget.
+        :type style:        :class:`colosseum.CSSNode`
+
+        :param max: The maximum value
+        :type  max: ``int``
+
+        :param value: The initial value
+        :type  value: ``int``
+        '''
         super().__init__(id=id, style=style, max=max, value=value)
 
     def _configure(self, max, value):
@@ -24,6 +32,11 @@ class ProgressBar(Widget):
 
     @property
     def value(self):
+        '''
+        The progress value
+        
+        :rtype: ``int``
+        '''
         return self._value
 
     @value.setter
@@ -33,6 +46,11 @@ class ProgressBar(Widget):
 
     @property
     def max(self):
+        '''
+        The maximum value
+
+        :rtype: ``int``
+        '''
         return self._max
 
     @max.setter
