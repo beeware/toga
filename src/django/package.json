@@ -1,6 +1,6 @@
 {
   "name": "@pybee/toga",
-  "version": "0.0.6-dev.4",
+  "version": "0.0.6-dev.5",
   "description": "A cross platform Python-native widget toolkit.",
   "author": "Russell Keith-Magee",
   "main": "toga/toga.js",
