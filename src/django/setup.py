@@ -31,7 +31,8 @@ setup(
     url='http://pybee.org/toga',
     packages=find_packages(exclude='tests'),
     install_requires=[
-        'django>=1.8',
+        'django==1.10.6',
+        'django-environ==0.4.1'
     ],
     license='New BSD',
     classifiers=[
