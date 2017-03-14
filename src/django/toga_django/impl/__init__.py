@@ -8,6 +8,7 @@
 from .app import App
 from .box import Box
 from .button import Button
+from .label import Label
 # from .list import List, SimpleListElement
 from .textinput import TextInput
 from .window import Window
@@ -40,7 +41,14 @@ def bootstrap_Window(element):
 
 
 def bootstrap_Box(element):
-    widget = Box(element.id)
+    widget = Box(element.id[5:])
+
+    element.toga = widget
+    widget.impl = element
+
+
+def bootstrap_Label(element):
+    widget = Label(element.id[5:], element.innerHTML)
 
     element.toga = widget
     widget.impl = element

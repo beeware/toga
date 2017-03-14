@@ -1,8 +1,44 @@
 class Window:
+    '''
+    Window
+    '''
     _CONTAINER_CLASS = None
     _DIALOG_MODULE = None
 
-    def __init__(self, id_=None, title=None, position=(100, 100), size=(640, 480), toolbar=None, resizeable=True, closeable=True, minimizable=True):
+    def __init__(self, id_=None, title=None,
+                 position=(100, 100), size=(640, 480),
+                 toolbar=None, resizeable=True,
+                 closeable=True, minimizable=True):
+        '''
+        Instantiates a window
+        
+        :param id_: The ID of the window (optional)
+        :type  id_: ``str``
+        
+        :param title: Title for the window (optional)
+        :type  title: ``str``
+        
+        :param position: Position of the window, as x,y coordinates
+        :type  position: ``tuple`` of (``int``, ``int``)
+        
+        :param size: Size of the window, as (width, height) sizes, in pixels
+        :type  size: ``tuple`` of (``int``, ``int``)
+        
+        :param toolbar: An list of widgets to add to a toolbar
+        :type  toolbar: ``list`` of :class:`toga.Widget`
+        
+        :param resizable: Toggle if the window is resizable by the user, defaults
+            to `True`.
+        :type  resizable: ``bool``
+        
+        :param closable: Toggle if the window is closable by the user, defaults
+            to `True`.
+        :type  closable: ``bool``
+        
+        :param minimizable: Toggle if the window is minimizable by the user, defaults
+            to `True`.
+        :type  minimizable: ``bool``
+        '''
         if self._CONTAINER_CLASS is None:
             raise NotImplementedError('Window class must define show()')
 
@@ -39,6 +75,11 @@ class Window:
 
     @property
     def app(self):
+        '''
+        Instance of the :class:`toga.App` that this window belongs to
+        
+        :rtype: :class:`toga.App`
+        '''
         return self._app
 
     @app.setter
@@ -54,6 +95,11 @@ class Window:
 
     @property
     def title(self):
+        '''
+        Title of the window
+        
+        :rtype: ``str``
+        '''
         return self._title
 
     @title.setter
@@ -66,6 +112,11 @@ class Window:
 
     @property
     def toolbar(self):
+        '''
+        Toolbar for the window
+        
+        :rtype: ``list`` of :class:`toga.Widget`
+        '''
         return self._toolbar
 
     @toolbar.setter
@@ -80,11 +131,17 @@ class Window:
 
     @property
     def content(self):
+        '''
+        Content of the window
+        
+        :rtype: :class:`toga.Widget`
+        '''
         return self._content
 
     @content.setter
     def content(self, widget):
         # Save the content widget.
+        widget._update_layout()
         if widget._impl is None:
             self._container = self._CONTAINER_CLASS()
             self._container.content = widget
@@ -106,6 +163,11 @@ class Window:
 
     @property
     def size(self):
+        '''
+        Size of the window, as width, height
+        
+        :rtype: ``tuple`` of (``int``, ``int``)
+        '''
         return self._size
 
     @size.setter
@@ -118,6 +180,11 @@ class Window:
 
     @property
     def position(self):
+        '''
+        Position of the window, as x, y
+        
+        :rtype: ``tuple`` of (``int``, ``int``)
+        '''
         return self._position
 
     @position.setter
@@ -129,6 +196,9 @@ class Window:
         pass
 
     def show(self):
+        '''
+        Show window, if hidden
+        '''
         raise NotImplementedError('Window class must define show()')
 
     def on_close(self):

@@ -24,12 +24,16 @@ with io.open('README.rst', encoding='utf8') as readme:
 setup(
     name='toga-winforms',
     version=version,
-    description='A Microsoft Winforms backend for the Toga widget toolkit.',
+    description='A Microsoft .Net backend for the Toga widget toolkit using the WinForms API.',
     long_description=long_description,
     author='Russell Keith-Magee',
     author_email='russell@keith-magee.com',
     url='http://pybee.org/toga',
     packages=find_packages(exclude='tests'),
+    install_requires=[
+        'pythonnet',
+        'toga-core>=%s' % version,
+    ],
     license='New BSD',
     classifiers=[
         'Development Status :: 3 - Alpha',

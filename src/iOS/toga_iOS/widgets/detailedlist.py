@@ -1,5 +1,7 @@
 from rubicon.objc import objc_method
 
+from toga.interface import DetailedList as DetailedListInterface
+
 from .base import WidgetMixin
 from ..libs import *
 # from ..utils import process_callback
@@ -44,28 +46,29 @@ class TogaTableViewController(UITableViewController):
         self.tableView.reloadData()
 
 
-class List(WidgetMixin):
-    def __init__(self, data=None, on_delete=None, on_refresh=None, style=None):
-        super().__init__(style=style)
-        self.data = data
-        self.on_delete = on_delete
-        self.on_refresh = on_refresh
+class DetailedList(DetailedListInterface, WidgetMixin):
+    def __init__(self, id=None, data=None, on_delete=None, on_refresh=None, style=None):
+        super().__init__(id=id, data=data, on_delete=on_delete, on_refresh=on_refresh, style=style)
+        self._create()
 
-        self.startup()
+    def create(self):
+        self._controller = TogaTableViewController.alloc().init()
+        self._controller.interface = self
+        self._impl = self._controller.tableView
 
-    def startup(self):
-        self._impl = TogaTableViewController.alloc().init()
-        self._impl.interface = self
-
-        self._impl.refreshControl = UIRefreshControl.alloc().init()
-        self._impl.refreshControl.addTarget_action_forControlEvents_(
-            self._impl,
+        self._controller.refreshControl = UIRefreshControl.alloc().init()
+        self._controller.refreshControl.addTarget_action_forControlEvents_(
+            self._controller,
             get_selector('refresh'),
             UIControlEventValueChanged
         )
 
-        self._impl.data = self.data
+        self._controller.data = self._config['data']
 
-    def add(self, item):
+        # Add the layout constraints
+        self._add_constraints()
+
+    def _add(self, item):
         self.data.append(item)
-        self._impl.tableView.reloadData()
+        self._controller.tableView.reloadData()
+

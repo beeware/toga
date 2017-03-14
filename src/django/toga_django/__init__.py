@@ -12,7 +12,7 @@ from .widgets.button import *
 # from .widgets.icon import *
 # from .widgets.image import *
 # from .widgets.imageview import *
-# from .widgets.label import *
+from .widgets.label import *
 # from .widgets.list import *
 # from .widgets.dialog import *
 # from .widgets.multilinetextinput import *
@@ -37,7 +37,7 @@ __all__ = [
 #     'Icon', 'TIBERIUS_ICON',
 #     'Image',
 #     'ImageView',
-#     'Label',
+    'Label',
     # 'List', 'SimpleListElement',
 #     'Dialog',
 #     'MultilineTextInput',

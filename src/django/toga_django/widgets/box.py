@@ -10,7 +10,10 @@ class Box(BoxInterface, WidgetMixin):
         self._create()
 
     def create(self):
-        self._impl = impl.Box(id=self.id)
+        self._impl = impl.Box(
+            id=self.id,
+            style=self.style,
+        )
 
     def _add_child(self, child):
         self._impl.add_child(child._impl)

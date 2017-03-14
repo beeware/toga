@@ -1,11 +1,12 @@
 
 class SimpleListElement:
-    def __init__(self, id, content, delete_url=None, on_press=None):
+    def __init__(self, id, content, delete_url=None, on_press=None, style=None):
         self.id = id
 
         self.content = content
         self.delete_url = delete_url
         self.on_press = on_press
+        self.style = style
 
     def __html__(self):
         return '<tr id="toga:%s" data-toga-class="toga.SimpleListElement" data-toga-parent="%s" data-toga-ports="%s" data-toga-delete-url="%s" data-toga-on-press="%s"><td>%s</td><td style="width:1em;">%s</td></tr>' % (

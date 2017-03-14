@@ -38,17 +38,21 @@ class PythonAppDelegate(UIResponder):
 class App(AppInterface):
     _MAIN_WINDOW_CLASS = MainWindow
 
-    def __init__(self, name, app_id, startup=None, document_types=None):
+    def __init__(self, name, app_id, icon=None, startup=None, document_types=None):
         super().__init__(
             name=name,
             app_id=app_id,
-            icon=None,
+            icon=None,  # Icon is ignored on iOS
             startup=startup,
             document_types=document_types
         )
 
     def _startup(self):
         self.startup()
+
+    def open_document(self, fileURL):
+        '''Add a new document to this app.'''
+        print("")
 
     def main_loop(self):
         # Main loop is a no-op on iOS; the app loop is integrated with the

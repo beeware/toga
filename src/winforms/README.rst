@@ -1,13 +1,9 @@
 toga-winforms
 =============
 
-A Microsoft Winforms backend for the `Toga widget toolkit`_.
+A Microsoft .NET backend for the `Toga widget toolkit`_ utilizing the WinForms API.
 
 **Toga requires Python 3**
-
-**THIS IS A PLACEHOLDER PROJECT**
-
-At present, it has no functionality - it exists purely to reserve the PyPI namespace.
 
 This package isn't much use by itself; it needs to be combined with `the core Toga library`_.
 

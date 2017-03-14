@@ -1,8 +1,9 @@
-from toga import identifier
+from builtins import id as identifier
 
 
 class App(object):
-    '''The App is the top level of any GUI program. It is the manager of all
+    '''
+    The App is the top level of any GUI program. It is the manager of all
     the other bits of the GUI app: the main window and events that window
     generates like user input.
 
@@ -23,7 +24,31 @@ class App(object):
     _MAIN_WINDOW_CLASS = None
     app = None
 
-    def __init__(self, name, app_id, icon=None, id=None, startup=None, document_types=None):
+    def __init__(self, name, app_id, icon=None,
+                 id=None, startup=None, document_types=None):
+        '''
+        Instantiate a new application
+        
+        :param name: The name of the application
+        :type  name: ``str``
+        
+        :param app_id: The unique application identifier,
+            the reversed domain name, e.g. 'org.pybee.me'
+        :type  app_id: ``str``
+        
+        :param icon: Icon for the application
+        :type  icon: ``str``
+        
+        :param id: The DOM identifier for the app (optional)
+        :type  id: ``str``
+        
+        :param startup: The callback method before starting the app, typically
+            to add the components
+        :type  startup: ``callable`` that expects a single argument of :class:`toga.App`
+        
+        :param document_types: Document types
+        :type  document_types: ``list`` of ``str``
+        '''
         App.app = self
 
         if self._MAIN_WINDOW_CLASS is None:
@@ -42,36 +67,57 @@ class App(object):
 
     @property
     def app_id(self):
-        '''The identifier for the app.
+        '''
+        The identifier for the app.
 
         This is the reversed domain name, often used for targetting resources, etc.
+        
+        :rtype: ``str``
         '''
         return self._id
 
     @property
     def id(self):
-        '''The DOM identifier for the app.
+        '''
+        The DOM identifier for the app.
 
         This id can be used to target CSS directives
+        
+        :rtype: ``str``
         '''
         return self._id
 
     @property
     def documents(self):
-        '''Return the list of documents associated with this app.'''
+        '''
+        Return the list of documents associated with this app.
+        
+        :rtype: ``list`` of ``str``
+        '''
         return self._documents
 
     def add_document(self, doc):
-        '''Add a new document to this app.'''
+        '''
+        Add a new document to this app.
+        
+        :param doc: The document to add
+        '''
         doc.app = self
         self._documents.append(doc)
 
     def open_document(self, fileURL):
-        '''Add a new document to this app.'''
+        '''
+        Add a new document to this app.
+        
+        :param fileURL: The URL/path to the file to add as a document
+        :type  fileURL: ``str``
+        '''
         raise NotImplementedError('Application class must define open_document()')
 
     def startup(self):
-        '''Create and show the main window for the application'''
+        '''
+        Create and show the main window for the application
+        '''
         self.main_window = self._MAIN_WINDOW_CLASS(self.name)
         self.main_window.app = self
 
@@ -81,7 +127,8 @@ class App(object):
         self.main_window.show()
 
     def main_loop(self):
-        '''Invoke the application to handle user input.
+        '''
+        Invoke the application to handle user input.
 
         This method typically only returns once the application is exiting.
         '''

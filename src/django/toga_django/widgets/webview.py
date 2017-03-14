@@ -14,7 +14,8 @@ class WebView(WebViewInterface, WidgetMixin):
         self._impl = impl.WebView(
             id=self.id,
             url=self._config['url'],
-            on_key_down=self.handler(self._config['on_key_down'], 'on_key_down') if self._config['on_key_down'] else None
+            on_key_down=self.handler(self._config['on_key_down'], 'on_key_down') if self._config['on_key_down'] else None,
+            style=self.style,
         )
 
     def _set_url(self, value):

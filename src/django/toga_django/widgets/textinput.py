@@ -17,6 +17,7 @@ class TextInput(TextInputInterface, WidgetMixin):
             placeholder=self._config['placeholder'],
             readonly=self._config['readonly'],
             # on_press=self.handler(self._config['on_press'], 'on_press') if self._config['on_press'] else None
+            style=self.style,
         )
 
     # def _set_window(self, window):
