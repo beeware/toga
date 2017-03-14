@@ -25,7 +25,8 @@ Toga has some minimum requirements:
 
   * **Debian** ??
 
-  * **Fedora** ``dnf install python3-gobject pywebkitgtk`` 
+  * **Fedora** ``dnf install python3-gobject pywebkitgtk``
+    or ``yum install python3-gobject pywebkitgtk`` 
 
 If these requirements aren't met, Toga either won't work at all, or won't have
 full functionality.
