@@ -5,7 +5,7 @@ class Switch(Widget):
     """
     Switch widget, a clickable button with two stable states, True (on, checked) and False (off, unchecked)
 
-    :param label:       Text to be shown next to the Switch
+    :param label:       Text to be shown next to the switch
     :type label:        ``str``
 
     :param id:          An identifier for this widget.
@@ -15,37 +15,38 @@ class Switch(Widget):
                         new one will be created for the widget.
     :type style:        :class:`colosseum.CSSNode`
 
-    :param on_press:    Function to execute when pressed
-    :type on_press:     ``callable``
+    :param on_toggle:    Function to execute when pressed
+    :type on_toggle:     ``callable``
 
-    :param state        Current state of the Switch
-    :type state         ``Bool`
+    :param is_on        Current on or off state of the switch
+    :type is_on         ``Bool`
     """
 
-    def __init__(self, label, id=None, style=None, on_press=None, state=False):
-        super().__init__(id=id, style=style, label=label, on_press=on_press, state=state)
+    def __init__(self, label, id=None, style=None, on_toggle=None, is_on=False, enabled=True):
+        super().__init__(id=id, style=style, label=label, on_toggle=on_toggle, is_on=is_on, enabled=enabled)
 
-    def _configure(self, label, on_press, state):
+    def _configure(self, label, on_toggle, is_on, enabled):
         self.label = label
-        self.on_press = on_press
-        self.state = state
+        self.on_toggle = on_toggle
+        self.is_on = is_on
+        self.enabled = enabled
 
     @property
     def label(self):
-        '''
+        """
         :returns: The label value
         :rtype: ``str``
-        '''
+        """
         return self._label
 
     @label.setter
     def label(self, value):
-        '''
+        """
         Set the label value
 
         :param value: The new label value
         :type  value: ``str``
-        '''
+        """
         if value is None:
             self._label = ''
         else:
@@ -57,46 +58,74 @@ class Switch(Widget):
         raise NotImplementedError('The inheriting class of {} must define _set_label()')
 
     @property
-    def on_press(self):
-        '''
+    def on_toggle(self):
+        """
         The callable function for when the switch is pressed
 
         :rtype: ``callable``
-        '''
-        return self._on_press
+        """
+        return self._on_toggle
 
-    @on_press.setter
-    def on_press(self, handler):
-        self._on_press = handler
-        self._set_on_press(handler)
+    @on_toggle.setter
+    def on_toggle(self, handler):
+        self._on_toggle = handler
+        self._set_on_toggle(handler)
 
-    def _set_on_press(self, value):
+    def _set_on_toggle(self, value):
         pass
 
     @property
-    def state(self):
-        '''
-        :returns: The state value
+    def is_on(self):
+        """
+        :returns: The is_on value
 
         :rtype: ``Bool``
-        '''
-        return self._get_state()
+        """
+        return self._get_is_on()
 
-    @state.setter
-    def state(self, value):
-        '''
-        Set the state value
+    @is_on.setter
+    def is_on(self, value):
+        """
+        Set the is_on value
 
-        :param value: The new state value
+        :param value: The new is_on value
         :type  value: ``Bool``
-        '''
+        """
         if value is True:
-            self._set_state(True)
+            self._set_is_on(True)
         elif value is False:
-            self._set_state(False)
+            self._set_is_on(False)
 
-    def _set_state(self, value):
-        raise NotImplementedError('The inheriting class of {} must define _set_state()'.format(__class__))
+    @property
+    def enabled(self):
+        """
+        :returns: The enabled state of the switch
 
-    def _get_state(self):
-        raise NotImplementedError('The inheriting class of {} must define _get_state()'.format(__class__))
+        :rtype  value: ``Bool``
+        """
+        return self._get_enabled()
+
+    @enabled.setter
+    def enabled(self, value):
+        """
+        Set the enabled state of the switch
+
+        :param value: The new enabled value
+        :type  value: ``Bool``
+        """
+        if value is True:
+            self._set_enabled(True)
+        elif value is False:
+            self._set_enabled(False)
+
+    def _set_is_on(self, value):
+        raise NotImplementedError('The inheriting class of {} must define _set_is_on()'.format(__class__))
+
+    def _get_is_on(self):
+        raise NotImplementedError('The inheriting class of {} must define _get_is_on()'.format(__class__))
+
+    def _set_enabled(self, value):
+        raise NotImplementedError('The inheriting class of {} must define _set_enabled()'.format(__class__))
+
+    def _get_enabled(self):
+        raise NotImplementedError('The inheriting class of {} must define _get_enabled()'.format(__class__))

@@ -10,13 +10,13 @@ from ..utils import process_callback
 class TogaSwitch(NSButton):
     @objc_method
     def onPress_(self, obj) -> None:
-        if self._interface.on_press:
-            process_callback(self._interface.on_press(self._interface))
+        if self._interface.on_toggle:
+            process_callback(self._interface.on_toggle(self._interface))
 
 
 class Switch(SwitchInterface, WidgetMixin):
-    def __init__(self, label, id=None, style=None, on_press=None, state=False):
-        super().__init__(label, id=id, style=style, on_press=on_press, state=state)
+    def __init__(self, label, id=None, style=None, on_toggle=None, is_on=False):
+        super().__init__(label, id=id, style=style, on_toggle=on_toggle, is_on=is_on)
         self._create()
 
     def create(self):
@@ -35,20 +35,35 @@ class Switch(SwitchInterface, WidgetMixin):
         self._impl.setTitle_(self.label)
         self.rehint()
 
-    def _set_state(self, value):
+    def _set_is_on(self, value):
         if value is True:
             self._impl.state = NSOnState
         elif value is False:
             self._impl.state = NSOffState
 
-    def _get_state(self):
-        state = self._impl.state
-        if state == 1:
+    def _get_is_on(self):
+        is_on = self._impl.state
+        if is_on == 1:
             return True
-        elif state == 0:
+        elif is_on == 0:
             return False
         else:
-            raise Exception('Undefined state of {}'.format(__class__))
+            raise Exception('Undefined value for is_on of {}'.format(__class__))
+
+    def _set_enabled(self, value):
+        if value is True:
+            self._impl.enabled = True
+        elif value is False:
+            self._impl.enabled = False
+
+    def _get_enabled(self):
+        enabled = self._impl.isEnabled()
+        if enabled == 1:
+            return True
+        elif enabled == 0:
+            return False
+        else:
+            raise Exception('Undefined value for enabled of {}'.format(__class__))
 
     def rehint(self):
         fitting_size = self._impl.fittingSize()
