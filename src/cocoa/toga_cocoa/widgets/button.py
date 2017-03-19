@@ -15,8 +15,9 @@ class TogaButton(NSButton):
 
 
 class Button(ButtonInterface, WidgetMixin):
-    def __init__(self, label, id=None, style=None, on_press=None):
-        super().__init__(label, id=id, style=style, on_press=on_press)
+    def __init__(self, label, id=None, style=None, on_press=None, enabled=None):
+        super().__init__(label, id=id, style=style, on_press=on_press,
+                        enabled=enabled)
         self._create()
 
     def create(self):
@@ -34,6 +35,9 @@ class Button(ButtonInterface, WidgetMixin):
     def _set_label(self, label):
         self._impl.setTitle_(self.label)
         self.rehint()
+
+    def _set_enabled(self, value):
+        self._impl.setEnabled_(self.enabled)
 
     def rehint(self):
         fitting_size = self._impl.fittingSize()
