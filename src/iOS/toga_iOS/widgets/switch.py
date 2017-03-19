@@ -19,31 +19,39 @@ class Switch(SwitchInterface, WidgetMixin):
         self._create()
 
     def create(self):
-        self._impl = TogaSwitch.alloc().init()
+        # Hack! Because UISwitch has no label, we place it in a UITableViewCell to get a label
+        self._impl = UITableViewCell.alloc().initWithStyle_reuseIdentifier_(UITableViewCellStyleDefault, 'row')
         self._impl._interface = self
 
-        self._impl.addTarget_action_forControlEvents_(self._impl, get_selector('onPress:'), UIControlEventValueChanged)
+        self._impl_switch = TogaSwitch.alloc().init()
+        self._impl_switch._interface = self
+        self._impl_switch.addTarget_action_forControlEvents_(self._impl_switch, get_selector('onPress:'),
+                                                             UIControlEventValueChanged)
+        # Add Switch to UITableViewCell
+        self._impl.accessoryView = self._impl_switch
 
         # Add the layout constraints
         self._add_constraints()
 
     def _set_label(self, value):
-        Warning('{} does not implement the label functionality at the moment.'.format(__class__))
+        self._impl.textLabel.text = str(value)
 
     def _set_is_on(self, value):
-        self._impl.setOn_animated_(value, True)
+        self._impl_switch.setOn_animated_(value, True)
 
     def _get_is_on(self):
-        return self._impl.isOn()
+        return self._impl_switch.isOn()
 
     def _set_enabled(self, value):
         if value is True:
-            self._impl.enabled = True
+            self._impl.textLabel.enabled = True
+            self._impl.accessoryView.enabled = True
         elif value is False:
-            self._impl.enabled = False
+            self._impl.textLabel.enabled = False
+            self._impl.accessoryView.enabled = False
 
     def _get_enabled(self):
-        enabled = self._impl.isEnabled()
+        enabled = self._impl.accessoryView.isEnabled()
         if enabled == 1:
             return True
         elif enabled == 0:
