@@ -55,7 +55,7 @@ class Switch(Widget):
         self.rehint()
 
     def _set_label(self, value):
-        raise NotImplementedError('The inheriting class of {} must define _set_label()')
+        raise NotImplementedError('The inheriting class of {} must define _set_label()'.format(__class__))
 
     @property
     def on_toggle(self):
