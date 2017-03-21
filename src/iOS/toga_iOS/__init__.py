@@ -20,6 +20,7 @@ from .widgets.navigationview import *
 # from .widgets.passwordinput import *
 # from .widgets.progressbar import *
 # from .widgets.scrollcontainer import *
+from .widgets.slider import *
 # from .widgets.splitcontainer import *
 # from .widgets.table import *
 from .widgets.textinput import *
@@ -45,6 +46,7 @@ __all__ = [
     # 'PasswordInput',
     # 'ProgressBar',
     # 'ScrollContainer',
+    'Slider',
     # 'SplitContainer',
     # 'Table',
     'TextInput',

@@ -257,3 +257,6 @@ UITextBorderStyleRoundedRect = 3
 
 # UIWebView.h
 UIWebView = ObjCClass('UIWebView')
+
+# UISlider.h
+UISlider = ObjCClass('UISlider')
