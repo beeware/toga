@@ -25,7 +25,7 @@ from .widgets.button import *
 __all__ = [
     '__version__',
     'App',
-    'Window',
+    'Window', 'MainWindow',
     # 'Command', 'SEPARATOR', 'SPACER', 'EXPANDING_SPACER',
     'Box',
     'Button',

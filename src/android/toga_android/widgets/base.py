@@ -8,14 +8,14 @@ def wrapped_handler(widget, handler):
 
 class WidgetMixin:
     def _set_app(self, app):
-        pass
+        self._create()
 
     def _set_window(self, window):
         pass
 
     def _set_container(self, container):
         if self._impl:
-            self._container._impl.add(self._impl)
+            self._container._impl.addView(self._impl)
 
     def _add_child(self, child):
         if self._container:

@@ -200,7 +200,7 @@ class Widget:
 
         This *always* returns a list, even if the node is a leaf
         and cannot have children.
-        
+
         :rtype: ``list``
         :return: A list of the children for this widget
         '''
@@ -236,7 +236,7 @@ class Widget:
     def app(self):
         '''
         The App to which this widget belongs.
-        
+
         :rtype: :class:`toga.App`
         '''
         return self._app
@@ -245,23 +245,24 @@ class Widget:
     def app(self, app):
         '''
         Set the app to which this widget belongs
-        
+
         :param app: The Application host
         :type  app: :class:`toga.App`
         '''
         if self._app:
             raise Exception("Widget %r is already associated with an App" % self)
-        self._app = app
-        self._set_app(app)
-        if self._children is not None:
-            for child in self._children:
-                child.app = app
+        if app:
+            self._app = app
+            self._set_app(app)
+            if self._children is not None:
+                for child in self._children:
+                    child.app = app
 
     @property
     def window(self):
         '''
         The Window to which this widget belongs.
-        
+
         :rtype: :class:`toga.Window`
         '''
         return self._window
@@ -270,7 +271,7 @@ class Widget:
     def window(self, window):
         '''
         Set the Window to which this widget belongs.
-        
+
         :param window: The new window
         :type  window: :class:`toga.Window`
         '''
