@@ -11,4 +11,6 @@ class Box(BoxInterface, WidgetMixin):
         pass
 
     def rehint(self):
-        pass
+        # print("REHINT BOX", self.children)
+        for child in self.children:
+            child.rehint()

@@ -20,7 +20,6 @@ class WidgetMixin:
     def _add_child(self, child):
         if self._container:
             child._set_container(self._container)
-        self.rehint()
 
     def _apply_layout(self):
         pass

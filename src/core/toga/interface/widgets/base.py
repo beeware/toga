@@ -168,21 +168,7 @@ class Widget:
 
     @style.setter
     def style(self, value):
-        self._style = value
-        self._engine = value.engine(self)
-
-    ######################################################################
-    # Compute layout
-    ######################################################################
-    def compute(self, max_width=None):
-        if self.layout.dirty != False:
-            # If the layout is actually dirty, reset the layout
-            # and mark the layout as currently being recomputed.
-            if self.layout.dirty:
-                self.layout.reset()
-                self.layout.dirty = None
-            self._engine.compute(max_width)
-            self.layout.dirty = False
+        self._style = value.bind(self)
 
     @property
     def parent(self):
@@ -319,11 +305,11 @@ class Widget:
             self.layout.dirty = True
 
         # Recompute layout for this widget
-        self.compute()
+        self.style.apply()
+
         # Update the layout parameters for all children.
         # This will also perform a leaf-first update of
         # the constraint on each widget.
-
         self._update_child_layout()
 
         # Set the constraints the widget to adhere to the new style.

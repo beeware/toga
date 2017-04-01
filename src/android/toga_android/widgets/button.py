@@ -29,14 +29,13 @@ class Button(ButtonInterface, WidgetMixin):
 
         self._impl.setOnClickListener(self._listener)
 
-        self.rehint()
-
     def _set_label(self, label):
         self._impl.setText(self.label)
-        self.rehint()
 
     def rehint(self):
-        self.style.hint(
-            min_width=self._impl.getMeasuredWidth(),
-            height=self._impl.getMeasuredHeight(),
-        )
+        if self._impl.getMeasuredWidth():
+            # print("REHINT button", self, self._impl.getMeasuredWidth(), self._impl.getMeasuredHeight())
+            self.style.hint(
+                min_width=self._impl.getMeasuredWidth(),
+                height=self._impl.getMeasuredHeight(),
+            )

@@ -20,11 +20,6 @@ class Window(WindowInterface):
         self.app._impl.setContentView(self._container._impl)
 
     def show(self):
-        # Do the first layout render.
-        self.content._update_layout(
-            # width=self._screen.bounds.size.width,
-            # height=self._screen.bounds.size.height
-        )
         pass
 
     def _set_title(self, title):

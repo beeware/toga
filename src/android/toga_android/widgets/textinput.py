@@ -1,42 +1,42 @@
-# from android.widget import EditText
-#
-# from ..app import App
-# from .base import Widget
-#
-#
-# class TextInput(Widget):
-#     def __init__(self, initial=None, placeholder=None, readonly=False, **style):
-#         default_style = {
-#             'margin': 8
-#         }
-#         default_style.update(style)
-#         super(TextInput, self).__init__(**default_style)
-#         self.placeholder = placeholder
-#
-#         self.startup()
-#
-#         self.value = initial
-#         # self.readonly = readonly
-#
-#     def startup(self):
-#         self._impl = EditText(App._impl)
-#         if self.placeholder:
-#             self._impl.setHint(self.placeholder)
-#
-#     @property
-#     def readonly(self):
-#         return self._readonly
-#
-#     @readonly.setter
-#     def readonly(self, value):
-#         self._readonly = value
-#         # self._impl.setEditable_(not self._readonly)
-#
-#     @property
-#     def value(self):
-#         return self._impl.getText().toString()
-#
-#     @value.setter
-#     def value(self, value):
-#         if value:
-#             self._impl.setText(value)
+from toga.interface import TextInput as TextInputInterface
+
+from .base import WidgetMixin
+from ..libs import NSTextField, NSTextFieldSquareBezel
+
+
+class TogaTextInput(extends=android.widget.EditText):
+    @super({context: android.content.Context})
+    def __init__(self, context, interface):
+        self._interface = interface
+
+
+class TextInput(TextInputInterface, WidgetMixin):
+    def __init__(self, id=None, style=None, initial=None, placeholder=None, readonly=False):
+        super().__init__(id=id, style=style, initial=initial, placeholder=placeholder, readonly=readonly)
+
+    def create(self):
+        print ("create text input")
+        self._impl = TogaTextInput(self.app._impl, self)
+
+    def _set_readonly(self, value):
+        # self._impl.editable = not value
+        pass
+
+    def _set_placeholder(self, value):
+        # self._impl.cell.placeholderString = self._placeholder
+        pass
+
+    def _get_value(self):
+        return self._impl.getText()
+
+    def _set_value(self, value):
+        self._impl.setText(value)
+
+    def rehint(self):
+        # Height of a text input is known and fixed.
+        if self._impl.getMeasuredHeight():
+            # print("REHINT text input", self, self._impl.getMeasuredWidth(), self._impl.getMeasuredHeight())
+            self.style.hint(
+                height=self._impl.getMeasuredHeight(),
+                min_width=100
+            )

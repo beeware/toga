@@ -8,30 +8,31 @@ class CSSLayout(extends=android.view.ViewGroup):
         return False
 
     def onMeasure(self, width: int, height: int) -> void:
-        print("ON MEASURE %sx%s" % (width, height))
+        # print("ON MEASURE %sx%s" % (width, height))
         self.measureChildren(width, height)
+        self._interface.rehint()
         self.setMeasuredDimension(width, height)
 
     def onLayout(self, changed: bool, left: int, top: int, right: int, bottom: int) -> void:
-        print("ON LAYOUT %s %sx%s -> %sx%s" % (changed, left, top, right, bottom))
+        # print("ON LAYOUT %s %sx%s -> %sx%s" % (changed, left, top, right, bottom))
 
         self._interface._update_layout(
             width=right - left,
             height=bottom - top,
         )
+        self._interface.style.apply()
 
         count = self.getChildCount()
-        print("LAYOUT: There are %d children" % count)
+        # print("LAYOUT: There are %d children" % count)
         for i in range(0, count):
             child = self.getChildAt(i)
-            print("    child: %s" % child, child.getMeasuredHeight(), child.getMeasuredWidth())
-            print("    min child: %s" % child, child.getSuggestedMinimumHeight(), child.getSuggestedMinimumWidth())
-            print("    layout: %s" % child, child._interface.layout)
+            # print("    child: %s" % child, child.getMeasuredHeight(), child.getMeasuredWidth())
+            # print("    layout: ", child._interface.layout)
             child.layout(
-                child._interface.layout.top,
-                child._interface.layout.left,
-                child.getMeasuredWidth(),
-                child.getMeasuredHeight()
+                child._interface.layout.absolute.left,
+                child._interface.layout.absolute.top,
+                child._interface.layout.absolute.left + child._interface.layout.width,
+                child._interface.layout.absolute.top + child._interface.layout.height,
             )
 
     # def onSizeChanged(self, left: int, top: int, right: int, bottom: int) -> void:
@@ -42,7 +43,6 @@ class CSSLayout(extends=android.view.ViewGroup):
     #     for i in range(0, count):
     #         child = self.getChildAt(i)
     #         print("    child: %s" % child)
-
 
 class Container:
     def __init__(self):

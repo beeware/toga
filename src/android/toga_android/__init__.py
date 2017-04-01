@@ -9,7 +9,7 @@ from .widgets.button import *
 # from .widgets.icon import *
 # from .widgets.image import *
 # from .widgets.imageview import *
-# from .widgets.label import *
+from .widgets.label import *
 # from .widgets.dialog import *
 # from .widgets.multilinetextinput import *
 # from .widgets.optioncontainer import *
@@ -18,7 +18,7 @@ from .widgets.button import *
 # from .widgets.scrollcontainer import *
 # from .widgets.splitcontainer import *
 # from .widgets.table import *
-# from .widgets.textinput import *
+from .widgets.textinput import *
 # from .widgets.tree import *
 # from .widgets.webview import *
 
@@ -32,7 +32,7 @@ __all__ = [
     # 'Icon', 'TIBERIUS_ICON',
     # 'Image',
     # 'ImageView',
-    # 'Label',
+    'Label',
     # 'Dialog',
     # 'MultilineTextInput',
     # 'OptionContainer',
@@ -41,7 +41,7 @@ __all__ = [
     # 'ScrollContainer',
     # 'SplitContainer',
     # 'Table',
-    # 'TextInput',
+    'TextInput',
     # 'Tree',
     # 'WebView',
 ]
