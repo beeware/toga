@@ -69,7 +69,7 @@ function dev {
     popd
 }
 
-MODULES="toga core cocoa iOS gtk django"
+MODULES="toga core cocoa iOS gtk django android winforms"
 
 action=$1
 shift
