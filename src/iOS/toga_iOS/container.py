@@ -41,7 +41,7 @@ class Constraints:
             self._widget._impl, NSLayoutAttributeLeft,
             NSLayoutRelationEqual,
             self._container._impl, NSLayoutAttributeLeft,
-            1.0, self._widget.style.layout.absolute.left
+            1.0, self._widget.layout.absolute.left
         )
         self._container._impl.addConstraint_(self._left_constraint)
 
@@ -49,7 +49,7 @@ class Constraints:
             self._widget._impl, NSLayoutAttributeTop,
             NSLayoutRelationEqual,
             self._container._impl, NSLayoutAttributeTop,
-            1.0, self._widget.style.layout.absolute.top
+            1.0, self._widget.layout.absolute.top
         )
         self._container._impl.addConstraint_(self._top_constraint)
 
@@ -57,7 +57,7 @@ class Constraints:
             self._widget._impl, NSLayoutAttributeRight,
             NSLayoutRelationEqual,
             self._widget._impl, NSLayoutAttributeLeft,
-            1.0, self._widget.style.layout.width
+            1.0, self._widget.layout.width
         )
         self._container._impl.addConstraint_(self._width_constraint)
 
@@ -65,7 +65,7 @@ class Constraints:
             self._widget._impl, NSLayoutAttributeBottom,
             NSLayoutRelationEqual,
             self._widget._impl, NSLayoutAttributeTop,
-            1.0, self._widget.style.layout.height
+            1.0, self._widget.layout.height
         )
         self._container._impl.addConstraint_(self._height_constraint)
 
@@ -92,11 +92,11 @@ class Constraints:
         # print("UPDATE", self._widget, 'in', self._container, 'to', self._widget.style.layout)
         if self._container:
             # print("     in", self._container)
-            self.top = self._widget.style.layout.absolute.top
-            self.left = self._widget.style.layout.absolute.left
+            self.top = self._widget.layout.absolute.top
+            self.left = self._widget.layout.absolute.left
 
-            self.width = self._widget.style.layout.width
-            self.height = self._widget.style.layout.height
+            self.width = self._widget.layout.width
+            self.height = self._widget.layout.height
 
     @property
     def width(self):
@@ -186,7 +186,7 @@ class Container:
 
     def _update_layout(self, **style):
         if self._content:
-            self._constraints.width = self._content.style.layout.width
-            self._constraints.height = self._content.style.layout.height
+            self._constraints.width = self._content.layout.width
+            self._constraints.height = self._content.layout.height
 
             self._content._update_layout(**style)

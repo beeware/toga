@@ -11,7 +11,7 @@ class WebView:
             <iframe id="toga:%s" class="toga WebView" style="%s" src="%s" data-toga-class="toga.WebView" data-toga-ports="%s">
             </iframe>""" % (
                 self.id,
-                self.style.render(),
+                self.style,
                 self.url if self.url else ''
                 '',  #  self.ports,
             )
