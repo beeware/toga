@@ -54,4 +54,4 @@ __all__ = [
 # __version__ = '1.2.3'       # Final Release
 # __version__ = '1.2.3.post1' # Post Release 1
 
-__version__ = '0.2.6'
+__version__ = '0.2.7.dev1'
