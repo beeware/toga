@@ -37,7 +37,7 @@ class AppDelegate(NSObject):
 
     @objc_method
     def addDocument_(self, document) -> None:
-        print("Add Document", document)
+        # print("Add Document", document)
         super().addDocument_(document)
 
     @objc_method
@@ -46,12 +46,10 @@ class AppDelegate(NSObject):
 
     @objc_method
     def application_openFiles_(self, app, filenames) -> None:
-        print("open file ", filenames)
+        # print("open file ", filenames)
         for i in range(0, filenames.count):
             filename = filenames.objectAtIndex_(i)
-            print("OPEN", filename)
             if isinstance(filename, str):
-                print("convert", filename, 'to URL')
                 fileURL = NSURL.fileURLWithPath_(filename)
 
             elif filename.__dict__['objc_class'].__dict__['name'] == 'NSURL':
@@ -59,7 +57,6 @@ class AppDelegate(NSObject):
                 # DocumentController to display the file open dialog.
                 # If we were, *all* filenames passed in would be
                 # string paths.
-                print("ALREADY A URL")
                 fileURL = filename
             else:
                 return
