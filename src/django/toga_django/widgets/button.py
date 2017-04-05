@@ -25,3 +25,6 @@ class Button(ButtonInterface, WidgetMixin):
 
     def _set_label(self, label):
         pass
+
+    def _set_enabled(self, value):
+        pass

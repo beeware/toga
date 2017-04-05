@@ -33,6 +33,9 @@ class Button(ButtonInterface, WidgetMixin):
     def _set_label(self, value):
         self._impl.setTitle_forState_(value, UIControlStateNormal)
 
+    def _set_enabled(self, value):
+        pass
+
     def rehint(self):
         fitting_size = self._impl.systemLayoutSizeFittingSize_(CGSize(0, 0))
         self.style.hint(
