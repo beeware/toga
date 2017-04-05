@@ -36,7 +36,7 @@ class Constraints:
     @_container.setter
     def _container(self, value):
         self.__container = value
-        # print("Add constraints for", self._widget, 'in', self._container, self._widget.style.layout)
+        # print("Add constraints for", self._widget, 'in', self._container, self._widget.layout)
         self._left_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
             self._widget._impl, NSLayoutAttributeLeft,
             NSLayoutRelationEqual,
@@ -89,7 +89,7 @@ class Constraints:
         self._widget._impl.addConstraint_(self._width_constraint)
 
     def update(self):
-        # print("UPDATE", self._widget, 'in', self._container, 'to', self._widget.style.layout)
+        # print("UPDATE", self._widget, 'in', self._container, 'to', self._widget.layout)
         if self._container:
             # print("     in", self._container)
             self.top = self._widget.layout.absolute.top

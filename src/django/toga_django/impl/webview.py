@@ -12,7 +12,7 @@ class WebView:
             </iframe>""" % (
                 self.id,
                 self.style,
-                self.url if self.url else ''
+                self.url if self.url else '',
                 '',  #  self.ports,
             )
 
