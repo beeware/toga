@@ -1,6 +1,6 @@
 from toga.interface import SplitContainer as SplitContainerInterface
 
-from ..container import TogaContainer
+from ..container import Container
 from ..libs import *
 from .base import WidgetMixin
 
@@ -21,6 +21,8 @@ class TogaSplitViewDelegate(NSObject):
 
 
 class SplitContainer(SplitContainerInterface, WidgetMixin):
+    _CONTAINER_CLASS = Container
+
     def __init__(self, id=None, style=None, direction=SplitContainerInterface.VERTICAL):
         super().__init__(id=None, style=None, direction=direction)
         self._create()

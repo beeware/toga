@@ -39,7 +39,7 @@ class ScrollContainer(Widget):
     def content(self):
         '''
         Content of the scroll window
-        
+
         :rtype: :class:`toga.Widget`
         '''
         return self._content
@@ -48,10 +48,10 @@ class ScrollContainer(Widget):
     def content(self, widget):
         self._content = widget
         if widget:
-            self._content.window = self.window
-            self._content.app = self.app
-
             widget._update_layout()
+            self._content.app = self.app
+            self._content.window = self.window
+
             if widget._impl is None:
                 self._inner_container = self._CONTAINER_CLASS()
                 self._inner_container.root_content = widget
@@ -64,7 +64,7 @@ class ScrollContainer(Widget):
     def vertical(self):
         '''
         Enable vertical scaling
-        
+
         :rtype: ``bool``
         '''
         return self._vertical
@@ -78,7 +78,7 @@ class ScrollContainer(Widget):
     def horizontal(self):
         '''
         Enable horizontal scaling
-        
+
         :rtype: ``bool``
         '''
         return self._horizontal
