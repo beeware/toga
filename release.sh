@@ -122,7 +122,7 @@ elif [ "$action" = "dev" ]; then
     git pull
 
     for module in $MODULES; do
-        $action $module $version
+        bump $module $version.dev1
     done
 
     git commit -m "Bumped version number for v$version development."
