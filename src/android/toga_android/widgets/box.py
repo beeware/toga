@@ -6,10 +6,11 @@ from .base import WidgetMixin
 class Box(BoxInterface, WidgetMixin):
     def __init__(self, id=None, style=None, children=None):
         super().__init__(id=id, style=style, children=children)
-        self._create()
 
     def create(self):
         pass
 
     def rehint(self):
-        pass
+        # print("REHINT BOX", self.children)
+        for child in self.children:
+            child.rehint()

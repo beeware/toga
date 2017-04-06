@@ -7,7 +7,6 @@ function bump {
         pushd .
         mv setup.py temp
         sed "s/version='.*',/version='$2',/g" temp > setup.py
-        rm temp
         git add setup.py
     else
         if [ "$1" = "core" ]; then
@@ -24,28 +23,27 @@ function bump {
 }
 
 function build {
-    cd $1
     echo "BUILD $1"
-    rm -rf build dist
-    python setup.py sdist bdist_wheel
-    cd ..
+    if [ "$1" = "toga" ]; then
+        rm -rf build dist
+        python setup.py sdist bdist_wheel
+    else
+        cd src/$1
+        rm -rf build dist
+        python setup.py sdist bdist_wheel
+        cd ../..
+    fi
 }
 
 function release {
-    cd $1
     echo "RELEASE $1 version $2"
-    python setup.py sdist bdist_wheel
     if [ "$1" = "toga" ]; then
-        twine upload dist/toga-$1-*
-        twine upload dist/toga-$1.*
+        twine upload "dist/toga-$2-py3-none-any.whl"
+        twine upload "dist/toga-$2.tar.gz"
     else
-        twine upload dist/toga_$1-$2-*
-        twine upload dist/toga-$1-$2.*
+        twine upload "src/$1/dist/toga_$1-$2-py3-none-any.whl"
+        twine upload "src/$1/dist/toga-$1-$2.tar.gz"
     fi
-    git tag v$1
-    git push
-    git push --tags
-    cd ..
 }
 
 function dev {
@@ -69,7 +67,7 @@ function dev {
     popd
 }
 
-MODULES="toga core cocoa iOS gtk django"
+MODULES="toga core cocoa iOS gtk django android winforms"
 
 action=$1
 shift
@@ -102,6 +100,10 @@ elif [ "$action" = "release" ]; then
         $action $module $version
     done
 
+    git tag v$version
+    git push
+    git push --tags
+
 elif [ "$action" = "bump" ]; then
     version=$1
     shift
@@ -120,7 +122,7 @@ elif [ "$action" = "dev" ]; then
     git pull
 
     for module in $MODULES; do
-        $action $module $version
+        bump $module $version.dev1
     done
 
     git commit -m "Bumped version number for v$version development."

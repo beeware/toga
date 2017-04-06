@@ -6,8 +6,7 @@ from .window import Window
 
 
 class MainWindow(Window):
-    def show(self):
-        self.app._impl.setContentView(self.content._impl)
+    pass
 
 
 class TogaApp:
@@ -52,7 +51,10 @@ class App(AppInterface):
     def _startup(self):
         # Connect this app to the PythonActivity
         self._listener = TogaApp(self)
-        self._impl = PythonActivity.setApp(self._listener)
+
+        # Set the Python activity listener to be this app.
+        self._impl = PythonActivity.setListener(self._listener)
+
         # Call user code to populate the main window
         self.startup()
 

@@ -30,8 +30,10 @@ setup(
     author_email='russell@keith-magee.com',
     url='http://pybee.org/toga',
     packages=find_packages(exclude='tests'),
+    include_package_data=True,
     install_requires=[
-        'django>=1.8',
+        'django==1.10.6',
+        'django-environ==0.4.1'
     ],
     license='New BSD',
     classifiers=[
@@ -48,4 +50,5 @@ setup(
         'Topic :: Software Development :: Widget Sets',
     ],
     test_suite='tests',
+    zip_safe=False,
 )

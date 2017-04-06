@@ -9,7 +9,7 @@ class CSSLayout(Gtk.Fixed):
     def do_get_preferred_width(self):
         # Calculate the minimum and natural width of the container.
         # print("GET PREFERRED WIDTH")
-        width = self._interface.content.style.layout.width
+        width = self._interface.content.layout.width
         min_width = self._interface.min_width
         if min_width > width:
             width = min_width
@@ -21,7 +21,7 @@ class CSSLayout(Gtk.Fixed):
         # Calculate the minimum and natural height of the container.
         # height = self.interface.layout.height
         # print("GET PREFERRED HEIGHT")
-        height = self._interface.content.style.layout.height
+        height = self._interface.content.layout.height
         min_height = self._interface.min_height
         if min_height > height:
             height = min_height
@@ -32,6 +32,8 @@ class CSSLayout(Gtk.Fixed):
     def do_size_allocate(self, allocation):
         # print(self._interface, "Container layout", allocation.width, 'x', allocation.height, ' @ ', allocation.x, 'x', allocation.y)
         self.set_allocation(allocation)
+
+        self._interface.content.rehint()
 
         # Force a re-layout of widgets
         self._interface.content._update_layout(
@@ -45,12 +47,12 @@ class CSSLayout(Gtk.Fixed):
                 # print("CHILD NOT VISIBLE", widget._interface)
                 pass
             else:
-                # print("update ", widget._interface, widget._interface.style.layout)
+                # print("update ", widget._interface, widget._interface.layout)
                 child_allocation = Gdk.Rectangle()
-                child_allocation.x = widget._interface.style.layout.absolute.left
-                child_allocation.y = widget._interface.style.layout.absolute.top
-                child_allocation.width = widget._interface.style.layout.width
-                child_allocation.height = widget._interface.style.layout.height
+                child_allocation.x = widget._interface.layout.absolute.left
+                child_allocation.y = widget._interface.layout.absolute.top
+                child_allocation.width = widget._interface.layout.width
+                child_allocation.height = widget._interface.layout.height
 
                 widget.size_allocate(child_allocation)
 
@@ -70,8 +72,8 @@ class Container:
         # No cached minimum size; compute it by computing an
         # unhinted layout.
         self._update_layout()
-        self._min_width = self._content.style.layout.width
-        self._min_height = self._content.style.layout.height
+        self._min_width = self._content.layout.width
+        self._min_height = self._content.layout.height
         return self._min_width
 
     @property
@@ -82,8 +84,8 @@ class Container:
         # No cached minimum size; compute it by computing an
         # unhinted layout.
         self._update_layout()
-        self._min_width = self._content.style.layout.width
-        self._min_height = self._content.style.layout.height
+        self._min_width = self._content.layout.width
+        self._min_height = self._content.layout.height
         return self._min_height
 
     @property

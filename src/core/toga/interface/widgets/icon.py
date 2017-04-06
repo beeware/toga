@@ -13,7 +13,7 @@ class Icon:
 
 
         if self.system:
-            toga_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+            toga_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
             filename = os.path.join(toga_dir, 'resources', self.path)
         else:

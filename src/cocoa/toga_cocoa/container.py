@@ -89,7 +89,7 @@ class Constraints:
         self._widget._impl.addConstraint_(self._width_constraint)
 
     def update(self):
-        # print("UPDATE", self._widget, 'in', self._container, 'to', self._widget.layout)
+        # print("UPDATE", self._widget, 'in', self._container, 'to', self._widget.layout, self._widget.layout.absolute.top, self._widget.layout.absolute.left)
         if self._container:
             # print("     in", self._container)
             self.top = self._widget.layout.absolute.top

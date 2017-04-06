@@ -99,3 +99,6 @@ class Button(Widget):
         else:
             self._enabled = value
         self._set_enabled(value)
+
+    def _set_enabled(self, value):
+        raise NotImplementedError('Button widget must define _set_enabled()')

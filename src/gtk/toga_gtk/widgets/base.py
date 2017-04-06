@@ -28,3 +28,7 @@ class WidgetMixin:
 
     def _set_font(self, font):
         self._impl.override_font(font._impl)
+
+    def rehint(self):
+        for c in self.children:
+            c.rehint()

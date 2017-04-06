@@ -15,7 +15,7 @@ class WindowDelegate(NSObject):
     def windowDidResize_(self, notification) -> None:
         if self._interface.content:
             # print()
-            print("Window resize", (notification.object.contentView.frame.size.width, notification.object.contentView.frame.size.height))
+            # print("Window resize", (notification.object.contentView.frame.size.width, notification.object.contentView.frame.size.height))
             if notification.object.contentView.frame.size.width > 0.0 and notification.object.contentView.frame.size.height > 0.0:
                 # Force a re-layout of widgets
                 self._interface.content._update_layout(

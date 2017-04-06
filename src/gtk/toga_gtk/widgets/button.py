@@ -22,6 +22,9 @@ class Button(ButtonInterface, WidgetMixin):
         self._impl.set_label(self.label)
         self.rehint()
 
+    def _set_enabled(self, value):
+        pass
+
     def _set_on_press(self, handler):
         for conn_id in self._connections:
             # Disconnect all other on-click handlers, so that if you reassign

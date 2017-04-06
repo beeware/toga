@@ -17,8 +17,8 @@ class TogaButton(WinForms.Button):
 
 
 class Button(ButtonInterface, WidgetMixin):
-    def __init__(self, label, id=None, style=None, on_press=None):
-        super().__init__(label, id=id, style=style, on_press=on_press)
+    def __init__(self, label, id=None, style=None, on_press=None, enabled=True):
+        super().__init__(label, id=id, style=style, on_press=on_press, enabled=enabled)
         self._create()
 
     def create(self):
@@ -27,6 +27,9 @@ class Button(ButtonInterface, WidgetMixin):
     def _set_label(self, label):
         self._impl.Text = self.label
         self.rehint()
+
+    def _set_enabled(self, value):
+        self._impl.Enabled = value
 
     def rehint(self):
         # self._impl.Size = Size(0, 0)

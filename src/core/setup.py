@@ -33,8 +33,9 @@ setup(
     package_data={
         'toga': ['resources/*.icns', 'resources/*.png'],
     },
+    include_package_data=True,
     install_requires=[
-        'colosseum>=0.1.3'
+        'colosseum>=0.1.5'
     ],
     license='New BSD',
     classifiers=[
@@ -45,10 +46,11 @@ setup(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: Only',
+        'Programming Language :: Python :: 3 :: Only',
         'Topic :: Software Development',
         'Topic :: Software Development :: User Interfaces',
         'Topic :: Software Development :: Widget Sets',
     ],
     test_suite='tests',
+    zip_safe=False,
 )

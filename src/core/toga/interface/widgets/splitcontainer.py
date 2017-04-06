@@ -39,7 +39,7 @@ class SplitContainer(Widget):
     def content(self):
         '''
         The content of the split container
-        
+
         :rtype: ``list`` of :class:`toga.Widget`
         '''
         return self._content
@@ -56,11 +56,12 @@ class SplitContainer(Widget):
         self._content = content
 
         for position, widget in enumerate(self._content):
-            widget.window = self.window
+            widget._update_layout()
             widget.app = self.app
+            widget.window = self.window
 
             if widget._impl is None:
-                container = _CONTAINER_CLASS()
+                container = self._CONTAINER_CLASS()
                 container.root_content = widget
                 widget._container = container
             else:
@@ -84,7 +85,7 @@ class SplitContainer(Widget):
     def direction(self):
         '''
         The direction of the split
-        
+
         :rtype: ``bool``
         '''
         return self._direction
