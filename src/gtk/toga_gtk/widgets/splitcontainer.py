@@ -51,18 +51,18 @@ class SplitContainer(SplitContainerInterface, WidgetMixin):
     def _update_child_layout(self):
         """Force a layout update on the widget.
         """
-        if self.content:
+        if self.content and self._impl.is_visible():
             if self.direction == SplitContainer.VERTICAL:
                 size = self._impl.get_allocation().width
-                if self._ratio == None:
+                if self._ratio is None:
                     self._ratio = 0.5
                     self._impl.set_position(size * self._ratio)
                 self._containers[0]._update_layout(width=size * self._ratio)
-                self._containers[1]._update_layout(width=(1.0 - (size * self._ratio)))
+                self._containers[1]._update_layout(width=size * (1.0 - self._ratio))
             else:
                 size = self._impl.get_allcoation().height
-                if self._ratio == None:
+                if self._ratio is None:
                     self._ratio = 0.5
                     self._impl.set_position(size * self._ratio)
                 self._containers[0]._update_layout(height=size * self._ratio)
-                self._containers[1]._update_layout(height=(1.0 - (size * self._ratio)))
+                self._containers[1]._update_layout(height=size * (1.0 - self._ratio))
