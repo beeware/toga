@@ -45,9 +45,6 @@ class SplitContainer(SplitContainerInterface, WidgetMixin):
     def _set_direction(self, value):
         pass
 
-    def rehint(self):
-        pass
-
     def _update_child_layout(self):
         """Force a layout update on the widget.
         """
