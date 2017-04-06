@@ -13,7 +13,6 @@ class MainWindow(Window):
         super(MainWindow, self).__init__(title, position, size)
 
 
-
 class App(AppInterface):
     _MAIN_WINDOW_CLASS = MainWindow
 
@@ -31,6 +30,7 @@ class App(AppInterface):
 
     def _startup(self):
         self._impl = WinForms.Application
+        Threading.Thread.CurrentThread.ApartmentState = Threading.ApartmentState.STA
 
         # self._impl.setApplicationIconImage_(self.icon._impl)
 
