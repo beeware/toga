@@ -33,6 +33,7 @@ setup(
     package_data={
         'toga': ['resources/*.icns', 'resources/*.png'],
     },
+    include_package_data=True,
     install_requires=[
         'colosseum>=0.1.5'
     ],
@@ -51,4 +52,5 @@ setup(
         'Topic :: Software Development :: Widget Sets',
     ],
     test_suite='tests',
+    zip_safe=False,
 )
