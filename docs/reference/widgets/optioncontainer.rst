@@ -8,7 +8,7 @@ Usage
 
 .. code-block:: Python
 
-    import python
+    import toga
     
     container = toga.OptionContainer()
 
