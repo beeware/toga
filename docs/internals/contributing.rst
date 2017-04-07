@@ -18,8 +18,8 @@ start coding. Assuming that you are using ``virtualenvwrapper``, you only have
 to run::
 
     $ git clone git@github.com:pybee/toga.git
-    $ mkvirtualenv toga
     $ cd toga
+    $ mkvirtualenv toga
 
 .. note::
 
