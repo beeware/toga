@@ -91,9 +91,9 @@ def set_platform(module_name=None, local_vars=locals()):
             if symbol == '__version__':
                 if local_vars['platform'].__version__ != __version__:
                     raise RuntimeError('Toga core is version %s; %s platform backend is version %s.' % (
-                            local_vars['platform'].__version__,
+                            __version__,
                             module_name,
-                            __version__
+                            local_vars['platform'].__version__
                         )
                     )
             else:
