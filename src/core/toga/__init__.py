@@ -58,7 +58,7 @@ def get_platform_name():
 
 
 def set_platform(module_name=None, local_vars=locals()):
-    "Configures toga to use the specfied platform module"
+    "Configures toga to use the specified platform module"
     # Note - locals is deliberately passed in as an argument; because it is
     # a dictionary, this results in the module level locals dictionary being
     # bound as a local variable in this method -- and a persistent one,
