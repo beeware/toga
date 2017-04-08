@@ -25,6 +25,7 @@ Here's the source code
 .. literalinclude:: /tutorial/source/tutorial-2.py
    :language: python
 
+`Icons <../resources/icons.zip>`__
 
 In this example, we see a couple of new Toga widgets - ``Table``,
 ``SplitContainer``, and ``ScrollContainer``. You can also see that
