@@ -3,3 +3,5 @@ include tox.ini
 include README.rst
 recursive-include toga *.py
 recursive-include tests *.py
+recursive-include toga/resources *.png
+recursive-include toga/resources *.icns

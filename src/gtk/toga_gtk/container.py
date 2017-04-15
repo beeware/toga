@@ -33,6 +33,8 @@ class CSSLayout(Gtk.Fixed):
         # print(self._interface, "Container layout", allocation.width, 'x', allocation.height, ' @ ', allocation.x, 'x', allocation.y)
         self.set_allocation(allocation)
 
+        self._interface.content.rehint()
+
         # Force a re-layout of widgets
         self._interface.content._update_layout(
             width=allocation.width,
