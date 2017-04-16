@@ -176,9 +176,6 @@ class Window:
         self._size = size
         self._set_size(size)
 
-    def _set_size(self, size):
-        pass
-
     @property
     def position(self):
         '''
