@@ -4,7 +4,7 @@ from colosseum import CSS, COLUMN, ROW
 class StartApp(toga.App):
     def startup(self):
         # Window class
-        #   Main window of the application with title and size.=
+        #   Main window of the application with title and size
         self.main_window = toga.MainWindow(self.name, size=(200, 200))
         self.main_window.app = self
 
@@ -42,7 +42,7 @@ class StartApp(toga.App):
         inner_box2 = toga.Box(style=style_inner_box,
                             children=[button5])
 
-        #  Create the outer box within 2 rows
+        #  Create the outer box with 2 rows
         outer_box = toga.Box(style=CSS(flex_direction=COLUMN,
                                         height=10),
                             children=[inner_box1, inner_box2])
@@ -55,17 +55,16 @@ class StartApp(toga.App):
 
     def callbackLabel(self, button):
         # Some action when you hit the button
-        #   In this case the label will change.
+        #   In this case the label will change
         button.label = 'Magic!!'
 
     def callbackResize(self, button):
         # Some action when you hit the button
-        #   In this case the window size will change.
+        #   In this case the window size will change
         self.main_window.size = (100,100)
 
 if __name__ == '__main__':
     # Application class
-    #   App name, namespace and callback to a startup delegate which takes 1
-    #   argument of the app instance.
+    #   App name and namespace
     app = StartApp('Buttons', 'org.pybee.helloworld')
     app.main_loop()
