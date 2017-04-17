@@ -38,9 +38,17 @@ class StartApp(toga.App):
         # Button with label and margin style
         button5 = toga.Button('Far from home', style=CSS(margin=50))
 
+        # Button with label and RGB color
+        button6 = toga.Button('RGB : Fashion', color=(50,200,200))
+
+        # Button with label and string color
+        button7 = toga.Button('String : Fashion', color='yellow')
+
         # Add components for the second row of the outer box
         inner_box2 = toga.Box(style=style_inner_box,
-                            children=[button5])
+                            children=[button5,
+                                    button6,
+                                    button7])
 
         #  Create the outer box with 2 rows
         outer_box = toga.Box(style=CSS(flex_direction=COLUMN,
