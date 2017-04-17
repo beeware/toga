@@ -176,6 +176,9 @@ class Window:
         self._size = size
         self._set_size(size)
 
+    def _set_size(self, size):
+        raise NotImplementedError('Window class must define _set_size()')
+
     @property
     def position(self):
         '''
