@@ -18,14 +18,16 @@ class Button(Widget):
     :param on_press:    Function to execute when pressed
     :type on_press:     ``callable``
     """
-    def __init__(self, label, id=None, style=None, on_press=None, enabled=None):
+    def __init__(self, label, id=None, style=None, on_press=None, enabled=None,
+                    color=None):
         super().__init__(id=id, style=style, label=label, on_press=on_press,
-                        enabled=enabled)
+                        enabled=enabled, color=color)
 
-    def _configure(self, label, on_press, enabled):
+    def _configure(self, label, on_press, enabled, color):
         self.label = label
         self.on_press = on_press
         self.enabled = enabled
+        self.color = color
 
     @property
     def label(self):
@@ -102,3 +104,29 @@ class Button(Widget):
 
     def _set_enabled(self, value):
         raise NotImplementedError('Button widget must define _set_enabled()')
+
+    @property
+    def color(self):
+        """
+        Indicates the button color.
+
+        :returns:   Button color. Default is None.
+        :rtype:     ``str` or ``tuple``
+        """
+        return self._color
+
+    @color.setter
+    def color(self, value):
+        """
+        Set the button color.
+
+        :param value:   Button color
+        :type value:    ``str` or ``tuple``
+        """
+
+        self._color = value
+        self._set_background_color(value)
+
+    def _set_background_color(self, value):
+        raise NotImplementedError('Button widget must define \
+                                    _set_background_color()')
