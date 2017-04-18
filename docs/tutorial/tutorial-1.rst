@@ -57,12 +57,10 @@ Here's the source code::
         return box
 
     def main():
-        app = toga.App('Temperature Converter', 'org.pybee.f_to_c', startup=build)
-
-        app.main_loop()
+        return toga.App('Temperature Converter', 'org.pybee.f_to_c', startup=build)
             
     if __name__ == '__main__':
-        main()
+        main().main_loop()
         
 
 
