@@ -56,10 +56,14 @@ Here's the source code::
 
         return box
 
-    if __name__ == '__main__':
+    def main():
         app = toga.App('Temperature Converter', 'org.pybee.f_to_c', startup=build)
 
         app.main_loop()
+            
+    if __name__ == '__main__':
+        main()
+        
 
 
 This example shows off the use of Flexbox in Toga's CSS styling. Flexbox is a
