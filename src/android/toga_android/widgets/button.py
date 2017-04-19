@@ -39,6 +39,6 @@ class Button(ButtonInterface, WidgetMixin):
         if self._impl.getMeasuredWidth():
             # print("REHINT button", self, self._impl.getMeasuredWidth(), self._impl.getMeasuredHeight())
             self.style.hint(
-                min_width=self._impl.getMeasuredWidth(),
-                height=self._impl.getMeasuredHeight(),
+                min_width=self._impl.getMeasuredWidth() / self.app._impl.device_scale,
+                height=self._impl.getMeasuredHeight() / self.app._impl.device_scale,
             )

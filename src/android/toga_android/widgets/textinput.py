@@ -27,16 +27,15 @@ class TextInput(TextInputInterface, WidgetMixin):
         pass
 
     def _get_value(self):
-        return self._impl.getText()
+        return str(self._impl.getText())
 
     def _set_value(self, value):
         self._impl.setText(value)
 
     def rehint(self):
         # Height of a text input is known and fixed.
-        if self._impl.getMeasuredHeight():
-            # print("REHINT text input", self, self._impl.getMeasuredWidth(), self._impl.getMeasuredHeight())
-            self.style.hint(
-                height=self._impl.getMeasuredHeight(),
-                min_width=100
-            )
+        # print("REHINT text input", self, self._impl.getMeasuredWidth(), self._impl.getMeasuredHeight())
+        self.style.hint(
+            height=self._impl.getMeasuredHeight() / self.app._impl.device_scale,
+            min_width=100
+        )

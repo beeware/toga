@@ -55,7 +55,6 @@ class App(AppInterface):
         # Set the Python activity listener to be this app.
         self._impl = PythonActivity.setListener(self._listener)
 
-        # Call user code to populate the main window
         self.startup()
 
     def open_document(self, fileURL):

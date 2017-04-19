@@ -16,9 +16,11 @@ class CSSLayout(extends=android.view.ViewGroup):
     def onLayout(self, changed: bool, left: int, top: int, right: int, bottom: int) -> void:
         # print("ON LAYOUT %s %sx%s -> %sx%s" % (changed, left, top, right, bottom))
 
+        device_scale = self._interface.app._impl.device_scale;
+
         self._interface._update_layout(
-            width=right - left,
-            height=bottom - top,
+            width=(right - left) / device_scale,
+            height=(bottom - top) / device_scale,
         )
         self._interface.style.apply()
 
@@ -26,13 +28,13 @@ class CSSLayout(extends=android.view.ViewGroup):
         # print("LAYOUT: There are %d children" % count)
         for i in range(0, count):
             child = self.getChildAt(i)
-            # print("    child: %s" % child, child.getMeasuredHeight(), child.getMeasuredWidth())
+            # print("    child: %s" % child, child.getMeasuredHeight(), child.getMeasuredWidth(), child.getWidth(), child.getHeight())
             # print("    layout: ", child._interface.layout)
             child.layout(
-                child._interface.layout.absolute.left,
-                child._interface.layout.absolute.top,
-                child._interface.layout.absolute.left + child._interface.layout.width,
-                child._interface.layout.absolute.top + child._interface.layout.height,
+                child._interface.layout.absolute.left * device_scale,
+                child._interface.layout.absolute.top * device_scale,
+                (child._interface.layout.absolute.left + child._interface.layout.width) * device_scale,
+                (child._interface.layout.absolute.top + child._interface.layout.height) * device_scale,
             )
 
     # def onSizeChanged(self, left: int, top: int, right: int, bottom: int) -> void:

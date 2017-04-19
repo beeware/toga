@@ -17,7 +17,7 @@ class Label(LabelInterface, WidgetMixin):
         super().__init__(id=id, style=style, text=text, alignment=alignment)
 
     def create(self):
-        print ("create label")
+        print("create label")
         self._impl = TogaLabel(self.app._impl, self)
         self._impl.setSingleLine()
 
@@ -34,9 +34,8 @@ class Label(LabelInterface, WidgetMixin):
         self._impl.setText(value)
 
     def rehint(self):
-        if self._impl.getMeasuredWidth():
-            # print("REHINT label", self, self._impl.getMeasuredWidth(), self._impl.getMeasuredHeight())
-            self.style.hint(
-                width=self._impl.getMeasuredWidth(),
-                height=self._impl.getMeasuredHeight(),
-            )
+        # print("REHINT label", self, self._impl.getMeasuredWidth(), self._impl.getMeasuredHeight())
+        self.style.hint(
+            width=self._impl.getMeasuredWidth() / self.app._impl.device_scale,
+            height=self._impl.getMeasuredHeight() / self.app._impl.device_scale,
+        )
