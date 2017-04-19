@@ -302,7 +302,6 @@ class Widget:
 
         if style:
             self.style.set(**style)
-            self.layout.dirty = True
 
         # Recompute layout for this widget
         self.style.apply()
