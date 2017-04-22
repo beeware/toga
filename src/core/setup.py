@@ -35,7 +35,7 @@ setup(
     },
     include_package_data=True,
     install_requires=[
-        'colosseum>=0.1.5'
+        'colosseum>=0.1.6'
     ],
     license='New BSD',
     classifiers=[
