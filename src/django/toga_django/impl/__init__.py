@@ -44,14 +44,14 @@ def bootstrap_Box(element):
     widget = Box(element.id[5:])
 
     element.toga = widget
-    widget.impl = element
+    widget._impl = element
 
 
 def bootstrap_Label(element):
     widget = Label(element.id[5:], element.innerHTML)
 
     element.toga = widget
-    widget.impl = element
+    widget._impl = element
 
 
 def bootstrap_TextInput(element):
@@ -62,7 +62,7 @@ def bootstrap_TextInput(element):
     widget = TextInput(element.id[5:], initial, placeholder, readonly)
 
     element.toga = widget
-    widget.impl = element
+    widget._impl = element
 
 
 # def bootstrap_SimpleListElement(element):
@@ -72,7 +72,7 @@ def bootstrap_TextInput(element):
 #     element.addEventListener('click', fn)
 
 #     element.toga = widget
-#     widget.impl = element
+#     widget._impl = element
 
 
 # def bootstrap_List(element):
@@ -81,7 +81,7 @@ def bootstrap_TextInput(element):
 #     widget = List(element.id[5:], children, element.dataset.togaCreateUrl, element.dataset.togaOnItemPress)
 
 #     element.toga = widget
-#     widget.impl = element
+#     widget._impl = element
 
 def bootstrap_Button(element):
     widget = Button(element.id[5:], element.innerHTML)
@@ -89,11 +89,11 @@ def bootstrap_Button(element):
     element.addEventListener('click', fn)
 
     element.toga = widget
-    widget.impl = element
+    widget._impl = element
 
 
 def bootstrap_WebView(element):
     widget = WebView(element.id[5:])
 
     element.toga = widget
-    widget.impl = element
+    widget._impl = element

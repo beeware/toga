@@ -3,8 +3,9 @@
 class Box:
     def __init__(self, id, style=None):
         self.id = id
-        self.style = style
+        self._impl = None
 
+        self.style = style
         self.children = []
 
     def add_child(self, child):

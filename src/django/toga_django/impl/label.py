@@ -3,8 +3,9 @@
 class Label:
     def __init__(self, id, text, alignment=None, ports=None, on_press=None, style=None):
         self.id = id
+        self._impl = None
 
-        self.text = text
+        self._text = text
         self.style = style
 
     def __html__(self):
@@ -15,3 +16,12 @@ class Label:
             '',  #  self.ports,
             self.text,
         )
+
+    @property
+    def text(self):
+        return self._text
+
+    @text.setter
+    def text(self, value):
+        if self._impl:
+            self._impl.innerText = value
