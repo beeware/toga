@@ -235,9 +235,10 @@ class Widget:
         :param app: The Application host
         :type  app: :class:`toga.App`
         '''
-        if self._app:
-            raise Exception("Widget %r is already associated with an App" % self)
-        if app:
+        if self._app is not None:
+            if self._app != app:
+                raise ValueError("Widget %s is already associated with an App" % self)
+        elif app is not None:
             self._app = app
             self._set_app(app)
             if self._children is not None:
