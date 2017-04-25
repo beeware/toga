@@ -9,4 +9,4 @@ class PasswordInput(TextInput):
 
     def create(self):
         super(PasswordInput, self).create()
-        self._impl.set_visibility(False)
+        self._impl.UseSystemPasswordChar = True
