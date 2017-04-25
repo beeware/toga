@@ -33,7 +33,7 @@ setup(
     include_package_data=True,
     install_requires=[
         'django==1.10.6',
-        'django-environ==0.4.1'
+        'django-environ==0.4.1',
         'toga-core>=%s' % version,
     ],
     license='New BSD',
