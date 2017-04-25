@@ -15,7 +15,7 @@ from .widgets.button import *
 from .widgets.label import *
 # from .widgets.multilinetextinput import *
 # from .widgets.optioncontainer import *
-# from .widgets.passwordinput import *
+from .widgets.passwordinput import *
 # from .widgets.progressbar import *
 # from .widgets.scrollcontainer import *
 # from .widgets.splitcontainer import *
@@ -41,13 +41,13 @@ __all__ = [
     # 'MultilineTextInput',
     # 'NumberInput',
     # 'OptionContainer',
-    # 'PasswordInput',
     # 'ProgressBar',
     # 'ScrollContainer',
     # 'Selection',
     # 'SplitContainer',
     # 'Table',
     'TextInput',
+    'PasswordInput',
     # 'Tree',
     'WebView',
 ]
