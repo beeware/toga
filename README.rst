@@ -23,7 +23,7 @@ Toga has some minimum requirements:
   * **Ubuntu 16.04** ``apt-get install python3-gi gir1.2-webkit-4.0``
     or ``apt-get install python3-gi gir1.2-webkit-3.0``
 
-  * **Debian** ??
+  * **Debian 8** ``apt-get install python3-gi gir1.2-webkit-3.0``
 
   * **Fedora** ``dnf install python3-gobject pywebkitgtk``
     or ``yum install python3-gobject pywebkitgtk`` 
