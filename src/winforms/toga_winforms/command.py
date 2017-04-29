@@ -26,3 +26,5 @@ class Command(object):
 
 # something about this design doesn't seem right
 SEPARATOR = "toolbar_separator"
+SPACER = "toolbar_spacer"
+EXPANDING_SPACER = "toolbar_expanding_spacer"

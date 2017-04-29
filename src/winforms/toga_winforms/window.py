@@ -4,7 +4,7 @@ from .libs import *
 
 from .container import Container
 from . import dialogs
-from .command import SEPARATOR
+from .command import SEPARATOR, SPACER, EXPANDING_SPACER
 
 class Window(WindowInterface):
     # _IMPL_CLASS = WinForms.Form
@@ -25,6 +25,10 @@ class Window(WindowInterface):
         for toolbar_item in items:
             if toolbar_item == SEPARATOR:
                 item_impl = WinForms.ToolStripSeparator()
+            elif toolbar_item == SPACER:
+                item_impl = WinForms.ToolStripSeparator()
+            elif toolbar_item == EXPANDING_SPACER:
+                item_impl = WinForms.ToolStripSeparator() # todo: check how this behaves on other platforms
             else:
                 item_impl = WinForms.ToolStripButton()
             self._toolbar_impl.Items.Add(item_impl)
