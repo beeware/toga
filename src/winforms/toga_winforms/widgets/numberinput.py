@@ -19,10 +19,10 @@ class NumberInput(WidgetMixin, NumberInputInterface):
         self.rehint()
 
     def _get_value(self):
-        return self._impl.get_value()
+        return self._impl.Value
 
     def _set_value(self, value):
-        self._impl.set_value(value)
+        self._impl.Value = value
 
     def rehint(self):
         self.style.min_width = 120
