@@ -1,8 +1,9 @@
-from ..libs import WinForms
+from ..libs import WinForms, ClrDecimal
 
 from toga.interface import NumberInput as NumberInputInterface
 
 from .base import WidgetMixin
+
 
 class NumberInput(WidgetMixin, NumberInputInterface):
     _IMPL_CLASS = WinForms.NumericUpDown
@@ -22,7 +23,8 @@ class NumberInput(WidgetMixin, NumberInputInterface):
         return self._impl.Value
 
     def _set_value(self, value):
-        self._impl.Value = value
+        if value is not None and value is not "":
+            self._impl.Value = ClrDecimal.Parse(value)
 
     def rehint(self):
         self.style.min_width = 120
