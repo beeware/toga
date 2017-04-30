@@ -1,7 +1,7 @@
 # Core capabilities
 from .app import *
 from .window import *
-# from .command import *
+from .command import *
 
 # Font support
 # from .font import Font
@@ -30,7 +30,7 @@ __all__ = [
     '__version__',
     'App', 'MainWindow',
     'Window',
-    # 'Command', 'SEPARATOR', 'SPACER', 'EXPANDING_SPACER',
+    'Command', 'SEPARATOR',  # 'SPACER', 'EXPANDING_SPACER',
     'Box',
     'Button',
     # 'Icon', 'TIBERIUS_ICON',

@@ -4,7 +4,7 @@ from .libs import *
 
 from .container import Container
 from . import dialogs
-
+from .command import SEPARATOR, SPACER, EXPANDING_SPACER
 
 class Window(WindowInterface):
     # _IMPL_CLASS = WinForms.Form
@@ -20,9 +20,24 @@ class Window(WindowInterface):
         self._impl.ClientSize = Size(self._size[0], self._size[1])
         self._impl.Resize += self._on_resize
 
-    # def _set_toolbar(self, items):
+    def _set_toolbar(self, items):
+        self._toolbar_impl = WinForms.ToolStrip()
+        for toolbar_item in items:
+            if toolbar_item == SEPARATOR:
+                item_impl = WinForms.ToolStripSeparator()
+            elif toolbar_item == SPACER:
+                item_impl = WinForms.ToolStripSeparator()
+            elif toolbar_item == EXPANDING_SPACER:
+                item_impl = WinForms.ToolStripSeparator() # todo: check how this behaves on other platforms
+            else:
+                item_impl = WinForms.ToolStripButton()
+            self._toolbar_impl.Items.Add(item_impl)
+
 
     def _set_content(self, widget):
+        if (self.toolbar):
+            self._impl.Controls.Add(self._toolbar_impl)
+
         self._impl.Controls.Add(widget._container._impl)
 
     def _set_title(self, title):
