@@ -71,7 +71,7 @@ class StartApp(toga.App):
         #   In this case the window size will change
         self.main_window.size = (100,100)
 
-if __name__ == '__main__':
+def main():
     # Application class
     #   App name and namespace
     app = StartApp('Buttons', 'org.pybee.helloworld')
