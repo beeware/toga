@@ -86,7 +86,7 @@ class App(AppInterface):
 
         self._impl.setApplicationIconImage_(self.icon._impl)
 
-        self.resource_path = os.path.dirname(os.path.dirname(NSBundle.mainBundle().bundlePath))
+        self.resource_path = os.path.dirname(os.path.dirname(NSBundle.mainBundle.bundlePath))
 
         appDelegate = AppDelegate.alloc().init()
         appDelegate._interface = self

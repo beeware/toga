@@ -223,6 +223,21 @@ NSApplicationPresentationDisableHideApplication = 1 << 8
 
 # NSColor.h
 NSColor = ObjCClass('NSColor')
+NSColor.declare_class_property('blackColor')
+NSColor.declare_class_property('blueColor')
+NSColor.declare_class_property('brownColor')
+NSColor.declare_class_property('clearColor')
+NSColor.declare_class_property('cyanColor')
+NSColor.declare_class_property('darkGrayColor')
+NSColor.declare_class_property('grayColor')
+NSColor.declare_class_property('greenColor')
+NSColor.declare_class_property('lightGrayColor')
+NSColor.declare_class_property('magentaColor')
+NSColor.declare_class_property('orangeColor')
+NSColor.declare_class_property('purpleColor')
+NSColor.declare_class_property('redColor')
+NSColor.declare_class_property('whiteColor')
+NSColor.declare_class_property('yellowColor')
 
 # NSImage.h
 NSImage = ObjCClass('NSImage')

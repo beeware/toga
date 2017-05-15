@@ -160,9 +160,25 @@ UIWindow = ObjCClass('UIWindow')
 
 # UIScreen.h
 UIScreen = ObjCClass('UIScreen')
+UIScreen.declare_class_property('mainScreen')
 
 # UIColor.h
 UIColor = ObjCClass('UIColor')
+UIColor.declare_class_property('blackColor')
+UIColor.declare_class_property('blueColor')
+UIColor.declare_class_property('brownColor')
+UIColor.declare_class_property('clearColor')
+UIColor.declare_class_property('cyanColor')
+UIColor.declare_class_property('darkGrayColor')
+UIColor.declare_class_property('grayColor')
+UIColor.declare_class_property('greenColor')
+UIColor.declare_class_property('lightGrayColor')
+UIColor.declare_class_property('magentaColor')
+UIColor.declare_class_property('orangeColor')
+UIColor.declare_class_property('purpleColor')
+UIColor.declare_class_property('redColor')
+UIColor.declare_class_property('whiteColor')
+UIColor.declare_class_property('yellowColor')
 
 # UIView.h
 UIView = ObjCClass('UIView')

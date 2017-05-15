@@ -21,6 +21,7 @@ NSMutableArray = ObjCClass('NSMutableArray')
 # NSBundle.h
 
 NSBundle = ObjCClass('NSBundle')
+NSBundle.declare_class_property('mainBundle')
 
 # NSCursor.h
 
