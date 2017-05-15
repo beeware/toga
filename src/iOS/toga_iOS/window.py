@@ -15,7 +15,7 @@ class Window(WindowInterface):
         self._create()
 
     def create(self):
-        self._screen = UIScreen.mainScreen()
+        self._screen = UIScreen.mainScreen
         self._impl = self._IMPL_CLASS.alloc().initWithFrame_(self._screen.bounds)
         self._impl._interface = self
 
