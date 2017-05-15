@@ -13,7 +13,7 @@ class App(AppConfig):
 
 
 def TogaApp(module_name):
-    module = importlib.import_module(module_name)
+    module = importlib.import_module(module_name + ".app")
     app = module.main()
     app._module = module
     return app
