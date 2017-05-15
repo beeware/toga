@@ -164,6 +164,13 @@ UIScreen.declare_class_property('mainScreen')
 
 # UIColor.h
 UIColor = ObjCClass('UIColor')
+
+# System colors
+UIColor.declare_class_property('darkTextColor')
+UIColor.declare_class_property('lightTextColor')
+UIColor.declare_class_property('groupTableViewBackgroundColor')
+
+# Predefined colors
 UIColor.declare_class_property('blackColor')
 UIColor.declare_class_property('blueColor')
 UIColor.declare_class_property('brownColor')

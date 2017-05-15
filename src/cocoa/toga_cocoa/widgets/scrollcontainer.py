@@ -16,8 +16,8 @@ class ScrollContainer(ScrollContainerInterface, WidgetMixin):
         self._impl = NSScrollView.alloc().init()
         self._impl.setAutohidesScrollers_(True)
         self._impl.setBorderType_(NSNoBorder)
-        self._impl.setBackgroundColor_(NSColor.windowBackgroundColor())
-        # self._impl.setBackgroundColor_(NSColor.blueColor())
+        self._impl.setBackgroundColor_(NSColor.windowBackgroundColor)
+        # self._impl.setBackgroundColor_(NSColor.blueColor)
         self._impl.setAutoresizesSubviews_(True)
 
         self._inner_container = None

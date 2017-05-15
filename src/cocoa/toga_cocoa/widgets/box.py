@@ -13,6 +13,6 @@ class Box(BoxInterface, WidgetMixin):
 
     def create(self):
         # # self._impl.setWantsLayer_(True)
-        # # self._impl.setBackgroundColor_(NSColor.blueColor())
+        # # self._impl.setBackgroundColor_(NSColor.blueColor)
 
         self._constraints = None
