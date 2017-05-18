@@ -5,7 +5,7 @@ The Label is a text-label for annotating forms or interfaces.
 
 .. figure:: /reference/images/Label.jpeg
     :align: center
-    :width: 300
+    :width: 200
 
 Usage
 -----
