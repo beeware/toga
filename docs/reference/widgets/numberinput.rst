@@ -3,6 +3,10 @@ Number Input
 
 The Number input is a text input box that is limited to numeric input.
 
+.. figure:: /reference/images/NumberInput.jpeg
+    :align: center
+    :width: 200
+
 Usage
 -----
 
