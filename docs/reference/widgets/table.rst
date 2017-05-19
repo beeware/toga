@@ -4,7 +4,7 @@ Table
 The table widget is a widget for displaying tabular data. It can be instantiated with the list of headings and then data rows
 can be added.
 
-.. figure:: /reference/images/Table.jpeg
+.. figure:: /reference/images/Table1.jpeg
     :align: center
 
 Usage
