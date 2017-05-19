@@ -3,6 +3,9 @@ Text Input
 
 The text input widget is a simple input field for user entry of text data.
 
+.. figure:: /reference/images/TextInput.jpeg
+    :align: center
+
 Usage
 -----
 
