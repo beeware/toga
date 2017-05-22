@@ -1,7 +1,10 @@
 Split Container
 ===============
 
-The split container is a container with a movable split and the option for 2 or 3 elements. 
+The split container is a container with a movable split and the option for 2 or 3 elements.
+
+.. figure:: /reference/images/SplitContainer.jpeg
+    :align: center
 
 Usage
 -----
