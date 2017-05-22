@@ -25,12 +25,15 @@ class AppDelegate(NSObject):
 
         # ...so we do this instead.
         panel = NSOpenPanel.openPanel()
-        print("Open documents of type", NSDocumentController.sharedDocumentController().defaultType)
+        # print("Open documents of type", NSDocumentController.sharedDocumentController().defaultType)
 
-        fileTypes = NSArray.alloc().initWithObjects_(*([d for d in self._interface.document_types] + [None]))
-        NSDocumentController.sharedDocumentController().runModalOpenPanel_forTypes_(panel, fileTypes)
+        fileTypes = NSMutableArray.alloc().init()
+        for filetype in self._interface.document_types:
+            fileTypes.addObject(filetype)
 
-        print("Untitled File opened?", panel.URLs)
+        NSDocumentController.sharedDocumentController().runModalOpenPanel(panel, forTypes=fileTypes)
+
+        # print("Untitled File opened?", panel.URLs)
         self.application_openFiles_(None, panel.URLs)
 
         return True
@@ -48,11 +51,11 @@ class AppDelegate(NSObject):
     def application_openFiles_(self, app, filenames) -> None:
         # print("open file ", filenames)
         for i in range(0, filenames.count):
-            filename = filenames.objectAtIndex_(i)
+            filename = filenames.objectAtIndex(i)
             if isinstance(filename, str):
-                fileURL = NSURL.fileURLWithPath_(filename)
+                fileURL = NSURL.fileURLWithPath(filename)
 
-            elif filename.__dict__['objc_class'].__dict__['name'] == 'NSURL':
+            elif filename.objc_class.name == 'NSURL':
                 # This case only exists because we aren't using the
                 # DocumentController to display the file open dialog.
                 # If we were, *all* filenames passed in would be
