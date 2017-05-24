@@ -39,7 +39,7 @@ If these requirements aren't met, Toga either won't work at all, or won't have
 full functionality.
 
 Quickstart
-~~~~~~~~~~~~~
+~~~~~~~~~~
 
 To get a demonstration of the capabilities of Toga, run the following::
 
@@ -54,7 +54,7 @@ Documentation
 Documentation for Toga can be found on `Read The Docs`_.
 
 Community
-~~~~~~~~~~~~~
+~~~~~~~~~
 
 Toga is part of the `BeeWare suite`_. You can talk to the community through:
 
@@ -63,7 +63,7 @@ Toga is part of the `BeeWare suite`_. You can talk to the community through:
 * The `pybee/general`_ channel on Gitter.
 
 Contributing
-~~~~~~~~~~~~~
+~~~~~~~~~~~~
 
 If you experience problems with Toga, `log them on GitHub`_. If you
 want to contribute code, please `fork the code`_ and `submit a pull request`_.

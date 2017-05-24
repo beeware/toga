@@ -178,6 +178,13 @@ html_static_path = ['_static']
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'togadoc'
 
+try:
+    import sphinx_rtd_theme
+    html_theme = "sphinx_rtd_theme"
+    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+except ImportError:
+    # The sphinx-rtd-theme package is not installed, so to the default
+    pass
 
 # -- Options for LaTeX output --------------------------------------------------
 
