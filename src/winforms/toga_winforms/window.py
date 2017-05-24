@@ -6,6 +6,38 @@ from .container import Container
 from . import dialogs
 from .command import SEPARATOR, SPACER, EXPANDING_SPACER
 
+"""
+According to:
+https://msdn.microsoft.com/en-us/library/windows/desktop/ms647553(v=vs.85).aspx
+"The system assigns a position value to all items in a menu, including separators."
+For this reason I have not assigned Index values to any menu items. -- Bruce Eckel
+"""
+
+def menu_item(menu_text, on_click_function):
+    "Create a single item on a menu"
+    _menu_item = WinForms.MenuItem()
+    _menu_item.Text = menu_text
+    _menu_item.Click += on_click_function
+    # How you assign the Index, in case it's actually necessary:
+    # _menu_item.Index = 4
+    return _menu_item
+
+def menu(menu_text, menu_items):
+    "Create one drop-down menu for the menu bar"
+    _menu = WinForms.MenuItem()
+    _menu.Text = menu_text
+    for item in menu_items:
+        _menu.MenuItems.Add(item)
+    # How you assign the Index, in case it's actually necessary:
+    # _menu.Index = 3
+    return _menu
+
+def menu_bar(menus):
+    "Assemble the menus into a menu bar"
+    _menu_bar = WinForms.MainMenu()
+    _menu_bar.MenuItems.AddRange(menus)
+    return _menu_bar
+
 class Window(WindowInterface):
     # _IMPL_CLASS = WinForms.Form
     _CONTAINER_CLASS = Container
@@ -20,22 +52,22 @@ class Window(WindowInterface):
         self._impl.ClientSize = Size(self._size[0], self._size[1])
         self._impl.Resize += self._on_resize
 
-        mainMenu = WinForms.MainMenu()
+        self._impl.Menu = menu_bar((
+            # Add more menus as needed:
+            menu("&File", (
+                # Add more menu items as needed:
+                menu_item("&Exit", self.file_exit_on_click),
+            )),
+            menu("&Help", (
+                menu_item("&About", self.help_about_on_click),
+            )),
+        ))
 
-        menuHelpAbout = WinForms.MenuItem()
-        menuHelpAbout.Text = "&About"
-        menuHelpAbout.Index = 0
-        menuHelpAbout.Click += self.OnClickHelpAbout
+    def file_exit_on_click(self, sender, args):
+        print("Stub file exit")
 
-        aboutMenu = WinForms.MenuItem()
-        aboutMenu.Text = "&Help"
-        aboutMenu.Index = 3
-        aboutMenu.MenuItems.Add(menuHelpAbout)
-
-        items = (aboutMenu,)
-        mainMenu.MenuItems.AddRange(items)
-
-        self._impl.Menu = mainMenu
+    def help_about_on_click(self, sender, args):
+        print("Stub help about...")
 
     def _set_toolbar(self, items):
         self._toolbar_impl = WinForms.ToolStrip()
@@ -92,7 +124,3 @@ class Window(WindowInterface):
                 width=sender.ClientSize.Width,
                 height=sender.ClientSize.Height,
             )
-
-
-    def OnClickHelpAbout(self, sender, args):
-        print("Stub help about...")
