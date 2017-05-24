@@ -20,6 +20,23 @@ class Window(WindowInterface):
         self._impl.ClientSize = Size(self._size[0], self._size[1])
         self._impl.Resize += self._on_resize
 
+        mainMenu = WinForms.MainMenu()
+
+        menuHelpAbout = WinForms.MenuItem()
+        menuHelpAbout.Text = "&About"
+        menuHelpAbout.Index = 0
+        menuHelpAbout.Click += self.OnClickHelpAbout
+
+        aboutMenu = WinForms.MenuItem()
+        aboutMenu.Text = "&Help"
+        aboutMenu.Index = 3
+        aboutMenu.MenuItems.Add(menuHelpAbout)
+
+        items = (aboutMenu,)
+        mainMenu.MenuItems.AddRange(items)
+
+        self._impl.Menu = mainMenu
+
     def _set_toolbar(self, items):
         self._toolbar_impl = WinForms.ToolStrip()
         for toolbar_item in items:
@@ -75,3 +92,7 @@ class Window(WindowInterface):
                 width=sender.ClientSize.Width,
                 height=sender.ClientSize.Height,
             )
+
+
+    def OnClickHelpAbout(self, sender, args):
+        print("Stub help about...")
