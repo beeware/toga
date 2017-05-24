@@ -27,7 +27,7 @@ Here's the source code
 
 Here are the :download:`Icons <./resources/icons.zip>`
 
-In this example, we see a couple of new Toga widgets - ``Table``,
-``SplitContainer``, and ``ScrollContainer``. You can also see that
+In this example, we see a couple of new Toga widgets - :class:`.Table`,
+:class:`.SplitContainer`, and :class:`.ScrollContainer`. You can also see that
 CSS styles can be added in the widget constructor. Lastly, you can
 see that windows can have toolbars.
