@@ -55,7 +55,8 @@ class Window(WindowInterface):
         self._impl.Menu = menu_bar((
             # Add more menus as needed:
             menu("&File", (
-                # Add more menu items as needed:
+                # Add more menu_items as needed:
+                menu_item("&New", self.file_new_on_click),
                 menu_item("&Exit", self.file_exit_on_click),
             )),
             menu("&Help", (
@@ -63,8 +64,11 @@ class Window(WindowInterface):
             )),
         ))
 
+    def file_new_on_click(self, sender, args):
+        print("Stub file new")
+
     def file_exit_on_click(self, sender, args):
-        print("Stub file exit")
+        self.close()
 
     def help_about_on_click(self, sender, args):
         print("Stub help about...")
