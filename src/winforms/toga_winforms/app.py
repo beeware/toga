@@ -3,8 +3,9 @@ import os
 from toga.interface.app import App as AppInterface
 
 from .libs import *
-
 from .window import Window
+
+
 # from .widgets.icon import Icon, TIBERIUS_ICON
 """
 According to:
@@ -12,6 +13,7 @@ https://msdn.microsoft.com/en-us/library/windows/desktop/ms647553(v=vs.85).aspx
 "The system assigns a position value to all items in a menu, including separators."
 For this reason I have not assigned Index values to any menu items. -- Bruce Eckel
 """
+
 
 def menu_item(menu_text, on_click_function):
     "Create a single item on a menu"
@@ -22,6 +24,7 @@ def menu_item(menu_text, on_click_function):
     # _menu_item.Index = 4
     return _menu_item
 
+
 def menu(menu_text, menu_items):
     "Create one drop-down menu for the menu bar"
     _menu = WinForms.MenuItem()
@@ -31,6 +34,7 @@ def menu(menu_text, menu_items):
     # How you assign the Index, in case it's actually necessary:
     # _menu.Index = 3
     return _menu
+
 
 def menu_bar(menus):
     "Assemble the menus into a menu bar"

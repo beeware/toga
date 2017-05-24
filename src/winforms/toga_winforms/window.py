@@ -1,10 +1,10 @@
 from toga.interface.window import Window as WindowInterface
 
+from . import dialogs
+from .command import EXPANDING_SPACER, SEPARATOR, SPACER
+from .container import Container
 from .libs import *
 
-from .container import Container
-from . import dialogs
-from .command import SEPARATOR, SPACER, EXPANDING_SPACER
 
 class Window(WindowInterface):
     # _IMPL_CLASS = WinForms.Form
@@ -12,14 +12,14 @@ class Window(WindowInterface):
     _DIALOG_MODULE = dialogs
 
     def __init__(self, title=None, position=(100, 100), size=(640, 480), toolbar=None, resizeable=True, closeable=True, minimizable=True):
-        super().__init__(title=title, position=position, size=size, toolbar=toolbar, resizeable=resizeable, closeable=closeable, minimizable=minimizable)
+        super().__init__(title=title, position=position, size=size, toolbar=toolbar,
+                         resizeable=resizeable, closeable=closeable, minimizable=minimizable)
         self._create()
 
     def create(self):
         self._impl = WinForms.Form(self)
         self._impl.ClientSize = Size(self._size[0], self._size[1])
         self._impl.Resize += self._on_resize
-
 
     def _set_toolbar(self, items):
         self._toolbar_impl = WinForms.ToolStrip()
@@ -29,11 +29,11 @@ class Window(WindowInterface):
             elif toolbar_item == SPACER:
                 item_impl = WinForms.ToolStripSeparator()
             elif toolbar_item == EXPANDING_SPACER:
-                item_impl = WinForms.ToolStripSeparator() # todo: check how this behaves on other platforms
+                # todo: check how this behaves on other platforms
+                item_impl = WinForms.ToolStripSeparator()
             else:
                 item_impl = WinForms.ToolStripButton()
             self._toolbar_impl.Items.Add(item_impl)
-
 
     def _set_content(self, widget):
         if (self.toolbar):
@@ -65,7 +65,6 @@ class Window(WindowInterface):
 
     def close(self):
         self._impl.Close()
-
 
     def _on_resize(self, sender, args):
         if self.content:
