@@ -48,6 +48,8 @@ class Window:
         self._container = None
         self._content = None
 
+        self._toolbar = [] # Added by BE for potential uninitialization bug
+
         self.position = position
         self.size = size
 

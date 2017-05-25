@@ -36,6 +36,8 @@ class Window(WindowInterface):
             self._toolbar_impl.Items.Add(item_impl)
 
     def _set_content(self, widget):
+        # if not hasattr(self, 'toolbar'):
+        #     import pdb; pdb.set_trace()
         if (self.toolbar):
             self._impl.Controls.Add(self._toolbar_impl)
 
