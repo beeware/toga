@@ -69,7 +69,6 @@ NSRadioButton = 4
 NSMomentaryChangeButton = 5
 NSOnOffButton = 6
 NSMomentaryPushInButton = 7
-
 NSRoundedBezelStyle = 1
 NSRegularSquareBezelStyle = 2
 NSThickSquareBezelStyle = 3
@@ -419,3 +418,7 @@ NSPopUpButton = ObjCClass('NSPopUpButton')
 # NSStepper
 
 NSStepper = ObjCClass('NSStepper')
+
+# NSSlider
+NSSlider = ObjCClass('NSSlider')
+NSSliderCell = ObjCClass('NSSliderCell')
