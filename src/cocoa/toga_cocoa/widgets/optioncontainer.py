@@ -37,7 +37,7 @@ class OptionContainer(OptionContainerInterface, WidgetMixin):
         # Turn the autoresizing mask into constraints.
         # This could be overcome by describing the specific constraints
         # that the autoresize mask defines...
-        widget._impl.setTranslatesAutoresizingMaskIntoConstraints_(True)
+        container._impl.setTranslatesAutoresizingMaskIntoConstraints_(True)
 
         item.setView_(container._impl)
 
