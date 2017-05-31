@@ -56,6 +56,10 @@ NSWindow = ObjCClass('NSWindow')
 # NSButton.h
 NSButton = ObjCClass('NSButton')
 
+NSOnState = 1
+NSOffState = 0
+NSMixedState = -1
+
 # NSButtonCell.h
 NSMomentaryLightButton = 0
 NSPushOnPushOffButton = 1
