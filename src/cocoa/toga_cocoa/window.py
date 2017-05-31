@@ -122,6 +122,19 @@ class Window(WindowInterface):
 
         self._impl.setDelegate_(self._delegate)
 
+    # Create a new frame on the same position with the new size doing
+    #   a animation.
+    def _set_size(self, size):
+        if self._impl:
+            screen = NSScreen.mainScreen().visibleFrame
+            position = NSMakeRect(
+                screen.origin.x + self.position[0],
+                screen.size.height + screen.origin.y - self.position[1] - self._size[1],
+                self._size[0],
+                self._size[1]
+            )
+            self._impl.setFrame_display_animate_(position, True, True)
+
     def _set_toolbar(self, items):
         self._toolbar_items = dict((item.toolbar_identifier, item) for item in items)
         self._toolbar_impl = NSToolbar.alloc().initWithIdentifier_('Toolbar-%s' % id(self))

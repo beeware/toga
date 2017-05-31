@@ -5,6 +5,7 @@ from enum import Enum
 from rubicon.objc import *
 
 from toga.constants import *
+from toga.constants.color import *
 
 ######################################################################
 
@@ -223,6 +224,24 @@ NSApplicationPresentationHideDock = 1 << 1
 NSApplicationPresentationHideMenuBar = 1 << 3
 NSApplicationPresentationDisableProcessSwitching = 1 << 5
 NSApplicationPresentationDisableHideApplication = 1 << 8
+
+def NSColorUsingColorName(background_color):
+    return {
+        Red: NSColor.redColor(),
+        Green: NSColor.greenColor(),
+        Blue: NSColor.blueColor(),
+        Black: NSColor.blackColor(),
+        White: NSColor.whiteColor(),
+        Brown: NSColor.brownColor(),
+        Cyan: NSColor.cyanColor(),
+        Magenta: NSColor.magentaColor(),
+        Yellow: NSColor.yellowColor(),
+        Orange: NSColor.orangeColor(),
+        Purple: NSColor.purpleColor(),
+        LightGray: NSColor.lightGrayColor(),
+        DarkGray: NSColor.darkGrayColor(),
+        Gray: NSColor.grayColor(),
+    }[background_color]
 
 # NSColor.h
 NSColor = ObjCClass('NSColor')
