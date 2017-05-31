@@ -19,7 +19,7 @@ class Label(LabelInterface, WidgetMixin):
         )
 
     def _set_text(self, text):
-        pass
+        self._impl.innerText = text
 
     def _set_alignment(self, text):
         pass

@@ -7,6 +7,6 @@ class PasswordInput(TextInput):
     def __init__(self):
         super(PasswordInput, self).__init__()
 
-    def startup(self):
-        super(PasswordInput, self).startup()
+    def create(self):
+        super(PasswordInput, self).create()
         self._impl.set_visibility(False)

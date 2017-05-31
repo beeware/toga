@@ -51,7 +51,7 @@ class TogaTree(NSOutlineView):
     @objc_method
     def outlineView_objectValueForTableColumn_byItem_(self, tree, column, item):
         column_index = int(column.identifier)
-        return text(self.interface._data[id(item)]['data'][column_index])
+        return self.interface._data[id(item)]['data'][column_index]
 
     # OutlineViewDelegate methods
     @objc_method

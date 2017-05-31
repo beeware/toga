@@ -16,8 +16,8 @@ class TogaButton(UIButton):
 
 
 class Button(ButtonInterface, WidgetMixin):
-    def __init__(self, label, id=None, on_press=None, style=None):
-        super().__init__(label, id=id, style=style, on_press=on_press)
+    def __init__(self, label, id=None, on_press=None, style=None, enabled=True):
+        super().__init__(label, id=id, style=style, on_press=on_press, enabled=enabled)
         self._create()
 
     def create(self):
@@ -25,6 +25,7 @@ class Button(ButtonInterface, WidgetMixin):
         self._impl._interface = self
 
         self._impl.setTitleColor_forState_(self._impl.tintColor, UIControlStateNormal)
+        self._impl.setTitleColor_forState_(UIColor.grayColor, UIControlStateDisabled)
         self._impl.addTarget_action_forControlEvents_(self._impl, get_selector('onPress:'), UIControlEventTouchDown)
 
         # Add the layout constraints
@@ -32,6 +33,9 @@ class Button(ButtonInterface, WidgetMixin):
 
     def _set_label(self, value):
         self._impl.setTitle_forState_(value, UIControlStateNormal)
+
+    def _set_enabled(self, value):
+        self._impl.enabled = value
 
     def rehint(self):
         fitting_size = self._impl.systemLayoutSizeFittingSize_(CGSize(0, 0))

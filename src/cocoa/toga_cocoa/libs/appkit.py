@@ -56,6 +56,10 @@ NSWindow = ObjCClass('NSWindow')
 # NSButton.h
 NSButton = ObjCClass('NSButton')
 
+NSOnState = 1
+NSOffState = 0
+NSMixedState = -1
+
 # NSButtonCell.h
 NSMomentaryLightButton = 0
 NSPushOnPushOffButton = 1
@@ -222,6 +226,65 @@ NSApplicationPresentationDisableHideApplication = 1 << 8
 
 # NSColor.h
 NSColor = ObjCClass('NSColor')
+
+# System colors
+NSColor.declare_class_property('alternateSelectedControlColor')
+NSColor.declare_class_property('alternateSelectedControlTextColor')
+NSColor.declare_class_property('controlBackgroundColor')
+NSColor.declare_class_property('controlColor')
+NSColor.declare_class_property('controlAlternatingRowBackgroundColors')
+NSColor.declare_class_property('controlHighlightColor')
+NSColor.declare_class_property('controlLightHighlightColor')
+NSColor.declare_class_property('controlShadowColor')
+NSColor.declare_class_property('controlDarkShadowColor')
+NSColor.declare_class_property('controlTextColor')
+NSColor.declare_class_property('currentControlTint')
+NSColor.declare_class_property('disabledControlTextColor')
+NSColor.declare_class_property('gridColor')
+NSColor.declare_class_property('headerColor')
+NSColor.declare_class_property('headerTextColor')
+NSColor.declare_class_property('highlightColor')
+NSColor.declare_class_property('keyboardFocusIndicatorColor')
+NSColor.declare_class_property('knobColor')
+NSColor.declare_class_property('scrollBarColor')
+NSColor.declare_class_property('secondarySelectedControlColor')
+NSColor.declare_class_property('selectedControlColor')
+NSColor.declare_class_property('selectedControlTextColor')
+NSColor.declare_class_property('selectedMenuItemColor')
+NSColor.declare_class_property('selectedMenuItemTextColor')
+NSColor.declare_class_property('selectedTextBackgroundColor')
+NSColor.declare_class_property('selectedTextColor')
+NSColor.declare_class_property('selectedKnobColor')
+NSColor.declare_class_property('shadowColor')
+NSColor.declare_class_property('textBackgroundColor')
+NSColor.declare_class_property('textColor')
+NSColor.declare_class_property('windowBackgroundColor')
+NSColor.declare_class_property('windowFrameColor')
+NSColor.declare_class_property('windowFrameTextColor')
+NSColor.declare_class_property('underPageBackgroundColor')
+
+# System Label Colors
+NSColor.declare_class_property('labelColor')
+NSColor.declare_class_property('secondaryLabelColor')
+NSColor.declare_class_property('tertiaryLabelColor')
+NSColor.declare_class_property('quaternaryLabelColor')
+
+# Predefined Colors
+NSColor.declare_class_property('blackColor')
+NSColor.declare_class_property('blueColor')
+NSColor.declare_class_property('brownColor')
+NSColor.declare_class_property('clearColor')
+NSColor.declare_class_property('cyanColor')
+NSColor.declare_class_property('darkGrayColor')
+NSColor.declare_class_property('grayColor')
+NSColor.declare_class_property('greenColor')
+NSColor.declare_class_property('lightGrayColor')
+NSColor.declare_class_property('magentaColor')
+NSColor.declare_class_property('orangeColor')
+NSColor.declare_class_property('purpleColor')
+NSColor.declare_class_property('redColor')
+NSColor.declare_class_property('whiteColor')
+NSColor.declare_class_property('yellowColor')
 
 # NSImage.h
 NSImage = ObjCClass('NSImage')

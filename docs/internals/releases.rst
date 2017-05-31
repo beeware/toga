@@ -1,10 +1,19 @@
 Release History
 ===============
 
-0.2 - In development
---------------------
+
+0.2.12
+------
 
 * Migrated to CSS-based layout, rather than Cassowary/constraint layout.
+* Added Windows backend
+* Added Django backend
+* Added Android backend
+
+0.2.0 - 0.2.11
+--------------
+
+Internal Development releases.
 
 0.1.2
 -----

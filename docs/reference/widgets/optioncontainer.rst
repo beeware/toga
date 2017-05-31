@@ -3,12 +3,15 @@ Option Container
 
 The Option Container widget is a user-selection control for choosing from a pre-configured list of controls, like a tab view.
 
+.. figure:: /reference/images/OptionContainer.jpeg
+    :align: center
+
 Usage
 -----
 
 .. code-block:: Python
 
-    import python
+    import toga
     
     container = toga.OptionContainer()
 

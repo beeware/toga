@@ -19,7 +19,7 @@ class ImageView(ImageViewInterface, WidgetMixin):
         self._impl.setImageScaling_(NSImageScaleProportionallyUpOrDown)
 
         # self._impl.setWantsLayer_(True)
-        # self._impl.setBackgroundColor_(NSColor.blueColor())
+        # self._impl.setBackgroundColor_(NSColor.blueColor)
 
         # if self.width is None:
         #     self.width = self._impl.fittingSize().width

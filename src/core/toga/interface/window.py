@@ -11,30 +11,30 @@ class Window:
                  closeable=True, minimizable=True):
         '''
         Instantiates a window
-        
+
         :param id_: The ID of the window (optional)
         :type  id_: ``str``
-        
+
         :param title: Title for the window (optional)
         :type  title: ``str``
-        
+
         :param position: Position of the window, as x,y coordinates
         :type  position: ``tuple`` of (``int``, ``int``)
-        
+
         :param size: Size of the window, as (width, height) sizes, in pixels
         :type  size: ``tuple`` of (``int``, ``int``)
-        
+
         :param toolbar: An list of widgets to add to a toolbar
         :type  toolbar: ``list`` of :class:`toga.Widget`
-        
+
         :param resizable: Toggle if the window is resizable by the user, defaults
             to `True`.
         :type  resizable: ``bool``
-        
+
         :param closable: Toggle if the window is closable by the user, defaults
             to `True`.
         :type  closable: ``bool``
-        
+
         :param minimizable: Toggle if the window is minimizable by the user, defaults
             to `True`.
         :type  minimizable: ``bool``
@@ -77,7 +77,7 @@ class Window:
     def app(self):
         '''
         Instance of the :class:`toga.App` that this window belongs to
-        
+
         :rtype: :class:`toga.App`
         '''
         return self._app
@@ -97,7 +97,7 @@ class Window:
     def title(self):
         '''
         Title of the window
-        
+
         :rtype: ``str``
         '''
         return self._title
@@ -114,7 +114,7 @@ class Window:
     def toolbar(self):
         '''
         Toolbar for the window
-        
+
         :rtype: ``list`` of :class:`toga.Widget`
         '''
         return self._toolbar
@@ -133,7 +133,7 @@ class Window:
     def content(self):
         '''
         Content of the window
-        
+
         :rtype: :class:`toga.Widget`
         '''
         return self._content
@@ -142,6 +142,13 @@ class Window:
     def content(self, widget):
         # Save the content widget.
         widget._update_layout()
+
+        # Assign the widget to the same app as the window.
+        widget.app = self.app
+
+        # Assign the widget to window.
+        widget.window = self
+
         if widget._impl is None:
             self._container = self._CONTAINER_CLASS()
             self._container.content = widget
@@ -152,12 +159,6 @@ class Window:
 
         self._set_content(widget)
 
-        # Assign the widget to window.
-        widget.window = self
-
-        # Assign the widget to the same app as the window.
-        widget.app = self.app
-
     def _set_content(self, widget):
         pass
 
@@ -165,7 +166,7 @@ class Window:
     def size(self):
         '''
         Size of the window, as width, height
-        
+
         :rtype: ``tuple`` of (``int``, ``int``)
         '''
         return self._size
@@ -182,7 +183,7 @@ class Window:
     def position(self):
         '''
         Position of the window, as x, y
-        
+
         :rtype: ``tuple`` of (``int``, ``int``)
         '''
         return self._position
@@ -216,8 +217,9 @@ class Window:
     def error_dialog(self, title, message):
         return self._DIALOG_MODULE.error(self, title, message)
 
-    def stack_trace_dialog(self, title, message):
-        return self._DIALOG_MODULE.stack_trace(self, title, message)
+    def stack_trace_dialog(self, title, message, content, retry=False):
+        return self._DIALOG_MODULE.stack_trace(self, title, message,
+                                                content, retry)
 
     def save_file_dialog(self, title, suggested_filename, file_types):
         return self._DIALOG_MODULE.save_file(self, title, suggested_filename,

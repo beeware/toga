@@ -30,3 +30,7 @@ class Window:
         self.content = content
         if content:
             self.content.parent = self
+
+    # HTML popups don't allow for titles, so we'll prepend it
+    def info_dialog(self, title, message):
+        dom.alert("%s\n\n%s" % (title, message));

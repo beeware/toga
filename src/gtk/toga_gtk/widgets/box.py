@@ -11,6 +11,3 @@ class Box(BoxInterface, WidgetMixin):
 
     def create(self):
         pass
-
-    def rehint(self):
-        pass

@@ -3,8 +3,9 @@
 class Box:
     def __init__(self, id, style=None):
         self.id = id
-        self.style = style
+        self._impl = None
 
+        self.style = style
         self.children = []
 
     def add_child(self, child):
@@ -15,7 +16,7 @@ class Box:
         lines = [
             '<div id="toga:%s" class="toga Box" style="%s" data-toga-class="toga.Box" data-toga-parent="%s" data-toga-ports="%s">' % (
                 self.id,
-                self.style.render(),
+                self.style,
                 self.parent.id,
                 '',  #  self.ports,
             )

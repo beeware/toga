@@ -1,6 +1,6 @@
 {
   "name": "@pybee/toga",
-  "version": "0.0.6-dev.5",
+  "version": "0.0.6-dev.6",
   "description": "A cross platform Python-native widget toolkit.",
   "author": "Russell Keith-Magee",
   "main": "toga/toga.js",
@@ -28,7 +28,7 @@
   "devDependencies": {
     "babel-core": "6.18.2",
     "babel-loader": "6.2.8",
-    "babel-preset-latest": "6.16.0",
+    "babel-preset-env": "^1.4.0",
     "css-loader": "0.26.1",
     "eslint": "3.9.1",
     "eslint-config-airbnb": "13.0.0",

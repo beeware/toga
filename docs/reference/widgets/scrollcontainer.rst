@@ -4,6 +4,9 @@ Scroll Container
 The Scroll Container is similar to the iframe or scrollable div element in HTML, it contains an object with
 its own scrollable selection.
 
+.. figure:: /reference/images/ScrollContainer.jpeg
+    :align: center
+
 Usage
 -----
 

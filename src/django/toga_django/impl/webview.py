@@ -2,7 +2,7 @@
 class WebView:
     def __init__(self, id=None, url=None, on_key_down=None, style=None):
         self.id = id
-        self.impl = None
+        self._impl = None
         self._url = url
         self.style = style
 
@@ -11,7 +11,7 @@ class WebView:
             <iframe id="toga:%s" class="toga WebView" style="%s" src="%s" data-toga-class="toga.WebView" data-toga-ports="%s">
             </iframe>""" % (
                 self.id,
-                self.style.render(),
+                self.style,
                 self.url if self.url else '',
                 '',  #  self.ports,
             )
@@ -23,8 +23,8 @@ class WebView:
     @url.setter
     def url(self, value):
         self._url = value
-        if self.impl:
-            self.impl.src = value
+        if self._impl:
+            self._impl.src = value
 
     def set_content(self, root_url, content):
         pass

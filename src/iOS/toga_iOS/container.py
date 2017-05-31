@@ -159,7 +159,7 @@ class Container:
     def __init__(self):
         self._impl = TogaContainer.alloc().init()
         self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
-        self._impl.setBackgroundColor_(UIColor.whiteColor())
+        self._impl.setBackgroundColor_(UIColor.whiteColor)
 
         self._content = None
         self._constraints = Constraints(self)

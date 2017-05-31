@@ -31,7 +31,7 @@ setup(
     url='http://pybee.org/toga',
     extras_require={
         # Automatically installed platform backends
-        ':sys_platform=="win32"': ['toga-win32'],
+        ':sys_platform=="win32"': ['toga-winforms'],
         ':sys_platform=="linux"': ['toga-gtk'],
         ':sys_platform=="darwin"': ['toga-cocoa'],
     },
@@ -44,6 +44,7 @@ setup(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3 :: Only',
         'Topic :: Software Development',
         'Topic :: Software Development :: User Interfaces',

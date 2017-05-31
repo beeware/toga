@@ -22,7 +22,7 @@ __all__ = [
 # __version__ = '1.2.3'       # Final Release
 # __version__ = '1.2.3.post1' # Post Release 1
 
-__version__ = '0.2.5.dev1'
+__version__ = '0.2.13.dev1'
 
 platform = None
 
@@ -58,7 +58,7 @@ def get_platform_name():
 
 
 def set_platform(module_name=None, local_vars=locals()):
-    "Configures toga to use the specfied platform module"
+    "Configures toga to use the specified platform module"
     # Note - locals is deliberately passed in as an argument; because it is
     # a dictionary, this results in the module level locals dictionary being
     # bound as a local variable in this method -- and a persistent one,
@@ -91,9 +91,9 @@ def set_platform(module_name=None, local_vars=locals()):
             if symbol == '__version__':
                 if local_vars['platform'].__version__ != __version__:
                     raise RuntimeError('Toga core is version %s; %s platform backend is version %s.' % (
-                            local_vars['platform'].__version__,
+                            __version__,
                             module_name,
-                            __version__
+                            local_vars['platform'].__version__
                         )
                     )
             else:

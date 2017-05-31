@@ -3,6 +3,9 @@ Selection
 
 The Selection widget is a simple control for allowing the user to choose between a list of string options.
 
+.. figure:: /reference/images/Selection.jpeg
+    :align: center
+
 Usage
 -----
 

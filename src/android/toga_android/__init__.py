@@ -9,7 +9,7 @@ from .widgets.button import *
 # from .widgets.icon import *
 # from .widgets.image import *
 # from .widgets.imageview import *
-# from .widgets.label import *
+from .widgets.label import *
 # from .widgets.dialog import *
 # from .widgets.multilinetextinput import *
 # from .widgets.optioncontainer import *
@@ -18,21 +18,21 @@ from .widgets.button import *
 # from .widgets.scrollcontainer import *
 # from .widgets.splitcontainer import *
 # from .widgets.table import *
-# from .widgets.textinput import *
+from .widgets.textinput import *
 # from .widgets.tree import *
 # from .widgets.webview import *
 
 __all__ = [
     '__version__',
     'App',
-    'Window',
+    'Window', 'MainWindow',
     # 'Command', 'SEPARATOR', 'SPACER', 'EXPANDING_SPACER',
     'Box',
     'Button',
     # 'Icon', 'TIBERIUS_ICON',
     # 'Image',
     # 'ImageView',
-    # 'Label',
+    'Label',
     # 'Dialog',
     # 'MultilineTextInput',
     # 'OptionContainer',
@@ -41,7 +41,7 @@ __all__ = [
     # 'ScrollContainer',
     # 'SplitContainer',
     # 'Table',
-    # 'TextInput',
+    'TextInput',
     # 'Tree',
     # 'WebView',
 ]
@@ -54,4 +54,4 @@ __all__ = [
 # __version__ = '1.2.3'       # Final Release
 # __version__ = '1.2.3.post1' # Post Release 1
 
-__version__ = '0.2.5.dev1'
+__version__ = '0.2.13.dev1'

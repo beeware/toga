@@ -22,6 +22,7 @@ from .widgets.navigationview import *
 # from .widgets.scrollcontainer import *
 from .widgets.slider import *
 # from .widgets.splitcontainer import *
+from .widgets.switch import *
 # from .widgets.table import *
 from .widgets.textinput import *
 # from .widgets.tree import *
@@ -48,6 +49,7 @@ __all__ = [
     # 'ScrollContainer',
     'Slider',
     # 'SplitContainer',
+    'Switch',
     # 'Table',
     'TextInput',
     # 'Tree',
@@ -62,4 +64,4 @@ __all__ = [
 # __version__ = '1.2.3'       # Final Release
 # __version__ = '1.2.3.post1' # Post Release 1
 
-__version__ = '0.2.5.dev1'
+__version__ = '0.2.13.dev1'

@@ -1,106 +1,75 @@
-# class CSSLayout(object):
-#     def __init__(self, container):
-#         super().__init__()
-#         self._interface = container
 
-#     def do_get_preferred_width(self):
-#         # Calculate the minimum and natural width of the container.
-#         # print("GET PREFERRED WIDTH")
-#         width = self._interface.content.style.layout.width
-#         min_width = self._interface.min_width
-#         if min_width > width:
-#             width = min_width
+class CSSLayout(extends=android.view.ViewGroup):
+    @super({context: android.content.Context})
+    def __init__(self, context, interface):
+        self._interface = interface
 
-#         # print(min_width, width)
-#         return min_width, width
+    def shouldDelayChildPressedState(self) -> bool:
+        return False
 
-#     def do_get_preferred_height(self):
-#         # Calculate the minimum and natural height of the container.
-#         # height = self.interface.layout.height
-#         # print("GET PREFERRED HEIGHT")
-#         height = self._interface.content.style.layout.height
-#         min_height = self._interface.min_height
-#         if min_height > height:
-#             height = min_height
+    def onMeasure(self, width: int, height: int) -> void:
+        # print("ON MEASURE %sx%s" % (width, height))
+        self.measureChildren(width, height)
+        self._interface.rehint()
+        self.setMeasuredDimension(width, height)
 
-#         # print(min_height, height)
-#         return min_height, height
+    def onLayout(self, changed: bool, left: int, top: int, right: int, bottom: int) -> void:
+        # print("ON LAYOUT %s %sx%s -> %sx%s" % (changed, left, top, right, bottom))
 
-#     def do_size_allocate(self, allocation):
-#         # print(self._interface, "Container layout", allocation.width, 'x', allocation.height, ' @ ', allocation.x, 'x', allocation.y)
-#         self.set_allocation(allocation)
+        device_scale = self._interface.app._impl.device_scale;
 
-#         # Force a re-layout of widgets
-#         self._interface.content._update_layout(
-#             width=allocation.width,
-#             height=allocation.height
-#         )
+        self._interface._update_layout(
+            width=(right - left) / device_scale,
+            height=(bottom - top) / device_scale,
+        )
+        self._interface.style.apply()
 
-#         # for widget in self.children:
-#         for widget in self.get_children():
-#             if not widget.get_visible():
-#                 # print("CHILD NOT VISIBLE", widget._interface)
-#                 pass
-#             else:
-#                 # print("update ", widget._interface, widget._interface.style.layout)
-#                 child_allocation = Gdk.Rectangle()
-#                 child_allocation.x = widget._interface.style.layout.absolute.left
-#                 child_allocation.y = widget._interface.style.layout.absolute.top
-#                 child_allocation.width = widget._interface.style.layout.width
-#                 child_allocation.height = widget._interface.style.layout.height
+        count = self.getChildCount()
+        # print("LAYOUT: There are %d children" % count)
+        for i in range(0, count):
+            child = self.getChildAt(i)
+            # print("    child: %s" % child, child.getMeasuredHeight(), child.getMeasuredWidth(), child.getWidth(), child.getHeight())
+            # print("    layout: ", child._interface.layout)
+            child.layout(
+                child._interface.layout.absolute.left * device_scale,
+                child._interface.layout.absolute.top * device_scale,
+                (child._interface.layout.absolute.left + child._interface.layout.width) * device_scale,
+                (child._interface.layout.absolute.top + child._interface.layout.height) * device_scale,
+            )
 
-#                 widget.size_allocate(child_allocation)
+    # def onSizeChanged(self, left: int, top: int, right: int, bottom: int) -> void:
+    #     print("ON SIZE CHANGE %sx%s -> %sx%s" % (left, top, right, bottom))
 
+    #     count = self.getChildCount()
+    #     print("CHANGE: There are %d children" % count)
+    #     for i in range(0, count):
+    #         child = self.getChildAt(i)
+    #         print("    child: %s" % child)
 
 class Container:
     def __init__(self):
-        # self._impl = CSSLayout(self)
         self._content = None
-        self._min_width = None
-        self._min_height = None
 
-    # @property
-    # def min_width(self):
-    #     if self._min_width:
-    #         return self._min_width
+    @property
+    def content(self):
+        return self._content
 
-    #     # No cached minimum size; compute it by computing an
-    #     # unhinted layout.
-    #     self._update_layout()
-    #     self._min_width = self._content.style.layout.width
-    #     self._min_height = self._content.style.layout.height
-    #     return self._min_width
+    @content.setter
+    def content(self, widget):
+        self._impl = CSSLayout(widget.app._impl, widget)
+        self._content = widget
+        self._content._container = self
 
-    # @property
-    # def min_height(self):
-    #     if self._min_height:
-    #         return self._min_height
+    @property
+    def root_content(self):
+        return self._content
 
-    #     # No cached minimum size; compute it by computing an
-    #     # unhinted layout.
-    #     self._update_layout()
-    #     self._min_width = self._content.style.layout.width
-    #     self._min_height = self._content.style.layout.height
-    #     return self._min_height
+    @root_content.setter
+    def root_content(self, widget):
+        self._impl = CSSLayout(widget.app._impl, widget)
+        self._content = widget
+        self._content._container = self
 
-    # @property
-    # def content(self):
-    #     return self._content
-
-    # @content.setter
-    # def content(self, widget):
-    #     self._content = widget
-    #     self._content._container = self
-
-    # @property
-    # def root_content(self):
-    #     return self._content
-
-    # @root_content.setter
-    # def root_content(self, widget):
-    #     self._content = widget
-    #     self._content._container = self
-
-    # def _update_layout(self, **style):
-    #     if self._content:
-    #         self._content._update_layout(**style)
+    def _update_layout(self, **style):
+        if self._content:
+            self._content._update_layout(**style)
