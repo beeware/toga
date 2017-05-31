@@ -49,8 +49,7 @@ class AppDelegate(NSObject):
 
     @objc_method
     def application_openFiles_(self, app, filenames) -> None:
-        # print("open file ", filenames)
-        for i in range(0, filenames.count):
+        for i in range(0, len(filenames)):
             filename = filenames.objectAtIndex(i)
             if isinstance(filename, str):
                 fileURL = NSURL.fileURLWithPath(filename)
