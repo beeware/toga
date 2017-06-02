@@ -5,6 +5,7 @@ from enum import Enum
 from rubicon.objc import *
 
 from toga.constants import *
+from toga.constants.color import *
 
 ######################################################################
 
@@ -285,6 +286,25 @@ NSColor.declare_class_property('purpleColor')
 NSColor.declare_class_property('redColor')
 NSColor.declare_class_property('whiteColor')
 NSColor.declare_class_property('yellowColor')
+
+def NSColorUsingColorName(background_color):
+    return {
+        Black: NSColor.blackColor,
+        Blue: NSColor.blueColor,
+        Brown: NSColor.brownColor,
+        Clear : NSColor.clearColor,
+        Cyan: NSColor.cyanColor,
+        DarkGray: NSColor.darkGrayColor,
+        Gray: NSColor.grayColor,
+        Green: NSColor.greenColor,
+        LightGray: NSColor.lightGrayColor,
+        Magenta: NSColor.magentaColor,
+        Orange: NSColor.orangeColor,
+        Purple: NSColor.purpleColor,
+        Red: NSColor.redColor,
+        White: NSColor.whiteColor,
+        Yellow: NSColor.yellowColor,
+    }[background_color]
 
 # NSImage.h
 NSImage = ObjCClass('NSImage')
