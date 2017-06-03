@@ -1,6 +1,7 @@
 import toga
 from colosseum import CSS, COLUMN, ROW
 
+
 class StartApp(toga.App):
     def startup(self):
         # Window class
@@ -70,6 +71,7 @@ class StartApp(toga.App):
         # Some action when you hit the button
         #   In this case the window size will change
         self.main_window.size = (100,100)
+
 
 def main():
     # Application class

@@ -17,12 +17,12 @@ with io.open('README.rst', encoding='utf8') as readme:
 
 
 setup(
-    name='button',
+    name='tutorial0',
     version=version,
-    description='A demonstration of all features of a button example for (macOS) of the native GUI toolkit, Toga.',
+    description='Tutorial 0 of the Toga widget toolkit.',
     long_description=long_description,
-    author='Dayanne Fernandes',
-    author_email='dayannefernandesc@gmail.com',
+    author='Russell Keith-Magee',
+    author_email='russell@keith-magee.com',
     license='New BSD',
     packages=find_packages(exclude=['docs', 'tests']),
     classifiers=[
@@ -41,7 +41,7 @@ setup(
     ],
     options={
         'app': {
-            'formal_name': 'Button',
+            'formal_name': 'Tutorial 0',
             'bundle': 'org.pybee'
         },
         'macos': {
