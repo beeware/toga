@@ -10,6 +10,10 @@ def button_handler(widget):
     print("done", i)
 
 
+def action0(widget):
+    print("action 0")
+
+
 def action1(widget):
     print("action 1")
 
@@ -54,19 +58,34 @@ def build(app):
 
     split.content = [left_container, right_container]
 
+    things = toga.Group('Things')
+
+    cmd0 = toga.Command(
+        action1,
+        label='Action 0',
+        tooltip='Perform action 0',
+        icon='icons/brutus.icns',
+        group=things
+    )
     cmd1 = toga.Command(
-        action1, 'Action 1',
+        action1,
+        label='Action 1',
         tooltip='Perform action 1',
-        icon='icons/brutus.icns'
+        icon='icons/brutus.icns',
+        group=things
     )
     cmd2 = toga.Command(
-        action2, 'Action 2',
+        action2,
+        label='Action 2',
         tooltip='Perform action 2',
-        icon=toga.TIBERIUS_ICON
+        icon=toga.TIBERIUS_ICON,
+        group=things
     )
     cmd3 = toga.Command(
-        action3, 'Action 3',
+        action3,
+        label='Action 3',
         tooltip='Perform action 3',
+        shortcut='k',
         icon='icons/cricket-72.png'
     )
 
@@ -75,16 +94,14 @@ def build(app):
         cmd3.enabled = not cmd3.enabled
 
     cmd4 = toga.Command(
-        action4, 'Action 4',
+        action4,
+        label='Action 4',
         tooltip='Perform action 4',
         icon='icons/brutus.icns'
     )
 
-    app.main_window.toolbar = [
-        cmd1, toga.SEPARATOR, cmd2, toga.SPACER, cmd3,
-        toga.EXPANDING_SPACER,
-        cmd4
-    ]
+    app.commands.add(cmd1, cmd2, cmd3, cmd4, cmd0)
+    app.main_window.toolbar.add(cmd1, cmd2, cmd3, cmd4)
 
     return split
 

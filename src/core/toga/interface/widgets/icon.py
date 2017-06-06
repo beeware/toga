@@ -11,7 +11,6 @@ class Icon:
             self.path = path + self.EXTENSION
         self.system = system
 
-
         if self.system:
             toga_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 

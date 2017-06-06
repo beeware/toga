@@ -1,9 +1,15 @@
 from toga.interface.window import Window as WindowInterface
+from toga.interface.command import Command as BaseCommand, GROUP_BREAK, SECTION_BREAK
 
 from .container import Container
+from .command import Command
 from .libs import *
 from .utils import process_callback
 from . import dialogs
+
+
+def toolbar_identifier(cmd):
+    return 'ToolbarItem-%s' % id(cmd)
 
 
 class WindowDelegate(NSObject):
@@ -34,7 +40,8 @@ class WindowDelegate(NSObject):
         # because customizable toolbars are no longer a thing.
         allowed = NSMutableArray.alloc().init()
         for item in self._interface.toolbar:
-            allowed.addObject_(item.toolbar_identifier)
+            if isinstance(item, Command):
+                default.addObject(toolbar_identifier(item))
         return allowed
 
     @objc_method
@@ -42,13 +49,15 @@ class WindowDelegate(NSObject):
         "Determine the list of toolbar items that will display by default"
         default = NSMutableArray.alloc().init()
         for item in self._interface.toolbar:
-            default.addObject_(item.toolbar_identifier)
+            if isinstance(item, Command):
+                default.addObject(toolbar_identifier(item))
         return default
 
     @objc_method
     def toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar_(self, toolbar, identifier, insert: bool):
         "Create the requested toolbar button"
         item = self._interface._toolbar_items[identifier]
+
         _item = NSToolbarItem.alloc().initWithItemIdentifier_(identifier)
         if item.label:
             _item.setLabel_(item.label)
@@ -57,6 +66,8 @@ class WindowDelegate(NSObject):
             _item.setToolTip_(item.tooltip)
         if item.icon:
             _item.setImage_(item.icon._impl)
+
+        item._widgets.append(_item)
 
         _item.setTarget_(self)
         _item.setAction_(get_selector('onToolbarButtonPress:'))
@@ -84,8 +95,8 @@ class Window(WindowInterface):
     _CONTAINER_CLASS = Container
     _DIALOG_MODULE = dialogs
 
-    def __init__(self, title=None, position=(100, 100), size=(640, 480), toolbar=None, resizeable=True, closeable=True, minimizable=True):
-        super().__init__(title=title, position=position, size=size, toolbar=toolbar, resizeable=resizeable, closeable=closeable, minimizable=minimizable)
+    def __init__(self, title=None, position=(100, 100), size=(640, 480), resizeable=True, closeable=True, minimizable=True):
+        super().__init__(title=title, position=position, size=size, resizeable=resizeable, closeable=closeable, minimizable=minimizable)
         self._create()
 
     def create(self):
@@ -135,8 +146,12 @@ class Window(WindowInterface):
             )
             self._impl.setFrame_display_animate_(position, True, True)
 
-    def _set_toolbar(self, items):
-        self._toolbar_items = dict((item.toolbar_identifier, item) for item in items)
+    def _create_toolbar(self):
+        self._toolbar_items = {}
+        for cmd in self.toolbar:
+            if isinstance(cmd, BaseCommand):
+                self._toolbar_items[toolbar_identifier(cmd)] = cmd
+
         self._toolbar_impl = NSToolbar.alloc().initWithIdentifier_('Toolbar-%s' % id(self))
         self._toolbar_impl.setDelegate_(self._delegate)
         self._impl.setToolbar_(self._toolbar_impl)

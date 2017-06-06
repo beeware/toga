@@ -1,7 +1,7 @@
 # Core capabilities
 from .app import *
+from .command import Group, Command
 from .window import *
-from .command import *
 
 # Font support
 from .font import Font
@@ -31,8 +31,8 @@ from .widgets.numberinput import NumberInput
 __all__ = [
     '__version__',
     'App', 'MainWindow',
+    'Group', 'Command',
     'Window',
-    'Command', 'SEPARATOR', 'SPACER', 'EXPANDING_SPACER',
     'Box',
     'Button',
     'Icon', 'TIBERIUS_ICON',

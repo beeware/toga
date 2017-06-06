@@ -1,7 +1,8 @@
 from builtins import id as identifier
+from .command import CommandSet
 
 
-class App(object):
+class App:
     '''
     The App is the top level of any GUI program. It is the manager of all
     the other bits of the GUI app: the main window and events that window
@@ -28,24 +29,24 @@ class App(object):
                  id=None, startup=None, document_types=None):
         '''
         Instantiate a new application
-        
+
         :param name: The name of the application
         :type  name: ``str``
-        
+
         :param app_id: The unique application identifier,
             the reversed domain name, e.g. 'org.pybee.me'
         :type  app_id: ``str``
-        
+
         :param icon: Icon for the application
         :type  icon: ``str``
-        
+
         :param id: The DOM identifier for the app (optional)
         :type  id: ``str``
-        
+
         :param startup: The callback method before starting the app, typically
             to add the components
         :type  startup: ``callable`` that expects a single argument of :class:`toga.App`
-        
+
         :param document_types: Document types
         :type  document_types: ``list`` of ``str``
         '''
@@ -60,6 +61,8 @@ class App(object):
 
         self.icon = icon
 
+        self._commands = CommandSet(None, self._create_menus)
+
         self.document_types = document_types
         self._documents = []
 
@@ -71,7 +74,7 @@ class App(object):
         The identifier for the app.
 
         This is the reversed domain name, often used for targetting resources, etc.
-        
+
         :rtype: ``str``
         '''
         return self._id
@@ -82,16 +85,25 @@ class App(object):
         The DOM identifier for the app.
 
         This id can be used to target CSS directives
-        
+
         :rtype: ``str``
         '''
         return self._id
 
     @property
+    def commands(self):
+        '''
+        The commands registered with this application.
+
+        :rtype: ``CommandSet``
+        '''
+        return self._commands
+
+    @property
     def documents(self):
         '''
         Return the list of documents associated with this app.
-        
+
         :rtype: ``list`` of ``str``
         '''
         return self._documents
@@ -99,7 +111,7 @@ class App(object):
     def add_document(self, doc):
         '''
         Add a new document to this app.
-        
+
         :param doc: The document to add
         '''
         doc.app = self
@@ -108,11 +120,17 @@ class App(object):
     def open_document(self, fileURL):
         '''
         Add a new document to this app.
-        
+
         :param fileURL: The URL/path to the file to add as a document
         :type  fileURL: ``str``
         '''
         raise NotImplementedError('Application class must define open_document()')
+
+    def _create_menus(self):
+        '''
+        Create the menus for this application
+        '''
+        raise NotImplementedError('Application class must define _create_menus()')
 
     def startup(self):
         '''
@@ -133,3 +151,9 @@ class App(object):
         This method typically only returns once the application is exiting.
         '''
         raise NotImplementedError('Application class must define main_loop()')
+
+    def exit(self):
+        '''
+        Shut down the application
+        '''
+        raise NotImplementedError('Application class must define exit()')

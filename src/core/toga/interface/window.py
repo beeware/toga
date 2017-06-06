@@ -1,3 +1,6 @@
+from .command import CommandSet
+
+
 class Window:
     '''
     Window
@@ -7,8 +10,7 @@ class Window:
 
     def __init__(self, id_=None, title=None,
                  position=(100, 100), size=(640, 480),
-                 toolbar=None, resizeable=True,
-                 closeable=True, minimizable=True):
+                 resizeable=True, closeable=True, minimizable=True):
         '''
         Instantiates a window
 
@@ -23,9 +25,6 @@ class Window:
 
         :param size: Size of the window, as (width, height) sizes, in pixels
         :type  size: ``tuple`` of (``int``, ``int``)
-
-        :param toolbar: An list of widgets to add to a toolbar
-        :type  toolbar: ``list`` of :class:`toga.Widget`
 
         :param resizable: Toggle if the window is resizable by the user, defaults
             to `True`.
@@ -48,6 +47,8 @@ class Window:
         self._container = None
         self._content = None
 
+        self._toolbar = CommandSet(self.app, self._create_toolbar)
+
         self.position = position
         self.size = size
 
@@ -59,7 +60,6 @@ class Window:
             'title': title,
             'position': position,
             'size': size,
-            'toolbar': toolbar,
             'resizeable': resizeable,
             'closeable': closeable,
             'minimizable': minimizable,
@@ -69,9 +69,8 @@ class Window:
         self.create()
         self._configure(**self._config)
 
-    def _configure(self, title, position, size, toolbar, resizeable, closeable, minimizable):
+    def _configure(self, title, position, size, resizeable, closeable, minimizable):
         self.title = title
-        self.toolbar = toolbar
 
     @property
     def app(self):
@@ -113,21 +112,17 @@ class Window:
     @property
     def toolbar(self):
         '''
-        Toolbar for the window
+        Commands registered for display on the toolbar.
 
-        :rtype: ``list`` of :class:`toga.Widget`
+        :rtype: ``CommandSet``
         '''
         return self._toolbar
 
-    @toolbar.setter
-    def toolbar(self, items):
-        # If there are toolbar items defined, add a toolbar to the window
-        self._toolbar = items
-        if self._toolbar:
-            self._set_toolbar(items)
-
-    def _set_toolbar(self, items):
-        pass
+    def _create_toolbar(self):
+        '''
+        Create the toolbar for this window
+        '''
+        raise NotImplementedError('Window class must define _create_menus()')
 
     @property
     def content(self):
