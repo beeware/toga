@@ -109,7 +109,7 @@ class App(AppInterface):
             Command(None, 'About ' + app_name, group=Group.APP),
             Command(None, 'Preferences', group=Group.APP),
             # Quit should always be the last item, in a section on it's own
-            Command(self.exit, 'Quit ' + app_name, shortcut='q', group=Group.APP, section=sys.maxsize),
+            Command(lambda s: self.exit(), 'Quit ' + app_name, shortcut='q', group=Group.APP, section=sys.maxsize),
 
             Command(None, 'Visit homepage', group=Group.HELP)
         )
@@ -171,6 +171,6 @@ class App(AppInterface):
         self._impl.activateIgnoringOtherApps_(True)
         self._impl.run()
 
-    def exit(self, widget):
-        self._impl.terminate(widget)
+    def exit(self):
+        self._impl.terminate(None)
 

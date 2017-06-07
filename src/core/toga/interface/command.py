@@ -62,14 +62,14 @@ def cmd_sort_key(value):
 
 
 class CommandSet:
-    def __init__(self, app, on_change=None):
-        self.app = app
+    def __init__(self, widget, on_change=None):
+        self.widget = widget
         self._values = set()
         self.on_change = on_change
 
     def add(self, *values):
-        if self.app:
-            self.app.commands.add(*values)
+        if self.widget:
+            self.widget.app.commands.add(*values)
         self._values.update(values)
         if self.on_change:
             self.on_change()

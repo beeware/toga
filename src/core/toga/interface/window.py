@@ -47,7 +47,7 @@ class Window:
         self._container = None
         self._content = None
 
-        self._toolbar = CommandSet(self.app, self._create_toolbar)
+        self._toolbar = CommandSet(self, self._create_toolbar)
 
         self.position = position
         self.size = size

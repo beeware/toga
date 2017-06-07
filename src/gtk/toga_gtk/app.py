@@ -98,13 +98,11 @@ class App(AppInterface):
         self._actions = None
 
     def _startup(self, data=None):
-        app_name = self.name
-
         self.commands.add(
-            Command(None, 'About ' + app_name, group=Group.APP),
+            Command(None, 'About ' + self.name, group=Group.APP),
             Command(None, 'Preferences', group=Group.APP),
             # Quit should always be the last item, in a section on it's own
-            Command(self.exit, 'Quit ' + app_name, shortcut='q', group=Group.APP, section=sys.maxsize),
+            Command(lambda s: self.exit(), 'Quit ' + self.name, shortcut='q', group=Group.APP, section=sys.maxsize),
 
             Command(None, 'Visit homepage', group=Group.HELP)
         )
@@ -173,6 +171,8 @@ class App(AppInterface):
                     if cmd.shortcut:
                         item.set_attribute_value('accel', GLib.Variant('s', '<Primary>%s' % cmd.shortcut.upper()))
 
+                        # item.set_attribute_value('accel', GLib.Variant(cmd.shortcut, '<Primary>%s' % cmd.shortcut.upper()))
+
                     section.append_item(item)
 
             if section:
@@ -193,6 +193,5 @@ class App(AppInterface):
 
         self._impl.run(None)
 
-
-    def exit(self, widget):
+    def exit(self):
         self._impl.quit()

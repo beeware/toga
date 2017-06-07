@@ -100,7 +100,7 @@ def build(app):
         icon='icons/brutus.icns'
     )
 
-    app.commands.add(cmd1, cmd2, cmd3, cmd4, cmd0)
+    app.commands.add(cmd1, cmd3, cmd4, cmd0)
     app.main_window.toolbar.add(cmd1, cmd2, cmd3, cmd4)
 
     return split
