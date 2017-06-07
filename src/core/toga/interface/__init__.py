@@ -1,4 +1,5 @@
 from .app import App
+from .command import Group, Command, CommandSet
 from .window import Window
 from .font import Font
 
@@ -30,6 +31,9 @@ from .widgets.numberinput import NumberInput
 __all__ = [
     'App',
     'Window',
+
+    # Commands
+    'Group', 'Command', 'CommandSet',
 
     # Fonts
     'Font',

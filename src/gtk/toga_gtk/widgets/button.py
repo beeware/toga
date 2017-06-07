@@ -23,6 +23,10 @@ class Button(ButtonInterface, WidgetMixin):
         self.rehint()
 
     def _set_enabled(self, value):
+        # self._impl.set_sensitive(value)
+        pass
+
+    def _set_background_color(self, value):
         pass
 
     def _set_on_press(self, handler):

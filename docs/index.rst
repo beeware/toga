@@ -66,5 +66,6 @@ Contents
 
    philosophy
    tutorial/index
+   topic/index
    reference/index
    internals/index

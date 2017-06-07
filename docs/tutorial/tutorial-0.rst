@@ -23,10 +23,11 @@ Here's a complete code listing for our "Hello world" app::
 
         return box
 
+    def main():
+        return toga.App('First App', 'org.pybee.helloworld', startup=build)
 
     if __name__ == '__main__':
-        app = toga.App('First App', 'org.pybee.helloworld', startup=build)
-        app.main_loop()
+        main().main_loop()
 
 
 Lets walk through this one line at a time.
@@ -93,21 +94,22 @@ the UI content. This box will be the content of the app's main window::
 
         return box
 
-Lastly, we get into the main body of the program, where we create the app
-itself. The app is a high level container representing the executable. The app
-has a name, and a unique identifier. The identifier is used when registering
-any app-specific system resources. By convention, the identifier is a
-"reversed domain name". The app also accepts our callable defining the main
-window contents::
+Lastly, we instantiate the app itself. The app is a high level container
+representing the executable. The app has a name, and a unique identifier. The
+identifier is used when registering any app-specific system resources. By
+convention, the identifier is a "reversed domain name". The app also accepts
+our callable defining the main window contents. We wrap this creation process
+into a method called `main`, which returns a new instance of our application::
+
+    def main():
+        return toga.App('First App', 'org.pybee.helloworld', startup=build)
+
+The entry point for the project then needs to instantiate this entry point,
+and start the main app loop. The call to `main_loop()` is a blocking call;
+it won't return until you quit the main app::
 
     if __name__ == '__main__':
-
-        app = toga.App('First App', 'org.pybee.helloworld', startup=build)
-
-Having created the app, we can start the main app loop. This is a blocking
-call; it won't return until you quit the main app::
-
-        app.main_loop()
+        main().main_loop()
 
 And that's it! Save this script as ``helloworld.py``, and you're ready to go.
 
@@ -143,27 +145,6 @@ environment`_ first, and installing toga in that virtual environment.
 
     If these requirements aren't met, Toga either won't work at all, or won't
     have full functionality.
-
-.. note:: Problems under Linux
-
-    Unfortunately, GTK+3 doesn't provide a pip-installable version of it's Python
-    bindings, so if you're using a virtual environment with --no-site-packages
-    installed (which is the default), GTK+ won't be in your ``PYTHONPATH`` inside
-    a virtual environment.
-
-    To make the system GTK+ bindings available to your virtualenv,
-    symlink the `gi` module from the system dist-packages directory into your
-    virtualenv's site-packages.
-
-        For a Ubuntu 32bit system (assuming Python 3.5)::
-
-            $ cd $VIRTUAL_ENV/lib/python3.5/site-packages
-            $ ln -si /usr/lib/python3.5/dist-packages/gi
-
-        For a Fedora 64bit system (assuming Python 3.5)::
-
-            $ cd $VIRTUAL_ENV/lib/python3.5/site-packages
-            $ ln -si /usr/lib64/python3.5/site-packages/gi/
 
 Once you've got toga installed, you can run your script::
 
