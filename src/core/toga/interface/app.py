@@ -77,7 +77,7 @@ class App:
 
         :rtype: ``str``
         '''
-        return self._id
+        return self._app_id
 
     @property
     def id(self):
