@@ -1,5 +1,6 @@
 import os
 import signal
+import sys
 
 from toga.interface.app import App as AppInterface
 from toga.interface.command import GROUP_BREAK, SECTION_BREAK
@@ -107,7 +108,8 @@ class App(AppInterface):
         self.commands.add(
             Command(None, 'About ' + app_name, group=Group.APP),
             Command(None, 'Preferences', group=Group.APP),
-            Command(self.exit, 'Quit ' + app_name, shortcut='q', group=Group.APP, section=99999999),
+            # Quit should always be the last item, in a section on it's own
+            Command(self.exit, 'Quit ' + app_name, shortcut='q', group=Group.APP, section=sys.maxsize),
 
             Command(None, 'Visit homepage', group=Group.HELP)
         )
@@ -115,7 +117,8 @@ class App(AppInterface):
         # Call user code to populate the main window
         self.startup()
 
-        # Create the lookup table of menu items, then force the creation of the menus.
+        # Create the lookup table of menu items,
+        # then force the creation of the menus.
         self._menu_items = {}
         self._create_menus()
 
@@ -158,7 +161,6 @@ class App(AppInterface):
 
             # Set the menu for the app.
             self._impl.mainMenu = menubar
-
 
     def main_loop(self):
         # Stimulate the build of the app
