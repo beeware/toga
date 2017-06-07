@@ -7,14 +7,14 @@ class Group:
     def __lt__(self, other):
         return (
             self.order < other.order
-            or self.order ==other.order and self.label < other.label
+            or self.order == other.order and self.label < other.label
         )
 
     def __eq__(self, other):
         return self.order == other.order and self.label == other.label
 
 
-Group.APP = Group('*app*', order=0)
+Group.APP = Group('*', order=0)
 Group.FILE = Group('File', order=1)
 Group.EDIT = Group('Edit', order=10)
 Group.VIEW = Group('View', order=20)
