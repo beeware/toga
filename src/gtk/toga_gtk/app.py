@@ -2,7 +2,6 @@ import signal
 import sys
 import os
 
-from toga.interface.app import App as AppInterface
 
 try:
     import gi
@@ -62,8 +61,13 @@ except ImportError:
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gio, GLib
 
+from toga.interface.app import App as AppInterface
+from toga.interface.command import GROUP_BREAK, SECTION_BREAK
+
+from .command import Command, Group
 from .window import Window
 from .widgets.icon import Icon, TIBERIUS_ICON
+from .utils import wrapped_handler
 
 
 class MainWindow(Window):
@@ -91,55 +95,97 @@ class App(AppInterface):
         self._impl.connect('activate', self._activate)
         # self._impl.connect('shutdown', self._shutdown)
 
+        self._actions = None
+
     def _startup(self, data=None):
-        action = Gio.SimpleAction.new('stuff', None)
-        action.connect('activate', self._quit)
-        self._impl.add_action(action)
+        app_name = self.name
 
-        app_name = sys.argv[0]
+        self.commands.add(
+            Command(None, 'About ' + app_name, group=Group.APP),
+            Command(None, 'Preferences', group=Group.APP),
+            # Quit should always be the last item, in a section on it's own
+            Command(self.exit, 'Quit ' + app_name, shortcut='q', group=Group.APP, section=sys.maxsize),
 
-        # # App menu
-        self.app_menu = Gio.Menu()
-
-        section = Gio.Menu()
-        section.append_item(Gio.MenuItem.new('About', 'about'))
-        section.append_item(Gio.MenuItem.new('Preferences', 'preferences'))
-
-        self.app_menu.append_section(None, section)
-
-        section = Gio.Menu()
-        item = Gio.MenuItem.new('Do Stuff', 'app.stuff')
-        item.set_attribute_value('accel', GLib.Variant('s', '<Primary>S'))
-        section.append_item(item)
-
-        self.app_menu.append_section(None, section)
-
-        self._impl.set_app_menu(self.app_menu)
-
-        # # Main menu bar
-        self.menu_bar = Gio.Menu()
-
-        # FIXME - the app menu doesn't display correctly - it assumes a title of
-        # "Unknown application name", which doesn't appear to be changeable, and may
-        # be an ubuntu unity bug...
-        # self.menu_bar.append_submenu('File', self.app_menu)
-
-        # Help
-        submenu = Gio.Menu()
-
-        section = Gio.Menu()
-        section.append_item(Gio.MenuItem.new('Help', 'help'))
-
-        submenu.append_section(None, section)
-
-        self.menu_bar.append_submenu('Help', submenu)
-
-        self._impl.set_menubar(self.menu_bar)
+            Command(None, 'Visit homepage', group=Group.HELP)
+        )
 
         self.startup()
 
+        # Create the lookup table of menu items,
+        # then force the creation of the menus.
+        self._actions = {}
+        self._create_menus()
+
     def _activate(self, data=None):
         pass
+
+    def open_document(self, fileURL):
+        '''Add a new document to this app.'''
+        print("STUB: If you want to handle opening documents, implement App.open_document(fileURL)")
+
+    def _create_menus(self):
+        # Only create the menu if the menu item index has been created.
+        if hasattr(self, '_actions'):
+            self._actions = {}
+            menubar = Gio.Menu()
+            label = None
+            submenu = None
+            section = None
+            for cmd in self.commands:
+                if cmd == GROUP_BREAK:
+                    if section:
+                        submenu.append_section(None, section)
+
+                    if label == '*':
+                        self._impl.set_app_menu(submenu)
+                    else:
+                        menubar.append_submenu(label, submenu)
+
+                    label = None
+                    submenu = None
+                    section = None
+                elif cmd == SECTION_BREAK:
+                    submenu.append_section(None, section)
+                    section = None
+
+                else:
+                    if submenu is None:
+                        label = cmd.group.label
+                        submenu = Gio.Menu()
+
+                    if section is None:
+                        section = Gio.Menu()
+
+                    try:
+                        action = self._actions[cmd]
+                    except KeyError:
+                        cmd_id = "command-%s" % id(cmd)
+                        action = Gio.SimpleAction.new(cmd_id, None)
+                        if cmd.action:
+                            action.connect("activate", wrapped_handler(self, cmd.action))
+                        cmd._widgets.append(action)
+                        self._actions[cmd] = action
+                        self._impl.add_action(action)
+
+                    cmd._set_enabled(cmd.enabled)
+
+                    item = Gio.MenuItem.new(cmd.label, 'app.' + cmd_id)
+                    if cmd.shortcut:
+                        item.set_attribute_value('accel', GLib.Variant('s', '<Primary>%s' % cmd.shortcut.upper()))
+
+                    section.append_item(item)
+
+            if section:
+                submenu.append_section(None, section)
+
+            if submenu:
+                if label == '*':
+                    self._impl.set_app_menu(submenu)
+                else:
+                    menubar.append_submenu(label, submenu)
+
+            # Set the menu for the app.
+            self._impl.set_menubar(menubar)
 
     def main_loop(self):
         # Modify signal handlers to make sure Ctrl-C is caught and handled.
@@ -147,8 +193,6 @@ class App(AppInterface):
 
         self._impl.run(None)
 
-    def _quit(self, widget, data=None):
-        self.on_quit()
 
-    def on_quit(self):
+    def exit(self, widget):
         self._impl.quit()

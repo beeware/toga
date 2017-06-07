@@ -1,49 +1,26 @@
+from toga.interface.command import Group, Command as BaseCommand
+
 from .widgets.icon import Icon
 
 
-class Command(object):
-    def __init__(self, action, label=None, tooltip=None, icon=None):
-        self.action = action
-        self.label = label
-        self.tooltip = tooltip
-        self.icon = Icon.load(icon)
+class Command(BaseCommand):
+    def __init__(self, action, label,
+                         shortcut=None, tooltip=None, icon=None,
+                         group=None, section=None, order=None):
+        super().__init__(action, label=label,
+                         shortcut=shortcut, tooltip=tooltip, icon=icon,
+                         group=group, section=section, order=order)
 
-        self._enabled = True
+        if self.icon_id:
+            self.icon = Icon.load(self.icon_id)
+        else:
+            self.icon = None
+
         self._widgets = []
 
-    @property
-    def toolbar_identifier(self):
-        return 'toolbarItem-%s' % id(self)
-
-    @property
-    def enabled(self):
-        return self._enabled
-
-    @enabled.setter
-    def enabled(self, value):
-        self._enabled = value
+    def _set_enabled(self, value):
         for widget in self._widgets:
-            widget.set_sensitive(value)
-
-
-class SpecialCommand(object):
-    def __init__(self, toolbar_identifier):
-        self._toolbar_identifier = toolbar_identifier
-        self.label = None
-        self.tooltip = None
-        # self.icon = None
-
-        self._widgets = []
-
-    @property
-    def toolbar_identifier(self):
-        return self._toolbar_identifier
-
-    @property
-    def enabled(self):
-        return True
-
-
-SEPARATOR = SpecialCommand('NSToolbarSeparatorItem')
-SPACER = SpecialCommand('NSToolbarSpaceItem')
-EXPANDING_SPACER = SpecialCommand('NSToolbarFlexibleSpaceItem')
+            try:
+                widget.set_sensitive(value)
+            except AttributeError:
+                widget.set_enabled(value)

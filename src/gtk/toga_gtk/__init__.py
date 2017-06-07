@@ -1,7 +1,7 @@
 # Core capabilities
 from .app import *
+from .command import Group, Command
 from .window import *
-from .command import *
 from .font import Font
 
 # Widgets
@@ -26,7 +26,7 @@ __all__ = [
     '__version__',
     'App', 'MainWindow',
     'Window',
-    'Command', 'SEPARATOR', 'SPACER', 'EXPANDING_SPACER',
+    'Group', 'Command',
     'Box',
     'Button',
     'Icon', 'TIBERIUS_ICON',
