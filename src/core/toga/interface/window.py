@@ -200,21 +200,22 @@ class Window:
     def on_close(self):
         pass
 
-    def info_dialog(self, title, message):
-        return self._DIALOG_MODULE.info(self, title, message)
+    def info_dialog(self, title, message, button_label='OK'):
+        return self._DIALOG_MODULE.info(self, title, message, button_label)
 
-    def question_dialog(self, title, message):
-        return self._DIALOG_MODULE.question(self, title, message)
+    def question_dialog(self, title, message, button_label=('Yes', 'No')):
+        return self._DIALOG_MODULE.question(self, title, message, button_label)
 
-    def confirm_dialog(self, title, message):
-        return self._DIALOG_MODULE.confirm(self, title, message)
+    def confirm_dialog(self, title, message, button_label=('OK', 'Cancel')):
+        return self._DIALOG_MODULE.confirm(self, title, message, button_label)
 
-    def error_dialog(self, title, message):
-        return self._DIALOG_MODULE.error(self, title, message)
+    def error_dialog(self, title, message, button_label='OK'):
+        return self._DIALOG_MODULE.error(self, title, message, button_label)
 
-    def stack_trace_dialog(self, title, message, content, retry=False):
+    def stack_trace_dialog(self, title, message, content, retry=False,
+                                            button_label=('Retry', 'Cancel')):
         return self._DIALOG_MODULE.stack_trace(self, title, message,
-                                                content, retry)
+                                                content, retry, button_label)
 
     def save_file_dialog(self, title, suggested_filename, file_types):
         return self._DIALOG_MODULE.save_file(self, title, suggested_filename,
