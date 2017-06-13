@@ -25,7 +25,7 @@ Inputs are mechanisms for displaying and editing input provided by the user.
     - GTK+: Gtk.ComboBox.new_with_model_and_entry
     - iOS: ?
 * Switch - A native control for enabled/disabled
-    - Cocoa: NSButton with checkbox style
+    - Cocoa: Done
     - GTK+: Gtk.CheckButton (maybe Gtk.Switch?)
     - iOS: UISwitch
 * DateInput - A widget for selecting a date
@@ -90,7 +90,7 @@ Views are mechanisms for displaying rich content, usually in a readonly manner.
     - iOS:
 * ProgressBar - A horizontal bar that displays progress, either progress
     against a known value, or indeterminiate
-    - Cocoa: NSProgressIndicator, Bar style
+    - Cocoa: Done
     - GTK+: Gtk.ProgressBar
     - iOS: UIProgressView
 * ActivityIndicator - A spinner widget showing that something is happening
@@ -98,7 +98,7 @@ Views are mechanisms for displaying rich content, usually in a readonly manner.
     - GTK+: Gtk.Spinner
     - iOS: UIActivityIndicatorView
 * ImageView - Display an graphical image
-    - Cocoa: NSImageView
+    - Cocoa: Done
     - GTK+: Gtk.Image
     - iOS: UIImageView
 * VideoView - Display a video
@@ -106,7 +106,7 @@ Views are mechanisms for displaying rich content, usually in a readonly manner.
     - GTK+: Custom Integrate with GStreamer
     - iOS: MPMoviePlayerController
 * WebView - Display a web page. Just the web page; no URL chrome, etc.
-    - Cocoa: WebView
+    - Cocoa: Done
     - GTK+: Webkit.WebView (via WebkitGtk)
     - iOS: UIWebView
 * PDFView - Display a PDF document
@@ -149,7 +149,7 @@ Containers are widgets that can contain other widgets.
     over a box. Examples of use: OS X System preference panes that contain
     multiple options (e.g., Keyboard settings have an option layout for "Keyboard",
     "Text", "Shortcuts" and "Input sources")
-    - Cocoa: NSTabView
+    - Cocoa: Done
     - GTK+: GtkNotebook (Maybe GtkStack on 3.10+?)
     - iOS: ?
 * SectionContainer - (suggestions for better name welcome) A container view that
@@ -179,23 +179,23 @@ GUIs aren't all about widgets - sometimes you need to pop up a dialog to query
 the user.
 
 * Info - a modal dialog providing an "OK" option
-    - Cocoa: NSAlert
+    - Cocoa: Done
     - GTK+: Gtk.MessageDialog, type Gtk.MessageType.INFO, buttons Gtk.ButtonsType.OK
     - iOS:
 * Error - a modal dialog showing an error, and a continue option.
-    - Cocoa: NSAlert
+    - Cocoa: Done
     - GTK+: Gtk.MessageDialog, type Gtk.MessageType.ERROR, buttons Gtk.ButtonsType.CANCEL
     - iOS:
 * Question - a modal dialog that asks a Yes/No question
-    - Cocoa: NSAlert with pre-canned buttons
+    - Cocoa: Done
     - GTK+: Gtk.MessageDialog, type Gtk.MessageType.QUESTION, buttons Gtk.ButtonsType.YES_NO
     - iOS:
 * Confirm - a modal dialog confirming "OK" or "cancel"
-    - Cocoa: NSAlert with pre-canned buttons, "proceed" name
+    - Cocoa: Done
     - GTK+: Gtk.MessageDialog, type Gtk.MessageType.WARNING, buttons Gtk.ButtonsType.OK_CANCEL
     - iOS:
 * StackTrace - a modal dialog for displaying a long stack trace.
-    - Cocoa: Custom NSWindow
+    - Cocoa: Done
     - GTK+: Custom Gtk.Dialog
     - iOS:
 * File Open - a mechanism for finding and specifying a file on disk.
@@ -203,7 +203,7 @@ the user.
     - GTK+: Gtk.FileChooserDialog
     - iOS:
 * File Save - a mechanism for finding and specifying a filename to save to.
-    - Cocoa:
+    - Cocoa: Done
     - GTK+:
     - iOS:
 
