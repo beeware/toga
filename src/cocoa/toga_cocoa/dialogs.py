@@ -3,55 +3,60 @@ from .libs import *
 from .widgets.icon import Icon
 
 
-def info(window, title, message):
+def info(window, title, message, button_label='OK'):
     alert = NSAlert.alloc().init()
     alert.icon = Icon.app_icon._impl
     alert.setAlertStyle_(NSInformationalAlertStyle)
     alert.setMessageText_(title)
     alert.setInformativeText_(message)
+
+    alert.addButtonWithTitle_(button_label)
 
     alert.runModal()
 
 
-def question(window, title, message):
+def question(window, title, message, button_label=('Yes', 'No')):
     alert = NSAlert.alloc().init()
     alert.icon = Icon.app_icon._impl
     alert.setAlertStyle_(NSInformationalAlertStyle)
     alert.setMessageText_(title)
     alert.setInformativeText_(message)
 
-    alert.addButtonWithTitle_('Yes')
-    alert.addButtonWithTitle_('No')
+    alert.addButtonWithTitle_(button_label[0])
+    alert.addButtonWithTitle_(button_label[1])
 
     result = alert.runModal()
     return result == NSAlertFirstButtonReturn
 
 
-def confirm(window, title, message):
+def confirm(window, title, message, button_label=('OK', 'Cancel')):
     alert = NSAlert.alloc().init()
     alert.icon = Icon.app_icon._impl
     alert.setAlertStyle_(NSWarningAlertStyle)
     alert.setMessageText_(title)
     alert.setInformativeText_(message)
 
-    alert.addButtonWithTitle_('OK')
-    alert.addButtonWithTitle_('Cancel')
+    alert.addButtonWithTitle_(button_label[0])
+    alert.addButtonWithTitle_(button_label[1])
 
     result = alert.runModal()
     return result == NSAlertFirstButtonReturn
 
 
-def error(window, title, message):
+def error(window, title, message, button_label='OK'):
     alert = NSAlert.alloc().init()
     alert.icon = Icon.app_icon._impl
     alert.setAlertStyle_(NSCriticalAlertStyle)
     alert.setMessageText_(title)
     alert.setInformativeText_(message)
 
+    alert.addButtonWithTitle_(button_label)
+
     alert.runModal()
 
 
-def stack_trace(window, title, message, content, retry=False):
+def stack_trace(window, title, message, content, retry=False,
+                                            button_label=('Retry', 'Cancel')):
     alert = NSAlert.alloc().init()
     alert.icon = Icon.app_icon._impl
     alert.setAlertStyle_(NSCriticalAlertStyle)
@@ -74,8 +79,8 @@ def stack_trace(window, title, message, content, retry=False):
     alert.setAccessoryView_(scroll)
 
     if retry:
-        alert.addButtonWithTitle_('Retry')
-        alert.addButtonWithTitle_('Cancel')
+        alert.addButtonWithTitle_(button_label[0])
+        alert.addButtonWithTitle_(button_label[1])
         result = alert.runModal()
         return result == NSAlertFirstButtonReturn
     else:

@@ -1,20 +1,21 @@
-def info(window, title, message):
+def info(window, title, message, button_label='OK'):
     raise NotImplementedError()
 
 
-def question(window, title, message):
+def question(window, title, message, button_label=('Yes', 'No')):
     raise NotImplementedError()
 
 
-def confirm(window, title, message):
+def confirm(window, title, message, button_label=('OK', 'Cancel')):
     raise NotImplementedError()
 
 
-def error(window, title, message):
+def error(window, title, message, button_label='OK'):
     raise NotImplementedError()
 
 
-def stack_trace(window, title, message, content, retry=False):
+def stack_trace(window, title, message, content, retry=False,
+                                            button_label=('Retry', 'Cancel')):
     raise NotImplementedError()
 
 
