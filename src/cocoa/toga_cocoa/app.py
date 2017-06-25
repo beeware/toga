@@ -1,14 +1,12 @@
 import os
 import signal
-import sys
 
-from toga.interface.app import App as AppInterface
-from toga.interface.command import GROUP_BREAK, SECTION_BREAK
+# from toga.interface.app import App as AppInterface
 
-from .command import Command, Group
 from .libs import *
-from .window import Window
-from .widgets.icon import Icon, TIBERIUS_ICON
+# from .window import Window
+from toga.window import Window
+# from .widgets.icon import Icon, TIBERIUS_ICON
 
 
 class MainWindow(Window):
@@ -16,7 +14,7 @@ class MainWindow(Window):
         super(MainWindow, self).__init__(title, position, size)
 
     def on_close(self):
-        self.app._impl.terminate_(self._delegate)
+        self.app._impl._impl.terminate_(self._impl._delegate)
 
 
 class AppDelegate(NSObject):
@@ -69,108 +67,69 @@ class AppDelegate(NSObject):
             self._interface.open_document(fileURL.absoluteString)
             # NSDocumentController.sharedDocumentController().openDocumentWithContentsOfURL_display_completionHandler_(fileURL, True, None)
 
-    @objc_method
-    def selectMenuItem_(self, sender) -> None:
-        cmd = self._interface._menu_items[sender]
-        if cmd.action:
-            cmd.action(None)
 
-
-class App(AppInterface):
+class App():
     _MAIN_WINDOW_CLASS = MainWindow
 
-    def __init__(self, name, app_id, icon=None, startup=None, document_types=None):
-        # Set the icon for the app
-        Icon.app_icon = Icon.load(icon, default=TIBERIUS_ICON)
+    def __init__(self, creator):
+        self._creator = creator
 
-        super().__init__(
-            name=name,
-            app_id=app_id,
-            icon=Icon.app_icon,
-            startup=startup,
-            document_types=document_types
-        )
-
-    def _startup(self):
+    def _create(self):
         self._impl = NSApplication.sharedApplication()
         self._impl.setActivationPolicy_(NSApplicationActivationPolicyRegular)
 
-        self._impl.setApplicationIconImage_(self.icon._impl)
+        # self._impl.setApplicationIconImage_(self.icon._impl)
 
         self.resource_path = os.path.dirname(os.path.dirname(NSBundle.mainBundle.bundlePath))
 
         appDelegate = AppDelegate.alloc().init()
         appDelegate._interface = self
-        self._impl.delegate = appDelegate
+        self._impl.setDelegate_(appDelegate)
 
-        app_name = self.name
+        app_name = self._creator.name
 
-        self.commands.add(
-            Command(None, 'About ' + app_name, group=Group.APP),
-            Command(None, 'Preferences', group=Group.APP),
-            # Quit should always be the last item, in a section on it's own
-            Command(lambda s: self.exit(), 'Quit ' + app_name, shortcut='q', group=Group.APP, section=sys.maxsize),
+        self.menu = NSMenu.alloc().initWithTitle_('MainMenu')
 
-            Command(None, 'Visit homepage', group=Group.HELP)
-        )
+        # App menu
+        self.app_menuItem = self.menu.addItemWithTitle_action_keyEquivalent_(app_name, None, '')
+        submenu = NSMenu.alloc().initWithTitle_(app_name)
 
-        # Call user code to populate the main window
-        self.startup()
+        menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('About ' + app_name, None, '')
+        submenu.addItem_(menu_item)
 
-        # Create the lookup table of menu items,
-        # then force the creation of the menus.
-        self._menu_items = {}
-        self._create_menus()
+        menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('Preferences', None, '')
+        submenu.addItem_(menu_item)
+
+        submenu.addItem_(NSMenuItem.separatorItem())
+
+        menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('Quit ' + app_name, get_selector('terminate:'), "q")
+        submenu.addItem_(menu_item)
+
+        self.menu.setSubmenu_forItem_(submenu, self.app_menuItem)
+
+        # Help menu
+        self.help_menuItem = self.menu.addItemWithTitle_action_keyEquivalent_('Apple', None, '')
+        submenu = NSMenu.alloc().initWithTitle_('Help')
+
+        menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('Visit homepage', None, '')
+        submenu.addItem_(menu_item)
+
+        self.menu.setSubmenu_forItem_(submenu, self.help_menuItem)
+
+        # Set the menu for the app.
+        self._impl.setMainMenu_(self.menu)
+
+        self._creator.startup()
 
     def open_document(self, fileURL):
         '''Add a new document to this app.'''
         print("STUB: If you want to handle opening documents, implement App.open_document(fileURL)")
 
-    def _create_menus(self):
-        # Only create the menu if the menu item index has been created.
-        if hasattr(self, '_menu_items'):
-            self._menu_items = {}
-            menubar = NSMenu.alloc().initWithTitle('MainMenu')
-            submenu = None
-            for cmd in self.commands:
-                if cmd == GROUP_BREAK:
-                    menubar.setSubmenu(submenu, forItem=menuItem)
-                    submenu = None
-                elif cmd == SECTION_BREAK:
-                    submenu.addItem_(NSMenuItem.separatorItem())
-                else:
-                    if submenu is None:
-                        menuItem = menubar.addItemWithTitle(cmd.group.label, action=None, keyEquivalent='')
-                        submenu = NSMenu.alloc().initWithTitle(cmd.group.label)
-                        submenu.setAutoenablesItems(False)
-
-                    item = NSMenuItem.alloc().initWithTitle(
-                        cmd.label,
-                        action=get_selector('selectMenuItem:'),
-                        keyEquivalent=cmd.shortcut if cmd.shortcut else ''
-                    )
-
-                    cmd._widgets.append(item)
-                    self._menu_items[item] = cmd
-
-                    cmd._set_enabled(cmd.enabled)
-                    submenu.addItem(item)
-
-            if submenu:
-                menubar.setSubmenu(submenu, forItem=menuItem)
-
-            # Set the menu for the app.
-            self._impl.mainMenu = menubar
-
     def main_loop(self):
         # Stimulate the build of the app
-        self._startup()
+        self._create()
         # Modify signal handlers to make sure Ctrl-C is caught and handled.
         signal.signal(signal.SIGINT, signal.SIG_DFL)
 
         self._impl.activateIgnoringOtherApps_(True)
         self._impl.run()
-
-    def exit(self):
-        self._impl.terminate(None)
-

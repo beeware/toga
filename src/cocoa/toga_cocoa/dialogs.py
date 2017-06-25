@@ -75,7 +75,7 @@ def stack_trace(window, title, message, content, retry=False):
 
     if retry:
         alert.addButtonWithTitle_('Retry')
-        alert.addButtonWithTitle_('Quit')
+        alert.addButtonWithTitle_('Cancel')
         result = alert.runModal()
         return result == NSAlertFirstButtonReturn
     else:

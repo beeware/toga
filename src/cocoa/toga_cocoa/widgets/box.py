@@ -1,18 +1,16 @@
 from rubicon.objc import *
 
-from toga.interface import Box as BoxInterface
+# from toga.interface import Box as BoxInterface
 
 from ..libs import *
-from .base import WidgetMixin
+from .base import Widget
 
 
-class Box(BoxInterface, WidgetMixin):
-    def __init__(self, id=id, style=None, children=None):
-        super().__init__(id=id, style=style, children=children)
+class Box(Widget):
+    def __init__(self, creator):
+        self._creator = creator
         self._create()
+        self._native = None
 
-    def create(self):
-        # # self._impl.setWantsLayer_(True)
-        # # self._impl.setBackgroundColor_(NSColor.blueColor)
-
+    def _create(self):
         self._constraints = None
