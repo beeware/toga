@@ -1,7 +1,7 @@
 from ..container import Constraints
 
 
-class WidgetMixin:
+class Widget:
     def _set_app(self, app):
         pass
 
@@ -9,17 +9,17 @@ class WidgetMixin:
         pass
 
     def _set_container(self, container):
-        if self._constraints and self._impl:
-            self._container._impl.addSubview_(self._impl)
+        if self._constraints and self._native:
+            self._creator._container._native.addSubview_(self._native)
             self._constraints._container = container
         self.rehint()
 
     def _add_child(self, child):
-        if self._container:
+        if self._creator._container:
             child._set_container(self._container)
 
     def _add_constraints(self):
-        self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
+        self._native.setTranslatesAutoresizingMaskIntoConstraints_(False)
         self._constraints = Constraints(self)
 
     def _apply_layout(self):
@@ -30,4 +30,7 @@ class WidgetMixin:
         pass
 
     def _set_font(self, font):
-        self._impl.setFont_(font._impl)
+        self._native.setFont_(font._native)
+
+    def set_enabled(self, value):
+        self._native.enabled = value

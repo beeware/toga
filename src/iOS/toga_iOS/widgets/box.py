@@ -1,15 +1,14 @@
 from rubicon.objc import *
 
-from toga.interface import Box as BoxInterface
-
-from .base import WidgetMixin
+from .base import Widget
 from ..libs import *
 
 
-class Box(BoxInterface, WidgetMixin):
-    def __init__(self, id=None, style=None, children=None):
-        super().__init__(id=id, style=style, children=children)
+class Box(Widget):
+    def __init__(self, creator):
+        self._creator = creator
         self._create()
 
-    def create(self):
+    def _create(self):
+        self._native = None
         self._constraints = None

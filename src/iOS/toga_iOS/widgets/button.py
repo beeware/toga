@@ -1,8 +1,5 @@
 from rubicon.objc import objc_method
-
-from toga.interface import Button as ButtonInterface
-
-from .base import WidgetMixin
+from .base import Widget
 from ..libs import *
 # from ..utils import process_callback
 
@@ -10,36 +7,32 @@ from ..libs import *
 class TogaButton(UIButton):
     @objc_method
     def onPress_(self, obj) -> None:
-        if self._interface.on_press:
-            # process_callback(self._interface.on_press(self._interface))
-            self._interface.on_press(self._interface)
+        if self.interface._creator.on_press:
+            self.interface._creator.on_press(self.interface)
 
 
-class Button(ButtonInterface, WidgetMixin):
-    def __init__(self, label, id=None, on_press=None, style=None, enabled=True):
-        super().__init__(label, id=id, style=style, on_press=on_press, enabled=enabled)
+class Button(Widget):
+    def __init__(self, creator):
+        self._creator = creator
         self._create()
 
-    def create(self):
-        self._impl = TogaButton.alloc().init()
-        self._impl._interface = self
+    def _create(self):
+        self._native = TogaButton.alloc().init()
+        self._native.interface = self
 
-        self._impl.setTitleColor_forState_(self._impl.tintColor, UIControlStateNormal)
-        self._impl.setTitleColor_forState_(UIColor.grayColor, UIControlStateDisabled)
-        self._impl.addTarget_action_forControlEvents_(self._impl, get_selector('onPress:'), UIControlEventTouchDown)
+        self._native.setTitleColor_forState_(self._native.tintColor, UIControlStateNormal)
+        self._native.setTitleColor_forState_(UIColor.grayColor, UIControlStateDisabled)
+        self._native.addTarget_action_forControlEvents_(self._native, get_selector('onPress:'), UIControlEventTouchDown)
 
         # Add the layout constraints
         self._add_constraints()
 
-    def _set_label(self, value):
-        self._impl.setTitle_forState_(value, UIControlStateNormal)
-
-    def _set_enabled(self, value):
-        self._impl.enabled = value
+    def set_label(self, value):
+        self._native.setTitle_forState_(value, UIControlStateNormal)
 
     def rehint(self):
-        fitting_size = self._impl.systemLayoutSizeFittingSize_(CGSize(0, 0))
-        self.style.hint(
+        fitting_size = self._native.systemLayoutSizeFittingSize_(CGSize(0, 0))
+        self._creator.style.hint(
             height=fitting_size.height,
             min_width=fitting_size.width,
         )

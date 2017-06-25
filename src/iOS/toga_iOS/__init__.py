@@ -9,24 +9,24 @@ from .font import Font
 # # Widgets
 from .widgets.box import *
 from .widgets.button import *
-from .widgets.detailedlist import *
-from .widgets.icon import *
+# from .widgets.detailedlist import *
+# from .widgets.icon import *
 # from .widgets.image import *
 # from .widgets.imageview import *
-from .widgets.label import *
+# from .widgets.label import *
 # from .widgets.multilinetextinput import *
 # from .widgets.optioncontainer import *
-from .widgets.navigationview import *
+# from .widgets.navigationview import *
 # from .widgets.passwordinput import *
 # from .widgets.progressbar import *
 # from .widgets.scrollcontainer import *
-from .widgets.slider import *
+# from .widgets.slider import *
 # from .widgets.splitcontainer import *
-from .widgets.switch import *
+# from .widgets.switch import *
 # from .widgets.table import *
-from .widgets.textinput import *
+# from .widgets.textinput import *
 # from .widgets.tree import *
-from .widgets.webview import *
+# from .widgets.webview import *
 
 __all__ = [
     '__version__',
@@ -35,25 +35,25 @@ __all__ = [
     # 'Command', 'SEPARATOR', 'SPACER', 'EXPANDING_SPACER',
     'Box',
     'Button',
-    'DetailedList',
-    'Icon', 'TIBERIUS_ICON',
-    'Font',
+    # 'DetailedList',
+    # 'Icon', 'TIBERIUS_ICON',
+    # 'Font',
     # 'Image',
     # 'ImageView',
-    'Label',
+    # 'Label',
     # 'MultilineTextInput',
     # 'OptionContainer',
-    'NavigationView',
+    # 'NavigationView',
     # 'PasswordInput',
     # 'ProgressBar',
     # 'ScrollContainer',
-    'Slider',
+    # 'Slider',
     # 'SplitContainer',
-    'Switch',
+    # 'Switch',
     # 'Table',
-    'TextInput',
+    # 'TextInput',
     # 'Tree',
-    'WebView',
+    # 'WebView',
 ]
 
 # Examples of valid version strings
