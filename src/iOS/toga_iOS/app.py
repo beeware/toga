@@ -1,9 +1,6 @@
-from rubicon.objc import objc_method
-
-from toga.interface.app import App as AppInterface
-
 from .libs import *
-from .window import Window
+from toga.window import Window
+from rubicon.objc import objc_method
 
 
 class MainWindow(Window):
@@ -12,7 +9,7 @@ class MainWindow(Window):
 
     def startup(self):
         super(MainWindow, self).startup()
-        self._impl.setBackgroundColor_(UIColor.whiteColor())
+        self._native.setBackgroundColor_(UIColor.whiteColor())
 
 
 class PythonAppDelegate(UIResponder):
@@ -28,30 +25,27 @@ class PythonAppDelegate(UIResponder):
 
     @objc_method
     def application_didChangeStatusBarOrientation_(self, application, oldStatusBarOrientation: int) -> None:
+        """ This callback is invoked when rotating the device from landscape to portrait and vice versa. """
         print("ROTATED", oldStatusBarOrientation)
-        App.app.main_window.content._update_layout(
-            width=App.app.main_window._screen.bounds.size.width,
-            height=App.app.main_window._screen.bounds.size.height,
+        App.app._creator.main_window.content._update_layout(
+            width=App.app._creator.main_window._impl._screen.bounds.size.width,
+            height=App.app._creator.main_window._impl._screen.bounds.size.height,
         )
 
 
-class App(AppInterface):
+class App():
     _MAIN_WINDOW_CLASS = MainWindow
 
-    def __init__(self, name, app_id, icon=None, startup=None, document_types=None):
-        super().__init__(
-            name=name,
-            app_id=app_id,
-            icon=None,  # Icon is ignored on iOS
-            startup=startup,
-            document_types=document_types
-        )
+    def __init__(self, creator):
+        self._creator = creator
+        App.app = self  # Add a reference for the PythonAppDelegate class to use.
 
     def _startup(self):
-        self.startup()
+        """ Calls the startup method on the interface """
+        self._creator.startup()
 
     def open_document(self, fileURL):
-        '''Add a new document to this app.'''
+        """ Add a new document to this app."""
         print("")
 
     def main_loop(self):
