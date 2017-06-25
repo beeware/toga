@@ -8,7 +8,7 @@ class Button(Widget):
         super().__init__(id=id, style=style, enabled=enabled, factory=factory)
 
         # Create a platform specific implementation of a Button
-        self._impl = self.factory.Button(creator=self)
+        self._impl = self.factory.Button(interface=self)
         # Set all the properties
         self.label = label
         self.on_press = on_press

@@ -5,8 +5,8 @@ from ..libs import *
 
 
 class Box(Widget):
-    def __init__(self, creator):
-        self._creator = creator
+    def __init__(self, interface):
+        self._interface = interface
         self._create()
 
     def _create(self):

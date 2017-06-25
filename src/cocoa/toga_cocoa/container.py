@@ -41,7 +41,7 @@ class Constraints:
             self._widget._native, NSLayoutAttributeLeft,
             NSLayoutRelationEqual,
             self._container._native, NSLayoutAttributeLeft,
-            1.0, self._widget._creator.layout.absolute.left
+            1.0, self._widget._interface.layout.absolute.left
         )
         self._container._native.addConstraint_(self._left_constraint)
 
@@ -49,7 +49,7 @@ class Constraints:
             self._widget._native, NSLayoutAttributeTop,
             NSLayoutRelationEqual,
             self._container._native, NSLayoutAttributeTop,
-            1.0, self._widget._creator.layout.absolute.top
+            1.0, self._widget._interface.layout.absolute.top
         )
         self._container._native.addConstraint_(self._top_constraint)
 
@@ -57,7 +57,7 @@ class Constraints:
             self._widget._native, NSLayoutAttributeRight,
             NSLayoutRelationEqual,
             self._widget._native, NSLayoutAttributeLeft,
-            1.0, self._widget._creator.layout.width
+            1.0, self._widget._interface.layout.width
         )
         self._container._native.addConstraint_(self._width_constraint)
 
@@ -65,7 +65,7 @@ class Constraints:
             self._widget._native, NSLayoutAttributeBottom,
             NSLayoutRelationEqual,
             self._widget._native, NSLayoutAttributeTop,
-            1.0, self._widget._creator.layout.height
+            1.0, self._widget._interface.layout.height
         )
         self._container._native.addConstraint_(self._height_constraint)
 
@@ -92,11 +92,11 @@ class Constraints:
         # print("UPDATE", self._widget, 'in', self._container, 'to', self._widget.layout, self._widget.layout.absolute.top, self._widget.layout.absolute.left)
         if self._container:
             # print("     in", self._container)
-            self.top = self._widget._creator.layout.absolute.top
-            self.left = self._widget._creator.layout.absolute.left
+            self.top = self._widget._interface.layout.absolute.top
+            self.left = self._widget._interface.layout.absolute.left
 
-            self.width = self._widget._creator.layout.width
-            self.height = self._widget._creator.layout.height
+            self.width = self._widget._interface.layout.width
+            self.height = self._widget._interface.layout.height
 
     @property
     def width(self):

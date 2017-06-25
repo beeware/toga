@@ -12,13 +12,13 @@ class TogaButton(NSButton):
 
 
 class Button(Widget):
-    def __init__(self, creator):
-        self._creator = creator
+    def __init__(self, interface):
+        self._interface = interface
         self._create()
 
     def _create(self):
         self._native = TogaButton.alloc().init()
-        self._native.interface = self._creator
+        self._native.interface = self._interface
 
         self._native.setBezelStyle_(NSRoundedBezelStyle)
         self._native.setButtonType_(NSMomentaryPushInButton)
@@ -34,7 +34,7 @@ class Button(Widget):
 
     def rehint(self):
         fitting_size = self._native.fittingSize()
-        self._creator.style.hint(
+        self._interface.style.hint(
             height=fitting_size.height,
             min_width=fitting_size.width,
         )

@@ -61,7 +61,7 @@ class Window:
             self.factory = get_platform_factory()
         else:
             self.factory = factory
-        self._impl = self.factory.Window(creator=self)
+        self._impl = self.factory.Window(interface=self)
         self.position = position
         self.size = size
         # self.title = title

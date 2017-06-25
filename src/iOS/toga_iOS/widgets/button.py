@@ -7,13 +7,13 @@ from ..libs import *
 class TogaButton(UIButton):
     @objc_method
     def onPress_(self, obj) -> None:
-        if self.interface._creator.on_press:
-            self.interface._creator.on_press(self.interface)
+        if self.interface._interface.on_press:
+            self.interface._interface.on_press(self.interface)
 
 
 class Button(Widget):
-    def __init__(self, creator):
-        self._creator = creator
+    def __init__(self, interface):
+        self._interface = interface
         self._create()
 
     def _create(self):
@@ -32,7 +32,7 @@ class Button(Widget):
 
     def rehint(self):
         fitting_size = self._native.systemLayoutSizeFittingSize_(CGSize(0, 0))
-        self._creator.style.hint(
+        self._interface.style.hint(
             height=fitting_size.height,
             min_width=fitting_size.width,
         )

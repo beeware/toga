@@ -71,8 +71,8 @@ class AppDelegate(NSObject):
 class App():
     _MAIN_WINDOW_CLASS = MainWindow
 
-    def __init__(self, creator):
-        self._creator = creator
+    def __init__(self, interface):
+        self._interface = interface
 
     def _create(self):
         self._impl = NSApplication.sharedApplication()
@@ -86,7 +86,7 @@ class App():
         appDelegate._interface = self
         self._impl.setDelegate_(appDelegate)
 
-        app_name = self._creator.name
+        app_name = self._interface.name
 
         self.menu = NSMenu.alloc().initWithTitle_('MainMenu')
 
@@ -119,7 +119,7 @@ class App():
         # Set the menu for the app.
         self._impl.setMainMenu_(self.menu)
 
-        self._creator.startup()
+        self._interface.startup()
 
     def open_document(self, fileURL):
         '''Add a new document to this app.'''

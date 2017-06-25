@@ -84,10 +84,10 @@ class Window():
     _CONTAINER_CLASS = Container
     _DIALOG_MODULE = dialogs
 
-    def __init__(self, creator, title=None, position=(100, 100), size=(640, 480), toolbar=None, resizeable=True, closeable=True, minimizable=True):
+    def __init__(self, interface, title=None, position=(100, 100), size=(640, 480), toolbar=None, resizeable=True, closeable=True, minimizable=True):
         # super().__init__(title=title, position=position, size=size, toolbar=toolbar, resizeable=resizeable, closeable=closeable, minimizable=minimizable)
         # self._create()
-        self._creator = creator
+        self._interface = interface
         self._create()
 
     def _create(self):
@@ -95,20 +95,20 @@ class Window():
         # offset relative to other screens. Adjust for this.
         screen = NSScreen.mainScreen().visibleFrame
         position = NSMakeRect(
-            screen.origin.x + self._creator.position[0],
-            screen.size.height + screen.origin.y - self._creator.position[1] - self._creator._size[1],
-            self._creator._size[0],
-            self._creator._size[1]
+            screen.origin.x + self._interface.position[0],
+            screen.size.height + screen.origin.y - self._interface.position[1] - self._interface._size[1],
+            self._interface._size[0],
+            self._interface._size[1]
         )
 
         mask = NSTitledWindowMask
-        if self._creator.closeable:
+        if self._interface.closeable:
             mask |= NSClosableWindowMask
 
-        if self._creator.resizeable:
+        if self._interface.resizeable:
             mask |= NSResizableWindowMask
 
-        if self._creator.minimizable:
+        if self._interface.minimizable:
             mask |= NSMiniaturizableWindowMask
 
         self._native = self._IMPL_CLASS.alloc().initWithContentRect_styleMask_backing_defer_(
@@ -120,7 +120,7 @@ class Window():
         self._native.setFrame_display_animate_(position, True, False)
 
         self._delegate = WindowDelegate.alloc().init()
-        self._delegate.interface = self._creator
+        self._delegate.interface = self._interface
 
         self._native.setDelegate_(self._delegate)
 
@@ -131,24 +131,24 @@ class Window():
         self._native.setToolbar_(self._toolbar_impl)
 
     def _set_content(self, widget):
-        self._native.setContentView_(self._creator._container._native)
+        self._native.setContentView_(self._interface._container._native)
 
         # Enforce a minimum size based on the content
         self._min_width_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
-            self._creator._container._native, NSLayoutAttributeRight,
-            NSLayoutRelationGreaterThanOrEqual if self._creator.resizeable else NSLayoutRelationEqual,
-            self._creator._container._native, NSLayoutAttributeLeft,
+            self._interface._container._native, NSLayoutAttributeRight,
+            NSLayoutRelationGreaterThanOrEqual if self._interface.resizeable else NSLayoutRelationEqual,
+            self._interface._container._native, NSLayoutAttributeLeft,
             1.0, 0
         )
-        self._creator._container._native.addConstraint_(self._min_width_constraint)
+        self._interface._container._native.addConstraint_(self._min_width_constraint)
 
         self._min_height_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
-            self._creator._container._native, NSLayoutAttributeBottom,
-            NSLayoutRelationGreaterThanOrEqual if self._creator.resizeable else NSLayoutRelationEqual,
-            self._creator._container._native, NSLayoutAttributeTop,
+            self._interface._container._native, NSLayoutAttributeBottom,
+            NSLayoutRelationGreaterThanOrEqual if self._interface.resizeable else NSLayoutRelationEqual,
+            self._interface._container._native, NSLayoutAttributeTop,
             1.0, 0
         )
-        self._creator._container._native.addConstraint_(self._min_height_constraint)
+        self._interface._container._native.addConstraint_(self._min_height_constraint)
 
     def set_title(self, title):
         self._native.setTitle_(title)
@@ -168,11 +168,11 @@ class Window():
         # The first render of the content will establish the
         # minimum possible content size; use that to enforce
         # a minimum window size.
-        self._min_width_constraint.constant = self._creator.content.layout.width
-        self._min_height_constraint.constant = self._creator.content.layout.height
+        self._min_width_constraint.constant = self._interface.content.layout.width
+        self._min_height_constraint.constant = self._interface.content.layout.height
 
         # Do the first layout render.
-        self._creator._container._update_layout(
+        self._interface._container._update_layout(
             width=self._native.contentView.frame.size.width,
             height=self._native.contentView.frame.size.height,
         )

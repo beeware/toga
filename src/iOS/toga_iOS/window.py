@@ -10,8 +10,8 @@ class Window():
     _CONTAINER_CLASS = Container
     _DIALOG_MODULE = dialogs
 
-    def __init__(self, creator):
-        self._creator = creator
+    def __init__(self, interface):
+        self._interface = interface
         self._create()
 
     def _create(self):
@@ -26,7 +26,7 @@ class Window():
             self._controller = UIViewController.alloc().init()
 
         self._impl.rootViewController = self._controller
-        self._controller.view = self._creator._container._native
+        self._controller.view = self._interface._container._native
 
     def set_title(self, title):
         pass
@@ -45,7 +45,7 @@ class Window():
 
         # self._impl.visualizeConstraints_(self._impl.contentView().constraints())
         # Do the first layout render.
-        self._creator.content._update_layout(
+        self._interface.content._update_layout(
             width=self._screen.bounds.size.width,
             height=self._screen.bounds.size.height
         )

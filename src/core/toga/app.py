@@ -72,7 +72,7 @@ class App(object):
             self.factory = get_platform_factory()
         else:
             self.factory = factory
-        self._impl = self.factory.App(creator=self)
+        self._impl = self.factory.App(interface=self)
 
         # # Call user code to populate the main window
         # self.startup()
