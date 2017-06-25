@@ -18,7 +18,7 @@ class TestCoreBox(unittest.TestCase):
         self.assertEqual(self.box.factory, self.factory)
 
     def test_box_impl_creation(self):
-        self.factory.Box.assert_called_with(creator=self.box)
+        self.factory.Box.assert_called_with(interface=self.box)
 
     @patch('toga.widgets.base.get_platform_factory')
     def test_box_with_without_factory(self, mock_function):

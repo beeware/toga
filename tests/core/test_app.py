@@ -42,7 +42,7 @@ class TestCoreApp(unittest.TestCase):
         self.assertEqual(self.app.documents, [doc])
 
     def test_app_factory_called(self):
-        self.factory.App.assert_called_once_with(creator=self.app)
+        self.factory.App.assert_called_once_with(interface=self.app)
 
     @patch('toga.app.get_platform_factory')
     def test_app_init_with_no_factory(self, mock_function):
