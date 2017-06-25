@@ -17,9 +17,11 @@ class Box(Widget):
                         box.
     :type children:     ``list``
     '''
-    def __init__(self, id=None, style=None, children=None):
-        super().__init__(id=id, style=style, children=children)
+
+    def __init__(self, id=None, style=None, children=None, factory=None):
+        super().__init__(id=id, style=style, children=children, factory=factory)
         self._children = []
+        self._impl = self.factory.Box(creator=self)
 
     def _configure(self, children):
         if children:
