@@ -14,6 +14,18 @@ class WidgetMixin:
             self._constraints._container = container
         self.rehint()
 
+    def _set_hidden(self, status, children):
+        for view in self._container._impl.subviews:
+            [view.setHidden_(status) for c in children if c._impl == view]
+
+    def _hide(self, children):
+        if self._container:
+            self._set_hidden(True, children)
+
+    def _show(self, children):
+        if self._container:
+            self._set_hidden(False, children)
+
     def _add_child(self, child):
         if self._container:
             child._set_container(self._container)
