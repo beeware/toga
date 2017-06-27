@@ -127,7 +127,7 @@ class Widget:
                     new one will be created for the widget.
     :type style:    :class:`colosseum.CSSNode`
     '''
-    def __init__(self, id=None, style=None, factory=None, **config):
+    def __init__(self, id=None, style=None, factory=None):
         self._id = id if id else identifier(self)
         self._parent = None
         self._children = None
@@ -137,18 +137,13 @@ class Widget:
         self.__container = None
         self._layout_in_progress = False
 
-        self._config = config
-
         self.layout = Layout(self)
         if style:
             self.style = style.copy()
         else:
             self.style = CSS()
 
-        if factory is None:
-            self.factory = get_platform_factory()
-        else:
-            self.factory = factory
+        self.factory = get_platform_factory(factory)
 
     def __repr__(self):
         return "<%s:%s>" % (self.__class__.__name__, id(self))
@@ -161,20 +156,6 @@ class Widget:
         :rtype: ``str``
         '''
         return self._id
-
-    @property
-    def style(self):
-        '''
-        The style object for this widget.
-
-        :return: The style for this widget
-        :rtype: :class:`colosseum.CSSNode`
-        '''
-        return self._style
-
-    @style.setter
-    def style(self, value):
-        self._style = value.bind(self)
 
     @property
     def parent(self):
@@ -222,7 +203,7 @@ class Widget:
         if self.parent:
             self.parent.layout.dirty = True
 
-        self._impl._add_child(child)
+        self._impl.add_child(child)
 
     @property
     def app(self):
@@ -246,7 +227,7 @@ class Widget:
                 raise ValueError("Widget %s is already associated with an App" % self)
         elif app is not None:
             self._app = app
-            self._impl._set_app(app)
+            self._impl.set_app(app)
             if self._children is not None:
                 for child in self._children:
                     child.app = app
@@ -269,7 +250,7 @@ class Widget:
         :type  window: :class:`toga.Window`
         '''
         self._window = window
-        self._impl._set_window(window)
+        self._impl.set_window(window)
         if self._children is not None:
             for child in self._children:
                 child.window = window
@@ -284,17 +265,35 @@ class Widget:
     @_container.setter
     def _container(self, container):
         self.__container = container
-        self._impl._set_container(container)
+        self._impl.set_container(container)
         if self._children is not None:
             for child in self._children:
                 child._container = container
 
-    # def _create(self):
-    #     self._impl.create()
-    #     # self._configure(**self._config)
+    @property
+    def style(self):
+        '''
+        The style object for this widget.
 
-    def _initialize(self, **initial):
-        pass
+        :return: The style for this widget
+        :rtype: :class:`colosseum.CSSNode`
+        '''
+        return self._style
+
+    @style.setter
+    def style(self, value):
+        self._style = value.bind(self)
+
+    @property
+    def font(self, font):
+        return self._font
+
+    @font.setter
+    def font(self, font):
+        self._impl.set_font(font)
+
+    def rehint(self):
+        self._impl.rehint()
 
     def _update_layout(self, **style):
         """Force a layout update on the widget.
@@ -319,7 +318,7 @@ class Widget:
         self._update_child_layout()
 
         # Set the constraints the widget to adhere to the new style.
-        self._impl._apply_layout()
+        self._impl.apply_layout()
         self._layout_in_progress = False
 
     def _update_child_layout(self):
@@ -328,12 +327,3 @@ class Widget:
             for child in self.children:
                 # if child.is_container:
                 child._update_layout()
-
-    def set_font(self, font):
-        """
-        Set a font on this widget.
-
-        :param font: The new font
-        :type  font: :class:`toga.Font`
-        """
-        self._set_font(font)

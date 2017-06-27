@@ -1,5 +1,3 @@
-# from toga.interface.window import Window as WindowInterface
-
 from .container import Container
 from .libs import *
 from .utils import process_callback
@@ -9,16 +7,16 @@ from . import dialogs
 class WindowDelegate(NSObject):
     @objc_method
     def windowWillClose_(self, notification) -> None:
-        self.interface.on_close()
+        self._interface.on_close()
 
     @objc_method
     def windowDidResize_(self, notification) -> None:
-        if self.interface.content:
+        if self._interface.content:
             # print()
             # print("Window resize", (notification.object.contentView.frame.size.width, notification.object.contentView.frame.size.height))
             if notification.object.contentView.frame.size.width > 0.0 and notification.object.contentView.frame.size.height > 0.0:
                 # Force a re-layout of widgets
-                self.interface.content._update_layout(
+                self._interface.content._update_layout(
                     width=notification.object.contentView.frame.size.width,
                     height=notification.object.contentView.frame.size.height
                 )
@@ -79,15 +77,15 @@ class WindowDelegate(NSObject):
         process_callback(item.action(obj))
 
 
-class Window():
+class Window:
     _IMPL_CLASS = NSWindow
     _CONTAINER_CLASS = Container
     _DIALOG_MODULE = dialogs
 
-    def __init__(self, interface, title=None, position=(100, 100), size=(640, 480), toolbar=None, resizeable=True, closeable=True, minimizable=True):
-        # super().__init__(title=title, position=position, size=size, toolbar=toolbar, resizeable=resizeable, closeable=closeable, minimizable=minimizable)
+    def __init__(self, interface):
         # self._create()
         self._interface = interface
+        self._interface._impl = self
         self._create()
 
     def _create(self):
@@ -120,7 +118,8 @@ class Window():
         self._native.setFrame_display_animate_(position, True, False)
 
         self._delegate = WindowDelegate.alloc().init()
-        self._delegate.interface = self._interface
+        self._delegate._interface = self._interface
+        self._delegate._impl = self
 
         self._native.setDelegate_(self._delegate)
 
@@ -176,6 +175,9 @@ class Window():
             width=self._native.contentView.frame.size.width,
             height=self._native.contentView.frame.size.height,
         )
+
+    def on_close(self):
+        pass
 
     def close(self):
         self._native.close()

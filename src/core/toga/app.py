@@ -1,5 +1,17 @@
 from builtins import id as identifier
+
+import signal
+
+
 from .platform import get_platform_factory
+from .window import Window
+from .command import CommandSet
+from .widgets.icon import Icon
+
+
+class MainWindow(Window):
+    def __init__(self, id=None, title=None, position=(100, 100), size=(640, 480)):
+        super(MainWindow, self).__init__(id=id, title=title, position=position, size=size)
 
 
 class App(object):
@@ -22,7 +34,6 @@ class App(object):
         app = toga.App('Empty App', 'org.pybee.empty')
         app.main_loop()
     """
-    _MAIN_WINDOW_CLASS = None
     app = None
 
     def __init__(self, name, app_id, icon=None,
@@ -54,28 +65,22 @@ class App(object):
         # App.app = self
         # print('App.app: ', App.app)
 
-        # if self._MAIN_WINDOW_CLASS is None:
-        #     raise NotImplementedError('App class must define _MAIN_WINDOW_CLASS')
-
         self.name = name
         self._app_id = app_id
         self._id = id if id else identifier(self)
 
         self.icon = icon
 
+        self.commands = CommandSet(None)
+
         self.document_types = document_types
         self._documents = []
 
         self._startup_method = startup
 
-        if factory is None:
-            self.factory = get_platform_factory()
-        else:
-            self.factory = factory
-        self._impl = self.factory.App(interface=self)
+        self.factory = get_platform_factory(factory)
 
-        # # Call user code to populate the main window
-        # self.startup()
+        self._impl = self.factory.App(interface=self)
 
     @property
     def app_id(self):
@@ -98,6 +103,19 @@ class App(object):
         :rtype: ``str``
         """
         return self._id
+
+    @property
+    def icon(self):
+        """
+        The Icon for the app.
+
+        :rtype: ``toga.Icon``
+        """
+        return self._icon
+
+    @icon.setter
+    def icon(self, name):
+        self._icon = Icon.load(name, default=Icon('tiberius', system=True))
 
     @property
     def documents(self):
@@ -130,7 +148,7 @@ class App(object):
         """
         Create and show the main window for the application
         """
-        self.main_window = self._impl._MAIN_WINDOW_CLASS(self.name)
+        self.main_window = MainWindow(title=self.name)
         self.main_window.app = self
 
         if self._startup_method:
@@ -144,4 +162,13 @@ class App(object):
 
         This method typically only returns once the application is exiting.
         """
+        # Modify signal handlers to make sure Ctrl-C is caught and handled.
+        signal.signal(signal.SIGINT, signal.SIG_DFL)
+
         self._impl.main_loop()
+
+    def exit(self):
+        """
+        Quit the application gracefully.
+        """
+        self._impl.exit()

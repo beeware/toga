@@ -6,7 +6,7 @@ class Label(Widget):
     '''
     Label widget
     '''
-    def __init__(self, text, id=None, style=None, alignment=LEFT_ALIGNED):
+    def __init__(self, text, id=None, style=None, factory=None, alignment=LEFT_ALIGNED):
         '''
         Instantiate a new instance of the label widget
 
@@ -24,9 +24,11 @@ class Label(Widget):
                             in toga.constants
         :type alignment:    ``int``
         '''
-        super().__init__(id=id, style=style, text=text, alignment=alignment)
+        super().__init__(id=id, style=style, factory=factory)
 
-    def _configure(self, text, alignment):
+        # Create a platform specific implementation of a Button
+        self._impl = self.factory.Label(interface=self)
+
         self.text = text
         self.alignment = alignment
 
@@ -44,7 +46,7 @@ class Label(Widget):
     @alignment.setter
     def alignment(self, value):
         self._alignment = value
-        self._set_alignment(value)
+        self._impl.set_alignment(value)
 
     @property
     def text(self):
@@ -61,11 +63,5 @@ class Label(Widget):
             self._text = ''
         else:
             self._text = str(value)
-        self._set_text(value)
+        self._impl.set_text(value)
         self.rehint()
-
-    def _set_alignment(self, value):
-        raise NotImplementedError('Label widget must define _set_alignment()')
-
-    def _set_text(self, value):
-        raise NotImplementedError('Label widget must define _set_text()')

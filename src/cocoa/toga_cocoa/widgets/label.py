@@ -1,36 +1,32 @@
-from toga.interface import Label as LabelInterface
-
 from ..libs import NSTextField, NSTextAlignment
-from .base import WidgetMixin
+from .base import Widget
 from toga.constants import LEFT_ALIGNED
 
 
-class Label(LabelInterface, WidgetMixin):
-    def __init__(self, text, id=None, style=None, alignment=LEFT_ALIGNED):
-        super().__init__(id=id, style=style, text=text, alignment=alignment)
-        self._create()
+class Label(Widget):
 
     def create(self):
-        self._impl = NSTextField.alloc().init()
-        self._impl._interface = self
+        self._native = NSTextField.alloc().init()
+        self._native._impl = self
+        self._native._interface = self._interface
 
-        self._impl.setDrawsBackground_(False)
-        self._impl.setEditable_(False)
-        self._impl.setBezeled_(False)
+        self._native.setDrawsBackground_(False)
+        self._native.setEditable_(False)
+        self._native.setBezeled_(False)
 
         # Add the layout constraints
-        self._add_constraints()
+        self.add_constraints()
 
-    def _set_alignment(self, value):
-        self._impl.setAlignment_(NSTextAlignment(value))
+    def set_alignment(self, value):
+        self._native.setAlignment_(NSTextAlignment(value))
 
-    def _set_text(self, value):
-        self._impl.stringValue = self._text
+    def set_text(self, value):
+        self._native.stringValue = value
 
     def rehint(self):
         # Width & height of a label is known and fixed.
-        # print("REHINT label", self, self._impl.fittingSize().width, self._impl.fittingSize().height)
-        self.style.hint(
-            height=self._impl.fittingSize().height,
-            width=self._impl.fittingSize().width
+        # print("REHINT label", self, self._native.fittingSize().width, self._native.fittingSize().height)
+        self._interface.style.hint(
+            height=self._native.fittingSize().height,
+            width=self._native.fittingSize().width
         )

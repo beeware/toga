@@ -18,8 +18,8 @@ class Box(Widget):
     :type children:     ``list``
     '''
 
-    def __init__(self, id=None, style=None, children=None, factory=None):
-        super().__init__(id=id, style=style, children=children, factory=factory)
+    def __init__(self, id=None, style=None, factory=None):
+        super().__init__(id=id, style=style, factory=factory)
         self._children = []
         self._impl = self.factory.Box(interface=self)
 

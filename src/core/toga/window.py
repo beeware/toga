@@ -1,3 +1,5 @@
+from builtins import id as identifier
+
 from .platform import get_platform_factory
 
 
@@ -8,15 +10,15 @@ class Window:
     _CONTAINER_CLASS = None
     _DIALOG_MODULE = None
 
-    def __init__(self, id_=None, title=None,
+    def __init__(self, id=None, title=None,
                  position=(100, 100), size=(640, 480),
                  toolbar=None, resizeable=True,
                  closeable=True, minimizable=True, factory=None):
         '''
         Instantiates a window
 
-        :param id_: The ID of the window (optional)
-        :type  id_: ``str``
+        :param id: The ID of the window (optional)
+        :type  id: ``str``
 
         :param title: Title for the window (optional)
         :type  title: ``str``
@@ -45,7 +47,7 @@ class Window:
         # if self._CONTAINER_CLASS is None:
         #     raise NotImplementedError('Window class must define show()')
 
-        self._id = id_ if id_ else id(self)
+        self._id = id if id else identifier(self)
         self._impl = None
         self._app = None
         self._container = None
@@ -57,15 +59,25 @@ class Window:
         self.closeable = closeable
         self.minimizable = minimizable
 
-        if factory is None:
-            self.factory = get_platform_factory()
-        else:
-            self.factory = factory
-        self._impl = self.factory.Window(interface=self)
+        self.factory = get_platform_factory(factory)
+
+        self._impl = getattr(self.factory, self.__class__.__name__)(interface=self)
+
         self.position = position
         self.size = size
         # self.title = title
         self.toolbar = toolbar
+
+    @property
+    def id(self):
+        """
+        The DOM identifier for the window.
+
+        This id can be used to target CSS directives
+
+        :rtype: ``str``
+        """
+        return self._id
 
     @property
     def app(self):
@@ -131,7 +143,6 @@ class Window:
 
     @content.setter
     def content(self, widget):
-        print(widget)
         # Save the content widget.
         widget._update_layout()
 
@@ -189,11 +200,10 @@ class Window:
         # '''
         # Show window, if hidden
         # '''
-        # raise NotImplementedError('Window class must define show()')
         self._impl.show()
 
     def on_close(self):
-        pass
+        self._impl.on_close()
 
     def info_dialog(self, title, message):
         return self._DIALOG_MODULE.info(self, title, message)

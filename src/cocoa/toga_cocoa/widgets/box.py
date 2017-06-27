@@ -7,10 +7,6 @@ from .base import Widget
 
 
 class Box(Widget):
-    def __init__(self, interface):
-        self._interface = interface
-        self._create()
+    def create(self):
         self._native = None
-
-    def _create(self):
         self._constraints = None

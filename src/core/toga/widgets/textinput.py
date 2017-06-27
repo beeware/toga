@@ -5,7 +5,9 @@ class TextInput(Widget):
     '''
     Text input widget
     '''
-    def __init__(self, id=None, style=None, initial=None, placeholder=None, readonly=False):
+    def __init__(
+            self, id=None, style=None, factory=None,
+            initial=None, placeholder=None, readonly=False):
         '''
         Instantiate a new instance of the text input widget
 
@@ -18,26 +20,27 @@ class TextInput(Widget):
 
         :param initial: The initial text
         :type  initial: ``str``
-        
+
         :param placeholder: The placeholder text
         :type  placeholder: ``str``
-        
+
         :param readonly: Whether a user can write into the text input, defaults to `False`
         :type  readonly: ``bool``
         '''
-        super().__init__(id=id, style=style, initial=initial, placeholder=placeholder, readonly=readonly)
+        super().__init__(id=id, style=style, factory=factory)
 
-    def _configure(self, initial, placeholder, readonly):
-        self.readonly = readonly
+        # Create a platform specific implementation of a Button
+        self._impl = self.factory.TextInput(interface=self)
+
+        self.initial = initial
         self.placeholder = placeholder
-        self.value = initial
-        self.rehint()
+        self.readonly = readonly
 
     @property
     def readonly(self):
         '''
         Whether a user can write into the text input
-        
+
         :rtype: ``bool``
         '''
         return self._readonly
@@ -45,13 +48,13 @@ class TextInput(Widget):
     @readonly.setter
     def readonly(self, value):
         self._readonly = value
-        self._set_readonly(value)
+        self._impl.set_readonly(value)
 
     @property
     def placeholder(self):
         '''
         The placeholder text
-        
+
         :rtype: ``str``
         '''
         return self._placeholder
@@ -62,16 +65,17 @@ class TextInput(Widget):
             self._placeholder = ''
         else:
             self._placeholder = str(value)
-        self._set_placeholder(value)
+        self._impl.set_placeholder(value)
+        self.rehint()
 
     @property
     def value(self):
         '''
         The value of the text input field
-        
+
         :rtype: ``str``
         '''
-        return self._get_value()
+        return self._impl.get_value()
 
     @value.setter
     def value(self, value):
@@ -79,7 +83,7 @@ class TextInput(Widget):
             v = ''
         else:
             v = str(value)
-        self._set_value(v)
+        self._impl.set_value(v)
         self.rehint()
 
     def clear(self):
@@ -87,12 +91,3 @@ class TextInput(Widget):
         Clear the value
         '''
         self.value = ''
-
-    def _set_readonly(self, value):
-        raise NotImplementedError('TextInput widget must define _set_readonly()')
-
-    def _set_placeholder(self, value):
-        raise NotImplementedError('TextInput widget must define _set_placeholder()')
-
-    def _set_value(self, value):
-        raise NotImplementedError('TextInput widget must define _set_value()')

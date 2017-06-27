@@ -12,11 +12,7 @@ class TogaButton(NSButton):
 
 
 class Button(Widget):
-    def __init__(self, interface):
-        self._interface = interface
-        self._create()
-
-    def _create(self):
+    def create(self):
         self._native = TogaButton.alloc().init()
         self._native.interface = self._interface
 
@@ -26,7 +22,7 @@ class Button(Widget):
         self._native.setAction_(get_selector('onPress:'))
 
         # Add the layout constraints
-        self._add_constraints()
+        self.add_constraints()
 
     def set_label(self, label):
         self._native.setTitle_(label)

@@ -2,17 +2,37 @@ from .base import Widget
 
 
 class Button(Widget):
-    """ This class is a wrapper for a platform specific implementation of a button. """
+    """
+    Button widget, a clickable button
 
-    def __init__(self, label, id=None, style=None, on_press=None, enabled=None, factory=None):
-        super().__init__(id=id, style=style, enabled=enabled, factory=factory)
+    :param label:       Text to be shown on the button
+    :type label:        ``str``
+
+    :param id:          An identifier for this widget.
+    :type  id:          ``str``
+
+    :param style:       an optional style object. If no style is provided then a
+                        new one will be created for the widget.
+    :type style:        :class:`colosseum.CSSNode`
+
+    :param factory:     an optional factory object. If no factory is provided then a
+                        new one will be created for the widget based on the current
+                        platform.
+    :type factory:      A Toga platform factory
+
+    :param on_press:    Function to execute when pressed
+    :type on_press:     ``callable``
+    """
+
+    def __init__(self, label, id=None, style=None, factory=None, on_press=None):
+        super().__init__(id=id, style=style, factory=factory)
 
         # Create a platform specific implementation of a Button
         self._impl = self.factory.Button(interface=self)
+
         # Set all the properties
         self.label = label
         self.on_press = on_press
-        self.enabled = enabled
 
     @property
     def label(self):

@@ -1,8 +1,12 @@
 import sys
 from functools import lru_cache
 
+
 @lru_cache(maxsize=8)
-def get_platform_factory():
+def get_platform_factory(factory=None):
+    if factory is not None:
+        return factory
+
     if sys.platform == 'ios':
         from toga_iOS import factory
         return factory
