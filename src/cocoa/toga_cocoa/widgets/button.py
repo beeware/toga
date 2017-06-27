@@ -13,24 +13,24 @@ class TogaButton(NSButton):
 
 class Button(Widget):
     def create(self):
-        self._native = TogaButton.alloc().init()
-        self._native.interface = self._interface
+        self.native = TogaButton.alloc().init()
+        self.native.interface = self.interface
 
-        self._native.setBezelStyle_(NSRoundedBezelStyle)
-        self._native.setButtonType_(NSMomentaryPushInButton)
-        self._native.setTarget_(self._native)
-        self._native.setAction_(get_selector('onPress:'))
+        self.native.setBezelStyle_(NSRoundedBezelStyle)
+        self.native.setButtonType_(NSMomentaryPushInButton)
+        self.native.setTarget_(self.native)
+        self.native.setAction_(get_selector('onPress:'))
 
         # Add the layout constraints
         self.add_constraints()
 
     def set_label(self, label):
-        self._native.setTitle_(label)
+        self.native.setTitle_(label)
         self.rehint()
 
     def rehint(self):
-        fitting_size = self._native.fittingSize()
-        self._interface.style.hint(
+        fitting_size = self.native.fittingSize()
+        self.interface.style.hint(
             height=fitting_size.height,
             min_width=fitting_size.width,
         )

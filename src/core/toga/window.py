@@ -50,7 +50,6 @@ class Window:
         self._id = id if id else identifier(self)
         self._impl = None
         self._app = None
-        self._container = None
         self._content = None
         self._position = position
         self._size = size
@@ -152,18 +151,11 @@ class Window:
         # Assign the widget to window.
         widget.window = self
 
-        if widget._impl._native is None:
-            self._container = self._impl._CONTAINER_CLASS()
-            self._container.content = widget
-        else:
-            self._container = widget
-
+        # Track our new content
         self._content = widget
 
-        self._impl._set_content(widget)
-
-    def _set_content(self, widget):
-        pass
+        # Manifest the widget
+        self._impl.set_content(widget._impl)
 
     @property
     def size(self):
@@ -177,7 +169,7 @@ class Window:
     @size.setter
     def size(self, size):
         self._size = size
-        self._impl._set_size(size)
+        self._impl.set_size(size)
 
     @property
     def position(self):
@@ -191,7 +183,7 @@ class Window:
     @position.setter
     def position(self, position):
         self._position = position
-        self._impl._set_position(position)
+        self._impl.set_position(position)
 
     def _set_position(self, position):
         pass
@@ -206,21 +198,21 @@ class Window:
         self._impl.on_close()
 
     def info_dialog(self, title, message):
-        return self._DIALOG_MODULE.info(self, title, message)
+        return self._impl.info(self, title, message)
 
     def question_dialog(self, title, message):
-        return self._DIALOG_MODULE.question(self, title, message)
+        return self._impl.question(self, title, message)
 
     def confirm_dialog(self, title, message):
-        return self._DIALOG_MODULE.confirm(self, title, message)
+        return self._impl.confirm(self, title, message)
 
     def error_dialog(self, title, message):
-        return self._DIALOG_MODULE.error(self, title, message)
+        return self._impl.error(self, title, message)
 
     def stack_trace_dialog(self, title, message, content, retry=False):
-        return self._DIALOG_MODULE.stack_trace(self, title, message,
+        return self._impl.stack_trace(self, title, message,
                                                content, retry)
 
     def save_file_dialog(self, title, suggested_filename, file_types):
-        return self._DIALOG_MODULE.save_file(self, title, suggested_filename,
+        return self._impl.save_file(self, title, suggested_filename,
                                              file_types)

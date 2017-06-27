@@ -8,5 +8,5 @@ from .base import Widget
 
 class Box(Widget):
     def create(self):
-        self._native = None
-        self._constraints = None
+        self.native = None
+        self.constraints = None

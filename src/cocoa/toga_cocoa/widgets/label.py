@@ -6,27 +6,27 @@ from toga.constants import LEFT_ALIGNED
 class Label(Widget):
 
     def create(self):
-        self._native = NSTextField.alloc().init()
-        self._native._impl = self
-        self._native._interface = self._interface
+        self.native = NSTextField.alloc().init()
+        self.native.impl = self
+        self.native.interface = self.interface
 
-        self._native.setDrawsBackground_(False)
-        self._native.setEditable_(False)
-        self._native.setBezeled_(False)
+        self.native.setDrawsBackground_(False)
+        self.native.setEditable_(False)
+        self.native.setBezeled_(False)
 
         # Add the layout constraints
         self.add_constraints()
 
     def set_alignment(self, value):
-        self._native.setAlignment_(NSTextAlignment(value))
+        self.native.setAlignment_(NSTextAlignment(value))
 
     def set_text(self, value):
-        self._native.stringValue = value
+        self.native.stringValue = value
 
     def rehint(self):
         # Width & height of a label is known and fixed.
-        # print("REHINT label", self, self._native.fittingSize().width, self._native.fittingSize().height)
-        self._interface.style.hint(
-            height=self._native.fittingSize().height,
-            width=self._native.fittingSize().width
+        # print("REHINT label", self, self.native.fittingSize().width, self.native.fittingSize().height)
+        self.interface.style.hint(
+            height=self.native.fittingSize().height,
+            width=self.native.fittingSize().width
         )

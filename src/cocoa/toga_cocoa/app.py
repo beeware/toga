@@ -10,7 +10,7 @@ from .window import Window
 
 class MainWindow(Window):
     def on_close(self):
-        self._interface.app.exit()
+        self.interface.app.exit()
 
 
 class AppDelegate(NSObject):
@@ -25,7 +25,7 @@ class AppDelegate(NSObject):
         # print("Open documents of type", NSDocumentController.sharedDocumentController().defaultType)
 
         fileTypes = NSMutableArray.alloc().init()
-        for filetype in self._interface.document_types:
+        for filetype in self.interface.document_types:
             fileTypes.addObject(filetype)
 
         NSDocumentController.sharedDocumentController().runModalOpenPanel(panel, forTypes=fileTypes)
@@ -60,12 +60,12 @@ class AppDelegate(NSObject):
             else:
                 return
 
-            self._interface.open_document(fileURL.absoluteString)
+            self.interface.open_document(fileURL.absoluteString)
             # NSDocumentController.sharedDocumentController().openDocumentWithContentsOfURL_display_completionHandler_(fileURL, True, None)
 
     @objc_method
     def selectMenuItem_(self, sender) -> None:
-        cmd = self._interface._menu_items[sender]
+        cmd = self.interface._menu_items[sender]
         if cmd.action:
             cmd.action(None)
 
@@ -74,24 +74,24 @@ class App:
     _MAIN_WINDOW_CLASS = MainWindow
 
     def __init__(self, interface):
-        self._interface = interface
-        self._interface._impl = self
+        self.interface = interface
+        self.interface._impl = self
 
     def create(self):
-        self._native = NSApplication.sharedApplication()
-        self._native.setActivationPolicy_(NSApplicationActivationPolicyRegular)
+        self.native = NSApplication.sharedApplication()
+        self.native.setActivationPolicy_(NSApplicationActivationPolicyRegular)
 
-        self._native.setApplicationIconImage_(self._interface.icon._impl._native)
+        self.native.setApplicationIconImage_(self.interface.icon._impl.native)
 
         self.resource_path = os.path.dirname(os.path.dirname(NSBundle.mainBundle.bundlePath))
 
         appDelegate = AppDelegate.alloc().init()
-        appDelegate._interface = self
-        self._native.setDelegate_(appDelegate)
+        appDelegate.interface = self
+        self.native.setDelegate_(appDelegate)
 
-        app_name = self._interface.name
+        app_name = self.interface.name
 
-        self._interface.commands.add(
+        self.interface.commands.add(
             toga.Command(None, 'About ' + app_name, group=toga.Group.APP),
             toga.Command(None, 'Preferences', group=toga.Group.APP),
             # Quit should always be the last item, in a section on it's own
@@ -101,7 +101,7 @@ class App:
         )
 
         # Call user code to populate the main window
-        self._interface.startup()
+        self.interface.startup()
 
         # Create the lookup table of menu items,
         # then force the creation of the menus.
@@ -118,7 +118,7 @@ class App:
             self._menu_items = {}
             menubar = NSMenu.alloc().initWithTitle('MainMenu')
             submenu = None
-            for cmd in self._interface.commands:
+            for cmd in self.interface.commands:
                 if cmd == toga.GROUP_BREAK:
                     menubar.setSubmenu(submenu, forItem=menuItem)
                     submenu = None
@@ -148,14 +148,14 @@ class App:
                 menubar.setSubmenu(submenu, forItem=menuItem)
 
             # Set the menu for the app.
-            self._native.mainMenu = menubar
+            self.native.mainMenu = menubar
 
     def main_loop(self):
         # Stimulate the build of the app
         self.create()
 
-        self._native.activateIgnoringOtherApps_(True)
-        self._native.run()
+        self.native.activateIgnoringOtherApps_(True)
+        self.native.run()
 
     def exit(self):
-        self._native.terminate(None)
+        self.native.terminate(None)

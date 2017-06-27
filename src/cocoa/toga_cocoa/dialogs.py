@@ -1,7 +1,5 @@
 from .libs import *
 
-from .widgets.icon import Icon
-
 
 def info(window, title, message):
     alert = NSAlert.alloc().init()

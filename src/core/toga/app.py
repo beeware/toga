@@ -14,7 +14,7 @@ class MainWindow(Window):
         super(MainWindow, self).__init__(id=id, title=title, position=position, size=size)
 
 
-class App(object):
+class App:
     """
     The App is the top level of any GUI program. It is the manager of all
     the other bits of the GUI app: the main window and events that window

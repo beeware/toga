@@ -134,7 +134,6 @@ class Widget:
         self._window = None
         self._app = None
         self._impl = None
-        self.__container = None
         self._layout_in_progress = False
 
         self.layout = Layout(self)
@@ -203,7 +202,7 @@ class Widget:
         if self.parent:
             self.parent.layout.dirty = True
 
-        self._impl.add_child(child)
+        self._impl.add_child(child._impl)
 
     @property
     def app(self):
@@ -254,21 +253,6 @@ class Widget:
         if self._children is not None:
             for child in self._children:
                 child.window = window
-
-    @property
-    def _container(self):
-        '''
-        The display container to which this widget belongs.
-        '''
-        return self.__container
-
-    @_container.setter
-    def _container(self, container):
-        self.__container = container
-        self._impl.set_container(container)
-        if self._children is not None:
-            for child in self._children:
-                child._container = container
 
     @property
     def style(self):
@@ -325,5 +309,4 @@ class Widget:
         # print("UPDATE CHILD LAYOUT - widget")
         if self._children is not None:
             for child in self.children:
-                # if child.is_container:
                 child._update_layout()
