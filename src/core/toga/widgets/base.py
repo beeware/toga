@@ -226,7 +226,7 @@ class Widget:
                 raise ValueError("Widget %s is already associated with an App" % self)
         elif app is not None:
             self._app = app
-            self._impl.set_app(app)
+            self._impl.set_app(app._impl)
             if self._children is not None:
                 for child in self._children:
                     child.app = app
@@ -249,7 +249,7 @@ class Widget:
         :type  window: :class:`toga.Window`
         '''
         self._window = window
-        self._impl.set_window(window)
+        self._impl.set_window(window._impl)
         if self._children is not None:
             for child in self._children:
                 child.window = window
