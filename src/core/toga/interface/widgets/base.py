@@ -331,20 +331,16 @@ class Widget:
         """
         self._set_font(font)
 
-    def hide(self, widget):
+    def hide(self):
         """
         Hide the widget from the super view.
-
-        :param widget: The widget to be hidden
-        :type  font: :class:`toga.Widget`
         """
-        self._hide(widget.children)
+        for child in self.children:
+            self._set_hidden(child, True)
 
-    def show(self, widget):
+    def show(self):
         """
         Show the widget on the super view.
-
-        :param widget: The widget to be shown
-        :type  font: :class:`toga.Widget`
         """
-        self._show(widget.children)
+        for child in self.children:
+            self._set_hidden(child, False)
