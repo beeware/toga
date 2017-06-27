@@ -39,6 +39,11 @@ class SplitContainer(SplitContainerInterface, WidgetMixin):
         self._add_constraints()
 
     def _add_content(self, position, container):
+        # Turn the autoresizing mask on the container widget
+        # into constraints. This makes the container fill the
+        # available space inside the SplitContainer.
+        container._impl.setTranslatesAutoresizingMaskIntoConstraints_(True)
+
         self._impl.addSubview_(container._impl)
 
     def _update_child_layout(self):
