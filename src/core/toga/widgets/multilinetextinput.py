@@ -19,4 +19,7 @@ class MultilineTextInput(Widget):
         :param initial:     The initial value
         :type  initial:     ``str``
         '''
-        super().__init__(id=id, style=style, initial=initial)
+        super().__init__(id=id, style=style)
+
+        self._impl = self.factory.MultilineTextInput(interface=self)
+        self._impl.value = initial

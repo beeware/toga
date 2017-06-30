@@ -187,6 +187,7 @@ class Window:
         self._min_height_constraint.constant = self.interface.content.layout.height
 
         # Do the first layout render.
+        # FixMe Is this really the best way? I don't think so, but I'm missing something!
         if hasattr(self.container, 'interface'):
             self.container.interface._update_layout(
                 width=self.native.contentView.frame.size.width,
