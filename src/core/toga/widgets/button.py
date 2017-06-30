@@ -24,7 +24,7 @@ class Button(Widget):
     :type on_press:     ``callable``
     """
 
-    def __init__(self, label, id=None, style=None, factory=None, on_press=None):
+    def __init__(self, label, id=None, style=None, factory=None, on_press=None, enabled=True):
         super().__init__(id=id, style=style, factory=factory)
 
         # Create a platform specific implementation of a Button
@@ -33,6 +33,7 @@ class Button(Widget):
         # Set all the properties
         self.label = label
         self.on_press = on_press
+        self.enabled = enabled
 
     @property
     def label(self):
@@ -100,5 +101,5 @@ class Button(Widget):
         if value is None:
             self._enabled = True
         else:
-            self._enabled = False
+            self._enabled = value
         self._impl.set_enabled(self._enabled)

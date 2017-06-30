@@ -10,7 +10,7 @@ class TestCoreApp(unittest.TestCase):
         self.factory = MagicMock()
         # Fixme | The MagicMock returns a MagicMock with the specs of a cocoa.Button.
         # This makes the test not platform independent. Solution could be a platform independent dummy backend.
-        self.mock_app = MagicMock(spec=toga_cocoa.App)
+        self.mock_app = MagicMock(spec=toga_cocoa.factory.App)
         self.factory.App = MagicMock(return_value=self.mock_app)
 
         self.name = 'Test App'
@@ -47,7 +47,7 @@ class TestCoreApp(unittest.TestCase):
     @patch('toga.app.get_platform_factory')
     def test_app_init_with_no_factory(self, mock_function):
         app = toga.App(self.name, self.app_id)
-        mock_function.assert_called_once_with()
+        mock_function.assert_called_once_with(None)
 
     def test_app_open_docuemnts_raise_not_implemented(self):
         with self.assertRaises(NotImplementedError):

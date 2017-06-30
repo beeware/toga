@@ -1,39 +1,30 @@
-from toga.interface import ScrollContainer as ScrollContainerInterface
-
-from .base import WidgetMixin
+from .base import Widget
 from ..container import Container
 from ..libs import *
 
 
-class ScrollContainer(ScrollContainerInterface, WidgetMixin):
-    _CONTAINER_CLASS = Container
-
-    def __init__(self, id=None, style=None, horizontal=True, vertical=True, content=None):
-        super().__init__(id=None, style=style, horizontal=horizontal, vertical=vertical, content=content)
-        self._create()
-
+class ScrollContainer(Widget):
     def create(self):
-        self._impl = NSScrollView.alloc().init()
-        self._impl.setAutohidesScrollers_(True)
-        self._impl.setBorderType_(NSNoBorder)
-        self._impl.setBackgroundColor_(NSColor.windowBackgroundColor)
+        self.native = NSScrollView.alloc().init()
+        self.native.setAutohidesScrollers_(True)
+        self.native.setBorderType_(NSNoBorder)
+        self.native.setBackgroundColor_(NSColor.windowBackgroundColor)
         # self._impl.setBackgroundColor_(NSColor.blueColor)
-        self._impl.setAutoresizesSubviews_(True)
-
-        self._inner_container = None
+        self.native.setAutoresizesSubviews_(True)
 
         # Add the layout constraints
-        self._add_constraints()
+        self.add_constraints()
 
-    def _set_content(self, container, widget):
-        self._impl.setDocumentView_(container._impl)
+    def set_content(self, container, widget):
+        self.native.setDocumentView_(container._impl.native)
 
     def _update_child_layout(self):
-        if self._content is not None:
-            self._inner_container._update_layout()
+        if self.interface.content is not None:
+            self.interface._inner_container._update_layout()
 
-    def _set_vertical(self, value):
-        self._impl.setHasVerticalScroller_(value)
+    def set_vertical(self, value):
+        self.native.setHasVerticalScroller_(value)
 
-    def _set_horizontal(self, value):
-        self._impl.setHasHorizontalScroller_(value)
+    def set_horizontal(self, value):
+        self.native.setHasHorizontalScroller_(value)
+

@@ -1,3 +1,5 @@
+from .platform import get_platform_factory
+
 
 class Group:
     def __init__(self, label, order=None):
@@ -41,6 +43,9 @@ class Command:
         self._enabled = self.action is not None
 
         self._widgets = []
+
+        self.factory = get_platform_factory()
+        self._impl = self.factory.Command(interface=self)
 
     @property
     def enabled(self):

@@ -5,7 +5,6 @@ class ScrollContainer(Widget):
     '''
     A scrollable container
     '''
-    _CONTAINER_CLASS = None
 
     def __init__(self, id=None, style=None, horizontal=True,
                  vertical=True, content=None):
@@ -28,9 +27,12 @@ class ScrollContainer(Widget):
         :param content: The content of the scroll window
         :type  content: :class:`toga.Widget`
         '''
-        super().__init__(id=id, style=style, horizontal=horizontal, vertical=vertical, content=content)
+        super().__init__(id=id, style=style)
 
-    def _configure(self, horizontal, vertical, content):
+        # Create a platform specific implementation of a Scroll Container
+        self._impl = self.factory.ScrollContainer(interface=self)
+
+        # Set all attributes
         self.horizontal = horizontal
         self.vertical = vertical
         self.content = content
@@ -52,13 +54,9 @@ class ScrollContainer(Widget):
             self._content.app = self.app
             self._content.window = self.window
 
-            if widget._impl is None:
-                self._inner_container = self._CONTAINER_CLASS()
-                self._inner_container.root_content = widget
-            else:
-                self._inner_container = widget
+            self._inner_container = widget
 
-            self._set_content(self._inner_container, widget)
+            self._impl.set_content(self._inner_container, widget)
 
     @property
     def vertical(self):
@@ -72,7 +70,7 @@ class ScrollContainer(Widget):
     @vertical.setter
     def vertical(self, value):
         self._vertical = value
-        self._set_vertical(value)
+        self._impl.set_vertical(value)
 
     @property
     def horizontal(self):
@@ -86,10 +84,4 @@ class ScrollContainer(Widget):
     @horizontal.setter
     def horizontal(self, value):
         self._horizontal = value
-        self._set_horizontal(value)
-
-    def _set_vertical(self, value):
-        raise NotImplementedError('ScrollContainer must define _set_vertical()')
-
-    def _set_horizontal(self, value):
-        raise NotImplementedError('ScrollContainer must define _set_horizontal()')
+        self._impl.set_horizontal(value)

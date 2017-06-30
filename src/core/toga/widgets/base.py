@@ -142,6 +142,8 @@ class Widget:
         else:
             self.style = CSS()
 
+        self._font = None
+
         self.factory = get_platform_factory(factory)
 
     def __repr__(self):
@@ -201,8 +203,8 @@ class Widget:
 
         if self.parent:
             self.parent.layout.dirty = True
-
-        self._impl.add_child(child._impl)
+        if self._impl:
+            self._impl.add_child(child._impl)
 
     @property
     def app(self):
@@ -226,7 +228,7 @@ class Widget:
                 raise ValueError("Widget %s is already associated with an App" % self)
         elif app is not None:
             self._app = app
-            self._impl.set_app(app._impl)
+            self._impl.set_app(app)
             if self._children is not None:
                 for child in self._children:
                     child.app = app
@@ -249,7 +251,8 @@ class Widget:
         :type  window: :class:`toga.Window`
         '''
         self._window = window
-        self._impl.set_window(window._impl)
+        if self._impl:
+            self._impl.set_window(window)
         if self._children is not None:
             for child in self._children:
                 child.window = window
@@ -269,11 +272,12 @@ class Widget:
         self._style = value.bind(self)
 
     @property
-    def font(self, font):
+    def font(self):
         return self._font
 
     @font.setter
     def font(self, font):
+        self._font = font
         self._impl.set_font(font)
 
     def rehint(self):
@@ -302,11 +306,11 @@ class Widget:
         self._update_child_layout()
 
         # Set the constraints the widget to adhere to the new style.
-        self._impl.apply_layout()
+        if self._impl:
+            self._impl.apply_layout()
         self._layout_in_progress = False
 
     def _update_child_layout(self):
-        # print("UPDATE CHILD LAYOUT - widget")
         if self._children is not None:
             for child in self.children:
                 child._update_layout()

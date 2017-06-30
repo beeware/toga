@@ -1,12 +1,14 @@
 from builtins import id as identifier
 
+from .command import CommandSet
+
 from .platform import get_platform_factory
 
 
 class Window:
-    '''
+    """
     Window
-    '''
+    """
     _CONTAINER_CLASS = None
     _DIALOG_MODULE = None
 
@@ -14,7 +16,7 @@ class Window:
                  position=(100, 100), size=(640, 480),
                  toolbar=None, resizeable=True,
                  closeable=True, minimizable=True, factory=None):
-        '''
+        """
         Instantiates a window
 
         :param id: The ID of the window (optional)
@@ -43,7 +45,7 @@ class Window:
         :param minimizable: Toggle if the window is minimizable by the user, defaults
             to `True`.
         :type  minimizable: ``bool``
-        '''
+        """
         # if self._CONTAINER_CLASS is None:
         #     raise NotImplementedError('Window class must define show()')
 
@@ -59,13 +61,13 @@ class Window:
         self.minimizable = minimizable
 
         self.factory = get_platform_factory(factory)
-
         self._impl = getattr(self.factory, self.__class__.__name__)(interface=self)
+
+        self._toolbar = CommandSet(self, self._impl.create_toolbar)
 
         self.position = position
         self.size = size
         # self.title = title
-        self.toolbar = toolbar
 
     @property
     def id(self):
@@ -80,11 +82,11 @@ class Window:
 
     @property
     def app(self):
-        '''
+        """
         Instance of the :class:`toga.App` that this window belongs to
 
         :rtype: :class:`toga.App`
-        '''
+        """
         return self._app
 
     @app.setter
@@ -97,11 +99,11 @@ class Window:
 
     @property
     def title(self):
-        '''
+        """
         Title of the window
 
         :rtype: ``str``
-        '''
+        """
         return self._title
 
     @title.setter
@@ -114,30 +116,20 @@ class Window:
 
     @property
     def toolbar(self):
-        '''
+        """
         Toolbar for the window
 
         :rtype: ``list`` of :class:`toga.Widget`
-        '''
+        """
         return self._toolbar
-
-    @toolbar.setter
-    def toolbar(self, items):
-        # If there are toolbar items defined, add a toolbar to the window
-        self._toolbar = items
-        if self._toolbar:
-            self._set_toolbar(items)
-
-    def _set_toolbar(self, items):
-        pass
 
     @property
     def content(self):
-        '''
+        """
         Content of the window
 
         :rtype: :class:`toga.Widget`
-        '''
+        """
         return self._content
 
     @content.setter
@@ -159,11 +151,11 @@ class Window:
 
     @property
     def size(self):
-        '''
+        """
         Size of the window, as width, height
 
         :rtype: ``tuple`` of (``int``, ``int``)
-        '''
+        """
         return self._size
 
     @size.setter
@@ -173,11 +165,11 @@ class Window:
 
     @property
     def position(self):
-        '''
+        """
         Position of the window, as x, y
 
         :rtype: ``tuple`` of (``int``, ``int``)
-        '''
+        """
         return self._position
 
     @position.setter

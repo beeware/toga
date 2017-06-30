@@ -2,15 +2,14 @@ from .base import Widget
 
 
 class SplitContainer(Widget):
-    '''
+    """
     Split container widget
-    '''
-    _CONTAINER_CLASS = None
+    """
     HORIZONTAL = False
     VERTICAL = True
 
     def __init__(self, id=None, style=None, direction=VERTICAL, content=None):
-        '''
+        """
         Instantiate a new instance of the split container widget
 
         :param id:          An identifier for this widget.
@@ -26,22 +25,28 @@ class SplitContainer(Widget):
 
         :param content: The list of components to be split
         :type  content: ``list`` of :class:`toga.Widget`
-        '''
-        super().__init__(id=id, style=style, direction=direction, content=content)
+        """
+        super().__init__(id=id, style=style)
         self._direction = direction
         self._containers = []
 
-    def _configure(self, direction, content):
+        # Create a platform specific implementation of a SplitContainer
+        self._impl = self.factory.SplitContainer(interface=self)
+
         self.content = content
         self.direction = direction
 
+    # def _configure(self, direction, content):
+    #     self.content = content
+    #     self.direction = direction
+
     @property
     def content(self):
-        '''
+        """
         The content of the split container
 
         :rtype: ``list`` of :class:`toga.Widget`
-        '''
+        """
         return self._content
 
     @content.setter
@@ -67,7 +72,7 @@ class SplitContainer(Widget):
             else:
                 container = widget
 
-            self._add_content(position, container)
+            self._impl.add_content(position, container)
 
             self._containers.append(container)
 
@@ -83,18 +88,15 @@ class SplitContainer(Widget):
 
     @property
     def direction(self):
-        '''
+        """
         The direction of the split
 
         :rtype: ``bool``
-        '''
+        """
         return self._direction
 
     @direction.setter
     def direction(self, value):
         self._direction = value
-        self._set_direction(value)
+        self._impl.set_direction(value)
         self.rehint()
-
-    def on_resize(self):
-        pass

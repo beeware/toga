@@ -1,8 +1,6 @@
-from toga.interface import SplitContainer as SplitContainerInterface
-
 from ..container import Container
 from ..libs import *
-from .base import WidgetMixin
+from .base import Widget
 
 
 class TogaSplitViewDelegate(NSObject):
@@ -14,43 +12,41 @@ class TogaSplitViewDelegate(NSObject):
     def splitViewDidResizeSubviews_(self, notification) -> None:
         # If the window is actually visible, and the split has moved,
         # a resize of all the content panels is required.
-        if self._interface.window and self._interface.window._impl.isVisible:
-            # print("SPLIT CONTAINER LAYOUT CHILDREN", self._interface._containers[0]._impl.frame.size.width, self._interface._containers[1]._impl.frame.size.width)
-            self._interface._update_child_layout()
-            self._interface.on_resize()
+        if self.interface.interface.window and self.interface.interface.window._impl.native.isVisible:
+            # print("SPLIT CONTAINER LAYOUT CHILDREN", self.interface._containers[0]._impl.frame.size.width, self._interface._containers[1]._impl.frame.size.width)
+            self.interface._update_child_layout()
+            self.interface.on_resize()
 
 
-class SplitContainer(SplitContainerInterface, WidgetMixin):
+class SplitContainer(Widget):
     _CONTAINER_CLASS = Container
 
-    def __init__(self, id=None, style=None, direction=SplitContainerInterface.VERTICAL):
-        super().__init__(id=None, style=None, direction=direction)
-        self._create()
-
     def create(self):
-        self._impl = NSSplitView.alloc().init()
+        self.native = NSSplitView.alloc().init()
 
-        self._delegate = TogaSplitViewDelegate.alloc().init()
-        self._delegate._interface = self
-
-        self._impl.setDelegate_(self._delegate)
+        self.delegate = TogaSplitViewDelegate.alloc().init()
+        self.delegate.interface = self
+        self.native.setDelegate_(self.delegate)
 
         # Add the layout constraints
-        self._add_constraints()
+        self.add_constraints()
 
-    def _add_content(self, position, container):
-        self._impl.addSubview_(container._impl)
+    def add_content(self, position, container):
+        self.native.addSubview_(container._impl.native)
 
     def _update_child_layout(self):
         """Force a layout update on the widget.
         """
-        if self.content:
-            for i, (container, content) in enumerate(zip(self._containers, self.content)):
-                frame = container._impl.frame
+        if self.interface.content:
+            for i, (container, content) in enumerate(zip(self.interface._containers, self.interface.content)):
+                frame = container._impl.native.frame
                 content._update_layout(
                     width=frame.size.width,
                     height=frame.size.height
                 )
 
-    def _set_direction(self, value):
-        self._impl.setVertical_(value)
+    def set_direction(self, value):
+        self.native.setVertical_(value)
+
+    def on_resize(self):
+        pass

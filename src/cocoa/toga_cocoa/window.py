@@ -2,6 +2,11 @@ from .container import Container
 from .libs import *
 from .utils import process_callback
 from . import dialogs
+from toga.command import Command as BaseCommand, GROUP_BREAK, SECTION_BREAK
+
+
+def toolbar_identifier(cmd):
+    return 'ToolbarItem-%s' % id(cmd)
 
 
 class WindowDelegate(NSObject):
@@ -32,7 +37,7 @@ class WindowDelegate(NSObject):
         # because customizable toolbars are no longer a thing.
         allowed = NSMutableArray.alloc().init()
         for item in self.interface.toolbar:
-            allowed.addObject_(item.toolbar_identifier)
+            allowed.addObject_(toolbar_identifier(item))
         return allowed
 
     @objc_method
@@ -40,21 +45,25 @@ class WindowDelegate(NSObject):
         "Determine the list of toolbar items that will display by default"
         default = NSMutableArray.alloc().init()
         for item in self.interface.toolbar:
-            default.addObject_(item.toolbar_identifier)
+            default.addObject_(toolbar_identifier(item))
         return default
 
     @objc_method
     def toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar_(self, toolbar, identifier, insert: bool):
         "Create the requested toolbar button"
-        item = self.interface._toolbar_items[identifier]
+        item = self.interface._impl._toolbar_items[identifier]
+
         _item = NSToolbarItem.alloc().initWithItemIdentifier_(identifier)
         if item.label:
             _item.setLabel_(item.label)
             _item.setPaletteLabel_(item.label)
         if item.tooltip:
             _item.setToolTip_(item.tooltip)
-        if item.icon:
-            _item.setImage_(item.icon._impl)
+        if item._impl.icon:
+            _item.setImage_(item._impl.icon._impl.native)
+            # pass
+
+        item._widgets.append(_item)
 
         _item.setTarget_(self)
         _item.setAction_(get_selector('onToolbarButtonPress:'))
@@ -64,7 +73,7 @@ class WindowDelegate(NSObject):
     @objc_method
     def validateToolbarItem_(self, item) -> bool:
         "Confirm if the toolbar item should be enabled"
-        return self.interface._toolbar_items[item.itemIdentifier].enabled
+        return self.interface._impl._toolbar_items[item.itemIdentifier].enabled
 
     ######################################################################
     # Toolbar button press delegate methods
@@ -73,13 +82,12 @@ class WindowDelegate(NSObject):
     @objc_method
     def onToolbarButtonPress_(self, obj) -> None:
         "Invoke the action tied to the toolbar button"
-        item = self.interface._toolbar_items[obj.itemIdentifier]
+        item = self.interface._impl._toolbar_items[obj.itemIdentifier]
         process_callback(item.action(obj))
 
 
 class Window:
     def __init__(self, interface):
-        # self.create()
         self.interface = interface
         self.interface._impl = self
         self.container = None
@@ -120,11 +128,16 @@ class Window:
 
         self.native.setDelegate_(self.delegate)
 
-    def set_toolbar(self, items):
-        self._toolbar_items = dict((item.toolbar_identifier, item) for item in items)
-        self._toolbar_impl = NSToolbar.alloc().initWithIdentifier_('Toolbar-%s' % id(self))
-        self._toolbar_impl.setDelegate_(self.delegate)
-        self.native.setToolbar_(self._toolbar_impl)
+    def create_toolbar(self):
+        self._toolbar_items = {}
+        for cmd in self.interface.toolbar:
+            if isinstance(cmd, BaseCommand):
+                self._toolbar_items[toolbar_identifier(cmd)] = cmd
+
+        self._toolbar_native = NSToolbar.alloc().initWithIdentifier_('Toolbar-%s' % id(self))
+        self._toolbar_native.setDelegate_(self.delegate)
+
+        self.native.setToolbar_(self._toolbar_native)
 
     def set_content(self, widget):
         if widget.native is None:
@@ -174,10 +187,16 @@ class Window:
         self._min_height_constraint.constant = self.interface.content.layout.height
 
         # Do the first layout render.
-        self.container.update_layout(
-            width=self.native.contentView.frame.size.width,
-            height=self.native.contentView.frame.size.height,
-        )
+        if hasattr(self.container, 'interface'):
+            self.container.interface._update_layout(
+                width=self.native.contentView.frame.size.width,
+                height=self.native.contentView.frame.size.height,
+            )
+        else:
+            self.container.update_layout(
+                width=self.native.contentView.frame.size.width,
+                height=self.native.contentView.frame.size.height,
+            )
 
     def on_close(self):
         pass

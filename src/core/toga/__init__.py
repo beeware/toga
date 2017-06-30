@@ -1,7 +1,7 @@
 from .app import *
 from .command import *
 from .window import Window
-from . import constants
+from .constants import *
 
 # Font support
 # from .font import Font
@@ -19,16 +19,19 @@ from .widgets.label import Label
 # from .widgets.optioncontainer import *
 # from .widgets.passwordinput import *
 # from .widgets.progressbar import *
-# from .widgets.scrollcontainer import *
+from .widgets.scrollcontainer import *
 # from .widgets.slider import *
-# from .widgets.splitcontainer import *
+from .widgets.splitcontainer import *
 # from .widgets.switch import *
-# from .widgets.table import *
+from .widgets.table import *
 from .widgets.textinput import TextInput
+
 # from .widgets.tree import *
 # from .widgets.webview import *
 # from .widgets.selection import Selection
 # from .widgets.numberinput import NumberInput
+
+from .widgets.icon import TIBERIUS_ICON
 
 __all__ = [
     'App', 'MainWindow',
@@ -54,13 +57,15 @@ __all__ = [
     # 'OptionContainer',
     # 'PasswordInput',
     # 'ProgressBar',
-    # 'ScrollContainer',
+    'ScrollContainer',
     # 'Selection',
     # 'Slider',
-    # 'SplitContainer',
+    'SplitContainer',
     # 'Switch',
-    # 'Table',
+    'Table',
     'TextInput',
     # 'Tree',
     # 'WebView',
+
+    'TIBERIUS_ICON',
 ]

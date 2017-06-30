@@ -10,3 +10,4 @@ class Icon:
 
     def create(self, filename):
         self.native = NSImage.alloc().initWithContentsOfFile_(filename)
+
