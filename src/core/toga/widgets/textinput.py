@@ -29,10 +29,11 @@ class TextInput(Widget):
         '''
         super().__init__(id=id, style=style, factory=factory)
 
-        # Create a platform specific implementation of a Button
+
+        # Create a platform specific implementation of a TextInput
         self._impl = self.factory.TextInput(interface=self)
 
-        self.initial = initial
+        self.value = initial
         self.placeholder = placeholder
         self.readonly = readonly
 
