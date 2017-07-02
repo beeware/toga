@@ -28,7 +28,7 @@ from .widgets.textinput import TextInput
 
 # from .widgets.tree import *
 from .widgets.webview import *
-# from .widgets.selection import Selection
+from .widgets.selection import Selection
 # from .widgets.numberinput import NumberInput
 
 from .widgets.icon import TIBERIUS_ICON
@@ -58,7 +58,7 @@ __all__ = [
     # 'PasswordInput',
     'ProgressBar',
     'ScrollContainer',
-    # 'Selection',
+    'Selection',
     # 'Slider',
     'SplitContainer',
     # 'Switch',
