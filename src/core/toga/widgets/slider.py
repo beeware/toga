@@ -1,5 +1,4 @@
 from collections import namedtuple
-
 from .base import Widget
 
 Range = namedtuple('Range', ['min', 'max'])
@@ -29,10 +28,10 @@ class Slider(Widget):
     :type enabled:      ``Bool``
     """
 
-    def __init__(self, id=None, style=None, default=None, range=None, on_slide=None, enabled=True):
-        super().__init__(id=id, style=style, default=default, range=range, on_slide=on_slide, enabled=enabled)
+    def __init__(self, id=None, style=None, default=None, range=None, on_slide=None, enabled=True, factory=None):
+        super().__init__(id=id, style=style, factory=factory)
+        self._impl = self.factory.Slider(interface=self)
 
-    def _configure(self, default, range, on_slide, enabled):
         self.range = range
         self.value = default
         self.on_slide = on_slide
@@ -44,7 +43,8 @@ class Slider(Widget):
         :returns: The current slider value
         :rtype: ``float``
         """
-        return self._get_value()
+        self._value = self._impl.get_value()
+        return self._value
 
     @value.setter
     def value(self, value):
@@ -56,11 +56,12 @@ class Slider(Widget):
         """
         _min, _max = self.range
         if value is None:
-            self._set_value(.5)
+            self._value = 0.5
         elif _min < value < _max:
-            self._set_value(value)
+            self._value = value
         else:
             raise Exception('Slider value ({}) is not in range ({}-{})'.format(value, _min, _max))
+        self._impl.set_value(self._value)
 
     @property
     def range(self):
@@ -78,7 +79,7 @@ class Slider(Widget):
         if _min > _max or _min == _max:
             raise Exception('Range min value has to be smaller than max value.')
         self._range = Range(_min, _max)
-        self._set_range(Range(_min, _max))
+        self._impl.set_range(Range(_min, _max))
 
     @property
     def on_slide(self):
@@ -98,10 +99,7 @@ class Slider(Widget):
         :type handler:      ``callable`
         """
         self._on_press = handler
-        self._set_on_slide(handler)
-
-    def _set_on_slide(self, value):
-        pass
+        # self._set_on_slide(handler)
 
     @property
     def enabled(self):
@@ -126,4 +124,4 @@ class Slider(Widget):
             self._enabled = False
         else:
             raise Exception('value must be of type Bool')
-        self._set_enabled(value)
+        self._impl.set_enabled(value)
