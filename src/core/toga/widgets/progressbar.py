@@ -22,12 +22,12 @@ class ProgressBar(Widget):
         :param value: The initial value
         :type  value: ``int``
         '''
-        super().__init__(id=id, style=style, max=max, value=value)
+        super().__init__(id=id, style=style)
+        self._impl = self.factory.ProgressBar(interface=self)
 
-    def _configure(self, max, value):
         self.value = value
         self.max = max
-        self.running = False
+        self._running = False
         self.rehint()
 
     @property
@@ -42,6 +42,7 @@ class ProgressBar(Widget):
     @value.setter
     def value(self, value):
         self._value = value
+        self._impl.set_value(value)
         self._running = self._value is not None
 
     @property
@@ -56,4 +57,4 @@ class ProgressBar(Widget):
     @max.setter
     def max(self, max):
         self._max = max
-        self._set_max(max)
+        self._impl.set_max(max)

@@ -1,39 +1,33 @@
-from toga.interface import ProgressBar as ProgressBarInterface
-
 from ..libs import *
-from .base import WidgetMixin
+from .base import Widget
 
 
-class ProgressBar(ProgressBarInterface, WidgetMixin):
-    def __init__(self, id=None, style=None, max=None, value=None):
-        super().__init__(id=id, style=style, max=max, value=value)
-        self._create()
-
+class ProgressBar(Widget):
     def create(self):
-        self._impl = NSProgressIndicator.new()
-        self._impl.setStyle_(NSProgressIndicatorBarStyle)
-        self._impl.setDisplayedWhenStopped_(True)
+        self.native = NSProgressIndicator.new()
+        self.native.setStyle_(NSProgressIndicatorBarStyle)
+        self.native.setDisplayedWhenStopped_(True)
 
         # Add the layout constraints
-        self._add_constraints()
+        self.add_constraints()
 
-    def _set_value(self, value):
+    def set_value(self, value):
         if value is not None:
-            self._impl.setDoubleValue_(value)
+            self.native.setDoubleValue_(value)
 
     def start(self):
-        if self._impl and not self._running:
-            self._impl.startAnimation_(self._impl)
-            self._running = True
+        if self.native and not self.interface._running:
+            self.native.startAnimation(self.native)
+            self.interface._running = True
 
     def stop(self):
-        if self._impl and self._running:
-            self._impl.stopAnimation_(self._impl)
-            self._running = False
+        if self.native and self.interface._running:
+            self.native.stopAnimation(self.native)
+            self.interface._running = False
 
-    def _set_max(self, value):
+    def set_max(self, value):
         if value:
-            self._impl.setIndeterminate_(False)
-            self._impl.setMaxValue_(value)
+            self.native.setIndeterminate_(False)
+            self.native.setMaxValue_(value)
         else:
-            self._impl.setIndeterminate_(True)
+            self.native.setIndeterminate_(True)
