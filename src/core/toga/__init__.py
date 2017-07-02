@@ -22,7 +22,7 @@ from .widgets.progressbar import *
 from .widgets.scrollcontainer import *
 # from .widgets.slider import *
 from .widgets.splitcontainer import *
-# from .widgets.switch import *
+from .widgets.switch import *
 from .widgets.table import *
 from .widgets.textinput import TextInput
 
@@ -61,7 +61,7 @@ __all__ = [
     'Selection',
     # 'Slider',
     'SplitContainer',
-    # 'Switch',
+    'Switch',
     'Table',
     'TextInput',
     # 'Tree',

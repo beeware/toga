@@ -23,9 +23,10 @@ class Switch(Widget):
     """
 
     def __init__(self, label, id=None, style=None, on_toggle=None, is_on=False, enabled=True):
-        super().__init__(id=id, style=style, label=label, on_toggle=on_toggle, is_on=is_on, enabled=enabled)
+        super().__init__(id=id, style=style)
 
-    def _configure(self, label, on_toggle, is_on, enabled):
+        self._impl = self.factory.Switch(interface=self)
+
         self.label = label
         self.on_toggle = on_toggle
         self.is_on = is_on
@@ -51,11 +52,8 @@ class Switch(Widget):
             self._label = ''
         else:
             self._label = str(value)
-        self._set_label(value)
+        self._impl.set_label(value)
         self.rehint()
-
-    def _set_label(self, value):
-        raise NotImplementedError('The inheriting class of {} must define _set_label()'.format(__class__))
 
     @property
     def on_toggle(self):
@@ -69,10 +67,6 @@ class Switch(Widget):
     @on_toggle.setter
     def on_toggle(self, handler):
         self._on_toggle = handler
-        self._set_on_toggle(handler)
-
-    def _set_on_toggle(self, value):
-        pass
 
     @property
     def is_on(self):
@@ -81,7 +75,7 @@ class Switch(Widget):
 
         :rtype: ``Bool``
         """
-        return self._get_is_on()
+        return self._impl.get_is_on()
 
     @is_on.setter
     def is_on(self, value):
@@ -92,9 +86,9 @@ class Switch(Widget):
         :type  value: ``Bool``
         """
         if value is True:
-            self._set_is_on(True)
+            self._impl.set_is_on(True)
         elif value is False:
-            self._set_is_on(False)
+            self._impl.set_is_on(False)
 
     @property
     def enabled(self):
@@ -103,7 +97,7 @@ class Switch(Widget):
 
         :rtype  value: ``Bool``
         """
-        return self._get_enabled()
+        return self._enabled
 
     @enabled.setter
     def enabled(self, value):
@@ -114,18 +108,8 @@ class Switch(Widget):
         :type  value: ``Bool``
         """
         if value is True:
-            self._set_enabled(True)
+            self._enabled = True
+            self._impl.set_enabled(True)
         elif value is False:
-            self._set_enabled(False)
-
-    def _set_is_on(self, value):
-        raise NotImplementedError('The inheriting class of {} must define _set_is_on()'.format(__class__))
-
-    def _get_is_on(self):
-        raise NotImplementedError('The inheriting class of {} must define _get_is_on()'.format(__class__))
-
-    def _set_enabled(self, value):
-        raise NotImplementedError('The inheriting class of {} must define _set_enabled()'.format(__class__))
-
-    def _get_enabled(self):
-        raise NotImplementedError('The inheriting class of {} must define _get_enabled()'.format(__class__))
+            self._enabled = False
+            self._impl.set_enabled(False)
