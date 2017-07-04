@@ -1,11 +1,10 @@
 import unittest
 import ast
-from pprint import pprint
 
-from ..utils import Visitor
+from ..utils import Visitor, get_class_methods
 
-# This Object defines what attributes a platform
-# specific implementation of a toga.Button has to have.
+# This dictionary defines what attributes a platform
+# specific implementation of a toga.Button needs to have.
 BUTTON_DEF = {'classes': ['Button'],
               'functions': ['create', 'set_label', 'rehint']}
 
@@ -27,17 +26,22 @@ class TestButtonImpl(unittest.TestCase):
     def test_required_classes_are_there(self):
         classes = self.visitor.class_names
         def_classes = BUTTON_DEF.get('classes')
+        def_functions = BUTTON_DEF.get('functions')
+
         for cls in def_classes:
             with self.subTest(cls=cls):
                 self.assertIn(cls, classes)
 
-    def test_required_functions_are_there(self):
-        # check if all required functions are there
-        functions = self.visitor.function_names
+    def test_button_class_has_required_methods(self):
+        def_classes = BUTTON_DEF.get('classes')
         def_functions = BUTTON_DEF.get('functions')
-        for func in def_functions:
-            with self.subTest(func=func):
-                self.assertIn(func, functions)
+
+        for cls in def_classes:
+            methods = get_class_methods(self.tree, cls)
+            print('methods: ', methods)
+            for func in def_functions:
+                with self.subTest(cls=cls):
+                    self.assertIn(func, methods)
 
 
 class TestButtonImplCocoa(TestButtonImpl):

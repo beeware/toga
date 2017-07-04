@@ -1,5 +1,1 @@
-from .ast_visitor import Visitor
-
-__all__ = [
-    'Visitor'
-]
+from .ast_visitor import *
