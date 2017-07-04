@@ -1,6 +1,6 @@
 from toga.interface import MultilineTextInput as MultilineTextInputInterface
 
-from ..libs import NSTextView, NSScrollView, NSBezelBorder, NSViewWidthSizable, NSViewHeightSizable
+from ..libs import NSTextView, NSScrollView, NSBezelBorder, NSViewWidthSizable, NSViewHeightSizable, NSRect, NSPoint, NSSize
 from .base import WidgetMixin
 
 
@@ -54,8 +54,9 @@ class MultilineTextInput(MultilineTextInputInterface, WidgetMixin):
         if value:
             self._text.insertText_(value)
 
-    def _apply_layout(self, layout):
-        frame = NSRect(NSPoint(layout.left, layout.top), NSSize(layout.width, layout.height))
+    def _apply_layout(self):
+        frame = NSRect(NSPoint(self.layout.left, self.layout.top),
+                        NSSize(self.layout.width, self.layout.height))
         self._impl.setFrame_(frame)
         self._impl.contentView.setFrame_(frame)
         self._impl.setNeedsDisplay_(True)
