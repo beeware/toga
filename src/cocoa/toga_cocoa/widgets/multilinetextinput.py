@@ -1,6 +1,6 @@
 from toga.interface import MultilineTextInput as MultilineTextInputInterface
 
-from ..libs import NSTextView, NSScrollView, NSBezelBorder, NSViewWidthSizable, NSViewHeightSizable
+from ..libs import NSTextView, NSScrollView, NSBezelBorder, NSViewWidthSizable, NSViewHeightSizable, NSRect, NSPoint, NSSize
 from .base import WidgetMixin
 
 
