@@ -2,7 +2,10 @@ import unittest
 from .ast_helper import DefinitionExtractor
 
 
-class TestBaseClass(unittest.TestCase):
+class ImplCheckBase(unittest.TestCase):
+    """
+    This is the base class for all the implementation base classes.
+    """
     PATH = None
     PATH_DUMMY = None
 

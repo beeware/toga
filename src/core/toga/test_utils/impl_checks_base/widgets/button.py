@@ -1,6 +1,6 @@
-from ..utils.base import TestBaseClass
+from ..utils.base import ImplCheckBase
 from toga_dummy.widgets import button
 
 
-class TestButtonImpl(TestBaseClass):
+class TestButtonImpl(ImplCheckBase):
     PATH_DUMMY = button.__file__
