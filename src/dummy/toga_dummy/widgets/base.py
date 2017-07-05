@@ -21,7 +21,7 @@ class Widget():
     def add_child(self, child):
         pass
 
-    def add_contraints(self):
+    def add_constraints(self):
         pass
 
     def apply_layout(self):
