@@ -45,44 +45,45 @@ class TestButtonImpl(unittest.TestCase):
 
 
 class TestButtonImplCocoa(TestButtonImpl):
-    PATH = '../../../src/cocoa/toga_cocoa/widgets/button.py'
+    PATH = '../src/cocoa/toga_cocoa/widgets/button.py'
 
 
 @unittest.skip('Not ported to new Toga version.')
 class TestButtonImpliOS(TestButtonImpl):
-    PATH = '../../../src/iOS/toga_ios/widgets/button.py'
+    PATH = '../src/iOS/toga_ios/widgets/button.py'
 
 
 @unittest.skip('Not ported to new Toga version.')
 class TestButtonImplAndroid(TestButtonImpl):
-    PATH = '../../../src/android/toga_android/widgets/button.py'
+    PATH = '../src/android/toga_android/widgets/button.py'
 
 
 @unittest.skip('Not ported to new Toga version.')
 class TestButtonImplDjango(TestButtonImpl):
-    PATH = '../../../src/django/toga_django/widgets/button.py'
+    PATH = '../src/django/toga_django/widgets/button.py'
 
 
 @unittest.skip('Not implemented yet.')
 class TestButtonImplFlask(TestButtonImpl):
-    PATH = '../../../src/flask/toga_flask/widgets/button.py'
+    PATH = '../src/flask/toga_flask/widgets/button.py'
 
 
 @unittest.skip('Not ported to new Toga version.')
 class TestButtonImplGTK(TestButtonImpl):
-    PATH = '../../../src/gtk/toga_gtk/widgets/button.py'
+    PATH = '../src/gtk/toga_gtk/widgets/button.py'
 
 
 @unittest.skip('Not implemented yet.')
 class TestButtonImplPyramid(TestButtonImpl):
-    PATH = '../../../src/pyramid/toga_pyramid/widgets/button.py'
+    PATH = '../src/pyramid/toga_pyramid/widgets/button.py'
 
 
 @unittest.skip('Not ported to new Toga version.')
 class TestButtonImplWin32(TestButtonImpl):
-    PATH = '../../../src/win32/toga_win32/widgets/button.py'
+    PATH = '../src/win32/toga_win32/widgets/button.py'
 
 
 @unittest.skip('Not ported to new Toga version.')
 class TestButtonImplWinforms(TestButtonImpl):
-    PATH = '../../../src/winforms/toga_winforms/widgets/button.py'
+    PATH = '../src/winforms/toga_winforms/widgets/button.py'
+    
