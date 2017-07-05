@@ -33,19 +33,16 @@ from .widgets.selection import Selection
 
 from .widgets.icon import TIBERIUS_ICON
 
+# Test Utilities
+from . import test_utils
+
 __all__ = [
     'App', 'MainWindow',
-
     'constants',
-
     'Command', 'Group', 'GROUP_BREAK', 'SECTION_BREAK',
-
     'Window',
-
     # 'Font',
-
     'Widget'
-
     'Box',
     'Button',
     'Icon',
@@ -68,4 +65,7 @@ __all__ = [
     'WebView',
 
     'TIBERIUS_ICON',
+
+    # Test Utils
+    'test_utils',
 ]
