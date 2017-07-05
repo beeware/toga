@@ -34,9 +34,9 @@ class OptionContainer(OptionContainerInterface, WidgetMixin):
         item = NSTabViewItem.alloc().initWithIdentifier_('%s-Tab-%s' % (id(self), id(widget)))
         item.setLabel_(label)
 
-        # Turn the autoresizing mask into constraints.
-        # This could be overcome by describing the specific constraints
-        # that the autoresize mask defines...
+        # Turn the autoresizing mask on the container widget
+        # into constraints. This makes the container fill the
+        # available space inside the OptionContainer.
         container._impl.setTranslatesAutoresizingMaskIntoConstraints_(True)
 
         item.setView_(container._impl)

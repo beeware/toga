@@ -67,8 +67,7 @@ class SplitContainer(Widget):
 
             if widget._impl is None:
                 container = self._CONTAINER_CLASS()
-                container.root_content = widget
-                widget._container = container
+                container.content = widget
             else:
                 container = widget
 

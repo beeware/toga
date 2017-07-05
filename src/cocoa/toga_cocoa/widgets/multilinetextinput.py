@@ -46,8 +46,9 @@ class MultilineTextInput(Widget):
         if value:
             self._text.insertText_(value)
 
-    def _apply_layout(self, layout):
-        frame = NSRect(NSPoint(layout.left, layout.top), NSSize(layout.width, layout.height))
+    def _apply_layout(self):
+        frame = NSRect(NSPoint(self.layout.left, self.layout.top),
+                       NSSize(self.layout.width, self.layout.height))
         self.native.setFrame_(frame)
         self.native.contentView.setFrame_(frame)
         self.native.setNeedsDisplay_(True)
