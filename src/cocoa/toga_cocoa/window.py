@@ -186,18 +186,10 @@ class Window:
         self._min_width_constraint.constant = self.interface.content.layout.width
         self._min_height_constraint.constant = self.interface.content.layout.height
 
-        # Do the first layout render.
-        # FixMe Is this really the best way? I don't think so, but I'm missing something!
-        if hasattr(self.container, 'interface'):
-            self.container.interface._update_layout(
-                width=self.native.contentView.frame.size.width,
-                height=self.native.contentView.frame.size.height,
-            )
-        else:
-            self.container.update_layout(
-                width=self.native.contentView.frame.size.width,
-                height=self.native.contentView.frame.size.height,
-            )
+        self.interface.content._update_layout(
+            width=self.native.contentView.frame.size.width,
+            height=self.native.contentView.frame.size.height,
+        )
 
     def on_close(self):
         pass
