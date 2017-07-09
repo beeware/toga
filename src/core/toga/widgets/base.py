@@ -306,8 +306,7 @@ class Widget:
         self._update_child_layout()
 
         # Set the constraints the widget to adhere to the new style.
-        if self._impl:
-            self._impl.apply_layout()
+        self._impl.apply_layout()
         self._layout_in_progress = False
 
     def _update_child_layout(self):

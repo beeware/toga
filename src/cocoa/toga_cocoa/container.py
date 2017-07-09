@@ -178,7 +178,8 @@ class Container:
 
     @root_content.setter
     def root_content(self, widget):
-        self.content = widget
+        self._content = widget
+        self._content.container = self
         # Make the constraints object a root container.
         self.constraints.make_root()
 

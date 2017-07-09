@@ -54,9 +54,7 @@ class ScrollContainer(Widget):
             self._content.app = self.app
             self._content.window = self.window
 
-            self._inner_container = widget
-
-            self._impl.set_content(self._inner_container, widget)
+            self._impl.set_content(widget._impl)
 
     @property
     def vertical(self):

@@ -35,7 +35,7 @@ class SplitContainer(Widget):
         # Turn the autoresizing mask on the container widget
         # into constraints. This makes the container fill the
         # available space inside the SplitContainer.
-        container._impl.setTranslatesAutoresizingMaskIntoConstraints_(True)
+        container._impl.native.setTranslatesAutoresizingMaskIntoConstraints_(True)
 
         self.native.addSubview_(container._impl.native)
 

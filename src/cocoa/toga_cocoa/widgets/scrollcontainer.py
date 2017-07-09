@@ -4,6 +4,8 @@ from ..libs import *
 
 
 class ScrollContainer(Widget):
+    _CONTAINER_CLASS = Container
+
     def create(self):
         self.native = NSScrollView.alloc().init()
         self.native.setAutohidesScrollers_(True)
@@ -15,8 +17,13 @@ class ScrollContainer(Widget):
         # Add the layout constraints
         self.add_constraints()
 
-    def set_content(self, container, widget):
-        self.native.setDocumentView_(container._impl.native)
+    def set_content(self, widget):
+        if widget.native is None:
+            self._inner_container = Container()
+            self._inner_container.root_content = widget.interface
+        else:
+            self._inner_container = widget
+        self.native.setDocumentView_(self._inner_container.native)
 
     def _update_child_layout(self):
         if self.interface.content is not None:
@@ -27,4 +34,3 @@ class ScrollContainer(Widget):
 
     def set_horizontal(self, value):
         self.native.setHasHorizontalScroller_(value)
-
