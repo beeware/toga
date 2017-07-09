@@ -16,6 +16,7 @@ class ProgressBar(ProgressBarInterface, WidgetMixin):
 
         # Add the layout constraints
         self._add_constraints()
+        self.rehint()
 
     def _set_value(self, value):
         if value is not None:
@@ -37,3 +38,9 @@ class ProgressBar(ProgressBarInterface, WidgetMixin):
             self._impl.setMaxValue_(value)
         else:
             self._impl.setIndeterminate_(True)
+
+    def rehint(self):
+        self.style.hint(
+            height=self._impl.fittingSize().height,
+            width=self._impl.fittingSize().width
+        )
