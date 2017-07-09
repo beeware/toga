@@ -1,14 +1,11 @@
 from rubicon.objc import *
-
-from toga.interface import Tree as TreeInterface
-
 from ..libs import *
-from .base import WidgetMixin
+from .base import Widget
 
 
 class TreeNode(object):
     def __init__(self, *data):
-        self._impl = NSObject.alloc().init()
+        self.native = NSObject.alloc().init()
         self._tree = None
         self.data = data
         self.children = []
@@ -23,8 +20,8 @@ class TogaTree(NSOutlineView):
         else:
             key = id(item)
 
-        node_id = self.interface._data[key]['children'][child]
-        node = self.interface._data[node_id]['node']
+        node_id = self._impl.data[key]['children'][child]
+        node = self._impl.data[node_id]['node']
         return node
 
     @objc_method
@@ -34,7 +31,7 @@ class TogaTree(NSOutlineView):
         else:
             key = id(item)
 
-        return self.interface._data[key]['children'] is not None
+        return self._impl.data[key]['children'] is not None
 
     @objc_method
     def outlineView_numberOfChildrenOfItem_(self, tree, item) -> int:
@@ -44,86 +41,83 @@ class TogaTree(NSOutlineView):
             key = id(item)
 
         try:
-            return len(self.interface._data[key]['children'])
+            return len(self._impl.data[key]['children'])
         except TypeError:
             return 0
 
     @objc_method
     def outlineView_objectValueForTableColumn_byItem_(self, tree, column, item):
         column_index = int(column.identifier)
-        return self.interface._data[id(item)]['data'][column_index]
+        return self._impl.data[id(item)]['data'][column_index]
 
     # OutlineViewDelegate methods
     @objc_method
     def outlineViewSelectionDidChange_(self, notification) -> None:
-        print ("tree selection changed")
+        print("tree selection changed")
 
 
-class Tree(TreeInterface, WidgetMixin):
-    def __init__(self, headings, id=None, style=None):
-        super(Tree, self).__init__(headings, id=id, style=style)
+class Tree(Widget):
+    def create(self):
+        self.tree = None
+        self.columns = None
 
-        self._tree = None
-        self._columns = None
-
-        self._data = {
+        self.data = {
             None: {
                 'children': []
             }
         }
 
-        self._create()
-
-    def create(self):
         # Create a tree view, and put it in a scroll view.
         # The scroll view is the _impl, because it's the outer container.
-        self._impl = NSScrollView.alloc().init()
-        self._impl.setHasVerticalScroller_(True)
-        self._impl.setHasHorizontalScroller_(True)
-        self._impl.setAutohidesScrollers_(False)
-        self._impl.setBorderType_(NSBezelBorder)
+        self.native = NSScrollView.alloc().init()
+        self.native.setHasVerticalScroller_(True)
+        self.native.setHasHorizontalScroller_(True)
+        self.native.setAutohidesScrollers_(False)
+        self.native.setBorderType_(NSBezelBorder)
 
         # Disable all autolayout functionality on the outer widget
-        self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
+        self.native.setTranslatesAutoresizingMaskIntoConstraints_(False)
 
-        self._tree = TogaTree.alloc().init()
-        self._tree.interface = self
-        self._tree.setColumnAutoresizingStyle_(NSTableViewUniformColumnAutoresizingStyle)
+        self.tree = TogaTree.alloc().init()
+        self.tree.interface = self.interface
+        self.tree._impl = self
+        self.tree.setColumnAutoresizingStyle_(NSTableViewUniformColumnAutoresizingStyle)
+
         # Use autolayout for the inner widget.
-        self._tree.setTranslatesAutoresizingMaskIntoConstraints_(True)
+        self.tree.setTranslatesAutoresizingMaskIntoConstraints_(True)
 
         # Create columns for the tree
-        self._columns = [
+        self.columns = [
             NSTableColumn.alloc().initWithIdentifier_('%d' % i)
-            for i, heading in enumerate(self.headings)
-        ]
+            for i, heading in enumerate(self.interface.headings)
+            ]
 
-        for heading, column in zip(self.headings, self._columns):
-            self._tree.addTableColumn_(column)
+        for heading, column in zip(self.interface.headings, self.columns):
+            self.tree.addTableColumn_(column)
             cell = column.dataCell
             cell.setEditable_(False)
             cell.setSelectable_(False)
             column.headerCell.stringValue = heading
 
         # Put the tree arrows in the first column.
-        self._tree.setOutlineTableColumn_(self._columns[0])
+        self.tree.setOutlineTableColumn_(self.columns[0])
 
-        self._tree.setDelegate_(self._tree)
-        self._tree.setDataSource_(self._tree)
+        self.tree.setDelegate_(self.tree)
+        self.tree.setDataSource_(self.tree)
 
         # Embed the tree view in the scroll view
-        self._impl.setDocumentView_(self._tree)
+        self.native.setDocumentView_(self.tree)
 
         # Add the layout constraints
-        self._add_constraints()
+        self.add_constraints()
 
     def insert(self, parent, index, *data):
-        if len(data) != len(self.headings):
+        if len(data) != len(self.interface.headings):
             raise Exception('Data size does not match number of headings')
 
         node = NSObject.alloc().init()
 
-        parent_node = self._data[parent]
+        parent_node = self.data[parent]
         if parent_node['children'] is None:
             parent_node['children'] = []
         if index is None:
@@ -131,11 +125,11 @@ class Tree(TreeInterface, WidgetMixin):
         else:
             parent_node['children'].insert(index, id(node))
 
-        self._data[id(node)] = {
+        self.data[id(node)] = {
             'node': node,
             'data': data,
             'children': None,
         }
 
-        self._tree.reloadData()
+        self.tree.reloadData()
         return id(node)

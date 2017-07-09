@@ -20,7 +20,8 @@ class Tree(Widget):
         :type style:        :class:`colosseum.CSSNode`
         '''
         super().__init__(id=id, style=style)
-        self.headings = headings
 
-    def _configure(self):
-        pass
+        self.headings = headings
+        self._impl = self.factory.Tree(interface=self)
+
+
