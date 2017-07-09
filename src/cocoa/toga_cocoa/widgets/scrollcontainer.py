@@ -20,14 +20,14 @@ class ScrollContainer(Widget):
     def set_content(self, widget):
         if widget.native is None:
             self._inner_container = Container()
-            self._inner_container.root_content = widget.interface
+            self._inner_container.root_content = widget
         else:
             self._inner_container = widget
         self.native.setDocumentView_(self._inner_container.native)
 
     def _update_child_layout(self):
         if self.interface.content is not None:
-            self.interface._inner_container._update_layout()
+            self._inner_container._update_layout()
 
     def set_vertical(self, value):
         self.native.setHasVerticalScroller_(value)
