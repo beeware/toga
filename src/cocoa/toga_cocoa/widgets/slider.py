@@ -8,14 +8,14 @@ from ..utils import process_callback
 class TogaSlider(NSSlider):
     @objc_method
     def onSlide_(self, obj) -> None:
-        if self.interface.interface.on_slide:
-            process_callback(self.interface.interface.on_slide(self.interface.interface))
+        if self.interface.on_slide:
+            process_callback(self.interface.on_slide(self.interface))
 
 
 class Slider(Widget):
     def create(self):
         self.native = TogaSlider.alloc().init()
-        self.native.interface = self
+        self.native.interface = self.interface
 
         self.native.setTarget_(self.native)
         self.native.setAction_(get_selector('onSlide:'))

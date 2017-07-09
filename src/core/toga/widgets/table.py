@@ -22,7 +22,7 @@ class Table(Widget):
         """
         super().__init__(id=id, style=style)
         self.headings = headings
-        self.impl = self.factory.Table(interface=self)
+        self._impl = self.factory.Table(interface=self)
 
     def _configure(self):
         pass
@@ -41,6 +41,6 @@ class Table(Widget):
             raise Exception('Data size does not match number of headings')
 
         if index is None:
-            self.impl.data.append(data)
+            self._impl.data.append(data)
         else:
-            self.impl.data.insert(index, data)
+            self._impl.data.insert(index, data)

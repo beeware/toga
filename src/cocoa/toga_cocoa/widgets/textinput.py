@@ -3,11 +3,11 @@ from ..libs import NSTextField, NSTextFieldSquareBezel
 
 
 class TextInput(Widget):
-    _IMPL_CLASS = NSTextField
+    # _IMPL_CLASS = NSTextField
 
     def create(self):
-        self.native = self._IMPL_CLASS.new()
-        self.native.interface = self
+        self.native = NSTextField.new()
+        self.native.interface = self.interface
 
         self.native.setBezeled_(True)
         self.native.setBezelStyle_(NSTextFieldSquareBezel)

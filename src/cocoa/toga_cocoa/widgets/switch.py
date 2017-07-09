@@ -8,15 +8,15 @@ from ..utils import process_callback
 class TogaSwitch(NSButton):
     @objc_method
     def onPress_(self, obj) -> None:
-        if self.interface.interface.on_toggle:
-            process_callback(self.interface.interface.on_toggle(self.interface.interface))
+        if self.interface.on_toggle:
+            process_callback(self.interface.on_toggle(self.interface))
 
 
 class Switch(Widget):
 
     def create(self):
         self.native = TogaSwitch.alloc().init()
-        self.native.interface = self
+        self.native.interface = self.interface
 
         self.native.setBezelStyle_(NSRoundedBezelStyle)
         self.native.setButtonType_(NSSwitchButton)

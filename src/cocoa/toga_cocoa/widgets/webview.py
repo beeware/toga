@@ -22,7 +22,7 @@ class TogaWebView(WebView):
 class WebView(Widget):
     def create(self):
         self.native = TogaWebView.alloc().init()
-        self.native.interface = self
+        self.native.interface = self.interface
 
         self.native.setDownloadDelegate_(self.native)
         self.native.setFrameLoadDelegate_(self.native)

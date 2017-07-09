@@ -6,12 +6,12 @@ class TogaTable(NSTableView):
     # TableDataSource methods
     @objc_method
     def numberOfRowsInTableView_(self, table) -> int:
-        return len(self.interface.data)
+        return len(self._impl.data)
 
     @objc_method
     def tableView_objectValueForTableColumn_row_(self, table, column, row: int):
         column_index = int(column.identifier)
-        return self.interface.data[row][column_index]
+        return self._impl.data[row][column_index]
 
     # TableDelegate methods
     @objc_method
@@ -31,7 +31,8 @@ class Table(Widget):
         self.native.setBorderType_(NSBezelBorder)
 
         self.table = TogaTable.alloc().init()
-        self.table.interface = self
+        self.table.interface = self.interface
+        self.table._impl = self
         self.table.setColumnAutoresizingStyle_(NSTableViewUniformColumnAutoresizingStyle)
 
         # Create columns for the table
