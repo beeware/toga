@@ -18,10 +18,20 @@ class ImageView(Widget):
     
         :param image:    Image to display
         '''
-        super().__init__(id=id, style=style, image=image)
+        super().__init__(id=id, style=style)
 
-    def _configure(self, image):
+        self._impl = self.factory.ImageView(interface=self)
         self.image = image
+
+    @property
+    def image(self):
+        self._impl.get_image()
+        return self._image
+
+    @image.setter
+    def image(self, image):
+        self._image = image
+        self._impl.set_image(self._image)
 
     # @property
     # def alignment(self):

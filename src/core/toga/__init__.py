@@ -12,8 +12,8 @@ from .widgets.base import Layout, Point, Widget
 from .widgets.box import Box
 from .widgets.button import Button
 from .widgets.icon import Icon
-# from .widgets.image import *
-# from .widgets.imageview import *
+from .widgets.image import *
+from .widgets.imageview import *
 from .widgets.label import Label
 from .widgets.multilinetextinput import *
 # from .widgets.optioncontainer import *
@@ -47,7 +47,7 @@ __all__ = [
     'Button',
     'Icon',
     # 'Image',
-    # 'ImageView',
+    'ImageView',
     'Label',
     'MultilineTextInput',
     # 'NumberInput',

@@ -1,22 +1,17 @@
-from toga.interface import ImageView as ImageViewInterface
-
 from ..libs import *
-from .base import WidgetMixin
+from .base import Widget
 
 
-class ImageView(ImageViewInterface, WidgetMixin):
-    def __init__(self, id=None, style=None, image=None):
-        super().__init__(id=id, style=style, image=image)
-        self._create()
+class ImageView(Widget):
 
     def create(self):
-        self._impl = NSImageView.alloc().init()
-        self._impl._interface = self
+        self.native = NSImageView.alloc().init()
+        self.native.interface = self.interface
 
         # self._impl.setImageFrameStyle_(NSImageFrameGrayBezel)
-        self._impl.setImageFrameStyle_(NSImageFrameNone)
-        self._impl.setImageAlignment_(NSImageAlignCenter)
-        self._impl.setImageScaling_(NSImageScaleProportionallyUpOrDown)
+        self.native.setImageFrameStyle_(NSImageFrameNone)
+        self.native.setImageAlignment_(NSImageAlignCenter)
+        self.native.setImageScaling_(NSImageScaleProportionallyUpOrDown)
 
         # self._impl.setWantsLayer_(True)
         # self._impl.setBackgroundColor_(NSColor.blueColor)
@@ -27,7 +22,7 @@ class ImageView(ImageViewInterface, WidgetMixin):
         #     self.height = self._impl.fittingSize().height
 
         # Add the layout constraints
-        self._add_constraints()
+        self.add_constraints()
 
     # @property
     # def alignment(self):
@@ -47,18 +42,23 @@ class ImageView(ImageViewInterface, WidgetMixin):
     #     self._scaling = value
     #     self._impl.setAlignment_(NSTextAlignment(self._scaling))
 
-    @property
-    def image(self):
-        return self._impl.image
+    def get_image(self):
+        return self.native.image
 
-    @image.setter
-    def image(self, image):
+    def set_image(self, image):
         if image:
-            self._impl.image = image._impl
+            self.native.image = image._impl.native
         else:
             width = 0
             height = 0
             if self.style and self.style.width and self.style.height:
                 width = self.style.width
                 height = self.style.height
-            self._impl.image = NSImage.alloc().initWithSize_(NSSize(width, height))
+            self.native.image = NSImage.alloc().initWithSize_(NSSize(width, height))
+
+    def rehint(self):
+        self.interface.style.hint(
+            height=self.native.fittingSize().height,
+            width=self.native.fittingSize().width
+        )
+
