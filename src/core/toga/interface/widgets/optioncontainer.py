@@ -21,6 +21,7 @@ class OptionContainer(Widget):
 
         super().__init__(id=id, style=style, content=content)
         self._containers = []
+        self._selected = None
 
     def _configure(self, content):
         if content:
@@ -50,6 +51,19 @@ class OptionContainer(Widget):
         self._containers.append((label, container, widget))
 
         self._add_content(label, container, widget)
+
+    @property
+    def selected(self):
+        """
+        The current id of the tab view selected
+
+        :rtype: ``int``
+        """
+        return self._selected
+
+    @selected.setter
+    def selected(self, value):
+        self._selected = value
 
     def _update_child_layout(self):
         for label, container, widget in self._containers:
