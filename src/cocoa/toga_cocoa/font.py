@@ -1,7 +1,11 @@
-# from toga.interface import Font as FontInterface
-# from .libs import NSFont
-#
-# class Font(FontInterface):
-#
-#     def create(self):
-#         self._native = NSFont.fontWithName_size_(self.family, self.size)
+from .libs import NSFont
+
+
+class Font():
+    def __init__(self, interface):
+        self.interface = interface
+        self.interface._impl = self
+        self.create()
+
+    def create(self):
+        self._native = NSFont.fontWithName_size_(self.interface.family, self.interface.size)

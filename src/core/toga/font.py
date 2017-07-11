@@ -1,34 +1,35 @@
+from .platform import get_platform_factory
+
+
 class Font:
-    """
-    A `Font` is a font family (e.g. "Helvetica") and a size (e.g. 15) that can
-    be applied to widgets.
-    """
     def __init__(self, family, size):
+        """ A `Font` is a font family (e.g. "Helvetica") and a size (e.g. 15) that can
+        be applied to widgets.
+
+        Args:
+            family (str): Name of the font family.
+            size (int): Defines the display size of the font.
+        """
+        self.factory = get_platform_factory()
+        self._impl = self.factory.Font(interface=self)
+
         self._family = family
         self._size = size
-        self.create()
-
-    def create(self):
-        '''
-        Create font
-        '''
-        raise NotImplementedError(
-            'Platform implementation must define create()')
 
     @property
     def family(self):
-        '''
-        Font family, e.g. Helvetica
-        
-        :rtype: ``str``
-        '''
+        """ Font family, e.g. Helvetica
+
+        Returns:
+            Returns a (str) with the name of the font family
+        """
         return self._family
 
     @property
     def size(self):
-        '''
-        Font size
-        
-        :rtype: ``int``
-        '''
+        """ Font size
+
+        Returns
+            (int) The size of the font.
+        """
         return self._size

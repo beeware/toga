@@ -46,7 +46,7 @@ __all__ = [
     'Box',
     'Button',
     'Icon',
-    # 'Image',
+    'Image',
     'ImageView',
     'Label',
     'MultilineTextInput',
