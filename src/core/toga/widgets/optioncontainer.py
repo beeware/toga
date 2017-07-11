@@ -2,55 +2,45 @@ from .base import Widget
 
 
 class OptionContainer(Widget):
-    _CONTAINER_CLASS = None
-
     def __init__(self, id=None, style=None, content=None):
-        '''
-        Instantiate a new instance of the option container widget
+        """ Instantiate a new instance of the option container widget
 
-        :param id:          An identifier for this widget.
-        :type  id:          ``str``
+        Args:
+            id (str):   An identifier for this widget.
+            style (:class:`colosseum.CSSNode`): an optional style object.
+                If no style is provided then a new one will be created for the widget.
+            content (``list`` of ``tuple`` (``str``, :class:`toga.Widget`)):
+                Each tuple in the list is composed of a title for the option and
+                the widget tree that is displayed in the option.
+        """
 
-        :param style:       an optional style object. If no style is provided then a
-                            new one will be created for the widget.
-        :type style:        :class:`colosseum.CSSNode`
+        super().__init__(id=id, style=style)
+        # self._containers = []
+        self._impl = self.factory.OptionContainer(interface=self)
 
-        :param content:     List of components to choose from.
-        :type  content:     ``list`` of ``tuple`` (``str``, :class:`toga.Widget`)
-        '''
-
-        super().__init__(id=id, style=style, content=content)
-        self._containers = []
-
-    def _configure(self, content):
         if content:
             for label, widget in content:
                 self.add(label, widget)
 
     def add(self, label, widget):
-        '''
-        Add a widget to the option container
+        """ Add a widget to the option container
 
         :param label: The label for the option
         :type  label: ``str``
 
         :param widget: The widget to add
         :type  widget: :class:`toga.Widget`
-        '''
+        """
         widget._update_layout()
         widget.app = self.app
         widget.window = self.window
 
-        if widget._impl is None:
-            container = self._CONTAINER_CLASS()
-            container.content = widget
-        else:
-            container = widget
-
-        self._containers.append((label, container, widget))
-
-        self._add_content(label, container, widget)
+        self._impl.add_content(label, widget._impl)
 
     def _update_child_layout(self):
-        for label, container, widget in self._containers:
-            container._update_layout()
+        """ Updates all of the option containers. """
+        for label, container, widget in self._impl.containers:
+            if hasattr(container, 'interface'):
+                container.interface._update_layout()
+            else:
+                container.update_layout()

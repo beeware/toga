@@ -13,7 +13,7 @@ from .widgets.image import *
 from .widgets.imageview import *
 from .widgets.label import Label
 from .widgets.multilinetextinput import *
-# from .widgets.optioncontainer import *
+from .widgets.optioncontainer import *
 from .widgets.passwordinput import *
 from .widgets.progressbar import *
 from .widgets.scrollcontainer import *
@@ -43,7 +43,7 @@ __all__ = [
     'Label',
     'MultilineTextInput',
     # 'NumberInput',
-    # 'OptionContainer',
+    'OptionContainer',
     'PasswordInput',
     'ProgressBar',
     'ScrollContainer',
