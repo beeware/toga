@@ -19,7 +19,7 @@ to run::
 
     $ git clone git@github.com:pybee/toga.git
     $ cd toga
-    $ mkvirtualenv toga
+    $ mkvirtualenv -p python3 toga
 
 .. note::
 
