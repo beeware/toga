@@ -55,15 +55,15 @@ class OptionContainer(Widget):
     @property
     def selected(self):
         """
-        The current id of the tab view selected
+        The current id and label of the tab view selected
 
-        :rtype: ``int``
+        :rtype: ``dict``
         """
         return self._selected
 
     @selected.setter
-    def selected(self, value):
-        self._selected = value
+    def selected(self, view_id, view_label):
+        self._selected = {'id':view_id, 'label':view_label}
 
     def _update_child_layout(self):
         for label, container, widget in self._containers:

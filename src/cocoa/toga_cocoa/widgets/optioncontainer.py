@@ -10,7 +10,8 @@ class TogaTabViewDelegate(NSObject):
     @objc_method
     def tabView_didSelectTabViewItem_(self, view, item) -> None:
         id_tab_view = item.identifier.split('-')[2]
-        process_callback(self._interface._update_current_tab_view(id_tab_view))
+        process_callback(self._interface._update_current_tab_view(id_tab_view,
+                                                                item.label))
 
 
 class OptionContainer(OptionContainerInterface, WidgetMixin):
@@ -31,8 +32,8 @@ class OptionContainer(OptionContainerInterface, WidgetMixin):
         # Add the layout constraints
         self._add_constraints()
 
-    def _update_current_tab_view(self, value):
-        self._selected = value
+    def _update_current_tab_view(self, view_id, view_label):
+        self._selected = {'id':view_id, 'label':view_label}
 
     def _add_content(self, label, container, widget):
         item = NSTabViewItem.alloc().initWithIdentifier_('%s-Tab-%s' % (id(self), id(widget)))
