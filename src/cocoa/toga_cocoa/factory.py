@@ -2,7 +2,7 @@ import os
 
 from .app import App, MainWindow
 from .window import Window
-# from ..font import Font
+from .font import Font
 
 # Widgets
 from .widgets.box import Box
@@ -33,7 +33,7 @@ __all__ = [
 
     'Window',
 
-    # 'Font',
+    'Font',
 
     'Box',
     'Button',

@@ -10,11 +10,12 @@ class Font:
             family (str): Name of the font family.
             size (int): Defines the display size of the font.
         """
+        self._family = family
+        self._size = size
+
         self.factory = get_platform_factory()
         self._impl = self.factory.Font(interface=self)
 
-        self._family = family
-        self._size = size
 
     @property
     def family(self):

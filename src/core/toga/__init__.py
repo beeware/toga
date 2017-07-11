@@ -4,7 +4,7 @@ from .window import Window
 from .constants import *
 
 # Font support
-# from .font import Font
+from .font import Font
 
 # Widgets
 from .widgets.base import Layout, Point, Widget
@@ -41,7 +41,7 @@ __all__ = [
     'constants',
     'Command', 'Group', 'GROUP_BREAK', 'SECTION_BREAK',
     'Window',
-    # 'Font',
+    'Font',
     'Widget'
     'Box',
     'Button',
