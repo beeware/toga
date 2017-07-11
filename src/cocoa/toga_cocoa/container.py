@@ -12,6 +12,11 @@ from .libs import (
 
 class Constraints:
     def __init__(self, widget):
+        """
+
+        Args:
+            widget (:class: toga-cocoa.Widget): The widget that should be constraint.
+        """
         self.widget = widget
         self._container = None
 
@@ -36,7 +41,7 @@ class Constraints:
     @container.setter
     def container(self, value):
         self._container = value
-        # print("Add constraints for", self.widget, 'in', self.container, self.widget.layout)
+        # print("Add constraints for", self.widget, 'in', self.container, self.widget.interface.layout)
         self._left_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
             self.widget.native, NSLayoutAttributeLeft,
             NSLayoutRelationEqual,
@@ -70,13 +75,13 @@ class Constraints:
         self.container.native.addConstraint_(self._height_constraint)
 
     def make_root(self):
-        self.__container = None
+        self._container = None
         # print("Make ", self.widget, 'a root container')
         self._height_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
             self.widget.native, NSLayoutAttributeBottom,
             NSLayoutRelationEqual,
             self.widget.native, NSLayoutAttributeTop,
-            1, 0,
+            1, self.widget.content.interface.layout.height,
         )
         self.widget.native.addConstraint_(self._height_constraint)
 
@@ -84,7 +89,7 @@ class Constraints:
             self.widget.native, NSLayoutAttributeRight,
             NSLayoutRelationEqual,
             self.widget.native, NSLayoutAttributeLeft,
-            1, 0,
+            1, self.widget.content.interface.layout.width,
         )
         self.widget.native.addConstraint_(self._width_constraint)
 
@@ -156,6 +161,8 @@ class TogaContainer(NSView):
 
 
 class Container:
+    """ The Container is the top level representation of toga.Box.
+    """
     def __init__(self):
         self.native = TogaContainer.alloc().init()
         self.native.setTranslatesAutoresizingMaskIntoConstraints_(False)
@@ -165,6 +172,12 @@ class Container:
 
     @property
     def content(self):
+        """ Content holds the top level widget of the container in form of
+        a (:class: 'toga-cocoa.Widget`).
+
+        Returns:
+            Returns a `toga-cocoa.Widget', None if no content was set.
+        """
         return self._content
 
     @content.setter
