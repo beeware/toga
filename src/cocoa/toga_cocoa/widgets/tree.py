@@ -105,7 +105,6 @@ class Tree(TreeInterface, WidgetMixin):
             for i, heading in enumerate(self.headings)
         ]
 
-        # image = NSImageCell.alloc().initImageCell(None)
         custom_cell = NSBrowserCell.alloc().init()
 
         for heading, column in zip(self.headings, self._columns):
