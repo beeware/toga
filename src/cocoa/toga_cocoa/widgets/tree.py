@@ -1,3 +1,4 @@
+import os
 from rubicon.objc import *
 
 from toga.interface import Tree as TreeInterface
@@ -53,6 +54,12 @@ class TogaTree(NSOutlineView):
         column_index = int(column.identifier)
         return self.interface._data[id(item)]['data'][column_index]
 
+    @objc_method
+    def outlineView_willDisplayCell_forTableColumn_item_(self, tree, cell,
+                                                        column, item):
+        cell.setImage_(self.interface._image)
+        cell.setLeaf_(True)
+
     # OutlineViewDelegate methods
     @objc_method
     def outlineViewSelectionDidChange_(self, notification) -> None:
@@ -65,6 +72,7 @@ class Tree(TreeInterface, WidgetMixin):
 
         self._tree = None
         self._columns = None
+        self._image = None
 
         self._data = {
             None: {
@@ -98,12 +106,16 @@ class Tree(TreeInterface, WidgetMixin):
             for i, heading in enumerate(self.headings)
         ]
 
+        # image = NSImageCell.alloc().initImageCell(None)
+        custom_cell = NSBrowserCell.alloc().init()
+
         for heading, column in zip(self.headings, self._columns):
             self._tree.addTableColumn_(column)
             cell = column.dataCell
             cell.setEditable_(False)
             cell.setSelectable_(False)
             column.headerCell.stringValue = heading
+            column.setDataCell_(custom_cell)
 
         # Put the tree arrows in the first column.
         self._tree.setOutlineTableColumn_(self._columns[0])
@@ -139,3 +151,12 @@ class Tree(TreeInterface, WidgetMixin):
 
         self._tree.reloadData()
         return id(node)
+
+    def setIcon(self, image_url):
+        size = NSMakeSize(8,8)
+
+        image = NSImage.alloc().initWithContentsOfFile_(image_url)
+        image.setSize_(size)
+
+        self._image = image
+        self._tree.reloadData()

@@ -327,8 +327,10 @@ NSImageScaleProportionallyUpOrDown = 3
 # NSImageView.h
 NSImageView = ObjCClass('NSImageView')
 
-# NSImageCell.h
+# NSBrowserCell.h
+NSBrowserCell = ObjCClass('NSBrowserCell')
 
+# NSImageCell.h
 NSImageFrameNone = 0
 NSImageFramePhoto = 1
 NSImageFrameGrayBezel = 2
