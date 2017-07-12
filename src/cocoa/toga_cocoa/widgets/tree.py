@@ -1,4 +1,3 @@
-import os
 from rubicon.objc import *
 
 from toga.interface import Tree as TreeInterface
