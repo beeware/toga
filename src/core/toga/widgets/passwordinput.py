@@ -2,14 +2,10 @@ from .base import Widget
 
 
 class PasswordInput(Widget):
-    '''
-    Text input widget
-    '''
     def __init__(
             self, id=None, style=None, factory=None,
             initial=None, placeholder=None, readonly=False):
-        '''
-        Instantiate a new instance of the password input widget
+        """ Instantiate a new instance of the password input widget
 
         :param id:          An identifier for this widget.
         :type  id:          ``str``
@@ -26,7 +22,7 @@ class PasswordInput(Widget):
 
         :param readonly: Whether a user can write into the text input, defaults to `False`
         :type  readonly: ``bool``
-        '''
+        """
         super().__init__(id=id, style=style, factory=factory)
 
 
@@ -39,11 +35,10 @@ class PasswordInput(Widget):
 
     @property
     def readonly(self):
-        '''
-        Whether a user can write into the password input
+        """ Whether a user can write into the password input
 
         :rtype: ``bool``
-        '''
+        """
         return self._readonly
 
     @readonly.setter
@@ -53,11 +48,11 @@ class PasswordInput(Widget):
 
     @property
     def placeholder(self):
-        '''
-        The placeholder text
+        """ The placeholder text is the displayed before the user input something.
 
-        :rtype: ``str``
-        '''
+        Returns:
+            The placeholder text (str) of the widget.
+        """
         return self._placeholder
 
     @placeholder.setter
@@ -71,11 +66,11 @@ class PasswordInput(Widget):
 
     @property
     def value(self):
-        '''
-        The value of the text input field
+        """ The value of the text input field.
 
-        :rtype: ``str``
-        '''
+        Returns:
+            value (str): The text of the password input widget.
+        """
         return self._impl.get_value()
 
     @value.setter
@@ -88,7 +83,6 @@ class PasswordInput(Widget):
         self.rehint()
 
     def clear(self):
-        '''
-        Clear the value
-        '''
+        """ Clear the value
+        """
         self.value = ''
