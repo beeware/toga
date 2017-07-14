@@ -61,7 +61,7 @@ class Window:
         self.minimizable = minimizable
 
         self.factory = get_platform_factory(factory)
-        self._impl = getattr(self.factory, self.__class__.__name__)(interface=self)
+        self._impl = self.factory.Window(interface=self)
 
         self._toolbar = CommandSet(self, self._impl.create_toolbar)
 

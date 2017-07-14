@@ -10,8 +10,8 @@ from .widgets.button import Button
 # from .command import Command
 from .widgets.label import Label
 from .widgets.icon import Icon
-# from .widgets.image import *
-# from .widgets.imageview import *
+from .widgets.image import *
+from .widgets.imageview import *
 
 # from .widgets.multilinetextinput import *
 # from .widgets.optioncontainer import *
@@ -40,8 +40,8 @@ __all__ = [
     'Box',
     'Button',
     'Icon',
-    # 'Image',
-    # 'ImageView',
+    'Image',
+    'ImageView',
     # 'MultilineTextInput',
     # 'NumberInput',
     # 'OptionContainer',
