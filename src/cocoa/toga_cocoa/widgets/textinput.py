@@ -3,8 +3,6 @@ from ..libs import NSTextField, NSTextFieldSquareBezel
 
 
 class TextInput(Widget):
-    # _IMPL_CLASS = NSTextField
-
     def create(self):
         self.native = NSTextField.new()
         self.native.interface = self.interface

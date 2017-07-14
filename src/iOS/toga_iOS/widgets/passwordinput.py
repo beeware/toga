@@ -7,4 +7,4 @@ class PasswordInput(TextInput):
 
     def startup(self):
         super().startup()
-        self._impl.setSecureTextEntry_(True)
+        self.native.setSecureTextEntry_(True)

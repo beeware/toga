@@ -22,7 +22,7 @@ from .widgets.imageview import *
 # from .widgets.splitcontainer import *
 # from .widgets.switch import *
 # from .widgets.table import *
-# from .widgets.textinput import TextInput
+from .widgets.textinput import TextInput
 # from .widgets.tree import *
 # from .widgets.webview import *
 # from .widgets.selection import Selection
@@ -53,7 +53,7 @@ __all__ = [
     # 'SplitContainer',
     # 'Switch',
     # 'Table',
-    # 'TextInput',
+    'TextInput',
     # 'Tree',
     # 'WebView',
 ]
