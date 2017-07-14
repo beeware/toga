@@ -4,6 +4,16 @@ from functools import lru_cache
 
 @lru_cache(maxsize=8)
 def get_platform_factory(factory=None):
+    """ This function figures out what the current host platform is and
+    imports the adequate factory. The factory is the interface to all platform
+    specific implementations.
+
+    Args:
+        factory (module):
+
+    Returns: The suitable factory for the current host platform
+        or the factory that was given as a argument.
+    """
     if factory is not None:
         return factory
 

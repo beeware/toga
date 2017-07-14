@@ -34,7 +34,7 @@ from .widgets.selection import Selection
 from .widgets.icon import TIBERIUS_ICON
 
 # Test Utilities
-from . import test_utils
+# from . import test_utils
 
 __all__ = [
     'App', 'MainWindow',

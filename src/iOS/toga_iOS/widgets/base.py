@@ -2,35 +2,50 @@ from ..container import Constraints
 
 
 class Widget:
-    def _set_app(self, app):
+    def __init__(self, interface):
+        self.interface = interface
+        self.interface._impl = self
+        self._container = None
+        self.create()
+
+    def set_app(self, app):
         pass
 
-    def _set_window(self, window):
+    def set_window(self, window):
         pass
 
-    def _set_container(self, container):
-        if self._constraints and self._native:
-            self._interface._container._native.addSubview_(self._native)
-            self._constraints._container = container
-        self.rehint()
+    @property
+    def container(self):
+        return self._container
 
-    def _add_child(self, child):
-        if self._interface._container:
-            child._set_container(self._container)
+    @container.setter
+    def container(self, widget):
+        self._container = widget
+        if self.constraints and self.native:
+            self._container.native.addSubview_(self.native)
+            self.constraints.container = widget
 
-    def _add_constraints(self):
-        self._native.setTranslatesAutoresizingMaskIntoConstraints_(False)
-        self._constraints = Constraints(self)
+        for child in self.interface.children:
+            child._impl.container = widget
+        self.interface.rehint()
 
-    def _apply_layout(self):
-        if self._constraints:
-            self._constraints.update()
+    def add_child(self, child):
+        if self.container:
+            child.container = self.container
+
+    def add_constraints(self):
+        self.native.setTranslatesAutoresizingMaskIntoConstraints_(False)
+        self.constraints = Constraints(self)
+
+    def apply_layout(self):
+        if self.constraints:
+            self.constraints.update()
+
+    def set_font(self, font):
+        self.native.setFont_(font.native)
+
+    def set_enabled(self, value):
+        self.native.enabled = value
 
     def rehint(self):
         pass
-
-    def _set_font(self, font):
-        self._native.setFont_(font._native)
-
-    def set_enabled(self, value):
-        self._native.enabled = value

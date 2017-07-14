@@ -5,10 +5,6 @@ from ..libs import *
 
 
 class Box(Widget):
-    def __init__(self, interface):
-        self._interface = interface
-        self._create()
-
-    def _create(self):
-        self._native = None
-        self._constraints = None
+    def create(self):
+        self.native = None
+        self.constraints = None

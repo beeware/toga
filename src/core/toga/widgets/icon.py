@@ -22,8 +22,6 @@ class Icon:
             self.filename = self.path
 
         self.create()
-        # self._impl = None
-        #
 
     def create(self):
         self._impl.create(self.filename)

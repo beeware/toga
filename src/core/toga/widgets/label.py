@@ -7,8 +7,7 @@ class Label(Widget):
     Label widget
     """
     def __init__(self, text, id=None, style=None, factory=None, alignment=LEFT_ALIGNED):
-        """
-        Instantiate a new instance of the label widget
+        """ Instantiate a new instance of the label widget
 
         :param text:        Text of the label
         :type  text:        ``str``

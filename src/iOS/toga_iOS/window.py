@@ -1,51 +1,56 @@
-# from toga.interface.window import Window as WindowInterface
-
 from .container import Container
 from .libs import *
 from . import dialogs
 
 
-class Window():
-    _IMPL_CLASS = UIWindow
-    _CONTAINER_CLASS = Container
-    _DIALOG_MODULE = dialogs
-
+class Window:
     def __init__(self, interface):
-        self._interface = interface
-        self._create()
+        self.interface = interface
+        self.interface._impl = self
+        self.container = None
+        self.create()
 
-    def _create(self):
-        self._screen = UIScreen.mainScreen
-        self._impl = self._IMPL_CLASS.alloc().initWithFrame_(self._screen.bounds)
-        self._impl._interface = self
+    def create(self):
+        self.screen = UIScreen.mainScreen
+        self.native = UIWindow.alloc().initWithFrame_(self.screen.bounds)
+        self.native.interface = self.interface
 
-    def _set_content(self, widget):
-        if getattr(widget, '_controller', None):
-            self._controller = widget._controller
+    def set_content(self, widget):
+        if widget.native is None:
+            self.container = Container()
+            self.container.content = widget
         else:
-            self._controller = UIViewController.alloc().init()
+            self.container = widget
 
-        self._impl.rootViewController = self._controller
-        self._controller.view = self._interface._container._native
+        if getattr(widget, 'controller', None):
+            self.controller = widget.controller
+        else:
+            self.controller = UIViewController.alloc().init()
+
+        self.native.rootViewController = self.controller
+        self.controller.view = self.container.native
+
 
     def set_title(self, title):
         pass
 
-    def _set_position(self, position):
+    def set_position(self, position):
         pass
 
-    def _set_size(self, size):
+    def set_size(self, size):
         pass
 
     def set_app(self, app):
         pass
 
-    def show(self):
-        self._impl.makeKeyAndVisible()
+    def create_toolbar(self):
+        pass
 
+    def show(self):
+        self.native.makeKeyAndVisible()
         # self._impl.visualizeConstraints_(self._impl.contentView().constraints())
         # Do the first layout render.
-        self._interface.content._update_layout(
-            width=self._screen.bounds.size.width,
-            height=self._screen.bounds.size.height
+        self.interface.content._update_layout(
+            width=self.screen.bounds.size.width,
+            height=self.screen.bounds.size.height
         )

@@ -9,7 +9,7 @@ class MainWindow(Window):
 
     def startup(self):
         super(MainWindow, self).startup()
-        self._native.setBackgroundColor_(UIColor.whiteColor())
+        self.native.setBackgroundColor_(UIColor.whiteColor())
 
 
 class PythonAppDelegate(UIResponder):
@@ -27,9 +27,9 @@ class PythonAppDelegate(UIResponder):
     def application_didChangeStatusBarOrientation_(self, application, oldStatusBarOrientation: int) -> None:
         """ This callback is invoked when rotating the device from landscape to portrait and vice versa. """
         print("ROTATED", oldStatusBarOrientation)
-        App.app._interface.main_window.content._update_layout(
-            width=App.app._interface.main_window._impl._screen.bounds.size.width,
-            height=App.app._interface.main_window._impl._screen.bounds.size.height,
+        App.app.interface.main_window.content._update_layout(
+            width=App.app.interface.main_window._impl.screen.bounds.size.width,
+            height=App.app.interface.main_window._impl.screen.bounds.size.height,
         )
 
 
@@ -37,12 +37,12 @@ class App():
     _MAIN_WINDOW_CLASS = MainWindow
 
     def __init__(self, interface):
-        self._interface = interface
+        self.interface = interface
         App.app = self  # Add a reference for the PythonAppDelegate class to use.
 
     def _startup(self):
         """ Calls the startup method on the interface """
-        self._interface.startup()
+        self.interface.startup()
 
     def open_document(self, fileURL):
         """ Add a new document to this app."""
