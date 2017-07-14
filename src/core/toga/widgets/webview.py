@@ -2,13 +2,8 @@ from .base import Widget
 
 
 class WebView(Widget):
-    """
-    Web view widget
-    """
-
     def __init__(self, id=None, style=None, url=None, on_key_down=None):
-        """
-        Instantiate a new instance of the tree widget
+        """ Instantiate a new instance of the Web view widget.
 
         :param id:          An identifier for this widget.
         :type  id:          ``str``
