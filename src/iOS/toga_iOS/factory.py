@@ -20,7 +20,7 @@ from .widgets.passwordinput import *
 # from .widgets.scrollcontainer import *
 from .widgets.slider import *
 # from .widgets.splitcontainer import *
-# from .widgets.switch import *
+from .widgets.switch import *
 # from .widgets.table import *
 from .widgets.textinput import TextInput
 # from .widgets.tree import *
@@ -31,17 +31,14 @@ from .widgets.webview import *
 __all__ = [
     'App', 'MainWindow',
     # 'Command',
-
     'Window',
-
     # 'Font',
-    'Label',
-
     'Box',
     'Button',
     'Icon',
     'Image',
     'ImageView',
+    'Label',
     # 'MultilineTextInput',
     # 'NumberInput',
     # 'OptionContainer',
@@ -51,7 +48,7 @@ __all__ = [
     # 'Selection',
     'Slider',
     # 'SplitContainer',
-    # 'Switch',
+    'Switch',
     # 'Table',
     'TextInput',
     # 'Tree',
