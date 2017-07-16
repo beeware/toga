@@ -112,7 +112,7 @@ class Tree(TreeInterface, WidgetMixin):
         # Add the layout constraints
         self._add_constraints()
 
-    def _insert(self, node_abs, path):
+    def _insert(self, node_abs):
         node = NSObject.alloc().init()
         node_abs._impl = node
 
