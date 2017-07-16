@@ -12,100 +12,9 @@ class Node:
         :type  data: ``dict``
         '''
         self._impl = None
+        self.id = None
         self.data = data
         self.children = None
-
-class Tree(Widget):
-    '''
-    Tree widget
-    '''
-    def __init__(self, headings, id=None, style=None):
-        '''
-        Instantiate a new instance of the tree widget
-
-        :param headings: The list of headings for the tree
-        :type  headings: ``list`` of ``str``
-
-        :param id:          An identifier for this widget.
-        :type  id:          ``int``
-
-        :param style:       an optional style object. If no style is provide
-                            then a new one will be created for the widget.
-        :type style:        :class:`colosseum.CSSNode`
-        '''
-        super().__init__(id=id, style=style)
-        self.headings = headings
-        self.tree = { None: Node(None) }
-
-    def _configure(self):
-        pass
-
-    def insert(self, item, path=None, index=None):
-        '''
-        Insert a node on the tree
-
-        :param item: Item to be add on the tree
-        :type  item: ``str``
-
-        :param path: Path of the node's parent
-        :type  path: ``int``
-
-        :param index: Location to add the node on its parent node
-        :type  index: ``int``
-
-        :returns: The id of the node
-        :rtype: ``int``
-        '''
-        node_data = {'text': item}
-        node = Node(node_data)
-
-        node_id = self._insert(node, path)
-        # Insert node on the tree
-        self.tree[node_id] = node
-        # Insert node on its parent children
-        if path is not None:
-            # Search node's parent
-            parent = self.tree[path]
-
-            if parent.children is None:
-                parent.children = []
-
-            parent.children.append(node_id)
-        else:
-            # Insert node on top level of the tree
-            if self.tree[path].children is None:
-                self.tree[path].children = []
-
-            self.tree[path].children.append(node_id)
-
-        self.rehint()
-
-        return node_id
-
-
-    def _insert(self, node):
-        raise NotImplementedError('Tree widget must define _insert()')
-
-    def remove(self, path):
-        '''
-        Remove a node on the tree
-
-        :param path: Path of the node's parent
-        :type  path: ``str``
-        '''
-        pass
-
-    def edit(self, item, path):
-        '''
-        Edit a node on the tree
-
-        :param item: New Item to be edited on the tree
-        :type  item: ``str``
-
-        :param path: Path of the node
-        :type  path: ``str``
-        '''
-        pass
 
     def collapse(self):
         '''
@@ -164,5 +73,99 @@ class Tree(Widget):
 
         :param data: Tags to be add on the node
         :type  data: ``list`` of ``str``
+        '''
+        pass
+
+
+class Tree(Widget):
+    '''
+    Tree widget
+    '''
+    def __init__(self, headings, id=None, style=None):
+        '''
+        Instantiate a new instance of the tree widget
+
+        :param headings: The list of headings for the tree
+        :type  headings: ``list`` of ``str``
+
+        :param id:          An identifier for this widget.
+        :type  id:          ``int``
+
+        :param style:       an optional style object. If no style is provide
+                            then a new one will be created for the widget.
+        :type style:        :class:`colosseum.CSSNode`
+        '''
+        super().__init__(id=id, style=style)
+        self.headings = headings
+        self.tree = { None: Node(None) }
+
+    def _configure(self):
+        pass
+
+    def insert(self, item, path=None, index=None):
+        '''
+        Insert a node on the tree
+
+        :param item: Item to be add on the tree
+        :type  item: ``str``
+
+        :param path: Path of the node's parent
+        :type  path: ``int``
+
+        :param index: Location to add the node on its parent node
+        :type  index: ``int``
+
+        :returns: The node inserted on the tree
+        :type:      :class:`tree.Node`
+        '''
+        node_data = {'text': item}
+        node = Node(node_data)
+
+        node_id = self._insert(node)
+        node.id = node_id
+        # Insert node on the tree
+        self.tree[node.id] = node
+        # Insert node on its parent children
+        if path is not None:
+            # Search node's parent
+            parent = self.tree[path]
+
+            if parent.children is None:
+                parent.children = []
+
+            parent.children.append(node.id)
+        else:
+            # Insert node on top level of the tree
+            if self.tree[path].children is None:
+                self.tree[path].children = []
+
+            self.tree[path].children.append(node.id)
+
+        self.rehint()
+
+        return node
+
+
+    def _insert(self, node):
+        raise NotImplementedError('Tree widget must define _insert()')
+
+    def remove(self, path):
+        '''
+        Remove a node on the tree
+
+        :param path: Path of the node's parent
+        :type  path: ``str``
+        '''
+        pass
+
+    def edit(self, item, path):
+        '''
+        Edit a node on the tree
+
+        :param item: New Item to be edited on the tree
+        :type  item: ``str``
+
+        :param path: Path of the node
+        :type  path: ``str``
         '''
         pass
