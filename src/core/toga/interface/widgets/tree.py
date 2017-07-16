@@ -35,7 +35,7 @@ class Tree(Widget):
         '''
         super().__init__(id=id, style=style)
         self.headings = headings
-        self.tree = {}
+        self.tree = { None: Node(None) }
 
     def _configure(self):
         pass
@@ -48,19 +48,40 @@ class Tree(Widget):
         :type  item: ``str``
 
         :param path: Path of the node's parent
-        :type  path: ``str``
+        :type  path: ``int``
 
         :param index: Location to add the node on its parent node
         :type  index: ``int``
-        '''
-        if path is None:
-            node_data = {'text': item}
-            node = Node(node_data)
-            self.tree[path] = node
-        else:
-            pass
 
-        self._insert(node, path)
+        :returns: The id of the node
+        :rtype: ``int``
+        '''
+        node_data = {'text': item}
+        node = Node(node_data)
+
+        node_id = self._insert(node, path)
+        # Insert node on the tree
+        self.tree[node_id] = node
+        # Insert node on its parent children
+        if path is not None:
+            # Search node's parent
+            parent = self.tree[path]
+
+            if parent.children is None:
+                parent.children = []
+
+            parent.children.append(node_id)
+        else:
+            # Insert node on top level of the tree
+            if self.tree[path].children is None:
+                self.tree[path].children = []
+
+            self.tree[path].children.append(node_id)
+
+        self.rehint()
+
+        return node_id
+
 
     def _insert(self, node):
         raise NotImplementedError('Tree widget must define _insert()')

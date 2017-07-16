@@ -1,7 +1,6 @@
 from rubicon.objc import *
 
 from toga.interface import Tree as TreeInterface
-from toga.interface import Node as NodeInterface
 
 from ..libs import *
 from .base import WidgetMixin
@@ -16,8 +15,8 @@ class TogaTree(NSOutlineView):
         else:
             key = id(item)
 
-        node_id = self.interface._data[key].children[child]
-        node = self.interface._data[node_id]._impl
+        node_id = self.interface.tree[key].children[child]
+        node = self.interface.tree[node_id]._impl
         return node
 
     @objc_method
@@ -27,7 +26,7 @@ class TogaTree(NSOutlineView):
         else:
             key = id(item)
 
-        return self.interface._data[key].children is not None
+        return self.interface.tree[key].children is not None
 
     @objc_method
     def outlineView_numberOfChildrenOfItem_(self, tree, item) -> int:
@@ -37,13 +36,13 @@ class TogaTree(NSOutlineView):
             key = id(item)
 
         try:
-            return len(self.interface._data[key].children)
+            return len(self.interface.tree[key].children)
         except TypeError:
             return 0
 
     @objc_method
     def outlineView_objectValueForTableColumn_byItem_(self, tree, column, item):
-        return self.interface._data[id(item)].data['text']
+        return self.interface.tree[id(item)].data['text']
 
     @objc_method
     def outlineView_willDisplayCell_forTableColumn_item_(self, tree, cell,
@@ -64,8 +63,6 @@ class Tree(TreeInterface, WidgetMixin):
 
         self._tree = None
         self._columns = None
-
-        self._data = { None: NodeInterface(None) }
 
         self._create()
 
@@ -119,11 +116,7 @@ class Tree(TreeInterface, WidgetMixin):
         node = NSObject.alloc().init()
         node_abs._impl = node
 
-        if self._data[path].children is None:
-            self._data[path].children = []
-        if path is None:
-            self._data[path].children.append(id(node))
+        return id(node)
 
-        self._data[id(node)] = node_abs
-
+    def rehint(self):
         self._tree.reloadData()
