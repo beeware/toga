@@ -1,17 +1,10 @@
 from rubicon.objc import *
 
 from toga.interface import Tree as TreeInterface
+from toga.interface import Node as NodeInterface
 
 from ..libs import *
 from .base import WidgetMixin
-
-
-class TreeNode(object):
-    def __init__(self, *data):
-        self._impl = NSObject.alloc().init()
-        self._tree = None
-        self.data = data
-        self.children = []
 
 
 class TogaTree(NSOutlineView):
@@ -23,8 +16,8 @@ class TogaTree(NSOutlineView):
         else:
             key = id(item)
 
-        node_id = self.interface._data[key]['children'][child]
-        node = self.interface._data[node_id]['node']
+        node_id = self.interface._data[key].children[child]
+        node = self.interface._data[node_id]._impl
         return node
 
     @objc_method
@@ -34,7 +27,7 @@ class TogaTree(NSOutlineView):
         else:
             key = id(item)
 
-        return self.interface._data[key]['children'] is not None
+        return self.interface._data[key].children is not None
 
     @objc_method
     def outlineView_numberOfChildrenOfItem_(self, tree, item) -> int:
@@ -44,20 +37,20 @@ class TogaTree(NSOutlineView):
             key = id(item)
 
         try:
-            return len(self.interface._data[key]['children'])
+            return len(self.interface._data[key].children)
         except TypeError:
             return 0
 
     @objc_method
     def outlineView_objectValueForTableColumn_byItem_(self, tree, column, item):
-        column_index = int(column.identifier)
-        return self.interface._data[id(item)]['data'][column_index]
+        return self.interface._data[id(item)].data['text']
 
     @objc_method
     def outlineView_willDisplayCell_forTableColumn_item_(self, tree, cell,
                                                         column, item):
-        cell.setImage_(self.interface._image)
-        cell.setLeaf_(True)
+        # cell.setImage_(self.interface._image)
+        # cell.setLeaf_(True)
+        pass
 
     # OutlineViewDelegate methods
     @objc_method
@@ -67,17 +60,12 @@ class TogaTree(NSOutlineView):
 
 class Tree(TreeInterface, WidgetMixin):
     def __init__(self, headings, id=None, style=None):
-        super(Tree, self).__init__(headings, id=id, style=style)
+        super().__init__(headings, id=id, style=style)
 
         self._tree = None
         self._columns = None
-        self._image = None
 
-        self._data = {
-            None: {
-                'children': []
-            }
-        }
+        self._data = { None: NodeInterface(None) }
 
         self._create()
 
@@ -105,7 +93,7 @@ class Tree(TreeInterface, WidgetMixin):
             for i, heading in enumerate(self.headings)
         ]
 
-        custom_cell = NSBrowserCell.alloc().init()
+        # custom_cell = NSBrowserCell.alloc().init()
 
         for heading, column in zip(self.headings, self._columns):
             self._tree.addTableColumn_(column)
@@ -113,7 +101,7 @@ class Tree(TreeInterface, WidgetMixin):
             cell.setEditable_(False)
             cell.setSelectable_(False)
             column.headerCell.stringValue = heading
-            column.setDataCell_(custom_cell)
+            # column.setDataCell_(custom_cell)
 
         # Put the tree arrows in the first column.
         self._tree.setOutlineTableColumn_(self._columns[0])
@@ -127,34 +115,15 @@ class Tree(TreeInterface, WidgetMixin):
         # Add the layout constraints
         self._add_constraints()
 
-    def insert(self, parent, index, *data):
-        if len(data) != len(self.headings):
-            raise Exception('Data size does not match number of headings')
-
+    def _insert(self, node_abs, path):
         node = NSObject.alloc().init()
+        node_abs._impl = node
 
-        parent_node = self._data[parent]
-        if parent_node['children'] is None:
-            parent_node['children'] = []
-        if index is None:
-            parent_node['children'].append(id(node))
-        else:
-            parent_node['children'].insert(index, id(node))
+        if self._data[path].children is None:
+            self._data[path].children = []
+        if path is None:
+            self._data[path].children.append(id(node))
 
-        self._data[id(node)] = {
-            'node': node,
-            'data': data,
-            'children': None,
-        }
+        self._data[id(node)] = node_abs
 
-        self._tree.reloadData()
-        return id(node)
-
-    def setIcon(self, image_url):
-        size = NSMakeSize(8,8)
-
-        image = NSImage.alloc().initWithContentsOfFile_(image_url)
-        image.setSize_(size)
-
-        self._image = image
         self._tree.reloadData()

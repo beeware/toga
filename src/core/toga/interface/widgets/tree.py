@@ -13,7 +13,7 @@ class Node:
         '''
         self._impl = None
         self.data = data
-        self.children = []
+        self.children = None
 
 class Tree(Widget):
     '''
@@ -33,10 +33,12 @@ class Tree(Widget):
                             then a new one will be created for the widget.
         :type style:        :class:`colosseum.CSSNode`
         '''
-        super().__init__(id=id, style=style, headings=headings)
-
-    def _configure(self, headings):
+        super().__init__(id=id, style=style)
         self.headings = headings
+        self.tree = {}
+
+    def _configure(self):
+        pass
 
     def insert(self, item, path=None, index=None):
         '''
@@ -51,7 +53,17 @@ class Tree(Widget):
         :param index: Location to add the node on its parent node
         :type  index: ``int``
         '''
-        pass
+        if path is None:
+            node_data = {'text': item}
+            node = Node(node_data)
+            self.tree[path] = node
+        else:
+            pass
+
+        self._insert(node, path)
+
+    def _insert(self, node):
+        raise NotImplementedError('Tree widget must define _insert()')
 
     def remove(self, path):
         '''
