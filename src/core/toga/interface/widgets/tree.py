@@ -148,9 +148,6 @@ class Tree(Widget):
 
         return node
 
-    def _insert(self, node):
-        raise NotImplementedError('Tree widget must define _insert()')
-
     def apply_layout(self):
         '''
         Applies modifications on the layout of the tree
@@ -183,3 +180,12 @@ class Tree(Widget):
         :type  path: ``str``
         '''
         pass
+
+    def _insert(self, node):
+        raise NotImplementedError('Tree widget must define _insert()')
+
+    def _set_icon(self, node):
+        raise NotImplementedError('Tree widget must define _set_icon()')
+
+    def rehint(self):
+        raise NotImplementedError('Tree widget must define rehint()')
