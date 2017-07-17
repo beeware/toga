@@ -105,7 +105,7 @@ class Tree(Widget):
     def _configure(self):
         pass
 
-    def insert(self, item, path=None, index=None):
+    def insert(self, item, path=None, index=None, collapse=True):
         '''
         Insert a node on the tree
 
@@ -118,10 +118,13 @@ class Tree(Widget):
         :param index: Location to add the node on its parent node
         :type  index: ``int``
 
+        :param collapse: Sets a node to be shown expanded or collapsed
+        :type  collapse: ``bool``
+
         :returns: The node inserted on the tree
         :type:      :class:`tree.Node`
         '''
-        node_data = {'text': item}
+        node_data = {'text': item, 'collapse': collapse}
         node = Node(node_data)
 
         node_id = self._insert(node)
