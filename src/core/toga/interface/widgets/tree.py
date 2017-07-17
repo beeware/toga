@@ -15,10 +15,12 @@ class Node:
         self.id = None
         self.data = data
         self.children = None
+        self.icon = {'url' : None, 'obj' : None}
+        self.update = []
 
     def collapse(self):
         '''
-        Collpase a node on the tree
+        Collapse a node on the tree
         '''
         pass
 
@@ -28,7 +30,7 @@ class Node:
         :returns: The image url of the node
         :rtype: ``str``
         '''
-        pass
+        return self.icon['url']
 
     @set_icon.setter
     def set_icon(self, image_url):
@@ -38,7 +40,8 @@ class Node:
         :param image_url: Url of the icon
         :type  image_url: ``str``
         '''
-        pass
+        self.icon['url'] = image_url
+        self.update.append('icon')
 
     @property
     def item_color(self):
@@ -145,9 +148,20 @@ class Tree(Widget):
 
         return node
 
-
     def _insert(self, node):
         raise NotImplementedError('Tree widget must define _insert()')
+
+    def apply_layout(self):
+        '''
+        Applies modifications on the layout of the tree
+        '''
+        for ids, node in self.tree.items():
+            if node.update:
+                type_layout = node.update.pop()
+                if type_layout == 'icon':
+                    self._set_icon(node)
+
+        self.rehint()
 
     def remove(self, path):
         '''

@@ -47,9 +47,8 @@ class TogaTree(NSOutlineView):
     @objc_method
     def outlineView_willDisplayCell_forTableColumn_item_(self, tree, cell,
                                                         column, item):
-        # cell.setImage_(self.interface._image)
-        # cell.setLeaf_(True)
-        pass
+        cell.setImage_(self.interface.tree[id(item)].icon['obj'])
+        cell.setLeaf_(True)
 
     # OutlineViewDelegate methods
     @objc_method
@@ -90,7 +89,7 @@ class Tree(TreeInterface, WidgetMixin):
             for i, heading in enumerate(self.headings)
         ]
 
-        # custom_cell = NSBrowserCell.alloc().init()
+        custom_cell = NSBrowserCell.alloc().init()
 
         for heading, column in zip(self.headings, self._columns):
             self._tree.addTableColumn_(column)
@@ -98,7 +97,7 @@ class Tree(TreeInterface, WidgetMixin):
             cell.setEditable_(False)
             cell.setSelectable_(False)
             column.headerCell.stringValue = heading
-            # column.setDataCell_(custom_cell)
+            column.setDataCell_(custom_cell)
 
         # Put the tree arrows in the first column.
         self._tree.setOutlineTableColumn_(self._columns[0])
@@ -117,6 +116,15 @@ class Tree(TreeInterface, WidgetMixin):
         node_abs._impl = node
 
         return id(node)
+
+    def _set_icon(self, node):
+        size = NSMakeSize(8,8)
+
+        image = NSImage.alloc().initWithContentsOfFile_(node.icon['url'])
+        image.setSize_(size)
+
+        node.icon['obj'] = image
+        node.icon['updated'] = True
 
     def rehint(self):
         self._tree.reloadData()
