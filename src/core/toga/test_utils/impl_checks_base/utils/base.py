@@ -2,7 +2,7 @@ import unittest
 from .ast_helper import DefinitionExtractor
 
 
-class ImplCheckBase(unittest.TestCase):
+class ImplCheckMixin:
     """
     This is the base class for all the implementation base classes.
     """
@@ -10,12 +10,10 @@ class ImplCheckBase(unittest.TestCase):
     PATH_DUMMY = None
 
     def setUp(self):
-        if self.PATH is None:
-            raise unittest.SkipTest('because it\'s a base class.')
-
         # the dummy backend defines everything expected
         self.expected = DefinitionExtractor(self.PATH_DUMMY)
         # the backend definition is the 'actual' implementation
+        print(self.PATH)
         self.actual = DefinitionExtractor(self.PATH)
 
     def test_module_has_required_classes(self):

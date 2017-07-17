@@ -29,7 +29,7 @@ setup(
     author='Russell Keith-Magee',
     author_email='russell@keith-magee.com',
     url='http://pybee.org/toga',
-    packages=find_packages(exclude='tests'),
+    packages=find_packages(),
     install_requires=[
         'toga-core>=%s' % version,
     ],
