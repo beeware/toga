@@ -4,7 +4,6 @@ from ..platform import get_platform_factory
 
 class Icon:
     def __init__(self, path, system=False, factory=None):
-
         self.factory = get_platform_factory(factory)
         self._impl = self.factory.Icon(interface=self)
 

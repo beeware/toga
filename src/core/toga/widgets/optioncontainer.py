@@ -2,7 +2,7 @@ from .base import Widget
 
 
 class OptionContainer(Widget):
-    def __init__(self, id=None, style=None, content=None):
+    def __init__(self, id=None, style=None, content=None, factory=None):
         """ Instantiate a new instance of the option container widget
 
         Args:
@@ -13,9 +13,7 @@ class OptionContainer(Widget):
                 Each tuple in the list is composed of a title for the option and
                 the widget tree that is displayed in the option.
         """
-
-        super().__init__(id=id, style=style)
-        # self._containers = []
+        super().__init__(id=id, style=style, factory=factory)
         self._impl = self.factory.OptionContainer(interface=self)
 
         if content:

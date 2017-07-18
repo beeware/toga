@@ -16,6 +16,7 @@ from .widgets.scrollcontainer import *
 from .widgets.slider import *
 from .widgets.splitcontainer import *
 from .widgets.switch import *
+from .widgets.optioncontainer import *
 from .widgets.table import *
 from .widgets.textinput import TextInput
 from .widgets.tree import *
@@ -41,6 +42,7 @@ __all__ = [
     'Slider',
     'SplitContainer',
     'Switch',
+    'OptionContainer'
     'Table',
     'TextInput',
     'Tree',

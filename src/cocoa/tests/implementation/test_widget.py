@@ -1,7 +1,7 @@
 import os
 from toga_dummy.test_utils import utils
 
-BACKEND_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'toga_cocoa'))
+BACKEND_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..', 'toga_cocoa'))
 
 # TODO not only test widgets
 impl_tests = utils.create_impl_tests(BACKEND_ROOT)

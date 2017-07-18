@@ -1,8 +1,5 @@
 import ast
 
-def extract__all__(path):
-    with open(file, 'r') as f:
-        lines = f.read()
 
 class DefinitionExtractor:
     def __init__(self, file):

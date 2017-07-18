@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import patch, Mock, MagicMock
 import toga
-import toga_cocoa
+import toga_dummy
 
 
 class TestCoreBox(unittest.TestCase):
@@ -10,7 +10,7 @@ class TestCoreBox(unittest.TestCase):
         self.factory = MagicMock()
         # Fixme | The MagicMock returns a MagicMock with the specs of a cocoa.Box.
         # This makes the test not platform independent. Solution could be a platform independent dummy backend.
-        self.factory.Box = MagicMock(return_value=MagicMock(spec=toga_cocoa.widgets.box.Box))
+        self.factory.Box = MagicMock(return_value=MagicMock(spec=toga_dummy.widgets.box.Box))
         # init box with test factory
         self.box = toga.Box(factory=self.factory)
 
