@@ -5,7 +5,7 @@ class Selection(Widget):
     """
     Selection widget
     """
-    def __init__(self, id=None, style=None, items=list()):
+    def __init__(self, id=None, style=None, items=list(), factory=None):
         """
         Instantiate a new instance of the selection widget
 
@@ -19,7 +19,7 @@ class Selection(Widget):
         :param items:       Items for the selection:
         :type  items:       ``list`` of ``str``
         """
-        super().__init__(id=id, style=style)
+        super().__init__(id=id, style=style, factory=factory)
 
         self._impl = self.factory.Selection(interface=self)
 

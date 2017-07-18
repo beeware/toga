@@ -2,12 +2,8 @@ from .base import Widget
 
 
 class ProgressBar(Widget):
-    '''
-    Progressbar widget
-    '''
-    def __init__(self, id=None, style=None, max=None, value=None):
-        '''
-        Instantiate a new instance of the progress bar widget
+    def __init__(self, id=None, style=None, max=None, value=None, factory=None):
+        """ Instantiate a new instance of the progress bar widget
 
         :param id:          An identifier for this widget.
         :type  id:          ``str``
@@ -21,8 +17,8 @@ class ProgressBar(Widget):
 
         :param value: The initial value
         :type  value: ``int``
-        '''
-        super().__init__(id=id, style=style)
+        """
+        super().__init__(id=id, style=style, factory=factory)
         self._impl = self.factory.ProgressBar(interface=self)
 
         self.value = value
@@ -32,11 +28,10 @@ class ProgressBar(Widget):
 
     @property
     def value(self):
-        '''
-        The progress value
-        
+        """ The progress value
+
         :rtype: ``int``
-        '''
+        """
         return self._value
 
     @value.setter
@@ -47,11 +42,11 @@ class ProgressBar(Widget):
 
     @property
     def max(self):
-        '''
+        """
         The maximum value
 
         :rtype: ``int``
-        '''
+        """
         return self._max
 
     @max.setter

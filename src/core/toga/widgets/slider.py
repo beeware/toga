@@ -5,8 +5,7 @@ Range = namedtuple('Range', ['min', 'max'])
 
 
 class Slider(Widget):
-    """
-    Slider widget, displays a range of values
+    """ Slider widget, displays a range of values
 
     :param id:          An identifier for this widget.
     :type  id:          ``str``
@@ -48,8 +47,7 @@ class Slider(Widget):
 
     @value.setter
     def value(self, value):
-        """
-        Set the value of the slider.
+        """ Set the value of the slider.
 
         :param value:       The new slider value
         :type value:        ``int or float``
@@ -57,10 +55,10 @@ class Slider(Widget):
         _min, _max = self.range
         if value is None:
             self._value = 0.5
-        elif _min < value < _max:
+        elif _min <= value <= _max:
             self._value = value
         else:
-            raise Exception('Slider value ({}) is not in range ({}-{})'.format(value, _min, _max))
+            raise ValueError('Slider value ({}) is not in range ({}-{})'.format(value, _min, _max))
         self._impl.set_value(self._value)
 
     @property
@@ -77,7 +75,7 @@ class Slider(Widget):
         default_range = (0.0, 1.0)
         _min, _max = default_range if range is None else range
         if _min > _max or _min == _max:
-            raise Exception('Range min value has to be smaller than max value.')
+            raise ValueError('Range min value has to be smaller than max value.')
         self._range = Range(_min, _max)
         self._impl.set_range(Range(_min, _max))
 
@@ -123,5 +121,5 @@ class Slider(Widget):
         elif value is False:
             self._enabled = False
         else:
-            raise Exception('value must be of type Bool')
+            raise ValueError('Value must be of type Bool')
         self._impl.set_enabled(value)

@@ -34,9 +34,9 @@ def collect_widgets(path_to_widget_folder):
     widgets = []
     if os.path.isdir(path_to_widget_folder) and os.path.basename(path_to_widget_folder) == 'widgets':
         filenames = os.listdir(path_to_widget_folder)
-        for file in filenames:
-            if not file.startswith('__'):
-                widgets.append(os.path.splitext(file)[0])
+        for f in filenames:
+            if not f.startswith('__'):
+                widgets.append(os.path.splitext(f)[0])
     return widgets
 
 

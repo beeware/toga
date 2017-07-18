@@ -16,11 +16,12 @@ class TestCoreProgressBar(unittest.TestCase):
 
     def test_set_value(self):
         self.progress_bar.value = 10
+        self.assertEqual(self.progress_bar.value, 10)
         self.assertEqual(self.progress_bar._value, 10)
-        self.progress_bar._impl.set_value.assert_called_once_with(10)
+        self.progress_bar._impl.set_value.assert_called_with(10)
 
     def test_set_max(self):
         new_max = 100
         self.progress_bar.max = new_max
         self.assertEqual(self.progress_bar._max, new_max)
-        self.progress_bar._impl.set_max.assert_called_once_with(new_max)
+        self.progress_bar._impl.set_max.assert_called_with(new_max)

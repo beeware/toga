@@ -2,32 +2,21 @@ from .base import Widget
 
 
 class ScrollContainer(Widget):
-    '''
-    A scrollable container
-    '''
-
     def __init__(self, id=None, style=None, horizontal=True,
-                 vertical=True, content=None):
-        '''
-        Instantiate a new instance of the scrollable container widget
+                 vertical=True, content=None, factory=None):
+        """ Instantiate a new instance of the scrollable container widget.
 
-        :param id:          An identifier for this widget.
-        :type  id:          ``str``
-
-        :param style:       an optional style object. If no style is provided then a
-                            new one will be created for the widget.
-        :type style:        :class:`colosseum.CSSNode`
-
-        :param horizontal: Enable horizontal scroll bar
-        :type  horizontal: ``bool``
-
-        :param vertical: Enable vertical scroll bar
-        :type  vertical: ``bool``
-
-        :param content: The content of the scroll window
-        :type  content: :class:`toga.Widget`
-        '''
-        super().__init__(id=id, style=style)
+        Args:
+            id (str): An identifier for this widget.
+            style (:class:`colosseum.CSSNode`): An optional style object.
+                If no style is provided then a new one will be created for the widget.
+            horizontal (bool):  If True enable horizontal scroll bar.
+            vertical (bool): If True enable vertical scroll bar.
+            content (:class:`toga.Widget`): The content of the scroll window.
+            factory (:module:): A provided factory module will be used to create the
+                implementation of the ScrollContainer.
+        """
+        super().__init__(id=id, style=style, factory=factory)
 
         # Create a platform specific implementation of a Scroll Container
         self._impl = self.factory.ScrollContainer(interface=self)
@@ -39,11 +28,11 @@ class ScrollContainer(Widget):
 
     @property
     def content(self):
-        '''
-        Content of the scroll window
+        """ Content of the scroll container.
 
-        :rtype: :class:`toga.Widget`
-        '''
+        Returns:
+            The content of the widget (:class:`toga.Widget`).
+        """
         return self._content
 
     @content.setter
@@ -58,11 +47,11 @@ class ScrollContainer(Widget):
 
     @property
     def vertical(self):
-        '''
-        Enable vertical scaling
+        """ Shows whether vertical scrolling is enabled.
 
-        :rtype: ``bool``
-        '''
+        Returns:
+            (bool) True if enabled, False if disabled.
+        """
         return self._vertical
 
     @vertical.setter
@@ -72,11 +61,11 @@ class ScrollContainer(Widget):
 
     @property
     def horizontal(self):
-        '''
-        Enable horizontal scaling
+        """ Shows whether horizontal scrolling is enabled.
 
-        :rtype: ``bool``
-        '''
+        Returns:
+            (bool) True if enabled, False if disabled.
+        """
         return self._horizontal
 
     @horizontal.setter

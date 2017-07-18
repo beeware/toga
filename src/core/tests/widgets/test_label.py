@@ -4,6 +4,7 @@ import toga
 import toga_dummy
 from toga import constants
 
+
 class TestCoreLabel(unittest.TestCase):
     def setUp(self):
         self.factory = MagicMock()
