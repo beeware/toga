@@ -8,9 +8,8 @@ class SplitContainer(Widget):
     HORIZONTAL = False
     VERTICAL = True
 
-    def __init__(self, id=None, style=None, direction=VERTICAL, content=None):
-        """
-        Instantiate a new instance of the split container widget
+    def __init__(self, id=None, style=None, direction=VERTICAL, content=None, factory=None):
+        """ Instantiate a new instance of the split container widget
 
         :param id:          An identifier for this widget.
         :type  id:          ``str``
@@ -26,7 +25,7 @@ class SplitContainer(Widget):
         :param content: The list of components to be split
         :type  content: ``list`` of :class:`toga.Widget`
         """
-        super().__init__(id=id, style=style)
+        super().__init__(id=id, style=style, factory=factory)
         self._direction = direction
         self._containers = []
 
@@ -35,10 +34,6 @@ class SplitContainer(Widget):
 
         self.content = content
         self.direction = direction
-
-    # def _configure(self, direction, content):
-    #     self.content = content
-    #     self.direction = direction
 
     @property
     def content(self):
@@ -64,7 +59,7 @@ class SplitContainer(Widget):
             widget._update_layout()
             widget.app = self.app
             widget.window = self.window
-
+            # Fixme move all container stuff to _impl level.
             if widget._impl is None:
                 container = self._CONTAINER_CLASS()
                 container.content = widget
