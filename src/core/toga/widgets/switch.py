@@ -22,8 +22,8 @@ class Switch(Widget):
     :type is_on         ``Bool`
     """
 
-    def __init__(self, label, id=None, style=None, on_toggle=None, is_on=False, enabled=True):
-        super().__init__(id=id, style=style)
+    def __init__(self, label, id=None, style=None, on_toggle=None, is_on=False, enabled=True, factory=None):
+        super().__init__(id=id, style=style, factory=factory)
 
         self._impl = self.factory.Switch(interface=self)
 

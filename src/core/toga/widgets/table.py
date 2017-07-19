@@ -6,7 +6,7 @@ class Table(Widget):
     Table widget
     """
 
-    def __init__(self, headings, id=None, style=None):
+    def __init__(self, headings, id=None, style=None, factory=None):
         """
         Instantiate a new instance of the split container widget
 
@@ -20,12 +20,9 @@ class Table(Widget):
                             new one will be created for the widget.
         :type style:        :class:`colosseum.CSSNode`
         """
-        super().__init__(id=id, style=style)
+        super().__init__(id=id, style=style, factory=factory)
         self.headings = headings
         self._impl = self.factory.Table(interface=self)
-
-    def _configure(self):
-        pass
 
     def insert(self, index, *data):
         """
