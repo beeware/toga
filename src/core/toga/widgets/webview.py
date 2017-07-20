@@ -2,7 +2,7 @@ from .base import Widget
 
 
 class WebView(Widget):
-    def __init__(self, id=None, style=None, url=None, on_key_down=None):
+    def __init__(self, id=None, style=None, factory=None, url=None, on_key_down=None):
         """ Instantiate a new instance of the Web view widget.
 
         :param id:          An identifier for this widget.
@@ -19,7 +19,7 @@ class WebView(Widget):
             the web view
         :type  on_key_down: ``callable``
         """
-        super(WebView, self).__init__(id=id, style=style)
+        super(WebView, self).__init__(id=id, style=style, factory=factory)
 
         self._impl = self.factory.WebView(interface=self)
         self.url = url

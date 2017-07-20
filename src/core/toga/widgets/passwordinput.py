@@ -61,7 +61,7 @@ class PasswordInput(Widget):
             self._placeholder = ''
         else:
             self._placeholder = str(value)
-        self._impl.set_placeholder(value)
+        self._impl.set_placeholder(self._placeholder)
         self.rehint()
 
     @property
