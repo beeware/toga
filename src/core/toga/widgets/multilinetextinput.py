@@ -5,7 +5,8 @@ class MultilineTextInput(Widget):
     '''
     A multi-line text input widget
     '''
-    def __init__(self, id=None, style=None, initial=None):
+    def __init__(self, id=None, style=None, factory=None,
+                 initial=None):
         '''
         Instantiate a new instance of the multi-line text input widget
 
@@ -19,7 +20,7 @@ class MultilineTextInput(Widget):
         :param initial:     The initial value
         :type  initial:     ``str``
         '''
-        super().__init__(id=id, style=style)
+        super().__init__(id=id, style=style, factory=factory)
 
         self._impl = self.factory.MultilineTextInput(interface=self)
         self._impl.value = initial

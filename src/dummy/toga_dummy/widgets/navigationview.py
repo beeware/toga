@@ -1,4 +1,7 @@
-class NavigationView():
+from .base import Widget
+
+
+class NavigationView(Widget):
     def __init__(self, title, content, on_action=None, style=None):
         pass
 

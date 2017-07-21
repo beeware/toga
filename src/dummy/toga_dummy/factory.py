@@ -10,6 +10,7 @@ from .widgets.image import *
 from .widgets.imageview import *
 from .widgets.label import Label
 from .widgets.multilinetextinput import *
+from .widgets.navigationview import *
 from .widgets.passwordinput import *
 from .widgets.progressbar import *
 from .widgets.scrollcontainer import *
@@ -35,6 +36,7 @@ __all__ = [
     'ImageView',
     'Label',
     'MultilineTextInput',
+    'NavigationView',
     'PasswordInput',
     'ProgressBar',
     'ScrollContainer',
