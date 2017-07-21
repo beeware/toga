@@ -3,8 +3,11 @@ from ..platform import get_platform_factory
 
 
 class Image(object):
-    def __init__(self, path):
-        self.factory = get_platform_factory()
+    def __init__(self, path, factory=None):
+        if factory:
+            self.factory = factory
+        else:
+            self.factory = get_platform_factory()
         self._impl = self.factory.Image(interface=self)
         self.path = path
 

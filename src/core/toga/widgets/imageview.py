@@ -5,7 +5,8 @@ class ImageView(Widget):
     '''
     An image viewer
     '''
-    def __init__(self, id=None, style=None, image=None):
+    def __init__(self, id=None, style=None, factory=None,
+                 image=None):
         '''
         Instantiate a new image viewer widget
         
@@ -18,7 +19,7 @@ class ImageView(Widget):
     
         :param image:    Image to display
         '''
-        super().__init__(id=id, style=style)
+        super().__init__(id=id, style=style, factory=factory)
 
         self._impl = self.factory.ImageView(interface=self)
         self.image = image
