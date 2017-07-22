@@ -1,7 +1,8 @@
 toga-dummy
-============
+==========
 
-An Dummy backend for the `Toga widget toolkit`_.
+An Dummy backend for the `Toga widget toolkit`_. This doesn't actually display
+anything; it exists purely as a testing environment.
 
 **Toga requires Python 3**
 
