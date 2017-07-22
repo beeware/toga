@@ -1,6 +1,38 @@
 import os
+import ast
 import unittest
-from .ast_utils import DefinitionExtractor
+from collections import namedtuple
+
+
+class DefinitionExtractor:
+    def __init__(self, file, emtpy=False):
+        self.emtpy = emtpy
+        self._classes = {}
+
+        if not emtpy:
+            # load the file and parse it with the ast module.
+            with open(file, 'r') as f:
+                lines = f.read()
+            self.tree = ast.parse(lines)
+            self.extract_classes()
+
+    @property
+    def class_names(self):
+        return self._classes.keys()
+
+    def extract_classes(self):
+        for node in ast.walk(self.tree):
+            if isinstance(node, ast.ClassDef):
+                self._classes[node.name] = node
+
+    def methods_of_class(self, class_name):
+        methods = []
+        if not self.emtpy:
+            class_node = self._classes[class_name]
+            for node in ast.walk(class_node):
+                if isinstance(node, ast.FunctionDef):
+                    methods.append(node.name)
+        return methods
 
 
 def create_impl_tests(root):
@@ -13,55 +45,75 @@ def create_impl_tests(root):
     Returns:
         A dictionary of test classes.
     """
-    path_to_widgets = os.path.join(root, 'widgets')
-    widgets = collect_widgets(path_to_widgets)
+    dummy_files = collect_dummy_files()
     tests = dict()
-    for widget in widgets:
-        tests['Test{}Impl'.format(widget.capitalize())] = \
-            make_toga_impl_check_class(os.path.join(root, 'widgets/{}.py'.format(widget)))
+    for name, dummy_path in dummy_files:
+        if 'widgets' in dummy_path:
+            path = os.path.join(root, 'widgets/{}.py'.format(name))
+        else:
+            path = os.path.join(root, '{}.py'.format(name))
+
+        tests['Test{}Impl'.format(name.capitalize())] = make_toga_impl_check_class(path, dummy_path)
     return tests
 
 
-def collect_widgets(path_to_widget_folder):
-    """
-
-    Args:
-        path_to_widget_folder (str):
-
-    Returns:
-        A list of widget file names (str).
-    """
-    widgets = []
-    if os.path.isdir(path_to_widget_folder) and os.path.basename(path_to_widget_folder) == 'widgets':
-        filenames = os.listdir(path_to_widget_folder)
-        for f in filenames:
-            if not f.startswith('__'):
-                widgets.append(os.path.splitext(f)[0])
-    return widgets
+TestFile = namedtuple('TestFile', ['name', 'path'])
 
 
-def make_toga_impl_check_class(path):
-    actual = DefinitionExtractor(path)
+def collect_dummy_files(exclude_folder=None, exclude_files=None):
+    dummy_files = []
+    toga_dummy_base = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../toga_dummy'))
 
-    expected = DefinitionExtractor(
-        os.path.join(os.path.join(os.path.dirname(__file__), '../widgets/'), os.path.basename(path)))
+    for root, dirs, files in os.walk(toga_dummy_base):
+        # Exclude the 'test_utils' folder.
+        if 'test_utils' in dirs:
+            dirs.remove('test_utils')
+
+        for file_ in files:
+            # exclude non .py files or start with '__'
+            if file_.startswith('__') or not file_.endswith('.py'):
+                continue
+            f = TestFile(file_[:-3], os.path.join(root, file_))
+            dummy_files.append(f)
+
+    return dummy_files
+
+
+def make_toga_impl_check_class(path, dummy_path):
+    expected = DefinitionExtractor(dummy_path)
+    if os.path.isfile(path):
+        skip_test = False
+        actual = DefinitionExtractor(path)
+    else:
+        skip_test = True
+        skip_msg = 'File does not exist: {}'.format(path)
+        actual = DefinitionExtractor(path, emtpy=True)
 
     class TestClass(unittest.TestCase):
         pass
 
-    for cls in expected.class_names:
-        def _fn(self):
-            # print('Expected: {}, Actual: {}'.format(cls, actual.class_names))
-            self.assertIn(cls, actual.class_names)
+    if skip_test:
+        @unittest.skip(skip_msg)
+        def setup(self):
+            pass
 
-        setattr(TestClass, 'test_class_{}_exists_in_file_{}'.format(cls, os.path.basename(path)), _fn)
+        setattr(TestClass, 'setUp', setup)
+
+    def make_test_function(_foo, _bar):
+        def fn(self):
+            self.assertIn(_foo, _bar)
+
+        return fn
+
+    for cls in expected.class_names:
+        setattr(TestClass,
+                'test_class_{}_exists_in_file_{}'.format(cls, os.path.basename(path)),
+                make_test_function(cls, actual.class_names))
 
     for cls in expected.class_names:
         for method in expected.methods_of_class(cls):
-            def _fn(self):
-                # print('Expected: {}, Actual: {}'.format(method, actual.methods_of_class(cls)))
-                self.assertIn(method, actual.methods_of_class(cls))
-
-            setattr(TestClass, 'test_method_{}_exists_in_class_{}'.format(method, cls), _fn)
+            setattr(TestClass,
+                    'test_method_{}_exists_in_class_{}'.format(method, cls),
+                    make_test_function(method, actual.methods_of_class(cls)))
 
     return TestClass
