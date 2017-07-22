@@ -15,8 +15,8 @@ class Node:
         self.id = None
         self.data = data
         self.children = None
-        self.icon = {'url' : None, 'obj' : None}
-        self.update = []
+        self._icon = {'url' : None, 'obj' : None}
+        self._update = []
 
     def collapse(self):
         '''
@@ -25,34 +25,34 @@ class Node:
         pass
 
     @property
-    def set_icon(self):
+    def icon(self):
         '''
         :returns: The image url of the node
         :rtype: ``str``
         '''
-        return self.icon['url']
+        return self._icon['url']
 
-    @set_icon.setter
-    def set_icon(self, image_url):
+    @icon.setter
+    def icon(self, image_url):
         '''
         Set an icon on the node
 
         :param image_url: Url of the icon
         :type  image_url: ``str``
         '''
-        self.icon['url'] = image_url
-        self.update.append('icon')
+        self._icon['url'] = image_url
+        self._update.append('icon')
 
     @property
-    def item_color(self):
+    def color(self):
         '''
         :returns: The current color of the node
         :rtype: ``str``
         '''
         pass
 
-    @item_color.setter
-    def item_color(self, color):
+    @color.setter
+    def color(self, color):
         '''
         Set a color for the text of the node
 
@@ -105,15 +105,15 @@ class Tree(Widget):
     def _configure(self):
         pass
 
-    def insert(self, item, path=None, index=None, collapse=True):
+    def insert(self, item, parent=None, index=None, collapse=True):
         '''
         Insert a node on the tree
 
         :param item: Item to be add on the tree
         :type  item: ``str``
 
-        :param path: Path of the node's parent
-        :type  path: ``int``
+        :param parent: Path of the node's parent
+        :type  parent: ``int``
 
         :param index: Location to add the node on its parent node
         :type  index: ``int``
@@ -132,20 +132,20 @@ class Tree(Widget):
         # Insert node on the tree
         self.tree[node.id] = node
         # Insert node on its parent children
-        if path is not None:
+        if parent is not None:
             # Search node's parent
-            parent = self.tree[path]
+            node_parent = self.tree[parent]
 
-            if parent.children is None:
-                parent.children = []
+            if node_parent.children is None:
+                node_parent.children = []
 
-            parent.children.append(node.id)
+            node_parent.children.append(node.id)
         else:
             # Insert node on top level of the tree
-            if self.tree[path].children is None:
-                self.tree[path].children = []
+            if self.tree[parent].children is None:
+                self.tree[parent].children = []
 
-            self.tree[path].children.append(node.id)
+            self.tree[parent].children.append(node.id)
 
         self.rehint()
 
@@ -156,8 +156,8 @@ class Tree(Widget):
         Applies modifications on the layout of the tree
         '''
         for ids, node in self.tree.items():
-            if node.update:
-                type_layout = node.update.pop()
+            if node._update:
+                type_layout = node._update.pop()
                 if type_layout == 'icon':
                     self._set_icon(node)
 
