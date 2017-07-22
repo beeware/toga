@@ -42,5 +42,5 @@ class ProgressBar(ProgressBarInterface, WidgetMixin):
     def rehint(self):
         self.style.hint(
             height=self._impl.fittingSize().height,
-            width=self._impl.fittingSize().width
+            min_width=100
         )
