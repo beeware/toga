@@ -13,7 +13,6 @@ class TogaSwitch(NSButton):
 
 
 class Switch(Widget):
-
     def create(self):
         self.native = TogaSwitch.alloc().init()
         self.native.interface = self.interface

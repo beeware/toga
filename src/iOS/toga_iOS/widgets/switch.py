@@ -14,10 +14,10 @@ class Switch(Widget):
     def create(self):
         # Hack! Because UISwitch has no label, we place it in a UITableViewCell to get a label
         self.native = UITableViewCell.alloc().initWithStyle_reuseIdentifier_(UITableViewCellStyleDefault, 'row')
-        self.native.interface = self
+        self.native.interface = self.interface
 
         self.native_switch = TogaSwitch.alloc().init()
-        self.native_switch.interface = self
+        self.native_switch.interface = self.interface
         self.native_switch.addTarget_action_forControlEvents_(self.native_switch, get_selector('onPress:'),
                                                               UIControlEventValueChanged)
         # Add Switch to UITableViewCell
@@ -34,6 +34,7 @@ class Switch(Widget):
 
     def set_label(self, value):
         self.native.textLabel.text = str(value)
+        self.rehint()
 
     def set_is_on(self, value):
         self.native_switch.setOn_animated_(value, True)
@@ -57,3 +58,10 @@ class Switch(Widget):
             return False
         else:
             raise Exception('Undefined value for enabled of {}'.format(__class__))
+
+    def rehint(self):
+        fitting_size = self.native.systemLayoutSizeFittingSize_(CGSize(0, 0))
+        self.interface.style.hint(
+            height=fitting_size.height,
+            min_width=fitting_size.width,
+        )
