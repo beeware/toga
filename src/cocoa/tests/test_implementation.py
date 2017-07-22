@@ -1,8 +1,12 @@
 import os
-from toga_dummy.test_utils import utils
+from toga.utils import test as test_utils
 
-BACKEND_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'toga_cocoa'))
-
-impl_tests = utils.create_impl_tests(BACKEND_ROOT)
-# Add the implementations tests into the current namespace.
-globals().update(impl_tests)
+globals().update(
+    test_utils.create_impl_tests(
+        os.path.abspath(
+            os.path.join(
+                os.path.dirname(os.path.dirname(__file__)),
+                'toga_cocoa')
+        )
+    )
+)

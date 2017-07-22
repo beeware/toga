@@ -2,6 +2,7 @@ import os
 import ast
 import unittest
 from collections import namedtuple
+import toga_dummy
 
 
 class DefinitionExtractor:
@@ -62,7 +63,7 @@ TestFile = namedtuple('TestFile', ['name', 'path'])
 
 def collect_dummy_files(exclude_folder=None, exclude_files=None):
     dummy_files = []
-    toga_dummy_base = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../toga_dummy'))
+    toga_dummy_base = os.path.dirname(toga_dummy.__file__)
 
     for root, dirs, files in os.walk(toga_dummy_base):
         # Exclude the 'test_utils' folder.
