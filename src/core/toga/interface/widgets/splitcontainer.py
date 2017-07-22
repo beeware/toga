@@ -70,6 +70,8 @@ class SplitContainer(Widget):
 
             self._containers.append(container)
 
+        self.rehint()
+
     def _set_app(self, app):
         if self._content:
             for content in self._content:

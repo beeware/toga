@@ -59,3 +59,16 @@ class SplitContainer(SplitContainerInterface, WidgetMixin):
 
     def _set_direction(self, value):
         self._impl.setVertical_(value)
+
+    def rehint(self):
+        if self.content:
+            if self.direction == SplitContainerInterface.VERTICAL:
+                self.style.hint(
+                    min_height=100,
+                    min_width=100 * len(self.content)
+                )
+            else:
+                self.style.hint(
+                    min_height=100 * len(self.content),
+                    min_width=100
+                )
