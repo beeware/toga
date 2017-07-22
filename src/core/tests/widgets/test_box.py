@@ -4,7 +4,7 @@ import toga
 import toga_dummy
 
 
-class TestCoreBox(unittest.TestCase):
+class TestBox(unittest.TestCase):
     def setUp(self):
         # make mock factory return a mock box
         self.factory = MagicMock()

@@ -4,7 +4,7 @@ import toga
 import toga_dummy
 
 
-class TestCoreTable(unittest.TestCase):
+class TestTable(unittest.TestCase):
     def setUp(self):
         self.factory = MagicMock()
         self.factory.Table = MagicMock(return_value=MagicMock(spec=toga_dummy.factory.Table))

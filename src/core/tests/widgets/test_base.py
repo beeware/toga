@@ -6,7 +6,7 @@ import toga_dummy
 from colosseum import CSS
 
 
-class TestCorePoint(unittest.TestCase):
+class TestPoint(unittest.TestCase):
     def setUp(self):
         self.top = 50
         self.left = 100
@@ -22,7 +22,7 @@ class TestCorePoint(unittest.TestCase):
         self.assertEqual(self.point.top, 50)
 
 
-class TestCoreLayout(unittest.TestCase):
+class TestLayout(unittest.TestCase):
     def setUp(self):
         self.widget = toga.Widget()
         self.layout = toga.Layout(self.widget)
@@ -41,7 +41,7 @@ class TestCoreLayout(unittest.TestCase):
         layout = toga.Layout(None)
         self.assertEqual(layout.__repr__(), '<Layout (dirty) (NonexNone @ 0,0)>')
 
-    def test_layout__eql__(self):
+    def test_layout__eq__(self):
         self.assertTrue(self.layout == self.layout)
 
     def test_layout_rest(self):
@@ -86,7 +86,7 @@ class TestCoreLayout(unittest.TestCase):
         self.assertEqual(origin.left, 0)
 
 
-class TestCoreWidget(unittest.TestCase):
+class TestWidget(unittest.TestCase):
     def setUp(self):
         self.id = 'widget_id'
         self.style = CSS(padding=666)

@@ -4,7 +4,7 @@ import toga
 import toga_dummy
 
 
-class TestCoreSlider(unittest.TestCase):
+class TestSlider(unittest.TestCase):
     def setUp(self):
         self.factory = MagicMock()
         self.factory.Slider = MagicMock(return_value=MagicMock(spec=toga_dummy.factory.Slider))

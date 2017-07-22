@@ -4,7 +4,7 @@ import toga
 import toga_dummy
 
 
-class TestCoreTextInput(unittest.TestCase):
+class TestTextInput(unittest.TestCase):
     def setUp(self):
         self.factory = MagicMock()
         self.factory.TextInput = MagicMock(return_value=MagicMock(spec=toga_dummy.factory.TextInput))

@@ -4,7 +4,7 @@ import toga
 import toga_dummy
 
 
-class TestCoreTree(unittest.TestCase):
+class TestTree(unittest.TestCase):
     def setUp(self):
         self.factory = MagicMock()
         self.factory.Tree = MagicMock(return_value=MagicMock(spec=toga_dummy.widgets.tree.Tree))

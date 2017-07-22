@@ -4,7 +4,7 @@ import toga
 import toga_dummy
 
 
-class TestCoreMultilineTextInput(unittest.TestCase):
+class TestMultilineTextInput(unittest.TestCase):
     def setUp(self):
         self.factory = MagicMock()
         self.factory.MultilineTextInput = MagicMock(return_value=MagicMock(spec=toga_dummy.widgets.multilinetextinput.MultilineTextInput))

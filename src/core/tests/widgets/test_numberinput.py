@@ -4,7 +4,7 @@ import toga
 import toga_dummy
 
 
-class TestCoreNumberInput(unittest.TestCase):
+class TestNumberInput(unittest.TestCase):
     @unittest.skip('Not implemented!')
     def setUp(self):
         self.factory = MagicMock()

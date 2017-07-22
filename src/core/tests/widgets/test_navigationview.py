@@ -4,7 +4,7 @@ import toga
 import toga_dummy
 
 
-class TestCoreNavigationView(unittest.TestCase):
+class TestNavigationView(unittest.TestCase):
     @unittest.skip('Not implemented!')
     def setUp(self):
         self.factory = MagicMock()

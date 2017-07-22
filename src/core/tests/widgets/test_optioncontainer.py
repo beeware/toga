@@ -4,7 +4,7 @@ import toga
 import toga_dummy
 
 
-class TestCoreOptionContainer(unittest.TestCase):
+class TestOptionContainer(unittest.TestCase):
     def setUp(self):
         self.factory = MagicMock()
         self.factory.OptionContainer = MagicMock(return_value=MagicMock(spec=toga_dummy.factory.OptionContainer))

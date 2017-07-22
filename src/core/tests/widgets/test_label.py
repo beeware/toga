@@ -5,7 +5,7 @@ import toga_dummy
 from toga import constants
 
 
-class TestCoreLabel(unittest.TestCase):
+class TestLabel(unittest.TestCase):
     def setUp(self):
         self.factory = MagicMock()
         self.factory.Label = MagicMock(return_value=MagicMock(spec=toga_dummy.factory.Label))
@@ -23,7 +23,7 @@ class TestCoreLabel(unittest.TestCase):
         self.assertEqual(self.label.text, new_text)
 
         self.label.text = None
-        self.assertEqual(self.label.text, '', )
+        self.assertEqual(self.label.text, '')
 
     def test_setting_text_invokes_set_text_call(self):
         self.label.text = 'new text'

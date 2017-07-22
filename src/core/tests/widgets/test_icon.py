@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 import toga
 import toga_dummy
 
-class TestCoreIcon(unittest.TestCase):
+class TestIcon(unittest.TestCase):
     def setUp(self):
         self.factory = MagicMock()
         self.factory.Icon = MagicMock(return_value=MagicMock(spec=toga_dummy.factory.Icon))

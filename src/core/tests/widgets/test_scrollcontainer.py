@@ -4,7 +4,7 @@ import toga
 import toga_dummy
 
 
-class TestCoreScrollContainer(unittest.TestCase):
+class TestScrollContainer(unittest.TestCase):
     def setUp(self):
         self.factory = MagicMock()
         self.factory.ScrollContainer = MagicMock(return_value=MagicMock(spec=toga_dummy.factory.ScrollContainer))

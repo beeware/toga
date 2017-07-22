@@ -6,7 +6,4 @@
 # __version__ = '1.2.3'       # Final Release
 # __version__ = '1.2.3.post1' # Post Release 1
 
-__version__ = '0.0.1.dev1'
-
-
-from . import factory
+__version__ = '0.2.13.dev1'

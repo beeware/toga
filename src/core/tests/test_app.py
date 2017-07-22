@@ -4,12 +4,10 @@ import toga
 import toga_dummy
 
 
-class TestCoreApp(unittest.TestCase):
+class TestApp(unittest.TestCase):
     def setUp(self):
-        # mock factory to return a mock button
+        # mock factory to return a mock app
         self.factory = MagicMock()
-        # Fixme | The MagicMock returns a MagicMock with the specs of a cocoa.Button.
-        # This makes the test not platform independent. Solution could be a platform independent dummy backend.
         self.mock_app = MagicMock(spec=toga_dummy.factory.App)
         self.factory.App = MagicMock(return_value=self.mock_app)
 

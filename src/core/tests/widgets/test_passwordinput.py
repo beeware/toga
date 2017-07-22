@@ -4,7 +4,7 @@ import toga
 import toga_dummy
 
 
-class TestCorePasswordInput(unittest.TestCase):
+class TestPasswordInput(unittest.TestCase):
     """
     """
     def setUp(self):

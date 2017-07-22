@@ -4,7 +4,7 @@ import toga
 import toga_dummy
 
 
-class TestCoreSplitContainer(unittest.TestCase):
+class TestSplitContainer(unittest.TestCase):
     def setUp(self):
         self.factory = MagicMock()
         self.factory.SplitContainer = MagicMock(return_value=MagicMock(spec=toga_dummy.factory.SplitContainer))

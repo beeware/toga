@@ -4,7 +4,7 @@ import toga
 import toga_dummy
 
 
-class TestCoreButton(unittest.TestCase):
+class TestButton(unittest.TestCase):
     def setUp(self):
         # mock factory to return a mock button
         self.factory = MagicMock()

@@ -4,7 +4,7 @@ import toga
 import toga_dummy
 
 
-class TestCoreProgressBar(unittest.TestCase):
+class TestProgressBar(unittest.TestCase):
     def setUp(self):
         self.factory = MagicMock()
         self.factory.ProgressBar = MagicMock(return_value=MagicMock(spec=toga_dummy.factory.ProgressBar))

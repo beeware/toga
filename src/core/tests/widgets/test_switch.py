@@ -4,7 +4,7 @@ import toga
 import toga_dummy
 
 
-class TestCoreSwitch(unittest.TestCase):
+class TestSwitch(unittest.TestCase):
     def setUp(self):
         self.factory = MagicMock()
         self.factory.Switch = MagicMock(return_value=MagicMock(spec=toga_dummy.factory.Switch))

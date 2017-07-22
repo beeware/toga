@@ -4,7 +4,7 @@ import toga
 import toga_dummy
 
 
-class TestCoreWebView(unittest.TestCase):
+class TestWebView(unittest.TestCase):
     def setUp(self):
         self.factory = MagicMock()
         self.factory.WebView = MagicMock(return_value=MagicMock(spec=toga_dummy.factory.WebView))
