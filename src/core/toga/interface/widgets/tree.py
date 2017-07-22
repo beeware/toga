@@ -112,8 +112,8 @@ class Tree(Widget):
         :param item: Item to be add on the tree
         :type  item: ``str``
 
-        :param parent: Path of the node's parent
-        :type  parent: ``int``
+        :param parent: Node's parent
+        :type  parent: :class:`tree.Node`
 
         :param index: Location to add the node on its parent node
         :type  index: ``int``
@@ -134,7 +134,7 @@ class Tree(Widget):
         # Insert node on its parent children
         if parent is not None:
             # Search node's parent
-            node_parent = self.tree[parent]
+            node_parent = self.tree[parent.id]
 
             if node_parent.children is None:
                 node_parent.children = []
