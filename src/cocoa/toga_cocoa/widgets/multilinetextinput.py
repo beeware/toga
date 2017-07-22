@@ -1,6 +1,10 @@
 from toga.interface import MultilineTextInput as MultilineTextInputInterface
 
-from ..libs import NSTextView, NSScrollView, NSBezelBorder, NSViewWidthSizable, NSViewHeightSizable, NSRect, NSPoint, NSSize
+from ..libs import (
+    NSTextView, NSScrollView,
+    NSBezelBorder, NSViewWidthSizable, NSViewHeightSizable,
+    NSRect, NSPoint, NSSize
+)
 from .base import WidgetMixin
 
 
@@ -19,26 +23,22 @@ class MultilineTextInput(MultilineTextInputInterface, WidgetMixin):
         self._impl.setHasHorizontalScroller_(False)
         self._impl.setAutohidesScrollers_(False)
         self._impl.setBorderType_(NSBezelBorder)
-        self._impl.setAutoresizingMask_(NSViewWidthSizable | NSViewHeightSizable)
 
         # Disable all autolayout functionality on the outer widget
-        # self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
-        # self._impl.setAutoresizesSubviews_(False)
+        self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
+        self._impl.contentView.setTranslatesAutoresizingMaskIntoConstraints_(False)
 
-        # self._impl.contentView.setTranslatesAutoresizingMaskIntoConstraints_(False)
-        # self._impl.contentView.setAutoresizesSubviews_(False)
+        # self._impl.setBackgroundColor_(NSColor.blueColor)
+        self._impl.setAutoresizesSubviews_(True)
 
         # Use a dummy size initially.
         self._text = NSTextView.alloc().init()
 
         # Disable all autolayout functionality on the inner widget
-        # self._text.setTranslatesAutoresizingMaskIntoConstraints_(False)
-        # self._text.setAutoresizesSubviews_(False)
-
-        self._text.setEditable_(True)
-        self._text.setVerticallyResizable_(True)
-        self._text.setHorizontallyResizable_(False)
-        self._text.setAutoresizingMask_(NSViewWidthSizable)
+        self._text.setTranslatesAutoresizingMaskIntoConstraints_(False)
+        self._text.editable = True
+        self._text.verticallyResizable = True
+        self._text.horizontallyResizable = False
 
         self._impl.setDocumentView_(self._text)
 
@@ -52,11 +52,10 @@ class MultilineTextInput(MultilineTextInputInterface, WidgetMixin):
     @value.setter
     def value(self, value):
         if value:
-            self._text.insertText_(value)
+            self._text.insertText(value)
 
-    def _apply_layout(self):
-        frame = NSRect(NSPoint(self.layout.left, self.layout.top),
-                        NSSize(self.layout.width, self.layout.height))
-        self._impl.setFrame_(frame)
-        self._impl.contentView.setFrame_(frame)
-        self._impl.setNeedsDisplay_(True)
+    def rehint(self):
+        self.style.hint(
+            min_height=100,
+            min_width=100
+        )
