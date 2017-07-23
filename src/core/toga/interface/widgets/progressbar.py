@@ -23,18 +23,18 @@ class ProgressBar(Widget):
         :type  value: ``int``
         '''
         super().__init__(id=id, style=style, max=max, value=value)
+        self._running = False
 
     def _configure(self, max, value):
         self.value = value
         self.max = max
-        self.running = False
         self.rehint()
 
     @property
     def value(self):
         '''
         The progress value
-        
+
         :rtype: ``int``
         '''
         return self._value
@@ -42,7 +42,32 @@ class ProgressBar(Widget):
     @value.setter
     def value(self, value):
         self._value = value
-        self._running = self._value is not None
+        self._set_value(value)
+
+    @property
+    def is_running(self):
+        '''
+        Is the progress bar currently running?
+
+        :rtype: ``bool``
+        '''
+        return self._running
+
+    def start(self):
+        '''
+        Start the progress bar animation.
+        '''
+        if not self._running:
+            self._start()
+            self._running = True
+
+    def stop(self):
+        '''
+        Stop the progress bar animation.
+        '''
+        if self._running:
+            self._stop()
+            self._running = False
 
     @property
     def max(self):

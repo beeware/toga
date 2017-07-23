@@ -22,15 +22,13 @@ class ProgressBar(ProgressBarInterface, WidgetMixin):
         if value is not None:
             self._impl.setDoubleValue_(value)
 
-    def start(self):
-        if self._impl and not self._running:
+    def _start(self):
+        if self._impl:
             self._impl.startAnimation_(self._impl)
-            self._running = True
 
-    def stop(self):
-        if self._impl and self._running:
+    def _stop(self):
+        if self._impl:
             self._impl.stopAnimation_(self._impl)
-            self._running = False
 
     def _set_max(self, value):
         if value:
