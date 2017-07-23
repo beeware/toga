@@ -1,7 +1,9 @@
 import os
 import ast
 import unittest
-from collections import namedtuple
+from collections import namedtuple, defaultdict
+from itertools import zip_longest
+
 import toga_dummy
 
 
@@ -17,6 +19,7 @@ class DefinitionExtractor:
         """
         self.exists = os.path.isfile(path)
         self._classes = {}
+        self._methods = defaultdict(dict)
 
         if self.exists:
             # open the file and parse it with the ast module.
@@ -24,15 +27,62 @@ class DefinitionExtractor:
                 lines = f.read()
             self.tree = ast.parse(lines)
             self.extract_classes()
+            self._extract_class_methods()
 
     @property
     def class_names(self):
         return self._classes.keys()
 
+    @property
+    def method_names(self):
+        return self._methods.keys()
+
     def extract_classes(self):
         for node in ast.walk(self.tree):
             if isinstance(node, ast.ClassDef):
                 self._classes[node.name] = node
+
+    def _extract_class_methods(self):
+        for class_name in self._classes:
+            for node in ast.walk(self._classes[class_name]):
+                if isinstance(node, ast.FunctionDef):
+                    self._methods['{}.{}'.format(class_name, node.name)]['node'] = node
+
+        updated_methods = defaultdict(dict)
+        for method in self._methods:
+            for node in ast.walk(self._methods[method]['node']):
+                if isinstance(node, ast.arguments):
+                    args = [arg.arg for arg in node.args]
+                    defaults = []
+                    for default in node.defaults:
+                        if isinstance(default, ast.NameConstant):
+                            print(default.value)
+                            defaults.append(default.value)
+                        elif isinstance(default, ast.Str):
+                            print(default.s)
+                            defaults.append(default.s)
+                        elif isinstance(default, ast.Num):
+                            print(default.n)
+                            defaults.append(default.n)
+                        elif isinstance(default, ast.Tuple) or isinstance(default, ast.List):
+                            defaults.append(default.elts)
+                        else:
+                            raise RuntimeWarning('ast classes of type "{}" can not be handled at the moment. '
+                                                 'Please implement to make this warning disappear.'.format(default))
+
+                    args_defaults_combi = zip_longest(reversed(args), reversed(defaults), fillvalue='no_default')
+
+                    vararg = node.vararg.arg if node.vararg is not None else None
+                    kwarg = node.kwarg.arg if node.kwarg is not None else None
+
+                    updated_methods[method]['arguments'] = {'args': [x for x in args_defaults_combi],
+                                                            'vararg': vararg,
+                                                            'kwarg': kwarg}
+        else:
+            self._methods = updated_methods
+
+    def get_function_def(self, function_id):
+        return self._methods[function_id]
 
     def methods_of_class(self, class_name):
         methods = []
@@ -114,11 +164,12 @@ def make_toga_impl_check_class(path, dummy_path):
         @unittest.skip(skip_msg)
         def setup(self):
             pass
+
         setattr(TestClass, 'setUp', setup)
 
-    def make_test_function(_foo, _bar):
+    def make_test_function(element, element_list, msg=None):
         def fn(self):
-            self.assertIn(_foo, _bar)
+            self.assertIn(element, element_list, msg=msg)
 
         return fn
 
@@ -132,6 +183,17 @@ def make_toga_impl_check_class(path, dummy_path):
             setattr(TestClass,
                     'test_method_{}_exists_in_class_{}'.format(method, cls),
                     make_test_function(method, actual.methods_of_class(cls)))
+
+            method_id = '{}.{}'.format(cls, method)
+            method_def = expected.get_function_def(method_id)
+            try:
+                actual_method_def = actual.get_function_def(method_id)['arguments']['args']
+            except KeyError:
+                actual_method_def = []
+            for arg in method_def['arguments']['args']:
+                setattr(TestClass,
+                        'test_{}_takes_the_right_argument_{}_with_{}'.format(method, *arg),
+                        make_test_function(arg, actual_method_def))
 
     return TestClass
 

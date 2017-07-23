@@ -32,8 +32,8 @@ class Switch(Widget):
             min_width=fitting_size.width,
         )
 
-    def set_label(self, value):
-        self.native.textLabel.text = str(value)
+    def set_label(self, label):
+        self.native.textLabel.text = str(label)
         self.rehint()
 
     def set_is_on(self, value):

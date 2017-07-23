@@ -1,6 +1,8 @@
 from rubicon.objc import objc_method
 from .base import Widget
 from ..libs import *
+
+
 # from ..utils import process_callback
 
 
@@ -23,8 +25,8 @@ class Button(Widget):
         # Add the layout constraints
         self.add_constraints()
 
-    def set_label(self, value):
-        self.native.setTitle_forState_(value, UIControlStateNormal)
+    def set_label(self, label):
+        self.native.setTitle_forState_(label, UIControlStateNormal)
 
     def rehint(self):
         fitting_size = self.native.systemLayoutSizeFittingSize_(CGSize(0, 0))

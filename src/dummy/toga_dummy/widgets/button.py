@@ -5,7 +5,7 @@ class Button(Widget):
     def create(self):
         pass
 
-    def set_label(self, value):
+    def set_label(self, label):
         pass
 
     def rehint(self):
