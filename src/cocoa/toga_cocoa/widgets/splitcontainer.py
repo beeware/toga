@@ -33,7 +33,7 @@ class SplitContainer(SplitContainerInterface, WidgetMixin):
         self._delegate = TogaSplitViewDelegate.alloc().init()
         self._delegate._interface = self
 
-        self._impl.setDelegate_(self._delegate)
+        self._impl.delegate = self._delegate
 
         # Add the layout constraints
         self._add_constraints()
@@ -42,9 +42,9 @@ class SplitContainer(SplitContainerInterface, WidgetMixin):
         # Turn the autoresizing mask on the container widget
         # into constraints. This makes the container fill the
         # available space inside the SplitContainer.
-        container._impl.setTranslatesAutoresizingMaskIntoConstraints_(True)
+        container._impl.translatesAutoresizingMaskIntoConstraints = True
 
-        self._impl.addSubview_(container._impl)
+        self._impl.addSubview(container._impl)
 
     def _update_child_layout(self):
         """Force a layout update on the widget.
@@ -58,7 +58,7 @@ class SplitContainer(SplitContainerInterface, WidgetMixin):
                 )
 
     def _set_direction(self, value):
-        self._impl.setVertical_(value)
+        self._impl.setVertical(value)
 
     def rehint(self):
         if self.content:
