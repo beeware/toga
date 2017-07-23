@@ -20,3 +20,6 @@ class MultilineTextInput(Widget):
         :type  initial:     ``str``
         '''
         super().__init__(id=id, style=style, initial=initial)
+
+    def _configure(self, initial):
+        self.initial = initial

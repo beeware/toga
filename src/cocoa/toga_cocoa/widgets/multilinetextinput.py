@@ -7,11 +7,11 @@ from .base import WidgetMixin
 class MultilineTextInput(MultilineTextInputInterface, WidgetMixin):
     def __init__(self, initial=None, style=None):
         super(MultilineTextInput, self).__init__(style=style)
-        self.startup()
+        self._create()
 
         self.value = initial
 
-    def startup(self):
+    def create(self):
         # Create a multiline view, and put it in a scroll view.
         # The scroll view is the _impl, because it's the outer container.
         self._impl = NSScrollView.alloc().init()

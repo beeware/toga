@@ -31,33 +31,36 @@ class Table(TableInterface, WidgetMixin):
         # Create a table view, and put it in a scroll view.
         # The scroll view is the _impl, because it's the outer container.
         self._impl = NSScrollView.alloc().init()
-        self._impl.setHasVerticalScroller_(True)
-        self._impl.setHasHorizontalScroller_(True)
-        self._impl.setAutohidesScrollers_(False)
-        self._impl.setBorderType_(NSBezelBorder)
+        self._impl.hasVerticalScroller = True
+        self._impl.hasHorizontalScroller = False
+        self._impl.autohidesScrollers = False
+        self._impl.borderType = NSBezelBorder
 
         self._table = TogaTable.alloc().init()
         self._table._interface = self
-        self._table.setColumnAutoresizingStyle_(NSTableViewUniformColumnAutoresizingStyle)
+        self._table.columnAutoresizingStyle = NSTableViewUniformColumnAutoresizingStyle
+
+        # Use autolayout for the inner widget.
+        self._table.translatesAutoresizingMaskIntoConstraints = True
 
         # Create columns for the table
         self._columns = [
-            NSTableColumn.alloc().initWithIdentifier_('%d' % i)
+            NSTableColumn.alloc().initWithIdentifier('%d' % i)
             for i, heading in enumerate(self.headings)
         ]
 
         for heading, column in zip(self.headings, self._columns):
-            self._table.addTableColumn_(column)
+            self._table.addTableColumn(column)
             cell = column.dataCell
-            cell.setEditable_(False)
-            cell.setSelectable_(False)
+            cell.editable = False
+            cell.selectable = False
             column.headerCell.stringValue = heading
 
-        self._table.setDelegate_(self._table)
-        self._table.setDataSource_(self._table)
+        self._table.delegate = self._table
+        self._table.dataSource = self._table
 
         # Embed the table view in the scroll view
-        self._impl.setDocumentView_(self._table)
+        self._impl.documentView = self._table
 
         # Add the layout constraints
         self._add_constraints()
