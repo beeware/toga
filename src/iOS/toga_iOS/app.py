@@ -20,7 +20,7 @@ class PythonAppDelegate(UIResponder):
     @objc_method
     def application_didFinishLaunchingWithOptions_(self, application, launchOptions) -> bool:
         print("App finished launching.")
-        App.app._startup()
+        App.app.create()
         return True
 
     @objc_method
@@ -33,20 +33,20 @@ class PythonAppDelegate(UIResponder):
         )
 
 
-class App():
+class App:
     _MAIN_WINDOW_CLASS = MainWindow
 
     def __init__(self, interface):
         self.interface = interface
         App.app = self  # Add a reference for the PythonAppDelegate class to use.
 
-    def _startup(self):
+    def create(self):
         """ Calls the startup method on the interface """
         self.interface.startup()
 
     def open_document(self, fileURL):
         """ Add a new document to this app."""
-        print("")
+        pass
 
     def main_loop(self):
         # Main loop is a no-op on iOS; the app loop is integrated with the
