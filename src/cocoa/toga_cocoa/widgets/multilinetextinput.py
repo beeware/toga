@@ -26,17 +26,12 @@ class MultilineTextInput(MultilineTextInputInterface, WidgetMixin):
 
         # Disable all autolayout functionality on the outer widget
         self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
-        self._impl.contentView.setTranslatesAutoresizingMaskIntoConstraints_(False)
-
-        # self._impl.setBackgroundColor_(NSColor.blueColor)
         self._impl.setAutoresizesSubviews_(True)
 
-        # Use a dummy size initially.
         self._text = NSTextView.alloc().init()
-
-        # Disable all autolayout functionality on the inner widget
-        self._text.setTranslatesAutoresizingMaskIntoConstraints_(False)
         self._text.editable = True
+        self._text.enabled = True
+        self._text.selectable = True
         self._text.verticallyResizable = True
         self._text.horizontallyResizable = False
 
@@ -53,6 +48,15 @@ class MultilineTextInput(MultilineTextInputInterface, WidgetMixin):
     def value(self, value):
         if value:
             self._text.insertText(value)
+
+    def _apply_layout(self):
+        super()._apply_layout()
+        self._text.setFrame(
+            NSRect(
+                NSPoint(0, 0),
+                NSSize(self.layout.width, self.layout.height)
+            )
+        )
 
     def rehint(self):
         self.style.hint(
