@@ -169,11 +169,26 @@ class Tree(Widget):
         Set the data source of the tree
 
         :param tree: Data source
-        :type  tree: ``dict``
+        :type  tree: ``dict`` or ``class``
         '''
-        for parent, children in tree.items():
-            parent_node = self.insert(parent)
-            self._add_node(parent_node, children)
+        if isinstance(tree, dict):
+            for parent, children in tree.items():
+                parent_node = self.insert(parent)
+                self._add_node(parent_node, children)
+        else:
+            parents = tree.roots()
+            for node in parents:
+                parent_node = self.insert(node)
+                self._add_by_data_source_model(tree, parent_node)
+
+
+    def _add_by_data_source_model(self, tree_model, parent_node):
+        if tree_model.has_children_by_node(parent_node):
+            children = tree_model.children_by_node(parent_node)
+            # list of str
+            for child in children:
+                new_child = self.insert(child, parent_node)
+                self._add_by_data_source_model(tree_model, new_child)
 
     def _add_node(self, parent_node, children):
         '''
