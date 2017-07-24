@@ -171,6 +171,8 @@ class Tree(Widget):
         :param tree: Data source
         :type  tree: ``dict`` or ``class``
         '''
+        self.tree = { None: Node(None) }
+
         if isinstance(tree, dict):
             for parent, children in tree.items():
                 parent_node = self.insert(parent)
