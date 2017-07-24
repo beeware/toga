@@ -84,26 +84,30 @@ class Tree(Widget):
     '''
     Tree widget
     '''
-    def __init__(self, headings, id=None, style=None):
+    def __init__(self, headings, data=None, id=None, style=None):
         '''
         Instantiate a new instance of the tree widget
 
         :param headings: The list of headings for the tree
         :type  headings: ``list`` of ``str``
 
-        :param id:          An identifier for this widget.
-        :type  id:          ``int``
+        :param data: Data source for the tree
+        :type  data: ``dict``
 
-        :param style:       an optional style object. If no style is provide
-                            then a new one will be created for the widget.
-        :type style:        :class:`colosseum.CSSNode`
+        :param id: An identifier for this widget.
+        :type  id: ``int``
+
+        :param style: an optional style object. If no style is provide
+                        then a new one will be created for the widget.
+        :type style: :class:`colosseum.CSSNode`
         '''
-        super().__init__(id=id, style=style)
+        super().__init__(id=id, style=style, data=data)
         self.headings = headings
         self.tree = { None: Node(None) }
 
-    def _configure(self):
-        pass
+    def _configure(self, data):
+        if data:
+            self.data = data
 
     def insert(self, item, parent=None, index=None, collapse=True):
         '''
@@ -150,6 +154,43 @@ class Tree(Widget):
         self.rehint()
 
         return node
+
+    @property
+    def data(self):
+        '''
+        :returns: The data source of the tree
+        :rtype: ``dict``
+        '''
+        return self._data
+
+    @data.setter
+    def data(self, tree):
+        '''
+        Set the data source of the tree
+
+        :param tree: Data source
+        :type  tree: ``dict``
+        '''
+        for parent, children in tree.items():
+            parent_node = self.insert(parent)
+            self._add_node(parent_node, children)
+
+    def _add_node(self, parent_node, children):
+        '''
+        Add recursive node on the Tree
+
+        :param parent_node: Parent's node
+        :type  parent_node: :class:`tree.Node`
+
+        :param children: Items of each parent node
+        :type  children: ``dict`` or ``str`` or ``None``
+        '''
+        if isinstance(children, str):
+            self.insert(children, parent_node)
+        elif isinstance(children, dict):
+            for new_parent, child in children.items():
+                new_parent_node = self.insert(new_parent, parent_node)
+                self._add_node(new_parent_node, child)
 
     def apply_layout(self):
         '''

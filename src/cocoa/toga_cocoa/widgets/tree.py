@@ -57,8 +57,8 @@ class TogaTree(NSOutlineView):
 
 
 class Tree(TreeInterface, WidgetMixin):
-    def __init__(self, headings, id=None, style=None):
-        super().__init__(headings, id=id, style=style)
+    def __init__(self, headings, data=None, id=None, style=None):
+        super().__init__(headings, data, id, style)
 
         self._tree = None
         self._columns = None
