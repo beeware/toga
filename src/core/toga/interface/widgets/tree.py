@@ -161,7 +161,7 @@ class Tree(Widget):
         '''
         # reset tree data
         self.tree = { None: Node(None) }
-        
+
         if isinstance(self._data, dict):
             for parent, children in self._data.items():
                 parent_node = self.insert(parent)
@@ -199,8 +199,8 @@ class Tree(Widget):
         :param parent_node: Parent's node
         :type  parent_node: :class:`tree.Node`
         '''
-        if self._data.has_children_by_node(parent_node):
-            children = self._data.children_by_node(parent_node)
+        children = self._data.children(parent_node)
+        if children:
             # list of str
             for child in children:
                 new_child = self.insert(child, parent_node)
