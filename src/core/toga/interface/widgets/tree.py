@@ -155,6 +155,23 @@ class Tree(Widget):
 
         return node
 
+    def update(self):
+        '''
+        Update Tree data
+        '''
+        # reset tree data
+        self.tree = { None: Node(None) }
+        
+        if isinstance(self._data, dict):
+            for parent, children in self._data.items():
+                parent_node = self.insert(parent)
+                self._add_from_dict(parent_node, children)
+        else:
+            parents = self._data.roots()
+            for node in parents:
+                parent_node = self.insert(node)
+                self._add_from_data_source(parent_node)
+
     @property
     def data(self):
         '''
@@ -171,30 +188,27 @@ class Tree(Widget):
         :param tree: Data source
         :type  tree: ``dict`` or ``class``
         '''
-        self.tree = { None: Node(None) }
+        self._data = tree
 
-        if isinstance(tree, dict):
-            for parent, children in tree.items():
-                parent_node = self.insert(parent)
-                self._add_node(parent_node, children)
-        else:
-            parents = tree.roots()
-            for node in parents:
-                parent_node = self.insert(node)
-                self._add_by_data_source_model(tree, parent_node)
+        self.update()
 
+    def _add_from_data_source(self, parent_node):
+        '''
+        Add nodes from a data source on the Tree
 
-    def _add_by_data_source_model(self, tree_model, parent_node):
-        if tree_model.has_children_by_node(parent_node):
-            children = tree_model.children_by_node(parent_node)
+        :param parent_node: Parent's node
+        :type  parent_node: :class:`tree.Node`
+        '''
+        if self._data.has_children_by_node(parent_node):
+            children = self._data.children_by_node(parent_node)
             # list of str
             for child in children:
                 new_child = self.insert(child, parent_node)
-                self._add_by_data_source_model(tree_model, new_child)
+                self._add_from_data_source(new_child)
 
-    def _add_node(self, parent_node, children):
+    def _add_from_dict(self, parent_node, children):
         '''
-        Add recursive node on the Tree
+        Add nodes from a dictionary on the Tree
 
         :param parent_node: Parent's node
         :type  parent_node: :class:`tree.Node`
@@ -207,7 +221,8 @@ class Tree(Widget):
         elif isinstance(children, dict):
             for new_parent, child in children.items():
                 new_parent_node = self.insert(new_parent, parent_node)
-                self._add_node(new_parent_node, child)
+                self._add_from_dict(new_parent_node, child)
+
 
     def apply_layout(self):
         '''
