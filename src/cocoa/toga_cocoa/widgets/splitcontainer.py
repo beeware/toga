@@ -13,7 +13,7 @@ class TogaSplitViewDelegate(NSObject):
         # If the window is actually visible, and the split has moved,
         # a resize of all the content panels is required.
         if self.interface.window and self.interface.window._impl.native.isVisible:
-            # print("SPLIT CONTAINER LAYOUT CHILDREN", self.interface._containers[0]._impl.frame.size.width, self._interface._containers[1]._impl.frame.size.width)
+            # print("SPLIT CONTAINER LAYOUT CHILDREN", self.interface._impl.containers[0].native.frame.size.width, self.interface._impl.containers[1].native.frame.size.width)
             self.interface._impl._update_child_layout()
             self.interface._impl.on_resize()
 
@@ -31,21 +31,31 @@ class SplitContainer(Widget):
         # Add the layout constraints
         self.add_constraints()
 
-    def add_content(self, position, container):
+        self.containers = []
+
+    def add_content(self, position, widget):
+        if widget.native is None:
+            container = Container()
+            container.content = widget
+        else:
+            container = widget
+
+        self.containers.append(container)
+
         # Turn the autoresizing mask on the container widget
         # into constraints. This makes the container fill the
         # available space inside the SplitContainer.
-        container._impl.native.setTranslatesAutoresizingMaskIntoConstraints_(True)
-
-        self.native.addSubview_(container._impl.native)
+        # FIXME Use Constrains to enforce min width and height of the containers otherwise width of 0 is possible.
+        container.native.translatesAutoresizingMaskIntoConstraints = False
+        self.native.addSubview_(container.native)
 
     def _update_child_layout(self):
         """Force a layout update on the widget.
         """
         if self.interface.content:
-            for i, (container, content) in enumerate(zip(self.interface._containers, self.interface.content)):
-                frame = container._impl.native.frame
-                print(frame.size.width)
+            for i, (container, content) in enumerate(zip(self.containers, self.interface.content)):
+                frame = container.native.frame
+                # print(frame.size.width)
                 content._update_layout(
                     width=frame.size.width,
                     height=frame.size.height

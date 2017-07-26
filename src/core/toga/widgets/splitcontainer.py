@@ -59,16 +59,7 @@ class SplitContainer(Widget):
             widget._update_layout()
             widget.app = self.app
             widget.window = self.window
-            # Fixme move all container stuff to _impl level.
-            if widget._impl is None:
-                container = self._CONTAINER_CLASS()
-                container.content = widget
-            else:
-                container = widget
-
-            self._impl.add_content(position, container)
-
-            self._containers.append(container)
+            self._impl.add_content(position, widget._impl)
 
     def _set_app(self, app):
         if self._content:
