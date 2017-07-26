@@ -1,5 +1,3 @@
-import os
-
 from .app import App, MainWindow
 from .window import Window
 from .font import Font
