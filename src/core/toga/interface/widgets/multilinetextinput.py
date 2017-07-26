@@ -22,4 +22,28 @@ class MultilineTextInput(Widget):
         super().__init__(id=id, style=style, initial=initial)
 
     def _configure(self, initial):
-        self.initial = initial
+        self.value = initial
+
+    @property
+    def value(self):
+        '''
+        The value of the multiline text input field
+
+        :rtype: ``str``
+        '''
+        return self._value
+
+    @value.setter
+    def value(self, value):
+        self._value = '' if value is None else str(value)
+        self._set_value(self._value)
+        self.rehint()
+
+    def clear(self):
+        '''
+        Clear the value
+        '''
+        self.value = ''
+
+    def _set_value(self, value):
+        raise NotImplementedError('MultilineTextInput widget must define _set_value()')
