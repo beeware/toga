@@ -12,10 +12,10 @@ class TogaSplitViewDelegate(NSObject):
     def splitViewDidResizeSubviews_(self, notification) -> None:
         # If the window is actually visible, and the split has moved,
         # a resize of all the content panels is required.
-        if self.interface.interface.window and self.interface.interface.window._impl.native.isVisible:
+        if self.interface.window and self.interface.window._impl.native.isVisible:
             # print("SPLIT CONTAINER LAYOUT CHILDREN", self.interface._containers[0]._impl.frame.size.width, self._interface._containers[1]._impl.frame.size.width)
-            self.interface._update_child_layout()
-            self.interface.on_resize()
+            self.interface._impl._update_child_layout()
+            self.interface._impl.on_resize()
 
 
 class SplitContainer(Widget):
@@ -25,7 +25,7 @@ class SplitContainer(Widget):
         self.native = NSSplitView.alloc().init()
 
         self.delegate = TogaSplitViewDelegate.alloc().init()
-        self.delegate.interface = self
+        self.delegate.interface = self.interface
         self.native.setDelegate_(self.delegate)
 
         # Add the layout constraints
@@ -45,6 +45,7 @@ class SplitContainer(Widget):
         if self.interface.content:
             for i, (container, content) in enumerate(zip(self.interface._containers, self.interface.content)):
                 frame = container._impl.native.frame
+                print(frame.size.width)
                 content._update_layout(
                     width=frame.size.width,
                     height=frame.size.height
