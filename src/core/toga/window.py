@@ -190,21 +190,78 @@ class Window:
         self._impl.on_close()
 
     def info_dialog(self, title, message):
-        return self._impl.info(self, title, message)
+        """ Opens a info dialog with a 'OK' button to close the dialog.
+
+        Args:
+            title (str): The title of the dialog window.
+            message (str):
+
+        Returns:
+            Returns `None after the user pressed the 'OK' button.
+        """
+        return self._impl.info_dialog(title, message)
 
     def question_dialog(self, title, message):
-        return self._impl.question(self, title, message)
+        """ Opens a dialog with a 'YES' and 'NO' button.
+
+        Args:
+            title (str): The title of the dialog window.
+            message (str):
+
+        Returns:
+            Returns `True` when the 'YES' button was pressed, `False` when the 'NO' button was pressed.
+        """
+        return self._impl.question_dialog(title, message)
 
     def confirm_dialog(self, title, message):
-        return self._impl.confirm(self, title, message)
+        """ Opens a dialog with a 'Cancel' and 'OK' button.
+
+        Args:
+            title (str): The title of the dialog window.
+            message (str):
+
+        Returns:
+            Returns `True` when the 'OK' button was pressed, `False` when the 'CANCEL' button was pressed.
+        """
+        return self._impl.confirm_dialog(title, message)
 
     def error_dialog(self, title, message):
-        return self._impl.error(self, title, message)
+        """ Opens a error dialog with a 'OK' button to close the dialog.
+
+        Args:
+            title (str): The title of the dialog window.
+            message (str):
+
+        Returns:
+            Returns `None` after the user pressed the 'OK' button.
+        """
+        return self._impl.error_dialog(title, message)
 
     def stack_trace_dialog(self, title, message, content, retry=False):
-        return self._impl.stack_trace(self, title, message,
-                                               content, retry)
+        """ Calling this function opens a dialog that allows to display a
+        large text body in a scrollable fashion.
 
-    def save_file_dialog(self, title, suggested_filename, file_types):
-        return self._impl.save_file(self, title, suggested_filename,
-                                             file_types)
+        Args:
+            title (str): The title of the dialog window.
+            message (str):
+            content (str):
+            retry (bool):
+
+        Returns:
+            Returns `None` after the user pressed the 'OK' button.
+        """
+        return self._impl.stack_trace_dialog(title, message, content, retry)
+
+    def save_file_dialog(self, title, suggested_filename, file_types=None):
+        """ This opens a native dialog where the user can select a place to save a file.
+        It is possible to suggest a filename and force the user to use a specific file extension.
+
+        Args:
+            title (str): The title of the dialog window.
+            suggested_filename(str): The automatically filled in filename.
+            file_types: A list of strings with the allowed file extensions.
+
+        Returns:
+            The absolute path(str) to the selected location.
+        """
+        return self._impl.save_file_dialog(title, suggested_filename, file_types)
