@@ -8,4 +8,4 @@ class Font():
         self.create()
 
     def create(self):
-        self._native = NSFont.fontWithName_size_(self.interface.family, self.interface.size)
+        self.native = NSFont.fontWithName_size_(self.interface.family, self.interface.size)
