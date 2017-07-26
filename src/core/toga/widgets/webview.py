@@ -56,3 +56,12 @@ class WebView(Widget):
         """
         self._url = root_url
         self._impl.set_content(root_url, content)
+
+    def evaluate(self, javascript):
+        """
+        Evaluate a JavaScript expression
+
+        :param javascript: The javascript expression
+        :type  javascript: ``str``
+        """
+        self._impl.set_evaluate(javascript)
