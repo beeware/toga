@@ -67,7 +67,7 @@ class Window:
 
         self.position = position
         self.size = size
-        # self.title = title
+        self.title = title
 
     @property
     def id(self):
