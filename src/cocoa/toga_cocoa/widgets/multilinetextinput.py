@@ -5,8 +5,10 @@ from .base import WidgetMixin
 
 
 class MultilineTextInput(MultilineTextInputInterface, WidgetMixin):
-    def __init__(self, initial=None, style=None):
-        super().__init__(style=style, initial=initial)
+    def __init__(self, initial=None, style=None,
+                        readonly=False, placeholder=None):
+        super().__init__(style=style, initial=initial, readonly=readonly,
+                                                    placeholder=placeholder)
         self._create()
 
     def create(self):
@@ -24,7 +26,6 @@ class MultilineTextInput(MultilineTextInputInterface, WidgetMixin):
 
         # Create the actual text widget
         self._text = NSTextView.alloc().init()
-        self._text.editable = True
         self._text.enabled = True
         self._text.selectable = True
         self._text.verticallyResizable = True
@@ -54,6 +55,12 @@ class MultilineTextInput(MultilineTextInputInterface, WidgetMixin):
 
         # Add the layout constraints
         self._add_constraints()
+
+    def _set_placeholder(self, value):
+        self._text.placeholderString = self._placeholder
+
+    def _set_readonly(self, value):
+        self._text.editable = not value
 
     def _set_value(self, value):
         self._text.setString(value)
