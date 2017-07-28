@@ -21,16 +21,20 @@ class NoDefault:
         return 'no_default'
 
 
+FunctionArguments = namedtuple('FunctionArguments', ['args', 'vararg', 'kwarg', 'kwonlyargs'])
+
+
 class DefinitionExtractor:
-    def __init__(self, path):
-        """ The DefinitionExtractor consumes a .py file and extracts information,
+    """ The DefinitionExtractor consumes a .py file and extracts information,
         with the help of the 'ast' module from it.
         Non existing files result in a empty DefinitionExtractor, this means the all properties
         return empty lists or dicts.
 
         Args:
             path (str): The path to the .py file.
-        """
+    """
+
+    def __init__(self, path):
         self.exists = os.path.isfile(path)
         self._classes = {}
         self._methods = defaultdict(dict)
@@ -40,8 +44,11 @@ class DefinitionExtractor:
             with open(path, 'r') as f:
                 lines = f.read()
             self.tree = ast.parse(lines)
-            self.extract_classes()
-            self._extract_class_methods()
+            self._extract_file()
+
+    def _extract_file(self):
+        self._extract_classes()
+        self._extract_class_methods()
 
     @property
     def class_names(self):
@@ -51,7 +58,7 @@ class DefinitionExtractor:
     def method_names(self):
         return self._methods.keys()
 
-    def extract_classes(self):
+    def _extract_classes(self):
         for node in ast.walk(self.tree):
             if isinstance(node, ast.ClassDef):
                 self._classes[node.name] = node
@@ -85,31 +92,38 @@ class DefinitionExtractor:
         for class_name in self._classes:
             for node in ast.walk(self._classes[class_name]):
                 if isinstance(node, ast.FunctionDef):
-                    self._methods['{}.{}'.format(class_name, node.name)]['node'] = node
+                    function_id = '{}.{}'.format(class_name, node.name)
+                    self._methods[function_id]['node'] = node
+                    self._methods[function_id]['arguments'] = self._extract_function_signature(node)
 
-        updated_methods = defaultdict(dict)
-        for method in self._methods:
-            for node in ast.walk(self._methods[method]['node']):
-                if isinstance(node, ast.arguments):
-                    # extract function arguments and possible default values.
-                    args = [arg.arg for arg in node.args]
-                    defaults = self._get_function_defaults(node)
-                    # extract keyword only arguments and defaults.
-                    kwonlyargs = [arg.arg for arg in node.kwonlyargs]
-                    kwonlyargs_defaults = self._get_function_defaults(node, kwonlyargs=True)
+    def _extract_function_signature(self, node):
+        for node in ast.walk(node):
+            if isinstance(node, ast.arguments):
+                # Extract positional arguments and possible default values.
+                args = [arg.arg for arg in node.args]
+                args_defaults = self._get_function_defaults(node)
+                # Extract kwonlyargs and defaults.
+                kwonlyargs = [arg.arg for arg in node.kwonlyargs]
+                kwonlyargs_defaults = self._get_function_defaults(node, kwonlyargs=True)
 
-                    args_defaults_combi = list(zip_longest(reversed(args), reversed(defaults), fillvalue=NoDefault()))
-                    kwonlyargs_defaults_combi = list(zip_longest(reversed(kwonlyargs), reversed(kwonlyargs_defaults),
-                                                                 fillvalue=NoDefault()))
+                # Combine arguments and their corresponding default values,
+                # if no default value exists fill it with a NoDefault object.
+                args_plus_defaults = list(zip_longest(reversed(args),
+                                                      reversed(args_defaults),
+                                                      fillvalue=NoDefault()))
+                kwonlyargs_plus_defaults = list(zip_longest(reversed(kwonlyargs),
+                                                            reversed(kwonlyargs_defaults),
+                                                            fillvalue=NoDefault()))
 
-                    vararg = node.vararg.arg if node.vararg is not None else None
-                    kwarg = node.kwarg.arg if node.kwarg is not None else None
-                    updated_methods[method]['arguments'] = {'args': args_defaults_combi,
-                                                            'vararg': vararg,
-                                                            'kwarg': kwarg,
-                                                            'kwonlyargs': kwonlyargs_defaults_combi}
-        else:
-            self._methods = updated_methods
+                vararg = node.vararg.arg if node.vararg is not None else None
+                kwarg = node.kwarg.arg if node.kwarg is not None else None
+
+                return FunctionArguments(
+                    args=args_plus_defaults,
+                    vararg=vararg,
+                    kwarg=kwarg,
+                    kwonlyargs=kwonlyargs_plus_defaults
+                )
 
     def get_function_def(self, function_id):
         return self._methods[function_id]
@@ -228,41 +242,41 @@ def make_toga_impl_check_class(path, dummy_path):
 
             # create tests that check for the right method arguments.
             method_id = '{}.{}'.format(cls, method)
-            method_def = expected.get_function_def(method_id)
+            method_def = expected.get_function_def(method_id)['arguments']
             try:
-                actual_method_def = actual.get_function_def(method_id)
+                actual_method_def = actual.get_function_def(method_id)['arguments']
             except KeyError:
-                actual_method_def = []
-            # Test if the method takes the right arguments and if the arguments have the right name.
-            # ARGS
-            for arg in method_def['arguments']['args']:
-                setattr(TestClass,
-                        'test_{}_takes_the_argument_{}_with_default_{}'.format(method, *arg),
-                        make_test_function(arg, actual_method_def['arguments']['args']))
-            # *varargs
-            if method_def['arguments']['vararg']:
-                vararg = method_def['arguments']['vararg']
-                actual_vararg = actual_method_def['arguments']['vararg'] if actual_method_def['arguments'][
-                    'vararg'] else []
-                setattr(TestClass,
-                        'test_{}_takes_vararg_with_name_{}'.format(method, vararg),
-                        make_test_function(vararg, actual_vararg))
-            # **kwarg
-            if method_def['arguments']['kwarg']:
-                kwarg = method_def['arguments']['kwarg']
-                actual_kwarg = actual_method_def['arguments']['kwarg'] if actual_method_def['arguments'][
-                    'kwarg'] else []
-                setattr(TestClass,
-                        'test_{}_takes_kwarg_with_name_{}'.format(method, kwarg),
-                        make_test_function(kwarg, actual_kwarg,
-                                           error_msg='The method does not take kwargs or the '
-                                                     'variable is not named "{}".'.format(kwarg)))
-            # kwonlyargs
-            if method_def['arguments']['kwonlyargs']:
-                for kwonlyarg in method_def['arguments']['kwonlyargs']:
+                actual_method_def = None
+
+            if actual_method_def:
+                # Create test whether the method takes the right arguments and if the arguments have the right name.
+                # ARGS
+                for arg in method_def.args:
                     setattr(TestClass,
-                            'test_{}_takes_kwonlyarg_{}_with_{}'.format(method, *kwonlyarg),
-                            make_test_function(kwonlyarg, actual_method_def['arguments']['kwonlyargs']))
+                            'test_{}_takes_the_argument_{}_with_default_{}'.format(method, *arg),
+                            make_test_function(arg, actual_method_def.args))
+                # *varargs
+                if method_def.vararg:
+                    vararg = method_def.vararg
+                    actual_vararg = actual_method_def.vararg if actual_method_def.vararg else []
+                    setattr(TestClass,
+                            'test_{}_takes_vararg_with_name_{}'.format(method, vararg),
+                            make_test_function(vararg, actual_vararg))
+                # **kwarg
+                if method_def.kwarg:
+                    kwarg = method_def.kwarg
+                    actual_kwarg = actual_method_def.kwarg if actual_method_def.kwarg else []
+                    setattr(TestClass,
+                            'test_{}_takes_kwarg_with_name_{}'.format(method, kwarg),
+                            make_test_function(kwarg, actual_kwarg,
+                                               error_msg='The method does not take kwargs or the '
+                                                         'variable is not named "{}".'.format(kwarg)))
+                # kwonlyargs
+                if method_def.kwonlyargs:
+                    for kwonlyarg in method_def.kwonlyargs:
+                        setattr(TestClass,
+                                'test_{}_takes_kwonlyarg_{}_with_{}'.format(method, *kwonlyarg),
+                                make_test_function(kwonlyarg, actual_method_def.kwonlyargs))
 
     return TestClass
 
