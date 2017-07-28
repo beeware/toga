@@ -36,5 +36,5 @@ class WebView(Widget):
     def set_content(self, root_url, content):
         self.native.loadHTMLString_baseURL_(content, NSURL.URLWithString_(root_url))
 
-    def evaluate(self, javascript):
+    def set_evaluate(self, javascript):
         return self.native.stringByEvaluatingJavaScriptFromString_(javascript)
