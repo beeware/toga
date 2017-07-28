@@ -5,7 +5,7 @@ class SplitContainer(Widget):
     def create(self):
         pass
 
-    def add_content(self, position, container):
+    def add_content(self, position, widget):
         pass
 
     def _update_child_layout(self):
