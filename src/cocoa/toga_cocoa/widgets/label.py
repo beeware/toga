@@ -26,7 +26,8 @@ class Label(Widget):
     def rehint(self):
         # Width & height of a label is known and fixed.
         # print("REHINT label", self, self.native.fittingSize().width, self.native.fittingSize().height)
+        fitting_size = self.native.fittingSize()
         self.interface.style.hint(
-            height=self.native.fittingSize().height,
-            width=self.native.fittingSize().width
+            height=fitting_size.height,
+            min_width=fitting_size.width
         )
