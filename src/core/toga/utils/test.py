@@ -83,6 +83,12 @@ class DefinitionExtractor:
                 defaults.append(default.n)
             elif isinstance(default, ast.Tuple) or isinstance(default, ast.List):
                 defaults.append(default.elts)
+            elif isinstance(default, ast.Call):
+                defaults.append(default.func)
+            elif isinstance(default, ast.Attribute):
+                defaults.append(default.value)
+            elif isinstance(default, ast.Name):
+                defaults.append(default.id)
             else:
                 raise RuntimeWarning('ast classes of type "{}" can not be handled at the moment. '
                                      'Please implement to make this warning disappear.'.format(default))
@@ -142,10 +148,11 @@ class DefinitionExtractor:
         """
         methods = []
         if self.exists:
-            class_node = self._classes[class_name]
-            for node in ast.walk(class_node):
-                if isinstance(node, ast.FunctionDef):
-                    methods.append(node.name)
+            if class_name in self._classes.keys():
+                class_node = self._classes[class_name]
+                for node in ast.walk(class_node):
+                    if isinstance(node, ast.FunctionDef):
+                        methods.append(node.name)
         return methods
 
 

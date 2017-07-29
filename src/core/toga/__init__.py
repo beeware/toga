@@ -11,7 +11,7 @@ from .widgets.base import Layout, Point, Widget
 
 from .widgets.box import Box
 from .widgets.button import Button
-from .widgets.icon import Icon
+# from .widgets.icon import Icon
 from .widgets.image import *
 from .widgets.imageview import *
 from .widgets.label import Label
@@ -31,7 +31,7 @@ from .widgets.webview import *
 from .widgets.selection import Selection
 from .widgets.numberinput import NumberInput
 
-from .widgets.icon import TIBERIUS_ICON
+#from .widgets.icon import TIBERIUS_ICON
 
 __all__ = [
     'App', 'MainWindow',
