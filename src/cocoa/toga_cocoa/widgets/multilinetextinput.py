@@ -1,4 +1,4 @@
-from ..libs import NSTextView, NSScrollView, NSBezelBorder, NSViewWidthSizable, NSViewHeightSizable
+from ..libs import *
 from .base import Widget
 
 
@@ -7,48 +7,58 @@ class MultilineTextInput(Widget):
         # Create a multiline view, and put it in a scroll view.
         # The scroll view is the native, because it's the outer container.
         self.native = NSScrollView.alloc().init()
-        self.native.setHasVerticalScroller_(True)
-        self.native.setHasHorizontalScroller_(False)
-        self.native.setAutohidesScrollers_(False)
-        self.native.setBorderType_(NSBezelBorder)
-        self.native.setAutoresizingMask_(NSViewWidthSizable | NSViewHeightSizable)
+        self.native.hasVerticalScroller = True
+        self.native.hasHorizontalScroller = False
+        self.native.autohidesScrollers = False
+        self.native.borderType = NSBezelBorder
 
         # Disable all autolayout functionality on the outer widget
-        # self.native.setTranslatesAutoresizingMaskIntoConstraints_(False)
-        # self.native.setAutoresizesSubviews_(False)
+        self.native.translatesAutoresizingMaskIntoConstraints = False
+        self.native.autoresizesSubviews = True
 
-        # self.native.contentView.setTranslatesAutoresizingMaskIntoConstraints_(False)
-        # self.native.contentView.setAutoresizesSubviews_(False)
+        # Create the actual text widget
+        self.text = NSTextView.alloc().init()
+        self.text.editable = True
+        self.text.enabled = True
+        self.text.selectable = True
+        self.text.verticallyResizable = True
+        self.text.horizontallyResizable = False
 
-        # Use a dummy size initially.
-        self._text = NSTextView.alloc().init()
+        # Disable the autolayout functionality, and replace with
+        # constraints controlled by the layout.
+        self.text.translatesAutoresizingMaskIntoConstraints = False
+        self._width_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
+            self.text, NSLayoutAttributeRight,
+            NSLayoutRelationEqual,
+            self.text, NSLayoutAttributeLeft,
+            1.0, 0
+        )
+        self.text.addConstraint(self._width_constraint)
 
-        # Disable all autolayout functionality on the inner widget
-        # self._text.setTranslatesAutoresizingMaskIntoConstraints_(False)
-        # self._text.setAutoresizesSubviews_(False)
+        self._height_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
+            self.text, NSLayoutAttributeBottom,
+            NSLayoutRelationEqual,
+            self.text, NSLayoutAttributeTop,
+            1.0, 0
+        )
+        self.text.addConstraint(self._height_constraint)
 
-        self._text.setEditable_(True)
-        self._text.setVerticallyResizable_(True)
-        self._text.setHorizontallyResizable_(False)
-        self._text.setAutoresizingMask_(NSViewWidthSizable)
-
-        self.native.setDocumentView_(self._text)
+        # Put the text view in the scroll window.
+        self.native.documentView = self.text
 
         # Add the layout constraints
         self.add_constraints()
 
-    @property
-    def value(self):
-        return self._text.string
+    def set_value(self, value):
+        self.text.setString(value)
 
-    @value.setter
-    def value(self, value):
-        if value:
-            self._text.insertText_(value)
+    def _update_child_layout(self):
+        print('in update child layout')
+        self._width_constraint.constant = self.interface.layout.width
+        self._height_constraint.constant = self.interface.layout.height
 
-    def _apply_layout(self):
-        frame = NSRect(NSPoint(self.layout.left, self.layout.top),
-                       NSSize(self.layout.width, self.layout.height))
-        self.native.setFrame_(frame)
-        self.native.contentView.setFrame_(frame)
-        self.native.setNeedsDisplay_(True)
+    def rehint(self):
+        self.interface.style.hint(
+            min_height=100,
+            min_width=100
+        )
