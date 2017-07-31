@@ -167,7 +167,7 @@ class Tree(Widget):
                 parent_node = self.insert(parent)
                 self._add_from_dict(parent_node, children)
         else:
-            parents = self._data.roots()
+            parents = self._data.source.roots()
             for node in parents:
                 parent_node = self.insert(node)
                 self._add_from_data_source(parent_node)
@@ -199,7 +199,7 @@ class Tree(Widget):
         :param parent_node: Parent's node
         :type  parent_node: :class:`tree.Node`
         '''
-        children = self._data.children(parent_node)
+        children = self._data.source.children(parent_node)
         if children:
             # list of str
             for child in children:
