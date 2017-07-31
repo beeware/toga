@@ -1,4 +1,4 @@
-from toga.interface.command import Group, Command as BaseCommand
+from toga.command import Group, Command as BaseCommand
 
 from .widgets.icon import Icon
 

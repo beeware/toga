@@ -6,7 +6,7 @@ import signal
 from .platform import get_platform_factory
 from .window import Window
 from .command import CommandSet
-#from .widgets.icon import Icon
+from .widgets.icon import Icon
 
 
 class MainWindow(Window):

@@ -61,12 +61,11 @@ except ImportError:
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gio, GLib
 
-from toga.interface.app import App as AppInterface
-from toga.interface.command import GROUP_BREAK, SECTION_BREAK
+from toga.command import GROUP_BREAK, SECTION_BREAK
 
 from .command import Command, Group
 from .window import Window
-from .widgets.icon import Icon, TIBERIUS_ICON
+# from .widgets.icon import Icon, TIBERIUS_ICON
 from .utils import wrapped_handler
 
 
@@ -74,47 +73,68 @@ class MainWindow(Window):
     _IMPL_CLASS = Gtk.ApplicationWindow
 
 
-class App(AppInterface):
+class App:
     _MAIN_WINDOW_CLASS = MainWindow
-    def __init__(self, name, app_id, icon=None, startup=None, document_types=None):
-        # Set the icon for the app
-        Icon.app_icon = Icon.load(icon, default=TIBERIUS_ICON)
 
-        super().__init__(
-            name=name,
-            app_id=app_id,
-            icon=Icon.app_icon,
-            startup=startup,
-            document_types=document_types
-        )
+    def __init__(self, interface):
+        self.interface = interface
+        self.interface._impl = self
+        self.create()
+
+    def create(self):
+
+        # Icon.app_icon = Icon.load(icon, default=TIBERIUS_ICON)
         # Stimulate the build of the app
-        self._impl = Gtk.Application(application_id=self.app_id, flags=Gio.ApplicationFlags.FLAGS_NONE)
+        self.native = Gtk.Application(application_id=self.interface.app_id, flags=Gio.ApplicationFlags.FLAGS_NONE)
 
         # Connect the GTK signal that will cause app startup to occur
-        self._impl.connect('startup', self._startup)
-        self._impl.connect('activate', self._activate)
+        self.native.connect('startup', self.startup)
+        self.native.connect('activate', self.activate)
         # self._impl.connect('shutdown', self._shutdown)
 
         self._actions = None
 
-    def _startup(self, data=None):
-        self.commands.add(
-            Command(None, 'About ' + self.name, group=Group.APP),
-            Command(None, 'Preferences', group=Group.APP),
-            # Quit should always be the last item, in a section on it's own
-            Command(lambda s: self.exit(), 'Quit ' + self.name, shortcut='q', group=Group.APP, section=sys.maxsize),
+    # def __init__(self, name, app_id, icon=None, startup=None, document_types=None):
+    #     # Set the icon for the app
+    #     Icon.app_icon = Icon.load(icon, default=TIBERIUS_ICON)
+    #
+    #     super().__init__(
+    #         name=name,
+    #         app_id=app_id,
+    #         icon=Icon.app_icon,
+    #         startup=startup,
+    #         document_types=document_types
+    #     )
+    #     # Stimulate the build of the app
+    #     self._impl = Gtk.Application(application_id=self.app_id, flags=Gio.ApplicationFlags.FLAGS_NONE)
+    #
+    #     # Connect the GTK signal that will cause app startup to occur
+    #     self._impl.connect('startup', self._startup)
+    #     self._impl.connect('activate', self._activate)
+    #     # self._impl.connect('shutdown', self._shutdown)
+    #
+    #     self._actions = None
 
-            Command(None, 'Visit homepage', group=Group.HELP)
-        )
+    def startup(self, data=None):
+        print('app.startup')
+        # self.commands.add(
+        #     Command(None, 'About ' + self.name, group=Group.APP),
+        #     Command(None, 'Preferences', group=Group.APP),
+        #     # Quit should always be the last item, in a section on it's own
+        #     Command(lambda s: self.exit(), 'Quit ' + self.name, shortcut='q', group=Group.APP, section=sys.maxsize),
+        #
+        #     Command(None, 'Visit homepage', group=Group.HELP)
+        # )
 
-        self.startup()
+        self.interface.startup()
 
         # Create the lookup table of menu items,
         # then force the creation of the menus.
         self._actions = {}
         self._create_menus()
 
-    def _activate(self, data=None):
+    def activate(self, data=None):
+        print('app.activate')
         pass
 
     def open_document(self, fileURL):
@@ -122,6 +142,7 @@ class App(AppInterface):
         print("STUB: If you want to handle opening documents, implement App.open_document(fileURL)")
 
     def _create_menus(self):
+        print('app._impl._create_menus')
         # Only create the menu if the menu item index has been created.
         if hasattr(self, '_actions'):
             self._actions = {}
@@ -129,13 +150,13 @@ class App(AppInterface):
             label = None
             submenu = None
             section = None
-            for cmd in self.commands:
+            for cmd in self.interface.commands:
                 if cmd == GROUP_BREAK:
                     if section:
                         submenu.append_section(None, section)
 
                     if label == '*':
-                        self._impl.set_app_menu(submenu)
+                        self.native.set_app_menu(submenu)
                     else:
                         menubar.append_submenu(label, submenu)
 
@@ -163,7 +184,7 @@ class App(AppInterface):
                             action.connect("activate", wrapped_handler(self, cmd.action))
                         cmd._widgets.append(action)
                         self._actions[cmd] = action
-                        self._impl.add_action(action)
+                        self.native.add_action(action)
 
                     cmd._set_enabled(cmd.enabled)
 
@@ -180,18 +201,19 @@ class App(AppInterface):
 
             if submenu:
                 if label == '*':
-                    self._impl.set_app_menu(submenu)
+                    self.native.set_app_menu(submenu)
                 else:
                     menubar.append_submenu(label, submenu)
 
             # Set the menu for the app.
-            self._impl.set_menubar(menubar)
+            self.native.set_menubar(menubar)
 
     def main_loop(self):
         # Modify signal handlers to make sure Ctrl-C is caught and handled.
+        print('app.main_loop')
         signal.signal(signal.SIGINT, signal.SIG_DFL)
 
-        self._impl.run(None)
+        self.native.run(None)
 
     def exit(self):
-        self._impl.quit()
+        self.native.quit()

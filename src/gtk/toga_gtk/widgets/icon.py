@@ -1,12 +1,12 @@
-import os
-
-from toga.interface import Icon as IconInterface
-
 from gi.repository import Gtk, GdkPixbuf
 
 
-class Icon(IconInterface):
+class Icon:
     EXTENSION = '.icns'
+    def __init__(self, interface):
+        self.interface = interface
+        self.interface._impl = self
+        self.native = None
 
     def create(self, filename):
         # GTK can load ICNS and image files, but doesn't natively scale to the
@@ -28,6 +28,3 @@ class Icon(IconInterface):
     _impl_32 = property(lambda self: self.__impl(32))
     _impl_48 = property(lambda self: self.__impl(48))
     _impl_72 = property(lambda self: self.__impl(72))
-
-
-TIBERIUS_ICON = Icon('tiberius', system=True)
