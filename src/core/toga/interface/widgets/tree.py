@@ -188,6 +188,7 @@ class Tree(Widget):
             for node in parents:
                 parent_node = self.insert(node)
                 self._add_from_data_source(parent_node)
+                self._update_cosmetic(parent_node)
 
     @property
     def data(self):
@@ -209,6 +210,9 @@ class Tree(Widget):
 
         self.update()
 
+    def _update_cosmetic(self, node):
+        self._set_collapse(node, self._data.source.is_collapsed(node))
+
     def _add_from_data_source(self, parent_node):
         '''
         Add nodes from a data source on the Tree
@@ -222,6 +226,7 @@ class Tree(Widget):
             for child in children:
                 new_child = self.insert(child, parent_node)
                 self._add_from_data_source(new_child)
+                self._update_cosmetic(new_child)
 
     def _add_from_dict(self, parent_node, children):
         '''
