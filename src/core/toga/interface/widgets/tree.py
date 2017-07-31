@@ -236,27 +236,6 @@ class Tree(Widget):
 
         self.rehint()
 
-    def remove(self, path):
-        '''
-        Remove a node on the tree
-
-        :param path: Path of the node's parent
-        :type  path: ``str``
-        '''
-        pass
-
-    def edit(self, item, path):
-        '''
-        Edit a node on the tree
-
-        :param item: New Item to be edited on the tree
-        :type  item: ``str``
-
-        :param path: Path of the node
-        :type  path: ``str``
-        '''
-        pass
-
     def _insert(self, node):
         raise NotImplementedError('Tree widget must define _insert()')
 
