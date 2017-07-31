@@ -116,7 +116,6 @@ class App:
     #     self._actions = None
 
     def startup(self, data=None):
-        print('app.startup')
         # self.commands.add(
         #     Command(None, 'About ' + self.name, group=Group.APP),
         #     Command(None, 'Preferences', group=Group.APP),
@@ -134,7 +133,6 @@ class App:
         self._create_menus()
 
     def activate(self, data=None):
-        print('app.activate')
         pass
 
     def open_document(self, fileURL):
@@ -142,7 +140,6 @@ class App:
         print("STUB: If you want to handle opening documents, implement App.open_document(fileURL)")
 
     def _create_menus(self):
-        print('app._impl._create_menus')
         # Only create the menu if the menu item index has been created.
         if hasattr(self, '_actions'):
             self._actions = {}
@@ -210,7 +207,6 @@ class App:
 
     def main_loop(self):
         # Modify signal handlers to make sure Ctrl-C is caught and handled.
-        print('app.main_loop')
         signal.signal(signal.SIGINT, signal.SIG_DFL)
 
         self.native.run(None)

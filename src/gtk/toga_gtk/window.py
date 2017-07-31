@@ -61,7 +61,6 @@ class Window:
             self._toolbar_impl.insert(item_impl, -1)
 
     def set_content(self, widget):
-        print('window._impl.set_content')
         if widget.native is None:
             self.container = Container()
             self.container.content = widget
@@ -79,11 +78,9 @@ class Window:
         self.container.native.connect('size-allocate', self.on_size_allocate)
 
     def show(self):
-        print('window._impl.show')
         self.native.show_all()
 
     def on_close(self, widget, data):
-        print('window._impl.close')
         self.on_close()
 
     def on_size_allocate(self, widget, allocation):

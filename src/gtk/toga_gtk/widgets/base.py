@@ -9,7 +9,6 @@ def wrapped_handler(widget, handler):
 
 class Widget:
     def __init__(self, interface):
-        print(str(interface.__class__).split('.')[-2],'._impl.','__init__')
         self.interface = interface
         self.interface._impl = self
         self._container = None
