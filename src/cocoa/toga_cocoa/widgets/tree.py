@@ -125,5 +125,11 @@ class Tree(TreeInterface, WidgetMixin):
 
         node._icon['obj'] = image
 
+    def _set_collapse(self, node, status):
+        if status:
+            self._tree.collapseItem(node._impl)
+        else:
+            self._tree.expandItem(node._impl)
+
     def rehint(self):
         self._tree.reloadData()
