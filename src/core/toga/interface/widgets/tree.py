@@ -15,31 +15,40 @@ class Node:
         '''
         self._impl = None
         self.id = id
-        self.data = data
-        self.children = children
         self._icon = icon
-        self._collapse = collapse
         self._update = []
+        self.children = children
+        self.data = data
+
+    def collapse(self):
+        self.data['collapse'] = True
+        self._update.append('collapse')
+
+    def expand(self):
+        self.data['collapse'] = False
+        self._update.append('expand')
 
     @property
-    def collapse(self):
+    def data(self):
         '''
-        :returns: The status of the node displayed
-        :rtype: ``bool``
+        :returns: Node data
+        :rtype: ``dict``
         '''
-        return self._collapse
+        return self._data
 
-    @collapse.setter
-    def collapse(self, status):
+    @data.setter
+    def data(self, node_data):
         '''
-        Collapse a node on the tree
+        Node data
 
-        :param status: True for collapse the node, otherwise False expand it
-        :type  status: ``bool``
+        :param node_data: Contains the node data, text and if a node is
+                            collapsed or expanded
+        :type  node_data: ``dict``
         '''
-        self._collapse = status
-        update_call = 'collapse' if status else 'expand'
-        self._update.append(update_call)
+        self._data = node_data
+        if node_data:
+            update_call = 'collapse' if self._data['collapse'] else 'expand'
+            self._update.append(update_call)
 
     @property
     def icon(self):
@@ -150,6 +159,7 @@ class Tree(Widget):
 
         node_id = self._insert(node)
         node.id = node_id
+
         # Insert node on the tree
         self.tree[node.id] = node
         # Insert node on its parent children
@@ -187,8 +197,10 @@ class Tree(Widget):
             parents = self._data.source.roots()
             for node in parents:
                 parent_node = self.insert(node)
-                self._add_from_data_source(parent_node)
                 self._update_cosmetic(parent_node)
+                self._add_from_data_source(parent_node)
+                
+        self.apply_layout()
 
     @property
     def data(self):
@@ -211,7 +223,10 @@ class Tree(Widget):
         self.update()
 
     def _update_cosmetic(self, node):
-        self._set_collapse(node, self._data.source.is_collapsed(node))
+        if self._data.source.is_collapsed(node):
+            node.collapse()
+        else:
+            node.expand()
 
     def _add_from_data_source(self, parent_node):
         '''
@@ -225,8 +240,8 @@ class Tree(Widget):
             # list of str
             for child in children:
                 new_child = self.insert(child, parent_node)
-                self._add_from_data_source(new_child)
                 self._update_cosmetic(new_child)
+                self._add_from_data_source(new_child)
 
     def _add_from_dict(self, parent_node, children):
         '''
@@ -245,19 +260,22 @@ class Tree(Widget):
                 new_parent_node = self.insert(new_parent, parent_node)
                 self._add_from_dict(new_parent_node, child)
 
+    def _update_node_layout(self, node):
+        if node._update:
+            type_layout = node._update.pop()
+            if type_layout == 'icon':
+                self._set_icon(node)
+            elif type_layout == 'collapse':
+                self._set_collapse(node, True)
+            elif type_layout == 'expand':
+                self._set_collapse(node, False)
+
     def apply_layout(self):
         '''
         Applies modifications on the layout of the tree
         '''
         for ids, node in self.tree.items():
-            if node._update:
-                type_layout = node._update.pop()
-                if type_layout == 'icon':
-                    self._set_icon(node)
-                elif type_layout == 'collapse':
-                    self._set_collapse(node, True)
-                elif type_layout == 'expand':
-                    self._set_collapse(node, False)
+            self._update_node_layout(node)
 
         self.rehint()
 
