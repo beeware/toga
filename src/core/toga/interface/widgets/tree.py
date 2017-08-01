@@ -4,9 +4,7 @@ class Node:
     '''
     Node of the Tree widget
     '''
-    def __init__(self, data, id=None, children=None,
-                                        icon={'url' : None, 'obj' : None},
-                                        collapse=True):
+    def __init__(self, data):
         '''
         Instantiate a new instance of a node
 
@@ -14,10 +12,10 @@ class Node:
         :type  data: ``dict``
         '''
         self._impl = None
-        self.id = id
-        self._icon = icon
+        self.id = None
+        self._icon = {'url' : None, 'obj' : None}
         self._update = []
-        self.children = children
+        self.children = None
         self.data = data
 
     def collapse(self):
@@ -132,7 +130,7 @@ class Tree(Widget):
         self.tree = { None: Node(None) }
 
     def _configure(self, data):
-        if data:
+        if data is not None:
             self.data = data
 
     def insert(self, item, parent=None, index=None, collapse=True):
@@ -199,7 +197,7 @@ class Tree(Widget):
                 parent_node = self.insert(node)
                 self._update_cosmetic(parent_node)
                 self._add_from_data_source(parent_node)
-                
+
         self.apply_layout()
 
     @property
@@ -261,21 +259,21 @@ class Tree(Widget):
                 self._add_from_dict(new_parent_node, child)
 
     def _update_node_layout(self, node):
-        if node._update:
-            type_layout = node._update.pop()
-            if type_layout == 'icon':
-                self._set_icon(node)
-            elif type_layout == 'collapse':
-                self._set_collapse(node, True)
-            elif type_layout == 'expand':
-                self._set_collapse(node, False)
+        type_layout = node._update.pop()
+        if type_layout == 'icon':
+            self._set_icon(node)
+        elif type_layout == 'collapse':
+            self._set_collapse(node, True)
+        elif type_layout == 'expand':
+            self._set_collapse(node, False)
 
     def apply_layout(self):
         '''
         Applies modifications on the layout of the tree
         '''
         for ids, node in self.tree.items():
-            self._update_node_layout(node)
+            if node._update:
+                self._update_node_layout(node)
 
         self.rehint()
 

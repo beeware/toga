@@ -10,10 +10,7 @@ class TogaTree(NSOutlineView):
     # OutlineViewDataSource methods
     @objc_method
     def outlineView_child_ofItem_(self, tree, child: int, item):
-        if item is None:
-            key = None
-        else:
-            key = id(item)
+        key = item if item is None else id(item)
 
         node_id = self.interface.tree[key].children[child]
         node = self.interface.tree[node_id]._impl
@@ -21,19 +18,12 @@ class TogaTree(NSOutlineView):
 
     @objc_method
     def outlineView_isItemExpandable_(self, tree, item) -> bool:
-        if item is None:
-            key = None
-        else:
-            key = id(item)
-
+        key = item if item is None else id(item)
         return self.interface.tree[key].children is not None
 
     @objc_method
     def outlineView_numberOfChildrenOfItem_(self, tree, item) -> int:
-        if item is None:
-            key = None
-        else:
-            key = id(item)
+        key = item if item is None else id(item)
 
         try:
             return len(self.interface.tree[key].children)
@@ -96,6 +86,7 @@ class Tree(TreeInterface, WidgetMixin):
             cell = column.dataCell
             cell.setEditable_(False)
             cell.setSelectable_(False)
+            # cell.setTextColor(NSColor.redColor)
             column.headerCell.stringValue = heading
             column.setDataCell_(custom_cell)
 
@@ -130,6 +121,8 @@ class Tree(TreeInterface, WidgetMixin):
             self._tree.collapseItem(node._impl)
         else:
             self._tree.expandItem(node._impl)
+
+    # def _set_color(self, node):
 
     def rehint(self):
         self._tree.reloadData()
