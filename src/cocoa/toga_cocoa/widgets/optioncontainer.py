@@ -37,7 +37,7 @@ class OptionContainer(OptionContainerInterface, WidgetMixin):
         # Turn the autoresizing mask on the container widget
         # into constraints. This makes the container fill the
         # available space inside the OptionContainer.
-        container._impl.setTranslatesAutoresizingMaskIntoConstraints_(True)
+        container._impl.translatesAutoresizingMaskIntoConstraints = True
 
         item.view = container._impl
 
