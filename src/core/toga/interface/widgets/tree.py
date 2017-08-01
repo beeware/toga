@@ -192,7 +192,7 @@ class Tree(Widget):
                 parent_node = self.insert(parent)
                 self._add_from_dict(parent_node, children)
         else:
-            parents = self._data.source.roots()
+            parents = self._data.roots()
             for node in parents:
                 parent_node = self.insert(node)
                 self._update_cosmetic(parent_node)
@@ -221,7 +221,7 @@ class Tree(Widget):
         self.update()
 
     def _update_cosmetic(self, node):
-        if self._data.source.is_collapsed(node):
+        if self._data.is_collapsed(node):
             node.collapse()
         else:
             node.expand()
@@ -233,7 +233,7 @@ class Tree(Widget):
         :param parent_node: Parent's node
         :type  parent_node: :class:`tree.Node`
         '''
-        children = self._data.source.children(parent_node)
+        children = self._data.children(parent_node)
         if children:
             # list of str
             for child in children:
