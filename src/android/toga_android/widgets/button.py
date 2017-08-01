@@ -35,6 +35,9 @@ class Button(ButtonInterface, WidgetMixin):
     def _set_enabled(self, value):
         pass
 
+    def _set_background_color(self, value):
+        pass
+
     def rehint(self):
         if self._impl.getMeasuredWidth():
             # print("REHINT button", self, self._impl.getMeasuredWidth(), self._impl.getMeasuredHeight())
