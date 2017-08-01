@@ -1,5 +1,6 @@
 from builtins import id as identifier
 from .command import CommandSet
+from .widgets.box import Box
 
 
 class App:
@@ -141,6 +142,9 @@ class App:
 
         if self._startup_method:
             self.main_window.content = self._startup_method(self)
+        else:
+            import toga
+            self.main_window.content = toga.Box()
 
         self.main_window.show()
 
