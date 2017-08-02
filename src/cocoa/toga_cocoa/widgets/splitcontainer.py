@@ -24,7 +24,7 @@ class SplitContainer(SplitContainerInterface, WidgetMixin):
     _CONTAINER_CLASS = Container
 
     def __init__(self, id=None, style=None, direction=SplitContainerInterface.VERTICAL):
-        super().__init__(id=None, style=None, direction=direction)
+        super().__init__(id=None, style=style, direction=direction)
         self._create()
 
     def create(self):
