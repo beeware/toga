@@ -8,7 +8,7 @@ class Button(Widget):
     def create(self):
         self._connections = []
         self.native = Gtk.Button()
-        self.native.interface = self
+        self.native.interface = self.interface
 
         self.native.connect('show', lambda event: self.rehint())
 
@@ -33,7 +33,7 @@ class Button(Widget):
             self.native.connect("clicked", wrapped_handler(self, handler)))
 
     def rehint(self):
-        print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height(), getattr(self, '_fixed_height', False), getattr(self, '_fixed_width', False))
+        # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height(), getattr(self, '_fixed_height', False), getattr(self, '_fixed_width', False))
         hints = {}
         width = self.native.get_preferred_width()
         minimum_width = width[0]
@@ -51,4 +51,4 @@ class Button(Widget):
             hints['height'] = natural_height
 
         if hints:
-            self.style.hint(**hints)
+            self.interface.style.hint(**hints)

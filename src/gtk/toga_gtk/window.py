@@ -80,10 +80,10 @@ class Window:
         self.native.show_all()
 
     def on_close(self, widget, data):
-        self.on_close()
+        pass
 
     def on_size_allocate(self, widget, allocation):
-        print("ON WINDOW SIZE ALLOCATION", allocation.width, allocation.height)
+        # print("ON WINDOW SIZE ALLOCATION", allocation.width, allocation.height)
         self.interface.content._update_layout(
             width=allocation.width,
             height=allocation.height

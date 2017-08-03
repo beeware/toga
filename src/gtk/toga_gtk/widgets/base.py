@@ -28,16 +28,17 @@ class Widget:
 
     @container.setter
     def container(self, container):
+        self._container = container
         if self.native:
             self._container.native.add(self.native)
 
-    # def set_container(self, container):
-    #     if self._impl:
-    #         self._container._impl.add(self._impl)
+        for child in self.interface.children:
+            child._impl.container = container
+        self.interface.rehint()
 
     def add_child(self, child):
         if self._container:
-            child._set_container(self._container)
+            child.container = self.container
         self.rehint()
 
     def apply_layout(self):

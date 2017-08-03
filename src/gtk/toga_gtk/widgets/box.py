@@ -1,5 +1,3 @@
-
-
 from .base import Widget
 
 

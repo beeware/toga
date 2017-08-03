@@ -49,10 +49,10 @@ class CSSLayout(Gtk.Fixed):
             else:
                 # print("update ", widget._interface, widget._interface.layout)
                 child_allocation = Gdk.Rectangle()
-                child_allocation.x = widget._interface.layout.absolute.left
-                child_allocation.y = widget._interface.layout.absolute.top
-                child_allocation.width = widget._interface.layout.width
-                child_allocation.height = widget._interface.layout.height
+                child_allocation.x = widget.interface.layout.absolute.left
+                child_allocation.y = widget.interface.layout.absolute.top
+                child_allocation.width = widget.interface.layout.width
+                child_allocation.height = widget.interface.layout.height
 
                 widget.size_allocate(child_allocation)
 
@@ -95,7 +95,7 @@ class Container:
     @content.setter
     def content(self, widget):
         self._content = widget
-        self._content._container = self
+        self._content.container = self
 
     @property
     def root_content(self):
