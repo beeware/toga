@@ -30,8 +30,7 @@ class Window:
         self.native.set_title(title)
 
     def set_app(self, app):
-        # app.native.add_window(self.native)
-        pass
+        app.native.add_window(self.native)
 
     def create_toolbar(self):
         if self._toolbar_items is None:

@@ -9,6 +9,7 @@ class Window:
     """
     Window
     """
+    _MAIN_WINDOW_CLASS = 'MainWindow'
     _CONTAINER_CLASS = None
     _DIALOG_MODULE = None
 
@@ -61,7 +62,7 @@ class Window:
         self.minimizable = minimizable
 
         self.factory = get_platform_factory(factory)
-        self._impl = self.factory.Window(interface=self)
+        self._impl = getattr(self.factory, self._MAIN_WINDOW_CLASS)(interface=self)
 
         self._toolbar = CommandSet(self, self._impl.create_toolbar)
 
@@ -95,7 +96,7 @@ class Window:
             raise Exception("Window is already associated with an App")
 
         self._app = app
-        self._impl.set_app(app)
+        self._impl.set_app(app._impl)
 
     @property
     def title(self):

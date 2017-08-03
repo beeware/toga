@@ -74,15 +74,12 @@ class MainWindow(Window):
 
 
 class App:
-    _MAIN_WINDOW_CLASS = MainWindow
-
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
         self.create()
 
     def create(self):
-
         # Icon.app_icon = Icon.load(icon, default=TIBERIUS_ICON)
         # Stimulate the build of the app
         self.native = Gtk.Application(application_id=self.interface.app_id, flags=Gio.ApplicationFlags.FLAGS_NONE)
@@ -206,9 +203,6 @@ class App:
             self.native.set_menubar(menubar)
 
     def main_loop(self):
-        # Modify signal handlers to make sure Ctrl-C is caught and handled.
-        signal.signal(signal.SIGINT, signal.SIG_DFL)
-
         self.native.run(None)
 
     def exit(self):
