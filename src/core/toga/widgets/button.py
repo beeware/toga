@@ -75,7 +75,7 @@ class Button(Widget):
         :type handler:      ``callable``
         """
         self._on_press = handler
-        self._set_on_press(handler)
+        self._impl.set_on_press(handler)
 
     def _set_on_press(self, value):
         pass
