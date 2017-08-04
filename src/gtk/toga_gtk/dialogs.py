@@ -2,7 +2,7 @@ from gi.repository import Gtk
 
 
 def info(window, title, message):
-    dialog = Gtk.MessageDialog(window._impl, 0, Gtk.MessageType.INFO,
+    dialog = Gtk.MessageDialog(window._impl.native, 0, Gtk.MessageType.INFO,
         Gtk.ButtonsType.OK, title)
     dialog.format_secondary_text(message)
 
@@ -11,7 +11,7 @@ def info(window, title, message):
 
 
 def question(window, title, message):
-    dialog = Gtk.MessageDialog(window._impl, 0, Gtk.MessageType.QUESTION,
+    dialog = Gtk.MessageDialog(window._impl.native, 0, Gtk.MessageType.QUESTION,
         Gtk.ButtonsType.YES_NO, title)
     dialog.format_secondary_text(message)
 
@@ -22,7 +22,7 @@ def question(window, title, message):
 
 
 def confirm(window, title, message):
-    dialog = Gtk.MessageDialog(window._impl, 0, Gtk.MessageType.WARNING,
+    dialog = Gtk.MessageDialog(window._impl.native, 0, Gtk.MessageType.WARNING,
         Gtk.ButtonsType.OK_CANCEL, title)
     dialog.format_secondary_text(message)
 
@@ -33,7 +33,7 @@ def confirm(window, title, message):
 
 
 def error(window, title, message):
-    dialog = Gtk.MessageDialog(window._impl, 0, Gtk.MessageType.ERROR,
+    dialog = Gtk.MessageDialog(window._impl.native, 0, Gtk.MessageType.ERROR,
         Gtk.ButtonsType.CANCEL, title)
     dialog.format_secondary_text(message)
 
@@ -49,7 +49,7 @@ def save_file(window, title, suggested_filename, file_types):
 
     filename = None
     dialog = Gtk.FileChooserDialog(
-        title, window._impl,
+        title, window._impl.native,
         Gtk.FileChooserAction.SAVE,
         (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
          Gtk.STOCK_SAVE, Gtk.ResponseType.OK))

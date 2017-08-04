@@ -11,7 +11,7 @@ class Label(Widget):
         self.native = Gtk.Label()
         self.native.set_line_wrap(False)
 
-        self.native._interface = self
+        self.native.interface = self.interface
 
         self.native.connect('show', lambda event: self.rehint())
 
@@ -19,10 +19,12 @@ class Label(Widget):
         self.native.set_alignment(*gtk_alignment(value))
 
     def set_text(self, value):
+        # FIXME after setting the label the label jumps to the top left
+        # corner and only jumps back at its place after resizing the window.
         self.native.set_text(value)
 
     def rehint(self):
-        print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height(), getattr(self, '_fixed_height', False), getattr(self, '_fixed_width', False))
+        # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height(), getattr(self, '_fixed_height', False), getattr(self, '_fixed_width', False))
         hints = {}
         width = self.native.get_preferred_width()
         minimum_width = width[0]

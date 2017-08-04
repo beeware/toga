@@ -30,7 +30,7 @@ class Button(Widget):
             self.native.disconnect(conn_id)
 
         self._connections.append(
-            self.native.connect("clicked", wrapped_handler(self, handler)))
+            self.native.connect("clicked", wrapped_handler(self.interface, handler)))
 
     def rehint(self):
         # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height(), getattr(self, '_fixed_height', False), getattr(self, '_fixed_width', False))

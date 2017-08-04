@@ -71,7 +71,7 @@ class Container:
 
         # No cached minimum size; compute it by computing an
         # unhinted layout.
-        self._update_layout()
+        self.update_layout()
         self._min_width = self._content.interface.layout.width
         self._min_height = self._content.interface.layout.height
         return self._min_width
@@ -83,7 +83,7 @@ class Container:
 
         # No cached minimum size; compute it by computing an
         # unhinted layout.
-        self._update_layout()
+        self.update_layout()
         self._min_width = self._content.interface.layout.width
         self._min_height = self._content.interface.layout.height
         return self._min_height
@@ -106,6 +106,6 @@ class Container:
         self._content = widget
         self._content._container = self
 
-    def _update_layout(self, **style):
+    def update_layout(self, **style):
         if self._content:
             self._content.interface._update_layout(**style)
