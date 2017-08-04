@@ -7,6 +7,3 @@ class Icon:
 
     def create(self, filename):
         pass
-
-
-TIBERIUS_ICON = None

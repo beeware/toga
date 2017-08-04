@@ -65,7 +65,7 @@ from toga.command import GROUP_BREAK, SECTION_BREAK
 
 from .command import Command, Group
 from .window import Window
-# from .widgets.icon import Icon, TIBERIUS_ICON
+# from .widgets.icon import Icon
 from .utils import wrapped_handler
 
 

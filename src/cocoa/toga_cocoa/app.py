@@ -5,7 +5,7 @@ import toga
 
 from .libs import *
 from .window import Window
-# from .widgets.icon import Icon, TIBERIUS_ICON
+# from .widgets.icon import Icon
 
 
 class MainWindow(Window):

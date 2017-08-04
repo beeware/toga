@@ -35,7 +35,7 @@ def build(app):
     left_container.insert(1, 'root4', 'value4')
 
     for i in range(0, 100):
-        left_container.insert(None, 'root%s' % (i+5), 'value%s' % (i+5))
+        left_container.insert(None, 'root%s' % (i + 5), 'value%s' % (i + 5))
 
     right_content = toga.Box(
         style=CSS(flex_direction='column', padding_top=50)
@@ -78,7 +78,7 @@ def build(app):
         action2,
         label='Action 2',
         tooltip='Perform action 2',
-        icon=toga.TIBERIUS_ICON,
+        icon=toga.Icon.TIBERIUS_ICON,
         group=things
     )
     cmd3 = toga.Command(
@@ -90,7 +90,7 @@ def build(app):
     )
 
     def action4(widget):
-        print ("CALLING Action 4")
+        print("CALLING Action 4")
         cmd3.enabled = not cmd3.enabled
 
     cmd4 = toga.Command(
