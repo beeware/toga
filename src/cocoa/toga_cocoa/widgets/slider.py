@@ -1,4 +1,4 @@
-from rubicon.objc import objc_method, get_selector
+from rubicon.objc import objc_method, SEL
 
 from .base import Widget
 from ..libs import *
@@ -18,7 +18,7 @@ class Slider(Widget):
         self.native.interface = self.interface
 
         self.native.setTarget_(self.native)
-        self.native.setAction_(get_selector('onSlide:'))
+        self.native.setAction_(SEL('onSlide:'))
 
         self.add_constraints()
 

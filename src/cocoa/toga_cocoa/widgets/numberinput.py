@@ -1,4 +1,4 @@
-from rubicon.objc import objc_method, get_selector
+from rubicon.objc import objc_method, SEL
 
 import toga
 from toga.widgets.base import Widget as InterfaceWidget
@@ -103,7 +103,7 @@ class Stepper(Widget):
         self.native.maxValue = self.interface.max_value
         self.native.increment = self.interface.step
         self.native.setTarget_(self.native)
-        self.native.setAction_(get_selector('onChange:'))
+        self.native.setAction_(SEL('onChange:'))
 
         self.add_constraints()
 

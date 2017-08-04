@@ -1,4 +1,4 @@
-from rubicon.objc import objc_method, get_selector
+from rubicon.objc import objc_method, SEL
 from .base import Widget
 from ..libs import *
 from ..utils import process_callback
@@ -19,7 +19,7 @@ class Button(Widget):
         self.native.setBezelStyle_(NSRoundedBezelStyle)
         self.native.setButtonType_(NSMomentaryPushInButton)
         self.native.setTarget_(self.native)
-        self.native.setAction_(get_selector('onPress:'))
+        self.native.setAction_(SEL('onPress:'))
 
         # Add the layout constraints
         self.add_constraints()

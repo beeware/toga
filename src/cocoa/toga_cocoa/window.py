@@ -66,7 +66,7 @@ class WindowDelegate(NSObject):
         item._widgets.append(_item)
 
         _item.setTarget_(self)
-        _item.setAction_(get_selector('onToolbarButtonPress:'))
+        _item.setAction_(SEL('onToolbarButtonPress:'))
 
         return _item
 

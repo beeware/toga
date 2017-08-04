@@ -18,7 +18,7 @@ class Switch(Widget):
 
         self.native_switch = TogaSwitch.alloc().init()
         self.native_switch.interface = self.interface
-        self.native_switch.addTarget_action_forControlEvents_(self.native_switch, get_selector('onPress:'),
+        self.native_switch.addTarget_action_forControlEvents_(self.native_switch, SEL('onPress:'),
                                                               UIControlEventValueChanged)
         # Add Switch to UITableViewCell
         self.native.accessoryView = self.native_switch

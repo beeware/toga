@@ -20,7 +20,7 @@ class Button(Widget):
 
         self.native.setTitleColor_forState_(self.native.tintColor, UIControlStateNormal)
         self.native.setTitleColor_forState_(UIColor.grayColor, UIControlStateDisabled)
-        self.native.addTarget_action_forControlEvents_(self.native, get_selector('onPress:'), UIControlEventTouchDown)
+        self.native.addTarget_action_forControlEvents_(self.native, SEL('onPress:'), UIControlEventTouchDown)
 
         # Add the layout constraints
         self.add_constraints()

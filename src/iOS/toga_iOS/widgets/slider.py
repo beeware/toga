@@ -1,4 +1,4 @@
-from rubicon.objc import objc_method, get_selector
+from rubicon.objc import objc_method, SEL
 
 from .base import Widget
 from ..libs import UISlider, CGSize, UIControlEventValueChanged
@@ -17,7 +17,7 @@ class Slider(Widget):
         self.native.interface = self.interface
 
         self.native.continuous = True
-        self.native.addTarget_action_forControlEvents_(self.native, get_selector('onSlide:'), UIControlEventValueChanged)
+        self.native.addTarget_action_forControlEvents_(self.native, SEL('onSlide:'), UIControlEventValueChanged)
 
         # Add the layout constraints
         self.add_constraints()
