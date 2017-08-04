@@ -5,13 +5,8 @@ class MultilineTextInput(Widget):
     def create(self):
         pass
 
-    @property
-    def value(self):
+    def set_value(self, value):
         pass
 
-    @value.setter
-    def value(self, value):
-        pass
-
-    def _apply_layout(self):
+    def rehint(self):
         pass

@@ -30,13 +30,6 @@ class TestButton(unittest.TestCase):
         self.btn.label = None
         self.assertEqual(self.btn.label, '')
 
-    def test_button_enabled(self):
-        self.assertEqual(self.btn.enabled, self.enabled)
-        self.btn.enabled = False
-        self.assertEqual(self.btn.enabled, False)
-        # test if backend gets called with the right argument
-        self.btn._impl.set_enabled.assert_called_with(False)
-
     def test_button_on_press(self):
         self.assertEqual(self.btn._on_press, self.on_press)
 
