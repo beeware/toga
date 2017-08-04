@@ -44,6 +44,10 @@ class Widget:
     def apply_layout(self):
         if self.constraints:
             self.constraints.update()
+        try:
+            self.apply_sub_layout()
+        except:
+            pass
 
     def set_font(self, font):
         self.native.setFont_(font.native)
