@@ -28,6 +28,9 @@ class Button(Widget):
         self.native.setTitle_(label)
         self.rehint()
 
+    def set_on_press(self, handler):
+        pass
+
     def rehint(self):
         fitting_size = self.native.fittingSize()
         self.interface.style.hint(

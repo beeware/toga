@@ -77,9 +77,6 @@ class Button(Widget):
         self._on_press = handler
         self._impl.set_on_press(handler)
 
-    def _set_on_press(self, value):
-        pass
-
     @property
     def enabled(self):
         """
