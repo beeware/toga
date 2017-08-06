@@ -1,15 +1,15 @@
 from .libs import *
-from toga.window import Window
+from .window import Window
 from rubicon.objc import objc_method
 
 
 class MainWindow(Window):
-    def __init__(self, title=None, position=(100, 100), size=(640, 480)):
-        super().__init__(title, position, size)
+    def __init__(self, interface):
+        super().__init__(interface)
 
-    def startup(self):
-        super(MainWindow, self).startup()
-        self.native.setBackgroundColor_(UIColor.whiteColor())
+    # def startup(self):
+    #     super(MainWindow, self).startup()
+    #     self.native.setBackgroundColor_(UIColor.whiteColor())
 
 
 class PythonAppDelegate(UIResponder):

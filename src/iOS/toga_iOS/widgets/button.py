@@ -28,6 +28,9 @@ class Button(Widget):
     def set_label(self, label):
         self.native.setTitle_forState_(label, UIControlStateNormal)
 
+    def set_on_press(self, handler):
+        pass
+
     def rehint(self):
         fitting_size = self.native.systemLayoutSizeFittingSize_(CGSize(0, 0))
         self.interface.style.hint(
