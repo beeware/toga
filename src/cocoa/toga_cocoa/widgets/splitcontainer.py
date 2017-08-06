@@ -14,7 +14,7 @@ class TogaSplitViewDelegate(NSObject):
         # a resize of all the content panels is required.
         if self.interface.window and self.interface.window._impl.native.isVisible:
             # print("SPLIT CONTAINER LAYOUT CHILDREN", self.interface._impl.containers[0].native.frame.size.width, self.interface._impl.containers[1].native.frame.size.width)
-            self.interface._impl._update_child_layout()
+            self.interface._impl.apply_sub_layout()
             self.interface._impl.on_resize()
 
 
@@ -49,7 +49,7 @@ class SplitContainer(Widget):
         container.native.translatesAutoresizingMaskIntoConstraints = False
         self.native.addSubview(container.native)
 
-    def _update_child_layout(self):
+    def apply_sub_layout(self):
         """Force a layout update on the widget.
         """
         if self.interface.content:
