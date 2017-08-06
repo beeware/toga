@@ -17,16 +17,16 @@ class Switch(Widget):
         self.native = TogaSwitch.alloc().init()
         self.native.interface = self.interface
 
-        self.native.setBezelStyle_(NSRoundedBezelStyle)
-        self.native.setButtonType_(NSSwitchButton)
-        self.native.setTarget_(self.native)
-        self.native.setAction_(SEL('onPress:'))
+        self.native.bezelStyle = NSRoundedBezelStyle
+        self.native.setButtonType(NSSwitchButton)
+        self.native.target = self.native
+        self.native.action = SEL('onPress:')
 
         # Add the layout constraints
         self.add_constraints()
 
     def set_label(self, label):
-        self.native.setTitle_(label)
+        self.native.title = label
         self.rehint()
 
     def set_is_on(self, value):

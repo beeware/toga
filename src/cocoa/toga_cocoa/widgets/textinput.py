@@ -7,8 +7,8 @@ class TextInput(Widget):
         self.native = NSTextField.new()
         self.native.interface = self.interface
 
-        self.native.setBezeled_(True)
-        self.native.setBezelStyle_(NSTextFieldSquareBezel)
+        self.native.bezeled = True
+        self.native.bezelStyle = NSTextFieldSquareBezel
 
         # Add the layout constraints
         self.add_constraints()

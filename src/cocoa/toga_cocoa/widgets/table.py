@@ -25,15 +25,15 @@ class Table(Widget):
         # Create a table view, and put it in a scroll view.
         # The scroll view is the _impl, because it's the outer container.
         self.native = NSScrollView.alloc().init()
-        self.native.setHasVerticalScroller_(True)
-        self.native.setHasHorizontalScroller_(True)
-        self.native.setAutohidesScrollers_(False)
-        self.native.setBorderType_(NSBezelBorder)
+        self.native.hasVerticalScroller = True
+        self.native.hasHorizontalScroller = True
+        self.native.autohidesScrollers = False
+        self.native.borderType = NSBezelBorder
 
         self.table = TogaTable.alloc().init()
         self.table.interface = self.interface
         self.table._impl = self
-        self.table.setColumnAutoresizingStyle_(NSTableViewUniformColumnAutoresizingStyle)
+        self.table.columnAutoresizingStyle = NSTableViewUniformColumnAutoresizingStyle
 
         # Create columns for the table
         self._columns = [
@@ -42,17 +42,17 @@ class Table(Widget):
         ]
 
         for heading, column in zip(self.interface.headings, self._columns):
-            self.table.addTableColumn_(column)
+            self.table.addTableColumn(column)
             cell = column.dataCell
-            cell.setEditable_(False)
-            cell.setSelectable_(False)
+            cell.editable = False
+            cell.selectable = False
             column.headerCell.stringValue = heading
 
-        self.table.setDelegate_(self.table)
-        self.table.setDataSource_(self.table)
+        self.table.delegate = self.table
+        self.table.dataSource = self.table
 
         # Embed the table view in the scroll view
-        self.native.setDocumentView_(self.table)
+        self.native.documentView = self.table
 
         # Add the layout constraints
         self.add_constraints()

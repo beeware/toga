@@ -17,8 +17,8 @@ class Slider(Widget):
         self.native = TogaSlider.alloc().init()
         self.native.interface = self.interface
 
-        self.native.setTarget_(self.native)
-        self.native.setAction_(SEL('onSlide:'))
+        self.native.target = self.native
+        self.native.action = SEL('onSlide:')
 
         self.add_constraints()
 
@@ -26,14 +26,14 @@ class Slider(Widget):
         return self.native.floatValue
 
     def set_value(self, value):
-        self.native.setDoubleValue_(value)
+        self.native.doubleValue = value
 
     def set_range(self, range):
-        self.native.setMinValue_(range.min)
-        self.native.setMaxValue_(range.max)
+        self.native.minValue = range.min
+        self.native.maxValue = range.max
 
     def set_enabled(self, value):
-        self.native.setEnabled_(value)
+        self.native.enabled = value
 
     def rehint(self):
         fitting_size = self.native.fittingSize()

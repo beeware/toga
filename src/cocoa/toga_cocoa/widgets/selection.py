@@ -25,10 +25,10 @@ class Selection(Widget):
         self.native.removeAllItems()
 
     def add_item(self, item):
-        self.native.addItemWithTitle_(item)
+        self.native.addItemWithTitle(item)
 
     def select_item(self, item):
-        self.native.selectItemWithTitle_(item)
+        self.native.selectItemWithTitle(item)
 
     def get_selected_item(self):
         return self.native.titleOfSelectedItem

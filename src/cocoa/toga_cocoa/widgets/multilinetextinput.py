@@ -50,7 +50,7 @@ class MultilineTextInput(Widget):
         self.add_constraints()
 
     def set_value(self, value):
-        self.text.setString(value)
+        self.text.string = value
 
     def _update_child_layout(self):
         print('in update child layout')

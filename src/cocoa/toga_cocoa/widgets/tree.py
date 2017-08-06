@@ -70,21 +70,22 @@ class Tree(Widget):
         # Create a tree view, and put it in a scroll view.
         # The scroll view is the _impl, because it's the outer container.
         self.native = NSScrollView.alloc().init()
-        self.native.setHasVerticalScroller_(True)
-        self.native.setHasHorizontalScroller_(True)
-        self.native.setAutohidesScrollers_(False)
-        self.native.setBorderType_(NSBezelBorder)
+        self.native.hasVerticalScroller = True
+        self.native.hasHorizontalScroller = False
+        self.native.autohidesScrollers = False
+        self.native.borderType = NSBezelBorder
 
         # Disable all autolayout functionality on the outer widget
-        self.native.setTranslatesAutoresizingMaskIntoConstraints_(False)
+        self.native.translatesAutoresizingMaskIntoConstraints = False
+        self.native.autoresizesSubviews = True
 
         self.tree = TogaTree.alloc().init()
         self.tree.interface = self.interface
         self.tree._impl = self
-        self.tree.setColumnAutoresizingStyle_(NSTableViewUniformColumnAutoresizingStyle)
+        self.tree.columnAutoresizingStyle = NSTableViewUniformColumnAutoresizingStyle
 
         # Use autolayout for the inner widget.
-        self.tree.setTranslatesAutoresizingMaskIntoConstraints_(True)
+        self.tree.translatesAutoresizingMaskIntoConstraints = True
 
         # Create columns for the tree
         self.columns = [
@@ -93,20 +94,20 @@ class Tree(Widget):
             ]
 
         for heading, column in zip(self.interface.headings, self.columns):
-            self.tree.addTableColumn_(column)
+            self.tree.addTableColumn(column)
             cell = column.dataCell
-            cell.setEditable_(False)
-            cell.setSelectable_(False)
+            cell.editable = False
+            cell.selectable = False
             column.headerCell.stringValue = heading
 
         # Put the tree arrows in the first column.
-        self.tree.setOutlineTableColumn_(self.columns[0])
+        self.tree.outlineTableColumn = self.columns[0]
 
-        self.tree.setDelegate_(self.tree)
-        self.tree.setDataSource_(self.tree)
+        self.tree.delegate = self.tree
+        self.tree.dataSource = self.tree
 
         # Embed the tree view in the scroll view
-        self.native.setDocumentView_(self.tree)
+        self.native.documentView = self.tree
 
         # Add the layout constraints
         self.add_constraints()

@@ -10,5 +10,5 @@ class Icon:
         self.native = None
 
     def create(self, filename):
-        self.native = NSImage.alloc().initWithContentsOfFile_(filename)
+        self.native = NSImage.alloc().initWithContentsOfFile(filename)
 

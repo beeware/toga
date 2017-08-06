@@ -24,22 +24,22 @@ class WebView(Widget):
         self.native = TogaWebView.alloc().init()
         self.native.interface = self.interface
 
-        self.native.setDownloadDelegate_(self.native)
-        self.native.setFrameLoadDelegate_(self.native)
-        self.native.setPolicyDelegate_(self.native)
-        self.native.setResourceLoadDelegate_(self.native)
-        self.native.setUIDelegate_(self.native)
+        self.native.downloadDelegate = self.native
+        self.native.frameLoadDelegate = self.native
+        self.native.policyDelegate = self.native
+        self.native.resourceLoadDelegate = self.native
+        self.native.uIDelegate = self.native
 
         # Add the layout constraints
         self.add_constraints()
 
     def set_url(self, value):
         if value:
-            request = NSURLRequest.requestWithURL_(NSURL.URLWithString_(self.interface.url))
-            self.native.mainFrame.loadRequest_(request)
+            request = NSURLRequest.requestWithURL(NSURL.URLWithString(self.interface.url))
+            self.native.mainFrame.loadRequest(request)
 
     def set_content(self, root_url, content):
-        self.native.mainFrame.loadHTMLString_baseURL_(content, NSURL.URLWithString_(root_url))
+        self.native.mainFrame.loadHTMLString_baseURL(content, NSURL.URLWithString(root_url))
 
     def set_evaluate(self, javascript):
         """
@@ -48,4 +48,4 @@ class WebView(Widget):
         :param javascript: The javascript expression
         :type  javascript: ``str``
         """
-        return self.native.stringByEvaluatingJavaScriptFromString_(javascript)
+        return self.native.stringByEvaluatingJavaScriptFromString(javascript)

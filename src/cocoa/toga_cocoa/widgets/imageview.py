@@ -8,10 +8,10 @@ class ImageView(Widget):
         self.native = NSImageView.alloc().init()
         self.native.interface = self.interface
 
-        # self._impl.setImageFrameStyle_(NSImageFrameGrayBezel)
-        self.native.setImageFrameStyle_(NSImageFrameNone)
-        self.native.setImageAlignment_(NSImageAlignCenter)
-        self.native.setImageScaling_(NSImageScaleProportionallyUpOrDown)
+        # self._impl.imageFrameStyle = NSImageFrameGrayBezel
+        self.native.imageFrameStyle = NSImageFrameNone
+        self.native.imageAlignment = NSImageAlignCenter
+        self.native.imageScaling = NSImageScaleProportionallyUpOrDown
 
         # self._impl.setWantsLayer_(True)
         # self._impl.setBackgroundColor_(NSColor.blueColor)
@@ -54,7 +54,7 @@ class ImageView(Widget):
             if self.style and self.style.width and self.style.height:
                 width = self.style.width
                 height = self.style.height
-            self.native.image = NSImage.alloc().initWithSize_(NSSize(width, height))
+            self.native.image = NSImage.alloc().initWithSize(NSSize(width, height))
 
     def rehint(self):
         self.interface.style.hint(

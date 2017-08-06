@@ -102,8 +102,8 @@ class Stepper(Widget):
         self.native.minValue = self.interface.min_value
         self.native.maxValue = self.interface.max_value
         self.native.increment = self.interface.step
-        self.native.setTarget_(self.native)
-        self.native.setAction_(SEL('onChange:'))
+        self.native.target = self.native
+        self.native.action = SEL('onChange:')
 
         self.add_constraints()
 

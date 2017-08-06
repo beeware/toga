@@ -8,6 +8,6 @@ class Image(object):
 
     def load_image(self, path):
         if path.startswith('http://') or path.startswith('https://'):
-            self.native = NSImage.alloc().initByReferencingURL_(NSURL.URLWithString_(path))
+            self.native = NSImage.alloc().initByReferencingURL(NSURL.URLWithString_(path))
         else:
-            self.native = NSImage.alloc().initWithContentsOfFile_(path)
+            self.native = NSImage.alloc().initWithContentsOfFile(path)

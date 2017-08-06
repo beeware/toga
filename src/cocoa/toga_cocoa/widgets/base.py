@@ -38,27 +38,27 @@ class Widget:
             child.container = self.container
 
     def add_constraints(self):
-        self.native.setTranslatesAutoresizingMaskIntoConstraints_(False)
+        self.native.translatesAutoresizingMaskIntoConstraints = False
         self.constraints = Constraints(self)
 
     def apply_layout(self):
         if self.constraints:
             self.constraints.update()
         try:
-            self.apply_sub_layout()
+            self.apply_sub_layout()  # If a widget has sub layouts like the scrollcontainer or splitview update them.
         except:
             pass
 
     def set_font(self, font):
-        self.native.setFont_(font.native)
+        self.native.font = font.native
 
     def set_enabled(self, value):
-        self.native.setEnabled_(value)
+        self.native.enabled = value
 
     def set_background_color(self, background_color):
         if background_color:
             if isinstance(background_color, tuple):
-                background_color = NSColor.colorWithRed_green_blue_alpha_(background_color[0] / 255,
+                background_color = NSColor.colorWithRed_green_blue_alpha(background_color[0] / 255,
                                                                           background_color[1] / 255,
                                                                           background_color[2] / 255, 1.0)
             elif isinstance(background_color, str):
@@ -70,9 +70,9 @@ class Widget:
             else:
                 raise ValueError('_set_background_color on button widget must receive a tuple or a string')
 
-            self.native.setBordered_(False)
-            self.native.setWantsLayer_(True)
-            self.native.setBackgroundColor_(background_color)
+            self.native.bordered = False
+            self.native.wantsLayer = True
+            self.native.backgroundColor = background_color
 
     def rehint(self):
         pass

@@ -5,15 +5,15 @@ from .base import Widget
 class ProgressBar(Widget):
     def create(self):
         self.native = NSProgressIndicator.new()
-        self.native.setStyle_(NSProgressIndicatorBarStyle)
-        self.native.setDisplayedWhenStopped_(True)
+        self.native.style = NSProgressIndicatorBarStyle
+        self.native.displayedWhenStopped = True
 
         # Add the layout constraints
         self.add_constraints()
 
     def set_value(self, value):
         if value is not None:
-            self.native.setDoubleValue_(value)
+            self.native.doubleValue = value
 
     def start(self):
         if self.native and not self.interface._running:
@@ -27,7 +27,7 @@ class ProgressBar(Widget):
 
     def set_max(self, value):
         if value:
-            self.native.setIndeterminate_(False)
-            self.native.setMaxValue_(value)
+            self.native.indeterminate = False
+            self.native.maxValue = value
         else:
-            self.native.setIndeterminate_(True)
+            self.native.indeterminate = True

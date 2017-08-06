@@ -26,7 +26,7 @@ class SplitContainer(Widget):
 
         self.delegate = TogaSplitViewDelegate.alloc().init()
         self.delegate.interface = self.interface
-        self.native.setDelegate_(self.delegate)
+        self.native.delegate = self.delegate
 
         # Add the layout constraints
         self.add_constraints()
@@ -47,7 +47,7 @@ class SplitContainer(Widget):
         # available space inside the SplitContainer.
         # FIXME Use Constrains to enforce min width and height of the containers otherwise width of 0 is possible.
         container.native.translatesAutoresizingMaskIntoConstraints = False
-        self.native.addSubview_(container.native)
+        self.native.addSubview(container.native)
 
     def _update_child_layout(self):
         """Force a layout update on the widget.
@@ -62,7 +62,7 @@ class SplitContainer(Widget):
                 )
 
     def set_direction(self, value):
-        self.native.setVertical_(value)
+        self.native.vertical = value
 
     def on_resize(self):
         pass
