@@ -7,6 +7,3 @@ class MultilineTextInput(Widget):
 
     def set_value(self, value):
         pass
-
-    def rehint(self):
-        pass

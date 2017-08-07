@@ -8,7 +8,7 @@ class ScrollContainer(Widget):
     def set_content(self, widget):
         pass
 
-    def _update_child_layout(self):
+    def apply_sub_layout(self):
         pass
 
     def set_vertical(self, value):

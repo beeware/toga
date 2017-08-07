@@ -8,11 +8,8 @@ class SplitContainer(Widget):
     def add_content(self, position, widget):
         pass
 
-    def _update_child_layout(self):
+    def apply_sub_layout(self):
         pass
 
     def set_direction(self, value):
-        pass
-
-    def on_resize(self):
         pass

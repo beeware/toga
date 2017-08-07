@@ -45,7 +45,7 @@ class SplitContainer(Widget):
     def set_direction(self, value):
         pass
 
-    def update_child_layout(self):
+    def apply_sub_layout(self):
         """Force a layout update on the widget.
         """
         if self.interface.content and self.native.is_visible():
