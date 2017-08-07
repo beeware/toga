@@ -23,7 +23,7 @@ from .widgets.textinput import TextInput
 # from .widgets.tree import *
 # from .widgets.webview import *
 # from .widgets.selection import Selection
-# from .widgets.numberinput import NumberInput
+from .widgets.numberinput import NumberInput
 
 __all__ = [
     'App', 'MainWindow',
