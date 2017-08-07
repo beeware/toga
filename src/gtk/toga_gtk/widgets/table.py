@@ -1,39 +1,32 @@
 from gi.repository import Gtk
-
-from toga.interface import Table as TableInterface
-
-from .base import WidgetMixin
+from .base import Widget
 
 
-class Table(TableInterface, WidgetMixin):
-    def __init__(self, headings, id=None, style=None):
-        super(Table, self).__init__(headings, id=id, style=style)
-        self._create()
-
+class Table(Widget):
     def create(self):
-        self._data = Gtk.ListStore(*[str for h in self.headings])
+        self.data = Gtk.ListStore(*[str for h in self.interface.headings])
         # Create a table view, and put it in a scroll view.
-        # The scroll view is the _impl, because it's the outer container.
-        self._table = Gtk.TreeView(self._data)
+        # The scroll view is the native, because it's the outer container.
+        self.table = Gtk.TreeView(self.data)
 
-        self._columns = []
-        for heading in self.headings:
+        self.columns = []
+        for heading in self.interface.headings:
             renderer = Gtk.CellRendererText()
             column = Gtk.TreeViewColumn(heading, renderer, text=0)
-            self._table.append_column(column)
+            self.table.append_column(column)
 
-        self._impl = Gtk.ScrolledWindow()
-        self._impl.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
-        self._impl.add(self._table)
-        self._impl.set_min_content_width(200)
-        self._impl.set_min_content_height(200)
-        self._impl._interface = self
+        self.native = Gtk.ScrolledWindow()
+        self.native.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        self.native.add(self.table)
+        self.native.set_min_content_width(200)
+        self.native.set_min_content_height(200)
+        self.native.interface = self.interface
 
     def insert(self, index, *data):
-        if len(data) != len(self.headings):
+        if len(data) != len(self.interface.headings):
             raise Exception('Data size does not match number of headings')
 
         if index is None:
-            self._data.append(data)
+            self.data.append(data)
         else:
-            self._data.insert(index, data)
+            self.data.insert(index, data)
