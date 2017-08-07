@@ -19,7 +19,7 @@ from .widgets.label import Label
 # from .widgets.splitcontainer import *
 # from .widgets.switch import *
 # from .widgets.table import *
-# from .widgets.textinput import TextInput
+from .widgets.textinput import TextInput
 # from .widgets.tree import *
 # from .widgets.webview import *
 # from .widgets.selection import Selection
@@ -28,11 +28,8 @@ from .widgets.label import Label
 __all__ = [
     'App', 'MainWindow',
     'Command',
-
     'Window',
-
     'Font',
-
     'Box',
     'Button',
     'Icon',
