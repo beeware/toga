@@ -16,7 +16,7 @@ from .widgets.optioncontainer import OptionContainer
 from .widgets.progressbar import ProgressBar
 # from .widgets.scrollcontainer import *
 # from .widgets.slider import *
-# from .widgets.splitcontainer import *
+from .widgets.splitcontainer import SplitContainer
 # from .widgets.switch import *
 # from .widgets.table import *
 from .widgets.textinput import TextInput
