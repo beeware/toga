@@ -44,6 +44,9 @@ class Widget:
     def apply_layout(self):
         pass
 
+    def apply_sub_layout(self):
+        pass
+
     def set_font(self, font):
         self.native.override_font(font._impl)
 
