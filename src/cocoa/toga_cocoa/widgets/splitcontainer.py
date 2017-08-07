@@ -19,8 +19,11 @@ class TogaSplitViewDelegate(NSObject):
 
 
 class SplitContainer(Widget):
-    _CONTAINER_CLASS = Container
+    """ Cocoa SplitContainer implementation
 
+    Todo:
+        * update the minimum width of the whole SplitContainer based on the content of its sub layouts.
+    """
     def create(self):
         self.native = NSSplitView.alloc().init()
 
@@ -50,16 +53,23 @@ class SplitContainer(Widget):
         self.native.addSubview(container.native)
 
     def apply_sub_layout(self):
-        """Force a layout update on the widget.
+        """ Force a layout update on the two sub layouts.
         """
         if self.interface.content:
             for i, (container, content) in enumerate(zip(self.containers, self.interface.content)):
                 frame = container.native.frame
-                # print(frame.size.width)
                 content._update_layout(
                     width=frame.size.width,
                     height=frame.size.height
                 )
+        # Enforce a minimum size for the SplitContainer as a whole.
+        self.min_width_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
+            self.native, NSLayoutAttributeWidth,
+            NSLayoutRelationGreaterThanOrEqual,
+            None, NSLayoutAttributeNotAnAttribute,
+            1.0, 300
+        )
+        self.native.addConstraint(self.min_width_constraint)
 
     def set_direction(self, value):
         self.native.vertical = value

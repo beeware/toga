@@ -44,10 +44,10 @@ class Widget:
     def apply_layout(self):
         if self.constraints:
             self.constraints.update()
-        try:
-            self.apply_sub_layout()  # If a widget has sub layouts like the scrollcontainer or splitview update them.
-        except:
-            pass
+
+    def apply_sub_layout(self):
+        # If widget have sub layouts like the ScrollContainer or SplitView,                                                                                                                                                                                                                                                                                                                                     update them.
+        pass
 
     def set_font(self, font):
         self.native.font = font.native
