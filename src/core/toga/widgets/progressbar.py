@@ -21,8 +21,8 @@ class ProgressBar(Widget):
         super().__init__(id=id, style=style, factory=factory)
         self._impl = self.factory.ProgressBar(interface=self)
 
-        self.value = value
         self.max = max
+        self.value = value
         self._running = False
         self.rehint()
 
