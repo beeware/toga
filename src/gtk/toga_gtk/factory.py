@@ -20,7 +20,7 @@ from .widgets.splitcontainer import SplitContainer
 # from .widgets.switch import *
 from .widgets.table import Table
 from .widgets.textinput import TextInput
-# from .widgets.tree import *
+from .widgets.tree import Tree
 from .widgets.webview import WebView
 from .widgets.selection import Selection
 from .widgets.numberinput import NumberInput
