@@ -1,10 +1,6 @@
 from rubicon.objc import objc_method
-
-from toga.interface import DetailedList as DetailedListInterface
-
-from .base import WidgetMixin
+from .base import Widget
 from ..libs import *
-# from ..utils import process_callback
 
 
 class TogaTableViewController(UITableViewController):
@@ -21,8 +17,7 @@ class TogaTableViewController(UITableViewController):
         cell = tableView.dequeueReusableCellWithIdentifier_("row")
         if cell is None:
             cell = UITableViewCell.alloc().initWithStyle_reuseIdentifier_(UITableViewCellStyleDefault, "row")
-
-        cell.textLabel.text = self.interface.data[indexPath.item]['description']
+        cell.textLabel.text = self.interface.data[indexPath.item]
         return cell
 
     @objc_method
@@ -33,10 +28,11 @@ class TogaTableViewController(UITableViewController):
             if self.interface.on_delete:
                 self.interface.on_delete(self.interface)
 
-            del self.data[indexPath.row]
-
-            paths = NSArray.alloc().initWithObjects_(indexPath, None)
-            tableView.deleteRowsAtIndexPaths_withRowAnimation_(paths, UITableViewRowAnimationFade)
+            del self.interface.data[indexPath.row]
+            # FIXME When deleting a item form the list the following lines cause a error.
+            self.tableView.reloadData()  # Just a hack for now! No animation!
+            # paths = NSArray.alloc().initWithObjects_(indexPath, None)
+            # tableView.deleteRowsAtIndexPaths_withRowAnimation_(paths, UITableViewRowAnimationFade)
 
     @objc_method
     def refresh(self):
@@ -46,29 +42,24 @@ class TogaTableViewController(UITableViewController):
         self.tableView.reloadData()
 
 
-class DetailedList(DetailedListInterface, WidgetMixin):
-    def __init__(self, id=None, data=None, on_delete=None, on_refresh=None, style=None):
-        super().__init__(id=id, data=data, on_delete=on_delete, on_refresh=on_refresh, style=style)
-        self._create()
-
+class DetailedList(Widget):
     def create(self):
-        self._controller = TogaTableViewController.alloc().init()
-        self._controller.interface = self
-        self._impl = self._controller.tableView
+        self.controller = TogaTableViewController.alloc().init()
+        self.controller.interface = self.interface
+        self.native = self.controller.tableView
 
-        self._controller.refreshControl = UIRefreshControl.alloc().init()
-        self._controller.refreshControl.addTarget_action_forControlEvents_(
-            self._controller,
+        self.controller.refreshControl = UIRefreshControl.alloc().init()
+        self.controller.refreshControl.addTarget_action_forControlEvents_(
+            self.controller,
             SEL('refresh'),
             UIControlEventValueChanged
         )
 
-        self._controller.data = self._config['data']
-
         # Add the layout constraints
-        self._add_constraints()
+        self.add_constraints()
 
-    def _add(self, item):
-        self.data.append(item)
-        self._controller.tableView.reloadData()
+    def set_data(self, data):
+        self.controller.data = data
 
+    def add(self, item):
+        self.controller.tableView.reloadData()

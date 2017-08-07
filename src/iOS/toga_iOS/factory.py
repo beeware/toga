@@ -8,6 +8,7 @@ from .font import Font
 from .widgets.box import Box
 from .widgets.button import Button
 # from .command import Command
+from .widgets.detailedlist import DetailedList
 from .widgets.label import Label
 from .widgets.icon import Icon
 from .widgets.image import *
@@ -35,6 +36,7 @@ __all__ = [
     # 'Font',
     'Box',
     'Button',
+    'DetailedList'
     'Icon',
     'Image',
     'ImageView',

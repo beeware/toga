@@ -11,6 +11,7 @@ from .widgets.base import Layout, Point, Widget
 
 from .widgets.box import Box
 from .widgets.button import Button
+from .widgets.detailedlist import DetailedList
 # from .widgets.icon import Icon
 from .widgets.image import *
 from .widgets.imageview import *
@@ -35,6 +36,7 @@ __all__ = [
     'App', 'MainWindow',
     'constants',
     'Command', 'Group', 'GROUP_BREAK', 'SECTION_BREAK',
+    'DetailedList'
     'Window',
     'Font',
     'Widget'
