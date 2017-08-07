@@ -61,11 +61,10 @@ except ImportError:
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gio, GLib
 
-from toga.command import GROUP_BREAK, SECTION_BREAK
-
-from .command import Command, Group
+from toga.command import GROUP_BREAK, SECTION_BREAK, Command, Group
+# from .command import Command, Group
 from .window import Window
-# from .widgets.icon import Icon
+from toga import Icon
 from .utils import wrapped_handler
 
 
@@ -74,60 +73,44 @@ class MainWindow(Window):
 
 
 class App:
+    """
+    Todo:
+        * Creation of Menus is not working.
+        * Disabling of menu items is not working.
+    """
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
         self.create()
 
     def create(self):
-        # Icon.app_icon = Icon.load(icon, default=TIBERIUS_ICON)
+        Icon.app_icon = Icon.load(self.interface.icon, default=Icon.TIBERIUS_ICON)
         # Stimulate the build of the app
         self.native = Gtk.Application(application_id=self.interface.app_id, flags=Gio.ApplicationFlags.FLAGS_NONE)
 
         # Connect the GTK signal that will cause app startup to occur
         self.native.connect('startup', self.startup)
         self.native.connect('activate', self.activate)
-        # self._impl.connect('shutdown', self._shutdown)
+        # self.native.connect('shutdown', self.shutdown)
 
-        self._actions = None
+        self.actions = None
 
-    # def __init__(self, name, app_id, icon=None, startup=None, document_types=None):
-    #     # Set the icon for the app
-    #     Icon.app_icon = Icon.load(icon, default=TIBERIUS_ICON)
-    #
-    #     super().__init__(
-    #         name=name,
-    #         app_id=app_id,
-    #         icon=Icon.app_icon,
-    #         startup=startup,
-    #         document_types=document_types
-    #     )
-    #     # Stimulate the build of the app
-    #     self._impl = Gtk.Application(application_id=self.app_id, flags=Gio.ApplicationFlags.FLAGS_NONE)
-    #
-    #     # Connect the GTK signal that will cause app startup to occur
-    #     self._impl.connect('startup', self._startup)
-    #     self._impl.connect('activate', self._activate)
-    #     # self._impl.connect('shutdown', self._shutdown)
-    #
-    #     self._actions = None
 
     def startup(self, data=None):
-        # self.commands.add(
-        #     Command(None, 'About ' + self.name, group=Group.APP),
-        #     Command(None, 'Preferences', group=Group.APP),
-        #     # Quit should always be the last item, in a section on it's own
-        #     Command(lambda s: self.exit(), 'Quit ' + self.name, shortcut='q', group=Group.APP, section=sys.maxsize),
-        #
-        #     Command(None, 'Visit homepage', group=Group.HELP)
-        # )
+        self.interface.commands.add(
+            Command(None, 'About ' + self.interface.name, group=Group.APP),
+            Command(None, 'Preferences', group=Group.APP),
+            # Quit should always be the last item, in a section on it's own
+            Command(lambda s: self.exit(), 'Quit ' + self.interface.name, shortcut='q', group=Group.APP, section=sys.maxsize),
+            Command(None, 'Visit homepage', group=Group.HELP)
+        )
 
         self.interface.startup()
 
         # Create the lookup table of menu items,
         # then force the creation of the menus.
-        self._actions = {}
-        self._create_menus()
+        self.actions = {}
+        self.create_menus()
 
     def activate(self, data=None):
         pass
@@ -136,10 +119,10 @@ class App:
         '''Add a new document to this app.'''
         print("STUB: If you want to handle opening documents, implement App.open_document(fileURL)")
 
-    def _create_menus(self):
+    def create_menus(self):
         # Only create the menu if the menu item index has been created.
         if hasattr(self, '_actions'):
-            self._actions = {}
+            self.actions = {}
             menubar = Gio.Menu()
             label = None
             submenu = None
@@ -170,17 +153,17 @@ class App:
                         section = Gio.Menu()
 
                     try:
-                        action = self._actions[cmd]
+                        action = self.actions[cmd]
                     except KeyError:
                         cmd_id = "command-%s" % id(cmd)
                         action = Gio.SimpleAction.new(cmd_id, None)
                         if cmd.action:
                             action.connect("activate", wrapped_handler(self, cmd.action))
                         cmd._widgets.append(action)
-                        self._actions[cmd] = action
+                        self.actions[cmd] = action
                         self.native.add_action(action)
 
-                    cmd._set_enabled(cmd.enabled)
+                    cmd._impl._set_enabled(cmd.enabled)
 
                     item = Gio.MenuItem.new(cmd.label, 'app.' + cmd_id)
                     if cmd.shortcut:

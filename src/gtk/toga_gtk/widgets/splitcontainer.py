@@ -46,7 +46,7 @@ class SplitContainer(Widget):
         pass
 
     def apply_sub_layout(self):
-        """Force a layout update on the widget.
+        """ Force a layout update on the widget.
         """
         if self.interface.content and self.native.is_visible():
             if self.interface.direction == self.interface.VERTICAL:
@@ -54,12 +54,13 @@ class SplitContainer(Widget):
                 if self.ratio is None:
                     self.ratio = 0.5
                     self.native.set_position(size * self.ratio)
-                self.containers[0]._update_layout(width=size * self.ratio)
-                self.containers[1]._update_layout(width=size * (1.0 - self.ratio))
+                    print(self.containers[0])
+                self.containers[0].interface._update_layout(width=size * self.ratio)
+                self.containers[1].interface._update_layout(width=size * (1.0 - self.ratio))
             else:
                 size = self.native.get_allcoation().height
                 if self.ratio is None:
                     self.ratio = 0.5
                     self.native.set_position(size * self.ratio)
-                self.containers[0]._update_layout(height=size * self.ratio)
-                self.containers[1]._update_layout(height=size * (1.0 - self.ratio))
+                self.containers[0].interface._update_layout(height=size * self.ratio)
+                self.containers[1].interface._update_layout(height=size * (1.0 - self.ratio))
