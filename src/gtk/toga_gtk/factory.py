@@ -10,10 +10,10 @@ from .widgets.icon import Icon
 # from .widgets.image import *
 # from .widgets.imageview import *
 from .widgets.label import Label
-from .widgets.multilinetextinput import *
-# from .widgets.optioncontainer import *
+from .widgets.multilinetextinput import MultilineTextInput
+from .widgets.optioncontainer import OptionContainer
 # from .widgets.passwordinput import *
-from .widgets.progressbar import *
+from .widgets.progressbar import ProgressBar
 # from .widgets.scrollcontainer import *
 # from .widgets.slider import *
 # from .widgets.splitcontainer import *
