@@ -22,7 +22,7 @@ from .widgets.progressbar import *
 from .widgets.textinput import TextInput
 # from .widgets.tree import *
 # from .widgets.webview import *
-# from .widgets.selection import Selection
+from .widgets.selection import Selection
 from .widgets.numberinput import NumberInput
 
 __all__ = [

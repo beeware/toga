@@ -8,7 +8,7 @@ class Selection(Widget):
     def create(self):
         rect = NSMakeRect(0, 0, 0, 0)
         self.native = NSPopUpButton.alloc().initWithFrame_pullsDown_(rect, 0)
-        self.native._interface = self
+        self.native.interface = self.interface
 
         self.add_constraints()
 
