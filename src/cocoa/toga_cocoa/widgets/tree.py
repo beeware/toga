@@ -78,41 +78,44 @@ class Tree(TreeInterface, WidgetMixin):
         # Create a tree view, and put it in a scroll view.
         # The scroll view is the _impl, because it's the outer container.
         self._impl = NSScrollView.alloc().init()
-        self._impl.setHasVerticalScroller_(True)
-        self._impl.setHasHorizontalScroller_(True)
-        self._impl.setAutohidesScrollers_(False)
-        self._impl.setBorderType_(NSBezelBorder)
+        self._impl.hasVerticalScroller = True
+        self._impl.hasHorizontalScroller = False
+        self._impl.autohidesScrollers = False
+        self._impl.borderType = NSBezelBorder
 
         # Disable all autolayout functionality on the outer widget
-        self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
+        self._impl.translatesAutoresizingMaskIntoConstraints = False
+        self._impl.autoresizesSubviews = True
 
+        # Create the Tree widget
         self._tree = TogaTree.alloc().init()
         self._tree.interface = self
-        self._tree.setColumnAutoresizingStyle_(NSTableViewUniformColumnAutoresizingStyle)
+        self._tree.columnAutoresizingStyle = NSTableViewUniformColumnAutoresizingStyle
+
         # Use autolayout for the inner widget.
-        self._tree.setTranslatesAutoresizingMaskIntoConstraints_(True)
+        self._tree.translatesAutoresizingMaskIntoConstraints = True
 
         # Create columns for the tree
         self._columns = [
-            NSTableColumn.alloc().initWithIdentifier_('%d' % i)
+            NSTableColumn.alloc().initWithIdentifier('%d' % i)
             for i, heading in enumerate(self.headings)
         ]
 
         for heading, column in zip(self.headings, self._columns):
-            self._tree.addTableColumn_(column)
+            self._tree.addTableColumn(column)
             cell = column.dataCell
-            cell.setEditable_(False)
-            cell.setSelectable_(False)
+            cell.editable = False
+            cell.selectable = False
             column.headerCell.stringValue = heading
 
         # Put the tree arrows in the first column.
-        self._tree.setOutlineTableColumn_(self._columns[0])
+        self._tree.outlineTableColumn = self._columns[0]
 
-        self._tree.setDelegate_(self._tree)
-        self._tree.setDataSource_(self._tree)
+        self._tree.delegate = self._tree
+        self._tree.dataSource = self._tree
 
         # Embed the tree view in the scroll view
-        self._impl.setDocumentView_(self._tree)
+        self._impl.documentView = self._tree
 
         # Add the layout constraints
         self._add_constraints()

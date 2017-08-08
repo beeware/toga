@@ -1,7 +1,6 @@
 from builtins import id as identifier
 from colosseum import CSS
 
-
 class Point:
     def __init__(self, top, left):
         self.top = top
@@ -331,3 +330,17 @@ class Widget:
         :type  font: :class:`toga.Font`
         """
         self._set_font(font)
+
+    def hide(self):
+        """
+        Hide the widget from the super view.
+        """
+        for child in self.children:
+            self._set_hidden(child, True)
+
+    def show(self):
+        """
+        Show the widget on the super view.
+        """
+        for child in self.children:
+            self._set_hidden(child, False)

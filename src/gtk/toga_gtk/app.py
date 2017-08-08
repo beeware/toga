@@ -52,7 +52,13 @@ except ImportError:
                 os.symlink(gi_path, gi_symlink_path)
                 os.symlink(pygtkcompat_path, pygtkcompat_symlink_path)
 
-                import gi
+                # The call to os.symlink will return almost immediately,
+                # but for some reason, it may not be fully flushed to
+                # the file system. One way to fix this is to start
+                # the process again. This call to os.execl restarts the
+                # program with the same arguments, replacing the original
+                # operating system process.
+                os.execl(sys.executable, sys.executable, *sys.argv)
             except OSError:
                 raise RuntimeError("Unable to automatically create symlink to system Python GTK+ bindings.")
         else:

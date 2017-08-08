@@ -1,8 +1,10 @@
-from collections import namedtuple
-
 from .base import Widget
 
-Range = namedtuple('Range', ['min', 'max'])
+
+class Range:
+    def __init__(self, max, min):
+        self.max = max
+        self.min = min
 
 
 class Slider(Widget):
@@ -20,7 +22,7 @@ class Slider(Widget):
     :type default:      ``float``
 
     :param range:       Min and max values of the slider
-    :type range:        ``tuple``
+    :type range:        ``Range``
 
     :param on_slide:    Function to execute on slide
     :type on_slide:     ``callable``

@@ -30,7 +30,7 @@ Here's a complete code listing for our "Hello world" app::
         main().main_loop()
 
 
-Lets walk through this one line at a time.
+Let's walk through this one line at a time.
 
 The code starts with imports. First, we import toga::
 
@@ -138,10 +138,10 @@ environment`_ first, and installing toga in that virtual environment.
     * If you want to use the WebView widget, you'll also need to
       have WebKit, plus the GI bindings to WebKit installed.
 
-        * For Ubuntu that's provided by the libwebkitgtk-3.0-0 and
-          gir1.2-webkit-3.0 packages.
+        * For Ubuntu that's provided by the ``libwebkitgtk-3.0-0`` and
+          ``gir1.2-webkit-3.0`` packages.
 
-        * For Fedora it's all provided in the webkitgtk3 package.
+        * For Fedora it's all provided in the ``webkitgtk3`` package.
 
     If these requirements aren't met, Toga either won't work at all, or won't
     have full functionality.

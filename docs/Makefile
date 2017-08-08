@@ -6,11 +6,15 @@ SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
 PAPER         =
 BUILDDIR      = _build
+SOURCEDIR     = .
 
 # Internal variables.
 PAPEROPT_a4     = -D latex_paper_size=a4
 PAPEROPT_letter = -D latex_paper_size=letter
 ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) .
+VENV = ../env/bin/activate
+PORT = 8001
+
 # the i18n builder cannot share the environment and doctrees with the others
 I18NSPHINXOPTS  = $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) .
 
@@ -18,6 +22,7 @@ I18NSPHINXOPTS  = $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) .
 
 help:
 	@echo "Please use \`make <target>' where <target> is one of"
+	@echo "  instal     to create a virtualenv called 'env' in the docs directory"
 	@echo "  html       to make standalone HTML files"
 	@echo "  dirhtml    to make HTML files named index.html in directories"
 	@echo "  singlehtml to make a single large HTML file"
@@ -37,6 +42,7 @@ help:
 	@echo "  changes    to make an overview of all changed/added/deprecated items"
 	@echo "  linkcheck  to check all external links for integrity"
 	@echo "  doctest    to run all doctests embedded in the documentation (if enabled)"
+	@echo "  run        to start a local autoreloading webserver on port 8001"
 
 clean:
 	-rm -rf $(BUILDDIR)/*
@@ -151,3 +157,25 @@ doctest:
 	$(SPHINXBUILD) -b doctest $(ALLSPHINXOPTS) $(BUILDDIR)/doctest
 	@echo "Testing of doctests in the sources finished, look at the " \
 	      "results in $(BUILDDIR)/doctest/output.txt."
+
+spelling:
+	. $(VENV); $(SPHINXBUILD) -b spelling . _build/spelling
+	@echo
+	@echo "Check finished. Wrong words can be found in " \
+		"build/spelling/output.txt."
+
+install:
+	@echo "... setting up virtualenv"
+	virtualenv env
+	. $(VENV); pip install -r requirements_docs.txt
+	@echo "\n" \
+	      "-------------------------------------------------------------------------------------------------- \n" \
+		    "* watch, build and serve the documentation: make run \n" \
+		    "* check spelling: make spelling \n" \
+		    "\n" \
+				"enchant must be installed in order for pyenchant (and therefore spelling checks) to work. See \n" \
+				"http://docs.django-cms.org/en/latest/contributing/documentation.html#install-the-spelling-software \n" \
+	      "-------------------------------------------------------------------------------------------------- \n" \
+
+run:
+	. $(VENV); sphinx-autobuild $(ALLSPHINXOPTS) build/html --host 0.0.0.0 --port $(PORT)

@@ -84,7 +84,7 @@ class Button(Widget):
         Indicates whether the button can be pressed by the user.
 
         :returns:   Button status. Default is True.
-        :rtype:     ``Bool`
+        :rtype:     ``Bool``
         """
         return self._enabled
 

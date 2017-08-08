@@ -27,7 +27,8 @@ class SplitContainer(Widget):
         :param content: The list of components to be split
         :type  content: ``list`` of :class:`toga.Widget`
         '''
-        super().__init__(id=id, style=style, direction=direction, content=content)
+        super().__init__(id=id, style=style, direction=direction,
+                                                content=content)
         self._direction = direction
         self._containers = []
 
@@ -69,6 +70,8 @@ class SplitContainer(Widget):
             self._add_content(position, container)
 
             self._containers.append(container)
+
+        self.rehint()
 
     def _set_app(self, app):
         if self._content:
