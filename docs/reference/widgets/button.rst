@@ -1,3 +1,7 @@
+:orphan:
+
+.. warnings about this file not being included in any toctree will be suppressed by :orphan:
+
 Button
 ======
 
@@ -11,15 +15,15 @@ Usage
 -----
 
 The most basic button has a text label and a callback method for when it is pressed. The callback expects 1 argument, the instance of the button firing the event.
-    
+
 .. code-block:: Python
 
     import toga
-    
+
     def my_callback(button):
         # handle event
         pass
-    
+
     button = toga.Button('Click me', on_press=my_callback)
 
 Supported Platforms

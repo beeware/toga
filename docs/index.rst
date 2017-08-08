@@ -1,3 +1,30 @@
+.. raw:: html
+
+    <style>
+        .row {clear: both}
+
+        .column img {border: 1px solid black;}
+
+        @media only screen and (min-width: 1000px),
+               only screen and (min-width: 500px) and (max-width: 768px){
+
+            .column {
+                padding-left: 5px;
+                padding-right: 5px;
+                float: left;
+            }
+
+            .column3  {
+                width: 33.3%;
+            }
+
+            .column2  {
+                width: 50%;
+            }
+        }
+    </style>
+
+
 ====
 Toga
 ====
@@ -9,39 +36,52 @@ Toga is available on Mac OS, Windows, Linux (GTK), and mobile platforms such as 
 
 .. figure:: tutorial/screenshots/tutorial-2.png
     :align: center
-    :width: 300
+    :width: 500
 
-Quickstart
-==========
 
-In your virtualenv, install Toga, and then run it::
+.. rst-class::  row
 
-    $ pip install toga-demo
-    $ toga-demo
+Table of contents
+=================
 
-This will pop up a GUI window showing the full range of widgets available
-to an application using Toga.
+.. rst-class:: clearfix row
 
-Getting Started
----------------
+.. rst-class:: column column2
 
-To get started, you can dive into our :doc:`Tutorials </tutorial/index>` or check out the widget :doc:`Reference </reference/index>`.
 
-Prerequisites
-~~~~~~~~~~~~~
+:ref:`Tutorial <tutorial>`
+------------------------------
 
-Toga has some minimum requirements:
+Get started with a hands-on introduction to pytest for beginners
 
-* If you're on OS X, you need to be on 10.7 (Lion) or newer.
+.. rst-class:: column column2
 
-* If you're on Linux, you need to have GTK+ 3.4 or later. This is the
-  version that ships with Ubuntu 12.04; you'll need to have the
-  ``python3-gi`` package installed. If you want to use the WebView widget,
-  you'll also need to have WebKit, plus the GI bindings to WebKit
-  (``gir1.2-webkit-3.0``) installed.
 
-If these requirements aren't met, Toga either won't work at all, or won't
-have full functionality.
+:ref:`How-to guides <how-to>`
+-----------------------------
+
+Guides and recipes for common problems and tasks
+
+
+.. rst-class:: column column2
+
+:ref:`Reference <reference>`
+------------------------------
+
+Technical reference - commands, modules, classes, methods
+
+
+.. rst-class:: column column2
+
+:ref:`Background <background>`
+------------------------------
+
+
+Explanation and discussion of key topics and concepts
+
+
+.. rst-class:: clearfix row
+
 
 Community
 =========
@@ -57,15 +97,15 @@ Toga is part of the `BeeWare suite`_. You can talk to the community through:
 .. _@pybeeware on Twitter: https://twitter.com/pybeeware
 .. _pybee/general on Gitter: https://gitter.im/pybee/general
 
-Contents
-========
 
 .. toctree::
    :maxdepth: 2
-   :glob:
+   :hidden:
+   :titlesonly:
 
-   philosophy
+
    tutorial/index
-   topic/index
+   how-to/index
    reference/index
-   internals/index
+   background/index
+   project/index

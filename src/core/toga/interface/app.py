@@ -11,7 +11,7 @@ class App:
 
     When you create an App you need to provide it a name, an id for uniqueness
     (by convention, the identifier is a "reversed domain name".) and an
-    optional startup function which should run once the App has initialised.
+    optional startup function which should run once the App has initialized.
     The startup function typically constructs some initial user interface.
 
     Once the app is created you should invoke the main_loop() method, which
@@ -74,7 +74,7 @@ class App:
         '''
         The identifier for the app.
 
-        This is the reversed domain name, often used for targetting resources, etc.
+        This is the reversed domain name, often used for targeting resources, etc.
 
         :rtype: ``str``
         '''
