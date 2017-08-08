@@ -86,7 +86,6 @@ class Tree(TreeInterface, WidgetMixin):
             cell = column.dataCell
             cell.setEditable_(False)
             cell.setSelectable_(False)
-            # cell.setTextColor(NSColor.redColor)
             column.headerCell.stringValue = heading
             column.setDataCell_(custom_cell)
 
@@ -121,8 +120,6 @@ class Tree(TreeInterface, WidgetMixin):
             self._tree.collapseItem(node._impl)
         else:
             self._tree.expandItem(node._impl)
-
-    # def _set_color(self, node):
 
     def rehint(self):
         self._tree.reloadData()

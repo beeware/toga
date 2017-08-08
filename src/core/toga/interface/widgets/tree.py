@@ -68,24 +68,6 @@ class Node:
         self._update.append('icon')
 
     @property
-    def color(self):
-        '''
-        :returns: The current color of the node
-        :rtype: ``str``
-        '''
-        pass
-
-    @color.setter
-    def color(self, color):
-        '''
-        Set a color for the text of the node
-
-        :param color: Color to be set on the text
-        :type  color: ``str``
-        '''
-        pass
-
-    @property
     def tags(self):
         '''
         :returns: Current tags of the node
@@ -133,7 +115,8 @@ class Tree(Widget):
         if data is not None:
             self.data = data
 
-    def insert(self, item, parent=None, index=None, collapse=True):
+    def insert(self, item, parent=None, index=None,
+                                    collapse=True):
         '''
         Insert a node on the tree
 
