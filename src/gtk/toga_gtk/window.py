@@ -23,8 +23,8 @@ class Window:
         self.native.connect("delete-event", self.on_close)
         self.native.set_default_size(self.interface.size[0], self.interface.size[1])
 
-        self._toolbar_impl = None
-        self._toolbar_items = None
+        self.toolbar_native = None
+        self.toolbar_items = None
 
     def set_title(self, title):
         self.native.set_title(title)
@@ -33,15 +33,15 @@ class Window:
         app.native.add_window(self.native)
 
     def create_toolbar(self):
-        if self._toolbar_items is None:
-            self._toolbar_impl = Gtk.Toolbar()
-            self._toolbar_items = {}
+        if self.toolbar_items is None:
+            self.toolbar_native = Gtk.Toolbar()
+            self.toolbar_items = {}
         else:
-            for cmd, item_impl in self._toolbar_items.items():
-                self._toolbar_impl.remove(item_impl)
-                cmd._widgets.remove(item_impl)
+            for cmd, item_impl in self.toolbar_items.items():
+                self.toolbar_native.remove(item_impl)
+                cmd._impl._widgets.remove(item_impl)
 
-        self._toolbar_impl.set_style(Gtk.ToolbarStyle.BOTH)
+        self.toolbar_native.set_style(Gtk.ToolbarStyle.BOTH)
         for cmd in self.interface.toolbar:
             if cmd == GROUP_BREAK:
                 item_impl = Gtk.SeparatorToolItem()
@@ -56,8 +56,8 @@ class Window:
                 item_impl.set_tooltip_text(cmd.tooltip)
                 item_impl.connect("clicked", wrapped_handler(cmd, cmd.action))
                 cmd._widgets.append(item_impl)
-            self._toolbar_items[cmd] = item_impl
-            self._toolbar_impl.insert(item_impl, -1)
+            self.toolbar_items[cmd] = item_impl
+            self.toolbar_native.insert(item_impl, -1)
 
     def set_content(self, widget):
         if widget.native is None:
@@ -68,8 +68,8 @@ class Window:
 
         self._window_layout = Gtk.VBox()
 
-        if self._toolbar_impl:
-            self._window_layout.pack_start(self._toolbar_impl, False, False, 0)
+        if self.toolbar_native:
+            self._window_layout.pack_start(self.toolbar_native, False, False, 0)
         self._window_layout.pack_start(self.container.native, True, True, 0)
 
         self.native.add(self._window_layout)

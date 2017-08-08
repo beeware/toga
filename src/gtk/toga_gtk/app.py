@@ -63,6 +63,7 @@ from gi.repository import Gtk, Gio, GLib
 
 from toga.command import GROUP_BREAK, SECTION_BREAK, Command, Group
 # from .command import Command, Group
+import toga
 from .window import Window
 from toga import Icon
 from .utils import wrapped_handler
@@ -77,6 +78,7 @@ class App:
     Todo:
         * Creation of Menus is not working.
         * Disabling of menu items is not working.
+        * App Icon is not showing up
     """
     def __init__(self, interface):
         self.interface = interface
@@ -95,22 +97,22 @@ class App:
 
         self.actions = None
 
-
     def startup(self, data=None):
         self.interface.commands.add(
-            Command(None, 'About ' + self.interface.name, group=Group.APP),
-            Command(None, 'Preferences', group=Group.APP),
+            Command(None, 'About ' + self.interface.name, group=toga.Group.APP),
+            Command(None, 'Preferences', group=toga.Group.APP),
             # Quit should always be the last item, in a section on it's own
-            Command(lambda s: self.exit(), 'Quit ' + self.interface.name, shortcut='q', group=Group.APP, section=sys.maxsize),
-            Command(None, 'Visit homepage', group=Group.HELP)
+            Command(lambda s: self.exit(), 'Quit ' + self.interface.name, shortcut='q', group=toga.Group.APP, section=sys.maxsize),
+            Command(None, 'Visit homepage', group=toga.Group.HELP)
         )
 
         self.interface.startup()
 
         # Create the lookup table of menu items,
         # then force the creation of the menus.
-        self.actions = {}
+        self._actions = {}
         self.create_menus()
+        # self.interface.main_window._impl.create_toolbar()
 
     def activate(self, data=None):
         pass
@@ -122,7 +124,7 @@ class App:
     def create_menus(self):
         # Only create the menu if the menu item index has been created.
         if hasattr(self, '_actions'):
-            self.actions = {}
+            self._actions = {}
             menubar = Gio.Menu()
             label = None
             submenu = None
@@ -153,14 +155,14 @@ class App:
                         section = Gio.Menu()
 
                     try:
-                        action = self.actions[cmd]
+                        action = self._actions[cmd]
                     except KeyError:
                         cmd_id = "command-%s" % id(cmd)
                         action = Gio.SimpleAction.new(cmd_id, None)
                         if cmd.action:
                             action.connect("activate", wrapped_handler(self, cmd.action))
                         cmd._widgets.append(action)
-                        self.actions[cmd] = action
+                        self._actions[cmd] = action
                         self.native.add_action(action)
 
                     cmd._impl._set_enabled(cmd.enabled)
@@ -186,6 +188,9 @@ class App:
             self.native.set_menubar(menubar)
 
     def main_loop(self):
+        # Modify signal handlers to make sure Ctrl-C is caught and handled.
+        signal.signal(signal.SIGINT, signal.SIG_DFL)
+
         self.native.run(None)
 
     def exit(self):
