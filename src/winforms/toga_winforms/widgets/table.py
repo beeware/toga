@@ -10,25 +10,27 @@ class Table(TableInterface, WidgetMixin):
 
     def create(self):
         self._container = self
-        self._impl = WinForms.DataGridView()
-        self._impl.ColumnHeadersHeightSizeMode = WinForms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
-        self._impl.ReadOnly = True
-        dataGridViewColumn = []
-        for heading in self.headings:
-            col = WinForms.DataGridViewTextBoxColumn()
-            col.HeaderText = heading
-            dataGridViewColumn.append(col)
+        self._impl = WinForms.ListView()
 
-        self._impl.Columns.AddRange(dataGridViewColumn)
+        dataColumn = []
+        for heading in self.headings:
+            col = WinForms.ColumnHeader()
+            col.Text = heading
+            dataColumn.append(col)
+
+        self._impl.View = WinForms.View.Details
+        self._impl.Columns.AddRange(dataColumn)
  
     def insert(self, index, *data):
         if len(data) != len(self.headings):
             raise Exception('Data size does not match number of headings')
 
         if index is None:
-            self._impl.Rows.Add(*data)  
+            listViewItem = WinForms.ListViewItem(data); 
+            self._impl.Items.Add(listViewItem)  
         else:
-            self._impl.Rows.Insert(index,*data)  
+            listViewItem = WinForms.ListViewItem(data); 
+            self._impl.Items.Insert(index, listViewItem)  
          
 
 
