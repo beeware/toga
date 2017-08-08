@@ -42,7 +42,7 @@ classify and organize the commands in your application:
 
 Commands may not use all the metadata - for example, on some platforms, menus
 will contain icons; on other platforms, they won't. Toga will use the metadata
-if it is provided, but ignore it (or subsitute an appropriate default) if it
+if it is provided, but ignore it (or substitute an appropriate default) if it
 isn't.
 
 Commands can be enabled and disabled; if you disable a command, it will
@@ -66,7 +66,7 @@ You can also define custom groups.
 Example
 ~~~~~~~
 
-The following is an example of using
+The following is an example of using menus and commands::
 
     import toga
 
@@ -97,7 +97,7 @@ The following is an example of using
 This code defines a command ``cmd1`` that will be placed in first section of
 the "Stuff" group. It can be activated by pressing CTRL-k (or CMD-K on a Mac).
 
-The definitions for ``cmd2``, ``cmd3``, and ``cmd4`` have been ommitted, but would
+The definitions for ``cmd2``, ``cmd3``, and ``cmd4`` have been omitted, but would
 follow a similar pattern.
 
 It doesn't matter what order you add commands to the app - the group, section

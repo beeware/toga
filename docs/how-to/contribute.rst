@@ -1,5 +1,8 @@
-Contributing to Toga
-====================
+.. _contribute:
+
+=========================
+How to contribute to Toga
+=========================
 
 
 If you experience problems with Toga, `log them on GitHub`_. If you want to contribute code, please `fork the code`_ and `submit a pull request`_.
@@ -9,10 +12,10 @@ If you experience problems with Toga, `log them on GitHub`_. If you want to cont
 .. _submit a pull request: https://github.com/pybee/toga/pulls
 
 
-Setting up your development environment
----------------------------------------
+Set up your development environment
+=======================================
 
-The recommended way of setting up your development envrionment for Toga
+The recommended way of setting up your development environment for Toga
 is to install a virtual environment, install the required dependencies and
 start coding. Assuming that you are using ``virtualenvwrapper``, you only have
 to run::

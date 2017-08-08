@@ -7,6 +7,7 @@ dist
 build
 _build
 distribute-*
+docs/env
 local
 .tox
 node_modules

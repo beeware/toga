@@ -12,7 +12,7 @@ Cascading Style Sheets, (CSS).
 If you've done any design for the web, you will have come across CSS before as
 the mechanism that you use to lay out HTML on a web page. Although this is the
 reason CSS was developed, CSS itself is a general set of rules for laying out
-any "boxes" that are structured in a tree-like heirarchy. GUI widgets are an
+any "boxes" that are structured in a tree-like hierarchy. GUI widgets are an
 example of one such structure.
 
 To see how this works in practice, lets look at a more complex example,
