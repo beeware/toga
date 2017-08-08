@@ -9,6 +9,8 @@ _build
 distribute-*
 docs/env
 local
+venv
+.idea
 .tox
 node_modules
 README.md
