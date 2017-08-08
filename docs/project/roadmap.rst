@@ -67,7 +67,7 @@ Inputs are mechanisms for displaying and editing input provided by the user.
     - Cocoa: Done
     - GTK+: Gtk.TreeView with a Gtk.ListStore
     - iOS: UITableView
-* Tree: A scrollable display of heirarchical data
+* Tree: A scrollable display of hierarchical data
     - Cocoa: Done
     - GTK+: Gtk.TreeView with a Gtk.TreeStore
     - iOS: UITableView with navigation
@@ -82,14 +82,14 @@ Inputs are mechanisms for displaying and editing input provided by the user.
 Views
 ~~~~~
 
-Views are mechanisms for displaying rich content, usually in a readonly manner.
+Views are mechanisms for displaying rich content, usually in a read-only manner.
 
 * Separator - a visual separator; usually a faint line.
     - Cocoa: NSSeparator
     - GTK+:
     - iOS:
 * ProgressBar - A horizontal bar that displays progress, either progress
-    against a known value, or indeterminiate
+    against a known value, or indeterminate
     - Cocoa: Done
     - GTK+: Gtk.ProgressBar
     - iOS: UIProgressView
@@ -166,7 +166,7 @@ Containers are widgets that can contain other widgets.
     - iOS: ?
 * NavigationContainer - A container view that holds a navigable tree of subviews;
     essentially a view that has a "back" button to return to the previous view
-    in a heirarchy. Example of use: Top level navigation in the OS X System
+    in a hierarchy. Example of use: Top level navigation in the OS X System
     Preferences panel.
     - Cocoa: No native control
     - GTK+: No native control; Gtk.HeaderBar in 3.10+
@@ -227,7 +227,7 @@ features.
 * Easy handling of long running tasks - possibly using generators to yield
   control back to the event loop.
 * Notification when updates are available
-* Easy Licening/registration of apps. Monetization is not a bad thing, and
+* Easy Licensing/registration of apps. Monetization is not a bad thing, and
   shouldn't be mutually exclusive with open source.
 
 Platforms
