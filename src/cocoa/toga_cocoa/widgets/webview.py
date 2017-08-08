@@ -9,8 +9,8 @@ from ..libs import *
 class TogaWebView(WebView):
     @objc_method
     def webView_didFinishLoadForFrame_(self, sender, frame) -> None:
-        # print ("FINISHED LOADING")
-        pass
+        if self._interface.on_webview_load:
+            self._interface.on_webview_load(self._interface)
 
     @objc_method
     def acceptsFirstResponder(self) -> bool:
@@ -23,8 +23,8 @@ class TogaWebView(WebView):
 
 
 class WebView(WebViewInterface, WidgetMixin):
-    def __init__(self, id=None, style=None, url=None, on_key_down=None):
-        super().__init__(id=id, style=style, url=url, on_key_down=on_key_down)
+    def __init__(self, id=None, style=None, url=None, on_key_down=None, on_webview_load=None):
+        super().__init__(id=id, style=style, url=url, on_key_down=on_key_down, on_webview_load=on_webview_load)
         self._create()
 
     def create(self):
@@ -39,6 +39,12 @@ class WebView(WebViewInterface, WidgetMixin):
 
         # Add the layout constraints
         self._add_constraints()
+
+    def _get_dom(self):
+        # Utilises Step 2) of:
+        # https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/DisplayWebContent/Tasks/SaveAndLoad.html
+        html = self._impl.mainFrame.DOMDocument.documentElement.outerHTML ##domDocument.markupString
+        return html
 
     def _set_url(self, value):
         if value:
