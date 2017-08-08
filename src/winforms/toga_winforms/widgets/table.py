@@ -11,7 +11,6 @@ class Table(TableInterface, WidgetMixin):
     def create(self):
         self._container = self
         self._impl = WinForms.DataGridView()
-        self._impl = WinForms.DataGridView()
         self._impl.ColumnHeadersHeightSizeMode = WinForms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         self._impl.ReadOnly = True
         dataGridViewColumn = []
