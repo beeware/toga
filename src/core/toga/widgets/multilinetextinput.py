@@ -22,10 +22,10 @@ class MultilineTextInput(Widget):
 
     @property
     def value(self):
-        """ The value of the multiline text input field
+        """ The value of the multiline text input field.
 
         Returns:
-            (str) The text of the Widget.
+            The text of the Widget as a ``str``.
         """
         return self._value
 

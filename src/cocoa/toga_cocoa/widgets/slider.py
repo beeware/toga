@@ -29,8 +29,8 @@ class Slider(Widget):
         self.native.doubleValue = value
 
     def set_range(self, range):
-        self.native.minValue = range.min
-        self.native.maxValue = range.max
+        self.native.minValue = range[0]
+        self.native.maxValue = range[1]
 
     def set_enabled(self, value):
         self.native.enabled = value

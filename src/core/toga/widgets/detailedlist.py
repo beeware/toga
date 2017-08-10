@@ -10,7 +10,11 @@ class DetailedList(Widget):
         on_delete:
         on_refresh:
         style:
-        factory:
+        factory (:obj:`module`): A python module that is capable to return a
+            implementation of this class with the same name. (optional & normally not needed)
+
+    Todo:
+        * Add missing docstrings.
     """
 
     def __init__(self, id=None, data=None, on_delete=None, on_refresh=None, style=None, factory=None):

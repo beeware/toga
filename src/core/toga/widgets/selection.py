@@ -2,23 +2,18 @@ from .base import Widget
 
 
 class Selection(Widget):
+    """ The Selection widget lets you pick from a defined selection of options.
+
+    Args:
+        id (str): An identifier for this widget.
+        style ( :class:`colosseum.CSSNode`): An optional style object.
+        If no style is provided then a new one will be created for the widget.
+        items (``list`` of ``str``): The items for the selection.
+        factory (:obj:`module`): A python module that is capable to return a
+            implementation of this class with the same name. (optional & normally not needed)
     """
-    Selection widget
-    """
+
     def __init__(self, id=None, style=None, items=list(), factory=None):
-        """
-        Instantiate a new instance of the selection widget
-
-        :param id:          An identifier for this widget.
-        :type  id:          ``str``
-
-        :param style:       an optional style object. If no style is provided then a
-                            new one will be created for the widget.
-        :type style:        :class:`colosseum.CSSNode`
-
-        :param items:       Items for the selection:
-        :type  items:       ``list`` of ``str``
-        """
         super().__init__(id=id, style=style, factory=factory)
 
         self._impl = self.factory.Selection(interface=self)
@@ -29,10 +24,10 @@ class Selection(Widget):
 
     @property
     def items(self):
-        """
-        The list of items
+        """ The list of items.
 
-        :rtype: ``list`` of ``str``
+        Returns:
+             The ``list`` of ``str`` of all selectable items.
         """
         return self._items
 
@@ -47,10 +42,10 @@ class Selection(Widget):
 
     @property
     def value(self):
-        """
-        The value of the selected item
+        """ The value of the currently selected item.
 
-        :rtype: ``str``
+        Returns:
+            The selected item as a ``str``.
         """
         return self._impl.get_selected_item()
 

@@ -2,24 +2,18 @@ from .base import Widget
 
 
 class Switch(Widget):
-    """
-    Switch widget, a clickable button with two stable states, True (on, checked) and False (off, unchecked)
+    """ Switch widget, a clickable button with two stable states, True (on, checked) and False (off, unchecked)
 
-    :param label:       Text to be shown next to the switch
-    :type label:        ``str``
-
-    :param id:          An identifier for this widget.
-    :type  id:          ``str``
-
-    :param style:       an optional style object. If no style is provided then a
-                        new one will be created for the widget.
-    :type style:        :class:`colosseum.CSSNode`
-
-    :param on_toggle:    Function to execute when pressed
-    :type on_toggle:     ``callable``
-
-    :param is_on        Current on or off state of the switch
-    :type is_on         ``Bool`
+    Args:
+        label (str): Text to be shown next to the switch.
+        id (str): AN identifier for this widget.
+        style (:class:`colosseum.CSSNode`): An optional style object.
+            If no style is provided then a new one will be created for the widget.
+        on_toggle (``callable``): Function to execute when pressed.
+        is_on (bool): Current on or off state of the switch.
+        enabled (bool): Whether or not interaction with the button is possible, defaults to `True`.
+        factory (:obj:`module`): A python module that is capable to return a
+            implementation of this class with the same name. (optional & normally not needed)
     """
 
     def __init__(self, label, id=None, style=None, on_toggle=None, is_on=False, enabled=True, factory=None):
@@ -34,20 +28,15 @@ class Switch(Widget):
 
     @property
     def label(self):
-        """
-        :returns: The label value
-        :rtype: ``str``
+        """ Accompanying text label of the Switch.
+
+        Returns:
+            The label text of the widget as a ``str`.
         """
         return self._label
 
     @label.setter
     def label(self, value):
-        """
-        Set the label value
-
-        :param value: The new label value
-        :type  value: ``str``
-        """
         if value is None:
             self._label = ''
         else:
@@ -57,10 +46,10 @@ class Switch(Widget):
 
     @property
     def on_toggle(self):
-        """
-        The callable function for when the switch is pressed
+        """ The callable function for when the switch is pressed
 
-        :rtype: ``callable``
+        Returns:
+            The ``callable`` on_toggle function.
         """
         return self._on_toggle
 
@@ -70,21 +59,15 @@ class Switch(Widget):
 
     @property
     def is_on(self):
-        """
-        :returns: The is_on value
+        """ Button Off/On state.
 
-        :rtype: ``Bool``
+        Returns:
+            ``True`` if on and ``False`` if the switch is off.
         """
         return self._impl.get_is_on()
 
     @is_on.setter
     def is_on(self, value):
-        """
-        Set the is_on value
-
-        :param value: The new is_on value
-        :type  value: ``Bool``
-        """
         if value is True:
             self._impl.set_is_on(True)
         elif value is False:
@@ -92,21 +75,16 @@ class Switch(Widget):
 
     @property
     def enabled(self):
-        """
-        :returns: The enabled state of the switch
+        """ The enabled state of the switch
 
-        :rtype  value: ``Bool``
+        Returns:
+            ``True`` if interaction with the widget is possible,
+            otherwise ``False``.
         """
         return self._enabled
 
     @enabled.setter
     def enabled(self, value):
-        """
-        Set the enabled state of the switch
-
-        :param value: The new enabled value
-        :type  value: ``Bool``
-        """
         if value is True:
             self._enabled = True
             self._impl.set_enabled(True)

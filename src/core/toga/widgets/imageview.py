@@ -2,23 +2,21 @@ from .base import Widget
 
 
 class ImageView(Widget):
-    '''
-    An image viewer
-    '''
-    def __init__(self, id=None, style=None, factory=None,
-                 image=None):
-        '''
-        Instantiate a new image viewer widget
-        
-        :param id:          An identifier for this widget.
-        :type  id:          ``str``
-    
-        :param style:       an optional style object. If no style is provided then a
-                            new one will be created for the widget.
-        :type style:        :class:`colosseum.CSSNode`
-    
-        :param image:    Image to display
-        '''
+    """
+
+    Args:
+        image (:class:`toga.Image`): The image to display.
+        id (str): An identifier for this widget.
+        style (:class:`colosseum.CSSNode`):
+        factory (:obj:`module`): A python module that is capable to return a
+            implementation of this class with the same name. (optional & normally not needed)
+
+    Todo:
+        * Finish implementation.
+    """
+
+    def __init__(self, image=None,
+                 id=None, style=None, factory=None, ):
         super().__init__(id=id, style=style, factory=factory)
 
         self._impl = self.factory.ImageView(interface=self)
@@ -34,20 +32,20 @@ class ImageView(Widget):
         self._image = image
         self._impl.set_image(self._image)
 
-    # @property
-    # def alignment(self):
-    #     return self._alignment
+        # @property
+        # def alignment(self):
+        #     return self._alignment
 
-    # @alignment.setter
-    # def alignment(self, value):
-    #     self._alignment = value
-    #     self._impl.setAlignment_(NSTextAlignment(self._alignment))
+        # @alignment.setter
+        # def alignment(self, value):
+        #     self._alignment = value
+        #     self._impl.setAlignment_(NSTextAlignment(self._alignment))
 
-    # @property
-    # def scaling(self):
-    #     return self._scaling
+        # @property
+        # def scaling(self):
+        #     return self._scaling
 
-    # @scaling.setter
-    # def scaling(self, value):
-    #     self._scaling = value
-    #     self._impl.setAlignment_(NSTextAlignment(self._scaling))
+        # @scaling.setter
+        # def scaling(self, value):
+        #     self._scaling = value
+        #     self._impl.setAlignment_(NSTextAlignment(self._scaling))

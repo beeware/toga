@@ -2,23 +2,20 @@ from .base import Widget
 
 
 class WebView(Widget):
-    def __init__(self, id=None, style=None, factory=None, url=None, on_key_down=None):
-        """ Instantiate a new instance of the Web view widget.
+    """ A widget to display and open html content.
 
-        :param id:          An identifier for this widget.
-        :type  id:          ``str``
-
-        :param style:       an optional style object. If no style is provided then a
-                            new one will be created for the widget.
-        :type style:        :class:`colosseum.CSSNode`
-
-        :param url: The URL to start with
-        :type  url: ``str``
-
-        :param on_key_down: The callback method for when the a key is pressed within
+    Args:
+        id (str): An identifier for this widget.
+        style (:class:`colosseum.CSSNode`): An optional style object. If no style is provided then
+            a new one will be created for the widget.
+        factory (:obj:`module`): A python module that is capable to return a
+            implementation of this class with the same name. (optional & normally not needed)
+        url (str): The URL to start with.
+        on_key_down (``callable``): The callback method for when the a key is pressed within
             the web view
-        :type  on_key_down: ``callable``
-        """
+    """
+
+    def __init__(self, id=None, style=None, factory=None, url=None, on_key_down=None):
         super(WebView, self).__init__(id=id, style=style, factory=factory)
 
         self._impl = self.factory.WebView(interface=self)
@@ -27,41 +24,35 @@ class WebView(Widget):
 
     @property
     def url(self):
-        """
-        The current URL
+        """ The current URL
 
-        :rtype: ``str``
+        Returns:
+            The current URL as a ``str``.
         """
         return self._url
 
     @url.setter
     def url(self, value):
-        """
-        Set URL
-        :param value: url
-        :type value: ``str`
-        """
         self._url = value
         self._impl.set_url(value)
 
     def set_content(self, root_url, content):
-        """
-        Set the content of the web view
+        """ Set the content of the web view.
 
-        :param root_url: The URL
-        :type  root_url: ``str``
+        Args:
+            root_url (str): The URL.
+            content (str): The new content.
 
-        :param content: The new content
-        :type  content: ``str``
+        Returns:
+
         """
         self._url = root_url
         self._impl.set_content(root_url, content)
 
     def evaluate(self, javascript):
-        """
-        Evaluate a JavaScript expression
+        """ Evaluate a JavaScript expression
 
-        :param javascript: The javascript expression
-        :type  javascript: ``str``
+        Args:
+            javascript (str): The javascript expression to evaluate.
         """
         self._impl.set_evaluate(javascript)

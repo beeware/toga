@@ -2,29 +2,20 @@ from .base import Widget
 
 
 class Button(Widget):
-    """
-    Button widget, a clickable button
+    """ Button widget, a clickable button.
 
-    :param label:       Text to be shown on the button
-    :type label:        ``str``
-
-    :param id:          An identifier for this widget.
-    :type  id:          ``str``
-
-    :param style:       an optional style object. If no style is provided then a
-                        new one will be created for the widget.
-    :type style:        :class:`colosseum.CSSNode`
-
-    :param factory:     an optional factory object. If no factory is provided then a
-                        new one will be created for the widget based on the current
-                        platform.
-    :type factory:      A Toga platform factory
-
-    :param on_press:    Function to execute when pressed
-    :type on_press:     ``callable``
+    Args:
+        label (str): Text to be shown on the button.
+        id (str): An identifier for this widget.
+        style (:class:`colosseum.CSSNode`): An optional style object. If no style is provided then
+            a new one will be created for the widget.
+        on_press (``callable``): Function to execute when pressed.
+        enabled (bool): Whether or not interaction with the button is possible, defaults to `True`.
+        factory (:obj:`module`): A python module that is capable to return a
+            implementation of this class with the same name. (optional & normally not needed)
     """
 
-    def __init__(self, label, id=None, style=None, factory=None, on_press=None, enabled=True):
+    def __init__(self, label, id=None, style=None, on_press=None, enabled=True, factory=None):
         super().__init__(id=id, style=style, factory=factory)
 
         # Create a platform specific implementation of a Button
@@ -38,19 +29,13 @@ class Button(Widget):
     @property
     def label(self):
         """
-        :returns: The label value
-        :rtype: ``str``
+        Returns:
+            The button label as a ``str`
         """
         return self._label
 
     @label.setter
     def label(self, value):
-        """
-        Set the label value
-
-        :param value: The new label value
-        :type  value: ``str``
-        """
         if value is None:
             self._label = ''
         else:
@@ -59,42 +44,29 @@ class Button(Widget):
 
     @property
     def on_press(self):
-        """
-        The callable function for when the button is pressed
+        """ The callable function for when the button is pressed
 
-        :rtype: ``callable``
+        Returns:
+            The function ``callable`` that is called on button press.
         """
         return self._on_press
 
     @on_press.setter
     def on_press(self, handler):
-        """
-        Set the function to be executed on button press.
-
-        :param handler:     callback function
-        :type handler:      ``callable``
-        """
         self._on_press = handler
         self._impl.set_on_press(handler)
 
     @property
     def enabled(self):
-        """
-        Indicates whether the button can be pressed by the user.
+        """ Indicates whether the button can be pressed by the user.
 
-        :returns:   Button status. Default is True.
-        :rtype:     ``Bool`
+        Returns:
+            The button status. Default is ``True``.
         """
         return self._enabled
 
     @enabled.setter
     def enabled(self, value):
-        """
-        Set if the button can be pressed by the user.
-
-        :param value:   Enabled state for button
-        :type value:    ``Bool``
-        """
         if value is None:
             self._enabled = True
         else:

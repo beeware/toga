@@ -3,7 +3,7 @@ from .platform import get_platform_factory
 
 class Font:
     def __init__(self, family, size):
-        """ A `Font` is a font family (e.g. "Helvetica") and a size (e.g. 15) that can
+        """ A :obj:`Font` is a font family (e.g. "Helvetica") and a size (e.g. 15) that can
         be applied to widgets.
 
         Args:
@@ -22,7 +22,7 @@ class Font:
         """ Font family, e.g. Helvetica
 
         Returns:
-            Returns a (str) with the name of the font family
+            Returns a ``str`` with the name of the font family
         """
         return self._family
 
@@ -30,7 +30,7 @@ class Font:
     def size(self):
         """ Font size
 
-        Returns
-            (int) The size of the font.
+        Returns:
+            The size of the font in ``int``.
         """
         return self._size

@@ -2,33 +2,23 @@ from .base import Widget
 
 
 class TextInput(Widget):
-    '''
-    Text input widget
-    '''
+    """ A widget get user input.
+
+    Args:
+        id (str): An identifier for this widget.
+        style (:class:`colosseum.CSSNode`): An optional style object. If no style is provided then
+            a new one will be created for the widget.
+        factory (:obj:`module`): A python module that is capable to return a
+            implementation of this class with the same name. (optional & normally not needed)
+        initial (str): The initial text for the input.
+        placeholder (str): If no input is present this text is shown.
+        readonly (bool):  Whether a user can write into the text input, defaults to `False`.
+    """
+
     def __init__(
             self, id=None, style=None, factory=None,
             initial=None, placeholder=None, readonly=False):
-        '''
-        Instantiate a new instance of the text input widget
-
-        :param id:          An identifier for this widget.
-        :type  id:          ``str``
-
-        :param style:       an optional style object. If no style is provided then a
-                            new one will be created for the widget.
-        :type style:        :class:`colosseum.CSSNode`
-
-        :param initial: The initial text
-        :type  initial: ``str``
-
-        :param placeholder: The placeholder text
-        :type  placeholder: ``str``
-
-        :param readonly: Whether a user can write into the text input, defaults to `False`
-        :type  readonly: ``bool``
-        '''
         super().__init__(id=id, style=style, factory=factory)
-
 
         # Create a platform specific implementation of a TextInput
         self._impl = self.factory.TextInput(interface=self)
@@ -39,11 +29,12 @@ class TextInput(Widget):
 
     @property
     def readonly(self):
-        '''
-        Whether a user can write into the text input
+        """ Whether a user can write into the text input
 
-        :rtype: ``bool``
-        '''
+        Returns:
+            ``True`` if only read is possible.
+            ``False`` if read and write is possible.
+        """
         return self._readonly
 
     @readonly.setter
@@ -53,11 +44,11 @@ class TextInput(Widget):
 
     @property
     def placeholder(self):
-        '''
-        The placeholder text
+        """ The placeholder text.
 
-        :rtype: ``str``
-        '''
+        Returns:
+            The placeholder text as a ``str``.
+        """
         return self._placeholder
 
     @placeholder.setter
@@ -71,11 +62,11 @@ class TextInput(Widget):
 
     @property
     def value(self):
-        '''
-        The value of the text input field
+        """ The value of the text input field
 
-        :rtype: ``str``
-        '''
+        Returns:
+            The current text of the widget as a ``str``.
+        """
         return self._impl.get_value()
 
     @value.setter
@@ -88,7 +79,5 @@ class TextInput(Widget):
         self.rehint()
 
     def clear(self):
-        '''
-        Clear the value
-        '''
+        """ Clears the text of the widget """
         self.value = ''

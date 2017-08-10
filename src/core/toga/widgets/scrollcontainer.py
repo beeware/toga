@@ -2,20 +2,20 @@ from .base import Widget
 
 
 class ScrollContainer(Widget):
+    """ Instantiate a new instance of the scrollable container widget.
+
+    Args:
+        id (str): An identifier for this widget.
+        style (:class:`colosseum.CSSNode`): An optional style object.
+            If no style is provided then a new one will be created for the widget.
+        horizontal (bool):  If True enable horizontal scroll bar.
+        vertical (bool): If True enable vertical scroll bar.
+        content (:class:`toga.Widget`): The content of the scroll window.
+        factory (:module:): A provided factory module will be used to create the
+            implementation of the ScrollContainer.
+    """
     def __init__(self, id=None, style=None, horizontal=True,
                  vertical=True, content=None, factory=None):
-        """ Instantiate a new instance of the scrollable container widget.
-
-        Args:
-            id (str): An identifier for this widget.
-            style (:class:`colosseum.CSSNode`): An optional style object.
-                If no style is provided then a new one will be created for the widget.
-            horizontal (bool):  If True enable horizontal scroll bar.
-            vertical (bool): If True enable vertical scroll bar.
-            content (:class:`toga.Widget`): The content of the scroll window.
-            factory (:module:): A provided factory module will be used to create the
-                implementation of the ScrollContainer.
-        """
         super().__init__(id=id, style=style, factory=factory)
 
         # Create a platform specific implementation of a Scroll Container

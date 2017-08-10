@@ -4,6 +4,13 @@ from ..platform import get_platform_factory
 
 
 class Point:
+    """ The :obj:`Point class hold the x and y coordinates of a point.
+
+    Args:
+        top (int or float): The y coordinate of the point.
+        left (int or float): The x coordinate of the point.
+    """
+
     def __init__(self, top, left):
         self.top = top
         self.left = left
@@ -13,6 +20,19 @@ class Point:
 
 
 class Layout:
+    """ The :obj:`Layout` is the mathematical representation of a box.
+    It has attributes like width, height, top, left to describe its bounding box.
+    With the :obj:`dirty` flag it can track whether or not its as well as the
+    layout of all children needs to be reevaluated.
+
+    Args:
+        node (:obj:`toga.Widget`): The widget that the layout should be attached to.
+        width (int): The width of the box.
+        height (int): The height of the box.
+        top (int): The y coordinate of the top side of the box.
+        left (int): The x coordinate of the left side of the box.
+    """
+
     def __init__(self, node, width=None, height=None, top=0, left=0):
         self.node = node
         self.width = width
@@ -109,8 +129,7 @@ class Layout:
 
 
 class Widget:
-    '''
-    This is the base widget implementation that all widgets in Toga
+    """ This is the base widget implementation that all widgets in Toga
     derive from.
 
     It defines the interface for core functionality for children, styling,
@@ -120,13 +139,14 @@ class Widget:
     be made concrete by some platform-specific code for the _apply_layout
     method.
 
-    :param id:      An identifier for this widget.
-    :type  id:      ``str``
+    Args:
+        id (str): An identifier for this widget.
+        style (:obj:`colosseum.CSSNode`): An optional style object.
+            If no style is provided then a new one will be created for the widget.
+        factory (:obj:`module`): A python module that is capable to return a
+            implementation of this class with the same name (optional & normally not needed).
+    """
 
-    :param style:   An optional style object. If no style is provided then a
-                    new one will be created for the widget.
-    :type style:    :class:`colosseum.CSSNode`
-    '''
     def __init__(self, id=None, style=None, factory=None):
         self._id = id if id else identifier(self)
         self._parent = None
@@ -151,48 +171,44 @@ class Widget:
 
     @property
     def id(self):
-        '''
-        The node identifier. This id can be used to target CSS directives
+        """ The node identifier. This id can be used to target CSS directives
 
-        :rtype: ``str``
-        '''
+        Returns:
+            The widgets identifier as a ``str``.
+        """
         return self._id
 
     @property
     def parent(self):
-        '''
-        The parent of this node.
+        """ The parent of this node.
 
-        :rtype: :class:`toga.Widget`
-        '''
+        Returns:
+            The parent :class:`toga.Widget`.
+        """
         return self._parent
 
     @property
     def children(self):
-        '''
-        The children of this node.
-
+        """ The children of this node.
         This *always* returns a list, even if the node is a leaf
         and cannot have children.
 
-        :rtype: ``list``
-        :return: A list of the children for this widget
-        '''
+        Returns:
+            A list of the children for this widget.
+        """
         if self._children is None:
             return []
         else:
             return self._children
 
     def add(self, child):
-        '''
-        Add a widget as a child of this one.
+        """ Add a widget as a child of this one.
+        Args:
+            child (:class:`toga.Widget`): A widget to add as a child to this widget.
 
-        Raises an :class:`ValueError` if this widget is a leaf, and cannot
-        have children.
-
-        :param child: The child to add to the widget
-        :type  child: :class:`toga.Widget`
-        '''
+        Raises:
+            ValueError: If this widget is a leaf, and cannot have children.
+        """
         if self._children is None:
             raise ValueError('Widget cannot have children')
 
@@ -208,21 +224,19 @@ class Widget:
 
     @property
     def app(self):
-        '''
-        The App to which this widget belongs.
+        """ The App to which this widget belongs.
+        On setting the app we also iterate over all children of this widget and set them to the same app.
 
-        :rtype: :class:`toga.App`
-        '''
+        Returns:
+            The :class:`toga.App` to which this widget belongs.
+
+        Raises:
+            ValueError: If the widget is already associated with another app.
+        """
         return self._app
 
     @app.setter
     def app(self, app):
-        '''
-        Set the app to which this widget belongs
-
-        :param app: The Application host
-        :type  app: :class:`toga.App`
-        '''
         if self._app is not None:
             if self._app != app:
                 raise ValueError("Widget %s is already associated with an App" % self)
@@ -235,21 +249,16 @@ class Widget:
 
     @property
     def window(self):
-        '''
-        The Window to which this widget belongs.
+        """ The Window to which this widget belongs.
+        On setting the window, we automatically update all children of this widget to belong to the same window.
 
-        :rtype: :class:`toga.Window`
-        '''
+        Returns:
+            The :class:`toga.Window` to which the widget belongs.
+        """
         return self._window
 
     @window.setter
     def window(self, window):
-        '''
-        Set the Window to which this widget belongs.
-
-        :param window: The new window
-        :type  window: :class:`toga.Window`
-        '''
         self._window = window
         if self._impl:
             self._impl.set_window(window)
@@ -259,12 +268,11 @@ class Widget:
 
     @property
     def style(self):
-        '''
-        The style object for this widget.
+        """ The style object for this widget.
 
-        :return: The style for this widget
-        :rtype: :class:`colosseum.CSSNode`
-        '''
+        Returns:
+            The style object :class:`colosseum.CSSNode` of the widget.
+        """
         return self._style
 
     @style.setter
@@ -273,6 +281,11 @@ class Widget:
 
     @property
     def font(self):
+        """ Font the widget.
+
+        Returns:
+            The :class:`toga.Font` of the widget.
+        """
         return self._font
 
     @font.setter
@@ -320,4 +333,3 @@ class Widget:
                     child._impl._update_child_layout()
                 except:
                     pass
-

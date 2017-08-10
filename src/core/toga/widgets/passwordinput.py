@@ -2,29 +2,23 @@ from .base import Widget
 
 
 class PasswordInput(Widget):
+    """ This widgets behaves like a TextInput but does not reveal what text is entered.
+
+    Args:
+        id (str): An identifier for this widget.
+        style (:class:`colosseum.CSSNode`): An optional style object. If no style is provided then
+            a new one will be created for the widget.
+        factory (:obj:`module`): A python module that is capable to return a
+            implementation of this class with the same name. (optional & normally not needed)
+        initial (str): The initial text that is displayed before the user inputs anything.
+        placeholder (str): The text that is displayed if no input text is present.
+        readonly (bool): Whether a user can write into the text input, defaults to `False`.
+    """
+
     def __init__(
             self, id=None, style=None, factory=None,
             initial=None, placeholder=None, readonly=False):
-        """ Instantiate a new instance of the password input widget
-
-        :param id:          An identifier for this widget.
-        :type  id:          ``str``
-
-        :param style:       an optional style object. If no style is provided then a
-                            new one will be created for the widget.
-        :type style:        :class:`colosseum.CSSNode`
-
-        :param initial: The initial text
-        :type  initial: ``str``
-
-        :param placeholder: The placeholder text
-        :type  placeholder: ``str``
-
-        :param readonly: Whether a user can write into the text input, defaults to `False`
-        :type  readonly: ``bool``
-        """
         super().__init__(id=id, style=style, factory=factory)
-
 
         # Create a platform specific implementation of a PasswordInput
         self._impl = self.factory.PasswordInput(interface=self)
@@ -37,7 +31,9 @@ class PasswordInput(Widget):
     def readonly(self):
         """ Whether a user can write into the password input
 
-        :rtype: ``bool``
+        Returns:
+            ``True`` if the user can only read,
+            ``False`` if the user can read and write into the input.
         """
         return self._readonly
 
@@ -69,7 +65,7 @@ class PasswordInput(Widget):
         """ The value of the text input field.
 
         Returns:
-            value (str): The text of the password input widget.
+            The text as a ``str`` of the password input widget.
         """
         return self._impl.get_value()
 
@@ -83,6 +79,6 @@ class PasswordInput(Widget):
         self.rehint()
 
     def clear(self):
-        """ Clear the value
+        """ Clears the input field of the widget.
         """
         self.value = ''

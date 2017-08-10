@@ -9,10 +9,13 @@ def get_platform_factory(factory=None):
     specific implementations.
 
     Args:
-        factory (module):
+        factory (:obj:`module`): (optional) Provide a custom factory that is automatically returned unchanged.
 
     Returns: The suitable factory for the current host platform
         or the factory that was given as a argument.
+
+    Raises:
+        RuntimeError: If no supported hots platform can be identified.
     """
     if factory is not None:
         return factory

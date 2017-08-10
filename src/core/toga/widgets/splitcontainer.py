@@ -2,29 +2,23 @@ from .base import Widget
 
 
 class SplitContainer(Widget):
-    """
-    Split container widget
+    """ A SplitContainer displays two widgets vertically or horizontally
+    next to each other with a movable divider.
+
+    Args:
+        id (str):  An identifier for this widget.
+        style (:class:`colosseum.CSSNode`): An optional style object.
+            If no style is provided then a new one will be created for the widget.
+        direction: The direction for the container split,
+            either `SplitContainer.HORIZONTAL` or `SplitContainer.VERTICAL`
+        content(``list`` of :class:`toga.Widget`): The list of components to be split.
+        factory (:obj:`module`): A python module that is capable to return a
+            implementation of this class with the same name. (optional & normally not needed)
     """
     HORIZONTAL = False
     VERTICAL = True
 
     def __init__(self, id=None, style=None, direction=VERTICAL, content=None, factory=None):
-        """ Instantiate a new instance of the split container widget
-
-        :param id:          An identifier for this widget.
-        :type  id:          ``str``
-
-        :param style:       an optional style object. If no style is provided then a
-                            new one will be created for the widget.
-        :type style:        :class:`colosseum.CSSNode`
-
-        :param direction: The direction for the container split, either `SplitContainer.HORIZONTAL` or
-            `SplitContainer.VERTICAL`
-        :type  direction: ``bool``
-
-        :param content: The list of components to be split
-        :type  content: ``list`` of :class:`toga.Widget`
-        """
         super().__init__(id=id, style=style, factory=factory)
         self._direction = direction
         self._containers = []
@@ -37,10 +31,14 @@ class SplitContainer(Widget):
 
     @property
     def content(self):
-        """
-        The content of the split container
+        """ The sub layouts of the `SplitContainer`.
 
-        :rtype: ``list`` of :class:`toga.Widget`
+        Returns:
+            A ``list`` of :class:`toga.Widget`. Each element of the list
+            is a sub layout of the `SplitContainer`
+
+        Raises:
+            ValueError: If the list is less than two elements long.
         """
         return self._content
 
@@ -73,10 +71,10 @@ class SplitContainer(Widget):
 
     @property
     def direction(self):
-        """
-        The direction of the split
+        """ The direction of the split
 
-        :rtype: ``bool``
+        Returns:
+            True if `True` for vertical, `False` for horizontal.
         """
         return self._direction
 

@@ -2,17 +2,18 @@ from .base import Widget
 
 
 class OptionContainer(Widget):
-    def __init__(self, id=None, style=None, content=None, factory=None):
-        """ Instantiate a new instance of the option container widget
+    """ The option container widget.
 
-        Args:
-            id (str):   An identifier for this widget.
-            style (:class:`colosseum.CSSNode`): an optional style object.
-                If no style is provided then a new one will be created for the widget.
-            content (``list`` of ``tuple`` (``str``, :class:`toga.Widget`)):
-                Each tuple in the list is composed of a title for the option and
-                the widget tree that is displayed in the option.
-        """
+    Args:
+        id (str):   An identifier for this widget.
+        style (:class:`colosseum.CSSNode`): an optional style object.
+            If no style is provided then a new one will be created for the widget.
+        content (``list`` of ``tuple`` (``str``, :class:`toga.Widget`)):
+            Each tuple in the list is composed of a title for the option and
+            the widget tree that is displayed in the option.
+    """
+
+    def __init__(self, id=None, style=None, content=None, factory=None):
         super().__init__(id=id, style=style, factory=factory)
         self._impl = self.factory.OptionContainer(interface=self)
 
@@ -21,13 +22,11 @@ class OptionContainer(Widget):
                 self.add(label, widget)
 
     def add(self, label, widget):
-        """ Add a widget to the option container
+        """ Add a new option to the option container.
 
-        :param label: The label for the option
-        :type  label: ``str``
-
-        :param widget: The widget to add
-        :type  widget: :class:`toga.Widget`
+        Args:
+            label (str): The label for the option.
+            widget (:class:`toga.Widget`): The widget to add to the option.
         """
         widget._update_layout()
         widget.app = self.app

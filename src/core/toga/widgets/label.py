@@ -4,25 +4,19 @@ from toga.constants import *
 
 class Label(Widget):
     """
-    Label widget
+
+    Args:
+        text (str): Text of the label.
+        id (str): An identifier for this widget.
+        style (:class:`colosseum.CSSNode`): An optional style object. If no style is provided then
+            a new one will be created for the widget.
+        factory (:obj:`module`): A python module that is capable to return a
+            implementation of this class with the same name. (optional & normally not needed)
+        alignment (int): Alignment of the label, default is left.
+            Alignments can be found in `toga.constants
     """
+
     def __init__(self, text, id=None, style=None, factory=None, alignment=LEFT_ALIGNED):
-        """ Instantiate a new instance of the label widget
-
-        :param text:        Text of the label
-        :type  text:        ``str``
-
-        :param id:          An identifier for this widget.
-        :type  id:          ``str``
-
-        :param style:       an optional style object. If no style is provided then a
-                            new one will be created for the widget.
-        :type style:        :class:`colosseum.CSSNode`
-
-        :param alignment:   Alignment of the label, default is left. Alignments can be found
-                            in toga.constants
-        :type alignment:    ``int``
-        """
         super().__init__(id=id, style=style, factory=factory)
 
         # Create a platform specific implementation of a Label
@@ -33,12 +27,10 @@ class Label(Widget):
 
     @property
     def alignment(self):
-        """
-        The alignment of the label text
+        """ The alignment of the label text
 
-        :returns: Alignment of the label, default is left. Alignments can be found
-                            in toga.constants
-        :rtype: ``int``
+        Returns:
+            (int) Alignment of the label, default is left.
         """
         return self._alignment
 
@@ -49,10 +41,10 @@ class Label(Widget):
 
     @property
     def text(self):
-        """
-        The text of the label
+        """ The label text of the.
 
-        :rtype: ``str``
+        Returns:
+            The text of the label as a ``str``.
         """
         return self._text
 

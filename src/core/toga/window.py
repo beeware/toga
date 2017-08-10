@@ -6,9 +6,21 @@ from .platform import get_platform_factory
 
 
 class Window:
+    """ The window is the top level container of a app.
+
+    Args:
+        id (str): The ID of the window (optional).
+        title (str): Title for the window (optional).
+        position (``tuple`` of (int, int)): Position of the window, as x,y coordinates.
+        size (``tuple`` of (int, int)):  Size of the window, as (width, height) sizes, in pixels.
+        toolbar (``list`` of :class:`toga.Widget`): A list of widgets to add to a toolbar
+        resizeable (bool): Toggle if the window is resizable by the user, defaults to `True.
+        closeable (bool): Toggle if the window is closable by the user, defaults to `True`.
+        minimizable (bool): Toggle if the window is minimizable by the user, defaults to `True`.
+        factory (:obj:`module`): A python module that is capable to return a
+            implementation of this class with the same name. (optional & normally not needed)
     """
-    Window
-    """
+
     _MAIN_WINDOW_CLASS = 'MainWindow'
     _CONTAINER_CLASS = None
     _DIALOG_MODULE = None
@@ -17,38 +29,6 @@ class Window:
                  position=(100, 100), size=(640, 480),
                  toolbar=None, resizeable=True,
                  closeable=True, minimizable=True, factory=None):
-        """
-        Instantiates a window
-
-        :param id: The ID of the window (optional)
-        :type  id: ``str``
-
-        :param title: Title for the window (optional)
-        :type  title: ``str``
-
-        :param position: Position of the window, as x,y coordinates
-        :type  position: ``tuple`` of (``int``, ``int``)
-
-        :param size: Size of the window, as (width, height) sizes, in pixels
-        :type  size: ``tuple`` of (``int``, ``int``)
-
-        :param toolbar: An list of widgets to add to a toolbar
-        :type  toolbar: ``list`` of :class:`toga.Widget`
-
-        :param resizable: Toggle if the window is resizable by the user, defaults
-            to `True`.
-        :type  resizable: ``bool``
-
-        :param closable: Toggle if the window is closable by the user, defaults
-            to `True`.
-        :type  closable: ``bool``
-
-        :param minimizable: Toggle if the window is minimizable by the user, defaults
-            to `True`.
-        :type  minimizable: ``bool``
-        """
-        # if self._CONTAINER_CLASS is None:
-        #     raise NotImplementedError('Window class must define show()')
 
         self._id = id if id else identifier(self)
         self._impl = None
@@ -72,21 +52,23 @@ class Window:
 
     @property
     def id(self):
-        """
-        The DOM identifier for the window.
-
+        """ The DOM identifier for the window.
         This id can be used to target CSS directives
 
-        :rtype: ``str``
+        Returns:
+            The identifier as a ``str``.
         """
         return self._id
 
     @property
     def app(self):
-        """
-        Instance of the :class:`toga.App` that this window belongs to
+        """ Instance of the :class:`toga.App` that this window belongs to.
 
-        :rtype: :class:`toga.App`
+        Returns:
+            The app that it belongs to :class:`toga.App`.
+
+        Raises:
+            Exception: If the window already is associated with another app.
         """
         return self._app
 
@@ -100,10 +82,10 @@ class Window:
 
     @property
     def title(self):
-        """
-        Title of the window
+        """ Title of the window. If no title is given it defaults to "Toga".
 
-        :rtype: ``str``
+        Returns:
+            The current title of the window as a ``str``.
         """
         return self._title
 
@@ -117,19 +99,20 @@ class Window:
 
     @property
     def toolbar(self):
-        """
-        Toolbar for the window
+        """ Toolbar for the window.
 
-        :rtype: ``list`` of :class:`toga.Widget`
+        Returns:
+            A ``list`` of :class:`toga.Widget`
         """
         return self._toolbar
 
     @property
     def content(self):
-        """
-        Content of the window
+        """ Content of the window.
+        On setting, the content is added to the same app as the window and to the same app.
 
-        :rtype: :class:`toga.Widget`
+        Returns:
+            A :class:`toga.Widget`
         """
         return self._content
 
@@ -152,10 +135,11 @@ class Window:
 
     @property
     def size(self):
-        """
-        Size of the window, as width, height
+        """ Size of the window, as width, height.
 
-        :rtype: ``tuple`` of (``int``, ``int``)
+        Returns:
+            A ``tuple`` of (``int``, ``int``) where the first value is
+            the width and the second it the height of the window.
         """
         return self._size
 
@@ -166,10 +150,10 @@ class Window:
 
     @property
     def position(self):
-        """
-        Position of the window, as x, y
+        """ Position of the window, as x, y
 
-        :rtype: ``tuple`` of (``int``, ``int``)
+        Returns:
+            A ``tuple`` of (``int``, ``int``) int the from (x, y).
         """
         return self._position
 
@@ -178,13 +162,8 @@ class Window:
         self._position = position
         self._impl.set_position(position)
 
-    def _set_position(self, position):
-        pass
-
     def show(self):
-        # '''
-        # Show window, if hidden
-        # '''
+        """ Show window, if hidden """
         self._impl.show()
 
     def on_close(self):
@@ -195,7 +174,7 @@ class Window:
 
         Args:
             title (str): The title of the dialog window.
-            message (str):
+            message (str): The dialog message to display.
 
         Returns:
             Returns `None after the user pressed the 'OK' button.
@@ -207,7 +186,7 @@ class Window:
 
         Args:
             title (str): The title of the dialog window.
-            message (str):
+            message (str): The dialog message to display.
 
         Returns:
             Returns `True` when the 'YES' button was pressed, `False` when the 'NO' button was pressed.
@@ -219,7 +198,7 @@ class Window:
 
         Args:
             title (str): The title of the dialog window.
-            message (str):
+            message (str): The dialog message to display.
 
         Returns:
             Returns `True` when the 'OK' button was pressed, `False` when the 'CANCEL' button was pressed.
@@ -231,7 +210,7 @@ class Window:
 
         Args:
             title (str): The title of the dialog window.
-            message (str):
+            message (str): The dialog message to display.
 
         Returns:
             Returns `None` after the user pressed the 'OK' button.
@@ -244,7 +223,7 @@ class Window:
 
         Args:
             title (str): The title of the dialog window.
-            message (str):
+            message (str): The dialog message to display.
             content (str):
             retry (bool):
 

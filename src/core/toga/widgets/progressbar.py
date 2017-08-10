@@ -2,21 +2,19 @@ from .base import Widget
 
 
 class ProgressBar(Widget):
+    """"""
+
     def __init__(self, id=None, style=None, max=None, value=None, factory=None):
-        """ Instantiate a new instance of the progress bar widget
+        """
 
-        :param id:          An identifier for this widget.
-        :type  id:          ``str``
-
-        :param style:       an optional style object. If no style is provided then a
-                            new one will be created for the widget.
-        :type style:        :class:`colosseum.CSSNode`
-
-        :param max: The maximum value
-        :type  max: ``int``
-
-        :param value: The initial value
-        :type  value: ``int``
+        Args:
+            id (str):  An identifier for this widget.
+            style (:class:`colosseum.CSSNode`): An optional style object. If no style is provided then a
+                new one will be created for the widget.
+            max (float): The maximum value of the progressbar.
+            value (float): To define the current progress of the progressbar.
+            factory (:obj:`module`): A python module that is capable to return a
+                implementation of this class with the same name. (optional & normally not needed)
         """
         super().__init__(id=id, style=style, factory=factory)
         self._impl = self.factory.ProgressBar(interface=self)
@@ -30,7 +28,8 @@ class ProgressBar(Widget):
     def value(self):
         """ The progress value
 
-        :rtype: ``int``
+        Returns:
+            The current value as a ``int`` or ``float``.
         """
         return self._value
 
@@ -42,10 +41,10 @@ class ProgressBar(Widget):
 
     @property
     def max(self):
-        """
-        The maximum value
+        """ The maximum value of the progressbar.
 
-        :rtype: ``int``
+        Returns:
+            The maximum value as a ``int`` or ``float``.
         """
         return self._max
 
