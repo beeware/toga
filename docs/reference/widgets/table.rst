@@ -34,7 +34,7 @@ Supported Platforms
 Reference
 ---------
 
-.. autoclass:: toga.interface.widgets.table.Table
+.. autoclass:: toga.widgets.table.Table
    :members:
    :undoc-members:
    :inherited-members:

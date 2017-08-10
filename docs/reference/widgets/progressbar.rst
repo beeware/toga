@@ -27,7 +27,7 @@ Supported Platforms
 Reference
 ---------
 
-.. autoclass:: toga.interface.widgets.progressbar.ProgressBar
+.. autoclass:: toga.widgets.progressbar.ProgressBar
    :members:
    :undoc-members:
    :inherited-members:

@@ -33,7 +33,7 @@ Supported Platforms
 Reference
 ---------
 
-.. autoclass:: toga.interface.widgets.optioncontainer.OptionContainer
+.. autoclass:: toga.widgets.optioncontainer.OptionContainer
    :members:
    :undoc-members:
    :inherited-members:

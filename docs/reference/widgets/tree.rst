@@ -36,7 +36,7 @@ Supported Platforms
 Reference
 ---------
 
-.. autoclass:: toga.interface.widgets.tree.Tree
+.. autoclass:: toga.widgets.tree.Tree
    :members:
    :undoc-members:
    :inherited-members:

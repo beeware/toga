@@ -27,7 +27,7 @@ Supported Platforms
 Reference
 ---------
 
-.. autoclass:: toga.interface.widgets.selection.Selection
+.. autoclass:: toga.widgets.selection.Selection
    :members:
    :undoc-members:
    :inherited-members:

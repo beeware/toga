@@ -15,7 +15,7 @@ Supported Platforms
 Reference
 ---------
 
-.. autoclass:: toga.interface.font.Font
+.. autoclass:: toga.font.Font
    :members:
    :undoc-members:
    :inherited-members:

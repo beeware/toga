@@ -54,7 +54,7 @@ Supported Platforms
 Reference
 ---------
 
-.. autoclass:: toga.interface.app.App
+.. autoclass:: toga.app.App
    :members:
    :undoc-members:
    :inherited-members:

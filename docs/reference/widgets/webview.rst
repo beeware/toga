@@ -27,7 +27,7 @@ Supported Platforms
 Reference
 ---------
 
-.. autoclass:: toga.interface.widgets.webview.WebView
+.. autoclass:: toga.widgets.webview.WebView
    :members:
    :undoc-members:
    :inherited-members:
