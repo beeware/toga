@@ -4,18 +4,30 @@ from .base import WidgetMixin
 
 from ..libs.appkit import NSPopUpButton
 from ..libs.foundation import NSMakeRect
+from ..libs import *
+
+from ..utils import process_callback
+
+class TogaSelection(NSPopUpButton):
+    @objc_method
+    def onSelect_(self, obj) -> None:
+        if self._interface.on_select:
+            process_callback(self._interface.on_select(self._interface))
 
 
 class Selection(WidgetMixin, SelectionInterface):
 
-    def __init__(self, id=None, style=None, items=tuple()):
-        super().__init__(id=id, style=style, items=items)
+    def __init__(self, id=None, style=None, items=tuple(), on_select=None):
+        super().__init__(id=id, style=style, items=items, on_select=on_select)
         self._create()
 
     def create(self):
         rect = NSMakeRect(0, 0, 0, 0)
-        self._impl = NSPopUpButton.alloc().initWithFrame_pullsDown_(rect, 0)
+        self._impl = TogaSelection.alloc().initWithFrame_pullsDown_(rect, 0)
         self._impl._interface = self
+
+        self._impl.setTarget_(self._impl)
+        self._impl.setAction_(get_selector('onSelect:'))
 
         self._add_constraints()
 
