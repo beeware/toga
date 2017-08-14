@@ -43,6 +43,11 @@ class Widget:
         if self.constraints:
             self.constraints.update()
 
+    def apply_sub_layout(self):
+        # this is a dummy method that can be overwritten
+        # by widget that have sub-layouts.
+        pass
+
     def set_font(self, font):
         self.native.setFont_(font.native)
 
