@@ -12,14 +12,14 @@ class TogaDialog(UIViewController):
         self.cancelButton = UIBarButtonItem.alloc().initWithBarButtonSystemItem_target_action_(
             UIBarButtonSystemItemCancel,
             self,
-            get_selector('cancelClicked')
+            SEL('cancelClicked')
         )
         self.navigationController.navigationBar.topItem.leftBarButtonItem = self.cancelButton
 
         self.doneButton = UIBarButtonItem.alloc().initWithBarButtonSystemItem_target_action_(
             UIBarButtonSystemItemDone,
             self,
-            get_selector('doneClicked')
+            SEL('doneClicked')
         )
         self.navigationController.navigationBar.topItem.rightBarButtonItem = self.doneButton
 

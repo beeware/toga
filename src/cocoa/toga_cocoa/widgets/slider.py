@@ -1,4 +1,4 @@
-from rubicon.objc import objc_method, get_selector
+from rubicon.objc import objc_method, SEL
 
 from toga.interface import Slider as SliderInterface
 
@@ -25,7 +25,7 @@ class Slider(SliderInterface, WidgetMixin):
         self._impl._interface = self
 
         self._impl.setTarget_(self._impl)
-        self._impl.setAction_(get_selector('onSlide:'))
+        self._impl.setAction_(SEL('onSlide:'))
 
         self._add_constraints()
 

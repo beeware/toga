@@ -59,7 +59,7 @@ class DetailedList(DetailedListInterface, WidgetMixin):
         self._controller.refreshControl = UIRefreshControl.alloc().init()
         self._controller.refreshControl.addTarget_action_forControlEvents_(
             self._controller,
-            get_selector('refresh'),
+            SEL('refresh'),
             UIControlEventValueChanged
         )
 
