@@ -52,7 +52,7 @@ class TogaDemo(toga.App):
         cmd1 = toga.Command(self.action1, 'Action 1', tooltip='Perform action 1', icon=os.path.join(os.path.dirname(__file__), 'icons/brutus-32.png'))
         cmd2 = toga.Command(self.action2, 'Action 2', tooltip='Perform action 2', icon=toga.TIBERIUS_ICON)
 
-        self.main_window.toolbar = [cmd1, toga.SEPARATOR, cmd2]
+        self.main_window.toolbar.add(cmd1, cmd2)
 
         self.main_window.content = split
 
