@@ -7,7 +7,6 @@ class Node:
     def __init__(self, data):
         '''
         Instantiate a new instance of a node
-
         :param data: Information about the node
         :type  data: ``dict``
         '''
@@ -38,7 +37,6 @@ class Node:
     def data(self, node_data):
         '''
         Node data
-
         :param node_data: Contains the node data, text and if a node is
                             collapsed or expanded
         :type  node_data: ``dict``
@@ -60,19 +58,18 @@ class Node:
     def icon(self, image_url):
         '''
         Set an icon on the node
-
         :param image_url: Url of the icon
         :type  image_url: ``str``
         '''
         self._icon['url'] = image_url
         self._update.append('icon')
 
-
 class Tree(Widget):
     '''
     Tree widget
     '''
-    def __init__(self, headings, data=None, id=None, style=None):
+    def __init__(self, headings, data=None, id=None, style=None,
+                                on_selection=None):
         '''
         Instantiate a new instance of the tree widget
 
@@ -88,12 +85,17 @@ class Tree(Widget):
         :param style: an optional style object. If no style is provide
                         then a new one will be created for the widget.
         :type style: :class:`colosseum.CSSNode`
+
+        :param on_selection: Function to execute when select a node on the Tree
+        :type on_selection:  ``callable``
         '''
-        super().__init__(id=id, style=style, data=data)
+        super().__init__(id=id, style=style, data=data,
+                                on_selection=on_selection)
         self.headings = headings
         self.tree = { None: Node(None) }
 
-    def _configure(self, data):
+    def _configure(self, data, on_selection):
+        self.on_selection = on_selection
         if data is not None:
             self.data = data
 
@@ -101,19 +103,14 @@ class Tree(Widget):
                                     collapse=True):
         '''
         Insert a node on the tree
-
         :param item: Item to be add on the tree
         :type  item: ``str``
-
         :param parent: Node's parent
         :type  parent: :class:`tree.Node`
-
         :param index: Location to add the node on its parent node
         :type  index: ``int``
-
         :param collapse: Sets a node to be shown expanded or collapsed
         :type  collapse: ``bool``
-
         :returns: The node inserted on the tree
         :type:      :class:`tree.Node`
         '''
@@ -177,7 +174,6 @@ class Tree(Widget):
     def data(self, tree):
         '''
         Set the data source of the tree
-
         :param tree: Data source
         :type  tree: ``dict`` or ``class``
         '''
@@ -194,7 +190,6 @@ class Tree(Widget):
     def _add_from_data_source(self, parent_node):
         '''
         Add nodes from a data source on the Tree
-
         :param parent_node: Parent's node
         :type  parent_node: :class:`tree.Node`
         '''
@@ -209,10 +204,8 @@ class Tree(Widget):
     def _add_from_dict(self, parent_node, children):
         '''
         Add nodes from a dictionary on the Tree
-
         :param parent_node: Parent's node
         :type  parent_node: :class:`tree.Node`
-
         :param children: Items of each parent node
         :type  children: ``dict`` or ``str`` or ``None``
         '''
@@ -241,6 +234,25 @@ class Tree(Widget):
                 self._update_node_layout(node)
 
         self.rehint()
+
+    @property
+    def on_selection(self):
+        """
+        The callable function for when a node on the Tree is selected
+
+        :rtype: ``callable``
+        """
+        return self._on_selection
+
+    @on_selection.setter
+    def on_selection(self, handler):
+        """
+        Set the function to be executed on node selection
+
+        :param handler:     callback function
+        :type handler:      ``callable``
+        """
+        self._on_selection = handler
 
     def _insert(self, node):
         raise NotImplementedError('Tree widget must define _insert()')

@@ -3,6 +3,7 @@ from rubicon.objc import *
 from toga.interface import Tree as TreeInterface
 
 from ..libs import *
+from ..utils import process_callback
 from .base import WidgetMixin
 
 
@@ -43,12 +44,14 @@ class TogaTree(NSOutlineView):
     # OutlineViewDelegate methods
     @objc_method
     def outlineViewSelectionDidChange_(self, notification) -> None:
-        print ("tree selection changed")
-
+        if self.interface.on_selection:
+            node = self.interface.tree[id(self.itemAtRow(self.selectedRow))]
+            process_callback(self.interface.on_selection(node))
 
 class Tree(TreeInterface, WidgetMixin):
-    def __init__(self, headings, data=None, id=None, style=None):
-        super().__init__(headings, data, id, style)
+    def __init__(self, headings, data=None, id=None, style=None,
+                                on_selection=None):
+        super().__init__(headings, data, id, style, on_selection)
 
         self._tree = None
         self._columns = None
