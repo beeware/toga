@@ -12,7 +12,7 @@ function bump {
         if [ "$1" = "core" ]; then
             pushd src/$1/toga
         elif [ "$1" = "demo" ]; then
-            pushd demo
+            pushd demo/toga_demo
         else
             pushd src/$1/toga_$1
         fi
