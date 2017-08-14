@@ -67,24 +67,6 @@ class Node:
         self._icon['url'] = image_url
         self._update.append('icon')
 
-    @property
-    def tags(self):
-        '''
-        :returns: Current tags of the node
-        :rtype: ``list`` of ``str``
-        '''
-        pass
-
-    @tags.setter
-    def tags(self, data):
-        '''
-        Set tags for the node
-
-        :param data: Tags to be add on the node
-        :type  data: ``list`` of ``str``
-        '''
-        pass
-
 
 class Tree(Widget):
     '''
