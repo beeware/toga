@@ -20,13 +20,13 @@ class OptionContainer(OptionContainerInterface, WidgetMixin):
         self._create()
 
     def create(self):
-        #self._container = self  # TODO Why?
+        self._container = self  # TODO Why?
         self._impl = TogaOptionContainer(self)
 
     def _add_content(self, label, container, widget):
         item = WinForms.TabPage()
         item.Text = label
-        item.Size = Drawing.Size(256, 214)  # TODO test
+        item.Size = Drawing.Size(700, 1000)  # TODO test
         item.TabIndex = 0  # TODO remove?
         # TODO Expansion?
 
