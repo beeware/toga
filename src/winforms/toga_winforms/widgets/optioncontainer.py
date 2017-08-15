@@ -28,7 +28,7 @@ class OptionContainer(OptionContainerInterface, WidgetMixin):
         item.Text = label
         item.Size = Drawing.Size(700, 1000)  # TODO test
         item.TabIndex = 0  # TODO remove?
-        # TODO Expansion???
+        # TODO Expansion???ß
 
         item.Controls.Add(container._impl)
         self._impl.Controls.Add(item)
