@@ -1,14 +1,31 @@
 from pprint import pprint
+import toga
+
+from .platform import get_platform_factory
 
 
 class Settings:
     def __init__(self, version=None):
-        print('inside core Settings')
+        self.factory = get_platform_factory()
+        self._impl = self.factory.Settings(interface=self)
+
+        self._app = None
         self.groups = []
         self.version = '0.0.0' if version is None else version
 
+    @property
+    def app(self):
+        return self._app
+
+    @app.setter
+    def app(self, app):
+        if self._app:
+            raise Exception("Settings are already associated with an App")
+        self._app = app
+        self._impl.set_app(app)
+
     def show(self):
-        raise NotImplementedError('method show() is not implemented')
+        self._impl.show(None)
 
     def add_group(self, group):
         if not isinstance(group, SettingsGroup):
@@ -204,5 +221,8 @@ class SettingsGroup:
         settings_items_in_normal_form = []
         for item in self.items:
             settings_items_in_normal_form.append(item._normal_form)
-        normal_form_of_this_group = {'group': {'title': self.title, 'items': settings_items_in_normal_form}}
+        normal_form_of_this_group = {'group':
+                                         {'title': self.title,
+                                          'items': settings_items_in_normal_form}
+                                     }
         return normal_form_of_this_group

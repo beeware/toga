@@ -25,7 +25,7 @@ class AppDelegate(NSObject):
         # print("Open documents of type", NSDocumentController.sharedDocumentController().defaultType)
 
         fileTypes = NSMutableArray.alloc().init()
-        for filetype in self.interface.document_types:
+        for filetype in self.interface._impl.document_types:
             fileTypes.addObject(filetype)
 
         NSDocumentController.sharedDocumentController().runModalOpenPanel(panel, forTypes=fileTypes)
@@ -60,12 +60,19 @@ class AppDelegate(NSObject):
             else:
                 return
 
-            self.interface.open_document(fileURL.absoluteString)
+            self.interface._impl.open_document(fileURL.absoluteString)
             # NSDocumentController.sharedDocumentController().openDocumentWithContentsOfURL_display_completionHandler_(fileURL, True, None)
 
     @objc_method
+    def openPreferences_(self, sender) -> None:
+        """ This function is called when the 'Preferences...' menu item is pressed. """
+        print('in openPreferences')
+        self.interface.settings.show()
+
+    @objc_method
     def selectMenuItem_(self, sender) -> None:
-        cmd = self.interface._menu_items[sender]
+        print('selectMenuItem_', sender)
+        cmd = self.interface._impl._menu_items[sender]
         if cmd.action:
             cmd.action(None)
 
@@ -86,20 +93,18 @@ class App:
         self.resource_path = os.path.dirname(os.path.dirname(NSBundle.mainBundle.bundlePath))
 
         appDelegate = AppDelegate.alloc().init()
-        appDelegate.interface = self
+        appDelegate.interface = self.interface
         self.native.setDelegate_(appDelegate)
 
         app_name = self.interface.name
 
+        print('Settings', self.interface.settings)
         self.interface.commands.add(
             toga.Command(None, 'About ' + app_name, group=toga.Group.APP),
-            toga.Command(None, 'Preferences', group=toga.Group.APP),
             # Quit should always be the last item, in a section on it's own
             toga.Command(lambda s: self.exit(), 'Quit ' + app_name, shortcut='q', group=toga.Group.APP, section=sys.maxsize),
-
             toga.Command(None, 'Visit homepage', group=toga.Group.HELP)
         )
-
         # Call user code to populate the main window
         self.interface.startup()
 
@@ -109,7 +114,7 @@ class App:
         self.create_menus()
 
     def open_document(self, fileURL):
-        '''Add a new document to this app.'''
+        """ Add a new document to this app. """
         print("STUB: If you want to handle opening documents, implement App.open_document(fileURL)")
 
     def create_menus(self):
@@ -143,9 +148,20 @@ class App:
                     # to force the enabled status on the underlying widgets.
                     cmd.enabled = cmd.enabled
                     submenu.addItem(item)
-
             if submenu:
                 menubar.setSubmenu(submenu, forItem=menuItem)
+
+            # Add the Preferences menu item to the app menu
+            app_menu = menubar.itemAtIndex(0)  # get the app menu
+            pref_item = NSMenuItem.alloc().initWithTitle(
+                'Preferences...',
+                action=SEL('openPreferences:'),
+                keyEquivalent=','
+            )
+            # If not settings are given gray out the menu item.
+            if self.interface.settings is None:
+                pref_item.enabled = False
+            app_menu.submenu.insertItem_atIndex_(pref_item, 1)
 
             # Set the menu for the app.
             self.native.mainMenu = menubar

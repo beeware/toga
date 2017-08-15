@@ -28,7 +28,8 @@ class Window:
     def __init__(self, id=None, title=None,
                  position=(100, 100), size=(640, 480),
                  toolbar=None, resizeable=True,
-                 closeable=True, minimizable=True, factory=None):
+                 closeable=True, minimizable=True, factory=None,
+                 main_window=True):
 
         self._id = id if id else identifier(self)
         self._impl = None
@@ -42,7 +43,10 @@ class Window:
         self.minimizable = minimizable
 
         self.factory = get_platform_factory(factory)
-        self._impl = getattr(self.factory, self._MAIN_WINDOW_CLASS)(interface=self)
+        if main_window:
+            self._impl = getattr(self.factory, self._MAIN_WINDOW_CLASS)(interface=self)
+        else:
+            self._impl = getattr(self.factory, 'Window')(interface=self)
 
         self._toolbar = CommandSet(self, self._impl.create_toolbar)
 

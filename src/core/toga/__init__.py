@@ -32,6 +32,8 @@ from .widgets.webview import *
 from .widgets.selection import Selection
 from .widgets.numberinput import NumberInput
 
+from .settings import Settings, SettingsItem, SettingsGroup
+
 __all__ = [
     'App', 'MainWindow',
     'constants',
@@ -40,6 +42,7 @@ __all__ = [
     'Window',
     'Font',
     'Widget'
+    # Widgets
     'Box',
     'Button',
     'Icon',
@@ -60,6 +63,8 @@ __all__ = [
     'TextInput',
     'Tree',
     'WebView',
+    # Settings
+    'Settings', 'SettingsGroup', 'SettingsItem',
 ]
 
 # Examples of valid version strings

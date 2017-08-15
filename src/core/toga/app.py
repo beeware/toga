@@ -67,6 +67,8 @@ class App:
 
         self._impl = self.factory.App(interface=self)
 
+        self._settings = None
+
     @property
     def app_id(self):
         """ The identifier for the app.
@@ -126,7 +128,7 @@ class App:
         raise NotImplementedError('Application class must define open_document()')
 
     def startup(self):
-        """ Create and show the main window for the application
+        """ Create and show the main window for the application.
         """
         self.main_window = MainWindow(title=self.name)
         self.main_window.app = self
@@ -149,3 +151,12 @@ class App:
         """ Quit the application gracefully.
         """
         self._impl.exit()
+
+    @property
+    def settings(self):
+        return self._settings
+
+    @settings.setter
+    def settings(self, settings):
+        settings.app = self
+        self._settings = settings

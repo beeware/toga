@@ -24,6 +24,7 @@ from .widgets.tree import *
 from .widgets.webview import *
 from .widgets.selection import Selection
 from .widgets.numberinput import NumberInput
+from .settings import Settings
 
 __all__ = [
     'App', 'MainWindow',
@@ -53,4 +54,6 @@ __all__ = [
     'TextInput',
     'Tree',
     'WebView',
+
+    'Settings'
 ]
