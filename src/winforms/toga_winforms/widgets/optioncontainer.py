@@ -6,12 +6,6 @@ from .base import WidgetMixin
 from System import Drawing
 
 
-class TogaOptionContainer(WinForms.TabControl):
-    def __init__(self, interface):
-        super().__init__()
-        self.interface = interface
-
-
 class OptionContainer(OptionContainerInterface, WidgetMixin):
     _CONTAINER_CLASS = Container
 
@@ -21,14 +15,20 @@ class OptionContainer(OptionContainerInterface, WidgetMixin):
 
     def create(self):
         self._container = self  # TODO Why?
-        self._impl = TogaOptionContainer(self)
+        self._impl = WinForms.TabControl()
 
     def _add_content(self, label, container, widget):
         item = WinForms.TabPage()
         item.Text = label
-        item.Size = Drawing.Size(700, 1000)  # TODO test
-        item.TabIndex = 0  # TODO remove?
-        # TODO Expansion???
 
         item.Controls.Add(container._impl)
         self._impl.Controls.Add(item)
+
+
+        # item.Size = Drawing.Size(700, 1000)
+        # TODO Expansion??? https://stackoverflow.com/a/7380999
+
+        # container._impl.Width = item.Width
+        # container._impl.Height = item.Height
+        # container._impl.Location = Drawing.Point(container._impl.Location.X, container._impl.Location.Y)
+        # container._impl.Anchor = WinForms.AnchorStyles.Left | WinForms.AnchorStyles.Right
