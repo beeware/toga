@@ -10,6 +10,7 @@ class WidgetMixin:
         pass
 
     def _set_container(self, container):
+        print("SET CONTAINER", container, self._impl)
         if self._impl:
             self._container._impl.Controls.Add(self._impl)
 

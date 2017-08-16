@@ -151,7 +151,6 @@ class Window:
             self._container = widget
 
         self._content = widget
-
         self._set_content(widget)
 
     def _set_content(self, widget):

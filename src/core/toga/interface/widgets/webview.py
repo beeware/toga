@@ -5,7 +5,7 @@ class WebView(Widget):
     '''
     Web view widget
     '''
-    def __init__(self, id=None, style=None, url=None, on_key_down=None, on_webview_load=None):
+    def __init__(self, id=None, style=None, url=None, user_agent=None, on_key_down=None, on_webview_load=None):
         '''
         Instantiate a new instance of the tree widget
 
@@ -19,6 +19,9 @@ class WebView(Widget):
         :param url: The URL to start with
         :type  url: ``str``
 
+        :param user_agent: The user agent for the web view
+        :type  user_agent: ``str``
+
         :param on_key_down: The callback method for when the a key is pressed within
             the web view
         :type  on_key_down: ``callable``
@@ -26,10 +29,11 @@ class WebView(Widget):
         :param on_webview_load: The callback method for when the webview loads (or reloads)
         :type  on_webview_load: ``callable``
         '''
-        super(WebView, self).__init__(id=id, style=style, url=url, on_key_down=on_key_down, on_webview_load=None)
+        super(WebView, self).__init__(id=id, style=style, url=url, user_agent=None, on_key_down=on_key_down, on_webview_load=None)
 
-    def _configure(self, url, on_key_down, on_webview_load=None):
+    def _configure(self, url, user_agent, on_key_down, on_webview_load=None):
         self.url = url
+        self.user_agent = user_agent
         self.on_key_down = on_key_down
         self.on_webview_load = on_webview_load
 
@@ -56,6 +60,15 @@ class WebView(Widget):
         self._url = value
         self._set_url(value)
 
+    @property
+    def user_agent(self):
+        return self._user_agent
+
+    @user_agent.setter
+    def user_agent(self, value):
+        self._user_agent = value
+        self._set_user_agent(value)
+
     def set_content(self, root_url, content):
         '''
         Set the content of the web view
@@ -71,6 +84,9 @@ class WebView(Widget):
 
     def _set_url(self, value):
         raise NotImplementedError('Webview widget must define _set_url()')
+
+    def _set_user_agent(self, value):
+        raise NotImplementedError('Webview widget must define _set_user_agent()')
 
     def _get_dom(self, value):
         raise NotImplementedError('Webview widget must define _get_dom()')

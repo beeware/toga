@@ -20,8 +20,10 @@ from .base import WidgetMixin
 
 
 class WebView(WebViewInterface, WidgetMixin):
-    def __init__(self, id=None, style=None, url=None, on_key_down=None):
-        super().__init__(id=id, style=style, url=url, on_key_down=on_key_down)
+    def __init__(self, id=None, style=None, url=None, user_agent=None, on_key_down=None):
+        if user_agent is None:
+            user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.101 Safari/537.36"
+        super().__init__(id=id, style=style, url=url, user_agent=user_agent, on_key_down=on_key_down)
         self._create()
 
     def create(self):
@@ -48,6 +50,9 @@ class WebView(WebViewInterface, WidgetMixin):
 
     def _set_content(self, root_url, content):
         self._webview.load_html(content, root_url)
+
+    def _set_user_agent(self, value):
+        pass
 
     def evaluate(self, javascript):
         self._webview.run_javascript(javascript, None, None, None)

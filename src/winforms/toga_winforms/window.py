@@ -38,7 +38,7 @@ class Window(WindowInterface):
         if self._toolbar_impl:
             self._impl.Controls.Add(self._toolbar_impl)
 
-        self._impl.Controls.Add(widget._container._impl)
+        self._impl.Controls.Add(self._container._impl)
 
     def _set_title(self, title):
         self._impl.Text = title
