@@ -38,7 +38,7 @@ class TogaTree(NSOutlineView):
     @objc_method
     def outlineView_willDisplayCell_forTableColumn_item_(self, tree, cell,
                                                         column, item):
-        cell.setImage_(self.interface.tree[id(item)]._icon['obj'])
+        cell.setImage_(self.interface.tree[id(item)].data['icon']['obj'])
         cell.setLeaf_(True)
 
     # OutlineViewDelegate methods
@@ -113,10 +113,10 @@ class Tree(TreeInterface, WidgetMixin):
     def _set_icon(self, node):
         size = NSMakeSize(8,8)
 
-        image = NSImage.alloc().initWithContentsOfFile_(node._icon['url'])
+        image = NSImage.alloc().initWithContentsOfFile_(node.data['icon']['url'])
         image.setSize_(size)
 
-        node._icon['obj'] = image
+        node.data['icon']['obj'] = image
 
     def _set_collapse(self, node, status):
         if status:
