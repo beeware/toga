@@ -5,13 +5,27 @@ from .platform import get_platform_factory
 
 
 class Settings:
-    def __init__(self, version=None):
+    def __init__(self, items=None, version=None):
         self.factory = get_platform_factory()
         self._impl = self.factory.Settings(interface=self)
+        self._items = []
+        self.callbacks = {}
 
         self._app = None
-        self.groups = []
+        self.items = items
         self.version = '0.0.0' if version is None else version
+
+
+    @property
+    def items(self):
+        return self._items
+
+    @items.setter
+    def items(self, items):
+        for item in items:
+            self._items.append(item)
+            self.callbacks[item.key] = item.on_change
+
 
     @property
     def app(self):
@@ -27,16 +41,20 @@ class Settings:
     def show(self):
         self._impl.show(None)
 
-    def add_group(self, group):
-        if not isinstance(group, SettingsGroup):
-            raise ValueError('{} must be instance of SettingsGroup'.format(group))
-        self.groups.append(group)
+    # def add_item(self, item):
+    #     if isinstance(item, SettingsItem):
+    #         self.items.append(item)
+    #     else:
+    #         raise ValueError('item must be of type', SettingsItem)
 
     @property
     def _normal_form(self):
         settings_in_normal_form = {'settings': {'version': self.version,
-                                                'groups': [g._normal_form for g in self.groups]}}
+                                                'items': [item._normal_form for item in self.items]}}
         return settings_in_normal_form
+
+    def __repr__(self):
+        return self._normal_form
 
     def save_to_file(self, path=None):
         """save the settings to the default settings place on the system"""
@@ -50,7 +68,7 @@ class Settings:
 class SettingsItem:
     valid_types = ['switch', 'slider', 'text_field', 'multi_value', 'radio_group']
 
-    def __init__(self, item_type, label, default=None, on_change=None, key=None):
+    def __init__(self, item_type, label, default=None, on_change=None, key=None, group=None):
         self._typ = None
         self._label = None
         self._key = None
@@ -61,6 +79,7 @@ class SettingsItem:
         self.key = key
         self.default = default
         self.on_change = on_change
+        self.group = group
 
         self.__normal_form = {}
 
@@ -110,8 +129,7 @@ class SettingsItem:
         if key:
             self._key = key
         else:
-            self._key = '{label}_{id}'.format(label=self.label.lower().replace(' ', '_'),
-                                              id=id(self))
+            self._key = 'xxx_{label}'.format(label=self.label[:15].lower().replace(' ', '_'))
 
     @property
     def on_change(self):
@@ -122,21 +140,20 @@ class SettingsItem:
         self._on_change = handler
 
     @classmethod
-    def Switch(cls, label, default=None, on_change=None, key=None):
-        return cls('switch', label, default=default, on_change=on_change, key=key)
+    def Switch(cls, label, default=None, on_change=None, key=None, group=None):
+        return cls('switch', label, default=default, on_change=on_change, key=key, group=group)
 
     @property
     def _normal_form(self):
-        normal_form = {
+        return {
             'type': self.typ,
             'label': self.label,
             'key': self.key,
             'default': self.default,
-            'on_change': self.on_change
+            'on_change': self.on_change,
+            'group': self.group
         }
 
-        self.__normal_form.update(normal_form)
-        return self.__normal_form
 
     def __repr__(self):
         return str(self._normal_form)
@@ -191,38 +208,37 @@ class SettingsItem:
         #                 'options': kwargs['options'],
         #                 'sorted': kwargs['sorted']}
 
-
-class SettingsGroup:
-    """ The SettingsGroup is a container class for SettingsItems.
-    The added SettingsItems are going to be displayed under the
-    title and icon of their SettingsGroup.
-    """
-
-    def __init__(self, title, items=None, icon=None):
-        self.title = title
-        self.icon = None if icon is None else icon
-        self._items = []
-        if items:
-            self.items = items
-
-    @property
-    def items(self):
-        return self._items
-
-    @items.setter
-    def items(self, items):
-        for item in items:
-            if not isinstance(item, SettingsItem):
-                raise Exception('Item: {} is not instance of SettingsItem'.format(item))
-            self._items.append(item)
-
-    @property
-    def _normal_form(self):
-        settings_items_in_normal_form = []
-        for item in self.items:
-            settings_items_in_normal_form.append(item._normal_form)
-        normal_form_of_this_group = {'group':
-                                         {'title': self.title,
-                                          'items': settings_items_in_normal_form}
-                                     }
-        return normal_form_of_this_group
+# class SettingsGroup:
+#     """ The SettingsGroup is a container class for SettingsItems.
+#     The added SettingsItems are going to be displayed under the
+#     title and icon of their SettingsGroup.
+#     """
+#
+#     def __init__(self, title, items=None, icon=None):
+#         self.title = title
+#         self.icon = None if icon is None else icon
+#         self._items = []
+#         if items:
+#             self.items = items
+#
+#     @property
+#     def items(self):
+#         return self._items
+#
+#     @items.setter
+#     def items(self, items):
+#         for item in items:
+#             if not isinstance(item, SettingsItem):
+#                 raise Exception('Item: {} is not instance of SettingsItem'.format(item))
+#             self._items.append(item)
+#
+#     @property
+#     def _normal_form(self):
+#         settings_items_in_normal_form = []
+#         for item in self.items:
+#             settings_items_in_normal_form.append(item._normal_form)
+#         normal_form_of_this_group = {'group':
+#                                          {'title': self.title,
+#                                           'items': settings_items_in_normal_form}
+#                                      }
+#         return normal_form_of_this_group

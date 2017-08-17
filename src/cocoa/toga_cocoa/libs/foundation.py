@@ -30,6 +30,7 @@ NSCursor = ObjCClass('NSCursor')
 # NSDictionary.h
 
 NSDictionary = ObjCClass('NSDictionary')
+NSMutableDictionary = ObjCClass('NSMutableDictionary')
 
 # NSDocument.h
 
@@ -79,6 +80,11 @@ NSURL = ObjCClass('NSURL')
 # NSURLRequest.h
 
 NSURLRequest = ObjCClass('NSURLRequest')
+
+# NSUserDefaults.h
+
+NSUserDefaults = ObjCClass('NSUserDefaults')
+NSUserDefaultsController = ObjCClass('NSUserDefaultsController')
 
 # NSFont.h
 

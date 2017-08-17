@@ -32,7 +32,7 @@ from .widgets.webview import *
 from .widgets.selection import Selection
 from .widgets.numberinput import NumberInput
 
-from .settings import Settings, SettingsItem, SettingsGroup
+from .settings import Settings, SettingsItem
 
 __all__ = [
     'App', 'MainWindow',
@@ -64,7 +64,7 @@ __all__ = [
     'Tree',
     'WebView',
     # Settings
-    'Settings', 'SettingsGroup', 'SettingsItem',
+    'Settings', 'SettingsItem',
 ]
 
 # Examples of valid version strings
