@@ -12,7 +12,6 @@ class Container:
 
     @content.setter
     def content(self, widget):
-        print("SET CONTAINER CONTENT")
         self._content = widget
         self._content._container = self
 
