@@ -1,5 +1,6 @@
 from pprint import pprint
 import toga
+import hashlib
 
 from .platform import get_platform_factory
 
@@ -15,17 +16,22 @@ class Settings:
         self.items = items
         self.version = '0.0.0' if version is None else version
 
-
     @property
     def items(self):
         return self._items
 
     @items.setter
     def items(self, items):
+        keys = []
         for item in items:
-            self._items.append(item)
-            self.callbacks[item.key] = item.on_change
-
+            if item.key not in keys:
+                keys.append(item.key)
+                self._items.append(item)
+                self.callbacks[item.key] = item.on_change
+            else:
+                raise KeyError(
+                    'SettingItems must have a unique key! '
+                    'This can occur if no keys got set and two or more SettingsItems with the same label exist.')
 
     @property
     def app(self):
@@ -66,7 +72,7 @@ class Settings:
 
 
 class SettingsItem:
-    valid_types = ['switch', 'slider', 'text_field', 'multi_value', 'radio_group']
+    valid_types = ['switch', 'slider', 'text_input', 'multi_value', 'single_value']
 
     def __init__(self, item_type, label, default=None, on_change=None, key=None, group=None):
         self._typ = None
@@ -139,10 +145,6 @@ class SettingsItem:
     def on_change(self, handler):
         self._on_change = handler
 
-    @classmethod
-    def Switch(cls, label, default=None, on_change=None, key=None, group=None):
-        return cls('switch', label, default=default, on_change=on_change, key=key, group=group)
-
     @property
     def _normal_form(self):
         return {
@@ -153,7 +155,6 @@ class SettingsItem:
             'on_change': self.on_change,
             'group': self.group
         }
-
 
     def __repr__(self):
         return str(self._normal_form)
@@ -207,6 +208,65 @@ class SettingsItem:
         #                 'default': kwargs['default'], 'on_change': kwargs['on_change'],
         #                 'options': kwargs['options'],
         #                 'sorted': kwargs['sorted']}
+
+
+class SettingsSwitch(SettingsItem):
+    def __init__(self, label, default, on_change=None, key=None, group=None):
+        super().__init__('switch', label, default=default, on_change=on_change, key=key, group=group)
+
+
+class SettingsSlider(SettingsItem):
+    def __init__(self, label, default, on_change=None, key=None, group=None, min_=None, max_=None):
+        super().__init__('slider', label, default=default, on_change=on_change, key=key, group=group)
+
+        self.min = min_
+        self.max = max_
+
+    @property
+    def _normal_form(self):
+        base_normal_form = super()._normal_form
+        base_normal_form.update({
+            'min': self.min,
+            'max': self.max,
+        })
+        return base_normal_form
+
+
+class SettingsTextInput(SettingsItem):
+    def __init__(self, label, default, on_change=None, key=None, group=None):
+        super().__init__('text_input', label, default=default, on_change=on_change, key=key, group=group)
+
+
+class SettingsMultiValue(SettingsItem):
+    def __init__(self, label, choices, default, on_change=None, key=None, group=None):
+        super().__init__('multi_value', label, default=default, on_change=on_change, key=key, group=group)
+
+        self.choices = choices
+
+    @property
+    def _normal_form(self):
+        base_normal_form = super()._normal_form
+        base_normal_form.update({
+            'choices': self.choices
+        })
+        return base_normal_form
+
+
+class SettingsSingleValue(SettingsItem):
+    def __init__(self, label, choices, default, on_change=None, key=None, group=None):
+        super().__init__('single_value', label, default=default, on_change=on_change, key=key, group=group)
+
+        self.choices = choices
+        if default not in self.choices:
+            raise KeyError('The default value "{}" must be in the possible choices: {}'.format(default, choices))
+
+    @property
+    def _normal_form(self):
+        base_normal_form = super()._normal_form
+        base_normal_form.update({
+            'choices': [choice for choice in self.choices]
+        })
+        return base_normal_form
 
 # class SettingsGroup:
 #     """ The SettingsGroup is a container class for SettingsItems.

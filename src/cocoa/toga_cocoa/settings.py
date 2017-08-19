@@ -27,55 +27,56 @@ class Settings:
         self.app = None
         self.delegate = SettingsDelegate.alloc().init()
         self.delegate.interface = self
-        self.native = NSUserDefaults.standardUserDefaults
-        self.native.delegate = SettingsDelegate.alloc().init()
+        self.store = NSUserDefaults.standardUserDefaults
+        self.store.delegate = SettingsDelegate.alloc().init()
         # print(self.native.dictionaryRepresentation())
 
     def set_app(self, app):
         self.app = app
 
+    def print_store(self):
+        """ debugging method to see what is in the self.store """
+        normal_form = self.interface._normal_form
+        version = normal_form['settings']['version']
+        items = normal_form['settings']['items']
+        print('_-' * 10, 'settings store', '-_' * 10)
+        print('Settings version: {}'.format(self.store.objectForKey_('version')))
+        for item in items:
+            print('Key: {}, Value: {}'.format(item['key'], self.store.objectForKey_(item['key'])))
+        print('-_' * 25)
+
     def save_key_value(self, key, value):
         if isinstance(value, bool):
-            self.native.setBool_forKey_(value, key)
+            self.store.setBool_forKey_(value, key)
         elif isinstance(value, int):
-            self.native.setInteger_forKey_(value, key)
+            self.store.setInteger_forKey_(value, key)
         elif isinstance(value, float):
-            self.native.setDouble_forKey_(value, key)
+            self.store.setDouble_forKey_(value, key)
         else:
-            self.native.setObject_forKey_(value, key)
+            self.store.setObject_forKey_(value, key)
 
     def set_defaults(self):
-        print('Setting defaults:', )
-        # store = NSUserDefaults.standardUserDefaults
+        """ Sets for every possible key a default value.
+        This values are the fallback if no value has been set for a key.
+
+        Notes:
+            This function has to be called every time your app launches.
+        """
         normal_form = self.interface._normal_form
         version = normal_form['settings']['version']
         items = normal_form['settings']['items']
 
-        # # set default values
-        # key_value_dict = NSMutableDictionary.alloc().init()
-        # key_value_dict['version'] = str(version)
-        # for item in items:
-        #     key_value_dict[item['key']] = str(item['default'])
-        # self.native.registerDefaults_(key_value_dict)
-        # self.native.synchronize()
-
-        # for item in items:
-        #     value = item['default']
-        #     key = item['key']
-        #     self.save_key_value(key, value)
-        #
-        # self.native.synchronize()
-
-        # print('for', self.native.objectForKey_('version'))
-        # self.native.setObject_forKey_('0.0.7', 'version')
-        # self.native.synchronize()
-        # print('nach', self.native.objectForKey_('version'))
-
+        # Create a dict and set the defaults
+        key_value_dict = NSMutableDictionary.alloc().init()
+        key_value_dict['version'] = str(version)
         for item in items:
-            print('Item from store {}: '.format(item['key']), self.native.objectForKey_(item['key']))
-
-        self.native.synchronize()
-        pass
+            default_value = item['default']
+            if isinstance(default_value, list):
+                default_value = NSArray.arrayWithObjects_(default_value)
+            # add default_value to dict
+            key_value_dict[item['key']] = str(default_value)
+        self.store.registerDefaults_(key_value_dict)
+        self.print_store()
 
     def show(self, widget):
         self.set_defaults()
@@ -95,9 +96,6 @@ class Settings:
 
     def build_ui_form_normal_form(self):
         normal_form = self.interface._normal_form
-        # print('_-' * 10)
-        # pprint(normal_form)
-
         version = normal_form['settings']['version']
         items = normal_form['settings']['items']
 
@@ -119,29 +117,57 @@ class Settings:
             group_title = 'Defaults' if group is None else group
             group_items = [item for item in items if item['group'] == group]
 
-            box = toga.Box(style=CSS(padding=20))
+            box = toga.Box(style=CSS(padding=15))
             # iterate over all items of the group.
             for item in group_items:
-                type = item['type']
+                typ = item['type']
                 label = item['label']
                 default = item['default']
                 key = item['key']
 
+                # Create a callback to update the store value if settings change
                 def make_callback(key):
                     def callback(widget):
-                        # update the value in settings store
-                        self.save_key_value(key, widget.is_on)
-                        # call the user defined function for the widget
-                        self.interface.callbacks[key](widget)
+                        # update the value in store
+                        if isinstance(widget, toga.Switch):
+                            self.save_key_value(key, widget.is_on)
+                        elif isinstance(widget, toga.Slider):
+                            self.save_key_value(key, widget.value)
+
+                        # invoke the user defined callback
+                        user_def_callback = self.interface.callbacks[key]
+                        if user_def_callback is not None:
+                            user_def_callback(widget)
+                        self.print_store()
 
                     return callback
 
-                print(self.native.boolForKey_(key))
+                if typ == 'switch':
+                    widget = toga.Switch(label, is_on=bool(self.store.boolForKey_(key)), on_toggle=make_callback(key))
+                if typ == 'slider':
+                    label = toga.Label(label)
+                    slider = toga.Slider(default=float(self.store.doubleForKey_(key)),
+                                         range=(item['min'], item['max']),
+                                         on_slide=make_callback(key), style=CSS(width=500))
+                    widget = toga.Box(children=[label, slider], style=CSS(flex_direction='column'))
+                if typ == 'text_input':
+                    label = toga.Label(label, style=CSS(margin_bottom=5))
+                    text_input = toga.TextInput(label, initial=self.store.objectForKey_(key))
+                    widget = toga.Box(children=[label, text_input])
+                if typ == 'single_value':
+                    # Todo add on_change/on_select method to update default value
+                    label = toga.Label(label, style=CSS(margin_bottom=5))
+                    selection = toga.Selection(items=item['choices'])
+                    selection.value = self.store.stringForKey_(key)
+                    widget = toga.Box(children=[label, selection])
+                if typ == 'multi_value':
+                    # Todo add multi value selection widget to toga.
+                    pass
 
-                if type == 'switch':
-                    box.add(toga.Switch(label, is_on=bool(self.native.boolForKey_(key)), on_toggle=make_callback(key)))
+                box.add(widget)
 
             if len(groups) > 1:
+                box.style.width = 500
                 container.add(group_title, box)
             else:
                 container.add(box)
