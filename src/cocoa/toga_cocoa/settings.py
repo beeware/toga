@@ -131,7 +131,7 @@ class Settings:
                         # update the value in store
                         if isinstance(widget, toga.Switch):
                             self.save_key_value(key, widget.is_on)
-                        elif isinstance(widget, toga.Slider):
+                        elif isinstance(widget, toga.Slider) or isinstance(widget, toga.Selection):
                             self.save_key_value(key, widget.value)
 
                         # invoke the user defined callback
@@ -155,9 +155,8 @@ class Settings:
                     text_input = toga.TextInput(label, initial=self.store.objectForKey_(key))
                     widget = toga.Box(children=[label, text_input])
                 if typ == 'single_value':
-                    # Todo add on_change/on_select method to update default value
                     label = toga.Label(label, style=CSS(margin_bottom=5))
-                    selection = toga.Selection(items=item['choices'])
+                    selection = toga.Selection(items=item['choices'], on_select=make_callback(key))
                     selection.value = self.store.stringForKey_(key)
                     widget = toga.Box(children=[label, selection])
                 if typ == 'multi_value':
