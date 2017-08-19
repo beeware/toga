@@ -17,6 +17,8 @@ class OpenContainerTest(toga.App):
         return container
 
     def startup(self):
+
+        widths = []
         self.main_window = toga.MainWindow(self.name)
         self.main_window.app = self
 
@@ -34,9 +36,9 @@ class OpenContainerTest(toga.App):
 
         button = toga.Button('Calculate', on_press=self.calculate)
         container = OptionContainer()
-        print(container._impl.Width)
+        widths.append(container._impl.Width)
         self.main_window.content = container
-        print(container._impl.Width)
+        widths.append(container._impl.Width)
 
         f_box.add(self.f_input)
         f_box.add(f_label)
@@ -53,15 +55,17 @@ class OpenContainerTest(toga.App):
         table1 = toga.Table(['Heading 1', 'Heading 2'])
         table.insert(None, 'Value 1', 'Value 2')
 
-
-        print(c_label._impl.Width)
+        widths.append(c_label._impl.Width)
         container = self.get_container(container, [box, table, table1])
-        print(c_label._impl.Width)
+        widths.append(c_label._impl.Width)
 
         box.style.set(flex_direction='column', padding_top=10)
 
         self.main_window.show()
+        print(widths)
 
+        with open("widths.csv", mode="w") as f:
+            f.write(",".join(map(str, widths)))
 
 def main():
     return OpenContainerTest('Converter', 'org.pybee.converter')
