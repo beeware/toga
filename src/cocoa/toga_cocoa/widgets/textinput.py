@@ -1,14 +1,37 @@
 from .base import Widget
-from ..libs import NSTextField, NSTextFieldSquareBezel
+from ..libs import *
+
+
+class TextInputDelegate(NSObject):
+    @objc_method
+    def controlTextDidChange_(self, sender) -> None:
+        print('in fieldTextDidChange_')
+        if self.interface.on_change:
+            self.interface.on_change(self.interface)
+
+
+class TogaTextInput(NSTextField):
+    @objc_method
+    def fieldTextDidChange_(self, sender) -> None:
+        print('in fieldTextDidChange_')
+        if self.interface.on_submit:
+            self.interface.on_submit(self.interface)
+    pass
 
 
 class TextInput(Widget):
     def create(self):
-        self.native = NSTextField.new()
+        self.native = TogaTextInput.new()
         self.native.interface = self.interface
+
+        self.native.target = self.native
+        self.native.action = SEL('controlTextDidChange:')
 
         self.native.bezeled = True
         self.native.bezelStyle = NSTextFieldSquareBezel
+
+        self.native.delegate = TextInputDelegate.alloc().init()
+        self.native.delegate.interface = self.interface
 
         # Add the layout constraints
         self.add_constraints()

@@ -13,11 +13,12 @@ class TextInput(Widget):
         initial (str): The initial text for the input.
         placeholder (str): If no input is present this text is shown.
         readonly (bool):  Whether a user can write into the text input, defaults to `False`.
+        on_submit(`callable`): A function to be invoked on submitting (returning) the TextField.
+        on_change(`callable`): A function to be invoked on every change of the text.
     """
 
-    def __init__(
-            self, id=None, style=None, factory=None,
-            initial=None, placeholder=None, readonly=False):
+    def __init__(self, id=None, style=None, factory=None,
+                 initial=None, placeholder=None, readonly=False, on_change=None, on_submit=None):
         super().__init__(id=id, style=style, factory=factory)
 
         # Create a platform specific implementation of a TextInput
@@ -26,6 +27,8 @@ class TextInput(Widget):
         self.value = initial
         self.placeholder = placeholder
         self.readonly = readonly
+        self.on_submit = on_submit if on_submit else None
+        self.on_change = on_change if on_change else None
 
     @property
     def readonly(self):
@@ -77,6 +80,24 @@ class TextInput(Widget):
             v = str(value)
         self._impl.set_value(v)
         self.rehint()
+
+    @property
+    def on_change(self):
+        return self._on_change
+
+    @on_change.setter
+    def on_change(self, handle):
+        if callable(handle):
+            self._on_change = handle
+
+    @property
+    def on_submit(self):
+        return self._on_submit
+
+    @on_submit.setter
+    def on_submit(self, handle):
+        if callable(handle):
+            self._on_submit = handle
 
     def clear(self):
         """ Clears the text of the widget """
