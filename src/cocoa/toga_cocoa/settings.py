@@ -131,8 +131,11 @@ class Settings:
                         # update the value in store
                         if isinstance(widget, toga.Switch):
                             self.save_key_value(key, widget.is_on)
-                        elif isinstance(widget, toga.Slider) or isinstance(widget, toga.Selection):
+                        elif isinstance(widget, (toga.Slider, toga.Selection, toga.TextInput)):
+                            print('save this: ', widget.value)
                             self.save_key_value(key, widget.value)
+                        else:
+                            raise RuntimeError('Unknown widget {}'.format(widget))
 
                         # invoke the user defined callback
                         user_def_callback = self.interface.callbacks[key]
@@ -152,7 +155,7 @@ class Settings:
                     widget = toga.Box(children=[label, slider], style=CSS(flex_direction='column'))
                 if typ == 'text_input':
                     label = toga.Label(label, style=CSS(margin_bottom=5))
-                    text_input = toga.TextInput(label, initial=self.store.objectForKey_(key))
+                    text_input = toga.TextInput(label, initial=self.store.objectForKey_(key), on_change=make_callback(key))
                     widget = toga.Box(children=[label, text_input])
                 if typ == 'single_value':
                     label = toga.Label(label, style=CSS(margin_bottom=5))
