@@ -1,14 +1,26 @@
+from toga_cocoa.utils import process_callback
+
 from .base import Widget
 
-from ..libs.appkit import NSPopUpButton
+from ..libs.appkit import *
 from ..libs.foundation import NSMakeRect
+
+
+class TogaSelection(NSPopUpButton):
+    @objc_method
+    def popUpButtonUsed_(self, sender) -> None:
+        if self.interface.on_select:
+            process_callback(self.interface.on_select(self.interface))
 
 
 class Selection(Widget):
     def create(self):
         rect = NSMakeRect(0, 0, 0, 0)
-        self.native = NSPopUpButton.alloc().initWithFrame_pullsDown_(rect, 0)
+        self.native = TogaSelection.alloc().initWithFrame_pullsDown_(rect, 0)
         self.native.interface = self.interface
+
+        self.native.target = self.native
+        self.native.action = SEL('popUpButtonUsed:')
 
         self.add_constraints()
 

@@ -13,7 +13,7 @@ class Selection(Widget):
             implementation of this class with the same name. (optional & normally not needed)
     """
 
-    def __init__(self, id=None, style=None, items=list(), factory=None):
+    def __init__(self, id=None, style=None, items=list(), on_select=None, factory=None):
         super().__init__(id=id, style=style, factory=factory)
 
         self._impl = self.factory.Selection(interface=self)
@@ -21,6 +21,8 @@ class Selection(Widget):
         self._items = items
         for item in self._items:
             self._impl.add_item(item)
+
+        self.on_select = on_select if on_select else None
 
     @property
     def items(self):
@@ -55,3 +57,12 @@ class Selection(Widget):
             raise ValueError("Not an item in the list.")
 
         self._impl.select_item(value)
+
+    @property
+    def on_select(self):
+        return self._on_select
+
+    @on_select.setter
+    def on_select(self, handle):
+        if callable(handle):
+            self._on_select = handle
