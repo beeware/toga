@@ -6,11 +6,9 @@ import toga
 from colosseum import CSS
 
 
-class SettingsDelegate(NSUserDefaultsController):
-    @objc_method
-    def NSUserDefaultsDidChangeNotification_(self, sender) -> None:
-        print('in NSUserDefaultsDidChangeNotification_')
-        print(sender)
+class SettingsWindow(toga.Window):
+    def on_close(self):
+        print('SettingsWindow is about to close.')
 
 
 class Settings:
@@ -25,10 +23,7 @@ class Settings:
         self.interface._impl = self
         self.window = None
         self.app = None
-        self.delegate = SettingsDelegate.alloc().init()
-        self.delegate.interface = self
         self.store = NSUserDefaults.standardUserDefaults
-        self.store.delegate = SettingsDelegate.alloc().init()
         # print(self.native.dictionaryRepresentation())
 
     def set_app(self, app):
@@ -75,22 +70,24 @@ class Settings:
                 default_value = NSArray.arrayWithObjects_(default_value)
             # add default_value to dict
             key_value_dict[item['key']] = str(default_value)
-        self.store.registerDefaults_(key_value_dict)
-        self.print_store()
+        else:
+            NSUserDefaults.standardUserDefaults.registerDefaults_(key_value_dict)
+            self.print_store()
 
     def show(self, widget):
         self.set_defaults()
-
         if self.window is None:
-            self.window = toga.Window(title='Settings',
-                                      position=(150, 150),
-                                      size=(540, 380),
-                                      minimizable=False,
-                                      main_window=False)
+            self.window = SettingsWindow(title='Settings',
+                                         position=(150, 150),
+                                         size=(540, 380),
+                                         minimizable=False,
+                                         main_window=False)
+            self.window._impl.native.releasedWhenClosed = False
             content = self.build_ui_form_normal_form()
             self.window.content = content
+
         if self.window._impl.native.isVisible:
-            self.window._impl.native.makeKeyAndOrderFront_(None)
+            self.window._impl.native.makeKeyAndOrderFront_(None)  # Brings the window in
         else:
             self.window.show()
 
