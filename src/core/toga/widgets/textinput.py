@@ -27,8 +27,8 @@ class TextInput(Widget):
         self.value = initial
         self.placeholder = placeholder
         self.readonly = readonly
-        self.on_submit = on_submit if on_submit else None
-        self.on_change = on_change if on_change else None
+        self.on_submit = on_submit
+        self.on_change = on_change
 
     @property
     def readonly(self):
@@ -87,8 +87,7 @@ class TextInput(Widget):
 
     @on_change.setter
     def on_change(self, handle):
-        if callable(handle):
-            self._on_change = handle
+        self._on_change = handle if callable(handle) else None
 
     @property
     def on_submit(self):
@@ -96,8 +95,7 @@ class TextInput(Widget):
 
     @on_submit.setter
     def on_submit(self, handle):
-        if callable(handle):
-            self._on_submit = handle
+        self._on_submit = handle if callable(handle) else None
 
     def clear(self):
         """ Clears the text of the widget """

@@ -5,7 +5,7 @@ from ..libs import *
 class TextInputDelegate(NSObject):
     @objc_method
     def controlTextDidChange_(self, sender) -> None:
-        print('in fieldTextDidChange_')
+        """ Is invoked on every text change. """
         if self.interface.on_change:
             self.interface.on_change(self.interface)
 
@@ -13,10 +13,9 @@ class TextInputDelegate(NSObject):
 class TogaTextInput(NSTextField):
     @objc_method
     def fieldTextDidChange_(self, sender) -> None:
-        print('in fieldTextDidChange_')
+        """ Is invoked on return key press. """
         if self.interface.on_submit:
             self.interface.on_submit(self.interface)
-    pass
 
 
 class TextInput(Widget):
@@ -26,12 +25,13 @@ class TextInput(Widget):
 
         self.native.target = self.native
         self.native.action = SEL('controlTextDidChange:')
-
-        self.native.bezeled = True
-        self.native.bezelStyle = NSTextFieldSquareBezel
+        self.native.action = SEL('fieldTextDidChange:')
 
         self.native.delegate = TextInputDelegate.alloc().init()
         self.native.delegate.interface = self.interface
+
+        self.native.bezeled = True
+        self.native.bezelStyle = NSTextFieldSquareBezel
 
         # Add the layout constraints
         self.add_constraints()
