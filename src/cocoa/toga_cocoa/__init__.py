@@ -9,6 +9,7 @@ from .font import Font
 # Widgets
 from .widgets.box import *
 from .widgets.button import *
+from .widgets.detailedlist import *
 from .widgets.icon import *
 from .widgets.image import *
 from .widgets.imageview import *
@@ -35,6 +36,7 @@ __all__ = [
     'Window',
     'Box',
     'Button',
+    'DetailedList',
     'Icon', 'TIBERIUS_ICON',
     'Image',
     'ImageView',
