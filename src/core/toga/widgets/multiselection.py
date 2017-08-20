@@ -54,8 +54,14 @@ class MultiSelection(Widget):
 
     @defaults.setter
     def defaults(self, defaults):
-        if isinstance(defaults, list) and len(defaults) == len(self.choices):
-            self._defaults = defaults
+        if defaults:
+            if len(defaults) == len(self.choices):
+                self._defaults = defaults
+            else:
+                raise ValueError('defaults and choices must be of the same length. '
+                                 '(defaults) {} != (choices) {}'.format(len(defaults), len(self.choices)))
+        else:
+            self._defaults = [True for x in range(len(self.choices))]
 
     @property
     def on_select(self):

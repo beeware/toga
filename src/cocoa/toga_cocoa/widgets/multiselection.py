@@ -40,7 +40,7 @@ class MultiSelection(Box):
         self.label.text = label
 
     def get_selected_items(self):
-        return [switch.label for switch in self.switches if switch.is_on is True]
+        return [switch.is_on for switch in self.switches]
 
     def set_row(self, value):
         self.box.style.flex_direction = 'row' if value else 'column'

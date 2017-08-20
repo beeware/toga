@@ -118,4 +118,4 @@ class Stepper(Widget):
 class TogaStepper(NSStepper):
     @objc_method
     def onChange_(self, obj) -> None:
-        process_callback(self.interface.on_change(self.interface))
+        process_callback(self.interface.on_select(self.interface))

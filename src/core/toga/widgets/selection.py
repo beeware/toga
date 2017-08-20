@@ -22,7 +22,7 @@ class Selection(Widget):
         for item in self._items:
             self._impl.add_item(item)
 
-        self.on_select = on_select if on_select else None
+        self.on_select = on_select
 
     @property
     def items(self):
@@ -64,5 +64,4 @@ class Selection(Widget):
 
     @on_select.setter
     def on_select(self, handle):
-        if callable(handle):
-            self._on_select = handle
+        self._on_select = handle if callable(handle) else None
