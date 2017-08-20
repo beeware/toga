@@ -6,11 +6,6 @@ from .base import WidgetMixin
 from ..libs import *
 
 
-NSUserDefaults = ObjCClass('NSUserDefaults')
-NSMutableDictionary = ObjCClass('NSMutableDictionary')
-NSMutableURLRequest = ObjCClass('NSMutableURLRequest')
-
-
 class TogaWebView(WebView):
     @objc_method
     def webView_didFinishLoadForFrame_(self, sender, frame) -> None:
