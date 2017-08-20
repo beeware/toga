@@ -2,7 +2,7 @@ from toga.interface import Table as TableInterface
 
 from ..libs import *
 from .base import WidgetMixin
-
+from ..utils import process_callback
 
 class TogaTable(NSTableView):
     # TableDataSource methods
@@ -18,12 +18,14 @@ class TogaTable(NSTableView):
     # TableDelegate methods
     @objc_method
     def tableViewSelectionDidChange_(self, notification) -> None:
-        print ("selection changed")
-
+        print ("selection changed to row: %s" % notification.object.selectedRow)
+        #pass selectedRow onto the interface
+        self._interface.selectedRow = notification.object.selectedRow
+        process_callback(self._interface.on_select(self._interface))
 
 class Table(TableInterface, WidgetMixin):
-    def __init__(self, headings, id=None, style=None):
-        super(Table, self).__init__(headings, id=id, style=style)
+    def __init__(self, headings, id=None, style=None, on_select=None):
+        super(Table, self).__init__(headings, id=id, style=style, on_select=on_select)
         self._create()
 
     def create(self):
