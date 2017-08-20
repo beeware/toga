@@ -1,3 +1,7 @@
+:orphan:
+
+.. warnings about this file not being included in any toctree will be suppressed by :orphan:
+
 Box
 ===
 
@@ -13,7 +17,7 @@ A box can be instantiated with no children and then the children added later
     import toga
 
     box = toga.Box('box1')
-    
+
     button = toga.Button('Hello world', on_press=button_handler)
     box.add(button)
 
@@ -25,7 +29,7 @@ To create boxes within boxes, use the children argument.
 
     box_a = toga.Box('box_a')
     box_b = toga.Box('box_b)
-    
+
     box = toga.Box('box', children=[box_a, box_b])
 
 Box Styling
@@ -38,14 +42,14 @@ Styling of boxes through colosseum can be done pre instantiation or post,
     import toga
 
     box = toga.Box('box1')
-    
+
     box.style.set(flex_direction='column', padding_top=10)
-    
+
 .. code-block:: Python
 
     import toga
     from colosseum import CSS
-    
+
     style = CSS(padding_top=10)
     box = toga.Box('box', style=style)
 

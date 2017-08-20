@@ -39,7 +39,7 @@ class NavigationView(NavigationViewInterface, WidgetMixin):
             self._action_button = UIBarButtonItem.alloc().initWithBarButtonSystemItem_target_action_(
                 button_for_action(self._config['on_action']),
                 self._controller,
-                get_selector('onAction')
+                SEL('onAction')
             )
             self._controller.navigationBar.topItem.rightBarButtonItem = self._action_button
 

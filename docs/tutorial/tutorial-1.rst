@@ -68,7 +68,7 @@ This example shows off the use of Flexbox in Toga's CSS styling. Flexbox is a
 new layout scheme that is part of the CSS3 specification that corrects the
 problems with the older box layout scheme in CSS2. Flexbox is not yet
 universally available in all web browsers,  but that doesn't matter for Toga -
-Toga provides an implemention of the Flexbox layout scheme. `CSS-tricks
+Toga provides an implementation of the Flexbox layout scheme. `CSS-tricks
 provides a good tutorial on Flexbox`_ if you've never come across it before.
 
 .. _CSS-tricks provides a good tutorial on Flexbox: https://css-tricks.com/snippets/css/a-guide-to-flexbox/

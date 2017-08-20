@@ -13,13 +13,13 @@ from .widgets.button import *
 # from .widgets.image import *
 # from .widgets.imageview import *
 from .widgets.label import *
-# from .widgets.multilinetextinput import *
+from .widgets.multilinetextinput import *
 # from .widgets.optioncontainer import *
 from .widgets.passwordinput import *
-# from .widgets.progressbar import *
+from .widgets.progressbar import *
 # from .widgets.scrollcontainer import *
 # from .widgets.splitcontainer import *
-# from .widgets.table import *
+from .widgets.table import *
 from .widgets.textinput import *
 # from .widgets.tree import *
 from .widgets.webview import *
@@ -38,14 +38,14 @@ __all__ = [
     # 'ImageView',
     # 'Font',
     'Label',
-    # 'MultilineTextInput',
+    'MultilineTextInput',
     'NumberInput',
     # 'OptionContainer',
-    # 'ProgressBar',
+    'ProgressBar',
     # 'ScrollContainer',
     # 'Selection',
     # 'SplitContainer',
-    # 'Table',
+    'Table',
     'TextInput',
     'PasswordInput',
     # 'Tree',
@@ -60,4 +60,4 @@ __all__ = [
 # __version__ = '1.2.3'       # Final Release
 # __version__ = '1.2.3.post1' # Post Release 1
 
-__version__ = '0.2.13.dev1'
+__version__ = '0.2.15'

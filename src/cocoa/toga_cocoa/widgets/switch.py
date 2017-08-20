@@ -1,4 +1,4 @@
-from rubicon.objc import objc_method
+from rubicon.objc import objc_method, SEL
 
 from toga.interface import Switch as SwitchInterface
 

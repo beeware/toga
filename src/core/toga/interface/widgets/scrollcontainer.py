@@ -46,17 +46,18 @@ class ScrollContainer(Widget):
 
     @content.setter
     def content(self, widget):
-        self._content = widget
         if widget:
             widget._update_layout()
-            self._content.app = self.app
-            self._content.window = self.window
+            widget.app = self.app
+            widget.window = self.window
 
             if widget._impl is None:
                 self._inner_container = self._CONTAINER_CLASS()
-                self._inner_container.root_content = widget
+                self._inner_container.content = widget
             else:
                 self._inner_container = widget
+
+            self._content = widget
 
             self._set_content(self._inner_container, widget)
 

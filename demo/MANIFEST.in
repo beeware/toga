@@ -1,0 +1,4 @@
+include README.rst
+include AUTHORS
+include LICENSE
+recursive-include toga_demo *.png

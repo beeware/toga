@@ -1,4 +1,4 @@
-from rubicon.objc import objc_method, get_selector
+from rubicon.objc import objc_method, SEL
 
 from toga.interface import Slider as SliderInterface
 
@@ -22,7 +22,7 @@ class Slider(SliderInterface, WidgetMixin):
         self._impl._interface = self
 
         self._impl.continuous = True
-        self._impl.addTarget_action_forControlEvents_(self._impl, get_selector('onSlide:'), UIControlEventValueChanged)
+        self._impl.addTarget_action_forControlEvents_(self._impl, SEL('onSlide:'), UIControlEventValueChanged)
 
         # Add the layout constraints
         self._add_constraints()

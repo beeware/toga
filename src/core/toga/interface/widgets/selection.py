@@ -5,7 +5,7 @@ class Selection(Widget):
     '''
     Selection widget
     '''
-    def __init__(self, id=None, style=None, items=list()):
+    def __init__(self, id=None, style=None, items=list(), on_select=None):
         '''
         Instantiate a new instance of the selection widget
 
@@ -18,12 +18,16 @@ class Selection(Widget):
 
         :param items:       Items for the selection:
         :type  items:       ``list`` of ``str``
+
+        :param on_select:    Function to execute upon choice selection
+        :type on_select:     ``callable``
         '''
         self._items = items
-        super().__init__(id=id, style=style, items=items)
+        super().__init__(id=id, style=style, items=items, on_select=on_select)
 
-    def _configure(self, items):
-        pass
+    def _configure(self, items, on_select):
+        self.items = items
+        self.on_select = on_select
 
     def _create(self):
         super()._create()
@@ -63,3 +67,26 @@ class Selection(Widget):
             raise ValueError("Not an item in the list.")
 
         self._select_item(value)
+
+    @property
+    def on_select(self):
+        """
+        The callable function for when the button is pressed
+
+        :rtype: ``callable``
+        """
+        return self._on_select
+
+    @on_select.setter
+    def on_select(self, handler):
+        """
+        Set the function to be executed on button press.
+
+        :param handler:     callback function
+        :type handler:      ``callable``
+        """
+        self._on_select = handler
+        self._set_on_select(handler)
+
+    def _set_on_select(self, value):
+        pass

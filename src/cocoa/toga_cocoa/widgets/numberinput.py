@@ -1,4 +1,4 @@
-from rubicon.objc import objc_method
+from rubicon.objc import objc_method, SEL
 
 from toga.interface import NumberInput as NumberInputInterface
 from toga.interface import Widget
