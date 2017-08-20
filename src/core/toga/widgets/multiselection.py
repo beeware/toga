@@ -24,7 +24,6 @@ class MultiSelection(Widget):
             self._row = value
             self._impl.set_row(self._row)
 
-
     @property
     def label(self):
         return self._label

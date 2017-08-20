@@ -185,7 +185,7 @@ class Settings:
                     widget = toga.Box(children=[label, selection])
                 elif typ == 'multi_value':
                     array = self.store.arrayForKey_(key)
-                    parsed_defaults = [bool(array.objectAtIndex(d).boolValue) for d in range(len(array))]
+                    parsed_defaults = [bool(d.boolValue) for d in list(array)]
                     widget = toga.MultiSelection(label,
                                                  choices=item['choices'],
                                                  defaults=parsed_defaults,
