@@ -45,8 +45,14 @@ class TogaTree(NSOutlineView):
     @objc_method
     def outlineViewSelectionDidChange_(self, notification) -> None:
         if self.interface.on_selection:
-            node = self.interface.tree[id(self.itemAtRow(self.selectedRow))]
-            process_callback(self.interface.on_selection(node))
+            nodes = []
+            currentIndex = self.selectedRowIndexes.firstIndex
+            for i in range(self.selectedRowIndexes.count):
+                nodes.append(self.interface.tree[id(self.itemAtRow(currentIndex))])
+                currentIndex = self.selectedRowIndexes.indexGreaterThanIndex(currentIndex)
+
+            process_callback(self.interface.on_selection(nodes))
+
 
 class Tree(TreeInterface, WidgetMixin):
     def __init__(self, headings, data=None, id=None, style=None,
@@ -75,6 +81,7 @@ class Tree(TreeInterface, WidgetMixin):
         self._tree.setColumnAutoresizingStyle_(NSTableViewUniformColumnAutoresizingStyle)
         # Use autolayout for the inner widget.
         self._tree.setTranslatesAutoresizingMaskIntoConstraints_(True)
+        self._tree.setAllowsMultipleSelection_(True)
 
         # Create columns for the tree
         self._columns = [

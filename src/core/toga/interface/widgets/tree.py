@@ -69,6 +69,14 @@ class Node:
         self._data['icon']['url'] = image_url
         self._update.append('icon')
 
+    @property
+    def text(self):
+        return self._data['text']
+
+    @text.setter
+    def text(self, value):
+        self._data['text'] = value
+
 class Tree(Widget):
     '''
     Tree widget
