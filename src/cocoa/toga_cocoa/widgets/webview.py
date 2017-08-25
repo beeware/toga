@@ -6,8 +6,8 @@ from ..libs import *
 class TogaWebView(WebView):
     @objc_method
     def webView_didFinishLoadForFrame_(self, sender, frame) -> None:
-        print ("FINISHED LOADING")
-        pass
+        if self.interface.on_webview_load:
+            self.interface.on_webview_load(self.interface)
 
     @objc_method
     def acceptsFirstResponder(self) -> bool:
@@ -32,6 +32,12 @@ class WebView(Widget):
 
         # Add the layout constraints
         self.add_constraints()
+
+    def get_dom(self):
+        # Utilises Step 2) of:
+        # https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/DisplayWebContent/Tasks/SaveAndLoad.html
+        html = self.native.mainFrame.DOMDocument.documentElement.outerHTML  ##domDocument.markupString
+        return html
 
     def set_url(self, value):
         if value:

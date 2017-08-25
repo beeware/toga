@@ -13,14 +13,25 @@ class WebView(Widget):
         url (str): The URL to start with.
         on_key_down (``callable``): The callback method for when the a key is pressed within
             the web view
+        on_webview_load (``callable``): The callback method for when the webview loads (or reloads).
     """
 
-    def __init__(self, id=None, style=None, factory=None, url=None, on_key_down=None):
+    def __init__(self, id=None, style=None, factory=None, url=None, on_key_down=None, on_webview_load=None):
         super(WebView, self).__init__(id=id, style=style, factory=factory)
 
         self._impl = self.factory.WebView(interface=self)
         self.url = url
         self.on_key_down = on_key_down
+        self.on_webview_load = on_webview_load
+
+    @property
+    def dom(self):
+        """ The current DOM
+
+        Returns:
+            The current DOM as a ``str``.
+        """
+        return self._impl.get_dom()
 
     @property
     def url(self):
