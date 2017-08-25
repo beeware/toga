@@ -11,6 +11,8 @@ function bump {
     else
         if [ "$1" = "core" ]; then
             pushd src/$1/toga
+        elif [ "$1" = "demo" ]; then
+            pushd demo/toga_demo
         else
             pushd src/$1/toga_$1
         fi
@@ -27,6 +29,11 @@ function build {
     if [ "$1" = "toga" ]; then
         rm -rf build dist
         python setup.py sdist bdist_wheel
+    elif [ "$1" = "demo" ]; then
+        cd demo
+        rm -rf build dist
+        python setup.py sdist bdist_wheel
+        cd ../..
     else
         cd src/$1
         rm -rf build dist
@@ -40,6 +47,9 @@ function release {
     if [ "$1" = "toga" ]; then
         twine upload "dist/toga-$2-py3-none-any.whl"
         twine upload "dist/toga-$2.tar.gz"
+    elif [ "$1" = "demo" ]; then
+        twine upload "demo/dist/toga-$2-py3-none-any.whl"
+        twine upload "demo/dist/toga-$2.tar.gz"
     else
         twine upload "src/$1/dist/toga_$1-$2-py3-none-any.whl"
         twine upload "src/$1/dist/toga-$1-$2.tar.gz"
@@ -56,6 +66,8 @@ function dev {
     else
         if [ "$1" = "core" ]; then
             pushd src/$1/toga
+        elif [ "$1" = "demo" ]; then
+            pushd demo
         else
             pushd src/$1/toga_$1
         fi
@@ -67,7 +79,7 @@ function dev {
     popd
 }
 
-MODULES="toga core cocoa iOS gtk django android winforms"
+MODULES="toga core cocoa iOS gtk django android winforms demo"
 
 action=$1
 shift
