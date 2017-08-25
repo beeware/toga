@@ -11,15 +11,18 @@ class WebView(Widget):
         factory (:obj:`module`): A python module that is capable to return a
             implementation of this class with the same name. (optional & normally not needed)
         url (str): The URL to start with.
+        user_agent (str): The user agent for the web view.
         on_key_down (``callable``): The callback method for when the a key is pressed within
             the web view
         on_webview_load (``callable``): The callback method for when the webview loads (or reloads).
     """
 
-    def __init__(self, id=None, style=None, factory=None, url=None, on_key_down=None, on_webview_load=None):
+    def __init__(self, id=None, style=None, factory=None,
+                 url=None, user_agent=None, on_key_down=None, on_webview_load=None):
         super(WebView, self).__init__(id=id, style=style, factory=factory)
 
         self._impl = self.factory.WebView(interface=self)
+        self.user_agent = user_agent
         self.url = url
         self.on_key_down = on_key_down
         self.on_webview_load = on_webview_load
@@ -46,6 +49,20 @@ class WebView(Widget):
     def url(self, value):
         self._url = value
         self._impl.set_url(value)
+
+    @property
+    def user_agent(self):
+        """ The user agent for the web view as a ``str``.
+
+        Returns:
+            The user agent as a ``str``.
+        """
+        return self._user_agent
+
+    @user_agent.setter
+    def user_agent(self, value):
+        self._user_agent = value
+        self._impl.set_user_agent(value)
 
     def set_content(self, root_url, content):
         """ Set the content of the web view.

@@ -33,6 +33,10 @@ class WebView(Widget):
             request = NSURLRequest.requestWithURL_(NSURL.URLWithString_(self.interface.url))
             self.native.loadRequest_(request)
 
+    def set_user_agent(self, value):
+        # self.native.???? = value if value else "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/603.3.8 (KHTML, like Gecko) Version/10.1.2 Safari/603.3.8"
+        pass
+
     def set_content(self, root_url, content):
         self.native.loadHTMLString_baseURL_(content, NSURL.URLWithString_(root_url))
 

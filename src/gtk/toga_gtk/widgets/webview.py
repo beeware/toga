@@ -22,6 +22,7 @@ class WebView(Widget):
 
     TODO: WebView is not displaying anything when setting a url.
     """
+
     def create(self):
         if WebKit2 is None:
             raise RuntimeError(
@@ -42,6 +43,10 @@ class WebView(Widget):
     def set_url(self, value):
         if value:
             self.webview.load_uri(value)
+
+    def set_user_agent(self, value):
+        pass
+        # self.native.user_agent = value if value else "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.101 Safari/537.36"
 
     def set_content(self, root_url, content):
         self.webview.load_html(content, root_url)
