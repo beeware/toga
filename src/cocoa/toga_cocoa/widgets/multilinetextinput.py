@@ -19,7 +19,6 @@ class MultilineTextInput(Widget):
         # Create the actual text widget
         self.text = NSTextView.alloc().init()
         self.text.editable = True
-        self.text.enabled = True
         self.text.selectable = True
         self.text.verticallyResizable = True
         self.text.horizontallyResizable = False
@@ -48,6 +47,12 @@ class MultilineTextInput(Widget):
 
         # Add the layout constraints
         self.add_constraints()
+
+    def set_placeholder(self, value):
+        self.text.placeholderString = value
+
+    def set_readonly(self, value):
+        self.text.editable = not value
 
     def set_value(self, value):
         self.text.string = value
