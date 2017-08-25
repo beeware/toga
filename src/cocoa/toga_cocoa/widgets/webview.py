@@ -2,10 +2,6 @@ from rubicon.objc import objc_method
 from .base import Widget
 from ..libs import *
 
-NSUserDefaults = ObjCClass('NSUserDefaults')
-NSMutableDictionary = ObjCClass('NSMutableDictionary')
-NSMutableURLRequest = ObjCClass('NSMutableURLRequest')
-
 
 class TogaWebView(WebView):
     @objc_method
