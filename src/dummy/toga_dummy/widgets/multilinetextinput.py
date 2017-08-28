@@ -7,3 +7,9 @@ class MultilineTextInput(Widget):
 
     def set_value(self, value):
         pass
+
+    def set_placeholder(self, value):
+        pass
+
+    def set_readonly(self, value):
+        pass
