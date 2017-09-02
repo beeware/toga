@@ -3,74 +3,64 @@ from rubicon.objc import *
 from toga.interface import Tree as TreeInterface
 
 from ..libs import *
+from ..utils import process_callback
 from .base import WidgetMixin
-
-
-class TreeNode(object):
-    def __init__(self, *data):
-        self._impl = NSObject.alloc().init()
-        self._tree = None
-        self.data = data
-        self.children = []
 
 
 class TogaTree(NSOutlineView):
     # OutlineViewDataSource methods
     @objc_method
     def outlineView_child_ofItem_(self, tree, child: int, item):
-        if item is None:
-            key = None
-        else:
-            key = id(item)
+        key = item if item is None else id(item)
 
-        node_id = self.interface._data[key]['children'][child]
-        node = self.interface._data[node_id]['node']
+        node_id = self.interface.tree[key].children[child]
+        node = self.interface.tree[node_id]._impl
         return node
 
     @objc_method
     def outlineView_isItemExpandable_(self, tree, item) -> bool:
-        if item is None:
-            key = None
-        else:
-            key = id(item)
-
-        return self.interface._data[key]['children'] is not None
+        key = item if item is None else id(item)
+        return self.interface.tree[key].children is not None
 
     @objc_method
     def outlineView_numberOfChildrenOfItem_(self, tree, item) -> int:
-        if item is None:
-            key = None
-        else:
-            key = id(item)
+        key = item if item is None else id(item)
 
         try:
-            return len(self.interface._data[key]['children'])
+            return len(self.interface.tree[key].children)
         except TypeError:
             return 0
 
     @objc_method
     def outlineView_objectValueForTableColumn_byItem_(self, tree, column, item):
-        column_index = int(column.identifier)
-        return self.interface._data[id(item)]['data'][column_index]
+        return self.interface.tree[id(item)].data['text']
+
+    @objc_method
+    def outlineView_willDisplayCell_forTableColumn_item_(self, tree, cell,
+                                                        column, item):
+        cell.setImage_(self.interface.tree[id(item)].data['icon']['obj'])
+        cell.setLeaf_(True)
 
     # OutlineViewDelegate methods
     @objc_method
     def outlineViewSelectionDidChange_(self, notification) -> None:
-        print ("tree selection changed")
+        if self.interface.on_selection:
+            nodes = []
+            currentIndex = self.selectedRowIndexes.firstIndex
+            for i in range(self.selectedRowIndexes.count):
+                nodes.append(self.interface.tree[id(self.itemAtRow(currentIndex))])
+                currentIndex = self.selectedRowIndexes.indexGreaterThanIndex(currentIndex)
+
+            process_callback(self.interface.on_selection(nodes))
 
 
 class Tree(TreeInterface, WidgetMixin):
-    def __init__(self, headings, id=None, style=None):
-        super(Tree, self).__init__(headings, id=id, style=style)
+    def __init__(self, headings, data=None, id=None, style=None,
+                                on_selection=None):
+        super().__init__(headings, data, id, style, on_selection)
 
         self._tree = None
         self._columns = None
-
-        self._data = {
-            None: {
-                'children': []
-            }
-        }
 
         self._create()
 
@@ -93,7 +83,8 @@ class Tree(TreeInterface, WidgetMixin):
         self._tree.columnAutoresizingStyle = NSTableViewUniformColumnAutoresizingStyle
 
         # Use autolayout for the inner widget.
-        self._tree.translatesAutoresizingMaskIntoConstraints = True
+        self._tree.setTranslatesAutoresizingMaskIntoConstraints_(True)
+        self._tree.setAllowsMultipleSelection_(True)
 
         # Create columns for the tree
         self._columns = [
@@ -101,12 +92,15 @@ class Tree(TreeInterface, WidgetMixin):
             for i, heading in enumerate(self.headings)
         ]
 
+        custom_cell = NSBrowserCell.alloc().init()
+
         for heading, column in zip(self.headings, self._columns):
             self._tree.addTableColumn(column)
             cell = column.dataCell
             cell.editable = False
             cell.selectable = False
             column.headerCell.stringValue = heading
+            column.setDataCell_(custom_cell)
 
         # Put the tree arrows in the first column.
         self._tree.outlineTableColumn = self._columns[0]
@@ -120,25 +114,25 @@ class Tree(TreeInterface, WidgetMixin):
         # Add the layout constraints
         self._add_constraints()
 
-    def insert(self, parent, index, *data):
-        if len(data) != len(self.headings):
-            raise Exception('Data size does not match number of headings')
-
+    def _insert(self, node_abs):
         node = NSObject.alloc().init()
+        node_abs._impl = node
 
-        parent_node = self._data[parent]
-        if parent_node['children'] is None:
-            parent_node['children'] = []
-        if index is None:
-            parent_node['children'].append(id(node))
-        else:
-            parent_node['children'].insert(index, id(node))
-
-        self._data[id(node)] = {
-            'node': node,
-            'data': data,
-            'children': None,
-        }
-
-        self._tree.reloadData()
         return id(node)
+
+    def _set_icon(self, node):
+        size = NSMakeSize(8,8)
+
+        image = NSImage.alloc().initWithContentsOfFile_(node.data['icon']['url'])
+        image.setSize_(size)
+
+        node.data['icon']['obj'] = image
+
+    def _set_collapse(self, node, status):
+        if status:
+            self._tree.collapseItem(node._impl)
+        else:
+            self._tree.expandItem(node._impl)
+
+    def rehint(self):
+        self._tree.reloadData()

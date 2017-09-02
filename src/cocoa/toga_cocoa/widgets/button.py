@@ -1,5 +1,6 @@
 from rubicon.objc import objc_method, SEL
 
+
 from toga.interface import Button as ButtonInterface
 from toga.constants import *
 

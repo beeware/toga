@@ -173,4 +173,3 @@ class App(AppInterface):
 
     def exit(self):
         self._impl.terminate(None)
-
