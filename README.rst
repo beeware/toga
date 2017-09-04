@@ -25,13 +25,12 @@ Optional extras
 If you want to use the WebView widget, you'll
 also need to have WebKit, plus the GI bindings to WebKit installed. This means
 you'll need to install the following:
-  * **Ubuntu 14.04** ``apt-get install python3-gi gir1.2-webkit-3.0``
 
-  * **Ubuntu 16.04 / Debian 8** ``apt-get install python3-gi gir1.2-webkit2-4.0``
-    or ``apt-get install python3-gi gir1.2-webkit-3.0``
-
-  * **Fedora** ``dnf install python3-gobject pywebkitgtk``
-    or ``yum install python3-gobject pywebkitgtk`` 
+* **Ubuntu 14.04** ``apt-get install python3-gi gir1.2-webkit-3.0``
+* **Ubuntu 16.04 / Debian 8** ``apt-get install python3-gi gir1.2-webkit2-4.0``
+  or ``apt-get install python3-gi gir1.2-webkit-3.0``
+* **Fedora** ``dnf install python3-gobject pywebkitgtk``
+  or ``yum install python3-gobject pywebkitgtk`` 
     
 Other distros should be similar, but feel free to send a pull request with updated dependencies if needed.
 
