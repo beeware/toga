@@ -12,12 +12,6 @@ foundation = cdll.LoadLibrary(util.find_library('Foundation'))
 foundation.NSMouseInRect.restype = c_bool
 foundation.NSMouseInRect.argtypes = [NSPoint, NSRect, c_bool]
 
-
-# NSArray.h
-
-NSArray = ObjCClass('NSArray')
-NSMutableArray = ObjCClass('NSMutableArray')
-
 # NSBundle.h
 
 NSBundle = ObjCClass('NSBundle')
@@ -26,10 +20,6 @@ NSBundle.declare_class_property('mainBundle')
 # NSCursor.h
 
 NSCursor = ObjCClass('NSCursor')
-
-# NSDictionary.h
-
-NSDictionary = ObjCClass('NSDictionary')
 
 # NSDocument.h
 
@@ -83,3 +73,6 @@ NSURLRequest = ObjCClass('NSURLRequest')
 # NSFont.h
 
 NSFont = ObjCClass('NSFont')
+
+# NSGraphicsContext.h
+NSGraphicsContext = ObjCClass('NSGraphicsContext')

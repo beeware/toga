@@ -93,6 +93,48 @@ NSBackingStoreRetained = 0
 NSBackingStoreNonretained = 1
 NSBackingStoreBuffered = 2
 
+# NSCompositingOperationXXX is equivalent to NSCompositeXXX
+NSCompositingOperationClear = 0
+NSCompositingOperationCopy = 1
+NSCompositingOperationSourceOver = 2
+NSCompositingOperationSourceIn = 3
+NSCompositingOperationSourceOut = 4
+NSCompositingOperationSourceAtop = 5
+NSCompositingOperationDestinationOver = 6
+NSCompositingOperationDestinationIn = 7
+NSCompositingOperationDestinationOut = 8
+NSCompositingOperationDestinationAtop = 9
+NSCompositingOperationXOR = 10
+NSCompositingOperationPlusDarker = 11
+NSCompositingOperationHighlight = 12
+NSCompositingOperationPlusLighter = 13
+
+NSCompositingOperationMultiply = 14
+NSCompositingOperationScreen = 15
+NSCompositingOperationOverlay = 16
+NSCompositingOperationDarken = 17
+NSCompositingOperationLighten = 18
+NSCompositingOperationColorDodge = 19
+NSCompositingOperationColorBurn = 20
+NSCompositingOperationSoftLight = 21
+NSCompositingOperationHardLight = 22
+NSCompositingOperationDifference = 23
+NSCompositingOperationExclusion = 24
+
+NSCompositingOperationHue = 25
+NSCompositingOperationSaturation = 26
+NSCompositingOperationColor = 27
+NSCompositingOperationLuminosity = 28
+
+# NSGraphicsContext.h
+
+NSImageInterpolationDefault = 0
+NSImageInterpolationNone = 1
+NSImageInterpolationLow = 2
+NSImageInterpolationMedium = 4
+NSImageInterpolationHigh = 3
+
+
 # NSTrackingArea.h
 NSTrackingMouseEnteredAndExited = 0x01
 NSTrackingMouseMoved = 0x02
@@ -204,6 +246,8 @@ class NSLayoutPriority(Enum):
     DefaultLow = 250
     FittingSizeCompression = 50
 
+# NSAffineTransform.h
+NSAffineTransform = ObjCClass('NSAffineTransform')
 
 # NSAlert.h
 NSWarningAlertStyle = 0
@@ -327,6 +371,9 @@ NSImageScaleProportionallyUpOrDown = 3
 # NSImageView.h
 NSImageView = ObjCClass('NSImageView')
 
+# NSCell.h
+NSCell = ObjCClass('NSCell')
+
 # NSBrowserCell.h
 NSBrowserCell = ObjCClass('NSBrowserCell')
 
@@ -367,6 +414,7 @@ def NSTextAlignment(alignment):
 
 # NSTextField.h
 NSTextField = ObjCClass('NSTextField')
+NSTextFieldCell = ObjCClass('NSTextFieldCell')
 
 # NSTextFieldCell.h
 NSTextFieldSquareBezel = 0
@@ -444,3 +492,37 @@ NSStepper = ObjCClass('NSStepper')
 # NSSlider
 NSSlider = ObjCClass('NSSlider')
 NSSliderCell = ObjCClass('NSSliderCell')
+
+# NSAttributedString.h
+NSFontAttributeName = objc_const(appkit, "NSFontAttributeName")
+NSParagraphStyleAttributeName = objc_const(appkit, "NSParagraphStyleAttributeName")
+NSForegroundColorAttributeName = objc_const(appkit, "NSForegroundColorAttributeName")
+NSBackgroundColorAttributeName = objc_const(appkit, "NSBackgroundColorAttributeName")
+NSLigatureAttributeName = objc_const(appkit, "NSLigatureAttributeName")
+NSKernAttributeName = objc_const(appkit, "NSKernAttributeName")
+NSStrikethroughStyleAttributeName = objc_const(appkit, "NSStrikethroughStyleAttributeName")
+NSUnderlineStyleAttributeName = objc_const(appkit, "NSUnderlineStyleAttributeName")
+NSStrokeColorAttributeName = objc_const(appkit, "NSStrokeColorAttributeName")
+NSStrokeWidthAttributeName = objc_const(appkit, "NSStrokeWidthAttributeName")
+NSShadowAttributeName = objc_const(appkit, "NSShadowAttributeName")
+NSTextEffectAttributeName = objc_const(appkit, "NSTextEffectAttributeName")
+
+NSAttachmentAttributeName = objc_const(appkit, "NSAttachmentAttributeName")
+NSLinkAttributeName = objc_const(appkit, "NSLinkAttributeName")
+NSBaselineOffsetAttributeName = objc_const(appkit, "NSBaselineOffsetAttributeName")
+NSUnderlineColorAttributeName = objc_const(appkit, "NSUnderlineColorAttributeName")
+NSStrikethroughColorAttributeName = objc_const(appkit, "NSStrikethroughColorAttributeName")
+NSObliquenessAttributeName = objc_const(appkit, "NSObliquenessAttributeName")
+NSExpansionAttributeName = objc_const(appkit, "NSExpansionAttributeName")
+
+NSWritingDirectionAttributeName = objc_const(appkit, "NSWritingDirectionAttributeName")
+NSVerticalGlyphFormAttributeName = objc_const(appkit, "NSVerticalGlyphFormAttributeName")
+
+NSCursorAttributeName = objc_const(appkit, "NSCursorAttributeName")
+NSToolTipAttributeName = objc_const(appkit, "NSToolTipAttributeName")
+
+NSMarkedClauseSegmentAttributeName = objc_const(appkit, "NSMarkedClauseSegmentAttributeName")
+NSTextAlternativesAttributeName = objc_const(appkit, "NSTextAlternativesAttributeName")
+
+NSSuperscriptAttributeName = objc_const(appkit, "NSSuperscriptAttributeName")
+NSGlyphInfoAttributeName = objc_const(appkit, "NSGlyphInfoAttributeName")
