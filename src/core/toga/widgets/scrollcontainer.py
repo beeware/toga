@@ -18,6 +18,8 @@ class ScrollContainer(Widget):
                  vertical=True, content=None, factory=None):
         super().__init__(id=id, style=style, factory=factory)
 
+        self._content = None
+
         # Create a platform specific implementation of a Scroll Container
         self._impl = self.factory.ScrollContainer(interface=self)
 

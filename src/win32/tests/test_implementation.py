@@ -6,7 +6,7 @@ globals().update(
         os.path.abspath(
             os.path.join(
                 os.path.dirname(os.path.dirname(__file__)),
-                'toga_cocoa')
+                'toga_win32')
         )
     )
 )

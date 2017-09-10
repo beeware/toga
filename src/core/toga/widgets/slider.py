@@ -78,7 +78,6 @@ class Slider(Widget):
     @on_slide.setter
     def on_slide(self, handler):
         self._on_press = handler
-        self._impl.set_on_slide(handler)
 
     @property
     def enabled(self):

@@ -33,6 +33,9 @@ setup(
     install_requires=[
         'toga-core>=%s' % version,
     ],
+    tests_require=[
+        'toga-dummy==%s' % version
+    ],
     license='New BSD',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',

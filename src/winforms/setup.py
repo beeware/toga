@@ -34,6 +34,9 @@ setup(
         'pythonnet',
         'toga-core>=%s' % version,
     ],
+    tests_require=[
+        'toga-dummy==%s' % version
+    ],
     license='New BSD',
     classifiers=[
         'Development Status :: 3 - Alpha',

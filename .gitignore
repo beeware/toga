@@ -2,6 +2,7 @@
 *~
 .*.sw[op]
 *.egg-info
+.eggs
 .coverage
 dist
 build

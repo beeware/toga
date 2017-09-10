@@ -2,8 +2,14 @@ from .base import Widget
 
 
 class Tree(Widget):
-    def create(self):
+    def insert_node(self, node):
         pass
 
-    def insert(self, parent, index, *data):
+    def refresh_node(self, node):
+        pass
+
+    def remove_node(self, node):
+        pass
+
+    def refresh(self):
         pass

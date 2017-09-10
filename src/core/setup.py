@@ -37,6 +37,9 @@ setup(
     install_requires=[
         'colosseum>=0.1.6'
     ],
+    tests_require=[
+        'toga-dummy==%s' % version
+    ],
     license='New BSD',
     classifiers=[
         'Development Status :: 3 - Alpha',

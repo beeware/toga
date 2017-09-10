@@ -83,4 +83,4 @@ class WebView(Widget):
         Args:
             javascript (str): The javascript expression to evaluate.
         """
-        self._impl.set_evaluate(javascript)
+        self._impl.evaluate(javascript)

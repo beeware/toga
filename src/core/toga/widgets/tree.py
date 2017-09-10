@@ -171,7 +171,9 @@ class Tree(Widget):
             self._data = DictionaryDataSource(data)
         else:
             self._data = data
-        self._data.interface = self
+
+        if data is not None:
+            self._data.interface = self
 
         self._impl.refresh()
 

@@ -17,5 +17,5 @@ class WebView(Widget):
     def set_url(self, value):
         pass
 
-    def set_evaluate(self, javascript):
+    def evaluate(self, javascript):
         pass

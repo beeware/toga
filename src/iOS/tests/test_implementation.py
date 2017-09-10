@@ -1,5 +1,5 @@
 import os
-from toga.utils import test as test_utils
+from toga_dummy import test_utils
 
 globals().update(
     test_utils.create_impl_tests(
