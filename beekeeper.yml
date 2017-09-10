@@ -1,0 +1,60 @@
+pull_request:
+    - beefore:
+        name: Prebuild checks
+        subtasks:
+            - eslint:
+                name: JavaScript lint checks
+                task: beefore-javascript
+            - pycodestyle:
+                name: Python lint checks
+                task: beefore
+    - core:
+        subtasks:
+            - py3.4:
+                name: Python 3.4 Core API tests
+                task: py34
+                environment:
+                    TEST_DIR: src/core
+            - py3.5:
+                name: Python 3.5 Core API tests
+                task: py35
+                environment:
+                    TEST_DIR: src/core
+            - py3.6:
+                name: Python 3.6 Core API tests
+                task: py36
+                environment:
+                    TEST_DIR: src/core
+    - implementations:
+        task: py34
+        subtasks:
+            - gtk:
+                name: GTK+ implementation compliance check
+                environment:
+                    TEST_DIR: src/gtk
+            - winforms:
+                name: Winforms implementation compliance check
+                environment:
+                    TEST_DIR: src/winforms
+            - cocoa:
+                name: Cocoa implementation compliance check
+                environment:
+                    TEST_DIR: src/cocoa
+            - iOS:
+                name: iOS implementation compliance check
+                environment:
+                    TEST_DIR: src/iOS
+            - android:
+                name: Android implementation compliance check
+                environment:
+                    TEST_DIR: src/android
+            - django:
+                name: Django implementation compliance check
+                environment:
+                    TEST_DIR: src/django
+push:
+    - core:
+        task: py34
+        name: Core API tests
+        environment:
+            TEST_DIR: src/core

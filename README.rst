@@ -1,5 +1,28 @@
+.. image:: http://pybee.org/project/projects/libraries/toga/toga.png
+    :width: 72px
+    :target: https://pybee.org/toga
+
 Toga
 ====
+
+.. image:: https://img.shields.io/pypi/pyversions/toga.svg
+    :target: https://pypi.python.org/pypi/toga
+
+.. image:: https://img.shields.io/pypi/v/toga.svg
+    :target: https://pypi.python.org/pypi/toga
+
+.. image:: https://img.shields.io/pypi/status/toga.svg
+    :target: https://pypi.python.org/pypi/toga
+
+.. image:: https://img.shields.io/pypi/l/toga.svg
+    :target: https://github.com/pybee/toga/blob/master/LICENSE
+
+.. image:: https://beekeeper.herokuapp.com/projects/pybee/batavia/shield
+    :target: https://beekeeper.herokuapp.com/projects/pybee/batavia
+
+.. image:: https://badges.gitter.im/pybee/general.svg
+    :target: https://gitter.im/pybee/general
+
 
 A Python native, OS native GUI toolkit.
 
@@ -16,9 +39,9 @@ Minimum requirements
 * If you're on Linux, you need to have GTK+ 3.10 or later. This is the version
   that ships starting with Ubuntu 14.04 and Fedora 20. You also need to install
   the Python 3 bindings to GTK+.
-  
+
 * We're working on Windows support, but not all features and widgets are supported. At a minimum, you'll need Python 3 and .NET Framework 4. This has been tested on Windows 10, but should work on 7 and 8. Pull requests, help and corrections are most welcome.
-  
+
 Optional extras
 ^^^^^^^^^^^^^^^
 
@@ -31,8 +54,8 @@ you'll need to install the following:
     or ``apt-get install python3-gi gir1.2-webkit-3.0``
 
   * **Fedora** ``dnf install python3-gobject pywebkitgtk``
-    or ``yum install python3-gobject pywebkitgtk`` 
-    
+    or ``yum install python3-gobject pywebkitgtk``
+
 Other distros should be similar, but feel free to send a pull request with updated dependencies if needed.
 
 If these requirements aren't met, Toga either won't work at all, or won't have
