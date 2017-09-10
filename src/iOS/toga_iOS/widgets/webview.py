@@ -40,5 +40,8 @@ class WebView(Widget):
     def set_content(self, root_url, content):
         self.native.loadHTMLString_baseURL_(content, NSURL.URLWithString_(root_url))
 
-    def set_evaluate(self, javascript):
+    def evaluate(self, javascript):
         return self.native.stringByEvaluatingJavaScriptFromString_(javascript)
+
+    def set_user_agent(self, value):
+        pass

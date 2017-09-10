@@ -37,11 +37,12 @@ class ScrollContainer(Widget):
 
     @content.setter
     def content(self, widget):
-        self._content = widget
         if widget:
             widget._update_layout()
-            self._content.app = self.app
-            self._content.window = self.window
+            widget.app = self.app
+            widget.window = self.window
+
+            self._content = widget
 
             self._impl.set_content(widget._impl)
 

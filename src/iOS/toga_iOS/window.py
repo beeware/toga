@@ -8,7 +8,7 @@ class Window:
         self.interface = interface
         self.interface._impl = self
         self.container = None
-        self.create()
+        self._create()
 
     def create(self):
         self.screen = UIScreen.mainScreen

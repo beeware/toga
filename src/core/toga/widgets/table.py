@@ -13,10 +13,12 @@ class Table(Widget):
             implementation of this class with the same name. (optional & normally not needed)
     """
 
-    def __init__(self, headings, id=None, style=None, factory=None):
+    def __init__(self, headings, id=None, style=None, on_select=None, factory=None):
         super().__init__(id=id, style=style, factory=factory)
         self.headings = headings
         self._impl = self.factory.Table(interface=self)
+
+        self.on_select = on_select
 
     def insert(self, index, *data):
         """ Insert a new row into the table.
@@ -35,3 +37,23 @@ class Table(Widget):
             self._impl.data.append(data)
         else:
             self._impl.data.insert(index, data)
+
+    @property
+    def on_select(self):
+        """
+        The callable function for when a node on the Tree is selected
+
+        :rtype: ``callable``
+        """
+        return self._on_select
+
+    @on_select.setter
+    def on_select(self, handler):
+        """
+        Set the function to be executed on node selection
+
+        :param handler:     callback function
+        :type handler:      ``callable``
+        """
+        self._on_select = handler
+        self._impl.set_on_select(handler)

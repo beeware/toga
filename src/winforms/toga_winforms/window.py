@@ -11,8 +11,8 @@ class Window(WindowInterface):
     _CONTAINER_CLASS = Container
     _DIALOG_MODULE = dialogs
 
-    def __init__(self, title=None, position=(100, 100), size=(640, 480), toolbar=None, resizeable=True, closeable=True, minimizable=True):
-        super().__init__(title=title, position=position, size=size, toolbar=toolbar, resizeable=resizeable, closeable=closeable, minimizable=minimizable)
+    def __init__(self, title=None, position=(100, 100), size=(640, 480), resizeable=True, closeable=True, minimizable=True):
+        super().__init__(title=title, position=position, size=size, resizeable=resizeable, closeable=closeable, minimizable=minimizable)
         self._create()
 
     def create(self):
@@ -20,25 +20,25 @@ class Window(WindowInterface):
         self._impl.ClientSize = Size(self._size[0], self._size[1])
         self._impl.Resize += self._on_resize
 
-    def _set_toolbar(self, items):
+        self._toolbar_impl = None
+        self._toolbar_items = None
+
+    def _create_toolbar(self):
         self._toolbar_impl = WinForms.ToolStrip()
-        for toolbar_item in items:
-            if toolbar_item == SEPARATOR:
+        for cmd in self.toolbar:
+            if cmd == GROUP_BREAK:
                 item_impl = WinForms.ToolStripSeparator()
-            elif toolbar_item == SPACER:
+            elif cmd == SECTION_BREAK:
                 item_impl = WinForms.ToolStripSeparator()
-            elif toolbar_item == EXPANDING_SPACER:
-                item_impl = WinForms.ToolStripSeparator() # todo: check how this behaves on other platforms
             else:
                 item_impl = WinForms.ToolStripButton()
             self._toolbar_impl.Items.Add(item_impl)
 
-
     def _set_content(self, widget):
-        if (self.toolbar):
+        if self._toolbar_impl:
             self._impl.Controls.Add(self._toolbar_impl)
 
-        self._impl.Controls.Add(widget._container._impl)
+        self._impl.Controls.Add(self._container._impl)
 
     def _set_title(self, title):
         self._impl.Text = title
@@ -64,7 +64,6 @@ class Window(WindowInterface):
 
     def close(self):
         self._impl.Close()
-
 
     def _on_resize(self, sender, args):
         if self.content:

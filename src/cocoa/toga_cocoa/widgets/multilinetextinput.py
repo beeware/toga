@@ -58,7 +58,6 @@ class MultilineTextInput(Widget):
         self.text.string = value
 
     def _update_child_layout(self):
-        print('in update child layout')
         self._width_constraint.constant = self.interface.layout.width
         self._height_constraint.constant = self.interface.layout.height
 

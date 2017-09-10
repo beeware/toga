@@ -10,6 +10,7 @@ class ProgressBar(Widget):
 
         # Add the layout constraints
         self.add_constraints()
+        self.rehint()
 
     def set_value(self, value):
         if value is not None:
@@ -31,3 +32,9 @@ class ProgressBar(Widget):
             self.native.maxValue = value
         else:
             self.native.indeterminate = True
+
+    def rehint(self):
+        self.style.hint(
+            height=self._impl.fittingSize().height,
+            min_width=100
+        )

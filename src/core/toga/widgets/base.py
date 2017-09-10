@@ -2,7 +2,6 @@ from builtins import id as identifier
 from colosseum import CSS
 from ..platform import get_platform_factory
 
-
 class Point:
     """ The :obj:`Point class hold the x and y coordinates of a point.
 
@@ -328,8 +327,8 @@ class Widget:
         if self._children is not None:
             for child in self.children:
                 child._update_layout()
-                # FIXME some wigets need their _update_child_layout() function get called.
-                try:
-                    child._impl._update_child_layout()
-                except:
-                    pass
+                # # FIXME some wigets need their _update_child_layout() function get called.
+                # try:
+                #     child._impl._update_child_layout()
+                # except:
+                #     pass

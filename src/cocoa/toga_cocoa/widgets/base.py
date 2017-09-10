@@ -33,6 +33,11 @@ class Widget:
             child._impl.container = container
         self.interface.rehint()
 
+    def _set_hidden(self, child, status):
+        for view in self._container._impl.subviews:
+            if child._impl == view:
+                view.setHidden_(status)
+
     def add_child(self, child):
         if self.container:
             child.container = self.container

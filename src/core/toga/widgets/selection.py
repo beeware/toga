@@ -13,14 +13,19 @@ class Selection(Widget):
             implementation of this class with the same name. (optional & normally not needed)
     """
 
-    def __init__(self, id=None, style=None, items=list(), factory=None):
+    def __init__(self, id=None, style=None, items=None, on_select=None, factory=None):
         super().__init__(id=id, style=style, factory=factory)
 
         self._impl = self.factory.Selection(interface=self)
 
-        self._items = items
-        for item in self._items:
-            self._impl.add_item(item)
+        if items is None:
+            self._items = []
+        else:
+            self._items = items
+            for item in self._items:
+                self._impl.add_item(item)
+
+        self.on_select = on_select
 
     @property
     def items(self):
@@ -55,3 +60,22 @@ class Selection(Widget):
             raise ValueError("Not an item in the list.")
 
         self._impl.select_item(value)
+
+    @property
+    def on_select(self):
+        """
+        The callable function for when a node on the Tree is selected
+
+        :rtype: ``callable``
+        """
+        return self._on_select
+
+    @on_select.setter
+    def on_select(self, handler):
+        """
+        Set the function to be executed on node selection
+
+        :param handler:     callback function
+        :type handler:      ``callable``
+        """
+        self._on_select = handler

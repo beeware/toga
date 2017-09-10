@@ -29,7 +29,6 @@ class OptionContainer(Widget):
             label (str): The label for the option container
             widget: The widget or widget tree that belongs to the label.
         """
-
         if widget.native is None:
             container = Container()
             container.content = widget

@@ -51,5 +51,8 @@ class WebView(Widget):
     def set_content(self, root_url, content):
         self.webview.load_html(content, root_url)
 
-    def set_evaluate(self, javascript):
+    def set_user_agent(self, value):
+        pass
+
+    def evaluate(self, javascript):
         self.webview.run_javascript(javascript, None, None, None)

@@ -8,7 +8,13 @@ class LongRunningTask(NSObject):
     def performIteration_(self, info) -> None:
         try:
             delay = next(self.__dict__['interface'])
-            NSTimer.scheduledTimerWithTimeInterval_target_selector_userInfo_repeats_(delay, self, SEL('performIteration:'), None, False)
+            NSTimer.scheduledTimerWithTimeInterval(
+                delay,
+                target=self,
+                selector=SEL('performIteration:'),
+                userInfo=None,
+                repeats=False
+            )
         except StopIteration:
             pass
 
