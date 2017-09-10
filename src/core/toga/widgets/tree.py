@@ -1,5 +1,5 @@
 from .base import Widget
-
+from .icon import Icon
 
 class TreeNode:
     '''
@@ -12,11 +12,11 @@ class TreeNode:
         :param data: Information about the node
         :type  data: ``dict``
         '''
-        self.__impl = None
+        self._impl = None
         self.source = source
 
         self._data = [data] if isinstance(data, str) else data
-        self._icon = icon
+        self.icon = icon
         self._expanded = expanded
 
         self.parent = None
@@ -27,15 +27,6 @@ class TreeNode:
 
     def __repr__(self):
         return "<TreeNode: %s>" % repr(self._data)
-
-    @property
-    def _impl(self):
-        return self.__impl
-
-    @_impl.setter
-    def _impl(self, value):
-        self.__impl = value
-        self.source._impls[value] = self
 
     @property
     def data(self):
@@ -57,10 +48,6 @@ class TreeNode:
         if self.source.interface:
             self.source.interface._impl.refresh()
 
-    def label(self, index):
-        print("NODE", self, "label", index)
-        return str(self._data[index])
-
     @property
     def expanded(self):
         return self._expanded
@@ -80,16 +67,19 @@ class TreeNode:
         return self._icon
 
     @icon.setter
-    def icon(self, icon):
+    def icon(self, path):
         '''
         Set an icon on the node
 
         :param image_url: Url of the icon
         :type  image_url: ``str``
         '''
-        self._icon = icon
-        if self.source.interface:
-            self.source.interface._impl.refresh_node(self)
+        if path is None:
+            self._icon = None
+        else:
+            self._icon = Icon.load(path)
+            if self.source.interface:
+                self.source.interface._impl.refresh_node(self)
 
     @property
     def children(self):
@@ -99,19 +89,18 @@ class TreeNode:
         node = TreeNode(source=self.source, data=data, icon=icon)
         self._children.insert(index, node)
         if self.source.interface:
-            self.source.interface._impl.refresh()
+            self.source.interface._impl.insert_node(node)
         return node
 
     def remove(self, node):
         self.parent._children.remove(node)
         if self.source.interface:
-            self.source.interface._impl.refresh()
+            self.source.interface._impl.remove_node(node)
 
 
 class DictionaryDataSource:
     def __init__(self, data):
         self._roots = self.create_nodes(data)
-        self._impls = {}
         self.interface = None
 
     def create_nodes(self, data):
@@ -131,9 +120,6 @@ class DictionaryDataSource:
 
     def root(self, index):
         return self._roots[index]
-
-    def node(self, impl):
-        return self._impls[impl]
 
     def insert(self, parent, index, data, icon=None):
         return parent.insert(index, data=data, icon=icon)
@@ -158,6 +144,8 @@ class Tree(Widget):
         super().__init__(id=id, style=style, factory=factory)
 
         self.headings = headings
+        self._data = None
+
         self._impl = self.factory.Tree(interface=self)
 
         self.data = data

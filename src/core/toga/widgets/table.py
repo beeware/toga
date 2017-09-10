@@ -56,4 +56,3 @@ class Table(Widget):
         :type handler:      ``callable``
         """
         self._on_select = handler
-        self._impl.set_on_select(handler)

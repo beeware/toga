@@ -1,7 +1,7 @@
 from rubicon.objc import *
 from ..libs import *
 from ..utils import process_callback
-from .base import WidgetMixin
+from .base import Widget
 
 
 class TogaNodeData(NSObject):
@@ -12,15 +12,16 @@ class TogaNodeData(NSObject):
         return copy
 
 
-class TogaIconCell(NSTextFieldCell):
+class TogaCell(NSTextFieldCell):
     @objc_method
     def drawWithFrame_inView_(self, cellFrame: NSRect, view) -> None:
         # The data to display
-        print("DRAW", self.objectValue)
-        label = self.objectValue.node.data[0]
+        label = str(self.objectValue.node.data[0])
         icon = self.objectValue.node.icon
+        # print("   ", label, icon)
 
         if icon:
+            image = icon._impl.native
             offset = 18
 
             NSGraphicsContext.currentContext.saveGraphicsState()
@@ -35,9 +36,9 @@ class TogaIconCell(NSTextFieldCell):
             interpolation = NSGraphicsContext.currentContext.imageInterpolation
             NSGraphicsContext.currentContext.imageInterpolation = NSImageInterpolationHigh
 
-            icon.drawInRect(
+            image.drawInRect(
                 NSRect(NSPoint(cellFrame.origin.x, yOffset), NSSize(16.0, 16.0)),
-                fromRect=NSRect(NSPoint(0, 0), NSSize(icon.size.width, icon.size.height)),
+                fromRect=NSRect(NSPoint(0, 0), NSSize(image.size.width, image.size.height)),
                 operation=NSCompositingOperationSourceOver,
                 fraction=1.0
             )
@@ -72,31 +73,30 @@ class TogaTree(NSOutlineView):
     # OutlineViewDataSource methods
     @objc_method
     def outlineView_child_ofItem_(self, tree, child: int, item):
-        print("GET CHILD", child, "of item", item)
         if item is None:
             node = self.interface.data.root(child)
         else:
-            parent = self.interface.data.node(item)
+            parent = self._impl.nodes[item]
             node = parent.children[child]
 
-        print("NODE IS", node)
         if node._impl is None:
-            if node.icon:
-                icon = NSImage.alloc().initWithContentsOfFile_(node.icon)
-            else:
-                icon = None
+            # if node.icon:
+            #     icon = NSImage.alloc().initWithContentsOfFile_(node.icon)
+            # else:
+            #     icon = None
 
             # node._impl = TogaNodeData.alloc().initWithLabel(list(node.data), icon=icon)
             node._impl = TogaNodeData.alloc().init()
             node._impl.node = node
 
-            print("CREATED IMPL", node._impl)
+            print("CREATED native", node._impl)
+            self._impl.nodes[node._impl] = node
 
         return node._impl
 
     @objc_method
     def outlineView_isItemExpandable_(self, tree, item) -> bool:
-        return self.interface.data.node(item).children is not None
+        return self._impl.nodes[item].children is not None
 
     @objc_method
     def outlineView_numberOfChildrenOfItem_(self, tree, item) -> int:
@@ -106,15 +106,11 @@ class TogaTree(NSOutlineView):
             else:
                 return 0
         else:
-            return len(self.interface.data.node(item).children)
+            return len(self._impl.nodes[item].children)
 
     @objc_method
     def outlineView_objectValueForTableColumn_byItem_(self, tree, column, item):
-        return self.interface.data.node(item)._impl
-        # if column.identifier == '0':
-
-        # else:
-        #     return self.interface.data.node(item).label(int(column.identifier))
+        return item
 
     # OutlineViewDelegate methods
     @objc_method
@@ -125,10 +121,10 @@ class TogaTree(NSOutlineView):
 class Tree(Widget):
     def create(self):
         self.tree = None
-        self.columns = None
+        self.nodes = {}
 
         # Create a tree view, and put it in a scroll view.
-        # The scroll view is the _impl, because it's the outer container.
+        # The scroll view is the native object, because it's the outer container.
         self.native = NSScrollView.alloc().init()
         self.native.hasVerticalScroller = True
         self.native.hasHorizontalScroller = False
@@ -148,23 +144,21 @@ class Tree(Widget):
         self.tree.translatesAutoresizingMaskIntoConstraints = True
 
         # Create columns for the tree
-        self.columns = [
-            NSTableColumn.alloc().initWithIdentifier_('%d' % i)
-            for i, heading in enumerate(self.interface.headings)
-        ]
+        for i, heading in enumerate(self.interface.headings):
+            column = NSTableColumn.alloc().initWithIdentifier_('%d' % i)
 
-        for heading, column in zip(self.interface.headings, self.columns):
             self.tree.addTableColumn(column)
 
-            column.dataCell = TogaIconCell.alloc().init()
-            cell = column.dataCell
+            cell = TogaCell.alloc().init()
             cell.editable = False
             cell.selectable = False
+            column.dataCell = cell
 
             column.headerCell.stringValue = heading
 
-        # Put the tree arrows in the first column.
-        self.tree.outlineTableColumn = self.columns[0]
+            # Put the tree arrows in the first column.
+            if i == 0:
+                self.tree.outlineTableColumn = column
 
         self.tree.delegate = self.tree
         self.tree.dataSource = self.tree
@@ -175,20 +169,21 @@ class Tree(Widget):
         # Add the layout constraints
         self.add_constraints()
 
+    def insert_node(self, node):
+        self.refresh_node(node)
+
     def refresh_node(self, node):
-        if node._expanded:
-            self.tree.expandItem(node.native)
-        else:
-            self.tree.collapseItem(node.native)
+        if node._impl:
+            if node.expanded:
+                self.tree.expandItem(node._impl)
+            else:
+                self.tree.collapseItem(node._impl)
 
-        # Reconstruct the native object.
-        if node.icon:
-            icon = NSImage.alloc().initWithContentsOfFile_(node.icon)
-        else:
-            icon = None
+    def remove_node(self, node):
+        if node._impl:
+            del self.nodes[node._impl]
 
-        node.native = TogaNodeData.alloc().init()
-        node.native.node = node
+        self.refresh()
 
     def refresh(self):
         self.tree.reloadData()

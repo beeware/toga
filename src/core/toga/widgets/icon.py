@@ -25,13 +25,12 @@ class Icon:
 
     def __init__(self, path, system=False, factory=None):
         self.factory = get_platform_factory(factory)
-        self._impl = self.factory.Icon(interface=self)
         self.filename = None
 
         if os.path.splitext(path)[1] in ('.png', '.icns', '.bmp'):
             self.path = path
         else:
-            self.path = path + self._impl.EXTENSION
+            self.path = path + '.icns'
 
         self.system = system
         if self.system:
@@ -40,10 +39,7 @@ class Icon:
         else:
             self.filename = self.path
 
-        self.create()
-
-    def create(self):
-        self._impl.create(self.filename)
+        self._impl = self.factory.Icon(interface=self)
 
     @classmethod
     def load(cls, path_or_icon, default=None):
@@ -55,8 +51,6 @@ class Icon:
         elif default:
             obj = default
 
-        if obj._impl.native is None:
-            obj.create()
         return obj
 
     @ClassProperty

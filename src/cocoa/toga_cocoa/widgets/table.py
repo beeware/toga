@@ -1,4 +1,5 @@
 from ..libs import *
+from ..utils import process_callback
 from .base import Widget
 
 
@@ -18,8 +19,10 @@ class TogaTable(NSTableView):
     def tableViewSelectionDidChange_(self, notification) -> None:
         print ("selection changed to row: %s" % notification.object.selectedRow)
         #pass selectedRow onto the interface
-        self._interface.selectedRow = notification.object.selectedRow
-        process_callback(self._interface.on_select(self._interface))
+        self.interface.selectedRow = notification.object.selectedRow
+        if self.interface.on_select:
+            process_callback(self.interface.on_select(self.interface))
+
 
 class Table(Widget):
     def create(self):
