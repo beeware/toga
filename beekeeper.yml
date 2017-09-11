@@ -37,7 +37,7 @@ pull_request:
                 environment:
                     TEST_DIR: src/winforms
             - cocoa:
-                name: Cocoa implementation compliance check
+                name: macOS Cocoa implementation compliance check
                 environment:
                     TEST_DIR: src/cocoa
             - iOS:
