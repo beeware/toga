@@ -15,16 +15,19 @@ pull_request:
                 task: py34
                 environment:
                     TEST_DIR: src/core
+                    SRC_REQUIRES: src/dummy
             - py3.5:
                 name: Python 3.5 Core API tests
                 task: py35
                 environment:
                     TEST_DIR: src/core
+                    SRC_REQUIRES: src/dummy
             - py3.6:
                 name: Python 3.6 Core API tests
                 task: py36
                 environment:
                     TEST_DIR: src/core
+                    SRC_REQUIRES: src/dummy
     - implementations:
         task: py34
         subtasks:
@@ -32,26 +35,32 @@ pull_request:
                 name: GTK+ implementation compliance check
                 environment:
                     TEST_DIR: src/gtk
+                    SRC_REQUIRES: src/dummy src/core
             - winforms:
                 name: Winforms implementation compliance check
                 environment:
                     TEST_DIR: src/winforms
+                    SRC_REQUIRES: src/dummy src/core
             - cocoa:
                 name: macOS Cocoa implementation compliance check
                 environment:
                     TEST_DIR: src/cocoa
+                    SRC_REQUIRES: src/dummy src/core
             - iOS:
                 name: iOS implementation compliance check
                 environment:
                     TEST_DIR: src/iOS
+                    SRC_REQUIRES: src/dummy src/core
             - android:
                 name: Android implementation compliance check
                 environment:
                     TEST_DIR: src/android
+                    SRC_REQUIRES: src/dummy src/core
             - django:
                 name: Django implementation compliance check
                 environment:
                     TEST_DIR: src/django
+                    SRC_REQUIRES: src/dummy src/core
 push:
     - core:
         task: py34
