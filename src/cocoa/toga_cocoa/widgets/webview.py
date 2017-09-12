@@ -15,6 +15,7 @@ class TogaWebView(WebView):
 
     @objc_method
     def keyDown_(self, event) -> None:
+        print('in keyDown', event.keyCode)
         if self.interface.on_key_down:
             self.interface.on_key_down(event.keyCode, event.modifierFlags)
 
