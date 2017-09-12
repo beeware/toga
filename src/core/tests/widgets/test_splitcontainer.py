@@ -32,12 +32,6 @@ class TestSplitContainer(unittest.TestCase):
         self.split._impl.add_content.assert_any_call(0, new_content[0]._impl)
         self.split._impl.add_content.assert_any_call(1, new_content[1]._impl)
 
-    @unittest.skip('FIXME: Not working at the moment')
-    def test_setting_content_updates_app_and_window_on_new_content(self):
-        new_content = [Mock(), Mock()]
-        self.split.content = new_content
-        new_content[0].app.assert_called_once_with(self.split.app)
-
     def test_direction_property_default(self):
         self.assertEqual(self.split.direction, True)
 
