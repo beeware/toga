@@ -5,10 +5,9 @@ import toga_dummy
 
 
 class TestNumberInput(unittest.TestCase):
-    @unittest.skip('Not implemented!')
     def setUp(self):
         self.factory = MagicMock()
-        self.factory.NumberInput = MagicMock(return_value=MagicMock(spec=toga_dummy.widgets.numberinput.NumberInput))
+        self.factory.NumberInput = MagicMock(return_value=MagicMock(spec=toga_dummy.factory.NumberInput))
 
         self.nr_input = toga.NumberInput(factory=self.factory)
 

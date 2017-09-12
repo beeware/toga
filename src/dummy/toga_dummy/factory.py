@@ -11,6 +11,7 @@ from .widgets.imageview import *
 from .widgets.label import Label
 from .widgets.multilinetextinput import *
 from .widgets.navigationview import *
+from .widgets.numberinput import *
 from .widgets.passwordinput import *
 from .widgets.progressbar import *
 from .widgets.scrollcontainer import *
@@ -37,6 +38,7 @@ __all__ = [
     'Label',
     'MultilineTextInput',
     'NavigationView',
+    'NumberInput',
     'PasswordInput',
     'ProgressBar',
     'ScrollContainer',
