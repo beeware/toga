@@ -29,9 +29,6 @@ class Window:
     def on_close(self):
         pass
 
-    def close(self):
-        pass
-
     def info_dialog(self, title, message):
         pass
 
