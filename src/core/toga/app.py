@@ -9,8 +9,8 @@ from .widgets.icon import Icon
 
 
 class MainWindow(Window):
-    def __init__(self, id=None, title=None, position=(100, 100), size=(640, 480)):
-        super(MainWindow, self).__init__(id=id, title=title, position=position, size=size)
+    def __init__(self, id=None, title=None, position=(100, 100), size=(640, 480), factory=None):
+        super(MainWindow, self).__init__(id=id, title=title, position=position, size=size, factory=factory)
 
 
 class App:
@@ -129,7 +129,7 @@ class App:
     def startup(self):
         """ Create and show the main window for the application
         """
-        self.main_window = MainWindow(title=self.name)
+        self.main_window = MainWindow(title=self.name, factory=self.factory)
         self.main_window.app = self
 
         if self._startup_method:
