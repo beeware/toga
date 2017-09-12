@@ -17,7 +17,7 @@ class TestScrollContainer(unittest.TestCase):
     def test_set_content_with_widget(self):
         self.assertEqual(self.sc.content, None, 'The default value of content should be None')
 
-        new_content = MagicMock(toga.Box())
+        new_content = MagicMock(toga.Box(factory=self.factory))
         self.sc.content = new_content
         self.assertEqual(self.sc.content, new_content)
         self.assertEqual(self.sc._content, new_content)

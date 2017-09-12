@@ -42,12 +42,12 @@ class Icon:
         self._impl = self.factory.Icon(interface=self)
 
     @classmethod
-    def load(cls, path_or_icon, default=None):
+    def load(cls, path_or_icon, default=None, factory=None):
         if path_or_icon:
             if isinstance(path_or_icon, Icon):
                 obj = path_or_icon
             else:
-                obj = cls(path_or_icon)
+                obj = cls(path_or_icon, factory=factory)
         elif default:
             obj = default
 

@@ -54,8 +54,6 @@ class App:
         self._app_id = app_id
         self._id = id if id else identifier(self)
 
-        self.icon = icon
-
         self.commands = CommandSet(None)
 
         self.document_types = document_types
@@ -64,6 +62,9 @@ class App:
         self._startup_method = startup
 
         self.factory = get_platform_factory(factory)
+
+        self.default_icon = Icon('tiberius', system=True, factory=self.factory)
+        self.icon = icon
 
         self._impl = self.factory.App(interface=self)
 
@@ -97,7 +98,7 @@ class App:
 
     @icon.setter
     def icon(self, name):
-        self._icon = Icon.load(name, default=Icon('tiberius', system=True))
+        self._icon = Icon.load(name, default=self.default_icon, factory=self.factory)
 
     @property
     def documents(self):

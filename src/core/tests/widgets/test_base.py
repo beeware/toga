@@ -24,7 +24,8 @@ class TestPoint(unittest.TestCase):
 
 class TestLayout(unittest.TestCase):
     def setUp(self):
-        self.widget = toga.Widget()
+        self.factory = MagicMock(spec=toga_dummy.factory)
+        self.widget = toga.Widget(factory=self.factory)
         self.layout = toga.Layout(self.widget)
 
     def test_instantiation(self):
@@ -103,7 +104,7 @@ class TestWidget(unittest.TestCase):
         self.assertEqual(self.widget.factory, self.factory)
 
     def test_create_widget_with_no_style(self):
-        widget = toga.Widget()
+        widget = toga.Widget(factory=self.factory)
         self.assertTrue(isinstance(widget.style, CSS))
 
     def test_adding_children(self):
@@ -111,7 +112,7 @@ class TestWidget(unittest.TestCase):
         """
         self.assertEqual(self.widget.children, [], 'No child was added, should return a empty list.')
         # Create a child widget to add to the our widget.
-        child = toga.Widget()
+        child = toga.Widget(factory=self.factory)
         child._impl = MagicMock(spec=toga_dummy.widgets.base.Widget)
 
         with self.assertRaises(ValueError, msg='Widget cannot have children.'):
