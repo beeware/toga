@@ -8,8 +8,8 @@ import toga_dummy
 
 
 class NoDefault:
-    """ This utility class to indicate that no default exists.
-    The use of `None` is not possible because it itself could be a default value."""
+    """ This utility class to indicate that no argument default exists.
+    The use of `None` is not possible because it itself could be a default argument value."""
 
     def __eq__(self, other):
         if isinstance(other, NoDefault):
@@ -34,10 +34,11 @@ class DefinitionExtractor:
             path (str): The path to the .py file.
     """
 
-    def __init__(self, path):
+    def __init__(self, path, platform_category=None):
         self.exists = os.path.isfile(path)
         self._classes = {}
         self._methods = defaultdict(dict)
+        self.platform = platform_category if platform_category else None
 
         if self.exists:
             # open the file and parse it with the ast module.
@@ -61,7 +62,28 @@ class DefinitionExtractor:
     def _extract_classes(self):
         for node in ast.walk(self.tree):
             if isinstance(node, ast.ClassDef):
-                self._classes[node.name] = node
+                if self.is_required_for_platform(node):
+                    self._classes[node.name] = node  # use the class name as the key
+
+    def is_required_for_platform(self, node):
+        """ Checks if the class or function is required for the given platform.
+        It looks for a decorator with the name `not_required_on`.
+
+        Returns:
+            `True` if the class/function is required for the platform.
+            `False` if the class/function is not required and can be dropped for this platform.
+        """
+        if node.decorator_list:  # check if a decorator list exists
+            print(node.decorator_list)
+            for decorator in node.decorator_list:
+                try:
+                    if decorator.func.id == 'not_required_on':
+                        platforms_to_skip = [arg.s for arg in decorator.args]
+                        if self.platform.intersection(set(platforms_to_skip)):
+                            return False
+                except Exception:
+                    pass
+        return True
 
     @staticmethod
     def _get_function_defaults(node, kwonlyargs=False):
@@ -95,12 +117,16 @@ class DefinitionExtractor:
         return defaults
 
     def _extract_class_methods(self):
+        """ Extract all the methods from the classes and save them in `self.methods`.
+        Use the combination of class and method name, like so: `<class_name>.<method_name>` as the key.
+        """
         for class_name in self._classes:
             for node in ast.walk(self._classes[class_name]):
                 if isinstance(node, ast.FunctionDef):
-                    function_id = '{}.{}'.format(class_name, node.name)
-                    self._methods[function_id]['node'] = node
-                    self._methods[function_id]['arguments'] = self._extract_function_signature(node)
+                    if self.is_required_for_platform(node):
+                        function_id = '{}.{}'.format(class_name, node.name)
+                        self._methods[function_id]['node'] = node
+                        self._methods[function_id]['arguments'] = self._extract_function_signature(node)
 
     def _extract_function_signature(self, node):
         for node in ast.walk(node):
@@ -152,13 +178,24 @@ class DefinitionExtractor:
                 class_node = self._classes[class_name]
                 for node in ast.walk(class_node):
                     if isinstance(node, ast.FunctionDef):
-                        methods.append(node.name)
+                        if self.is_required_for_platform(node):
+                            methods.append(node.name)
         return methods
+
+
+def get_platform_category(path_to_backend):
+    name = os.path.basename(path_to_backend)
+    if name in ['toga_cocoa', 'toga_gtk', 'toga_winforms', 'toga_win32']:
+        return {'desktop', name.split('_')[-1]}
+    if name in ['toga_iOS', 'toga_android']:
+        return {'mobile', name.split('_')[-1]}
+    else:
+        raise RuntimeError('Couldn\'t identify a supported host platform: "{}"'.format(name))
 
 
 def get_required_files(path_to_backend):
     name = os.path.basename(path_to_backend)
-    if name in ['toga_cocoa', 'toga_gtk', 'toga_gtk', 'toga_winforms', 'toga_win32']:
+    if name in ['toga_cocoa', 'toga_gtk', 'toga_winforms', 'toga_win32']:
         return TOGA_BASE_FILES + TOGA_DESKTOP_FILES
     if name in ['toga_iOS', 'toga_android']:
         return TOGA_BASE_FILES + TOGA_MOBILE_FILES
@@ -176,6 +213,7 @@ def create_impl_tests(root):
     Returns:
         A dictionary of test classes.
     """
+    platform_category = get_platform_category(root)
     dummy_files = collect_dummy_files(get_required_files(root))
     tests = dict()
     for name, dummy_path in dummy_files:
@@ -184,7 +222,7 @@ def create_impl_tests(root):
         else:
             path = os.path.join(root, '{}.py'.format(name))
 
-        tests['Test{}Impl'.format(name.capitalize())] = make_toga_impl_check_class(path, dummy_path)
+        tests['Test{}Impl'.format(name.capitalize())] = make_toga_impl_check_class(path, dummy_path, platform_category)
     return tests
 
 
@@ -209,8 +247,8 @@ def collect_dummy_files(required_files):
     return dummy_files
 
 
-def make_toga_impl_check_class(path, dummy_path):
-    expected = DefinitionExtractor(dummy_path)
+def make_toga_impl_check_class(path, dummy_path, platform):
+    expected = DefinitionExtractor(dummy_path, platform)
     if os.path.isfile(path):
         skip_test = False
         actual = DefinitionExtractor(path)
@@ -249,6 +287,7 @@ def make_toga_impl_check_class(path, dummy_path):
 
             # create tests that check for the right method arguments.
             method_id = '{}.{}'.format(cls, method)
+            print('method_id', method_id)
             method_def = expected.get_function_def(method_id)['arguments']
             try:
                 actual_method_def = actual.get_function_def(method_id)['arguments']
