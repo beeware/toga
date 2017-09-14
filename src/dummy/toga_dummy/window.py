@@ -1,3 +1,5 @@
+from .utils import not_required_on
+
 class Window:
     def __init__(self, interface):
         pass
@@ -26,6 +28,7 @@ class Window:
     def show(self):
         pass
 
+    @not_required_on('mobile')
     def on_close(self):
         pass
 

@@ -1,3 +1,7 @@
+from toga_dummy.utils import not_required_on
+
+
+@not_required_on('gtk')
 class Constraints:
     def __init__(self, widget):
         pass
