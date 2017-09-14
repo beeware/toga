@@ -5,9 +5,11 @@ def not_required_on(*args):
 
     Args:
         *args (str): Takes arguments in form of strings.
+            Possible *args are 'mobile' and 'desktop'
+            as well as all platform names ('iOS', 'gtk', 'android' ...).
 
     Notes:
-        You should only use 'mobile' and 'desktop' as *args.
+        Possible *args are the categoryYou should only use 'mobile' and 'desktop' as *args.
 
     Examples:
         >>> # Marks the function as only required on platforms that are not "mobile".

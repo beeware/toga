@@ -74,7 +74,6 @@ class DefinitionExtractor:
             `False` if the class/function is not required and can be dropped for this platform.
         """
         if node.decorator_list:  # check if a decorator list exists
-            print(node.decorator_list)
             for decorator in node.decorator_list:
                 try:
                     if decorator.func.id == 'not_required_on':
@@ -95,13 +94,10 @@ class DefinitionExtractor:
         defaults = []
         for default in to_extract:
             if isinstance(default, ast.NameConstant):
-                print(default.value)
                 defaults.append(default.value)
             elif isinstance(default, ast.Str):
-                print(default.s)
                 defaults.append(default.s)
             elif isinstance(default, ast.Num):
-                print(default.n)
                 defaults.append(default.n)
             elif isinstance(default, ast.Tuple) or isinstance(default, ast.List):
                 defaults.append(default.elts)
@@ -287,7 +283,6 @@ def make_toga_impl_check_class(path, dummy_path, platform):
 
             # create tests that check for the right method arguments.
             method_id = '{}.{}'.format(cls, method)
-            print('method_id', method_id)
             method_def = expected.get_function_def(method_id)['arguments']
             try:
                 actual_method_def = actual.get_function_def(method_id)['arguments']
