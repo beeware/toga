@@ -33,9 +33,13 @@ from .widgets.selection import Selection
 from .widgets.numberinput import NumberInput
 
 __all__ = [
+    # Applications
     'App', 'MainWindow',
-    'constants',
+
+    # Commands
     'Command', 'Group', 'GROUP_BREAK', 'SECTION_BREAK',
+
+    # Widgets
     'DetailedList'
     'Window',
     'Font',

@@ -20,10 +20,7 @@ class Window:
         factory (:obj:`module`): A python module that is capable to return a
             implementation of this class with the same name. (optional & normally not needed)
     """
-
-    _MAIN_WINDOW_CLASS = 'MainWindow'
-    _CONTAINER_CLASS = None
-    _DIALOG_MODULE = None
+    _WINDOW_CLASS = 'Window'
 
     def __init__(self, id=None, title=None,
                  position=(100, 100), size=(640, 480),
@@ -36,13 +33,13 @@ class Window:
         self._content = None
         self._position = position
         self._size = size
-
+        self._is_full_screen = False
         self.resizeable = resizeable
         self.closeable = closeable
         self.minimizable = minimizable
 
         self.factory = get_platform_factory(factory)
-        self._impl = getattr(self.factory, self._MAIN_WINDOW_CLASS)(interface=self)
+        self._impl = getattr(self.factory, self._WINDOW_CLASS)(interface=self)
 
         self._toolbar = CommandSet(self, self._impl.create_toolbar)
 
@@ -94,8 +91,8 @@ class Window:
         if not title:
             title = "Toga"
 
-        self._impl.set_title(title)
         self._title = title
+        self._impl.set_title(title)
 
     @property
     def toolbar(self):
@@ -118,13 +115,13 @@ class Window:
 
     @content.setter
     def content(self, widget):
-        # Save the content widget.
+        # Update the geometry of the widget
         widget._update_layout()
 
-        # Assign the widget to the same app as the window.
+        # Assign the content widget to the same app as the window.
         widget.app = self.app
 
-        # Assign the widget to window.
+        # Assign the content widget to the window.
         widget.window = self
 
         # Track our new content
@@ -166,8 +163,21 @@ class Window:
         """ Show window, if hidden """
         self._impl.show()
 
+    @property
+    def full_screen(self):
+        return self._is_full_screen
+
+    @full_screen.setter
+    def full_screen(self, is_full_screen):
+        self._is_full_screen = is_full_screen
+        self._impl.set_full_screen(is_full_screen)
+
     def on_close(self):
         self._impl.on_close()
+
+    ############################################################
+    # Dialogs
+    ############################################################
 
     def info_dialog(self, title, message):
         """ Opens a info dialog with a 'OK' button to close the dialog.

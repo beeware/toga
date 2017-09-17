@@ -9,6 +9,8 @@ from .widgets.icon import Icon
 
 
 class MainWindow(Window):
+    _WINDOW_CLASS = 'MainWindow'
+
     def __init__(self, id=None, title=None, position=(100, 100), size=(640, 480), factory=None):
         super(MainWindow, self).__init__(id=id, title=title, position=position, size=size, factory=factory)
 
@@ -45,10 +47,10 @@ class App:
     """
     app = None
 
-    def __init__(self, name, app_id, icon=None,
-                 id=None, startup=None, document_types=None, factory=None):
-        # App.app = self
-        # print('App.app: ', App.app)
+    def __init__(self, name, app_id,
+                 id=None, icon=None, startup=None, document_types=None, factory=None):
+
+        self.factory = get_platform_factory(factory)
 
         self.name = name
         self._app_id = app_id
@@ -60,8 +62,6 @@ class App:
         self._documents = []
 
         self._startup_method = startup
-
-        self.factory = get_platform_factory(factory)
 
         self.default_icon = Icon('tiberius', system=True, factory=self.factory)
         self.icon = icon
