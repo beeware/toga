@@ -1,3 +1,5 @@
+from ..utils import not_required_on
+
 class Widget():
     def __init__(self, interface):
         self.interface = interface
@@ -21,6 +23,7 @@ class Widget():
     def add_child(self, child):
         pass
 
+    @not_required_on('gtk')
     def add_constraints(self):
         pass
 
