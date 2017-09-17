@@ -1,6 +1,6 @@
 from __future__ import print_function, absolute_import, division
 
-from gi.repository import Gtk, Gdk, Pango
+from gi.repository import Gtk, Gdk
 from .base import Widget
 
 
@@ -23,7 +23,8 @@ class MultilineTextInput(Widget):
         return self.buffer.get_text(self.buffer.get_start_iter(), self.buffer.get_end_iter(), True)
 
     def set_readonly(self, value):
-        self.native.editable = value
+        self.native.set_property('editable', not value)
+        self.native.set_property('cursor-visible', not value)
 
     def set_placeholder(self, value):
         """ Set the placeholder text of the widget.
@@ -42,8 +43,6 @@ class MultilineTextInput(Widget):
     def on_focus_in(self, *args):
         if self.get_value() == self._placeholder:
             self.buffer.set_text("")
-            self.native.set_style(self._text_color)
-
         return False
 
     def on_focus_out(self, *args):
