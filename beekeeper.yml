@@ -62,7 +62,7 @@ pull_request:
                     TEST_DIR: src/django
                     SRC_REQUIRES: src/dummy src/core
 push:
-    - core:
+    - smoke:
         task: py34
         name: Core API tests
         environment:
