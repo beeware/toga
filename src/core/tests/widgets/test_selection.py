@@ -32,7 +32,6 @@ class TestSelection(unittest.TestCase):
 
     def test_get_selected_item_invokes_impl_method(self):
         value = self.selection.value
-        print(value)
         self.selection._impl.get_selected_item.assert_called_once_with()
 
     def test_set_selected_item_invokes_impl_methods(self):
