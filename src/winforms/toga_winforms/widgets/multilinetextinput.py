@@ -1,13 +1,9 @@
-from __future__ import print_function, absolute_import, division
-
-from toga.interface import MultilineTextInput as MultilineTextInputInterface
-
 from ..libs import *
 
 from .base import WidgetMixin
 
 
-class MultilineTextInput(MultilineTextInputInterface, WidgetMixin):
+class MultilineTextInput(WidgetMixin):
     # because https://stackoverflow.com/a/612234
     _IMPL_CLASS = WinForms.RichTextBox
 

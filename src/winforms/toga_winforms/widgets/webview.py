@@ -1,6 +1,4 @@
-from toga.interface import WebView as WebViewInterface
-
-from .base import WidgetMixin
+from .base import Widget
 from ..libs import *
 
 
@@ -10,25 +8,19 @@ class TogaWebBrowser(WinForms.WebBrowser):
         self.interface = interface
 
 
-class WebView(WebViewInterface, WidgetMixin):
-    def __init__(self, id=None, style=None, url=None, user_agent=None, on_key_down=None):
-        if user_agent is None:
-            user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.10240"
-        super().__init__(id=id, style=style, url=url, user_agent=user_agent, on_key_down=on_key_down)
-        self._create()
-
+class WebView(Widget):
     def create(self):
-        self._impl = TogaWebBrowser(self)
+        self.native = TogaWebBrowser(self)
 
-    def _set_url(self, value):
+    def set_url(self, value):
         if value:
-            self._impl.Navigate(Uri(value), "_self", None, "User-Agent: %s" % self.user_agent)
+            self.native.Navigate(Uri(value), "_self", None, "User-Agent: %s" % self.user_agent)
 
-    def _set_content(self, root_url, content):
-        self._impl.Navigate(Uri(root_url), "_self" , None, self.user_agent)
+    def set_content(self, root_url, content):
+        self.native.Navigate(Uri(root_url), "_self" , None, self.user_agent)
 
-    def _set_user_agent(self, value):
-        pass
+    def set_user_agent(self, value):
+        # self.native.customUserAgent = value if value else "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.10240"
 
     def evaluate(self, javascript):
         pass

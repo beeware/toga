@@ -39,7 +39,7 @@ def get_platform_factory(factory=None):
         from toga_gtk import factory
         return factory
     elif sys.platform == 'win32':
-        from toga_win32 import factory
+        from toga_winforms import factory
         return factory
     else:
         raise RuntimeError("Couldn't identify a supported host platform.")

@@ -1,8 +1,6 @@
-from toga.interface import Button as ButtonInterface
-
 from ..libs import *
 
-from .base import WidgetMixin
+from .base import Widget
 # from ..utils import process_callback
 
 
@@ -13,31 +11,31 @@ class TogaButton(WinForms.Button):
         self.Click += self.on_click
 
     def on_click(self, sender, event):
-        self.interface.on_press(self.interface)
+        if self.interface.on_press:
+            self.interface.on_press(self.interface)
 
 
-class Button(ButtonInterface, WidgetMixin):
-    def __init__(self, label, id=None, style=None, on_press=None, enabled=True):
-        super().__init__(label, id=id, style=style, on_press=on_press, enabled=enabled)
-        self._create()
-
+class Button(Widget):
     def create(self):
-        self._impl = TogaButton(self)
+        self.native = TogaButton(self.interface)
 
-    def _set_label(self, label):
-        self._impl.Text = self.label
+    def set_label(self, label):
+        self.native.Text = label
         self.rehint()
 
-    def _set_enabled(self, value):
-        self._impl.Enabled = value
+    def set_enabled(self, value):
+        self.native.Enabled = value
 
-    def _set_background_color(self, value):
+    def set_on_press(self, handler):
+        pass
+
+    def set_background_color(self, value):
         pass
 
     def rehint(self):
-        # self._impl.Size = Size(0, 0)
-        # print("REHINT Button", self, self._impl.PreferredSize)
-        self.style.hint(
-            height=self._impl.PreferredSize.Height,
-            min_width=self._impl.PreferredSize.Width,
+        # self.native.Size = Size(0, 0)
+        # print("REHINT Button", self, self.native.PreferredSize)
+        self.interface.style.hint(
+            height=self.native.PreferredSize.Height,
+            min_width=self.native.PreferredSize.Width,
         )

@@ -1,16 +1,11 @@
-from toga.interface import Table as TableInterface
-
 from ..libs import *
-from .base import WidgetMixin      
+from .base import Widget
 
-class Table(TableInterface, WidgetMixin):
-    def __init__(self, headings, id=None, style=None):
-        super(Table, self).__init__(headings, id=id, style=style)
-        self._create()
 
+class Table(Widget):
     def create(self):
         self._container = self
-        self._impl = WinForms.ListView()
+        self.native = WinForms.ListView()
 
         dataColumn = []
         for heading in self.headings:
@@ -18,22 +13,16 @@ class Table(TableInterface, WidgetMixin):
             col.Text = heading
             dataColumn.append(col)
 
-        self._impl.View = WinForms.View.Details
-        self._impl.Columns.AddRange(dataColumn)
- 
+        self.native.View = WinForms.View.Details
+        self.native.Columns.AddRange(dataColumn)
+
     def insert(self, index, *data):
         if len(data) != len(self.headings):
             raise Exception('Data size does not match number of headings')
 
         if index is None:
-            listViewItem = WinForms.ListViewItem(data); 
-            self._impl.Items.Add(listViewItem)  
+            listViewItem = WinForms.ListViewItem(data);
+            self.native.Items.Add(listViewItem)
         else:
-            listViewItem = WinForms.ListViewItem(data); 
-            self._impl.Items.Insert(index, listViewItem)  
-         
-
-
-
-
-        
+            listViewItem = WinForms.ListViewItem(data);
+            self.native.Items.Insert(index, listViewItem)

@@ -1,7 +1,6 @@
 from rubicon.objc import objc_method, SEL
 from .base import Widget
 
-
 from ..libs import *
 from ..utils import process_callback
 
