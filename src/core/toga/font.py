@@ -16,7 +16,6 @@ class Font:
         self.factory = get_platform_factory()
         self._impl = self.factory.Font(interface=self)
 
-
     @property
     def family(self):
         """ Font family, e.g. Helvetica
