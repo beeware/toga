@@ -30,7 +30,7 @@ __all__ = [
     '__version__',
     'App', 'MainWindow',
     'Window',
-    'Command', 'SEPARATOR',  # 'SPACER', 'EXPANDING_SPACER',
+    'Command',
     'Box',
     'Button',
     'Icon', 'TIBERIUS_ICON',

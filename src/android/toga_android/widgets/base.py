@@ -6,20 +6,51 @@ def wrapped_handler(widget, handler):
     return _handler
 
 
-class WidgetMixin:
-    def _set_app(self, app):
-        self._create()
+class Widget:
+    def __init__(self, interface):
+        self.interface = interface
+        self.interface._impl = self
+        self._container = None
+        self.constraints = None
+        self.native = None
+        self.create()
 
-    def _set_window(self, window):
+    def set_app(self, app):
         pass
 
-    def _set_container(self, container):
-        if self._impl:
-            self._container._impl.addView(self._impl)
+    def set_window(self, window):
+        pass
 
-    def _add_child(self, child):
+    @property
+    def container(self):
+        return self._container
+
+    @container.setter
+    def container(self, container):
+        self._container = container
+        if self.constraints and self.native:
+            self._container.native.addSubview_(self.native)
+            self.constraints.container = container
+
+        for child in self.interface.children:
+            child._impl.container = container
+        self.interface.rehint()
+
+    def add_child(self, child):
         if self._container:
             child._set_container(self._container)
 
-    def _apply_layout(self):
+    def apply_layout(self):
+        pass
+
+    def apply_sub_layout(self):
+        pass
+
+    def set_font(self, font):
+        self.native.setFont_(font.native)
+
+    def set_enabled(self, value):
+        self.native.enabled = value
+
+    def rehint(self):
         pass

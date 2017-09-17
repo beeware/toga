@@ -1,16 +1,6 @@
-from toga.interface import Box as BoxInterface
-
-from .base import WidgetMixin
+from .base import Widget
 
 
-class Box(BoxInterface, WidgetMixin):
-    def __init__(self, id=None, style=None, children=None):
-        super().__init__(id=id, style=style, children=children)
-
+class Box(Widget):
     def create(self):
         pass
-
-    def rehint(self):
-        # print("REHINT BOX", self.children)
-        for child in self.children:
-            child.rehint()

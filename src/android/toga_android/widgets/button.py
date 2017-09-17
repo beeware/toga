@@ -1,5 +1,3 @@
-from toga.interface import Button as ButtonInterface
-
 from .base import WidgetMixin
 
 
@@ -18,30 +16,30 @@ class TogaButtonListener(implements=android.view.View[OnClickListener]):
         self._interface.on_press(self._interface)
 
 
-class Button(ButtonInterface, WidgetMixin):
+class Button(Widget):
     def __init__(self, label, id=None, style=None, on_press=None):
         super().__init__(label, id=id, style=style, on_press=on_press)
 
     def create(self):
-        self._impl = TogaButton(self.app._impl, self)
+        self.native = TogaButton(self.app._impl, self.interface)
 
         self._listener = TogaButtonListener(self)
 
-        self._impl.setOnClickListener(self._listener)
+        self.native.setOnClickListener(self._listener)
 
-    def _set_label(self, label):
-        self._impl.setText(self.label)
+    def set_label(self, label):
+        self.native.setText(self.label)
 
-    def _set_enabled(self, value):
+    def set_enabled(self, value):
         pass
 
-    def _set_background_color(self, value):
+    def set_background_color(self, value):
         pass
 
     def rehint(self):
-        if self._impl.getMeasuredWidth():
-            # print("REHINT button", self, self._impl.getMeasuredWidth(), self._impl.getMeasuredHeight())
-            self.style.hint(
-                min_width=self._impl.getMeasuredWidth() / self.app._impl.device_scale,
-                height=self._impl.getMeasuredHeight() / self.app._impl.device_scale,
+        if self.native.getMeasuredWidth():
+            # print("REHINT button", self, self.native.getMeasuredWidth(), self.native.getMeasuredHeight())
+            self.interface.style.hint(
+                min_width=self.native.getMeasuredWidth() / self.app._impl.device_scale,
+                height=self.native.getMeasuredHeight() / self.app._impl.device_scale,
             )
