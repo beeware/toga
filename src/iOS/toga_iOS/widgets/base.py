@@ -21,14 +21,14 @@ class Widget:
         return self._container
 
     @container.setter
-    def container(self, widget):
-        self._container = widget
+    def container(self, container):
+        self._container = container
         if self.constraints and self.native:
             self._container.native.addSubview_(self.native)
-            self.constraints.container = widget
+            self.constraints.container = container
 
         for child in self.interface.children:
-            child._impl.container = widget
+            child._impl.container = container
         self.interface.rehint()
 
     def add_child(self, child):

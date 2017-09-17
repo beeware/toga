@@ -11,7 +11,3 @@ class ImageView(Widget):
 
     def set_image(self, image):
         pass
-
-    def rehint(self):
-        pass
-

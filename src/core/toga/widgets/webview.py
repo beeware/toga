@@ -12,7 +12,7 @@ class WebView(Widget):
             implementation of this class with the same name. (optional & normally not needed)
         url (str): The URL to start with.
         user_agent (str): The user agent for the web view.
-        on_key_down (``callable``): The callback method for when the a key is pressed within
+        on_key_down (``callable``): The callback method for when a key is pressed within
             the web view
         on_webview_load (``callable``): The callback method for when the webview loads (or reloads).
     """
