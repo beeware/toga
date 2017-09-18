@@ -292,6 +292,14 @@ class Widget:
         self._font = font
         self._impl.set_font(font)
 
+    @property
+    def enabled(self):
+        return self._impl.enabled
+
+    @enabled.setter
+    def enabled(self, value):
+        self._impl.enabled = value
+
     def rehint(self):
         self._impl.rehint()
 

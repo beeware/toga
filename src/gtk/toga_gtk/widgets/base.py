@@ -1,9 +1,11 @@
 from gi.repository import Gtk
 
+
 def wrapped_handler(widget, handler):
     def _handler(impl, data=None):
         if handler:
             return handler(widget)
+
     return _handler
 
 
@@ -35,6 +37,14 @@ class Widget:
         for child in self.interface.children:
             child._impl.container = container
         self.interface.rehint()
+
+    @property
+    def enabled(self):
+        return self.native.gtk_widget_get_sensitive()
+
+    @enabled.setter
+    def enabled(self, value):
+        self.native.gtk_widget_set_sensitive(value)
 
     def add_child(self, child):
         if self._container:

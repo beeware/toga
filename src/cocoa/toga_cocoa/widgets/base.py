@@ -33,6 +33,20 @@ class Widget:
             child._impl.container = container
         self.interface.rehint()
 
+    @property
+    def enabled(self):
+        value = self.native.isEnabled()
+        if value == 0:
+            return False
+        elif value == 1:
+            return True
+        else:
+            raise RuntimeError('Got not allowed return value: {}'.format(value))
+
+    @enabled.setter
+    def enabled(self, value):
+        self.native.enabled = value
+
     def _set_hidden(self, child, status):
         for view in self._container._impl.subviews:
             if child._impl == view:
@@ -56,9 +70,6 @@ class Widget:
 
     def set_font(self, font):
         self.native.font = font.native
-
-    def set_enabled(self, value):
-        self.native.enabled = value
 
     def set_background_color(self, background_color):
         if background_color:

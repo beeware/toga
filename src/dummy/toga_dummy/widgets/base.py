@@ -21,6 +21,14 @@ class Widget:
     def container(self, container):
         pass
 
+    @property
+    def enabled(self):
+        pass
+
+    @enabled.setter
+    def enabled(self, value):
+        pass
+
     def add_child(self, child):
         pass
 
@@ -32,9 +40,6 @@ class Widget:
         pass
 
     def set_font(self, font):
-        pass
-
-    def set_enabled(self, value):
         pass
 
     def rehint(self):
