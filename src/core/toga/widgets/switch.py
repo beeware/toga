@@ -72,22 +72,3 @@ class Switch(Widget):
             self._impl.set_is_on(True)
         elif value is False:
             self._impl.set_is_on(False)
-
-    @property
-    def enabled(self):
-        """ The enabled state of the switch
-
-        Returns:
-            ``True`` if interaction with the widget is possible,
-            otherwise ``False``.
-        """
-        return self._enabled
-
-    @enabled.setter
-    def enabled(self, value):
-        if value is True:
-            self._enabled = True
-            self._impl.set_enabled(True)
-        elif value is False:
-            self._enabled = False
-            self._impl.set_enabled(False)

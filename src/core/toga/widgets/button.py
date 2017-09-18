@@ -55,20 +55,3 @@ class Button(Widget):
     def on_press(self, handler):
         self._on_press = handler
         self._impl.set_on_press(handler)
-
-    @property
-    def enabled(self):
-        """ Indicates whether the button can be pressed by the user.
-
-        Returns:
-            The button status. Default is ``True``.
-        """
-        return self._enabled
-
-    @enabled.setter
-    def enabled(self, value):
-        if value is None:
-            self._enabled = True
-        else:
-            self._enabled = value
-        self._impl.set_enabled(self._enabled)

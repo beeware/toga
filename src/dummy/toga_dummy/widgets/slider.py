@@ -14,8 +14,5 @@ class Slider(Widget):
     def set_range(self, range):
         pass
 
-    def set_enabled(self, value):
-        pass
-
     def rehint(self):
         pass

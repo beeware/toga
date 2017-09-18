@@ -14,11 +14,5 @@ class Switch(Widget):
     def get_is_on(self):
         pass
 
-    def set_enabled(self, value):
-        pass
-
-    def get_enabled(self):
-        pass
-
     def rehint(self):
         pass

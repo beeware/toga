@@ -78,22 +78,3 @@ class Slider(Widget):
     @on_slide.setter
     def on_slide(self, handler):
         self._on_press = handler
-
-    @property
-    def enabled(self):
-        """ Indicates whether slider interaction is possible or not.
-
-        Returns:
-            `True` when the widget is enabled, `False` otherwise.
-        """
-        return self._enabled
-
-    @enabled.setter
-    def enabled(self, value):
-        if value is True:
-            self._enabled = True
-        elif value is False:
-            self._enabled = False
-        else:
-            raise ValueError('Value must be of type Bool')
-        self._impl.set_enabled(value)

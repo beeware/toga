@@ -32,7 +32,6 @@ class TestSwitch(unittest.TestCase):
         self.assertEqual(self.switch.on_toggle, self.on_toggle)
         self.assertEqual(self.switch._on_toggle, self.on_toggle)
         self.assertEqual(self.switch.enabled, self.enabled)
-        self.assertEqual(self.switch._enabled, self.enabled)
 
     def test_label_with_None(self):
         self.switch.label = None
@@ -52,12 +51,3 @@ class TestSwitch(unittest.TestCase):
     def test_getting_is_on_invokes_impl_method(self):
         value = self.switch.is_on
         self.switch._impl.get_is_on.assert_called_with()
-
-    def test_setting_enabled_invokes_impl_method(self):
-        value = False
-        self.switch.enabled = value
-        self.switch._impl.set_enabled.assert_called_with(value)
-
-        new_value = True
-        self.switch.enabled = new_value
-        self.switch._impl.set_enabled.assert_called_with(new_value)

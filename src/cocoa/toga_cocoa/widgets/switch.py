@@ -44,21 +44,6 @@ class Switch(Widget):
         else:
             raise Exception('Undefined value for is_on of {}'.format(__class__))
 
-    def set_enabled(self, value):
-        if value is True:
-            self.native.enabled = True
-        elif value is False:
-            self.native.enabled = False
-
-    def get_enabled(self):
-        enabled = self.native.isEnabled()
-        if enabled == 1:
-            return True
-        elif enabled == 0:
-            return False
-        else:
-            raise Exception('Undefined value for enabled of {}'.format(__class__))
-
     def rehint(self):
         fitting_size = self.native.fittingSize()
         self.interface.style.hint(

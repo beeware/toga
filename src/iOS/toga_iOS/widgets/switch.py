@@ -42,22 +42,24 @@ class Switch(Widget):
     def get_is_on(self):
         return self.native_switch.isOn()
 
-    def set_enabled(self, value):
-        if value is True:
-            self.native.textLabel.enabled = True
-            self.native.accessoryView.enabled = True
-        elif value is False:
-            self.native.textLabel.enabled = False
-            self.native.accessoryView.enabled = False
-
-    def get_enabled(self):
-        enabled = self.native.accessoryView.isEnabled()
-        if enabled == 1:
+    @property
+    def enabled(self):
+        value = self.native.accessoryView.isEnabled()
+        if value == 1:
             return True
-        elif enabled == 0:
+        elif value == 0:
             return False
         else:
-            raise Exception('Undefined value for enabled of {}'.format(__class__))
+            raise RuntimeError('Undefined value for enabled: {} in {}'.format(value, __class__))
+
+    @enabled.setter
+    def enabled(self, value):
+        if value:
+            self.native.textLabel.enabled = True
+            self.native.accessoryView.enabled = True
+        else:
+            self.native.textLabel.enabled = False
+            self.native.accessoryView.enabled = False
 
     def rehint(self):
         fitting_size = self.native.systemLayoutSizeFittingSize_(CGSize(0, 0))

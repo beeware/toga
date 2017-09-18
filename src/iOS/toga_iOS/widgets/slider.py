@@ -32,9 +32,6 @@ class Slider(Widget):
         self.native.minimumValue = range.min
         self.native.maximumValue = range.max
 
-    def set_enabled(self, value):
-        self.native.enabled = value
-
     def rehint(self):
         fitting_size = self.native.systemLayoutSizeFittingSize_(CGSize(0, 0))
         self.interface.style.hint(

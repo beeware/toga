@@ -79,18 +79,3 @@ class TestSlider(unittest.TestCase):
         self.slider.enabled = False
         self.assertEqual(self.slider.enabled, False)
 
-    def test_setting_enabled_with_false_values(self):
-        with self.assertRaises(ValueError):
-            self.slider.enabled = None
-
-        with self.assertRaises(ValueError):
-            self.slider.enabled = 1
-
-        with self.assertRaises(ValueError):
-            self.slider.enabled = 'True'
-
-    def test_setting_enabled_invokes_impl_method(self):
-        new_value = False
-        self.slider.enabled = new_value
-        self.slider._impl.set_enabled.assert_called_with(new_value)
-
