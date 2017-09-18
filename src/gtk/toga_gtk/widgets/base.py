@@ -40,11 +40,11 @@ class Widget:
 
     @property
     def enabled(self):
-        return self.native.gtk_widget_get_sensitive()
+        return Gtk.gtk_widget_get_sensitive(self.native)
 
     @enabled.setter
     def enabled(self, value):
-        self.native.gtk_widget_set_sensitive(value)
+        Gtk.gtk_widget_set_sensitive(self.native, value)
 
     def add_child(self, child):
         if self._container:
