@@ -1,6 +1,7 @@
 from ..utils import not_required_on
 
-class Widget():
+
+class Widget:
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
