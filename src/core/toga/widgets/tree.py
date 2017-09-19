@@ -87,6 +87,8 @@ class TreeNode:
 
     def insert(self, index, data, icon=None):
         node = TreeNode(source=self.source, data=data, icon=icon)
+        if self._children is None:
+            self._children = []
         self._children.insert(index, node)
         if self.source.interface:
             self.source.interface._impl.insert_node(node)

@@ -19,16 +19,16 @@ class TogaIconCell(NSTextFieldCell):
         icon = self.objectValue.node.icon
         if icon:
             nicon = icon._impl.native
-            offset = 18
+            offset = 28.5
 
             NSGraphicsContext.currentContext.saveGraphicsState()
             yOffset = cellFrame.origin.y
             if view.isFlipped:
                 xform = NSAffineTransform.transform()
-                xform.translateXBy(0.0, yBy=cellFrame.size.height)
+                xform.translateXBy(8, yBy=cellFrame.size.height)
                 xform.scaleXBy(1.0, yBy=-1.0)
                 xform.concat()
-                yOffset = 0 - cellFrame.origin.y;
+                yOffset = 0.5 - cellFrame.origin.y
 
             interpolation = NSGraphicsContext.currentContext.imageInterpolation
             NSGraphicsContext.currentContext.imageInterpolation = NSImageInterpolationHigh
@@ -44,7 +44,7 @@ class TogaIconCell(NSTextFieldCell):
             NSGraphicsContext.currentContext.restoreGraphicsState()
         else:
             # No icon; just the text label
-            offset = 0
+            offset = 5
 
         if label:
             # Find the right color for the text
