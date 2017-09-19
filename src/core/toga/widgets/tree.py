@@ -15,9 +15,9 @@ class TreeNode:
         self._impl = None
         self.source = source
 
+        self._expanded = expanded
         self._data = [data] if isinstance(data, str) else data
         self.icon = icon
-        self._expanded = expanded
 
         self.parent = None
         self._children = children
