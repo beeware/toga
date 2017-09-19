@@ -46,14 +46,17 @@ class TogaTree(NSOutlineView):
     # OutlineViewDelegate methods
     @objc_method
     def outlineViewSelectionDidChange_(self, notification) -> None:
-        if self.interface.on_selection:
-            nodes = []
-            currentIndex = self.selectedRowIndexes.firstIndex
-            for i in range(self.selectedRowIndexes.count):
-                nodes.append(self._impl.node[self.itemAtRow(currentIndex)])
-                currentIndex = self.selectedRowIndexes.indexGreaterThanIndex(currentIndex)
+        self.interface.selected = []
+        currentIndex = self.selectedRowIndexes.firstIndex
+        for i in range(self.selectedRowIndexes.count):
+            self.interface.selected.append(self._impl.node[self.itemAtRow(currentIndex)])
+            currentIndex = self.selectedRowIndexes.indexGreaterThanIndex(currentIndex)
 
-            process_callback(self.interface.on_selection(self.interface, nodes))
+        # FIXME: return a list if widget allows multi-selection.
+        self.interface.selected = self.interface.selected[0]
+
+        if self.interface.on_select:
+            process_callback(self.interface.on_select(self.interface))
 
 
 class Tree(Widget):
@@ -81,6 +84,8 @@ class Tree(Widget):
 
         # Use autolayout for the inner widget.
         self.tree.setTranslatesAutoresizingMaskIntoConstraints_(True)
+
+        # FIXME: Make turning this on an option.
         # self.tree.setAllowsMultipleSelection_(True)
 
         # Create columns for the tree
@@ -90,6 +95,8 @@ class Tree(Widget):
             self.tree.addTableColumn(column)
             self.columns.append(column)
 
+            # FIXME - Modify TogaIconCell to preserve the column ID;
+            # then allow all columns to have icons and/or text.
             if i == 0:
                 cell = TogaIconCell.alloc().init()
                 column.dataCell = cell

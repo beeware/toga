@@ -142,7 +142,7 @@ class Tree(Widget):
             implementation of this class with the same name. (optional & normally not needed)
     """
 
-    def __init__(self, headings, id=None, style=None, data=None, on_selection=None, factory=None):
+    def __init__(self, headings, id=None, style=None, data=None, on_select=None, factory=None):
         super().__init__(id=id, style=style, factory=factory)
 
         self.headings = headings
@@ -151,7 +151,7 @@ class Tree(Widget):
         self._impl = self.factory.Tree(interface=self)
 
         self.data = data
-        self.on_selection = on_selection
+        self.on_select = on_select
 
     @property
     def data(self):
@@ -180,20 +180,20 @@ class Tree(Widget):
         self._impl.refresh()
 
     @property
-    def on_selection(self):
+    def on_select(self):
         """
         The callable function for when a node on the Tree is selected
 
         :rtype: ``callable``
         """
-        return self._on_selection
+        return self._on_select
 
-    @on_selection.setter
-    def on_selection(self, handler):
+    @on_select.setter
+    def on_select(self, handler):
         """
-        Set the function to be executed on node selection
+        Set the function to be executed on node select
 
         :param handler:     callback function
         :type handler:      ``callable``
         """
-        self._on_selection = handler
+        self._on_select = handler

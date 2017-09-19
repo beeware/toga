@@ -7,26 +7,25 @@ class TogaTable(NSTableView):
     # TableDataSource methods
     @objc_method
     def numberOfRowsInTableView_(self, table) -> int:
-        return len(self._impl.data)
+        return len(self.interface.data)
 
     @objc_method
     def tableView_objectValueForTableColumn_row_(self, table, column, row: int):
         column_index = int(column.identifier)
-        return self._impl.data[row][column_index]
+        return self.interface.data[row][column_index]
 
     # TableDelegate methods
     @objc_method
     def tableViewSelectionDidChange_(self, notification) -> None:
-        print ("selection changed to row: %s" % notification.object.selectedRow)
-        #pass selectedRow onto the interface
-        self.interface.selectedRow = notification.object.selectedRow
+        self.interface.selection = notification.object.selectedRow
+        self.interface.selected = self.interface.data[notification.object.selectedRow]
         if self.interface.on_select:
             process_callback(self.interface.on_select(self.interface))
 
 
 class Table(Widget):
     def create(self):
-        self.data = []
+        self.nodes = {}
         # Create a table view, and put it in a scroll view.
         # The scroll view is the _impl, because it's the outer container.
         self.native = NSScrollView.alloc().init()
@@ -41,13 +40,12 @@ class Table(Widget):
         self.table.columnAutoresizingStyle = NSTableViewUniformColumnAutoresizingStyle
 
         # Create columns for the table
-        self._columns = [
-            NSTableColumn.alloc().initWithIdentifier_('%d' % i)
-            for i, heading in enumerate(self.interface.headings)
-        ]
-
-        for heading, column in zip(self.interface.headings, self._columns):
+        self.columns = []
+        for i, heading in enumerate(self.interface.headings):
+            column = NSTableColumn.alloc().initWithIdentifier('%d' % i)
             self.table.addTableColumn(column)
+            self.columns.append(column)
+
             cell = column.dataCell
             cell.editable = False
             cell.selectable = False
@@ -61,3 +59,15 @@ class Table(Widget):
 
         # Add the layout constraints
         self.add_constraints()
+
+    def insert_node(self, node):
+        node._impl = TogaNodeData.alloc().init()
+        node._impl.node = node
+
+        self.node[node._impl] = node
+
+    def remove_node(self, node):
+        del self.node[node._impl]
+
+    def refresh(self):
+        self.table.reloadData()
