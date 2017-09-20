@@ -270,16 +270,16 @@ def make_toga_impl_check_class(path, dummy_path, platform):
         return fn
 
     for cls in expected.class_names:
-        setattr(TestClass,
-                'test_class_{}_exists_in_file_{}'.format(cls, os.path.basename(path)),
-                make_test_function(cls, actual.class_names))
+        fn = make_test_function(cls, actual.class_names)
+        fn.__doc__ = "{} exists".format(cls)
+        setattr(TestClass, 'test_class_{}_exists'.format(cls), fn)
 
     for cls in expected.class_names:
         for method in expected.methods_of_class(cls):
             # create a test that checks if the method exists in the class.
-            setattr(TestClass,
-                    'test_method_{}_exists_in_class_{}'.format(method, cls),
-                    make_test_function(method, actual.methods_of_class(cls)))
+            fn = make_test_function(method, actual.methods_of_class(cls))
+            fn.__doc__ = '{}.{}(...) exists'.format(cls, method)
+            setattr(TestClass, 'test_{}__{}_exists'.format(cls, method), fn)
 
             # create tests that check for the right method arguments.
             method_id = '{}.{}'.format(cls, method)
@@ -290,34 +290,55 @@ def make_toga_impl_check_class(path, dummy_path, platform):
                 actual_method_def = None
 
             if actual_method_def:
-                # Create test whether the method takes the right arguments and if the arguments have the right name.
+                # Create test whether the method takes the right arguments
+                # and if the arguments have the right name.
+
                 # ARGS
                 for arg in method_def.args:
-                    setattr(TestClass,
-                            'test_{}_takes_the_argument_{}_with_default_{}'.format(method, *arg),
-                            make_test_function(arg, actual_method_def.args))
+                    fn = make_test_function(arg, actual_method_def.args)
+                    fn.__doc__= "{}.{}(..., {}={}, ...) exists".format(cls, method, *arg)
+                    setattr(
+                        TestClass,
+                        'test_{}__{}_arg_{}_default_{}'.format(cls, method, *arg),
+                        fn
+                    )
+
                 # *varargs
                 if method_def.vararg:
                     vararg = method_def.vararg
                     actual_vararg = actual_method_def.vararg if actual_method_def.vararg else []
-                    setattr(TestClass,
-                            'test_{}_takes_vararg_with_name_{}'.format(method, vararg),
-                            make_test_function(vararg, actual_vararg))
+                    fn = make_test_function(vararg, actual_vararg)
+                    fn.__doc__ = "{}.{}(..., *{}, ...) exists".format(cls, method, vararg)
+                    setattr(
+                        TestClass,
+                        'test_{}__{}_vararg_{}'.format(cls, method, vararg),
+                        fn
+                    )
+
                 # **kwarg
                 if method_def.kwarg:
                     kwarg = method_def.kwarg
                     actual_kwarg = actual_method_def.kwarg if actual_method_def.kwarg else []
-                    setattr(TestClass,
-                            'test_{}_takes_kwarg_with_name_{}'.format(method, kwarg),
-                            make_test_function(kwarg, actual_kwarg,
-                                               error_msg='The method does not take kwargs or the '
-                                                         'variable is not named "{}".'.format(kwarg)))
+                    fn = make_test_function(kwarg, actual_kwarg,
+                                            error_msg='The method does not take kwargs or the '
+                                                      'variable is not named "{}".'.format(kwarg))
+                    fn.__doc__ = "{}.{}(..., **{}, ...) exists".format(cls, method, kwarg)
+                    setattr(
+                        TestClass,
+                        'test_{}__{}_kw_{}'.format(cls, method, kwarg),
+                        fn
+                    )
+
                 # kwonlyargs
                 if method_def.kwonlyargs:
                     for kwonlyarg in method_def.kwonlyargs:
-                        setattr(TestClass,
-                                'test_{}_takes_kwonlyarg_{}_with_{}'.format(method, *kwonlyarg),
-                                make_test_function(kwonlyarg, actual_method_def.kwonlyargs))
+                        fn = make_test_function(kwonlyarg, actual_method_def.kwonlyargs)
+                        fn.__doc__ = "{}.{}(..., {}={}, ...) exists".format(cls, method, *kwonlyarg)
+                        setattr(
+                            TestClass,
+                            'test_{}__{}_kwonly_{}_default_{}'.format(cls, method, *kwonlyarg),
+                            fn
+                        )
 
     return TestClass
 
@@ -332,6 +353,7 @@ TOGA_BASE_FILES = [
     'factory.py',
     'font.py',
     'window.py',
+
     # Widgets
     'base.py',
     'box.py',
