@@ -19,6 +19,11 @@ class TogaWebView(WebView):
         if self.interface.on_key_down:
             self.interface.on_key_down(event.keyCode, event.modifierFlags)
 
+    @objc_method
+    def touchBar(self):
+        # Disable the touchbar.
+        return None
+
 
 class WebView(Widget):
     def create(self):
