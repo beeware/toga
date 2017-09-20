@@ -60,13 +60,13 @@ class Table(Widget):
         # Add the layout constraints
         self.add_constraints()
 
-    def insert_node(self, node):
+    def insert_row(self, node):
         node._impl = TogaNodeData.alloc().init()
         node._impl.node = node
 
         self.node[node._impl] = node
 
-    def remove_node(self, node):
+    def remove_row(self, node):
         del self.node[node._impl]
 
     def refresh(self):
