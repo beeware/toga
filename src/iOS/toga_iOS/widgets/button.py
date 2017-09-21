@@ -26,7 +26,7 @@ class Button(ButtonInterface, WidgetMixin):
 
         self._impl.setTitleColor_forState_(self._impl.tintColor, UIControlStateNormal)
         self._impl.setTitleColor_forState_(UIColor.grayColor, UIControlStateDisabled)
-        self._impl.addTarget_action_forControlEvents_(self._impl, get_selector('onPress:'), UIControlEventTouchDown)
+        self._impl.addTarget_action_forControlEvents_(self._impl, SEL('onPress:'), UIControlEventTouchDown)
 
         # Add the layout constraints
         self._add_constraints()

@@ -25,9 +25,11 @@ def action2(widget):
 def action3(widget):
     print("action 3")
 
+def tableSelected(widget):
+    print("selected %s" % widget.selectedRow)
 
 def build(app):
-    left_container = toga.Table(['Hello', 'World'])
+    left_container = toga.Table(['Hello', 'World'], on_select=tableSelected)
 
     left_container.insert(None, 'root1', 'value1')
     left_container.insert(None, 'root2', 'value2')

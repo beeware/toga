@@ -1,4 +1,5 @@
-from rubicon.objc import objc_method, get_selector
+from rubicon.objc import objc_method, SEL
+
 
 from toga.interface import Button as ButtonInterface
 from toga.constants import *
@@ -29,7 +30,7 @@ class Button(ButtonInterface, WidgetMixin):
         self._impl.setBezelStyle_(NSRoundedBezelStyle)
         self._impl.setButtonType_(NSMomentaryPushInButton)
         self._impl.setTarget_(self._impl)
-        self._impl.setAction_(get_selector('onPress:'))
+        self._impl.setAction_(SEL('onPress:'))
 
         # Add the layout constraints
         self._add_constraints()

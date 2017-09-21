@@ -27,7 +27,7 @@ class Selection(WidgetMixin, SelectionInterface):
         self._impl._interface = self
 
         self._impl.setTarget_(self._impl)
-        self._impl.setAction_(get_selector('onSelect:'))
+        self._impl.setAction_(SEL('onSelect:'))
 
         self._add_constraints()
 

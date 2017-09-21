@@ -146,7 +146,7 @@ class App(AppInterface):
 
                     item = NSMenuItem.alloc().initWithTitle(
                         cmd.label,
-                        action=get_selector('selectMenuItem:'),
+                        action=SEL('selectMenuItem:'),
                         keyEquivalent=cmd.shortcut if cmd.shortcut else ''
                     )
 
@@ -173,4 +173,3 @@ class App(AppInterface):
 
     def exit(self):
         self._impl.terminate(None)
-

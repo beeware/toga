@@ -21,3 +21,9 @@ src/django/toga.min.js.map
 src/gtk/gi
 src/gtk/pygtkcompat
 .DS_Store
+pip-selfcheck.json
+pyvenv.cfg
+.vscode
+bin/
+lib/
+
