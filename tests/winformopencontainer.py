@@ -35,7 +35,7 @@ class OpenContainerTest(toga.App):
         button = toga.Button('Calculate', on_press=self.calculate)
         container = OptionContainer()
         print(container._impl.Width)
-        self.main_window.content = container
+
         print(container._impl.Width)
 
         f_box.add(self.f_input)
@@ -59,7 +59,7 @@ class OpenContainerTest(toga.App):
         print(c_label._impl.Width)
 
         box.style.set(flex_direction='column', padding_top=10)
-
+        self.main_window.content = container
         self.main_window.show()
 
 

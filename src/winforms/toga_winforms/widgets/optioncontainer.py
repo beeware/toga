@@ -20,10 +20,9 @@ class OptionContainer(OptionContainerInterface, WidgetMixin):
     def _add_content(self, label, container, widget):
         item = WinForms.TabPage()
         item.Text = label
-
         item.Controls.Add(container._impl)
-        self._impl.Controls.Add(item)
 
+        self._impl.Controls.Add(item)
 
         # item.Size = Drawing.Size(700, 1000)
         # TODO Expansion??? https://stackoverflow.com/a/7380999
@@ -31,4 +30,4 @@ class OptionContainer(OptionContainerInterface, WidgetMixin):
         # container._impl.Width = item.Width
         # container._impl.Height = item.Height
         # container._impl.Location = Drawing.Point(container._impl.Location.X, container._impl.Location.Y)
-        # container._impl.Anchor = WinForms.AnchorStyles.Left | WinForms.AnchorStyles.Right
+        container._impl.Anchor = WinForms.AnchorStyles.Left | WinForms.AnchorStyles.Right
