@@ -1,8 +1,10 @@
 import toga
+from colosseum import CSS
+
 from src.winforms.toga_winforms.widgets.optioncontainer import OptionContainer
 
 
-class OpenContainerTest(toga.App):
+class OptionContainerTest(toga.App):
     def calculate(self, widget):
         try:
             self.c_input.value = (float(self.f_input.value) - 32.0) * 5.0 / 9.0
@@ -33,10 +35,7 @@ class OpenContainerTest(toga.App):
         join_label = toga.Label('is equivalent to', alignment=toga.RIGHT_ALIGNED)
 
         button = toga.Button('Calculate', on_press=self.calculate)
-        container = OptionContainer()
-        print(container._impl.Width)
-
-        print(container._impl.Width)
+        container = OptionContainer(style=CSS(width=600))
 
         f_box.add(self.f_input)
         f_box.add(f_label)
@@ -44,27 +43,33 @@ class OpenContainerTest(toga.App):
         c_box.add(join_label)
         c_box.add(self.c_input)
         c_box.add(c_label)
-        # c_box.add(table)
+
         box.add(f_box)
         box.add(c_box)
         box.add(button)
 
         table = toga.Table(['Hello', 'World'])
-        table1 = toga.Table(['Heading 1', 'Heading 2'])
+
+
+        t_box = toga.Box(style=CSS(width=500, height=300, padding_top=50, flex_direction='row'))
+        t_box.add(toga.TextInput(style=CSS(width=400)))
+        t_box.add(toga.Button("Hi"))
         table.insert(None, 'Value 1', 'Value 2')
 
+        container = self.get_container(container, [box, table, t_box])
 
-        print(c_label._impl.Width)
-        container = self.get_container(container, [box, table, table1])
-        print(c_label._impl.Width)
+        container.add("test", toga.TextInput(style=CSS(width=400)))
 
         box.style.set(flex_direction='column', padding_top=10)
+
+        x_box = toga.Box(style=CSS(flex_direction="column"))
+        x_box.add(t_box)
         self.main_window.content = container
         self.main_window.show()
 
 
 def main():
-    return OpenContainerTest('Converter', 'org.pybee.converter')
+    return OptionContainerTest('Converter', 'org.pybee.converter')
 
 
 if __name__ == '__main__':
