@@ -35,32 +35,32 @@ pull_request:
                 name: GTK+ implementation compliance check
                 environment:
                     TEST_DIR: src/gtk
-                    SRC_DEPENDANTS: src/dummy src/core
+                    SRC_DEPENDANTS: src/core src/dummy
             - winforms:
                 name: Winforms implementation compliance check
                 environment:
                     TEST_DIR: src/winforms
-                    SRC_DEPENDANTS: src/dummy src/core
+                    SRC_DEPENDANTS: src/core src/dummy
             - cocoa:
                 name: macOS Cocoa implementation compliance check
                 environment:
                     TEST_DIR: src/cocoa
-                    SRC_DEPENDANTS: src/dummy src/core
+                    SRC_DEPENDANTS: src/core src/dummy
             - iOS:
                 name: iOS implementation compliance check
                 environment:
                     TEST_DIR: src/iOS
-                    SRC_DEPENDANTS: src/dummy src/core
+                    SRC_DEPENDANTS: src/core src/dummy
             - android:
                 name: Android implementation compliance check
                 environment:
                     TEST_DIR: src/android
-                    SRC_DEPENDANTS: src/dummy src/core
+                    SRC_DEPENDANTS: src/core src/dummy
             - django:
                 name: Django implementation compliance check
                 environment:
                     TEST_DIR: src/django
-                    SRC_DEPENDANTS: src/dummy src/core
+                    SRC_DEPENDANTS: src/core src/dummy
 push:
     - smoke:
         task: py34
