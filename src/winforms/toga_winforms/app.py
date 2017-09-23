@@ -18,8 +18,9 @@ class App:
         self.interface._impl = self
 
     def create(self):
+        print("CREATE")
         self.native = WinForms.Application
-        Threading.Thread.CurrentThread.ApartmentState = Threading.ApartmentState.STA
+        Threading.Thread.CurrentThread.SetApartmentState(Threading.ApartmentState.STA)
 
         # self.native.setApplicationIconImage_(self.icon.native)
 

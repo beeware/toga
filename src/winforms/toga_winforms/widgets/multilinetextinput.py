@@ -1,9 +1,9 @@
 from ..libs import *
 
-from .base import WidgetMixin
+from .base import Widget
 
 
-class MultilineTextInput(WidgetMixin):
+class MultilineTextInput(Widget):
     def create(self):
         # because https://stackoverflow.com/a/612234
         self.native = WinForms.RichTextBox()

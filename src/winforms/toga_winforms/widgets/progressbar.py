@@ -1,5 +1,5 @@
 from ..libs import *
-from .base import WidgetMixin
+from .base import Widget
 
 
 class ProgressBar(Widget):

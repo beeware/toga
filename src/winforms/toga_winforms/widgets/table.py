@@ -8,7 +8,7 @@ class Table(Widget):
         self.native = WinForms.ListView()
 
         dataColumn = []
-        for heading in self.headings:
+        for heading in self.interface.headings:
             col = WinForms.ColumnHeader()
             col.Text = heading
             dataColumn.append(col)
