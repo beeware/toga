@@ -1,12 +1,12 @@
 from __future__ import print_function, absolute_import, division
+from gi.repository import Gtk
 
 from .textinput import TextInput
 
 
 class PasswordInput(TextInput):
-    def __init__(self):
-        super(PasswordInput, self).__init__()
-
     def create(self):
-        super(PasswordInput, self).create()
-        self._impl.set_visibility(False)
+        self.native = Gtk.Entry()
+        self.native.interface = self.interface
+        self.native.set_visibility(False)
+        self.native.connect('show', lambda event: self.rehint())

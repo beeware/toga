@@ -1,18 +1,15 @@
-from rubicon.objc import objc_method
-
-from toga.interface.app import App as AppInterface
-
 from .libs import *
 from .window import Window
+from rubicon.objc import objc_method
 
 
 class MainWindow(Window):
-    def __init__(self, title=None, position=(100, 100), size=(640, 480)):
-        super().__init__(title, position, size)
+    def __init__(self, interface):
+        super().__init__(interface)
 
-    def startup(self):
-        super(MainWindow, self).startup()
-        self._impl.setBackgroundColor_(UIColor.whiteColor())
+    # def startup(self):
+    #     super(MainWindow, self).startup()
+    #     self.native.setBackgroundColor_(UIColor.whiteColor())
 
 
 class PythonAppDelegate(UIResponder):
@@ -23,36 +20,33 @@ class PythonAppDelegate(UIResponder):
     @objc_method
     def application_didFinishLaunchingWithOptions_(self, application, launchOptions) -> bool:
         print("App finished launching.")
-        App.app._startup()
+        App.app.create()
         return True
 
     @objc_method
     def application_didChangeStatusBarOrientation_(self, application, oldStatusBarOrientation: int) -> None:
+        """ This callback is invoked when rotating the device from landscape to portrait and vice versa. """
         print("ROTATED", oldStatusBarOrientation)
-        App.app.main_window.content._update_layout(
-            width=App.app.main_window._screen.bounds.size.width,
-            height=App.app.main_window._screen.bounds.size.height,
+        App.app.interface.main_window.content._update_layout(
+            width=App.app.interface.main_window._impl.screen.bounds.size.width,
+            height=App.app.interface.main_window._impl.screen.bounds.size.height,
         )
 
 
-class App(AppInterface):
+class App:
     _MAIN_WINDOW_CLASS = MainWindow
 
-    def __init__(self, name, app_id, icon=None, startup=None, document_types=None):
-        super().__init__(
-            name=name,
-            app_id=app_id,
-            icon=None,  # Icon is ignored on iOS
-            startup=startup,
-            document_types=document_types
-        )
+    def __init__(self, interface):
+        self.interface = interface
+        App.app = self  # Add a reference for the PythonAppDelegate class to use.
 
-    def _startup(self):
-        self.startup()
+    def create(self):
+        """ Calls the startup method on the interface """
+        self.interface.startup()
 
     def open_document(self, fileURL):
-        '''Add a new document to this app.'''
-        print("")
+        """ Add a new document to this app."""
+        pass
 
     def main_loop(self):
         # Main loop is a no-op on iOS; the app loop is integrated with the

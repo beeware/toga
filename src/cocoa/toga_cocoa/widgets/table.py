@@ -1,68 +1,73 @@
-from toga.interface import Table as TableInterface
-
 from ..libs import *
-from .base import WidgetMixin
 from ..utils import process_callback
+from .base import Widget
+
 
 class TogaTable(NSTableView):
     # TableDataSource methods
     @objc_method
     def numberOfRowsInTableView_(self, table) -> int:
-        return len(self._interface._data)
+        return len(self.interface.data)
 
     @objc_method
     def tableView_objectValueForTableColumn_row_(self, table, column, row: int):
         column_index = int(column.identifier)
-        return self._interface._data[row][column_index]
+        return self.interface.data[row][column_index]
 
     # TableDelegate methods
     @objc_method
     def tableViewSelectionDidChange_(self, notification) -> None:
-        print ("selection changed to row: %s" % notification.object.selectedRow)
-        #pass selectedRow onto the interface
-        self._interface.selectedRow = notification.object.selectedRow
-        process_callback(self._interface.on_select(self._interface))
+        self.interface.selection = notification.object.selectedRow
+        self.interface.selected = self.interface.data[notification.object.selectedRow]
+        if self.interface.on_select:
+            process_callback(self.interface.on_select(self.interface))
 
-class Table(TableInterface, WidgetMixin):
-    def __init__(self, headings, id=None, style=None, on_select=None):
-        super(Table, self).__init__(headings, id=id, style=style, on_select=on_select)
-        self._create()
 
+class Table(Widget):
     def create(self):
-        self._data = []
+        self.nodes = {}
         # Create a table view, and put it in a scroll view.
         # The scroll view is the _impl, because it's the outer container.
-        self._impl = NSScrollView.alloc().init()
-        self._impl.hasVerticalScroller = True
-        self._impl.hasHorizontalScroller = False
-        self._impl.autohidesScrollers = False
-        self._impl.borderType = NSBezelBorder
+        self.native = NSScrollView.alloc().init()
+        self.native.hasVerticalScroller = True
+        self.native.hasHorizontalScroller = True
+        self.native.autohidesScrollers = False
+        self.native.borderType = NSBezelBorder
 
-        self._table = TogaTable.alloc().init()
-        self._table._interface = self
-        self._table.columnAutoresizingStyle = NSTableViewUniformColumnAutoresizingStyle
-
-        # Use autolayout for the inner widget.
-        self._table.translatesAutoresizingMaskIntoConstraints = True
+        self.table = TogaTable.alloc().init()
+        self.table.interface = self.interface
+        self.table._impl = self
+        self.table.columnAutoresizingStyle = NSTableViewUniformColumnAutoresizingStyle
 
         # Create columns for the table
-        self._columns = [
-            NSTableColumn.alloc().initWithIdentifier('%d' % i)
-            for i, heading in enumerate(self.headings)
-        ]
+        self.columns = []
+        for i, heading in enumerate(self.interface.headings):
+            column = NSTableColumn.alloc().initWithIdentifier('%d' % i)
+            self.table.addTableColumn(column)
+            self.columns.append(column)
 
-        for heading, column in zip(self.headings, self._columns):
-            self._table.addTableColumn(column)
             cell = column.dataCell
             cell.editable = False
             cell.selectable = False
             column.headerCell.stringValue = heading
 
-        self._table.delegate = self._table
-        self._table.dataSource = self._table
+        self.table.delegate = self.table
+        self.table.dataSource = self.table
 
         # Embed the table view in the scroll view
-        self._impl.documentView = self._table
+        self.native.documentView = self.table
 
         # Add the layout constraints
-        self._add_constraints()
+        self.add_constraints()
+
+    def insert_row(self, node):
+        node._impl = TogaNodeData.alloc().init()
+        node._impl.node = node
+
+        self.node[node._impl] = node
+
+    def remove_row(self, node):
+        del self.node[node._impl]
+
+    def refresh(self):
+        self.table.reloadData()

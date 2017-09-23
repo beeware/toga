@@ -1,34 +1,29 @@
 from toga.constants import LEFT_ALIGNED
-from toga.interface import Label as LabelInterface
-
-from .base import WidgetMixin
+from rubicon.objc import CGSize
+from .base import Widget
 from ..libs import UILabel, NSTextAlignment, NSLineBreakByWordWrapping, CGSize
 
 
-class Label(LabelInterface, WidgetMixin):
-    def __init__(self, text, id=None, style=None, alignment=LEFT_ALIGNED):
-        super().__init__(id=id, style=style, text=text, alignment=alignment)
-        self._create()
-
+class Label(Widget):
     def create(self):
-        self._impl = UILabel.new()
-        self._impl._interface = self
+        self.native = UILabel.new()
+        self.native.interface = self
 
-        self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
-        self._impl.setLineBreakMode_(NSLineBreakByWordWrapping)
+        self.native.setTranslatesAutoresizingMaskIntoConstraints_(False)
+        self.native.setLineBreakMode_(NSLineBreakByWordWrapping)
 
         # Add the layout constraints
-        self._add_constraints()
+        self.add_constraints()
 
-    def _set_alignment(self, value):
-        self._impl.setTextAlignment_(NSTextAlignment(value))
+    def set_alignment(self, value):
+        self.native.setTextAlignment_(NSTextAlignment(value))
 
-    def _set_text(self, value):
-        self._impl.setText_(value)
+    def set_text(self, value):
+        self.native.setText_(value)
 
     def rehint(self):
-        fitting_size = self._impl.systemLayoutSizeFittingSize_(CGSize(0, 0))
-        self.style.hint(
+        fitting_size = self.native.systemLayoutSizeFittingSize_(CGSize(0, 0))
+        self.interface.style.hint(
             height=fitting_size.height,
             width=fitting_size.width
         )

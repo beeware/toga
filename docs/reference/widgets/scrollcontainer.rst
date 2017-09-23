@@ -45,7 +45,7 @@ Supported Platforms
 Reference
 ---------
 
-.. autoclass:: toga.interface.widgets.scrollcontainer.ScrollContainer
+.. autoclass:: toga.widgets.scrollcontainer.ScrollContainer
    :members:
    :undoc-members:
    :inherited-members:

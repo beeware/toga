@@ -9,7 +9,7 @@ class CSSLayout(Gtk.Fixed):
     def do_get_preferred_width(self):
         # Calculate the minimum and natural width of the container.
         # print("GET PREFERRED WIDTH")
-        width = self._interface.content.layout.width
+        width = self._interface.content.interface.layout.width
         min_width = self._interface.min_width
         if min_width > width:
             width = min_width
@@ -21,7 +21,7 @@ class CSSLayout(Gtk.Fixed):
         # Calculate the minimum and natural height of the container.
         # height = self.interface.layout.height
         # print("GET PREFERRED HEIGHT")
-        height = self._interface.content.layout.height
+        height = self._interface.content.interface.layout.height
         min_height = self._interface.min_height
         if min_height > height:
             height = min_height
@@ -36,7 +36,7 @@ class CSSLayout(Gtk.Fixed):
         self._interface.content.rehint()
 
         # Force a re-layout of widgets
-        self._interface.content._update_layout(
+        self._interface.content.interface._update_layout(
             width=allocation.width,
             height=allocation.height
         )
@@ -49,17 +49,17 @@ class CSSLayout(Gtk.Fixed):
             else:
                 # print("update ", widget._interface, widget._interface.layout)
                 child_allocation = Gdk.Rectangle()
-                child_allocation.x = widget._interface.layout.absolute.left
-                child_allocation.y = widget._interface.layout.absolute.top
-                child_allocation.width = widget._interface.layout.width
-                child_allocation.height = widget._interface.layout.height
+                child_allocation.x = widget.interface.layout.absolute.left
+                child_allocation.y = widget.interface.layout.absolute.top
+                child_allocation.width = widget.interface.layout.width
+                child_allocation.height = widget.interface.layout.height
 
                 widget.size_allocate(child_allocation)
 
 
 class Container:
     def __init__(self):
-        self._impl = CSSLayout(self)
+        self.native = CSSLayout(self)
         self._content = None
         self._min_width = None
         self._min_height = None
@@ -71,9 +71,9 @@ class Container:
 
         # No cached minimum size; compute it by computing an
         # unhinted layout.
-        self._update_layout()
-        self._min_width = self._content.layout.width
-        self._min_height = self._content.layout.height
+        self.update_layout()
+        self._min_width = self._content.interface.layout.width
+        self._min_height = self._content.interface.layout.height
         return self._min_width
 
     @property
@@ -83,9 +83,9 @@ class Container:
 
         # No cached minimum size; compute it by computing an
         # unhinted layout.
-        self._update_layout()
-        self._min_width = self._content.layout.width
-        self._min_height = self._content.layout.height
+        self.update_layout()
+        self._min_width = self._content.interface.layout.width
+        self._min_height = self._content.interface.layout.height
         return self._min_height
 
     @property
@@ -95,7 +95,7 @@ class Container:
     @content.setter
     def content(self, widget):
         self._content = widget
-        self._content._container = self
+        self._content.container = self
 
     @property
     def root_content(self):
@@ -106,6 +106,6 @@ class Container:
         self._content = widget
         self._content._container = self
 
-    def _update_layout(self, **style):
+    def update_layout(self, **style):
         if self._content:
-            self._content._update_layout(**style)
+            self._content.interface._update_layout(**style)

@@ -1,6 +1,4 @@
-from toga.interface import Selection as SelectionInterface
-
-from .base import WidgetMixin
+from .base import Widget
 
 from ..libs.appkit import NSPopUpButton
 from ..libs.foundation import NSMakeRect
@@ -15,39 +13,31 @@ class TogaSelection(NSPopUpButton):
             process_callback(self._interface.on_select(self._interface))
 
 
-class Selection(WidgetMixin, SelectionInterface):
-
-    def __init__(self, id=None, style=None, items=tuple(), on_select=None):
-        super().__init__(id=id, style=style, items=items, on_select=on_select)
-        self._create()
-
+class Selection(Widget):
     def create(self):
         rect = NSMakeRect(0, 0, 0, 0)
-        self._impl = TogaSelection.alloc().initWithFrame_pullsDown_(rect, 0)
-        self._impl._interface = self
+        self.native = NSPopUpButton.alloc().initWithFrame_pullsDown_(rect, 0)
+        self.native.interface = self.interface
 
-        self._impl.setTarget_(self._impl)
-        self._impl.setAction_(SEL('onSelect:'))
-
-        self._add_constraints()
+        self.add_constraints()
 
     def rehint(self):
-        fitting_size = self._impl.fittingSize()
-        self.style.hint(
+        fitting_size = self.native.fittingSize()
+        self.interface.style.hint(
             height=fitting_size.height,
             min_width=fitting_size.width
         )
         # Hacky hack! But, Russ told me to do it.
-        self.style.margin_top = -2
+        self.interface.style.margin_top = -2
 
-    def _remove_all_items(self):
-        self._impl.removeAllItems()
+    def remove_all_items(self):
+        self.native.removeAllItems()
 
-    def _add_item(self, item):
-        self._impl.addItemWithTitle_(item)
+    def add_item(self, item):
+        self.native.addItemWithTitle(item)
 
-    def _select_item(self, item):
-        self._impl.selectItemWithTitle_(item)
+    def select_item(self, item):
+        self.native.selectItemWithTitle(item)
 
-    def _get_selected_item(self):
-        return self._impl.titleOfSelectedItem
+    def get_selected_item(self):
+        return self.native.titleOfSelectedItem

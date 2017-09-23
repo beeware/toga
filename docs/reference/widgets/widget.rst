@@ -10,7 +10,7 @@ The widget class is a base class for all widgets and not designed to be instanti
 Reference
 ---------
 
-.. autoclass:: toga.interface.widgets.base.Widget
+.. autoclass:: toga.widgets.base.Widget
    :members:
    :undoc-members:
    :inherited-members:

@@ -1,41 +1,34 @@
-from toga.interface import TextInput as TextInputInterface
+from .base import Widget
+from ..libs import UITextField, UITextBorderStyleRoundedRect
+from rubicon.objc import CGSize
 
-from .base import WidgetMixin
-from ..libs import UITextField, UITextBorderStyleRoundedRect, CGSize
 
-
-class TextInput(TextInputInterface, WidgetMixin):
-    _IMPL_CLASS = UITextField
-
-    def __init__(self, id=None, style=None, initial=None, placeholder=None, readonly=False):
-        super().__init__(id=id, style=style, initial=initial, placeholder=placeholder, readonly=readonly)
-        self._create()
-
+class TextInput(Widget):
     def create(self):
-        self._impl = self._IMPL_CLASS.new()
-        self._impl._interface = self
+        self.native = UITextField.new()
+        self.native._interface = self
 
-        self._impl.setBorderStyle_(UITextBorderStyleRoundedRect)
+        self.native.setBorderStyle_(UITextBorderStyleRoundedRect)
 
         # Add the layout constraints
-        self._add_constraints()
+        self.add_constraints()
 
-    def _set_readonly(self, value):
-        self._impl.enabled = not value
+    def set_readonly(self, value):
+        self.native.enabled = not value
 
-    def _set_placeholder(self, value):
-        self._impl.placeholder = self._placeholder
+    def set_placeholder(self, value):
+        self.native.placeholder = value
 
-    def _get_value(self):
-        return self._impl.text
+    def get_value(self):
+        return self.native.text
 
-    def _set_value(self, value):
-        self._impl.text = value
+    def set_value(self, value):
+        self.native.text = value
 
     def rehint(self):
         # Height of a text input is known.
-        fitting_size = self._impl.systemLayoutSizeFittingSize_(CGSize(0, 0))
-        self.style.hint(
+        fitting_size = self.native.systemLayoutSizeFittingSize_(CGSize(0, 0))
+        self.interface.style.hint(
             height=fitting_size.height,
             min_width=100
         )

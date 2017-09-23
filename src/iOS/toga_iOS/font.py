@@ -1,8 +1,7 @@
-from toga.interface import Font as FontInterface
 from .libs import UIFont
 
 
-class Font(FontInterface):
+class Font():
 
     def create(self):
-        self._impl = UIFont.fontWithName_size_(self.family, self.size)
+        self.native = UIFont.fontWithName_size_(self.family, self.size)

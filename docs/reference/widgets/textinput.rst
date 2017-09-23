@@ -28,7 +28,7 @@ Supported Platforms
 Reference
 ---------
 
-.. autoclass:: toga.interface.widgets.textinput.TextInput
+.. autoclass:: toga.widgets.textinput.TextInput
    :members:
    :undoc-members:
    :inherited-members:

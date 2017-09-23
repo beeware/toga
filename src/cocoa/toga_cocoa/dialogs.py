@@ -1,11 +1,9 @@
 from .libs import *
 
-from .widgets.icon import Icon
-
 
 def info(window, title, message):
     alert = NSAlert.alloc().init()
-    alert.icon = Icon.app_icon._impl
+    alert.icon = window.app.icon._impl.native
     alert.setAlertStyle_(NSInformationalAlertStyle)
     alert.setMessageText_(title)
     alert.setInformativeText_(message)
@@ -15,7 +13,7 @@ def info(window, title, message):
 
 def question(window, title, message):
     alert = NSAlert.alloc().init()
-    alert.icon = Icon.app_icon._impl
+    alert.icon = window.app.icon._impl.native
     alert.setAlertStyle_(NSInformationalAlertStyle)
     alert.setMessageText_(title)
     alert.setInformativeText_(message)
@@ -29,7 +27,7 @@ def question(window, title, message):
 
 def confirm(window, title, message):
     alert = NSAlert.alloc().init()
-    alert.icon = Icon.app_icon._impl
+    alert.icon = window.app.icon._impl.native
     alert.setAlertStyle_(NSWarningAlertStyle)
     alert.setMessageText_(title)
     alert.setInformativeText_(message)
@@ -43,7 +41,7 @@ def confirm(window, title, message):
 
 def error(window, title, message):
     alert = NSAlert.alloc().init()
-    alert.icon = Icon.app_icon._impl
+    alert.icon = window.app.icon._impl.native
     alert.setAlertStyle_(NSCriticalAlertStyle)
     alert.setMessageText_(title)
     alert.setInformativeText_(message)
@@ -53,12 +51,12 @@ def error(window, title, message):
 
 def stack_trace(window, title, message, content, retry=False):
     alert = NSAlert.alloc().init()
-    alert.icon = Icon.app_icon._impl
+    alert.icon = window.app.icon._impl.native
     alert.setAlertStyle_(NSCriticalAlertStyle)
     alert.setMessageText_(title)
     alert.setInformativeText_(message)
 
-    scroll = NSScrollView.alloc().initWithFrame_(NSMakeRect(0,0,350,200))
+    scroll = NSScrollView.alloc().initWithFrame_(NSMakeRect(0, 0, 500, 200))
     scroll.setHasVerticalScroller_(True)
     scroll.setHasHorizontalScroller_(False)
     scroll.setAutohidesScrollers_(False)
@@ -82,14 +80,16 @@ def stack_trace(window, title, message, content, retry=False):
         alert.runModal()
 
 
-def save_file(window, title, suggested_filename, file_types):
+def save_file(window, title, suggested_filename, file_types=None):
     panel = NSSavePanel.alloc().init()
     panel.title = title
 
-    arr = NSArray.alloc().init()
-
-    for x in file_types:
-        arr = arr.arrayByAddingObject_(x)
+    if file_types:
+        arr = NSArray.alloc().init()
+        for x in file_types:
+            arr = arr.arrayByAddingObject_(x)
+    else:
+        arr = None
 
     panel.allowedFileTypes = arr
     panel.nameFieldStringValue = suggested_filename

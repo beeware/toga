@@ -25,19 +25,18 @@ def action2(widget):
 def action3(widget):
     print("action 3")
 
+
 def tableSelected(widget):
-    print("selected %s" % widget.selectedRow)
+    print("selected row %s:" % widget.selection, widget.selected)
+
 
 def build(app):
-    left_container = toga.Table(['Hello', 'World'], on_select=tableSelected)
 
-    left_container.insert(None, 'root1', 'value1')
-    left_container.insert(None, 'root2', 'value2')
-    left_container.insert(None, 'root3', 'value3')
-    left_container.insert(1, 'root4', 'value4')
-
+    list_data = []
     for i in range(0, 100):
-        left_container.insert(None, 'root%s' % (i+5), 'value%s' % (i+5))
+        list_data.append(('root%s' % i, 'value%s' % i))
+
+    left_box = toga.Table(['Hello', 'World'], data=list_data, on_select=tableSelected)
 
     right_content = toga.Box(
         style=CSS(flex_direction='column', padding_top=50)
@@ -80,7 +79,7 @@ def build(app):
         action2,
         label='Action 2',
         tooltip='Perform action 2',
-        icon=toga.TIBERIUS_ICON,
+        icon=toga.Icon.TIBERIUS_ICON,
         group=things
     )
     cmd3 = toga.Command(
@@ -92,7 +91,7 @@ def build(app):
     )
 
     def action4(widget):
-        print ("CALLING Action 4")
+        print("CALLING Action 4")
         cmd3.enabled = not cmd3.enabled
 
     cmd4 = toga.Command(

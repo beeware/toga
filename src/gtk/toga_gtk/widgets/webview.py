@@ -10,21 +10,18 @@ for version in ['4.0', '3.0']:
     try:
         gi.require_version('WebKit2', version)
         from gi.repository import WebKit2
+
         break
     except (ImportError, ValueError):
         pass
-
-from toga.interface import WebView as WebViewInterface
-
-from .base import WidgetMixin
+from .base import Widget
 
 
-class WebView(WebViewInterface, WidgetMixin):
-    def __init__(self, id=None, style=None, url=None, user_agent=None, on_key_down=None):
-        if user_agent is None:
-            user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.101 Safari/537.36"
-        super().__init__(id=id, style=style, url=url, user_agent=user_agent, on_key_down=on_key_down)
-        self._create()
+class WebView(Widget):
+    """ GTK WebView implementation.
+
+    TODO: WebView is not displaying anything when setting a url.
+    """
 
     def create(self):
         if WebKit2 is None:
@@ -32,27 +29,30 @@ class WebView(WebViewInterface, WidgetMixin):
                 "Import 'from gi.repository import WebKit' failed;" +
                 " may need to install  gir1.2-webkit2-4.0 or gir1.2-webkit2-3.0.")
 
-        self._impl = Gtk.ScrolledWindow()
-        self._impl.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
-        self._impl._interface = self
+        self.native = Gtk.ScrolledWindow()
+        self.native.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
+        self.native.interface = self.interface
 
-        self._webview = WebKit2.WebView()
+        self.webview = WebKit2.WebView()
 
-        self._impl.add(self._webview)
-        self._impl.set_min_content_width(200)
-        self._impl.set_min_content_height(200)
+        self.native.add(self.webview)
+        self.native.set_min_content_width(200)
+        self.native.set_min_content_height(200)
+        # self.native.connect('show', lambda event: self.rehint())
 
-        # self._impl.connect('show', lambda event: self.rehint())
-
-    def _set_url(self, value):
+    def set_url(self, value):
         if value:
-            self._webview.load_uri(self._url)
+            self.webview.load_uri(value)
 
-    def _set_content(self, root_url, content):
-        self._webview.load_html(content, root_url)
+    def set_user_agent(self, value):
+        pass
+        # self.native.user_agent = value if value else "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.101 Safari/537.36"
 
-    def _set_user_agent(self, value):
+    def set_content(self, root_url, content):
+        self.webview.load_html(content, root_url)
+
+    def set_user_agent(self, value):
         pass
 
     def evaluate(self, javascript):
-        self._webview.run_javascript(javascript, None, None, None)
+        self.webview.run_javascript(javascript, None, None, None)

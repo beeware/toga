@@ -1,21 +1,25 @@
 from gi.repository import Gtk
-
-from toga.interface import OptionContainer as OptionContainerInterface
-
 from ..container import Container
-from .base import WidgetMixin
+from .base import Widget
 
 
-class OptionContainer(OptionContainerInterface, WidgetMixin):
-    _CONTAINER_CLASS = Container
-
-    def __init__(self, id=None, style=None, content=None):
-        super(OptionContainer, self).__init__(id=id, style=style, content=content)
-        self._create()
-
+class OptionContainer(Widget):
     def create(self):
         # We want a single unified widget; the vbox is the representation of that widget.
-        self._impl = Gtk.Notebook()
+        self.native = Gtk.Notebook()
+        self.native.interface = self.interface
 
-    def _add_content(self, label, container, widget):
-        self._impl.append_page(container._impl, Gtk.Label(label))
+        self.containers = []
+
+    def add_content(self, label, widget):
+        # FIXME? Is there a better way to prevent the content of being occluded from the tabs?
+        # Also 25 is just a guesstimate not based on anything.
+        widget.interface.style.margin_top += 25  # increase top margin to prevent occlusion.
+        if widget.native is None:
+            container = Container()
+            container.content = widget
+        else:
+            container = widget
+
+        self.containers.append((label, container, widget))
+        self.native.append_page(container.native, Gtk.Label(label))

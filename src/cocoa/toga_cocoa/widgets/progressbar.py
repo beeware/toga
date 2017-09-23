@@ -1,41 +1,37 @@
-from toga.interface import ProgressBar as ProgressBarInterface
-
 from ..libs import *
-from .base import WidgetMixin
+from .base import Widget
 
 
-class ProgressBar(ProgressBarInterface, WidgetMixin):
-    def __init__(self, id=None, style=None, max=None, value=None):
-        super().__init__(id=id, style=style, max=max, value=value)
-        self._create()
-
+class ProgressBar(Widget):
     def create(self):
-        self._impl = NSProgressIndicator.new()
-        self._impl.setStyle_(NSProgressIndicatorBarStyle)
-        self._impl.setDisplayedWhenStopped_(True)
+        self.native = NSProgressIndicator.new()
+        self.native.style = NSProgressIndicatorBarStyle
+        self.native.displayedWhenStopped = True
 
         # Add the layout constraints
-        self._add_constraints()
+        self.add_constraints()
         self.rehint()
 
-    def _set_value(self, value):
+    def set_value(self, value):
         if value is not None:
-            self._impl.setDoubleValue_(value)
+            self.native.doubleValue = value
 
-    def _start(self):
-        if self._impl:
-            self._impl.startAnimation_(self._impl)
+    def start(self):
+        if self.native and not self.interface._running:
+            self.native.startAnimation(self.native)
+            self.interface._running = True
 
-    def _stop(self):
-        if self._impl:
-            self._impl.stopAnimation_(self._impl)
+    def stop(self):
+        if self.native and self.interface._running:
+            self.native.stopAnimation(self.native)
+            self.interface._running = False
 
-    def _set_max(self, value):
+    def set_max(self, value):
         if value:
-            self._impl.setIndeterminate_(False)
-            self._impl.setMaxValue_(value)
+            self.native.indeterminate = False
+            self.native.maxValue = value
         else:
-            self._impl.setIndeterminate_(True)
+            self.native.indeterminate = True
 
     def rehint(self):
         self.style.hint(

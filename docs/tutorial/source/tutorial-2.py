@@ -78,7 +78,7 @@ def build(app):
         action2,
         label='Action 2',
         tooltip='Perform action 2',
-        icon=toga.TIBERIUS_ICON,
+        icon=toga.Icon.TIBERIUS_ICON,
         group=things
     )
     cmd3 = toga.Command(

@@ -33,6 +33,9 @@ setup(
     install_requires=[
         'toga-core>=%s' % version,
     ],
+    tests_require=[
+        'toga-dummy==%s' % version
+    ],
     license='New BSD',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
@@ -43,6 +46,7 @@ setup(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3 :: Only',
         'Topic :: Software Development',
         'Topic :: Software Development :: User Interfaces',

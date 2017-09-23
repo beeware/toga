@@ -4,20 +4,16 @@ from toga.constants import *
 
 
 class ImageView(Widget):
-    def __init__(self, image=None, style=None):
-        super().__init__(style=style)
-
-        self.create()
-
-        self.image = image
 
     def create(self):
-        self._impl = UIImageView.alloc().init()
-        self._impl.interface = self
+        self.native = UIImageView.alloc().init()
+        self.native.interface = self.interface
 
         # Disable all autolayout functionality
-        self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
-        self._impl.setAutoresizesSubviews_(False)
+        self.native.setTranslatesAutoresizingMaskIntoConstraints_(False)
+        self.native.setAutoresizesSubviews_(False)
+
+        self.add_constraints()
 
         # if self.width is None:
         #     self.width = self._impl.fittingSize().width
@@ -42,16 +38,15 @@ class ImageView(Widget):
     #     self._scaling = value
     #     self._impl.setAlignment_(NSTextAlignment(self._scaling))
 
-    @property
-    def image(self):
-        return self._impl.image
 
-    @image.setter
-    def image(self, image):
+    def get_image(self):
+        return self.native.image
+
+    def set_image(self, image):
         if image:
-            self._impl.image = image._impl
+            self.native.image = image._impl.native
 
-    def _set_frame(self, frame):
+    def set_frame(self, frame):
         print("SET IMAGE FRAME", self, frame.origin.x, frame.origin.y, frame.size.width, frame.size.height)
-        self._impl.setFrame_(frame)
-        self._impl.setNeedsDisplay()
+        self.native.setFrame_(frame)
+        self.native.setNeedsDisplay()

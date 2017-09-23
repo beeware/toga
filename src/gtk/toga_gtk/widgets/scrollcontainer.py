@@ -1,45 +1,47 @@
 from gi.repository import Gtk
-
-from toga.interface import ScrollContainer as ScrollContainerInterface
-
-from .base import WidgetMixin
+from .base import Widget
 from ..container import Container
 
 
-class ScrollContainer(ScrollContainerInterface, WidgetMixin):
-    _CONTAINER_CLASS = Container
-
-    def __init__(self, id=None, style=None, horizontal=True, vertical=True, content=None):
-        super().__init__(id=id, style=style, horizontal=horizontal, vertical=vertical, content=content)
-        self._create()
-
+class ScrollContainer(Widget):
     def create(self):
-        self._impl = Gtk.ScrolledWindow()
-        self._impl._interface = self
+        self.native = Gtk.ScrolledWindow()
+        self.native.interface = self.interface
 
-    def _set_content(self, container, widget):
-        if self._impl.get_child():
-            self._impl.get_child().destroy()
+    def set_content(self, widget):
+        if widget.native is None:
+            self.inner_container = Container()
+            self.inner_container.content = widget
+        else:
+            self.inner_container = widget
 
-        self._impl.add(container._impl)
-        self._impl.show_all()
+        if self.native.get_child():
+            self.native.get_child().destroy()
 
-    def _set_app(self, app):
-        if self._content:
-            self._content.app = app
+        self.native.add(self.inner_container.native)
+        self.native.show_all()
 
-    def _update_child_layout(self):
-        if self._content is not None:
-            self._inner_container._update_layout()
+    def set_app(self, app):
+        if self.interface.content:
+            self.interface.content.app = app
 
-    def _set_vertical(self, value):
-        self._impl.set_policy(
+    def set_window(self, window):
+        if self.interface.content:
+            self.interface.content.window = window
+
+    def apply_sub_layout(self):
+        if self.interface.content is not None:
+            self.inner_container.content.interface._update_layout(
+                min_height=self.inner_container.content.interface.layout.height)
+
+    def set_vertical(self, value):
+        self.native.set_policy(
             Gtk.PolicyType.AUTOMATIC if getattr(self, 'horizontal', True) else Gtk.PolicyType.NEVER,
             Gtk.PolicyType.AUTOMATIC if getattr(self, 'vertical', True) else Gtk.PolicyType.NEVER,
         )
 
-    def _set_horizontal(self, value):
-        self._impl.set_policy(
+    def set_horizontal(self, value):
+        self.native.set_policy(
             Gtk.PolicyType.AUTOMATIC if getattr(self, 'horizontal', True) else Gtk.PolicyType.NEVER,
             Gtk.PolicyType.AUTOMATIC if getattr(self, 'vertical', True) else Gtk.PolicyType.NEVER,
         )
