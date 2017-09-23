@@ -79,11 +79,11 @@ class Window:
         self.native.Close()
 
     def _on_resize(self, sender, args):
-        if self.content:
+        if self.interface.content:
             # Set the size of the container to be the same as the window
             self.container.native.Size = self.native.ClientSize
             # Re-layout the content
-            self.content._update_layout(
+            self.interface.content._update_layout(
                 width=sender.ClientSize.Width,
                 height=sender.ClientSize.Height,
             )

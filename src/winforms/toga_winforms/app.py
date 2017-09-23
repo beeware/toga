@@ -20,7 +20,6 @@ class App:
     def create(self):
         print("CREATE")
         self.native = WinForms.Application
-        Threading.Thread.CurrentThread.SetApartmentState(Threading.ApartmentState.STA)
 
         # self.native.setApplicationIconImage_(self.icon.native)
 
@@ -34,6 +33,12 @@ class App:
         '''Add a new document to this app.'''
         print("STUB: If you want to handle opening documents, implement App.open_document(fileURL)")
 
-    def main_loop(self):
+    def run_app(self):
         self.create()
         self.native.Run(self.interface.main_window._impl.native)
+
+    def main_loop(self):
+        thread = Threading.Thread(Threading.ThreadStart(self.run_app))
+        thread.SetApartmentState(Threading.ApartmentState.STA)
+        thread.Start()
+        thread.Join()
