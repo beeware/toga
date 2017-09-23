@@ -24,4 +24,4 @@ def process_callback(callback_result):
     if inspect.isgenerator(callback_result):
         task = LongRunningTask.alloc().init()
         task.__dict__['interface'] = callback_result
-        task.performIteration_(None)
+        task.performIteration(None)
