@@ -56,6 +56,8 @@ you'll need to install the following:
   * **Fedora** ``dnf install python3-gobject pywebkitgtk``
     or ``yum install python3-gobject pywebkitgtk``
 
+  * **Arch Linux** ``pacman -S python-gobject webkit2gtk``
+
 Other distros should be similar, but feel free to send a pull request with updated dependencies if needed.
 
 If these requirements aren't met, Toga either won't work at all, or won't have
