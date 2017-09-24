@@ -36,7 +36,7 @@ def build(app):
     for i in range(0, 100):
         list_data.append(('root%s' % i, 'value%s' % i))
 
-    left_box = toga.Table(['Hello', 'World'], data=list_data, on_select=tableSelected)
+    left_container = toga.Table(['Hello', 'World'], data=list_data, on_select=tableSelected)
 
     right_content = toga.Box(
         style=CSS(flex_direction='column', padding_top=50)
