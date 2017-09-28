@@ -27,15 +27,13 @@ def action3(widget):
 
 
 def build(app):
-    left_container = toga.Table(['Hello', 'World'])
 
-    left_container.insert(None, 'root1', 'value1')
-    left_container.insert(None, 'root2', 'value2')
-    left_container.insert(None, 'root3', 'value3')
-    left_container.insert(1, 'root4', 'value4')
+    data = [
+        ('root%s' % i, 'value %s' % i)
+        for i in range(1, 100)
+    ]
 
-    for i in range(0, 100):
-        left_container.insert(None, 'root%s' % (i+5), 'value%s' % (i+5))
+    left_container = toga.Table(headings=['Hello', 'World'], data=data)
 
     right_content = toga.Box(
         style=CSS(flex_direction='column', padding_top=50)
