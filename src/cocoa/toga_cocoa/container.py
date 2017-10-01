@@ -74,25 +74,6 @@ class Constraints:
         )
         self.container.native.addConstraint_(self._height_constraint)
 
-    def make_root(self):
-        self._container = None
-        # print("Make ", self.widget, 'a root container')
-        self._height_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
-            self.widget.native, NSLayoutAttributeBottom,
-            NSLayoutRelationEqual,
-            self.widget.native, NSLayoutAttributeTop,
-            1, self.widget.content.interface.layout.height,
-        )
-        self.widget.native.addConstraint_(self._height_constraint)
-
-        self._width_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
-            self.widget.native, NSLayoutAttributeRight,
-            NSLayoutRelationEqual,
-            self.widget.native, NSLayoutAttributeLeft,
-            1, self.widget.content.interface.layout.width,
-        )
-        self.widget.native.addConstraint_(self._width_constraint)
-
     def update(self):
         # print("UPDATE", self.widget, 'in', self.container, 'to', self.widget.layout, self.widget.layout.absolute.top, self.widget.layout.absolute.left)
         if self.container:
@@ -184,17 +165,6 @@ class Container:
     def content(self, widget):
         self._content = widget
         self._content.container = self
-
-    @property
-    def root_content(self):
-        return self.content
-
-    @root_content.setter
-    def root_content(self, widget):
-        self._content = widget
-        self._content.container = self
-        # Make the constraints object a root container.
-        self.constraints.make_root()
 
     def update_layout(self, **style):
         if self.content:

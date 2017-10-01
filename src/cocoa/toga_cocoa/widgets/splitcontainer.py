@@ -49,7 +49,7 @@ class SplitContainer(Widget):
         # into constraints. This makes the container fill the
         # available space inside the SplitContainer.
         # FIXME Use Constrains to enforce min width and height of the containers otherwise width of 0 is possible.
-        container.native.translatesAutoresizingMaskIntoConstraints = False
+        container.native.translatesAutoresizingMaskIntoConstraints = True
         self.native.addSubview(container.native)
 
     def apply_sub_layout(self):

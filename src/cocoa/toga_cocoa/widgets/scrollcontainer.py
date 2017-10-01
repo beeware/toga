@@ -23,7 +23,7 @@ class ScrollContainer(Widget):
     def set_content(self, widget):
         if widget.native is None:
             self.inner_container = Container()
-            self.inner_container.root_content = widget
+            self.inner_container.content = widget
         else:
             self.inner_container = widget
         self.native.documentView = self.inner_container.native
