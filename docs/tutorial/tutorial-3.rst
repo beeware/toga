@@ -6,7 +6,7 @@ Although it's possible to build complex GUI layouts, you can get a lot
 of functionality with very little code, utilizing the rich components that
 are native on modern platforms.
 
-So - lets build a tool that lets our pet yak graze the web - a primitive
+So - let's build a tool that lets our pet yak graze the web - a primitive
 web browser, in less than 40 lines of code!
 
 .. image:: screenshots/tutorial-3.png
