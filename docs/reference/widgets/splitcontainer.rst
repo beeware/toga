@@ -46,7 +46,7 @@ Supported Platforms
 Reference
 ---------
 
-.. autoclass:: toga.interface.widgets.splitcontainer.SplitContainer
+.. autoclass:: toga.widgets.splitcontainer.SplitContainer
    :members:
    :undoc-members:
    :inherited-members:

@@ -1,76 +1,68 @@
-from toga.interface import MultilineTextInput as MultilineTextInputInterface
-
 from ..libs import *
-from .base import WidgetMixin
+from .base import Widget
 
 
-class MultilineTextInput(MultilineTextInputInterface, WidgetMixin):
-    def __init__(self, initial=None, style=None,
-                        readonly=False, placeholder=None):
-        super().__init__(style=style, initial=initial, readonly=readonly,
-                                                    placeholder=placeholder)
-        self._create()
-
+class MultilineTextInput(Widget):
     def create(self):
         # Create a multiline view, and put it in a scroll view.
-        # The scroll view is the _impl, because it's the outer container.
-        self._impl = NSScrollView.alloc().init()
-        self._impl.hasVerticalScroller = True
-        self._impl.hasHorizontalScroller = False
-        self._impl.autohidesScrollers = False
-        self._impl.borderType = NSBezelBorder
+        # The scroll view is the native, because it's the outer container.
+        self.native = NSScrollView.alloc().init()
+        self.native.hasVerticalScroller = True
+        self.native.hasHorizontalScroller = False
+        self.native.autohidesScrollers = False
+        self.native.borderType = NSBezelBorder
 
         # Disable all autolayout functionality on the outer widget
-        self._impl.translatesAutoresizingMaskIntoConstraints = False
-        self._impl.autoresizesSubviews = True
+        self.native.translatesAutoresizingMaskIntoConstraints = False
+        self.native.autoresizesSubviews = True
 
         # Create the actual text widget
-        self._text = NSTextView.alloc().init()
-        self._text.enabled = True
-        self._text.selectable = True
-        self._text.verticallyResizable = True
-        self._text.horizontallyResizable = False
+        self.text = NSTextView.alloc().init()
+        self.text.editable = True
+        self.text.selectable = True
+        self.text.verticallyResizable = True
+        self.text.horizontallyResizable = False
 
         # Disable the autolayout functionality, and replace with
         # constraints controlled by the layout.
-        self._text.translatesAutoresizingMaskIntoConstraints = False
+        self.text.translatesAutoresizingMaskIntoConstraints = False
         self._width_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
-            self._text, NSLayoutAttributeRight,
+            self.text, NSLayoutAttributeRight,
             NSLayoutRelationEqual,
-            self._text, NSLayoutAttributeLeft,
+            self.text, NSLayoutAttributeLeft,
             1.0, 0
         )
-        self._text.addConstraint(self._width_constraint)
+        self.text.addConstraint(self._width_constraint)
 
         self._height_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
-            self._text, NSLayoutAttributeBottom,
+            self.text, NSLayoutAttributeBottom,
             NSLayoutRelationEqual,
-            self._text, NSLayoutAttributeTop,
+            self.text, NSLayoutAttributeTop,
             1.0, 0
         )
-        self._text.addConstraint(self._height_constraint)
+        self.text.addConstraint(self._height_constraint)
 
         # Put the text view in the scroll window.
-        self._impl.documentView = self._text
+        self.native.documentView = self.text
 
         # Add the layout constraints
-        self._add_constraints()
+        self.add_constraints()
 
-    def _set_placeholder(self, value):
-        self._text.placeholderString = self._placeholder
+    def set_placeholder(self, value):
+        self.text.placeholderString = value
 
-    def _set_readonly(self, value):
-        self._text.editable = not value
+    def set_readonly(self, value):
+        self.text.editable = not value
 
-    def _set_value(self, value):
-        self._text.setString(value)
+    def set_value(self, value):
+        self.text.string = value
 
     def _update_child_layout(self):
-        self._width_constraint.constant = self.layout.width
-        self._height_constraint.constant = self.layout.height
+        self._width_constraint.constant = self.interface.layout.width
+        self._height_constraint.constant = self.interface.layout.height
 
     def rehint(self):
-        self.style.hint(
+        self.interface.style.hint(
             min_height=100,
             min_width=100
         )

@@ -27,7 +27,7 @@ Supported Platforms
 Reference
 ---------
 
-.. autoclass:: toga.interface.widgets.label.Label
+.. autoclass:: toga.widgets.label.Label
    :members:
    :undoc-members:
    :inherited-members:

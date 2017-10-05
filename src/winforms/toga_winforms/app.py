@@ -1,7 +1,5 @@
 import os
 
-from toga.interface.app import App as AppInterface
-
 from .libs import *
 
 from .window import Window
@@ -9,42 +7,38 @@ from .window import Window
 
 
 class MainWindow(Window):
-    def __init__(self, title=None, position=(100, 100), size=(640, 480)):
-        super(MainWindow, self).__init__(title, position, size)
+    pass
 
 
-class App(AppInterface):
+class App:
     _MAIN_WINDOW_CLASS = MainWindow
 
-    def __init__(self, name, app_id, icon=None, startup=None, document_types=None):
-        # Set the icon for the app
-        # Icon.app_icon = Icon.load(icon, default=TIBERIUS_ICON)
+    def __init__(self, interface):
+        self.interface = interface
+        self.interface._impl = self
 
-        super().__init__(
-            name=name,
-            app_id=app_id,
-            icon=None,  # Icon.app_icon,
-            startup=startup,
-            document_types=document_types
-        )
+    def create(self):
+        print("CREATE")
+        self.native = WinForms.Application
 
-    def _startup(self):
-        self._impl = WinForms.Application
-        Threading.Thread.CurrentThread.ApartmentState = Threading.ApartmentState.STA
-
-        # self._impl.setApplicationIconImage_(self.icon._impl)
+        # self.native.setApplicationIconImage_(self.icon.native)
 
         # Set the menu for the app.
-        # self._impl.setMainMenu_(self.menu)
+        # self.native.setMainMenu_(self.menu)
 
         # Call user code to populate the main window
-        self.startup()
-
+        self.interface.startup()
 
     def open_document(self, fileURL):
         '''Add a new document to this app.'''
         print("STUB: If you want to handle opening documents, implement App.open_document(fileURL)")
 
+    def run_app(self):
+        self.create()
+        self.native.Run(self.interface.main_window._impl.native)
+
     def main_loop(self):
-        self._startup()
-        self._impl.Run(self.main_window._impl)
+        thread = Threading.Thread(Threading.ThreadStart(self.run_app))
+        thread.SetApartmentState(Threading.ApartmentState.STA)
+        thread.Start()
+        thread.Join()

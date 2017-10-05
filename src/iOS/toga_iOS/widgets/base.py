@@ -1,33 +1,70 @@
 from ..container import Constraints
 
 
-class WidgetMixin:
-    def _set_app(self, app):
+class Widget:
+    def __init__(self, interface):
+        self.interface = interface
+        self.interface._impl = self
+        self._container = None
+        self.constraints = None
+        self.native = None
+        self.create()
+
+    def set_app(self, app):
         pass
 
-    def _set_window(self, window):
+    def set_window(self, window):
         pass
 
-    def _set_container(self, container):
-        if self._constraints and self._impl:
-            self._container._impl.addSubview_(self._impl)
-            self._constraints._container = container
-        self.rehint()
+    @property
+    def container(self):
+        return self._container
 
-    def _add_child(self, child):
-        if self._container:
-            child._set_container(self._container)
+    @container.setter
+    def container(self, container):
+        self._container = container
+        if self.constraints and self.native:
+            self._container.native.addSubview_(self.native)
+            self.constraints.container = container
 
-    def _add_constraints(self):
-        self._impl.setTranslatesAutoresizingMaskIntoConstraints_(False)
-        self._constraints = Constraints(self)
+        for child in self.interface.children:
+            child._impl.container = container
+        self.interface.rehint()
 
-    def _apply_layout(self):
-        if self._constraints:
-            self._constraints.update()
+    @property
+    def enabled(self):
+        value = self.native.isEnabled()
+        if value == 0:
+            return False
+        elif value == 1:
+            return True
+        else:
+            raise RuntimeError('Got not allowed return value: {}'.format(value))
+
+    @enabled.setter
+    def enabled(self, value):
+        self.native.enabled = value
+
+    def add_child(self, child):
+        if self.container:
+            child.container = self.container
+
+    def add_constraints(self):
+        self.native.setTranslatesAutoresizingMaskIntoConstraints_(False)
+        self.constraints = Constraints(self)
+
+    def apply_layout(self):
+        if self.constraints:
+            self.constraints.update()
+
+    def apply_sub_layout(self):
+        pass
+
+    def set_font(self, font):
+        self.native.setFont_(font.native)
+
+    def set_enabled(self, value):
+        self.native.enabled = value
 
     def rehint(self):
         pass
-
-    def _set_font(self, font):
-        self._impl.setFont_(font._impl)

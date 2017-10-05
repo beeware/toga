@@ -1,7 +1,5 @@
 from android import PythonActivity
 
-from toga.interface.app import App as AppInterface
-
 from .window import Window
 
 
@@ -35,25 +33,19 @@ class TogaApp:
         print("Toga app: onRestart")
 
 
-class App(AppInterface):
+class App:
     _MAIN_WINDOW_CLASS = MainWindow
 
-    def __init__(self, name, app_id, startup=None, document_types=None):
-        super().__init__(
-            name=name,
-            app_id=app_id,
-            icon=None,
-            startup=startup,
-            document_types=document_types
-        )
-        self._startup()
+    def __init__(self, interface):
+        self.interface = interface
+        self.interface._impl = self
 
-    def _startup(self):
+    def create(self):
         # Connect this app to the PythonActivity
         self._listener = TogaApp(self)
 
         # Set the Python activity listener to be this app.
-        self._impl = PythonActivity.setListener(self._listener)
+        self.native = PythonActivity.setListener(self._listener)
 
         self.startup()
 

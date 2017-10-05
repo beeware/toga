@@ -1,65 +1,66 @@
 from gi.repository import Gtk
-
-from toga.interface import SplitContainer as SplitContainerInterface
-
 from ..container import Container
-from .base import WidgetMixin
+from .base import Widget
 
 
-class SplitContainer(SplitContainerInterface, WidgetMixin):
-    _CONTAINER_CLASS = Container
-
-    def __init__(self, id=None, style=None, direction=SplitContainerInterface.VERTICAL):
-        super().__init__(id=id, style=style, direction=direction)
-        self._create()
-        self._ratio = None
-
+class SplitContainer(Widget):
     def create(self):
-        if self.direction == self.HORIZONTAL:
-            self._impl = Gtk.VPaned()
+        if self.interface.direction == self.interface.HORIZONTAL:
+            self.native = Gtk.VPaned()
         else:
-            self._impl = Gtk.HPaned()
-        self._impl._interface = self
+            self.native = Gtk.HPaned()
+        self.native.interface = self.interface
+        self.ratio = None
+        self.containers = []
 
-    def _add_content(self, position, container):
+    def add_content(self, position, widget):
+        if widget.native is None:
+            container = Container()
+            container.content = widget
+        else:
+            container = widget
+
+        self.containers.append(container)
+
         if position >= 2:
             raise ValueError('SplitContainer content must be a 2-tuple')
 
         if position == 0:
-            add = self._impl.add1
+            add = self.native.add1
         elif position == 1:
-            add = self._impl.add2
+            add = self.native.add2
 
-        add(container._impl)
+        add(container.native)
 
-    def _set_app(self, app):
-        if self._content:
-            self._content[0].app = self.app
-            self._content[1].app = self.app
+    def set_app(self, app):
+        if self.interface.content:
+            self.interface.content[0].app = self.interface.app
+            self.interface.content[1].app = self.interface.app
 
-    def _set_window(self, window):
-        if self._content:
-            self._content[0].window = self.window
-            self._content[1].window = self.window
+    def set_window(self, window):
+        if self.interface.content:
+            self.interface.content[0].window = self.interface.window
+            self.interface.content[1].window = self.interface.window
 
-    def _set_direction(self, value):
+    def set_direction(self, value):
         pass
 
-    def _update_child_layout(self):
-        """Force a layout update on the widget.
+    def apply_sub_layout(self):
+        """ Force a layout update on the widget.
         """
-        if self.content and self._impl.is_visible():
-            if self.direction == SplitContainer.VERTICAL:
-                size = self._impl.get_allocation().width
-                if self._ratio is None:
-                    self._ratio = 0.5
-                    self._impl.set_position(size * self._ratio)
-                self._containers[0]._update_layout(width=size * self._ratio)
-                self._containers[1]._update_layout(width=size * (1.0 - self._ratio))
+        if self.interface.content and self.native.is_visible():
+            if self.interface.direction == self.interface.VERTICAL:
+                size = self.native.get_allocation().width
+                if self.ratio is None:
+                    self.ratio = 0.5
+                    self.native.set_position(size * self.ratio)
+                    print(self.containers[0])
+                self.containers[0].interface._update_layout(width=size * self.ratio)
+                self.containers[1].interface._update_layout(width=size * (1.0 - self.ratio))
             else:
-                size = self._impl.get_allcoation().height
-                if self._ratio is None:
-                    self._ratio = 0.5
-                    self._impl.set_position(size * self._ratio)
-                self._containers[0]._update_layout(height=size * self._ratio)
-                self._containers[1]._update_layout(height=size * (1.0 - self._ratio))
+                size = self.native.get_allcoation().height
+                if self.ratio is None:
+                    self.ratio = 0.5
+                    self.native.set_position(size * self.ratio)
+                self.containers[0].interface._update_layout(height=size * self.ratio)
+                self.containers[1].interface._update_layout(height=size * (1.0 - self.ratio))

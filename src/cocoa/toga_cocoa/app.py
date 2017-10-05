@@ -1,22 +1,16 @@
 import os
-import signal
 import sys
 
-from toga.interface.app import App as AppInterface
-from toga.interface.command import GROUP_BREAK, SECTION_BREAK
+import toga
 
-from .command import Command, Group
 from .libs import *
 from .window import Window
-from .widgets.icon import Icon, TIBERIUS_ICON
+# from .widgets.icon import Icon
 
 
 class MainWindow(Window):
-    def __init__(self, title=None, position=(100, 100), size=(640, 480)):
-        super(MainWindow, self).__init__(title, position, size)
-
     def on_close(self):
-        self.app._impl.terminate_(self._delegate)
+        self.interface.app.exit()
 
 
 class AppDelegate(NSObject):
@@ -31,7 +25,7 @@ class AppDelegate(NSObject):
         # print("Open documents of type", NSDocumentController.sharedDocumentController().defaultType)
 
         fileTypes = NSMutableArray.alloc().init()
-        for filetype in self._interface.document_types:
+        for filetype in self.interface.document_types:
             fileTypes.addObject(filetype)
 
         NSDocumentController.sharedDocumentController().runModalOpenPanel(panel, forTypes=fileTypes)
@@ -66,77 +60,69 @@ class AppDelegate(NSObject):
             else:
                 return
 
-            self._interface.open_document(fileURL.absoluteString)
+            self.interface.open_document(fileURL.absoluteString)
             # NSDocumentController.sharedDocumentController().openDocumentWithContentsOfURL_display_completionHandler_(fileURL, True, None)
 
     @objc_method
     def selectMenuItem_(self, sender) -> None:
-        cmd = self._interface._menu_items[sender]
+        cmd = self.interface._menu_items[sender]
         if cmd.action:
             cmd.action(None)
 
 
-class App(AppInterface):
+class App:
     _MAIN_WINDOW_CLASS = MainWindow
 
-    def __init__(self, name, app_id, icon=None, startup=None, document_types=None):
-        # Set the icon for the app
-        Icon.app_icon = Icon.load(icon, default=TIBERIUS_ICON)
+    def __init__(self, interface):
+        self.interface = interface
+        self.interface._impl = self
 
-        super().__init__(
-            name=name,
-            app_id=app_id,
-            icon=Icon.app_icon,
-            startup=startup,
-            document_types=document_types
-        )
+    def create(self):
+        self.native = NSApplication.sharedApplication()
+        self.native.setActivationPolicy_(NSApplicationActivationPolicyRegular)
 
-    def _startup(self):
-        self._impl = NSApplication.sharedApplication()
-        self._impl.setActivationPolicy_(NSApplicationActivationPolicyRegular)
-
-        self._impl.setApplicationIconImage_(self.icon._impl)
+        self.native.setApplicationIconImage_(self.interface.icon._impl.native)
 
         self.resource_path = os.path.dirname(os.path.dirname(NSBundle.mainBundle.bundlePath))
 
         appDelegate = AppDelegate.alloc().init()
-        appDelegate._interface = self
-        self._impl.delegate = appDelegate
+        appDelegate.interface = self
+        self.native.setDelegate_(appDelegate)
 
-        app_name = self.name
+        app_name = self.interface.name
 
-        self.commands.add(
-            Command(None, 'About ' + app_name, group=Group.APP),
-            Command(None, 'Preferences', group=Group.APP),
+        self.interface.commands.add(
+            toga.Command(None, 'About ' + app_name, group=toga.Group.APP),
+            toga.Command(None, 'Preferences', group=toga.Group.APP),
             # Quit should always be the last item, in a section on it's own
-            Command(lambda s: self.exit(), 'Quit ' + app_name, shortcut='q', group=Group.APP, section=sys.maxsize),
+            toga.Command(lambda s: self.exit(), 'Quit ' + app_name, shortcut='q', group=toga.Group.APP, section=sys.maxsize),
 
-            Command(None, 'Visit homepage', group=Group.HELP)
+            toga.Command(None, 'Visit homepage', group=toga.Group.HELP)
         )
 
         # Call user code to populate the main window
-        self.startup()
+        self.interface.startup()
 
         # Create the lookup table of menu items,
         # then force the creation of the menus.
         self._menu_items = {}
-        self._create_menus()
+        self.create_menus()
 
     def open_document(self, fileURL):
         '''Add a new document to this app.'''
         print("STUB: If you want to handle opening documents, implement App.open_document(fileURL)")
 
-    def _create_menus(self):
+    def create_menus(self):
         # Only create the menu if the menu item index has been created.
         if hasattr(self, '_menu_items'):
             self._menu_items = {}
             menubar = NSMenu.alloc().initWithTitle('MainMenu')
             submenu = None
-            for cmd in self.commands:
-                if cmd == GROUP_BREAK:
+            for cmd in self.interface.commands:
+                if cmd == toga.GROUP_BREAK:
                     menubar.setSubmenu(submenu, forItem=menuItem)
                     submenu = None
-                elif cmd == SECTION_BREAK:
+                elif cmd == toga.SECTION_BREAK:
                     submenu.addItem_(NSMenuItem.separatorItem())
                 else:
                     if submenu is None:
@@ -153,23 +139,23 @@ class App(AppInterface):
                     cmd._widgets.append(item)
                     self._menu_items[item] = cmd
 
-                    cmd._set_enabled(cmd.enabled)
+                    # This line may appear redundant, but it triggers the logic
+                    # to force the enabled status on the underlying widgets.
+                    cmd.enabled = cmd.enabled
                     submenu.addItem(item)
 
             if submenu:
                 menubar.setSubmenu(submenu, forItem=menuItem)
 
             # Set the menu for the app.
-            self._impl.mainMenu = menubar
+            self.native.mainMenu = menubar
 
     def main_loop(self):
         # Stimulate the build of the app
-        self._startup()
-        # Modify signal handlers to make sure Ctrl-C is caught and handled.
-        signal.signal(signal.SIGINT, signal.SIG_DFL)
+        self.create()
 
-        self._impl.activateIgnoringOtherApps_(True)
-        self._impl.run()
+        self.native.activateIgnoringOtherApps_(True)
+        self.native.run()
 
     def exit(self):
-        self._impl.terminate(None)
+        self.native.terminate(None)

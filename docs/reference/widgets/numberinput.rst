@@ -27,7 +27,7 @@ Supported Platforms
 Reference
 ---------
 
-.. autoclass:: toga.interface.widgets.numberinput.NumberInput
+.. autoclass:: toga.widgets.numberinput.NumberInput
    :members:
    :undoc-members:
    :inherited-members:

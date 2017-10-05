@@ -1,67 +1,63 @@
-from toga.interface import ScrollContainer as ScrollContainerInterface
-
-from .base import WidgetMixin
+from .base import Widget
 from ..container import Container
 from ..libs import *
 
 
-class ScrollContainer(ScrollContainerInterface, WidgetMixin):
-    _CONTAINER_CLASS = Container
-
-    def __init__(self, id=None, style=None, horizontal=True, vertical=True, content=None):
-        super().__init__(id=None, style=style, horizontal=horizontal, vertical=vertical, content=content)
-        self._create()
-
+class ScrollContainer(Widget):
     def create(self):
-        self._impl = NSScrollView.alloc().init()
-        self._impl.autohidesScrollers = True
-        self._impl.borderType = NSNoBorder
-        self._impl.backgroundColor = NSColor.windowBackgroundColor
-        # self._impl.backgroundColor = NSColor.blueColor
+        self.native = NSScrollView.alloc().init()
+        self.native.autohidesScrollers = True
+        self.native.borderType = NSNoBorder
+        self.native.backgroundColor = NSColor.windowBackgroundColor
+        # self.native.backgroundColor = NSColor.blueColor
 
-        # Disable all autolayout functionality on the outer widget
-        self._impl.translatesAutoresizingMaskIntoConstraints = False
-        self._impl.autoresizesSubviews = True
-
-        self._inner_container = None
+        self.native.translatesAutoresizingMaskIntoConstraints = False
+        self.native.autoresizesSubviews = True
 
         # Add the layout constraints
-        self._add_constraints()
+        self.add_constraints()
 
-    def _set_content(self, container, widget):
-        self._impl.documentView = container._impl
+        self.min_width_constraint = None
+        self.min_height_constraint = None
 
-        # Enforce a minimum size based on the content
-        self._width_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
-            self._inner_container._impl, NSLayoutAttributeRight,
-            NSLayoutRelationEqual,
-            self._inner_container._impl, NSLayoutAttributeLeft,
-            1.0, 0
+    def set_content(self, widget):
+        if widget.native is None:
+            self.inner_container = Container()
+            self.inner_container.content = widget
+        else:
+            self.inner_container = widget
+        self.native.documentView = self.inner_container.native
+
+        # We consider the width of the scrollbar to prevent content occlusion.
+        self.vertical_scrollbar_width = 15 if self.interface.vertical else 0
+        self.horizontal_scrollbar_width = 15 if self.interface.horizontal else 0
+
+        # Enforce a minimum size based on the inner_container
+        self.min_width_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
+            self.native, NSLayoutAttributeWidth,
+            NSLayoutRelationGreaterThanOrEqual,
+            None, NSLayoutAttributeNotAnAttribute,
+            1.0, self.inner_container.content.interface.layout.width + self.vertical_scrollbar_width
         )
-        self._inner_container._impl.addConstraint(self._width_constraint)
+        self.native.addConstraint(self.min_width_constraint)
 
-        self._height_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
-            self._inner_container._impl, NSLayoutAttributeBottom,
-            NSLayoutRelationEqual,
-            self._inner_container._impl, NSLayoutAttributeTop,
-            1.0, 0
+        self.min_height_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
+            self.native, NSLayoutAttributeHeight,
+            NSLayoutRelationGreaterThanOrEqual,
+            None, NSLayoutAttributeNotAnAttribute,
+            1.0, 100 + self.horizontal_scrollbar_width
         )
-        self._inner_container._impl.addConstraint(self._height_constraint)
+        self.native.addConstraint(self.min_height_constraint)
 
-    def _update_child_layout(self):
-        if self._content is not None:
-            self._inner_container._update_layout()
-            self._width_constraint.constant = self.content.layout.width
-            self._height_constraint.constant = self.content.layout.height
+    def apply_sub_layout(self):
+        # TODO update minimum width after layout change.
+        if self.interface.content is not None:
+            self.inner_container.update_layout()
+            # self.min_width_constraint.constant = self.inner_container.content.interface.layout.width + self.horizontal_scrollbar_width
+            # self.min_height_constraint.constant = self.inner_container.content.interface.layout.height + self.vertical_scrollbar_width
 
-    def _set_vertical(self, value):
-        self._impl.hasVerticalScroller = value
+    def set_vertical(self, value):
+        self.native.hasVerticalScroller = value
 
-    def _set_horizontal(self, value):
-        self._impl.hasHorizontalScroller = value
-
-    def rehint(self):
-        self.style.hint(
-            min_height=100,
-            min_width=100
-        )
+    def set_horizontal(self, value):
+        self.native.hasHorizontalScroller = value

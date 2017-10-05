@@ -34,7 +34,7 @@ Supported Platforms
 Reference
 ---------
 
-.. autoclass:: toga.interface.widgets.button.Button
+.. autoclass:: toga.widgets.button.Button
    :members:
    :undoc-members:
    :inherited-members:

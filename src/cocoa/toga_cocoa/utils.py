@@ -8,7 +8,13 @@ class LongRunningTask(NSObject):
     def performIteration_(self, info) -> None:
         try:
             delay = next(self.__dict__['interface'])
-            NSTimer.scheduledTimerWithTimeInterval_tarSEL_userInfo_repeats_(delay, self, SEL('performIteration:'), None, False)
+            NSTimer.scheduledTimerWithTimeInterval(
+                delay,
+                target=self,
+                selector=SEL('performIteration:'),
+                userInfo=None,
+                repeats=False
+            )
         except StopIteration:
             pass
 
@@ -18,4 +24,4 @@ def process_callback(callback_result):
     if inspect.isgenerator(callback_result):
         task = LongRunningTask.alloc().init()
         task.__dict__['interface'] = callback_result
-        task.performIteration_(None)
+        task.performIteration(None)

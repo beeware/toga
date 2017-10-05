@@ -61,7 +61,7 @@ Supported Platforms
 Reference
 ---------
 
-.. autoclass:: toga.interface.widgets.box.Box
+.. autoclass:: toga.widgets.box.Box
    :members:
    :undoc-members:
    :inherited-members:

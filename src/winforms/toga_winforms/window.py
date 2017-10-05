@@ -1,76 +1,89 @@
-from toga.interface.window import Window as WindowInterface
-
 from .libs import *
 
 from .container import Container
 from . import dialogs
-from .command import SEPARATOR, SPACER, EXPANDING_SPACER
+# from .command import SEPARATOR, SPACER, EXPANDING_SPACER
 
-class Window(WindowInterface):
-    # _IMPL_CLASS = WinForms.Form
-    _CONTAINER_CLASS = Container
-    _DIALOG_MODULE = dialogs
 
-    def __init__(self, title=None, position=(100, 100), size=(640, 480), resizeable=True, closeable=True, minimizable=True):
-        super().__init__(title=title, position=position, size=size, resizeable=resizeable, closeable=closeable, minimizable=minimizable)
-        self._create()
+
+class Window:
+    def __init__(self, interface):
+        self.interface = interface
+        self.interface._impl = self
+        self.container = None
+        self.create()
 
     def create(self):
-        self._impl = WinForms.Form(self)
-        self._impl.ClientSize = Size(self._size[0], self._size[1])
-        self._impl.Resize += self._on_resize
+        self.native = WinForms.Form(self)
+        self.native.ClientSize = Size(self.interface._size[0], self.interface._size[1])
+        self.native.Resize += self._on_resize
 
-        self._toolbar_impl = None
-        self._toolbar_items = None
+        self.toolbar_native = None
+        self.toolbar_items = None
 
-    def _create_toolbar(self):
-        self._toolbar_impl = WinForms.ToolStrip()
-        for cmd in self.toolbar:
+    def create_toolbar(self):
+        self.toolbar_native = WinForms.ToolStrip()
+        for cmd in self.interface.toolbar:
             if cmd == GROUP_BREAK:
-                item_impl = WinForms.ToolStripSeparator()
+                item = WinForms.ToolStripSeparator()
             elif cmd == SECTION_BREAK:
-                item_impl = WinForms.ToolStripSeparator()
+                item = WinForms.ToolStripSeparator()
             else:
-                item_impl = WinForms.ToolStripButton()
-            self._toolbar_impl.Items.Add(item_impl)
+                item = WinForms.ToolStripButton()
+            self.toolbar_native.Items.Add(item)
 
-    def _set_content(self, widget):
-        if self._toolbar_impl:
-            self._impl.Controls.Add(self._toolbar_impl)
+    def set_position(self, value):
+        pass
 
-        self._impl.Controls.Add(self._container._impl)
+    def set_size(self, value):
+        pass
 
-    def _set_title(self, title):
-        self._impl.Text = title
+    def set_app(self, app):
+        pass
+
+    def set_content(self, widget):
+        if widget.native is None:
+            self.container = Container()
+            self.container.content = widget
+        else:
+            self.container = widget
+
+        if self.toolbar_native:
+            self.native.Controls.Add(self.toolbar_native)
+
+        self.native.Controls.Add(self.container.native)
+
+    def set_title(self, title):
+        self.native.Text = title
 
     def show(self):
         # The first render of the content will establish the
         # minimum possible content size; use that to enforce
         # a minimum window size.
-        TITLEBAR_HEIGHT = 36
-        self._impl.MinimumSize = Size(
-            int(self.content.layout.width),
-            int(self.content.layout.height) + TITLEBAR_HEIGHT
+        TITLEBAR_HEIGHT = 36  # FIXME: this shouldn't be hard coded...
+        self.native.MinimumSize = Size(
+            int(self.interface.content.layout.width),
+            int(self.interface.content.layout.height) + TITLEBAR_HEIGHT
         )
 
         # Set the size of the container to be the same as the window
-        self._container._impl.Size = self._impl.ClientSize
+        self.container.native.Size = self.native.ClientSize
 
         # Do the first layout render.
-        self._container._update_layout(
-            width=self._impl.ClientSize.Width,
-            height=self._impl.ClientSize.Height,
+        self.container.update_layout(
+            width=self.native.ClientSize.Width,
+            height=self.native.ClientSize.Height,
         )
 
     def close(self):
-        self._impl.Close()
+        self.native.Close()
 
     def _on_resize(self, sender, args):
-        if self.content:
+        if self.interface.content:
             # Set the size of the container to be the same as the window
-            self._container._impl.Size = self._impl.ClientSize
+            self.container.native.Size = self.native.ClientSize
             # Re-layout the content
-            self.content._update_layout(
+            self.interface.content._update_layout(
                 width=sender.ClientSize.Width,
                 height=sender.ClientSize.Height,
             )

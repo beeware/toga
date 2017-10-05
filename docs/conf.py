@@ -25,7 +25,7 @@ sys.path.insert(0, os.path.abspath('../src/core/'))
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc']
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.napoleon', 'sphinx.ext.todo']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -282,3 +282,14 @@ spelling_lang = 'en_US'
 spelling_word_list_filename = 'spelling_wordlist'
 
 spelling_ignore_pypi_package_names = True
+
+# -- Options for Todos -------------------------------------------
+
+# If this is True, todo and todolist produce output, else they produce nothing. The default is False.
+todo_include_todos = True
+
+# If this is True, todo emits a warning for each TODO entries. The default is False.
+# todo_emit_warnings = False
+
+# If this is True, todolist produce output without file path and line, The default is False.
+# todo_link_only = False

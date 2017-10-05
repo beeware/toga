@@ -24,7 +24,7 @@ Supported Platforms
 Reference
 ---------
 
-.. autoclass:: toga.interface.widgets.imageview.ImageView
+.. autoclass:: toga.widgets.imageview.ImageView
    :members:
    :undoc-members:
    :inherited-members:

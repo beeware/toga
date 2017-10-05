@@ -1,30 +1,24 @@
-from toga.interface import Label as LabelInterface
-
 from ..libs import *
-from .base import WidgetMixin
+from .base import Widget
 from toga.constants import LEFT_ALIGNED
 
 
-class Label(LabelInterface, WidgetMixin):
-    def __init__(self, text, id=None, style=None, alignment=LEFT_ALIGNED):
-        super().__init__(id=id, style=style, text=text, alignment=alignment)
-        self._create()
-
+class Label(Widget):
     def create(self):
-        self._impl = WinForms.Label()
+        self.native = WinForms.Label()
 
-    def _set_alignment(self, value):
-        # self._impl.setAlignment_(NSTextAlignment(value))
+    def set_alignment(self, value):
+        # self.native.setAlignment_(NSTextAlignment(value))
         pass
 
-    def _set_text(self, value):
-        self._impl.Text = self._text
+    def set_text(self, value):
+        self.native.Text = value
 
     def rehint(self):
         # Width & height of a label is known and fixed.
-        # self._impl.Size = Size(0, 0)
-        # print("REHINT label", self, self._impl.PreferredSize)
-        self.style.hint(
-            height=self._impl.PreferredSize.Height,
-            width=self._impl.PreferredSize.Width,
+        # self.native.Size = Size(0, 0)
+        # print("REHINT label", self, self.native.PreferredSize)
+        self.interface.style.hint(
+            height=self.native.PreferredSize.Height,
+            width=self.native.PreferredSize.Width,
         )

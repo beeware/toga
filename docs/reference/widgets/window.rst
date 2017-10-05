@@ -28,7 +28,7 @@ Supported Platforms
 Reference
 ---------
 
-.. autoclass:: toga.interface.window.Window
+.. autoclass:: toga.window.Window
    :members:
    :undoc-members:
    :inherited-members:

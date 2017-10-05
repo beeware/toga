@@ -1,18 +1,64 @@
 from rubicon.objc import objc_method, SEL
 
-from toga.interface import NumberInput as NumberInputInterface
-from toga.interface import Widget
-
-from .textinput import TextInput
+import toga
+from toga.widgets.base import Widget as InterfaceWidget
 from .box import Box
-from .base import WidgetMixin
+from .base import Widget
 
 from ..libs import NSStepper, NSView, NSMakeRect, NSObject
 from ..utils import process_callback
 
 
-class TextInputVerifier(NSObject):
+class NumberInput(Box):
+    def create(self):
+        self.native = None
+        self.constraints = None
 
+        self.interface._children = []
+
+        delegate = TextInputVerifier.alloc().init()
+        delegate.controller = self
+
+        self.text_input = toga.TextInput()
+        self.text_input._impl.native.setDelegate_(delegate)
+        self.interface.add(self.text_input)
+
+        self.stepper = StepperInterface(
+            min_value=self.interface._min_value,
+            max_value=self.interface._max_value,
+            step=self.interface._step
+        )
+        self.stepper.controller = self
+        self.interface.add(self.stepper)
+        self.set_value(self.interface._min_value)
+
+        self.interface.style.flex_direction = 'row'
+        self.rehint()
+
+    def text_update(self, handler):
+        self.stepper.value = self.text_input.value
+
+    def stepper_update(self):
+        self.set_value(self.stepper.value)
+
+    def set_value(self, value):
+        self.stepper.value = value
+        self.text_input.value = ('%f' % (value,)).rstrip('0').rstrip('.')
+
+    def get_value(self):
+        return self.text_input.value
+
+    def rehint(self):
+        self.text_input.rehint()
+        self.stepper.rehint()
+
+        self.interface.style.hint(
+            height=self.text_input.style.height,
+            min_width=120,
+        )
+
+
+class TextInputVerifier(NSObject):
     @objc_method
     def control_textShouldEndEditing_(self, text) -> int:
         try:
@@ -23,108 +69,53 @@ class TextInputVerifier(NSObject):
 
     @objc_method
     def controlTextDidEndEditing_(self, notification) -> None:
-        if self._controller._text_update:
-            process_callback(self._controller._text_update(self._controller))
+        if self.controller.text_update:
+            process_callback(self.controller.text_update(self.controller))
 
 
-class TogaStepper(NSStepper):
-
-    @objc_method
-    def onChange_(self, obj) -> None:
-        if self._interface.on_change:
-            process_callback(self._interface.on_change(self._interface))
-
-
-class Stepper(WidgetMixin, Widget):
-
-    def __init__(self, controller, id=None, style=None, min_value=0, max_value=100, step=1):
-        super().__init__(id=id, style=style, min_value=min_value, max_value=max_value, step=step)
-        self._create()
-        self.controller = controller
-
-    def _configure(self, **kw):
-        pass
+class StepperInterface(InterfaceWidget):
+    def __init__(self, id=None, style=None, factory=None,
+                 min_value=0, max_value=100, step=1):
+        self.min_value = min_value
+        self.max_value = max_value
+        self.step = step
+        super().__init__(id=id, style=style, factory=factory)
+        self._impl = Stepper(interface=self)
 
     @property
     def value(self):
-        return self._impl.floatValue
+        return self._impl.native.floatValue
 
     @value.setter
     def value(self, val):
-        self._impl.floatValue = float(val)
+        self._impl.native.floatValue = float(val)
 
     def on_change(self, handler):
-        self.controller._stepper_update()
+        self.controller.stepper_update()
 
+
+class Stepper(Widget):
     def create(self):
+        self.native = TogaStepper.alloc().init()
+        self.native.interface = self.interface
 
-        self._impl = TogaStepper.alloc().init()
-        self._impl._interface = self
+        self.native.minValue = self.interface.min_value
+        self.native.maxValue = self.interface.max_value
+        self.native.increment = self.interface.step
+        self.native.target = self.native
+        self.native.action = SEL('onChange:')
 
-        self._impl.minValue = self._config["min_value"]
-        self._impl.maxValue = self._config["max_value"]
-        self._impl.increment = self._config["step"]
-        self._impl.setTarget_(self._impl)
-        self._impl.setAction_(SEL('onChange:'))
-
-        self._add_constraints()
+        self.add_constraints()
 
     def rehint(self):
-        self.style.hint(
-            height=self._impl.fittingSize().height,
-            min_width=self._impl.fittingSize().width
+        self.interface.style.hint(
+            height=self.native.fittingSize().height,
+            min_width=self.native.fittingSize().width
         )
-        self.style.margin_top = -3
+        self.interface.style.margin_top = -3
 
 
-
-class NumberInput(Box, NumberInputInterface):
-
-    def __init__(self, id=None, style=None, min_value=0, max_value=100, step=1, children=None):
-        self._min_value = min_value
-        self._max_value = max_value
-        self._step = step
-        super().__init__(id=id, style=style, children=children)
-
-    def _configure(self, **kw):
-        pass
-
-    def _text_update(self, handler):
-        self._stepper.value = self._text.value
-
-    def _stepper_update(self):
-        self._set_value(self._stepper.value)
-
-    def create(self):
-
-        self._impl = NSView.alloc().init(NSMakeRect(0,0,100,100))
-        self._add_constraints()
-
-        delegate = TextInputVerifier.alloc().init()
-        delegate._controller = self
-        self._text = TextInput(_delegate=delegate)
-        self.add(self._text)
-
-        self._stepper = Stepper(
-            self, min_value=self._min_value, max_value=self._max_value,
-            step=self._step)
-        self.add(self._stepper)
-
-        self.style.flex_direction = 'row'
-        self.rehint()
-
-    def _set_value(self, value):
-        self._stepper.value = value
-        self._text.value =  ('%f' % (value,)).rstrip('0').rstrip('.')
-
-    def _get_value(self):
-        return self._text.value
-
-    def rehint(self):
-        self._text.rehint()
-        self._stepper.rehint()
-
-        self.style.hint(
-            height=self._text.style.height,
-            min_width=120,
-        )
+class TogaStepper(NSStepper):
+    @objc_method
+    def onChange_(self, obj) -> None:
+        process_callback(self.interface.on_change(self.interface))

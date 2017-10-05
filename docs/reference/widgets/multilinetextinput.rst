@@ -24,7 +24,7 @@ Supported Platforms
 Reference
 ---------
 
-.. autoclass:: toga.interface.widgets.multilinetextinput.MultilineTextInput
+.. autoclass:: toga.widgets.multilinetextinput.MultilineTextInput
    :members:
    :undoc-members:
    :inherited-members:
