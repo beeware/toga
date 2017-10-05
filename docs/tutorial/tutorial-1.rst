@@ -77,7 +77,7 @@ In this example app, we've set up an outer box that stacks vertically;
 inside that box, we've put 2 horizontal boxes and a button.
 
 Since there's no width styling on the horizontal boxes, they'll try to
-fit the widgets the contain into the available space. The ``TextInput``
+fit the widgets they contain into the available space. The ``TextInput``
 widgets have a style of ``flex=1``, but the ``Label`` widgets have a fixed
 width; as a result, the ``TextInput`` widgets will be stretched to fit the
 available horizontal space. The margin and padding terms then ensure that the
