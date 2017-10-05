@@ -65,19 +65,18 @@ Guides and recipes for common problems and tasks
 
 .. rst-class:: column column2
 
-:ref:`Reference <reference>`
+:ref:`Background <background>`
 ------------------------------
 
-Technical reference - commands, modules, classes, methods
+Explanation and discussion of key topics and concepts
 
 
 .. rst-class:: column column2
 
-:ref:`Background <background>`
+:ref:`Reference <reference>`
 ------------------------------
 
-
-Explanation and discussion of key topics and concepts
+Technical reference - commands, modules, classes, methods
 
 
 .. rst-class:: clearfix row
