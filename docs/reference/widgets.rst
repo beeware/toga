@@ -28,6 +28,7 @@ General widgets
 Component            Usage                                                        Purpose                                Class
 ==================== ============================================================ ====================================== ===================================================================
 Button               :doc:`Documentation </reference/widgets/button>`             Basic clickable button                 :mod:`toga.widgets.button.Button`
+DrawingArea          :doc:`Documentation </reference/widgets/drawingarea>`        Area you can draw on                   :mod:`toga.widgets.drawingarea.DrawingArea`
 Image View           :doc:`Documentation </reference/widgets/imageview>`          Image Viewer                           :mod:`toga.widgets.imageview.ImageView`
 Label                :doc:`Documentation </reference/widgets/label>`              Text label                             :mod:`toga.widgets.label.Label`
 Multiline Text Input :doc:`Documentation </reference/widgets/multilinetextinput>` Multi-line Text Input field            :mod:`toga.widgets.multilinetextinput.MultilineTextInput`
