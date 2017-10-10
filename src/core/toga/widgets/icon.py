@@ -39,7 +39,7 @@ class Icon:
         else:
             self.filename = self.path
 
-        self._impl = self.factory.Icon(interface=self)
+        self._impl = self.factory.Icon(interface=self, filename=self.filename)
 
     @classmethod
     def load(cls, path_or_icon, default=None, factory=None):
