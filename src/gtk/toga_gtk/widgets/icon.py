@@ -3,16 +3,16 @@ from gi.repository import Gtk, GdkPixbuf
 
 class Icon:
     EXTENSION = '.icns'
+
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
         self.native = None
 
-    def create(self, filename):
         # GTK can load ICNS and image files, but doesn't natively scale to the
         # appropriate size as required. So, we help it out. But to avoid loading
         # all the possible icon sizes at once, we lazy load them on first use.
-        self._filename = filename
+        self._filename = interface.filename
         self._impl_cache = {}
 
     def __impl(self, size):
