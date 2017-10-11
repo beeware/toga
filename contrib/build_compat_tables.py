@@ -21,7 +21,7 @@ COMPONENT_LIST =  [
     ('EXPANDING_SPACER', None),
     ('Box', 'toga.interface.widgets.box.Box'),
     ('Button', 'toga.interface.widgets.button.Button'),
-    ('DrawingArea', 'toga.interface.widgets.drawingarea.DrawingArea'),
+    ('Canvas', 'toga.interface.widgets.canvas.Canvas'),
     ('Icon', 'toga.interface.widgets.icon.Icon'),
     ('TIBERIUS_ICON', None),
     ('Image', None),

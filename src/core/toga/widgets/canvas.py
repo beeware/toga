@@ -1,7 +1,7 @@
 from .base import Widget
 
 
-class DrawingArea(Widget):
+class Canvas(Widget):
     """"""
 
     def __init__(self, id=None, style=None, factory=None):
@@ -15,6 +15,6 @@ class DrawingArea(Widget):
                 implementation of this class with the same name. (optional & normally not needed)
         """
         super().__init__(id=id, style=style, factory=factory)
-        self._impl = self.factory.DrawingArea(interface=self)
+        self._impl = self.factory.Canvas(interface=self)
 
         self.rehint()

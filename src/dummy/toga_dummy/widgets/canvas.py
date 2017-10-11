@@ -1,6 +1,6 @@
 from .base import Widget
 
 
-class DrawingArea(Widget):
+class Canvas(Widget):
     def create(self):
         pass

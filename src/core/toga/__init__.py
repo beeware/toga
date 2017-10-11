@@ -12,7 +12,7 @@ from .widgets.base import Layout, Point, Widget
 from .widgets.box import Box
 from .widgets.button import Button
 from .widgets.detailedlist import DetailedList
-from .widgets.drawingarea import DrawingArea
+from .widgets.canvas import Canvas
 # from .widgets.icon import Icon
 from .widgets.image import *
 from .widgets.imageview import *
@@ -47,7 +47,7 @@ __all__ = [
     'Widget'
     'Box',
     'Button',
-    'DrawingArea',
+    'Canvas',
     'Icon',
     'Image',
     'ImageView',

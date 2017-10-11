@@ -4,12 +4,12 @@ import toga
 import toga_dummy
 
 
-class TestDrawingArea(unittest.TestCase):
+class TestCanvas(unittest.TestCase):
     def setUp(self):
         self.factory = MagicMock()
-        self.factory.DrawingArea = MagicMock(return_value=MagicMock(spec=toga_dummy.factory.DrawingArea))
+        self.factory.Canvas = MagicMock(return_value=MagicMock(spec=toga_dummy.factory.Canvas))
 
-        self.drawing_area = toga.DrawingArea(factory=self.factory)
+        self.drawing_area = toga.Canvas(factory=self.factory)
 
     def test_factory_called(self):
-        self.factory.DrawingArea.assert_called_once_with(interface=self.drawing_area)
+        self.factory.Canvas.assert_called_once_with(interface=self.drawing_area)

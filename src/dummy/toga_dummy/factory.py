@@ -5,7 +5,7 @@ from .window import Window
 from .widgets.box import Box
 from .widgets.button import Button
 from .command import Command
-from .widgets.drawingarea import DrawingArea
+from .widgets.canvas import Canvas
 from .widgets.icon import Icon
 from .widgets.image import *
 from .widgets.imageview import *
@@ -33,7 +33,7 @@ __all__ = [
     'Font',
     'Box',
     'Button',
-    'DrawingArea',
+    'Canvas',
     'Icon',
     'Image',
     'ImageView',
