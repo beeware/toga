@@ -2,10 +2,10 @@
 
 .. warnings about this file not being included in any toctree will be suppressed by :orphan:
 
-Drawing Area
+Canvas
 ============
 
-The drawing area is used for creating a blank widget that you can draw on using a drawing library like Cairo.
+The canvas widget is used for drawing on a window with text, lines, shapes, or other graphics.
 
 Usage
 -----
@@ -14,7 +14,7 @@ Usage
 
     import toga
 
-    drawingarea = toga.DrawingArea()
+    canvas = toga.Canvas()
 
 Supported Platforms
 -------------------
