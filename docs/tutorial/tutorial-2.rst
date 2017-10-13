@@ -7,7 +7,7 @@ biggest problems that any widget toolkit solves is how to put widgets on the
 screen in the right place. Different widget toolkits use different approaches
 - constraints, packing models, and grid-based models are all common. Toga uses
 an approach that  is new for widget toolkits, but well proven in computing:
-Cascading Style Sheets, (CSS).
+Cascading Style Sheets (CSS).
 
 If you've done any design for the web, you will have come across CSS before as
 the mechanism that you use to lay out HTML on a web page. Although this is the
@@ -16,7 +16,7 @@ any "boxes" that are structured in a tree-like hierarchy. GUI widgets are an
 example of one such structure.
 
 To see how this works in practice, lets look at a more complex example,
-involving layouts, scrollers, and containers inside other containers.:
+involving layouts, scrollers, and containers inside other containers:
 
 .. image:: screenshots/tutorial-2.png
 
