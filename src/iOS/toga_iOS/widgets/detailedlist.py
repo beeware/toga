@@ -26,7 +26,7 @@ class TogaTableViewController(UITableViewController):
             item = self.data[indexPath.row]
 
             if self.interface.on_delete:
-                self.interface.on_delete(self.interface)
+                self.interface.on_delete(self.interface, indexPath.row)
 
             del self.interface.data[indexPath.row]
             # FIXME When deleting a item form the list the following lines cause a error.
@@ -41,6 +41,11 @@ class TogaTableViewController(UITableViewController):
         self.refreshControl.endRefreshing()
         self.tableView.reloadData()
 
+    @objc_method
+    def tableView_willSelectRowAtIndexPath_(self, tableView, indexPath):
+        if self.interface.on_select:
+            self.interface.on_select(self.interface, indexPath.row)
+
 
 class DetailedList(Widget):
     def create(self):
@@ -48,15 +53,17 @@ class DetailedList(Widget):
         self.controller.interface = self.interface
         self.native = self.controller.tableView
 
-        self.controller.refreshControl = UIRefreshControl.alloc().init()
-        self.controller.refreshControl.addTarget_action_forControlEvents_(
-            self.controller,
-            SEL('refresh'),
-            UIControlEventValueChanged
-        )
-
         # Add the layout constraints
         self.add_constraints()
+
+    def enable_refresh(self, value: bool) -> None:
+        if value:
+            self.controller.refreshControl = UIRefreshControl.alloc().init()
+            self.controller.refreshControl.addTarget_action_forControlEvents_(
+                self.controller,
+                SEL('refresh'),
+                UIControlEventValueChanged
+            )
 
     def set_data(self, data):
         self.controller.data = data
