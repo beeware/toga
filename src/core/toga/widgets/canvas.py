@@ -2,7 +2,7 @@ from .base import Widget
 
 
 class Canvas(Widget):
-    """ Create new canvas
+    """Create new canvas
 
     Args:
         id (str):  An identifier for this widget.
@@ -18,6 +18,98 @@ class Canvas(Widget):
         self._impl = self.factory.Canvas(interface=self)
 
         self.rehint()
+
+
+class Context2D(Widget):
+    """Provide 2D rendering context for a canvas that you can draw on
+
+    Args:
+        id (str):  An identifier for this widget.
+        style (:class:`colosseum.CSSNode`): An optional style object. If no
+            style is provided then a new one will be created for the widget.
+        factory (:obj:`module`): A python module that is capable to return a
+            implementation of this class with the same name. (optional &
+            normally not needed)
+    """
+
+    def __init__(self, id=None, style=None, factory=None):
+        super().__init__(id=id, style=style, factory=factory)
+        self._impl = self.factory.Canvas(interface=self)
+
+        self.rehint()
+
+    # Canvas State
+
+    def save(self):
+        """Push context to a stack
+        """
+        return self._impl.save()
+
+    def restore(self):
+        """Restore to the saved state
+        """
+        return self._impl.restore()
+
+    # Transformations
+
+    def rotate(self, radians):
+        """Moves the transformation matrix by the angle
+
+        Modifies the current transformation matrix (CTM) by rotating the
+        user-space axes by angle radians. The rotation of the axes takes places
+        after any existing transformation of user space. The rotation center
+        point is always the canvas origin. To change the center point, move the
+        canvas by using the translate() method.
+
+        Args:
+            radians (float): The angle to rotate clockwise in radians
+
+        """
+        return self._impl.rotate(radians)
+
+    def scale(self, sx, sy):
+        """
+
+        Args:
+            sx:
+            sy:
+
+        Returns:
+
+        """
+        return self._impl.scale(sx, sy)
+
+    def translate(self, tx, ty):
+        """
+
+        Args:
+            tx:
+            ty:
+
+        Returns:
+
+        """
+        self._impl.translate(tx, ty)
+
+
+class Matrix(Widget):
+    """Defines the transformation from user-space to device-space coordinates.
+
+    Args:
+
+        xx (float): xx component of the affine transformation
+        yx (float): yx component of the affine transformation
+        xy (float): xy component of the affine transformation
+        yy (float): yy component of the affine transformation
+        x0 (float): X translation component of the affine transformation
+        y0 (float): Y translation component of the affine transformation
+
+    """
+
+    def __init__(self, id=None, style=None, xx=1.0, yx=0.0, xy=0.0, yy=1.0, x0=0.0, y0=0.0, factory=None):
+        super().__init__(id=id, style=style, factory=factory)
+        self._impl = self.factory.Canvas(interface=self)
+
 
 class Path2D(Widget):
     """Create paths which consist of straight and curved line segments joined.
@@ -52,6 +144,7 @@ class Path2D(Widget):
             path: A Path2D path to add
             transform: An optional SVGMatrix to be used as the transformation
                 matrix for the path that is added
+
         """
         return self._impl.addPath(path, transform)
 
