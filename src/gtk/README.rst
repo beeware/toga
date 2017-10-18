@@ -18,14 +18,15 @@ starting with Ubuntu 14.04 and Fedora 20. You also need to install the Python
 have WebKit, plus the GI bindings to WebKit installed. This means you'll need
 to install the following:
 
-* **Ubuntu 14.04** ``apt-get install python3-gi gir1.2-webkit2-3.0``
+* **Ubuntu 14.04** ``apt-get install python3-gi gir1.2-webkit-3.0``
 
-* **Ubuntu 16.04** ``apt-get install python3-gi gir1.2-webkit2-4.0``
-  or ``apt-get install python3-gi gir1.2-webkit2-3.0``
-
-* **Fedora 20+** ???
-
-* **Debian** ???
+* **Ubuntu 16.04 / Debian 8** ``apt-get install python3-gi gir1.2-webkit2-4.0``
+  or ``apt-get install python3-gi gir1.2-webkit-3.0``
+  
+* **Fedora** ``dnf install python3-gobject pywebkitgtk``
+  or ``yum install python3-gobject pywebkitgtk`` 
+  
+* **Arch Linux** ``pacman -S python-gobject webkit2gtk`` 
 
 Community
 ---------
