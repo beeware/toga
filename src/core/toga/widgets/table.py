@@ -3,18 +3,14 @@ from .icon import Icon
 
 
 class TableRow:
-    def __init__(self, source, data, icon=None):
-        """ Row of the Table widget
+    """ Row of the Table widget
 
-        Args:
-            source: The ``class:ListDataSource`` that the row belongs to.
-            data: A ``list`` where each element is a column of the row.
-            icon: A icon displayed in the row.
-        """
+    Args:
+        data: A ``tuple`` where each element is a column of the row.
+        icon: A icon displayed in the row.
+    """
 
-        self._impl = None
-        self.source = source
-
+    def __init__(self, data, icon=None):
         self._data = [data] if isinstance(data, str) else data
         self.icon = icon
 
@@ -33,8 +29,6 @@ class TableRow:
     @data.setter
     def data(self, data):
         self._data = data
-        if self.source.interface:
-            self.source.interface._impl.refresh()
 
     @property
     def icon(self):
@@ -52,8 +46,6 @@ class TableRow:
             self._icon = None
         else:
             self._icon = Icon.load(path)
-            if self.source.interface:
-                self.source.interface._impl.refresh_row(self)
 
 
 class ListDataSource:
@@ -62,32 +54,39 @@ class ListDataSource:
         self.interface = None
 
     def create_rows(self, data):
-        return [TableRow(source=self, data=item) for item in data]
+        return [TableRow(data=item) for item in data]
 
     @property
     def data(self):
         return self._data
 
-    def insert(self, index, data, icon=None):
-        node = TableRow(source=self, data=data, icon=icon)
+    def insert(self, index: int, data, icon=None):
+        node = TableRow(data=data, icon=icon)
         self._data.insert(index, node)
-        # if self.interface:
-        #     self.interface._impl.insert_row(node)
         return node
 
     def remove(self, node):
         self._data.remove(node)
-        # if self.interface:
-        #     self.interface._impl.remove_row(node)
+
+    def item(self, row: int, column: int):
+        if isinstance(row and column, int):
+            return self.data[row].data[column]
+
+    def row(self, row: int) -> TableRow:
+        if row >= 0:
+            return self.data[row]
+
+    def rows(self) -> list:
+        return self.data
 
 
 class Table(Widget):
-    """ A Table Widget allows the disply of data in the from of columns and rows.
+    """ A Table Widget allows the display of data in the from of columns and rows.
 
     Args:
         headings (``list`` of ``str``): The list of headings for the table.
         id (str): An identifier for this widget.
-        data (``list`` of ``list`): The data to be displayed on the table.
+        data (``list`` of ``tuple``): The data to be displayed on the table.
         style (:class:`colosseum.CSSNode`): An optional style object.
             If no style is provided` then a new one will be created for the widget.
         on_select(``callable``): A function to be invoked on selecting a row of the table.
@@ -96,8 +95,8 @@ class Table(Widget):
 
     Examples:
         >>> headings = ['Head 1', 'Head 2', 'Head 3']
-        >>> data = [['item 1', 'item 2', 'item3'],
-        >>>         ['item 1', 'item 2', 'item3']]
+        >>> data = [('item 1', 'item 2', 'item3'),
+        >>>         ('item 1', 'item 2', 'item3')]
         >>>
         >>> table = Table(headings, data=data)
     """

@@ -7,18 +7,18 @@ class TogaTable(NSTableView):
     # TableDataSource methods
     @objc_method
     def numberOfRowsInTableView_(self, table) -> int:
-        return len(self.interface.data.data) if self.interface.data else 0
+        return len(self.interface.data.rows()) if self.interface.data else 0
 
     @objc_method
     def tableView_objectValueForTableColumn_row_(self, table, column, row: int):
         column_index = int(column.identifier)
-        return self.interface.data.data[row].data[column_index]
+        return self.interface.data.item(row, column_index)
 
     # TableDelegate methods
     @objc_method
     def tableViewSelectionDidChange_(self, notification) -> None:
         self.interface.selection = notification.object.selectedRow
-        self.interface.selected = self.interface.data.data[notification.object.selectedRow]
+        self.interface.selected = self.interface.data.row(notification.object.selectedRow)
         if self.interface.on_select:
             row = notification.object.selectedRow if notification.object.selectedRow != -1 else None
             process_callback(self.interface.on_select(self.interface, row))
@@ -60,15 +60,6 @@ class Table(Widget):
 
         # Add the layout constraints
         self.add_constraints()
-
-    # def insert_row(self, node):
-    #     node._impl = TogaNodeData.alloc().init()
-    #     node._impl.node = node
-    #
-    #     self.node[node._impl] = node
-    #
-    # def remove_row(self, node):
-    #     del self.node[node._impl]
 
     def refresh(self):
         self.table.reloadData()

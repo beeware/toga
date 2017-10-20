@@ -10,7 +10,7 @@ def build(app):
     # Data to populate the table.
     data = []
     for x in range(5):
-        data.append([str(x) for x in range(5)])
+        data.append(tuple(str(x) for x in range(5)))
 
     def selection_handler(widget, row):
         label.text = 'You selected row: {}'.format(row) if row is not None else 'No row selected'
