@@ -20,7 +20,8 @@ class TogaTable(NSTableView):
         self.interface.selection = notification.object.selectedRow
         self.interface.selected = self.interface.data.data[notification.object.selectedRow]
         if self.interface.on_select:
-            process_callback(self.interface.on_select(self.interface, self.interface.selection))
+            row = notification.object.selectedRow if notification.object.selectedRow != -1 else None
+            process_callback(self.interface.on_select(self.interface, row))
 
 
 class Table(Widget):
