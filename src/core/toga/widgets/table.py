@@ -51,7 +51,6 @@ class TableRow:
 class ListDataSource:
     def __init__(self, data):
         self._data = self.create_rows(data)
-        self.interface = None
 
     def create_rows(self, data):
         return [TableRow(data=item) for item in data]
@@ -129,7 +128,7 @@ class Table(Widget):
             self._data = data
 
         if data is not None:
-            self._data.interface = self
+            # self._data.interface = self
             self._impl.refresh()
 
     @property
