@@ -5,7 +5,7 @@ from .window import Window
 from .widgets.box import Box
 from .widgets.button import Button
 from .command import Command
-from .widgets.canvas import Canvas
+from .widgets.canvas import Canvas, Context2D, Matrix
 from .widgets.icon import Icon
 from .widgets.image import *
 from .widgets.imageview import *
@@ -34,10 +34,12 @@ __all__ = [
     'Box',
     'Button',
     'Canvas',
+    'Context2D',
     'Icon',
     'Image',
     'ImageView',
     'Label',
+    'Matrix',
     'MultilineTextInput',
     'NavigationView',
     'NumberInput',
