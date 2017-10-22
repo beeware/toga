@@ -12,11 +12,13 @@ from .widgets.base import Layout, Point, Widget
 from .widgets.box import Box
 from .widgets.button import Button
 from .widgets.detailedlist import DetailedList
-from .widgets.canvas import Canvas, Context2D, Matrix
+from .widgets.canvas import Canvas
+from .widgets.context2d import Context2D
 # from .widgets.icon import Icon
 from .widgets.image import *
 from .widgets.imageview import *
 from .widgets.label import Label
+from .widgets.matrix import Matrix
 from .widgets.multilinetextinput import *
 from .widgets.optioncontainer import *
 from .widgets.passwordinput import *
