@@ -170,7 +170,7 @@ class Context2D(Widget):
             y (int): y coordinate for the end point
 
         """
-        self._impl.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y)
+        self._impl.bezier_curve_to(cp1x, cp1y, cp2x, cp2y, x, y)
 
     def quadratic_curve_to(self, cpx, cpy, x, y):
         """Adds a quadratic Bézier curve to the path.
