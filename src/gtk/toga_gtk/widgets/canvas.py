@@ -1,18 +1,18 @@
 from gi.repository import Gtk
 import cairo
+# from collosseum import colors
 from .base import Widget
 
 
 class Canvas(Widget):
     def create(self):
         self.native = Gtk.DrawingArea()
-        self.native.interface = self.interface
 
 
 class Context2D(Widget):
     def create(self):
-        self.native = cairo.Context()
-        self.native.interface = self.interface
+        surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, 0, 0)
+        self.native = cairo.Context(surface)
 
     def save(self):
         self.native.save()
@@ -20,14 +20,27 @@ class Context2D(Widget):
     def restore(self):
         self.native.restore()
 
+    def release(self):
+        pass
+        # TODO determine how flush the surface
+        # surface.flush()
+        # surface.finish()
+
     def line_width(self, width=2.0):
         self.native.set_line_width(width)
 
-    def fill_style(self, color='black'):
-        self.native.set_source_rgba(color)
+    def fill_style(self, color='None', r=0.0, b=0.0, g=0.0, a=1.0):
+        if color is not 'None':
+            pass
+            # Support future colosseum versions
+            # for named_color, rgb in colors.NAMED_COLOR.items():
+            #     if named_color == color:
+            #         exec('self.native.set_source_' + str(rgb))
+        else:
+            self.native.set_source_rgba(r, g, b, a)
 
-    def stroke_style(self, color='black'):
-        self.native.set_source_rgba(color)
+    def stroke_style(self, color='None', r=0.0, b=0.0, g=0.0, a=1.0):
+        self.fill_style(color)
 
     def begin_path(self):
         self.native.new_sub_path()
@@ -100,7 +113,7 @@ class Context2D(Widget):
 class Matrix(Widget):
     def create(self):
         self.native = cairo.Matrix()
-        self.native.interface = self.interface
+        # self.native.interface = self.interface
 
     def transform_point(self, x, y):
         return self.native.transform_point(x, y)
