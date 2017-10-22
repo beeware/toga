@@ -1,3 +1,4 @@
+from math import pi
 from .base import Widget
 
 
@@ -15,6 +16,8 @@ class Canvas(Widget):
 
     def __init__(self, id=None, style=None, factory=None):
         super().__init__(id=id, style=style, factory=factory)
+
+        # Create a platform specific implementation of Canvas
         self._impl = self.factory.Canvas(interface=self)
 
         self.rehint()
@@ -34,7 +37,10 @@ class Context2D(Widget):
 
     def __init__(self, id=None, style=None, factory=None):
         super().__init__(id=id, style=style, factory=factory)
+
+        # Create a platform specific implementation of Context2D
         self._impl = self.factory.Context2D(interface=self)
+
         self.rehint()
 
     # Canvas State
@@ -210,7 +216,7 @@ class Context2D(Widget):
         """
         self._impl.arc(x, y, radius, startangle, endangle, anticlockwise)
 
-    def ellipse(self, x, y, radiusx, radiusy, rotation, startangle, endangle, anticlockwise):
+    def ellipse(self, x, y, radiusx, radiusy, rotation, startangle=0, endangle=2*pi, anticlockwise=False):
         """Adds an ellipse to the path.
 
         The ellipse is centered at (x, y) position with the radii radiusx and radiusy
@@ -352,6 +358,8 @@ class Matrix(Widget):
 
     def __init__(self, id=None, style=None, xx=1.0, yx=0.0, xy=0.0, yy=1.0, x0=0.0, y0=0.0, factory=None):
         super().__init__(id=id, style=style, factory=factory)
+
+        # Create a platform specific implementation of Matrix
         self._impl = self.factory.Matrix(interface=self)
 
     def transform_point(self, x, y):
