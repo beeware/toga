@@ -5,7 +5,7 @@
 Canvas
 ============
 
-The canvas is used for creating a blank widget that you can draw on.
+The canvas widget is used for drawing on a window with text, lines, shapes, or other graphics.
 
 Usage
 -----
@@ -19,12 +19,12 @@ Usage
 Supported Platforms
 -------------------
 
-.. include:: ../supported_platforms/Canvas.rst
+.. include:: ../supported_platforms/DrawingArea.rst
 
 Reference
 ---------
 
-.. autoclass:: toga.widgets.canvas.Canvas
+.. autoclass:: toga.widgets.drawingarea.DrawingArea
 :members:
        :undoc-members:
        :inherited-members:
