@@ -1,6 +1,5 @@
 import unittest
 from unittest.mock import MagicMock
-import math
 
 import toga
 import toga_dummy
