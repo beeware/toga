@@ -34,7 +34,7 @@ class Context2D(Widget):
 
     def __init__(self, id=None, style=None, factory=None):
         super().__init__(id=id, style=style, factory=factory)
-        self._impl = self.factory.Canvas(interface=self)
+        self._impl = self.factory.Context2D(interface=self)
 
         self.rehint()
 
@@ -335,7 +335,7 @@ class Matrix(Widget):
 
     def __init__(self, id=None, style=None, xx=1.0, yx=0.0, xy=0.0, yy=1.0, x0=0.0, y0=0.0, factory=None):
         super().__init__(id=id, style=style, factory=factory)
-        self._impl = self.factory.Canvas(interface=self)
+        self._impl = self.factory.Matrix(interface=self)
 
     def transform_point(self, x, y):
         """Transforms the point (x, y) by Matrix
