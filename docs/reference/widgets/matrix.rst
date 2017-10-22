@@ -2,10 +2,10 @@
 
 .. warnings about this file not being included in any toctree will be suppressed by :orphan:
 
-Canvas
+Matrix
 ============
 
-The canvas widget is used for drawing on a window with text, lines, shapes, or other graphics.
+Defines the transformation from user-space to device-space coordinates
 
 Usage
 -----
@@ -14,17 +14,18 @@ Usage
 
     import toga
 
-    canvas = toga.Canvas()
+    matrix = toga.Matrix(xx=1.0, yx=0.0, xy=0.0, yy=1.0, x0=0.0, y0=0.0)
+    matrix.transform_point(10, 10)
 
 Supported Platforms
 -------------------
 
-.. include:: ../supported_platforms/DrawingArea.rst
+.. include:: ../supported_platforms/Matrix.rst
 
 Reference
 ---------
 
-.. autoclass:: toga.widgets.drawingarea.DrawingArea
+.. autoclass:: toga.widgets.matrix.Matrix
 :members:
        :undoc-members:
        :inherited-members:
