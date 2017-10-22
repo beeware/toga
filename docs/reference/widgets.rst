@@ -28,7 +28,6 @@ General widgets
 Component            Usage                                                        Purpose                                Class
 ==================== ============================================================ ====================================== ===================================================================
 Button               :doc:`Documentation </reference/widgets/button>`             Basic clickable button                 :mod:`toga.widgets.button.Button`
-DrawingArea          :doc:`Documentation </reference/widgets/drawingarea>`        Area you can draw on                   :mod:`toga.widgets.drawingarea.DrawingArea`
 Image View           :doc:`Documentation </reference/widgets/imageview>`          Image Viewer                           :mod:`toga.widgets.imageview.ImageView`
 Label                :doc:`Documentation </reference/widgets/label>`              Text label                             :mod:`toga.widgets.label.Label`
 Multiline Text Input :doc:`Documentation </reference/widgets/multilinetextinput>` Multi-line Text Input field            :mod:`toga.widgets.multilinetextinput.MultilineTextInput`
@@ -53,4 +52,16 @@ Scroll Container     :doc:`Documentation </reference/widgets/scrollcontainer>`  
 Split Container      :doc:`Documentation </reference/widgets/splitcontainer>`     Split Container                        :mod:`toga.widgets.splitcontainer.SplitContainer`
 Option Container     :doc:`Documentation </reference/widgets/optioncontainer>`    Option Container                       :mod:`toga.widgets.optioncontainer.OptionContainer`
 Web View             :doc:`Documentation </reference/widgets/webview>`            Web View                               :mod:`toga.widgets.webview.WebView`
+==================== ============================================================ ====================================== ===================================================================
+
+--------------
+Drawing widgets
+--------------
+
+==================== ============================================================ ====================================== ===================================================================
+Component            Usage                                                        Purpose                                Class
+==================== ============================================================ ====================================== ===================================================================
+Canvas               :doc:`Documentation </reference/widgets/canvas>`             Area you can draw on                   :mod:`toga.widgets.canvas.Canvas`
+Context2D            :doc:`Documentation </reference/widgets/context2d>`          Provide 2D rendering context           :mod:`toga.widgets.context.Context2D`
+Matrix               :doc:`Documentation </reference/widgets/matrix>`             Coordinate space transformation        :mod:`toga.widgets.matrix.Matrix`
 ==================== ============================================================ ====================================== ===================================================================
