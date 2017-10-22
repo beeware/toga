@@ -64,7 +64,7 @@ class Context2D(Widget):
         """Release the context when it no longer needed
 
         """
-        self._impl.release(self.surface)
+        self._impl.release()
 
     # Line Styles
 
