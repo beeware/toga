@@ -35,7 +35,6 @@ class Context2D(Widget):
     def __init__(self, id=None, style=None, factory=None):
         super().__init__(id=id, style=style, factory=factory)
         self._impl = self.factory.Context2D(interface=self)
-
         self.rehint()
 
     # Canvas State
@@ -61,6 +60,12 @@ class Context2D(Widget):
         """
         self._impl.restore()
 
+    def release(self):
+        """Release the context when it no longer needed
+
+        """
+        self._impl.release(self.surface)
+
     # Line Styles
 
     def line_width(self, width=2.0):
@@ -74,22 +79,34 @@ class Context2D(Widget):
 
     # Fill and Stroke Styles
 
-    def fill_style(self, color='black'):
+    def fill_style(self, color='None', r=0.0, g=0.0, b=0.0, a=0.0):
         """Color to use inside shapes
 
-        Currently supports color, in the future could support gradient and pattern
+        Currently supports color, in the future could support gradient and
+        pattern. A named color or RGBA value must be passed, or default
+        to black.
         Args:
             color (str): CSS color value
+            r (float): RGBA red value
+            g (float): RGBA green value
+            b (float): RGBA blue value
+            a (float): RGBA alpha value
 
         """
         self._impl.fill_style(color)
 
-    def stroke_style(self, color='black'):
+    def stroke_style(self, color='None', r=0.0, g=0.0, b=0.0, a=1.0):
         """Color to use for lines around shapes
 
-        Currently supports color, in the future could support gradient and pattern
+        Currently supports color, in the future could support gradient and
+        pattern. A named color or RGBA value must be passed, or default to
+        black.
         Args:
             color (str): CSS color value
+            r (float): RGBA red value
+            g (float): RGBA green value
+            b (float): RGBA blue value
+            a (float): RGBA alpha value
 
         """
         self._impl.stroke_style(color)
@@ -348,5 +365,5 @@ class Matrix(Widget):
             tuple: the transformed point (x, y)
 
         """
-        return self._impl.tranform_point(x, y)
+        return self._impl.transform_point(x, y)
 
