@@ -7,12 +7,14 @@ from .base import Widget
 class Canvas(Widget):
     def create(self):
         self.native = Gtk.DrawingArea()
+        self.native.interface = self.interface
 
 
 class Context2D(Widget):
     def create(self):
         surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, 0, 0)
         self.native = cairo.Context(surface)
+        self.native.interface = self.interface
 
     def save(self):
         self.native.save()
@@ -113,7 +115,7 @@ class Context2D(Widget):
 class Matrix(Widget):
     def create(self):
         self.native = cairo.Matrix()
-        # self.native.interface = self.interface
+        self.native.interface = self.interface
 
     def transform_point(self, x, y):
         return self.native.transform_point(x, y)
