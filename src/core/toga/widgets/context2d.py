@@ -119,8 +119,8 @@ class Context2D(Widget):
         """Moves the starting point of a new sub-path to the (x, y) coordinates.
 
         Args:
-            x (int): The x axis of the point
-            y (int): The y axis of the point
+            x (float): The x axis of the point
+            y (float): The y axis of the point
 
         """
         self._impl.move_to(x, y)
@@ -132,8 +132,8 @@ class Context2D(Widget):
         with a straight line (but does not actually draw it).
 
         Args:
-            x (int): The x axis of the coordinate for the end of the line
-            y (int): The y axis of the coordinate for the end of the line
+            x (float): The x axis of the coordinate for the end of the line
+            y (float): The y axis of the coordinate for the end of the line
 
         """
         self._impl.line_to(x, y)
@@ -147,12 +147,12 @@ class Context2D(Widget):
         creating the Bézier curve.
 
         Args:
-            cp1x (int): x coordinate for the first control point
-            cp1y (int): y coordinate for first control point
-            cp2x (int): x coordinate for the second control point
-            cp2y (int): y coordinate for the second control point
-            x (int): x coordinate for the end point
-            y (int): y coordinate for the end point
+            cp1x (float): x coordinate for the first control point
+            cp1y (float): y coordinate for first control point
+            cp2x (float): x coordinate for the second control point
+            cp2y (float): y coordinate for the second control point
+            x (float): x coordinate for the end point
+            y (float): y coordinate for the end point
 
         """
         self._impl.bezier_curve_to(cp1x, cp1y, cp2x, cp2y, x, y)
@@ -166,10 +166,10 @@ class Context2D(Widget):
         quadratic Bézier curve.
 
         Args:
-            cpx (int): The x axis of the coordinate for the control point
-            cpy (int): The y axis of the coordinate for the control point
-            x (int): The x axis of the coordinate for the end point
-            y (int): he y axis of the coordinate for the end point
+            cpx (float): The x axis of the coordinate for the control point
+            cpy (float): The y axis of the coordinate for the control point
+            x (float): The x axis of the coordinate for the end point
+            y (float): he y axis of the coordinate for the end point
 
         """
         self._impl.quadratic_curve_to(cpx, cpy, x, y)
@@ -182,12 +182,12 @@ class Context2D(Widget):
         anticlockwise (defaulting to clockwise).
 
         Args:
-            x (int): The x coordinate of the arc's center
-            y (int): The y coordinate of the arc's center
-            radius (int): The arc's radius
-            startangle (int): The angle (in radians) at which the arc starts,
+            x (float): The x coordinate of the arc's center
+            y (float): The y coordinate of the arc's center
+            radius (float): The arc's radius
+            startangle (float): The angle (in radians) at which the arc starts,
                 measured clockwise from the positive x axis
-            endangle (int): The angle (in radians) at which the arc ends,
+            endangle (float): The angle (in radians) at which the arc ends,
                 measured clockwise from the positive x axis
             anticlockwise (bool): Optional, if true, causes the arc to be drawn
                 counter-clockwise between the two angles instead of clockwise
@@ -203,14 +203,14 @@ class Context2D(Widget):
         direction by anticlockwise (defaulting to clockwise).
 
         Args:
-            x (int): The x axis of the coordinate for the ellipse's center
-            y (int): The y axis of the coordinate for the ellipse's center
-            radiusx (int): The ellipse's major-axis radius
-            radiusy (int): The ellipse's minor-axis radius
-            rotation (int): The rotation for this ellipse, expressed in radians
-            startangle (int): The starting point in radians, measured from the x
+            x (float): The x axis of the coordinate for the ellipse's center
+            y (float): The y axis of the coordinate for the ellipse's center
+            radiusx (float): The ellipse's major-axis radius
+            radiusy (float): The ellipse's minor-axis radius
+            rotation (float): The rotation for this ellipse, expressed in radians
+            startangle (float): The starting point in radians, measured from the x
                 axis, from which it will be drawn
-            endangle (int): The end ellipse's angle in radians to which it will
+            endangle (float): The end ellipse's angle in radians to which it will
                 be drawn
             anticlockwise (bool): Optional, if true, draws the ellipse
                 anticlockwise (counter-clockwise) instead of clockwise
@@ -227,10 +227,10 @@ class Context2D(Widget):
         rectangle.
 
         Args:
-            x (int): x coordinate for the rectangle starting point
-            y (int): y coordinate for the rectangle starting point
-            width (int): The rectangle's width
-            height (int): The rectangle's width
+            x (float): x coordinate for the rectangle starting point
+            y (float): y coordinate for the rectangle starting point
+            width (float): The rectangle's width
+            height (float): The rectangle's width
 
         """
         self._impl.rect(x, y, width, height)
