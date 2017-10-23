@@ -19,7 +19,12 @@ except ImportError:
     py_version = "%d.%d" % (sys.version_info.major, sys.version_info.minor)
 
     if sys.version_info.major == 3:
-        if os.path.isdir('/usr/lib/python3/dist-packages/'):
+        if os.path.isdir('/usr/lib64/python%s/site-packages/' % (py_version,)):
+            # Fedora
+            base_packages_dir = '/usr/lib64/python%s/site-packages/' % (py_version,)
+            gi_system_install_path = '/usr/lib64/python%s/site-packages/gi' % (py_version,)
+            installer_command = 'dnf install pygobject3 python3-gobject'
+        elif os.path.isdir('/usr/lib/python3/dist-packages/'):
             # Ubuntu, Debian
             base_packages_dir = '/usr/lib/python3/dist-packages/'
             gi_system_install_path = '/usr/local/lib/python3/dist-packages/gi'
