@@ -23,21 +23,23 @@ def build(app):
     # Button callback functions
     def insert_handler(widget):
         table.data.insert(0, [str(round(random() * 100)) for _ in range(5)])
-        table._impl.refresh()
         print('Rows', len(table.data.data))
 
     def delete_handler(widget):
         if len(table.data.data) > 0:
             table.data.remove(table.data.data[0])
-            table._impl.refresh()
         else:
             print('Table is empty!')
+
+    def clear_handler(widget):
+        table.data.clear()
 
     # Buttons
     btn_style = CSS(flex=1)
     btn_insert = toga.Button('Insert Row', on_press=insert_handler, style=btn_style)
     btn_delete = toga.Button('Delete Row', on_press=delete_handler, style=btn_style)
-    btn_box = toga.Box(children=[btn_insert, btn_delete], style=CSS(flex_direction='row'))
+    btn_clear = toga.Button('Clear Table', on_press=clear_handler, style=btn_style)
+    btn_box = toga.Box(children=[btn_insert, btn_delete, btn_clear], style=CSS(flex_direction='row'))
 
     # Most outer box
     box = toga.Box(children=[table, btn_box, label],
@@ -49,7 +51,7 @@ def build(app):
 
 
 def main():
-    return toga.App('Test Table', 'org.pybee.helloworld', startup=build)
+    return toga.App('Test Table', 'org.pybee.table', startup=build)
 
 
 if __name__ == '__main__':

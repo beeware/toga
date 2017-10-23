@@ -49,8 +49,9 @@ class TableRow:
 
 
 class ListDataSource:
-    def __init__(self, data):
+    def __init__(self, data, refresh_function=None):
         self._data = self.create_rows(data)
+        self.refresh = refresh_function if refresh_function else lambda x:x
 
     def create_rows(self, data):
         return [TableRow(data=item) for item in data]
@@ -59,13 +60,19 @@ class ListDataSource:
     def data(self):
         return self._data
 
+    def clear(self):
+        self._data = []
+        self.refresh()
+
     def insert(self, index: int, data, icon=None):
         node = TableRow(data=data, icon=icon)
         self._data.insert(index, node)
+        self.refresh()
         return node
 
     def remove(self, node):
         self._data.remove(node)
+        self.refresh()
 
     def item(self, row: int, column: int):
         if isinstance(row and column, int):
@@ -123,13 +130,10 @@ class Table(Widget):
     @data.setter
     def data(self, data):
         if isinstance(data, (list, tuple)):
-            self._data = ListDataSource(data)
+            self._data = ListDataSource(data, refresh_function=self._impl.refresh)
         else:
             self._data = data
-
-        if data is not None:
-            # self._data.interface = self
-            self._impl.refresh()
+        self._impl.refresh()
 
     @property
     def on_select(self):
