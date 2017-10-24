@@ -1,4 +1,9 @@
-import cairo
+import gi
+try:
+    gi.require_foreign("cairo")
+except ImportError:
+    print("Pycairo integration required for Context2D :(")
+
 from .base import Widget
 
 

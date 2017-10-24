@@ -1,13 +1,20 @@
-import cairo
-# from collosseum import colors
+import gi
+try:
+    gi.require_foreign("cairo")
+except ImportError:
+    print("Pycairo integration required for Context2D :(")
+
+# TODO import colosseum once updated to support colors
+# from colosseum import colors
+
 from .base import Widget
 
 
 class Context2D(Widget):
     def create(self):
-        surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, 0, 0)
+        surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, 200, 200)
         self.native = cairo.Context(surface)
-        self.native.interface = self.interface
+        # self.native.interface = self.interface
 
     def save(self):
         self.native.save()
