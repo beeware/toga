@@ -64,37 +64,29 @@ class Context2D(Widget):
 
     # Fill and Stroke Styles
 
-    def fill_style(self, color='None', r=0.0, g=0.0, b=0.0, a=0.0):
+    def fill_style(self, color=None):
         """Color to use inside shapes
 
         Currently supports color, in the future could support gradient and
         pattern. A named color or RGBA value must be passed, or default
         to black.
         Args:
-            color (str): CSS color value
-            r (float): RGBA red value
-            g (float): RGBA green value
-            b (float): RGBA blue value
-            a (float): RGBA alpha value
+            color (str): CSS color value or in rgba(0, 0, 0, 1) format
 
         """
-        self._impl.fill_style(color, r, g, b, a)
+        self._impl.fill_style(color)
 
-    def stroke_style(self, color='None', r=0.0, g=0.0, b=0.0, a=1.0):
+    def stroke_style(self, color=None):
         """Color to use for lines around shapes
 
         Currently supports color, in the future could support gradient and
         pattern. A named color or RGBA value must be passed, or default to
         black.
         Args:
-            color (str): CSS color value
-            r (float): RGBA red value
-            g (float): RGBA green value
-            b (float): RGBA blue value
-            a (float): RGBA alpha value
+            color (str): CSS color value or in rgba(0, 0, 0, 1) format
 
         """
-        self._impl.stroke_style(color, r, g, b, a)
+        self._impl.stroke_style(color)
 
     # Paths
 
