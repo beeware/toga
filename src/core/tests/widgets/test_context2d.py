@@ -19,9 +19,9 @@ class TestContext2D(unittest.TestCase):
     def test_basic_drawing(self):
         self.context.save()
         self.context.rect(-3, -3, 6, 6)
-        self.context.fill_style(r=0, g=0.5, b=0, a=.4)
+        self.context.fill_style('rgba(0, 0.5, 0, 0.4)')
         self.context.fill(preserve=True)
-        self.context.stroke_style(r=.25, g=.25, b=.25, a=.6)
+        self.context.stroke_style('rgba(0.25, 0.25, 0.25, 0.6)')
         self.context.line_width(1)
         self.context.stroke()
         self.context.restore()
@@ -46,7 +46,7 @@ class TestContext2D(unittest.TestCase):
         width = 200
         height = 200
         self.context.rect(x, y, width, height)
-        self.context.fill_style(r=0.4, g=0.4, b=0.4)
+        self.context.fill_style('rgba(0.4, 0.4, 0.4, 1)')
         self.context.fill()
 
         # Only works for CHECK_SIZE a power of 2
@@ -55,7 +55,7 @@ class TestContext2D(unittest.TestCase):
                 if((i / CHECK_SIZE + j / CHECK_SIZE) % 2 == 0):
                     self.context.rect(i, j, CHECK_SIZE, CHECK_SIZE)
 
-        self.context.fill_style(r=0.7, g=0.7, b=0.7)
+        self.context.fill_style('rgba(0.7, 0.7, 0.7, 1)')
         self.context.fill()
 
     def test_draw_3circles(self):
@@ -65,21 +65,21 @@ class TestContext2D(unittest.TestCase):
         alpha = 0.8
         subradius = radius * (2 / 3. - 0.1)
 
-        self.context.fill_style(r=1, g=0, b=0, a=alpha)
+        self.context.fill_style('rgba(1, 0, 0, ' + str(alpha) +')')
         self.context.ellipse(self.context,
               xc + radius / 3. * math.cos(math.pi * 0.5),
               yc - radius / 3. * math.sin(math.pi * 0.5),
               subradius, subradius)
         self.context.fill()
 
-        self.context.fill_style(r=0, g=1, b=0, a=alpha)
+        self.context.fill_style('rgba(0, 1, 0, ' + str(alpha) + ')')
         self.context.ellipse(self.context,
               xc + radius / 3. * math.cos(math.pi * (0.5 + 2 / .3)),
               yc - radius / 3. * math.sin(math.pi * (0.5 + 2 / .3)),
               subradius, subradius)
         self.context.fill()
 
-        self.context.fill_style(r=0, g=0, b=1, a=alpha)
+        self.context.fill_style('rgba(0, 0, 1, ' + str(alpha) + ')')
         self.context.ellipse(self.context,
               xc + radius / 3. * math.cos(math.pi * (0.5 + 4 / .3)),
               yc - radius / 3. * math.sin(math.pi * (0.5 + 4 / .3)),

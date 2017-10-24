@@ -1,3 +1,4 @@
+import re
 import gi
 try:
     gi.require_foreign("cairo")
@@ -31,17 +32,26 @@ class Context2D(Widget):
     def line_width(self, width=2.0):
         self.native.set_line_width(width)
 
-    def fill_style(self, color='None', r=0.0, b=0.0, g=0.0, a=1.0):
-        if color is not 'None':
-            pass
+    def fill_style(self, color=None):
+        if color is not None:
+            num = re.search('^rgba\((\d*\.?\d*), (\d*\.?\d*), (\d*\.?\d*), (\d*\.?\d*)\)$', color)
+            if num is not None:
+                r = num.group(1)
+                g = num.group(2)
+                b = num.group(3)
+                a = num.group(4)
+                self.native.set_source_rgba(r, b, g, a)
+            else:
+                pass
             # Support future colosseum versions
             # for named_color, rgb in colors.NAMED_COLOR.items():
             #     if named_color == color:
             #         exec('self.native.set_source_' + str(rgb))
         else:
-            self.native.set_source_rgba(r, g, b, a)
+            # set color to black
+            self.native.set_source_rgba(0, 0, 0, 1)
 
-    def stroke_style(self, color='None', r=0.0, b=0.0, g=0.0, a=1.0):
+    def stroke_style(self, color=None):
         self.fill_style(color)
 
     def begin_path(self):
