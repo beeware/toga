@@ -1,9 +1,8 @@
 import re
-import gi
 try:
-    gi.require_foreign("cairo")
+    import cairo
 except ImportError:
-    print("Pycairo integration required for Context2D :(")
+    print("Import 'import cairo' failed; may need to install cairo.")
 
 # TODO import colosseum once updated to support colors
 # from colosseum import colors
@@ -25,7 +24,7 @@ class Context2D(Widget):
 
     def release(self):
         pass
-        # TODO determine how flush the surface
+        # TODO determine how to flush the surface
         # surface.flush()
         # surface.finish()
 
