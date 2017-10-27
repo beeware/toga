@@ -17,27 +17,25 @@ class TestContext2D(unittest.TestCase):
         self.factory.Context2D.assert_called_once_with(interface=self.context)
 
     def test_basic_drawing(self):
-        self.context.save()
-        self.context.rect(-3, -3, 6, 6)
-        self.context.fill_style('rgba(0, 0.5, 0, 0.4)')
-        self.context.fill(preserve=True)
-        self.context.stroke_style('rgba(0.25, 0.25, 0.25, 0.6)')
-        self.context.line_width(1)
-        self.context.stroke()
-        self.context.restore()
+        with self.context.save_restore():
+            self.context.rect(-3, -3, 6, 6)
+            self.context.fill_style('rgba(0, 0.5, 0, 0.4)')
+            self.context.fill(preserve=True)
+            self.context.stroke_style('rgba(0.25, 0.25, 0.25, 0.6)')
+            self.context.line_width(1)
+            self.context.stroke()
 
     def test_self_oval_path(self):
         xc = 50
         yc = 60
         xr = 25
         yr = 30
-        self.context.save()
-        self.context.translate(xc, yc)
-        self.context.scale(1.0, yr / xr)
-        self.context.move_to(xr, 0.0)
-        self.context.arc(0, 0, xr, 0, 2 * math.pi)
-        self.context.close_path()
-        self.context.restore()
+        with self.context.save_restore():
+            self.context.translate(xc, yc)
+            self.context.scale(1.0, yr / xr)
+            with self.context.begin_close_path():
+                self.context.move_to(xr, 0.0)
+                self.context.arc(0, 0, xr, 0, 2 * math.pi)
 
     def test_fill_checks(self):
         CHECK_SIZE = 32
@@ -86,14 +84,11 @@ class TestContext2D(unittest.TestCase):
               subradius, subradius)
         self.context.fill()
 
-    def test_release(self):
-        self.context.release()
-
-    def test_begin_path(self):
-        self.context.begin_path()
-
-    def test_close_path(self):
-        self.context.close_path()
+    def test_draw_triangle(self):
+        with self.context.begin_close_path():
+            self.context.move_to(32, 0)
+            self.context.line_to(32, 64)
+            self.context.line_to(-64, 0)
 
     def test_move_to(self):
         self.context.move_to(5, 7)

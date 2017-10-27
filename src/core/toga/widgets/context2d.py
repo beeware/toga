@@ -1,4 +1,6 @@
 from math import pi
+from contextlib import contextmanager
+
 from .base import Widget
 
 
@@ -22,34 +24,27 @@ class Context2D(Widget):
 
         self.rehint()
 
-    # Canvas State
+    def __enter__(self):
+        return self._impl
 
-    def save(self):
-        """Push context to a stack
-
-        Restores Context to the state saved by a preceding call to save() and
-        removes that state from the stack of saved states.
-
-        """
-        self._impl.save()
-
-    def restore(self):
-        """Restore to the saved state
-
-        Makes a copy of the current state of Context and saves it on an internal
-        stack of saved states. When restore() is called, Context will be
-        restored to the saved state. Multiple calls to save() and restore() can
-        be nested; each call to restore() restores the state from the matching
-        paired save().
-
-        """
-        self._impl.restore()
-
-    def release(self):
-        """Release the context when it no longer needed
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """Release the context when no longer needed
 
         """
         self._impl.release()
+
+    # Canvas State
+
+    @contextmanager
+    def save_restore(self):
+        """Push contents to a stack, then restore to the previous state
+
+        Yields: None
+
+        """
+        self._impl.save()
+        yield
+        self._impl.restore()
 
     # Line Styles
 
@@ -90,21 +85,15 @@ class Context2D(Widget):
 
     # Paths
 
-    def begin_path(self):
-        """Create new path
+    @contextmanager
+    def begin_close_path(self):
+        """Creates a new path and then closes it
+
+        Yields: None
 
         """
         self._impl.begin_path()
-
-    def close_path(self):
-        """Closes a path
-
-         Causes the point of the pen to move back to the start of the current
-         sub-path. It tries to add a straight line (but does not actually draw
-         it) from the current point to the start. If the shape has already been
-         closed or has only one point, this function does nothing.
-
-        """
+        yield
         self._impl.close_path()
 
     def move_to(self, x, y):
