@@ -2,11 +2,19 @@ import asyncio
 import inspect
 
 
-async def long_running_task(generator):
+@asyncio.coroutine
+def long_running_task(generator):
+    """Run a generator as an asynchronous coroutine
+
+    When we drop Python 3.4 support, we can:
+    * drop the decorator,
+    * rename the method as `async def`
+    * change from `yield from` to `await`
+    """
     try:
         while True:
             delay = next(generator)
-            await asyncio.sleep(delay)
+            yield from asyncio.sleep(delay)
     except StopIteration:
         pass
 
@@ -16,10 +24,10 @@ def wrapped_handler(interface, handler):
 
     If the handler is a bound method, or function, invoke it as it,
         and return the result.
-    If the method is a generator, invoke it asynchronously, with
+    If the handler is a generator, invoke it asynchronously, with
         the yield values from the generator representing the duration
         to sleep between iterations.
-    If the method is a coroutine, install it on the asynchronous
+    If the handler is a coroutine, install it on the asynchronous
         event loop.
     """
     if handler:
