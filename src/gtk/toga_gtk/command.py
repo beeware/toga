@@ -16,7 +16,6 @@ class Command():
         self._widgets = []
 
     def _set_enabled(self, value):
-        print('in _set_enabled')
         for widget in self.interface._widgets:
             try:
                 widget.set_sensitive(value)

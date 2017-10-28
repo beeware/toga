@@ -22,9 +22,6 @@ class Constraints:
     def container(self, value):
         pass
 
-    def make_root(self):
-        pass
-
     def update(self):
         pass
 
@@ -71,14 +68,6 @@ class Container:
 
     @content.setter
     def content(self, widget):
-        pass
-
-    @property
-    def root_content(self):
-        pass
-
-    @root_content.setter
-    def root_content(self, widget):
         pass
 
     def update_layout(self, **style):

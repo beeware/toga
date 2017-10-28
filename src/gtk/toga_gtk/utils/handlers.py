@@ -1,3 +1,4 @@
+import asyncio
 import inspect
 
 from gi.repository import GLib
@@ -18,8 +19,11 @@ def long_running_task(task):
 def wrapped_handler(widget, handler):
     def _handler(impl, data=None):
         if handler:
-            result = handler(widget)
-            if inspect.isgenerator(result):
-                long_running_task(result)
+            if asyncio.iscoroutinefunction(handler):
+                asyncio.async(handler(widget))
+            else:
+                result = handler(widget)
+                if inspect.isgenerator(result):
+                    long_running_task(result)
 
     return _handler
