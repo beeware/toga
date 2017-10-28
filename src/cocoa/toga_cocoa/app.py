@@ -2,6 +2,7 @@ import asyncio
 import os
 import sys
 
+from rubicon.objc.async import CFEventLoopPolicy
 import toga
 
 from .libs import *
@@ -78,6 +79,7 @@ class App:
         self.interface = interface
         self.interface._impl = self
 
+        asyncio.set_event_loop_policy(CFEventLoopPolicy())
         self.loop = asyncio.get_event_loop()
 
     def create(self):
@@ -158,7 +160,7 @@ class App:
         self.create()
 
         self.native.activateIgnoringOtherApps_(True)
-        self.native.run()
+        self.loop.run_forever(application=self.native)
 
     def exit(self):
         self.native.terminate(None)
