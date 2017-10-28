@@ -1,7 +1,7 @@
+import asyncio
+import os
 import signal
 import sys
-import os
-
 
 try:
     import gi
@@ -72,12 +72,13 @@ except ImportError:
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gio, GLib
 
+
 from toga.command import GROUP_BREAK, SECTION_BREAK, Command, Group
 # from .command import Command, Group
 import toga
 from .window import Window
 from toga import Icon
-from .utils import wrapped_handler
+from .utils import install_async, wrapped_handler
 
 
 class MainWindow(Window):
@@ -94,6 +95,10 @@ class App:
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
+
+        install_async(gtk=True)
+        self.loop = asyncio.get_event_loop()
+
         self.create()
 
     def create(self):
@@ -202,7 +207,7 @@ class App:
         # Modify signal handlers to make sure Ctrl-C is caught and handled.
         signal.signal(signal.SIGINT, signal.SIG_DFL)
 
-        self.native.run(None)
+        self.loop.run_forever(application=self.native)
 
     def exit(self):
         self.native.quit()
