@@ -3,7 +3,7 @@ from .libs import *
 from .container import Container
 from . import dialogs
 # from .command import SEPARATOR, SPACER, EXPANDING_SPACER
-
+from toga.command import GROUP_BREAK, SECTION_BREAK
 
 
 class Window:

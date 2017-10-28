@@ -17,8 +17,8 @@ from .widgets.multilinetextinput import *
 from .widgets.optioncontainer import *
 from .widgets.passwordinput import *
 from .widgets.progressbar import *
-# from .widgets.scrollcontainer import *
-# from .widgets.splitcontainer import *
+from .widgets.scrollcontainer import *
+from .widgets.splitcontainer import *
 from .widgets.table import *
 from .widgets.textinput import *
 # from .widgets.tree import *
