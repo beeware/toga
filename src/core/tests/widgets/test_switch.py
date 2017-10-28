@@ -29,8 +29,7 @@ class TestSwitch(unittest.TestCase):
     def test_arguments_are_all_set_properly(self):
         self.assertEqual(self.switch.label, self.label)
         self.assertEqual(self.switch._label, self.label)
-        self.assertEqual(self.switch.on_toggle, self.on_toggle)
-        self.assertEqual(self.switch._on_toggle, self.on_toggle)
+        self.assertEqual(self.switch.on_toggle._raw, self.on_toggle)
         self.assertEqual(self.switch.enabled, self.enabled)
 
     def test_label_with_None(self):

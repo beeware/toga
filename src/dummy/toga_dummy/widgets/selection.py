@@ -19,3 +19,6 @@ class Selection(Widget):
 
     def get_selected_item(self):
         pass
+
+    def set_on_select(self, handler):
+        pass

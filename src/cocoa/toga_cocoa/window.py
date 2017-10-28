@@ -1,6 +1,5 @@
 from .container import Container
 from .libs import *
-from .utils import process_callback
 from . import dialogs
 from toga.command import Command as BaseCommand, GROUP_BREAK, SECTION_BREAK
 
@@ -83,7 +82,7 @@ class WindowDelegate(NSObject):
     def onToolbarButtonPress_(self, obj) -> None:
         "Invoke the action tied to the toolbar button"
         item = self.interface._impl._toolbar_items[obj.itemIdentifier]
-        process_callback(item.action(obj))
+        item.action(obj)
 
 
 class Window:

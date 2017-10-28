@@ -16,3 +16,6 @@ class Slider(Widget):
 
     def rehint(self):
         pass
+
+    def set_on_slide(self, handler):
+        pass

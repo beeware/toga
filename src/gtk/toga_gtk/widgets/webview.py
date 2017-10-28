@@ -54,5 +54,8 @@ class WebView(Widget):
     def set_user_agent(self, value):
         pass
 
+    def get_dom(self):
+        raise NotImplemented()
+
     def evaluate(self, javascript):
-        self.webview.run_javascript(javascript, None, None, None)
+        return self.webview.run_javascript(javascript, None, None, None)

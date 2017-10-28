@@ -2,14 +2,13 @@ from rubicon.objc import objc_method, SEL
 from .base import Widget
 
 from ..libs import *
-from ..utils import process_callback
 
 
 class TogaButton(NSButton):
     @objc_method
     def onPress_(self, obj) -> None:
         if self.interface.on_press:
-            process_callback(self.interface.on_press(self.interface))
+            self.interface.on_press(self.interface)
 
 
 class Button(Widget):

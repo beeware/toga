@@ -1,3 +1,4 @@
+import asyncio
 import os
 import sys
 
@@ -76,6 +77,8 @@ class App:
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
+
+        self.loop = asyncio.get_event_loop()
 
     def create(self):
         self.native = NSApplication.sharedApplication()

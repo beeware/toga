@@ -22,11 +22,14 @@ class Table(Widget):
         self.native.set_min_content_height(200)
         self.native.interface = self.interface
 
-    def insert(self, index, *data):
-        if len(data) != len(self.interface.headings):
-            raise Exception('Data size does not match number of headings')
+    def insert_row(self, node):
+        raise NotImplemented()
 
-        if index is None:
-            self.data.append(data)
-        else:
-            self.data.insert(index, data)
+    def remove_row(self, node):
+        raise NotImplemented()
+
+    def refresh(self):
+        raise NotImplemented()
+
+    def set_on_select(self, handler):
+        pass

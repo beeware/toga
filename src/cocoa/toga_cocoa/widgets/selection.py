@@ -4,13 +4,12 @@ from ..libs.appkit import NSPopUpButton
 from ..libs.foundation import NSMakeRect
 from ..libs import *
 
-from ..utils import process_callback
 
 class TogaSelection(NSPopUpButton):
     @objc_method
     def onSelect_(self, obj) -> None:
         if self._interface.on_select:
-            process_callback(self._interface.on_select(self._interface))
+            self._interface.on_select(self._interface)
 
 
 class Selection(Widget):
@@ -41,3 +40,6 @@ class Selection(Widget):
 
     def get_selected_item(self):
         return self.native.titleOfSelectedItem
+
+    def set_on_select(self, handler):
+        pass

@@ -1,5 +1,4 @@
 from ..libs import *
-from ..utils import process_callback
 from .base import Widget
 
 
@@ -20,7 +19,7 @@ class TogaTable(NSTableView):
         self.interface.selection = notification.object.selectedRow
         self.interface.selected = self.interface.data[notification.object.selectedRow]
         if self.interface.on_select:
-            process_callback(self.interface.on_select(self.interface))
+            self.interface.on_select(self.interface)
 
 
 class Table(Widget):
@@ -71,3 +70,6 @@ class Table(Widget):
 
     def refresh(self):
         self.table.reloadData()
+
+    def set_on_select(self, handler):
+        pass

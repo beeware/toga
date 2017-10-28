@@ -34,9 +34,12 @@ class TestButton(unittest.TestCase):
         self.assertEqual(self.btn._on_press, self.on_press)
 
         # set new callback
-        def callback():
-            return 'called'
+        def callback(widget, **extra):
+            return 'called {} with {}'.format(type(widget), extra)
 
         self.btn.on_press = callback
-        self.assertEqual(self.btn.on_press, callback)
-        self.assertEqual(self.btn.on_press(), 'called')
+        self.assertEqual(self.btn.on_press._raw, callback)
+        self.assertEqual(
+            self.btn.on_press('widget', a=1),
+            "called <class 'toga.widgets.button.Button'> with {'a': 1}"
+        )

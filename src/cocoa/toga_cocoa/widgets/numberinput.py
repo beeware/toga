@@ -6,7 +6,6 @@ from .box import Box
 from .base import Widget
 
 from ..libs import NSStepper, NSView, NSMakeRect, NSObject
-from ..utils import process_callback
 
 
 class NumberInput(Box):
@@ -70,7 +69,7 @@ class TextInputVerifier(NSObject):
     @objc_method
     def controlTextDidEndEditing_(self, notification) -> None:
         if self.controller.text_update:
-            process_callback(self.controller.text_update(self.controller))
+            self.controller.text_update(self.controller)
 
 
 class StepperInterface(InterfaceWidget):

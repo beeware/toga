@@ -1,4 +1,5 @@
 from .base import Widget
+from ..utils import wrapped_handler
 
 
 class Switch(Widget):
@@ -55,7 +56,8 @@ class Switch(Widget):
 
     @on_toggle.setter
     def on_toggle(self, handler):
-        self._on_toggle = handler
+        self._on_toggle = wrapped_handler(self, handler)
+        self._impl.set_on_toggle(self._on_toggle)
 
     @property
     def is_on(self):

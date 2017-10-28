@@ -1,4 +1,5 @@
 from .base import Widget
+from ..utils import wrapped_handler
 
 
 class Slider(Widget):
@@ -73,8 +74,9 @@ class Slider(Widget):
         Returns:
             The ``callable`` that is executed on slide.
         """
-        return self._on_press
+        return self._on_slide
 
     @on_slide.setter
     def on_slide(self, handler):
-        self._on_press = handler
+        self._on_slide = wrapped_handler(self, handler)
+        self._impl.set_on_slide(self._on_slide)
