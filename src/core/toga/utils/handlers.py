@@ -29,6 +29,10 @@ def wrapped_handler(interface, handler):
         to sleep between iterations.
     If the handler is a coroutine, install it on the asynchronous
         event loop.
+
+    Returns a wrapped function that will invoke the handler, using
+    the interface as context. The wrapper function is annotated with
+    the original handler function on the `_raw` attribute.
     """
     if handler:
         def _handler(widget, **extra):
