@@ -20,6 +20,13 @@ def build(app):
                        style=CSS(flex=1),
                        on_select=selection_handler)
 
+    table2 = toga.Table(headings=['heading_{}'.format(x) for x in range(5)],
+                        data=table.data,
+                        style=CSS(flex=1),
+                        on_select=selection_handler)
+
+    tablebox = toga.Box(children=[table, table2], style=CSS(flex=1))
+
     # Button callback functions
     def insert_handler(widget):
         table.data.insert(0, [str(round(random() * 100)) for _ in range(5)])
@@ -42,7 +49,7 @@ def build(app):
     btn_box = toga.Box(children=[btn_insert, btn_delete, btn_clear], style=CSS(flex_direction='row'))
 
     # Most outer box
-    box = toga.Box(children=[table, btn_box, label],
+    box = toga.Box(children=[tablebox, btn_box, label],
                    style=CSS(flex=1,
                              flex_direction='column',
                              padding=10,

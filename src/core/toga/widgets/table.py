@@ -49,30 +49,58 @@ class TableRow:
 
 
 class ListDataSource:
+    """ A data source that helps you to store and manage data in a row like fashion.
+
+    Args:
+        data (`list` of `tuple`): A list of tuples containing the data for every row.
+        refresh_function (`callable`): A function invoked on data change.
+    """
+
     def __init__(self, data, refresh_function=None):
         self._data = self.create_rows(data)
-        self.refresh = refresh_function if refresh_function else lambda x:x
+        self.refresh = refresh_function if refresh_function else None
+        self._data_user = []
 
     def create_rows(self, data):
-        return [TableRow(data=item) for item in data]
+        return [TableRow(data=row_data) for row_data in data]
 
     @property
     def data(self):
         return self._data
 
+    @property
+    def data_user(self):
+        return self._data_user
+
+    @data_user.setter
+    def data_user(self, widget):
+        self._data_user.append(widget)
+
+    @data_user.deleter
+    def data_user(self, widget):
+        self._data_user.remove(widget)
+
+    def _refresh(self):
+        """ Invoke the refresh function on all widgets that use this ListDataSource."""
+        for widget in self._data_user:
+            widget.refresh()
+
+        if self.refresh:
+            self.refresh()
+
     def clear(self):
         self._data = []
-        self.refresh()
+        self._refresh()
 
     def insert(self, index: int, data, icon=None):
         node = TableRow(data=data, icon=icon)
         self._data.insert(index, node)
-        self.refresh()
+        self._refresh()
         return node
 
     def remove(self, node):
         self._data.remove(node)
-        self.refresh()
+        self._refresh()
 
     def item(self, row: int, column: int):
         if isinstance(row and column, int):
@@ -133,7 +161,9 @@ class Table(Widget):
             self._data = ListDataSource(data, refresh_function=self._impl.refresh)
         else:
             self._data = data
-        self._impl.refresh()
+
+        if data is not None:
+            self._data.data_user = self
 
     @property
     def on_select(self):
@@ -149,3 +179,6 @@ class Table(Widget):
     @on_select.setter
     def on_select(self, handler):
         self._on_select = handler
+
+    def refresh(self):
+        self._impl.refresh()

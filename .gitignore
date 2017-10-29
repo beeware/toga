@@ -28,3 +28,11 @@ pyvenv.cfg
 bin/
 lib/
 
+# Exclude briefcase packages from the examples dir.
+examples/*/macOS/
+examples/*/iOS/
+examples/*/linux/
+examples/*/android/
+examples/*/django/
+examples/*/windows/
+
