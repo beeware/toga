@@ -18,7 +18,7 @@ class WebView(WebViewInterface, WidgetMixin):
             style=self.style,
         )
 
-    def _set_url(self, value):
+    def set_url(self, value):
         self._impl.url = value
 
     # def _set_window(self, window):
@@ -26,17 +26,26 @@ class WebView(WebViewInterface, WidgetMixin):
     #     if self.on_press:
     #         self.window.callbacks[(self.id, 'on_press')] = self.on_press
 
-    def _set_placeholder(self, value):
-        pass
+    def get_dom(self):
+        raise NotImplementeException()
 
-    def _set_readonly(self, value):
-        pass
+    def set_user_agent(self, value):
+        raise NotImplementeException()
 
-    def _get_value(self):
+    def set_placeholder(self, value):
+        raise NotImplementeException()
+
+    def set_readonly(self, value):
+        raise NotImplementeException()
+
+    def get_value(self):
         return self._impl.value
 
-    def _set_value(self, value):
-        pass
+    def set_value(self, value):
+        raise NotImplementeException()
 
-    def _set_content(self, root_url, content):
-        pass
+    def set_content(self, root_url, content):
+        raise NotImplementeException()
+
+    def evaluate(self, javascript):
+        raise NotImplementeException()

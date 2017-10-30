@@ -31,7 +31,7 @@ class TestSlider(unittest.TestCase):
         self.assertEqual(self.slider._value, self.default)
         self.assertEqual(self.slider.range, self.range)
         self.assertEqual(self.slider._range, self.range)
-        self.assertEqual(self.slider.on_slide, self.on_slide)
+        self.assertEqual(self.slider.on_slide._raw, self.on_slide)
         self.assertEqual(self.slider.enabled, self.enabled)
 
     def test_get_value_invokes_impl_method(self):
@@ -78,4 +78,3 @@ class TestSlider(unittest.TestCase):
         self.assertEqual(self.slider.enabled, self.enabled)
         self.slider.enabled = False
         self.assertEqual(self.slider.enabled, False)
-

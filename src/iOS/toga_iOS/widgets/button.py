@@ -3,9 +3,6 @@ from .base import Widget
 from ..libs import *
 
 
-# from ..utils import process_callback
-
-
 class TogaButton(UIButton):
     @objc_method
     def onPress_(self, obj) -> None:

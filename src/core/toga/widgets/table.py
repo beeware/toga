@@ -1,5 +1,6 @@
 from .base import Widget
 from .icon import Icon
+from ..utils import wrapped_handler
 
 
 class TableRow:
@@ -178,7 +179,14 @@ class Table(Widget):
 
     @on_select.setter
     def on_select(self, handler):
-        self._on_select = handler
+        """
+        Set the function to be executed on node selection
+
+        :param handler:     callback function
+        :type handler:      ``callable``
+        """
+        self._on_select = wrapped_handler(self, handler)
+        self._impl.set_on_select(self._on_select)
 
     def refresh(self):
         self._impl.refresh()

@@ -70,6 +70,7 @@ class Container:
         self._content = widget
         self._content._container = self
 
-    def _update_layout(self, **style):
+    def update_layout(self, **style):
         if self._content:
             self._content._update_layout(**style)
+

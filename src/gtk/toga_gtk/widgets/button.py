@@ -1,7 +1,6 @@
 from gi.repository import Gtk
 
 from .base import Widget
-from ..utils import wrapped_handler
 
 
 class Button(Widget):
@@ -29,8 +28,7 @@ class Button(Widget):
             # the on_press, it doesn't trigger the old ones too.
             self.native.disconnect(conn_id)
 
-        self._connections.append(
-            self.native.connect("clicked", wrapped_handler(self.interface, handler)))
+        self._connections.append(self.native.connect("clicked", handler))
 
     def rehint(self):
         # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height(), getattr(self, '_fixed_height', False), getattr(self, '_fixed_width', False))

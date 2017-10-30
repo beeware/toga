@@ -1,7 +1,6 @@
 from rubicon.objc import *
 
 from ..libs import *
-from ..utils import process_callback
 from .base import Widget
 from .utils import TogaIconCell, TogaNodeData
 
@@ -56,7 +55,7 @@ class TogaTree(NSOutlineView):
         self.interface.selected = self.interface.selected[0]
 
         if self.interface.on_select:
-            process_callback(self.interface.on_select(self.interface))
+            self.interface.on_select(self.interface)
 
 
 class Tree(Widget):
@@ -136,3 +135,6 @@ class Tree(Widget):
 
     def refresh(self):
         self.tree.reloadData()
+
+    def set_on_select(self, handler):
+        pass

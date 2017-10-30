@@ -1,5 +1,5 @@
 from .platform import get_platform_factory
-
+from .utils import wrapped_handler
 
 class Group:
     """
@@ -50,7 +50,7 @@ class Command:
     def __init__(self, action, label,
                  shortcut=None, tooltip=None, icon=None,
                  group=None, section=None, order=None, factory=None):
-        self.action = action
+        self.action = wrapped_handler(self, action)
         self.label = label
 
         self.shortcut = shortcut

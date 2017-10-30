@@ -1,6 +1,10 @@
+import asyncio
+
+from rubicon.objc import objc_method
+from rubicon.objc.async import EventLoopPolicy, iOSLifecycle
+
 from .libs import *
 from .window import Window
-from rubicon.objc import objc_method
 
 
 class MainWindow(Window):
@@ -38,7 +42,11 @@ class App:
 
     def __init__(self, interface):
         self.interface = interface
+        self.interface._impl = self
         App.app = self  # Add a reference for the PythonAppDelegate class to use.
+
+        asyncio.set_event_loop_policy(EventLoopPolicy())
+        self.loop = asyncio.get_event_loop()
 
     def create(self):
         """ Calls the startup method on the interface """
@@ -51,4 +59,5 @@ class App:
     def main_loop(self):
         # Main loop is a no-op on iOS; the app loop is integrated with the
         # main iOS event loop.
-        pass
+
+        self.loop.run_forever(lifecycle=iOSLifecycle())

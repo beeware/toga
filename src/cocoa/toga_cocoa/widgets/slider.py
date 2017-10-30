@@ -2,14 +2,13 @@ from rubicon.objc import objc_method, SEL
 
 from .base import Widget
 from ..libs import *
-from ..utils import process_callback
 
 
 class TogaSlider(NSSlider):
     @objc_method
     def onSlide_(self, obj) -> None:
         if self.interface.on_slide:
-            process_callback(self.interface.on_slide(self.interface))
+            self.interface.on_slide(self.interface)
 
 
 class Slider(Widget):
@@ -38,3 +37,6 @@ class Slider(Widget):
             height=fitting_size.height,
             min_width=fitting_size.width,
         )
+
+    def set_on_slide(self, handler):
+        pass

@@ -1,11 +1,4 @@
 
-def wrapped_handler(widget, handler):
-    def _handler(impl, data=None):
-        if handler:
-            return handler(widget)
-    return _handler
-
-
 class Widget:
     def __init__(self, interface):
         self.interface = interface
@@ -49,7 +42,12 @@ class Widget:
     def set_font(self, font):
         self.native.setFont_(font.native)
 
-    def set_enabled(self, value):
+    @property
+    def enabled(self):
+        raise NotImplementedError()
+
+    @enabled.setter
+    def enabled(self, value):
         self.native.enabled = value
 
     def rehint(self):

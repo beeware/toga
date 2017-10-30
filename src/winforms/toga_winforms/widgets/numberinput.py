@@ -6,6 +6,9 @@ class NumberInput(Widget):
     def create(self):
         self.native = WinForms.NumericUpDown()
 
+    def get_value(self):
+        raise NotImplementedError()
+
     def set_value(self, value):
         if value is not None and value is not "":
             self.native.Value = ClrDecimal.Parse(value)

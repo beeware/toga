@@ -16,3 +16,6 @@ class Tree(Widget):
 
     def refresh(self):
         pass
+
+    def set_on_select(self, handler):
+        pass

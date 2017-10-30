@@ -2,14 +2,13 @@ from rubicon.objc import objc_method, SEL
 
 from .base import Widget
 from ..libs import *
-from ..utils import process_callback
 
 
 class TogaSwitch(NSButton):
     @objc_method
     def onPress_(self, obj) -> None:
         if self.interface.on_toggle:
-            process_callback(self.interface.on_toggle(self.interface))
+            self.interface.on_toggle(self.interface)
 
 
 class Switch(Widget):
@@ -50,3 +49,6 @@ class Switch(Widget):
             height=fitting_size.height,
             min_width=fitting_size.width,
         )
+
+    def set_on_toggle(self, handler):
+        pass
