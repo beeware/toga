@@ -181,20 +181,36 @@ class DefinitionExtractor:
 
 def get_platform_category(path_to_backend):
     name = os.path.basename(path_to_backend)
-    if name in ['toga_cocoa', 'toga_gtk', 'toga_winforms', 'toga_win32']:
+    if name in ['toga_cocoa', 'toga_gtk', 'toga_winforms', 'toga_win32', 'toga_uwp']:
         return {'desktop', name.split('_')[-1]}
-    if name in ['toga_iOS', 'toga_android']:
+    elif name in ['toga_iOS', 'toga_android']:
         return {'mobile', name.split('_')[-1]}
+    elif name in ['toga_django', 'toga_flask', 'toga_pyramid']:
+        return {'web', name.split('_')[-1]}
+    elif name in ['toga_curses',]:
+        return {'console', name.split('_')[-1]}
+    elif name in ['toga_tvOS',]:
+        return {'settop', name.split('_')[-1]}
+    elif name in ['toga_watchOS',]:
+        return {'watch', name.split('_')[-1]}
     else:
         raise RuntimeError('Couldn\'t identify a supported host platform: "{}"'.format(name))
 
 
 def get_required_files(path_to_backend):
     name = os.path.basename(path_to_backend)
-    if name in ['toga_cocoa', 'toga_gtk', 'toga_winforms', 'toga_win32']:
+    if name in ['toga_cocoa', 'toga_gtk', 'toga_winforms', 'toga_win32', 'toga_uwp']:
         return TOGA_BASE_FILES + TOGA_DESKTOP_FILES
-    if name in ['toga_iOS', 'toga_android']:
+    elif name in ['toga_iOS', 'toga_android']:
         return TOGA_BASE_FILES + TOGA_MOBILE_FILES
+    elif name in ['toga_django', 'toga_flask', 'toga_pyramid']:
+        return TOGA_BASE_FILES + TOGA_WEB_FILES
+    elif name in ['toga_curses',]:
+        return TOGA_BASE_FILES + TOGA_CONSOLE_FILES
+    elif name in ['toga_tvOS',]:
+        return TOGA_BASE_FILES + TOGA_SETTOP_FILES
+    elif name in ['toga_watchOS',]:
+        return TOGA_BASE_FILES + TOGA_WATCH_FILES
     else:
         raise RuntimeError('Couldn\'t identify a supported host platform: "{}"'.format(name))
 
@@ -388,4 +404,24 @@ TOGA_MOBILE_FILES = [
 # in desktop implementations of Toga.
 TOGA_DESKTOP_FILES = [
     'splitcontainer.py',
+]
+
+# Files that must only be present
+# in web implementations of Toga.
+TOGA_WEB_FILES = [
+]
+
+# Files that must only be present
+# in console implementations of Toga.
+TOGA_CONSOLE_FILES = [
+]
+
+# Files that must only be present
+# in set-top box implementations of Toga.
+TOGA_SETTOP_FILES = [
+]
+
+# Files that must only be present
+# in watch implementations of Toga.
+TOGA_WATCH_FILES = [
 ]

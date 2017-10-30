@@ -22,3 +22,6 @@ class Container:
         self._content._container = self
         # Make the constraints object a root container.
         self._constraints.make_root()
+
+    def update_layout(self, **style):
+        pass

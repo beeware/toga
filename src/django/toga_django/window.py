@@ -19,12 +19,11 @@ class Window(WindowInterface):
     _CONTAINER_CLASS = Container
     _DIALOG_MODULE = dialogs
 
-    def __init__(self, title=None, position=(100, 100), size=(640, 480), resizeable=True, closeable=True, minimizable=True):
-        super().__init__(title=title, position=position, size=size, resizeable=resizeable, closeable=closeable, minimizable=minimizable)
-        self.id = id(self)
-        self.callbacks = {}
-
-        self._create()
+    def __init__(self, interface):
+        self.interface = interface
+        self.interface._impl = self
+        self.container = None
+        self.create()
 
     def create(self):
         self._impl = impl.Window(
@@ -32,14 +31,29 @@ class Window(WindowInterface):
             title=self._config['title']
         )
 
-    def _set_toolbar(self, items):
+    def set_toolbar(self, items):
         pass
 
-    def _set_content(self, widget):
+    def set_content(self, widget):
         self._impl.set_content(widget._impl)
 
-    def _set_title(self, title):
+    def set_title(self, title):
         # self._impl.set_title(title)
+        pass
+
+    def set_app(self, app):
+        pass
+
+    def set_position(self, position):
+        pass
+
+    def set_size(self, size):
+        pass
+
+    def on_close(self, widget, data):
+        pass
+
+    def create_toolbar(self, toolbar):
         pass
 
     def __str__(self):
@@ -87,3 +101,21 @@ class Window(WindowInterface):
                 for (widget, message), callback in self.callbacks.items()
             }
         })
+
+    def info_dialog(self, title, message):
+        raise NotImplementedError()
+
+    def question_dialog(self, title, message):
+        raise NotImplementedError()
+
+    def confirm_dialog(self, title, message):
+        raise NotImplementedError()
+
+    def error_dialog(self, title, message):
+        raise NotImplementedError()
+
+    def stack_trace_dialog(self, title, message, content, retry=False):
+        raise NotImplementedError()
+
+    def save_file_dialog(self, title, suggested_filename, file_types):
+        raise NotImplementedError()

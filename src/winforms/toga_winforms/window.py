@@ -32,10 +32,10 @@ class Window:
                 item = WinForms.ToolStripButton()
             self.toolbar_native.Items.Add(item)
 
-    def set_position(self, value):
+    def set_position(self, position):
         pass
 
-    def set_size(self, value):
+    def set_size(self, size):
         pass
 
     def set_app(self, app):
@@ -75,6 +75,9 @@ class Window:
             height=self.native.ClientSize.Height,
         )
 
+    def on_close(self):
+        pass
+
     def close(self):
         self.native.Close()
 
@@ -87,3 +90,21 @@ class Window:
                 width=sender.ClientSize.Width,
                 height=sender.ClientSize.Height,
             )
+
+    def info_dialog(self, title, message):
+        pass
+
+    def question_dialog(self, title, message):
+        pass
+
+    def confirm_dialog(self, title, message):
+        pass
+
+    def error_dialog(self, title, message):
+        pass
+
+    def stack_trace_dialog(self, title, message, content, retry=False):
+        pass
+
+    def save_file_dialog(self, title, suggested_filename, file_types):
+        pass

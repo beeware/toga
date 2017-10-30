@@ -7,7 +7,8 @@ from .window import Window
 
 
 class MainWindow(Window):
-    pass
+    def on_close(self):
+        pass
 
 
 class App:
@@ -33,6 +34,9 @@ class App:
         '''Add a new document to this app.'''
         print("STUB: If you want to handle opening documents, implement App.open_document(fileURL)")
 
+    def create_menus(self):
+        raise NotImplementedError()
+
     def run_app(self):
         self.create()
         self.native.Run(self.interface.main_window._impl.native)
@@ -42,3 +46,6 @@ class App:
         thread.SetApartmentState(Threading.ApartmentState.STA)
         thread.Start()
         thread.Join()
+
+    def exit(self):
+        raise NotImplementedError()

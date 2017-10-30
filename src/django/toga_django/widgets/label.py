@@ -1,15 +1,8 @@
-from toga.interface import Label as LabelInterface
-
 from .. import impl
-from .base import WidgetMixin
-# from ..utils import process_callback
+from .base import Widget
 
 
-class Label(LabelInterface, WidgetMixin):
-    def __init__(self, text, id=None, style=None, alignment=None):
-        super().__init__(text, id=id, style=style, alignment=alignment)
-        self._create()
-
+class Label(Widget):
     def create(self):
         self._impl = impl.Label(
             id=self.id,
@@ -18,8 +11,12 @@ class Label(LabelInterface, WidgetMixin):
             style=self.style,
         )
 
-    def _set_text(self, text):
-        self._impl.innerText = text
+    def set_text(self, value):
+        self._impl.innerText = value
 
-    def _set_alignment(self, text):
+    def set_alignment(self, value):
+        raise NotImplementedError()
+
+    def rehint(self):
         pass
+
