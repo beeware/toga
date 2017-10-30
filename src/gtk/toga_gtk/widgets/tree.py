@@ -25,12 +25,17 @@ class Tree(Widget):
         self.native.set_min_content_width(200)
         self.native.set_min_content_height(200)
 
-    def insert(self, parent, index, *data):
-        if len(data) != len(self.interface.headings):
-            raise Exception('Data size does not match number of headings')
+    def insert_node(self, node):
+        raise NotImplementedError()
 
-        if index is None:
-            node = self.data.append(parent, data)
-        else:
-            node = self.data.insert(parent, index, data)
-        return node
+    def remove_node(self, node):
+        raise NotImplementedError()
+
+    def refresh(self):
+        raise NotImplementedError()
+
+    def refresh_node(self, node):
+        raise NotImplementedError()
+
+    def set_on_select(self, handler):
+        pass

@@ -26,3 +26,6 @@ class Selection(Widget):
     def rehint(self):
         self.interface.style.min_width = 90
         self.interface.style.height = 32
+
+    def set_on_select(self):
+        pass
