@@ -35,3 +35,6 @@ class Table(Widget):
 
     def refresh(self):
         raise NotImplementedError()
+
+    def set_on_select(self, handler):
+        pass

@@ -42,6 +42,9 @@ class Switch(Widget):
     def get_is_on(self):
         return self.native_switch.isOn()
 
+    def set_on_toggle(self, handler):
+        pass
+
     @property
     def enabled(self):
         value = self.native.accessoryView.isEnabled()
