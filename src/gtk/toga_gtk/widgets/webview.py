@@ -55,7 +55,7 @@ class WebView(Widget):
         pass
 
     def get_dom(self):
-        raise NotImplemented()
+        raise NotImplementedError()
 
     def evaluate(self, javascript):
         return self.webview.run_javascript(javascript, None, None, None)

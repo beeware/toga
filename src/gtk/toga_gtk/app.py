@@ -86,6 +86,9 @@ import gbulb
 class MainWindow(Window):
     _IMPL_CLASS = Gtk.ApplicationWindow
 
+    def on_close(self, widget):
+        pass
+
 
 class App:
     """

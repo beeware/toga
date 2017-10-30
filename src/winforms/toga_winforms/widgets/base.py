@@ -18,6 +18,13 @@ class Widget:
     def set_window(self, window):
         pass
 
+    @property
+    def enabled(self):
+        raise NotImplmementedError()
+
+    @enabled.setter
+    def enabled(self, value):
+        raise NotImplmementedError()
 
     @property
     def container(self):

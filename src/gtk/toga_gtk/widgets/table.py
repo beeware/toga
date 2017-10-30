@@ -23,13 +23,13 @@ class Table(Widget):
         self.native.interface = self.interface
 
     def insert_row(self, node):
-        raise NotImplemented()
+        raise NotImplementedError()
 
     def remove_row(self, node):
-        raise NotImplemented()
+        raise NotImplementedError()
 
     def refresh(self):
-        raise NotImplemented()
+        raise NotImplementedError()
 
     def set_on_select(self, handler):
         pass

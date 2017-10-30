@@ -32,7 +32,7 @@ class Widget:
     def add_child(self, child):
         pass
 
-    @not_required_on('gtk')
+    @not_required_on('gtk', 'winforms', 'android', 'web')
     def add_constraints(self):
         pass
 

@@ -1,7 +1,7 @@
 from toga_dummy.utils import not_required_on
 
 
-@not_required_on('gtk')
+@not_required_on('gtk', 'winforms', 'android', 'web')
 class Constraints:
     def __init__(self, widget):
         pass
