@@ -1,6 +1,8 @@
+import asyncio
 import os
 import sys
 
+from rubicon.objc.async import EventLoopPolicy, CocoaLifecycle
 import toga
 
 from .libs import *
@@ -76,6 +78,9 @@ class App:
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
+
+        asyncio.set_event_loop_policy(EventLoopPolicy())
+        self.loop = asyncio.get_event_loop()
 
     def create(self):
         self.native = NSApplication.sharedApplication()
@@ -155,7 +160,7 @@ class App:
         self.create()
 
         self.native.activateIgnoringOtherApps_(True)
-        self.native.run()
+        self.loop.run_forever(lifecycle=CocoaLifecycle(self.native))
 
     def exit(self):
         self.native.terminate(None)

@@ -1,6 +1,5 @@
 from gi.repository import Gtk
 from .base import Widget
-from ..utils import wrapped_handler
 
 
 class TextInput(Widget):

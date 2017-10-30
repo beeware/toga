@@ -16,3 +16,6 @@ class Switch(Widget):
 
     def rehint(self):
         pass
+
+    def set_on_toggle(self, handler):
+        pass

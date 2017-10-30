@@ -27,5 +27,5 @@ class Selection(Widget):
         self.interface.style.min_width = 90
         self.interface.style.height = 32
 
-    def set_on_select(self):
+    def set_on_select(self, handler):
         pass

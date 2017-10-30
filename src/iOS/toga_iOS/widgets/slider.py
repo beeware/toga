@@ -38,3 +38,6 @@ class Slider(Widget):
             height=fitting_size.height,
             min_width=fitting_size.width,
         )
+
+    def set_on_slide(self, handler):
+        pass

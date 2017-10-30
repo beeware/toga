@@ -1,9 +1,9 @@
 from gi.repository import Gtk
 
 from toga.command import GROUP_BREAK, SECTION_BREAK
+from toga.utils import wrapped_handler
 
 from .container import Container
-from .utils import wrapped_handler
 from . import dialogs
 
 

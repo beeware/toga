@@ -78,7 +78,9 @@ from toga.command import GROUP_BREAK, SECTION_BREAK, Command, Group
 import toga
 from .window import Window
 from toga import Icon
-from .utils import install_async, wrapped_handler
+from toga.utils import wrapped_handler
+
+import gbulb
 
 
 class MainWindow(Window):
@@ -99,7 +101,7 @@ class App:
         self.interface = interface
         self.interface._impl = self
 
-        install_async(gtk=True)
+        gbulb.install(gtk=True)
         self.loop = asyncio.get_event_loop()
 
         self.create()
@@ -179,7 +181,7 @@ class App:
                         cmd_id = "command-%s" % id(cmd)
                         action = Gio.SimpleAction.new(cmd_id, None)
                         if cmd.action:
-                            action.connect("activate", wrapped_handler(self, cmd.action))
+                            action.connect("activate", wrapped_handler(cmd, cmd.action))
                         cmd._widgets.append(action)
                         self._actions[cmd] = action
                         self.native.add_action(action)
