@@ -18,31 +18,31 @@ from . import impl
 
 
 class MainWindow(Window):
-    pass
+    def on_close(self, widget, data):
+        pass
 
 
 class App(AppInterface):
     _MAIN_WINDOW_CLASS = MainWindow
 
-    def __init__(self, name, app_id, icon=None, id=None, startup=None):
-        # Set the icon for the app
-        # Icon.app_icon = Icon.load(icon, default=TIBERIUS_ICON)
-        self.windows = []
 
-        super().__init__(
-            name=name,
-            app_id=app_id,
-            # icon=Icon.app_icon,
-            id=id,
-            startup=startup,
-        )
-        self._startup()
+    def __init__(self, interface):
+        self.interface = interface
+        self.interface._impl = self
+        self.container = None
+        self.create()
 
-    def _startup(self):
+    def create(self):
         self.startup()
 
     def main_loop(self):
         pass
+
+    def open_document(self, fileURL):
+        raise NotImplementedError()
+
+    def create_menus(self):
+        raise NotImplementedError()
 
     # ====
 

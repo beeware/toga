@@ -20,6 +20,9 @@ class TextInput(Widget):
         # self.native.cell.placeholderString = self._placeholder
         pass
 
+    def get_value(self, value):
+        raise NotImplementedError()
+
     def set_value(self, value):
         self.native.setText(value)
 

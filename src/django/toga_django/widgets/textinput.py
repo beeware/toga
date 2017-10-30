@@ -25,14 +25,17 @@ class TextInput(TextInputInterface, WidgetMixin):
     #     if self.on_press:
     #         self.window.callbacks[(self.id, 'on_press')] = self.on_press
 
-    def _set_placeholder(self, value):
-        pass
+    def set_placeholder(self, value):
+        raise NotImplementedError()
 
-    def _set_readonly(self, value):
-        pass
+    def set_readonly(self, value):
+        raise NotImplementedError()
 
-    def _get_value(self):
+    def get_value(self):
         return self._impl.value
 
-    def _set_value(self, value):
+    def set_value(self, value):
+        raise NotImplementedError()
+
+    def rehint(self):
         pass

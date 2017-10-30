@@ -3,7 +3,7 @@ from .window import Window
 
 
 class MainWindow(Window):
-    @not_required_on('iOS', 'gtk')
+    @not_required_on('mobile')
     def on_close(self):
         pass
 
@@ -25,6 +25,6 @@ class App:
     def main_loop(self):
         pass
 
-    @not_required_on('mobile')
+    @not_required_on('mobile', 'web')
     def exit(self):
         pass
