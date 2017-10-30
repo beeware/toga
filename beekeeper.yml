@@ -68,3 +68,4 @@ push:
         name: Core API tests
         environment:
             TEST_DIR: src/core
+            SRC_DEPENDANTS: src/dummy
