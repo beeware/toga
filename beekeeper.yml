@@ -39,6 +39,7 @@ pull_request:
             - winforms:
                 name: Winforms implementation compliance check
                 environment:
+                    EXTRA_REQUIRES: git+https://github.com/pybee/legless-lizard.git
                     TEST_DIR: src/winforms
                     SRC_DEPENDANTS: src/core src/dummy
             - cocoa:
