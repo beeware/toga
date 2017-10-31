@@ -57,10 +57,10 @@ class ListDataSource:
         refresh_function (`callable`): A function invoked on data change.
     """
 
-    def __init__(self, data, refresh_function=None):
+    def __init__(self, data, on_refresh=None):
         self._data = self.create_rows(data)
-        self.refresh = refresh_function if refresh_function else None
-        self._data_user = []
+        self._on_refresh = on_refresh if on_refresh else None
+        self._refresh_list = []
 
     def create_rows(self, data):
         return [TableRow(data=row_data) for row_data in data]
@@ -70,24 +70,31 @@ class ListDataSource:
         return self._data
 
     @property
-    def data_user(self):
-        return self._data_user
+    def refresh_list(self):
+        return self._refresh_list
 
-    @data_user.setter
-    def data_user(self, widget):
-        self._data_user.append(widget)
+    def add_to_refresh_list(self, widget):
+        self._refresh_list.append(widget)
 
-    @data_user.deleter
-    def data_user(self, widget):
-        self._data_user.remove(widget)
+    def remove_from_refresh_list(self, widget):
+        self._refresh_list.remove(widget)
+
+    @property
+    def on_refresh(self) -> callable:
+        return self._on_refresh
+
+    @on_refresh.setter
+    def on_refresh(self, handler: callable):
+        if callable(handler) or handler is None:
+            self._on_refresh = handler
 
     def _refresh(self):
         """ Invoke the refresh function on all widgets that use this ListDataSource."""
-        for widget in self._data_user:
+        for widget in self._refresh_list:
             widget.refresh()
 
-        if self.refresh:
-            self.refresh()
+        if self._on_refresh:
+            self._on_refresh()
 
     def clear(self):
         self._data = []
@@ -111,6 +118,7 @@ class ListDataSource:
         if row >= 0:
             return self.data[row]
 
+    @property
     def rows(self) -> list:
         return self.data
 
@@ -159,12 +167,12 @@ class Table(Widget):
     @data.setter
     def data(self, data):
         if isinstance(data, (list, tuple)):
-            self._data = ListDataSource(data, refresh_function=self._impl.refresh)
+            self._data = ListDataSource(data)
         else:
             self._data = data
 
         if data is not None:
-            self._data.data_user = self
+            self._data.add_to_refresh_list(self)
 
     @property
     def on_select(self):

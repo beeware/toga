@@ -6,7 +6,7 @@ class TogaTable(NSTableView):
     # TableDataSource methods
     @objc_method
     def numberOfRowsInTableView_(self, table) -> int:
-        return len(self.interface.data.rows()) if self.interface.data else 0
+        return len(self.interface.data.rows) if self.interface.data else 0
 
     @objc_method
     def tableView_objectValueForTableColumn_row_(self, table, column, row: int):
@@ -20,7 +20,7 @@ class TogaTable(NSTableView):
         self.interface.selected = self.interface.data.row(notification.object.selectedRow)
         if self.interface.on_select:
             row = notification.object.selectedRow if notification.object.selectedRow != -1 else None
-            self.interface.on_select(self.interface, row)
+            self.interface.on_select(self.interface, row=row)
 
 
 class Table(Widget):

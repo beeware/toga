@@ -4,6 +4,72 @@ import toga
 import toga_dummy
 
 
+class TestListDataSource(unittest.TestCase):
+    def setUp(self):
+        self.data = [('{}:0'.format(x), '{}:1'.format(x), '{}:2'.format(x)) for x in range(5)]
+        self.on_refresh = Mock()
+        self.widget = Mock()
+        self.data_source = toga.ListDataSource(data=self.data, on_refresh=self.on_refresh)
+        self.data_source.add_to_refresh_list(self.widget)
+
+    def test_refresh_list(self):
+        self.assertListEqual(self.data_source.refresh_list, [self.widget])
+        # add more widgets to refresh_list
+        another_widget = Mock()
+        self.data_source.add_to_refresh_list(another_widget)
+        self.assertListEqual(self.data_source.refresh_list, [self.widget, another_widget])
+        # remove from refresh_list
+        self.data_source.remove_from_refresh_list(another_widget)
+        self.assertListEqual(self.data_source.refresh_list, [self.widget])
+
+    def test_item_extraction_from_table(self):
+        self.assertEqual(self.data_source.item(0, 0), '0:0')
+        self.assertEqual(self.data_source.item(4, 2), '4:2')
+
+        with self.assertRaises(Exception):
+            self.data_source.item(100, 100)
+
+        with self.assertRaises(Exception):
+            self.data_source.item('1', 2)
+
+    def test_refresh_function(self):
+        # test if refresh function was set correctly
+        self.assertIs(self.data_source.on_refresh, self.on_refresh)
+
+        # set new refresh_function
+        def new_refresh_func():
+            return 'new'
+
+        self.data_source.on_refresh = new_refresh_func
+        self.assertIs(self.data_source.on_refresh, new_refresh_func)
+
+    def test_if_refresh_function_is_invoked_on_remove(self):
+        self.assertIs(self.data_source.on_refresh, self.on_refresh)
+        self.data_source.remove(self.data_source.row(0))
+        self.on_refresh.assert_called_once_with()
+
+    def test_if_refresh_function_is_invoked_on_insert(self):
+        self.data_source.insert(0, ('0:0', '0:1', '0:2'))
+        self.on_refresh.assert_called_once_with()
+
+    def test_if_refresh_function_is_invoked_on_clear(self):
+        self.data_source.clear()
+        self.on_refresh.assert_called_once_with()
+
+    def test_rows_were_set_correctly(self):
+        self.assertTupleEqual(self.data_source.row(0).data, self.data[0])
+        self.assertTupleEqual(self.data_source.row(1).data, self.data[1])
+        self.assertTupleEqual(self.data_source.row(2).data, self.data[2])
+        self.assertTupleEqual(self.data_source.row(3).data, self.data[3])
+        self.assertTupleEqual(self.data_source.row(4).data, self.data[4])
+
+    def test_number_of_rows(self):
+        self.assertEqual(len(self.data_source.rows), len(self.data))
+        # remove one row
+        self.data_source.remove(self.data_source.row(0))
+        self.assertEqual(len(self.data_source.rows), len(self.data) - 1)
+
+
 class TestTable(unittest.TestCase):
     def setUp(self):
         self.factory = MagicMock()
@@ -30,10 +96,12 @@ class TestTable(unittest.TestCase):
         # data
         data_source = toga.ListDataSource(self.data)
         self.assertEqual(type(data_source), type(self.table.data))
-        # on_select
-        self.assertEqual(self.on_select, self.table.on_select)
 
-    def test_custom_data_source(self):
-        custom_data_source = object()
-        self.table.data = custom_data_source
-        self.assertEqual(self.table.data, custom_data_source)
+    def test_provide_custom_data_source(self):
+        data_source = toga.ListDataSource([(1, 2, 3, 4) for _ in range(5)])
+        self.table.data = data_source
+        self.assertIs(self.table.data, data_source)
+
+    def test_refresh_invokes_impl_func(self):
+        self.table.refresh()
+        self.table._impl.refresh.assert_called_once_with()

@@ -22,8 +22,7 @@ def build(app):
 
     table2 = toga.Table(headings=['heading_{}'.format(x) for x in range(5)],
                         data=table.data,
-                        style=CSS(flex=1),
-                        on_select=selection_handler)
+                        style=CSS(flex=1))
 
     tablebox = toga.Box(children=[table, table2], style=CSS(flex=1))
 
