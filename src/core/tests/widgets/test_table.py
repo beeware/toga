@@ -10,17 +10,17 @@ class TestListDataSource(unittest.TestCase):
         self.on_refresh = Mock()
         self.widget = Mock()
         self.data_source = toga.ListDataSource(data=self.data, on_refresh=self.on_refresh)
-        self.data_source.add_to_refresh_list(self.widget)
+        self.data_source.add_listener(self.widget)
 
-    def test_refresh_list(self):
-        self.assertListEqual(self.data_source.refresh_list, [self.widget])
-        # add more widgets to refresh_list
+    def test_listeners(self):
+        self.assertListEqual(self.data_source.listeners, [self.widget])
+        # add more widgets to listeners
         another_widget = Mock()
-        self.data_source.add_to_refresh_list(another_widget)
-        self.assertListEqual(self.data_source.refresh_list, [self.widget, another_widget])
-        # remove from refresh_list
-        self.data_source.remove_from_refresh_list(another_widget)
-        self.assertListEqual(self.data_source.refresh_list, [self.widget])
+        self.data_source.add_listener(another_widget)
+        self.assertListEqual(self.data_source.listeners, [self.widget, another_widget])
+        # remove from listeners
+        self.data_source.remove_listener(another_widget)
+        self.assertListEqual(self.data_source.listeners, [self.widget])
 
     def test_item_extraction_from_table(self):
         self.assertEqual(self.data_source.item(0, 0), '0:0')
@@ -102,6 +102,7 @@ class TestTable(unittest.TestCase):
         self.table.data = data_source
         self.assertIs(self.table.data, data_source)
 
-    def test_refresh_invokes_impl_func(self):
-        self.table.refresh()
-        self.table._impl.refresh.assert_called_once_with()
+    def test_data_different_data_sources(self):
+        with self.assertRaises(UserWarning):
+            self.table.data = Mock()
+

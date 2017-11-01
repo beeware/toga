@@ -60,7 +60,7 @@ class ListDataSource:
     def __init__(self, data, on_refresh=None):
         self._data = self.create_rows(data)
         self._on_refresh = on_refresh if on_refresh else None
-        self._refresh_list = []
+        self._listeners = []
 
     def create_rows(self, data):
         return [TableRow(data=row_data) for row_data in data]
@@ -70,14 +70,14 @@ class ListDataSource:
         return self._data
 
     @property
-    def refresh_list(self):
-        return self._refresh_list
+    def listeners(self):
+        return self._listeners
 
-    def add_to_refresh_list(self, widget):
-        self._refresh_list.append(widget)
+    def add_listener(self, widget):
+        self._listeners.append(widget)
 
-    def remove_from_refresh_list(self, widget):
-        self._refresh_list.remove(widget)
+    def remove_listener(self, widget):
+        self._listeners.remove(widget)
 
     @property
     def on_refresh(self) -> callable:
@@ -89,10 +89,9 @@ class ListDataSource:
             self._on_refresh = handler
 
     def _refresh(self):
-        """ Invoke the refresh function on all widgets that use this ListDataSource."""
-        for widget in self._refresh_list:
-            widget.refresh()
-
+        """ Invoke the refresh function on all widgets that are subscribed to this data source."""
+        for widget in self._listeners:
+            widget._impl.refresh()
         if self._on_refresh:
             self._on_refresh()
 
@@ -112,11 +111,11 @@ class ListDataSource:
 
     def item(self, row: int, column: int):
         if isinstance(row and column, int):
-            return self.data[row].data[column]
+            return self._data[row].data[column]
 
     def row(self, row: int) -> TableRow:
         if row >= 0:
-            return self.data[row]
+            return self._data[row]
 
     @property
     def rows(self) -> list:
@@ -132,7 +131,7 @@ class Table(Widget):
         data (``list`` of ``tuple``): The data to be displayed on the table.
         style (:class:`colosseum.CSSNode`): An optional style object.
             If no style is provided` then a new one will be created for the widget.
-        on_select(``callable``): A function to be invoked on selecting a row of the table.
+        on_select (``callable``): A function to be invoked on selecting a row of the table.
         factory (:obj:`module`): A python module that is capable to return a
             implementation of this class with the same name. (optional & normally not needed)
 
@@ -159,8 +158,7 @@ class Table(Widget):
         in the form of ``list``, ``tuple``, or :obj:`ListDataSource`
 
         Returns:
-            (list) Returns a ``list`` of lists. Where the outer lists represents the
-            rows and each inner list represents a column.
+            Returns a (:obj:`ListDataSource`).
         """
         return self._data if self._data is not None else None
 
@@ -168,11 +166,13 @@ class Table(Widget):
     def data(self, data):
         if isinstance(data, (list, tuple)):
             self._data = ListDataSource(data)
-        else:
+        elif isinstance(data, ListDataSource):
             self._data = data
+        else:
+            raise UserWarning('The table widgets should get data in form of a list or ListDataSource.')
 
         if data is not None:
-            self._data.add_to_refresh_list(self)
+            self._data.add_listener(self)
 
     @property
     def on_select(self):
@@ -195,6 +195,3 @@ class Table(Widget):
         """
         self._on_select = wrapped_handler(self, handler)
         self._impl.set_on_select(self._on_select)
-
-    def refresh(self):
-        self._impl.refresh()
