@@ -52,7 +52,7 @@ Table of contents
 :ref:`Tutorial <tutorial>`
 ------------------------------
 
-Get started with a hands-on introduction to pytest for beginners
+Get started with a hands-on introduction to Toga for beginners
 
 .. rst-class:: column column2
 
