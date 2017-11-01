@@ -1,4 +1,4 @@
-from random import random
+from random import choice
 import toga
 from colosseum import CSS
 
@@ -25,7 +25,7 @@ def build(app):
         label.text = 'You selected row: {}'.format(row) if row is not None else 'No row selected'
 
     table = toga.Table(headings=headings,
-                       data=bee_movies,
+                       data=bee_movies[:4],
                        style=CSS(flex=1),
                        on_select=selection_handler)
 
@@ -37,8 +37,8 @@ def build(app):
 
     # Button callback functions
     def insert_handler(widget):
-        table.data.insert(0, [str(round(random() * 100)) for _ in range(5)])
-        print('Rows', len(table.data.data))
+        table.data.insert(0, choice(bee_movies))
+        print('Nr of rows', len(table.data.data))
 
     def delete_handler(widget):
         if len(table.data.data) > 0:
