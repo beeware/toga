@@ -22,12 +22,6 @@ class Table(Widget):
         self.native.set_min_content_height(200)
         self.native.interface = self.interface
 
-    def insert_row(self, node):
-        raise NotImplementedError()
-
-    def remove_row(self, node):
-        raise NotImplementedError()
-
     def refresh(self):
         raise NotImplementedError()
 

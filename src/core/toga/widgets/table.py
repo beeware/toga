@@ -4,19 +4,14 @@ from ..utils import wrapped_handler
 
 
 class TableRow:
-    '''
-    Row of the Table widget
-    '''
-    def __init__(self, source, data, icon=None):
-        '''
-        Instantiate a new instance of a row
+    """ Row of the Table widget
 
-        :param data: Information about the row
-        :type  data: ``dict``
-        '''
-        self._impl = None
-        self.source = source
+    Args:
+        data: A ``tuple`` where each element is a column of the row.
+        icon: A icon displayed in the row.
+    """
 
+    def __init__(self, data, icon=None):
         self._data = [data] if isinstance(data, str) else data
         self.icon = icon
 
@@ -25,127 +20,169 @@ class TableRow:
 
     @property
     def data(self):
-        '''
-        :returns: TableRow data
-        :rtype: ``data``
-        '''
+        """ TableRow data
+
+        Returns:
+            (``data``)
+        """
         return self._data
 
     @data.setter
     def data(self, data):
-        '''
-        TableRow data
-
-        :param data: Contains the row data
-        :type  data: ``dict``
-        '''
         self._data = data
-        if self.source.interface:
-            self.source.interface._impl.refresh()
 
     @property
     def icon(self):
-        '''
-        :returns: The image url of the row
-        :rtype: ``str``
-        '''
+        """ Icon on the row.
+        To set a image provide the path to the image as a ``str``.
+
+        Returns:
+            (str) The image url of the row as a ``str`.
+        """
         return self._icon
 
     @icon.setter
     def icon(self, path):
-        '''
-        Set an icon on the row
-
-        :param image_url: Url of the icon
-        :type  image_url: ``str``
-        '''
         if path is None:
             self._icon = None
         else:
             self._icon = Icon.load(path)
-            if self.source.interface:
-                self.source.interface._impl.refresh_row(self)
 
 
 class ListDataSource:
+    """ A data source that helps you to store and manage data in a row like fashion.
+
+    Args:
+        data (`list` of `tuple`): A list of tuples containing the data for every row.
+        refresh_function (`callable`): A function invoked on data change.
+    """
+
     def __init__(self, data):
         self._data = self.create_rows(data)
-        self.interface = None
+        self._listeners = []
 
     def create_rows(self, data):
-        return [
-            TableRow(source=self, data=item)
-            for item in data
-        ]
+        return [TableRow(data=row_data) for row_data in data]
 
+    @property
     def data(self):
         return self._data
 
-    def insert(self, index, data, icon=None):
-        node = TreeNode(source=self, data=data, icon=icon)
+    @property
+    def listeners(self) -> list:
+        """ The listeners of this data source.
+        Listeners can be ``callable`` or :obj:``toga.Widget``.
+
+        Returns:
+            A list of objects that are listening for data change.
+        """
+        return self._listeners
+
+    def add_listener(self, listener):
+        """
+        Args:
+            listener: ``callable`` or :obj:``toga.Widget`
+        """
+        self._listeners.append(listener)
+
+    def remove_listener(self, listener):
+        self._listeners.remove(listener)
+
+    def _refresh(self):
+        """ Invoke the refresh function on all widgets that are subscribed to this data source."""
+        for listener in self._listeners:
+            if hasattr(listener, '_impl'):
+                listener._impl.refresh()
+            elif callable(listener):
+                listener()
+            else:
+                raise RuntimeError('{} is not a accepted listener for {}'.format(listener, self))
+
+    def clear(self):
+        self._data = []
+        self._refresh()
+
+    def insert(self, index: int, data, icon=None):
+        node = TableRow(data=data, icon=icon)
         self._data.insert(index, node)
-        if self.interface:
-            self.interface._impl.insert_node(node)
+        self._refresh()
         return node
 
     def remove(self, node):
         self._data.remove(node)
-        if self.interface:
-            self.interface._impl.remove_node(node)
+        self._refresh()
 
+    def item(self, row: int, column: int):
+        if isinstance(row and column, int):
+            return self._data[row].data[column]
+
+    def row(self, row: int) -> TableRow:
+        if row >= 0:
+            return self._data[row]
+
+    @property
+    def rows(self) -> list:
+        return self.data
 
 
 class Table(Widget):
-    """ A Table Widget allows the disply of data in the from of columns and rows.
+    """ A Table Widget allows the display of data in the from of columns and rows.
 
     Args:
         headings (``list`` of ``str``): The list of headings for the table.
         id (str): An identifier for this widget.
+        data (``list`` of ``tuple``): The data to be displayed on the table.
         style (:class:`colosseum.CSSNode`): An optional style object.
-            If no style is provided then a new one will be created for the widget.
+            If no style is provided` then a new one will be created for the widget.
+        on_select (``callable``): A function to be invoked on selecting a row of the table.
         factory (:obj:`module`): A python module that is capable to return a
             implementation of this class with the same name. (optional & normally not needed)
+
+    Examples:
+        >>> headings = ['Head 1', 'Head 2', 'Head 3']
+        >>> data = [('item 1', 'item 2', 'item3'),
+        >>>         ('item 1', 'item 2', 'item3')]
+        >>>
+        >>> table = Table(headings, data=data)
     """
+
     def __init__(self, headings, id=None, style=None, data=None, on_select=None, factory=None):
         super().__init__(id=id, style=style, factory=factory)
         self.headings = headings
-        self._data = data
+        self._data = None
         self._impl = self.factory.Table(interface=self)
+        self.data = data
 
         self.on_select = on_select
 
     @property
     def data(self):
-        '''
-        :returns: The data source of the tree
-        :rtype: ``dict``
-        '''
-        return self._data
+        """ The data source of the widget. It accepts table data
+        in the form of ``list``, ``tuple``, or :obj:`ListDataSource`
+
+        Returns:
+            Returns a (:obj:`ListDataSource`).
+        """
+        return self._data if self._data is not None else None
 
     @data.setter
     def data(self, data):
-        '''
-        Set the data source of the data
-
-        :param data: Data source
-        :type  data: ``list``, ``tuple``, or ``class``
-        '''
         if isinstance(data, (list, tuple)):
             self._data = ListDataSource(data)
         else:
             self._data = data
 
         if data is not None:
-            self._data.interface = self
-
-        self._impl.refresh()
+            self._data.add_listener(self)
 
     @property
     def on_select(self):
-        """
-        The callable function for when a node on the Table is selected
+        """ The callback function that is invoked when a row of the table is selected.
+        The provided callback function has to accept two arguments table (``:obj:Table`)
+        and row (``int`` or ``None``).
 
-        :rtype: ``callable``
+        Returns:
+            (``callable``) The callback function.
         """
         return self._on_select
 
