@@ -21,6 +21,11 @@ class TestListDataSource(unittest.TestCase):
         self.data_source.remove_listener(another_widget)
         self.assertListEqual(self.data_source.listeners, [self.widget])
 
+    def test_wrong_listeners(self):
+        self.data_source.add_listener(object())
+        with self.assertRaises(RuntimeError):
+            self.data_source.clear()
+
     def test_item_extraction_from_table(self):
         self.assertEqual(self.data_source.item(0, 0), '0:0')
         self.assertEqual(self.data_source.item(4, 2), '4:2')
@@ -42,6 +47,15 @@ class TestListDataSource(unittest.TestCase):
     def test_if_refresh_function_is_invoked_on_clear(self):
         self.data_source.clear()
         self.data_source.listeners[0]._impl.refresh.assert_called_once_with()
+
+    def test_if_function_is_invoked_on_refresh(self):
+        func = MagicMock(spec=callable)
+        self.data_source.add_listener(func)
+        # is function in listeners
+        self.assertIn(func, self.data_source.listeners)
+        # change data and check if function is invoked
+        self.data_source.clear()
+        func.assert_called_once_with()
 
     def test_rows_were_set_correctly(self):
         self.assertTupleEqual(self.data_source.row(0).data, self.data[0])

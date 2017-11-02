@@ -69,19 +69,34 @@ class ListDataSource:
         return self._data
 
     @property
-    def listeners(self):
+    def listeners(self) -> list:
+        """ The listeners of this data source.
+        Listeners can be ``callable`` or :obj:``toga.Widget``.
+
+        Returns:
+            A list of objects that are listening for data change.
+        """
         return self._listeners
 
-    def add_listener(self, widget):
-        self._listeners.append(widget)
+    def add_listener(self, listener):
+        """
+        Args:
+            listener: ``callable`` or :obj:``toga.Widget`
+        """
+        self._listeners.append(listener)
 
-    def remove_listener(self, widget):
-        self._listeners.remove(widget)
+    def remove_listener(self, listener):
+        self._listeners.remove(listener)
 
     def _refresh(self):
         """ Invoke the refresh function on all widgets that are subscribed to this data source."""
-        for widget in self._listeners:
-            widget._impl.refresh()
+        for listener in self._listeners:
+            if hasattr(listener, '_impl'):
+                listener._impl.refresh()
+            elif callable(listener):
+                listener()
+            else:
+                raise RuntimeError('{} is not a accepted listener for {}'.format(listener, self))
 
     def clear(self):
         self._data = []
