@@ -57,9 +57,8 @@ class ListDataSource:
         refresh_function (`callable`): A function invoked on data change.
     """
 
-    def __init__(self, data, on_refresh=None):
+    def __init__(self, data):
         self._data = self.create_rows(data)
-        self._on_refresh = on_refresh if on_refresh else None
         self._listeners = []
 
     def create_rows(self, data):
@@ -79,21 +78,10 @@ class ListDataSource:
     def remove_listener(self, widget):
         self._listeners.remove(widget)
 
-    @property
-    def on_refresh(self) -> callable:
-        return self._on_refresh
-
-    @on_refresh.setter
-    def on_refresh(self, handler: callable):
-        if callable(handler) or handler is None:
-            self._on_refresh = handler
-
     def _refresh(self):
         """ Invoke the refresh function on all widgets that are subscribed to this data source."""
         for widget in self._listeners:
             widget._impl.refresh()
-        if self._on_refresh:
-            self._on_refresh()
 
     def clear(self):
         self._data = []
@@ -166,10 +154,8 @@ class Table(Widget):
     def data(self, data):
         if isinstance(data, (list, tuple)):
             self._data = ListDataSource(data)
-        elif isinstance(data, ListDataSource):
-            self._data = data
         else:
-            raise UserWarning('The table widgets should get data in form of a list or ListDataSource.')
+            self._data = data
 
         if data is not None:
             self._data.add_listener(self)
