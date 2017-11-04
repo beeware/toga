@@ -3,4 +3,4 @@ from .base import Widget
 
 class Box(Widget):
     def create(self):
-        pass
+        self._action('create Box')

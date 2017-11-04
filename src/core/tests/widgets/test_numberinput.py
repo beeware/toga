@@ -1,15 +1,14 @@
-import unittest
-from unittest.mock import MagicMock, Mock
 import toga
 import toga_dummy
+from toga_dummy.utils import TestCase
 
 
-class TestNumberInput(unittest.TestCase):
+class NumberInputTests(TestCase):
     def setUp(self):
-        self.factory = MagicMock()
-        self.factory.NumberInput = MagicMock(return_value=MagicMock(spec=toga_dummy.factory.NumberInput))
+        super().setUp()
 
-        self.nr_input = toga.NumberInput(factory=self.factory)
+        self.nr_input = toga.NumberInput(factory=toga_dummy.factory)
 
-    def test_factory_called(self):
-        self.factory.NumberInput.assert_called_once_with(interface=self.nr_input)
+    def test_widget_created(self):
+        self.assertEqual(self.nr_input._impl.interface, self.nr_input)
+        self.assertActionPerformed(self.nr_input, 'create NumberInput')

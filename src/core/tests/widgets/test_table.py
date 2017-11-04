@@ -1,13 +1,17 @@
-import unittest
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import Mock, MagicMock
+
 import toga
 import toga_dummy
+from toga_dummy.utils import TestCase
 
 
-class TestListDataSource(unittest.TestCase):
+class ListDataSourceTests(TestCase):
     def setUp(self):
-        self.data = [('{}:0'.format(x), '{}:1'.format(x), '{}:2'.format(x)) for x in range(5)]
+        super().setUp()
         self.widget = Mock()
+
+        self.data = [('{}:0'.format(x), '{}:1'.format(x), '{}:2'.format(x)) for x in range(5)]
+
         self.data_source = toga.ListDataSource(data=self.data)
         self.data_source.add_listener(self.widget)
 
@@ -71,10 +75,10 @@ class TestListDataSource(unittest.TestCase):
         self.assertEqual(len(self.data_source.rows), len(self.data) - 1)
 
 
-class TestTable(unittest.TestCase):
+class TableTests(TestCase):
     def setUp(self):
-        self.factory = MagicMock()
-        self.factory.Table = MagicMock(return_value=MagicMock(spec=toga_dummy.factory.Table))
+        super().setUp()
+
         self.headings = ['Heading 1', 'Heading 2', 'Heading 3']
         self.data = [(1, 2, 3, 4) for _ in range(5)]
 
@@ -86,10 +90,11 @@ class TestTable(unittest.TestCase):
         self.table = toga.Table(self.headings,
                                 data=self.data,
                                 on_select=self.on_select,
-                                factory=self.factory)
+                                factory=toga_dummy.factory)
 
-    def test_factory_called(self):
-        self.factory.Table.assert_called_with(interface=self.table)
+    def test_widget_created(self):
+        self.assertEqual(self.table._impl.interface, self.table)
+        self.assertActionPerformed(self.table, 'create Table')
 
     def test_arguments_are_all_set_properly(self):
         # headings

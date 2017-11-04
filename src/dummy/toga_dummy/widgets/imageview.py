@@ -2,12 +2,11 @@ from .base import Widget
 
 
 class ImageView(Widget):
-
     def create(self):
-        pass
+        self._action('create ImageView')
 
     def get_image(self):
-        pass
+        return self._get_value('image')
 
     def set_image(self, image):
-        pass
+        self._set_value('image', image)

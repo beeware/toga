@@ -1,30 +1,31 @@
-from .utils import not_required_on
+from .utils import not_required_on, LoggedObject
 from .window import Window
 
 
 class MainWindow(Window):
     @not_required_on('mobile')
     def on_close(self):
-        pass
+        self.action('handle MainWindow on_close')
 
 
-class App:
+class App(LoggedObject):
     def __init__(self, interface):
-        pass
+        super().__init__()
+        self.interface = interface
 
     def create(self):
-        pass
+        self._action('create')
 
     def open_document(self, fileURL):
-        pass
+        self._action('open document', fileURL=fileURL)
 
     @not_required_on('mobile')
     def create_menus(self):
-        pass
+        self._action('create menus')
 
     def main_loop(self):
-        pass
+        self._action('main loop')
 
     @not_required_on('mobile', 'web')
     def exit(self):
-        pass
+        self._action('exit')

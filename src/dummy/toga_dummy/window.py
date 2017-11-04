@@ -1,51 +1,55 @@
-from .utils import not_required_on
+from .utils import not_required_on, LoggedObject
 
-class Window:
+
+class Window(LoggedObject):
     def __init__(self, interface):
-        pass
+        super().__init__()
+        self.interface = interface
 
     def create(self):
-        pass
+        self.action('create Window')
 
     def create_toolbar(self):
-        pass
+        self._action('create toolbar')
 
     def set_content(self, widget):
-        pass
+        self._action('set content', widget=widget)
 
     def set_title(self, title):
-        pass
+        self._set_value('title', title)
 
     def set_position(self, position):
-        pass
+        self._set_value('position', position)
 
     def set_size(self, size):
-        pass
+        self._set_value('size', size)
 
     def set_app(self, app):
-        pass
+        self._set_value('app', app)
 
     def show(self):
-        pass
+        self._action('show')
 
     @not_required_on('mobile')
     def on_close(self):
-        pass
+        self._action('handle Window on_close')
 
     def info_dialog(self, title, message):
-        pass
+        self._action('show info dialog', title=title, message=message)
 
     def question_dialog(self, title, message):
-        pass
+        self._action('show question dialog', title=title, message=message)
 
     def confirm_dialog(self, title, message):
-        pass
+        self._action('show confirm dialog', title=title, message=message)
 
     def error_dialog(self, title, message):
-        pass
+        self._action('show error dialog', title=title, message=message)
 
     def stack_trace_dialog(self, title, message, content, retry=False):
-        pass
+        self._action('show stack trace dialog', title=title, message=message, content=content, retry=retry)
 
     def save_file_dialog(self, title, suggested_filename, file_types):
-        pass
+        self._action(
+            'show save file dialog', title=title, suggested_filename=suggested_filename, file_types=file_types
+        )

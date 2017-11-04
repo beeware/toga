@@ -1,17 +1,16 @@
-import unittest
-from unittest.mock import MagicMock, Mock
 import toga
 import toga_dummy
+from toga_dummy.utils import TestCase
 
 
-class TestTree(unittest.TestCase):
+class TreeTests(TestCase):
     def setUp(self):
-        self.factory = MagicMock()
-        self.factory.Tree = MagicMock(return_value=MagicMock(spec=toga_dummy.widgets.tree.Tree))
+        super().setUp()
 
         self.heading = ['Heading {}'.format(x) for x in range(3)]
         self.tree = toga.Tree(headings=self.heading,
-                              factory=self.factory)
+                              factory=toga_dummy.factory)
 
-    def test_factory_called(self):
-        self.factory.Tree.assert_called_once_with(interface=self.tree)
+    def test_widget_created(self):
+        self.assertEqual(self.tree._impl.interface, self.tree)
+        self.assertActionPerformed(self.tree, 'create Tree')

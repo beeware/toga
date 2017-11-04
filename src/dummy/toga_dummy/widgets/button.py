@@ -3,13 +3,13 @@ from .base import Widget
 
 class Button(Widget):
     def create(self):
-        pass
+        self._action('create Button')
 
     def set_label(self, label):
-        pass
+        self._set_value('label', label)
 
     def set_on_press(self, handler):
-        pass
+        self._set_value('on_press', handler)
 
     def rehint(self):
-        pass
+        self._action('rehint Button')

@@ -4,7 +4,6 @@
 How to contribute to Toga
 =========================
 
-
 If you experience problems with Toga, `log them on GitHub`_. If you want to contribute code, please `fork the code`_ and `submit a pull request`_.
 
 .. _log them on Github: https://github.com/pybee/toga/issues
@@ -92,9 +91,17 @@ Then, generate a report for the coverage data you just gathered::
     ------------------------------------------------------------------
     TOTAL                                 1034    258    75%
 
-What does this all mean? Well, the "Cover" column tells you what proportion of lines in a given file were executed during the test run. In this run, every line of ``toga/app.py`` was executed; but only 77% of lines in ``toga/window.py`` were executed. Which lines were missed? They're listed in the next column: lines 58, 75, 87, and so on weren't executed.
+What does this all mean? Well, the "Cover" column tells you what proportion of
+lines in a given file were executed during the test run. In this run, every
+line of ``toga/app.py`` was executed; but only 77% of lines in
+``toga/window.py`` were executed. Which lines were missed? They're listed in
+the next column: lines 58, 75, 87, and so on weren't executed.
 
-That's what you have to fix - ideally, every single line in every single file will have 100% coverage. If you look in `src/core/tests`, you should find a test file that matches the name of the file that has insufficient coverage. If you don't, it's possible the entire test file is missing - so you'll have to create it!
+That's what you have to fix - ideally, every single line in every single file
+will have 100% coverage. If you look in `src/core/tests`, you should find a
+test file that matches the name of the file that has insufficient coverage. If
+you don't, it's possible the entire test file is missing - so you'll have to
+create it!
 
 Your task: create a test that improves coverage - even by one more line.
 
@@ -117,7 +124,8 @@ Once you've written a test, re-run the test suite to generate fresh coverage dat
     ------------------------------------------------------------------
     TOTAL                                 1034    257    75%
 
-That is, one more test has been executed, resulting in one less missing line in the coverage results.
+That is, one more test has been executed, resulting in one less missing line
+in the coverage results.
 
 Submit a pull request for your work, and you're done! Congratulations, you're
 a contributor to Toga!
@@ -145,7 +153,11 @@ will be handled correctly, too.
 It's not just about coverage!
 =============================
 
-Although improving test coverage is the goal, the task ahead of you isn't *just* about increasing numerical coverage. Part of the task is to audit the code as you go. You could write a comprehensive set of tests for a concrete life jacket... but a concrete life jacket would still be useless for the purpose it was intended!
+Although improving test coverage is the goal, the task ahead of you isn't
+*just* about increasing numerical coverage. Part of the task is to audit the
+code as you go. You could write a comprehensive set of tests for a concrete
+life jacket... but a concrete life jacket would still be useless for the
+purpose it was intended!
 
 As you develop tests and improve coverage, you should be checking that the
 core module is internally **consistent** as well. If you notice any method

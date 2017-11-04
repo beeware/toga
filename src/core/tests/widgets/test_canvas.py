@@ -1,15 +1,14 @@
-import unittest
-from unittest.mock import MagicMock
 import toga
 import toga_dummy
+from toga_dummy.utils import EventLog, TestCase
 
 
-class TestCanvas(unittest.TestCase):
+class CanvasTests(TestCase):
     def setUp(self):
-        self.factory = MagicMock()
-        self.factory.Canvas = MagicMock(return_value=MagicMock(spec=toga_dummy.factory.Canvas))
+        super().setUp()
 
-        self.testing_canvas = toga.Canvas(factory=self.factory)
+        self.testing_canvas = toga.Canvas(factory=toga_dummy.factory)
 
-    def test_factory_called(self):
-        self.factory.Canvas.assert_called_once_with(interface=self.testing_canvas)
+    def test_widget_created(self):
+        self.assertEqual(self.testing_canvas._impl.interface, self.testing_canvas)
+        self.assertActionPerformed(self.testing_canvas, 'create Canvas')
