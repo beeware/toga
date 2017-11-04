@@ -3,19 +3,19 @@ from .base import Widget
 
 class Switch(Widget):
     def create(self):
-        pass
+        self._action('create Switch')
 
     def set_label(self, label):
-        pass
+        self._set_value('label', label)
 
     def set_is_on(self, value):
-        pass
+        self._set_value('is_on', value)
 
     def get_is_on(self):
-        pass
+        return self._get_value('is_on')
 
     def rehint(self):
-        pass
+        self._action('rehint Switch')
 
     def set_on_toggle(self, handler):
-        pass
+        self._set_value('on_toggle', handler)

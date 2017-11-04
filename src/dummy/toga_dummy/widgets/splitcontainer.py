@@ -3,13 +3,13 @@ from .base import Widget
 
 class SplitContainer(Widget):
     def create(self):
-        pass
+        self._action('create SplitContainer')
 
     def add_content(self, position, widget):
-        pass
+        self._action('add content', position=position, widget=widget)
 
     def apply_sub_layout(self):
-        pass
+        self._action('apply sub layout')
 
     def set_direction(self, value):
-        pass
+        self._set_value('direction', value)

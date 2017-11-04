@@ -1,21 +1,21 @@
 import unittest
-from unittest.mock import MagicMock, Mock
+
 import toga
 import toga_dummy
+from toga_dummy.utils import TestCase
 
 
-class TestNavigationView(unittest.TestCase):
-    @unittest.skip('Not implemented!')
+class NavigationViewTests(TestCase):
+    @unittest.skip("Not implemented!")
     def setUp(self):
-        self.factory = MagicMock()
-        self.factory.NavigationView = MagicMock(
-            return_value=MagicMock(spec=toga_dummy.widgets.navigationview.NavigationView))
+        super().setUp()
 
         self.title = 'Main View'
-        self.content = Mock()
+        self.content = toga.Box(factory=toga_dummy.factory)
         self.navi_view = toga.NavigationView(self.title,
                                              self.content,
-                                             factory=self.factory)
+                                             factory=toga_dummy.factory)
 
-    def test_factory_called(self):
-        self.factory.NavigationView.assert_called_once_with(interface=self.navi_view)
+    def test_widget_created(self):
+        self.assertEqual(self.switch._impl.interface, self.switch)
+        self.assertActionPerformed(self.switch, 'create Switch')

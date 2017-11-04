@@ -1,7 +1,9 @@
 import unittest
-from unittest.mock import MagicMock
+
 import toga
 import toga_dummy
+from toga_dummy.utils import EventLog
+
 
 class TestIcon(unittest.TestCase):
     def setUp(self):

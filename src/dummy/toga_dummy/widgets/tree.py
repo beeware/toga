@@ -3,19 +3,19 @@ from .base import Widget
 
 class Tree(Widget):
     def create(self):
-        pass
+        self._action('create Tree')
 
     def insert_node(self, node):
-        pass
+        self._action('insert node', node=node)
 
     def refresh_node(self, node):
-        pass
+        self._action('refresh node', node=node)
 
     def remove_node(self, node):
-        pass
+        self._action('remove node', node=node)
 
     def refresh(self):
-        pass
+        self._action('refresh')
 
     def set_on_select(self, handler):
-        pass
+        self._set_value('on_select', handler)

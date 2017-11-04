@@ -1,22 +1,21 @@
-import unittest
-from unittest.mock import MagicMock, Mock
 import toga
 import toga_dummy
+from toga_dummy.utils import TestCase
 
 
-class TestOptionContainer(unittest.TestCase):
+class OptionContainerTests(TestCase):
     def setUp(self):
-        self.factory = MagicMock()
-        self.factory.OptionContainer = MagicMock(return_value=MagicMock(spec=toga_dummy.factory.OptionContainer))
+        super().setUp()
 
-        self.op_container = toga.OptionContainer(factory=self.factory)
+        self.op_container = toga.OptionContainer(factory=toga_dummy.factory)
 
-    def test_option_container_factory_called(self):
-        self.factory.OptionContainer.assert_called_once_with(interface=self.op_container)
+    def test_widget_created(self):
+        self.assertEqual(self.op_container._impl.interface, self.op_container)
+        self.assertActionPerformed(self.op_container, 'create OptionContainer')
 
     def test_adding_container_invokes_add_content(self):
-        widget = MagicMock(specs=toga_dummy.factory.Widget)
+        widget = toga.Box(factory=toga_dummy.factory)
         label = 'New Container'
 
         self.op_container.add(label, widget)
-        self.op_container._impl.add_content.assert_called_once_with('New Container', widget._impl)
+        self.assertActionPerformedWith(self.op_container, 'add content', label=label, widget=widget._impl)

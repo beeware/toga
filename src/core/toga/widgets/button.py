@@ -41,7 +41,7 @@ class Button(Widget):
             self._label = ''
         else:
             self._label = str(value)
-        self._impl.set_label(str(value))
+        self._impl.set_label(self.label)
 
     @property
     def on_press(self):

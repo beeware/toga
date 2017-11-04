@@ -2,15 +2,14 @@ from .base import Widget
 
 
 class Label(Widget):
-
     def create(self):
-        pass
+        self._action('create Label')
 
     def set_alignment(self, value):
-        pass
+        self._set_value('alignment', value)
 
     def set_text(self, value):
-        pass
+        self._set_value('text', value)
 
     def rehint(self):
-        pass
+        self._action('rehint Label')

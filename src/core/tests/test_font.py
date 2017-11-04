@@ -1,15 +1,11 @@
-import unittest
-from unittest.mock import Mock, MagicMock, patch
 import toga
 import toga_dummy
+from toga_dummy.utils import TestCase
 
 
-class TestFont(unittest.TestCase):
+class FontTests(TestCase):
     def setUp(self):
-        mock_font = MagicMock(spec=toga_dummy.factory.Font)
-        
-        self.factory = MagicMock()
-        self.factory.Font = MagicMock(return_value=mock_font)
+        super().setUp()
 
         self.family = "sans-serif"
         self.size = 14
@@ -17,7 +13,7 @@ class TestFont(unittest.TestCase):
         self.font = toga.Font(
             self.family,
             self.size,
-            factory=self.factory
+            factory=toga_dummy.factory
         )
 
     def test_family(self):

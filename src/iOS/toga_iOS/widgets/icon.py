@@ -1,3 +1,4 @@
+
 class Icon:
     EXTENSION = ''
 

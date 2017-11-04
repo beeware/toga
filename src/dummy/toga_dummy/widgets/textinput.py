@@ -3,19 +3,19 @@ from .base import Widget
 
 class TextInput(Widget):
     def create(self):
-        pass
+        self._action('create TextInput')
 
     def set_readonly(self, value):
-        pass
+        self._set_value('readonly', value)
 
     def set_placeholder(self, value):
-        pass
+        self._set_value('placeholder', value)
 
     def get_value(self):
-        pass
+        return self._get_value('value')
 
     def set_value(self, value):
-        pass
+        self._set_value('value', value)
 
     def rehint(self):
-        pass
+        self._action('rehint TextInput')
