@@ -32,10 +32,6 @@ class Canvas(Widget):
         # surface.flush()
         # surface.finish()
 
-    def set_window(self, window):
-        if self.interface.content:
-            self.interface.content.window = window
-
     def line_width(self, width=2.0):
         self.native.set_line_width(width)
 
