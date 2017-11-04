@@ -15,6 +15,7 @@ class Canvas(Widget):
     def create(self):
         self.native = Gtk.DrawingArea()
         self.native.interface = self.interface
+        self.native.connect('show', lambda event: self.rehint())
 
     def draw(self, draw_func):
         self.native.connect('draw', draw_func)
@@ -123,3 +124,24 @@ class Canvas(Widget):
 
     def reset_transform(self):
         self.native.identity_matrix()
+
+    def rehint(self):
+        # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height(), getattr(self, '_fixed_height', False), getattr(self, '_fixed_width', False))
+        hints = {}
+        width = self.native.get_preferred_width()
+        minimum_width = width[0]
+        natural_width = width[1]
+
+        height = self.native.get_preferred_height()
+        minimum_height = height[0]
+        natural_height = height[1]
+
+        if minimum_width > 0:
+            hints['min_width'] = minimum_width
+        if minimum_height > 0:
+            hints['min_height'] = minimum_height
+        if natural_height > 0:
+            hints['height'] = natural_height
+
+        if hints:
+            self.interface.style.hint(**hints)
