@@ -44,6 +44,11 @@ class Widget:
         # if self._constraints:
         #     self._constraints.update()
 
+    def apply_sub_layout(self):
+        pass
+        # if self._constraints:
+        #     self._constraints.update()
+
     def rehint(self):
         pass
 
