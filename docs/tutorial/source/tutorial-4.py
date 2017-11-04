@@ -69,37 +69,39 @@ def build(app):
         context.line_style('rbga(0, 0, 0, 1)')
 
         context.line_width(SIZE / 4)
-        context.set_tolerance(0.1)
+        # context.set_tolerance(0.1)
 
-        context.set_line_join('ROUND')
-        context.set_dash([SIZE / 4.0, SIZE / 4.0], 0)
+        # context.set_line_join('ROUND')
+        # context.set_dash([SIZE / 4.0, SIZE / 4.0], 0)
         stroke_shapes(context, 0, 0)
 
-        context.set_dash([], 0)
+        # context.set_dash([], 0)
         stroke_shapes(context, 0, 3 * SIZE)
 
-        context.set_line_join('BEVEL')
+        # context.set_line_join('BEVEL')
         stroke_shapes(context, 0, 6 * SIZE)
 
-        context.set_line_join('MITER')
+        # context.set_line_join('MITER')
         stroke_shapes(context, 0, 9 * SIZE)
 
         fill_shapes(context, 0, 12 * SIZE)
 
-        context.set_line_join('BEVEL')
+        # context.set_line_join('BEVEL')
         fill_shapes(context, 0, 15 * SIZE)
         context.line_style('rgba(1, 0, 0, 1)')
         stroke_shapes(context, 0, 15 * SIZE)
 
     canvas = toga.Canvas()
-    # window = toga.Window()
-    # window.app(app)
-    # window.content(canvas)
+    window = toga.Window(title='Drawing Canvas')
+    window.app = app
+    window.content = canvas
+    window.show()
     canvas.draw(draw)
-
+    
+    return canvas
 
 def main():
-    return toga.App('First App', 'org.pybee.canvas_draw', startup=build)
+    return toga.App('First App', 'org.pybee.canvas', startup=build)
 
 
 if __name__ == '__main__':
