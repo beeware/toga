@@ -12,4 +12,4 @@ class Font:
 
     def create(self):
         self._impl = Pango.FontDescription.from_string(
-            self.family + " " + str(self.size))
+            self.interface.family + " " + str(self.interface.size))

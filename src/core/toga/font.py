@@ -2,7 +2,7 @@ from .platform import get_platform_factory
 
 
 class Font:
-    def __init__(self, family, size):
+    def __init__(self, family, size, factory=None):
         """ A :obj:`Font` is a font family (e.g. "Helvetica") and a size (e.g. 15) that can
         be applied to widgets.
 
@@ -13,7 +13,7 @@ class Font:
         self._family = family
         self._size = size
 
-        self.factory = get_platform_factory()
+        self.factory = get_platform_factory(factory)
         self._impl = self.factory.Font(interface=self)
 
     @property
