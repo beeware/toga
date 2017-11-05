@@ -40,7 +40,6 @@ __all__ = [
     'Image',
     'ImageView',
     'Label',
-    'Matrix',
     'MultilineTextInput',
     'NavigationView',
     'NumberInput',

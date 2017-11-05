@@ -11,7 +11,6 @@ from .widgets.icon import Icon
 # from .widgets.image import *
 # from .widgets.imageview import *
 from .widgets.label import Label
-from .widgets.matrix import Matrix
 from .widgets.multilinetextinput import MultilineTextInput
 from .widgets.optioncontainer import OptionContainer
 from .widgets.passwordinput import PasswordInput
@@ -35,12 +34,10 @@ __all__ = [
     'Box',
     'Button',
     'Canvas',
-    'Context2D',
     'Icon',
     'Image',
     'ImageView',
     'Label',
-    'Matrix',
     'MultilineTextInput',
     'NumberInput',
     'OptionContainer',
