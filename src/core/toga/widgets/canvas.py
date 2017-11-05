@@ -77,7 +77,7 @@ class Canvas(Widget):
     # Paths
 
     @contextmanager
-    def begin_close_path(self, x, y):
+    def closed_path(self, x, y):
         """Creates a new path and then closes it
 
         Yields: None

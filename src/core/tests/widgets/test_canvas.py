@@ -31,7 +31,7 @@ class CanvasTests(TestCase):
         with self.testing_canvas.save_restore():
             self.testing_canvas.translate(xc, yc)
             self.testing_canvas.scale(1.0, yr / xr)
-            with self.testing_canvas.begin_close_path(xr, 0.0):
+            with self.testing_canvas.closed_path(xr, 0.0):
                 self.testing_canvas.arc(0, 0, xr, 0, 2 * math.pi)
 
     def test_fill_checks(self):
@@ -82,7 +82,7 @@ class CanvasTests(TestCase):
         self.testing_canvas.fill()
 
     def test_draw_triangle(self):
-        with self.testing_canvas.begin_close_path(32, 0):
+        with self.testing_canvas.closed_path(32, 0):
             self.testing_canvas.line_to(32, 64)
             self.testing_canvas.line_to(-64, 0)
 

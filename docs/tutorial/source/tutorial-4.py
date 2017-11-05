@@ -22,27 +22,27 @@ class StartApp(toga.App):
         self.main_window.show()
 
     def triangle(self, context):
-        with context.begin_close_path(self.SIZE, 0):
+        with context.closed_path(self.SIZE, 0):
             context.line_to(self.SIZE, 2 * self.SIZE)
             context.line_to(-2 * self.SIZE, 0)
 
     def square(self, context):
         self.context = context
-        with self.context.begin_close_path(0, 0):
+        with self.context.closed_path(0, 0):
             self.context.line_to(2 * self.SIZE, 0)
             self.context.line_to(0, 2 * self.SIZE)
             self.context.line_to(-2 * self.SIZE, 0)
 
     def bowtie(self, context):
         self.context = context
-        with self.context.begin_close_path(0, 0):
+        with self.context.closed_path(0, 0):
             self.context.line_to(2 * self.SIZE, 2 * self.SIZE)
             self.context.line_to(-2 * self.SIZE, 0)
             self.context.line_to(2 * self.SIZE, -2 * self.SIZE)
 
     def inf(self, context):
         self.context = context
-        with self.context.begin_close_path(0, self.SIZE):
+        with self.context.closed_path(0, self.SIZE):
             self.context.bezier_curve_to(0, self.SIZE, self.SIZE, self.SIZE, 2 * self.SIZE, 0)
             self.context.bezier_curve_to(self.SIZE, -self.SIZE, 2 * self.SIZE, -self.SIZE, 2 * self.SIZE, 0)
             self.context.bezier_curve_to(0, self.SIZE, -self.SIZE, self.SIZE, -2 * self.SIZE, 0)

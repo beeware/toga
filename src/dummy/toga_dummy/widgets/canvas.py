@@ -29,7 +29,7 @@ class Canvas(Widget):
     def stroke_style(self, color='None', r=0.0, b=0.0, g=0.0, a=1.0):
         pass
 
-    def begin_close_path(self):
+    def closed_path(self):
         pass
 
     def close_path(self):
