@@ -1,46 +1,50 @@
-from ..utils import not_required_on
+from ..utils import not_required, not_required_on, LogEntry, LoggedObject
 
 
-class Widget:
+class Widget(LoggedObject):
     def __init__(self, interface):
+        super().__init__()
         self.interface = interface
         self.interface._impl = self
         self.create()
 
     def set_app(self, app):
-        pass
+        self._set_value('app', app)
 
     def set_window(self, window):
-        pass
+        self._set_value('window', window)
 
     @property
     def container(self):
-        pass
+        return self._get_value('container')
 
     @container.setter
     def container(self, container):
-        pass
+        self._set_value('container', container)
 
     @property
     def enabled(self):
-        pass
+        return self._get_value('enabled')
 
     @enabled.setter
     def enabled(self, value):
-        pass
+        self._set_value('enabled', value)
 
     def add_child(self, child):
-        pass
+        self._action('add child', child=child)
 
     @not_required_on('gtk', 'winforms', 'android', 'web')
     def add_constraints(self):
-        pass
+        self._action('add constraints')
 
     def apply_layout(self):
-        pass
+        self._action('apply layout')
+
+    def apply_sub_layout(self):
+        self._action('apply sub layout')
 
     def set_font(self, font):
-        pass
+        self._set_value('font', font)
 
     def rehint(self):
-        pass
+        self._action('rehint')

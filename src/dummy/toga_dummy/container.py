@@ -1,4 +1,4 @@
-from toga_dummy.utils import not_required_on
+from toga_dummy.utils import not_required_on, LoggedObject
 
 
 @not_required_on('gtk', 'winforms', 'android', 'web')
@@ -58,17 +58,14 @@ class Constraints:
         pass
 
 
-class Container:
-    def __init__(self):
-        pass
-
+class Container(LoggedObject):
     @property
     def content(self):
-        pass
+        return self._get_value('content')
 
     @content.setter
     def content(self, widget):
-        pass
+        self._set_value('content', widget)
 
     def update_layout(self, **style):
-        pass
+        self._action('update container layout', style=style)

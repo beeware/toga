@@ -46,8 +46,8 @@ class NavigationView(NavigationViewInterface, WidgetMixin):
         # Add the layout constraints
         self._add_constraints()
 
-    def _push(self, content):
+    def push(self, content):
         self._controller.pushViewController_animated_(content._controller, True)
 
-    def _pop(self, content):
+    def pop(self, content):
         self._controller.popViewController_animated_(True)

@@ -1,39 +1,37 @@
-import unittest
-from unittest.mock import MagicMock
 import toga
 import toga_dummy
+from toga_dummy.utils import TestCase
 
 
-class TestButton(unittest.TestCase):
+class ButtonTests(TestCase):
     def setUp(self):
-        # mock factory to return a mock button
-        self.factory = MagicMock()
-        self.factory.Button = MagicMock(return_value=MagicMock(spec=toga_dummy.widgets.button.Button))
+        super().setUp()
 
-        # init button with test factory
-        self.label = 'Test Button'
-        self.on_press = None
-        self.enabled = True
-        self.btn = toga.Button(self.label, factory=self.factory)
+        # Create a button with the dummy factory
+        self.initial_label = 'Test Button'
+        self.btn = toga.Button(self.initial_label, factory=toga_dummy.factory)
 
-    def test_button_factory_called(self):
-        self.factory.Button.assert_called_once_with(interface=self.btn)
+    def test_widget_created(self):
+        self.assertEqual(self.btn._impl.interface, self.btn)
+        self.assertActionPerformed(self.btn, 'create Button')
 
     def test_button_label(self):
-        self.assertEqual(self.btn._label, self.label)
+        self.assertEqual(self.btn._label, self.initial_label)
         self.btn.label = 'New Label'
         self.assertEqual(self.btn.label, 'New Label')
+
         # test if backend gets called with the right label
-        self.btn._impl.set_label.assert_called_with('New Label')
+        self.assertValueSet(self.btn, 'label', 'New Label')
 
     def test_button_label_with_None(self):
         self.btn.label = None
         self.assertEqual(self.btn.label, '')
+        self.assertValueSet(self.btn, 'label', '')
 
     def test_button_on_press(self):
-        self.assertEqual(self.btn._on_press, self.on_press)
+        self.assertIsNone(self.btn._on_press)
 
-        # set new callback
+        # set a new callback
         def callback(widget, **extra):
             return 'called {} with {}'.format(type(widget), extra)
 
@@ -43,3 +41,4 @@ class TestButton(unittest.TestCase):
             self.btn.on_press('widget', a=1),
             "called <class 'toga.widgets.button.Button'> with {'a': 1}"
         )
+        self.assertValueSet(self.btn, 'on_press', self.btn.on_press)

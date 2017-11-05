@@ -1,12 +1,13 @@
 import unittest
-from unittest.mock import MagicMock
+
+from colosseum import CSS
 
 import toga
 import toga_dummy
-from colosseum import CSS
+from toga_dummy.utils import TestCase
 
 
-class TestPoint(unittest.TestCase):
+class PointTests(unittest.TestCase):
     def setUp(self):
         self.top = 50
         self.left = 100
@@ -22,10 +23,11 @@ class TestPoint(unittest.TestCase):
         self.assertEqual(self.point.top, 50)
 
 
-class TestLayout(unittest.TestCase):
+class LayoutTests(TestCase):
     def setUp(self):
-        self.factory = MagicMock(spec=toga_dummy.factory)
-        self.widget = toga.Widget(factory=self.factory)
+        super().setUp()
+
+        self.widget = toga.Widget(factory=toga_dummy.factory)
         self.layout = toga.Layout(self.widget)
 
     def test_instantiation(self):
@@ -87,24 +89,23 @@ class TestLayout(unittest.TestCase):
         self.assertEqual(origin.left, 0)
 
 
-class TestWidget(unittest.TestCase):
+class WidgetTests(TestCase):
     def setUp(self):
+        super().setUp()
+
         self.id = 'widget_id'
         self.style = CSS(padding=666)
-        self.factory = MagicMock(spec=toga_dummy.factory)
 
         self.widget = toga.Widget(id=self.id,
                                   style=self.style,
-                                  factory=self.factory)
-        self.widget._impl = MagicMock(spec=toga_dummy.widgets.base.Widget)
+                                  factory=toga_dummy.factory)
 
     def test_arguments_were_set_correctly(self):
         self.assertEqual(self.widget.id, self.id)
         self.assertEqual(self.widget.style.padding, self.style.padding)
-        self.assertEqual(self.widget.factory, self.factory)
 
     def test_create_widget_with_no_style(self):
-        widget = toga.Widget(factory=self.factory)
+        widget = toga.Widget(factory=toga_dummy.factory)
         self.assertTrue(isinstance(widget.style, CSS))
 
     def test_adding_children(self):
@@ -112,8 +113,7 @@ class TestWidget(unittest.TestCase):
         """
         self.assertEqual(self.widget.children, [], 'No child was added, should return a empty list.')
         # Create a child widget to add to the our widget.
-        child = toga.Widget(factory=self.factory)
-        child._impl = MagicMock(spec=toga_dummy.widgets.base.Widget)
+        child = toga.Widget(factory=toga_dummy.factory)
 
         with self.assertRaises(ValueError, msg='Widget cannot have children.'):
             self.widget.add(child)

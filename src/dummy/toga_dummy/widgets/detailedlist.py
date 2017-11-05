@@ -1,9 +1,12 @@
-class DetailedList():
+from .base import Widget
+
+
+class DetailedList(Widget):
     def create(self):
-        pass
+        self._action('create DetailedList')
 
     def set_data(self, data):
-        pass
+        self._set_value('data', data)
 
     def add(self, item):
-        pass
+        self._action('add item', item=item)

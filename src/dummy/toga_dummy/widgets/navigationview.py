@@ -2,14 +2,11 @@ from .base import Widget
 
 
 class NavigationView(Widget):
-    def __init__(self, title, content, on_action=None, style=None):
-        pass
-
     def create(self):
-        pass
+        self._action('create NavigationView')
 
-    def _push(self, content):
-        pass
+    def push(self, content):
+        self._action('push', content=content)
 
-    def _pop(self, content):
-        pass
+    def pop(self):
+        self._action('pop')

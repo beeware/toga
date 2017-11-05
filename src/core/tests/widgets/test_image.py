@@ -1,21 +1,16 @@
-import unittest
-from unittest.mock import MagicMock
 import toga
 import toga_dummy
+from toga_dummy.utils import TestCase
 
 
-class TestImage(unittest.TestCase):
+class ImageTests(TestCase):
     def setUp(self):
-        # mock factory to return a mock button
-        self.factory = MagicMock()
-        self.factory.Image = MagicMock(return_value=MagicMock(spec=toga_dummy.widgets.image.Image))
+        super().setUp()
 
         self.path = 'path/to/image.jpg'
         self.image = toga.Image(path=self.path,
-                                factory=self.factory)
+                                factory=toga_dummy.factory)
 
-    def test_factory_called(self):
-        self.factory.Image.assert_called_once_with(interface=self.image)
-
-    def test_setting_path_invokes_impl_method(self):
-        self.image._impl.load_image.assert_called_once_with(self.path)
+    def test_object_created(self):
+        self.assertEqual(self.image._impl.interface, self.image)
+        self.assertActionPerformedWith(self.image, 'load image', path=self.path)

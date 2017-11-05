@@ -4,7 +4,6 @@ from ..libs import *
 class Image(object):
     def __init__(self, interface):
         self.interface = interface
-        self.interface._impl = self
 
     def load_image(self, path):
         if path.startswith('http://') or path.startswith('https://'):

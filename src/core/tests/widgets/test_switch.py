@@ -1,13 +1,11 @@
-import unittest
-from unittest.mock import MagicMock, Mock
 import toga
 import toga_dummy
+from toga_dummy.utils import TestCase
 
 
-class TestSwitch(unittest.TestCase):
+class SwitchTests(TestCase):
     def setUp(self):
-        self.factory = MagicMock()
-        self.factory.Switch = MagicMock(return_value=MagicMock(spec=toga_dummy.factory.Switch))
+        super().setUp()
 
         self.label = 'Test Label'
 
@@ -21,10 +19,11 @@ class TestSwitch(unittest.TestCase):
                                   on_toggle=self.on_toggle,
                                   is_on=self.is_on,
                                   enabled=self.enabled,
-                                  factory=self.factory)
+                                  factory=toga_dummy.factory)
 
-    def test_factory_called(self):
-        self.factory.Switch.assert_called_with(interface=self.switch)
+    def test_widget_created(self):
+        self.assertEqual(self.switch._impl.interface, self.switch)
+        self.assertActionPerformed(self.switch, 'create Switch')
 
     def test_arguments_are_all_set_properly(self):
         self.assertEqual(self.switch.label, self.label)
@@ -40,13 +39,13 @@ class TestSwitch(unittest.TestCase):
     def test_setting_label_invokes_impl_method(self):
         new_label = 'New Label'
         self.switch.label = new_label
-        self.switch._impl.set_label.assert_called_with(new_label)
+        self.assertValueSet(self.switch, 'label', new_label)
 
     def test_setting_is_on_invokes_impl_method(self):
         new_value = False
         self.switch.is_on = new_value
-        self.switch._impl.set_is_on.assert_called_with(new_value)
+        self.assertValueSet(self.switch, 'is_on', False)
 
     def test_getting_is_on_invokes_impl_method(self):
         value = self.switch.is_on
-        self.switch._impl.get_is_on.assert_called_with()
+        self.assertValueGet(self.switch, 'is_on')

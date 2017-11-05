@@ -3,17 +3,16 @@ from .base import Widget
 
 class ScrollContainer(Widget):
     def create(self):
-        pass
+        self._action('create ScrollContainer')
 
     def set_content(self, widget):
-        pass
+        self._action('set content', widget=widget)
 
     def apply_sub_layout(self):
-        pass
+        self._action('apply_sub_layout')
 
     def set_vertical(self, value):
-        pass
+        self._set_value('vertical', value)
 
     def set_horizontal(self, value):
-        pass
-
+        self._set_value('horizontal', value)

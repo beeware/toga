@@ -3,13 +3,13 @@ from .base import Widget
 
 class MultilineTextInput(Widget):
     def create(self):
-        pass
+        self._action('create MultilineTextInput')
 
     def set_value(self, value):
-        pass
+        self._set_value('value', value)
 
     def set_placeholder(self, value):
-        pass
+        self._set_value('placeholder', value)
 
     def set_readonly(self, value):
-        pass
+        self._set_value('readonly', value)

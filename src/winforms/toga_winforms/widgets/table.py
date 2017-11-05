@@ -27,12 +27,6 @@ class Table(Widget):
             listViewItem = WinForms.ListViewItem(data);
             self.native.Items.Insert(index, listViewItem)
 
-    def insert_row(self, node):
-        raise NotImplementedError()
-
-    def remove_row(self, node):
-        raise NotImplementedError()
-
     def refresh(self):
         raise NotImplementedError()
 
