@@ -27,12 +27,6 @@ class Canvas(Widget):
     def restore(self):
         self.native.restore()
 
-    def release(self):
-        pass
-        # TODO determine how to flush the surface
-        # surface.flush()
-        # surface.finish()
-
     def line_width(self, width=2.0):
         self.native.set_line_width(width)
 

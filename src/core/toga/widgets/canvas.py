@@ -23,15 +23,6 @@ class Canvas(Widget):
 
         self.rehint()
 
-    def __enter__(self):
-        return self._impl
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        """Release the context when no longer needed
-
-        """
-        self._impl.release()
-
     @contextmanager
     def save_restore(self):
         """Push contents to a stack, then restore to the previous state
