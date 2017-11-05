@@ -35,7 +35,6 @@ __all__ = [
     'Box',
     'Button',
     'Canvas',
-    'Context2D',
     'Icon',
     'Image',
     'ImageView',
