@@ -10,9 +10,9 @@ class Table(Widget):
         self.table = Gtk.TreeView(self.data)
 
         self.columns = []
-        for heading in self.interface.headings:
+        for i, heading in enumerate(self.interface.headings):
             renderer = Gtk.CellRendererText()
-            column = Gtk.TreeViewColumn(heading, renderer, text=0)
+            column = Gtk.TreeViewColumn(heading, renderer, text=i)
             self.table.append_column(column)
 
         self.native = Gtk.ScrolledWindow()
@@ -23,7 +23,10 @@ class Table(Widget):
         self.native.interface = self.interface
 
     def refresh(self):
-        raise NotImplementedError()
+        self.data.clear()
+
+        for row in self.interface.data.rows:
+            self.data.append(row.data)
 
     def set_on_select(self, handler):
         pass
