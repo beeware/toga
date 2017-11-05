@@ -174,7 +174,8 @@ class Table(Widget):
 
         if data is not None:
             self._data.add_listener(self)
-            self._data._refresh()
+
+        self._impl.refresh()
 
     @property
     def on_select(self):
