@@ -23,18 +23,23 @@ class Canvas(Widget):
 
         self.rehint()
 
-    @contextmanager
-    def save_restore(self):
-        """Push contents to a stack, then restore to the previous state
+    def draw(self, draw_func):
+        """Begins a draw operation using the passed in drawing function
 
-        Yields: None
+        Creates a context or saves the current context, draws the operations
+        passed using the draw_func, then renders the drawing, and finally
+        restores the saved context. The top left corner of the canvas must be
+        painted at the origin of the context and is sized using the rehint()
+        method. The draw_func requires two arguments canvas and context.
+        >>> canvas = toga.Canvas()
+        >>> def draw_func(canvas, context)
+        >>>     canvas.move_to(10,10)
+        >>> canvas.draw(draw_func)
+
+        Args:
+            draw_func (:obj:'function'): the function that contains the drawing procedure
 
         """
-        self._impl.save()
-        yield
-        self._impl.restore()
-
-    def draw(self, draw_func):
         self._impl.draw(draw_func)
 
     # Line Styles

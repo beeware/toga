@@ -5,16 +5,7 @@ class Canvas(Widget):
     def create(self):
         self._action('create Canvas')
 
-    def save_restore(self):
-        pass
-
-    def save(self):
-        pass
-
-    def safe(self):
-        pass
-
-    def restore(self):
+    def context(self):
         pass
 
     def draw(self):

@@ -27,75 +27,67 @@ class StartApp(toga.App):
             context.line_to(-2 * self.SIZE, 0)
 
     def square(self, context):
-        self.context = context
-        with self.context.closed_path(0, 0):
-            self.context.line_to(2 * self.SIZE, 0)
-            self.context.line_to(0, 2 * self.SIZE)
-            self.context.line_to(-2 * self.SIZE, 0)
+        with context.closed_path(0, 0):
+            context.line_to(2 * self.SIZE, 0)
+            context.line_to(0, 2 * self.SIZE)
+            context.line_to(-2 * self.SIZE, 0)
 
     def bowtie(self, context):
-        self.context = context
-        with self.context.closed_path(0, 0):
-            self.context.line_to(2 * self.SIZE, 2 * self.SIZE)
-            self.context.line_to(-2 * self.SIZE, 0)
-            self.context.line_to(2 * self.SIZE, -2 * self.SIZE)
+        with context.closed_path(0, 0):
+            context.line_to(2 * self.SIZE, 2 * self.SIZE)
+            context.line_to(-2 * self.SIZE, 0)
+            context.line_to(2 * self.SIZE, -2 * self.SIZE)
 
     def inf(self, context):
-        self.context = context
-        with self.context.closed_path(0, self.SIZE):
-            self.context.bezier_curve_to(0, self.SIZE, self.SIZE, self.SIZE, 2 * self.SIZE, 0)
-            self.context.bezier_curve_to(self.SIZE, -self.SIZE, 2 * self.SIZE, -self.SIZE, 2 * self.SIZE, 0)
-            self.context.bezier_curve_to(0, self.SIZE, -self.SIZE, self.SIZE, -2 * self.SIZE, 0)
-            self.context.bezier_curve_to(-self.SIZE, -self.SIZE, -2 * self.SIZE, -self.SIZE, -2 * self.SIZE, 0)
+        with context.closed_path(0, self.SIZE):
+            context.bezier_curve_to(0, self.SIZE, self.SIZE, self.SIZE, 2 * self.SIZE, 0)
+            context.bezier_curve_to(self.SIZE, -self.SIZE, 2 * self.SIZE, -self.SIZE, 2 * self.SIZE, 0)
+            context.bezier_curve_to(0, self.SIZE, -self.SIZE, self.SIZE, -2 * self.SIZE, 0)
+            context.bezier_curve_to(-self.SIZE, -self.SIZE, -2 * self.SIZE, -self.SIZE, -2 * self.SIZE, 0)
 
-    def fill_shapes(self, context, x, y):
-        self.context = context
-        with self.context.save_restore():
-            for shape in range(4):
-                with self.context.fill():
-                    if shape == 0:
-                        self.context.translate(x + self.SIZE, y + self.SIZE)
-                        self.bowtie(context)
-                    elif shape == 1:
-                        self.context.translate(3 * self.SIZE, 0)
-                        self.square(context)
-                    elif shape == 2:
-                        self.context.translate(3 * self.SIZE, 0)
-                        self.triangle(context)
-                    else:
-                        self.context.translate(3 * self.SIZE, 0)
-                        self.inf(context)
+    def fill_shapes(self, canvas, context, x, y):
+        for shape in range(4):
+            with context.fill():
+                if shape == 0:
+                    context.translate(x + self.SIZE, y + self.SIZE)
+                    self.bowtie(context)
+                elif shape == 1:
+                    context.translate(3 * self.SIZE, 0)
+                    self.square(context)
+                elif shape == 2:
+                    context.translate(3 * self.SIZE, 0)
+                    self.triangle(context)
+                else:
+                    context.translate(3 * self.SIZE, 0)
+                    self.inf(context)
 
-    def stroke_shapes(self, context, x, y):
-        self.context = context
-        with self.context.save_restore():
-            for self.shape in range(4):
-                with self.context.stroke():
-                    if self.shape == 0:
-                        self.context.translate(x + self.SIZE, y + self.SIZE)
-                        self.bowtie(context)
-                    elif self.shape == 1:
-                        self.context.translate(3 * self.SIZE, 0)
-                        self.square(context)
-                    elif self.shape == 2:
-                        self.context.translate(3 * self.SIZE, 0)
-                        self.triangle(context)
-                    else:
-                        self.context.translate(3 * self.SIZE, 0)
-                        self.inf(context)
+    def stroke_shapes(self, canvas, context, x, y):
+        for shape in range(4):
+            with context.stroke():
+                if shape == 0:
+                    context.translate(x + self.SIZE, y + self.SIZE)
+                    self.bowtie(context)
+                elif shape == 1:
+                    context.translate(3 * self.SIZE, 0)
+                    self.square(context)
+                elif shape == 2:
+                    context.translate(3 * self.SIZE, 0)
+                    self.triangle(context)
+                else:
+                    context.translate(3 * self.SIZE, 0)
+                    self.inf(context)
 
     def draw_steps(self, canvas, context):
-        self.context = context
-        self.context.line_style('rbga(0, 0, 0, 1)')
-        self.context.line_width(self.SIZE / 4)
-        self.stroke_shapes(context, 0, 0)
-        self.stroke_shapes(context, 0, 3 * self.SIZE)
-        self.stroke_shapes(context, 0, 6 * self.SIZE)
-        self.stroke_shapes(context, 0, 9 * self.SIZE)
-        self.fill_shapes(context, 0, 12 * self.SIZE)
-        self.fill_shapes(context, 0, 15 * self.SIZE)
-        self.context.line_style('rgba(1, 0, 0, 1)')
-        self.stroke_shapes(context, 0, 15 * self.SIZE)
+        context.line_style('rbga(0, 0, 0, 1)')
+        canvas.line_width(context, self.SIZE / 4)
+        canvas.draw(self.stroke_shapes(x=0, y=0))
+        canvas.draw(self.stroke_shapes(x=0, y=3 * self.SIZE))
+        canvas.draw(self.stroke_shapes(x=0, y=6 * self.SIZE))
+        canvas.draw(self.stroke_shapes(x=0, y=9 * self.SIZE))
+        canvas.draw(self.fill_shapes(x=0, y=12 * self.SIZE))
+        canvas.draw(self.fill_shapes(x=0, y=15 * self.SIZE))
+        context.line_style('rgba(1, 0, 0, 1)')
+        canvas.draw(self.stroke_shapes(x=0, y=15 * self.SIZE))
 
 
 if __name__ == '__main__':
@@ -104,3 +96,4 @@ if __name__ == '__main__':
     app = StartApp('Tutorial 4', 'org.pybee.helloworld')
 
     app.main_loop()
+

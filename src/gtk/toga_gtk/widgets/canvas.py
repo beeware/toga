@@ -21,12 +21,6 @@ class Canvas(Widget):
         self.native.connect('draw', draw_func)
         yield
 
-    def save(self):
-        self.native.save()
-
-    def restore(self):
-        self.native.restore()
-
     def line_width(self, width=2.0):
         self.native.set_line_width(width)
 

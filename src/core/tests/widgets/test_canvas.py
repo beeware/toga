@@ -15,24 +15,24 @@ class CanvasTests(TestCase):
         self.assertActionPerformed(self.testing_canvas, 'create Canvas')
 
     def test_basic_drawing(self):
-        with self.testing_canvas.save_restore():
-            self.testing_canvas.rect(-3, -3, 6, 6)
-            self.testing_canvas.fill_style('rgba(0, 0.5, 0, 0.4)')
-            self.testing_canvas.fill(preserve=True)
-            self.testing_canvas.stroke_style('rgba(0.25, 0.25, 0.25, 0.6)')
-            self.testing_canvas.line_width(1)
-            self.testing_canvas.stroke()
+        def drawing(canvas, context):
+            context.rect(-3, -3, 6, 6)
+            context.fill_style('rgba(0, 0.5, 0, 0.4)')
+            context.fill(preserve=True)
+            context.stroke_style('rgba(0.25, 0.25, 0.25, 0.6)')
+            context.line_width(1)
+            context.stroke()
+        self.testing_canvas.draw(drawing)
 
     def test_self_oval_path(self):
         xc = 50
         yc = 60
         xr = 25
         yr = 30
-        with self.testing_canvas.save_restore():
-            self.testing_canvas.translate(xc, yc)
-            self.testing_canvas.scale(1.0, yr / xr)
-            with self.testing_canvas.closed_path(xr, 0.0):
-                self.testing_canvas.arc(0, 0, xr, 0, 2 * math.pi)
+        self.testing_canvas.translate(xc, yc)
+        self.testing_canvas.scale(1.0, yr / xr)
+        with self.testing_canvas.closed_path(xr, 0.0):
+            self.testing_canvas.arc(0, 0, xr, 0, 2 * math.pi)
 
     def test_fill_checks(self):
         CHECK_SIZE = 32
@@ -47,7 +47,7 @@ class CanvasTests(TestCase):
         # Only works for CHECK_SIZE a power of 2
         for j in range(x & -CHECK_SIZE, height, CHECK_SIZE):
             for i in range(y & -CHECK_SIZE, width, CHECK_SIZE):
-                if ((i / CHECK_SIZE + j / CHECK_SIZE) % 2 == 0):
+                if (i / CHECK_SIZE + j / CHECK_SIZE) % 2 == 0:
                     self.testing_canvas.rect(i, j, CHECK_SIZE, CHECK_SIZE)
 
         self.testing_canvas.fill_style('rgba(0.7, 0.7, 0.7, 1)')
