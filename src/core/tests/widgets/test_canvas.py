@@ -1,6 +1,7 @@
 import toga
 import toga_dummy
 from toga_dummy.utils import EventLog, TestCase
+import math
 
 
 class CanvasTests(TestCase):
@@ -10,8 +11,8 @@ class CanvasTests(TestCase):
         self.testing_canvas = toga.Canvas(factory=toga_dummy.factory)
 
     def test_widget_created(self):
-        self.assertEqual(self.testing.testing_canvas._impl.interface, self.testing_canvas)
-        self.assertActionPerformed(self.testing.testing_canvas. 'create Canvas')
+        self.assertEqual(self.testing_canvas._impl.interface, self.testing_canvas)
+        self.assertActionPerformed(self.testing_canvas, 'create Canvas')
 
     def test_basic_drawing(self):
         with self.testing_canvas.save_restore():
@@ -46,7 +47,7 @@ class CanvasTests(TestCase):
         # Only works for CHECK_SIZE a power of 2
         for j in range(x & -CHECK_SIZE, height, CHECK_SIZE):
             for i in range(y & -CHECK_SIZE, width, CHECK_SIZE):
-                if((i / CHECK_SIZE + j / CHECK_SIZE) % 2 == 0):
+                if ((i / CHECK_SIZE + j / CHECK_SIZE) % 2 == 0):
                     self.testing_canvas.rect(i, j, CHECK_SIZE, CHECK_SIZE)
 
         self.testing_canvas.fill_style('rgba(0.7, 0.7, 0.7, 1)')
@@ -59,25 +60,25 @@ class CanvasTests(TestCase):
         alpha = 0.8
         subradius = radius * (2 / 3. - 0.1)
 
-        self.testing_canvas.fill_style('rgba(1, 0, 0, ' + str(alpha) +')')
-        self.testing_canvas.ellipse(self.canvas,
-                             xc + radius / 3. * math.cos(math.pi * 0.5),
-                             yc - radius / 3. * math.sin(math.pi * 0.5),
-                             subradius, subradius)
+        self.testing_canvas.fill_style('rgba(1, 0, 0, ' + str(alpha) + ')')
+        self.testing_canvas.ellipse(self.testing_canvas,
+                                    xc + radius / 3. * math.cos(math.pi * 0.5),
+                                    yc - radius / 3. * math.sin(math.pi * 0.5),
+                                    subradius, subradius)
         self.testing_canvas.fill()
 
         self.testing_canvas.fill_style('rgba(0, 1, 0, ' + str(alpha) + ')')
-        self.testing_canvas.ellipse(self.canvas,
-                             xc + radius / 3. * math.cos(math.pi * (0.5 + 2 / .3)),
-                             yc - radius / 3. * math.sin(math.pi * (0.5 + 2 / .3)),
-                             subradius, subradius)
+        self.testing_canvas.ellipse(self.testing_canvas,
+                                    xc + radius / 3. * math.cos(math.pi * (0.5 + 2 / .3)),
+                                    yc - radius / 3. * math.sin(math.pi * (0.5 + 2 / .3)),
+                                    subradius, subradius)
         self.testing_canvas.fill()
 
         self.testing_canvas.fill_style('rgba(0, 0, 1, ' + str(alpha) + ')')
-        self.testing_canvas.ellipse(self.canvas,
-                             xc + radius / 3. * math.cos(math.pi * (0.5 + 4 / .3)),
-                             yc - radius / 3. * math.sin(math.pi * (0.5 + 4 / .3)),
-                             subradius, subradius)
+        self.testing_canvas.ellipse(self.testing_canvas,
+                                    xc + radius / 3. * math.cos(math.pi * (0.5 + 4 / .3)),
+                                    yc - radius / 3. * math.sin(math.pi * (0.5 + 4 / .3)),
+                                    subradius, subradius)
         self.testing_canvas.fill()
 
     def test_draw_triangle(self):
@@ -98,10 +99,10 @@ class CanvasTests(TestCase):
         self.testing_canvas.quadratic_curve_to(1, 1, 5, 5)
 
     def test_arc(self):
-        self.testing_canvas.arc(-10, -10, 10, math.pi/2, 0, True)
+        self.testing_canvas.arc(-10, -10, 10, math.pi / 2, 0, True)
 
     def test_ellipse(self):
-        self.testing_canvas.ellipse(1, 1, 50, 20, 0, math.pi, 2*math.pi, False)
+        self.testing_canvas.ellipse(1, 1, 50, 20, 0, math.pi, 2 * math.pi, False)
 
     def test_rotate(self):
         self.testing_canvas.rotate(math.pi)
