@@ -48,7 +48,7 @@ a simple browser.
 Tutorial 4 - let's draw on a canvas! (Gtk+ only for now)
 ===================================
 
-In :doc:`tutorial-4`, you will discover how to use the :mod:`toga.interface.widgets.context2D.Context2D` widget to draw
+In :doc:`tutorial-4`, you will discover how to use the :mod:`toga.interface.widgets.canvas.Canvas` widget to draw
 lines and shapes on a canvas.
 
 .. figure:: screenshots/tutorial-4.png
