@@ -17,7 +17,6 @@ from .widgets.canvas import Canvas
 from .widgets.image import *
 from .widgets.imageview import *
 from .widgets.label import Label
-from .widgets.matrix import Matrix
 from .widgets.multilinetextinput import *
 from .widgets.optioncontainer import *
 from .widgets.passwordinput import *
