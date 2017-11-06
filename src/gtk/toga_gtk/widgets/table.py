@@ -31,10 +31,14 @@ class Table(Widget):
             self.data.append(row.data)
 
     def set_on_select(self, handler):
+
         for conn_id in self._connections:
             # Disconnect all other on_select handlers, so that if you reassign
             # the on_select, it doesn't trigger the old ones too.
             self.table.disconnect(conn_id)
+
+        if handler is None:
+            return
 
         def _handler(widget, *args):
             selection = widget.get_selection()

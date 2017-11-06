@@ -180,8 +180,8 @@ class Table(Widget):
     @property
     def on_select(self):
         """ The callback function that is invoked when a row of the table is selected.
-        The provided callback function has to accept two arguments table (``:obj:Table`)
-        and row (``int`` or ``None``).
+        The provided callback function has to accept one argument, table
+        (``:obj:Table``), and keyword arguments (i.e. **kwargs).
 
         Returns:
             (``callable``) The callback function.
