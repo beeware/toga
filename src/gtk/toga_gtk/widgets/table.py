@@ -4,6 +4,8 @@ from .base import Widget
 
 class Table(Widget):
     def create(self):
+        self._connections = []
+
         self.data = Gtk.ListStore(*[str for h in self.interface.headings])
         # Create a table view, and put it in a scroll view.
         # The scroll view is the native, because it's the outer container.
@@ -29,4 +31,18 @@ class Table(Widget):
             self.data.append(row.data)
 
     def set_on_select(self, handler):
-        pass
+        for conn_id in self._connections:
+            # Disconnect all other on_select handlers, so that if you reassign
+            # the on_select, it doesn't trigger the old ones too.
+            self.table.disconnect(conn_id)
+
+        def _handler(widget, *args):
+            selection = widget.get_selection()
+            selection.set_mode(Gtk.SelectionMode.SINGLE)
+            tree_model, tree_iter = selection.get_selected()
+            tree_path = tree_model.get_path(tree_iter)
+            index = tree_path.get_indices()[0]
+
+            handler(widget, row=index)
+
+        self._connections.append(self.table.connect("cursor-changed", _handler))
