@@ -37,7 +37,8 @@ class Table(Widget):
         for conn_id in self._connections:
             # Disconnect all other on_select handlers, so that if you reassign
             # the on_select, it doesn't trigger the old ones too.
-            self.table.disconnect(conn_id)
+            self.selection.disconnect(conn_id)
+            self._connections.remove(conn_id)
 
         if handler is None:
             return
@@ -48,8 +49,8 @@ class Table(Widget):
             if tree_iter:
                 tree_path = tree_model.get_path(tree_iter)
                 index = tree_path.get_indices()[0]
-                handler(widget, row=index)
+                handler(self.table, row=index)
             else:
-                handler(widget, row=None)
+                handler(self.table, row=None)
 
         self._connections.append(self.selection.connect("changed", _handler))
