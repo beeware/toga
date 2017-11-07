@@ -170,6 +170,8 @@ class Table(Widget):
         if data is not None:
             self._data.add_listener(self._impl)
 
+        self._impl.refresh()
+
     @property
     def on_select(self):
         """ The callback function that is invoked when a row of the table is selected.
