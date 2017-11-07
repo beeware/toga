@@ -1,16 +1,15 @@
-import unittest
-from unittest.mock import MagicMock
 import toga
 import toga_dummy
+from toga_dummy.utils import TestCase
 
 
-class TestMultilineTextInput(unittest.TestCase):
+class MultilineTextInputTests(TestCase):
     def setUp(self):
-        self.factory = MagicMock()
-        self.factory.MultilineTextInput = MagicMock(return_value=MagicMock(spec=toga_dummy.widgets.multilinetextinput.MultilineTextInput))
+        super().setUp()
 
         self.initial = 'Super Multiline Text'
-        self.multiline = toga.MultilineTextInput(self.initial, factory=self.factory)
+        self.multiline = toga.MultilineTextInput(self.initial, factory=toga_dummy.factory)
 
-    def test_factory_called(self):
-        self.factory.MultilineTextInput.assert_called_once_with(interface=self.multiline)
+    def test_widget_created(self):
+        self.assertEqual(self.multiline._impl.interface, self.multiline)
+        self.assertActionPerformed(self.multiline, 'create MultilineTextInput')

@@ -1,8 +1,8 @@
 import os
-from toga_dummy import test_utils
+from toga_dummy import test_implementation
 
 globals().update(
-    test_utils.create_impl_tests(
+    test_implementation.create_impl_tests(
         os.path.abspath(
             os.path.join(
                 os.path.dirname(os.path.dirname(__file__)),

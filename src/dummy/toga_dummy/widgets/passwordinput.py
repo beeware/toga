@@ -1,3 +1,6 @@
-class PasswordInput():
+from .textinput import TextInput
+
+
+class PasswordInput(TextInput):
     def create(self):
-        pass
+        self._action('create PasswordInput')

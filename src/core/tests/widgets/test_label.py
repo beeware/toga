@@ -1,39 +1,34 @@
-import unittest
-from unittest.mock import MagicMock
 import toga
 import toga_dummy
 from toga import constants
+from toga_dummy.utils import TestCase
 
 
-class TestLabel(unittest.TestCase):
+class LabelTests(TestCase):
     def setUp(self):
-        self.factory = MagicMock()
-        self.factory.Label = MagicMock(return_value=MagicMock(spec=toga_dummy.factory.Label))
+        super().setUp()
 
         self.text = 'test text'
 
-        self.label = toga.Label(self.text, factory=self.factory)
+        self.label = toga.Label(self.text, factory=toga_dummy.factory)
 
-    def test_label_factory_called(self):
-        self.factory.Label.assert_called_with(interface=self.label)
+    def test_widget_created(self):
+        self.assertEqual(self.label._impl.interface, self.label)
+        self.assertActionPerformed(self.label, 'create Label')
 
     def test_update_label_text(self):
         new_text = 'updated text'
         self.label.text = new_text
         self.assertEqual(self.label.text, new_text)
+        self.assertValueSet(self.label, 'text', new_text)
+        self.assertActionPerformed(self.label, 'rehint Label')
 
         self.label.text = None
         self.assertEqual(self.label.text, '')
 
-    def test_setting_text_invokes_set_text_call(self):
-        self.label.text = 'new text'
-        self.label._impl.set_text.assert_called_with('new text')
-
-    def test_update_label_invokes_label_rehint_call(self):
-        self.label.text = 'new text'
-        self.label._impl.rehint.assert_called_with()
+        self.assertValueSet(self.label, 'text', '')
 
     def test_setting_alignment_invokes_call_to_impl(self):
         self.label.alignment = constants.CENTER_ALIGNED
         self.assertEqual(self.label.alignment, constants.CENTER_ALIGNED)
-        self.label._impl.set_alignment.assert_called_with(constants.CENTER_ALIGNED)
+        self.assertValueSet(self.label, 'alignment', constants.CENTER_ALIGNED)

@@ -3,16 +3,16 @@ from .base import Widget
 
 class ProgressBar(Widget):
     def create(self):
-        pass
+        self._action('create ProgressBar')
 
     def set_value(self, value):
-        pass
+        self._set_value('value', value)
 
     def start(self):
-        pass
+        self._action('start')
 
     def stop(self):
-        pass
+        self._action('stop')
 
     def set_max(self, value):
-        pass
+        self._set_value('max', value)

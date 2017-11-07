@@ -1,7 +1,8 @@
 import unittest
-from unittest.mock import Mock, MagicMock, patch
+
 import toga
 import toga_dummy
+from toga_dummy.utils import EventLog
 
 
 class TestCommand(unittest.TestCase):

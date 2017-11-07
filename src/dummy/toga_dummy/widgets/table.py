@@ -3,10 +3,10 @@ from .base import Widget
 
 class Table(Widget):
     def create(self):
-        pass
+        self._action('create Table')
 
     def refresh(self):
-        pass
+        self._action('refresh')
 
     def set_on_select(self, handler):
-        pass
+        self._set_value('on_select', handler)

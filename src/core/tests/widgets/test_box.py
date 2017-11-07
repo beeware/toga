@@ -1,24 +1,19 @@
-import unittest
-from unittest.mock import patch, Mock, MagicMock
+from unittest.mock import patch
+
 import toga
 import toga_dummy
+from toga_dummy.utils import TestCase
 
 
-class TestBox(unittest.TestCase):
+class BoxTests(TestCase):
     def setUp(self):
-        # make mock factory return a mock box
-        self.factory = MagicMock()
-        # Fixme | The MagicMock returns a MagicMock with the specs of a cocoa.Box.
-        # This makes the test not platform independent. Solution could be a platform independent dummy backend.
-        self.factory.Box = MagicMock(return_value=MagicMock(spec=toga_dummy.widgets.box.Box))
-        # init box with test factory
-        self.box = toga.Box(factory=self.factory)
+        super().setUp()
 
-    def test_box_creation(self):
-        self.assertEqual(self.box.factory, self.factory)
+        self.box = toga.Box(factory=toga_dummy.factory)
 
-    def test_box_impl_creation(self):
-        self.factory.Box.assert_called_with(interface=self.box)
+    def test_widget_created(self):
+        self.assertEqual(self.box._impl.interface, self.box)
+        self.assertActionPerformed(self.box, 'create Box')
 
     @patch('toga.widgets.base.get_platform_factory')
     def test_box_with_without_factory(self, mock_function):

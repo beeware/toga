@@ -1,30 +1,31 @@
-import unittest
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import Mock, MagicMock
+
 import toga
 import toga_dummy
+from toga_dummy.utils import TestCase
 
 
-class TestListDataSource(unittest.TestCase):
+class ListDataSourceTests(TestCase):
     def setUp(self):
+        super().setUp()
+        self.listener = Mock()
+
         self.data = [('{}:0'.format(x), '{}:1'.format(x), '{}:2'.format(x)) for x in range(5)]
-        self.widget = Mock()
+
         self.data_source = toga.ListDataSource(data=self.data)
-        self.data_source.add_listener(self.widget)
+        self.data_source.add_listener(self.listener)
 
     def test_listeners(self):
-        self.assertListEqual(self.data_source.listeners, [self.widget])
-        # add more widgets to listeners
-        another_widget = Mock()
-        self.data_source.add_listener(another_widget)
-        self.assertListEqual(self.data_source.listeners, [self.widget, another_widget])
-        # remove from listeners
-        self.data_source.remove_listener(another_widget)
-        self.assertListEqual(self.data_source.listeners, [self.widget])
+        self.assertListEqual(self.data_source.listeners, [self.listener])
 
-    def test_wrong_listeners(self):
-        self.data_source.add_listener(object())
-        with self.assertRaises(RuntimeError):
-            self.data_source.clear()
+        # add more widgets to listeners
+        another_listener = Mock()
+        self.data_source.add_listener(another_listener)
+        self.assertListEqual(self.data_source.listeners, [self.listener, another_listener])
+
+        # remove from listeners
+        self.data_source.remove_listener(another_listener)
+        self.assertListEqual(self.data_source.listeners, [self.listener])
 
     def test_item_extraction_from_table(self):
         self.assertEqual(self.data_source.item(0, 0), '0:0')
@@ -38,24 +39,15 @@ class TestListDataSource(unittest.TestCase):
 
     def test_if_refresh_function_is_invoked_on_remove(self):
         self.data_source.remove(self.data_source.row(0))
-        self.data_source.listeners[0]._impl.refresh.assert_called_once_with()
+        self.data_source.listeners[0].refresh.assert_called_once_with()
 
     def test_if_refresh_function_is_invoked_on_insert(self):
         self.data_source.insert(0, ('0:0', '0:1', '0:2'))
-        self.data_source.listeners[0]._impl.refresh.assert_called_once_with()
+        self.data_source.listeners[0].refresh.assert_called_once_with()
 
     def test_if_refresh_function_is_invoked_on_clear(self):
         self.data_source.clear()
-        self.data_source.listeners[0]._impl.refresh.assert_called_once_with()
-
-    def test_if_function_is_invoked_on_refresh(self):
-        func = MagicMock(spec=callable)
-        self.data_source.add_listener(func)
-        # is function in listeners
-        self.assertIn(func, self.data_source.listeners)
-        # change data and check if function is invoked
-        self.data_source.clear()
-        func.assert_called_once_with()
+        self.data_source.listeners[0].refresh.assert_called_once_with()
 
     def test_rows_were_set_correctly(self):
         self.assertTupleEqual(self.data_source.row(0).data, self.data[0])
@@ -71,10 +63,10 @@ class TestListDataSource(unittest.TestCase):
         self.assertEqual(len(self.data_source.rows), len(self.data) - 1)
 
 
-class TestTable(unittest.TestCase):
+class TableTests(TestCase):
     def setUp(self):
-        self.factory = MagicMock()
-        self.factory.Table = MagicMock(return_value=MagicMock(spec=toga_dummy.factory.Table))
+        super().setUp()
+
         self.headings = ['Heading 1', 'Heading 2', 'Heading 3']
         self.data = [(1, 2, 3, 4) for _ in range(5)]
 
@@ -86,14 +78,16 @@ class TestTable(unittest.TestCase):
         self.table = toga.Table(self.headings,
                                 data=self.data,
                                 on_select=self.on_select,
-                                factory=self.factory)
+                                factory=toga_dummy.factory)
 
-    def test_factory_called(self):
-        self.factory.Table.assert_called_with(interface=self.table)
+    def test_widget_created(self):
+        self.assertEqual(self.table._impl.interface, self.table)
+        self.assertActionPerformed(self.table, 'create Table')
 
     def test_arguments_are_all_set_properly(self):
         # headings
         self.assertEqual(self.table.headings, self.headings)
+
         # data
         data_source = toga.ListDataSource(self.data)
         self.assertEqual(type(data_source), type(self.table.data))

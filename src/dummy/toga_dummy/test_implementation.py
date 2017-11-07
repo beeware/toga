@@ -76,7 +76,9 @@ class DefinitionExtractor:
         if node.decorator_list:  # check if a decorator list exists
             for decorator in node.decorator_list:
                 try:
-                    if decorator.func.id == 'not_required_on':
+                    if decorator.func.id == 'not_required':
+                        return False
+                    elif decorator.func.id == 'not_required_on':
                         platforms_to_skip = [arg.s for arg in decorator.args]
                         if self.platform.intersection(set(platforms_to_skip)):
                             return False
@@ -227,14 +229,14 @@ def create_impl_tests(root):
     """
     platform_category = get_platform_category(root)
     dummy_files = collect_dummy_files(get_required_files(root))
-    tests = dict()
+    tests = {}
     for name, dummy_path in dummy_files:
         if 'widgets' in dummy_path:
             path = os.path.join(root, 'widgets/{}.py'.format(name))
         else:
             path = os.path.join(root, '{}.py'.format(name))
 
-        tests['Test{}Impl'.format(name.capitalize())] = make_toga_impl_check_class(path, dummy_path, platform_category)
+        tests.update(make_toga_impl_check_class(path, dummy_path, platform_category))
     return tests
 
 
@@ -245,118 +247,123 @@ def collect_dummy_files(required_files):
     dummy_files = []
     toga_dummy_base = os.path.dirname(toga_dummy.__file__)
 
-    for root, dirs, files in os.walk(toga_dummy_base):
-
-        for file_ in files:
-            # exclude non .py files or start with '__'
-            if file_.startswith('__') or not file_.endswith('.py'):
+    for root, dirs, filenames in os.walk(toga_dummy_base):
+        for filename in filenames:
+            # exclude non .py filenames or start with '__'
+            if filename.startswith('__') or not filename.endswith('.py'):
                 continue
 
-            if file_ in required_files:
-                f = TestFile(file_[:-3], os.path.join(root, file_))
+            full_filename = os.path.join(root, filename)[len(toga_dummy_base) + 1:]
+            if full_filename in required_files:
+                f = TestFile(filename[:-3], os.path.join(root, filename))
                 dummy_files.append(f)
 
     return dummy_files
 
 
+def make_test_function(element, element_list, error_msg=None):
+    def fn(self):
+        self.assertIn(element, element_list, msg=error_msg)
+
+    return fn
+
+
+def make_test_class(path, cls, expected, actual, skip):
+    class_name = '{}ImplTest'.format(cls)
+    test_class = type(class_name, (unittest.TestCase,), {})
+
+    if skip:
+        test_class = unittest.skip(skip)(test_class)
+
+    fn = make_test_function(cls, actual.class_names)
+    fn.__doc__ = "The class {} is defined in {}".format(cls, path)
+    test_class.test_class_exists = fn
+
+    for method in expected.methods_of_class(cls):
+        # create a test that checks if the method exists in the class.
+        fn = make_test_function(method, actual.methods_of_class(cls))
+        fn.__doc__ = 'The method {}.{}(...) exists'.format(cls, method)
+        setattr(test_class, 'test_{}_exists'.format(method), fn)
+
+        # create tests that check for the right method arguments.
+        method_id = '{}.{}'.format(cls, method)
+        method_def = expected.get_function_def(method_id)['arguments']
+        try:
+            actual_method_def = actual.get_function_def(method_id)['arguments']
+        except KeyError:
+            actual_method_def = None
+
+        if actual_method_def:
+            # Create test whether the method takes the right arguments
+            # and if the arguments have the right name.
+
+            # ARGS
+            for arg in method_def.args:
+                fn = make_test_function(arg, actual_method_def.args)
+                fn.__doc__= "The argument {}.{}(..., {}={}, ...) exists".format(cls, method, *arg)
+                setattr(
+                    test_class,
+                    'test_{}_arg_{}_default_{}'.format(method, *arg),
+                    fn
+                )
+
+            # *varargs
+            if method_def.vararg:
+                vararg = method_def.vararg
+                actual_vararg = actual_method_def.vararg if actual_method_def.vararg else []
+                fn = make_test_function(vararg, actual_vararg)
+                fn.__doc__ = "The vararg {}.{}(..., *{}, ...) exists".format(cls, method, vararg)
+                setattr(
+                    test_class,
+                    'test_{}_vararg_{}'.format(method, vararg),
+                    fn
+                )
+
+            # **kwarg
+            if method_def.kwarg:
+                kwarg = method_def.kwarg
+                actual_kwarg = actual_method_def.kwarg if actual_method_def.kwarg else []
+                fn = make_test_function(kwarg, actual_kwarg,
+                                        error_msg='The method does not take kwargs or the '
+                                                  'variable is not named "{}".'.format(kwarg))
+                fn.__doc__ = "The kw argument {}.{}(..., **{}, ...) exists".format(cls, method, kwarg)
+                setattr(
+                    test_class,
+                    'test_{}_kw_{}'.format(method, kwarg),
+                    fn
+                )
+
+            # kwonlyargs
+            if method_def.kwonlyargs:
+                for kwonlyarg in method_def.kwonlyargs:
+                    fn = make_test_function(kwonlyarg, actual_method_def.kwonlyargs)
+                    fn.__doc__ = "The kwonly argument {}.{}(..., {}={}, ...) exists".format(cls, method, *kwonlyarg)
+                    setattr(
+                        test_class,
+                        'test_{}_kwonly_{}_default_{}'.format(method, *kwonlyarg),
+                        fn
+                    )
+
+    return class_name, test_class
+
+
 def make_toga_impl_check_class(path, dummy_path, platform):
+    prefix = os.path.commonprefix([path, dummy_path])
     expected = DefinitionExtractor(dummy_path, platform)
     if os.path.isfile(path):
-        skip_test = False
+        skip = None
         actual = DefinitionExtractor(path)
     else:
-        skip_test = True
-        skip_msg = 'File does not exist: {}'.format(path)
+        skip = 'Implementation file {} does not exist'.format(path[len(prefix):])
         actual = DefinitionExtractor(path)
 
-    class TestClass(unittest.TestCase):
-        pass
-
-    if skip_test:
-        @unittest.skip(skip_msg)
-        def setup(self):
-            pass
-
-        setattr(TestClass, 'setUp', setup)
-
-    def make_test_function(element, element_list, error_msg=None):
-        def fn(self):
-            self.assertIn(element, element_list, msg=error_msg)
-
-        return fn
+    test_classes = {}
 
     for cls in expected.class_names:
-        fn = make_test_function(cls, actual.class_names)
-        fn.__doc__ = "{} exists".format(cls)
-        setattr(TestClass, 'test_class_{}_exists'.format(cls), fn)
+        class_name, test_class = make_test_class(path[len(prefix):], cls, expected, actual, skip)
+        test_classes[class_name] = test_class
 
-    for cls in expected.class_names:
-        for method in expected.methods_of_class(cls):
-            # create a test that checks if the method exists in the class.
-            fn = make_test_function(method, actual.methods_of_class(cls))
-            fn.__doc__ = '{}.{}(...) exists'.format(cls, method)
-            setattr(TestClass, 'test_{}__{}_exists'.format(cls, method), fn)
-
-            # create tests that check for the right method arguments.
-            method_id = '{}.{}'.format(cls, method)
-            method_def = expected.get_function_def(method_id)['arguments']
-            try:
-                actual_method_def = actual.get_function_def(method_id)['arguments']
-            except KeyError:
-                actual_method_def = None
-
-            if actual_method_def:
-                # Create test whether the method takes the right arguments
-                # and if the arguments have the right name.
-
-                # ARGS
-                for arg in method_def.args:
-                    fn = make_test_function(arg, actual_method_def.args)
-                    fn.__doc__= "{}.{}(..., {}={}, ...) exists".format(cls, method, *arg)
-                    setattr(
-                        TestClass,
-                        'test_{}__{}_arg_{}_default_{}'.format(cls, method, *arg),
-                        fn
-                    )
-
-                # *varargs
-                if method_def.vararg:
-                    vararg = method_def.vararg
-                    actual_vararg = actual_method_def.vararg if actual_method_def.vararg else []
-                    fn = make_test_function(vararg, actual_vararg)
-                    fn.__doc__ = "{}.{}(..., *{}, ...) exists".format(cls, method, vararg)
-                    setattr(
-                        TestClass,
-                        'test_{}__{}_vararg_{}'.format(cls, method, vararg),
-                        fn
-                    )
-
-                # **kwarg
-                if method_def.kwarg:
-                    kwarg = method_def.kwarg
-                    actual_kwarg = actual_method_def.kwarg if actual_method_def.kwarg else []
-                    fn = make_test_function(kwarg, actual_kwarg,
-                                            error_msg='The method does not take kwargs or the '
-                                                      'variable is not named "{}".'.format(kwarg))
-                    fn.__doc__ = "{}.{}(..., **{}, ...) exists".format(cls, method, kwarg)
-                    setattr(
-                        TestClass,
-                        'test_{}__{}_kw_{}'.format(cls, method, kwarg),
-                        fn
-                    )
-
-                # kwonlyargs
-                if method_def.kwonlyargs:
-                    for kwonlyarg in method_def.kwonlyargs:
-                        fn = make_test_function(kwonlyarg, actual_method_def.kwonlyargs)
-                        fn.__doc__ = "{}.{}(..., {}={}, ...) exists".format(cls, method, *kwonlyarg)
-                        setattr(
-                            TestClass,
-                            'test_{}__{}_kwonly_{}_default_{}'.format(cls, method, *kwonlyarg),
-                            fn
-                        )
-
-    return TestClass
+    return test_classes
 
 
 # A list of files that must be present in every
@@ -371,39 +378,39 @@ TOGA_BASE_FILES = [
     'window.py',
 
     # Widgets
-    'base.py',
-    'box.py',
-    'button.py',
-    'icon.py',
-    'image.py',
-    'imageview.py',
-    'label.py',
-    'multilinetextinput.py',
-    'numberinput.py',
-    'optioncontainer.py',
-    'passwordinput.py',
-    'progressbar.py',
-    'scrollcontainer.py',
-    'selection.py',
-    'slider.py',
-    'switch.py',
-    'table.py',
-    'textinput.py',
-    'tree.py',
-    'webview.py'
+    'widgets/base.py',
+    'widgets/box.py',
+    'widgets/button.py',
+    'widgets/icon.py',
+    'widgets/image.py',
+    'widgets/imageview.py',
+    'widgets/label.py',
+    'widgets/multilinetextinput.py',
+    'widgets/numberinput.py',
+    'widgets/optioncontainer.py',
+    'widgets/passwordinput.py',
+    'widgets/progressbar.py',
+    'widgets/scrollcontainer.py',
+    'widgets/selection.py',
+    'widgets/slider.py',
+    'widgets/switch.py',
+    'widgets/table.py',
+    'widgets/textinput.py',
+    'widgets/tree.py',
+    'widgets/webview.py'
 ]
 
 # Files that must only be present
 # in mobile implementations of Toga.
 TOGA_MOBILE_FILES = [
-    'navigationview.py',
-    'detailedlist.py',
+    'widgets/navigationview.py',
+    'widgets/detailedlist.py',
 ]
 
 # Files that must only be present
 # in desktop implementations of Toga.
 TOGA_DESKTOP_FILES = [
-    'splitcontainer.py',
+    'widgets/splitcontainer.py',
 ]
 
 # Files that must only be present

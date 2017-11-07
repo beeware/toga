@@ -4,5 +4,5 @@ import toga
 import toga_dummy
 
 
-class TestHandler(unittest.TestCase):
+class HandlerTests(unittest.TestCase):
     pass
