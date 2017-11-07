@@ -1,6 +1,6 @@
 import toga
 import toga_dummy
-from toga_dummy.utils import EventLog, TestCase
+from toga_dummy.utils import TestCase
 
 
 class WebViewTests(TestCase):
@@ -15,7 +15,8 @@ class WebViewTests(TestCase):
         self.on_key_down = callback
         self.web_view = toga.WebView(url=self.url,
                                      on_key_down=self.on_key_down,
-                                     factory=toga_dummy.factory)
+                                     factory=toga_dummy.factory,
+                                     user_agent='DUMMY AGENT')
 
     def test_widget_created(self):
         self.assertEqual(self.web_view._impl.interface, self.web_view)
@@ -40,3 +41,18 @@ class WebViewTests(TestCase):
 
         self.web_view.set_content(root_url, new_content)
         self.assertActionPerformedWith(self.web_view, 'set content', root_url=root_url, content=new_content)
+
+    def test_get_dom(self):
+        dom = self.web_view.dom
+        self.assertEqual(dom, 'DUMMY DOM')
+
+    def test_get_user_agent(self):
+        self.assertEqual(self.web_view.user_agent, 'DUMMY AGENT')
+
+    def test_set_user_agent(self):
+        self.web_view.user_agent = 'DUMMY AGENT 2'
+        self.assertEqual(self.web_view.user_agent, 'DUMMY AGENT 2')
+
+    def test_evaluate(self):
+        self.web_view.evaluate('test(1);')
+        self.assertActionPerformed(self.web_view, 'evaluate')
