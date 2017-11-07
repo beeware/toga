@@ -91,12 +91,7 @@ class ListDataSource:
     def _refresh(self):
         """ Invoke the refresh function on all widgets that are subscribed to this data source."""
         for listener in self._listeners:
-            if hasattr(listener, '_impl'):
-                listener._impl.refresh()
-            elif callable(listener):
-                listener()
-            else:
-                raise RuntimeError('{} is not a accepted listener for {}'.format(listener, self))
+            listener.refresh()
 
     def clear(self):
         self._data = []
@@ -163,7 +158,7 @@ class Table(Widget):
         Returns:
             Returns a (:obj:`ListDataSource`).
         """
-        return self._data if self._data is not None else None
+        return self._data
 
     @data.setter
     def data(self, data):
@@ -173,7 +168,7 @@ class Table(Widget):
             self._data = data
 
         if data is not None:
-            self._data.add_listener(self)
+            self._data.add_listener(self._impl)
 
     @property
     def on_select(self):
