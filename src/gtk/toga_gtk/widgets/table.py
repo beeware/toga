@@ -10,6 +10,8 @@ class Table(Widget):
         # Create a table view, and put it in a scroll view.
         # The scroll view is the native, because it's the outer container.
         self.table = Gtk.TreeView(self.data)
+        self.selection = self.table.get_selection()
+        self.selection.set_mode(Gtk.SelectionMode.SINGLE)
 
         self.columns = []
         for i, heading in enumerate(self.interface.headings):
@@ -40,13 +42,14 @@ class Table(Widget):
         if handler is None:
             return
 
-        def _handler(widget, *args):
-            selection = widget.get_selection()
-            selection.set_mode(Gtk.SelectionMode.SINGLE)
+        def _handler(selection):
             tree_model, tree_iter = selection.get_selected()
-            tree_path = tree_model.get_path(tree_iter)
-            index = tree_path.get_indices()[0]
 
-            handler(widget, row=index)
+            if tree_iter:
+                tree_path = tree_model.get_path(tree_iter)
+                index = tree_path.get_indices()[0]
+                handler(widget, row=index)
+            else:
+                handler(widget, row=None)
 
-        self._connections.append(self.table.connect("cursor-changed", _handler))
+        self._connections.append(self.selection.connect("changed", _handler))
