@@ -10,29 +10,32 @@ class TogaTableViewController(UITableViewController):
 
     @objc_method
     def tableView_numberOfRowsInSection_(self, tableView, section: int) -> int:
-        return len(self.data)
+        return len(self.interface.data.rows)
 
     @objc_method
     def tableView_cellForRowAtIndexPath_(self, tableView, indexPath):
         cell = tableView.dequeueReusableCellWithIdentifier_("row")
         if cell is None:
             cell = UITableViewCell.alloc().initWithStyle_reuseIdentifier_(UITableViewCellStyleDefault, "row")
-        cell.textLabel.text = self.interface.data[indexPath.item]
+        cell.textLabel.text = self.interface.data.row(indexPath.item).data[0]  # hack until TableRow data format is established.
         return cell
 
     @objc_method
     def tableView_commitEditingStyle_forRowAtIndexPath_(self, tableView, editingStyle: int, indexPath):
         if editingStyle == UITableViewCellEditingStyleDelete:
-            item = self.data[indexPath.row]
+            item = self.interface.data.row(indexPath.row)
+            if editingStyle == UITableViewCellEditingStyleDelete:
+                if self.interface.on_delete:
+                    self.interface.on_delete(self.interface, row=indexPath.row)
 
-            if self.interface.on_delete:
-                self.interface.on_delete(self.interface)
-
-            del self.interface.data[indexPath.row]
-            # FIXME When deleting a item form the list the following lines cause a error.
-            self.tableView.reloadData()  # Just a hack for now! No animation!
-            # paths = NSArray.alloc().initWithObjects_(indexPath, None)
-            # tableView.deleteRowsAtIndexPaths_withRowAnimation_(paths, UITableViewRowAnimationFade)
+                tableView.beginUpdates()
+                self.interface.data.remove(item, refresh=False)
+                tableView.deleteRowsAtIndexPaths_withRowAnimation_([indexPath], UITableViewRowAnimationLeft)
+                tableView.endUpdates()
+            elif editingStyle == UITableViewCellEditingStyleInsert:
+                pass
+            elif editingStyle == UITableViewCellEditingStyleNone:
+                pass
 
     @objc_method
     def refresh(self):
@@ -41,6 +44,11 @@ class TogaTableViewController(UITableViewController):
         self.refreshControl.endRefreshing()
         self.tableView.reloadData()
 
+    @objc_method
+    def tableView_willSelectRowAtIndexPath_(self, tableView, indexPath):
+        if self.interface.on_select:
+            self.interface.on_select(self.interface, row=indexPath.row)
+
 
 class DetailedList(Widget):
     def create(self):
@@ -48,18 +56,17 @@ class DetailedList(Widget):
         self.controller.interface = self.interface
         self.native = self.controller.tableView
 
-        self.controller.refreshControl = UIRefreshControl.alloc().init()
-        self.controller.refreshControl.addTarget_action_forControlEvents_(
-            self.controller,
-            SEL('refresh'),
-            UIControlEventValueChanged
-        )
-
         # Add the layout constraints
         self.add_constraints()
 
-    def set_data(self, data):
-        self.controller.data = data
+    def set_refresh(self, handler: callable or None) -> None:
+        if callable(handler):
+            self.controller.refreshControl = UIRefreshControl.alloc().init()
+            self.controller.refreshControl.addTarget_action_forControlEvents_(
+                self.controller,
+                SEL('refresh'),
+                UIControlEventValueChanged
+            )
 
-    def add(self, item):
+    def refresh(self):
         self.controller.tableView.reloadData()

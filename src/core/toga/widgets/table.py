@@ -54,7 +54,6 @@ class ListDataSource:
 
     Args:
         data (`list` of `tuple`): A list of tuples containing the data for every row.
-        refresh_function (`callable`): A function invoked on data change.
     """
 
     def __init__(self, data):
@@ -93,19 +92,22 @@ class ListDataSource:
         for listener in self._listeners:
             listener.refresh()
 
-    def clear(self):
+    def clear(self, refresh=True):
         self._data = []
-        self._refresh()
+        if refresh:
+            self._refresh()
 
-    def insert(self, index: int, data, icon=None):
+    def insert(self, index: int, data, icon=None, refresh=True):
         node = TableRow(data=data, icon=icon)
         self._data.insert(index, node)
-        self._refresh()
+        if refresh:
+            self._refresh()
         return node
 
-    def remove(self, node):
+    def remove(self, node, refresh=True):
         self._data.remove(node)
-        self._refresh()
+        if refresh:
+            self._refresh()
 
     def item(self, row: int, column: int):
         if isinstance(row and column, int):

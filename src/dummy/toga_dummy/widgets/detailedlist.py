@@ -5,8 +5,5 @@ class DetailedList(Widget):
     def create(self):
         self._action('create DetailedList')
 
-    def set_data(self, data):
-        self._set_value('data', data)
-
-    def add(self, item):
-        self._action('add item', item=item)
+    def set_refresh(self, handler):
+        self._set_value('on_refresh', handler)
