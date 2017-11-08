@@ -10,29 +10,32 @@ class TogaTableViewController(UITableViewController):
 
     @objc_method
     def tableView_numberOfRowsInSection_(self, tableView, section: int) -> int:
-        return len(self.data)
+        return len(self.interface.data.rows)
 
     @objc_method
     def tableView_cellForRowAtIndexPath_(self, tableView, indexPath):
         cell = tableView.dequeueReusableCellWithIdentifier_("row")
         if cell is None:
             cell = UITableViewCell.alloc().initWithStyle_reuseIdentifier_(UITableViewCellStyleDefault, "row")
-        cell.textLabel.text = self.interface.data[indexPath.item]
+        cell.textLabel.text = self.interface.data.row(indexPath.item).data[0]  # hack until TableRow data format is established.
         return cell
 
     @objc_method
     def tableView_commitEditingStyle_forRowAtIndexPath_(self, tableView, editingStyle: int, indexPath):
         if editingStyle == UITableViewCellEditingStyleDelete:
-            item = self.data[indexPath.row]
+            item = self.interface.data.row(indexPath.row)
+            if editingStyle == UITableViewCellEditingStyleDelete:
+                if self.interface.on_delete:
+                    self.interface.on_delete(self.interface, row=indexPath.row)
 
-            if self.interface.on_delete:
-                self.interface.on_delete(self.interface, indexPath.row)
-
-            del self.interface.data[indexPath.row]
-            # FIXME When deleting a item form the list the following lines cause a error.
-            self.tableView.reloadData()  # Just a hack for now! No animation!
-            # paths = NSArray.alloc().initWithObjects_(indexPath, None)
-            # tableView.deleteRowsAtIndexPaths_withRowAnimation_(paths, UITableViewRowAnimationFade)
+                tableView.beginUpdates()
+                self.interface.data.remove(item, refresh=False)
+                tableView.deleteRowsAtIndexPaths_withRowAnimation_([indexPath], UITableViewRowAnimationLeft)
+                tableView.endUpdates()
+            elif editingStyle == UITableViewCellEditingStyleInsert:
+                pass
+            elif editingStyle == UITableViewCellEditingStyleNone:
+                pass
 
     @objc_method
     def refresh(self):
@@ -44,7 +47,7 @@ class TogaTableViewController(UITableViewController):
     @objc_method
     def tableView_willSelectRowAtIndexPath_(self, tableView, indexPath):
         if self.interface.on_select:
-            self.interface.on_select(self.interface, indexPath.row)
+            self.interface.on_select(self.interface, row=indexPath.row)
 
 
 class DetailedList(Widget):
@@ -65,8 +68,5 @@ class DetailedList(Widget):
                 UIControlEventValueChanged
             )
 
-    def set_data(self, data):
-        self.controller.data = data
-
-    def add(self, item):
+    def refresh(self):
         self.controller.tableView.reloadData()

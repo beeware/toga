@@ -1,4 +1,6 @@
 from .base import Widget
+from .table import ListDataSource
+from ..utils import wrapped_handler
 
 
 class DetailedList(Widget):
@@ -34,28 +36,25 @@ class DetailedList(Widget):
         self.on_refresh = on_refresh
         self.on_select = on_select
 
-    def add(self, item):
-        """ Add a item to the list.
-
-        Args:
-            item (str): String add to the list.
-        """
-        self._data.append(item)
-        self._impl.add(item)
-
     @property
-    def data(self) -> list:
-        """ The data displayed in the rows of the list.
+    def data(self):
+        """ The data source of the widget. It accepts table data
+        in the form of ``list``, ``tuple``, or :obj:`ListDataSource`
 
         Returns:
-            The row data in form of a list.
+            Returns a (:obj:`ListDataSource`).
         """
-        return self._data
+        return self._data if self._data is not None else None
 
     @data.setter
-    def data(self, data_list: list):
-        self._data = data_list
-        self._impl.set_data(self._data)
+    def data(self, data):
+        if isinstance(data, (list, tuple)):
+            self._data = ListDataSource(data)
+        else:
+            self._data = data
+
+        if data is not None:
+            self._data.add_listener(self)
 
     @property
     def on_delete(self):
@@ -73,7 +72,7 @@ class DetailedList(Widget):
 
     @on_delete.setter
     def on_delete(self, handler: callable):
-        self._on_delete = handler
+        self._on_delete = wrapped_handler(self, handler)
 
     @property
     def on_refresh(self):
@@ -86,7 +85,7 @@ class DetailedList(Widget):
     @on_refresh.setter
     def on_refresh(self, handler: callable):
         if callable(handler) or handler is None:
-            self._on_refresh = handler
+            self._on_refresh = wrapped_handler(self, handler)
             # If a function to handle refreshing was provided enable refreshing.
             self._impl.enable_refresh(True if handler is not None else False)
         else:
@@ -104,6 +103,6 @@ class DetailedList(Widget):
     @on_select.setter
     def on_select(self, handler: callable):
         if callable(handler) or handler is None:
-            self._on_select = handler
+            self._on_select = wrapped_handler(self, handler)
         else:
             raise ValueError('on_select must be of type callable or None.')
