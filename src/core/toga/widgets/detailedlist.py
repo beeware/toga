@@ -87,7 +87,7 @@ class DetailedList(Widget):
         if callable(handler) or handler is None:
             self._on_refresh = wrapped_handler(self, handler)
             # If a function to handle refreshing was provided enable refreshing.
-            self._impl.enable_refresh(True if handler is not None else False)
+            self._impl.set_refresh(handler)
         else:
             raise ValueError('on_refresh must be a function or `None.')
 

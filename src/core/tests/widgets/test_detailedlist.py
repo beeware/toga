@@ -1,19 +1,24 @@
-import unittest
-
 import toga
 import toga_dummy
 from toga_dummy.utils import TestCase
 
 
 class TestDetailedList(TestCase):
-    @unittest.skip('Not implemented!')
     def setUp(self):
         super().setUp()
 
-        self.text = 'test text'
+        self.on_select = None
+        self.on_delete = None
+        self.on_refresh = None
 
-        self.detailed_list = toga.DetailedList(factory=toga_dummy.factory)
+        self.data = [str(x) for x in range(10)]
+
+        self.dlist = toga.DetailedList(factory=toga_dummy.factory,
+                                       data=self.data,
+                                       on_select=self.on_select,
+                                       on_delete=self.on_delete,
+                                       on_refresh=self.on_refresh)
 
     def test_widget_created(self):
-        self.assertEqual(self.detailed_list._impl.interface, self.detailed_list)
-        self.assertActionPerformed(self.detailed_list, 'create Canvas')
+        self.assertEqual(self.dlist._impl.interface, self.dlist)
+        self.assertActionPerformed(self.dlist, 'create DetailedList')

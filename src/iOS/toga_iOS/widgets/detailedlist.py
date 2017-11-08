@@ -59,8 +59,8 @@ class DetailedList(Widget):
         # Add the layout constraints
         self.add_constraints()
 
-    def enable_refresh(self, value: bool) -> None:
-        if value:
+    def set_refresh(self, handler: callable or None) -> None:
+        if callable(handler):
             self.controller.refreshControl = UIRefreshControl.alloc().init()
             self.controller.refreshControl.addTarget_action_forControlEvents_(
                 self.controller,

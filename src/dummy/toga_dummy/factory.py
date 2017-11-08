@@ -6,6 +6,7 @@ from .widgets.box import Box
 from .widgets.button import Button
 from .command import Command
 from .widgets.canvas import Canvas
+from .widgets.detailedlist import DetailedList
 from .font import Font
 from .widgets.icon import Icon
 from .widgets.image import *
@@ -30,6 +31,7 @@ from .widgets.selection import Selection
 __all__ = [
     'App', 'MainWindow',
     'Command',
+    'DetailedList',
     'Window',
     'Font',
     'Box',
