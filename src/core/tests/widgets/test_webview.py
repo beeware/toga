@@ -45,13 +45,16 @@ class WebViewTests(TestCase):
     def test_get_dom(self):
         dom = self.web_view.dom
         self.assertEqual(dom, 'DUMMY DOM')
+        self.assertActionPerformed(self.web_view, 'get DOM')
 
     def test_get_user_agent(self):
         self.assertEqual(self.web_view.user_agent, 'DUMMY AGENT')
 
     def test_set_user_agent(self):
-        self.web_view.user_agent = 'DUMMY AGENT 2'
-        self.assertEqual(self.web_view.user_agent, 'DUMMY AGENT 2')
+        new_user_agent = 'DUMMY AGENT 2'
+        self.web_view.user_agent = new_user_agent
+        self.assertEqual(self.web_view.user_agent, new_user_agent)
+        self.assertValueSet(self.web_view, 'user_agent', new_user_agent)
 
     def test_evaluate(self):
         self.web_view.evaluate('test(1);')
