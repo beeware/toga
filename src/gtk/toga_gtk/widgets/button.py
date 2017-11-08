@@ -5,9 +5,11 @@ from .base import Widget
 
 class Button(Widget):
     def create(self):
-        self._connections = []
+        self._on_press_handler = None
+
         self.native = Gtk.Button()
         self.native.interface = self.interface
+        self.native.connect("clicked", self._on_press)
 
         self.native.connect('show', lambda event: self.rehint())
 
@@ -22,14 +24,12 @@ class Button(Widget):
     def set_background_color(self, value):
         pass
 
-    def set_on_press(self, handler):
-        for conn_id in self._connections:
-            # Disconnect all other on-click handlers, so that if you reassign
-            # the on_press, it doesn't trigger the old ones too.
-            self.native.disconnect(conn_id)
-            self._connections.remove(conn_id)
+    def _on_press(self, widget):
+        if self._on_press_handler:
+            self._on_press_handler(widget)
 
-        self._connections.append(self.native.connect("clicked", handler))
+    def set_on_press(self, handler):
+        self._on_press_handler = handler
 
     def rehint(self):
         # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height(), getattr(self, '_fixed_height', False), getattr(self, '_fixed_width', False))
