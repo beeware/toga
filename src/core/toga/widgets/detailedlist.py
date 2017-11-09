@@ -28,7 +28,7 @@ class DetailedList(Widget):
 
     def __init__(self, id=None, data=None, on_delete=None, on_refresh=None, on_select=None, style=None, factory=None):
         super().__init__(id=id, style=style, factory=factory)
-
+        self._data = None
         self._impl = self.factory.DetailedList(interface=self)
 
         self.data = data
@@ -44,17 +44,19 @@ class DetailedList(Widget):
         Returns:
             Returns a (:obj:`ListDataSource`).
         """
-        return self._data if self._data is not None else None
+        return self._data
 
     @data.setter
     def data(self, data):
-        if isinstance(data, (list, tuple)):
+        if data is None:
+            self._data = ListDataSource([])
+        elif isinstance(data, (list, tuple)):
             self._data = ListDataSource(data)
         else:
             self._data = data
 
-        if data is not None:
-            self._data.add_listener(self)
+        self._data.add_listener(self._impl)
+        self.data._refresh()
 
     @property
     def on_delete(self):
@@ -73,6 +75,7 @@ class DetailedList(Widget):
     @on_delete.setter
     def on_delete(self, handler: callable):
         self._on_delete = wrapped_handler(self, handler)
+        self._impl.set_on_delete(self._on_delete)
 
     @property
     def on_refresh(self):
@@ -84,12 +87,8 @@ class DetailedList(Widget):
 
     @on_refresh.setter
     def on_refresh(self, handler: callable):
-        if callable(handler) or handler is None:
-            self._on_refresh = wrapped_handler(self, handler)
-            # If a function to handle refreshing was provided enable refreshing.
-            self._impl.set_refresh(handler)
-        else:
-            raise ValueError('on_refresh must be a function or `None.')
+        self._on_refresh = wrapped_handler(self, handler)
+        self._impl.set_on_refresh(self._on_refresh)
 
     @property
     def on_select(self):
@@ -102,7 +101,5 @@ class DetailedList(Widget):
 
     @on_select.setter
     def on_select(self, handler: callable):
-        if callable(handler) or handler is None:
-            self._on_select = wrapped_handler(self, handler)
-        else:
-            raise ValueError('on_select must be of type callable or None.')
+        self._on_select = wrapped_handler(self, handler)
+        self._impl.set_on_select(self._on_select)

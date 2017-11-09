@@ -12,6 +12,7 @@ class TableRow:
     """
 
     def __init__(self, data, icon=None):
+        self._impl = None
         self._data = [data] if isinstance(data, str) else data
         self.icon = icon
 
@@ -97,17 +98,18 @@ class ListDataSource:
         if refresh:
             self._refresh()
 
-    def insert(self, index: int, data, icon=None, refresh=True):
+    def insert(self, index: int, data, icon=None):
         node = TableRow(data=data, icon=icon)
         self._data.insert(index, node)
-        if refresh:
-            self._refresh()
+        self._refresh()
         return node
 
-    def remove(self, node, refresh=True):
+    def append(self, data, icon=None):
+        return self.insert(len(self._data), data, icon)
+
+    def remove(self, node):
         self._data.remove(node)
-        if refresh:
-            self._refresh()
+        self._refresh()
 
     def item(self, row: int, column: int):
         if isinstance(row and column, int):
@@ -164,14 +166,14 @@ class Table(Widget):
 
     @data.setter
     def data(self, data):
-        if isinstance(data, (list, tuple)):
+        if data is None:
+            self._data = ListDataSource([])
+        elif isinstance(data, (list, tuple)):
             self._data = ListDataSource(data)
         else:
             self._data = data
 
-        if data is not None:
-            self._data.add_listener(self._impl)
-
+        self._data.add_listener(self._impl)
         self._impl.refresh()
 
     @property
