@@ -89,6 +89,7 @@ class TreeNode:
         if self._children is None:
             self._children = []
         self._children.insert(index, node)
+        node.parent = self
         self.source._insert_node(node)
         return node
 
@@ -162,7 +163,13 @@ class DictionaryDataSource:
         return self._roots[index]
 
     def insert(self, parent, index, data, icon=None):
-        return parent.insert(index, data=data, icon=icon)
+        if parent:
+            node = parent.insert(index, data=data, icon=icon)
+        else:
+            node = TreeNode(source=self, data=data)
+            self._roots.insert(index, node)
+        self._refresh()
+        return node
 
     def remove(self, node):
         return node.parent.remove(node)
@@ -207,13 +214,15 @@ class Tree(Widget):
         :param data: Data source
         :type  data: ``dict`` or ``class``
         '''
-        if isinstance(data, dict):
+        if data is None:
+            self._data = DictionaryDataSource({})
+        elif isinstance(data, dict):
             self._data = DictionaryDataSource(data)
         else:
             self._data = data
 
-        if data is not None:
-            self._data.add_listener(self._impl)
+        self._data.add_listener(self._impl)
+        self._impl.refresh()
 
     @property
     def on_select(self):

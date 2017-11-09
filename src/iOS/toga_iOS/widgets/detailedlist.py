@@ -59,7 +59,7 @@ class DetailedList(Widget):
         # Add the layout constraints
         self.add_constraints()
 
-    def set_refresh(self, handler: callable or None) -> None:
+    def set_on_refresh(self, handler: callable or None) -> None:
         if callable(handler):
             self.controller.refreshControl = UIRefreshControl.alloc().init()
             self.controller.refreshControl.addTarget_action_forControlEvents_(
@@ -70,3 +70,9 @@ class DetailedList(Widget):
 
     def refresh(self):
         self.controller.tableView.reloadData()
+
+    def set_on_select(self, handler):
+        pass
+
+    def set_on_delete(self, handler):
+        pass
