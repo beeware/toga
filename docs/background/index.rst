@@ -9,5 +9,7 @@ Background
 
    philosophy
    faq
+   design-philosophy
+   togas-and-yaks
    commands
    data-sources
