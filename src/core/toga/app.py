@@ -63,7 +63,7 @@ class App:
 
         self._startup_method = startup
 
-        self.default_icon = Icon('tiberius', system=True, factory=self.factory)
+        self.default_icon = Icon('tiberius', system=True)
         self.icon = icon
 
         self._impl = self.factory.App(interface=self)
@@ -98,7 +98,7 @@ class App:
 
     @icon.setter
     def icon(self, name):
-        self._icon = Icon.load(name, default=self.default_icon, factory=self.factory)
+        self._icon = Icon.load(name, default=self.default_icon)
 
     @property
     def documents(self):

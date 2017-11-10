@@ -1,8 +1,10 @@
 from rubicon.objc import *
 
+from toga.sources import to_accessor
+
 from ..libs import *
 from .base import Widget
-from .utils import TogaIconCell, TogaNodeData
+from .utils import TogaIconCell, TogaData
 
 
 class TogaTree(NSOutlineView):
@@ -12,17 +14,26 @@ class TogaTree(NSOutlineView):
         if item is None:
             node = self.interface.data.root(child)
         else:
-            parent = self._impl.node[item]
-            node = parent.children[child]
+            node = item.attrs['node']._children[child]
 
-        if node._impl is None:
-            self._impl.insert_node(node)
+        try:
+            node_impl = node._impl
+        except AttributeError:
+            node_impl = TogaData.alloc().init()
+            node_impl.attrs = {
+                'node': node,
+                'values': {
+                    attr: TogaData.alloc().init()
+                    for attr in self.interface._accessors
+                }
+            }
+            node._impl = node_impl
 
-        return node._impl
+        return node_impl
 
     @objc_method
     def outlineView_isItemExpandable_(self, tree, item) -> bool:
-        return self._impl.node[item].children is not None
+        return item.attrs['node']._children is not None
 
     @objc_method
     def outlineView_numberOfChildrenOfItem_(self, tree, item) -> int:
@@ -32,15 +43,27 @@ class TogaTree(NSOutlineView):
             else:
                 return 0
         else:
-            return len(self._impl.node[item].children)
+            return len(item.attrs['node']._children)
 
     @objc_method
     def outlineView_objectValueForTableColumn_byItem_(self, tree, column, item):
-        if column.identifier == '0':
-            data = self._impl.node[item]._impl
-        else:
-            data = str(self._impl.node[item].data[int(column.identifier)])
-        return data
+        node = item.attrs['node']
+        value = getattr(node, column.identifier)
+
+        datum = item.attrs['values'][column.identifier]
+        # If the value has an icon attribute, get the _impl.
+        # Icons are deferred resources, so we provide the factory.
+        try:
+            icon = value.icon._impl(self.interface.factory)
+        except AttributeError:
+            icon = None
+
+        datum.attrs = {
+            'label': str(value),
+            'icon': icon,
+        }
+
+        return datum
 
     # OutlineViewDelegate methods
     @objc_method
@@ -48,7 +71,7 @@ class TogaTree(NSOutlineView):
         self.interface.selected = []
         currentIndex = self.selectedRowIndexes.firstIndex
         for i in range(self.selectedRowIndexes.count):
-            self.interface.selected.append(self._impl.node[self.itemAtRow(currentIndex)])
+            # self.interface.selected.append(self._impl.node[self.itemAtRow(currentIndex)])
             currentIndex = self.selectedRowIndexes.indexGreaterThanIndex(currentIndex)
 
         # FIXME: return a list if widget allows multi-selection.
@@ -72,9 +95,6 @@ class Tree(Widget):
         self.native.translatesAutoresizingMaskIntoConstraints = False
         self.native.autoresizesSubviews = True
 
-        # Set up storage for node implementations
-        self.node = {}
-
         # Create the Tree widget
         self.tree = TogaTree.alloc().init()
         self.tree.interface = self.interface
@@ -90,17 +110,12 @@ class Tree(Widget):
         # Create columns for the tree
         self.columns = []
         for i, heading in enumerate(self.interface.headings):
-            column = NSTableColumn.alloc().initWithIdentifier('%d' % i)
+            column = NSTableColumn.alloc().initWithIdentifier(to_accessor(heading))
             self.tree.addTableColumn(column)
             self.columns.append(column)
 
-            # FIXME - Modify TogaIconCell to preserve the column ID;
-            # then allow all columns to have icons and/or text.
-            if i == 0:
-                cell = TogaIconCell.alloc().init()
-                column.dataCell = cell
-            else:
-                cell = column.dataCell
+            cell = TogaIconCell.alloc().init()
+            column.dataCell = cell
 
             cell.editable = False
             cell.selectable = False
@@ -118,14 +133,14 @@ class Tree(Widget):
         # Add the layout constraints
         self.add_constraints()
 
-    def insert_node(self, node):
-        node._impl = TogaNodeData.alloc().init()
-        node._impl.node = node
+    # def insert_node(self, node):
+    #     node._impl = TogaData.alloc().init()
+    #     node._impl.data = node
 
-        self.node[node._impl] = node
+    #     self.node[node._impl] = node
 
-    def remove_node(self, node):
-        del self.node[node._impl]
+    # def remove_node(self, node):
+    #     del self.node[node._impl]
 
     def refresh_node(self, node):
         if node._expanded:

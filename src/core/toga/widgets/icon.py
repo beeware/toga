@@ -16,15 +16,17 @@ class ClassProperty(property):
 class Icon:
     """ Icon widget.
 
+    Icon is a deferred resource; it's impl isn't available until it is
+    requested; the factory is provided at the time the implementation is
+    requested.
+
     Args:
         path(str): Path to the icon file.
         system(bool): Set to `True if the icon is located in the 'resource' folder
             of the Toga package. Default is False.
-        factory:
     """
 
-    def __init__(self, path, system=False, factory=None):
-        self.factory = get_platform_factory(factory)
+    def __init__(self, path, system=False):
         self.filename = None
 
         if os.path.splitext(path)[1] in ('.png', '.icns', '.bmp'):
@@ -39,15 +41,21 @@ class Icon:
         else:
             self.filename = self.path
 
-        self._impl = self.factory.Icon(interface=self)
+        self.__impl = None
+
+    def _impl(self, factory=None):
+        if self.__impl is None:
+            self.factory = factory
+            self.__impl = self.factory.Icon(interface=self)
+        return self.__impl
 
     @classmethod
-    def load(cls, path_or_icon, default=None, factory=None):
+    def load(cls, path_or_icon, default=None):
         if path_or_icon:
             if isinstance(path_or_icon, Icon):
                 obj = path_or_icon
             else:
-                obj = cls(path_or_icon, factory=factory)
+                obj = cls(path_or_icon)
         elif default:
             obj = default
 

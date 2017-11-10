@@ -1,46 +1,20 @@
 
-class Variable:
-    """A data source that helps you to store and manage data in a row like fashion.
+class Variable(Source):
+    """A value source that helps you to store and manage a single value value.
 
     Args:
-        data: The value for the variable.
-        refresh_function (`callable`): A function invoked on data change.
+        value: The value for the variable.
     """
 
     def __init__(self, value):
-        self._data = value
-        self._listeners = []
+        super().__init__()
+        self._value = value
 
     @property
-    def data(self):
-        return self._data
+    def value(self):
+        return self._value
 
-    @data.setter
-    def data(self, value):
-        self._data = value
+    @value.setter
+    def value(self, value):
+        self._value = value
         self._refresh()
-
-    @property
-    def listeners(self) -> list:
-        """ The listeners of this data source.
-        Listeners can be ``callable`` or :obj:``toga.Widget``.
-
-        Returns:
-            A list of objects that are listening for data change.
-        """
-        return self._listeners
-
-    def add_listener(self, listener):
-        """
-        Args:
-            listener: ``callable`` or :obj:``toga.Widget`
-        """
-        self._listeners.append(listener)
-
-    def remove_listener(self, listener):
-        self._listeners.remove(listener)
-
-    def _refresh(self):
-        """ Invoke the refresh function on all widgets that are subscribed to this data source."""
-        for listener in self._listeners:
-            listener.refresh()

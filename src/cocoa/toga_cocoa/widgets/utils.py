@@ -3,22 +3,23 @@ from rubicon.objc import *
 from ..libs import *
 
 
-class TogaNodeData(NSObject):
+class TogaData(NSObject):
     @objc_method
     def copyWithZone_(self):
-        copy = TogaNodeData.alloc().init()
-        copy.node = self.node
+        copy = TogaData.alloc().init()
+        copy.attrs = self.attrs
         return copy
 
 
 class TogaIconCell(NSTextFieldCell):
     @objc_method
     def drawWithFrame_inView_(self, cellFrame: NSRect, view) -> None:
-        # The data to display
-        label = self.objectValue.node.data[0]
-        icon = self.objectValue.node.icon
+        # The data to display.
+        label = self.objectValue.attrs['label']
+        icon = self.objectValue.attrs['icon']
+
         if icon:
-            nicon = icon._impl.native
+            nicon = icon.native
             offset = 28.5
 
             NSGraphicsContext.currentContext.saveGraphicsState()
