@@ -1,6 +1,6 @@
 from .base import Widget
-from .table import ListDataSource
 from ..utils import wrapped_handler
+from ..sources import to_accessor, ListSource
 
 
 class DetailedList(Widget):
@@ -49,9 +49,9 @@ class DetailedList(Widget):
     @data.setter
     def data(self, data):
         if data is None:
-            self._data = ListDataSource([])
+            self._data = ListSource([])
         elif isinstance(data, (list, tuple)):
-            self._data = ListDataSource(data)
+            self._data = ListSource(data)
         else:
             self._data = data
 
