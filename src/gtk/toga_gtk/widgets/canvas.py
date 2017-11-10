@@ -15,14 +15,17 @@ class Canvas(Widget):
     def create(self):
         self.native = Gtk.DrawingArea()
         self.native.interface = self.interface
+        self.native.context = None
         self.native.connect('show', lambda event: self.rehint())
 
-    def draw(self, draw_func):
-        self.native.connect('draw', draw_func)
-        yield
+    def set_on_draw(self, handler):
+        self.native.connect('draw', handler)
+
+    def set_context(self, context):
+        self.native.context = context
 
     def line_width(self, width=2.0):
-        self.native.set_line_width(width)
+        self.native.context.set_line_width(width)
 
     def fill_style(self, color=None):
         if color is not None:
@@ -32,7 +35,7 @@ class Canvas(Widget):
                 g = num.group(2)
                 b = num.group(3)
                 a = num.group(4)
-                self.native.set_source_rgba(r, b, g, a)
+                self.native.context.set_source_rgba(r, b, g, a)
             else:
                 pass
                 # Support future colosseum versions
@@ -41,22 +44,22 @@ class Canvas(Widget):
                 #         exec('self.native.set_source_' + str(rgb))
         else:
             # set color to black
-            self.native.set_source_rgba(0, 0, 0, 1)
+            self.native.context.set_source_rgba(0, 0, 0, 1)
 
     def stroke_style(self, color=None):
         self.fill_style(color)
 
     def close_path(self):
-        self.native.close_path()
+        self.native.context.close_path()
 
     def move_to(self, x, y):
-        self.native.move_to(x, y)
+        self.native.context.move_to(x, y)
 
     def line_to(self, x, y):
-        self.native.line_to(x, y)
+        self.native.context.line_to(x, y)
 
     def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y):
-        self.native.curve_to(cp1x, cp1y, cp2x, cp2y, x, y)
+        self.native.context.curve_to(cp1x, cp1y, cp2x, cp2y, x, y)
 
     def quadratic_curve_to(self, cpx, cpy, x, y):
         # Not supported by cairo.Context
@@ -64,9 +67,9 @@ class Canvas(Widget):
 
     def arc(self, x, y, radius, startangle, endangle, anticlockwise):
         if anticlockwise:
-            self.native.arc_negative(x, y, radius, startangle, endangle)
+            self.native.context.arc_negative(x, y, radius, startangle, endangle)
         else:
-            self.native.arc(x, y, radius, startangle, endangle)
+            self.native.context.arc(x, y, radius, startangle, endangle)
 
     def ellipse(self, x, y, radiusx, radiusy, rotation, startangle, endangle, anticlockwise):
         width = 2 * radiusx
@@ -79,7 +82,7 @@ class Canvas(Widget):
         self.restore()
 
     def rect(self, x, y, width, height):
-        self.native.rectangle(x, y, width, height)
+        self.native.context.rectangle(x, y, width, height)
 
     # Drawing Paths
 
@@ -89,26 +92,26 @@ class Canvas(Widget):
         else:
             cairo.Context.set_fill_rule(cairo.FILL_RULE_WINDING)
         if preserve:
-            self.native.fill_preserve()
+            self.native.context.fill_preserve()
         else:
-            self.native.fill()
+            self.native.context.fill()
 
     def stroke(self):
-        self.native.stroke()
+        self.native.context.stroke()
 
     # Transformations
 
     def rotate(self, radians):
-        self.native.rotate(radians)
+        self.native.context.rotate(radians)
 
     def scale(self, sx, sy):
-        self.native.scale(sx, sy)
+        self.native.context.scale(sx, sy)
 
     def translate(self, tx, ty):
-        self.native.translate(tx, ty)
+        self.native.context.translate(tx, ty)
 
     def reset_transform(self):
-        self.native.identity_matrix()
+        self.native.context.identity_matrix()
 
     def rehint(self):
         # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height(), getattr(self, '_fixed_height', False), getattr(self, '_fixed_width', False))

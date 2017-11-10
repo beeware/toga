@@ -1,6 +1,8 @@
 from contextlib import contextmanager
-from .base import Widget
 from math import pi
+
+from .base import Widget
+from ..utils import wrapped_handler
 
 
 class Canvas(Widget):
@@ -10,37 +12,43 @@ class Canvas(Widget):
         id (str):  An identifier for this widget.
         style (:class:`colosseum.CSSNode`): An optional style object. If no
             style is provided then a new one will be created for the widget.
+        on_draw (``callable``): Function to draw on the canvas.
         factory (:obj:`module`): A python module that is capable to return a
             implementation of this class with the same name. (optional &
             normally not needed)
     """
 
-    def __init__(self, id=None, style=None, factory=None):
+    def __init__(self, id=None, style=None, on_draw=None, factory=None):
         super().__init__(id=id, style=style, factory=factory)
 
         # Create a platform specific implementation of Canvas
         self._impl = self.factory.Canvas(interface=self)
+        self.on_draw = on_draw
 
         self.rehint()
 
-    def draw(self, draw_func):
-        """Begins a draw operation using the passed in drawing function
+    @property
+    def on_draw(self):
+        """The callable function to draw on a Canvas
 
         Creates a context or saves the current context, draws the operations
-        passed using the draw_func, then renders the drawing, and finally
+        using the passed function, then renders the drawing, and finally
         restores the saved context. The top left corner of the canvas must be
         painted at the origin of the context and is sized using the rehint()
-        method. The draw_func requires two arguments canvas and context.
-        >>> canvas = toga.Canvas()
-        >>> def draw_func(canvas, context)
-        >>>     canvas.move_to(10,10)
-        >>> canvas.draw(draw_func)
-
-        Args:
-            draw_func (:obj:'function'): the function that contains the drawing procedure
+        method.
 
         """
-        self._impl.draw(draw_func)
+        return self._on_draw
+
+    @on_draw.setter
+    def on_draw(self, handler):
+
+        def context_handler(canvas, context):
+            self._impl.set_context(context)
+            return handler
+
+        self._on_draw = context_handler
+        self._impl.set_on_draw(self._on_draw)
 
     # Line Styles
 
