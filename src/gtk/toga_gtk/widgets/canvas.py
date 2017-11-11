@@ -74,12 +74,10 @@ class Canvas(Widget):
     def ellipse(self, x, y, radiusx, radiusy, rotation, startangle, endangle, anticlockwise):
         width = 2 * radiusx
         height = 2 * radiusy
-        self.save()
         self.translate(x + width / 2, y + height / 2)
         self.scale(width / 2, height / 2)
         self.rotate(rotation)
         self.arc(x, y, 1, startangle, endangle, anticlockwise)
-        self.restore()
 
     def rect(self, x, y, width, height):
         self.native.context.rectangle(x, y, width, height)
