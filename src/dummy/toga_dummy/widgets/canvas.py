@@ -1,3 +1,4 @@
+import re
 from .base import Widget
 
 
@@ -34,7 +35,6 @@ class Canvas(Widget):
             # set color to black
             self._set_value('fill_style', '0, 0, 0, 1')
 
-
     def stroke_style(self, color=None):
         self.fill_style(color)
 
@@ -54,13 +54,15 @@ class Canvas(Widget):
         self._action('quadratic curve to (' + cpx + ' ,' + cpy + ' ,' + x + ' ,' + y)
 
     def arc(self, x, y, radius, startangle, endangle, anticlockwise):
-        self._action('arc (' + x + ' ,' + y + ' ,' + radius + ' ,' + startangle + ' ,' + endangle + ' ,' + anticlockwise)
+        self._action(
+            'arc (' + x + ' ,' + y + ' ,' + radius + ' ,' + startangle + ' ,' + endangle + ' ,' + anticlockwise)
 
     def ellipse(self, x, y, radiusx, radiusy, rotation, startangle, endangle, anticlockwise):
-        self._action('ellipse (' + x + ' ,' + y + ' ,' + radiusx + ' ,' + radiusy +' ,' + rotation +' ,' + startangle +' ,' + endangle +' ,' + anticlockwise)
+        self._action(
+            'ellipse (' + x + ' ,' + y + ' ,' + radiusx + ' ,' + radiusy + ' ,' + rotation + ' ,' + startangle + ' ,' + endangle + ' ,' + anticlockwise)
 
     def rect(self, x, y, width, height):
-        self._action('rect (' + x + ' ,' + y + ' ,' + width +' ,' + height)
+        self._action('rect (' + x + ' ,' + y + ' ,' + width + ' ,' + height)
 
     # Drawing Paths
 
@@ -77,7 +79,7 @@ class Canvas(Widget):
     # Transformations
 
     def rotate(self, radians):
-        self._action('rotate', radians)
+        self._action('rotate ' + radians)
 
     def scale(self, sx, sy):
         self._action('scale ' + sx + ' ' + sy)
@@ -90,4 +92,3 @@ class Canvas(Widget):
 
     def rehint(self):
         self._action('rehint Canvas')
-
