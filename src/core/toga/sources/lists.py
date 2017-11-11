@@ -6,8 +6,11 @@ class BaseListSource(Source):
         super().__init__()
         self._accessors = accessors
 
+    def prepend(self, *values, **data):
+        return self.insert(0, *values, **data)
+
     def append(self, *values, **data):
-        return self.insert(len(self._data), *values, **data)
+        return self.insert(len(self), *values, **data)
 
 
 class ListSource(BaseListSource):

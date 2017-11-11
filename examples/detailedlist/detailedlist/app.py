@@ -4,47 +4,55 @@ from colosseum import CSS
 from .translations import bee_translations
 
 
-class TestDetailedListApp(toga.App):
+class ExampleDetailedListApp(toga.App):
     # Detailed list callback functions
-    def on_select(widget, row, **kwargs):
-        self.label.text('Row {} was selected.'.format(row))
+    def on_select_handler(widget, row, **kwargs):
+        self.label.text = 'You selected row: {}'.format(row) if row is not None else 'No row selected'
 
-    def on_refresh(widget, **kwargs):
-        self.label.text('List was refreshed.')
+    def on_refresh_handler(widget, **kwargs):
+        self.label.text = 'List was refreshed.'
 
-    def on_delete(widget, row, **kwargs):
-        self.label.text('Row {} is going to be deleted.'.format(row))
+    def on_delete_handler(widget, row, **kwargs):
+        self.label.text = 'Row {} is going to be deleted.'.format(row)
 
     def startup(self):
-      # Label to show responses.
-      label = toga.Label('Ready.')
+        # Set up main window
+        self.main_window = toga.MainWindow(self.name)
+        self.main_window.app = self
 
-      widget = toga.DetailedList(
-          data=[
-              '{country}: {string}'.format(**translation)
-              for translation in bee_translations
-          ],
-          on_select=on_select,
-          on_delete=on_delete,
-          on_refresh=on_refresh,
-      )
+        # Label to show responses.
+        label = toga.Label('Ready.')
 
-      # Outermost box
-      box = toga.Box(
-          children=[widget, label],
-          style=CSS(
-              flex=1,
-              flex_direction='column',
-              padding=10,
-              min_width=500,
-              min_height=300
-          )
-      )
-      return box
+        widget = toga.DetailedList(
+            data=[
+                '{country}: {string}'.format(**translation)
+                for translation in bee_translations
+            ],
+            on_select=on_select_handler,
+            on_delete=on_delete_handler,
+            on_refresh=on_refresh_handler,
+        )
 
+        # Outermost box
+        box = toga.Box(
+            children=[widget, label],
+            style=CSS(
+                flex=1,
+                flex_direction='column',
+                padding=10,
+                min_width=500,
+                min_height=300
+            )
+        )
+
+        # Add the content on the main window
+        self.main_window.content = outer_box
+
+        # Show the main window
+        self.main_window.show()
 
 def main():
-    return TestDetailedListApp('Test Detailed List', 'org.pybee.widgets.detailedlist')
+    return ExampleDetailedListApp('Detailed List', 'org.pybee.widgets.detailedlist')
 
 
 if __name__ == '__main__':

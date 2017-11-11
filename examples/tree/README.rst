@@ -1,7 +1,7 @@
-Table
-=====
+Tree
+====
 
-Test app for the Table widget.
+Test app for the Tree widget.
 
 Quickstart
 ~~~~~~~~~~
@@ -9,4 +9,4 @@ Quickstart
 To run this example:
 
     $ pip install toga
-    $ python -m table
+    $ python -m tree

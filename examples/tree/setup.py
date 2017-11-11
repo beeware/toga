@@ -4,7 +4,7 @@ import re
 from setuptools import setup, find_packages
 import sys
 
-with io.open('./table/__init__.py', encoding='utf8') as version_file:
+with io.open('./tree/__init__.py', encoding='utf8') as version_file:
     version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]", version_file.read(), re.M)
     if version_match:
         version = version_match.group(1)
@@ -17,9 +17,9 @@ with io.open('README.rst', encoding='utf8') as readme:
 
 
 setup(
-    name='table',
+    name='tree',
     version=version,
-    description='Test app for the Table widget.',
+    description='Test app for the Tree widget.',
     long_description=long_description,
     author='BeeWare Project',
     author_email='contact@pybee.org',
@@ -40,7 +40,7 @@ setup(
     ],
     options={
         'app': {
-            'formal_name': 'Table',
+            'formal_name': 'Tree',
             'bundle': 'org.pybee.widgets'
         },
 

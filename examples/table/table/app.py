@@ -1,6 +1,8 @@
 from random import choice
+
 import toga
 from colosseum import CSS
+
 
 headings = ['Title', 'Year', 'Rating', 'Genre']
 bee_movies = [('The Secret Life of Bees', '2008', '7.3', 'Drama'),
@@ -12,61 +14,81 @@ bee_movies = [('The Secret Life of Bees', '2008', '7.3', 'Drama'),
               ('Bees in Paradise', '1944', '5.4', 'Comedy, Musical'),
               ('Keeper of the Bees', '1947', '6.3', 'Drama')]
 
-def build(app):
-    # Label to show which row is currently selected.
-    label = toga.Label('No row selected.')
 
-    # Data to populate the table.
-    data = []
-    for x in range(5):
-        data.append(tuple(str(x) for x in range(5)))
-
-    def selection_handler(widget, row):
-        label.text = 'You selected row: {}'.format(row) if row is not None else 'No row selected'
-
-    table = toga.Table(headings=headings,
-                       data=bee_movies[:4],
-                       style=CSS(flex=1),
-                       on_select=selection_handler)
-
-    table2 = toga.Table(headings=headings,
-                        data=table.data,
-                        style=CSS(flex=1))
-
-    tablebox = toga.Box(children=[table, table2], style=CSS(flex=1))
+class ExampleTableApp(toga.App):
+    # Table callback functions
+    def on_select_handler(self, widget, row, **kwargs):
+        self.label.text = 'You selected row: {}'.format(row) if row is not None else 'No row selected'
 
     # Button callback functions
-    def insert_handler(widget):
-        table.data.insert(0, choice(bee_movies))
-        print('Nr of rows', len(table.data.data))
+    def insert_handler(self, widget, **kwargs):
+        self.table1.data.insert(0, *choice(bee_movies))
+        print('Nr of rows', len(self.table.data.data))
 
-    def delete_handler(widget):
-        if len(table.data.data) > 0:
-            table.data.remove(table.data.data[0])
+    def delete_handler(self, widget, **kwargs):
+        if len(self.table1.data.data) > 0:
+            self.table.data.remove(table.data.data[0])
         else:
             print('Table is empty!')
 
-    def clear_handler(widget):
-        table.data.clear()
+    def clear_handler(self, widget, **kwargs):
+        self.table1.data.clear()
 
-    # Buttons
-    btn_style = CSS(flex=1)
-    btn_insert = toga.Button('Insert Row', on_press=insert_handler, style=btn_style)
-    btn_delete = toga.Button('Delete Row', on_press=delete_handler, style=btn_style)
-    btn_clear = toga.Button('Clear Table', on_press=clear_handler, style=btn_style)
-    btn_box = toga.Box(children=[btn_insert, btn_delete, btn_clear], style=CSS(flex_direction='row'))
+    def startup(self):
+        self.main_window = toga.MainWindow(self.name)
+        self.main_window.app = self
 
-    # Most outer box
-    box = toga.Box(children=[tablebox, btn_box, label],
-                   style=CSS(flex=1,
-                             flex_direction='column',
-                             padding=10,
-                             min_width=500, min_height=300))
-    return box
+        # Label to show which row is currently selected.
+        self.label = toga.Label('Ready.')
+
+        # Data to populate the table.
+        data = []
+        for x in range(5):
+            data.append(tuple(str(x) for x in range(5)))
+
+        self.table1 = toga.Table(
+            headings=headings,
+            data=bee_movies[:4],
+            style=CSS(flex=1),
+            on_select=self.on_select_handler
+        )
+
+        self.table2 = toga.Table(
+            headings=headings,
+            data=self.table1.data,
+            style=CSS(flex=1)
+        )
+
+        tablebox = toga.Box(children=[self.table1, self.table2], style=CSS(flex=1))
+
+        # Buttons
+        btn_style = CSS(flex=1)
+        btn_insert = toga.Button('Insert Row', on_press=self.insert_handler, style=btn_style)
+        btn_delete = toga.Button('Delete Row', on_press=self.delete_handler, style=btn_style)
+        btn_clear = toga.Button('Clear Table', on_press=self.clear_handler, style=btn_style)
+        btn_box = toga.Box(children=[btn_insert, btn_delete, btn_clear], style=CSS(flex_direction='row'))
+
+        # Most outer box
+        outer_box = toga.Box(
+            children=[btn_box, tablebox, self.label],
+            style=CSS(
+                flex=1,
+                flex_direction='column',
+                padding=10,
+                min_width=500,
+                min_height=300
+            )
+        )
+
+        # Add the content on the main window
+        self.main_window.content = outer_box
+
+        # Show the main window
+        self.main_window.show()
 
 
 def main():
-    return toga.App('Test Table', 'org.pybee.table', startup=build)
+    return ExampleTableApp('Table', 'org.pybee.widgets.table')
 
 
 if __name__ == '__main__':

@@ -6,11 +6,21 @@ class BaseDictSource(Source):
         super().__init__()
         self._accessors = accessors
 
+    def append(self, parent, *values, **data):
+
+        return self.insert(parent, len(parent) if parent else len(self), *values, **data)
+
 
 class DictSource(BaseDictSource):
     def __init__(self, accessors, data):
         super().__init__(accessors)
         self._roots = self.create_nodes(data)
+
+    def __len__(self):
+        return len(self._roots)
+
+    def __getitem__(self, index):
+        return self._data[index]
 
     def create_node(self, datum, children=None):
         if isinstance(datum, dict):

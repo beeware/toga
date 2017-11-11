@@ -91,18 +91,11 @@ class Tree(Widget):
         self.native.autohidesScrollers = False
         self.native.borderType = NSBezelBorder
 
-        # Disable all autolayout functionality on the outer widget
-        self.native.translatesAutoresizingMaskIntoConstraints = False
-        self.native.autoresizesSubviews = True
-
         # Create the Tree widget
         self.tree = TogaTree.alloc().init()
         self.tree.interface = self.interface
         self.tree._impl = self
         self.tree.columnAutoresizingStyle = NSTableViewUniformColumnAutoresizingStyle
-
-        # Use autolayout for the inner widget.
-        self.tree.setTranslatesAutoresizingMaskIntoConstraints_(True)
 
         # FIXME: Make turning this on an option.
         # self.tree.setAllowsMultipleSelection_(True)
@@ -132,15 +125,6 @@ class Tree(Widget):
 
         # Add the layout constraints
         self.add_constraints()
-
-    # def insert_node(self, node):
-    #     node._impl = TogaData.alloc().init()
-    #     node._impl.data = node
-
-    #     self.node[node._impl] = node
-
-    # def remove_node(self, node):
-    #     del self.node[node._impl]
 
     def refresh_node(self, node):
         if node._expanded:

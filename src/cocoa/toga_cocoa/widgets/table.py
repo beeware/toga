@@ -57,7 +57,7 @@ class Table(Widget):
         # The scroll view is the native, because it's the outer container.
         self.native = NSScrollView.alloc().init()
         self.native.hasVerticalScroller = True
-        self.native.hasHorizontalScroller = True
+        self.native.hasHorizontalScroller = False
         self.native.autohidesScrollers = False
         self.native.borderType = NSBezelBorder
 

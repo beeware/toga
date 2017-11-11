@@ -35,6 +35,15 @@ class Node(Row):
         self.parent = None
         self._children = None
 
+    def __len__(self):
+        if self._children:
+            return len(self._children)
+        else:
+            return 0
+
+    def __getitem__(self, index):
+        return self._children[index]
+
 
 class Source:
     def __init__(self):
