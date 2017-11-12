@@ -6,13 +6,13 @@ from .translations import bee_translations
 
 class ExampleDetailedListApp(toga.App):
     # Detailed list callback functions
-    def on_select_handler(widget, row, **kwargs):
+    def on_select_handler(self, widget, row, **kwargs):
         self.label.text = 'You selected row: {}'.format(row) if row is not None else 'No row selected'
 
-    def on_refresh_handler(widget, **kwargs):
+    def on_refresh_handler(self, widget, **kwargs):
         self.label.text = 'List was refreshed.'
 
-    def on_delete_handler(widget, row, **kwargs):
+    def on_delete_handler(self, widget, row, **kwargs):
         self.label.text = 'Row {} is going to be deleted.'.format(row)
 
     def startup(self):
@@ -21,16 +21,16 @@ class ExampleDetailedListApp(toga.App):
         self.main_window.app = self
 
         # Label to show responses.
-        label = toga.Label('Ready.')
+        self.label = toga.Label('Ready.')
 
         widget = toga.DetailedList(
             data=[
                 '{country}: {string}'.format(**translation)
                 for translation in bee_translations
             ],
-            on_select=on_select_handler,
-            on_delete=on_delete_handler,
-            on_refresh=on_refresh_handler,
+            on_select=self.on_select_handler,
+            on_delete=self.on_delete_handler,
+            on_refresh=self.on_refresh_handler,
         )
 
         # Outermost box
