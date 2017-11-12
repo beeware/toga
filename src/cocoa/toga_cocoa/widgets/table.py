@@ -89,7 +89,7 @@ class Table(Widget):
         # Add the layout constraints
         self.add_constraints()
 
-    def refresh(self):
+    def data_changed(self, node=None):
         self.table.reloadData()
 
     def set_on_select(self, handler):

@@ -1,9 +1,12 @@
 
 
-class Datum:
-    def __init__(self, value=None, icon=None):
+class Value:
+    def __init__(self, source, value=None, icon=None, **data):
+        self._source = source
         self.value = value
         self.icon = icon
+        for name, val in data.items():
+            setattr(self, name, val)
 
     def __str__(self):
         if self.value is None:
@@ -22,27 +25,41 @@ class Datum:
         else:
             self._icon = None
 
+    def __setattr__(self, attr, value):
+        super().__setattr__(attr, value)
+        if not attr.startswith('_'):
+            self._source._notify('data_changed')
+
 
 class Row:
-    def __init__(self, **data):
+    def __init__(self, source, **data):
+        self._source = source
         for name, value in data.items():
             setattr(self, name, value)
 
+    def __setattr__(self, attr, value):
+        super().__setattr__(attr, value)
+        if not attr.startswith('_'):
+            self._source._notify('data_changed')
+
 
 class Node(Row):
-    def __init__(self, **data):
-        super().__init__(**data)
-        self.parent = None
+    def __init__(self, source, **data):
+        super().__init__(source, **data)
         self._children = None
-
-    def __len__(self):
-        if self._children:
-            return len(self._children)
-        else:
-            return 0
+        self.parent = None
 
     def __getitem__(self, index):
         return self._children[index]
+
+    def __len__(self):
+        if self._children is None:
+            return 0
+        else:
+            return len(self._children)
+
+    def has_children(self):
+        return self._children is not None
 
 
 class Source:

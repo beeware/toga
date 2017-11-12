@@ -49,14 +49,14 @@ class DetailedList(Widget):
     @data.setter
     def data(self, data):
         if data is None:
-            self._data = ListSource([])
+            self._data = ListSource(data=[])
         elif isinstance(data, (list, tuple)):
-            self._data = ListSource(data)
+            self._data = ListSource(data=data)
         else:
             self._data = data
 
         self._data.add_listener(self._impl)
-        self.data._refresh()
+        self.data._notify('refresh')
 
     @property
     def on_delete(self):

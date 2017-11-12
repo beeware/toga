@@ -1,8 +1,8 @@
-from .base import Source, Row, Datum, to_accessor
+from .base import Source, Row, Value, to_accessor
 
 
 class BaseListSource(Source):
-    def __init__(self, accessors):
+    def __init__(self, accessors=None):
         super().__init__()
         self._accessors = accessors
 
@@ -23,22 +23,25 @@ class ListSource(BaseListSource):
             same number of entries as there are accessors.
     """
 
-    def __init__(self, accessors, data):
+    def __init__(self, data, accessors=None):
         super().__init__(accessors)
         self._data = []
-        self.create_rows(data)
-
-    def create_rows(self, data):
         for datum in data:
             if isinstance(datum, dict):
-                self._data.append(Row(**datum))
+                if self._accessors:
+                    self._data.append(Row(self, **datum))
+                else:
+                    self._data.append(Value(self, **datum))
             elif isinstance(datum, (list, tuple)):
-                self._data.append(
-                    Row(**{
-                        accessor: Datum(value)
-                        for accessor, value in zip(self._accessors, datum)
-                    })
-                )
+                if self._accessors:
+                    self._data.append(
+                        Row(self, **{
+                            accessor: Value(self, value)
+                            for accessor, value in zip(self._accessors, datum)
+                        })
+                    )
+                else:
+                    raise Exception("Can't add a list to a single-valued ListSource")
             else:
                 self._data.append(datum)
 
@@ -50,12 +53,12 @@ class ListSource(BaseListSource):
 
     def clear(self):
         self._data = []
-        self._notify('refresh')
+        self._notify('data_changed')
 
     def insert(self, index, *values, **data):
         # Coalesce values and data into a single data dictionary,
         # and use that to create the data row
-        node = Row(**dict(
+        node = Row(self, **dict(
             data,
             **{
                 accessor: value
@@ -63,9 +66,9 @@ class ListSource(BaseListSource):
             }
         ))
         self._data.insert(index, node)
-        self._notify('refresh')
+        self._notify('data_changed')
         return node
 
     def remove(self, node):
         self._data.remove(node)
-        self._notify('refresh')
+        self._notify('data_changed')

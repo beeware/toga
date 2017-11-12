@@ -1,37 +1,28 @@
-from .base import Source, Node, Datum, to_accessor
+from .base import Source, Node, Value, to_accessor
 
 
-class BaseDictSource(Source):
-    def __init__(self, accessors):
+class DictSource(Source):
+    def __init__(self, accessors, data):
         super().__init__()
         self._accessors = accessors
-
-    def append(self, parent, *values, **data):
-
-        return self.insert(parent, len(parent) if parent else len(self), *values, **data)
-
-
-class DictSource(BaseDictSource):
-    def __init__(self, accessors, data):
-        super().__init__(accessors)
         self._roots = self.create_nodes(data)
 
     def __len__(self):
         return len(self._roots)
 
     def __getitem__(self, index):
-        return self._data[index]
+        return self._roots[index]
 
     def create_node(self, datum, children=None):
         if isinstance(datum, dict):
-            node = Node(**datum)
+            node = Node(self, **datum)
         elif isinstance(datum, (list, tuple)):
-            node = Node(**{
-                accessor: value
+            node = Node(self, **{
+                accessor: Value(self, value)
                 for accessor, value in zip(self._accessors, datum)
             })
         else:
-            node = datum
+            node = Value(self, datum)
 
         if children is not None:
             node._children = []
@@ -53,17 +44,11 @@ class DictSource(BaseDictSource):
                 for datum in data
             ]
 
-    def roots(self):
-        return self._roots
-
-    def root(self, index):
-        return self._roots[index]
-
     def insert(self, parent, index, *values, **datum):
         node = self.create_node(dict(
             datum,
             **{
-                accessor: value
+                accessor: Value(self, value)
                 for accessor, value in zip(self._accessors, values)
             }
         ))
@@ -74,10 +59,13 @@ class DictSource(BaseDictSource):
                 parent._children = []
             parent._children.insert(index, node)
         node.parent = parent
-        self._notify('refresh')
+        self._notify('data_changed')
         return node
+
+    def append(self, parent, *value, **datum):
+        return self.insert(parent, len(self) if parent is None else len(parent), *value, **datum)
 
     def remove(self, node):
         result = node.parent._children.remove(node)
-        self._notify('refresh')
+        self._notify('data_changed')
         return result

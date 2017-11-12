@@ -1,10 +1,10 @@
 from random import choice
 
 import toga
+from toga.sources import Source
 from colosseum import CSS
 
 
-headings = ['Title', 'Year', 'Rating', 'Genre']
 bee_movies = [
     ('The Secret Life of Bees', '2008', '7.3', 'Drama'),
     ('Bee Movie', '2007', '6.1', 'Animation, Adventure, Comedy'),
@@ -17,18 +17,76 @@ bee_movies = [
 ]
 
 
-class ExampleTableApp(toga.App):
+class Movie:
+    # A class to wrap individual movies
+    def __init__(self, title, year, rating, genre):
+        self.year = int(year)
+        self.title = title
+        self.rating = float(rating)
+        self.genre = genre
+
+
+class MovieSource(Source):
+    def __init__(self):
+        super().__init__()
+        self._movies = []
+
+    def __len__(self):
+        return len(self._movies)
+
+    def __getitem__(self, index):
+        return self._movies[index]
+
+    def add(self, entry):
+        self._movies.append(Movie(*entry))
+        self._movies.sort(key=lambda m: m.year)
+        self._notify('data_changed')
+
+    def remove(self, index):
+        del self._movies[index]
+        self._notify('data_changed')
+
+    def clear(self):
+        self._movies = []
+        self._notify('data_changed')
+
+
+class GoodMovieSource(Source):
+    # A data source that piggy-backs on a MovieSource, but only
+    # exposes *good* movies (rating > 7.5)
+    def __init__(self, source):
+        super().__init__()
+        self._source = source
+        self._source.add_listener(self)
+
+    # Implement the filtering of the underlying data source
+    def _filtered(self):
+        return (m for m in self._source._movies if m.rating > 7.0)
+
+    # Methods required by the ListSource interface
+    def __len__(self):
+        return len(list(self._filtered()))
+
+    def __getitem__(self, index):
+        return sorted(self._filtered(), key=lambda m: -m.rating)[index]
+
+    # A listener that passes on all notifications
+    def data_changed(self, node=None):
+        self._notify('data_changed', node)
+
+
+class ExampleTableSourceApp(toga.App):
     # Table callback functions
     def on_select_handler(self, widget, row, **kwargs):
         self.label.text = 'You selected row: {}'.format(row) if row is not None else 'No row selected'
 
     # Button callback functions
     def insert_handler(self, widget, **kwargs):
-        self.table1.data.insert(0, *choice(bee_movies))
+        self.table1.data.add(choice(bee_movies))
 
     def delete_handler(self, widget, **kwargs):
         if len(self.table1.data) > 0:
-            self.table1.data.remove(self.table1.data[0])
+            self.table1.data.remove(0)
         else:
             print('Table is empty!')
 
@@ -42,23 +100,25 @@ class ExampleTableApp(toga.App):
         # Label to show which row is currently selected.
         self.label = toga.Label('Ready.')
 
-        # Data to populate the table.
-        data = []
-        for x in range(5):
-            data.append(tuple(str(x) for x in range(5)))
-
+        # Create two tables with custom data sources; the data source
+        # of the second reads from the first.
+        # The headings are also in a different order.
         self.table1 = toga.Table(
-            headings=headings,
-            data=bee_movies[:4],
+            headings=['Year', 'Title', 'Rating', 'Genre'],
+            data=MovieSource(),
             style=CSS(flex=1),
             on_select=self.on_select_handler
         )
 
         self.table2 = toga.Table(
-            headings=headings,
-            data=self.table1.data,
+            headings=['Rating', 'Title', 'Year', 'Genre'],
+            data=GoodMovieSource(self.table1.data),
             style=CSS(flex=1)
         )
+
+        # Populate the table
+        for entry in bee_movies:
+            self.table1.data.add(entry)
 
         tablebox = toga.Box(children=[self.table1, self.table2], style=CSS(flex=1))
 
@@ -89,7 +149,7 @@ class ExampleTableApp(toga.App):
 
 
 def main():
-    return ExampleTableApp('Table', 'org.pybee.widgets.table')
+    return ExampleTableSourceApp('Table Source', 'org.pybee.widgets.table_source')
 
 
 if __name__ == '__main__':

@@ -15,8 +15,13 @@ class TogaIconCell(NSTextFieldCell):
     @objc_method
     def drawWithFrame_inView_(self, cellFrame: NSRect, view) -> None:
         # The data to display.
-        label = self.objectValue.attrs['label']
-        icon = self.objectValue.attrs['icon']
+        try:
+            label = self.objectValue.attrs['label']
+            icon = self.objectValue.attrs['icon']
+        except AttributeError:
+            # Value is a simple string.
+            label = self.objectValue
+            icon = None
 
         if icon:
             nicon = icon.native

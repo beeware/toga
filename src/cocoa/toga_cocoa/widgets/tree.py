@@ -11,11 +11,15 @@ class TogaTree(NSOutlineView):
     # OutlineViewDataSource methods
     @objc_method
     def outlineView_child_ofItem_(self, tree, child: int, item):
+        # Get the object representing the row
         if item is None:
-            node = self.interface.data.root(child)
+            node = self.interface.data[child]
         else:
-            node = item.attrs['node']._children[child]
+            node = item.attrs['node'][child]
 
+        # Get the Cocoa implementation for the row. If an _impl
+        # doesn't exist, create a data object for it, and
+        # populate it with initial values for each column.
         try:
             node_impl = node._impl
         except AttributeError:
@@ -23,7 +27,7 @@ class TogaTree(NSOutlineView):
             node_impl.attrs = {
                 'node': node,
                 'values': {
-                    attr: TogaData.alloc().init()
+                    attr: None
                     for attr in self.interface._accessors
                 }
             }
@@ -33,37 +37,73 @@ class TogaTree(NSOutlineView):
 
     @objc_method
     def outlineView_isItemExpandable_(self, tree, item) -> bool:
-        return item.attrs['node']._children is not None
+        try:
+            return item.attrs['node'].has_children()
+        except AttributeError:
+            return False
 
     @objc_method
     def outlineView_numberOfChildrenOfItem_(self, tree, item) -> int:
         if item is None:
-            if self.interface.data:
-                return len(self.interface.data.roots())
+            # How many root elements are there?
+            # If we're starting up, the source may not exist yet.
+            if self.interface.data is not None:
+                return len(self.interface.data)
             else:
                 return 0
         else:
-            return len(item.attrs['node']._children)
+            # How many children does this node have?
+            return len(item.attrs['node'])
 
     @objc_method
     def outlineView_objectValueForTableColumn_byItem_(self, tree, column, item):
-        node = item.attrs['node']
-        value = getattr(node, column.identifier)
-
-        datum = item.attrs['values'][column.identifier]
-        # If the value has an icon attribute, get the _impl.
-        # Icons are deferred resources, so we provide the factory.
         try:
-            icon = value.icon._impl(self.interface.factory)
+            value = getattr(item.attrs['node'], column.identifier)
+
+            # If the value has an icon attribute, get the _impl.
+            # Icons are deferred resources, so we provide the factory.
+            try:
+                icon = value.icon._impl(self.interface.factory)
+            except AttributeError:
+                icon = None
         except AttributeError:
+            # If the node doesn't have a property with the
+            # accessor name, assume an empty string value.
+            value = ''
             icon = None
 
-        datum.attrs = {
-            'label': str(value),
-            'icon': icon,
-        }
+        # Now construct the data object for the cell.
+        # If the datum already exists, reuse and update it.
+        # If an icon is present, create a TogaData object.
+        # Otherwise, just use the string (because a Python string)
+        # is transparently an ObjC object, so it works as a value.
+        obj = item.attrs['values'][column.identifier]
+        if obj is None or isinstance(obj, str):
+            if icon:
+                # Create a TogaData value
+                obj = TogaData.alloc().init()
+                obj.attrs = {
+                    'label': str(value),
+                    'icon': icon,
+                }
+            else:
+                # Create/Update the string value
+                obj = str(value)
+            item.attrs['values'][column.identifier] = obj
+        else:
+            # Datum exists, and is currently an icon.
+            if icon:
+                # Update TogaData values
+                obj.attrs = {
+                    'label': str(value),
+                    'icon': icon,
+                }
+            else:
+                # Convert to a simple string.
+                obj = str(value)
+                item.attrs['values'][column.identifier] = obj
 
-        return datum
+        return obj
 
     # OutlineViewDelegate methods
     @objc_method
@@ -126,13 +166,13 @@ class Tree(Widget):
         # Add the layout constraints
         self.add_constraints()
 
-    def refresh_node(self, node):
-        if node._expanded:
-            self.tree.expandItem(node._impl)
-        else:
-            self.tree.collapseItem(node._impl)
+    def data_changed(self, node=None):
+        if node:
+            if node._expanded:
+                self.tree.expandItem(node._impl)
+            else:
+                self.tree.collapseItem(node._impl)
 
-    def refresh(self):
         self.tree.reloadData()
 
     def set_on_select(self, handler):

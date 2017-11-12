@@ -71,7 +71,7 @@ class Table(Widget):
             self._data = data
 
         self._data.add_listener(self._impl)
-        self._impl.refresh()
+        self._impl.data_changed()
 
     @property
     def on_select(self):
