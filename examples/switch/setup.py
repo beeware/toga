@@ -21,8 +21,8 @@ setup(
     version=version,
     description='A demonstration of all features of a toga.Switch example for the native GUI toolkit, Toga.',
     long_description=long_description,
-    author='DariusMontez',
-    author_email='darius.montez@gmail.com',
+    author='BeeWare',
+    author_email='contact@pybee.org',
     license='New BSD',
     packages=find_packages(exclude=['docs', 'tests']),
     classifiers=[
