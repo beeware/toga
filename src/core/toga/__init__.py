@@ -2,6 +2,7 @@ from .app import *
 from .command import *
 from .window import Window
 from .constants import *
+from .store import Store
 
 # Font support
 from .font import Font
@@ -35,7 +36,7 @@ from .widgets.numberinput import NumberInput
 
 __all__ = [
     # Applications
-    'App', 'MainWindow',
+    'App', 'MainWindow', 'Store',
 
     # Commands
     'Command', 'Group', 'GROUP_BREAK', 'SECTION_BREAK',

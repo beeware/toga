@@ -76,3 +76,8 @@ NSFont = ObjCClass('NSFont')
 
 # NSGraphicsContext.h
 NSGraphicsContext = ObjCClass('NSGraphicsContext')
+
+# PREFERENCES
+
+NSUserDefaults = ObjCClass('NSUserDefaults')
+

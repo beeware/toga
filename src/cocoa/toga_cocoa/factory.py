@@ -1,6 +1,7 @@
 from .app import App, MainWindow
 from .window import Window
 from .font import Font
+from .store import Store
 
 # Widgets
 from .widgets.box import Box
@@ -32,6 +33,7 @@ __all__ = [
     'Window',
 
     'Font',
+    'Store',
 
     'Box',
     'Button',
