@@ -27,6 +27,7 @@ class Button(Widget):
             # Disconnect all other on-click handlers, so that if you reassign
             # the on_press, it doesn't trigger the old ones too.
             self.native.disconnect(conn_id)
+            self._connections.remove(conn_id)
 
         self._connections.append(self.native.connect("clicked", handler))
 

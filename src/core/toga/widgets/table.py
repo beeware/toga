@@ -12,6 +12,7 @@ class TableRow:
     """
 
     def __init__(self, data, icon=None):
+        self._impl = None
         self._data = [data] if isinstance(data, str) else data
         self.icon = icon
 
@@ -54,7 +55,6 @@ class ListDataSource:
 
     Args:
         data (`list` of `tuple`): A list of tuples containing the data for every row.
-        refresh_function (`callable`): A function invoked on data change.
     """
 
     def __init__(self, data):
@@ -91,22 +91,21 @@ class ListDataSource:
     def _refresh(self):
         """ Invoke the refresh function on all widgets that are subscribed to this data source."""
         for listener in self._listeners:
-            if hasattr(listener, '_impl'):
-                listener._impl.refresh()
-            elif callable(listener):
-                listener()
-            else:
-                raise RuntimeError('{} is not a accepted listener for {}'.format(listener, self))
+            listener.refresh()
 
-    def clear(self):
+    def clear(self, refresh=True):
         self._data = []
-        self._refresh()
+        if refresh:
+            self._refresh()
 
     def insert(self, index: int, data, icon=None):
         node = TableRow(data=data, icon=icon)
         self._data.insert(index, node)
         self._refresh()
         return node
+
+    def append(self, data, icon=None):
+        return self.insert(len(self._data), data, icon)
 
     def remove(self, node):
         self._data.remove(node)
@@ -163,17 +162,19 @@ class Table(Widget):
         Returns:
             Returns a (:obj:`ListDataSource`).
         """
-        return self._data if self._data is not None else None
+        return self._data
 
     @data.setter
     def data(self, data):
-        if isinstance(data, (list, tuple)):
+        if data is None:
+            self._data = ListDataSource([])
+        elif isinstance(data, (list, tuple)):
             self._data = ListDataSource(data)
         else:
             self._data = data
 
-        if data is not None:
-            self._data.add_listener(self)
+        self._data.add_listener(self._impl)
+        self._impl.refresh()
 
     @property
     def on_select(self):
