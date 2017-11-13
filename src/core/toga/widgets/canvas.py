@@ -2,7 +2,7 @@ from contextlib import contextmanager
 from math import pi
 
 from .base import Widget
-from ..utils import wrapped_handler
+from ..utils import wrapped_canvas_handler
 
 
 class Canvas(Widget):
@@ -42,12 +42,7 @@ class Canvas(Widget):
 
     @on_draw.setter
     def on_draw(self, handler):
-
-        def context_handler(canvas, context):
-            self._impl.set_context(context)
-            return handler
-
-        self._on_draw = context_handler
+        self._on_draw = wrapped_canvas_handler(self, handler)
         self._impl.set_on_draw(self._on_draw)
 
     # Line Styles
