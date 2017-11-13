@@ -76,7 +76,7 @@ class StartApp(toga.App):
                     self.canvas.translate(3 * self.SIZE, 0)
                     self.inf()
 
-    def draw_steps(self):
+    def draw_steps(self, widget):
         self.canvas.stroke_style('rbga(0, 0, 0, 1)')
         self.canvas.line_width(self.SIZE / 4)
         self.stroke_shapes(0, 0)
