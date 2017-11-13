@@ -26,7 +26,7 @@ class Table(Widget):
         self.native.set_min_content_height(200)
         self.native.interface = self.interface
 
-    def refresh(self):
+    def data_changed(self):
         self.data.clear()
 
         for row in self.interface.data.rows:

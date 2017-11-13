@@ -25,16 +25,7 @@ class Tree(Widget):
         self.native.set_min_content_width(200)
         self.native.set_min_content_height(200)
 
-    def insert_node(self, node):
-        raise NotImplementedError()
-
-    def remove_node(self, node):
-        raise NotImplementedError()
-
-    def refresh(self):
-        raise NotImplementedError()
-
-    def refresh_node(self, node):
+    def data_changed(self):
         raise NotImplementedError()
 
     def set_on_select(self, handler):
