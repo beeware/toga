@@ -14,7 +14,7 @@ class Selection(Widget):
             implementation of this class with the same name. (optional & normally not needed)
     """
 
-    def __init__(self, id=None, style=None, items=None, on_select=None, factory=None):
+    def __init__(self, id=None, style=None, items=None, on_select=None, enabled=True, factory=None):
         super().__init__(id=id, style=style, factory=factory)
 
         self._impl = self.factory.Selection(interface=self)
@@ -27,6 +27,7 @@ class Selection(Widget):
                 self._impl.add_item(item)
 
         self.on_select = on_select
+        self.enabled = enabled
 
     @property
     def items(self):
