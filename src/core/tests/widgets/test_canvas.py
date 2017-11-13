@@ -8,21 +8,33 @@ class CanvasTests(TestCase):
     def setUp(self):
         super().setUp()
 
+        # Create a canvas with the dummy factory
         self.testing_canvas = toga.Canvas(factory=toga_dummy.factory)
 
     def test_widget_created(self):
         self.assertEqual(self.testing_canvas._impl.interface, self.testing_canvas)
         self.assertActionPerformed(self.testing_canvas, 'create Canvas')
 
+    def test_canvas_on_draw(self):
+        self.assertIsNone(self.testing_canvas._on_draw)
+
+        # set a new callback
+        def callback(widget, **extra):
+            return 'called {} with {}'.format(type(widget), extra)
+
+        self.testing_canvas.on_draw = callback
+        self.assertEqual(self.testing_canvas.on_draw._raw, callback)
+        self.assertValueSet(self.testing_canvas, 'on_draw', self.testing_canvas.on_draw)
+
     def test_basic_drawing(self):
-        def drawing(canvas, context):
-            context.rect(-3, -3, 6, 6)
-            context.fill_style('rgba(0, 0.5, 0, 0.4)')
-            context.fill(preserve=True)
-            context.stroke_style('rgba(0.25, 0.25, 0.25, 0.6)')
-            context.line_width(1)
-            context.stroke()
-        self.testing_canvas.draw(drawing)
+        def drawing(widget):
+            self.testing_canvas.rect(-3, -3, 6, 6)
+            self.testing_canvas.fill_style('rgba(0, 0.5, 0, 0.4)')
+            self.testing_canvas.fill(preserve=True)
+            self.testing_canvas.stroke_style('rgba(0.25, 0.25, 0.25, 0.6)')
+            self.testing_canvas.line_width(1)
+            self.testing_canvas.stroke()
+        self.testing_canvas.on_draw = drawing
 
     def test_self_oval_path(self):
         xc = 50
