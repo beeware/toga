@@ -42,27 +42,27 @@ class Canvas(Widget):
         self._action('close path')
 
     def move_to(self, x, y):
-        self._action('move to (' + x + ' ,' + y + ')')
+        self._action('move to (' + str(x) + ' ,' + str(y) + ')')
 
     def line_to(self, x, y):
-        self._action('line to (' + x + ' ,' + y + ')')
+        self._action('line to (' + str(x) + ' ,' + str(y) + ')')
 
     def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y):
-        self._action('bezier curve to ' + cp1x + ' ,' + cp1y + ' ,' + cp2x + ' ,' + cp2y + ' ,' + x + ' ,' + y)
+        self._action('bezier curve to ' + str(cp1x) + ' ,' + str(cp1y) + ' ,' + str(cp2x) + ' ,' + str(cp2y) + ' ,' + str(x) + ' ,' + str(y))
 
     def quadratic_curve_to(self, cpx, cpy, x, y):
-        self._action('quadratic curve to (' + cpx + ' ,' + cpy + ' ,' + x + ' ,' + y)
+        self._action('quadratic curve to (' + str(cpx) + ' ,' + str(cpy) + ' ,' + str(x) + ' ,' + str(y))
 
     def arc(self, x, y, radius, startangle, endangle, anticlockwise):
         self._action(
-            'arc (' + x + ' ,' + y + ' ,' + radius + ' ,' + startangle + ' ,' + endangle + ' ,' + anticlockwise)
+            'arc (' + str(x) + ' ,' + str(y) + ' ,' + str(radius) + ' ,' + str(startangle) + ' ,' + str(endangle) + ' ,' + str(anticlockwise))
 
     def ellipse(self, x, y, radiusx, radiusy, rotation, startangle, endangle, anticlockwise):
         self._action(
-            'ellipse (' + x + ' ,' + y + ' ,' + radiusx + ' ,' + radiusy + ' ,' + rotation + ' ,' + startangle + ' ,' + endangle + ' ,' + anticlockwise)
+            'ellipse (' + str(x) + ' ,' + str(y) + ' ,' + str(radiusx) + ' ,' + str(radiusy) + ' ,' + str(rotation) + ' ,' + str(startangle) + ' ,' + str(endangle) + ' ,' + str(anticlockwise))
 
     def rect(self, x, y, width, height):
-        self._action('rect (' + x + ' ,' + y + ' ,' + width + ' ,' + height)
+        self._action('rect (' + str(x) + ' ,' + str(y) + ' ,' + str(width) + ' ,' + str(height))
 
     # Drawing Paths
 
@@ -79,13 +79,13 @@ class Canvas(Widget):
     # Transformations
 
     def rotate(self, radians):
-        self._action('rotate ' + radians)
+        self._action('rotate ' + str(radians))
 
     def scale(self, sx, sy):
-        self._action('scale ' + sx + ' ' + sy)
+        self._action('scale ' + str(sx) + ' ' + str(sy))
 
     def translate(self, tx, ty):
-        self._action('translate ' + tx + ' ' + ty)
+        self._action('translate ' + str(tx) + ' ' + str(ty))
 
     def reset_transform(self):
         self._action('reset transform')
