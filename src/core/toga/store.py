@@ -7,15 +7,14 @@ class Store:
     persisted over app launches.
 
     Examples:
-        >>> store = toga.Store(app=app)
         >>> value = 'I want to save this'
-        >>> store.set_item('my_key', value)
-        >>> store.get_item('my_key')
+        >>> self.app.store.set_item('my_key', value)
+        >>> self.app.store.get_item('my_key')
         'I want to save this'
         >>> # Listen for changes
         >>> def my_callback(key, value):
         >>>     print(key, 'changed to', value)
-        >>> store.add_listener('my_key', my_callback)
+        >>> self.app.store.add_listener('my_key', my_callback)
     """
 
     def __init__(self, app, factory=None):

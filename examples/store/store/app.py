@@ -10,7 +10,6 @@ class StoreApp(toga.App):
         self.main_window = toga.MainWindow(self.name, size=(500, 300))
         self.main_window.app = self
 
-        self.store = toga.Store(app=self)
         self.key_field = toga.TextInput(placeholder='key', initial='test_key', style=CSS(flex=1, padding=5))
         self.value_field = toga.TextInput(placeholder='value', initial='test_value', style=CSS(flex=1, padding=5))
         key_value_box = toga.Box(children=[self.key_field, self.value_field],

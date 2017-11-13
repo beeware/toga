@@ -6,6 +6,7 @@ from .platform import get_platform_factory
 from .window import Window
 from .command import CommandSet
 from .widgets.icon import Icon
+from .store import Store
 
 
 class MainWindow(Window):
@@ -62,6 +63,7 @@ class App:
         self._documents = []
 
         self._startup_method = startup
+        self._store = Store(self)
 
         self.default_icon = Icon('tiberius', system=True, factory=self.factory)
         self.icon = icon
@@ -99,6 +101,10 @@ class App:
     @icon.setter
     def icon(self, name):
         self._icon = Icon.load(name, default=self.default_icon, factory=self.factory)
+
+    @property
+    def store(self):
+        return self._store
 
     @property
     def documents(self):
