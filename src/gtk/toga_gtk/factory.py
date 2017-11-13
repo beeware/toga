@@ -18,7 +18,7 @@ from .widgets.progressbar import ProgressBar
 from .widgets.scrollcontainer import ScrollContainer
 # from .widgets.slider import *
 from .widgets.splitcontainer import SplitContainer
-# from .widgets.switch import *
+from .widgets.switch import Switch
 from .widgets.table import Table
 from .widgets.textinput import TextInput
 from .widgets.tree import Tree
