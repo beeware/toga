@@ -1,49 +1,23 @@
-from .base import Source, Row, Value, to_accessor
+from .base import Source, Row, Value
 
 
-class BaseListSource(Source):
-    def __init__(self, accessors=None):
-        super().__init__()
-        self._accessors = accessors
-
-    def prepend(self, *values, **data):
-        return self.insert(0, *values, **data)
-
-    def append(self, *values, **data):
-        return self.insert(len(self), *values, **data)
-
-
-class ListSource(BaseListSource):
-    """A data source that helps you to store and manage data in a row like fashion.
+class SimpleListSource(Source):
+    """A data source to store single values in a list.
 
     Args:
-        accessors (`list`): A list of attribute names for accessing the value
-            in each column of the row.
         data (`list`): The data in the list. Each entry in the list should have the
             same number of entries as there are accessors.
     """
 
-    def __init__(self, data, accessors=None):
-        super().__init__(accessors)
+    def __init__(self, data):
+        super().__init__()
         self._data = []
-        for datum in data:
-            if isinstance(datum, dict):
-                if self._accessors:
-                    self._data.append(Row(self, **datum))
-                else:
-                    self._data.append(Value(self, **datum))
-            elif isinstance(datum, (list, tuple)):
-                if self._accessors:
-                    self._data.append(
-                        Row(self, **{
-                            accessor: Value(self, value)
-                            for accessor, value in zip(self._accessors, datum)
-                        })
-                    )
-                else:
-                    raise Exception("Can't add a list to a single-valued ListSource")
-            else:
-                self._data.append(datum)
+        for value in data:
+            self._data.append(self._create_row(value))
+
+    ######################################################################
+    # Methods required by the ListSource interface
+    ######################################################################
 
     def __len__(self):
         return len(self._data)
@@ -51,15 +25,37 @@ class ListSource(BaseListSource):
     def __getitem__(self, index):
         return self._data[index]
 
+    ######################################################################
+    # Factory methods for new rows
+    ######################################################################
+
+    def _create_row(self, data):
+        if isinstance(data, dict):
+            row = Value(self, **data)
+        else:
+            row = Value(self, value=data)
+        return row
+
+    ######################################################################
+    # Utility methods to make ListSources more list-like
+    ######################################################################
+
+    def __setitem__(self, index, value):
+        self._data[index] = self._create_row(value)
+        self._notify('data_changed')
+
+    def __iter__(self):
+        return iter(self._data)
+
     def clear(self):
         self._data = []
         self._notify('data_changed')
 
-    def insert(self, index, *values, **data):
+    def insert(self, index, *values, **named):
         # Coalesce values and data into a single data dictionary,
         # and use that to create the data row
-        node = Row(self, **dict(
-            data,
+        node = self._create_row(dict(
+            named,
             **{
                 accessor: value
                 for accessor, value in zip(self._accessors, values)
@@ -69,6 +65,44 @@ class ListSource(BaseListSource):
         self._notify('data_changed')
         return node
 
+    def prepend(self, *values, **named):
+        return self.insert(0, *values, **named)
+
+    def append(self, *values, **named):
+        return self.insert(len(self), *values, **named)
+
     def remove(self, node):
         self._data.remove(node)
         self._notify('data_changed')
+
+
+class ListSource(SimpleListSource):
+    """A data source to store a list of multiple data values, in a row-like fashion.
+
+    Args:
+        data (`list`): The data in the list. Each entry in the list should have the
+            same number of entries as there are accessors.
+        accessors (`list`): A list of attribute names for accessing the value
+            in each column of the row.
+    """
+
+    def __init__(self, data, accessors=None):
+        self._accessors = accessors
+        super().__init__(data)
+
+    ######################################################################
+    # Factory methods for new rows
+    ######################################################################
+
+    def _create_row(self, data):
+        if isinstance(data, dict):
+            row = Row(self, **{
+                name: value
+                for name, value in data.items()
+            })
+        else:
+            row = Row(self, **{
+                accessor: value
+                for accessor, value in zip(self._accessors, data)
+            })
+        return row

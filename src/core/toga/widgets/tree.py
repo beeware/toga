@@ -1,7 +1,8 @@
 from .base import Widget
 from .icon import Icon
 from ..utils import wrapped_handler
-from ..sources import to_accessor, DictSource
+from ..sources import DictSource
+from ..sources.base import build_accessors
 
 
 class Tree(Widget):
@@ -20,10 +21,7 @@ class Tree(Widget):
         super().__init__(id=id, style=style, factory=factory)
 
         self.headings = headings
-        if accessors:
-            self._accessors = accessors
-        else:
-            self._accessors = [to_accessor(h) for h in self.headings]
+        self._accessors = build_accessors(headings, accessors)
 
         self._data = None
         self._impl = self.factory.Tree(interface=self)

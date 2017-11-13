@@ -1,7 +1,8 @@
 from .base import Widget
 from .icon import Icon
 from ..utils import wrapped_handler
-from ..sources import to_accessor, ListSource
+from ..sources import ListSource
+from ..sources.base import build_accessors
 
 
 class Table(Widget):
@@ -40,10 +41,7 @@ class Table(Widget):
     def __init__(self, headings, id=None, style=None, data=None, accessors=None, on_select=None, factory=None):
         super().__init__(id=id, style=style, factory=factory)
         self.headings = headings
-        if accessors:
-            self._accessors = accessors
-        else:
-            self._accessors = [to_accessor(h) for h in self.headings]
+        self._accessors = build_accessors(headings, accessors)
 
         self._data = None
         self._impl = self.factory.Table(interface=self)
