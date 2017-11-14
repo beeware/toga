@@ -6,8 +6,10 @@ class SliderApp(toga.App):
     
     def startup(self):
         # Main window of the application with title and size
-        self.main_window = toga.MainWindow(self.name, size=(640, 500))
+        self.main_window = toga.MainWindow(self.name, size=(700, 500))
         self.main_window.app = self
+
+        self.sliderValueLabel = toga.Label("slide me")
         
         # set up common styls
         label_style = CSS(flex=1, padding_right=24)
@@ -48,6 +50,8 @@ class SliderApp(toga.App):
                         style=label_style),
                         
                     toga.Slider(on_slide=self.my_on_slide, range=(-40, 58)),
+
+                    self.sliderValueLabel
                 ]),
             ],
             style=CSS(padding=24)
@@ -59,7 +63,7 @@ class SliderApp(toga.App):
     
         # get the current value of the slider with `slider.value`
     
-        print("The slider value changed to {0}".format(slider.value))
+        self.sliderValueLabel.text = "The slider value changed to {0}".format(slider.value)
         
 
 def main():
