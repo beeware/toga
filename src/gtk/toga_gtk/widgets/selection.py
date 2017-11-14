@@ -22,6 +22,10 @@ class Selection(Widget):
         # self._text.append(item)
         self.native.append_text(item)
 
+        # Gtk.ComboBox does not select the first item, so it's done here.
+        if not self.get_selected_item():
+            self.select_item(item)
+
     def select_item(self, item):
         self.native.set_active(self.interface.items.index(item))
 
@@ -33,4 +37,4 @@ class Selection(Widget):
         self.interface.style.height = 32
 
     def set_on_select(self, handler):
-        self._on_select_handler = handler
+        pass
