@@ -42,27 +42,25 @@ class Canvas(Widget):
         self._action('close path')
 
     def move_to(self, x, y):
-        self._action('move to (' + str(x) + ' ,' + str(y) + ')')
+        self._action('move to')
 
     def line_to(self, x, y):
-        self._action('line to (' + str(x) + ' ,' + str(y) + ')')
+        self._action('line to')
 
     def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y):
-        self._action('bezier curve to ' + str(cp1x) + ' ,' + str(cp1y) + ' ,' + str(cp2x) + ' ,' + str(cp2y) + ' ,' + str(x) + ' ,' + str(y))
+        self._action('bezier curve to')
 
     def quadratic_curve_to(self, cpx, cpy, x, y):
-        self._action('quadratic curve to (' + str(cpx) + ' ,' + str(cpy) + ' ,' + str(x) + ' ,' + str(y))
+        self._action('quadratic curve to')
 
     def arc(self, x, y, radius, startangle, endangle, anticlockwise):
-        self._action(
-            'arc (' + str(x) + ' ,' + str(y) + ' ,' + str(radius) + ' ,' + str(startangle) + ' ,' + str(endangle) + ' ,' + str(anticlockwise))
+        self._action('arc')
 
     def ellipse(self, x, y, radiusx, radiusy, rotation, startangle, endangle, anticlockwise):
-        self._action(
-            'ellipse (' + str(x) + ' ,' + str(y) + ' ,' + str(radiusx) + ' ,' + str(radiusy) + ' ,' + str(rotation) + ' ,' + str(startangle) + ' ,' + str(endangle) + ' ,' + str(anticlockwise))
+        self._action('ellipse')
 
     def rect(self, x, y, width, height):
-        self._action('rect (' + str(x) + ' ,' + str(y) + ' ,' + str(width) + ' ,' + str(height))
+        self._action('rect')
 
     # Drawing Paths
 
@@ -79,13 +77,13 @@ class Canvas(Widget):
     # Transformations
 
     def rotate(self, radians):
-        self._action('rotate ' + str(radians))
+        self._action('rotate')
 
     def scale(self, sx, sy):
-        self._action('scale ' + str(sx) + ' ' + str(sy))
+        self._action('scale')
 
     def translate(self, tx, ty):
-        self._action('translate ' + str(tx) + ' ' + str(ty))
+        self._action('translate')
 
     def reset_transform(self):
         self._action('reset transform')
