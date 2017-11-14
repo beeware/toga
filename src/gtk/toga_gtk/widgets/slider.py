@@ -4,8 +4,6 @@ from .base import Widget
 
 class Slider(Widget):
     def create(self):
-        self._on_slide_handler = None
-
         self.adj = Gtk.Adjustment()
 
         self.native = Gtk.Scale.new(Gtk.Orientation.HORIZONTAL, self.adj)
@@ -15,11 +13,11 @@ class Slider(Widget):
         self.rehint()
 
     def _on_slide(self, widget):
-        if self._on_slide_handler:
-            self._on_slide_handler(widget)
+        if self.interface.on_slide:
+            self.interface.on_slide(widget)
 
     def set_on_slide(self, handler):
-        self._on_slide_handler = handler
+        pass
 
     def set_value(self, value):
         self.adj.set_value(value)
