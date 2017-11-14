@@ -6,7 +6,7 @@ class SliderApp(toga.App):
     
     def startup(self):
         # Main window of the application with title and size
-        self.main_window = toga.MainWindow(self.name, size=(640, 400))
+        self.main_window = toga.MainWindow(self.name, size=(640, 500))
         self.main_window.app = self
         
         # set up common styls
