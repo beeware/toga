@@ -4,8 +4,6 @@ from .base import Widget
 
 class Selection(Widget):
     def create(self):
-        self._on_select_handler = None
-
         self.native = Gtk.ComboBoxText.new()
         self.native.interface = self.interface
         self.native.connect("changed", self._on_select)
@@ -13,8 +11,8 @@ class Selection(Widget):
         self.rehint()
 
     def _on_select(self, widget):
-        if self._on_select_handler:
-            self._on_select_handler(widget)
+        if self.interface.on_select:
+            self.interface.on_select(widget)
 
     def remove_all_items(self):
         # self._text.clear()
