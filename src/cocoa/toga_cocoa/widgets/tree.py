@@ -166,13 +166,26 @@ class Tree(Widget):
         # Add the layout constraints
         self.add_constraints()
 
-    def data_changed(self, node=None):
-        if node:
-            if node._expanded:
-                self.tree.expandItem(node._impl)
-            else:
-                self.tree.collapseItem(node._impl)
+    # def data_changed(self, node=None):
+    #     if node:
+    #         if node._expanded:
+    #             self.tree.expandItem(node._impl)
+    #         else:
+    #             self.tree.collapseItem(node._impl)
 
+    def change_source(self, source):
+        self.tree.reloadData()
+
+    def insert(self, parent, index, node):
+        self.tree.reloadData()
+
+    def change(self, node):
+        self.tree.reloadData()
+
+    def remove(self, node):
+        self.tree.reloadData()
+
+    def clear(self):
         self.tree.reloadData()
 
     def set_on_select(self, handler):

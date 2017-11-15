@@ -55,8 +55,9 @@ class DictSource(Source):
     ######################################################################
 
     def __setitem__(self, index, value):
-        self._roots[index] = self._create_node(value)
-        self._notify('data_changed')
+        root = self._create_node(value)
+        self._roots[index] = root
+        self._notify('insert', parent=None, index=index, item=root)
 
     def __iter__(self):
         return iter(self._roots)
@@ -76,7 +77,7 @@ class DictSource(Source):
                 parent._children = []
             parent._children.insert(index, node)
         node._parent = parent
-        self._notify('data_changed')
+        self._notify('insert', parent=parent, index=index, item=node)
         return node
 
     def prepend(self, parent, *value, **named):
@@ -87,8 +88,8 @@ class DictSource(Source):
 
     def remove(self, node):
         if node._parent is None:
-            result = self._roots.remove(node)
+            self._roots.remove(node)
         else:
-            result = node._parent._children.remove(node)
-        self._notify('data_changed')
-        return result
+            node._parent._children.remove(node)
+        self._notify('remove', item=node)
+        return node

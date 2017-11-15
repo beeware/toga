@@ -31,7 +31,7 @@ class ValueTests(TestCase):
 
         self.assertEqual(self.example.value, 42)
         self.assertEqual(str(self.example), '42')
-        self.source._notify.assert_called_once_with('data_changed')
+        self.source._notify.assert_called_once_with('change', item=self.example)
 
     def test_clear_value(self):
         "If the value is cleared, internal representation is updated, and notifications are propegated"
@@ -39,7 +39,7 @@ class ValueTests(TestCase):
 
         self.assertIsNone(self.example.value)
         self.assertEqual(str(self.example), '')
-        self.source._notify.assert_called_once_with('data_changed')
+        self.source._notify.assert_called_once_with('change', item=self.example)
 
     def test_set_icon(self):
         "If the icon is set, internal representation is updated, and notifications are propegated"
@@ -47,18 +47,18 @@ class ValueTests(TestCase):
 
         self.assertIsInstance(self.example.icon, toga.Icon)
         self.assertEqual(self.example.icon.path, 'path/to/other.png')
-        self.source._notify.assert_called_once_with('data_changed')
+        self.source._notify.assert_called_once_with('change', item=self.example)
 
     def test_clear_icon(self):
         "If the icon is cleared, internal representation is updated, and notifications are propegated"
         self.example.icon = None
 
         self.assertIsNone(self.example.icon)
-        self.source._notify.assert_called_once_with('data_changed')
+        self.source._notify.assert_called_once_with('change', item=self.example)
 
     def test_set_other(self):
         "If a non-core value is set, internal representation is updated, and notifications are propegated"
         self.example.other = 3.14159
 
         self.assertEqual(self.example.other, 3.14159)
-        self.source._notify.assert_called_once_with('data_changed')
+        self.source._notify.assert_called_once_with('change', item=self.example)

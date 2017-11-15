@@ -102,7 +102,7 @@ class Value:
         super().__setattr__(attr, value)
         if not attr.startswith('_'):
             if self._source is not None:
-                self._source._notify('data_changed')
+                self._source._notify('change', item=self)
 
 
 class Row:
@@ -116,7 +116,7 @@ class Row:
         super().__setattr__(attr, value)
         if not attr.startswith('_'):
             if self._source is not None:
-                self._source._notify('data_changed')
+                self._source._notify('change', item=self)
 
 
 class Node(Row):
@@ -129,8 +129,9 @@ class Node(Row):
         return self._children[index]
 
     def __setitem__(self, index, value):
-        self._children[index] = self._source._create_node(value)
-        self._source._notify('data_changed')
+        node = self._source._create_node(value)
+        self._children[index] = node
+        self._source._notify('insert', parent=self, index=index, item=node)
 
     def __len__(self):
         if self._children is None:
@@ -181,7 +182,7 @@ class Source:
     def remove_listener(self, listener):
         self._listeners.remove(listener)
 
-    def _notify(self, notification, *args, **kwargs):
+    def _notify(self, notification, **kwargs):
         """Invoke a notification function on all listeners that are subscribed to this data source."""
         for listener in self._listeners:
-            getattr(listener, notification)(*args, **kwargs)
+            getattr(listener, notification)(**kwargs)

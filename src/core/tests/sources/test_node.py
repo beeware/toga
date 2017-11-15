@@ -22,7 +22,7 @@ class LeafNodeTests(TestCase):
         self.example.val1 = 'new value'
 
         self.assertEqual(self.example.val1, 'new value')
-        self.source._notify.assert_called_once_with('data_changed')
+        self.source._notify.assert_called_once_with('change', item=self.example)
 
 
 class NodeTests(TestCase):
@@ -55,7 +55,7 @@ class NodeTests(TestCase):
         self.parent.val1 = 'new value'
 
         self.assertEqual(self.parent.val1, 'new value')
-        self.source._notify.assert_called_once_with('data_changed')
+        self.source._notify.assert_called_once_with('change', item=self.parent)
 
     def test_empty_children(self):
         "A parent with 0 children isn't the same as a parent who *can't* have children"

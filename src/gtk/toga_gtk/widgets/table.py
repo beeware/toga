@@ -26,14 +26,23 @@ class Table(Widget):
         self.native.set_min_content_height(200)
         self.native.interface = self.interface
 
-    def data_changed(self):
+    def change_source(self, source):
+        for row in self.interface.data:
+            self.data.append(*[getattr(row, attr) for attr in self.interface._accessors])
+
+    def insert(self, index, row):
+        raise NotImplementedError()
+
+    def change(self, row):
+        raise NotImplementedError()
+
+    def remove(self, row):
+        raise NotImplementedError()
+
+    def clear(self):
         self.data.clear()
 
-        for row in self.interface.data.rows:
-            self.data.append(row.data)
-
     def set_on_select(self, handler):
-
         for conn_id in self._connections:
             # Disconnect all other on_select handlers, so that if you reassign
             # the on_select, it doesn't trigger the old ones too.

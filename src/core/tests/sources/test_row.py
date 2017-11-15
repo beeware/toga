@@ -21,4 +21,4 @@ class RowTests(TestCase):
         self.example.val1 = 'new value'
 
         self.assertEqual(self.example.val1, 'new value')
-        self.source._notify.assert_called_once_with('data_changed')
+        self.source._notify.assert_called_once_with('change', item=self.example)

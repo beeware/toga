@@ -41,7 +41,7 @@ class DictSourceTests(TestCase):
         self.assertFalse(source[1].has_children())
         self.assertEqual(len(source[1]), 0)
 
-        listener.data_changed.assert_called_once_with()
+        listener.insert.assert_called_once_with(parent=None, index=1, item=source[1])
 
     def test_init_with_list_of_dicts(self):
         "DictSource nodes can be instantiated from lists of dicts"
@@ -79,7 +79,7 @@ class DictSourceTests(TestCase):
         self.assertFalse(source[1].has_children())
         self.assertEqual(len(source[1]), 0)
 
-        listener.data_changed.assert_called_once_with()
+        listener.insert.assert_called_once_with(parent=None, index=1, item=source[1])
 
     def test_init_with_dict_of_lists(self):
         "DictSource nodes can be instantiated from dicts of lists"
@@ -138,7 +138,7 @@ class DictSourceTests(TestCase):
         self.assertEqual(source[2].val1, 'new element')
         self.assertEqual(source[2].val2, 999)
 
-        listener.data_changed.assert_called_once_with()
+        listener.insert.assert_called_once_with(parent=None, index=2, item=source[2])
 
     def test_init_with_dict_of_dicts(self):
         "DictSource nodes can be instantiated from dicts of dicts"
@@ -204,7 +204,7 @@ class DictSourceTests(TestCase):
         self.assertEqual(source[2].val1, 'new element')
         self.assertEqual(source[2].val2, 999)
 
-        listener.data_changed.assert_called_once_with()
+        listener.insert.assert_called_once_with(parent=None, index=2, item=source[2])
 
     def test_iter(self):
         "TreeSource roots can be iterated over"
@@ -246,14 +246,14 @@ class DictSourceTests(TestCase):
         source.add_listener(listener)
 
         # Insert the new element
-        row = source.insert(None, 1, 'new element', 999)
+        node = source.insert(None, 1, 'new element', 999)
 
         self.assertEqual(len(source), 4)
-        self.assertEqual(source[1], row)
-        self.assertEqual(row.val1, 'new element')
-        self.assertEqual(row.val2, 999)
+        self.assertEqual(source[1], node)
+        self.assertEqual(node.val1, 'new element')
+        self.assertEqual(node.val2, 999)
 
-        listener.data_changed.assert_called_once_with()
+        listener.insert.assert_called_once_with(parent=None, index=1, item=node)
 
     def test_insert_root_kwargs(self):
         "A new root can be inserted using kwargs"
@@ -275,14 +275,14 @@ class DictSourceTests(TestCase):
         source.add_listener(listener)
 
         # Insert the new element
-        row = source.insert(None, 1, val1='new element', val2=999)
+        node = source.insert(None, 1, val1='new element', val2=999)
 
         self.assertEqual(len(source), 4)
-        self.assertEqual(source[1], row)
-        self.assertEqual(row.val1, 'new element')
-        self.assertEqual(row.val2, 999)
+        self.assertEqual(source[1], node)
+        self.assertEqual(node.val1, 'new element')
+        self.assertEqual(node.val2, 999)
 
-        listener.data_changed.assert_called_once_with()
+        listener.insert.assert_called_once_with(parent=None, index=1, item=node)
 
     def test_insert_child_args(self):
         "A new child can be inserted using value args"
@@ -305,15 +305,15 @@ class DictSourceTests(TestCase):
         source.add_listener(listener)
 
         # Insert the new element
-        row = source.insert(source[2], 1, val1='new element', val2=999)
+        node = source.insert(source[2], 1, val1='new element', val2=999)
 
         self.assertEqual(len(source), 3)
         self.assertEqual(len(source[2]), 3)
-        self.assertEqual(source[2][1], row)
-        self.assertEqual(row.val1, 'new element')
-        self.assertEqual(row.val2, 999)
+        self.assertEqual(source[2][1], node)
+        self.assertEqual(node.val1, 'new element')
+        self.assertEqual(node.val2, 999)
 
-        listener.data_changed.assert_called_once_with()
+        listener.insert.assert_called_once_with(parent=source[2], index=1, item=node)
 
     def test_insert_child_kwargs(self):
         "A new child can be inserted using kwargs"
@@ -336,15 +336,15 @@ class DictSourceTests(TestCase):
         source.add_listener(listener)
 
         # Insert the new element
-        row = source.insert(source[2], 1, val1='new element', val2=999)
+        node = source.insert(source[2], 1, val1='new element', val2=999)
 
         self.assertEqual(len(source), 3)
         self.assertEqual(len(source[2]), 3)
-        self.assertEqual(source[2][1], row)
-        self.assertEqual(row.val1, 'new element')
-        self.assertEqual(row.val2, 999)
+        self.assertEqual(source[2][1], node)
+        self.assertEqual(node.val1, 'new element')
+        self.assertEqual(node.val2, 999)
 
-        listener.data_changed.assert_called_once_with()
+        listener.insert.assert_called_once_with(parent=source[2], index=1, item=node)
 
     def test_insert_first_child(self):
         "If a node previously didn't allow children, inserting changes this"
@@ -368,16 +368,16 @@ class DictSourceTests(TestCase):
         source.add_listener(listener)
 
         # Insert the new element
-        row = source.insert(source[0], 0, val1='new element', val2=999)
+        node = source.insert(source[0], 0, val1='new element', val2=999)
 
         self.assertEqual(len(source), 3)
         self.assertTrue(source[0].has_children())
         self.assertEqual(len(source[0]), 1)
-        self.assertEqual(source[0][0], row)
-        self.assertEqual(row.val1, 'new element')
-        self.assertEqual(row.val2, 999)
+        self.assertEqual(source[0][0], node)
+        self.assertEqual(node.val1, 'new element')
+        self.assertEqual(node.val2, 999)
 
-        listener.data_changed.assert_called_once_with()
+        listener.insert.assert_called_once_with(parent=source[0], index=0, item=node)
 
     def test_append_root(self):
         "A new root can be appended"
@@ -399,14 +399,14 @@ class DictSourceTests(TestCase):
         source.add_listener(listener)
 
         # Insert the new element
-        row = source.append(None, val1='new element', val2=999)
+        node = source.append(None, val1='new element', val2=999)
 
         self.assertEqual(len(source), 4)
-        self.assertEqual(source[3], row)
-        self.assertEqual(row.val1, 'new element')
-        self.assertEqual(row.val2, 999)
+        self.assertEqual(source[3], node)
+        self.assertEqual(node.val1, 'new element')
+        self.assertEqual(node.val2, 999)
 
-        listener.data_changed.assert_called_once_with()
+        listener.insert.assert_called_once_with(parent=None, index=3, item=node)
 
     def test_append_child(self):
         "A new child can be appended"
@@ -429,15 +429,15 @@ class DictSourceTests(TestCase):
         source.add_listener(listener)
 
         # Insert the new element
-        row = source.append(source[2], val1='new element', val2=999)
+        node = source.append(source[2], val1='new element', val2=999)
 
         self.assertEqual(len(source), 3)
         self.assertEqual(len(source[2]), 3)
-        self.assertEqual(source[2][2], row)
-        self.assertEqual(row.val1, 'new element')
-        self.assertEqual(row.val2, 999)
+        self.assertEqual(source[2][2], node)
+        self.assertEqual(node.val1, 'new element')
+        self.assertEqual(node.val2, 999)
 
-        listener.data_changed.assert_called_once_with()
+        listener.insert.assert_called_once_with(parent=source[2], index=2, item=node)
 
     def test_prepend_root(self):
         "A new root can be prepended"
@@ -459,14 +459,14 @@ class DictSourceTests(TestCase):
         source.add_listener(listener)
 
         # Insert the new element
-        row = source.prepend(None, val1='new element', val2=999)
+        node = source.prepend(None, val1='new element', val2=999)
 
         self.assertEqual(len(source), 4)
-        self.assertEqual(source[0], row)
-        self.assertEqual(row.val1, 'new element')
-        self.assertEqual(row.val2, 999)
+        self.assertEqual(source[0], node)
+        self.assertEqual(node.val1, 'new element')
+        self.assertEqual(node.val2, 999)
 
-        listener.data_changed.assert_called_once_with()
+        listener.insert.assert_called_once_with(parent=None, index=0, item=node)
 
     def test_prepend_child(self):
         "A new child can be prepended"
@@ -489,15 +489,15 @@ class DictSourceTests(TestCase):
         source.add_listener(listener)
 
         # Insert the new element
-        row = source.prepend(source[2], val1='new element', val2=999)
+        node = source.prepend(source[2], val1='new element', val2=999)
 
         self.assertEqual(len(source), 3)
         self.assertEqual(len(source[2]), 3)
-        self.assertEqual(source[2][0], row)
-        self.assertEqual(row.val1, 'new element')
-        self.assertEqual(row.val2, 999)
+        self.assertEqual(source[2][0], node)
+        self.assertEqual(node.val1, 'new element')
+        self.assertEqual(node.val2, 999)
 
-        listener.data_changed.assert_called_once_with()
+        listener.insert.assert_called_once_with(parent=source[2], index=0, item=node)
 
     def test_remove_root(self):
         "A root can be removed"
@@ -520,12 +520,12 @@ class DictSourceTests(TestCase):
         source.add_listener(listener)
 
         # Remove the root element
-        source.remove(source[1])
+        node = source.remove(source[1])
 
         self.assertEqual(len(source), 2)
         self.assertEqual(len(source[1]), 2)
 
-        listener.data_changed.assert_called_once_with()
+        listener.remove.assert_called_once_with(item=node)
 
     def test_remove_child(self):
         "A child can be removed"
@@ -548,9 +548,9 @@ class DictSourceTests(TestCase):
         source.add_listener(listener)
 
         # Remove the child element
-        source.remove(source[2][1])
+        node = source.remove(source[2][1])
 
         self.assertEqual(len(source), 3)
         self.assertEqual(len(source[2]), 1)
 
-        listener.data_changed.assert_called_once_with()
+        listener.remove.assert_called_once_with(item=node)

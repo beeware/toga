@@ -41,15 +41,16 @@ class SimpleListSource(Source):
     ######################################################################
 
     def __setitem__(self, index, value):
-        self._data[index] = self._create_row(value)
-        self._notify('data_changed')
+        row = self._create_row(value)
+        self._data[index] = row
+        self._notify('insert', index=index, item=row)
 
     def __iter__(self):
         return iter(self._data)
 
     def clear(self):
         self._data = []
-        self._notify('data_changed')
+        self._notify('clear')
 
     def insert(self, index, *values, **named):
         # Coalesce values and data into a single data dictionary,
@@ -62,7 +63,7 @@ class SimpleListSource(Source):
             }
         ))
         self._data.insert(index, node)
-        self._notify('data_changed')
+        self._notify('insert', index=index, item=node)
         return node
 
     def prepend(self, *values, **named):
@@ -73,7 +74,8 @@ class SimpleListSource(Source):
 
     def remove(self, node):
         self._data.remove(node)
-        self._notify('data_changed')
+        self._notify('remove', item=node)
+        return node
 
 
 class ListSource(SimpleListSource):

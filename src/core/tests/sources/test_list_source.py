@@ -35,7 +35,7 @@ class ListSourceTests(TestCase):
         self.assertEqual(source[1].val1, 'new element')
         self.assertEqual(source[1].val2, 999)
 
-        listener.data_changed.assert_called_once_with()
+        listener.insert.assert_called_once_with(index=1, item=source[1])
 
     def test_init_with_list(self):
         "A ListSource can be instantiated from lists"
@@ -67,7 +67,7 @@ class ListSourceTests(TestCase):
         self.assertEqual(source[1].val1, 'new element')
         self.assertEqual(source[1].val2, 999)
 
-        listener.data_changed.assert_called_once_with()
+        listener.insert.assert_called_once_with(index=1, item=source[1])
 
     def test_init_with_dict(self):
         "A ListSource can be instantiated from dicts"
@@ -99,7 +99,7 @@ class ListSourceTests(TestCase):
         self.assertEqual(source[1].val1, 'new element')
         self.assertEqual(source[1].val2, 999)
 
-        listener.data_changed.assert_called_once_with()
+        listener.insert.assert_called_once_with(index=1, item=source[1])
 
     def test_iter(self):
         "A list source can be iterated over"
@@ -140,7 +140,7 @@ class ListSourceTests(TestCase):
         source.clear()
         self.assertEqual(len(source), 0)
 
-        listener.data_changed.assert_called_once_with()
+        listener.clear.assert_called_once_with()
 
     def test_insert_kwarg(self):
         "You can insert into a list source using kwargs"
@@ -166,7 +166,7 @@ class ListSourceTests(TestCase):
         self.assertEqual(row.val1, 'new element')
         self.assertEqual(row.val2, 999)
 
-        listener.data_changed.assert_called_once_with()
+        listener.insert.assert_called_once_with(index=1, item=row)
 
     def test_insert(self):
         "You can insert into a list source using positional args"
@@ -192,7 +192,7 @@ class ListSourceTests(TestCase):
         self.assertEqual(row.val1, 'new element')
         self.assertEqual(row.val2, 999)
 
-        listener.data_changed.assert_called_once_with()
+        listener.insert.assert_called_once_with(index=1, item=row)
 
     def test_prepend_kwarg(self):
         "You can prepend to a list source using kwargs"
@@ -218,7 +218,7 @@ class ListSourceTests(TestCase):
         self.assertEqual(row.val1, 'new element')
         self.assertEqual(row.val2, 999)
 
-        listener.data_changed.assert_called_once_with()
+        listener.insert.assert_called_once_with(index=0, item=row)
 
     def test_prepend(self):
         "You can prepend to a list source using positional args"
@@ -244,7 +244,7 @@ class ListSourceTests(TestCase):
         self.assertEqual(row.val1, 'new element')
         self.assertEqual(row.val2, 999)
 
-        listener.data_changed.assert_called_once_with()
+        listener.insert.assert_called_once_with(index=0, item=row)
 
     def test_append_kwarg(self):
         "You can append to a list source using kwargs"
@@ -270,7 +270,7 @@ class ListSourceTests(TestCase):
         self.assertEqual(row.val1, 'new element')
         self.assertEqual(row.val2, 999)
 
-        listener.data_changed.assert_called_once_with()
+        listener.insert.assert_called_once_with(index=3, item=row)
 
     def test_append(self):
         "You can append to a list source using positional args"
@@ -296,7 +296,7 @@ class ListSourceTests(TestCase):
         self.assertEqual(row.val1, 'new element')
         self.assertEqual(row.val2, 999)
 
-        listener.data_changed.assert_called_once_with()
+        listener.insert.assert_called_once_with(index=3, item=row)
 
     def test_remove(self):
         "You can remove an item from a list source"
@@ -315,7 +315,7 @@ class ListSourceTests(TestCase):
         source.add_listener(listener)
 
         # Remove the second element
-        source.remove(source[1])
+        row = source.remove(source[1])
 
         self.assertEqual(len(source), 2)
         self.assertEqual(source[0].val1, 'first')
@@ -324,7 +324,7 @@ class ListSourceTests(TestCase):
         self.assertEqual(source[1].val1, 'third')
         self.assertEqual(source[1].val2, 333)
 
-        listener.data_changed.assert_called_once_with()
+        listener.remove.assert_called_once_with(item=row)
 
 
 class SimpleListSourceTests(TestCase):
@@ -358,7 +358,7 @@ class SimpleListSourceTests(TestCase):
         self.assertEqual(source[1].val1, 'new element')
         self.assertEqual(source[1].val2, 999)
 
-        listener.data_changed.assert_called_once_with()
+        listener.insert.assert_called_once_with(index=1, item=source[1])
 
     def test_init_non_dict(self):
         "A SimpleListSource can be instantiated with non-dict values"
@@ -384,4 +384,4 @@ class SimpleListSourceTests(TestCase):
         self.assertEqual(len(source), 3)
         self.assertEqual(source[1].value, ['new element', 999])
 
-        listener.data_changed.assert_called_once_with()
+        listener.insert.assert_called_once_with(index=1, item=source[1])
