@@ -41,6 +41,9 @@ class Canvas(Widget):
     def close_path(self):
         self._action('close path')
 
+    def closed_path(self, x, y):
+        self._action('closed path', x=x, y=y)
+
     def move_to(self, x, y):
         self._action('move to', x=x, y=y)
 

@@ -29,11 +29,17 @@ class CanvasTests(TestCase):
     def test_basic_drawing(self):
         def drawing(widget):
             self.testing_canvas.rect(-3, -3, 6, 6)
+            self.assertActionPerformedWith(self.testing_canvas, 'rect', x=-3, y=-3, width=6, height=6)
             self.testing_canvas.fill_style('rgba(0, 0.5, 0, 0.4)')
+            self.assertActionPerformedWith(self.testing_canvas, 'fill style', color='rgba(0, 0.5, 0, 0.4)')
             self.testing_canvas.fill(preserve=True)
+            self.assertActionPerformedWith(self.testing_canvas, 'fill', preserve=True)
             self.testing_canvas.stroke_style('rgba(0.25, 0.25, 0.25, 0.6)')
+            self.assertActionPerformedWith(self.testing_canvas, 'stroke style', color='rgba(0.25, 0.25, 0.25, 0.6)')
             self.testing_canvas.line_width(1)
+            self.assertActionPerformedWith(self.testing_canvas, 'line width', width=1)
             self.testing_canvas.stroke()
+            self.assertActionPerformedWith(self.testing_canvas, 'stroke')
 
         self.testing_canvas.on_draw = drawing
 
@@ -43,63 +49,101 @@ class CanvasTests(TestCase):
         xr = 25
         yr = 30
         self.testing_canvas.translate(xc, yc)
+        self.assertActionPerformedWith(self.testing_canvas, 'translate', tx=xc, ty=yc)
         self.testing_canvas.scale(1.0, yr / xr)
+        self.assertActionPerformedWith(self.testing_canvas, 'scale', sx=1.0, sy=yr/xr)
         with self.testing_canvas.closed_path(xr, 0.0):
             self.testing_canvas.arc(0, 0, xr, 0, 2 * math.pi)
 
     def test_fill_checks(self):
-        CHECK_SIZE = 32
-        x = 10
-        y = -10
-        width = 200
-        height = 200
-        self.testing_canvas.rect(x, y, width, height)
-        self.testing_canvas.fill_style('rgba(0.4, 0.4, 0.4, 1)')
-        self.testing_canvas.fill()
+        def drawing(widget):
+            CHECK_SIZE = 32
+            x = 10
+            y = -10
+            width = 200
+            height = 200
+            self.testing_canvas.rect(x, y, width, height)
+            self.assertActionPerformedWith(self.testing_canvas, 'rect', x=10, y=-10, width=200, height=200)
+            self.testing_canvas.fill_style('rgba(0.4, 0.4, 0.4, 1)')
+            self.assertActionPerformedWith(self.testing_canvas, 'fill style', color='rgba(0.4, 0.4, 0.4, 1)')
+            self.testing_canvas.fill()
+            self.assertActionPerformedWith(self.testing_canvas, 'fill')
 
-        # Only works for CHECK_SIZE a power of 2
-        for j in range(x & -CHECK_SIZE, height, CHECK_SIZE):
-            for i in range(y & -CHECK_SIZE, width, CHECK_SIZE):
-                if (i / CHECK_SIZE + j / CHECK_SIZE) % 2 == 0:
-                    self.testing_canvas.rect(i, j, CHECK_SIZE, CHECK_SIZE)
+            # Only works for CHECK_SIZE a power of 2
+            for j in range(x & -CHECK_SIZE, height, CHECK_SIZE):
+                for i in range(y & -CHECK_SIZE, width, CHECK_SIZE):
+                    if (i / CHECK_SIZE + j / CHECK_SIZE) % 2 == 0:
+                        self.testing_canvas.rect(i, j, CHECK_SIZE, CHECK_SIZE)
+                        self.assertActionPerformedWith(self.testing_canvas, 'rect', x=i, y=j, width=CHECK_SIZE, height=CHECK_SIZE)
 
-        self.testing_canvas.fill_style('rgba(0.7, 0.7, 0.7, 1)')
-        self.testing_canvas.fill()
+            self.testing_canvas.fill_style('rgba(0.7, 0.7, 0.7, 1)')
+            self.assertActionPerformedWith(self.testing_canvas, 'fill style', color='rgba(0.7, 0.7, 0.7, 1)')
+            self.testing_canvas.fill()
+            self.assertActionPerformedWith(self.testing_canvas, 'fill')
+
+        self.testing_canvas.on_draw = drawing
 
     def test_draw_3circles(self):
-        xc = 100
-        yc = 150
-        radius = 0.5 * 50 - 10
-        alpha = 0.8
-        subradius = radius * (2 / 3. - 0.1)
+        def drawing(widget):
+            xc = 100
+            yc = 150
+            radius = 0.5 * 50 - 10
+            alpha = 0.8
+            subradius = radius * (2 / 3. - 0.1)
 
-        self.testing_canvas.fill_style('rgba(1, 0, 0, ' + str(alpha) + ')')
-        self.testing_canvas.ellipse(self.testing_canvas,
-                                    xc + radius / 3. * math.cos(math.pi * 0.5),
-                                    yc - radius / 3. * math.sin(math.pi * 0.5),
-                                    subradius, subradius)
-        self.testing_canvas.fill()
+            self.testing_canvas.fill_style('rgba(1, 0, 0, ' + str(alpha) + ')')
+            self.assertActionPerformedWith(self.testing_canvas, 'fill style', color='rgba(1, 0, 0, ' + str(alpha) + ')')
+            self.testing_canvas.ellipse(self.testing_canvas,
+                                        xc + radius / 3. * math.cos(math.pi * 0.5),
+                                        yc - radius / 3. * math.sin(math.pi * 0.5),
+                                        subradius, subradius, 2.0 * math.pi)
+            self.assertActionPerformedWith(self.testing_canvas, 'ellipse',
+                                           x=xc + radius / 3. * math.cos(math.pi * 0.5),
+                                           y=yc - radius / 3. * math.sin(math.pi * 0.5),
+                                           radiusx=subradius, radiusy=subradius, rotation=2.0*math.pi)
 
-        self.testing_canvas.fill_style('rgba(0, 1, 0, ' + str(alpha) + ')')
-        self.testing_canvas.ellipse(self.testing_canvas,
-                                    xc + radius / 3. * math.cos(math.pi * (0.5 + 2 / .3)),
-                                    yc - radius / 3. * math.sin(math.pi * (0.5 + 2 / .3)),
-                                    subradius, subradius)
-        self.testing_canvas.fill()
+            self.testing_canvas.fill()
+            self.assertActionPerformedWith(self.testing_canvas, 'fill')
 
-        self.testing_canvas.fill_style('rgba(0, 0, 1, ' + str(alpha) + ')')
-        self.testing_canvas.ellipse(self.testing_canvas,
-                                    xc + radius / 3. * math.cos(math.pi * (0.5 + 4 / .3)),
-                                    yc - radius / 3. * math.sin(math.pi * (0.5 + 4 / .3)),
-                                    subradius, subradius)
-        self.testing_canvas.fill()
+            self.testing_canvas.fill_style('rgba(0, 1, 0, ' + str(alpha) + ')')
+            self.assertActionPerformedWith(self.testing_canvas, 'fill style', color='rgba(0, 1, 0, ' + str(alpha) + ')')
+            self.testing_canvas.ellipse(self.testing_canvas,
+                                        xc + radius / 3. * math.cos(math.pi * (0.5 + 2 / .3)),
+                                        yc - radius / 3. * math.sin(math.pi * (0.5 + 2 / .3)),
+                                        subradius, subradius)
+            self.assertActionPerformedWith(self.testing_canvas, 'ellipse',
+                                           x=xc + radius / 3. * math.cos(math.pi * (0.5 + 2 / .3)),
+                                           y=yc - radius / 3. * math.sin(math.pi * (0.5 + 2 / .3)),
+                                           radiusx=subradius, radiusy=subradius)
+            self.testing_canvas.fill()
+            self.assertActionPerformedWith(self.testing_canvas, 'fill')
+
+            self.testing_canvas.fill_style('rgba(0, 0, 1, ' + str(alpha) + ')')
+            self.assertActionPerformedWith(self.testing_canvas, 'fill style', color='rgba(0, 0, 1, ' + str(alpha) + ')')
+            self.testing_canvas.ellipse(self.testing_canvas,
+                                        xc + radius / 3. * math.cos(math.pi * (0.5 + 4 / .3)),
+                                        yc - radius / 3. * math.sin(math.pi * (0.5 + 4 / .3)),
+                                        subradius, subradius)
+            self.assertActionPerformedWith(self.testing_canvas, 'ellipse',
+                                           x=xc + radius / 3. * math.cos(math.pi * (0.5 + 4 / .3)),
+                                           y=yc - radius / 3. * math.sin(math.pi * (0.5 + 4 / .3)),
+                                           radiusx=subradius, radiusy=subradius)
+            self.testing_canvas.fill()
+            self.assertActionPerformedWith(self.testing_canvas, 'fill')
+
+        self.testing_canvas.on_draw = drawing
 
     def test_draw_triangle(self):
-        with self.testing_canvas.closed_path(32, 0):
-            self.testing_canvas.line_to(32, 64)
-            self.testing_canvas.line_to(-64, 0)
-            # TODO add multi-action testing: for example 'close path', 'create Canvas', 'line to', 'move to', 'rehint Canvas'
-            # self.assertActionPerformedWith(self.testing_canvas, 'closed path', x=32, y=0)
+        def drawing(widget):
+            with self.testing_canvas.closed_path(32, 0):
+                self.assertActionPerformedWith(self.testing_canvas, 'move to', x=32, y=0)
+                self.testing_canvas.line_to(32, 64)
+                self.assertActionPerformedWith(self.testing_canvas, 'line to', x=32, y=64)
+                self.testing_canvas.line_to(-64, 0)
+                self.assertActionPerformedWith(self.testing_canvas, 'line to', x=-64, y=0)
+                self.assertActionPerformedWith(self.testing_canvas, 'close path')
+
+        self.testing_canvas.on_draw = drawing
 
     def test_move_to(self):
         self.testing_canvas.move_to(5, 7)
