@@ -25,17 +25,22 @@ class ExampleDetailedListApp(toga.App):
 
         widget = toga.DetailedList(
             data=[
-                '{country}: {string}'.format(**translation)
+                {
+                    'icon': 'resources/brutus.png',
+                    'label1': translation['country'],
+                    'label2': translation['string'],
+                }
                 for translation in bee_translations
             ],
             on_select=self.on_select_handler,
             on_delete=self.on_delete_handler,
             on_refresh=self.on_refresh_handler,
+            style=CSS(flex=1)
         )
 
         # Outermost box
-        box = toga.Box(
-            children=[widget, label],
+        outer_box = toga.Box(
+            children=[widget, self.label],
             style=CSS(
                 flex=1,
                 flex_direction='column',
