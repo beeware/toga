@@ -175,7 +175,7 @@ class Canvas(Widget):
         """
         self._impl.arc(x, y, radius, startangle, endangle, anticlockwise)
 
-    def ellipse(self, x, y, radiusx, radiusy, rotation, startangle=0, endangle=2*pi, anticlockwise=False):
+    def ellipse(self, x, y, radiusx, radiusy, rotation=0, startangle=0, endangle=2*pi, anticlockwise=False):
         """Adds an ellipse to the path.
 
         The ellipse is centered at (x, y) position with the radii radiusx and radiusy
@@ -237,6 +237,7 @@ class Canvas(Widget):
         else:
             self._impl.fill('nonzero', preserve)
 
+    @contextmanager
     def stroke(self):
         """Strokes the subpaths with the current stroke style
 
@@ -244,6 +245,7 @@ class Canvas(Widget):
         current line style settings.
 
         """
+        yield
         self._impl.stroke()
 
     # Transformations
