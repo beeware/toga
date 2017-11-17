@@ -1,16 +1,35 @@
-from .base import Source, Row, Value
+from .base import Source
 
 
-class SimpleListSource(Source):
-    """A data source to store single values in a list.
+class Row:
+    def __init__(self, **data):
+        self._source = None
+        for name, value in data.items():
+            setattr(self, name, value)
+
+    ######################################################################
+    # Utility wrappers
+    ######################################################################
+
+    def __setattr__(self, attr, value):
+        super().__setattr__(attr, value)
+        if not attr.startswith('_'):
+            if self._source is not None:
+                self._source._notify('change', item=self)
+
+
+class ListSource(Source):
+    """A data source to store a list of multiple data values, in a row-like fashion.
 
     Args:
         data (`list`): The data in the list. Each entry in the list should have the
             same number of entries as there are accessors.
+        accessors (`list`): A list of attribute names for accessing the value
+            in each column of the row.
     """
-
-    def __init__(self, data):
+    def __init__(self, data, accessors):
         super().__init__()
+        self._accessors = accessors
         self._data = []
         for value in data:
             self._data.append(self._create_row(value))
@@ -31,9 +50,16 @@ class SimpleListSource(Source):
 
     def _create_row(self, data):
         if isinstance(data, dict):
-            row = Value(self, **data)
+            row = Row(**{
+                name: value
+                for name, value in data.items()
+            })
         else:
-            row = Value(self, value=data)
+            row = Row(**{
+                accessor: value
+                for accessor, value in zip(self._accessors, data)
+            })
+        row._source = self
         return row
 
     ######################################################################
@@ -76,35 +102,3 @@ class SimpleListSource(Source):
         self._data.remove(node)
         self._notify('remove', item=node)
         return node
-
-
-class ListSource(SimpleListSource):
-    """A data source to store a list of multiple data values, in a row-like fashion.
-
-    Args:
-        data (`list`): The data in the list. Each entry in the list should have the
-            same number of entries as there are accessors.
-        accessors (`list`): A list of attribute names for accessing the value
-            in each column of the row.
-    """
-
-    def __init__(self, data, accessors=None):
-        self._accessors = accessors
-        super().__init__(data)
-
-    ######################################################################
-    # Factory methods for new rows
-    ######################################################################
-
-    def _create_row(self, data):
-        if isinstance(data, dict):
-            row = Row(self, **{
-                name: value
-                for name, value in data.items()
-            })
-        else:
-            row = Row(self, **{
-                accessor: value
-                for accessor, value in zip(self._accessors, data)
-            })
-        return row

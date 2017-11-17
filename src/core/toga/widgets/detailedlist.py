@@ -49,9 +49,9 @@ class DetailedList(Widget):
     @data.setter
     def data(self, data):
         if data is None:
-            self._data = ListSource(data=[])
+            self._data = ListSource(data=[], accessors=['icon', 'label1', 'label2'])
         elif isinstance(data, (list, tuple)):
-            self._data = ListSource(data=data)
+            self._data = ListSource(data=data, accessors=['icon', 'label1', 'label2'])
         else:
             self._data = data
 

@@ -38,17 +38,19 @@ class MovieSource(Source):
         return self._movies[index]
 
     def add(self, entry):
-        self._movies.append(Movie(*entry))
+        movie = Movie(*entry)
+        self._movies.append(movie)
         self._movies.sort(key=lambda m: m.year)
-        self._notify('data_changed')
+        self._notify('insert', item=movie)
 
     def remove(self, index):
+        item = self._movies[index]
         del self._movies[index]
-        self._notify('data_changed')
+        self._notify('remove', item=item)
 
     def clear(self):
         self._movies = []
-        self._notify('data_changed')
+        self._notify('clear')
 
 
 class GoodMovieSource(Source):
@@ -71,8 +73,14 @@ class GoodMovieSource(Source):
         return sorted(self._filtered(), key=lambda m: -m.rating)[index]
 
     # A listener that passes on all notifications
-    def data_changed(self, node=None):
-        self._notify('data_changed', node)
+    def insert(self, item):
+        self._notify('insert', item=item)
+
+    def remove(self, item):
+        self._notify('remove', item=item)
+
+    def clear(self):
+        self._notify('clear')
 
 
 class ExampleTableSourceApp(toga.App):

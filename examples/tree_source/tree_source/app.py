@@ -69,8 +69,9 @@ class DecadeSource(Source):
             decade_root = Decade(decade)
             self._decades.append(decade_root)
             self._decades.sort(key=lambda v: v.decade)
-        decade_root._data.append(Movie(**entry))
-        self._notify('data_changed')
+        movie = Movie(**entry)
+        decade_root._data.append(movie)
+        self._notify('insert', item=movie)
 
 
 class ExampleTreeSourceApp(toga.App):

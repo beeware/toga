@@ -1,14 +1,62 @@
-from .base import Source, Node, Value
+from .base import Source
+from .list_source import Row
 
 
-class DictSource(Source):
+class Node(Row):
+    def __init__(self, **data):
+        super().__init__(**data)
+        self._children = None
+        self._parent = None
+
+    ######################################################################
+    # Methods required by the TreeSource interface
+    ######################################################################
+
+    def __getitem__(self, index):
+        return self._children[index]
+
+    def __len__(self):
+        if self._children is None:
+            return 0
+        else:
+            return len(self._children)
+
+    def has_children(self):
+        return self._children is not None
+
+    ######################################################################
+    # Utility methods to make TreeSource more dict-like
+    ######################################################################
+
+    def __iter__(self):
+        return iter(self._children)
+
+    def __setitem__(self, index, value):
+        node = self._source._create_node(value)
+        self._children[index] = node
+        self._source._notify('insert', parent=self, index=index, item=node)
+
+    def insert(self, index, *values, **named):
+        self._source.insert(self, index, *values, **named)
+
+    def prepend(self, *values, **named):
+        self._source.prepend(self, *values, **named)
+
+    def append(self, *values, **named):
+        self._source.append(self, *values, **named)
+
+    def remove(self, node):
+        self._source.remove(self, node)
+
+
+class TreeSource(Source):
     def __init__(self, data, accessors):
         super().__init__()
         self._accessors = accessors
         self._roots = self._create_nodes(data)
 
     ######################################################################
-    # Methods required by the ListSource interface
+    # Methods required by the TreeSource interface
     ######################################################################
 
     def __len__(self):
@@ -23,18 +71,20 @@ class DictSource(Source):
 
     def _create_node(self, data, children=None):
         if isinstance(data, dict):
-            node = Node(self, **data)
+            node = Node(**data)
         else:
-            node = Node(self, **{
+            node = Node(**{
                 accessor: value
                 for accessor, value in zip(self._accessors, data)
             })
+        node._source = self
 
         if children is not None:
             node._children = []
             for child_node in self._create_nodes(children):
                 node._children.append(child_node)
                 child_node._parent = node
+                child_node._source = self
 
         return node
 
@@ -51,7 +101,7 @@ class DictSource(Source):
             ]
 
     ######################################################################
-    # Utility methods to make ListSources more list-like
+    # Utility methods to make TreeSources more dict-like
     ######################################################################
 
     def __setitem__(self, index, value):
