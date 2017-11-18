@@ -68,7 +68,19 @@ class DetailedList(Widget):
                 UIControlEventValueChanged
             )
 
-    def refresh(self):
+    def change_source(self, source):
+        self.controller.tableView.reloadData()
+
+    def insert(self, index, item):
+        self.controller.tableView.reloadData()
+
+    def change(self, item):
+        self.controller.tableView.reloadData()
+
+    def remove(self, item):
+        self.controller.tableView.reloadData()
+
+    def clear(self):
         self.controller.tableView.reloadData()
 
     def set_on_select(self, handler):

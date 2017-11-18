@@ -170,13 +170,13 @@ class DetailedList(Widget):
     def change_source(self, source):
         self.detailedlist.reloadData()
 
-    def insert(self, index, row):
+    def insert(self, index, item):
         self.detailedlist.reloadData()
 
-    def change(self, row):
+    def change(self, item):
         self.detailedlist.reloadData()
 
-    def remove(self, row):
+    def remove(self, item):
         self.detailedlist.reloadData()
 
     def clear(self):
