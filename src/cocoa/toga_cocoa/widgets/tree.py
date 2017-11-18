@@ -60,12 +60,17 @@ class TogaTree(NSOutlineView):
         try:
             value = getattr(item.attrs['node'], column.identifier)
 
-            # If the value has an icon attribute, get the _impl.
-            # Icons are deferred resources, so we provide the factory.
-            try:
-                icon = value.icon._impl(self.interface.factory)
-            except AttributeError:
-                icon = None
+            # Allow for an (icon, value) tuple as the simple case
+            # for encoding an icon in a table cell.
+            if isinstance(value, tuple):
+                icon, value = value
+            else:
+                # If the value has an icon attribute, get the _impl.
+                # Icons are deferred resources, so we provide the factory.
+                try:
+                    icon = value.icon._impl(self.interface.factory)
+                except AttributeError:
+                    icon = None
         except AttributeError:
             # If the node doesn't have a property with the
             # accessor name, assume an empty string value.
