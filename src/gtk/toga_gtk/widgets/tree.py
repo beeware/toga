@@ -28,13 +28,13 @@ class Tree(Widget):
     def change_source(self, source):
         raise NotImplementedError()
 
-    def insert(self, parent, index, node):
+    def insert(self, item):
         raise NotImplementedError()
 
-    def change(self, node):
+    def change(self, item):
         raise NotImplementedError()
 
-    def remove(self, node):
+    def remove(self, item):
         raise NotImplementedError()
 
     def clear(self):

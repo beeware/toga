@@ -1,8 +1,8 @@
 from .base import Widget
 from .icon import Icon
 from ..utils import wrapped_handler
-from ..sources import DictSource
-from ..sources.base import build_accessors
+from ..sources import TreeSource
+from ..sources.accessors import build_accessors
 
 
 class Tree(Widget):
@@ -46,9 +46,9 @@ class Tree(Widget):
         :type  data: ``dict`` or ``class``
         '''
         if data is None:
-            self._data = DictSource(accessors=self._accessors, data=[])
+            self._data = TreeSource(accessors=self._accessors, data=[])
         elif isinstance(data, (list, tuple, dict)):
-            self._data = DictSource(accessors=self._accessors, data=data)
+            self._data = TreeSource(accessors=self._accessors, data=data)
         else:
             self._data = data
 

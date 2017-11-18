@@ -176,13 +176,13 @@ class Tree(Widget):
     def change_source(self, source):
         self.tree.reloadData()
 
-    def insert(self, parent, index, node):
+    def insert(self, item):
         self.tree.reloadData()
 
-    def change(self, node):
+    def change(self, item):
         self.tree.reloadData()
 
-    def remove(self, node):
+    def remove(self, item):
         self.tree.reloadData()
 
     def clear(self):

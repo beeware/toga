@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from toga.sources.base import build_accessors, to_accessor
+from toga.sources.accessors import build_accessors, to_accessor
 
 
 class ToAccessorTests(TestCase):

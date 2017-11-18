@@ -2,7 +2,7 @@ from .base import Widget
 from .icon import Icon
 from ..utils import wrapped_handler
 from ..sources import ListSource
-from ..sources.base import build_accessors
+from ..sources.accessors import build_accessors
 
 
 class Table(Widget):

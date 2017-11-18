@@ -1,7 +1,28 @@
 from unittest import TestCase
 from unittest.mock import Mock
 
-from toga.sources import SimpleListSource, ListSource
+from toga.sources import ListSource
+from toga.sources.list_source import Row
+
+
+class RowTests(TestCase):
+    def setUp(self):
+        self.source = Mock()
+        self.example = Row(val1='value 1', val2=42)
+        self.example._source = self.source
+
+    def test_initial_state(self):
+        "A row holds values as expected"
+
+        self.assertEqual(self.example.val1, 'value 1')
+        self.assertEqual(self.example.val2, 42)
+
+    def test_change_value(self):
+        "If a row value changes, the source is notified"
+        self.example.val1 = 'new value'
+
+        self.assertEqual(self.example.val1, 'new value')
+        self.source._notify.assert_called_once_with('change', item=self.example)
 
 
 class ListSourceTests(TestCase):
@@ -325,63 +346,3 @@ class ListSourceTests(TestCase):
         self.assertEqual(source[1].val2, 333)
 
         listener.remove.assert_called_once_with(item=row)
-
-
-class SimpleListSourceTests(TestCase):
-    def test_init_dict(self):
-        "A SimpleListSource can be instantiated with dicts"
-        source = SimpleListSource(
-            data=[
-                {'val1': 'first', 'val2': 111, 'icon': 'path/to/first.png'},
-                {'val1': 'second', 'val2': 222},
-                {'val1': 'third', 'val2': 333},
-            ]
-        )
-
-        self.assertEqual(len(source), 3)
-
-        self.assertEqual(source[0].val1, 'first')
-        self.assertEqual(source[0].val2, 111)
-        self.assertEqual(source[0].icon.path, 'path/to/first.png')
-
-        self.assertEqual(source[1].val1, 'second')
-        self.assertEqual(source[1].val2, 222)
-
-        listener = Mock()
-        source.add_listener(listener)
-
-        # Set element 1
-        source[1] = {'val1': 'new element', 'val2': 999}
-
-        self.assertEqual(len(source), 3)
-
-        self.assertEqual(source[1].val1, 'new element')
-        self.assertEqual(source[1].val2, 999)
-
-        listener.insert.assert_called_once_with(index=1, item=source[1])
-
-    def test_init_non_dict(self):
-        "A SimpleListSource can be instantiated with non-dict values"
-        source = SimpleListSource(
-            data=[
-                ['first', 111],
-                ['second', 222],
-                ['third', 333],
-            ]
-        )
-
-        self.assertEqual(len(source), 3)
-
-        self.assertEqual(source[0].value, ['first', 111])
-        self.assertEqual(source[1].value, ['second', 222])
-
-        listener = Mock()
-        source.add_listener(listener)
-
-        # Set element 1
-        source[1] = ['new element', 999]
-
-        self.assertEqual(len(source), 3)
-        self.assertEqual(source[1].value, ['new element', 999])
-
-        listener.insert.assert_called_once_with(index=1, item=source[1])

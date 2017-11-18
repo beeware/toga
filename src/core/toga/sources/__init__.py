@@ -1,4 +1,5 @@
-from .base import Source, Value, to_accessor
-from .lists import SimpleListSource, ListSource
-from .dicts import DictSource
-# from .variables import Variable
+from .accessors import to_accessor
+from .base import Source
+from .list_source import ListSource
+from .tree_source import TreeSource
+from .value_source import ValueSource

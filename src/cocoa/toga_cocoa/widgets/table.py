@@ -92,13 +92,13 @@ class Table(Widget):
     def change_source(self, source):
         self.table.reloadData()
 
-    def insert(self, index, row):
+    def insert(self, item):
         self.table.reloadData()
 
-    def change(self, row):
+    def change(self, item):
         self.table.reloadData()
 
-    def remove(self, row):
+    def remove(self, item):
         self.table.reloadData()
 
     def clear(self):
