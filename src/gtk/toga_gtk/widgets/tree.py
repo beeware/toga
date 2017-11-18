@@ -109,7 +109,7 @@ class Tree(Widget):
     def change_source(self, source):
         self._refresh()
 
-    def insert(self, item):
+    def insert(self, item, index, **kwargs):
         self.store.insert(
             self._node_iter(item._parent),
             index,
@@ -120,7 +120,7 @@ class Tree(Widget):
         self.store.set(
             self._node_iter(item._parent),
             # `TreeModel.set()` expects *flat* column-value pairs
-            *chain.from_iterable(enumerate(self._row_items(node))
+            *chain.from_iterable(enumerate(self._row_items(node)))
         )
 
     def remove(self, item):

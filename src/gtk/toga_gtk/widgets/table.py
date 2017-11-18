@@ -70,6 +70,7 @@ class Table(Widget):
         self.store[self._row_index(item)] = self._row_items(item)
 
     def remove(self, item):
+        # TODO: implement `index()` on ListSource to avoid accessing _data
         index = self.interface.data._data.index(item)
         self.store.remove(self.store.get_iter((index,)))
 
