@@ -151,7 +151,7 @@ class TreeSourceTests(TestCase):
         self.assertFalse(source[1].has_children())
         self.assertEqual(len(source[1]), 0)
 
-        listener.insert.assert_called_once_with(parent=None, index=1, item=source[1])
+        listener.change.assert_called_once_with(item=source[1])
 
     def test_init_with_list_of_dicts(self):
         "TreeSource nodes can be instantiated from lists of dicts"
@@ -189,7 +189,7 @@ class TreeSourceTests(TestCase):
         self.assertFalse(source[1].has_children())
         self.assertEqual(len(source[1]), 0)
 
-        listener.insert.assert_called_once_with(parent=None, index=1, item=source[1])
+        listener.change.assert_called_once_with(item=source[1])
 
     def test_init_with_dict_of_lists(self):
         "TreeSource nodes can be instantiated from dicts of lists"
@@ -248,7 +248,7 @@ class TreeSourceTests(TestCase):
         self.assertEqual(source[2].val1, 'new element')
         self.assertEqual(source[2].val2, 999)
 
-        listener.insert.assert_called_once_with(parent=None, index=2, item=source[2])
+        listener.change.assert_called_once_with(item=source[2])
 
     def test_init_with_dict_of_dicts(self):
         "TreeSource nodes can be instantiated from dicts of dicts"
@@ -314,7 +314,7 @@ class TreeSourceTests(TestCase):
         self.assertEqual(source[2].val1, 'new element')
         self.assertEqual(source[2].val2, 999)
 
-        listener.insert.assert_called_once_with(parent=None, index=2, item=source[2])
+        listener.change.assert_called_once_with(item=source[2])
 
     def test_iter(self):
         "TreeSource roots can be iterated over"
@@ -664,3 +664,61 @@ class TreeSourceTests(TestCase):
         self.assertEqual(len(source[2]), 1)
 
         listener.remove.assert_called_once_with(item=node)
+
+    def test___setitem___for_root(self):
+        "A root can be set (changed) with __setitem__"
+        source = TreeSource(
+            data={
+                ('first', 111): None,
+                ('second', 222): [],
+                ('third', 333): [
+                    ('third.one', 331),
+                    ('third.two', 332)
+                ]
+            },
+            accessors=['val1', 'val2']
+        )
+
+        self.assertEqual(len(source), 3)
+        self.assertEqual(len(source[2]), 2)
+
+        listener = Mock()
+        source.add_listener(listener)
+
+        # Re-assign the first root
+        source[0] = ('first_new', -111)
+
+        self.assertEqual(len(source), 3)
+        self.assertEqual(source[0].val1, 'first_new')
+        self.assertEqual(source[0].val2, -111)
+
+        listener.change.assert_called_once_with(item=source[0])
+
+    def test___setitem___for_child(self):
+        "A child can be set (changed) with __setitem__"
+        source = TreeSource(
+            data={
+                ('first', 111): None,
+                ('second', 222): [],
+                ('third', 333): [
+                    ('third.one', 331),
+                    ('third.two', 332)
+                ]
+            },
+            accessors=['val1', 'val2']
+        )
+
+        self.assertEqual(len(source), 3)
+        self.assertEqual(len(source[2]), 2)
+
+        listener = Mock()
+        source.add_listener(listener)
+
+        # Re-assign the first root
+        source[2][0] = ('third.one_new', -331)
+
+        self.assertEqual(len(source), 3)
+        self.assertEqual(source[2][0].val1, 'third.one_new')
+        self.assertEqual(source[2][0].val2, -331)
+
+        listener.change.assert_called_once_with(item=source[2][0])

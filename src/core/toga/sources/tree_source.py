@@ -34,7 +34,7 @@ class Node(Row):
     def __setitem__(self, index, value):
         node = self._source._create_node(value)
         self._children[index] = node
-        self._source._notify('insert', parent=self, index=index, item=node)
+        self._source._notify('change', item=node)
 
     def insert(self, index, *values, **named):
         self._source.insert(self, index, *values, **named)
