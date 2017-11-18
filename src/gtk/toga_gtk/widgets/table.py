@@ -1,6 +1,5 @@
 from gi.repository import Gtk
 from .base import Widget
-from toga.sources.base import Row
 
 
 class Table(Widget):
@@ -53,24 +52,25 @@ class Table(Widget):
 
     # TODO: The interface should provide the row index instead of using this
     # method to access a private property
-    def _row_index(self, row: Row):
+    def _row_index(self, row):
         return self.interface.data._data.index(row)
 
     # TODO: The interface should provide the row list items instead of using
     # this method to access a private property
-    def _row_items(self, row: Row):
+    def _row_items(self, row):
         return [getattr(row, attr) for attr in self.interface._accessors]
 
     def change_source(self, source):
         self._refresh()
 
-    def insert(self, index, item: Row):
-        self.store.insert(index, self._row_items(row))
+    def insert(self, index, item):
+        self.store.insert(index, self._row_items(item))
 
-    def change(self, item: Row):
-        self.store[self._row_index(row)] = self._row_items(row)
+    def change(self, item):
+        self.store[self._row_index(item)] = self._row_items(item)
 
-    def remove(self, index, item: Row):
+    def remove(self, item):
+        index = self.interface.data._data.index(item)
         self.store.remove(self.store.get_iter((index,)))
 
     def clear(self):
