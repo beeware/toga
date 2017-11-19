@@ -23,7 +23,7 @@ class Table(Widget):
             ])
             self.native.Items.Insert(index, row._impl)
 
-    def insert(self, item):
+    def insert(self, index, item):
         item._impl = WinForms.ListViewItem(*[
             getattr(item, attr) for attr in self.interface._accessors
         ])

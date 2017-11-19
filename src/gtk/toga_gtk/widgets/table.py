@@ -30,7 +30,7 @@ class Table(Widget):
         for row in self.interface.data:
             self.data.append(*[getattr(row, attr) for attr in self.interface._accessors])
 
-    def insert(self, item):
+    def insert(self, index, item):
         raise NotImplementedError()
 
     def change(self, item):
