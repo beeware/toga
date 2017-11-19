@@ -97,7 +97,7 @@ class Table(Widget):
     def change_source(self, source):
         self.table.reloadData()
 
-    def insert(self, item):
+    def insert(self, index, item):
         self.table.reloadData()
 
     def change(self, item):

@@ -28,7 +28,7 @@ class Tree(Widget):
     def change_source(self, source):
         raise NotImplementedError()
 
-    def insert(self, item):
+    def insert(self, parent, index, item):
         raise NotImplementedError()
 
     def change(self, item):
