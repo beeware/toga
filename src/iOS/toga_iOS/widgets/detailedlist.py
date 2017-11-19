@@ -67,21 +67,25 @@ class DetailedList(Widget):
                 SEL('refresh'),
                 UIControlEventValueChanged
             )
+        else:
+            if self.controller.refreshControl:
+                self.controller.refreshControl.removeFromSuperview()
+            self.controller.refreshControl = None
 
     def change_source(self, source):
-        self.controller.tableView.reloadData()
+        self.native.reloadData()
 
     def insert(self, index, item):
-        self.controller.tableView.reloadData()
+        self.native.reloadData()
 
     def change(self, item):
-        self.controller.tableView.reloadData()
+        self.native.reloadData()
 
     def remove(self, item):
-        self.controller.tableView.reloadData()
+        self.native.reloadData()
 
     def clear(self):
-        self.controller.tableView.reloadData()
+        self.native.reloadData()
 
     def set_on_select(self, handler):
         pass
