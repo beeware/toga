@@ -31,10 +31,10 @@ class Canvas(Widget):
         if color is not None:
             num = re.search('^rgba\((\d*\.?\d*), (\d*\.?\d*), (\d*\.?\d*), (\d*\.?\d*)\)$', color)
             if num is not None:
-                r = num.group(1)
-                g = num.group(2)
-                b = num.group(3)
-                a = num.group(4)
+                r = int(num.group(1))
+                g = int(num.group(2))
+                b = int(num.group(3))
+                a = int(num.group(4))
                 self.native.context.set_source_rgba(r, b, g, a)
             else:
                 pass
