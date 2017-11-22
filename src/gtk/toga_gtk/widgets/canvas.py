@@ -94,9 +94,9 @@ class Canvas(Widget):
 
     def fill(self, fill_rule, preserve):
         if fill_rule is 'evenodd':
-            cairo.Context.set_fill_rule(cairo.FILL_RULE_EVEN_ODD)
+            self.native.context.set_fill_rule(cairo.FILL_RULE_EVEN_ODD)
         else:
-            cairo.Context.set_fill_rule(cairo.FILL_RULE_WINDING)
+            self.native.context.set_fill_rule(cairo.FILL_RULE_WINDING)
         if preserve:
             self.native.context.fill_preserve()
         else:
