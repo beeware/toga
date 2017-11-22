@@ -14,12 +14,17 @@ from .base import Widget
 class Canvas(Widget):
     def create(self):
         self.native = Gtk.DrawingArea()
+        self.native.set_size_request(200, 200)
         self.native.interface = self.interface
-        self.native.context = None
+        surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, 200, 200)
+        self.native.context = cairo.Context(surface)
         self.native.connect('show', lambda event: self.rehint())
 
     def set_on_draw(self, handler):
         self.native.connect('draw', handler)
+        # handler(self.native, self.native.context)
+        print(self.native)
+        print(self.native.context)
 
     def set_context(self, context):
         self.native.context = context

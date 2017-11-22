@@ -47,22 +47,3 @@ def wrapped_handler(interface, handler):
         _handler._raw = handler
 
         return _handler
-
-
-def wrapped_canvas_handler(interface, handler):
-    """Wrap a handler and add canvas and context arguments
-    """
-    if handler:
-        def _handler(canvas, context, **extra):
-            interface.factory.Canvas(interface=interface).set_context = context
-            if asyncio.iscoroutinefunction(handler):
-                asyncio.async(handler(interface, **extra))
-            else:
-                # TODO we need to avoid calling the handler before establishing the native on_draw handler
-                # result = handler(interface, **extra)
-                # if inspect.isgenerator(result):
-                #     asyncio.async(long_running_task(result))
-                # else:
-                return handler
-        _handler._raw = handler
-        return _handler
