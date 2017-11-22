@@ -70,7 +70,7 @@ class StartApp(toga.App):
     def callbackResize(self, button):
         # Some action when you hit the button
         #   In this case the window size will change
-        self.main_window.size(100,100)
+        self.main_window.size = (100,100)
 
 
 def main():
