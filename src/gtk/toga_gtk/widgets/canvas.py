@@ -54,6 +54,9 @@ class Canvas(Widget):
     def stroke_style(self, color=None):
         self.fill_style(color)
 
+    def new_path(self):
+        self.native.context.new_path()
+
     def close_path(self):
         self.native.context.close_path()
 
