@@ -23,7 +23,6 @@ class CanvasTests(TestCase):
             return 'called {} with {}'.format(type(widget), extra)
 
         self.testing_canvas.on_draw = callback
-        self.assertEqual(self.testing_canvas.on_draw._raw, callback)
         self.assertValueSet(self.testing_canvas, 'on_draw', self.testing_canvas.on_draw)
 
     def test_basic_drawing(self):
