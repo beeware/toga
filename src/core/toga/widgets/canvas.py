@@ -83,7 +83,9 @@ class Canvas(Widget):
 
         Currently supports color, in the future could support gradient and
         pattern. A named color or RGBA value must be passed, or default to
-        black.
+        black. If using RGBA values, RGB are in the range 0-255, A is in the
+        range 0-1.
+
         Args:
             color (str): CSS color value or in rgba(0, 0, 0, 1) format
 

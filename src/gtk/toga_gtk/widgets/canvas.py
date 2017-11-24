@@ -14,10 +14,10 @@ from .base import Widget
 class Canvas(Widget):
     def create(self):
         self.native = Gtk.DrawingArea()
-        self.native.set_size_request(200, 200)
+        self.native.set_size_request(800, 800)
         self.native.interface = self.interface
-        surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, 200, 200)
-        self.native.context = cairo.Context(surface)
+        self.surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, 800, 800)
+        self.native.context = cairo.Context(self.surface)
         self.native.connect('show', lambda event: self.rehint())
 
     def set_on_draw(self, handler):
@@ -36,11 +36,12 @@ class Canvas(Widget):
         if color is not None:
             num = re.search('^rgba\((\d*\.?\d*), (\d*\.?\d*), (\d*\.?\d*), (\d*\.?\d*)\)$', color)
             if num is not None:
-                r = int(num.group(1))
-                g = int(num.group(2))
-                b = int(num.group(3))
-                a = int(num.group(4))
-                self.native.context.set_source_rgba(r, b, g, a)
+                #  Convert RGB values to be a float between 0 and 1
+                r = float(num.group(1))/255
+                g = float(num.group(2))/255
+                b = float(num.group(3))/255
+                a = float(num.group(4))
+                self.native.context.set_source_rgba(r, g, b, a)
             else:
                 pass
                 # Support future colosseum versions
@@ -80,12 +81,17 @@ class Canvas(Widget):
             self.native.context.arc(x, y, radius, startangle, endangle)
 
     def ellipse(self, x, y, radiusx, radiusy, rotation, startangle, endangle, anticlockwise):
-        width = 2 * radiusx
-        height = 2 * radiusy
-        self.translate(x + width / 2, y + height / 2)
-        self.scale(width / 2, height / 2)
+        self.native.context.save()
+        self.translate(x, y)
+        if radiusx >= radiusy:
+            self.scale(1, radiusy/radiusx)
+            self.arc(0, 0, radiusx, startangle, endangle, anticlockwise)
+        elif radiusy > radiusx:
+            self.scale(radiusx/radiusy, 1)
+            self.arc(0, 0, radiusy, startangle, endangle, anticlockwise)
         self.rotate(rotation)
-        self.arc(x, y, 1, startangle, endangle, anticlockwise)
+        self.reset_transform()
+        self.native.context.restore
 
     def rect(self, x, y, width, height):
         self.native.context.rectangle(x, y, width, height)
