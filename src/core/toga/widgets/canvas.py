@@ -26,6 +26,15 @@ class Canvas(Widget):
 
         self.rehint()
 
+    def set_context(self, context):
+        """The context of the Canvas to pass through from a callable function
+
+        Args:
+            context (:obj:'context'): The context to pass
+
+        """
+        self._impl.set_context(context)
+
     @property
     def on_draw(self):
         """The callable function to draw on a Canvas
@@ -153,7 +162,7 @@ class Canvas(Widget):
         """
         self._impl.quadratic_curve_to(cpx, cpy, x, y)
 
-    def arc(self, x, y, radius, startangle, endangle, anticlockwise=False):
+    def arc(self, x, y, radius, startangle=0, endangle=2 * pi, anticlockwise=False):
         """Adds an arc to the path.
 
         The arc is centered at (x, y) position with radius r starting at
@@ -174,7 +183,7 @@ class Canvas(Widget):
         """
         self._impl.arc(x, y, radius, startangle, endangle, anticlockwise)
 
-    def ellipse(self, x, y, radiusx, radiusy, rotation=0, startangle=0, endangle=2*pi, anticlockwise=False):
+    def ellipse(self, x, y, radiusx, radiusy, rotation=0, startangle=0, endangle=2 * pi, anticlockwise=False):
         """Adds an ellipse to the path.
 
         The ellipse is centered at (x, y) position with the radii radiusx and radiusy
