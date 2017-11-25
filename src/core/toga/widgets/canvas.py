@@ -24,8 +24,6 @@ class Canvas(Widget):
         self._impl = self.factory.Canvas(interface=self)
         self.on_draw = on_draw
 
-        self.rehint()
-
     def set_context(self, context):
         """The context of the Canvas to pass through from a callable function
 
@@ -133,7 +131,7 @@ class Canvas(Widget):
 
         It requires three points. The first two points are control points
         and the third one is the end point. The starting point is the last
-        point in the current path, which can be changed using moveTo() before
+        point in the current path, which can be changed using move_to() before
         creating the Bézier curve.
 
         Args:
