@@ -19,7 +19,7 @@ passing the function to the on_draw parameter.
 The function you want to draw with should also be defined to include canvas and
 context arguments, and make use of the set_context method.
 
-2. Next we create a new Canvas, and pass in the draw_steps method::
+2. Next we create a new Canvas, and pass in the draw_tiberius method::
 
     self.canvas = toga.Canvas(on_draw=self.draw_tiberius)
 
@@ -41,6 +41,7 @@ Here's the source code
 .. literalinclude:: /tutorial/source/tutorial-4.py
    :language: python
 
-Although not shown in this tutorial, it is also possible
+Although not shown in this tutorial, it is also possible to directly do simple
+draw operations without passing in the on_draw callable function.
 
 In this example, we see a new Toga widget - :class:`.Canvas`.
