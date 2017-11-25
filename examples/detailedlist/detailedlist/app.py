@@ -13,6 +13,9 @@ class ExampleDetailedListApp(toga.App):
 
     async def on_refresh_handler(self, widget, **kwargs):
         self.label.text = 'Refreshing list...'
+        # We are using a local data source, so there's literally no reason
+        # to use refresh. However, for demonstration purposes, lets pretend
+        # that we're getting the data from an API, which takes 1s to respond.
         await asyncio.sleep(1)
         self.label.text = 'List was refreshed.'
 
