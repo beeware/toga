@@ -19,10 +19,10 @@ with io.open('README.rst', encoding='utf8') as readme:
 setup(
     name='table',
     version=version,
-    description='Test app for Table widget.',
+    description='Test app for the Table widget.',
     long_description=long_description,
-    author='Jonas Schell',
-    author_email='jonasschell@me.com',
+    author='BeeWare Project',
+    author_email='contact@pybee.org',
     license='BSD license',
     packages=find_packages(
         exclude=[
@@ -40,8 +40,8 @@ setup(
     ],
     options={
         'app': {
-            'formal_name': 'table',
-            'bundle': 'com.example'
+            'formal_name': 'Table',
+            'bundle': 'org.pybee.widgets'
         },
 
         # Desktop/laptop deployments

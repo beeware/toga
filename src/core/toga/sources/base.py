@@ -1,24 +1,8 @@
 
-class Variable:
-    """A data source that helps you to store and manage data in a row like fashion.
 
-    Args:
-        data: The value for the variable.
-        refresh_function (`callable`): A function invoked on data change.
-    """
-
-    def __init__(self, value):
-        self._data = value
+class Source:
+    def __init__(self):
         self._listeners = []
-
-    @property
-    def data(self):
-        return self._data
-
-    @data.setter
-    def data(self, value):
-        self._data = value
-        self._refresh()
 
     @property
     def listeners(self) -> list:
@@ -40,7 +24,7 @@ class Variable:
     def remove_listener(self, listener):
         self._listeners.remove(listener)
 
-    def _refresh(self):
-        """ Invoke the refresh function on all widgets that are subscribed to this data source."""
+    def _notify(self, notification, **kwargs):
+        """Invoke a notification function on all listeners that are subscribed to this data source."""
         for listener in self._listeners:
-            listener.refresh()
+            getattr(listener, notification)(**kwargs)

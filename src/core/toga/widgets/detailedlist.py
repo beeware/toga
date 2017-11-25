@@ -1,6 +1,6 @@
 from .base import Widget
-from .table import ListDataSource
 from ..utils import wrapped_handler
+from ..sources import to_accessor, ListSource
 
 
 class DetailedList(Widget):
@@ -49,14 +49,14 @@ class DetailedList(Widget):
     @data.setter
     def data(self, data):
         if data is None:
-            self._data = ListDataSource([])
+            self._data = ListSource(data=[], accessors=['icon', 'label1', 'label2'])
         elif isinstance(data, (list, tuple)):
-            self._data = ListDataSource(data)
+            self._data = ListSource(data=data, accessors=['icon', 'label1', 'label2'])
         else:
             self._data = data
 
         self._data.add_listener(self._impl)
-        self.data._refresh()
+        self.data._notify('refresh')
 
     @property
     def on_delete(self):

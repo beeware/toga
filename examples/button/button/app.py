@@ -2,7 +2,7 @@ import toga
 from colosseum import CSS, COLUMN, ROW
 
 
-class StartApp(toga.App):
+class ExampleButtonApp(toga.App):
     def startup(self):
         # Window class
         #   Main window of the application with title and size
@@ -40,10 +40,10 @@ class StartApp(toga.App):
         button5 = toga.Button('Far from home', style=CSS(margin=50))
 
         # Button with label and RGB color
-        button6 = toga.Button('RGB : Fashion', background_color=(50,200,200))
+        button6 = toga.Button('RGB : Fashion')  # , style=CSS(background_color='red'))
 
         # Button with label and string color
-        button7 = toga.Button('String : Fashion', background_color='yellow')
+        button7 = toga.Button('String : Fashion')  # , style=CSS(background_color='blue'))
 
         # Add components for the second row of the outer box
         inner_box2 = toga.Box(style=style_inner_box,
@@ -76,5 +76,5 @@ class StartApp(toga.App):
 def main():
     # Application class
     #   App name and namespace
-    app = StartApp('Buttons', 'org.pybee.helloworld')
+    app = ExampleButtonApp('Buttona', 'org.pybee.widgets.buttons')
     return app
