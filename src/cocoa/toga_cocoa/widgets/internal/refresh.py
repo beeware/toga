@@ -1,6 +1,6 @@
 from rubicon.objc import *
 
-from ...libs import *
+from toga_cocoa.libs import *
 
 HEADER_HEIGHT = 45.0
 
