@@ -8,6 +8,25 @@ from .internal.refresh import RefreshableScrollView
 
 
 class TogaDetailedList(NSTableView):
+    @objc_method
+    def menuForEvent_(self, event):
+        if self.interface.on_delete:
+            mousePoint = self.convertPoint(event.locationInWindow, fromView=None)
+            row = self.rowAtPoint(mousePoint)
+
+            popup = NSMenu.alloc().initWithTitle("popup")
+            delete_item = popup.addItemWithTitle("Delete", action=SEL('actionDeleteRow:'), keyEquivalent="")
+            delete_item.tag = row
+            # action_item = popup.addItemWithTitle("???", action=SEL('actionRow:'), keyEquivalent="")
+            # action_item.tag = row
+
+            return popup
+
+    @objc_method
+    def actionDeleteRow_(self, event):
+        row = self.interface.data[event.tag]
+        self.interface.on_delete(self.interface, row=row)
+
     # TableDataSource methods
     @objc_method
     def numberOfRowsInTableView_(self, table) -> int:
@@ -45,6 +64,7 @@ class TogaDetailedList(NSTableView):
         if self.interface.on_select:
             row = notification.object.selectedRow if notification.object.selectedRow != -1 else None
             self.interface.on_select(self.interface, row=row)
+
 
 
 class DetailedList(Widget):

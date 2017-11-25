@@ -17,7 +17,7 @@ class ExampleDetailedListApp(toga.App):
         self.label.text = 'List was refreshed.'
 
     def on_delete_handler(self, widget, row, **kwargs):
-        self.label.text = 'Row {} is going to be deleted.'.format(row)
+        self.label.text = 'Row {} is going to be deleted.'.format(row.subtitle)
 
     def startup(self):
         # Set up main window
@@ -37,7 +37,7 @@ class ExampleDetailedListApp(toga.App):
                 for translation in bee_translations
             ],
             on_select=self.on_select_handler,
-            on_delete=self.on_delete_handler,
+            # on_delete=self.on_delete_handler,
             on_refresh=self.on_refresh_handler,
             style=CSS(flex=1)
         )
