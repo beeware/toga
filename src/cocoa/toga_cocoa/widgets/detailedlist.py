@@ -23,8 +23,8 @@ class TogaDetailedList(NSTableView):
             return popup
 
     @objc_method
-    def actionDeleteRow_(self, event):
-        row = self.interface.data[event.tag]
+    def actionDeleteRow_(self, menuitem):
+        row = self.interface.data[menuitem.tag]
         self.interface.on_delete(self.interface, row=row)
 
     # TableDataSource methods
