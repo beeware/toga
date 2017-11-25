@@ -68,9 +68,8 @@ class TogaList(NSTableView):
             self.interface.on_select(self.interface, row=row)
 
     @objc_method
-    def tableView_heightOfRow_(self, row: int) -> float:
+    def tableView_heightOfRow_(self, table, row: int) -> float:
         return 48.0
-
 
 
 class DetailedList(Widget):
