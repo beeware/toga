@@ -2,7 +2,8 @@ from toga.sources import to_accessor
 
 from ..libs import *
 from .base import Widget
-from .utils import TogaData, TogaIconCell
+from .internal.cells import TogaIconCell
+from .internal.data import TogaData
 
 
 class TogaTable(NSTableView):

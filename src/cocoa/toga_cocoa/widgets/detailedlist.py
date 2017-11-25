@@ -2,90 +2,9 @@ from rubicon.objc import *
 
 from ..libs import *
 from .base import Widget
-from .table import TogaTable
-from .utils import TogaIconCell, TogaData
-
-
-NSBezierPath = ObjCClass('NSBezierPath')
-
-
-class TogaDisplayListCell(NSTextFieldCell):
-    @objc_method
-    # def drawWithFrame_inView_(self, cellFrame: NSRect, view) -> None:
-    def drawInteriorWithFrame_inView_(self, cellFrame: NSRect, view) -> None:
-        # The data to display.
-        label1 = self.objectValue.attrs['label1']
-        label2 = self.objectValue.attrs['label2']
-        icon = self.objectValue.attrs['icon']
-
-        if icon:
-            nicon = icon.native
-
-            NSGraphicsContext.currentContext.saveGraphicsState()
-            yOffset = cellFrame.origin.y
-            if view.isFlipped:
-                xform = NSAffineTransform.transform()
-                xform.translateXBy(4, yBy=cellFrame.size.height)
-                xform.scaleXBy(1.0, yBy=-1.0)
-                xform.concat()
-                yOffset = 0.5 - cellFrame.origin.y
-
-            interpolation = NSGraphicsContext.currentContext.imageInterpolation
-            NSGraphicsContext.currentContext.imageInterpolation = NSImageInterpolationHigh
-
-            nicon.drawInRect(
-                NSRect(NSPoint(cellFrame.origin.x, yOffset + 4), NSSize(40.0, 40.0)),
-                fromRect=NSRect(NSPoint(0, 0), NSSize(nicon.size.width, nicon.size.height)),
-                operation=NSCompositingOperationSourceOver,
-                fraction=1.0
-            )
-
-            NSGraphicsContext.currentContext.imageInterpolation = interpolation
-            NSGraphicsContext.currentContext.restoreGraphicsState()
-        else:
-            path = NSBezierPath.bezierPathWithRect(
-                NSRect(NSPoint(cellFrame.origin.x, cellFrame.origin.y + 4), NSSize(40.0, 40.0))
-            )
-            NSColor.grayColor.set()
-            path.fill()
-
-        if label1:
-            # Find the right color for the text
-            if self.isHighlighted():
-                primaryColor = NSColor.alternateSelectedControlTextColor
-            else:
-                if False:
-                    primaryColor = NSColor.disabledControlTextColor
-                else:
-                    primaryColor = NSColor.textColor
-
-            textAttributes = NSMutableDictionary.alloc().init()
-            textAttributes[NSForegroundColorAttributeName] = primaryColor
-            textAttributes[NSFontAttributeName] = NSFont.systemFontOfSize(13)
-
-            at(label1).drawAtPoint(
-                NSPoint(cellFrame.origin.x + 48, cellFrame.origin.y + 4),
-                withAttributes=textAttributes
-            )
-
-        if label2:
-            # Find the right color for the text
-            if self.isHighlighted():
-                primaryColor = NSColor.alternateSelectedControlTextColor
-            else:
-                if False:
-                    primaryColor = NSColor.disabledControlTextColor
-                else:
-                    primaryColor = NSColor.textColor
-
-            textAttributes = NSMutableDictionary.alloc().init()
-            textAttributes[NSForegroundColorAttributeName] = primaryColor
-            textAttributes[NSFontAttributeName] = NSFont.systemFontOfSize(15)
-
-            at(label2).drawAtPoint(
-                NSPoint(cellFrame.origin.x + 48, cellFrame.origin.y + 26),
-                withAttributes=textAttributes
-            )
+from .internal.cells import TogaDetailedCell
+from .internal.data import TogaData
+from .internal.refresh import RefreshableScrollView
 
 
 class TogaDetailedList(NSTableView):
@@ -111,9 +30,9 @@ class TogaDetailedList(NSTableView):
             icon = None
 
         data.attrs = {
-            'label1': str(getattr(value, 'label1')),
-            'label2': str(getattr(value, 'label2')),
             'icon': icon,
+            'title': str(getattr(value, 'title')),
+            'subtitle': str(getattr(value, 'subtitle')),
         }
 
         return data
@@ -132,7 +51,8 @@ class DetailedList(Widget):
     def create(self):
         # Create a tree view, and put it in a scroll view.
         # The scroll view is the _impl, because it's the outer container.
-        self.native = NSScrollView.alloc().init()
+        self.native = RefreshableScrollView.alloc().init()
+        self.native.interface = self.interface
         self.native.hasVerticalScroller = True
         self.native.hasHorizontalScroller = False
         self.native.autohidesScrollers = False
@@ -145,17 +65,20 @@ class DetailedList(Widget):
         self.detailedlist.columnAutoresizingStyle = NSTableViewUniformColumnAutoresizingStyle
         self.detailedlist.rowHeight = 48
 
+        self.native.detailedlist = self.detailedlist
+
         # Create the column for the detailed list
         column = NSTableColumn.alloc().initWithIdentifier('data')
         self.detailedlist.addTableColumn(column)
         self.columns = [column]
 
-        cell = TogaDisplayListCell.alloc().init()
+        cell = TogaDetailedCell.alloc().init()
         column.dataCell = cell
 
         cell.editable = False
         cell.selectable = False
 
+        # Hide the column header.
         self.detailedlist.headerView = None
 
         self.detailedlist.delegate = self.detailedlist
@@ -184,6 +107,9 @@ class DetailedList(Widget):
 
     def set_on_refresh(self, handler):
         pass
+
+    def after_on_refresh(self):
+        self.native.finishedLoading()
 
     def set_on_select(self, handler):
         pass

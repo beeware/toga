@@ -3,7 +3,7 @@ import inspect
 
 
 @asyncio.coroutine
-def long_running_task(generator):
+def long_running_task(generator, cleanup):
     """Run a generator as an asynchronous coroutine
 
     When we drop Python 3.4 support, we can:
@@ -16,10 +16,18 @@ def long_running_task(generator):
             delay = next(generator)
             yield from asyncio.sleep(delay)
     except StopIteration:
-        pass
+        if cleanup:
+            cleanup()
 
 
-def wrapped_handler(interface, handler):
+@asyncio.coroutine
+def handler_with_cleanup(handler, cleanup, interface, **extra):
+    yield from handler(interface, **extra)
+    if cleanup:
+        cleanup()
+
+
+def wrapped_handler(interface, handler, cleanup=None):
     """Wrap a handler provided by the user so it can be invoked.
 
     If the handler is a bound method, or function, invoke it as it,
@@ -37,12 +45,18 @@ def wrapped_handler(interface, handler):
     if handler:
         def _handler(widget, **extra):
             if asyncio.iscoroutinefunction(handler):
-                asyncio.async(handler(interface, **extra))
+                asyncio.ensure_future(
+                    handler_with_cleanup(handler, cleanup, interface, **extra)
+                )
             else:
                 result = handler(interface, **extra)
                 if inspect.isgenerator(result):
-                    asyncio.async(long_running_task(result))
+                    asyncio.ensure_future(
+                        long_running_task(result, cleanup)
+                    )
                 else:
+                    if cleanup:
+                        cleanup()
                     return result
         _handler._raw = handler
 

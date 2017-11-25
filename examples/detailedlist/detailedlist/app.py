@@ -1,3 +1,5 @@
+import asyncio
+
 import toga
 from colosseum import CSS
 
@@ -9,7 +11,9 @@ class ExampleDetailedListApp(toga.App):
     def on_select_handler(self, widget, row, **kwargs):
         self.label.text = 'You selected row: {}'.format(row) if row is not None else 'No row selected'
 
-    def on_refresh_handler(self, widget, **kwargs):
+    async def on_refresh_handler(self, widget, **kwargs):
+        self.label.text = 'Refreshing list...'
+        await asyncio.sleep(1)
         self.label.text = 'List was refreshed.'
 
     def on_delete_handler(self, widget, row, **kwargs):
@@ -27,8 +31,8 @@ class ExampleDetailedListApp(toga.App):
             data=[
                 {
                     'icon': 'resources/brutus.png',
-                    'label1': translation['country'],
-                    'label2': translation['string'],
+                    'title': translation['string'],
+                    'subtitle': translation['country'],
                 }
                 for translation in bee_translations
             ],

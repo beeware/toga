@@ -10,14 +10,27 @@ class TogaTableViewController(UITableViewController):
 
     @objc_method
     def tableView_numberOfRowsInSection_(self, tableView, section: int) -> int:
-        return len(self.interface.data.rows)
+        return len(self.interface.data)
 
     @objc_method
     def tableView_cellForRowAtIndexPath_(self, tableView, indexPath):
         cell = tableView.dequeueReusableCellWithIdentifier_("row")
         if cell is None:
-            cell = UITableViewCell.alloc().initWithStyle_reuseIdentifier_(UITableViewCellStyleDefault, "row")
-        cell.textLabel.text = self.interface.data.row(indexPath.item).data[0]  # hack until TableRow data format is established.
+            cell = UITableViewCell.alloc().initWithStyle_reuseIdentifier_(UITableViewCellStyleSubtitle, "row")
+
+        value = self.interface.data[indexPath.item]
+
+        # If the value has an icon attribute, get the _impl.
+        # Icons are deferred resources, so we provide the factory.
+        try:
+            icon = value.icon._impl(self.interface.factory)
+        except AttributeError:
+            icon = None
+
+        cell.textLabel.text = str(getattr(value, 'title', '')),
+        cell.detailTextLabel.text = str(getattr(value, 'subtitle', '')),
+        cell.imageView.image = icon
+
         return cell
 
     @objc_method
@@ -39,10 +52,7 @@ class TogaTableViewController(UITableViewController):
 
     @objc_method
     def refresh(self):
-        if self.interface.on_refresh:
-            self.interface.on_refresh(self.interface)
-        self.refreshControl.endRefreshing()
-        self.tableView.reloadData()
+        self.interface.on_refresh(self.interface)
 
     @objc_method
     def tableView_willSelectRowAtIndexPath_(self, tableView, indexPath):
@@ -71,6 +81,10 @@ class DetailedList(Widget):
             if self.controller.refreshControl:
                 self.controller.refreshControl.removeFromSuperview()
             self.controller.refreshControl = None
+
+    def after_on_refresh(self):
+        self.refreshControl.endRefreshing()
+        self.tableView.reloadData()
 
     def change_source(self, source):
         self.native.reloadData()

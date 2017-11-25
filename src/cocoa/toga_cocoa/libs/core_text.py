@@ -11,6 +11,16 @@ core_text = cdll.LoadLibrary(util.find_library('CoreText'))
 ######################################################################
 
 ######################################################################
+# CTFontDescriptor.h
+
+CTFontOrientation = c_uint32
+
+######################################################################
+# CTFontTraits.h
+
+CTFontSymbolicTraits = c_uint32
+
+######################################################################
 # CTFont.h
 core_text.CTFontGetBoundingRectsForGlyphs.restype = CGRect
 core_text.CTFontGetBoundingRectsForGlyphs.argtypes = [c_void_p, CTFontOrientation, POINTER(CGGlyph), POINTER(CGRect), CFIndex]
@@ -48,15 +58,11 @@ core_text.CTFontDescriptorCreateWithAttributes.argtypes = [c_void_p]
 ######################################################################
 # CTFontDescriptor.h
 
-CTFontOrientation = c_uint32
-
 kCTFontFamilyNameAttribute = c_void_p.in_dll(core_text, 'kCTFontFamilyNameAttribute')
 kCTFontTraitsAttribute = c_void_p.in_dll(core_text, 'kCTFontTraitsAttribute')
 
 ######################################################################
 # CTFontTraits.h
-
-CTFontSymbolicTraits = c_uint32
 
 kCTFontSymbolicTrait = c_void_p.in_dll(core_text, 'kCTFontSymbolicTrait')
 kCTFontWeightTrait = c_void_p.in_dll(core_text, 'kCTFontWeightTrait')

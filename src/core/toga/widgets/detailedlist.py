@@ -87,7 +87,7 @@ class DetailedList(Widget):
 
     @on_refresh.setter
     def on_refresh(self, handler: callable):
-        self._on_refresh = wrapped_handler(self, handler)
+        self._on_refresh = wrapped_handler(self, handler, self._impl.after_on_refresh)
         self._impl.set_on_refresh(self._on_refresh)
 
     @property

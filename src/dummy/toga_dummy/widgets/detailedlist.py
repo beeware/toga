@@ -23,6 +23,9 @@ class DetailedList(Widget):
     def set_on_refresh(self, handler):
         self._set_value('on_refresh', handler)
 
+    def after_on_refresh(self):
+        self._action('after on refresh')
+
     def set_on_delete(self, handler):
         self._set_value('on_delete', handler)
 
