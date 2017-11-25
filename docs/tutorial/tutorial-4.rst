@@ -12,12 +12,16 @@ passing the function to the on_draw parameter.
 
 1. We first define the drawing operations we want to perform in a new function::
 
-    def draw_steps(self):
-        self.canvas.stroke_style('rbga(0, 0, 0, 1)')
+     def draw_tiberius(self, canvas, context):
+        self.canvas.set_context(context)
+        self.fill_head()
+
+The function you want to draw with should also be defined to include canvas and
+context arguments, and make use of the set_context method.
 
 2. Next we create a new Canvas, and pass in the draw_steps method::
 
-    self.canvas = toga.Canvas(on_draw=self.draw_steps)
+    self.canvas = toga.Canvas(on_draw=self.draw_tiberius)
 
 That's all there is to! In this example we also add our canvas to the MainWindow
 through use of the Box Widget::
@@ -26,8 +30,8 @@ through use of the Box Widget::
         self.main_window.content = box
 
 You'll also notice in the full example below that some of the drawing operations
-use the "with" keyword to utilize two context managers called closed_path and
-fill. This reduces the repetition of commands while utilizing these basic
+use the "with" keyword to utilize context managers including closed_path, fill,
+and stroke. This reduces the repetition of commands while utilizing these basic
 drawing capabilities.
 
 .. image:: screenshots/tutorial-4.png
@@ -37,5 +41,6 @@ Here's the source code
 .. literalinclude:: /tutorial/source/tutorial-4.py
    :language: python
 
+Although not shown in this tutorial, it is also possible
 
 In this example, we see a new Toga widget - :class:`.Canvas`.
