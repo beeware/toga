@@ -7,7 +7,17 @@ from .internal.data import TogaData
 from .internal.refresh import RefreshableScrollView
 
 
-class TogaDetailedList(NSTableView):
+def attr_impl(value, attr, factory):
+    # If the data value has an _impl attribute, invoke it.
+    # This will manifest any impl-specific attributes.
+    impl = getattr(value, attr, None)
+    try:
+        return impl._impl(factory)
+    except AttributeError:
+        return impl
+
+
+class TogaList(NSTableView):
     @objc_method
     def menuForEvent_(self, event):
         if self.interface.on_delete:
@@ -41,17 +51,9 @@ class TogaDetailedList(NSTableView):
             data = TogaData.alloc().init()
             value._impl = data
 
-        # If the value has an icon attribute, get the _impl.
-        # Icons are deferred resources, so we provide the factory.
-        try:
-            icon = value.icon._impl(self.interface.factory)
-        except AttributeError:
-            icon = None
-
         data.attrs = {
-            'icon': icon,
-            'title': str(getattr(value, 'title')),
-            'subtitle': str(getattr(value, 'subtitle')),
+            attr: attr_impl(value, attr, self.interface.factory)
+            for attr in value._attrs
         }
 
         return data
@@ -65,11 +67,15 @@ class TogaDetailedList(NSTableView):
             row = notification.object.selectedRow if notification.object.selectedRow != -1 else None
             self.interface.on_select(self.interface, row=row)
 
+    @objc_method
+    def tableView_heightOfRow_(self, row: int) -> float:
+        return 48.0
+
 
 
 class DetailedList(Widget):
     def create(self):
-        # Create a tree view, and put it in a scroll view.
+        # Create a List, and put it in a scroll view.
         # The scroll view is the _impl, because it's the outer container.
         self.native = RefreshableScrollView.alloc().init()
         self.native.interface = self.interface
@@ -78,12 +84,11 @@ class DetailedList(Widget):
         self.native.autohidesScrollers = False
         self.native.borderType = NSBezelBorder
 
-        # Create the DetailedList widget
-        self.detailedlist = TogaDetailedList.alloc().init()
+        # Create the List widget
+        self.detailedlist = TogaList.alloc().init()
         self.detailedlist.interface = self.interface
         self.detailedlist._impl = self
         self.detailedlist.columnAutoresizingStyle = NSTableViewUniformColumnAutoresizingStyle
-        self.detailedlist.rowHeight = 48
 
         self.native.detailedlist = self.detailedlist
 

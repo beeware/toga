@@ -30,7 +30,7 @@ class ExampleDetailedListApp(toga.App):
         widget = toga.DetailedList(
             data=[
                 {
-                    'icon': 'resources/brutus.png',
+                    'icon': toga.Icon('resources/brutus.png'),
                     'title': translation['string'],
                     'subtitle': translation['country'],
                 }
