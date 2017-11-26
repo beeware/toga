@@ -8,8 +8,8 @@ class Table(Widget):
     def change_source(self, source):
         self._action('change source', source=source)
 
-    def insert(self, item):
-        self._action('insert row', item=item)
+    def insert(self, index, item):
+        self._action('insert row', index=index, item=item)
 
     def change(self, item):
         self._action('change row', item=item)

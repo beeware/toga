@@ -8,8 +8,8 @@ class Tree(Widget):
     def change_source(self, source):
         self._action('change source', source=source)
 
-    def insert(self, item):
-        self._action('insert node', item=item)
+    def insert(self, parent, index, item):
+        self._action('insert node', parent=parent, index=index, item=item)
 
     def change(self, item):
         self._action('change node', item=item)

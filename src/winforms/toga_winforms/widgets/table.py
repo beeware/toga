@@ -23,16 +23,16 @@ class Table(Widget):
             ])
             self.native.Items.Insert(index, row._impl)
 
-    def insert(self, index, row):
-        row._impl = WinForms.ListViewItem(*[
-            getattr(row, attr) for attr in self.interface._accessors
+    def insert(self, index, item):
+        item._impl = WinForms.ListViewItem(*[
+            getattr(item, attr) for attr in self.interface._accessors
         ])
-        self.native.Items.Insert(index, row._impl)
+        self.native.Items.Insert(index, item._impl)
 
-    def change(self, row):
+    def change(self, item):
         raise NotImplementedError()
 
-    def remove(self, row):
+    def remove(self, item):
         raise NotImplementedError()
 
     def clear(self):

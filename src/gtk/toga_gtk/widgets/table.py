@@ -5,6 +5,8 @@ from .base import Widget
 class Table(Widget):
     def create(self):
         self.store = Gtk.ListStore(*[str for h in self.interface.headings])
+        self.rows = {}
+
         # Create a table view, and put it in a scroll view.
         # The scroll view is the native, because it's the outer container.
         self.treeview = Gtk.TreeView(self.store)
@@ -26,16 +28,24 @@ class Table(Widget):
 
     def _on_select(self, selection):
         if hasattr(self.interface, "_on_select") and self.interface.on_select:
-            tree_model, tree_iter = selection.get_selected()
+            tree_model, impl = selection.get_selected()
+            self.interface.on_select(None, row=self.rows.get(impl, None))
 
-            if tree_iter:
-                tree_path = tree_model.get_path(tree_iter)
-                row = tree_path.get_indices()[0]
-            else:
-                row = None
-            self.interface.on_select(None, row=row)
+    def row_data(self, row):
+        return [
+            str(getattr(row, attr))
+            for attr in self.interface._accessors
+        ]
 
-    def _refresh(self):
+    def set_impl(self, item, impl):
+        try:
+            item._impl[self] = impl
+        except AttributeError:
+            item._impl = {self: impl}
+
+        self.rows[impl] = item
+
+    def change_source(self, source):
         """
         Synchronize self.data with self.interface.data
         """
@@ -45,34 +55,22 @@ class Table(Widget):
         self.treeview.set_model(None) # temporarily disconnect the view
 
         self.store.clear()
-        for row in self.interface.data:
-            self.store.append(self._row_items(row))
+        for item in self.interface.data:
+            impl = self.store.append(self.row_data(item))
+            self.set_impl(item, impl)
 
         self.treeview.set_model(self.store)
 
-    # TODO: The interface should provide the row index instead of using this
-    # method to access a private property
-    def _row_index(self, row):
-        return self.interface.data._data.index(row)
-
-    # TODO: The interface should provide the row list items instead of using
-    # this method to access a private property
-    def _row_items(self, row):
-        return [getattr(row, attr) for attr in self.interface._accessors]
-
-    def change_source(self, source):
-        self._refresh()
-
     def insert(self, index, item):
-        self.store.insert(index, self._row_items(item))
+        impl = self.store.insert(index, self.row_data(item))
+        self.set_impl(item, impl)
 
     def change(self, item):
-        self.store[self._row_index(item)] = self._row_items(item)
+        item._impl[self] = self.row_data(item)
 
     def remove(self, item):
-        # TODO: implement `index()` on ListSource to avoid accessing _data
-        index = self.interface.data._data.index(item)
-        self.store.remove(self.store.get_iter((index,)))
+        self.store.remove(item._impl[self])
+        del self.rows[item._impl[self]]
 
     def clear(self):
         self.store.clear()
