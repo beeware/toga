@@ -2,7 +2,8 @@ from toga.sources import to_accessor
 
 from ..libs import *
 from .base import Widget
-from .utils import TogaData, TogaIconCell
+from .internal.cells import TogaIconCell
+from .internal.data import TogaData
 
 
 class TogaTable(NSTableView):
@@ -13,26 +14,31 @@ class TogaTable(NSTableView):
 
     @objc_method
     def tableView_objectValueForTableColumn_row_(self, table, column, row: int):
-        row = self.interface.data[row]
+        data_row = self.interface.data[row]
         try:
-            data = row._impls
+            data = data_row._impls
         except AttributeError:
             data = {
                 attr: TogaData.alloc().init()
                 for attr in self.interface._accessors
             }
-            row._impls = data
+            data_row._impls = data
 
         datum = data[column.identifier]
 
-        value = getattr(row, column.identifier)
+        value = getattr(data_row, column.identifier)
 
-        # If the value has an icon attribute, get the _impl.
-        # Icons are deferred resources, so we provide the factory.
-        try:
-            icon = value.icon._impl(self.interface.factory)
-        except AttributeError:
-            icon = None
+        # Allow for an (icon, value) tuple as the simple case
+        # for encoding an icon in a table cell.
+        if isinstance(value, tuple):
+            icon, value = value
+        else:
+            # If the value has an icon attribute, get the _impl.
+            # Icons are deferred resources, so we provide the factory.
+            try:
+                icon = value.icon._impl(self.interface.factory)
+            except AttributeError:
+                icon = None
 
         datum.attrs = {
             'label': str(value),
@@ -42,6 +48,12 @@ class TogaTable(NSTableView):
         return datum
 
     # TableDelegate methods
+    @objc_method
+    def selectionShouldChangeInTableView_(self, table) -> bool:
+        # Explicitly allow selection on the table.
+        # TODO: return False to disable selection.
+        return True
+
     @objc_method
     def tableViewSelectionDidChange_(self, notification) -> None:
         self.interface.selection = notification.object.selectedRow
@@ -66,6 +78,9 @@ class Table(Widget):
         self.table._impl = self
         self.table.columnAutoresizingStyle = NSTableViewUniformColumnAutoresizingStyle
 
+        # TODO: Optionally enable multiple selection
+        self.table.allowsMultipleSelection = False
+
         # Create columns for the table
         self.columns = []
         for i, heading in enumerate(self.interface.headings):
@@ -76,8 +91,6 @@ class Table(Widget):
             cell = TogaIconCell.alloc().init()
             column.dataCell = cell
 
-            cell.editable = False
-            cell.selectable = False
             column.headerCell.stringValue = heading
 
         self.table.delegate = self.table

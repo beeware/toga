@@ -4,7 +4,8 @@ from toga.sources import to_accessor
 
 from ..libs import *
 from .base import Widget
-from .utils import TogaIconCell, TogaData
+from .internal.cells import TogaIconCell
+from .internal.data import TogaData
 
 
 class TogaTree(NSOutlineView):
@@ -60,12 +61,17 @@ class TogaTree(NSOutlineView):
         try:
             value = getattr(item.attrs['node'], column.identifier)
 
-            # If the value has an icon attribute, get the _impl.
-            # Icons are deferred resources, so we provide the factory.
-            try:
-                icon = value.icon._impl(self.interface.factory)
-            except AttributeError:
-                icon = None
+            # Allow for an (icon, value) tuple as the simple case
+            # for encoding an icon in a table cell.
+            if isinstance(value, tuple):
+                icon, value = value
+            else:
+                # If the value has an icon attribute, get the _impl.
+                # Icons are deferred resources, so we provide the factory.
+                try:
+                    icon = value.icon._impl(self.interface.factory)
+                except AttributeError:
+                    icon = None
         except AttributeError:
             # If the node doesn't have a property with the
             # accessor name, assume an empty string value.
@@ -137,8 +143,8 @@ class Tree(Widget):
         self.tree._impl = self
         self.tree.columnAutoresizingStyle = NSTableViewUniformColumnAutoresizingStyle
 
-        # FIXME: Make turning this on an option.
-        # self.tree.setAllowsMultipleSelection_(True)
+        # TODO: Make turning this on an option.
+        self.tree.allowsMultipleSelection = False
 
         # Create columns for the tree
         self.columns = []
@@ -150,8 +156,6 @@ class Tree(Widget):
             cell = TogaIconCell.alloc().init()
             column.dataCell = cell
 
-            cell.editable = False
-            cell.selectable = False
             column.headerCell.stringValue = heading
 
         # Put the tree arrows in the first column.
