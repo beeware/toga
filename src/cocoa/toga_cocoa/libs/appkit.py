@@ -504,6 +504,16 @@ NSSplitView = ObjCClass('NSSplitView')
 NSStepper = ObjCClass('NSStepper')
 
 ######################################################################
+# NSStringDrawing.h
+
+NSStringDrawingUsesLineFragmentOrigin = 1 << 0
+NSStringDrawingUsesFontLeading = 1 << 1
+NSStringDrawingDisableScreenFontSubstitution = 1 << 2  # DEPRECATED
+NSStringDrawingUsesDeviceMetrics = 1 << 3
+NSStringDrawingOneShot = 1 << 4  # DEPRECATED
+NSStringDrawingTruncatesLastVisibleLine = 1 << 5
+
+######################################################################
 # NSTableView.h
 NSTableColumn = ObjCClass('NSTableColumn')
 NSTableView = ObjCClass('NSTableView')
