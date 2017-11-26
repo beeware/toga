@@ -49,6 +49,12 @@ class TogaTable(NSTableView):
 
     # TableDelegate methods
     @objc_method
+    def selectionShouldChangeInTableView_(self, table) -> bool:
+        # Explicitly allow selection on the table.
+        # TODO: return False to disable selection.
+        return True
+
+    @objc_method
     def tableViewSelectionDidChange_(self, notification) -> None:
         self.interface.selection = notification.object.selectedRow
         self.interface.selected = self.interface.data[notification.object.selectedRow]
@@ -72,6 +78,9 @@ class Table(Widget):
         self.table._impl = self
         self.table.columnAutoresizingStyle = NSTableViewUniformColumnAutoresizingStyle
 
+        # TODO: Optionally enable multiple selection
+        self.table.allowsMultipleSelection = False
+
         # Create columns for the table
         self.columns = []
         for i, heading in enumerate(self.interface.headings):
@@ -82,8 +91,6 @@ class Table(Widget):
             cell = TogaIconCell.alloc().init()
             column.dataCell = cell
 
-            cell.editable = False
-            cell.selectable = False
             column.headerCell.stringValue = heading
 
         self.table.delegate = self.table

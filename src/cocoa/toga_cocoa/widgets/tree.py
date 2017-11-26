@@ -143,8 +143,8 @@ class Tree(Widget):
         self.tree._impl = self
         self.tree.columnAutoresizingStyle = NSTableViewUniformColumnAutoresizingStyle
 
-        # FIXME: Make turning this on an option.
-        # self.tree.setAllowsMultipleSelection_(True)
+        # TODO: Make turning this on an option.
+        self.tree.allowsMultipleSelection = False
 
         # Create columns for the tree
         self.columns = []
@@ -156,8 +156,6 @@ class Tree(Widget):
             cell = TogaIconCell.alloc().init()
             column.dataCell = cell
 
-            cell.editable = False
-            cell.selectable = False
             column.headerCell.stringValue = heading
 
         # Put the tree arrows in the first column.

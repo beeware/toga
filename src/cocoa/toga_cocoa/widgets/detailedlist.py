@@ -60,16 +60,22 @@ class TogaList(NSTableView):
 
     # TableDelegate methods
     @objc_method
+    def tableView_heightOfRow_(self, table, row: int) -> float:
+        return 48.0
+
+    @objc_method
+    def selectionShouldChangeInTableView_(self, table) -> bool:
+        # Explicitly allow selection on the table.
+        # TODO: return False to disable selection.
+        return True
+
+    @objc_method
     def tableViewSelectionDidChange_(self, notification) -> None:
         self.interface.selection = notification.object.selectedRow
         self.interface.selected = self.interface.data[notification.object.selectedRow]
         if self.interface.on_select:
             row = notification.object.selectedRow if notification.object.selectedRow != -1 else None
             self.interface.on_select(self.interface, row=row)
-
-    @objc_method
-    def tableView_heightOfRow_(self, table, row: int) -> float:
-        return 48.0
 
 
 class DetailedList(Widget):
@@ -89,6 +95,9 @@ class DetailedList(Widget):
         self.detailedlist._impl = self
         self.detailedlist.columnAutoresizingStyle = NSTableViewUniformColumnAutoresizingStyle
 
+        # TODO: Optionally enable multiple selection
+        self.detailedlist.allowsMultipleSelection = False
+
         self.native.detailedlist = self.detailedlist
 
         # Create the column for the detailed list
@@ -98,9 +107,6 @@ class DetailedList(Widget):
 
         cell = TogaDetailedCell.alloc().init()
         column.dataCell = cell
-
-        cell.editable = False
-        cell.selectable = False
 
         # Hide the column header.
         self.detailedlist.headerView = None
