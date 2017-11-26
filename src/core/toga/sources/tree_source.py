@@ -34,7 +34,7 @@ class Node(Row):
     def __setitem__(self, index, value):
         node = self._source._create_node(value)
         self._children[index] = node
-        self._source._notify('insert', parent=self, index=index, item=node)
+        self._source._notify('change', item=node)
 
     def insert(self, index, *values, **named):
         self._source.insert(self, index, *values, **named)
@@ -107,7 +107,7 @@ class TreeSource(Source):
     def __setitem__(self, index, value):
         root = self._create_node(value)
         self._roots[index] = root
-        self._notify('insert', parent=None, index=index, item=root)
+        self._notify('change', item=root)
 
     def __iter__(self):
         return iter(self._roots)
@@ -137,9 +137,10 @@ class TreeSource(Source):
         return self.insert(parent, len(self) if parent is None else len(parent), *value, **named)
 
     def remove(self, node):
+        self._notify('remove', item=node)
         if node._parent is None:
             self._roots.remove(node)
         else:
             node._parent._children.remove(node)
-        self._notify('remove', item=node)
+
         return node

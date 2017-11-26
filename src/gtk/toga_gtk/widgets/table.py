@@ -4,62 +4,76 @@ from .base import Widget
 
 class Table(Widget):
     def create(self):
-        self._connections = []
+        self.store = Gtk.ListStore(*[str for h in self.interface.headings])
+        self.rows = {}
 
-        self.data = Gtk.ListStore(*[str for h in self.interface.headings])
         # Create a table view, and put it in a scroll view.
         # The scroll view is the native, because it's the outer container.
-        self.table = Gtk.TreeView(self.data)
-        self.selection = self.table.get_selection()
+        self.treeview = Gtk.TreeView(self.store)
+        self.selection = self.treeview.get_selection()
         self.selection.set_mode(Gtk.SelectionMode.SINGLE)
+        self.selection.connect("changed", self._on_select)
 
-        self.columns = []
         for i, heading in enumerate(self.interface.headings):
             renderer = Gtk.CellRendererText()
             column = Gtk.TreeViewColumn(heading, renderer, text=i)
-            self.table.append_column(column)
+            self.treeview.append_column(column)
 
         self.native = Gtk.ScrolledWindow()
         self.native.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
-        self.native.add(self.table)
+        self.native.add(self.treeview)
         self.native.set_min_content_width(200)
         self.native.set_min_content_height(200)
         self.native.interface = self.interface
 
+    def _on_select(self, selection):
+        if hasattr(self.interface, "_on_select") and self.interface.on_select:
+            tree_model, impl = selection.get_selected()
+            self.interface.on_select(None, row=self.rows.get(impl, None))
+
+    def row_data(self, row):
+        return [
+            str(getattr(row, attr))
+            for attr in self.interface._accessors
+        ]
+
+    def set_impl(self, item, impl):
+        try:
+            item._impl[self] = impl
+        except AttributeError:
+            item._impl = {self: impl}
+
+        self.rows[impl] = item
+
     def change_source(self, source):
-        for row in self.interface.data:
-            self.data.append(*[getattr(row, attr) for attr in self.interface._accessors])
+        """
+        Synchronize self.data with self.interface.data
+        """
+
+        # Temporarily disconnecting the TreeStore improves performance for large
+        # updates by deferring row rendering until the update is complete.
+        self.treeview.set_model(None) # temporarily disconnect the view
+
+        self.store.clear()
+        for item in self.interface.data:
+            impl = self.store.append(self.row_data(item))
+            self.set_impl(item, impl)
+
+        self.treeview.set_model(self.store)
 
     def insert(self, index, item):
-        raise NotImplementedError()
+        impl = self.store.insert(index, self.row_data(item))
+        self.set_impl(item, impl)
 
     def change(self, item):
-        raise NotImplementedError()
+        item._impl[self] = self.row_data(item)
 
     def remove(self, item):
-        raise NotImplementedError()
+        self.store.remove(item._impl[self])
+        del self.rows[item._impl[self]]
 
     def clear(self):
-        self.data.clear()
+        self.store.clear()
 
     def set_on_select(self, handler):
-        for conn_id in self._connections:
-            # Disconnect all other on_select handlers, so that if you reassign
-            # the on_select, it doesn't trigger the old ones too.
-            self.selection.disconnect(conn_id)
-            self._connections.remove(conn_id)
-
-        if handler is None:
-            return
-
-        def _handler(selection):
-            tree_model, tree_iter = selection.get_selected()
-
-            if tree_iter:
-                tree_path = tree_model.get_path(tree_iter)
-                index = tree_path.get_indices()[0]
-                handler(self.table, row=index)
-            else:
-                handler(self.table, row=None)
-
-        self._connections.append(self.selection.connect("changed", _handler))
+        pass
