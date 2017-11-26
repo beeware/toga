@@ -4,7 +4,7 @@ import re
 from setuptools import setup, find_packages
 import sys
 
-with io.open('./eliza/__init__.py', encoding='utf8') as version_file:
+with io.open('./therapy/__init__.py', encoding='utf8') as version_file:
     version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]", version_file.read(), re.M)
     if version_match:
         version = version_match.group(1)
@@ -17,7 +17,7 @@ with io.open('README.rst', encoding='utf8') as readme:
 
 
 setup(
-    name='eliza',
+    name='therapy',
     version=version,
     description='An Eliza chat-bot.',
     long_description=long_description,
@@ -40,7 +40,7 @@ setup(
     ],
     options={
         'app': {
-            'formal_name': 'Chat',
+            'formal_name': 'Therapy',
             'bundle': 'org.pybee.widgets'
         },
 

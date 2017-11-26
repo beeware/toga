@@ -45,8 +45,7 @@ class Icon:
 
     def _impl(self, factory=None):
         if self.__impl is None:
-            self.factory = factory
-            self.__impl = self.factory.Icon(interface=self)
+            self.__impl = factory.Icon(interface=self)
         return self.__impl
 
     @classmethod

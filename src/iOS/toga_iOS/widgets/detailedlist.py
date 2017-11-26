@@ -17,19 +17,17 @@ class TogaTableViewController(UITableViewController):
         cell = tableView.dequeueReusableCellWithIdentifier_("row")
         if cell is None:
             cell = UITableViewCell.alloc().initWithStyle_reuseIdentifier_(UITableViewCellStyleSubtitle, "row")
-
         value = self.interface.data[indexPath.item]
+
+        cell.textLabel.text = str(getattr(value, 'title', ''))
+        cell.detailTextLabel.text = str(getattr(value, 'subtitle', ''))
 
         # If the value has an icon attribute, get the _impl.
         # Icons are deferred resources, so we provide the factory.
         try:
-            icon = value.icon._impl(self.interface.factory)
+            cell.imageView.image = value.icon._impl(self.interface.factory).native
         except AttributeError:
-            icon = None
-
-        cell.textLabel.text = str(getattr(value, 'title', '')),
-        cell.detailTextLabel.text = str(getattr(value, 'subtitle', '')),
-        cell.imageView.image = icon
+            pass
 
         return cell
 
