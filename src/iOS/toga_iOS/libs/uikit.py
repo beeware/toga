@@ -1,3 +1,6 @@
+##########################################################################
+# System/Library/Frameworks/UIKit.framework
+##########################################################################
 from ctypes import *
 from ctypes import util
 from enum import Enum
@@ -7,17 +10,13 @@ from rubicon.objc import *
 from toga.constants import *
 
 ######################################################################
-
-# UIKit
-
 uikit = cdll.LoadLibrary(util.find_library('UIKit'))
+######################################################################
 
 uikit.UIApplicationMain.restype = c_int
 uikit.UIApplicationMain.argtypes = [c_int, POINTER(c_char_p), c_void_p, c_void_p]
 
-NSArray = ObjCClass('NSArray')
-NSMutableArray = ObjCClass('NSMutableArray')
-
+######################################################################
 # NSLayoutConstraint.h
 NSLayoutConstraint = ObjCClass('NSLayoutConstraint')
 
@@ -81,6 +80,16 @@ class NSLayoutPriority(Enum):
     DefaultLow = 250
     FittingSizeCompression = 50
 
+######################################################################
+# NSParagraphStyle.h
+NSLineBreakByWordWrapping = 0
+NSLineBreakByCharWrapping = 1
+NSLineBreakByClipping = 2
+NSLineBreakByTruncatingHead = 3
+NSLineBreakByTruncatingTail = 4
+NSLineBreakByTruncatingMiddle = 5
+
+######################################################################
 # NSText.h
 NSLeftTextAlignment = 0
 NSRightTextAlignment = 1
@@ -97,6 +106,65 @@ def NSTextAlignment(alignment):
         NATURAL_ALIGNED: NSNaturalTextAlignment,
     }[alignment]
 
+######################################################################
+# UIBarButtonItem.h
+UIBarButtonItem = ObjCClass('UIBarButtonItem')
+
+UIBarButtonSystemItemDone = 0
+UIBarButtonSystemItemCancel = 1
+UIBarButtonSystemItemEdit = 2
+UIBarButtonSystemItemSave = 3
+UIBarButtonSystemItemAdd = 4
+UIBarButtonSystemItemFlexibleSpace = 5
+UIBarButtonSystemItemFixedSpace = 6
+UIBarButtonSystemItemCompose = 7
+UIBarButtonSystemItemReply = 8
+UIBarButtonSystemItemAction = 9
+UIBarButtonSystemItemOrganize = 10
+UIBarButtonSystemItemBookmarks = 11
+UIBarButtonSystemItemSearch = 12
+UIBarButtonSystemItemRefresh = 13
+UIBarButtonSystemItemStop = 14
+UIBarButtonSystemItemCamera = 15
+UIBarButtonSystemItemTrash = 16
+UIBarButtonSystemItemPlay = 17
+UIBarButtonSystemItemPause = 18
+UIBarButtonSystemItemRewind = 19
+UIBarButtonSystemItemFastForward = 20
+UIBarButtonSystemItemUndo = 21
+UIBarButtonSystemItemRedo = 22
+UIBarButtonSystemItemPageCurl = 23
+
+######################################################################
+# UIButton.h
+UIButton = ObjCClass('UIButton')
+######################################################################
+# UIColor.h
+UIColor = ObjCClass('UIColor')
+
+# System colors
+UIColor.declare_class_property('darkTextColor')
+UIColor.declare_class_property('lightTextColor')
+UIColor.declare_class_property('groupTableViewBackgroundColor')
+
+# Predefined colors
+UIColor.declare_class_property('blackColor')
+UIColor.declare_class_property('blueColor')
+UIColor.declare_class_property('brownColor')
+UIColor.declare_class_property('clearColor')
+UIColor.declare_class_property('cyanColor')
+UIColor.declare_class_property('darkGrayColor')
+UIColor.declare_class_property('grayColor')
+UIColor.declare_class_property('greenColor')
+UIColor.declare_class_property('lightGrayColor')
+UIColor.declare_class_property('magentaColor')
+UIColor.declare_class_property('orangeColor')
+UIColor.declare_class_property('purpleColor')
+UIColor.declare_class_property('redColor')
+UIColor.declare_class_property('whiteColor')
+UIColor.declare_class_property('yellowColor')
+
+######################################################################
 # UIControl.h
 
 # UIControlEvents
@@ -143,106 +211,48 @@ UIControlStateSelected = 1 << 2
 UIControlStateApplication = 0x00FF0000
 UIControlStateReserved = 0xFF000000
 
+######################################################################
+# UIFont.h
+UIFont = ObjCClass('UIFont')
+
+######################################################################
 # UIImage.h
 UIImage = ObjCClass('UIImage')
 
+######################################################################
 # UIImageView.h
 UIImageView = ObjCClass('UIImageView')
 
+######################################################################
+# UILabel.h
+UILabel = ObjCClass('UILabel')
+
+######################################################################
+# UINavigationController.h
+UINavigationController = ObjCClass('UINavigationController')
+
+######################################################################
+# UIRefreshControl.h
+UIRefreshControl = ObjCClass('UIRefreshControl')
+
+######################################################################
 # UIResponder.h
 UIResponder = ObjCClass('UIResponder')
 
-# UIWindow.h
-UIWindow = ObjCClass('UIWindow')
-
-# UIWindow.h
-UIWindow = ObjCClass('UIWindow')
-
+######################################################################
 # UIScreen.h
 UIScreen = ObjCClass('UIScreen')
 UIScreen.declare_class_property('mainScreen')
 
-# UIColor.h
-UIColor = ObjCClass('UIColor')
+######################################################################
+# UISlider.h
+UISlider = ObjCClass('UISlider')
 
-# System colors
-UIColor.declare_class_property('darkTextColor')
-UIColor.declare_class_property('lightTextColor')
-UIColor.declare_class_property('groupTableViewBackgroundColor')
+######################################################################
+# UISwitch.h
+UISwitch = ObjCClass('UISwitch')
 
-# Predefined colors
-UIColor.declare_class_property('blackColor')
-UIColor.declare_class_property('blueColor')
-UIColor.declare_class_property('brownColor')
-UIColor.declare_class_property('clearColor')
-UIColor.declare_class_property('cyanColor')
-UIColor.declare_class_property('darkGrayColor')
-UIColor.declare_class_property('grayColor')
-UIColor.declare_class_property('greenColor')
-UIColor.declare_class_property('lightGrayColor')
-UIColor.declare_class_property('magentaColor')
-UIColor.declare_class_property('orangeColor')
-UIColor.declare_class_property('purpleColor')
-UIColor.declare_class_property('redColor')
-UIColor.declare_class_property('whiteColor')
-UIColor.declare_class_property('yellowColor')
-
-# UIView.h
-UIView = ObjCClass('UIView')
-
-# UIWindow.h
-UIWindow = ObjCClass('UIWindow')
-
-# UILabel.h
-NSLineBreakByWordWrapping = 0
-NSLineBreakByCharWrapping = 1
-NSLineBreakByClipping = 2
-NSLineBreakByTruncatingHead = 3
-NSLineBreakByTruncatingTail = 4
-NSLineBreakByTruncatingMiddle = 5
-
-UILabel = ObjCClass('UILabel')
-
-# UINavigationController.h
-UINavigationController = ObjCClass('UINavigationController')
-
-# UIButton.h
-UIButton = ObjCClass('UIButton')
-
-# UIBarButtonItem.h
-UIBarButtonItem = ObjCClass('UIBarButtonItem')
-
-UIBarButtonSystemItemDone = 0
-UIBarButtonSystemItemCancel = 1
-UIBarButtonSystemItemEdit = 2
-UIBarButtonSystemItemSave = 3
-UIBarButtonSystemItemAdd = 4
-UIBarButtonSystemItemFlexibleSpace = 5
-UIBarButtonSystemItemFixedSpace = 6
-UIBarButtonSystemItemCompose = 7
-UIBarButtonSystemItemReply = 8
-UIBarButtonSystemItemAction = 9
-UIBarButtonSystemItemOrganize = 10
-UIBarButtonSystemItemBookmarks = 11
-UIBarButtonSystemItemSearch = 12
-UIBarButtonSystemItemRefresh = 13
-UIBarButtonSystemItemStop = 14
-UIBarButtonSystemItemCamera = 15
-UIBarButtonSystemItemTrash = 16
-UIBarButtonSystemItemPlay = 17
-UIBarButtonSystemItemPause = 18
-UIBarButtonSystemItemRewind = 19
-UIBarButtonSystemItemFastForward = 20
-UIBarButtonSystemItemUndo = 21
-UIBarButtonSystemItemRedo = 22
-UIBarButtonSystemItemPageCurl = 23
-
-# UIViewController.h
-UIViewController = ObjCClass('UIViewController')
-
-# UIRefreshControl.h
-UIRefreshControl = ObjCClass('UIRefreshControl')
-
+######################################################################
 # UITableView.h
 UITableView = ObjCClass('UITableView')
 UITableViewController = ObjCClass('UITableViewController')
@@ -258,6 +268,7 @@ UITableViewRowAnimationNone = 5
 UITableViewRowAnimationMiddle = 6
 UITableViewRowAnimationAutomatic = 100
 
+######################################################################
 # UITableViewCell.h
 UITableViewCell = ObjCClass('UITableViewCell')
 
@@ -270,6 +281,7 @@ UITableViewCellEditingStyleNone = 0
 UITableViewCellEditingStyleDelete = 1
 UITableViewCellEditingStyleInsert = 2
 
+######################################################################
 # UITextField.h
 UITextField = ObjCClass('UITextField')
 
@@ -278,11 +290,18 @@ UITextBorderStyleLine = 1
 UITextBorderStyleBezel = 2
 UITextBorderStyleRoundedRect = 3
 
+######################################################################
+# UIView.h
+UIView = ObjCClass('UIView')
+
+######################################################################
+# UIViewController.h
+UIViewController = ObjCClass('UIViewController')
+
+######################################################################
 # UIWebView.h
 UIWebView = ObjCClass('UIWebView')
 
-# UISlider.h
-UISlider = ObjCClass('UISlider')
-
-# UISwitch.h
-UISwitch = ObjCClass('UISwitch')
+######################################################################
+# UIWindow.h
+UIWindow = ObjCClass('UIWindow')
