@@ -32,6 +32,10 @@ setup(
             'django'
         ]
     ),
+    package_data={
+        'therapy': ['resources/*'],
+    },
+    include_package_data=True,
     classifiers=[
         'Development Status :: 1 - Planning',
         'License :: OSI Approved :: BSD license',
@@ -41,7 +45,7 @@ setup(
     options={
         'app': {
             'formal_name': 'Therapy',
-            'bundle': 'org.pybee.widgets'
+            'bundle': 'org.pybee'
         },
 
         # Desktop/laptop deployments
