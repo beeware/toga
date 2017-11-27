@@ -30,7 +30,6 @@ class PythonAppDelegate(UIResponder):
     @objc_method
     def application_didChangeStatusBarOrientation_(self, application, oldStatusBarOrientation: int) -> None:
         """ This callback is invoked when rotating the device from landscape to portrait and vice versa. """
-        print("ROTATED", oldStatusBarOrientation)
         App.app.interface.main_window.content._update_layout(
             width=App.app.interface.main_window._impl.screen.bounds.size.width,
             height=App.app.interface.main_window._impl.screen.bounds.size.height,
@@ -38,8 +37,6 @@ class PythonAppDelegate(UIResponder):
 
 
 class App:
-    _MAIN_WINDOW_CLASS = MainWindow
-
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
