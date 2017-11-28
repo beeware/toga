@@ -20,6 +20,8 @@ class TherapyApp(toga.App):
         )
         # Clear the current input, ready for more input.
         self.text_input.value = ''
+        # Scroll so the most recent entry is visible.
+        self.chat.scroll_to_row(len(self.chat.data) - 1)
 
         # The therapist needs to think about their response...
         await asyncio.sleep(random.random() * 3)
@@ -32,6 +34,9 @@ class TherapyApp(toga.App):
             title='Brutus',
             subtitle=response,
         )
+
+        # Scroll so the most recent entry is visible.
+        self.chat.scroll_to_row(len(self.chat.data) - 1)
 
     def startup(self):
         # Set up main window

@@ -110,3 +110,10 @@ class DetailedList(Widget):
 
     def set_on_delete(self, handler):
         pass
+
+    def scroll_to_row(self, row):
+        self.native.scrollToRowAtIndexPath(
+            NSIndexPath.indexPathForRow(row, inSection=0),
+            atScrollPosition=UITableViewScrollPositionNone,
+            animated=False
+        )

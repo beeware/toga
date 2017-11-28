@@ -58,6 +58,14 @@ class DetailedList(Widget):
         self._data.add_listener(self._impl)
         self._impl.change_source(source=self._data)
 
+    def scroll_to_row(self, row):
+        """Scroll the view so that the specified row index is visible.
+
+        Args:
+            row: The index of the row to make visible.
+        """
+        self._impl.scroll_to_row(row)
+
     @property
     def on_delete(self):
         """ The function invoked on row deletion. The delete handler must accept two arguments.
@@ -103,3 +111,4 @@ class DetailedList(Widget):
     def on_select(self, handler: callable):
         self._on_select = wrapped_handler(self, handler)
         self._impl.set_on_select(self._on_select)
+

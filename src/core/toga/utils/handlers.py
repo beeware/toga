@@ -18,13 +18,18 @@ def long_running_task(generator, cleanup):
     except StopIteration:
         if cleanup:
             cleanup()
+    except Exception as e:
+        print('Error in long running handler:', e)
 
 
 @asyncio.coroutine
 def handler_with_cleanup(handler, cleanup, interface, **extra):
-    yield from handler(interface, **extra)
-    if cleanup:
-        cleanup()
+    try:
+        yield from handler(interface, **extra)
+        if cleanup:
+            cleanup()
+    except Exception as e:
+        print('Error in async handler:', e)
 
 
 def wrapped_handler(interface, handler, cleanup=None):
@@ -55,9 +60,13 @@ def wrapped_handler(interface, handler, cleanup=None):
                         long_running_task(result, cleanup)
                     )
                 else:
-                    if cleanup:
-                        cleanup()
-                    return result
+                    try:
+                        if cleanup:
+                            cleanup()
+                        return result
+                    except Exception as e:
+                        print('Error in handler:', e)
+
         _handler._raw = handler
 
         return _handler

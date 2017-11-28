@@ -146,3 +146,6 @@ class DetailedList(Widget):
 
     def set_on_delete(self, handler):
         pass
+
+    def scroll_to_row(self, row):
+        self.detailedlist.scrollRowToVisible(row)

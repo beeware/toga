@@ -257,7 +257,10 @@ UISwitch = ObjCClass('UISwitch')
 UITableView = ObjCClass('UITableView')
 UITableViewController = ObjCClass('UITableViewController')
 
-NSIndexPath = ObjCClass('NSIndexPath')
+UITableViewScrollPositionNone = 0
+UITableViewScrollPositionTop = 1
+UITableViewScrollPositionMiddle = 2
+UITableViewScrollPositionBottom = 3
 
 UITableViewRowAnimationFade = 0
 UITableViewRowAnimationRight = 1
