@@ -53,13 +53,16 @@ class TherapyApp(toga.App):
 
         # Buttons
         self.text_input = toga.TextInput(style=CSS(flex=1))
-        send_button = toga.Button('Send', on_press=self.handle_input)
+        send_button = toga.Button('Send', on_press=self.handle_input, style=CSS(margin_left=10))
         input_box = toga.Box(
             children=[
                 self.text_input,
                 send_button
             ],
-            style=CSS(flex_direction='row')
+            style=CSS(
+                flex_direction='row',
+                padding=10,
+            )
         )
 
         # Outermost box
@@ -67,10 +70,7 @@ class TherapyApp(toga.App):
             children=[self.chat, input_box],
             style=CSS(
                 flex=1,
-                flex_direction='column',
-                padding=10,
-                min_width=500,
-                min_height=300
+                flex_direction='column'
             )
         )
 

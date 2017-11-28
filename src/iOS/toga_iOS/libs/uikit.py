@@ -281,6 +281,9 @@ UITableViewCellEditingStyleNone = 0
 UITableViewCellEditingStyleDelete = 1
 UITableViewCellEditingStyleInsert = 2
 
+UITableViewCellSeparatorStyleNone = 0
+UITableViewCellSeparatorStyleSingleLine = 1
+
 ######################################################################
 # UITextField.h
 UITextField = ObjCClass('UITextField')
@@ -305,3 +308,13 @@ UIWebView = ObjCClass('UIWebView')
 ######################################################################
 # UIWindow.h
 UIWindow = ObjCClass('UIWindow')
+
+UIKeyboardWillShowNotification = objc_const(uikit, 'UIKeyboardWillShowNotification')
+UIKeyboardDidShowNotification = objc_const(uikit, 'UIKeyboardDidShowNotification')
+UIKeyboardWillHideNotification = objc_const(uikit, 'UIKeyboardWillHideNotification')
+UIKeyboardDidHideNotification = objc_const(uikit, 'UIKeyboardDidHideNotification')
+
+UIKeyboardFrameEndUserInfoKey = objc_const(uikit, 'UIKeyboardFrameEndUserInfoKey')
+
+UIKeyboardWillChangeFrameNotification = objc_const(uikit, 'UIKeyboardWillChangeFrameNotification')
+UIKeyboardDidChangeFrameNotification = objc_const(uikit, 'UIKeyboardDidChangeFrameNotification')

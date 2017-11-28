@@ -57,6 +57,10 @@ class TogaTableViewController(UITableViewController):
         if self.interface.on_select:
             self.interface.on_select(self.interface, row=indexPath.row)
 
+    # @objc_method
+    # def tableView_heightForRowAtIndexPath_(self, tableView, indexPath) -> float:
+    #     return 48.0
+
 
 class DetailedList(Widget):
     def create(self):
@@ -64,16 +68,18 @@ class DetailedList(Widget):
         self.controller.interface = self.interface
         self.native = self.controller.tableView
 
+        self.native.separatorStyle = UITableViewCellSeparatorStyleNone
+
         # Add the layout constraints
         self.add_constraints()
 
     def set_on_refresh(self, handler: callable or None) -> None:
         if callable(handler):
             self.controller.refreshControl = UIRefreshControl.alloc().init()
-            self.controller.refreshControl.addTarget_action_forControlEvents_(
+            self.controller.refreshControl.addTarget(
                 self.controller,
-                SEL('refresh'),
-                UIControlEventValueChanged
+                action=SEL('refresh'),
+                forControlEvents=UIControlEventValueChanged
             )
         else:
             if self.controller.refreshControl:

@@ -48,7 +48,7 @@ class PythonAppDelegate(UIResponder):
         """ This callback is invoked when rotating the device from landscape to portrait and vice versa. """
         App.app.interface.main_window.content._update_layout(
             width=App.app.interface.main_window._impl.screen.bounds.size.width,
-            height=App.app.interface.main_window._impl.screen.bounds.size.height,
+            height=App.app.interface.main_window._impl.screen.bounds.size.height - self.kb_height,
         )
 
     @objc_method
@@ -56,43 +56,25 @@ class PythonAppDelegate(UIResponder):
         # Keyboard is about to be displayed.
         # This will fire multiple times - once to display the keyboard,
         # and again to display the autocomplete bar.
-        kb_height = App.app.interface.main_window._impl.controller.view.convertRect(
+        self.kb_height = App.app.interface.main_window._impl.controller.view.convertRect(
                 notification.userInfo.objectForKey(UIKeyboardFrameEndUserInfoKey).CGRectValue,
                 fromView=None
             ).size.height
 
-        old_rect = App.app.interface.main_window._impl.controller.view.frame
-        # Adjust the content rectangle so that it is smaller.
-        # A different sized keyboard might already be displayed, so
-        # offset
-        # rect = NSMakeRect(
-        #     old_rect.origin.x, old_rect.origin.y,
-        #     old_rect.size.width, old_rect.size.height + self.kb_height - kb_height
-        # )
-        new_rect = NSMakeRect(
-            old_rect.origin.x, -kb_height,
-            old_rect.size.width, old_rect.size.height
+        App.app.interface.main_window.content._update_layout(
+            width=App.app.interface.main_window._impl.screen.bounds.size.width,
+            height=App.app.interface.main_window._impl.screen.bounds.size.height - self.kb_height,
         )
-        App.app.interface.main_window._impl.controller.view.frame = new_rect
-
-        # Preserve the new keyboard height.
-        self.kb_height = kb_height
 
     @objc_method
     def keyboardWillHide_(self, notification) -> None:
-        old_rect = App.app.interface.main_window._impl.controller.view.frame
-
-        # Reset the size of the content rectangle, compensating for the
-        # keyboard that was most recently displayed
-        # new_rect = NSMakeRect(
-        #     old_rect.origin.x, old_rect.origin.x,
-        #     old_rect.size.width, old_rect.size.height + self.kb_height
-        # )
-        new_rect = NSMakeRect(
-            old_rect.origin.x, 0.0,
-            old_rect.size.width, old_rect.size.height
+        # Reset the layout to the size of the screen.
+        App.app.interface.main_window.content._update_layout(
+            width=App.app.interface.main_window._impl.screen.bounds.size.width,
+            height=App.app.interface.main_window._impl.screen.bounds.size.height,
         )
-        App.app.interface.main_window._impl.controller.view.frame = new_rect
+
+        self.kb_height = 0.0
 
 
 class App:
