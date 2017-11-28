@@ -58,13 +58,28 @@ class DetailedList(Widget):
         self._data.add_listener(self._impl)
         self._impl.change_source(source=self._data)
 
+    def scroll_to_top(self):
+        """Scroll the view so that the top of the list (first row) is visible
+        """
+        self._impl.scroll_to_row(0)
+
     def scroll_to_row(self, row):
         """Scroll the view so that the specified row index is visible.
 
         Args:
-            row: The index of the row to make visible.
+            row: The index of the row to make visible. Negative values refer
+                 to the nth last row (-1 is the last row, -2 second last,
+                 and so on)
         """
-        self._impl.scroll_to_row(row)
+        if row >= 0:
+            self._impl.scroll_to_row(row)
+        else:
+            self._impl.scroll_to_row(len(self.data) + row + 1)
+
+    def scroll_to_bottom(self):
+        """Scroll the view so that the bottom of the list (last row) is visible
+        """
+        self._impl.scroll_to_row(-1)
 
     @property
     def on_delete(self):
