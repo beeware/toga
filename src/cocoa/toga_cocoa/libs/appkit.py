@@ -33,6 +33,7 @@ NSAlertThirdButtonReturn = 1002
 ######################################################################
 # NSApplication.h
 NSApplication = ObjCClass('NSApplication')
+NSApplication.declare_class_property('sharedApplication')
 
 NSApplicationPresentationDefault = 0
 NSApplicationPresentationHideDock = 1 << 1
@@ -477,6 +478,7 @@ NSFileHandlingPanelOKButton = 1
 ######################################################################
 # NSScreen.h
 NSScreen = ObjCClass('NSScreen')
+NSScreen.declare_class_property('mainScreen')
 
 ######################################################################
 # NSScrollView.h

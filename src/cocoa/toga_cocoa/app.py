@@ -83,7 +83,7 @@ class App:
         self.loop = asyncio.get_event_loop()
 
     def create(self):
-        self.native = NSApplication.sharedApplication()
+        self.native = NSApplication.sharedApplication
         self.native.setActivationPolicy_(NSApplicationActivationPolicyRegular)
 
         self.native.setApplicationIconImage_(self.interface.icon._impl(self.interface.factory).native)
