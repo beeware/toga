@@ -26,6 +26,10 @@ NSBundle = ObjCClass('NSBundle')
 NSData = ObjCClass('NSData')
 
 ######################################################################
+# NSNSNotification.h
+NSNotificationCenter = ObjCClass('NSNotificationCenter')
+
+######################################################################
 # NSURL.h
 NSURL = ObjCClass('NSURL')
 
