@@ -165,7 +165,7 @@ class Window:
         self.container.native.addConstraint_(self._min_height_constraint)
 
     def set_title(self, title):
-        self.native.setTitle_(title)
+        self.native.title = title
 
     def set_position(self, position):
         pass

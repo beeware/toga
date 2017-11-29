@@ -1,4 +1,4 @@
-from therapy.app import main
+from beeliza.app import main
 
 if __name__ == '__main__':
     main().main_loop()

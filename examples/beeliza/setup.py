@@ -4,7 +4,7 @@ import re
 from setuptools import setup, find_packages
 import sys
 
-with io.open('./therapy/__init__.py', encoding='utf8') as version_file:
+with io.open('./beeliza/__init__.py', encoding='utf8') as version_file:
     version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]", version_file.read(), re.M)
     if version_match:
         version = version_match.group(1)
@@ -17,9 +17,9 @@ with io.open('README.rst', encoding='utf8') as readme:
 
 
 setup(
-    name='therapy',
+    name='beeliza',
     version=version,
-    description='An Eliza chat-bot.',
+    description='A Bee-themed Eliza chat-bot.',
     long_description=long_description,
     author='BeeWare Project',
     author_email='contact@pybee.org',
@@ -33,7 +33,7 @@ setup(
         ]
     ),
     package_data={
-        'therapy': ['resources/*'],
+        'beeliza': ['resources/*'],
     },
     include_package_data=True,
     classifiers=[

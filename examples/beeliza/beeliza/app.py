@@ -4,10 +4,10 @@ import random
 import toga
 from colosseum import CSS
 
-from .therapist import Eliza
+from .bot import Eliza
 
 
-class TherapyApp(toga.App):
+class BeelizaApp(toga.App):
     async def handle_input(self, widget, **kwargs):
         # Display the input as a chat entry.
         input_text = self.text_input.value
@@ -23,11 +23,11 @@ class TherapyApp(toga.App):
         # Scroll so the most recent entry is visible.
         self.chat.scroll_to_bottom()
 
-        # The therapist needs to think about their response...
+        # The partner needs to think about their response...
         await asyncio.sleep(random.random() * 3)
 
         # ... and they respond
-        response = self.therapist.respond(input_text)
+        response = self.partner.respond(input_text)
         # Display the response
         self.chat.data.append(
             icon=toga.Icon('resources/brutus.png'),
@@ -40,10 +40,10 @@ class TherapyApp(toga.App):
 
     def startup(self):
         # Set up main window
-        self.main_window = toga.MainWindow(self.name)
+        self.main_window = toga.MainWindow(title=self.name)
         self.main_window.app = self
 
-        self.therapist = Eliza()
+        self.partner = Eliza()
 
         self.chat = toga.DetailedList(
             data=[
@@ -87,7 +87,7 @@ class TherapyApp(toga.App):
 
 
 def main():
-    return TherapyApp('Therapy', 'org.pybee.therapy')
+    return BeelizaApp('Beeliza', 'org.pybee.beeliza')
 
 
 if __name__ == '__main__':

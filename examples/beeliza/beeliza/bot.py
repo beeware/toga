@@ -4,6 +4,8 @@
 # A cheezy little Eliza knock-off by Joe Strout
 # with some updates by Jeff Epler
 # Hacked into a module and updated by Jez Higgins
+# Updated and tweaked for PEP8 compliance by Russell Keith-Magee
+#
 # Original source: https://github.com/jezhiggins/eliza.py
 #
 # Used under the terms of the MIT Licence.
@@ -28,7 +30,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
-# Modernized, tweaked for PEP8 compliance by Russell Keith-Magee
 #----------------------------------------------------------------------
 import string
 import re
@@ -417,14 +418,13 @@ class Eliza:
 
 
 if __name__ == "__main__":
-    print('Therapist\n---------')
     print('Talk to the program by typing in plain English, using normal upper-')
     print('and lower-case letters and punctuation.  Enter "quit" when done.')
     print('='*72)
     print('Hello. How are you feeling today?')
 
     s = ''
-    therapist = Eliza()
+    bot = Eliza()
     while s != 'quit':
         try:
             s = input('> ')
@@ -436,4 +436,4 @@ if __name__ == "__main__":
 
         while s[-1] in '!.':
             s = s[:-1]
-        print(therapist.respond(s))
+        print(bot.respond(s))
