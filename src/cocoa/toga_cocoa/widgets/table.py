@@ -119,3 +119,6 @@ class Table(Widget):
 
     def set_on_select(self, handler):
         pass
+
+    def scroll_to_row(self, row):
+        self.table.scrollRowToVisible(row)
