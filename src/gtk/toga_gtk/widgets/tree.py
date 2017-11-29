@@ -1,6 +1,6 @@
 from gi.repository import Gtk
+
 from .base import Widget
-from itertools import chain
 
 
 class Tree(Widget):

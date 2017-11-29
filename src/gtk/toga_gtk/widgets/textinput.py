@@ -1,4 +1,5 @@
 from gi.repository import Gtk
+
 from .base import Widget
 
 

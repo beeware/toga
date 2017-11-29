@@ -1,4 +1,4 @@
-from ..libs import UIImage
+from toga_iOS.libs import UIImage
 
 
 class Icon:

@@ -3,10 +3,10 @@ import signal
 import sys
 from builtins import id as identifier
 
-from .platform import get_platform_factory
-from .window import Window
-from .command import CommandSet
-from .widgets.icon import Icon
+from toga.platform import get_platform_factory
+from toga.window import Window
+from toga.command import CommandSet
+from toga.widgets.icon import Icon
 
 
 class MainWindow(Window):

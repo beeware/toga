@@ -1,6 +1,7 @@
+from toga.handlers import wrapped_handler
+from toga.sources import to_accessor, ListSource
+
 from .base import Widget
-from ..utils import wrapped_handler
-from ..sources import to_accessor, ListSource
 
 
 class DetailedList(Widget):

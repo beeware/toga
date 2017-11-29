@@ -1,5 +1,6 @@
-from .platform import get_platform_factory
-from .utils import wrapped_handler
+from toga.handlers import wrapped_handler
+from toga.platform import get_platform_factory
+
 
 class Group:
     """

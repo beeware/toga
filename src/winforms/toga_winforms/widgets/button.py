@@ -1,7 +1,6 @@
-from ..libs import *
+from toga_winforms.libs import *
 
 from .base import Widget
-# from ..utils import process_callback
 
 
 class TogaButton(WinForms.Button):

@@ -1,6 +1,8 @@
 from builtins import id as identifier
 from colosseum import CSS
-from ..platform import get_platform_factory
+
+from toga.platform import get_platform_factory
+
 
 class Point:
     """ The :obj:`Point class hold the x and y coordinates of a point.

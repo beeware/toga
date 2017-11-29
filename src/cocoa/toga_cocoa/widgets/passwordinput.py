@@ -1,4 +1,5 @@
-from ..libs import NSSecureTextField, NSTextFieldSquareBezel
+from toga_cocoa.libs import NSSecureTextField, NSTextFieldSquareBezel
+
 from .textinput import TextInput
 
 

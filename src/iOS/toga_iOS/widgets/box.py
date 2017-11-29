@@ -1,7 +1,8 @@
 from rubicon.objc import *
 
+from toga_iOS.libs import *
+
 from .base import Widget
-from ..libs import *
 
 
 class Box(Widget):

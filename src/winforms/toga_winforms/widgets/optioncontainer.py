@@ -1,6 +1,7 @@
+from toga_winforms.container import Container
+from toga_winforms.libs import WinForms
+
 from .base import Widget
-from ..container import Container
-from ..libs import WinForms
 
 
 class OptionContainer(Widget):
