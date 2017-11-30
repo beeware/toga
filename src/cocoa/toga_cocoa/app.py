@@ -2,7 +2,7 @@ import asyncio
 import os
 import sys
 
-from rubicon.objc.async import EventLoopPolicy, CocoaLifecycle
+from rubicon.objc.eventloop import EventLoopPolicy, CocoaLifecycle
 import toga
 
 from .libs import *

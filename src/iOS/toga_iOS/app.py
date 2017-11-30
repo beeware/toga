@@ -1,7 +1,7 @@
 import asyncio
 
 from rubicon.objc import objc_method
-from rubicon.objc.async import EventLoopPolicy, iOSLifecycle
+from rubicon.objc.eventloop import EventLoopPolicy, iOSLifecycle
 
 from .libs import *
 from .window import Window
