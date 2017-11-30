@@ -1,4 +1,4 @@
-from gi.repository import Gtk
+from gi.repository import Gtk, GObject
 from .base import Widget
 
 
@@ -6,19 +6,29 @@ class ProgressBar(Widget):
     def create(self):
         self.native = Gtk.ProgressBar()
         self.native.interface = self.interface
+        self.timeout_id = GObject.timeout_add(50, self._animate, None)
+
+    def _animate(self, *a, **kw):
+        if self.interface.running:
+            self.native.pulse()
+
+        return True
 
     def set_value(self, value):
-        if value is not None:
-            self.interface._running = self.interface.value is not None
-            self.native.set_fraction(float(self.interface.value) / float(self.interface.max))
-
-    def start(self):
-        if not self.interface._running:
-            self.interface._running = True
-
-    def stop(self):
-        if self.interface._running:
-            self.interface._running = False
+        self.native.set_fraction(value / self.interface.max)
 
     def set_max(self, value):
         pass
+
+    def start(self):
+        pass
+
+    def stop(self):
+        pass
+
+    def rehint(self):
+        size = self.native.size_request()
+        self.interface.style.hint(
+            min_width=size.width,
+            min_height=size.height
+        )

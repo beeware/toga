@@ -13,18 +13,13 @@ class ProgressBar(Widget):
         self.rehint()
 
     def set_value(self, value):
-        if value is not None:
-            self.native.doubleValue = value
+        self.native.doubleValue = value
 
     def start(self):
-        if self.native and not self.interface._running:
-            self.native.startAnimation(self.native)
-            self.interface._running = True
+        self.native.startAnimation(self.native)
 
     def stop(self):
-        if self.native and self.interface._running:
-            self.native.stopAnimation(self.native)
-            self.interface._running = False
+        self.native.stopAnimation(self.native)
 
     def set_max(self, value):
         if value:

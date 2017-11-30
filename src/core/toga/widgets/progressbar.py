@@ -1,10 +1,11 @@
 from .base import Widget
+from types import GeneratorType
 
 
 class ProgressBar(Widget):
     """"""
 
-    def __init__(self, id=None, style=None, max=None, value=None, factory=None):
+    def __init__(self, id=None, style=None, max=1, value=None, factory=None):
         """
 
         Args:
@@ -17,16 +18,27 @@ class ProgressBar(Widget):
                 implementation of this class with the same name. (optional & normally not needed)
         """
         super().__init__(id=id, style=style, factory=factory)
+
+        self._value = None
         self._impl = self.factory.ProgressBar(interface=self)
 
         self.max = max
         self.value = value
-        self._running = False
+
         self.rehint()
 
     @property
+    def running(self):
+        """
+        Returns:
+            True if the progress bar is running,
+            False if a specific value is displayed
+        """
+        return self.value is None
+
+    @property
     def value(self):
-        """ The progress value
+        """ The progress value. Set to None to enter "running" mode.
 
         Returns:
             The current value as a ``int`` or ``float``.
@@ -35,9 +47,20 @@ class ProgressBar(Widget):
 
     @value.setter
     def value(self, value):
+        if not isinstance(value, (int, float)) and value is not None:
+            raise TypeError("expected int or float, got {}".format(type(value)))
+
+        if value:
+            if self.running:
+                self._impl.stop()
+                
+            # bound value between 0 and self.max
+            value = max(0, min(self.max, value))
+            self._impl.set_value(value)
+        elif not self.running:
+            self._impl.start()
+
         self._value = value
-        self._impl.set_value(value)
-        self._running = self._value is not None
 
     @property
     def max(self):
@@ -49,6 +72,9 @@ class ProgressBar(Widget):
         return self._max
 
     @max.setter
-    def max(self, max):
-        self._max = max
-        self._impl.set_max(max)
+    def max(self, value):
+        if not isinstance(value, (int, float)) and value is not None:
+            raise TypeError("expected int or float, got {}".format(type(value)))
+
+        self._max = value
+        self._impl.set_max(value)
