@@ -33,6 +33,7 @@ NSAlertThirdButtonReturn = 1002
 ######################################################################
 # NSApplication.h
 NSApplication = ObjCClass('NSApplication')
+NSApplication.declare_class_property('sharedApplication')
 
 NSApplicationPresentationDefault = 0
 NSApplicationPresentationHideDock = 1 << 1
@@ -477,6 +478,7 @@ NSFileHandlingPanelOKButton = 1
 ######################################################################
 # NSScreen.h
 NSScreen = ObjCClass('NSScreen')
+NSScreen.declare_class_property('mainScreen')
 
 ######################################################################
 # NSScrollView.h
@@ -502,6 +504,16 @@ NSSplitView = ObjCClass('NSSplitView')
 ######################################################################
 # NSStepper.h
 NSStepper = ObjCClass('NSStepper')
+
+######################################################################
+# NSStringDrawing.h
+
+NSStringDrawingUsesLineFragmentOrigin = 1 << 0
+NSStringDrawingUsesFontLeading = 1 << 1
+NSStringDrawingDisableScreenFontSubstitution = 1 << 2  # DEPRECATED
+NSStringDrawingUsesDeviceMetrics = 1 << 3
+NSStringDrawingOneShot = 1 << 4  # DEPRECATED
+NSStringDrawingTruncatesLastVisibleLine = 1 << 5
 
 ######################################################################
 # NSTableView.h

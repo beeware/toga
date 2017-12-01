@@ -1,8 +1,9 @@
+from toga.handlers import wrapped_handler
+from toga.sources import TreeSource
+from toga.sources.accessors import build_accessors
+
 from .base import Widget
 from .icon import Icon
-from ..utils import wrapped_handler
-from ..sources import TreeSource
-from ..sources.accessors import build_accessors
 
 
 class Tree(Widget):

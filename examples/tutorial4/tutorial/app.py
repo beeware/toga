@@ -58,24 +58,24 @@ class StartApp(toga.App):
         with self.canvas.fill():
             self.canvas.fill_style('rgba(212, 212, 212, 1)')
             self.canvas.move_to(112, 99)
-            self.canvas.bezier_curve_to(145, 65, 145, 60, 139, 36)
-            self.canvas.bezier_curve_to(130, 60, 130, 60, 109, 75)
+            self.canvas.quadratic_curve_to(145, 65, 139, 36)
+            self.canvas.quadratic_curve_to(130, 60, 109, 75)
         with self.canvas.stroke():
             self.canvas.stroke_style()
             self.canvas.move_to(112, 99)
-            self.canvas.bezier_curve_to(145, 65, 145, 60, 139, 36)
-            self.canvas.bezier_curve_to(130, 60, 130, 60, 109, 75)
+            self.canvas.quadratic_curve_to(145, 65, 139, 36)
+            self.canvas.quadratic_curve_to(130, 60, 109, 75)
         # Left horn
         with self.canvas.fill():
             self.canvas.fill_style('rgba(212, 212, 212, 1)')
             self.canvas.move_to(35, 99)
-            self.canvas.bezier_curve_to(2, 65, 2, 60, 6, 36)
-            self.canvas.bezier_curve_to(17, 60, 17, 60, 37, 75)
+            self.canvas.quadratic_curve_to(2, 65, 6, 36)
+            self.canvas.quadratic_curve_to(17, 60, 37, 75)
         with self.canvas.stroke():
             self.canvas.stroke_style()
             self.canvas.move_to(35, 99)
-            self.canvas.bezier_curve_to(2, 65, 2, 60, 6, 36)
-            self.canvas.bezier_curve_to(17, 60, 17, 60, 37, 75)
+            self.canvas.quadratic_curve_to(2, 65, 6, 36)
+            self.canvas.quadratic_curve_to(17, 60, 37, 75)
 
     def draw_nostrils(self):
         with self.canvas.fill():

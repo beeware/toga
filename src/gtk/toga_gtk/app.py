@@ -89,7 +89,7 @@ from toga.command import GROUP_BREAK, SECTION_BREAK, Command, Group
 import toga
 from .window import Window
 from toga import Icon
-from toga.utils import wrapped_handler
+from toga.handlers import wrapped_handler
 
 import gbulb
 

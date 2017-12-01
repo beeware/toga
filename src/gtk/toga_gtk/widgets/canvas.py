@@ -74,8 +74,7 @@ class Canvas(Widget):
         self.native.context.curve_to(cp1x, cp1y, cp2x, cp2y, x, y)
 
     def quadratic_curve_to(self, cpx, cpy, x, y):
-        # Not supported by cairo.Context
-        pass
+        self.native.context.curve_to(cpx, cpy, cpx, cpy, x, y)
 
     def arc(self, x, y, radius, startangle, endangle, anticlockwise):
         if anticlockwise:

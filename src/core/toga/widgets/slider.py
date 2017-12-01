@@ -1,5 +1,6 @@
+from toga.handlers import wrapped_handler
+
 from .base import Widget
-from ..utils import wrapped_handler
 
 
 class Slider(Widget):

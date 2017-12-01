@@ -1,4 +1,9 @@
-# /System/Library/Frameworks/ApplicationServices.framework/Frameworks/CoreGraphics.framework/Headers/CGImage.h
+##########################################################################
+# System/Library/Frameworks/CoreGraphics.framework
+##########################################################################
+
+######################################################################
+# CGEventTypes.h
 kCGImageAlphaNone = 0
 kCGImageAlphaPremultipliedLast = 1
 kCGImageAlphaPremultipliedFirst = 2

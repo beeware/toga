@@ -1,5 +1,6 @@
+from toga_winforms.libs import *
+
 from .base import Widget
-from ..libs import *
 
 
 class TogaWebBrowser(WinForms.WebBrowser):

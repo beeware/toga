@@ -1,5 +1,7 @@
 import asyncio
 import inspect
+import sys
+import traceback
 
 
 @asyncio.coroutine
@@ -18,13 +20,20 @@ def long_running_task(generator, cleanup):
     except StopIteration:
         if cleanup:
             cleanup()
+    except Exception as e:
+        print('Error in long running handler:', e, file=sys.stderr)
+        traceback.print_exc()
 
 
 @asyncio.coroutine
 def handler_with_cleanup(handler, cleanup, interface, **extra):
-    yield from handler(interface, **extra)
-    if cleanup:
-        cleanup()
+    try:
+        yield from handler(interface, **extra)
+        if cleanup:
+            cleanup()
+    except Exception as e:
+        print('Error in async handler:', e, file=sys.stderr)
+        traceback.print_exc()
 
 
 def wrapped_handler(interface, handler, cleanup=None):
@@ -55,9 +64,14 @@ def wrapped_handler(interface, handler, cleanup=None):
                         long_running_task(result, cleanup)
                     )
                 else:
-                    if cleanup:
-                        cleanup()
-                    return result
+                    try:
+                        if cleanup:
+                            cleanup()
+                        return result
+                    except Exception as e:
+                        print('Error in handler:', e, file=sys.stderr)
+                        traceback.print_exc()
+
         _handler._raw = handler
 
         return _handler

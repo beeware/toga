@@ -1,6 +1,7 @@
+from toga.handlers import wrapped_handler
+from toga.sources import to_accessor, ListSource
+
 from .base import Widget
-from ..utils import wrapped_handler
-from ..sources import to_accessor, ListSource
 
 
 class DetailedList(Widget):
@@ -58,6 +59,29 @@ class DetailedList(Widget):
         self._data.add_listener(self._impl)
         self._impl.change_source(source=self._data)
 
+    def scroll_to_top(self):
+        """Scroll the view so that the top of the list (first row) is visible
+        """
+        self.scroll_to_row(0)
+
+    def scroll_to_row(self, row):
+        """Scroll the view so that the specified row index is visible.
+
+        Args:
+            row: The index of the row to make visible. Negative values refer
+                 to the nth last row (-1 is the last row, -2 second last,
+                 and so on)
+        """
+        if row >= 0:
+            self._impl.scroll_to_row(row)
+        else:
+            self._impl.scroll_to_row(len(self.data) + row)
+
+    def scroll_to_bottom(self):
+        """Scroll the view so that the bottom of the list (last row) is visible
+        """
+        self.scroll_to_row(-1)
+
     @property
     def on_delete(self):
         """ The function invoked on row deletion. The delete handler must accept two arguments.
@@ -103,3 +127,4 @@ class DetailedList(Widget):
     def on_select(self, handler: callable):
         self._on_select = wrapped_handler(self, handler)
         self._impl.set_on_select(self._on_select)
+

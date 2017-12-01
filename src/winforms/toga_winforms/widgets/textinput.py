@@ -1,4 +1,5 @@
-from ..libs import *
+from toga_winforms.libs import *
+
 from .base import Widget
 
 

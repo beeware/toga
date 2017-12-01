@@ -1,5 +1,4 @@
 import os
-from ..platform import get_platform_factory
 
 
 class ClassProperty(property):
@@ -39,14 +38,14 @@ class Icon:
             toga_dir = os.path.dirname(os.path.dirname(__file__))
             self.filename = os.path.join(toga_dir, 'resources', self.path)
         else:
-            self.filename = self.path
+            from toga.app import App
+            self.filename = os.path.join(App.app_dir, self.path)
 
         self.__impl = None
 
     def _impl(self, factory=None):
         if self.__impl is None:
-            self.factory = factory
-            self.__impl = self.factory.Icon(interface=self)
+            self.__impl = factory.Icon(interface=self)
         return self.__impl
 
     @classmethod

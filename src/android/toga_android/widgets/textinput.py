@@ -1,5 +1,4 @@
 from .base import Widget
-from ..libs import NSTextField, NSTextFieldSquareBezel
 
 
 class TogaTextInput(extends=android.widget.EditText):

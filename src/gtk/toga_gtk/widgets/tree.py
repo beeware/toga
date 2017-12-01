@@ -1,6 +1,6 @@
 from gi.repository import Gtk
+
 from .base import Widget
-from itertools import chain
 
 
 class Tree(Widget):
@@ -39,12 +39,14 @@ class Tree(Widget):
         except AttributeError:
             item._impl = {self: impl}
 
-        self.nodes[impl] = item
+        path = self.store.get_path(impl)
+        self.nodes[str(path)] = item
 
     def _on_select(self, selection):
         if hasattr(self.interface, "_on_select") and self.interface.on_select:
             tree_model, impl = selection.get_selected()
-            self.interface.on_select(None, row=self.nodes.get(impl, None))
+            path = str(tree_model.get_path(impl))
+            self.interface.on_select(None, row=self.nodes.get(path, None))
 
     def change_source(self, source):
         # Temporarily disconnecting the TreeStore improves performance for large

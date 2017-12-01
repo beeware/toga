@@ -1,6 +1,7 @@
 from rubicon.objc import *
 
-from ..libs import *
+from toga_cocoa.libs import *
+
 from .base import Widget
 from .internal.cells import TogaDetailedCell
 from .internal.data import TogaData
@@ -146,3 +147,6 @@ class DetailedList(Widget):
 
     def set_on_delete(self, handler):
         pass
+
+    def scroll_to_row(self, row):
+        self.detailedlist.scrollRowToVisible(row)
