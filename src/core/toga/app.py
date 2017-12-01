@@ -1,11 +1,12 @@
+import os
+import signal
+import sys
 from builtins import id as identifier
 
-import signal
-
-from .platform import get_platform_factory
-from .window import Window
-from .command import CommandSet
-from .widgets.icon import Icon
+from toga.platform import get_platform_factory
+from toga.window import Window
+from toga.command import CommandSet
+from toga.widgets.icon import Icon
 
 
 class MainWindow(Window):
@@ -51,6 +52,11 @@ class App:
                  id=None, icon=None, startup=None, document_types=None, factory=None):
 
         self.factory = get_platform_factory(factory)
+
+        # Keep an accessible copy of the app instance
+        App.app = self
+        App.app_module = self.__module__.split('.')[0]
+        App.app_dir = os.path.dirname(sys.modules[App.app_module].__file__)
 
         self.name = name
         self._app_id = app_id

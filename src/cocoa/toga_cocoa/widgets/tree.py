@@ -2,7 +2,8 @@ from rubicon.objc import *
 
 from toga.sources import to_accessor
 
-from ..libs import *
+from toga_cocoa.libs import *
+
 from .base import Widget
 from .internal.cells import TogaIconCell
 from .internal.data import TogaData

@@ -1,8 +1,7 @@
 from builtins import id as identifier
 
-from .command import CommandSet
-
-from .platform import get_platform_factory
+from toga.command import CommandSet
+from toga.platform import get_platform_factory
 
 
 class Window:

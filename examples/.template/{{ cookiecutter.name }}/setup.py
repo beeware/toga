@@ -32,6 +32,10 @@ setup(
             'django'
         ]
     ),
+    package_data={
+        '{{ cookiecutter.name }}': ['resources/*'],
+    },
+    install_package_data=True,
     classifiers=[
         'Development Status :: 1 - Planning',
         'License :: OSI Approved :: BSD license',

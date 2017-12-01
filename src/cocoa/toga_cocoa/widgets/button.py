@@ -1,7 +1,9 @@
 from rubicon.objc import objc_method, SEL
+
+from toga_cocoa.libs import *
+
 from .base import Widget
 
-from ..libs import *
 
 
 class TogaButton(NSButton):

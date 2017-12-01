@@ -1,4 +1,4 @@
-from ..libs import NSImage
+from toga_cocoa.libs import NSImage
 
 
 class Icon:

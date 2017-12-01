@@ -1,4 +1,4 @@
-from ..container import Constraints
+from toga_iOS.container import Constraints
 
 
 class Widget:

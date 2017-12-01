@@ -25,6 +25,10 @@ setup(
     author_email='russell@keith-magee.com',
     license='New BSD',
     packages=find_packages(exclude=['docs', 'tests']),
+    package_data={
+        'tutorial': ['icons/*'],
+    },
+    install_package_data=True,
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
