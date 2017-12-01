@@ -1,4 +1,4 @@
-from .base import WidgetMixin
+from .base import Widget
 
 
 class TogaButton(extends=android.widget.Button):
@@ -17,9 +17,6 @@ class TogaButtonListener(implements=android.view.View[OnClickListener]):
 
 
 class Button(Widget):
-    def __init__(self, label, id=None, style=None, on_press=None):
-        super().__init__(label, id=id, style=style, on_press=on_press)
-
     def create(self):
         self.native = TogaButton(self.app._impl, self.interface)
 

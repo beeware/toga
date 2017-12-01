@@ -1,6 +1,5 @@
+from toga_cocoa.container import Constraints
 from toga_cocoa.libs import NSColor, NSColorUsingColorName
-
-from ..container import Constraints
 
 
 class Widget:

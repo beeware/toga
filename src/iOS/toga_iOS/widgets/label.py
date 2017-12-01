@@ -1,7 +1,10 @@
-from toga.constants import LEFT_ALIGNED
 from rubicon.objc import CGSize
+
+from toga.constants import LEFT_ALIGNED
+
+from toga_iOS.libs import UILabel, NSTextAlignment, NSLineBreakByWordWrapping, CGSize
+
 from .base import Widget
-from ..libs import UILabel, NSTextAlignment, NSLineBreakByWordWrapping, CGSize
 
 
 class Label(Widget):

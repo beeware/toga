@@ -1,6 +1,8 @@
 from rubicon.objc import objc_method
+
+from toga_iOS.libs import *
+
 from .base import Widget
-from ..libs import *
 
 
 class TogaTableViewController(UITableViewController):
@@ -17,19 +19,17 @@ class TogaTableViewController(UITableViewController):
         cell = tableView.dequeueReusableCellWithIdentifier_("row")
         if cell is None:
             cell = UITableViewCell.alloc().initWithStyle_reuseIdentifier_(UITableViewCellStyleSubtitle, "row")
-
         value = self.interface.data[indexPath.item]
+
+        cell.textLabel.text = str(getattr(value, 'title', ''))
+        cell.detailTextLabel.text = str(getattr(value, 'subtitle', ''))
 
         # If the value has an icon attribute, get the _impl.
         # Icons are deferred resources, so we provide the factory.
         try:
-            icon = value.icon._impl(self.interface.factory)
+            cell.imageView.image = value.icon._impl(self.interface.factory).native
         except AttributeError:
-            icon = None
-
-        cell.textLabel.text = str(getattr(value, 'title', '')),
-        cell.detailTextLabel.text = str(getattr(value, 'subtitle', '')),
-        cell.imageView.image = icon
+            pass
 
         return cell
 
@@ -59,6 +59,10 @@ class TogaTableViewController(UITableViewController):
         if self.interface.on_select:
             self.interface.on_select(self.interface, row=indexPath.row)
 
+    # @objc_method
+    # def tableView_heightForRowAtIndexPath_(self, tableView, indexPath) -> float:
+    #     return 48.0
+
 
 class DetailedList(Widget):
     def create(self):
@@ -66,16 +70,18 @@ class DetailedList(Widget):
         self.controller.interface = self.interface
         self.native = self.controller.tableView
 
+        self.native.separatorStyle = UITableViewCellSeparatorStyleNone
+
         # Add the layout constraints
         self.add_constraints()
 
     def set_on_refresh(self, handler: callable or None) -> None:
         if callable(handler):
             self.controller.refreshControl = UIRefreshControl.alloc().init()
-            self.controller.refreshControl.addTarget_action_forControlEvents_(
+            self.controller.refreshControl.addTarget(
                 self.controller,
-                SEL('refresh'),
-                UIControlEventValueChanged
+                action=SEL('refresh'),
+                forControlEvents=UIControlEventValueChanged
             )
         else:
             if self.controller.refreshControl:
@@ -106,3 +112,10 @@ class DetailedList(Widget):
 
     def set_on_delete(self, handler):
         pass
+
+    def scroll_to_row(self, row):
+        self.native.scrollToRowAtIndexPath(
+            NSIndexPath.indexPathForRow(row, inSection=0),
+            atScrollPosition=UITableViewScrollPositionNone,
+            animated=False
+        )

@@ -1,4 +1,5 @@
 import gi
+
 from gi.repository import Gtk
 
 # The following import will fail if WebKit or it's API wrappers aren't
@@ -14,6 +15,7 @@ for version in ['4.0', '3.0']:
         break
     except (ImportError, ValueError):
         pass
+
 from .base import Widget
 
 

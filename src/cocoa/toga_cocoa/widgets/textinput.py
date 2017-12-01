@@ -1,5 +1,6 @@
+from toga_cocoa.libs import NSTextField, NSTextFieldSquareBezel
+
 from .base import Widget
-from ..libs import NSTextField, NSTextFieldSquareBezel
 
 
 class TextInput(Widget):

@@ -1,5 +1,6 @@
-from .base import Widget
 from toga.constants import *
+
+from .base import Widget
 
 
 class Label(Widget):

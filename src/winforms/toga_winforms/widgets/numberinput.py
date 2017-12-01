@@ -1,4 +1,5 @@
-from ..libs import WinForms, ClrDecimal
+from toga_winforms.libs import WinForms, ClrDecimal
+
 from .base import Widget
 
 
