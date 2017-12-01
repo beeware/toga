@@ -50,23 +50,23 @@ class WindowDelegate(NSObject):
     @objc_method
     def toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar_(self, toolbar, identifier, insert: bool):
         "Create the requested toolbar button"
-        item = self.interface._impl._toolbar_items[identifier]
-
         _item = NSToolbarItem.alloc().initWithItemIdentifier_(identifier)
-        if item.label:
-            _item.setLabel_(item.label)
-            _item.setPaletteLabel_(item.label)
-        if item.tooltip:
-            _item.setToolTip_(item.tooltip)
-        if item._impl.icon:
-            _item.setImage_(item._impl.icon._impl.native)
-            # pass
+        try:
+            item = self.interface._impl._toolbar_items[identifier]
+            if item.label:
+                _item.setLabel_(item.label)
+                _item.setPaletteLabel_(item.label)
+            if item.tooltip:
+                _item.setToolTip_(item.tooltip)
+            if item._impl.icon:
+                _item.setImage_(item._impl.icon._impl(self.interface.factory).native)
 
-        item._widgets.append(_item)
+            item._widgets.append(_item)
 
-        _item.setTarget_(self)
-        _item.setAction_(SEL('onToolbarButtonPress:'))
-
+            _item.setTarget_(self)
+            _item.setAction_(SEL('onToolbarButtonPress:'))
+        except KeyError:
+            pass
         return _item
 
     @objc_method
