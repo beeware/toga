@@ -26,8 +26,8 @@ def action3(widget):
     print("action 3")
 
 
-def tableSelected(widget):
-    print("selected row %s:" % widget.selection, widget.selected)
+def tableSelected(widget, row):
+    print("selected row %s" % row)
 
 
 def build(app):
