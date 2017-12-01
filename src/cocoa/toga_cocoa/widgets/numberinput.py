@@ -2,10 +2,12 @@ from rubicon.objc import objc_method, SEL
 
 import toga
 from toga.widgets.base import Widget as InterfaceWidget
+
+from toga_cocoa.libs import NSStepper, NSView, NSMakeRect, NSObject
+
 from .box import Box
 from .base import Widget
 
-from ..libs import NSStepper, NSView, NSMakeRect, NSObject
 
 
 class NumberInput(Box):

@@ -1,7 +1,7 @@
 import asyncio
 
 from rubicon.objc import objc_method
-from rubicon.objc.async import EventLoopPolicy, iOSLifecycle
+from rubicon.objc.eventloop import EventLoopPolicy, iOSLifecycle
 
 from .libs import *
 from .window import Window
@@ -25,21 +25,59 @@ class PythonAppDelegate(UIResponder):
     def application_didFinishLaunchingWithOptions_(self, application, launchOptions) -> bool:
         print("App finished launching.")
         App.app.create()
+
+        NSNotificationCenter.defaultCenter.addObserver(
+            self,
+            selector=SEL('keyboardWillShow:'),
+            name=UIKeyboardWillShowNotification,
+            object=None
+        )
+        NSNotificationCenter.defaultCenter.addObserver(
+            self,
+            selector=SEL('keyboardWillHide:'),
+            name=UIKeyboardWillHideNotification,
+            object=None
+        )
+        # Set the initial keyboard size.
+        self.kb_height = 0.0
+
         return True
 
     @objc_method
     def application_didChangeStatusBarOrientation_(self, application, oldStatusBarOrientation: int) -> None:
         """ This callback is invoked when rotating the device from landscape to portrait and vice versa. """
-        print("ROTATED", oldStatusBarOrientation)
+        App.app.interface.main_window.content._update_layout(
+            width=App.app.interface.main_window._impl.screen.bounds.size.width,
+            height=App.app.interface.main_window._impl.screen.bounds.size.height - self.kb_height,
+        )
+
+    @objc_method
+    def keyboardWillShow_(self, notification) -> None:
+        # Keyboard is about to be displayed.
+        # This will fire multiple times - once to display the keyboard,
+        # and again to display the autocomplete bar.
+        self.kb_height = App.app.interface.main_window._impl.controller.view.convertRect(
+                notification.userInfo.objectForKey(UIKeyboardFrameEndUserInfoKey).CGRectValue,
+                fromView=None
+            ).size.height
+
+        App.app.interface.main_window.content._update_layout(
+            width=App.app.interface.main_window._impl.screen.bounds.size.width,
+            height=App.app.interface.main_window._impl.screen.bounds.size.height - self.kb_height,
+        )
+
+    @objc_method
+    def keyboardWillHide_(self, notification) -> None:
+        # Reset the layout to the size of the screen.
         App.app.interface.main_window.content._update_layout(
             width=App.app.interface.main_window._impl.screen.bounds.size.width,
             height=App.app.interface.main_window._impl.screen.bounds.size.height,
         )
 
+        self.kb_height = 0.0
+
 
 class App:
-    _MAIN_WINDOW_CLASS = MainWindow
-
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self

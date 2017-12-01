@@ -1,6 +1,8 @@
-from ..libs import *
-from .base import Widget
 from toga.constants import *
+
+from toga_iOS.libs import *
+
+from .base import Widget
 
 
 class ImageView(Widget):

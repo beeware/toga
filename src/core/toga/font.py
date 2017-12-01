@@ -1,4 +1,4 @@
-from .platform import get_platform_factory
+from toga.platform import get_platform_factory
 
 
 class Font:

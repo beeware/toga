@@ -1,6 +1,8 @@
 from gi.repository import Gtk
+
+from toga_gtk.container import Container
+
 from .base import Widget
-from ..container import Container
 
 
 class ScrollContainer(Widget):

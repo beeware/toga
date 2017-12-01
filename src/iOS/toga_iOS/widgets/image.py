@@ -1,4 +1,4 @@
-from ..libs import *
+from toga_iOS.libs import *
 
 
 class Image(object):

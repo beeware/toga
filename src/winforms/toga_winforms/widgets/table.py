@@ -1,4 +1,4 @@
-from ..libs import *
+from toga_winforms.libs import *
 from .base import Widget
 
 
@@ -40,3 +40,6 @@ class Table(Widget):
 
     def set_on_select(self, handler):
         pass
+
+    def scroll_to_row(self, row):
+        raise NotImplementedError()

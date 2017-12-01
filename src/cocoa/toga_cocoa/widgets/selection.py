@@ -1,8 +1,6 @@
-from .base import Widget
+from toga_cocoa.libs import *
 
-from ..libs.appkit import NSPopUpButton
-from ..libs.foundation import NSMakeRect
-from ..libs import *
+from .base import Widget
 
 
 class TogaSelection(NSPopUpButton):
