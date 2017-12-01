@@ -4,7 +4,7 @@ import re
 try:
     import cairo
 except ImportError:
-    print("Import 'import cairo' failed; may need to install cairo.")
+    cairo = None
 
 # TODO import colosseum once updated to support colors
 # from colosseum import colors
@@ -14,6 +14,11 @@ from .base import Widget
 
 class Canvas(Widget):
     def create(self):
+        if cairo is None:
+            raise RuntimeError(
+                "'import cairo' failed; may need to install python-gi-cairo."
+            )
+
         self.native = Gtk.DrawingArea()
         self.native.set_size_request(640, 480)
         self.native.interface = self.interface
