@@ -7,14 +7,14 @@ from ctypes import util
 from rubicon.objc import *
 
 ######################################################################
-webkit = cdll.LoadLibrary(util.find_library('WebKit'))
+
+webkit_path = util.find_library('WebKit')
+
+if not webkit_path:  # WKWebView is only available under iOS 8.0 or newer.
+    raise ImportError("WebKit is not available.")
+
+webkit = cdll.LoadLibrary(webkit_path)
 ######################################################################
 
 ######################################################################
-# WebView.h
-WebView = ObjCClass('WebView')
-
-try:
-    WKWebView = ObjCClass('WKWebView')
-except NameError:  # WKWebView is only available under macOS 10.10 or newer.
-    pass
+WKWebView = ObjCClass('WKWebView')
