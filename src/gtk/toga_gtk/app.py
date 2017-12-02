@@ -43,6 +43,7 @@ except ImportError:
     # the location of the virtualenv.
     gi_symlink_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'gi')
     pygtkcompat_symlink_path = os.path.join(os.path.dirname(os.path.dirname(__file__)),  'pygtkcompat')
+    cairo_symlink_path = os.path.join(os.path.dirname(os.path.dirname(__file__)),  'cairo')
 
     if gi_symlink_path == gi_system_install_path:
         # If we're not in a virtualenv, just raise the original import error.
@@ -50,12 +51,22 @@ except ImportError:
     else:
         gi_path = os.path.join(base_packages_dir, 'gi')
         pygtkcompat_path = os.path.join(base_packages_dir, 'pygtkcompat')
+        cairo_path = os.path.join(base_packages_dir, 'cairo')
         if os.path.exists(gi_path) and os.path.isdir(gi_path):
+
             # If we can identify the gi library, create a symlink to it.
             try:
                 print("Creating symlink (%s & %s) to system GTK+ libraries..." % (gi_symlink_path, pygtkcompat_symlink_path))
                 os.symlink(gi_path, gi_symlink_path)
                 os.symlink(pygtkcompat_path, pygtkcompat_symlink_path)
+
+                try:
+                    print("Creating symlink (%s) to system Cairo libraries..." % cairo_symlink_path)
+                    os.symlink(cairo_path, cairo_symlink_path)
+                except OSError:
+                    # If we can't create the symlink, we'll get an error importing cairo;
+                    # report the error at time of use, rather than now.
+                    pass
 
                 # The call to os.symlink will return almost immediately,
                 # but for some reason, it may not be fully flushed to
@@ -78,7 +89,7 @@ from toga.command import GROUP_BREAK, SECTION_BREAK, Command, Group
 import toga
 from .window import Window
 from toga import Icon
-from toga.utils import wrapped_handler
+from toga.handlers import wrapped_handler
 
 import gbulb
 

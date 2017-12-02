@@ -100,10 +100,5 @@ class StartApp(toga.App):
         self.stroke_head()
 
 
-if __name__ == '__main__':
-    # Application class
-    #   App name and namespace
-    app = StartApp('Tutorial 4', 'org.pybee.helloworld')
-
-    app.main_loop()
-
+def main():
+    return StartApp('Tutorial 4', 'org.pybee.helloworld')

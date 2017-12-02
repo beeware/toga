@@ -30,7 +30,8 @@ class Table(Widget):
     def _on_select(self, selection):
         if hasattr(self.interface, "_on_select") and self.interface.on_select:
             tree_model, impl = selection.get_selected()
-            self.interface.on_select(None, row=self.rows.get(impl, None))
+            path = str(tree_model.get_path(impl))
+            self.interface.on_select(None, row=self.rows.get(path, None))
 
     def row_data(self, row):
         return [
@@ -44,7 +45,8 @@ class Table(Widget):
         except AttributeError:
             item._impl = {self: impl}
 
-        self.rows[impl] = item
+        path = self.store.get_path(impl)
+        self.rows[str(path)] = item
 
     def change_source(self, source):
         """
