@@ -39,11 +39,12 @@ class Table(Widget):
         >>> data = ['item 1', 'item 2', 'item 3']
     """
 
-    def __init__(self, headings, id=None, style=None, data=None, accessors=None, on_select=None, factory=None):
+    def __init__(self, headings, id=None, style=None, data=None, accessors=None,
+                 multiple_select=False, on_select=None, factory=None):
         super().__init__(id=id, style=style, factory=factory)
         self.headings = headings
         self._accessors = build_accessors(headings, accessors)
-
+        self._multiple_select = multiple_select
         self._data = None
         self._impl = self.factory.Table(interface=self)
         self.data = data
@@ -71,6 +72,21 @@ class Table(Widget):
 
         self._data.add_listener(self._impl)
         self._impl.change_source(source=self._data)
+
+    @property
+    def multiple_select(self):
+        """Does the table allow multiple rows to be selected?"""
+        return self._multiple_select
+
+    @property
+    def selection(self):
+        """The current selection of the table.
+
+        A value of None indicates no selection.
+        If the table allows multiple selection, returns a list of
+        selected data nodes. Otherwise, returns a single data node.
+        """
+        return self._selection
 
     def scroll_to_top(self):
         """Scroll the view so that the top of the list (first row) is visible
