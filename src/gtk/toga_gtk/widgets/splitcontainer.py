@@ -56,7 +56,6 @@ class SplitContainer(Widget):
                 if self.ratio is None:
                     self.ratio = 0.5
                     self.native.set_position(size * self.ratio)
-                    print(self.containers[0])
                 self.containers[0].interface._update_layout(width=size * self.ratio)
                 self.containers[1].interface._update_layout(width=size * (1.0 - self.ratio))
             else:
