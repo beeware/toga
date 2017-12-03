@@ -3,6 +3,13 @@ from toga_cocoa.libs import *
 from .base import Widget
 
 
+class TogaTextView(NSTextView):
+    @objc_method
+    def touchBar(self):
+        # Disable the touchbar.
+        return None
+
+
 class MultilineTextInput(Widget):
     def create(self):
         # Create a multiline view, and put it in a scroll view.
@@ -18,7 +25,7 @@ class MultilineTextInput(Widget):
         self.native.autoresizesSubviews = True
 
         # Create the actual text widget
-        self.text = NSTextView.alloc().init()
+        self.text = TogaTextView.alloc().init()
         self.text.editable = True
         self.text.selectable = True
         self.text.verticallyResizable = True
@@ -58,7 +65,7 @@ class MultilineTextInput(Widget):
     def set_value(self, value):
         self.text.string = self.interface._value
 
-    def _update_child_layout(self):
+    def apply_sub_layout(self):
         self._width_constraint.constant = self.interface.layout.width
         self._height_constraint.constant = self.interface.layout.height
 
