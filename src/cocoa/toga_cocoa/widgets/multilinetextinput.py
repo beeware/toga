@@ -50,13 +50,13 @@ class MultilineTextInput(Widget):
         self.add_constraints()
 
     def set_placeholder(self, value):
-        self.text.placeholderString = value
+        self.text.placeholderString = self.interface._value
 
     def set_readonly(self, value):
-        self.text.editable = not value
+        self.text.editable = not self.interface._readonly
 
     def set_value(self, value):
-        self.text.string = value
+        self.text.string = self.interface._value
 
     def _update_child_layout(self):
         self._width_constraint.constant = self.interface.layout.width
