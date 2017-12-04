@@ -56,8 +56,6 @@ class Tree(Widget):
     def _on_select(self, selection):
         if hasattr(self.interface, "_on_select") and self.interface.on_select:
             tree_model, tree_iter = selection.get_selected()
-            _path = self.store.get_path(tree_iter) if tree_iter else None
-            print("selected path: {}".format(_path))
             row = self.get_node(tree_iter) if tree_iter else None
             self.interface.on_select(None, row=row)
 

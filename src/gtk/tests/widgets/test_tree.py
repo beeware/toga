@@ -202,14 +202,6 @@ class TestGtkTree(unittest.TestCase):
         A = self.tree.data.append(None, one="A1", two="A2")
         B = self.tree.data.append(A, one="B1", two="B2")
 
-        # def print_node_path(node):
-        #     tree_iter = self.gtk_tree.nodes[node]
-        #     path = self.gtk_tree.store.get_path(tree_iter)
-        #     print("Node: {}".format(path))
-        #
-        # print_node_path(A)
-        # print_node_path(B)
-
         # Create a flag
         succeed = False
 
