@@ -220,8 +220,6 @@ class TestGtkTree(unittest.TestCase):
 
         # Select node B
         self.gtk_tree.selection.select_iter(self.gtk_tree.nodes[B])
-        # self.gtk_tree.selection.select_path(Gtk.TreePath((0,0)))
-        # on_select(self.tree, B)
         # Allow on_select to call
         handle_events()
 
