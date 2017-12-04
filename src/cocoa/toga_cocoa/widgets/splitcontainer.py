@@ -6,6 +6,19 @@ from .base import Widget
 class TogaSplitViewDelegate(NSObject):
     @objc_method
     def splitView_resizeSubviewsWithOldSize_(self, view, size: NSSize) -> None:
+        if size.width and size.height:
+            count = len(self._impl.containers)
+
+            # Turn all the weights into a fraction of 1.0
+            total = sum(self.interface._weight)
+            self.interface._weight = [
+                weight / total
+                for weight in self.interface._weight
+            ]
+
+            # Set the splitter positions based on the new weight fractions.
+            for i, weight in enumerate(self.interface._weight[:-1]):
+                view.setPosition(size.width * self.interface._weight[i], ofDividerAtIndex=i)
         view.adjustSubviews()
 
     @objc_method
@@ -13,9 +26,20 @@ class TogaSplitViewDelegate(NSObject):
         # If the window is actually visible, and the split has moved,
         # a resize of all the content panels is required.
         if self.interface.window and self.interface.window._impl.native.isVisible:
-            # print("SPLIT CONTAINER LAYOUT CHILDREN", self.interface._impl.containers[0].native.frame.size.width, self.interface._impl.containers[1].native.frame.size.width)
-            self.interface._impl.apply_sub_layout()
-            self.interface._impl.on_resize()
+            self._impl.apply_sub_layout()
+            self._impl.on_resize()
+
+            # Save the current view sizes as the splitter weights.
+            if self.interface._direction:  # Vertical
+                self.interface._weight = [
+                    container.native.frame.size.width
+                    for container in self._impl.containers
+                ]
+            else:
+                self.interface._weight = [
+                    container.native.frame.size.height
+                    for container in self._impl.containers
+                ]
 
 
 class SplitContainer(Widget):
@@ -29,12 +53,22 @@ class SplitContainer(Widget):
 
         self.delegate = TogaSplitViewDelegate.alloc().init()
         self.delegate.interface = self.interface
+        self.delegate._impl = self
         self.native.delegate = self.delegate
 
         # Add the layout constraints
         self.add_constraints()
 
         self.containers = []
+
+        # Enforce a minimum size for the SplitContainer as a whole.
+        self.min_width_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
+            self.native, NSLayoutAttributeWidth,
+            NSLayoutRelationGreaterThanOrEqual,
+            None, NSLayoutAttributeNotAnAttribute,
+            1.0, 300
+        )
+        self.native.addConstraint(self.min_width_constraint)
 
     def add_content(self, position, widget):
         if widget.native is None:
@@ -62,14 +96,6 @@ class SplitContainer(Widget):
                     width=frame.size.width,
                     height=frame.size.height
                 )
-        # Enforce a minimum size for the SplitContainer as a whole.
-        self.min_width_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
-            self.native, NSLayoutAttributeWidth,
-            NSLayoutRelationGreaterThanOrEqual,
-            None, NSLayoutAttributeNotAnAttribute,
-            1.0, 300
-        )
-        self.native.addConstraint(self.min_width_constraint)
 
     def set_direction(self, value):
         self.native.vertical = value
