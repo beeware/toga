@@ -3,9 +3,11 @@ from gi.repository import Gtk
 
 import toga
 
+
 def handle_events():
     while Gtk.events_pending():
         Gtk.main_iteration_do(blocking=False)
+
 
 class TestGtkTable(unittest.TestCase):
 
