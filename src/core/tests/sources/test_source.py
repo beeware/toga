@@ -38,3 +38,12 @@ class SourceTests(TestCase):
         # remove from listeners
         source.remove_listener(listener2)
         self.assertListEqual(source.listeners, [listener1])
+
+    def test_missing_listener_method(self):
+        listener1 = object()
+        source = Source()
+
+        source.add_listener(listener1)
+
+        # This shouldn't raise an error
+        source._notify('message1')
