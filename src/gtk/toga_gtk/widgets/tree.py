@@ -56,6 +56,8 @@ class Tree(Widget):
     def _on_select(self, selection):
         if hasattr(self.interface, "_on_select") and self.interface.on_select:
             tree_model, tree_iter = selection.get_selected()
+            _path = self.store.get_path(tree_iter) if tree_iter else None
+            print("selected path: {}".format(_path))
             row = self.get_node(tree_iter) if tree_iter else None
             self.interface.on_select(None, row=row)
 
@@ -67,11 +69,8 @@ class Tree(Widget):
         self.store.clear()
 
         def append_node(parent, root=False):
-            parent_impl = None if root else self.nodes[parent]
             for i, child_node in enumerate(parent):
                 self.insert(parent, i, child_node)
-                # impl = self.store.append(parent_impl, self.row_data(child_node))
-                # self.set_impl(child_node, impl)
                 append_node(child_node)
 
         append_node(self.interface.data, root=True)
@@ -80,7 +79,7 @@ class Tree(Widget):
 
     def insert(self, parent, index, item, **kwargs):
         tree_iter = self.store.insert(
-            self.nodes.get(item, None),
+            self.nodes.get(parent, None),
             index,
             self.row_data(item)
         )
