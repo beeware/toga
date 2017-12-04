@@ -22,7 +22,6 @@ class MultilineTextInput(Widget):
 
         # Disable all autolayout functionality on the outer widget
         self.native.translatesAutoresizingMaskIntoConstraints = False
-        self.native.autoresizesSubviews = True
 
         # Create the actual text widget
         self.text = TogaTextView.alloc().init()
@@ -31,24 +30,7 @@ class MultilineTextInput(Widget):
         self.text.verticallyResizable = True
         self.text.horizontallyResizable = False
 
-        # Disable the autolayout functionality, and replace with
-        # constraints controlled by the layout.
-        self.text.translatesAutoresizingMaskIntoConstraints = False
-        self._width_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
-            self.text, NSLayoutAttributeRight,
-            NSLayoutRelationEqual,
-            self.text, NSLayoutAttributeLeft,
-            1.0, 0
-        )
-        self.text.addConstraint(self._width_constraint)
-
-        self._height_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
-            self.text, NSLayoutAttributeBottom,
-            NSLayoutRelationEqual,
-            self.text, NSLayoutAttributeTop,
-            1.0, 0
-        )
-        self.text.addConstraint(self._height_constraint)
+        self.text.autoresizingMask = NSViewWidthSizable
 
         # Put the text view in the scroll window.
         self.native.documentView = self.text
@@ -64,10 +46,6 @@ class MultilineTextInput(Widget):
 
     def set_value(self, value):
         self.text.string = self.interface._value
-
-    def apply_sub_layout(self):
-        self._width_constraint.constant = self.interface.layout.width
-        self._height_constraint.constant = self.interface.layout.height
 
     def rehint(self):
         self.interface.style.hint(
