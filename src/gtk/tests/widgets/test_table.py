@@ -92,6 +92,19 @@ class TestGtkTable(unittest.TestCase):
         result_row = self.gtk_table.store[path]
         self.assertEqual(tuple(result_row), (row.one, row.two))
 
+    def test_method_compare_tree_iters(self):
+        store = self.gtk_table.store
+        store.clear()
+        store.append(("1", "2"))
+
+        # Gtk.TreeIters can't be compared directly
+        self.assertNotEqual(store[0].iter, store[0].iter)
+
+        self.assertTrue(self.gtk_table.compare_tree_iters(
+            store[0].iter,
+            store[0].iter
+        ))
+
     def test_method_get_row(self):
         # Put data in the Table
         self.table.table = []
