@@ -15,7 +15,9 @@ class TextInput(Widget):
         self.add_constraints()
 
     def set_readonly(self, value):
+        # Even if it's not editable, it's still selectable.
         self.native.editable = not value
+        self.native.selectable = True
 
     def set_placeholder(self, value):
         self.native.cell.placeholderString = value
