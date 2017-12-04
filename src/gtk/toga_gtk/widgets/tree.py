@@ -6,6 +6,8 @@ from .base import Widget
 class Tree(Widget):
     def create(self):
         self.store = Gtk.TreeStore(*[str for h in self.interface.headings])
+
+        # flat dict, maps Node to Gtk.TreeIter
         self.nodes = {}
 
         # Create a tree view, and put it in a scroll view.
@@ -33,20 +35,29 @@ class Tree(Widget):
             for attr in self.interface._accessors
         ]
 
-    def set_impl(self, item, impl):
-        try:
-            item._impl[self] = impl
-        except AttributeError:
-            item._impl = {self: impl}
+    # Gtk.TreeIter cannot be compared with __eq__ !!!
+    def compare_tree_iters(self, one, two):
+        return self.store.get_path(one) == self.store.get_path(two)
 
-        path = self.store.get_path(impl)
-        self.nodes[str(path)] = item
+    # find `tree_iter` in `self.rows`
+    def get_node(self, tree_iter):
+        if not isinstance(tree_iter, Gtk.TreeIter):
+            raise TypeError("expected Gtk.TreeIter, got {}".format(type(tree_iter)))
+
+        for node, it in self.nodes.items():
+            if self.compare_tree_iters(tree_iter, it):
+                return node
+
+    def set_tree_iter(self, item, tree_iter):
+        item._tree_iters = getattr(item, "_tree_iters", {})
+        item._tree_iters[self] = tree_iter
+        self.nodes[item] = tree_iter
 
     def _on_select(self, selection):
         if hasattr(self.interface, "_on_select") and self.interface.on_select:
-            tree_model, impl = selection.get_selected()
-            path = str(tree_model.get_path(impl))
-            self.interface.on_select(None, row=self.nodes.get(path, None))
+            tree_model, tree_iter = selection.get_selected()
+            row = self.get_node(tree_iter) if tree_iter else None
+            self.interface.on_select(None, row=row)
 
     def change_source(self, source):
         # Temporarily disconnecting the TreeStore improves performance for large
@@ -56,10 +67,11 @@ class Tree(Widget):
         self.store.clear()
 
         def append_node(parent, root=False):
-            parent_impl = None if root else parent._impl[self]
+            parent_impl = None if root else self.nodes[parent]
             for i, child_node in enumerate(parent):
-                impl = self.store.append(parent_impl, self.row_data(child_node))
-                self.set_impl(child_node, impl)
+                self.insert(parent, i, child_node)
+                # impl = self.store.append(parent_impl, self.row_data(child_node))
+                # self.set_impl(child_node, impl)
                 append_node(child_node)
 
         append_node(self.interface.data, root=True)
@@ -67,22 +79,21 @@ class Tree(Widget):
         self.treeview.set_model(self.store)
 
     def insert(self, parent, index, item, **kwargs):
-        impl = self.store.insert(
-            parent._impl[self] if parent else None,
+        tree_iter = self.store.insert(
+            self.nodes.get(item, None),
             index,
             self.row_data(item)
         )
-        self.set_impl(item, impl)
+        self.set_tree_iter(item, tree_iter)
 
     def change(self, item):
-        self.store.set(
-            item.parent._impl[self] if item.parent else None,
-            *self.row_data(item)
-        )
+        tree_iter = self.nodes[item]
+        self.store[tree_iter] = self.row_data(item)
 
     def remove(self, item):
-        self.store.remove(item._impl[self])
-        del self.nodes[item_impl[self]]
+        tree_iter = self.nodes[item]
+        del self.store[tree_iter]
+        del self.nodes[item]
 
     def clear(self):
         self.store.clear()

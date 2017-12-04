@@ -27,26 +27,35 @@ class Table(Widget):
         self.native.set_min_content_height(200)
         self.native.interface = self.interface
 
+    # Gtk.TreeIter cannot be compared with __eq__ !!!
+    def compare_tree_iters(self, one, two):
+        return self.store.get_path(one) == self.store.get_path(two)
+
+    # find `tree_iter` in `self.rows`
+    def get_row(self, tree_iter):
+        if not isinstance(tree_iter, Gtk.TreeIter):
+            raise TypeError("expected Gtk.TreeIter, got {}".format(type(tree_iter)))
+
+        for row, it in self.rows.items():
+            if self.compare_tree_iters(tree_iter, it):
+                return row
+
+    def set_tree_iter(self, item, tree_iter):
+        item._tree_iters = getattr(item, "_tree_iters", {})
+        item._tree_iters[self] = tree_iter
+        self.rows[item] = tree_iter
+
     def _on_select(self, selection):
         if hasattr(self.interface, "_on_select") and self.interface.on_select:
-            tree_model, impl = selection.get_selected()
-            path = str(tree_model.get_path(impl))
-            self.interface.on_select(None, row=self.rows.get(path, None))
+            tree_model, tree_iter = selection.get_selected()
+            row = self.get_row(tree_iter) if tree_iter else None
+            self.interface.on_select(None, row=row)
 
     def row_data(self, row):
         return [
             str(getattr(row, attr))
             for attr in self.interface._accessors
         ]
-
-    def set_impl(self, item, impl):
-        try:
-            item._impl[self] = impl
-        except AttributeError:
-            item._impl = {self: impl}
-
-        path = self.store.get_path(impl)
-        self.rows[str(path)] = item
 
     def change_source(self, source):
         """
@@ -58,22 +67,21 @@ class Table(Widget):
         self.treeview.set_model(None) # temporarily disconnect the view
 
         self.store.clear()
-        for item in self.interface.data:
-            impl = self.store.append(self.row_data(item))
-            self.set_impl(item, impl)
+        for i, row in enumerate(self.interface.data):
+            self.insert(i, row)
 
         self.treeview.set_model(self.store)
 
     def insert(self, index, item):
-        impl = self.store.insert(index, self.row_data(item))
-        self.set_impl(item, impl)
+        tree_iter = self.store.insert(index, self.row_data(item))
+        self.set_tree_iter(item, tree_iter)
 
     def change(self, item):
-        item._impl[self] = self.row_data(item)
+        self.store[self.rows[item]] = self.row_data(item)
 
     def remove(self, item):
-        self.store.remove(item._impl[self])
-        del self.rows[item._impl[self]]
+        del self.store[self.rows[item]]
+        del self.rows[item]
 
     def clear(self):
         self.store.clear()
