@@ -17,4 +17,4 @@ WebView = ObjCClass('WebView')
 try:
     WKWebView = ObjCClass('WKWebView')
 except NameError:  # WKWebView is only available under macOS 10.10 or newer.
-    pass
+    WKWebView = None

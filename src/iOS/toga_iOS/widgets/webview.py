@@ -4,7 +4,7 @@ from toga_iOS.libs import *
 
 from .base import Widget
 
-from concurrent.futures import Future
+import asyncio
 
 
 class TogaUIWebView(UIWebView):
@@ -52,7 +52,7 @@ class WebKit1WebView(Widget):
         return self.native.stringByEvaluatingJavaScriptFromString_(javascript)
 
 
-if "WKWebView" in vars():
+if WKWebView is not None:  # WKWebView is only available under iOS 8.0 or newer.
     class TogaWKWebView(WKWebView):
         @objc_method
         def webView_didFinish_(self, navi):
@@ -104,14 +104,15 @@ if "WKWebView" in vars():
             self.native.customUserAgent = value
 
         def evaluate(self, js_str):
-            fur = Future()  # type: concurrent.futures.Future
+            fur = asyncio.Future()
 
             def when_finish(result, err):
                 if fur.done():
                     return
 
                 if err:
-                    fur.set_exception(err)
+                    # Is NSError a subclass of BaseException?
+                    fur.set_exception(RuntimeError(err))
 
                 else:
                     fur.set_result(result)

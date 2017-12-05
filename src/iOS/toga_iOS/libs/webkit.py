@@ -8,13 +8,11 @@ from rubicon.objc import *
 
 ######################################################################
 
-webkit_path = util.find_library('WebKit')
+_webkit_path = util.find_library('WebKit')
 
-if not webkit_path:  # WKWebView is only available under iOS 8.0 or newer.
-    raise ImportError("WebKit is not available.")
+if not _webkit_path:  # WebKit framework is only available under iOS 8.0 or newer.
+    WKWebView = None
+else:
+    webkit = cdll.LoadLibrary(_webkit_path)
 
-webkit = cdll.LoadLibrary(webkit_path)
-######################################################################
-
-######################################################################
-WKWebView = ObjCClass('WKWebView')
+    WKWebView = ObjCClass('WKWebView')
