@@ -49,7 +49,8 @@ class TestCommand(unittest.TestCase):
                            icon='icons/none.png',
                            group=grp,
                            section=1,
-                           order=1
+                           order=1,
+                           factory=toga_dummy.factory
                            )
         self.assertEqual(cmd.label, 'test')
         self.assertEqual(cmd.shortcut, 't')
@@ -74,6 +75,7 @@ class TestCommand(unittest.TestCase):
                            icon='icons/none.png',
                            group=grp,
                            section=1,
-                           order=1
+                           order=1,
+                           factory=toga_dummy.factory
                            )
         self.assertEqual(toga.cmd_sort_key(cmd), (grp, 1, 1, 'test'))

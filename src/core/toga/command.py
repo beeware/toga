@@ -1,5 +1,6 @@
 from toga.handlers import wrapped_handler
 from toga.platform import get_platform_factory
+import toga_dummy
 
 
 class Group:
@@ -64,7 +65,11 @@ class Command:
         self._widgets = []
 
         self.factory = get_platform_factory(factory)
-        self._impl = self.factory.Command(interface=self)
+        
+        if factory == toga_dummy.factory:
+            self._impl = self.factory.Command()
+        else:
+            self._impl = self.factory.Command(interface=self)
 
     @property
     def enabled(self):
