@@ -187,3 +187,15 @@ class CanvasTests(TestCase):
     def test_reset_transform(self):
         self.testing_canvas.reset_transform()
         self.assertActionPerformedWith(self.testing_canvas, 'reset transform')
+
+    def test_fill_text(self):
+        self.testing_canvas.fill_text('text fill', 2, 2)
+        self.assertActionPerformedWith(self.testing_canvas, 'fill text', text='text fill', x=2, y=2)
+
+    def test_stroke_text(self):
+        self.testing_canvas.stroke_text('text stroke', 0, 0)
+        self.assertActionPerformedWith(self.testing_canvas, 'stroke text', text='text stroke', x=0, y=0)
+
+    def test_measure_text(self):
+        self.testing_canvas.measure_text('measured text')
+        self.assertActionPerformedWith(self.testing_canvas, 'measure text', text='measured text')

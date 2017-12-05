@@ -313,3 +313,46 @@ class Canvas(Widget):
 
         """
         self._impl.reset_transform()
+
+    # Text
+
+    def fill_text(self, text, x=0, y=0):
+        """Fills a given text
+
+        Fills a given text at the given (x,y) position. Optionally with a
+        maximum width to draw.
+
+        Args:
+            text (string): text to fill
+            x (float, optional): The x coordinate of the text. Default to 0.
+            y (float, optional): The y coordinate of the text. Default to 0.
+
+        """
+        self._impl.fill_text(text, x, y)
+
+    def stroke_text(self, text, x, y):
+        """Strokes a given text
+
+        Strokes a given text at the given (x,y) position. Optionally with a
+        maximum width to draw.
+
+        Args:
+            text (string): text to stroke
+            x (float, optional): The x coordinate of the text. Default to 0.
+            y (float, optional): The y coordinate of the text. Default to 0.
+
+        """
+        self._impl.stroke_text(text, x, y)
+
+    def measure_text(self, text):
+        """Measure the text
+
+        Provides a measurement of the text based on the current style.
+
+        Args:
+            text (string): text to measure
+
+        Returns:
+            tuple (float, float): text width, text height
+        """
+        return self._impl.measure_text(text)
