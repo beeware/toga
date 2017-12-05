@@ -29,7 +29,7 @@ class TestCommand(unittest.TestCase):
         self.assertNotEqual(toga.Group('A', 1), toga.Group('B', 1))
     
     def test_command_init_defaults(self):
-        cmd = toga.Command(lambda x: print('Hello World'), 'test')
+        cmd = toga.Command(lambda x: print('Hello World'), 'test', factory=toga_dummy.factory)
         self.assertEqual(cmd.label, 'test')
         self.assertEqual(cmd.shortcut, None)
         self.assertEqual(cmd.tooltip, None)
