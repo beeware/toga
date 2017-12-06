@@ -1,5 +1,6 @@
 from toga.handlers import wrapped_handler
 from toga.platform import get_platform_factory
+import toga_dummy
 
 
 class Group:
@@ -35,18 +36,15 @@ Group.HELP = Group('Help', order=100)
 class Command:
     """
     Args:
-            action:
-            label:
-            shortcut:
-            tooltip:
-            icon:
-            group:
-            section:
-            order:
-            factory:
-
-    Todo:
-        * Add missing docstrings.
+            action: a function to invoke when the command is activated.
+            label: a name for the command.
+            shortcut: (optional) a key combination that can be used to invoke the command.
+            tooltip: (optional) a short description for what the command will do.
+            icon: (optional) a path to an icon resource to decorate the command.
+            group: (optional) a Group object describing a collection of similar commands. If no group is specified, a default "Command" group will be used.
+            section: (optional) an integer providing a sub-grouping. If no section is specified, the command will be allocated to section 0 within the group.
+            order: (optional) an integer indicating where a command falls within a section. If a Command doesn't have an order, it will be sorted alphabetically by label within its section.
+            factory: (optional) a custom factory to be used. If no factory is specified, a default factory for the current host platform will be selected.
     """
     def __init__(self, action, label,
                  shortcut=None, tooltip=None, icon=None,
@@ -66,8 +64,12 @@ class Command:
 
         self._widgets = []
 
-        self.factory = get_platform_factory()
-        self._impl = self.factory.Command(interface=self)
+        self.factory = get_platform_factory(factory)
+        
+        if factory == toga_dummy.factory:
+            self._impl = self.factory.Command()
+        else:
+            self._impl = self.factory.Command(interface=self)
 
     @property
     def enabled(self):
