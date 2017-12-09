@@ -91,6 +91,9 @@ class StartApp(toga.App):
             self.canvas.move_to(45, 145)
             self.canvas.bezier_curve_to(51, 123, 96, 123, 102, 145)
 
+    def draw_text(self):
+        self.canvas.fill_text('Tiberius')
+
     def draw_tiberius(self, canvas, context):
         self.canvas.set_context(context)
         self.fill_head()
@@ -98,6 +101,7 @@ class StartApp(toga.App):
         self.draw_horns()
         self.draw_nostrils()
         self.stroke_head()
+        self.draw_text()
 
 
 if __name__ == '__main__':
