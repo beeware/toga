@@ -92,7 +92,7 @@ class StartApp(toga.App):
             self.canvas.bezier_curve_to(51, 123, 96, 123, 102, 145)
 
     def draw_text(self):
-        self.canvas.fill_text('Tiberius')
+        self.canvas.fill_text('Tiberius', 55, 10)
 
     def draw_tiberius(self, canvas, context):
         self.canvas.set_context(context)
