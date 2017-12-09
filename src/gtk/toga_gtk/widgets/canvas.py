@@ -130,7 +130,7 @@ class Canvas(Widget):
     def fill_text(self, text, x, y):
         # Support filling multiline text
         for line in text.splitlines():
-            width, height = self.measure_text(self, line)
+            width, height = self.measure_text(line)
             y += height
             self.native.context.move_to(x, y)
             self.native.context.show_text(text)
@@ -138,7 +138,7 @@ class Canvas(Widget):
     def stroke_text(self, text, x, y):
         # Support stroking multiline text
         for line in text.splitlines():
-            width, height = self.measure_text(self, line)
+            width, height = self.measure_text(line)
             y += height
             self.native.context.move_to(x, y)
             self.native.context.text_path(text)
