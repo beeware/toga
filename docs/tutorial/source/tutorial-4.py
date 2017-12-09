@@ -93,7 +93,7 @@ class StartApp(toga.App):
 
     def draw_text(self):
         with self.canvas.fill():
-            self.canvas.write_text('Tiberius')
+            self.canvas.write_text('Tiberius', 55, 10)
 
     def draw_tiberius(self, canvas, context):
         self.canvas.set_context(context)
