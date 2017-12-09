@@ -127,22 +127,13 @@ class Canvas(Widget):
     def reset_transform(self):
         self.native.context.identity_matrix()
 
-    def fill_text(self, text, x, y):
-        # Support filling multiline text
-        for line in text.splitlines():
-            width, height = self.measure_text(line)
-            y += height
-            self.native.context.move_to(x, y)
-            self.native.context.show_text(text)
-
-    def stroke_text(self, text, x, y):
-        # Support stroking multiline text
+    def write_text(self, text, x, y):
+        # Support writing multiline text
         for line in text.splitlines():
             width, height = self.measure_text(line)
             y += height
             self.native.context.move_to(x, y)
             self.native.context.text_path(text)
-            self.stroke()
 
     def measure_text(self, text):
         x_bearing, y_bearing, width, height, x_advance, y_advance = self.native.context.text_extents(text)
