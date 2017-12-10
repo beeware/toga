@@ -1,3 +1,9 @@
+import gi
+
+gi.require_version("Pango", "1.0")
+from gi.repository import Pango
+
+gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
 import re
 
@@ -23,8 +29,9 @@ class Canvas(Widget):
         self.native.set_size_request(640, 480)
         self.native.interface = self.interface
         surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, self.native.get_allocated_width(),
-                                          self.native.get_allocated_height())
+                                     self.native.get_allocated_height())
         self.native.context = cairo.Context(surface)
+        self.native.font = None
 
     def set_on_draw(self, handler):
         self.native.connect('draw', handler)
@@ -128,6 +135,11 @@ class Canvas(Widget):
         self.native.context.identity_matrix()
 
     def write_text(self, text, x, y):
+        # Set font family and size
+        if self.native.font:
+            self.native.context.select_font_face(self.native.font.get_family())
+            self.native.context.set_font_size(self.native.font.get_size() / Pango.SCALE)
+
         # Support writing multiline text
         for line in text.splitlines():
             width, height = self.measure_text(line)
