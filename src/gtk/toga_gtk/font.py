@@ -1,5 +1,5 @@
-
 import gi
+
 gi.require_version("Pango", "1.0")
 from gi.repository import Pango
 
@@ -11,5 +11,5 @@ class Font:
         self.create()
 
     def create(self):
-        self._impl = Pango.FontDescription.from_string(
+        self.native = Pango.FontDescription.from_string(
             self.interface.family + " " + str(self.interface.size))
