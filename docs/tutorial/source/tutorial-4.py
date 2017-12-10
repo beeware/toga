@@ -92,8 +92,15 @@ class StartApp(toga.App):
             self.canvas.bezier_curve_to(51, 123, 96, 123, 102, 145)
 
     def draw_text(self):
+        x = 32
+        y = 175
+        width, height = self.canvas.measure_text('Tiberius')
+        with self.canvas.stroke():
+            self.canvas.rect(x - 5, y - 5, width + 10, height + 10)
+        self.canvas.font = toga.Font(family='sans-serif', size=20)
         with self.canvas.fill():
-            self.canvas.write_text('Tiberius', 55, 10)
+            self.canvas.fill_style('rgba(149.0, 119, 73, 1)')
+            self.canvas.write_text('Tiberius', x, y)
 
     def draw_tiberius(self, canvas, context):
         self.canvas.set_context(context)
@@ -111,3 +118,4 @@ if __name__ == '__main__':
     app = StartApp('Tutorial 4', 'org.pybee.helloworld')
 
     app.main_loop()
+
