@@ -145,9 +145,14 @@ class Canvas(Widget):
             width, height = self.measure_text(line)
             y += height
             self.native.context.move_to(x, y)
-            self.native.context.text_path(text)
+            self.native.context.text_path(line)
 
     def measure_text(self, text):
+        # Set font family and size
+        if self.native.font:
+            self.native.context.select_font_face(self.native.font.get_family())
+            self.native.context.set_font_size(self.native.font.get_size() / Pango.SCALE)
+
         x_bearing, y_bearing, width, height, x_advance, y_advance = self.native.context.text_extents(text)
         return width, height
 
