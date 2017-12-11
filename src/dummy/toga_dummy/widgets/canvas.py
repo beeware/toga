@@ -91,11 +91,11 @@ class Canvas(Widget):
     def reset_transform(self):
         self._action('reset transform')
 
-    def write_text(self, text, x, y):
-        self._action('write text', text=text, x=x, y=y)
+    def write_text(self, text, x, y, font):
+        self._action('write text', text=text, x=x, y=y, font=font)
 
-    def measure_text(self, text):
-        self._action('measure text', text=text)
+    def measure_text(self, text, font):
+        self._action('measure text', text=text, font=font)
 
     def rehint(self):
         self._action('rehint Canvas')

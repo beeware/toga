@@ -134,22 +134,28 @@ class Canvas(Widget):
     def reset_transform(self):
         self.native.context.identity_matrix()
 
-    def write_text(self, text, x, y):
+    def write_text(self, text, x, y, font):
         # Set font family and size
-        if self.native.font:
+        if font:
+            self.native.context.select_font_face(font.family)
+            self.native.context.set_font_size(font.size)
+        elif self.native.font:
             self.native.context.select_font_face(self.native.font.get_family())
             self.native.context.set_font_size(self.native.font.get_size() / Pango.SCALE)
 
         # Support writing multiline text
         for line in text.splitlines():
-            width, height = self.measure_text(line)
+            width, height = self.measure_text(line, font)
             y += height
             self.native.context.move_to(x, y)
             self.native.context.text_path(line)
 
-    def measure_text(self, text):
+    def measure_text(self, text, font):
         # Set font family and size
-        if self.native.font:
+        if font:
+            self.native.context.select_font_face(font.family)
+            self.native.context.set_font_size(font.size)
+        elif self.native.font:
             self.native.context.select_font_face(self.native.font.get_family())
             self.native.context.set_font_size(self.native.font.get_size() / Pango.SCALE)
 
