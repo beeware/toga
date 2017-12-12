@@ -1,6 +1,6 @@
 from builtins import id as identifier
-from colosseum import CSS
 
+from colosseum import CSS
 from toga.platform import get_platform_factory
 
 

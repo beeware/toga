@@ -1,5 +1,5 @@
-import os
 import ast
+import os
 import unittest
 from collections import namedtuple, defaultdict
 from itertools import zip_longest

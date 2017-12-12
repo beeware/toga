@@ -6,7 +6,6 @@ from ctypes import util
 from enum import Enum
 
 from rubicon.objc import *
-
 from toga.constants import *
 
 ######################################################################

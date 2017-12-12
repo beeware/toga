@@ -1,7 +1,5 @@
 from toga.platform import get_platform_factory
 
-from .base import Widget
-
 
 class Image(object):
     """

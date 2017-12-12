@@ -1,5 +1,5 @@
 from toga.handlers import wrapped_handler
-from toga.sources import to_accessor, ListSource
+from toga.sources import ListSource
 
 from .base import Widget
 

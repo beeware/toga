@@ -1,6 +1,3 @@
-from gi.repository import Gtk
-
-
 def wrapped_handler(widget, handler):
     def _handler(impl, data=None):
         if handler:
