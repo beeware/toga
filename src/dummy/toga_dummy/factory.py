@@ -12,6 +12,7 @@ from .widgets.label import Label
 from .widgets.multilinetextinput import *
 from .widgets.navigationview import *
 from .widgets.numberinput import *
+from .widgets.optioncontainer import *
 from .widgets.passwordinput import *
 from .widgets.progressbar import *
 from .widgets.scrollcontainer import *
@@ -19,6 +20,7 @@ from .widgets.selection import Selection
 from .widgets.slider import *
 from .widgets.splitcontainer import *
 from .widgets.switch import *
+from .widgets.table import *
 from .widgets.textinput import TextInput
 from .widgets.tree import *
 from .widgets.webview import *
