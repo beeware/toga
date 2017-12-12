@@ -150,6 +150,50 @@ the interface layer, and sent through to the right endpoints in the Dummy
 backend. If the *dummy* backend is invoked correcty, then any other backend
 will be handled correctly, too.
 
+One error you might see...
+--------------------------
+
+When you're running these tests - especially when you submit your PR, and the
+tests run on our continous integration (CI) server - it's possible you might get
+and error that reads:
+
+    ModuleNotFoundError: No module named 'toga_gtk'.
+
+If this happens, you've found an bug in the way the widget you're testing
+has been constructed.
+
+The Core API is designed to be platform independent. When a widget is created,
+it calls upon a "factory" to instantiate the underlying platform-dependent
+implementation. When a Toga application starts running, it will try to guess
+the right factory to use based on the environment where the code is running.
+So, if you run your code on a Mac, it will use the Cocoa factory; if you're on
+a Linux box, it will use the GTK factory.
+
+However, when writing tests, we want to use the "dummy" factory. The Dummy
+factory isn't the "native" platform anywhere - it's just a placeholder. As a
+result, the  dummy factory won't be used unless you specifically request it -
+which means every widget has to honor that request.
+
+Most Toga widgets create their platform-specific implementation when they are
+created. As a result, most Toga widgets should accept a ``factory`` argument -
+and that factory should be used to instantiate any widget implementations or
+sub-widgets.
+
+However, *some* widgets - like Icon - are "late loaded" - the implmementation
+isn't created until the widget is actually *used*. Late loaded widgets don't
+accept a ``factory`` when they're created - but they *do* have an `_impl()`
+method that accepts a factory.
+
+If these factory arguments aren't being passed around correctly, then a test
+suite will attempt to create a widget, but will fall back to the platform-
+default factory, rather than the "dummy" factory. If you've installed the
+appropriate platform default backend, you won't (necessarily) get an error,
+but your tests won't use the dummy backend. On our CI server, we deliberately
+don't install a platform backend so we can find these errors.
+
+If you get the ``ModuleNotFoundError``, you need to audit the code to find out
+where a widget is being created without a factory being specified.
+
 It's not just about coverage!
 =============================
 
@@ -167,6 +211,9 @@ being handled consistently (one widget updates then refreshes, but another
 widget refreshes then updates), flag it and bring it to our attention by
 raising a ticket. Or, if you're confident that you know what needs to be done,
 create a pull request that fixes the problem you've found.
+
+On example of the type of consistency we're looking for is described in
+`this ticket <https://github.com/pybee/toga/issues/299>`__.
 
 What next?
 ==========
@@ -186,3 +233,37 @@ native widget capabilities to the Toga API. You may find it helpful to look at
 existing widgets to work out what is needed.
 
 Most importantly - have fun!
+
+Advanced Mode
+=============
+
+If you've got expertise in a particular platform (for example, if you've got
+experience writing iOS apps), or you'd *like* to have that experience, you
+might want to look into a more advanced problem. Here are some suggestions:
+
+* **Implement a platform native widget** If the core library already specifies
+  an interface, implement that interface; if no interface exists, propose an
+  interface design, and implement it for at least one platform.
+
+* **Add a new feature to an existing widget API** Can you think of a feature
+  than an existing widget should have? Propose a new API for that widget, and
+  provide a sample implementation.
+
+* **Improve platform specific testing** The tests that have been described in
+  this document are all platform independent. They use the dummy backend to
+  validate that data is being passed around correctly, but they don't validate
+  that on a given platform, widgets behave they way they should. If I put a
+  button on Toga app, is that button displayed? Is it in the right place? Does
+  it respond to mouse clicks? Ideally, we'd have automated tests to validate
+  these properties. However, automated tests of GUI operations can be difficult
+  to set up. If you've got experience with automated GUI testing, we'd love to
+  hear your suggestions.
+
+* **Improve the testing API for application writers** The dummy backend exists
+  to validate that Toga's internal API works as expected. However, we would like
+  it to be a useful resource for *application* authors as well. Testing GUI
+  applications is a difficult task; a Dummy backend would potentially allow an
+  end user to write an application, and validate behavior by testing the
+  properties of the Dummy. Think of it as a GUI mock - but one that is baked into
+  Toga as a framework. See if you can write a GUI app of your own, and write
+  a test suite that uses the Dummy backend to validate the behavior of that app.
