@@ -33,7 +33,6 @@ pull_request:
         subtasks:
             - gtk:
                 name: GTK+ implementation compliance check
-                task: gtk-py34
                 environment:
                     TEST_DIR: src/gtk
                     SRC_DEPENDANTS: src/core src/dummy
