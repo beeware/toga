@@ -8,5 +8,6 @@ Background
    :maxdepth: 1
 
    philosophy
-   togas-and-yaks
+   faq
    commands
+   data-sources

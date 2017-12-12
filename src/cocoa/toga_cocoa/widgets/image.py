@@ -1,4 +1,4 @@
-from ..libs import *
+from toga_cocoa.libs import *
 
 
 class Image(object):

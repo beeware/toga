@@ -50,23 +50,23 @@ class WindowDelegate(NSObject):
     @objc_method
     def toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar_(self, toolbar, identifier, insert: bool):
         "Create the requested toolbar button"
-        item = self.interface._impl._toolbar_items[identifier]
-
         _item = NSToolbarItem.alloc().initWithItemIdentifier_(identifier)
-        if item.label:
-            _item.setLabel_(item.label)
-            _item.setPaletteLabel_(item.label)
-        if item.tooltip:
-            _item.setToolTip_(item.tooltip)
-        if item._impl.icon:
-            _item.setImage_(item._impl.icon._impl.native)
-            # pass
+        try:
+            item = self.interface._impl._toolbar_items[identifier]
+            if item.label:
+                _item.setLabel_(item.label)
+                _item.setPaletteLabel_(item.label)
+            if item.tooltip:
+                _item.setToolTip_(item.tooltip)
+            if item._impl.icon:
+                _item.setImage_(item._impl.icon._impl(self.interface.factory).native)
 
-        item._widgets.append(_item)
+            item._widgets.append(_item)
 
-        _item.setTarget_(self)
-        _item.setAction_(SEL('onToolbarButtonPress:'))
-
+            _item.setTarget_(self)
+            _item.setAction_(SEL('onToolbarButtonPress:'))
+        except KeyError:
+            pass
         return _item
 
     @objc_method
@@ -95,7 +95,7 @@ class Window:
     def create(self):
         # OSX origin is bottom left of screen, and the screen might be
         # offset relative to other screens. Adjust for this.
-        screen = NSScreen.mainScreen().visibleFrame
+        screen = NSScreen.mainScreen.visibleFrame
         position = NSMakeRect(
             screen.origin.x + self.interface.position[0],
             screen.size.height + screen.origin.y - self.interface.position[1] - self.interface._size[1],
@@ -165,7 +165,7 @@ class Window:
         self.container.native.addConstraint_(self._min_height_constraint)
 
     def set_title(self, title):
-        self.native.setTitle_(title)
+        self.native.title = title
 
     def set_position(self, position):
         pass

@@ -26,86 +26,95 @@ def action3(widget):
     print("action 3")
 
 
-def tableSelected(widget):
-    print("selected row %s:" % widget.selection, widget.selected)
+def tableSelected(widget, row):
+    print("selected row %s" % row)
 
 
-def build(app):
+class Tutorial2App(toga.App):
+    def startup(self):
+        # Window class
+        #   Main window of the application with title and size
+        self.main_window = toga.MainWindow(self.name, size=(640, 480))
+        self.main_window.app = self
 
-    list_data = []
-    for i in range(0, 100):
-        list_data.append(('root%s' % i, 'value%s' % i))
+        list_data = []
+        for i in range(0, 100):
+            list_data.append(('root%s' % i, 'value%s' % i))
 
-    left_container = toga.Table(['Hello', 'World'], data=list_data, on_select=tableSelected)
+        left_container = toga.Table(['Hello', 'World'], data=list_data, on_select=tableSelected)
 
-    right_content = toga.Box(
-        style=CSS(flex_direction='column', padding_top=50)
-    )
-
-    for b in range(0, 10):
-        right_content.add(
-            toga.Button(
-                'Hello world %s' % b,
-                on_press=button_handler,
-                style=CSS(width=200, margin=20)
-            )
+        right_content = toga.Box(
+            style=CSS(flex_direction='column', padding_top=50)
         )
 
-    right_container = toga.ScrollContainer(horizontal=False)
+        for b in range(0, 10):
+            right_content.add(
+                toga.Button(
+                    'Hello world %s' % b,
+                    on_press=button_handler,
+                    style=CSS(width=200, margin=20)
+                )
+            )
 
-    right_container.content = right_content
+        right_container = toga.ScrollContainer(horizontal=False)
 
-    split = toga.SplitContainer()
+        right_container.content = right_content
 
-    split.content = [left_container, right_container]
+        split = toga.SplitContainer()
 
-    things = toga.Group('Things')
+        split.content = [left_container, right_container]
 
-    cmd0 = toga.Command(
-        action1,
-        label='Action 0',
-        tooltip='Perform action 0',
-        icon='icons/brutus.icns',
-        group=things
-    )
-    cmd1 = toga.Command(
-        action1,
-        label='Action 1',
-        tooltip='Perform action 1',
-        icon='icons/brutus.icns',
-        group=things
-    )
-    cmd2 = toga.Command(
-        action2,
-        label='Action 2',
-        tooltip='Perform action 2',
-        icon=toga.Icon.TIBERIUS_ICON,
-        group=things
-    )
-    cmd3 = toga.Command(
-        action3,
-        label='Action 3',
-        tooltip='Perform action 3',
-        shortcut='k',
-        icon='icons/cricket-72.png'
-    )
+        things = toga.Group('Things')
 
-    def action4(widget):
-        print("CALLING Action 4")
-        cmd3.enabled = not cmd3.enabled
+        cmd0 = toga.Command(
+            action1,
+            label='Action 0',
+            tooltip='Perform action 0',
+            icon=toga.Icon('icons/brutus.icns'),
+            group=things
+        )
+        cmd1 = toga.Command(
+            action1,
+            label='Action 1',
+            tooltip='Perform action 1',
+            icon=toga.Icon('icons/brutus.icns'),
+            group=things
+        )
+        cmd2 = toga.Command(
+            action2,
+            label='Action 2',
+            tooltip='Perform action 2',
+            icon=toga.Icon.TIBERIUS_ICON,
+            group=things
+        )
+        cmd3 = toga.Command(
+            action3,
+            label='Action 3',
+            tooltip='Perform action 3',
+            shortcut='k',
+            icon=toga.Icon('icons/cricket-72.png')
+        )
 
-    cmd4 = toga.Command(
-        action4,
-        label='Action 4',
-        tooltip='Perform action 4',
-        icon='icons/brutus.icns'
-    )
+        def action4(widget):
+            print("CALLING Action 4")
+            cmd3.enabled = not cmd3.enabled
 
-    app.commands.add(cmd1, cmd3, cmd4, cmd0)
-    app.main_window.toolbar.add(cmd1, cmd2, cmd3, cmd4)
+        cmd4 = toga.Command(
+            action4,
+            label='Action 4',
+            tooltip='Perform action 4',
+            icon=toga.Icon('icons/brutus.icns'),
+        )
 
-    return split
+        self.commands.add(cmd1, cmd3, cmd4, cmd0)
+        self.main_window.toolbar.add(cmd1, cmd2, cmd3, cmd4)
+
+        # Add the content on the main window
+        self.main_window.content = split
+
+        # Show the main window
+        self.main_window.show()
 
 
 def main():
-    return toga.App('First App', 'org.pybee.helloworld', startup=build)
+    return Tutorial2App('Tutorial 2', 'org.pybee.tutorial2')

@@ -1,12 +1,13 @@
+import os
+import signal
+import sys
 from builtins import id as identifier
 
-import signal
-
-from .platform import get_platform_factory
-from .window import Window
-from .command import CommandSet
-from .widgets.icon import Icon
-from .store import Store
+from toga.platform import get_platform_factory
+from toga.window import Window
+from toga.command import CommandSet
+from toga.widgets.icon import Icon
+from toga.store import Store
 
 
 class MainWindow(Window):
@@ -53,6 +54,11 @@ class App:
 
         self.factory = get_platform_factory(factory)
 
+        # Keep an accessible copy of the app instance
+        App.app = self
+        App.app_module = self.__module__.split('.')[0]
+        App.app_dir = os.path.dirname(sys.modules[App.app_module].__file__)
+
         self.name = name
         self._app_id = app_id
         self._id = id if id else identifier(self)
@@ -65,7 +71,7 @@ class App:
         self._startup_method = startup
         self._store = Store(self)
 
-        self.default_icon = Icon('tiberius', system=True, factory=self.factory)
+        self.default_icon = Icon('tiberius', system=True)
         self.icon = icon
 
         self._impl = self.factory.App(interface=self)
@@ -100,7 +106,7 @@ class App:
 
     @icon.setter
     def icon(self, name):
-        self._icon = Icon.load(name, default=self.default_icon, factory=self.factory)
+        self._icon = Icon.load(name, default=self.default_icon)
 
     @property
     def store(self):

@@ -1,5 +1,6 @@
+from toga.handlers import wrapped_handler
+
 from .base import Widget
-from ..utils import wrapped_handler
 
 
 class Selection(Widget):
@@ -14,9 +15,9 @@ class Selection(Widget):
             implementation of this class with the same name. (optional & normally not needed)
     """
 
-    def __init__(self, id=None, style=None, items=None, on_select=None, factory=None):
+    def __init__(self, id=None, style=None, items=None, on_select=None, enabled=True, factory=None):
         super().__init__(id=id, style=style, factory=factory)
-
+        self._on_select = None # needed for _impl initialization
         self._impl = self.factory.Selection(interface=self)
 
         if items is None:
@@ -27,6 +28,7 @@ class Selection(Widget):
                 self._impl.add_item(item)
 
         self.on_select = on_select
+        self.enabled = enabled
 
     @property
     def items(self):

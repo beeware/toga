@@ -1,5 +1,6 @@
+from toga.handlers import wrapped_handler
+
 from .base import Widget
-from ..utils import wrapped_handler
 
 
 class Slider(Widget):
@@ -18,6 +19,7 @@ class Slider(Widget):
 
     def __init__(self, id=None, style=None, default=None, range=None, on_slide=None, enabled=True, factory=None):
         super().__init__(id=id, style=style, factory=factory)
+        self._on_slide = None # needed for _impl initialization
         self._impl = self.factory.Slider(interface=self)
 
         self.range = range

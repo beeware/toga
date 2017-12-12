@@ -1,46 +1,116 @@
 from rubicon.objc import *
 
-from ..libs import *
+from toga.sources import to_accessor
+
+from toga_cocoa.libs import *
+
 from .base import Widget
-from .utils import TogaIconCell, TogaNodeData
+from .internal.cells import TogaIconCell
+from .internal.data import TogaData
 
 
 class TogaTree(NSOutlineView):
     # OutlineViewDataSource methods
     @objc_method
     def outlineView_child_ofItem_(self, tree, child: int, item):
+        # Get the object representing the row
         if item is None:
-            node = self.interface.data.root(child)
+            node = self.interface.data[child]
         else:
-            parent = self._impl.node[item]
-            node = parent.children[child]
+            node = item.attrs['node'][child]
 
-        if node._impl is None:
-            self._impl.insert_node(node)
+        # Get the Cocoa implementation for the row. If an _impl
+        # doesn't exist, create a data object for it, and
+        # populate it with initial values for each column.
+        try:
+            node_impl = node._impl
+        except AttributeError:
+            node_impl = TogaData.alloc().init()
+            node_impl.attrs = {
+                'node': node,
+                'values': {
+                    attr: None
+                    for attr in self.interface._accessors
+                }
+            }
+            node._impl = node_impl
 
-        return node._impl
+        return node_impl
 
     @objc_method
     def outlineView_isItemExpandable_(self, tree, item) -> bool:
-        return self._impl.node[item].children is not None
+        try:
+            return item.attrs['node'].has_children()
+        except AttributeError:
+            return False
 
     @objc_method
     def outlineView_numberOfChildrenOfItem_(self, tree, item) -> int:
         if item is None:
-            if self.interface.data:
-                return len(self.interface.data.roots())
+            # How many root elements are there?
+            # If we're starting up, the source may not exist yet.
+            if self.interface.data is not None:
+                return len(self.interface.data)
             else:
                 return 0
         else:
-            return len(self._impl.node[item].children)
+            # How many children does this node have?
+            return len(item.attrs['node'])
 
     @objc_method
     def outlineView_objectValueForTableColumn_byItem_(self, tree, column, item):
-        if column.identifier == '0':
-            data = self._impl.node[item]._impl
+        try:
+            value = getattr(item.attrs['node'], column.identifier)
+
+            # Allow for an (icon, value) tuple as the simple case
+            # for encoding an icon in a table cell.
+            if isinstance(value, tuple):
+                icon, value = value
+            else:
+                # If the value has an icon attribute, get the _impl.
+                # Icons are deferred resources, so we provide the factory.
+                try:
+                    icon = value.icon._impl(self.interface.factory)
+                except AttributeError:
+                    icon = None
+        except AttributeError:
+            # If the node doesn't have a property with the
+            # accessor name, assume an empty string value.
+            value = ''
+            icon = None
+
+        # Now construct the data object for the cell.
+        # If the datum already exists, reuse and update it.
+        # If an icon is present, create a TogaData object.
+        # Otherwise, just use the string (because a Python string)
+        # is transparently an ObjC object, so it works as a value.
+        obj = item.attrs['values'][column.identifier]
+        if obj is None or isinstance(obj, str):
+            if icon:
+                # Create a TogaData value
+                obj = TogaData.alloc().init()
+                obj.attrs = {
+                    'label': str(value),
+                    'icon': icon,
+                }
+            else:
+                # Create/Update the string value
+                obj = str(value)
+            item.attrs['values'][column.identifier] = obj
         else:
-            data = str(self._impl.node[item].data[int(column.identifier)])
-        return data
+            # Datum exists, and is currently an icon.
+            if icon:
+                # Update TogaData values
+                obj.attrs = {
+                    'label': str(value),
+                    'icon': icon,
+                }
+            else:
+                # Convert to a simple string.
+                obj = str(value)
+                item.attrs['values'][column.identifier] = obj
+
+        return obj
 
     # OutlineViewDelegate methods
     @objc_method
@@ -48,7 +118,7 @@ class TogaTree(NSOutlineView):
         self.interface.selected = []
         currentIndex = self.selectedRowIndexes.firstIndex
         for i in range(self.selectedRowIndexes.count):
-            self.interface.selected.append(self._impl.node[self.itemAtRow(currentIndex)])
+            # self.interface.selected.append(self._impl.node[self.itemAtRow(currentIndex)])
             currentIndex = self.selectedRowIndexes.indexGreaterThanIndex(currentIndex)
 
         # FIXME: return a list if widget allows multi-selection.
@@ -68,42 +138,25 @@ class Tree(Widget):
         self.native.autohidesScrollers = False
         self.native.borderType = NSBezelBorder
 
-        # Disable all autolayout functionality on the outer widget
-        self.native.translatesAutoresizingMaskIntoConstraints = False
-        self.native.autoresizesSubviews = True
-
-        # Set up storage for node implementations
-        self.node = {}
-
         # Create the Tree widget
         self.tree = TogaTree.alloc().init()
         self.tree.interface = self.interface
         self.tree._impl = self
         self.tree.columnAutoresizingStyle = NSTableViewUniformColumnAutoresizingStyle
 
-        # Use autolayout for the inner widget.
-        self.tree.setTranslatesAutoresizingMaskIntoConstraints_(True)
-
-        # FIXME: Make turning this on an option.
-        # self.tree.setAllowsMultipleSelection_(True)
+        # TODO: Make turning this on an option.
+        self.tree.allowsMultipleSelection = False
 
         # Create columns for the tree
         self.columns = []
         for i, heading in enumerate(self.interface.headings):
-            column = NSTableColumn.alloc().initWithIdentifier('%d' % i)
+            column = NSTableColumn.alloc().initWithIdentifier(to_accessor(heading))
             self.tree.addTableColumn(column)
             self.columns.append(column)
 
-            # FIXME - Modify TogaIconCell to preserve the column ID;
-            # then allow all columns to have icons and/or text.
-            if i == 0:
-                cell = TogaIconCell.alloc().init()
-                column.dataCell = cell
-            else:
-                cell = column.dataCell
+            cell = TogaIconCell.alloc().init()
+            column.dataCell = cell
 
-            cell.editable = False
-            cell.selectable = False
             column.headerCell.stringValue = heading
 
         # Put the tree arrows in the first column.
@@ -118,22 +171,26 @@ class Tree(Widget):
         # Add the layout constraints
         self.add_constraints()
 
-    def insert_node(self, node):
-        node._impl = TogaNodeData.alloc().init()
-        node._impl.node = node
+    # def data_changed(self, node=None):
+    #     if node:
+    #         if node._expanded:
+    #             self.tree.expandItem(node._impl)
+    #         else:
+    #             self.tree.collapseItem(node._impl)
 
-        self.node[node._impl] = node
+    def change_source(self, source):
+        self.tree.reloadData()
 
-    def remove_node(self, node):
-        del self.node[node._impl]
+    def insert(self, parent, index, item):
+        self.tree.reloadData()
 
-    def refresh_node(self, node):
-        if node._expanded:
-            self.tree.expandItem(node._impl)
-        else:
-            self.tree.collapseItem(node._impl)
+    def change(self, item):
+        self.tree.reloadData()
 
-    def refresh(self):
+    def remove(self, item):
+        self.tree.reloadData()
+
+    def clear(self):
         self.tree.reloadData()
 
     def set_on_select(self, handler):

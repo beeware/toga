@@ -1,6 +1,8 @@
-from ..libs import *
-from .base import Widget
 from toga.constants import LEFT_ALIGNED
+
+from toga_winforms.libs import *
+
+from .base import Widget
 
 
 class Label(Widget):

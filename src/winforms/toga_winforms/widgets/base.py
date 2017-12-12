@@ -1,5 +1,4 @@
-# from ..container import Constraints
-from ..libs import *
+from toga_winforms.libs import *
 
 
 class Widget:

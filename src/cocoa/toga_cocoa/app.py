@@ -2,7 +2,7 @@ import asyncio
 import os
 import sys
 
-from rubicon.objc.async import EventLoopPolicy, CocoaLifecycle
+from rubicon.objc.eventloop import EventLoopPolicy, CocoaLifecycle
 import toga
 
 from .libs import *
@@ -83,10 +83,10 @@ class App:
         self.loop = asyncio.get_event_loop()
 
     def create(self):
-        self.native = NSApplication.sharedApplication()
+        self.native = NSApplication.sharedApplication
         self.native.setActivationPolicy_(NSApplicationActivationPolicyRegular)
 
-        self.native.setApplicationIconImage_(self.interface.icon._impl.native)
+        self.native.setApplicationIconImage_(self.interface.icon._impl(self.interface.factory).native)
 
         self.resource_path = os.path.dirname(os.path.dirname(NSBundle.mainBundle.bundlePath))
 
