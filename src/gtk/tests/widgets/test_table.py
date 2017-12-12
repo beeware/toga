@@ -22,6 +22,34 @@ class TestGtkTable(unittest.TestCase):
         self.window = Gtk.Window()
         self.window.add(self.table._impl.native)
 
+    def test_change_source(self):
+        # Clear the table directly
+        self.gtk_table.clear()
+
+        # Assign pre-constructed data
+        self.table.data = [
+            ("A1", "A2"),
+            ("B1", "B2")
+        ]
+
+        # Make sure the data was stored correctly
+        store = self.gtk_table.store
+        self.assertEqual(tuple(store[0]), ("A1", "A2"))
+        self.assertEqual(tuple(store[1]), ("B1", "B2"))
+
+        # Clear the table with empty assignment
+        self.table.data = []
+
+        # Make sure the table is empty
+        self.assertEqual(len(store), 0)
+
+        # Repeat with a few different cases
+        self.table.data = None
+        self.assertEqual(len(store), 0)
+
+        self.table.data = ()
+        self.assertEqual(len(store), 0)
+
     def test_insert(self):
         # Insert a row
         row_data = ("1", "2")

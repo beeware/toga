@@ -66,10 +66,20 @@ class Tree(Widget):
 
         self.store.clear()
 
+        # TODO: Remove this function once a consistent API exists for
+        # checking if a TreeSource OR Node has children.
+        def has_children(parent):
+            return (
+                hasattr(parent, '_children') and parent._children
+            ) or (
+                hasattr(parent, '_roots') and parent._roots
+            )
+
         def append_node(parent, root=False):
-            for i, child_node in enumerate(parent):
-                self.insert(parent, i, child_node)
-                append_node(child_node)
+            if has_children(parent):
+                for i, child_node in enumerate(parent):
+                    self.insert(parent, i, child_node)
+                    append_node(child_node)
 
         append_node(self.interface.data, root=True)
 

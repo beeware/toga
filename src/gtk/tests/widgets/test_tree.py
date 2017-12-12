@@ -22,6 +22,37 @@ class TestGtkTree(unittest.TestCase):
         self.window = Gtk.Window()
         self.window.add(self.tree._impl.native)
 
+    def test_change_source(self):
+        # Clear the table directly
+        self.gtk_tree.clear()
+
+        # Assign pre-constructed data
+        self.tree.data = {
+            ("A1", "A2"): [],
+            ("B1", "B2"): [
+                ("B1.1", "B2.1")
+            ]
+        }
+
+        # Make sure the data was stored correctly
+        store = self.gtk_tree.store
+        self.assertEqual(tuple(store[0]), ("A1", "A2"))
+        self.assertEqual(tuple(store[1]), ("B1", "B2"))
+        self.assertEqual(tuple(store[(1,0)]), ("B1.1", "B2.1"))
+
+        # Clear the table with empty assignment
+        self.tree.data = []
+
+        # Make sure the table is empty
+        self.assertEqual(len(store), 0)
+
+        # Repeat with a few different cases
+        self.tree.data = None
+        self.assertEqual(len(store), 0)
+
+        self.tree.data = ()
+        self.assertEqual(len(store), 0)
+
     def test_insert_root_node(self):
         # Insert a node
         node_data = ("1", "2")
