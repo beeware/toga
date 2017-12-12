@@ -38,7 +38,7 @@ class TestGtkTree(unittest.TestCase):
         store = self.gtk_tree.store
         self.assertEqual(tuple(store[0]), ("A1", "A2"))
         self.assertEqual(tuple(store[1]), ("B1", "B2"))
-        self.assertEqual(tuple(store[(1,0)]), ("B1.1", "B2.1"))
+        self.assertEqual(tuple(store[(1, 0)]), ("B1.1", "B2.1"))
 
         # Clear the table with empty assignment
         self.tree.data = []
@@ -111,7 +111,7 @@ class TestGtkTree(unittest.TestCase):
         # Make sure it's the correct Gtk.TreePath
         self.assertTrue(isinstance(path, Gtk.TreePath))
         self.assertEqual(str(path), "0:0")
-        self.assertEqual(tuple(path), (0,0))
+        self.assertEqual(tuple(path), (0, 0))
         self.assertEqual(path, Gtk.TreePath((0, 0)))
 
         # Make sure the node got stored correctly
