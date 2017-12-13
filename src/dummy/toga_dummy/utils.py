@@ -1,5 +1,9 @@
 import unittest
 
+from travertino.declaration import BaseStyle
+from travertino.layout import BaseBox
+from travertino.size import BaseIntrinsicSize
+
 
 def not_required(method_or_class):
     """ This decorator function is used to mark methods or classes
@@ -153,6 +157,17 @@ class LoggedObject:
         """
         sequence = EventLog.log(EventLog.ACTION, instance=self, action=action, **data)
         self._actions.setdefault(action, {})[sequence] = data
+
+
+class TestStyle(BaseStyle):
+    class IntrinsicSize(BaseIntrinsicSize):
+        pass
+
+    class Box(BaseBox):
+        pass
+
+    def layout(self, root, viewport):
+        pass
 
 
 class TestCase(unittest.TestCase):

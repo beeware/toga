@@ -14,6 +14,7 @@ class TextInput(Widget):
         placeholder (str): If no input is present this text is shown.
         readonly (bool):  Whether a user can write into the text input, defaults to `False`.
     """
+    MIN_WIDTH = 100
 
     def __init__(
             self, id=None, style=None, factory=None,
@@ -58,7 +59,7 @@ class TextInput(Widget):
         else:
             self._placeholder = str(value)
         self._impl.set_placeholder(value)
-        self.rehint()
+        self._impl.rehint()
 
     @property
     def value(self):
@@ -76,7 +77,7 @@ class TextInput(Widget):
         else:
             v = str(value)
         self._impl.set_value(v)
-        self.rehint()
+        self._impl.rehint()
 
     def clear(self):
         """ Clears the text of the widget """

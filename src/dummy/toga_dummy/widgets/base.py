@@ -6,6 +6,7 @@ class Widget(LoggedObject):
         super().__init__()
         self.interface = interface
         self.interface._impl = self
+        self.viewport = None
         self.create()
 
     def set_app(self, app):
@@ -30,21 +31,28 @@ class Widget(LoggedObject):
     def enabled(self, value):
         self._set_value('enabled', value)
 
+    ### APPLICATOR
+
+    def set_bounds(self, x, y, width, height):
+        self._action('set bounds', x=x, y=y, width=width, height=height)
+
+    def set_hidden(self, hidden):
+        self._action('set hidden', hidden=hidden)
+
+    def set_font(self, font):
+        self._action('set font', font=font)
+
+    def set_background_color(self, color):
+        self._action('set background color', color=color)
+
+    ### INTERFACE
+
     def add_child(self, child):
         self._action('add child', child=child)
 
     @not_required_on('gtk', 'winforms', 'android', 'web')
     def add_constraints(self):
         self._action('add constraints')
-
-    def apply_layout(self):
-        self._action('apply layout')
-
-    def apply_sub_layout(self):
-        self._action('apply sub layout')
-
-    def set_font(self, font):
-        self._set_value('font', font)
 
     def rehint(self):
         self._action('rehint')

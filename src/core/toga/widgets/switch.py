@@ -44,7 +44,7 @@ class Switch(Widget):
         else:
             self._label = str(value)
         self._impl.set_label(value)
-        self.rehint()
+        self._impl.rehint()
 
     @property
     def on_toggle(self):

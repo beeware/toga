@@ -7,7 +7,7 @@ from .constants import *
 from .font import Font
 
 # Widgets
-from .widgets.base import Layout, Point, Widget
+from .widgets.base import Widget
 
 from .widgets.box import Box
 from .widgets.button import Button

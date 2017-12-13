@@ -33,6 +33,7 @@ class Window:
         self._position = position
         self._size = size
         self._is_full_screen = False
+
         self.resizeable = resizeable
         self.closeable = closeable
         self.minimizable = minimizable
@@ -114,9 +115,6 @@ class Window:
 
     @content.setter
     def content(self, widget):
-        # Update the geometry of the widget
-        widget._update_layout()
-
         # Assign the content widget to the same app as the window.
         widget.app = self.app
 
@@ -128,6 +126,9 @@ class Window:
 
         # Manifest the widget
         self._impl.set_content(widget._impl)
+
+        # Update the geometry of the widget
+        widget.refresh()
 
     @property
     def size(self):
@@ -143,6 +144,8 @@ class Window:
     def size(self, size):
         self._size = size
         self._impl.set_size(size)
+        if self.content:
+            self.content.refresh()
 
     @property
     def position(self):

@@ -1,5 +1,3 @@
-from toga.constants import *
-
 from .base import Widget
 
 
@@ -17,28 +15,13 @@ class Label(Widget):
             Alignments can be found in `toga.constants
     """
 
-    def __init__(self, text, id=None, style=None, factory=None, alignment=LEFT_ALIGNED):
+    def __init__(self, text, id=None, style=None, factory=None):
         super().__init__(id=id, style=style, factory=factory)
 
         # Create a platform specific implementation of a Label
         self._impl = self.factory.Label(interface=self)
 
         self.text = text
-        self.alignment = alignment
-
-    @property
-    def alignment(self):
-        """ The alignment of the label text
-
-        Returns:
-            (int) Alignment of the label, default is left.
-        """
-        return self._alignment
-
-    @alignment.setter
-    def alignment(self, value):
-        self._alignment = value
-        self._impl.set_alignment(value)
 
     @property
     def text(self):
@@ -56,4 +39,4 @@ class Label(Widget):
         else:
             self._text = str(value)
         self._impl.set_text(self._text)
-        self.rehint()
+        self._impl.rehint()

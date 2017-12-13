@@ -1,3 +1,5 @@
+from travertino.size import at_least
+
 from toga_cocoa.libs import NSTextField, NSTextFieldSquareBezel
 
 from .base import Widget
@@ -30,7 +32,5 @@ class TextInput(Widget):
         # Height of a text input is known and fixed.
         # Width must be > 100
         # print("REHINT TextInput", self, self._impl.fittingSize().width, self._impl.fittingSize().height)
-        self.interface.style.hint(
-            height=self.native.fittingSize().height,
-            min_width=100
-        )
+        self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
+        self.interface.intrinsic.height = self.native.fittingSize().height

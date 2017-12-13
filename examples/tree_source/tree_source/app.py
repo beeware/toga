@@ -43,7 +43,7 @@ class Decade:
     def __getitem__(self, index):
         return self._data[index]
 
-    def has_children(self):
+    def can_have_children(self):
         return True
 
 

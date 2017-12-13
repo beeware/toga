@@ -1,5 +1,5 @@
 import toga
-from colosseum import CSS
+from toga.style.flow import *
 
 
 def button_handler(widget):
@@ -44,7 +44,7 @@ class Tutorial2App(toga.App):
         left_container = toga.Table(['Hello', 'World'], data=list_data, on_select=tableSelected)
 
         right_content = toga.Box(
-            style=CSS(flex_direction='column', padding_top=50)
+            style=Flow(direction=COLUMN, padding_top=50)
         )
 
         for b in range(0, 10):
@@ -52,7 +52,7 @@ class Tutorial2App(toga.App):
                 toga.Button(
                     'Hello world %s' % b,
                     on_press=button_handler,
-                    style=CSS(width=200, margin=20)
+                    style=Flow(width=200, padding=20)
                 )
             )
 

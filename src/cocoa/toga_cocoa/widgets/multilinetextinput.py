@@ -1,3 +1,5 @@
+from travertino.size import at_least
+
 from toga_cocoa.libs import *
 
 from .base import Widget
@@ -63,7 +65,5 @@ class MultilineTextInput(Widget):
         self._height_constraint.constant = self.interface.layout.height
 
     def rehint(self):
-        self.interface.style.hint(
-            min_height=100,
-            min_width=100
-        )
+        self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
+        self.interface.intrinsic.height = at_least(self.interface.MIN_HEIGHT)

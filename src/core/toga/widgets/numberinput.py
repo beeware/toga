@@ -17,6 +17,7 @@ class NumberInput(Widget):
         step (int): Step size of the adjustment buttons.
         **ex:
     """
+    MIN_WIDTH = 120
 
     def __init__(self, id=None, style=None, factory=None,
                  min_value=0, max_value=100, step=1, **ex):

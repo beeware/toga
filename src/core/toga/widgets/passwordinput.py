@@ -58,7 +58,7 @@ class PasswordInput(Widget):
         else:
             self._placeholder = str(value)
         self._impl.set_placeholder(self._placeholder)
-        self.rehint()
+        self._impl.rehint()
 
     @property
     def value(self):
@@ -76,7 +76,7 @@ class PasswordInput(Widget):
         else:
             v = str(value)
         self._impl.set_value(v)
-        self.rehint()
+        self._impl.rehint()
 
     def clear(self):
         """ Clears the input field of the widget.

@@ -54,20 +54,27 @@ class SplitContainer(Widget):
         self._content = content
 
         for position, widget in enumerate(self._content):
-            widget._update_layout()
             widget.app = self.app
             widget.window = self.window
             self._impl.add_content(position, widget._impl)
+            widget.refresh()
 
-    def _set_app(self, app):
+    def set_app(self, app):
         if self._content:
             for content in self._content:
                 content.app = self.app
 
-    def _set_window(self, window):
+    def set_window(self, window):
         if self._content:
             for content in self._content:
                 content.window = self.window
+
+    def refresh(self):
+        """Refresh the layout and appearance of this widget."""
+        super().refresh()
+        # refresh the layout of content panels as well
+        for widget in self._content:
+            widget.refresh()
 
     @property
     def direction(self):
@@ -82,4 +89,4 @@ class SplitContainer(Widget):
     def direction(self, value):
         self._direction = value
         self._impl.set_direction(value)
-        self.rehint()
+        self._impl.rehint()

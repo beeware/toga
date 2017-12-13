@@ -123,3 +123,7 @@ class Table(Widget):
 
     def scroll_to_row(self, row):
         self.table.scrollRowToVisible(row)
+
+    def rehint(self):
+        self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
+        self.interface.intrinsic.height = at_least(self.interface.MIN_HEIGHT)

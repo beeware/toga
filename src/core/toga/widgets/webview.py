@@ -16,6 +16,8 @@ class WebView(Widget):
             the web view
         on_webview_load (``callable``): The callback method for when the webview loads (or reloads).
     """
+    MIN_WIDTH = 100
+    MIN_HEIGHT = 100
 
     def __init__(self, id=None, style=None, factory=None,
                  url=None, user_agent=None, on_key_down=None, on_webview_load=None):

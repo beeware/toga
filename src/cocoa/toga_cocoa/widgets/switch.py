@@ -1,4 +1,5 @@
 from rubicon.objc import objc_method, SEL
+from travertino.size import at_least
 
 from toga_cocoa.libs import *
 
@@ -27,7 +28,6 @@ class Switch(Widget):
 
     def set_label(self, label):
         self.native.title = label
-        self.rehint()
 
     def set_is_on(self, value):
         if value is True:
@@ -46,10 +46,8 @@ class Switch(Widget):
 
     def rehint(self):
         fitting_size = self.native.fittingSize()
-        self.interface.style.hint(
-            height=fitting_size.height,
-            min_width=fitting_size.width,
-        )
+        self.interface.intrinsic.height = fitting_size.height
+        self.interface.intrinsic.width = at_least(fitting_size.width)
 
     def set_on_toggle(self, handler):
         pass

@@ -46,22 +46,26 @@ class Widget:
     def enabled(self, value):
         self.native.set_sensitive(value)
 
+    ### APPLICATOR
+
+    def set_bounds(self, x, y, width, height):
+        raise NotImplementedException()
+
+    def set_hidden(self, hidden):
+        raise NotImplementedException()
+
+    def set_font(self, font):
+        raise NotImplementedException()
+
+    def set_background_color(self, color):
+        raise NotImplementedException()
+
+    ### INTERFACE
+
     def add_child(self, child):
         if self._container:
             child.container = self.container
         self.rehint()
-
-    def apply_layout(self):
-        pass
-
-    def apply_sub_layout(self):
-        pass
-
-    def set_font(self, font):
-        self.native.override_font(font._impl)
-
-    def set_background_color(self, background_color):
-        pass
 
     def rehint(self):
         for c in self.interface.children:

@@ -2,7 +2,9 @@ from .base import Widget
 
 
 class ProgressBar(Widget):
-    """"""
+    """
+    """
+    MIN_WIDTH = 100
 
     def __init__(self, id=None, style=None, max=None, value=None, factory=None):
         """
@@ -22,7 +24,6 @@ class ProgressBar(Widget):
         self.max = max
         self.value = value
         self._running = False
-        self.rehint()
 
     @property
     def value(self):

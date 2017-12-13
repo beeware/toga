@@ -40,7 +40,7 @@ class TogaTree(NSOutlineView):
     @objc_method
     def outlineView_isItemExpandable_(self, tree, item) -> bool:
         try:
-            return item.attrs['node'].has_children()
+            return item.attrs['node'].can_have_children()
         except AttributeError:
             return False
 
@@ -195,3 +195,7 @@ class Tree(Widget):
 
     def set_on_select(self, handler):
         pass
+
+    def rehint(self):
+        self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
+        self.interface.intrinsic.height = at_least(self.interface.MIN_HEIGHT)

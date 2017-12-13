@@ -1,4 +1,4 @@
-from toga.constants import LEFT_ALIGNED
+from travertino.size import at_least
 
 from toga_cocoa.libs import NSTextField, NSTextAlignment
 
@@ -29,7 +29,5 @@ class Label(Widget):
         # Width & height of a label is known and fixed.
         # print("REHINT label", self, self.native.fittingSize().width, self.native.fittingSize().height)
         fitting_size = self.native.fittingSize()
-        self.interface.style.hint(
-            height=fitting_size.height,
-            min_width=fitting_size.width
-        )
+        self.interface.intrinsic.width = at_least(fitting_size.width)
+        self.interface.intrinsic.height = fitting_size.height

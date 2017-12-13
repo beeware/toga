@@ -28,16 +28,8 @@ class OptionContainer(Widget):
             label (str): The label for the option.
             widget (:class:`toga.Widget`): The widget to add to the option.
         """
-        widget._update_layout()
         widget.app = self.app
         widget.window = self.window
 
         self._impl.add_content(label, widget._impl)
-
-    def _update_child_layout(self):
-        """ Updates all of the option containers. """
-        for label, container, widget in self._impl.containers:
-            if hasattr(container, 'interface'):
-                container.interface._update_layout()
-            else:
-                container.update_layout()
+        widget.refresh()

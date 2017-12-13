@@ -1,3 +1,5 @@
+from travertino.size import at_least
+
 from toga_cocoa.libs import *
 
 from .base import Widget
@@ -20,12 +22,8 @@ class Selection(Widget):
 
     def rehint(self):
         fitting_size = self.native.fittingSize()
-        self.interface.style.hint(
-            height=fitting_size.height,
-            min_width=fitting_size.width
-        )
-        # Hacky hack! But, Russ told me to do it.
-        self.interface.style.margin_top = -2
+        self.interface._intrinsic.height = fitting_size.height
+        self.interface._intrinsic.width = at_least(fitting_size.width)
 
     def remove_all_items(self):
         self.native.removeAllItems()

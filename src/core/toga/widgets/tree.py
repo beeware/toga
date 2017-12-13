@@ -17,6 +17,8 @@ class Tree(Widget):
         factory (:obj:`module`): A python module that is capable to return a
             implementation of this class with the same name. (optional & normally not needed)
     """
+    MIN_WIDTH = 100
+    MIN_HEIGHT = 100
 
     def __init__(self, headings, id=None, style=None, data=None, accessors=None, on_select=None, factory=None):
         super().__init__(id=id, style=style, factory=factory)

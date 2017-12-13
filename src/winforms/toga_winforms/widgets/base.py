@@ -18,14 +18,6 @@ class Widget:
         pass
 
     @property
-    def enabled(self):
-        raise NotImplmementedError()
-
-    @enabled.setter
-    def enabled(self, value):
-        raise NotImplmementedError()
-
-    @property
     def container(self):
         return self._container
 
@@ -40,21 +32,36 @@ class Widget:
 
         self.interface.rehint()
 
+    @property
+    def enabled(self):
+        return self.native.get_sensitive()
+
+    @enabled.setter
+    def enabled(self, value):
+        self.native.set_sensitive(value)
+
+    ### APPLICATOR
+
+    def set_bounds(self, x, y, width, height):
+        raise NotImplementedException()
+
+    def set_hidden(self, hidden):
+        raise NotImplementedException()
+
+    def set_font(self, font):
+        raise NotImplementedException()
+
+    def set_background_color(self, color):
+        raise NotImplementedException()
+
+    ### INTERFACE
+
     def add_child(self, child):
         if self.container:
             child._set_container(self.container)
 
-    def apply_layout(self):
-        if self.native:
-            self.native.Size = Size(int(self.interface.layout.width), int(self.interface.layout.height))
-            self.native.Location = Point(int(self.interface.layout.absolute.left), int(self.interface.layout.absolute.top))
-
-    def apply_sub_layout(self):
-        # If widget have sub layouts like the ScrollContainer or SplitView,                                                                                                                                                                                                                                                                                                                                     update them.
-        pass
-
     def rehint(self):
-        pass
+        raise NotImplementedException()
 
     def set_font(self, font):
-        pass
+        raise NotImplementedException()

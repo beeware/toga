@@ -38,6 +38,8 @@ class Table(Widget):
         # A list of values. This is only accepted if there is a single heading.
         >>> data = ['item 1', 'item 2', 'item 3']
     """
+    MIN_WIDTH = 100
+    MIN_HEIGHT = 100
 
     def __init__(self, headings, id=None, style=None, data=None, accessors=None, on_select=None, factory=None):
         super().__init__(id=id, style=style, factory=factory)

@@ -45,6 +45,22 @@ class Widget:
     def enabled(self, value):
         self.native.enabled = value
 
+    ### APPLICATOR
+
+    def set_bounds(self, x, y, width, height):
+        raise NotImplementedError()
+
+    def set_hidden(self, hidden):
+        raise NotImplementedError()
+
+    def set_font(self, font):
+        raise NotImplementedError()
+
+    def set_background_color(self, color):
+        raise NotImplementedError()
+
+    ### INTERFACE
+
     def add_child(self, child):
         if self.container:
             child.container = self.container
@@ -52,19 +68,6 @@ class Widget:
     def add_constraints(self):
         self.native.setTranslatesAutoresizingMaskIntoConstraints_(False)
         self.constraints = Constraints(self)
-
-    def apply_layout(self):
-        if self.constraints:
-            self.constraints.update()
-
-    def apply_sub_layout(self):
-        pass
-
-    def set_font(self, font):
-        self.native.setFont_(font.native)
-
-    def set_enabled(self, value):
-        self.native.enabled = value
 
     def rehint(self):
         pass

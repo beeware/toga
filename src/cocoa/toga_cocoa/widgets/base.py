@@ -24,70 +24,51 @@ class Widget:
     @container.setter
     def container(self, container):
         self._container = container
-        if self.constraints and self.native:
-            self._container.native.addSubview_(self.native)
+        if self.constraints:
+            self._container.native.addSubview(self.native)
             self.constraints.container = container
 
         for child in self.interface.children:
             child._impl.container = container
-        self.interface.rehint()
+        self.rehint()
 
-    @property
-    def enabled(self):
-        value = self.native.isEnabled()
-        if value == 0:
-            return False
-        elif value == 1:
-            return True
-        else:
-            raise RuntimeError('Got not allowed return value: {}'.format(value))
-
-    @enabled.setter
-    def enabled(self, value):
+    def set_enabled(self, value):
         self.native.enabled = value
 
-    def _set_hidden(self, child, status):
+    ### APPLICATOR
+
+    def set_bounds(self, x, y, width, height):
+        self.constraints.update(x, y, width, height)
+
+    def set_hidden(self, hidden):
         for view in self._container._impl.subviews:
             if child._impl == view:
-                view.setHidden_(status)
+                view.setHidden(hidden)
+
+    def set_font(self, font):
+        self.native.font = font.native
+
+    def set_background_color(self, color):
+        if color:
+            self.native.bordered = False
+            self.native.wantsLayer = True
+            self.native.backgroundColor = NSColor.colorWithRed(
+                    color[0] / 255,
+                    green=color[1] / 255,
+                    blue=color[2] / 255,
+                    alpha=1.0
+                )
+
+    ### INTERFACE
 
     def add_child(self, child):
         if self.container:
+            child.viewport = self.root.viewport
             child.container = self.container
 
     def add_constraints(self):
         self.native.translatesAutoresizingMaskIntoConstraints = False
         self.constraints = Constraints(self)
-
-    def apply_layout(self):
-        if self.constraints:
-            self.constraints.update()
-
-    def apply_sub_layout(self):
-        # If widget have sub layouts like the ScrollContainer or SplitView,                                                                                                                                                                                                                                                                                                                                     update them.
-        pass
-
-    def set_font(self, font):
-        self.native.font = font.native
-
-    def set_background_color(self, background_color):
-        if background_color:
-            if isinstance(background_color, tuple):
-                background_color = NSColor.colorWithRed_green_blue_alpha(background_color[0] / 255,
-                                                                          background_color[1] / 255,
-                                                                          background_color[2] / 255, 1.0)
-            elif isinstance(background_color, str):
-                try:
-                    background_color = NSColorUsingColorName(background_color.upper())
-                except:
-                    raise ValueError(
-                        'Background color %s does not exist, try a RGB number (red, green, blue).' % background_color)
-            else:
-                raise ValueError('_set_background_color on button widget must receive a tuple or a string')
-
-            self.native.bordered = False
-            self.native.wantsLayer = True
-            self.native.backgroundColor = background_color
 
     def rehint(self):
         pass

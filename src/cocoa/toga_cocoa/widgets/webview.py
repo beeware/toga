@@ -66,3 +66,7 @@ class WebView(Widget):
         :type  javascript: ``str``
         """
         return self.native.stringByEvaluatingJavaScriptFromString(javascript)
+
+    def rehint(self):
+        self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
+        self.interface.intrinsic.height = at_least(self.interface.MIN_HEIGHT)

@@ -1,4 +1,3 @@
-from toga_cocoa.container import Container
 from toga_cocoa.libs import *
 
 from .base import Widget
@@ -18,8 +17,6 @@ class OptionContainer(Widget):
         self.delegate.interface = self
         self.native.delegate = self.delegate
 
-        self.containers = []
-
         # Add the layout constraints
         self.add_constraints()
 
@@ -30,21 +27,13 @@ class OptionContainer(Widget):
             label (str): The label for the option container
             widget: The widget or widget tree that belongs to the label.
         """
-        if widget.native is None:
-            container = Container()
-            container.content = widget
-        else:
-            container = widget
-
-        self.containers.append((label, container, widget))
-
         item = NSTabViewItem.alloc().initWithIdentifier('%s-Tab-%s' % (id(self), id(widget)))
         item.label = label
 
-        # Turn the autoresizing mask on the container widget
-        # into constraints. This makes the container fill the
+        # Turn the autoresizing mask on the widget widget
+        # into constraints. This makes the widget fill the
         # available space inside the OptionContainer.
-        container.native.translatesAutoresizingMaskIntoConstraints = True
+        widget.native.translatesAutoresizingMaskIntoConstraints = True
 
-        item.view = container.native
+        item.view = widget.native
         self.native.addTabViewItem(item)

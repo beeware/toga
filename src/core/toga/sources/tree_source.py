@@ -21,7 +21,7 @@ class Node(Row):
         else:
             return len(self._children)
 
-    def has_children(self):
+    def can_have_children(self):
         return self._children is not None
 
     ######################################################################
