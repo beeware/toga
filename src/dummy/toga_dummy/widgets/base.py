@@ -23,13 +23,8 @@ class Widget(LoggedObject):
     def container(self, container):
         self._set_value('container', container)
 
-    @property
-    def enabled(self):
-        return self._get_value('enabled')
-
-    @enabled.setter
-    def enabled(self, value):
-        self._set_value('enabled', value)
+    def set_enabled(self, value):
+        self._action('set enabled', value=value)
 
     ### APPLICATOR
 

@@ -31,18 +31,7 @@ class Widget:
             child._impl.container = container
         self.interface.rehint()
 
-    @property
-    def enabled(self):
-        value = self.native.isEnabled()
-        if value == 0:
-            return False
-        elif value == 1:
-            return True
-        else:
-            raise RuntimeError('Got not allowed return value: {}'.format(value))
-
-    @enabled.setter
-    def enabled(self, value):
+    def set_enabled(self, value):
         self.native.enabled = value
 
     ### APPLICATOR

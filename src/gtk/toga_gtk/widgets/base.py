@@ -38,12 +38,7 @@ class Widget:
             child._impl.container = container
         self.interface.rehint()
 
-    @property
-    def enabled(self):
-        return self.native.get_sensitive()
-
-    @enabled.setter
-    def enabled(self, value):
+    def set_enabled(self, value):
         self.native.set_sensitive(value)
 
     ### APPLICATOR

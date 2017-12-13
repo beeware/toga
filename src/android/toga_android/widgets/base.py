@@ -29,26 +29,28 @@ class Widget:
             child._impl.container = container
         self.interface.rehint()
 
+    def set_enabled(self, value):
+        self.native.enabled = value
+
+    ### APPLICATOR
+
+    def set_bounds(self, x, y, width, height):
+        self._action('set bounds', x=x, y=y, width=width, height=height)
+
+    def set_hidden(self, hidden):
+        self._action('set hidden', hidden=hidden)
+
+    def set_font(self, font):
+        self._action('set font', font=font)
+
+    def set_background_color(self, color):
+        self._action('set background color', color=color)
+
+    ### INTERFACE
+
     def add_child(self, child):
         if self._container:
             child._set_container(self._container)
-
-    def apply_layout(self):
-        pass
-
-    def apply_sub_layout(self):
-        pass
-
-    def set_font(self, font):
-        self.native.setFont_(font.native)
-
-    @property
-    def enabled(self):
-        raise NotImplementedError()
-
-    @enabled.setter
-    def enabled(self, value):
-        self.native.enabled = value
 
     def rehint(self):
         pass

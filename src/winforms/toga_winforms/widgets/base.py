@@ -32,13 +32,8 @@ class Widget:
 
         self.interface.rehint()
 
-    @property
-    def enabled(self):
-        return self.native.get_sensitive()
-
-    @enabled.setter
-    def enabled(self, value):
-        self.native.set_sensitive(value)
+    def set_enabled(self, value):
+        raise NotImplementedException()
 
     ### APPLICATOR
 
