@@ -27,7 +27,6 @@ def action3(widget):
 
 
 def build(app):
-
     data = [
         ('root%s' % i, 'value %s' % i)
         for i in range(1, 100)
@@ -88,7 +87,7 @@ def build(app):
     )
 
     def action4(widget):
-        print ("CALLING Action 4")
+        print("CALLING Action 4")
         cmd3.enabled = not cmd3.enabled
 
     cmd4 = toga.Command(

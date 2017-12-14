@@ -17,9 +17,9 @@ with io.open('README.rst', encoding='utf8') as readme:
 
 
 setup(
-    name='tutorial0',
+    name='tutorial2',
     version=version,
-    description='Tutorial 0 of the Toga widget toolkit.',
+    description='Tutorial 2 of the Toga widget toolkit.',
     long_description=long_description,
     author='Russell Keith-Magee',
     author_email='russell@keith-magee.com',
@@ -45,7 +45,7 @@ setup(
     ],
     options={
         'app': {
-            'formal_name': 'Tutorial 0',
+            'formal_name': 'Tutorial 2',
             'bundle': 'org.pybee'
         },
         'macos': {

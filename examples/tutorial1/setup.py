@@ -4,7 +4,7 @@ import re
 from setuptools import setup, find_packages
 import sys
 
-with io.open('./button/__init__.py', encoding='utf8') as version_file:
+with io.open('./tutorial/__init__.py', encoding='utf8') as version_file:
     version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]", version_file.read(), re.M)
     if version_match:
         version = version_match.group(1)
@@ -17,9 +17,9 @@ with io.open('README.rst', encoding='utf8') as readme:
 
 
 setup(
-    name='tutorial0',
+    name='tutorial1',
     version=version,
-    description='Tutorial 0 of the Toga widget toolkit.',
+    description='Tutorial 1 of the Toga widget toolkit.',
     long_description=long_description,
     author='Russell Keith-Magee',
     author_email='russell@keith-magee.com',
@@ -41,7 +41,7 @@ setup(
     ],
     options={
         'app': {
-            'formal_name': 'Tutorial 0',
+            'formal_name': 'Tutorial 1',
             'bundle': 'org.pybee'
         },
         'macos': {
