@@ -29,12 +29,11 @@ from .window import Window
 __all__ = [
     'App', 'MainWindow',
     'Command',
-    'DetailedList',
-    'Window',
     'Font',
     'Box',
     'Button',
     'Canvas',
+    'DetailedList',
     'Icon',
     'Image',
     'ImageView',
@@ -42,6 +41,7 @@ __all__ = [
     'MultilineTextInput',
     'NavigationView',
     'NumberInput',
+    'OptionContainer'
     'PasswordInput',
     'ProgressBar',
     'ScrollContainer',
@@ -49,9 +49,9 @@ __all__ = [
     'Slider',
     'SplitContainer',
     'Switch',
-    'OptionContainer'
     'Table',
     'TextInput',
     'Tree',
     'WebView',
+    'Window',
 ]

@@ -3,6 +3,7 @@ from .command import Command
 from .font import Font
 from .widgets.box import Box
 from .widgets.button import Button
+# from .widgets.canvas import Canvas
 from .widgets.detailedlist import DetailedList
 from .widgets.icon import Icon
 from .widgets.image import *
@@ -27,10 +28,10 @@ from .window import Window
 __all__ = [
     'App', 'MainWindow',
     'Command',
-    'Window',
     'Font',
     'Box',
     'Button',
+    # 'Canvas',
     'DetailedList',
     'Icon',
     'Image',
@@ -50,4 +51,5 @@ __all__ = [
     'TextInput',
     'Tree',
     'WebView',
+    'Window',
 ]
