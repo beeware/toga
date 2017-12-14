@@ -1,3 +1,5 @@
+import os
+
 import toga
 from colosseum import CSS
 
@@ -27,6 +29,10 @@ def action3(widget):
 
 
 def build(app):
+    path = os.path.dirname(os.path.abspath(__file__))
+    brutus_icon = os.path.join(path, "icons", "brutus.icns")
+    cricket_icon = os.path.join(path, "icons", "cricket-72.png")
+
     data = [
         ('root%s' % i, 'value %s' % i)
         for i in range(1, 100)
@@ -61,14 +67,14 @@ def build(app):
         action1,
         label='Action 0',
         tooltip='Perform action 0',
-        icon='icons/brutus.icns',
+        icon=brutus_icon,
         group=things
     )
     cmd1 = toga.Command(
         action1,
         label='Action 1',
         tooltip='Perform action 1',
-        icon='icons/brutus.icns',
+        icon=brutus_icon,
         group=things
     )
     cmd2 = toga.Command(
@@ -83,7 +89,7 @@ def build(app):
         label='Action 3',
         tooltip='Perform action 3',
         shortcut='k',
-        icon='icons/cricket-72.png'
+        icon=cricket_icon
     )
 
     def action4(widget):
@@ -94,7 +100,7 @@ def build(app):
         action4,
         label='Action 4',
         tooltip='Perform action 4',
-        icon='icons/brutus.icns'
+        icon=brutus_icon
     )
 
     app.commands.add(cmd1, cmd3, cmd4, cmd0)
