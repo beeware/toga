@@ -6,6 +6,8 @@ from .base import Widget
 class Table(Widget):
     def create(self):
         self.store = Gtk.ListStore(*[str for h in self.interface.headings])
+
+        # flat dict, maps Row to Gtk.TreeIter
         self.rows = {}
 
         # Create a table view, and put it in a scroll view.
@@ -40,11 +42,6 @@ class Table(Widget):
             if self.compare_tree_iters(tree_iter, it):
                 return row
 
-    def set_tree_iter(self, item, tree_iter):
-        item._tree_iters = getattr(item, "_tree_iters", {})
-        item._tree_iters[self] = tree_iter
-        self.rows[item] = tree_iter
-
     def _on_select(self, selection):
         if hasattr(self.interface, "_on_select") and self.interface.on_select:
             tree_model, tree_iter = selection.get_selected()
@@ -73,8 +70,7 @@ class Table(Widget):
         self.treeview.set_model(self.store)
 
     def insert(self, index, item):
-        tree_iter = self.store.insert(index, self.row_data(item))
-        self.set_tree_iter(item, tree_iter)
+        self.rows[item] = self.store.insert(index, self.row_data(item))
 
     def change(self, item):
         self.store[self.rows[item]] = self.row_data(item)

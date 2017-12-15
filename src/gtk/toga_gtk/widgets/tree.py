@@ -39,7 +39,7 @@ class Tree(Widget):
     def compare_tree_iters(self, one, two):
         return self.store.get_path(one) == self.store.get_path(two)
 
-    # find `tree_iter` in `self.rows`
+    # find `tree_iter` in `self.nodes`
     def get_node(self, tree_iter):
         if not isinstance(tree_iter, Gtk.TreeIter):
             raise TypeError("expected Gtk.TreeIter, got {}".format(type(tree_iter)))
@@ -47,11 +47,6 @@ class Tree(Widget):
         for node, it in self.nodes.items():
             if self.compare_tree_iters(tree_iter, it):
                 return node
-
-    def set_tree_iter(self, item, tree_iter):
-        item._tree_iters = getattr(item, "_tree_iters", {})
-        item._tree_iters[self] = tree_iter
-        self.nodes[item] = tree_iter
 
     def _on_select(self, selection):
         if hasattr(self.interface, "_on_select") and self.interface.on_select:
@@ -86,12 +81,11 @@ class Tree(Widget):
         self.treeview.set_model(self.store)
 
     def insert(self, parent, index, item, **kwargs):
-        tree_iter = self.store.insert(
+        self.nodes[item] = self.store.insert(
             self.nodes.get(parent, None),
             index,
             self.row_data(item)
         )
-        self.set_tree_iter(item, tree_iter)
 
     def change(self, item):
         tree_iter = self.nodes[item]
