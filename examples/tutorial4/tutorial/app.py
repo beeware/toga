@@ -1,5 +1,6 @@
-import toga
 import math
+
+import toga
 
 
 class StartApp(toga.App):

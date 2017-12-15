@@ -1,6 +1,5 @@
 from .container import Container
 from .libs import *
-from . import dialogs
 
 
 class Window:

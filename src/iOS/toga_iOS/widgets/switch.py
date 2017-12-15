@@ -1,5 +1,4 @@
 from rubicon.objc import objc_method, CGSize
-
 from toga_iOS.libs import *
 
 from .base import Widget

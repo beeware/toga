@@ -1,6 +1,6 @@
+import toga_dummy
 from toga.handlers import wrapped_handler
 from toga.platform import get_platform_factory
-import toga_dummy
 
 
 class Group:

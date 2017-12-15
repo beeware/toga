@@ -1,5 +1,5 @@
-from .. import impl
 from .base import Widget
+from .. import impl
 
 
 class Label(Widget):

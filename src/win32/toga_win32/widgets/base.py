@@ -1,9 +1,10 @@
-from __future__ import print_function, absolute_import, division
+from ctypes import c_wchar_p
 
 from toga_cassowary.widget import Widget as CassowaryWidget
-from ..libs.constants import *
+
 from ..libs import user32
-from ctypes import c_wchar_p
+from ..libs.constants import *
+
 
 class Widget(CassowaryWidget):
     window_class = None
