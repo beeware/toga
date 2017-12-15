@@ -1,16 +1,22 @@
-import gi
+import re
 
-gi.require_version("Pango", "1.0")
-from gi.repository import Pango
+import gi
 
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
-import re
 
 try:
     import cairo
 except ImportError:
     cairo = None
+
+try:
+    gi.require_version("Pango", "1.0")
+    from gi.repository import Pango
+
+    SCALE = Pango.SCALE
+except ImportError:
+    SCALE = 1024
 
 # TODO import colosseum once updated to support colors
 # from colosseum import colors
@@ -141,7 +147,7 @@ class Canvas(Widget):
             self.native.context.set_font_size(font.size)
         elif self.native.font:
             self.native.context.select_font_face(self.native.font.get_family())
-            self.native.context.set_font_size(self.native.font.get_size() / Pango.SCALE)
+            self.native.context.set_font_size(self.native.font.get_size() / SCALE)
 
         # Support writing multiline text
         for line in text.splitlines():
@@ -157,7 +163,7 @@ class Canvas(Widget):
             self.native.context.set_font_size(font.size)
         elif self.native.font:
             self.native.context.select_font_face(self.native.font.get_family())
-            self.native.context.set_font_size(self.native.font.get_size() / Pango.SCALE)
+            self.native.context.set_font_size(self.native.font.get_size() / SCALE)
 
         x_bearing, y_bearing, width, height, x_advance, y_advance = self.native.context.text_extents(text)
         return width, height
