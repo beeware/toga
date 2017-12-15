@@ -7,28 +7,8 @@ button, that prints to the console when you press the button.
 
 Here's a complete code listing for our "Hello world" app::
 
-    import toga
-
-
-    def button_handler(widget):
-        print("hello")
-
-
-    def build(app):
-        box = toga.Box()
-
-        button = toga.Button('Hello world', on_press=button_handler)
-        button.style.set(margin=50)
-        box.add(button)
-
-        return box
-
-    def main():
-        return toga.App('First App', 'org.pybee.helloworld', startup=build)
-
-    if __name__ == '__main__':
-        main().main_loop()
-
+.. literalinclude:: /tutorial/source/tutorial-0.py
+   :language: python
 
 Let's walk through this one line at a time.
 
