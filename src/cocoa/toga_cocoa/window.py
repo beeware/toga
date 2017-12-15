@@ -1,7 +1,8 @@
+from toga.command import Command as BaseCommand
+
+from . import dialogs
 from .container import Container
 from .libs import *
-from . import dialogs
-from toga.command import Command as BaseCommand, GROUP_BREAK, SECTION_BREAK
 
 
 def toolbar_identifier(cmd):

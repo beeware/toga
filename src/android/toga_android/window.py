@@ -1,7 +1,3 @@
-from .container import Container
-from . import dialogs
-
-
 class Window:
     def __init__(self, interface):
         self.interface = interface

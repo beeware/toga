@@ -1,7 +1,6 @@
-from __future__ import print_function, absolute_import, division
+from .base import Widget
 from ..libs import *
 
-from .base import Widget
 
 def wrapped_handler(widget, handler):
     def _handler(impl, data=None):

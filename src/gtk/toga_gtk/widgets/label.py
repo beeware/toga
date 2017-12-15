@@ -1,7 +1,5 @@
 from gi.repository import Gtk
-
 from toga.constants import *
-
 from toga_gtk.libs import gtk_alignment
 
 from .base import Widget

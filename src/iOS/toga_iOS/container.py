@@ -3,9 +3,7 @@ from rubicon.objc import objc_method
 from .libs import (
     NSLayoutAttributeTop, NSLayoutAttributeLeft,
     NSLayoutAttributeRight, NSLayoutAttributeBottom,
-    NSLayoutRelationEqual, NSLayoutRelationGreaterThanOrEqual, NSLayoutRelationLessThanOrEqual,
-    NSLayoutConstraint,
-    NSLayoutPriority,
+    NSLayoutRelationEqual, NSLayoutConstraint,
     UIView, UIColor
 )
 

@@ -1,7 +1,3 @@
-from __future__ import print_function, absolute_import, division
-
-import ctypes
-
 from .libs import *
 from .window import Window
 

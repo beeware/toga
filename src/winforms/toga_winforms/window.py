@@ -1,9 +1,5 @@
-from .libs import *
-
 from .container import Container
-from . import dialogs
-# from .command import SEPARATOR, SPACER, EXPANDING_SPACER
-
+from .libs import *
 
 
 class Window:

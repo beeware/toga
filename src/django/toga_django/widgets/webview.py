@@ -1,8 +1,7 @@
 from toga.interface import WebView as WebViewInterface
 
-from .. import impl
 from .base import WidgetMixin
-# from ..libs import WebView as TogaWebView
+from .. import impl
 
 
 class WebView(WebViewInterface, WidgetMixin):
