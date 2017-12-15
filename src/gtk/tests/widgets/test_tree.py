@@ -180,7 +180,7 @@ class TestGtkTree(unittest.TestCase):
         with self.assertRaises(TypeError):
             self.gtk_tree.get_node(None)
 
-    def test_node_persisence_for_replacement(self):
+    def test_node_persistence_for_replacement(self):
         self.tree.data = []
         A = self.tree.data.insert(None, 0, one="A1", two="A2")
         B = self.tree.data.insert(None, 0, one="B1", two="B2")
@@ -191,7 +191,7 @@ class TestGtkTree(unittest.TestCase):
         self.assertEqual(tuple(self.gtk_tree.store[0]), ("B1", "B2"))
         self.assertEqual(tuple(self.gtk_tree.store[1]), ("A1", "A2"))
 
-    def test_node_persisence_for_deletion(self):
+    def test_node_persistence_for_deletion(self):
         self.tree.data = []
         A = self.tree.data.append(None, one="A1", two="A2")
         B = self.tree.data.append(None, one="B1", two="B2")

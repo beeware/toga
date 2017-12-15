@@ -143,7 +143,7 @@ class TestGtkTable(unittest.TestCase):
         with self.assertRaises(TypeError):
             self.gtk_table.get_row(None)
 
-    def test_row_persisence(self):
+    def test_row_persistence(self):
         A = self.table.data.insert(0, one="A1", two="A2")
         B = self.table.data.insert(0, one="B1", two="B2")
 
