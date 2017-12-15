@@ -2,8 +2,6 @@ from android.view import Gravity
 
 from toga.constants import *
 
-from .base import WidgetMixin
-
 
 class TogaLabel(extends=android.widget.TextView):
     @super({context: android.content.Context})

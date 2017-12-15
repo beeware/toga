@@ -5,7 +5,7 @@
 """
 import ast
 import os
-import sys
+
 import pytablewriter
 
 """

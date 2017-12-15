@@ -3,7 +3,6 @@ from random import choice
 import toga
 from colosseum import CSS
 
-
 headings = ['Title', 'Year', 'Rating', 'Genre']
 bee_movies = [
     ('The Secret Life of Bees', '2008', '7.3', 'Drama'),

@@ -1,7 +1,5 @@
 from rubicon.objc import *
-
 from toga.interface import NavigationView as NavigationViewInterface
-
 from toga_iOS.libs import *
 
 from .base import WidgetMixin

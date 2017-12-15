@@ -9,10 +9,10 @@ from .app import App
 from .box import Box
 from .button import Button
 from .label import Label
-# from .list import List, SimpleListElement
 from .textinput import TextInput
-from .window import Window
 from .webview import WebView
+from .window import Window
+
 
 # _counter = 1000
 

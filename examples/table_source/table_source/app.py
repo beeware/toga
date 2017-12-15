@@ -1,9 +1,8 @@
 from random import choice
 
 import toga
-from toga.sources import Source
 from colosseum import CSS
-
+from toga.sources import Source
 
 bee_movies = [
     ('The Secret Life of Bees', '2008', '7.3', 'Drama'),
