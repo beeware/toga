@@ -29,7 +29,6 @@ class Button(Widget):
 
     def set_label(self, label):
         self.native.title = label
-        self.rehint()
 
     def set_on_press(self, handler):
         pass

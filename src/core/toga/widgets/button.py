@@ -42,6 +42,7 @@ class Button(Widget):
         else:
             self._label = str(value)
         self._impl.set_label(self.label)
+        self._impl.rehint()
 
     @property
     def on_press(self):
