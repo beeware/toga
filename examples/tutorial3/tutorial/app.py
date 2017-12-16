@@ -1,5 +1,5 @@
 import toga
-from colosseum import CSS
+from toga.style.flow import *
 
 
 class Graze(toga.App):
@@ -7,27 +7,27 @@ class Graze(toga.App):
         self.main_window = toga.MainWindow(self.name)
         self.main_window.app = self
 
-        self.webview = toga.WebView(style=CSS(flex=1))
+        self.webview = toga.WebView(style=Flow(flex=1))
         self.url_input = toga.TextInput(
             initial='https://github.com/',
-            style=CSS(flex=1, margin=5)
+            style=Flow(flex=1, padding=5)
         )
 
         box = toga.Box(
-            children = [
+            children=[
                 toga.Box(
-                    children = [
+                    children=[
                         self.url_input,
-                        toga.Button('Go', on_press=self.load_page, style=CSS(width=50)),
+                        toga.Button('Go', on_press=self.load_page, style=Flow(width=50, padding_right=5)),
                     ],
-                    style=CSS(
-                        flex_direction='row'
+                    style=Flow(
+                        direction=ROW
                     )
                 ),
                 self.webview,
             ],
-            style=CSS(
-                flex_direction='column'
+            style=Flow(
+                direction=COLUMN
             )
         )
 

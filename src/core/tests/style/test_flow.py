@@ -128,3 +128,42 @@ class FlowLayoutTests(TestCase):
                 {'origin': (15, 75), 'content': (610, 30)}
             ]}
         )
+
+    def test_tutorial_3(self):
+        root = TestNode(
+            'app', style=Flow(direction=COLUMN), children=[
+                TestNode('box', style=Flow(), children=[
+                    TestNode('input', style=Flow(flex=1, padding=5), size=(at_least(100), 15)),
+                    TestNode('button', style=Flow(width=50, padding=5), size=(at_least(40), 10)),
+                ]),
+                TestNode('web', style=Flow(flex=1), size=(at_least(100), at_least(100))),
+            ]
+        )
+
+        # Minimum size
+        root.style.layout(root, Viewport(0, 0))
+        self.assertLayout(
+            root,
+            (170, 125),
+            {'origin': (0, 0), 'content': (170, 125), 'children': [
+                {'origin': (0, 0), 'content': (170, 25), 'children': [
+                    {'origin': (5, 5), 'content': (100, 15)},
+                    {'origin': (115, 5), 'content': (50, 10)},
+                ]},
+                {'origin': (0, 25), 'content': (100, 100)}
+            ]}
+        )
+
+        # Normal size
+        root.style.layout(root, Viewport(640, 480))
+        self.assertLayout(
+            root,
+            (640, 480),
+            {'origin': (0, 0), 'content': (640, 480), 'children': [
+                {'origin': (0, 0), 'content': (640, 25), 'children': [
+                    {'origin': (5, 5), 'content': (570, 15)},
+                    {'origin': (585, 5), 'content': (50, 10)},
+                ]},
+                {'origin': (0, 25), 'content': (640, 455)}
+            ]}
+        )
