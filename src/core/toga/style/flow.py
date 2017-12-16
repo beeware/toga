@@ -2,9 +2,7 @@ from travertino.constants import (
     NORMAL, SERIF, SANS_SERIF, CURSIVE, FANTASY, MONOSPACE, ITALIC, OBLIQUE, SMALL_CAPS, BOLD,
     LEFT, RIGHT, TOP, BOTTOM, CENTER, JUSTIFY, RTL, LTR, TRANSPARENT
 )
-from travertino.declaration import (
-    Choices, validated_property, directional_property, BaseStyle
-)
+from travertino.declaration import BaseStyle, Choices
 from travertino.layout import BaseBox
 from travertino.size import BaseIntrinsicSize
 
@@ -64,37 +62,6 @@ class Flow(BaseStyle):
     # def __init__(self, direction=ROW, **style):
     #     style['direction'] = direction
     #     super().__init__(**style)
-
-    display = validated_property('display', choices=DISPLAY_CHOICES, initial=FLOW)
-    visibility = validated_property('visibility', choices=VISIBILITY_CHOICES, initial=VISIBLE)
-    direction = validated_property('direction', choices=DIRECTION_CHOICES, initial=ROW)
-    alignment = validated_property('alignment', choices=ALIGNMENT_CHOICES)
-
-    width = validated_property('width', choices=SIZE_CHOICES, initial=0)
-    height = validated_property('height', choices=SIZE_CHOICES, initial=0)
-    flex = validated_property('flex', choices=FLEX_CHOICES, initial=0)
-
-    padding_top = validated_property('padding_top', choices=PADDING_CHOICES, initial=0)
-    padding_right = validated_property('padding_right', choices=PADDING_CHOICES, initial=0)
-    padding_bottom = validated_property('padding_bottom', choices=PADDING_CHOICES, initial=0)
-    padding_left = validated_property('padding_left', choices=PADDING_CHOICES, initial=0)
-    padding = directional_property('padding%s')
-
-    color = validated_property('color', choices=COLOR_CHOICES)
-    background_color = validated_property('background_color', choices=BACKGROUND_COLOR_CHOICES)
-
-    text_align = validated_property('text_align', choices=TEXT_ALIGN_CHOICES)
-    text_direction = validated_property('text_direction', choices=TEXT_DIRECTION_CHOICES, initial=LTR)
-
-    # font_family = list_property('font_family', choices=FONT_FAMILY_CHOICES)
-    font_style = validated_property('font_style', choices=FONT_STYLE_CHOICES, initial=NORMAL)
-    font_variant = validated_property('font_variant', choices=FONT_VARIANT_CHOICES, initial=NORMAL)
-    font_weight = validated_property('font_weight', choices=FONT_WEIGHT_CHOICES, initial=NORMAL)
-    font_size = validated_property('font_size', choices=FONT_SIZE_CHOICES)
-    # font = composite_property([
-    #     'font_family', 'font_style', 'font_variant', 'font_weight', 'font_size'
-    #     FONT_CHOICES
-    # ])
 
     _depth = -1
 
@@ -410,3 +377,35 @@ class Flow(BaseStyle):
                 # self._debug("align to left", child, child.layout.content_left)
 
         return width, height
+
+
+Flow.validated_property('display', choices=DISPLAY_CHOICES, initial=FLOW)
+Flow.validated_property('visibility', choices=VISIBILITY_CHOICES, initial=VISIBLE)
+Flow.validated_property('direction', choices=DIRECTION_CHOICES, initial=ROW)
+Flow.validated_property('alignment', choices=ALIGNMENT_CHOICES)
+
+Flow.validated_property('width', choices=SIZE_CHOICES, initial=0)
+Flow.validated_property('height', choices=SIZE_CHOICES, initial=0)
+Flow.validated_property('flex', choices=FLEX_CHOICES, initial=0)
+
+Flow.validated_property('padding_top', choices=PADDING_CHOICES, initial=0)
+Flow.validated_property('padding_right', choices=PADDING_CHOICES, initial=0)
+Flow.validated_property('padding_bottom', choices=PADDING_CHOICES, initial=0)
+Flow.validated_property('padding_left', choices=PADDING_CHOICES, initial=0)
+Flow.directional_property('padding%s')
+
+Flow.validated_property('color', choices=COLOR_CHOICES)
+Flow.validated_property('background_color', choices=BACKGROUND_COLOR_CHOICES)
+
+Flow.validated_property('text_align', choices=TEXT_ALIGN_CHOICES)
+Flow.validated_property('text_direction', choices=TEXT_DIRECTION_CHOICES, initial=LTR)
+
+# Flow.list_property('font_family', choices=FONT_FAMILY_CHOICES)
+Flow.validated_property('font_style', choices=FONT_STYLE_CHOICES, initial=NORMAL)
+Flow.validated_property('font_variant', choices=FONT_VARIANT_CHOICES, initial=NORMAL)
+Flow.validated_property('font_weight', choices=FONT_WEIGHT_CHOICES, initial=NORMAL)
+Flow.validated_property('font_size', choices=FONT_SIZE_CHOICES)
+# Flow.composite_property([
+#     'font_family', 'font_style', 'font_variant', 'font_weight', 'font_size'
+#     FONT_CHOICES
+# ])
