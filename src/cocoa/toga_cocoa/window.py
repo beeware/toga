@@ -66,13 +66,14 @@ class WindowDelegate(NSObject):
         _item = NSToolbarItem.alloc().initWithItemIdentifier_(identifier)
         try:
             item = self.interface._impl._toolbar_items[identifier]
+            impl = item._impl(self.interface.factory)
             if item.label:
                 _item.setLabel_(item.label)
                 _item.setPaletteLabel_(item.label)
             if item.tooltip:
                 _item.setToolTip_(item.tooltip)
-            if item._impl.icon:
-                _item.setImage_(item._impl.icon._impl(self.interface.factory).native)
+            if impl.icon:
+                _item.setImage_(impl.icon._impl(self.interface.factory).native)
 
             item._widgets.append(_item)
 
