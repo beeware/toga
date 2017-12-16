@@ -6,11 +6,6 @@ from toga.style import Flow, TogaApplicator
 from toga.platform import get_platform_factory
 
 
-# Create a TogaApplicator. This instance will be
-# used to apply style and layout changes to widget implementations.
-applicator = TogaApplicator()
-
-
 class Widget(Node):
     """ This is the base widget implementation that all widgets in Toga
     derive from.
@@ -34,7 +29,7 @@ class Widget(Node):
     def __init__(self, id=None, enabled=True, style=None, factory=None):
         super().__init__(
             style=style if style else Flow(),
-            applicator=applicator
+            applicator=TogaApplicator(self)
         )
 
         self._id = id if id else identifier(self)

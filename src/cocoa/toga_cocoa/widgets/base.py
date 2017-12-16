@@ -10,6 +10,7 @@ class Widget:
         self.constraints = None
         self.native = None
         self.create()
+        self.interface.style.reapply()
 
     def set_app(self, app):
         pass
@@ -40,24 +41,31 @@ class Widget:
     def set_bounds(self, x, y, width, height):
         self.constraints.update(x, y, width, height)
 
+    def set_alignment(self, alignment):
+        pass
+
     def set_hidden(self, hidden):
         for view in self._container._impl.subviews:
             if child._impl == view:
                 view.setHidden(hidden)
 
     def set_font(self, font):
-        self.native.font = font.native
+        pass
+
+    def set_color(self, color):
+        pass
 
     def set_background_color(self, color):
-        if color:
-            self.native.bordered = False
-            self.native.wantsLayer = True
-            self.native.backgroundColor = NSColor.colorWithRed(
-                    color[0] / 255,
-                    green=color[1] / 255,
-                    blue=color[2] / 255,
-                    alpha=1.0
-                )
+        pass
+        # if color:
+        #     self.native.bordered = False
+        #     self.native.wantsLayer = True
+        #     self.native.backgroundColor = NSColor.colorWithRed(
+        #             color[0] / 255,
+        #             green=color[1] / 255,
+        #             blue=color[2] / 255,
+        #             alpha=1.0
+        #         )
 
     ### INTERFACE
 

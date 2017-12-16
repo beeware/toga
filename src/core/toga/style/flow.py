@@ -102,6 +102,25 @@ class Flow(BaseStyle):
         print('    ' * self.__class__._depth, *args)
         pass
 
+    def apply(self, prop, value):
+        if self._applicator:
+            if prop == 'text_align':
+                if value is None:
+                    if self.text_direction is RTL:
+                        value = RIGHT
+                    else:
+                        value = LEFT
+                self._applicator.set_text_alignment(value)
+            elif prop == 'color':
+                self._applicator.set_color(value)
+            elif prop == 'background_color':
+                self._applicator.set_background_color(value)
+            elif prop == 'hidden':
+                self._applicator.set_hidden(value)
+            elif prop == 'font':
+                self._applicator.set_font(font)
+
+
     def layout(self, node, viewport):
         self._layout_node(node, viewport.width, viewport.height, viewport.dpi)
         node.layout.content_top = node.style.padding_top
