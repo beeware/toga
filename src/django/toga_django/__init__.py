@@ -1,7 +1,8 @@
 from . import django
 from .app import App, MainWindow
+# from .color import color
 # from .command import Command
-# from .font import Font
+# from .font import font
 from .widgets.box import *
 from .widgets.button import *
 # from .widgets.canvas import Canvas
@@ -31,8 +32,9 @@ __all__ = [
     '__version__',
     'django',
     'App', 'MainWindow',
+    # 'color',
     # 'Command',
-    # 'Font',
+    # 'font',
     'Box',
     'Button',
     # 'Canvas',
