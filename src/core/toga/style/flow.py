@@ -67,7 +67,6 @@ class Flow(BaseStyle):
 
     def _debug(self, *args):
         print('    ' * self.__class__._depth, *args)
-        pass
 
     def apply(self, prop, value):
         if self._applicator:
