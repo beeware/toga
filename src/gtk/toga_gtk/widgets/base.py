@@ -6,7 +6,6 @@ class Widget:
         self.interface = interface
         self.interface._impl = self
         self._container = None
-        self.constraints = None
         self.native = None
         self.create()
         self.interface.style.reapply()
@@ -24,8 +23,7 @@ class Widget:
     @container.setter
     def container(self, container):
         self._container = container
-        if self.native:
-            self._container.native.add(self.native)
+        self._container.native.add(self.native)
 
         for child in self.interface.children:
             child._impl.container = container
@@ -37,6 +35,8 @@ class Widget:
     ### APPLICATOR
 
     def set_bounds(self, x, y, width, height):
+        # No implementation required here; the new sizing will be picked up
+        # by the box's allocation handler.
         pass
 
     def set_alignment(self, alignment):
