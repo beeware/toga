@@ -9,3 +9,6 @@ class Font():
 
     def create(self):
         self.native = NSFont.fontWithName_size_(self.interface.family, self.interface.size)
+
+    def measure(self, text, tight):
+        raise NotImplementedError()
