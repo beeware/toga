@@ -87,7 +87,6 @@ class Flow(BaseStyle):
             elif prop == 'font':
                 self._applicator.set_font(font)
 
-
     def layout(self, node, viewport):
         self._layout_node(node, viewport.width, viewport.height, viewport.dpi)
         node.layout.content_top = node.style.padding_top
