@@ -94,11 +94,11 @@ class StartApp(toga.App):
 
     def draw_text(self):
         x = 32
-        y = 175
+        y = 185
         font = toga.Font(family='sans-serif', size=20)
-        width, height = self.canvas.measure_text('Tiberius', font)
+        width, height = font.measure('Tiberius', tight=True)
         with self.canvas.stroke():
-            self.canvas.rect(x - 5, y - 5, width + 10, height + 10)
+            self.canvas.rect(x - 10, y - height + 2, width, height + 2)
         with self.canvas.fill():
             self.canvas.fill_style('rgba(149.0, 119, 73, 1)')
             self.canvas.write_text('Tiberius', x, y, font)

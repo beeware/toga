@@ -33,3 +33,18 @@ class Font:
             The size of the font in ``int``.
         """
         return self._size
+
+    def measure(self, text, tight=False):
+        """Measure the text
+
+        Provides a measurement of the text using the font.
+
+        Args:
+            text (string): The text to measure.
+            tight (bool, optional): Enables tight measurement around the text
+                for drawing. Defaults to false for doing layouts.
+
+        Returns:
+            tuple (int, int): text width, text height
+        """
+        return self._impl.measure(text, tight)

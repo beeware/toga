@@ -143,18 +143,20 @@ class Canvas(Widget):
     def write_text(self, text, x, y, font):
         # Set font family and size
         if font:
-            self.native.context.select_font_face(font.family)
-            self.native.context.set_font_size(font.size)
+            write_font = font
         elif self.native.font:
-            self.native.context.select_font_face(self.native.font.get_family())
-            self.native.context.set_font_size(self.native.font.get_size() / SCALE)
+            write_font = self.native.font
+            write_font.family = self.native.font.get_family()
+            write_font.size = self.native.font.get_size() / SCALE
+        self.native.context.select_font_face(write_font.family)
+        self.native.context.set_font_size(write_font.size)
 
         # Support writing multiline text
         for line in text.splitlines():
-            width, height = self.measure_text(line, font)
-            y += height
+            width, height = write_font.measure(line)
             self.native.context.move_to(x, y)
             self.native.context.text_path(line)
+            y += height
 
     def measure_text(self, text, font):
         # Set font family and size

@@ -331,19 +331,3 @@ class Canvas(Widget):
 
         """
         self._impl.write_text(text, x, y, font)
-
-    def measure_text(self, text, font=None):
-        """Measure the text
-
-        Provides a measurement of the text based on the font. If no font is
-        provided, then it will use the font assigned to the Canvas Widget, if it
-        exists, or use the default font if there is no font assigned.
-
-        Args:
-            text (string): The text to measure.
-            font (:class:`toga.Font`, optional): The font to measure with.
-
-        Returns:
-            tuple (float, float): text width, text height
-        """
-        return self._impl.measure_text(text, font)

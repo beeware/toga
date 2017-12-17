@@ -193,8 +193,3 @@ class CanvasTests(TestCase):
         test_font = toga.Font(factory=toga_dummy.factory, family='sans-serif', size=15)
         self.testing_canvas.write_text('test text', 0, 0, test_font)
         self.assertActionPerformedWith(self.testing_canvas, 'write text', text='test text', x=0, y=0, font=test_font)
-
-    def test_measure_text(self):
-        test_font = toga.Font(factory=toga_dummy.factory, family='Helvetica', size=10)
-        self.testing_canvas.measure_text('measured text', test_font)
-        self.assertActionPerformedWith(self.testing_canvas, 'measure text', text='measured text', font=test_font)
