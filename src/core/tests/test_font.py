@@ -13,7 +13,6 @@ class FontTests(TestCase):
         self.font = toga.Font(
             self.family,
             self.size,
-            factory=toga_dummy.factory
         )
 
     def test_family(self):

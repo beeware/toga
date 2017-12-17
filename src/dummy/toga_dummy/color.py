@@ -1,0 +1,3 @@
+
+def color(c):
+    pass
