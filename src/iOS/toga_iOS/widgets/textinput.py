@@ -1,5 +1,4 @@
 from rubicon.objc import CGSize
-
 from toga_iOS.libs import UITextField, UITextBorderStyleRoundedRect
 
 from .base import Widget

@@ -1,8 +1,5 @@
-from __future__ import print_function, absolute_import, division
-
 from ctypes import *
 from ctypes.wintypes import *
-
 
 INT = c_int
 LPVOID = c_void_p

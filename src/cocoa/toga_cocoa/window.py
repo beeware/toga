@@ -1,9 +1,9 @@
 from travertino.layout import Viewport
 
-from toga.command import Command as BaseCommand, GROUP_BREAK, SECTION_BREAK
+from toga.command import Command as BaseCommand
 
-from toga_cocoa.libs import *
 from toga_cocoa import dialogs
+from toga_cocoa.libs import *
 
 
 def toolbar_identifier(cmd):

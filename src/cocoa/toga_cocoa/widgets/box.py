@@ -1,8 +1,8 @@
 from rubicon.objc import *
 
-from toga_cocoa.widgets.base import Widget
-
 from toga_cocoa.libs import NSView
+
+from .base import Widget
 
 
 class TogaView(NSView):

@@ -1,4 +1,4 @@
-from ..utils import not_required, not_required_on, LogEntry, LoggedObject
+from ..utils import not_required_on, LoggedObject
 
 
 class Widget(LoggedObject):

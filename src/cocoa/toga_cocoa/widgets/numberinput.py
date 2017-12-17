@@ -3,12 +3,10 @@ from travertino.size import at_least
 
 import toga
 from toga.widgets.base import Widget as InterfaceWidget
+from toga_cocoa.libs import NSStepper, NSObject
 
-from toga_cocoa.libs import NSStepper, NSView, NSMakeRect, NSObject
-
-from .box import Box
 from .base import Widget
-
+from .box import Box
 
 
 class NumberInput(Box):

@@ -1,5 +1,3 @@
-from toga.command import Group, Command as BaseCommand
-
 from toga import Icon
 
 

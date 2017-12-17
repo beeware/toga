@@ -1,9 +1,4 @@
-import os
-
-from .libs import *
-
 from .window import Window
-# from .widgets.icon import Icon, TIBERIUS_ICON
 
 
 class MainWindow(Window):

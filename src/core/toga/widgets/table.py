@@ -3,7 +3,6 @@ from toga.sources import ListSource
 from toga.sources.accessors import build_accessors
 
 from .base import Widget
-from .icon import Icon
 
 
 class Table(Widget):

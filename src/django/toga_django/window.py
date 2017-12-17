@@ -1,15 +1,14 @@
-from toga.interface.window import Window as WindowInterface
-
 import base64
 import marshal
 import os
 import py_compile
-from django.conf.urls import url
+
 from django.shortcuts import render
 from django.utils.safestring import mark_safe
+from toga.interface.window import Window as WindowInterface
 
-from . import impl
 from . import dialogs
+from . import impl
 from .bootstrap import bootstrap
 from .container import Container
 

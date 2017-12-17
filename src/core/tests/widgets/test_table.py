@@ -1,8 +1,6 @@
 import toga
-
-from toga.sources import ListSource, Source
-
 import toga_dummy
+from toga.sources import ListSource, Source
 from toga_dummy.utils import TestCase
 
 

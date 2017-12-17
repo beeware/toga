@@ -1,5 +1,3 @@
-from rubicon.objc import *
-
 from .libs import *
 
 

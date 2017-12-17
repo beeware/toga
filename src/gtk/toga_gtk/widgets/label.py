@@ -2,7 +2,6 @@ from gi.repository import Gtk
 from travertino.size import at_least
 
 from toga.constants import *
-
 from toga_gtk.libs import gtk_alignment
 
 from .base import Widget

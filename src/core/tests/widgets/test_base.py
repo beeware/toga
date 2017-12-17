@@ -3,6 +3,7 @@ import unittest
 import toga
 from toga.style import Flow
 import toga_dummy
+from colosseum import CSS
 from toga_dummy.utils import TestCase
 
 

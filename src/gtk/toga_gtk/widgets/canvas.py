@@ -1,5 +1,6 @@
-from gi.repository import Gtk
 import re
+
+from gi.repository import Gtk
 
 try:
     import cairo

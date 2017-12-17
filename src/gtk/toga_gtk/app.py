@@ -84,8 +84,7 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gio, GLib
 
 
-from toga.command import GROUP_BREAK, SECTION_BREAK, Command, Group
-# from .command import Command, Group
+from toga.command import GROUP_BREAK, SECTION_BREAK, Command
 import toga
 from .window import Window
 from toga import Icon

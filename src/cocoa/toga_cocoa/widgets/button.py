@@ -6,7 +6,6 @@ from toga_cocoa.libs import *
 from .base import Widget
 
 
-
 class TogaButton(NSButton):
     @objc_method
     def onPress_(self, obj) -> None:

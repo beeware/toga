@@ -2,10 +2,8 @@ from .libs import (
     objc_method,
     NSLayoutAttributeTop, NSLayoutAttributeLeft,
     NSLayoutAttributeRight, NSLayoutAttributeBottom,
-    NSLayoutRelationEqual, NSLayoutRelationGreaterThanOrEqual, NSLayoutRelationLessThanOrEqual,
-    NSLayoutConstraint,
-    NSLayoutPriority,
-    NSRect, NSPoint, NSSize,
+    NSLayoutRelationEqual, NSLayoutConstraint,
+    NSView
 )
 
 

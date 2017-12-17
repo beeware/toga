@@ -1,8 +1,6 @@
-from __future__ import print_function, absolute_import, division
+import ctypes
 
 from .libs import *
-
-import ctypes
 
 
 class Window(object):
