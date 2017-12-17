@@ -13,7 +13,7 @@ class Table(Widget):
         self.treeview = Gtk.TreeView(self.store)
         self.selection = self.treeview.get_selection()
         self.selection.set_mode(Gtk.SelectionMode.SINGLE)
-        self.selection.connect("changed", self._on_select)
+        self.selection.connect("changed", self.on_select)
 
         for i, heading in enumerate(self.interface.headings):
             renderer = Gtk.CellRendererText()
@@ -23,12 +23,12 @@ class Table(Widget):
         self.native = Gtk.ScrolledWindow()
         self.native.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
         self.native.add(self.treeview)
-        self.native.set_min_content_width(200)
-        self.native.set_min_content_height(200)
+        # self.native.set_min_content_width(200)
+        # self.native.set_min_content_height(200)
         self.native.interface = self.interface
 
-    def _on_select(self, selection):
-        if hasattr(self.interface, "_on_select") and self.interface.on_select:
+    def on_select(self, selection):
+        if self.interface.on_select:
             tree_model, impl = selection.get_selected()
             path = str(tree_model.get_path(impl))
             self.interface.on_select(None, row=self.rows.get(path, None))

@@ -27,6 +27,7 @@ class Tree(Widget):
         self._accessors = build_accessors(headings, accessors)
 
         self._data = None
+        self._on_select = None
         self._impl = self.factory.Tree(interface=self)
         self.data = data
 
