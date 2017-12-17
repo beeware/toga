@@ -35,10 +35,7 @@ class SplitContainer(Widget):
         # Add the layout constraints
         self.add_constraints()
 
-        self.containers = []
-
     def add_content(self, position, widget):
-        self.containers.append(widget)
         widget.viewport = CocoaViewport(widget.native)
 
         # Turn the autoresizing mask on the widget widget
