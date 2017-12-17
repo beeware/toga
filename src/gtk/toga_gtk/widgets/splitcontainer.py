@@ -1,6 +1,6 @@
 from gi.repository import Gtk
 
-from toga_gtk.container import Container
+from toga_gtk.window import GtkViewport
 
 from .base import Widget
 
@@ -13,28 +13,21 @@ class SplitContainer(Widget):
             self.native = Gtk.HPaned()
         self.native.interface = self.interface
         self.ratio = None
-        self.containers = []
 
     def add_content(self, position, widget):
-        if widget.native is None:
-            container = Container()
-            container.content = widget
-        else:
-            container = widget
+        widget.viewport = GtkViewport(self.native)
 
-        widget.viewport = CocoaViewport(widget.native)
-
-        self.containers.append(container)
+        # Add all children to the content widget.
+        for child in widget.interface.children:
+            child._impl.container = widget
 
         if position >= 2:
             raise ValueError('SplitContainer content must be a 2-tuple')
 
         if position == 0:
-            add = self.native.add1
+            self.native.add1(widget.native)
         elif position == 1:
-            add = self.native.add2
-
-        add(container.native)
+            self.native.add2(widget.native)
 
     def set_app(self, app):
         if self.interface.content:
