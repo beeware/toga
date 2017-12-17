@@ -4,7 +4,6 @@ from travertino.layout import Viewport
 from toga.command import GROUP_BREAK, SECTION_BREAK
 from toga.handlers import wrapped_handler
 
-from .container import Container
 from . import dialogs
 
 
@@ -63,7 +62,9 @@ class Window:
                 item_impl.set_draw(False)
             else:
                 item_impl = Gtk.ToolButton()
-                item_impl.set_icon_widget(cmd._impl.icon._impl(self.interface.factory).native_32)
+                cmd_impl = cmd._impl(self.interface.factory)
+                icon_impl = cmd_impl.icon._impl(self.interface.factory)
+                item_impl.set_icon_widget(icon_impl.native_32)
                 item_impl.set_label(cmd.label)
                 item_impl.set_tooltip_text(cmd.tooltip)
                 item_impl.connect("clicked", wrapped_handler(cmd, cmd.action))
@@ -72,13 +73,13 @@ class Window:
             self.toolbar_native.insert(item_impl, -1)
 
     def set_content(self, widget):
-        self.layout = Gtk.VBox()
-
         widget.viewport = GtkViewport(widget.native)
 
         # Add all children to the content widget.
         for child in widget.interface.children:
             child._impl.container = widget
+
+        self.layout = Gtk.VBox()
 
         if self.toolbar_native:
             self.layout.pack_start(self.toolbar_native, False, False, 0)
