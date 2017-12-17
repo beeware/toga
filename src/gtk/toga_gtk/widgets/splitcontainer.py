@@ -22,6 +22,8 @@ class SplitContainer(Widget):
         else:
             container = widget
 
+        widget.viewport = CocoaViewport(widget.native)
+
         self.containers.append(container)
 
         if position >= 2:
@@ -46,22 +48,3 @@ class SplitContainer(Widget):
 
     def set_direction(self, value):
         pass
-
-    def apply_sub_layout(self):
-        """ Force a layout update on the widget.
-        """
-        if self.interface.content and self.native.is_visible():
-            if self.interface.direction == self.interface.VERTICAL:
-                size = self.native.get_allocation().width
-                if self.ratio is None:
-                    self.ratio = 0.5
-                    self.native.set_position(size * self.ratio)
-                self.containers[0].interface._update_layout(width=size * self.ratio)
-                self.containers[1].interface._update_layout(width=size * (1.0 - self.ratio))
-            else:
-                size = self.native.get_allocation().height
-                if self.ratio is None:
-                    self.ratio = 0.5
-                    self.native.set_position(size * self.ratio)
-                self.containers[0].interface._update_layout(height=size * self.ratio)
-                self.containers[1].interface._update_layout(height=size * (1.0 - self.ratio))

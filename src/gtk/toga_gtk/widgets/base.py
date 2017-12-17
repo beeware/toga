@@ -1,14 +1,6 @@
 from gi.repository import Gtk
 
 
-def wrapped_handler(widget, handler):
-    def _handler(impl, data=None):
-        if handler:
-            return handler(widget)
-
-    return _handler
-
-
 class Widget:
     def __init__(self, interface):
         self.interface = interface
@@ -17,6 +9,7 @@ class Widget:
         self.constraints = None
         self.native = None
         self.create()
+        self.interface.style.reapply()
 
     def set_app(self, app):
         pass
@@ -36,7 +29,7 @@ class Widget:
 
         for child in self.interface.children:
             child._impl.container = container
-        self.interface.rehint()
+        self.rehint()
 
     def set_enabled(self, value):
         self.native.set_sensitive(value)
@@ -44,24 +37,29 @@ class Widget:
     ### APPLICATOR
 
     def set_bounds(self, x, y, width, height):
-        raise NotImplementedException()
+        pass
+
+    def set_alignment(self, alignment):
+        pass
 
     def set_hidden(self, hidden):
-        raise NotImplementedException()
+        pass
 
     def set_font(self, font):
-        raise NotImplementedException()
+        pass
+
+    def set_color(self, color):
+        pass
 
     def set_background_color(self, color):
-        raise NotImplementedException()
+        pass
 
     ### INTERFACE
 
     def add_child(self, child):
-        if self._container:
+        if self.container:
+            child.viewport = self.root.viewport
             child.container = self.container
-        self.rehint()
 
     def rehint(self):
-        for c in self.interface.children:
-            c.rehint()
+        pass

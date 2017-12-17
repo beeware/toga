@@ -1,4 +1,5 @@
 from gi.repository import Gtk
+from travertino.layout import Viewport
 
 from toga.command import GROUP_BREAK, SECTION_BREAK
 from toga.handlers import wrapped_handler
@@ -66,6 +67,8 @@ class Window:
         else:
             self.container = widget
 
+        widget.viewport = Viewport(width=0, height=0, dpi=96)
+
         self._window_layout = Gtk.VBox()
 
         if self.toolbar_native:
@@ -79,15 +82,21 @@ class Window:
     def show(self):
         self.native.show_all()
 
+        # Now that the content is visible, we can do our initial hinting,
+        # and use that as the basis for setting the minimum window size.
+        self.container.content.rehint()
+        self.interface.content.style.layout(self.interface.content, Viewport(0, 0))
+        self.container.min_width = self.interface.content.layout.width
+        self.container.min_height = self.interface.content.layout.height
+
     def on_close(self, widget, data):
         pass
 
     def on_size_allocate(self, widget, allocation):
         # print("ON WINDOW SIZE ALLOCATION", allocation.width, allocation.height)
-        self.interface.content._update_layout(
-            width=allocation.width,
-            height=allocation.height
-        )
+        self.container.content.viewport.width = allocation.width
+        self.container.content.viewport.height = allocation.height
+        self.interface.content.refresh()
 
     def close(self):
         self.native.close()

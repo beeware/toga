@@ -1,4 +1,5 @@
 from gi.repository import Gtk
+from travertino.size import at_least
 
 from toga.constants import *
 
@@ -26,19 +27,8 @@ class Label(Widget):
 
     def rehint(self):
         # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height(), getattr(self, '_fixed_height', False), getattr(self, '_fixed_width', False))
-        hints = {}
         width = self.native.get_preferred_width()
-        minimum_width = width[0]
-        natural_width = width[1]
-
         height = self.native.get_preferred_height()
-        minimum_height = height[0]
-        natural_height = height[1]
 
-        if minimum_width > 0:
-            hints['min_width'] = minimum_width
-        if minimum_height > 0:
-            hints['min_height'] = minimum_height
-
-        if hints:
-            self.interface.style.hint(**hints)
+        self.interface.intrinsic.width = at_least(width[0])
+        self.interface.intrinsic.height = height[1]
