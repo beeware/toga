@@ -1,8 +1,9 @@
 from travertino.constants import (
     NORMAL, SERIF, SANS_SERIF, CURSIVE, FANTASY, MONOSPACE, ITALIC, OBLIQUE, SMALL_CAPS, BOLD,
-    LEFT, RIGHT, TOP, BOTTOM, CENTER, JUSTIFY, RTL, LTR, TRANSPARENT
+    LEFT, RIGHT, TOP, BOTTOM, CENTER, JUSTIFY, RTL, LTR, TRANSPARENT, SYSTEM
 )
 from travertino.declaration import BaseStyle, Choices
+from travertino.fonts import Font
 from travertino.layout import BaseBox
 from travertino.size import BaseIntrinsicSize
 
@@ -44,11 +45,12 @@ TEXT_DIRECTION_CHOICES = Choices(RTL, LTR)
 COLOR_CHOICES = Choices(color=True, default=True)
 BACKGROUND_COLOR_CHOICES = Choices(TRANSPARENT, color=True, default=True)
 
-FONT_FAMILY_CHOICES = Choices(SERIF, SANS_SERIF, CURSIVE, FANTASY, MONOSPACE, string=True, default=True)
+FONT_FAMILY_CHOICES = Choices(SYSTEM, SERIF, SANS_SERIF, CURSIVE, FANTASY, MONOSPACE, string=True)
+# FONT_FAMILY_CHOICES = Choices(SERIF, SANS_SERIF, CURSIVE, FANTASY, MONOSPACE, string=True, default=True)
 FONT_STYLE_CHOICES = Choices(NORMAL, ITALIC, OBLIQUE)
 FONT_VARIANT_CHOICES = Choices(NORMAL, SMALL_CAPS)
 FONT_WEIGHT_CHOICES = Choices(NORMAL, BOLD)
-FONT_SIZE_CHOICES = Choices(integer=True, default=True)
+FONT_SIZE_CHOICES = Choices(integer=True)
 
 
 class Flow(BaseStyle):
@@ -83,8 +85,16 @@ class Flow(BaseStyle):
                 self._applicator.set_background_color(value)
             elif prop == 'hidden':
                 self._applicator.set_hidden(value)
-            elif prop == 'font':
-                self._applicator.set_font(font)
+            elif prop in ('font_family', 'font_size', 'font_style', 'font_variant', 'font_weight'):
+                self._applicator.set_font(
+                    Font(
+                        self.font_family,
+                        self.font_size,
+                        style=self.font_style,
+                        variant=self.font_variant,
+                        weight=self.font_weight
+                    )
+                )
 
     def layout(self, node, viewport):
         self._layout_node(node, viewport.width, viewport.height, viewport.dpi)
@@ -398,11 +408,12 @@ Flow.validated_property('background_color', choices=BACKGROUND_COLOR_CHOICES)
 Flow.validated_property('text_align', choices=TEXT_ALIGN_CHOICES)
 Flow.validated_property('text_direction', choices=TEXT_DIRECTION_CHOICES, initial=LTR)
 
+Flow.validated_property('font_family', choices=FONT_FAMILY_CHOICES, initial=SYSTEM)
 # Flow.list_property('font_family', choices=FONT_FAMILY_CHOICES)
 Flow.validated_property('font_style', choices=FONT_STYLE_CHOICES, initial=NORMAL)
 Flow.validated_property('font_variant', choices=FONT_VARIANT_CHOICES, initial=NORMAL)
 Flow.validated_property('font_weight', choices=FONT_WEIGHT_CHOICES, initial=NORMAL)
-Flow.validated_property('font_size', choices=FONT_SIZE_CHOICES)
+Flow.validated_property('font_size', choices=FONT_SIZE_CHOICES, initial=12)
 # Flow.composite_property([
 #     'font_family', 'font_style', 'font_variant', 'font_weight', 'font_size'
 #     FONT_CHOICES

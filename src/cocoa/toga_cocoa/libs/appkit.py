@@ -7,7 +7,7 @@ from enum import Enum
 
 from rubicon.objc import *
 from toga.constants import *
-from toga.constants.color import *
+from toga.color import *
 
 ######################################################################
 appkit = cdll.LoadLibrary(util.find_library('AppKit'))
