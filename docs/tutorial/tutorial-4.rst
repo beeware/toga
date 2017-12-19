@@ -3,8 +3,8 @@ Let's draw on a canvas! (Gtk+ only for now, help needed!)
 =====================================
 
 One of the main capabilities needed to create many types of GUI applications is
-the ability to draw and manipulate lines, shapes, and other graphics. To do this
-in Toga, we use the Canvas Widget.
+the ability to draw and manipulate lines, shapes, text, and other graphics. To
+do this in Toga, we use the Canvas Widget.
 
 Utilizing the Canvas is easy as determining the drawing operations you want to
 perform, placing them in a function, and then creating a new Canvas while

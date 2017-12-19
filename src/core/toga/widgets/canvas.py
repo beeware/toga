@@ -313,3 +313,21 @@ class Canvas(Widget):
 
         """
         self._impl.reset_transform()
+
+    # Text
+
+    def write_text(self, text, x=0, y=0, font=None):
+        """Writes a given text
+
+        Writes a given text at the given (x,y) position. If no font is provided,
+        then it will use the font assigned to the Canvas Widget, if it exists,
+        or use the default font if there is no font assigned.
+
+        Args:
+            text (string): The text to fill.
+            x (float, optional): The x coordinate of the text. Default to 0.
+            y (float, optional): The y coordinate of the text. Default to 0.
+            font (:class:`toga.Font`, optional): The font to write with.
+
+        """
+        self._impl.write_text(text, x, y, font)
