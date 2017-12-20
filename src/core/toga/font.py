@@ -8,3 +8,8 @@ from travertino.constants import (
     SMALL_CAPS,
     BOLD,
 )
+from toga.platform import get_platform_factory
+
+
+def measure_text(font, text, tight=False, factory=None):
+    return get_platform_factory(factory).measure_text(font, text, tight=tight)

@@ -34,9 +34,9 @@ class TogaTable(NSTableView):
             icon, value = value
         else:
             # If the value has an icon attribute, get the _impl.
-            # Icons are deferred resources, so we provide the factory.
+            # Icons are deferred resources, so we bind to the factory.
             try:
-                icon = value.icon._impl(self.interface.factory)
+                icon = value.icon.bind(self.interface.factory)
             except AttributeError:
                 icon = None
 

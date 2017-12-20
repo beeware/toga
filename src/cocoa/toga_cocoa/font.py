@@ -1,40 +1,46 @@
 from .libs import NSFont
 from toga.font import MESSAGE, NORMAL, SYSTEM, SERIF, SANS_SERIF, CURSIVE, FANTASY, MONOSPACE
 
-CACHE = {}
+_FONT_CACHE = {}
 
 
-def font(f):
+def native_font(font):
     try:
-        font = CACHE[f]
+        native = _FONT_CACHE[font]
     except KeyError:
-        if f.family == SYSTEM:
-            font = NSFont.systemFontOfSize(f.size)
-        elif f.family == MESSAGE:
-            font = NSFont.messageFontOfSize(f.size)
+        if font.family == SYSTEM:
+            native = NSFont.systemFontOfSize(font.size)
+        elif font.family == MESSAGE:
+            native = NSFont.messageFontOfSize(font.size)
         else:
-            if f.family is SERIF:
+            if font.family is SERIF:
                 family = 'Times-Roman'
-            elif f.family is SANS_SERIF:
+            elif font.family is SANS_SERIF:
                 family = 'Helvetica'
-            elif f.family is CURSIVE:
+            elif font.family is CURSIVE:
                 family = 'Apple Chancery'
-            elif f.family is FANTASY:
+            elif font.family is FANTASY:
                 family = 'Papyrus'
-            elif f.family is MONOSPACE:
+            elif font.family is MONOSPACE:
                 family = 'Courier New'
             else:
-                family = f.family
+                family = font.family
 
             full_name = '{family}{weight}{style}'.format(
                 family=family,
-                weight=(' ' + f.weight.title()) if f.weight is not NORMAL else '',
-                style=(' ' + f.style.title()) if f.style is not NORMAL else '',
+                weight=(' ' + font.weight.title()) if font.weight is not NORMAL else '',
+                style=(' ' + font.style.title()) if font.style is not NORMAL else '',
             )
-            font = NSFont.fontWithName(full_name, size=f.size)
+            native = NSFont.fontWithName(full_name, size=font.size)
 
-            if font is None:
-                print("Unable to load font: {}pt {}".format(f.size, full_name))
-        CACHE[f] = font
+            if native is None:
+                print("Unable to load font: {}pt {}".format(font.size, full_name))
+            else:
+                _FONT_CACHE[font] = native
 
-    return font
+    return native
+
+
+def measure_text(font, text, tight=False):
+    # TODO
+    pass

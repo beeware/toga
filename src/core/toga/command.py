@@ -60,12 +60,12 @@ class Command:
         self._enabled = self.action is not None
 
         self._widgets = []
-        self.__impl = None
+        self._impl = None
 
-    def _impl(self, factory=None):
-        if self.__impl is None:
-            self.__impl = factory.Command(interface=self)
-        return self.__impl
+    def bind(self, factory):
+        if self._impl is None:
+            self._impl = factory.Command(interface=self)
+        return self._impl
 
     @property
     def enabled(self):

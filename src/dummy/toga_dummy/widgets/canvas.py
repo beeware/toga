@@ -92,5 +92,8 @@ class Canvas(Widget):
     def reset_transform(self):
         self._action('reset transform')
 
+    def write_text(self, text, x, y, font):
+        self._action('write text', text=text, x=x, y=y, font=font)
+
     def rehint(self):
         self._action('rehint Canvas')

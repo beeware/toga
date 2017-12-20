@@ -1,10 +1,10 @@
 CACHE = {}
 
 
-def color(c):
+def native_color(c):
     try:
         color = CACHE[c]
     except KeyError:
-        color = (c.r / 255, c.g / 255, c.b / 255, c.a)
+        color = (c.rgba.r / 255, c.rgba.g / 255, c.rgba.b / 255, c.rgba.a)
 
     return color

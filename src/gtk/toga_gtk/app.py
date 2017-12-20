@@ -196,7 +196,7 @@ class App:
                         self._actions[cmd] = action
                         self.native.add_action(action)
 
-                    # cmd._impl(self.interface.factory).set_enabled(cmd.enabled)
+                    # cmd.bind(self.interface.factory).set_enabled(cmd.enabled)
 
                     item = Gio.MenuItem.new(cmd.label, 'app.' + cmd_id)
                     if cmd.shortcut:

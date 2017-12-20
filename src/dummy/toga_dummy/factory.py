@@ -1,7 +1,8 @@
 from .app import App, MainWindow
-from .color import color
+from .color import native_color
 from .command import Command
-from .font import font
+from .font import native_font, measure_text
+
 from .widgets.box import Box
 from .widgets.button import Button
 from .widgets.canvas import Canvas
@@ -29,9 +30,10 @@ from .window import Window
 
 __all__ = [
     'App', 'MainWindow',
+    'native_color',
     'Command',
-    'color',
-    'font',
+    'native_font', 'measure_text',
+
     'Box',
     'Button',
     'Canvas',

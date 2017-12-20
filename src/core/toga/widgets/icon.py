@@ -41,12 +41,12 @@ class Icon:
             from toga.app import App
             self.filename = os.path.join(App.app_dir, self.path)
 
-        self.__impl = None
+        self._impl = None
 
-    def _impl(self, factory=None):
-        if self.__impl is None:
-            self.__impl = factory.Icon(interface=self)
-        return self.__impl
+    def bind(self, factory):
+        if self._impl is None:
+            self._impl = factory.Icon(interface=self)
+        return self._impl
 
     @classmethod
     def load(cls, path_or_icon, default=None):

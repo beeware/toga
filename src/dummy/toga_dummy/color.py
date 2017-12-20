@@ -1,3 +1,3 @@
 
-def color(c):
+def native_color(c):
     pass
