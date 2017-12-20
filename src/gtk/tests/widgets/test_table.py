@@ -57,10 +57,10 @@ class TestGtkTable(unittest.TestCase):
         row = self.table.data.insert(INSERTED_AT, *row_data)
 
         # Make sure it's in there
-        self.assertTrue(row in self.gtk_table.rows)
+        self.assertIsNotNone(self.gtk_table.get_impl(row))
 
         # Get the Gtk.TreeIter
-        tree_iter = self.gtk_table.rows[row]
+        tree_iter = self.gtk_table.get_impl(row)
 
         # Make sure it's a Gtk.TreeIter
         self.assertTrue(isinstance(tree_iter, Gtk.TreeIter))
@@ -86,20 +86,20 @@ class TestGtkTable(unittest.TestCase):
         row = self.table.data.insert(0, "1", "2")
 
         # Make sure it's in there
-        self.assertTrue(row in self.gtk_table.rows)
+        self.assertIsNotNone(self.gtk_table.get_impl(row))
 
         # Then remove it
         self.gtk_table.remove(row)
 
         # Make sure its gone
-        self.assertFalse(row in self.gtk_table.rows)
+        self.assertIsNone(self.gtk_table.get_impl(row))
 
     def test_change(self):
         # Insert a row
         row = self.table.data.insert(0, "1", "2")
 
         # Make sure it's in there
-        self.assertTrue(row in self.gtk_table.rows)
+        self.assertIsNotNone(self.gtk_table.get_impl(row))
 
         # Change a column
         row.one = "something_changed"
@@ -107,7 +107,7 @@ class TestGtkTable(unittest.TestCase):
         # unit tests should ensure this already.)
 
         # Get the Gtk.TreeIter
-        tree_iter = self.gtk_table.rows[row]
+        tree_iter = self.gtk_table.get_impl(row)
 
         # Make sure it's a Gtk.TreeIter
         self.assertTrue(isinstance(tree_iter, Gtk.TreeIter))
@@ -137,11 +137,10 @@ class TestGtkTable(unittest.TestCase):
         # Put data in the Table
         self.table.table = []
         A = self.table.data.append(None, one="A1", two="A2")
-        tree_iter = self.gtk_table.rows[A]
+        tree_iter = self.gtk_table.get_impl(A)
         self.assertEqual(A, self.gtk_table.get_row(tree_iter))
 
-        with self.assertRaises(TypeError):
-            self.gtk_table.get_row(None)
+        self.assertIsNone(self.gtk_table.get_row(None))
 
     def test_row_persistence(self):
         A = self.table.data.insert(0, one="A1", two="A2")
@@ -198,7 +197,7 @@ class TestGtkTable(unittest.TestCase):
         self.table.on_select = on_select
 
         # Select node B
-        self.gtk_table.selection.select_iter(self.gtk_table.rows[B])
+        self.gtk_table.selection.select_iter(self.gtk_table.get_impl(B))
 
         # Allow on_select to call
         handle_events()
@@ -229,7 +228,7 @@ class TestGtkTable(unittest.TestCase):
         self.table.on_select = on_select
 
         # Select row B
-        self.gtk_table.selection.select_iter(self.gtk_table.rows[B])
+        self.gtk_table.selection.select_iter(self.gtk_table.get_impl(B))
 
         # Allow on_select to call
         handle_events()

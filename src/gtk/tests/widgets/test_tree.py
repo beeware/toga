@@ -59,10 +59,10 @@ class TestGtkTree(unittest.TestCase):
         node = self.tree.data.insert(None, 0, *node_data)
 
         # Make sure it's in there
-        self.assertTrue(node in self.gtk_tree.nodes)
+        self.assertIsNotNone(self.gtk_tree.get_impl(node))
 
         # Get the Gtk.TreeIter
-        tree_iter = self.gtk_tree.nodes[node]
+        tree_iter = self.gtk_tree.get_impl(node)
 
         # Make sure it's a Gtk.TreeIter
         self.assertTrue(isinstance(tree_iter, Gtk.TreeIter))
@@ -94,10 +94,10 @@ class TestGtkTree(unittest.TestCase):
         node = self.tree.data.insert(parent, 0, *node_data)
 
         # Make sure it's in there
-        self.assertTrue(node in self.gtk_tree.nodes)
+        self.assertIsNotNone(self.gtk_tree.get_impl(node))
 
         # Get the Gtk.TreeIter
-        tree_iter = self.gtk_tree.nodes[node]
+        tree_iter = self.gtk_tree.get_impl(node)
 
         # Make sure it's a Gtk.TreeIter
         self.assertTrue(isinstance(tree_iter, Gtk.TreeIter))
@@ -123,20 +123,20 @@ class TestGtkTree(unittest.TestCase):
         node = self.tree.data.insert(None, 0, "1", "2")
 
         # Make sure it's in there
-        self.assertTrue(node in self.gtk_tree.nodes)
+        self.assertIsNotNone(self.gtk_tree.get_impl(node))
 
         # Then remove it
         self.gtk_tree.remove(node)
 
         # Make sure its gone
-        self.assertFalse(node in self.gtk_tree.nodes)
+        self.assertIsNone(self.gtk_tree.get_impl(node))
 
     def test_change(self):
         # Insert a node
         node = self.tree.data.insert(None, 0, "1", "2")
 
         # Make sure it's in there
-        self.assertTrue(node in self.gtk_tree.nodes)
+        self.assertIsNotNone(self.gtk_tree.get_impl(node))
 
         # Change a column
         node.one = "something_changed"
@@ -144,7 +144,7 @@ class TestGtkTree(unittest.TestCase):
         # unit tests should ensure this already.)
 
         # Get the Gtk.TreeIter
-        tree_iter = self.gtk_tree.nodes[node]
+        tree_iter = self.gtk_tree.get_impl(node)
 
         # Make sure it's a Gtk.TreeIter
         self.assertTrue(isinstance(tree_iter, Gtk.TreeIter))
@@ -174,11 +174,10 @@ class TestGtkTree(unittest.TestCase):
         # Put data in the Tree
         self.tree.data = []
         A = self.tree.data.append(None, one="A1", two="A2")
-        tree_iter = self.gtk_tree.nodes[A]
+        tree_iter = A._impl[self.gtk_tree]
         self.assertEqual(A, self.gtk_tree.get_node(tree_iter))
 
-        with self.assertRaises(TypeError):
-            self.gtk_tree.get_node(None)
+        self.assertIsNone(self.gtk_tree.get_node(None))
 
     def test_node_persistence_for_replacement(self):
         self.tree.data = []
@@ -220,7 +219,7 @@ class TestGtkTree(unittest.TestCase):
         self.tree.on_select = on_select
 
         # Select node B
-        self.gtk_tree.selection.select_iter(self.gtk_tree.nodes[B])
+        self.gtk_tree.selection.select_iter(self.gtk_tree.get_impl(B))
 
         # Allow on_select to call
         handle_events()
@@ -246,11 +245,11 @@ class TestGtkTree(unittest.TestCase):
         self.tree.on_select = on_select
 
         # Expand parent node (A) on Gtk.TreeView to allow selection
-        path = self.gtk_tree.store.get_path(self.gtk_tree.nodes[A])
+        path = self.gtk_tree.store.get_path(self.gtk_tree.get_impl(A))
         self.gtk_tree.treeview.expand_row(path, True)
 
         # Select node B
-        self.gtk_tree.selection.select_iter(self.gtk_tree.nodes[B])
+        self.gtk_tree.selection.select_iter(self.gtk_tree.get_impl(B))
         # Allow on_select to call
         handle_events()
 
@@ -280,7 +279,7 @@ class TestGtkTree(unittest.TestCase):
         self.tree.on_select = on_select
 
         # Select node B
-        self.gtk_tree.selection.select_iter(self.gtk_tree.nodes[B])
+        self.gtk_tree.selection.select_iter(self.gtk_tree.get_impl(B))
 
         # Allow on_select to call
         handle_events()

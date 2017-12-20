@@ -7,9 +7,6 @@ class Table(Widget):
     def create(self):
         self.store = Gtk.ListStore(*[str for h in self.interface.headings])
 
-        # flat dict, maps Row to Gtk.TreeIter
-        self.rows = {}
-
         # Create a table view, and put it in a scroll view.
         # The scroll view is the native, because it's the outer container.
         self.treeview = Gtk.TreeView(self.store)
@@ -29,23 +26,10 @@ class Table(Widget):
         self.native.set_min_content_height(200)
         self.native.interface = self.interface
 
-    # Gtk.TreeIter cannot be compared with __eq__ !!!
-    def compare_tree_iters(self, one, two):
-        return self.store.get_path(one) == self.store.get_path(two)
-
-    # find `tree_iter` in `self.rows`
-    def get_row(self, tree_iter):
-        if not isinstance(tree_iter, Gtk.TreeIter):
-            raise TypeError("expected Gtk.TreeIter, got {}".format(type(tree_iter)))
-
-        for row, it in self.rows.items():
-            if self.compare_tree_iters(tree_iter, it):
-                return row
-
     def _on_select(self, selection):
         if hasattr(self.interface, "_on_select") and self.interface.on_select:
             tree_model, tree_iter = selection.get_selected()
-            row = self.get_row(tree_iter) if tree_iter else None
+            row = self.get_row(tree_iter)
             self.interface.on_select(None, row=row)
 
     def row_data(self, row):
@@ -53,6 +37,28 @@ class Table(Widget):
             str(getattr(row, attr))
             for attr in self.interface._accessors
         ]
+
+    # Gtk.TreeIter cannot be compared with __eq__ !!!
+    def compare_tree_iters(self, one, two):
+        return self.store.get_path(one) == self.store.get_path(two)
+
+    def get_row(self, impl):
+        for row in self.interface.data:
+            if impl and self.get_impl(row):
+                if self.compare_tree_iters(impl, self.get_impl(row)):
+                    return row
+
+    def set_impl(self, node, impl):
+        node._impl = getattr(node, '_impl', {})
+        node._impl[self] = impl
+
+    def del_impl(self, node):
+        if hasattr(node, '_impl'):
+            del node._impl[self]
+
+    def get_impl(self, node):
+        if hasattr(node, '_impl'):
+            return node._impl.get(self, None)
 
     def change_source(self, source):
         """
@@ -70,14 +76,15 @@ class Table(Widget):
         self.treeview.set_model(self.store)
 
     def insert(self, index, item):
-        self.rows[item] = self.store.insert(index, self.row_data(item))
+        impl = self.store.insert(index, self.row_data(item))
+        self.set_impl(item, impl)
 
     def change(self, item):
-        self.store[self.rows[item]] = self.row_data(item)
+        self.store[self.get_impl(item)] = self.row_data(item)
 
     def remove(self, item):
-        del self.store[self.rows[item]]
-        del self.rows[item]
+        del self.store[self.get_impl(item)]
+        self.del_impl(item)
 
     def clear(self):
         self.store.clear()

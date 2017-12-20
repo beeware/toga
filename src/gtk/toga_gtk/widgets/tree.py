@@ -7,9 +7,6 @@ class Tree(Widget):
     def create(self):
         self.store = Gtk.TreeStore(*[str for h in self.interface.headings])
 
-        # flat dict, maps Node to Gtk.TreeIter
-        self.nodes = {}
-
         # Create a tree view, and put it in a scroll view.
         # The scroll view is the _impl, because it's the outer container.
         self.treeview = Gtk.TreeView(self.store)
@@ -39,19 +36,41 @@ class Tree(Widget):
     def compare_tree_iters(self, one, two):
         return self.store.get_path(one) == self.store.get_path(two)
 
-    # find `tree_iter` in `self.nodes`
-    def get_node(self, tree_iter):
-        if not isinstance(tree_iter, Gtk.TreeIter):
-            raise TypeError("expected Gtk.TreeIter, got {}".format(type(tree_iter)))
+    # TODO: Remove this function once a consistent API exists for
+    # checking if a TreeSource OR Node has children.
+    def node_has_children(self, parent):
+        return (
+            hasattr(parent, '_children') and parent._children) or (
+            hasattr(parent, '_roots') and parent._roots)
 
-        for node, it in self.nodes.items():
-            if self.compare_tree_iters(tree_iter, it):
-                return node
+    def get_node(self, tree_iter):
+        def iterate_tree(node, root=False):
+            yield node
+            if self.node_has_children(node):
+                for child in node:
+                    yield from iterate_tree(child)
+
+        for node in iterate_tree(self.interface.data, root=True):
+            if self.get_impl(node) and tree_iter:
+                if self.compare_tree_iters(tree_iter, self.get_impl(node)):
+                    return node
+
+    def set_impl(self, node, impl):
+        node._impl = getattr(node, '_impl', {})
+        node._impl[self] = impl
+
+    def del_impl(self, node):
+        if hasattr(node, '_impl'):
+            del node._impl[self]
+
+    def get_impl(self, node):
+        if hasattr(node, '_impl'):
+            return node._impl.get(self, None)
 
     def _on_select(self, selection):
         if hasattr(self.interface, "_on_select") and self.interface.on_select:
             tree_model, tree_iter = selection.get_selected()
-            row = self.get_node(tree_iter) if tree_iter else None
+            row = self.get_node(tree_iter)
             self.interface.on_select(None, row=row)
 
     def change_source(self, source):
@@ -61,17 +80,8 @@ class Tree(Widget):
 
         self.store.clear()
 
-        # TODO: Remove this function once a consistent API exists for
-        # checking if a TreeSource OR Node has children.
-        def has_children(parent):
-            return (
-                hasattr(parent, '_children') and parent._children
-            ) or (
-                hasattr(parent, '_roots') and parent._roots
-            )
-
         def append_node(parent, root=False):
-            if has_children(parent):
+            if self.node_has_children(parent):
                 for i, child_node in enumerate(parent):
                     self.insert(parent, i, child_node)
                     append_node(child_node)
@@ -81,20 +91,19 @@ class Tree(Widget):
         self.treeview.set_model(self.store)
 
     def insert(self, parent, index, item, **kwargs):
-        self.nodes[item] = self.store.insert(
-            self.nodes.get(parent, None),
+        impl = self.store.insert(
+            self.get_impl(parent),
             index,
             self.row_data(item)
         )
+        self.set_impl(item, impl)
 
     def change(self, item):
-        tree_iter = self.nodes[item]
-        self.store[tree_iter] = self.row_data(item)
+        self.store[self.get_impl(item)] = self.row_data(item)
 
     def remove(self, item):
-        tree_iter = self.nodes[item]
-        del self.store[tree_iter]
-        del self.nodes[item]
+        del self.store[self.get_impl(item)]
+        self.del_impl(item)
 
     def clear(self):
         self.store.clear()
