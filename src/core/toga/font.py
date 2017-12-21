@@ -18,11 +18,13 @@ class Font(BaseFont):
 
     @property
     def _impl(self):
-        return self.bind(get_platform_factory())
+        if self.__impl is None:
+            self.bind(None)
+        return self.__impl
 
     def bind(self, factory):
-        if self.__impl is None:
-            self.__impl = factory.Font(self)
+        factory = get_platform_factory(factory)
+        self.__impl = factory.Font(self)
         return self.__impl
 
     def measure(self, text, tight=False):
