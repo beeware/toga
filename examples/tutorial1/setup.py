@@ -17,7 +17,7 @@ with io.open('README.rst', encoding='utf8') as readme:
 
 
 setup(
-    name='tutorial1',
+    name='tutorial',
     version=version,
     description='Tutorial 1 of the Toga widget toolkit.',
     long_description=long_description,
@@ -44,9 +44,40 @@ setup(
             'formal_name': 'Tutorial 1',
             'bundle': 'org.pybee'
         },
+
+        # Desktop/laptop deployments
         'macos': {
             'app_requires': [
                 'toga-cocoa',
+            ]
+        },
+        'linux': {
+            'app_requires': [
+                'toga-gtk',
+            ]
+        },
+        'windows': {
+            'app_requires': [
+                'toga-winforms',
+            ]
+        },
+
+        # Mobile deployments
+        'ios': {
+            'app_requires': [
+                'toga-ios',
+            ]
+        },
+        'android': {
+            'app_requires': [
+                'toga-android',
+            ]
+        },
+
+        # Web deployments
+        'django': {
+            'app_requires': [
+                'toga-django',
             ]
         },
     }
