@@ -1,7 +1,7 @@
 import os
 
 import toga
-from toga.style.flow import *
+from toga.style.pack import *
 
 
 def button_handler(widget):
@@ -41,7 +41,7 @@ def build(app):
     left_container = toga.Table(headings=['Hello', 'World'], data=data)
 
     right_content = toga.Box(
-        style=Flow(direction=COLUMN, padding_top=50)
+        style=Pack(direction=COLUMN, padding_top=50)
     )
 
     for b in range(0, 10):
@@ -49,7 +49,7 @@ def build(app):
             toga.Button(
                 'Hello world %s' % b,
                 on_press=button_handler,
-                style=Flow(width=200, padding=20)
+                style=Pack(width=200, padding=20)
             )
         )
 

@@ -1,5 +1,5 @@
 import toga
-from toga.style.flow import *
+from toga.style.pack import *
 
 
 def build(app):
@@ -10,9 +10,9 @@ def build(app):
     c_input = toga.TextInput(readonly=True)
     f_input = toga.TextInput()
 
-    c_label = toga.Label('Celsius', style=Flow(text_align=LEFT))
-    f_label = toga.Label('Fahrenheit', style=Flow(text_align=LEFT))
-    join_label = toga.Label('is equivalent to', style=Flow(text_align=RIGHT))
+    c_label = toga.Label('Celsius', style=Pack(text_align=LEFT))
+    f_label = toga.Label('Fahrenheit', style=Pack(text_align=LEFT))
+    join_label = toga.Label('is equivalent to', style=Pack(text_align=RIGHT))
 
     def calculate(widget):
         try:

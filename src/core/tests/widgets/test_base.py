@@ -1,7 +1,7 @@
 import unittest
 
 import toga
-from toga.style import Flow
+from toga.style import Pack
 import toga_dummy
 from toga_dummy.utils import TestCase
 
@@ -11,7 +11,7 @@ class WidgetTests(TestCase):
         super().setUp()
 
         self.id = 'widget_id'
-        self.style = Flow(padding=666)
+        self.style = Pack(padding=666)
 
         self.widget = toga.Widget(id=self.id,
                                   style=self.style,
@@ -23,7 +23,7 @@ class WidgetTests(TestCase):
 
     def test_create_widget_with_no_style(self):
         widget = toga.Widget(factory=toga_dummy.factory)
-        self.assertTrue(isinstance(widget.style, Flow))
+        self.assertTrue(isinstance(widget.style, Pack))
 
     def test_adding_children(self):
         """

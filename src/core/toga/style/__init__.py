@@ -1,3 +1,3 @@
 
 from toga.style.applicator import TogaApplicator
-from toga.style.flow import Flow
+from toga.style.pack import Pack

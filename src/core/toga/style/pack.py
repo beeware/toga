@@ -12,7 +12,7 @@ from toga.font import Font
 # Display
 ######################################################################
 
-FLOW = 'flow'
+PACK = 'pack'
 
 ######################################################################
 # Visibility
@@ -30,7 +30,7 @@ ROW = 'row'
 COLUMN = 'column'
 
 
-DISPLAY_CHOICES = Choices(FLOW, NONE)
+DISPLAY_CHOICES = Choices(PACK, NONE)
 VISIBILITY_CHOICES = Choices(VISIBLE, HIDDEN, NONE)
 DIRECTION_CHOICES = Choices(ROW, COLUMN)
 ALIGNMENT_CHOICES = Choices(LEFT, RIGHT, TOP, BOTTOM, CENTER, default=True)
@@ -54,7 +54,7 @@ FONT_WEIGHT_CHOICES = Choices(NORMAL, BOLD)
 FONT_SIZE_CHOICES = Choices(integer=True)
 
 
-class Flow(BaseStyle):
+class Pack(BaseStyle):
     class Box(BaseBox):
         pass
 
@@ -388,34 +388,34 @@ class Flow(BaseStyle):
         return width, height
 
 
-Flow.validated_property('display', choices=DISPLAY_CHOICES, initial=FLOW)
-Flow.validated_property('visibility', choices=VISIBILITY_CHOICES, initial=VISIBLE)
-Flow.validated_property('direction', choices=DIRECTION_CHOICES, initial=ROW)
-Flow.validated_property('alignment', choices=ALIGNMENT_CHOICES)
+Pack.validated_property('display', choices=DISPLAY_CHOICES, initial=PACK)
+Pack.validated_property('visibility', choices=VISIBILITY_CHOICES, initial=VISIBLE)
+Pack.validated_property('direction', choices=DIRECTION_CHOICES, initial=ROW)
+Pack.validated_property('alignment', choices=ALIGNMENT_CHOICES)
 
-Flow.validated_property('width', choices=SIZE_CHOICES, initial=0)
-Flow.validated_property('height', choices=SIZE_CHOICES, initial=0)
-Flow.validated_property('flex', choices=FLEX_CHOICES, initial=0)
+Pack.validated_property('width', choices=SIZE_CHOICES, initial=0)
+Pack.validated_property('height', choices=SIZE_CHOICES, initial=0)
+Pack.validated_property('flex', choices=FLEX_CHOICES, initial=0)
 
-Flow.validated_property('padding_top', choices=PADDING_CHOICES, initial=0)
-Flow.validated_property('padding_right', choices=PADDING_CHOICES, initial=0)
-Flow.validated_property('padding_bottom', choices=PADDING_CHOICES, initial=0)
-Flow.validated_property('padding_left', choices=PADDING_CHOICES, initial=0)
-Flow.directional_property('padding%s')
+Pack.validated_property('padding_top', choices=PADDING_CHOICES, initial=0)
+Pack.validated_property('padding_right', choices=PADDING_CHOICES, initial=0)
+Pack.validated_property('padding_bottom', choices=PADDING_CHOICES, initial=0)
+Pack.validated_property('padding_left', choices=PADDING_CHOICES, initial=0)
+Pack.directional_property('padding%s')
 
-Flow.validated_property('color', choices=COLOR_CHOICES)
-Flow.validated_property('background_color', choices=BACKGROUND_COLOR_CHOICES)
+Pack.validated_property('color', choices=COLOR_CHOICES)
+Pack.validated_property('background_color', choices=BACKGROUND_COLOR_CHOICES)
 
-Flow.validated_property('text_align', choices=TEXT_ALIGN_CHOICES)
-Flow.validated_property('text_direction', choices=TEXT_DIRECTION_CHOICES, initial=LTR)
+Pack.validated_property('text_align', choices=TEXT_ALIGN_CHOICES)
+Pack.validated_property('text_direction', choices=TEXT_DIRECTION_CHOICES, initial=LTR)
 
-Flow.validated_property('font_family', choices=FONT_FAMILY_CHOICES, initial=SYSTEM)
-# Flow.list_property('font_family', choices=FONT_FAMILY_CHOICES)
-Flow.validated_property('font_style', choices=FONT_STYLE_CHOICES, initial=NORMAL)
-Flow.validated_property('font_variant', choices=FONT_VARIANT_CHOICES, initial=NORMAL)
-Flow.validated_property('font_weight', choices=FONT_WEIGHT_CHOICES, initial=NORMAL)
-Flow.validated_property('font_size', choices=FONT_SIZE_CHOICES, initial=12)
-# Flow.composite_property([
+Pack.validated_property('font_family', choices=FONT_FAMILY_CHOICES, initial=SYSTEM)
+# Pack.list_property('font_family', choices=FONT_FAMILY_CHOICES)
+Pack.validated_property('font_style', choices=FONT_STYLE_CHOICES, initial=NORMAL)
+Pack.validated_property('font_variant', choices=FONT_VARIANT_CHOICES, initial=NORMAL)
+Pack.validated_property('font_weight', choices=FONT_WEIGHT_CHOICES, initial=NORMAL)
+Pack.validated_property('font_size', choices=FONT_SIZE_CHOICES, initial=12)
+# Pack.composite_property([
 #     'font_family', 'font_style', 'font_variant', 'font_weight', 'font_size'
 #     FONT_CHOICES
 # ])

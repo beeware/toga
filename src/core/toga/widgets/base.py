@@ -1,8 +1,9 @@
+
 from builtins import id as identifier
 
 from travertino.node import Node
 
-from toga.style import Flow, TogaApplicator
+from toga.style import Pack, TogaApplicator
 from toga.platform import get_platform_factory
 
 
@@ -28,7 +29,7 @@ class Widget(Node):
 
     def __init__(self, id=None, enabled=True, style=None, factory=None):
         super().__init__(
-            style=style if style else Flow(),
+            style=style if style else Pack(),
             applicator=TogaApplicator(self)
         )
 

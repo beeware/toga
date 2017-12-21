@@ -4,7 +4,7 @@ from travertino.layout import Viewport
 from travertino.node import Node
 from travertino.size import at_least
 
-from toga.style.flow import *
+from toga.style.pack import *
 
 
 class TestNode(Node):
@@ -19,7 +19,7 @@ class TestNode(Node):
         return '<{} at {}>'.format(self.name, id(self))
 
 
-class FlowLayoutTests(TestCase):
+class PackLayoutTests(TestCase):
     def assertLayout(self, node, size, layout):
         self.assertEqual(
             (node.layout.width, node.layout.height), size,
@@ -50,8 +50,8 @@ class FlowLayoutTests(TestCase):
 
     def test_tutorial_0(self):
         root = TestNode(
-            'app', style=Flow(), children=[
-                TestNode('button', style=Flow(flex=1, padding=50), size=(at_least(120), 30)),
+            'app', style=Pack(), children=[
+                TestNode('button', style=Pack(flex=1, padding=50), size=(at_least(120), 30)),
             ]
         )
 
@@ -77,17 +77,17 @@ class FlowLayoutTests(TestCase):
 
     def test_tutorial_1(self):
         root = TestNode(
-            'app', style=Flow(direction=COLUMN, padding_top=10), children=[
-                TestNode('f_box', style=Flow(direction=ROW, padding=5), children=[
-                    TestNode('f_input', style=Flow(flex=1, padding_left=160), size=(at_least(100), 15)),
-                    TestNode('f_label', style=Flow(width=100, padding_left=10), size=(at_least(40), 10)),
+            'app', style=Pack(direction=COLUMN, padding_top=10), children=[
+                TestNode('f_box', style=Pack(direction=ROW, padding=5), children=[
+                    TestNode('f_input', style=Pack(flex=1, padding_left=160), size=(at_least(100), 15)),
+                    TestNode('f_label', style=Pack(width=100, padding_left=10), size=(at_least(40), 10)),
                 ]),
-                TestNode('c_box', style=Flow(direction=ROW, padding=5), children=[
-                    TestNode('join_label', style=Flow(width=150, padding_right=10), size=(at_least(80), 10)),
-                    TestNode('c_input', style=Flow(flex=1), size=(at_least(100), 15)),
-                    TestNode('c_label', style=Flow(width=100, padding_left=10), size=(at_least(40), 10)),
+                TestNode('c_box', style=Pack(direction=ROW, padding=5), children=[
+                    TestNode('join_label', style=Pack(width=150, padding_right=10), size=(at_least(80), 10)),
+                    TestNode('c_input', style=Pack(flex=1), size=(at_least(100), 15)),
+                    TestNode('c_label', style=Pack(width=100, padding_left=10), size=(at_least(40), 10)),
                 ]),
-                TestNode('button', style=Flow(flex=1, padding=15), size=(at_least(120), 30)),
+                TestNode('button', style=Pack(flex=1, padding=15), size=(at_least(120), 30)),
             ]
         )
 
@@ -131,12 +131,12 @@ class FlowLayoutTests(TestCase):
 
     def test_tutorial_3(self):
         root = TestNode(
-            'app', style=Flow(direction=COLUMN), children=[
-                TestNode('box', style=Flow(), children=[
-                    TestNode('input', style=Flow(flex=1, padding=5), size=(at_least(100), 15)),
-                    TestNode('button', style=Flow(width=50, padding=5), size=(at_least(40), 10)),
+            'app', style=Pack(direction=COLUMN), children=[
+                TestNode('box', style=Pack(), children=[
+                    TestNode('input', style=Pack(flex=1, padding=5), size=(at_least(100), 15)),
+                    TestNode('button', style=Pack(width=50, padding=5), size=(at_least(40), 10)),
                 ]),
-                TestNode('web', style=Flow(flex=1), size=(at_least(100), at_least(100))),
+                TestNode('web', style=Pack(flex=1), size=(at_least(100), at_least(100))),
             ]
         )
 
