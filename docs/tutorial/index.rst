@@ -46,8 +46,8 @@ a simple browser.
     :align: center
     :width: 300
 
-Tutorial 4 - let's draw on a canvas! (Gtk+ only for now)
-========================================================
+Tutorial 4 - let's draw on a canvas!
+====================================
 
 In :doc:`tutorial-4`, you will discover how to use the :mod:`toga.interface.widgets.canvas.Canvas` widget to draw
 lines and shapes on a canvas.
