@@ -1,5 +1,4 @@
-from toga_cocoa.container import Constraints
-from toga_cocoa.libs import NSColor, NSColorUsingColorName
+from toga_cocoa.constraints import Constraints
 
 
 class Widget:
@@ -57,15 +56,6 @@ class Widget:
 
     def set_background_color(self, color):
         pass
-        # if color:
-        #     self.native.bordered = False
-        #     self.native.wantsLayer = True
-        #     self.native.backgroundColor = NSColor.colorWithRed(
-        #             color[0] / 255,
-        #             green=color[1] / 255,
-        #             blue=color[2] / 255,
-        #             alpha=1.0
-        #         )
 
     ### INTERFACE
 
