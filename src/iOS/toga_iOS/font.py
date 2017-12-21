@@ -4,43 +4,44 @@ from toga.font import MESSAGE, NORMAL, SYSTEM, SERIF, SANS_SERIF, CURSIVE, FANTA
 _FONT_CACHE = {}
 
 
-def native_font(font):
-    try:
-        native = _FONT_CACHE[font]
-    except KeyError:
-        if font.family == SYSTEM:
-            native = UIFont.systemFontOfSize(font.size)
-        elif font.family == MESSAGE:
-            native = UIFont.messageFontOfSize(font.size)
-        else:
-            if font.family is SERIF:
-                family = 'Times-Roman'
-            elif font.family is SANS_SERIF:
-                family = 'Helvetica'
-            elif font.family is CURSIVE:
-                family = 'Apple Chancery'
-            elif font.family is FANTASY:
-                family = 'Papyrus'
-            elif font.family is MONOSPACE:
-                family = 'Courier New'
+class Font:
+    def __init__(self, interface):
+        self.interface = interface
+        try:
+            font = _FONT_CACHE[self.interface]
+        except KeyError:
+            if self.interface.family == SYSTEM:
+                font = UIFont.systemFontOfSize(self.interface.size)
+            elif self.interface.family == MESSAGE:
+                font = UIFont.messageFontOfSize(self.interface.size)
             else:
-                family = font.family
+                if self.interface.family is SERIF:
+                    family = 'Times-Roman'
+                elif self.interface.family is SANS_SERIF:
+                    family = 'Helvetica'
+                elif self.interface.family is CURSIVE:
+                    family = 'Apple Chancery'
+                elif self.interface.family is FANTASY:
+                    family = 'Papyrus'
+                elif self.interface.family is MONOSPACE:
+                    family = 'Courier New'
+                else:
+                    family = self.interface.family
 
-            full_name = '{family}{weight}{style}'.format(
-                family=family,
-                weight=(' ' + font.weight.title()) if font.weight is not NORMAL else '',
-                style=(' ' + font.style.title()) if font.style is not NORMAL else '',
-            )
-            native = UIFont.fontWithName(full_name, size=font.size)
+                full_name = '{family}{weight}{style}'.format(
+                    family=family,
+                    weight=(' ' + self.interface.weight.title()) if self.interface.weight is not NORMAL else '',
+                    style=(' ' + self.interface.style.title()) if self.interface.style is not NORMAL else '',
+                )
+                font = UIFont.fontWithName(full_name, size=self.interface.size)
 
-            if native is None:
-                print("Unable to load font: {}pt {}".format(font.size, full_name))
-            else:
-                _FONT_CACHE[font] = native
+                if font is None:
+                    print("Unable to load font: {}pt {}".format(self.interface.size, full_name))
+                else:
+                    _FONT_CACHE[self.interface] = font
 
-    return native
+        self.native = font
 
-
-def measure_text(font, text, tight=False):
-    # TODO
-    pass
+    def measure(self, text, tight=False):
+        # TODO
+        pass

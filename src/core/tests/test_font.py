@@ -1,5 +1,5 @@
 import toga
-from toga.font import SANS_SERIF, measure_text
+from toga.font import Font, SANS_SERIF
 
 import toga_dummy
 from toga_dummy.utils import TestCase
@@ -17,6 +17,9 @@ class FontTests(TestCase):
             self.size,
         )
 
+        # Bind the font to the dummy factory
+        self.font.bind(toga_dummy.factory)
+
     def test_family(self):
       self.assertEqual(self.font.family, self.family)
 
@@ -24,5 +27,5 @@ class FontTests(TestCase):
       self.assertEqual(self.font.size, self.size)
 
     def test_measure(self):
-        measure_text(self.font, 'measured text', tight=True, factory=toga_dummy.factory)
-        self.assertFunctionPerformedWith('font', 'measure_text', text='measured text', tight=True)
+        self.font.measure('measured text', tight=True)
+        self.assertActionPerformedWith(self.font, 'measure', text='measured text', tight=True)

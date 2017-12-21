@@ -1,8 +1,8 @@
 from .app import *
 from .command import *
 from .constants import *
-from .color import Color, color, hsl, hsla, rgb, rgba
-from .font import font, Font
+from .color import hsl, hsla, rgb, rgba
+from .font import Font
 
 # Widgets
 from .widgets.base import Widget
@@ -33,12 +33,12 @@ from .window import Window
 __all__ = [
     # Applications
     'App', 'MainWindow',
-
+    # Colors
+    'hsv', 'hsva', 'rgb', 'rgba',
     # Commands
     'Command', 'Group', 'GROUP_BREAK', 'SECTION_BREAK',
-
-    'Color', 'color', 'hsv', 'hsva', 'rgb', 'rgba',
-    'font', 'Font',
+    # Fonts
+    'Font',
 
     # Widgets
     'DetailedList'

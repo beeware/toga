@@ -1,9 +1,10 @@
-from .utils import log_action
+from .utils import LoggedObject
 
 
-def native_font(font):
-    log_action('font', 'native_font', font=font)
+class Font(LoggedObject):
+    def __init__(self, interface):
+        super().__init__()
+        self.interface = interface
 
-
-def measure_text(font, text, tight=False):
-    log_action('font', 'measure_text', text=text, tight=tight)
+    def measure(self, text, tight=False):
+        self._action('measure', text=text, tight=tight)

@@ -1,7 +1,6 @@
 from travertino.size import at_least
 
 from toga_cocoa.color import native_color
-from toga_cocoa.font import native_font
 from toga_cocoa.libs import NSTextField, NSTextAlignment
 
 from .base import Widget
@@ -29,7 +28,7 @@ class Label(Widget):
 
     def set_font(self, value):
         if value:
-            self.native.font = native_font(value)
+            self.native.font = value._impl.native
 
     def set_text(self, value):
         self.native.stringValue = value

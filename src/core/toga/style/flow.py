@@ -3,9 +3,10 @@ from travertino.constants import (
     LEFT, RIGHT, TOP, BOTTOM, CENTER, JUSTIFY, RTL, LTR, TRANSPARENT, SYSTEM
 )
 from travertino.declaration import BaseStyle, Choices
-from travertino.fonts import Font
 from travertino.layout import BaseBox
 from travertino.size import BaseIntrinsicSize
+
+from toga.font import Font
 
 ######################################################################
 # Display
