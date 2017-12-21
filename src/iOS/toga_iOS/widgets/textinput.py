@@ -1,4 +1,6 @@
 from rubicon.objc import CGSize
+from travertino.size import at_least
+
 from toga_iOS.libs import UITextField, UITextBorderStyleRoundedRect
 
 from .base import Widget
@@ -9,7 +11,7 @@ class TextInput(Widget):
         self.native = UITextField.new()
         self.native._interface = self
 
-        self.native.setBorderStyle_(UITextBorderStyleRoundedRect)
+        self.native.borderStyle = UITextBorderStyleRoundedRect
 
         # Add the layout constraints
         self.add_constraints()
@@ -28,8 +30,6 @@ class TextInput(Widget):
 
     def rehint(self):
         # Height of a text input is known.
-        fitting_size = self.native.systemLayoutSizeFittingSize_(CGSize(0, 0))
-        self.interface.style.hint(
-            height=fitting_size.height,
-            min_width=100
-        )
+        fitting_size = self.native.systemLayoutSizeFittingSize(CGSize(0, 0))
+        self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
+        self.interface.intrinsic.height = fitting_size.height

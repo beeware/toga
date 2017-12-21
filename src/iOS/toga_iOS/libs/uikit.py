@@ -89,20 +89,19 @@ NSLineBreakByTruncatingTail = 4
 NSLineBreakByTruncatingMiddle = 5
 
 ######################################################################
-# NSText.h
+# NSText.h (The order is different on macOS and iOS)
 NSLeftTextAlignment = 0
-NSRightTextAlignment = 1
-NSCenterTextAlignment = 2
+NSCenterTextAlignment = 1
+NSRightTextAlignment = 2
 NSJustifiedTextAlignment = 3
 NSNaturalTextAlignment = 4
 
 def NSTextAlignment(alignment):
     return {
-        LEFT_ALIGNED: NSLeftTextAlignment,
-        RIGHT_ALIGNED: NSRightTextAlignment,
-        CENTER_ALIGNED: NSCenterTextAlignment,
-        JUSTIFIED_ALIGNED: NSJustifiedTextAlignment,
-        NATURAL_ALIGNED: NSNaturalTextAlignment,
+        LEFT: NSLeftTextAlignment,
+        RIGHT: NSRightTextAlignment,
+        CENTER: NSCenterTextAlignment,
+        JUSTIFY: NSJustifiedTextAlignment,
     }[alignment]
 
 ######################################################################
