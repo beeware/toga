@@ -167,3 +167,42 @@ class PackLayoutTests(TestCase):
                 {'origin': (0, 25), 'content': (640, 455)}
             ]}
         )
+
+    def test_beeliza(self):
+        root = TestNode(
+            'app', style=Pack(direction=COLUMN), children=[
+                TestNode('detailedlist', style=Pack(flex=1), size=(at_least(100), at_least(100))),
+                TestNode('box', style=Pack(direction=ROW), children=[
+                    TestNode('input', style=Pack(flex=1, padding=5), size=(at_least(100), 15)),
+                    TestNode('button', style=Pack(padding=5), size=(at_least(40), 10)),
+                ]),
+            ]
+        )
+
+        # Minimum size
+        root.style.layout(root, Viewport(0, 0))
+        self.assertLayout(
+            root,
+            (160, 125),
+            {'origin': (0, 0), 'content': (160, 125), 'children': [
+                {'origin': (0, 0), 'content': (100, 100)},
+                {'origin': (0, 100), 'content': (160, 25), 'children': [
+                    {'origin': (5, 105), 'content': (100, 15)},
+                    {'origin': (115, 105), 'content': (40, 10)},
+                ]},
+            ]}
+        )
+
+        # Normal size
+        root.style.layout(root, Viewport(640, 480))
+        self.assertLayout(
+            root,
+            (640, 480),
+            {'origin': (0, 0), 'content': (640, 480), 'children': [
+                {'origin': (0, 0), 'content': (640, 455)},
+                {'origin': (0, 455), 'content': (640, 25), 'children': [
+                    {'origin': (5, 460), 'content': (580, 15)},
+                    {'origin': (595, 460), 'content': (40, 10)},
+                ]},
+            ]}
+        )

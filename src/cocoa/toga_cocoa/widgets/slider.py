@@ -36,7 +36,7 @@ class Slider(Widget):
     def rehint(self):
         fitting_size = self.native.fittingSize()
         self.interface.intrinsic.height = fitting_size.height
-        self.interface.intrinsic.width = at_least(fitting_size.width)
+        self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
 
     def set_on_slide(self, handler):
         pass

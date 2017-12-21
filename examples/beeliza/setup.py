@@ -44,7 +44,7 @@ setup(
     ],
     options={
         'app': {
-            'formal_name': 'Therapy',
+            'formal_name': 'Beeliza',
             'bundle': 'org.pybee'
         },
 

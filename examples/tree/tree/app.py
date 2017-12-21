@@ -1,7 +1,8 @@
 from random import choice
 
 import toga
-from colosseum import CSS
+from toga.style import Pack
+from toga.constants import ROW, COLUMN
 
 bee_movies = [
     {'year': 2008, 'title': 'The Secret Life of Bees', 'rating': '7.3', 'genre': 'Drama'},
@@ -51,7 +52,7 @@ class ExampleTreeApp(toga.App):
         self.tree = toga.Tree(
             headings=['Year', 'Title', 'Rating', 'Genre'],
             on_select=self.on_select_handler,
-            style=CSS(flex=1)
+            style=Pack(flex=1)
         )
 
         self.decade_1940s = self.tree.data.append(None, year='1940s', title='', rating='', genre='')
@@ -63,19 +64,17 @@ class ExampleTreeApp(toga.App):
         self.decade_2000s = self.tree.data.append(None, year='2000s', title='', rating='', genre='')
 
         # Buttons
-        btn_style = CSS(flex=1)
+        btn_style = Pack(flex=1)
         btn_insert = toga.Button('Insert Row', on_press=self.insert_handler, style=btn_style)
-        btn_box = toga.Box(children=[btn_insert], style=CSS(flex_direction='row'))
+        btn_box = toga.Box(children=[btn_insert], style=Pack(direction=ROW))
 
         # Outermost box
         outer_box = toga.Box(
             children=[btn_box, self.tree, self.label],
-            style=CSS(
+            style=Pack(
                 flex=1,
-                flex_direction='column',
+                direction=COLUMN,
                 padding=10,
-                min_width=500,
-                min_height=300
             )
         )
 

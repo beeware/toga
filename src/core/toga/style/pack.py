@@ -128,8 +128,9 @@ class Pack(BaseStyle):
                     available_width = min(available_width, node.intrinsic.width)
 
                 # self._debug("ADJUSTED WIDTH", available_width)
-            # else:
+            else:
                 # self._debug("USE ALL AVAILABLE WIDTH", available_width)
+                pass
 
         # Establish available height
         if self.height:
@@ -147,8 +148,9 @@ class Pack(BaseStyle):
                     available_height = node.intrinsic.height
 
                 # self._debug("ADJUSTED HEIGHT", available_height)
-            # else:
+            else:
                 # self._debug("USE ALL AVAILABLE HEIGHT", available_height)
+                pass
 
         if node.children:
             if self.direction == COLUMN:
@@ -190,7 +192,7 @@ class Pack(BaseStyle):
                         # self._debug("PASS 1 intrinsic flex width", child.intrinsic.width)
                     else:
                         # self._debug("PASS 1 intrinsic non-flex width", child.intrinsic.width)
-                        child.style._layout_node(child, available_width, available_height, view_dpi)
+                        child.style._layout_node(child, 0, available_height, view_dpi)
                         child_width = child.style.padding_left + child.layout.content_width + child.style.padding_right
                         width += child_width
                         available_width -= child_width
@@ -303,7 +305,7 @@ class Pack(BaseStyle):
                         # self._debug("PASS 1 intrinsic flex height", child.intrinsic.height)
                     else:
                         # self._debug("PASS 1 intrinsic non-flex height", child.intrinsic.height)
-                        child.style._layout_node(child, available_width, available_height, view_dpi)
+                        child.style._layout_node(child, available_width, 0, view_dpi)
                         child_height = child.style.padding_top + child.layout.content_height + child.style.padding_bottom
                         height += child_height
                         available_height -= child_height

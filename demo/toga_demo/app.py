@@ -3,7 +3,7 @@
 import os
 
 import toga
-from colosseum import CSS
+from toga.style import Pack
 
 
 class TogaDemo(toga.App):
@@ -40,7 +40,13 @@ class TogaDemo(toga.App):
 
         right_content = toga.Box()
         for b in range(0, 10):
-            right_content.add(toga.Button('Hello world %s' % b, on_press=self.button_handler, style=CSS(margin=20)))
+            right_content.add(
+                toga.Button(
+                    'Hello world %s' % b,
+                    on_press=self.button_handler,
+                    style=Pack(padding=20)
+                )
+            )
 
         right_container = toga.ScrollContainer()
 
