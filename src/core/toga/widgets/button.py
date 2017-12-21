@@ -4,14 +4,14 @@ from .base import Widget
 
 
 class Button(Widget):
-    """ Button widget, a clickable button.
+    """A clickable button widget.
 
     Args:
         label (str): Text to be shown on the button.
         id (str): An identifier for this widget.
         style (:class:`colosseum.CSSNode`): An optional style object. If no style is provided then
             a new one will be created for the widget.
-        on_press (``callable``): Function to execute when pressed.
+        on_press (:obj:`callable`): Function to execute when pressed.
         enabled (bool): Whether or not interaction with the button is possible, defaults to `True`.
         factory (:obj:`module`): A python module that is capable to return a
             implementation of this class with the same name. (optional & normally not needed)
@@ -31,7 +31,7 @@ class Button(Widget):
     def label(self):
         """
         Returns:
-            The button label as a ``str`
+            The button label as a ``str``
         """
         return self._label
 
@@ -46,7 +46,7 @@ class Button(Widget):
 
     @property
     def on_press(self):
-        """ The callable function for when the button is pressed
+        """The handler to invoke when the button
 
         Returns:
             The function ``callable`` that is called on button press.
@@ -55,5 +55,10 @@ class Button(Widget):
 
     @on_press.setter
     def on_press(self, handler):
+        """Set the handler to invoke when the button is pressed.
+
+        Args:
+            handler (:obj:`callable`): The handler to invoke when the button is pressed.
+        """
         self._on_press = wrapped_handler(self, handler)
         self._impl.set_on_press(self._on_press)

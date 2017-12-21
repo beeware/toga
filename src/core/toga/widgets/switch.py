@@ -33,7 +33,7 @@ class Switch(Widget):
         """ Accompanying text label of the Switch.
 
         Returns:
-            The label text of the widget as a ``str`.
+            The label text of the widget as a ``str``.
         """
         return self._label
 

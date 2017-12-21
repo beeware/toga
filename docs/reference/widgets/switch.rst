@@ -2,10 +2,10 @@
 
 .. warnings about this file not being included in any toctree will be suppressed by :orphan:
 
-Canvas
-============
+Switch
+======
 
-The canvas is used for creating a blank widget that you can draw on.
+The text input widget is a simple input field for user entry of text data.
 
 Usage
 -----
@@ -14,17 +14,18 @@ Usage
 
     import toga
 
-    canvas = toga.Canvas()
+    input = toga.Switch()
+
 
 Supported Platforms
 -------------------
 
-.. include:: ../supported_platforms/Canvas.rst
+.. include:: ../supported_platforms/Switch.rst
 
 Reference
 ---------
 
-.. autoclass:: toga.widgets.canvas.Canvas
+.. autoclass:: toga.widgets.switch.Switch
    :members:
    :undoc-members:
    :inherited-members:

@@ -7,20 +7,12 @@ build a slightly more complex example - a Fahrenheit to Celsius converter:
 
 .. image:: screenshots/tutorial-1.png
 
-Here's the source code::
+Here's the source code:
 
-.. literalinclude:: /tutorial/source/tutorial-1.py
+.. literalinclude:: /../examples/tutorial1/tutorial/app.py
    :language: python
 
-This example shows off the use of Flexbox in Toga's CSS styling. Flexbox is a
-new layout scheme that is part of the CSS3 specification that corrects the
-problems with the older box layout scheme in CSS2. Flexbox is not yet
-universally available in all web browsers,  but that doesn't matter for Toga -
-Toga provides an implementation of the Flexbox layout scheme. `CSS-tricks
-provides a good tutorial on Flexbox`_ if you've never come across it before.
-
-.. _CSS-tricks provides a good tutorial on Flexbox: https://css-tricks.com/snippets/css/a-guide-to-flexbox/
-
+This example shows off some more features of Toga's Pack style engine.
 In this example app, we've set up an outer box that stacks vertically;
 inside that box, we've put 2 horizontal boxes and a button.
 

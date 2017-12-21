@@ -128,7 +128,7 @@ The amount of space to allocate between the edge of the box, and the edge of con
 ``padding``
 -----------
 
-**Values:** ``<integer>``{1,4}
+**Values:** ``<integer>`` {1,4}
 
 A shorthand for setting the top, right, bottom and left padding with a single declaration.
 

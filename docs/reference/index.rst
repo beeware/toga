@@ -10,4 +10,4 @@ Reference
    platforms
    widgets
    supported_widgets
-   style
+   style/index

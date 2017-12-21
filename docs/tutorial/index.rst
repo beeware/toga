@@ -12,6 +12,7 @@ Tutorials
    tutorial-1
    tutorial-2
    tutorial-3
+   tutorial-4
 
 
 Tutorial 0 - your first Toga app
@@ -46,7 +47,7 @@ a simple browser.
     :width: 300
 
 Tutorial 4 - let's draw on a canvas! (Gtk+ only for now)
-===================================
+========================================================
 
 In :doc:`tutorial-4`, you will discover how to use the :mod:`toga.interface.widgets.canvas.Canvas` widget to draw
 lines and shapes on a canvas.

@@ -11,9 +11,9 @@ web browser, in less than 40 lines of code!
 
 .. image:: screenshots/tutorial-3.png
 
-Here's the source code::
+Here's the source code:
 
-.. literalinclude:: /tutorial/source/tutorial-3.py
+.. literalinclude:: /../examples/tutorial3/tutorial/app.py
    :language: python
 
 In this example, you can see an application being developed as a class, rather
