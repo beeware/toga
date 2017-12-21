@@ -126,11 +126,11 @@ class Window:
         if self.interface.minimizable:
             mask |= NSMiniaturizableWindowMask
 
-        self.native = NSWindow.alloc().initWithContentRect_styleMask_backing_defer_(
+        self.native = NSWindow.alloc().initWithContentRect(
             position,
-            mask,
-            NSBackingStoreBuffered,
-            False
+            styleMask=mask,
+            backing=NSBackingStoreBuffered,
+            defer=False
         )
         self.native.setFrame(position, display=True, animate=False)
 
