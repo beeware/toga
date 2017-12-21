@@ -15,25 +15,31 @@ class TogaDemo(toga.App):
 
         left_container = toga.OptionContainer()
 
-        left_table = toga.Table(['Hello', 'World'])
+        left_table = toga.Table(
+            headings=['Hello', 'World'],
+            data=[
+                ('root1', 'value1'),
+                ('root2', 'value2'),
+                ('root3', 'value3'),
+                ('root4', 'value4'),
+            ]
+        )
 
-        left_table.insert(None, 'root1', 'value1')
-        left_table.insert(None, 'root2', 'value2')
-        left_table.insert(None, 'root3', 'value3')
-        left_table.insert(1, 'root4', 'value4')
-
-        left_tree = toga.Tree(['Navigate'])
-
-        left_tree.insert(None, None, 'root1')
-
-        root2 = left_tree.insert(None, None, 'root2')
-
-        left_tree.insert(root2, None, 'root2.1')
-        root2_2 = left_tree.insert(root2, None, 'root2.2')
-
-        left_tree.insert(root2_2, None, 'root2.2.1')
-        left_tree.insert(root2_2, None, 'root2.2.2')
-        left_tree.insert(root2_2, None, 'root2.2.3')
+        left_tree = toga.Tree(
+            headings=['Navigate'],
+            data={
+                'root1': {
+                },
+                'root2': {
+                    'root2.1': None,
+                    'root2.2': [
+                        'root2.2.1',
+                        'root2.2.2',
+                        'root2.2.3',
+                    ]
+                }
+            }
+        )
 
         left_container.add('Table', left_table)
         left_container.add('Tree', left_tree)
