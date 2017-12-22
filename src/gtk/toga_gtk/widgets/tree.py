@@ -5,19 +5,18 @@ from .base import Widget
 
 class Tree(Widget):
     def create(self):
-        self.store = Gtk.TreeStore(*[str for h in self.interface.headings])
-        self.nodes = {}
+        self.store = Gtk.TreeStore(*[object] + [str for h in self.interface.headings])
 
         # Create a tree view, and put it in a scroll view.
         # The scroll view is the _impl, because it's the outer container.
-        self.treeview = Gtk.TreeView(self.store)
+        self.treeview = Gtk.TreeView(model=self.store)
         self.selection = self.treeview.get_selection()
         self.selection.set_mode(Gtk.SelectionMode.SINGLE)
-        self.selection.connect("changed", self._on_select)
+        self.selection.connect("changed", self.on_select)
 
         for i, heading in enumerate(self.interface.headings):
             renderer = Gtk.CellRendererText()
-            column = Gtk.TreeViewColumn(heading, renderer, text=i)
+            column = Gtk.TreeViewColumn(heading, renderer, text=i + 1)
             self.treeview.append_column(column)
 
         self.native = Gtk.ScrolledWindow()
@@ -28,25 +27,26 @@ class Tree(Widget):
         self.native.set_min_content_height(200)
 
     def row_data(self, item):
-        return [
+        return [item] + [
             str(getattr(item, attr))
             for attr in self.interface._accessors
         ]
 
-    def set_impl(self, item, impl):
-        try:
-            item._impl[self] = impl
-        except AttributeError:
-            item._impl = {self: impl}
+    # TODO: Remove this function once a consistent API exists for
+    # checking if a TreeSource OR Node has children.
+    def node_has_children(self, parent):
+        return (
+            hasattr(parent, '_children') and parent._children) or (
+            hasattr(parent, '_roots') and parent._roots)
 
-        path = self.store.get_path(impl)
-        self.nodes[str(path)] = item
-
-    def _on_select(self, selection):
-        if hasattr(self.interface, "_on_select") and self.interface.on_select:
-            tree_model, impl = selection.get_selected()
-            path = str(tree_model.get_path(impl))
-            self.interface.on_select(None, row=self.nodes.get(path, None))
+    def on_select(self, selection):
+        if hasattr(self.interface, "on_select") and self.interface.on_select:
+            tree_model, tree_iter = selection.get_selected()
+            if tree_iter:
+                row = tree_model.get(tree_iter, 0)[0]
+            else:
+                row = None
+            self.interface.on_select(None, row=row)
 
     def change_source(self, source):
         # Temporarily disconnecting the TreeStore improves performance for large
@@ -55,14 +55,12 @@ class Tree(Widget):
 
         self.store.clear()
 
-        def append_node(parent, root=False):
-            parent_impl = None if root else parent._impl[self]
-            for i, child_node in enumerate(parent):
-                impl = self.store.append(parent_impl, self.row_data(child_node))
-                self.set_impl(child_node, impl)
-                append_node(child_node)
+        def append_children(data, parent=None):
+            for i, node in enumerate(data):
+                self.insert(parent, i, node)
+                append_children(node, parent=node)
 
-        append_node(self.interface.data, root=True)
+        append_children(self.interface.data, parent=None)
 
         self.treeview.set_model(self.store)
 
@@ -72,17 +70,17 @@ class Tree(Widget):
             index,
             self.row_data(item)
         )
-        self.set_impl(item, impl)
+        try:
+            item._impl[self] = impl
+        except AttributeError:
+            item._impl = {self: impl}
 
     def change(self, item):
-        self.store.set(
-            item.parent._impl[self] if item.parent else None,
-            *self.row_data(item)
-        )
+        self.store[item._impl[self]] = self.row_data(item)
 
     def remove(self, item):
-        self.store.remove(item._impl[self])
-        del self.nodes[item_impl[self]]
+        del self.store[item._impl[self]]
+        del item._impl[self]
 
     def clear(self):
         self.store.clear()
