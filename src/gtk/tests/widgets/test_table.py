@@ -1,5 +1,8 @@
 import unittest
-from gi.repository import Gtk
+try:
+    from gi.repository import Gtk
+except ImportError:
+    Gtk = None
 
 import toga
 
@@ -9,6 +12,7 @@ def handle_events():
         Gtk.main_iteration_do(blocking=False)
 
 
+@unittest.skipIf(Gtk is None, "Can't run GTK implementation tests")
 class TestGtkTable(unittest.TestCase):
 
     def setUp(self):
