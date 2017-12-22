@@ -45,6 +45,7 @@ class Table(Widget):
         self.headings = headings
         self._accessors = build_accessors(headings, accessors)
 
+        self._on_select = None
         self._data = None
         self._on_select = None
         self._impl = self.factory.Table(interface=self)
