@@ -82,7 +82,7 @@ class TogaTree(NSOutlineView):
         # If the value has an icon, get the _impl.
         # Icons are deferred resources, so we provide the factory.
         if icon_iface:
-            icon = icon_iface._impl(self.interface.factory)
+            icon = icon_iface.bind(self.interface.factory)
         else:
             icon = None
 
