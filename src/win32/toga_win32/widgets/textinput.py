@@ -1,9 +1,8 @@
-from __future__ import print_function, absolute_import, division
-
-from ..libs import *
 from ctypes import c_wchar_p
 
 from .base import Widget
+from ..libs import *
+
 
 class TextInput(Widget):
     window_class = 'edit'

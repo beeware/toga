@@ -2,12 +2,11 @@ import asyncio
 import os
 import sys
 
-from rubicon.objc.eventloop import EventLoopPolicy, CocoaLifecycle
 import toga
+from rubicon.objc.eventloop import EventLoopPolicy, CocoaLifecycle
 
 from .libs import *
 from .window import Window
-# from .widgets.icon import Icon
 
 
 class MainWindow(Window):

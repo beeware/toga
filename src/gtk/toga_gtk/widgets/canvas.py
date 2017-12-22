@@ -1,10 +1,22 @@
-from gi.repository import Gtk
 import re
+
+import gi
+
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk
 
 try:
     import cairo
 except ImportError:
     cairo = None
+
+try:
+    gi.require_version("Pango", "1.0")
+    from gi.repository import Pango
+
+    SCALE = Pango.SCALE
+except ImportError:
+    SCALE = 1024
 
 # TODO import colosseum once updated to support colors
 # from colosseum import colors
@@ -23,8 +35,9 @@ class Canvas(Widget):
         self.native.set_size_request(640, 480)
         self.native.interface = self.interface
         surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, self.native.get_allocated_width(),
-                                          self.native.get_allocated_height())
+                                     self.native.get_allocated_height())
         self.native.context = cairo.Context(surface)
+        self.native.font = None
 
     def set_on_draw(self, handler):
         self.native.connect('draw', handler)
@@ -126,6 +139,36 @@ class Canvas(Widget):
 
     def reset_transform(self):
         self.native.context.identity_matrix()
+
+    def write_text(self, text, x, y, font):
+        # Set font family and size
+        if font:
+            write_font = font
+        elif self.native.font:
+            write_font = self.native.font
+            write_font.family = self.native.font.get_family()
+            write_font.size = self.native.font.get_size() / SCALE
+        self.native.context.select_font_face(write_font.family)
+        self.native.context.set_font_size(write_font.size)
+
+        # Support writing multiline text
+        for line in text.splitlines():
+            width, height = write_font.measure(line)
+            self.native.context.move_to(x, y)
+            self.native.context.text_path(line)
+            y += height
+
+    def measure_text(self, text, font):
+        # Set font family and size
+        if font:
+            self.native.context.select_font_face(font.family)
+            self.native.context.set_font_size(font.size)
+        elif self.native.font:
+            self.native.context.select_font_face(self.native.font.get_family())
+            self.native.context.set_font_size(self.native.font.get_size() / SCALE)
+
+        x_bearing, y_bearing, width, height, x_advance, y_advance = self.native.context.text_extents(text)
+        return width, height
 
     def rehint(self):
         # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height(), getattr(self, '_fixed_height', False), getattr(self, '_fixed_width', False))

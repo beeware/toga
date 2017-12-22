@@ -1,37 +1,30 @@
 from .app import *
 from .command import *
-from .window import Window
 from .constants import *
-
-# Font support
 from .font import Font
-
-# Widgets
 from .widgets.base import Layout, Point, Widget
-
 from .widgets.box import Box
 from .widgets.button import Button
-from .widgets.detailedlist import DetailedList
 from .widgets.canvas import Canvas
-# from .widgets.icon import Icon
+from .widgets.detailedlist import DetailedList
 from .widgets.image import *
 from .widgets.imageview import *
 from .widgets.label import Label
 from .widgets.multilinetextinput import *
+from .widgets.numberinput import NumberInput
 from .widgets.optioncontainer import *
 from .widgets.passwordinput import *
 from .widgets.progressbar import *
 from .widgets.scrollcontainer import *
+from .widgets.selection import Selection
 from .widgets.slider import *
 from .widgets.splitcontainer import *
 from .widgets.switch import *
 from .widgets.table import *
 from .widgets.textinput import TextInput
-
 from .widgets.tree import *
 from .widgets.webview import *
-from .widgets.selection import Selection
-from .widgets.numberinput import NumberInput
+from .window import Window
 
 __all__ = [
     # Applications

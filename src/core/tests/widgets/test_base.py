@@ -1,9 +1,8 @@
 import unittest
 
-from colosseum import CSS
-
 import toga
 import toga_dummy
+from colosseum import CSS
 from toga_dummy.utils import TestCase
 
 

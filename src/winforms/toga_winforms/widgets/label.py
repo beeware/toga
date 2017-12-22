@@ -1,5 +1,3 @@
-from toga.constants import LEFT_ALIGNED
-
 from toga_winforms.libs import *
 
 from .base import Widget

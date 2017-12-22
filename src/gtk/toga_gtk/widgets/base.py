@@ -1,6 +1,3 @@
-from gi.repository import Gtk
-
-
 def wrapped_handler(widget, handler):
     def _handler(impl, data=None):
         if handler:
@@ -58,7 +55,7 @@ class Widget:
         pass
 
     def set_font(self, font):
-        self.native.override_font(font._impl)
+        self.native.font = font._impl.native
 
     def set_background_color(self, background_color):
         pass

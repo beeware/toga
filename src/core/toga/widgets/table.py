@@ -3,7 +3,6 @@ from toga.sources import ListSource
 from toga.sources.accessors import build_accessors
 
 from .base import Widget
-from .icon import Icon
 
 
 class Table(Widget):
@@ -45,6 +44,8 @@ class Table(Widget):
         self.headings = headings
         self._accessors = build_accessors(headings, accessors)
         self._multiple_select = multiple_select
+
+        self._on_select = None
         self._data = None
         self._impl = self.factory.Table(interface=self)
         self.data = data

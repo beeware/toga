@@ -29,7 +29,10 @@ class Node(Row):
     ######################################################################
 
     def __iter__(self):
-        return iter(self._children)
+        if self._children:
+            return iter(self._children)
+        else:
+            return iter([])
 
     def __setitem__(self, index, value):
         node = self._source._create_node(value)

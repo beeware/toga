@@ -1,5 +1,3 @@
-from toga.constants import LEFT_ALIGNED
-
 from toga_cocoa.libs import NSTextField, NSTextAlignment
 
 from .base import Widget

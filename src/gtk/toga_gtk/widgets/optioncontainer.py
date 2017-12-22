@@ -1,5 +1,4 @@
 from gi.repository import Gtk
-
 from toga_gtk.container import Container
 
 from .base import Widget

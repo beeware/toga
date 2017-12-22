@@ -1,6 +1,6 @@
+import toga_dummy
 from toga.handlers import wrapped_handler
 from toga.platform import get_platform_factory
-import toga_dummy
 
 
 class Group:
@@ -107,7 +107,7 @@ class CommandSet:
         self.on_change = on_change
 
     def add(self, *values):
-        if self.widget:
+        if self.widget and self.widget.app != None:
             self.widget.app.commands.add(*values)
         self._values.update(values)
         if self.on_change:

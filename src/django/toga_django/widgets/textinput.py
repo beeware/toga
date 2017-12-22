@@ -1,8 +1,7 @@
 from toga.interface import TextInput as TextInputInterface
 
-from .. import impl
 from .base import WidgetMixin
-# from ..libs import TextInput as TogaTextInput
+from .. import impl
 
 
 class TextInput(TextInputInterface, WidgetMixin):
