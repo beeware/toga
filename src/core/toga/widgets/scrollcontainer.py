@@ -6,7 +6,7 @@ class ScrollContainer(Widget):
 
     Args:
         id (str): An identifier for this widget.
-        style (:class:`colosseum.CSSNode`): An optional style object.
+        style (:obj:`Style`): An optional style object.
             If no style is provided then a new one will be created for the widget.
         horizontal (bool):  If True enable horizontal scroll bar.
         vertical (bool): If True enable vertical scroll bar.

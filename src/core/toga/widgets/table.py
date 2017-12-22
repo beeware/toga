@@ -14,7 +14,7 @@ class Table(Widget):
         data (``list`` of ``tuple``): The data to be displayed on the table.
         accessors: A list of methods, same length as ``headings``, that describes
             how to extract the data value for each column from the row. (Optional)
-        style (:class:`colosseum.CSSNode`): An optional style object.
+        style (:obj:`Style`): An optional style object.
             If no style is provided` then a new one will be created for the widget.
         on_select (``callable``): A function to be invoked on selecting a row of the table.
         factory (:obj:`module`): A python module that is capable to return a

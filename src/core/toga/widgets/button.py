@@ -9,7 +9,7 @@ class Button(Widget):
     Args:
         label (str): Text to be shown on the button.
         id (str): An identifier for this widget.
-        style (:class:`colosseum.CSSNode`): An optional style object. If no style is provided then
+        style (:obj:`Style`): An optional style object. If no style is provided then
             a new one will be created for the widget.
         on_press (:obj:`callable`): Function to execute when pressed.
         enabled (bool): Whether or not interaction with the button is possible, defaults to `True`.
@@ -46,7 +46,7 @@ class Button(Widget):
 
     @property
     def on_press(self):
-        """The handler to invoke when the button
+        """The handler to invoke when the button is pressed.
 
         Returns:
             The function ``callable`` that is called on button press.

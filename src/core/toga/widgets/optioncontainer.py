@@ -6,7 +6,7 @@ class OptionContainer(Widget):
 
     Args:
         id (str):   An identifier for this widget.
-        style (:class:`colosseum.CSSNode`): an optional style object.
+        style (:obj:`Style`): an optional style object.
             If no style is provided then a new one will be created for the widget.
         content (``list`` of ``tuple`` (``str``, :class:`toga.Widget`)):
             Each tuple in the list is composed of a title for the option and

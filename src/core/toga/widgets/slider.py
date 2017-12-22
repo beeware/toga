@@ -8,7 +8,7 @@ class Slider(Widget):
 
     Args:
         id: An identifier for this widget.
-        style (:class:`colosseum.CSSNode`):
+        style (:obj:`Style`):
         default (float): Default value of the slider
         range (``tuple``): Min and max values of the slider in this form (min, max).
         on_slide (``callable``): The function that is executed on_slide.

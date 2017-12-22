@@ -6,7 +6,7 @@ class MultilineTextInput(Widget):
 
     Args:
         id (str): An identifier for this widget.
-        style(:class:`colosseum.CSSNode`):  An optional style object.
+        style(:obj:`Style`):  An optional style object.
             If no style is provided then a new one will be created for the widget.
         factory: Optional factory that must be able to return a implementation
             of a MulitlineTextInput Widget.

@@ -38,9 +38,9 @@ class SplitContainer(Widget):
     def add_content(self, position, widget):
         widget.viewport = CocoaViewport(widget.native)
 
-        # Turn the autoresizing mask on the widget widget
-        # into constraints. This makes the widget fill the
-        # available space inside the SplitContainer.
+        # Turn the autoresizing mask on the widget into constraints.
+        # This makes the widget fill the available space inside the
+        # SplitContainer.
         # FIXME Use Constrains to enforce min width and height of the widgets otherwise width of 0 is possible.
         widget.native.translatesAutoresizingMaskIntoConstraints = True
         self.native.addSubview(widget.native)

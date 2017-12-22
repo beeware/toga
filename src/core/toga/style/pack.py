@@ -117,7 +117,7 @@ class Pack(BaseStyle):
         else:
             # If no width is specified, assume we're going to use all
             # the available width. If there is an intrinsic width,
-            # use it to make user the width is at lea
+            # use it to make sure the width is at least the amount specified.
             available_width = max(0, alloc_width - self.padding_left - self.padding_right)
             # self._debug("INITIAL AVAILABLE WIDTH", available_width)
             if node.intrinsic.width:
@@ -134,7 +134,7 @@ class Pack(BaseStyle):
 
         # Establish available height
         if self.height:
-            # If width is specified, use it.
+            # If height is specified, use it.
             available_height = self.height
             # self._debug("SPECIFIED HEIGHT", available_height)
         else:
