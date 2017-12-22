@@ -21,7 +21,7 @@ class SplitContainer(Widget):
     def __init__(self, id=None, style=None, direction=VERTICAL, content=None, factory=None):
         super().__init__(id=id, style=style, factory=factory)
         self._direction = direction
-        self._containers = []
+        self._content = []
         self._weight = []
 
         # Create a platform specific implementation of a SplitContainer
