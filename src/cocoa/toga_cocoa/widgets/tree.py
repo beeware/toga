@@ -117,14 +117,16 @@ class TogaTree(NSOutlineView):
         self.interface.selected = []
         currentIndex = self.selectedRowIndexes.firstIndex
         for i in range(self.selectedRowIndexes.count):
-            # self.interface.selected.append(self._impl.node[self.itemAtRow(currentIndex)])
+            self.interface.selected.append(self.itemAtRow(currentIndex).attrs['node'])
             currentIndex = self.selectedRowIndexes.indexGreaterThanIndex(currentIndex)
 
         # FIXME: return a list if widget allows multi-selection.
-        self.interface.selected = self.interface.selected[0]
+        if True:  # if not self.interface.multiple_selection
+            self.interface.selected = self.interface.selected[0]
+
 
         if self.interface.on_select:
-            self.interface.on_select(self.interface)
+            self.interface.on_select(self.interface, row=self.interface.selected)
 
 
 class Tree(Widget):
