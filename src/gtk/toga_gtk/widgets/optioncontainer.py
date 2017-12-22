@@ -19,3 +19,6 @@ class OptionContainer(Widget):
             child._impl.container = widget
 
         self.native.append_page(widget.native, Gtk.Label(label))
+
+    def set_on_select(self, handler):
+        pass

@@ -25,3 +25,6 @@ class OptionContainer(Widget):
         item.Controls.Add(widget)
 
         self.native.Controls.Add(item)
+
+    def set_on_select(self, handler):
+        pass

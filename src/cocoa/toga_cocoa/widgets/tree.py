@@ -62,20 +62,28 @@ class TogaTree(NSOutlineView):
             value = getattr(item.attrs['node'], column.identifier)
 
             # Allow for an (icon, value) tuple as the simple case
-            # for encoding an icon in a table cell.
+            # for encoding an icon in a table cell. Otherwise, look
+            # for an icon attribute.
             if isinstance(value, tuple):
-                icon, value = value
+                icon_iface, value = value
             else:
                 # If the value has an icon attribute, get the _impl.
                 # Icons are deferred resources, so we bind to the factory.
                 try:
                     icon = value.icon.bind(self.interface.factory)
                 except AttributeError:
-                    icon = None
+                    icon_iface = None
         except AttributeError:
             # If the node doesn't have a property with the
             # accessor name, assume an empty string value.
             value = ''
+            icon_iface = None
+
+        # If the value has an icon, get the _impl.
+        # Icons are deferred resources, so we provide the factory.
+        if icon_iface:
+            icon = icon_iface._impl(self.interface.factory)
+        else:
             icon = None
 
         # Now construct the data object for the cell.
@@ -114,18 +122,19 @@ class TogaTree(NSOutlineView):
     # OutlineViewDelegate methods
     @objc_method
     def outlineViewSelectionDidChange_(self, notification) -> None:
-        self.interface.selected = []
-        currentIndex = self.selectedRowIndexes.firstIndex
+        selection = []
+        current_index = self.selectedRowIndexes.firstIndex
         for i in range(self.selectedRowIndexes.count):
-            self.interface.selected.append(self.itemAtRow(currentIndex).attrs['node'])
-            currentIndex = self.selectedRowIndexes.indexGreaterThanIndex(currentIndex)
+            selection.append(self.itemAtRow(current_index).attrs['node'])
+            current_index = self.selectedRowIndexes.indexGreaterThanIndex(current_index)
 
-        # FIXME: return a list if widget allows multi-selection.
-        if True:  # if not self.interface.multiple_selection
+        if not self.interface.multiple_select:
             try:
-                self.interface.selected = self.interface.selected[0]
+                self.interface._selection = selection[0]
             except IndexError:
-                self.interface.selected = None
+                self.interface._selection = None
+        else:
+            self.interface._selection = selection
 
         if notification.object.selectedRow == -1:
             selected = None
@@ -152,13 +161,15 @@ class Tree(Widget):
         self.tree._impl = self
         self.tree.columnAutoresizingStyle = NSTableViewUniformColumnAutoresizingStyle
 
-        # TODO: Make turning this on an option.
-        self.tree.allowsMultipleSelection = False
+        self.tree.allowsMultipleSelection = self.interface.multiple_select
 
         # Create columns for the tree
         self.columns = []
-        for i, heading in enumerate(self.interface.headings):
-            column = NSTableColumn.alloc().initWithIdentifier(to_accessor(heading))
+        for i, (heading, accessor) in enumerate(zip(
+                    self.interface.headings,
+                    self.interface._accessors
+                )):
+            column = NSTableColumn.alloc().initWithIdentifier(accessor)
             self.tree.addTableColumn(column)
             self.columns.append(column)
 

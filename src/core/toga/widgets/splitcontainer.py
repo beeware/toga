@@ -22,6 +22,7 @@ class SplitContainer(Widget):
         super().__init__(id=id, style=style, factory=factory)
         self._direction = direction
         self._containers = []
+        self._weight = []
 
         # Create a platform specific implementation of a SplitContainer
         self._impl = self.factory.SplitContainer(interface=self)
@@ -51,9 +52,17 @@ class SplitContainer(Widget):
         if len(content) < 2:
             raise ValueError('SplitContainer content must have at least 2 elements')
 
-        self._content = content
+        self._content = []
+        for position, item in enumerate(content):
+            if isinstance(item, tuple):
+                widget, weight = item
+            else:
+                widget = item
+                weight = 1.0
 
-        for position, widget in enumerate(self._content):
+            self._content.append(widget)
+            self._weight.append(weight)
+
             widget.app = self.app
             widget.window = self.window
             self._impl.add_content(position, widget._impl)

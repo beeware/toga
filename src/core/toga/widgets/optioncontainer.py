@@ -1,3 +1,5 @@
+from toga.handlers import wrapped_handler
+
 from .base import Widget
 
 
@@ -13,13 +15,18 @@ class OptionContainer(Widget):
             the widget tree that is displayed in the option.
     """
 
-    def __init__(self, id=None, style=None, content=None, factory=None):
+    def __init__(self, id=None, style=None, content=None, on_select=None, factory=None):
         super().__init__(id=id, style=style, factory=factory)
+        self._on_select = None
         self._impl = self.factory.OptionContainer(interface=self)
+
+        self.on_select = on_select
 
         if content:
             for label, widget in content:
                 self.add(label, widget)
+
+        self.on_select = on_select
 
     def add(self, label, widget):
         """ Add a new option to the option container.
@@ -33,3 +40,23 @@ class OptionContainer(Widget):
 
         self._impl.add_content(label, widget._impl)
         widget.refresh()
+
+    @property
+    def on_select(self):
+        """ The callback function that is invoked when one of the options is selected.
+
+        Returns:
+            (``callable``) The callback function.
+        """
+        return self._on_select
+
+    @on_select.setter
+    def on_select(self, handler):
+        """
+        Set the function to be executed on option selection
+
+        :param handler:     callback function
+        :type handler:      ``callable``
+        """
+        self._on_select = wrapped_handler(self, handler)
+        self._impl.set_on_select(self._on_select)

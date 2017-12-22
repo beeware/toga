@@ -26,27 +26,37 @@ class Icon:
     """
 
     def __init__(self, path, system=False):
-        self.filename = None
-
         if os.path.splitext(path)[1] in ('.png', '.icns', '.bmp'):
             self.path = path
         else:
             self.path = path + '.icns'
 
         self.system = system
-        if self.system:
-            toga_dir = os.path.dirname(os.path.dirname(__file__))
-            self.filename = os.path.join(toga_dir, 'resources', self.path)
-        else:
-            from toga.app import App
-            self.filename = os.path.join(App.app_dir, self.path)
 
         self._impl = None
+
+    @property
+    def filename(self):
+        if self.system:
+            toga_dir = os.path.dirname(os.path.dirname(__file__))
+            return os.path.join(toga_dir, 'resources', self.path)
+        else:
+            from toga.app import App
+            return os.path.join(App.app_dir, self.path)
 
     def bind(self, factory):
         if self._impl is None:
             self._impl = factory.Icon(interface=self)
         return self._impl
+
+    @property
+    def filename(self):
+        if self.system:
+            toga_dir = os.path.dirname(os.path.dirname(__file__))
+            return os.path.join(toga_dir, 'resources', self.path)
+        else:
+            from toga.app import App
+            return os.path.join(App.app_dir, self.path)
 
     @classmethod
     def load(cls, path_or_icon, default=None):

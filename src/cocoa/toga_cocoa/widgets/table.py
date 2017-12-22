@@ -58,18 +58,19 @@ class TogaTable(NSTableView):
 
     @objc_method
     def tableViewSelectionDidChange_(self, notification) -> None:
-        self.interface.selected = []
-        currentIndex = self.selectedRowIndexes.firstIndex
+        selection = []
+        current_index = self.selectedRowIndexes.firstIndex
         for i in range(self.selectedRowIndexes.count):
-            self.interface.selected.append(self.interface.data[currentIndex])
-            currentIndex = self.selectedRowIndexes.indexGreaterThanIndex(currentIndex)
+            selection.append(self.interface.data[current_index])
+            current_index = self.selectedRowIndexes.indexGreaterThanIndex(current_index)
 
-        # FIXME: return a list if widget allows multi-selection.
-        if True:  # if not self.interface.multiple_selection
+        if not self.interface.multiple_select:
             try:
-                self.interface.selected = self.interface.selected[0]
+                self.interface._selection = selection[0]
             except IndexError:
-                self.interface.selected = None
+                self.interface._selection = None
+        else:
+            self.interface._selection = selection
 
         if notification.object.selectedRow == -1:
             selected = None
@@ -95,8 +96,7 @@ class Table(Widget):
         self.table._impl = self
         self.table.columnAutoresizingStyle = NSTableViewUniformColumnAutoresizingStyle
 
-        # TODO: Optionally enable multiple selection
-        self.table.allowsMultipleSelection = False
+        self.table.allowsMultipleSelection = self.interface.multiple_select
 
         # Create columns for the table
         self.columns = []

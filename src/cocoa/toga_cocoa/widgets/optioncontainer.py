@@ -1,3 +1,5 @@
+from rubicon.objc import at
+
 from toga_cocoa.libs import *
 from toga_cocoa.window import CocoaViewport
 
@@ -7,17 +9,20 @@ from .base import Widget
 class TogaTabViewDelegate(NSObject):
     @objc_method
     def tabView_didSelectTabViewItem_(self, view, item) -> None:
-        pass
+        ident = at(item.identifier).longValue
+        if self.interface.on_select:
+            self.interface.on_select(self.interface, option=self._impl.options[ident])
 
 
 class OptionContainer(Widget):
     def create(self):
         self.native = NSTabView.alloc().init()
-
         self.delegate = TogaTabViewDelegate.alloc().init()
-        self.delegate.interface = self
+        self.delegate.interface = self.interface
+        self.delegate._impl = self
         self.native.delegate = self.delegate
 
+        self.options = {}
         # Add the layout constraints
         self.add_constraints()
 
@@ -30,8 +35,10 @@ class OptionContainer(Widget):
         """
         widget.viewport = CocoaViewport(widget.native)
 
-        item = NSTabViewItem.alloc().initWithIdentifier('%s-Tab-%s' % (id(self), id(widget)))
+        item = NSTabViewItem.alloc().initWithIdentifier(id(widget))
         item.label = label
+
+        self.options[id(widget)] = widget.interface
 
         # Turn the autoresizing mask on the widget widget
         # into constraints. This makes the widget fill the
@@ -40,3 +47,6 @@ class OptionContainer(Widget):
 
         item.view = widget.native
         self.native.addTabViewItem(item)
+
+    def set_on_select(self, handler):
+        pass
