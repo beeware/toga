@@ -22,11 +22,10 @@ class ScrollContainer(Widget):
 
     def set_content(self, widget):
         self.native.documentView = widget.native
+        widget.viewport = CocoaViewport(self.native.documentView)
 
         for child in widget.interface.children:
             child._impl.container = widget
-
-        widget.viewport = CocoaViewport(self.native.documentView)
 
     def set_bounds(self, x, y, width, height):
         super().set_bounds(x, y, width, height)

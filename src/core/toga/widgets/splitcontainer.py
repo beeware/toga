@@ -78,10 +78,8 @@ class SplitContainer(Widget):
             for content in self._content:
                 content.window = self.window
 
-    def refresh(self):
+    def refresh_sublayouts(self):
         """Refresh the layout and appearance of this widget."""
-        super().refresh()
-        # refresh the layout of content panels as well
         for widget in self._content:
             widget.refresh()
 

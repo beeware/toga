@@ -8,7 +8,7 @@ class TogaSplitViewDelegate(NSObject):
     @objc_method
     def splitView_resizeSubviewsWithOldSize_(self, view, size: NSSize) -> None:
         if size.width and size.height:
-            count = len(self._impl.containers)
+            count = len(self.interface.content)
 
             # Turn all the weights into a fraction of 1.0
             total = sum(self.interface._weight)
@@ -52,10 +52,13 @@ class SplitContainer(Widget):
     def add_content(self, position, widget):
         widget.viewport = CocoaViewport(widget.native)
 
+        for child in widget.interface.children:
+            child._impl.container = widget
+
         # Turn the autoresizing mask on the widget into constraints.
         # This makes the widget fill the available space inside the
         # SplitContainer.
-        # FIXME Use Constrains to enforce min width and height of the widgets otherwise width of 0 is possible.
+        # FIXME Use Constraints to enforce min width and height of the widgets otherwise width of 0 is possible.
         widget.native.translatesAutoresizingMaskIntoConstraints = True
         self.native.addSubview(widget.native)
 

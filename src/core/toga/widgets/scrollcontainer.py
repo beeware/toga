@@ -87,3 +87,8 @@ class ScrollContainer(Widget):
     def horizontal(self, value):
         self._horizontal = value
         self._impl.set_horizontal(value)
+
+    def refresh_sublayouts(self):
+        """Refresh the layout and appearance of this widget."""
+        for widget in self._content:
+            widget.refresh()

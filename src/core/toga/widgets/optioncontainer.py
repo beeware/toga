@@ -21,12 +21,25 @@ class OptionContainer(Widget):
         self._impl = self.factory.OptionContainer(interface=self)
 
         self.on_select = on_select
-
+        self._content = []
         if content:
             for label, widget in content:
                 self.add(label, widget)
 
         self.on_select = on_select
+
+    @property
+    def content(self):
+        """ The sub layouts of the `SplitContainer`.
+
+        Returns:
+            A ``list`` of :class:`toga.Widget`. Each element of the list
+            is a sub layout of the `SplitContainer`
+
+        Raises:
+            ValueError: If the list is less than two elements long.
+        """
+        return self._content
 
     def add(self, label, widget):
         """ Add a new option to the option container.
@@ -38,8 +51,14 @@ class OptionContainer(Widget):
         widget.app = self.app
         widget.window = self.window
 
+        self._content.append(widget)
         self._impl.add_content(label, widget._impl)
         widget.refresh()
+
+    def refresh_sublayouts(self):
+        """Refresh the layout and appearance of this widget."""
+        for widget in self._content:
+            widget.refresh()
 
     @property
     def on_select(self):

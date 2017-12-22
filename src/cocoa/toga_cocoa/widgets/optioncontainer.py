@@ -9,9 +9,9 @@ from .base import Widget
 class TogaTabViewDelegate(NSObject):
     @objc_method
     def tabView_didSelectTabViewItem_(self, view, item) -> None:
-        ident = at(item.identifier).longValue
+        index = at(item.identifier).longValue
         if self.interface.on_select:
-            self.interface.on_select(self.interface, option=self._impl.options[ident])
+            self.interface.on_select(self.interface, option=self.interface.content[index])
 
 
 class OptionContainer(Widget):
@@ -22,7 +22,6 @@ class OptionContainer(Widget):
         self.delegate._impl = self
         self.native.delegate = self.delegate
 
-        self.options = {}
         # Add the layout constraints
         self.add_constraints()
 
@@ -35,10 +34,11 @@ class OptionContainer(Widget):
         """
         widget.viewport = CocoaViewport(widget.native)
 
-        item = NSTabViewItem.alloc().initWithIdentifier(id(widget))
-        item.label = label
+        for child in widget.interface.children:
+            child._impl.container = widget
 
-        self.options[id(widget)] = widget.interface
+        item = NSTabViewItem.alloc().initWithIdentifier(len(self.interface.content) - 1)
+        item.label = label
 
         # Turn the autoresizing mask on the widget widget
         # into constraints. This makes the widget fill the
