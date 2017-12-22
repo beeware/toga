@@ -1,3 +1,5 @@
+from travertino.size import at_least
+
 from toga_winforms.libs import *
 
 from .base import Widget
@@ -24,7 +26,5 @@ class ProgressBar(Widget):
     def rehint(self):
         # Height must be non-zero
         # Set a sensible min-width
-        self.interface.style.hint(
-            height=self.native.PreferredSize.Height,
-            min_width=100,
-        )
+        self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
+        self.interface.intrinsic.height = self.native.PreferredSize.Height

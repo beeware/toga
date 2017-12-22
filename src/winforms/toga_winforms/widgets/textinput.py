@@ -1,3 +1,5 @@
+from travertino.size import at_least
+
 from toga_winforms.libs import *
 
 from .base import Widget
@@ -25,7 +27,5 @@ class TextInput(Widget):
         # Height of a text input is known and fixed.
         # Width must be > 100
         # print("REHINT TextInput", self, self.native.PreferredSize)
-        self.interface.style.hint(
-            height=self.native.PreferredSize.Height,
-            min_width=100,
-        )
+        self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
+        self.interface.intrinsic.height = self.native.PreferredSize.Height

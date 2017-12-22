@@ -5,6 +5,7 @@ class Widget:
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
+
         self._container = None
         self.native = None
         self.create()
@@ -27,6 +28,7 @@ class Widget:
 
         for child in self.interface.children:
             child._impl.container = container
+
         self.rehint()
 
     def set_enabled(self, value):
