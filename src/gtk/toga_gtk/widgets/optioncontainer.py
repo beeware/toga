@@ -18,4 +18,4 @@ class OptionContainer(Widget):
         for child in widget.interface.children:
             child._impl.container = widget
 
-        self.native.append_page(container.native, Gtk.Label(label))
+        self.native.append_page(widget.native, Gtk.Label(label))

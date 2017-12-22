@@ -22,13 +22,15 @@ class Label(Widget):
 
     def set_color(self, value):
         if value:
-            print('set color', value, native_color(value))
+            pass
+            # print('set color', value, native_color(value))
             # FIXME
             # self.native.set_color(native_color(value))
 
     def set_font(self, value):
         if value:
-            print('set font', value._impl, value._impl.native)
+            pass
+            # print('set font', value._impl, value._impl.native)
             # FIXME
             # self.native.set_font(native_font(value))
 
