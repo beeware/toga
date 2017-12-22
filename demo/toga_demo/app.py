@@ -4,6 +4,7 @@ import os
 
 import toga
 from toga.style import Pack
+from toga.constants import COLUMN
 
 
 class TogaDemo(toga.App):
@@ -28,14 +29,14 @@ class TogaDemo(toga.App):
         left_tree = toga.Tree(
             headings=['Navigate'],
             data={
-                'root1': {
+                ('root1',): {
                 },
-                'root2': {
-                    'root2.1': None,
-                    'root2.2': [
-                        'root2.2.1',
-                        'root2.2.2',
-                        'root2.2.3',
+                ('root2',): {
+                    ('root2.1',): None,
+                    ('root2.2',): [
+                        ('root2.2.1',),
+                        ('root2.2.2',),
+                        ('root2.2.3',),
                     ]
                 }
             }
@@ -44,7 +45,7 @@ class TogaDemo(toga.App):
         left_container.add('Table', left_table)
         left_container.add('Tree', left_tree)
 
-        right_content = toga.Box()
+        right_content = toga.Box(style=Pack(direction=COLUMN))
         for b in range(0, 10):
             right_content.add(
                 toga.Button(
@@ -63,7 +64,7 @@ class TogaDemo(toga.App):
         split.content = [left_container, right_container]
 
         cmd1 = toga.Command(self.action1, 'Action 1', tooltip='Perform action 1', icon=os.path.join(os.path.dirname(__file__), 'icons/brutus-32.png'))
-        cmd2 = toga.Command(self.action2, 'Action 2', tooltip='Perform action 2', icon=toga.TIBERIUS_ICON)
+        cmd2 = toga.Command(self.action2, 'Action 2', tooltip='Perform action 2', icon=toga.Icon.TIBERIUS_ICON)
 
         self.main_window.toolbar.add(cmd1, cmd2)
 
