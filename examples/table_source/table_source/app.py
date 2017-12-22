@@ -41,7 +41,7 @@ class MovieSource(Source):
         movie = Movie(*entry)
         self._movies.append(movie)
         self._movies.sort(key=lambda m: m.year)
-        self._notify('insert', item=movie)
+        self._notify('insert', index=len(self._movies) - 1, item=movie)
 
     def remove(self, index):
         item = self._movies[index]
@@ -73,8 +73,8 @@ class GoodMovieSource(Source):
         return sorted(self._filtered(), key=lambda m: -m.rating)[index]
 
     # A listener that passes on all notifications
-    def insert(self, item):
-        self._notify('insert', item=item)
+    def insert(self, index, item):
+        self._notify('insert', index=index, item=item)
 
     def remove(self, item):
         self._notify('remove', item=item)
@@ -86,7 +86,7 @@ class GoodMovieSource(Source):
 class ExampleTableSourceApp(toga.App):
     # Table callback functions
     def on_select_handler(self, widget, row, **kwargs):
-        self.label.text = 'You selected row: {}'.format(row) if row is not None else 'No row selected'
+        self.label.text = 'You selected row: {}'.format(row.title) if row is not None else 'No row selected'
 
     # Button callback functions
     def insert_handler(self, widget, **kwargs):

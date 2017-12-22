@@ -122,11 +122,18 @@ class TogaTree(NSOutlineView):
 
         # FIXME: return a list if widget allows multi-selection.
         if True:  # if not self.interface.multiple_selection
-            self.interface.selected = self.interface.selected[0]
+            try:
+                self.interface.selected = self.interface.selected[0]
+            except IndexError:
+                self.interface.selected = None
 
+        if notification.object.selectedRow == -1:
+            selected = None
+        else:
+            selected = self.itemAtRow(notification.object.selectedRow).attrs['node']
 
         if self.interface.on_select:
-            self.interface.on_select(self.interface, row=self.interface.selected)
+            self.interface.on_select(self.interface, node=selected)
 
 
 class Tree(Widget):

@@ -20,7 +20,7 @@ bee_movies = [
 class ExampleTableApp(toga.App):
     # Table callback functions
     def on_select_handler(self, widget, row, **kwargs):
-        self.label.text = 'You selected row: {}'.format(row) if row is not None else 'No row selected'
+        self.label.text = 'You selected row: {}'.format(row.title) if row is not None else 'No row selected'
 
     # Button callback functions
     def insert_handler(self, widget, **kwargs):

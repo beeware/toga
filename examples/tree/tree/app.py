@@ -15,11 +15,13 @@ bee_movies = [
     {'year': 1947, 'title': 'Keeper of the Bees', 'rating': '6.3', 'genre': 'Drama'}
 ]
 
-
 class ExampleTreeApp(toga.App):
     # Table callback functions
-    def on_select_handler(self, widget, row, **kwargs):
-        self.label.text = 'You selected row: {}'.format(row) if row is not None else 'No row selected'
+    def on_select_handler(self, widget, node):
+        if node is not None and node.title:
+            self.label.text = 'You selected node: {}'.format(node.title)
+        else:
+            self.label.text = 'No node selected'
 
     # Button callback functions
     def insert_handler(self, widget, **kwargs):

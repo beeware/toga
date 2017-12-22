@@ -71,13 +71,16 @@ class DecadeSource(Source):
             self._decades.sort(key=lambda v: v.decade)
         movie = Movie(**entry)
         decade_root._data.append(movie)
-        self._notify('insert', item=movie)
+        self._notify('insert', parent=decade_root, index=len(decade_root._data) - 1, item=movie)
 
 
 class ExampleTreeSourceApp(toga.App):
     # Table callback functions
-    def on_select_handler(self, widget, row, **kwargs):
-        self.label.text = 'You selected row: {}'.format(row) if row is not None else 'No row selected'
+    def on_select_handler(self, widget, node):
+        if node and hasattr(node, 'title'):
+            self.label.text = 'You selected node: {}'.format(node.title)
+        else:
+            self.label.text = 'No row selected'
 
     # Button callback functions
     def insert_handler(self, widget, **kwargs):
