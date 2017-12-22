@@ -1,4 +1,5 @@
 from toga_cocoa.libs import *
+from toga_cocoa.window import CocoaViewport
 
 from .base import Widget
 
@@ -27,6 +28,8 @@ class OptionContainer(Widget):
             label (str): The label for the option container
             widget: The widget or widget tree that belongs to the label.
         """
+        widget.viewport = CocoaViewport(widget.native)
+
         item = NSTabViewItem.alloc().initWithIdentifier('%s-Tab-%s' % (id(self), id(widget)))
         item.label = label
 
