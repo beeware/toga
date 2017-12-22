@@ -43,7 +43,7 @@ class Widget(Node):
         self.factory = get_platform_factory(factory)
 
     def __repr__(self):
-        return "<%s:%s>" % (self.__class__.__name__, id(self))
+        return "<%s:0x%x>" % (self.__class__.__name__, identifier(self))
 
     @property
     def id(self):
@@ -124,3 +124,9 @@ class Widget(Node):
     def refresh(self):
         """Refresh the layout and appearance of the tree this node is contained in."""
         super().refresh(self._impl.viewport)
+        self.refresh_sublayouts()
+
+    def refresh_sublayouts(self):
+        if self._children is not None:
+            for child in self._children:
+                child.refresh_sublayouts()

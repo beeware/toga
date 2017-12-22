@@ -39,6 +39,7 @@ class Widget:
     ### APPLICATOR
 
     def set_bounds(self, x, y, width, height):
+        # print("SET BOUNDS ON", self.interface, x, y, width, height)
         self.constraints.update(x, y, width, height)
 
     def set_alignment(self, alignment):

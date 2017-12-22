@@ -72,6 +72,7 @@ class Constraints:
     def update(self, x, y, width, height):
         # print("UPDATE", self.widget, 'in', self.container, 'to', x, y, width, height)
         if self.container:
+            # print("IN CONTAINER")
             self.left_constraint.constant = x
             self.top_constraint.constant = y
 
