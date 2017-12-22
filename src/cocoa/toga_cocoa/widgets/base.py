@@ -30,6 +30,7 @@ class Widget:
 
         for child in self.interface.children:
             child._impl.container = container
+
         self.rehint()
 
     def set_enabled(self, value):
