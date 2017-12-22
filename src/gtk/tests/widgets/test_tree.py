@@ -1,8 +1,17 @@
 import unittest
 try:
+    import gi
+    gi.require_version('Gtk', '3.0')
     from gi.repository import Gtk
 except ImportError:
-    Gtk = None
+    import sys
+    # If we're on Linux, Gtk *should* be available. If it isn't, make
+    # Gtk an object... but in such a way that every test will fail,
+    # because the object isn't actually the Gtk interface.
+    if sys.platform == 'linux':
+        Gtk = object()
+    else:
+        Gtk = None
 
 import toga
 
@@ -12,7 +21,7 @@ def handle_events():
         Gtk.main_iteration_do(blocking=False)
 
 
-@unittest.skipIf(Gtk is None, "Can't run GTK implementation tests")
+@unittest.skipIf(Gtk is None, "Can't run GTK implementation tests on a non-Linux platform")
 class TestGtkTree(unittest.TestCase):
     def setUp(self):
         self.tree = toga.Tree(
@@ -24,6 +33,9 @@ class TestGtkTree(unittest.TestCase):
 
         self.window = Gtk.Window()
         self.window.add(self.tree._impl.native)
+
+    def assertNodeEqual(self, node, data):
+        self.assertEqual(tuple(node)[1:], data)
 
     def test_change_source(self):
         # Clear the table directly
@@ -39,9 +51,9 @@ class TestGtkTree(unittest.TestCase):
 
         # Make sure the data was stored correctly
         store = self.gtk_tree.store
-        self.assertEqual(tuple(store[0]), ("A1", "A2"))
-        self.assertEqual(tuple(store[1]), ("B1", "B2"))
-        self.assertEqual(tuple(store[(1, 0)]), ("B1.1", "B2.1"))
+        self.assertNodeEqual(store[0], ("A1", "A2"))
+        self.assertNodeEqual(store[1], ("B1", "B2"))
+        self.assertNodeEqual(store[(1, 0)], ("B1.1", "B2.1"))
 
         # Clear the table with empty assignment
         self.tree.data = []
@@ -62,16 +74,16 @@ class TestGtkTree(unittest.TestCase):
         node = self.tree.data.insert(None, 0, *node_data)
 
         # Make sure it's in there
-        self.assertIsNotNone(self.gtk_tree.get_impl(node))
+        self.assertIsNotNone(node._impl[self.gtk_tree])
 
         # Get the Gtk.TreeIter
-        tree_iter = self.gtk_tree.get_impl(node)
+        tree_iter = node._impl[self.gtk_tree]
 
         # Make sure it's a Gtk.TreeIter
         self.assertTrue(isinstance(tree_iter, Gtk.TreeIter))
 
         # Make sure it's the correct Gtk.TreeIter
-        self.assertEqual(node, self.gtk_tree.get_node(tree_iter))
+        self.assertEqual(node, self.gtk_tree.store.get(tree_iter, 0)[0])
 
         # Get the Gtk.TreePath of the Gtk.TreeIter
         path = self.gtk_tree.store.get_path(tree_iter)
@@ -80,11 +92,10 @@ class TestGtkTree(unittest.TestCase):
         self.assertTrue(isinstance(path, Gtk.TreePath))
         self.assertEqual(path, Gtk.TreePath(0))
         # self.assertEqual(str(path), "0")
-        # self.assertEqual(tuple(path), (0,))
+        # self.assertNodeEqual(path), (0,))
 
         # Make sure the node got stored correctly
-        result_node = self.gtk_tree.store[path]
-        self.assertEqual(tuple(result_node), node_data)
+        self.assertNodeEqual(self.gtk_tree.store[path], node_data)
 
     def test_insert_child_node(self):
         self.tree.data = []
@@ -97,16 +108,16 @@ class TestGtkTree(unittest.TestCase):
         node = self.tree.data.insert(parent, 0, *node_data)
 
         # Make sure it's in there
-        self.assertIsNotNone(self.gtk_tree.get_impl(node))
+        self.assertIsNotNone(node._impl[self.gtk_tree])
 
         # Get the Gtk.TreeIter
-        tree_iter = self.gtk_tree.get_impl(node)
+        tree_iter = node._impl[self.gtk_tree]
 
         # Make sure it's a Gtk.TreeIter
         self.assertTrue(isinstance(tree_iter, Gtk.TreeIter))
 
         # Make sure it's the correct Gtk.TreeIter
-        self.assertEqual(node, self.gtk_tree.get_node(tree_iter))
+        self.assertEqual(node, self.gtk_tree.store.get(tree_iter, 0)[0])
 
         # Get the Gtk.TreePath of the Gtk.TreeIter
         path = self.gtk_tree.store.get_path(tree_iter)
@@ -118,28 +129,27 @@ class TestGtkTree(unittest.TestCase):
         self.assertEqual(path, Gtk.TreePath((0, 0)))
 
         # Make sure the node got stored correctly
-        result_node = self.gtk_tree.store[path]
-        self.assertEqual(tuple(result_node), node_data)
+        self.assertNodeEqual(self.gtk_tree.store[path], node_data)
 
     def test_remove(self):
         # Insert a node
         node = self.tree.data.insert(None, 0, "1", "2")
 
         # Make sure it's in there
-        self.assertIsNotNone(self.gtk_tree.get_impl(node))
+        self.assertIsNotNone(node._impl[self.gtk_tree])
 
         # Then remove it
         self.gtk_tree.remove(node)
 
         # Make sure its gone
-        self.assertIsNone(self.gtk_tree.get_impl(node))
+        self.assertIsNone(node._impl.get(self.gtk_tree, None))
 
     def test_change(self):
         # Insert a node
         node = self.tree.data.insert(None, 0, "1", "2")
 
         # Make sure it's in there
-        self.assertIsNotNone(self.gtk_tree.get_impl(node))
+        self.assertIsNotNone(node._impl[self.gtk_tree])
 
         # Change a column
         node.one = "something_changed"
@@ -147,74 +157,51 @@ class TestGtkTree(unittest.TestCase):
         # unit tests should ensure this already.)
 
         # Get the Gtk.TreeIter
-        tree_iter = self.gtk_tree.get_impl(node)
+        tree_iter = node._impl[self.gtk_tree]
 
         # Make sure it's a Gtk.TreeIter
         self.assertTrue(isinstance(tree_iter, Gtk.TreeIter))
 
         # Make sure it's the correct Gtk.TreeIter
-        self.assertEqual(node, self.gtk_tree.get_node(tree_iter))
+        self.assertEqual(node, self.gtk_tree.store.get(tree_iter, 0)[0])
 
         # Make sure the value changed
         path = self.gtk_tree.store.get_path(tree_iter)
-        result_node = self.gtk_tree.store[path]
-        self.assertEqual(tuple(result_node), (node.one, node.two))
-
-    def test_method_compare_tree_iters(self):
-        store = self.gtk_tree.store
-        store.clear()
-        store.append(None, ("1", "2"))
-
-        # Gtk.TreeIters can't be compared directly
-        self.assertNotEqual(store[0].iter, store[0].iter)
-
-        self.assertTrue(self.gtk_tree.compare_tree_iters(
-            store[0].iter,
-            store[0].iter
-        ))
-
-    def test_method_get_node(self):
-        # Put data in the Tree
-        self.tree.data = []
-        A = self.tree.data.append(None, one="A1", two="A2")
-        tree_iter = A._impl[self.gtk_tree]
-        self.assertEqual(A, self.gtk_tree.get_node(tree_iter))
-
-        self.assertIsNone(self.gtk_tree.get_node(None))
+        self.assertNodeEqual(self.gtk_tree.store[path], (node.one, node.two))
 
     def test_node_persistence_for_replacement(self):
         self.tree.data = []
-        A = self.tree.data.insert(None, 0, one="A1", two="A2")
-        B = self.tree.data.insert(None, 0, one="B1", two="B2")
+        a = self.tree.data.insert(None, 0, one="A1", two="A2")
+        b = self.tree.data.insert(None, 0, one="B1", two="B2")
 
         # B should now precede A
         # test passes if A "knows" it has moved to index 1
 
-        self.assertEqual(tuple(self.gtk_tree.store[0]), ("B1", "B2"))
-        self.assertEqual(tuple(self.gtk_tree.store[1]), ("A1", "A2"))
+        self.assertNodeEqual(self.gtk_tree.store[0], ("B1", "B2"))
+        self.assertNodeEqual(self.gtk_tree.store[1], ("A1", "A2"))
 
     def test_node_persistence_for_deletion(self):
         self.tree.data = []
-        A = self.tree.data.append(None, one="A1", two="A2")
-        B = self.tree.data.append(None, one="B1", two="B2")
+        a = self.tree.data.append(None, one="A1", two="A2")
+        b = self.tree.data.append(None, one="B1", two="B2")
 
-        self.tree.data.remove(A)
+        self.tree.data.remove(a)
 
         # test passes if B "knows" it has moved to index 0
-        self.assertEqual(tuple(self.gtk_tree.store[0]), ("B1", "B2"))
+        self.assertNodeEqual(self.gtk_tree.store[0], ("B1", "B2"))
 
     def test_on_select_root_node(self):
         # Insert dummy nodes
         self.tree.data = []
-        A = self.tree.data.append(None, one="A1", two="A2")
-        B = self.tree.data.append(None, one="B1", two="B2")
+        a = self.tree.data.append(None, one="A1", two="A2")
+        b = self.tree.data.append(None, one="B1", two="B2")
 
         # Create a flag
         succeed = False
 
         def on_select(tree, row, *kw):
             # Make sure the right node was selected
-            self.assertEqual(row, B)
+            self.assertEqual(row, b)
 
             nonlocal succeed
             succeed = True
@@ -222,7 +209,7 @@ class TestGtkTree(unittest.TestCase):
         self.tree.on_select = on_select
 
         # Select node B
-        self.gtk_tree.selection.select_iter(self.gtk_tree.get_impl(B))
+        self.gtk_tree.selection.select_iter(b._impl[self.gtk_tree])
 
         # Allow on_select to call
         handle_events()
@@ -232,27 +219,27 @@ class TestGtkTree(unittest.TestCase):
     def test_on_select_child_node(self):
         # Insert two nodes
         self.tree.data = []
-        A = self.tree.data.append(None, one="A1", two="A2")
-        B = self.tree.data.append(A, one="B1", two="B2")
+        a = self.tree.data.append(None, one="A1", two="A2")
+        b = self.tree.data.append(a, one="B1", two="B2")
 
         # Create a flag
         succeed = False
 
         def on_select(tree, row):
             # Make sure the right node was selected
-            self.assertEqual(row, B)
+            self.assertEqual(row, b)
 
             nonlocal succeed
             succeed = True
 
         self.tree.on_select = on_select
 
-        # Expand parent node (A) on Gtk.TreeView to allow selection
-        path = self.gtk_tree.store.get_path(self.gtk_tree.get_impl(A))
+        # Expand parent node (a) on Gtk.TreeView to allow selection
+        path = self.gtk_tree.store.get_path(a._impl[self.gtk_tree])
         self.gtk_tree.treeview.expand_row(path, True)
 
         # Select node B
-        self.gtk_tree.selection.select_iter(self.gtk_tree.get_impl(B))
+        self.gtk_tree.selection.select_iter(b._impl[self.gtk_tree])
         # Allow on_select to call
         handle_events()
 
@@ -261,8 +248,8 @@ class TestGtkTree(unittest.TestCase):
     def test_on_select_deleted_node(self):
         # Insert two nodes
         self.tree.data = []
-        A = self.tree.data.append(None, one="A1", two="A2")
-        B = self.tree.data.append(None, one="B1", two="B2")
+        a = self.tree.data.append(None, one="A1", two="A2")
+        b = self.tree.data.append(None, one="B1", two="B2")
 
         # Create a flag
         succeed = False
@@ -271,7 +258,7 @@ class TestGtkTree(unittest.TestCase):
             nonlocal succeed
             if row is not None:
                 # Make sure the right node was selected
-                self.assertEqual(row, B)
+                self.assertEqual(row, b)
 
                 # Remove node B. This should trigger on_select again
                 tree.data.remove(row)
@@ -282,7 +269,7 @@ class TestGtkTree(unittest.TestCase):
         self.tree.on_select = on_select
 
         # Select node B
-        self.gtk_tree.selection.select_iter(self.gtk_tree.get_impl(B))
+        self.gtk_tree.selection.select_iter(b._impl[self.gtk_tree])
 
         # Allow on_select to call
         handle_events()

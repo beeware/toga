@@ -9,7 +9,7 @@ class Tree(Widget):
 
         # Create a tree view, and put it in a scroll view.
         # The scroll view is the _impl, because it's the outer container.
-        self.treeview = Gtk.TreeView(self.store)
+        self.treeview = Gtk.TreeView(model=self.store)
         self.selection = self.treeview.get_selection()
         self.selection.set_mode(Gtk.SelectionMode.SINGLE)
         self.selection.connect("changed", self.on_select)
@@ -42,7 +42,10 @@ class Tree(Widget):
     def on_select(self, selection):
         if hasattr(self.interface, "on_select") and self.interface.on_select:
             tree_model, tree_iter = selection.get_selected()
-            row = tree_model.get(tree_iter, 0)[0]
+            if tree_iter:
+                row = tree_model.get(tree_iter, 0)[0]
+            else:
+                row = None
             self.interface.on_select(None, row=row)
 
     def change_source(self, source):
@@ -52,12 +55,12 @@ class Tree(Widget):
 
         self.store.clear()
 
-        def append_node(parent):
-            for i, child_node in enumerate(parent):
-                self.insert(parent, i, child_node)
-                append_node(child_node)
+        def append_children(data, parent=None):
+            for i, node in enumerate(data):
+                self.insert(parent, i, node)
+                append_children(node, parent=node)
 
-        append_node(self.interface.data)
+        append_children(self.interface.data, parent=None)
 
         self.treeview.set_model(self.store)
 

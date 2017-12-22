@@ -9,7 +9,7 @@ class Table(Widget):
 
         # Create a table view, and put it in a scroll view.
         # The scroll view is the native, because it's the outer container.
-        self.treeview = Gtk.TreeView(self.store)
+        self.treeview = Gtk.TreeView(model=self.store)
         self.selection = self.treeview.get_selection()
         self.selection.set_mode(Gtk.SelectionMode.SINGLE)
         self.selection.connect("changed", self.on_select)
@@ -29,7 +29,10 @@ class Table(Widget):
     def on_select(self, selection):
         if self.interface.on_select:
             tree_model, tree_iter = selection.get_selected()
-            row = tree_model.get(tree_iter, 0)[0]
+            if tree_iter:
+                row = tree_model.get(tree_iter, 0)[0]
+            else:
+                row = None
             self.interface.on_select(None, row=row)
 
     def row_data(self, row):
@@ -64,8 +67,8 @@ class Table(Widget):
         self.store[item._impl[self]] = self.row_data(item)
 
     def remove(self, item):
-        del self.store[self.get_impl(item)]
-        del node._impl[self]
+        del self.store[item._impl[self]]
+        del item._impl[self]
 
     def clear(self):
         self.store.clear()
