@@ -38,6 +38,7 @@ class TogaBox(Gtk.Fixed):
     def do_size_allocate(self, allocation):
         # print(self._impl, "Container layout", allocation.width, 'x', allocation.height, ' @ ', allocation.x, 'x', allocation.y)
         self.set_allocation(allocation)
+        self.interface.refresh()
 
         # WARNING! This list of children is *not* the same
         # as the list provided by the interface!
@@ -50,6 +51,7 @@ class TogaBox(Gtk.Fixed):
                 pass
             else:
                 # print("update ", widget.interface, widget.interface.layout)
+                widget.interface._impl.rehint()
                 widget_allocation = Gdk.Rectangle()
                 widget_allocation.x = widget.interface.layout.absolute_content_left
                 widget_allocation.y = widget.interface.layout.absolute_content_top
