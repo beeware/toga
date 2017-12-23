@@ -32,7 +32,6 @@ class Canvas(Widget):
             )
 
         self.native = Gtk.DrawingArea()
-        self.native.set_size_request(640, 480)
         self.native.interface = self.interface
         surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, self.native.get_allocated_width(),
                                      self.native.get_allocated_height())
@@ -171,22 +170,6 @@ class Canvas(Widget):
         return width, height
 
     def rehint(self):
-        # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height(), getattr(self, '_fixed_height', False), getattr(self, '_fixed_width', False))
-        hints = {}
+        # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height())
         width = self.native.get_preferred_width()
-        minimum_width = width[0]
-        natural_width = width[1]
-
         height = self.native.get_preferred_height()
-        minimum_height = height[0]
-        natural_height = height[1]
-
-        if minimum_width > 0:
-            hints['min_width'] = minimum_width
-        if minimum_height > 0:
-            hints['min_height'] = minimum_height
-        if natural_height > 0:
-            hints['height'] = natural_height
-
-        if hints:
-            self.interface.style.hint(**hints)

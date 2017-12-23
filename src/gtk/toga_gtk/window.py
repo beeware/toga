@@ -104,7 +104,7 @@ class Window:
 
     def on_size_allocate(self, widget, allocation):
         # print("ON WINDOW SIZE ALLOCATION", allocation.width, allocation.height)
-        self.interface.content.refresh()
+        pass
 
     def close(self):
         self.native.close()
