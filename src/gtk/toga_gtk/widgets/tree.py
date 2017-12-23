@@ -32,21 +32,14 @@ class Tree(Widget):
             for attr in self.interface._accessors
         ]
 
-    # TODO: Remove this function once a consistent API exists for
-    # checking if a TreeSource OR Node has children.
-    def node_has_children(self, parent):
-        return (
-            hasattr(parent, '_children') and parent._children) or (
-            hasattr(parent, '_roots') and parent._roots)
-
     def on_select(self, selection):
         if hasattr(self.interface, "on_select") and self.interface.on_select:
             tree_model, tree_iter = selection.get_selected()
             if tree_iter:
-                row = tree_model.get(tree_iter, 0)[0]
+                node = tree_model.get(tree_iter, 0)[0]
             else:
-                row = None
-            self.interface.on_select(None, row=row)
+                node = None
+            self.interface.on_select(None, node=node)
 
     def change_source(self, source):
         # Temporarily disconnecting the TreeStore improves performance for large

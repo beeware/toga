@@ -25,6 +25,6 @@ Reference
 ---------
 
 .. autoclass:: toga.widgets.canvas.Canvas
-:members:
-       :undoc-members:
-       :inherited-members:
+   :members:
+   :undoc-members:
+   :inherited-members:

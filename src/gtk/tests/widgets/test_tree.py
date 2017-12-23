@@ -199,9 +199,9 @@ class TestGtkTree(unittest.TestCase):
         # Create a flag
         succeed = False
 
-        def on_select(tree, row, *kw):
+        def on_select(tree, node):
             # Make sure the right node was selected
-            self.assertEqual(row, b)
+            self.assertEqual(node, b)
 
             nonlocal succeed
             succeed = True
@@ -225,9 +225,9 @@ class TestGtkTree(unittest.TestCase):
         # Create a flag
         succeed = False
 
-        def on_select(tree, row):
+        def on_select(tree, node):
             # Make sure the right node was selected
-            self.assertEqual(row, b)
+            self.assertEqual(node, b)
 
             nonlocal succeed
             succeed = True
@@ -254,16 +254,16 @@ class TestGtkTree(unittest.TestCase):
         # Create a flag
         succeed = False
 
-        def on_select(tree, row):
+        def on_select(tree, node):
             nonlocal succeed
-            if row is not None:
+            if node is not None:
                 # Make sure the right node was selected
-                self.assertEqual(row, b)
+                self.assertEqual(node, b)
 
                 # Remove node B. This should trigger on_select again
-                tree.data.remove(row)
+                tree.data.remove(node)
             else:
-                self.assertEqual(row, None)
+                self.assertEqual(node, None)
                 succeed = True
 
         self.tree.on_select = on_select

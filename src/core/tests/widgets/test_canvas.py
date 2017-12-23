@@ -1,6 +1,8 @@
 import math
 
 import toga
+from toga.font import SANS_SERIF
+
 import toga_dummy
 from toga_dummy.utils import TestCase
 
@@ -190,6 +192,6 @@ class CanvasTests(TestCase):
         self.assertActionPerformedWith(self.testing_canvas, 'reset transform')
 
     def test_write_text(self):
-        test_font = toga.Font(factory=toga_dummy.factory, family='sans-serif', size=15)
+        test_font = toga.Font(family=SANS_SERIF, size=15)
         self.testing_canvas.write_text('test text', 0, 0, test_font)
         self.assertActionPerformedWith(self.testing_canvas, 'write text', text='test text', x=0, y=0, font=test_font)

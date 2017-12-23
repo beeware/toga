@@ -1,3 +1,5 @@
+from travertino.size import at_least
+
 from .base import Widget
 
 
@@ -28,7 +30,5 @@ class TextInput(Widget):
     def rehint(self):
         # Height of a text input is known and fixed.
         # print("REHINT text input", self, self.native.getMeasuredWidth(), self.native.getMeasuredHeight())
-        self.interface.style.hint(
-            height=self.native.getMeasuredHeight() / self.app.native.device_scale,
-            min_width=100
-        )
+        self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
+        self.interface.intrinsic.height = self.native.getMeasuredHeight() / self.app.native.device_scale

@@ -9,7 +9,7 @@ class Switch(Widget):
     Args:
         label (str): Text to be shown next to the switch.
         id (str): AN identifier for this widget.
-        style (:class:`colosseum.CSSNode`): An optional style object.
+        style (:obj:`Style`): An optional style object.
             If no style is provided then a new one will be created for the widget.
         on_toggle (``callable``): Function to execute when pressed.
         is_on (bool): Current on or off state of the switch.
@@ -33,7 +33,7 @@ class Switch(Widget):
         """ Accompanying text label of the Switch.
 
         Returns:
-            The label text of the widget as a ``str`.
+            The label text of the widget as a ``str``.
         """
         return self._label
 
@@ -44,7 +44,7 @@ class Switch(Widget):
         else:
             self._label = str(value)
         self._impl.set_label(value)
-        self.rehint()
+        self._impl.rehint()
 
     @property
     def on_toggle(self):

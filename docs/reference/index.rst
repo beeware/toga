@@ -1,8 +1,8 @@
 .. _reference:
 
-================
+=========
 Reference
-================
+=========
 
 .. toctree::
    :maxdepth: 1
@@ -10,3 +10,4 @@ Reference
    platforms
    widgets
    supported_widgets
+   style/index

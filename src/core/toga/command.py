@@ -1,6 +1,4 @@
-import toga_dummy
 from toga.handlers import wrapped_handler
-from toga.platform import get_platform_factory
 
 
 class Group:
@@ -44,7 +42,6 @@ class Command:
             group: (optional) a Group object describing a collection of similar commands. If no group is specified, a default "Command" group will be used.
             section: (optional) an integer providing a sub-grouping. If no section is specified, the command will be allocated to section 0 within the group.
             order: (optional) an integer indicating where a command falls within a section. If a Command doesn't have an order, it will be sorted alphabetically by label within its section.
-            factory: (optional) a custom factory to be used. If no factory is specified, a default factory for the current host platform will be selected.
     """
     def __init__(self, action, label,
                  shortcut=None, tooltip=None, icon=None,
@@ -63,13 +60,12 @@ class Command:
         self._enabled = self.action is not None
 
         self._widgets = []
+        self._impl = None
 
-        self.factory = get_platform_factory(factory)
-        
-        if factory == toga_dummy.factory:
-            self._impl = self.factory.Command()
-        else:
-            self._impl = self.factory.Command(interface=self)
+    def bind(self, factory):
+        if self._impl is None:
+            self._impl = factory.Command(interface=self)
+        return self._impl
 
     @property
     def enabled(self):

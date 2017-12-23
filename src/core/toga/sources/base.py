@@ -27,4 +27,10 @@ class Source:
     def _notify(self, notification, **kwargs):
         """Invoke a notification function on all listeners that are subscribed to this data source."""
         for listener in self._listeners:
-            getattr(listener, notification)(**kwargs)
+            try:
+                method = getattr(listener, notification)
+            except AttributeError:
+                method = None
+
+            if method:
+                method(**kwargs)

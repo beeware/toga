@@ -35,7 +35,7 @@ setup(
     },
     include_package_data=True,
     install_requires=[
-        'colosseum>=0.1.6'
+        'travertino>=0.1.0'
     ],
     tests_require=[
         'toga-dummy==%s' % version

@@ -114,7 +114,7 @@ The node is also required to implement the following methods:
 * ``__getitem__(self, index)`` - returns the child at position ``index`` of
   the node.
 
-* ``has_children(self)`` - returns True if the node is allowed to have
+* ``can_have_children(self)`` - returns True if the node is allowed to have
   children. The result of this method does *not* depend on whether the
   node actually has any children; it only describes whether it is allowed
   to store children.

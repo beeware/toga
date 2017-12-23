@@ -7,23 +7,15 @@ class Widget:
         self.interface._impl = self
 
         self._container = None
-        self.constraints = None
         self.native = None
         self.create()
+        self.interface.style.reapply()
 
     def set_app(self, app):
         pass
 
     def set_window(self, window):
         pass
-
-    @property
-    def enabled(self):
-        raise NotImplmementedError()
-
-    @enabled.setter
-    def enabled(self, value):
-        raise NotImplmementedError()
 
     @property
     def container(self):
@@ -38,23 +30,39 @@ class Widget:
         for child in self.interface.children:
             child._impl.container = container
 
-        self.interface.rehint()
+        self.rehint()
 
-    def add_child(self, child):
-        if self.container:
-            child._set_container(self.container)
+    def set_enabled(self, value):
+        raise NotImplementedException()
 
-    def apply_layout(self):
+    ### APPLICATOR
+
+    def set_bounds(self, x, y, width, height):
         if self.native:
-            self.native.Size = Size(int(self.interface.layout.width), int(self.interface.layout.height))
-            self.native.Location = Point(int(self.interface.layout.absolute.left), int(self.interface.layout.absolute.top))
+            self.native.Size = Size(width, height)
+            self.native.Location = Point(x, y)
 
-    def apply_sub_layout(self):
-        # If widget have sub layouts like the ScrollContainer or SplitView,                                                                                                                                                                                                                                                                                                                                     update them.
+    def set_alignment(self, alignment):
         pass
 
-    def rehint(self):
+    def set_hidden(self, hidden):
         pass
 
     def set_font(self, font):
+        pass
+
+    def set_color(self, color):
+        pass
+
+    def set_background_color(self, color):
+        pass
+
+    ### INTERFACE
+
+    def add_child(self, child):
+        if self.container:
+            child.viewport = self.root.viewport
+            child.container = self.container
+
+    def rehint(self):
         pass

@@ -16,6 +16,10 @@ class MainWindow(Window):
 
 class AppDelegate(NSObject):
     @objc_method
+    def applicationDidFinishLaunching_(self, notification):
+        self.interface.native.activateIgnoringOtherApps(True)
+
+    @objc_method
     def applicationOpenUntitledFile_(self, sender) -> bool:
         # FIXME This should be all we need; but for some reason, application types
         # aren't being registered correctly..
@@ -83,9 +87,9 @@ class App:
 
     def create(self):
         self.native = NSApplication.sharedApplication
-        self.native.setActivationPolicy_(NSApplicationActivationPolicyRegular)
+        self.native.setActivationPolicy(NSApplicationActivationPolicyRegular)
 
-        self.native.setApplicationIconImage_(self.interface.icon._impl(self.interface.factory).native)
+        self.native.setApplicationIconImage_(self.interface.icon.bind(self.interface.factory).native)
 
         self.resource_path = os.path.dirname(os.path.dirname(NSBundle.mainBundle.bundlePath))
 
@@ -158,7 +162,6 @@ class App:
         # Stimulate the build of the app
         self.create()
 
-        self.native.activateIgnoringOtherApps_(True)
         self.loop.run_forever(lifecycle=CocoaLifecycle(self.native))
 
     def exit(self):

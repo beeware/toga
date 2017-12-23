@@ -38,42 +38,33 @@ class PythonAppDelegate(UIResponder):
             object=None
         )
         # Set the initial keyboard size.
-        self.kb_height = 0.0
+        App.app.interface.main_window.content._impl.viewport.kb_height = 0.0
 
         return True
 
     @objc_method
     def application_didChangeStatusBarOrientation_(self, application, oldStatusBarOrientation: int) -> None:
         """ This callback is invoked when rotating the device from landscape to portrait and vice versa. """
-        App.app.interface.main_window.content._update_layout(
-            width=App.app.interface.main_window._impl.screen.bounds.size.width,
-            height=App.app.interface.main_window._impl.screen.bounds.size.height - self.kb_height,
-        )
+        App.app.interface.main_window.content.refresh()
 
     @objc_method
     def keyboardWillShow_(self, notification) -> None:
         # Keyboard is about to be displayed.
         # This will fire multiple times - once to display the keyboard,
         # and again to display the autocomplete bar.
-        self.kb_height = App.app.interface.main_window._impl.controller.view.convertRect(
+        kb_height = App.app.interface.main_window._impl.controller.view.convertRect(
                 notification.userInfo.objectForKey(UIKeyboardFrameEndUserInfoKey).CGRectValue,
                 fromView=None
             ).size.height
+        App.app.interface.main_window.content._impl.viewport.kb_height = kb_height
 
-        App.app.interface.main_window.content._update_layout(
-            width=App.app.interface.main_window._impl.screen.bounds.size.width,
-            height=App.app.interface.main_window._impl.screen.bounds.size.height - self.kb_height,
-        )
+        App.app.interface.main_window.content.refresh()
 
     @objc_method
     def keyboardWillHide_(self, notification) -> None:
         # Reset the layout to the size of the screen.
-        App.app.interface.main_window.content._update_layout(
-            width=App.app.interface.main_window._impl.screen.bounds.size.width,
-            height=App.app.interface.main_window._impl.screen.bounds.size.height,
-        )
-
-        self.kb_height = 0.0
+        App.app.interface.main_window.content._impl.viewport.kb_height = 0.0
+        App.app.interface.main_window.content.refresh()
 
 
 class App:

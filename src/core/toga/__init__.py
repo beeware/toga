@@ -1,8 +1,12 @@
 from .app import *
 from .command import *
 from .constants import *
+from .color import hsl, hsla, rgb, rgba
 from .font import Font
-from .widgets.base import Layout, Point, Widget
+
+# Widgets
+from .widgets.base import Widget
+
 from .widgets.box import Box
 from .widgets.button import Button
 from .widgets.canvas import Canvas
@@ -29,14 +33,16 @@ from .window import Window
 __all__ = [
     # Applications
     'App', 'MainWindow',
-
+    # Colors
+    'hsv', 'hsva', 'rgb', 'rgba',
     # Commands
     'Command', 'Group', 'GROUP_BREAK', 'SECTION_BREAK',
+    # Fonts
+    'Font',
 
     # Widgets
     'DetailedList'
     'Window',
-    'Font',
     'Widget'
     'Box',
     'Button',

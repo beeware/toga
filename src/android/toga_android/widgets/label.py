@@ -1,5 +1,7 @@
 from android.view import Gravity
 
+from travertino.size import at_least
+
 from toga.constants import *
 
 
@@ -28,7 +30,5 @@ class Label(Widget):
 
     def rehint(self):
         # print("REHINT label", self, self.native.getMeasuredWidth(), self.native.getMeasuredHeight())
-        self.interface.style.hint(
-            width=self.native.getMeasuredWidth() / self.app.device_scale,
-            height=self.native.getMeasuredHeight() / self.app.device_scale,
-        )
+        self.interface.intrinsic.width = at_least(self.native.getMeasuredWidth() / self.app.device_scale)
+        self.interface.intrinsic.height = self.native.getMeasuredHeight() / self.app.device_scale

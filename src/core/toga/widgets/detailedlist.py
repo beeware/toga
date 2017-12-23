@@ -14,7 +14,7 @@ class DetailedList(Widget):
         on_delete (``callable``): Function that is invoked on row deletion.
         on_refresh (``callable``): Function that is invoked on user initialised refresh.
         on_select (``callable``): Function that is invoked on row selection.
-        style (:class:`colosseum.CSSNode`): An optional style object. If no style is provided then
+        style (:obj:`Style`): An optional style object. If no style is provided then
             a new one will be created for the widget.
         factory (:obj:`module`): A python module that is capable to return a
             implementation of this class with the same name. (optional & normally not needed)
@@ -26,6 +26,8 @@ class DetailedList(Widget):
         >>>
         >>> dlist = toga.DetailedList(data=['Item 0', 'Item 1', 'Item 2'], on_select=selection_handler)
     """
+    MIN_HEIGHT = 100
+    MIN_WIDTH = 100
 
     def __init__(self, id=None, data=None, on_delete=None, on_refresh=None, on_select=None, style=None, factory=None):
         super().__init__(id=id, style=style, factory=factory)

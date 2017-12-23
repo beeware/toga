@@ -1,4 +1,5 @@
 from .window import Window
+from .libs import Threading, WinForms
 
 
 class MainWindow(Window):
@@ -14,7 +15,6 @@ class App:
         self.interface._impl = self
 
     def create(self):
-        print("CREATE")
         self.native = WinForms.Application
 
         # self.native.setApplicationIconImage_(self.icon.native)

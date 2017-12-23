@@ -1,6 +1,7 @@
 import math
 
 import toga
+from toga.style import Pack
 
 
 class StartApp(toga.App):
@@ -10,7 +11,7 @@ class StartApp(toga.App):
         self.main_window = toga.MainWindow(self.name, size=(148, 200))
         self.main_window.app = self
 
-        self.canvas = toga.Canvas(on_draw=self.draw_tiberius)
+        self.canvas = toga.Canvas(on_draw=self.draw_tiberius, style=Pack(flex=1))
         box = toga.Box(children=[self.canvas])
 
         # Add the content on the main window

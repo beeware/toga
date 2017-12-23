@@ -1,5 +1,8 @@
 from rubicon.objc import objc_method, SEL
+from travertino.size import at_least
+
 from toga_cocoa.libs import *
+from toga_cocoa.color import native_color
 
 from .base import Widget
 
@@ -24,19 +27,17 @@ class Button(Widget):
         # Add the layout constraints
         self.add_constraints()
 
+    def set_font(self, value):
+        if value:
+            self.native.font = value._impl.native
+
     def set_label(self, label):
         self.native.title = label
-        self.rehint()
 
     def set_on_press(self, handler):
         pass
 
     def rehint(self):
         fitting_size = self.native.fittingSize()
-        self.interface.style.hint(
-            height=fitting_size.height,
-            min_width=fitting_size.width,
-        )
-
-
-
+        self.interface.intrinsic.width = at_least(fitting_size.width)
+        self.interface.intrinsic.height = fitting_size.height

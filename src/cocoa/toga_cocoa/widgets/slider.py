@@ -1,4 +1,6 @@
 from rubicon.objc import objc_method, SEL
+from travertino.size import at_least
+
 from toga_cocoa.libs import *
 
 from .base import Widget
@@ -33,10 +35,8 @@ class Slider(Widget):
 
     def rehint(self):
         fitting_size = self.native.fittingSize()
-        self.interface.style.hint(
-            height=fitting_size.height,
-            min_width=fitting_size.width,
-        )
+        self.interface.intrinsic.height = fitting_size.height
+        self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
 
     def set_on_slide(self, handler):
         pass

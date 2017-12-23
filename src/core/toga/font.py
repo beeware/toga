@@ -1,50 +1,31 @@
+# Use the Travertino font definitions as-is
+from travertino.fonts import font, Font as BaseFont
+from travertino.constants import (
+    NORMAL,
+    SYSTEM, MESSAGE,
+    SERIF, SANS_SERIF, CURSIVE, FANTASY, MONOSPACE,
+    ITALIC, OBLIQUE,
+    SMALL_CAPS,
+    BOLD,
+)
 from toga.platform import get_platform_factory
 
 
-class Font:
-    def __init__(self, family, size, factory=None):
-        """ A :obj:`Font` is a font family (e.g. "Helvetica") and a size (e.g. 15) that can
-        be applied to widgets.
-
-        Args:
-            family (str): Name of the font family.
-            size (int): Defines the display size of the font.
-        """
-        self._family = family
-        self._size = size
-
-        self.factory = get_platform_factory(factory)
-        self._impl = self.factory.Font(interface=self)
+class Font(BaseFont):
+    def __init__(self, family, size, style=NORMAL, variant=NORMAL, weight=NORMAL):
+        super().__init__(family, size, style=NORMAL, variant=NORMAL, weight=NORMAL)
+        self.__impl = None
 
     @property
-    def family(self):
-        """ Font family, e.g. Helvetica
+    def _impl(self):
+        if self.__impl is None:
+            self.bind(None)
+        return self.__impl
 
-        Returns:
-            Returns a ``str`` with the name of the font family
-        """
-        return self._family
-
-    @property
-    def size(self):
-        """ Font size
-
-        Returns:
-            The size of the font in ``int``.
-        """
-        return self._size
+    def bind(self, factory):
+        factory = get_platform_factory(factory)
+        self.__impl = factory.Font(self)
+        return self.__impl
 
     def measure(self, text, tight=False):
-        """Measure the text
-
-        Provides a measurement of the text using the font.
-
-        Args:
-            text (string): The text to measure.
-            tight (bool, optional): Enables tight measurement around the text
-                for drawing. Defaults to false for doing layouts.
-
-        Returns:
-            tuple (int, int): text width, text height
-        """
-        return self._impl.measure(text, tight)
+        return self._impl.measure(text, tight=tight)

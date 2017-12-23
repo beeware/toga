@@ -10,22 +10,34 @@ except ImportError:
     Pango = None
 
 
+_FONT_CACHE = {}
+
+
+class Measure(Gtk.Widget):
+    """Gtk.Widget for Font.measure in order to create a Pango Layout
+    """
+    def create(self):
+        pass
+
+
 class Font:
     def __init__(self, interface):
         self.interface = interface
-        self.interface._impl = self
-        self.create()
 
-    def create(self):
         if Pango is None:
             raise RuntimeError(
                 "'from gi.repository import Pango' failed; may need to install gir1.2-pango-1.0."
             )
 
-        self.native = Pango.FontDescription.from_string(
-            self.interface.family + " " + str(self.interface.size))
+        try:
+            font = _FONT_CACHE[self.interface]
+        except KeyError:
+            font = Pango.FontDescription.from_string('{font.family} {font.size}'.format(font=self.interface))
+            _FONT_CACHE[font] = font
 
-    def measure(self, text, tight):
+        self.native = font
+
+    def measure(self, text, tight=False):
         measure_widget = Measure()
         layout = measure_widget.create_pango_layout(text)
         layout.set_font_description(self.native)
@@ -36,11 +48,5 @@ class Font:
         else:
             width = logical.width / Pango.SCALE
             height = logical.height / Pango.SCALE
+
         return width, height
-
-
-class Measure(Gtk.Widget):
-    """Gtk.Widget for Font.measure in order to create a Pango Layout
-    """
-    def create(self):
-        pass

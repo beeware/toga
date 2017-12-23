@@ -1,7 +1,8 @@
 from random import choice
 
 import toga
-from colosseum import CSS
+from toga.style import Pack
+from toga.constants import ROW, COLUMN
 from toga.sources import Source
 
 bee_movies = [
@@ -40,7 +41,7 @@ class MovieSource(Source):
         movie = Movie(*entry)
         self._movies.append(movie)
         self._movies.sort(key=lambda m: m.year)
-        self._notify('insert', item=movie)
+        self._notify('insert', index=len(self._movies) - 1, item=movie)
 
     def remove(self, index):
         item = self._movies[index]
@@ -72,8 +73,8 @@ class GoodMovieSource(Source):
         return sorted(self._filtered(), key=lambda m: -m.rating)[index]
 
     # A listener that passes on all notifications
-    def insert(self, item):
-        self._notify('insert', item=item)
+    def insert(self, index, item):
+        self._notify('insert', index=index, item=item)
 
     def remove(self, item):
         self._notify('remove', item=item)
@@ -85,7 +86,7 @@ class GoodMovieSource(Source):
 class ExampleTableSourceApp(toga.App):
     # Table callback functions
     def on_select_handler(self, widget, row, **kwargs):
-        self.label.text = 'You selected row: {}'.format(row) if row is not None else 'No row selected'
+        self.label.text = 'You selected row: {}'.format(row.title) if row is not None else 'No row selected'
 
     # Button callback functions
     def insert_handler(self, widget, **kwargs):
@@ -113,38 +114,36 @@ class ExampleTableSourceApp(toga.App):
         self.table1 = toga.Table(
             headings=['Year', 'Title', 'Rating', 'Genre'],
             data=MovieSource(),
-            style=CSS(flex=1),
+            style=Pack(flex=1),
             on_select=self.on_select_handler
         )
 
         self.table2 = toga.Table(
             headings=['Rating', 'Title', 'Year', 'Genre'],
             data=GoodMovieSource(self.table1.data),
-            style=CSS(flex=1)
+            style=Pack(flex=1)
         )
 
         # Populate the table
         for entry in bee_movies:
             self.table1.data.add(entry)
 
-        tablebox = toga.Box(children=[self.table1, self.table2], style=CSS(flex=1))
+        tablebox = toga.Box(children=[self.table1, self.table2], style=Pack(flex=1))
 
         # Buttons
-        btn_style = CSS(flex=1)
+        btn_style = Pack(flex=1)
         btn_insert = toga.Button('Insert Row', on_press=self.insert_handler, style=btn_style)
         btn_delete = toga.Button('Delete Row', on_press=self.delete_handler, style=btn_style)
         btn_clear = toga.Button('Clear Table', on_press=self.clear_handler, style=btn_style)
-        btn_box = toga.Box(children=[btn_insert, btn_delete, btn_clear], style=CSS(flex_direction='row'))
+        btn_box = toga.Box(children=[btn_insert, btn_delete, btn_clear], style=Pack(direction=ROW))
 
         # Most outer box
         outer_box = toga.Box(
             children=[btn_box, tablebox, self.label],
-            style=CSS(
+            style=Pack(
                 flex=1,
-                flex_direction='column',
+                direction=COLUMN,
                 padding=10,
-                min_width=500,
-                min_height=300
             )
         )
 

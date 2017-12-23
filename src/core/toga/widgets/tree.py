@@ -11,19 +11,24 @@ class Tree(Widget):
     Args:
         headings (``list`` of ``str``): The list of headings for the interface.
         id (str):  An identifier for this widget.
-        style (:class:`colosseum.CSSNode`): An optional style object. If no style is provided then
+        style (:obj:`Style`): An optional style object. If no style is provided then
             a new one will be created for the widget.
         factory (:obj:`module`): A python module that is capable to return a
             implementation of this class with the same name. (optional & normally not needed)
     """
+    MIN_WIDTH = 100
+    MIN_HEIGHT = 100
 
-    def __init__(self, headings, id=None, style=None, data=None, accessors=None, on_select=None, factory=None):
+    def __init__(self, headings, id=None, style=None, data=None, accessors=None,
+                 multiple_select=False, on_select=None, factory=None):
         super().__init__(id=id, style=style, factory=factory)
-
         self.headings = headings
         self._accessors = build_accessors(headings, accessors)
-
+        self._multiple_select = multiple_select
+        self._selection = None
         self._data = None
+        self._on_select = None
+
         self._impl = self.factory.Tree(interface=self)
         self.data = data
 
@@ -54,6 +59,21 @@ class Tree(Widget):
 
         self._data.add_listener(self._impl)
         self._impl.change_source(source=self._data)
+
+    @property
+    def multiple_select(self):
+        """Does the table allow multiple rows to be selected?"""
+        return self._multiple_select
+
+    @property
+    def selection(self):
+        """The current selection of the table.
+
+        A value of None indicates no selection.
+        If the table allows multiple selection, returns a list of
+        selected data nodes. Otherwise, returns a single data node.
+        """
+        return self._selection
 
     @property
     def on_select(self):

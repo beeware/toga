@@ -7,7 +7,7 @@ class SplitContainer(Widget):
 
     Args:
         id (str):  An identifier for this widget.
-        style (:class:`colosseum.CSSNode`): An optional style object.
+        style (:obj:`Style`): An optional style object.
             If no style is provided then a new one will be created for the widget.
         direction: The direction for the container split,
             either `SplitContainer.HORIZONTAL` or `SplitContainer.VERTICAL`
@@ -21,7 +21,8 @@ class SplitContainer(Widget):
     def __init__(self, id=None, style=None, direction=VERTICAL, content=None, factory=None):
         super().__init__(id=id, style=style, factory=factory)
         self._direction = direction
-        self._containers = []
+        self._content = []
+        self._weight = []
 
         # Create a platform specific implementation of a SplitContainer
         self._impl = self.factory.SplitContainer(interface=self)
@@ -51,23 +52,36 @@ class SplitContainer(Widget):
         if len(content) < 2:
             raise ValueError('SplitContainer content must have at least 2 elements')
 
-        self._content = content
+        self._content = []
+        for position, item in enumerate(content):
+            if isinstance(item, tuple):
+                widget, weight = item
+            else:
+                widget = item
+                weight = 1.0
 
-        for position, widget in enumerate(self._content):
-            widget._update_layout()
+            self._content.append(widget)
+            self._weight.append(weight)
+
             widget.app = self.app
             widget.window = self.window
             self._impl.add_content(position, widget._impl)
+            widget.refresh()
 
-    def _set_app(self, app):
+    def set_app(self, app):
         if self._content:
             for content in self._content:
                 content.app = self.app
 
-    def _set_window(self, window):
+    def set_window(self, window):
         if self._content:
             for content in self._content:
                 content.window = self.window
+
+    def refresh_sublayouts(self):
+        """Refresh the layout and appearance of this widget."""
+        for widget in self._content:
+            widget.refresh()
 
     @property
     def direction(self):
@@ -82,4 +96,4 @@ class SplitContainer(Widget):
     def direction(self, value):
         self._direction = value
         self._impl.set_direction(value)
-        self.rehint()
+        self._impl.rehint()
