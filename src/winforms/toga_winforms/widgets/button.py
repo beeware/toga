@@ -21,7 +21,7 @@ class Button(Widget):
         self.native = TogaButton(self.interface)
 
     def set_label(self, label):
-        self.native.Text = label
+        self.native.Text = self.interface.label
         self.rehint()
 
     def set_enabled(self, value):
