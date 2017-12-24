@@ -16,6 +16,29 @@ core_graphics = cdll.LoadLibrary(util.find_library('CoreGraphics'))
 ######################################################################
 
 ######################################################################
+# CGContext.h
+CGContextAddArc = ObjCClass('CGContextAddArc')
+CGContextAddCurveToPoint = ObjCClass('CGContextAddCurveToPoint')
+CGContextAddLineToPoint = ObjCClass('CGContextAddLineToPoint')
+CGContextAddQuadCurveToPoint = ObjCClass('CGContextAddQuadCurveToPoint')
+CGContextAddRect = ObjCClass('CGContextAddRect')
+CGContextBeginPath = ObjCClass('CGContextBeginPath')
+CGContextClosePath = ObjCClass('CGContextClosePath')
+CGContextDrawPath = ObjCClass('CGContextDrawPath')
+CGContextMoveToPoint = ObjCClass('CGContextMoveToPoint')
+CGContextRestoreGState = ObjCClass('CGContextRestoreGState')
+CGContextRotateCTM = ObjCClass('CGContextRotateCTM')
+CGContextSaveGState = ObjCClass('CGContextSaveGState')
+CGContextScaleCTM = ObjCClass('CGContextScaleCTM')
+CGContextSetLineWidth = ObjCClass('CGContextSetLineWidth')
+CGContextSetRGBFillColor = ObjCClass('CGContextSetRGBFillColor')
+CGContextSetRGBStrokeColor = ObjCClass('CGContextSetRGBStrokeColor')
+CGContextTranslateCTM = ObjCClass('CGContextTranslateCTM')
+
+######################################################################
+
+
+######################################################################
 # CGEvent.h
 CGEventRef = c_void_p
 register_preferred_encoding(b'^{__CGEvent=}', CGEventRef)
