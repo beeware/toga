@@ -26,7 +26,7 @@ class Button(Widget):
         self.add_constraints()
 
     def set_label(self, label):
-        self.native.setTitle(label, forState=UIControlStateNormal)
+        self.native.setTitle(self.interface.label, forState=UIControlStateNormal)
 
     def set_on_press(self, handler):
         pass

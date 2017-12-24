@@ -13,7 +13,7 @@ class Button(Widget):
         self.native.connect('clicked', self.on_press)
 
     def set_label(self, label):
-        self.native.set_label(label)
+        self.native.set_label(self.interface.label)
         self.rehint()
 
     def set_enabled(self, value):
