@@ -1,4 +1,5 @@
 from gi.repository import Gtk
+from travertino.size import at_least
 
 from .base import Widget
 
@@ -16,7 +17,7 @@ class MultilineTextInput(Widget):
         self.tag_placholder = self.buffer.create_tag("placeholder", foreground="gray")
 
     def set_value(self, value):
-        self.buffer.set_text(value)
+        self.buffer.set_text(self.interface.value)
 
     def get_value(self):
         return self.buffer.get_text(self.buffer.get_start_iter(), self.buffer.get_end_iter(), True)
@@ -32,7 +33,7 @@ class MultilineTextInput(Widget):
         """
         if self.get_value() == self._placeholder:
             self._placeholder = value
-            self.buffer.set_text(value)
+            self.buffer.set_text(self.interface.value)
             self.buffer.apply_tag(self.tag_placholder,
                                   self.buffer.get_start_iter(),
                                   self.buffer.get_end_iter())  # make the placeholder text gray.
