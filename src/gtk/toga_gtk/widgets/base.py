@@ -5,8 +5,8 @@ class Widget:
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
-
         self._container = None
+        self.viewport = None
         self.native = None
         self.create()
         self.interface.style.reapply()
@@ -60,7 +60,6 @@ class Widget:
 
     def add_child(self, child):
         if self.container:
-            child.viewport = self.root.viewport
             child.container = self.container
 
     def rehint(self):

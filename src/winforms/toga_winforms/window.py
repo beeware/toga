@@ -52,18 +52,23 @@ class Window:
         pass
 
     def set_content(self, widget):
+        # If the content widget doesn't have a native, manifest a Panel as that native.
         if widget.native is None:
             widget.native = WinForms.Panel()
+
+        # Construct the top-level layout, and set the window's view to
+        # the be the widget's native object.
+        if self.toolbar_native:
+            self.native.Controls.Add(self.toolbar_native)
+
+        self.native.Controls.Add(widget.native)
+
+        # Set the widget's viewport to be based on the window's content.
         widget.viewport = WinFormsViewport(self.native)
 
         # Add all children to the content widget.
         for child in widget.interface.children:
             child._impl.container = widget
-
-        if self.toolbar_native:
-            self.native.Controls.Add(self.toolbar_native)
-
-        self.native.Controls.Add(widget.native)
 
     def set_title(self, title):
         self.native.Text = title

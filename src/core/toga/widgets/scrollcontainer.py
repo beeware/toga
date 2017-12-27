@@ -90,5 +90,4 @@ class ScrollContainer(Widget):
 
     def refresh_sublayouts(self):
         """Refresh the layout and appearance of this widget."""
-        for widget in self._content:
-            widget.refresh()
+        self._content.refresh()
