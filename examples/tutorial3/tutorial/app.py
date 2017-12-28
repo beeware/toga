@@ -41,7 +41,9 @@ class Graze(toga.App):
         self.webview.url = self.url_input.value
 
 
-if __name__ == '__main__':
-    app = Graze('Graze', 'org.pybee.graze')
+def main():
+    return Graze('Graze', 'org.pybee.graze')
 
-    app.main_loop()
+
+if __name__ == '__main__':
+    main().main_loop()
