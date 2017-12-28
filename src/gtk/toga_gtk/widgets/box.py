@@ -11,7 +11,7 @@ class TogaBox(Gtk.Fixed):
 
     def do_get_preferred_width(self):
         # Calculate the minimum and natural width of the container.
-        # print("GET PREFERRED WIDTH")
+        # print("GET PREFERRED WIDTH", self._impl.native)
         width = self._impl.interface.layout.width
         min_width = self._impl.min_width
         if min_width is None:
@@ -25,7 +25,7 @@ class TogaBox(Gtk.Fixed):
     def do_get_preferred_height(self):
         # Calculate the minimum and natural height of the container.
         # height = self._impl.layout.height
-        # print("GET PREFERRED HEIGHT")
+        # print("GET PREFERRED HEIGHT", self._impl.native)
         height = self._impl.interface.layout.height
         min_height = self._impl.min_height
         if min_height is None:

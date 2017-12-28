@@ -1,4 +1,5 @@
 from gi.repository import Gtk
+from travertino.size import at_least
 
 
 class Widget:
@@ -63,4 +64,9 @@ class Widget:
             child.container = self.container
 
     def rehint(self):
-        pass
+        # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height())
+        width = self.native.get_preferred_width()
+        height = self.native.get_preferred_height()
+
+        self.interface.intrinsic.width = at_least(width[0])
+        self.interface.intrinsic.height = at_least(height[0])
