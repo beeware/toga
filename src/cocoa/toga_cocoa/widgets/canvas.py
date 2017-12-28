@@ -1,20 +1,28 @@
-from rubicon.objc import objc_method, SEL
+import re
 
-from toga_cocoa.libs import *
+from rubicon.objc import objc_method, SEL
 
 # TODO import colosseum once updated to support colors
 # from colosseum import colors
 
+from toga_cocoa.libs import *
 from .base import Widget
+
+
+class TogaCanvas(NSGraphicsContext):
+    @objc_method
+    def onDraw_(self, obj) -> None:
+        if self.interface.on_draw:
+            self.interface.on_draw(self.interface)
 
 
 class Canvas(Widget):
     def create(self):
-        self.native = NSGraphicsContext.alloc().init()
+        self.native = TogaCanvas.alloc().init()
         self.native.interface = self.interface
 
         self.native.target = self.native
-        # self.native.action = SEL('onPress:')
+        self.native.action = SEL('onDraw:')
 
         # Add the layout constraints
         self.add_constraints()
@@ -66,7 +74,7 @@ class Canvas(Widget):
                 #         exec('self.native.set_source_' + str(rgb))
         else:
             # set color to black
-            self.CGContextSetRGBStrokeColor(0, 0, 0, 1)
+            self.native.CGContextSetRGBStrokeColor(0, 0, 0, 1)
 
     def new_path(self):
         self.native.CGContextBeginPath()
@@ -107,7 +115,7 @@ class Canvas(Widget):
         self.native.CGContextRestoreGState()
 
     def rect(self, x, y, width, height):
-        rectangle = CGMakeRect(x, y, width, height)
+        rectangle = self.native.CGMakeRect(x, y, width, height)
         self.native.CGContextAddRect(rectangle)
 
     # Drawing Paths

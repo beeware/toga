@@ -35,6 +35,15 @@ CGContextSetRGBFillColor = ObjCClass('CGContextSetRGBFillColor')
 CGContextSetRGBStrokeColor = ObjCClass('CGContextSetRGBStrokeColor')
 CGContextTranslateCTM = ObjCClass('CGContextTranslateCTM')
 
+CGPathDrawingMode = c_int32
+
+kCGPathFill = 0
+kCGPathEOFill = 1
+kCGPathStroke = 2
+kCGPathFillStroke = 3
+kCGPathFillStrokeEOL = 4
+
+
 ######################################################################
 
 
