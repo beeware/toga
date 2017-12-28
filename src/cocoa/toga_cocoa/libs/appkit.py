@@ -6,9 +6,8 @@ from ctypes import util
 from enum import Enum
 
 from rubicon.objc import *
-
 from toga.constants import *
-from toga.constants.color import *
+from toga.color import *
 
 ######################################################################
 appkit = cdll.LoadLibrary(util.find_library('AppKit'))
@@ -543,11 +542,10 @@ NSNaturalTextAlignment = 4
 
 def NSTextAlignment(alignment):
     return {
-        LEFT_ALIGNED: NSLeftTextAlignment,
-        RIGHT_ALIGNED: NSRightTextAlignment,
-        CENTER_ALIGNED: NSCenterTextAlignment,
-        JUSTIFIED_ALIGNED: NSJustifiedTextAlignment,
-        NATURAL_ALIGNED: NSNaturalTextAlignment,
+        LEFT: NSLeftTextAlignment,
+        RIGHT: NSRightTextAlignment,
+        CENTER: NSCenterTextAlignment,
+        JUSTIFY: NSJustifiedTextAlignment,
     }[alignment]
 
 ######################################################################

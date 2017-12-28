@@ -1,8 +1,6 @@
-from __future__ import print_function, absolute_import, division
-
 from ctypes import *
-from . import constants
 
+from . import constants
 
 _debug_win32 = True
 

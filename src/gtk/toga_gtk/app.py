@@ -84,8 +84,7 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gio, GLib
 
 
-from toga.command import GROUP_BREAK, SECTION_BREAK, Command, Group
-# from .command import Command, Group
+from toga.command import GROUP_BREAK, SECTION_BREAK, Command
 import toga
 from .window import Window
 from toga import Icon
@@ -197,7 +196,7 @@ class App:
                         self._actions[cmd] = action
                         self.native.add_action(action)
 
-                    cmd._impl._set_enabled(cmd.enabled)
+                    # cmd.bind(self.interface.factory).set_enabled(cmd.enabled)
 
                     item = Gio.MenuItem.new(cmd.label, 'app.' + cmd_id)
                     if cmd.shortcut:

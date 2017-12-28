@@ -1,4 +1,7 @@
+from travertino.size import at_least
+
 from toga_cocoa.libs import *
+
 from .base import Widget
 
 
@@ -34,7 +37,5 @@ class ProgressBar(Widget):
             self.native.indeterminate = True
 
     def rehint(self):
-        self.style.hint(
-            height=self._impl.fittingSize().height,
-            min_width=100
-        )
+        self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
+        self.interface.intrinsic.height = self.native.fittingSize().height

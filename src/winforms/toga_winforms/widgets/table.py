@@ -1,4 +1,7 @@
+from travertino.size import at_least
+
 from toga_winforms.libs import *
+
 from .base import Widget
 
 
@@ -43,3 +46,7 @@ class Table(Widget):
 
     def scroll_to_row(self, row):
         raise NotImplementedError()
+
+    def rehint(self):
+        self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
+        self.interface.intrinsic.height = at_least(self.interface.MIN_HEIGHT)

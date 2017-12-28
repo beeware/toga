@@ -1,9 +1,9 @@
 #/usr/bin/env python
 import io
 import re
-from setuptools import setup, find_packages
 import sys
 
+from setuptools import setup, find_packages
 
 if sys.version_info[:3] < (3, 4):
     raise SystemExit("Toga requires Python 3.4+.")
@@ -35,7 +35,7 @@ setup(
     },
     include_package_data=True,
     install_requires=[
-        'colosseum>=0.1.6'
+        'travertino>=0.1.0'
     ],
     tests_require=[
         'toga-dummy==%s' % version

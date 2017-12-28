@@ -1,3 +1,5 @@
+from travertino.size import at_least
+
 from toga_winforms.libs import *
 
 from .base import Widget
@@ -20,10 +22,6 @@ class MultilineTextInput(Widget):
         self.native.Text = value
 
     def rehint(self):
-        # Width must be > 100
-        s = Size(self.native.Width, 0)
-        self.interface.style.hint(
-            height=self.native.GetPreferredSize(s).Height,
-            min_width=100,
-        )
+        self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
+        self.interface.intrinsic.height = at_least(self.interface.MIN_HEIGHT)
 

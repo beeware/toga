@@ -15,5 +15,5 @@ class NumberInput(Widget):
             self.native.Value = ClrDecimal.Parse(value)
 
     def rehint(self):
-        self.style.min_width = 120
-        self.style.height = 32
+        self.interface.intrinsic.width = 120
+        self.interface.intrinsic.height = 32

@@ -1,7 +1,6 @@
-from __future__ import print_function, absolute_import, division
+from .base import Widget
 from ..libs import *
 
-from .base import Widget
 
 def wrapped_handler(widget, handler):
     def _handler(impl, data=None):
@@ -15,7 +14,7 @@ class Button(Widget):
     control_style = BS_DEFPUSHBUTTON | BS_TEXT
 
     def __init__(self, label, on_press=None):
-        super(Button, self).__init__(text=label)
+        super(Button, self).__init__(text=self.interface.label)
         self._expand_vertical = False
         self.on_press = on_press
 

@@ -3,7 +3,6 @@ from toga.sources import ListSource
 from toga.sources.accessors import build_accessors
 
 from .base import Widget
-from .icon import Icon
 
 
 class Table(Widget):
@@ -15,7 +14,7 @@ class Table(Widget):
         data (``list`` of ``tuple``): The data to be displayed on the table.
         accessors: A list of methods, same length as ``headings``, that describes
             how to extract the data value for each column from the row. (Optional)
-        style (:class:`colosseum.CSSNode`): An optional style object.
+        style (:obj:`Style`): An optional style object.
             If no style is provided` then a new one will be created for the widget.
         on_select (``callable``): A function to be invoked on selecting a row of the table.
         factory (:obj:`module`): A python module that is capable to return a
@@ -38,13 +37,18 @@ class Table(Widget):
         # A list of values. This is only accepted if there is a single heading.
         >>> data = ['item 1', 'item 2', 'item 3']
     """
+    MIN_WIDTH = 100
+    MIN_HEIGHT = 100
 
-    def __init__(self, headings, id=None, style=None, data=None, accessors=None, on_select=None, factory=None):
+    def __init__(self, headings, id=None, style=None, data=None, accessors=None,
+                 multiple_select=False, on_select=None, factory=None):
         super().__init__(id=id, style=style, factory=factory)
         self.headings = headings
         self._accessors = build_accessors(headings, accessors)
-
+        self._multiple_select = multiple_select
+        self._on_select = None
         self._data = None
+
         self._impl = self.factory.Table(interface=self)
         self.data = data
 
@@ -71,6 +75,21 @@ class Table(Widget):
 
         self._data.add_listener(self._impl)
         self._impl.change_source(source=self._data)
+
+    @property
+    def multiple_select(self):
+        """Does the table allow multiple rows to be selected?"""
+        return self._multiple_select
+
+    @property
+    def selection(self):
+        """The current selection of the table.
+
+        A value of None indicates no selection.
+        If the table allows multiple selection, returns a list of
+        selected data nodes. Otherwise, returns a single data node.
+        """
+        return self._selection
 
     def scroll_to_top(self):
         """Scroll the view so that the top of the list (first row) is visible

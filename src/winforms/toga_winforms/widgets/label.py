@@ -1,4 +1,4 @@
-from toga.constants import LEFT_ALIGNED
+from travertino.size import at_least
 
 from toga_winforms.libs import *
 
@@ -10,8 +10,7 @@ class Label(Widget):
         self.native = WinForms.Label()
 
     def set_alignment(self, value):
-        # self.native.setAlignment_(NSTextAlignment(value))
-        pass
+        self.native.TextAlign = TextAlignment(value)
 
     def set_text(self, value):
         self.native.Text = value
@@ -20,7 +19,5 @@ class Label(Widget):
         # Width & height of a label is known and fixed.
         # self.native.Size = Size(0, 0)
         # print("REHINT label", self, self.native.PreferredSize)
-        self.interface.style.hint(
-            height=self.native.PreferredSize.Height,
-            width=self.native.PreferredSize.Width,
-        )
+        self.interface.intrinsic.width = at_least(self.native.PreferredSize.Width)
+        self.interface.intrinsic.height = self.native.PreferredSize.Height

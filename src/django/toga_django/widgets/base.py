@@ -28,41 +28,6 @@ class Widget:
     def set_window(self, window):
         pass
 
-    def set_container(self, container):
-        # if self._constraints and self._impl:
-            # self._container._impl.addSubview_(self._impl)
-            # self._constraints._container = container
-        self.rehint()
-
-    def add_child(self, child):
-        pass
-        # if self._container:
-            # child._set_container(self._container)
-
-    def apply_layout(self):
-        pass
-        # if self._constraints:
-        #     self._constraints.update()
-
-    def apply_sub_layout(self):
-        pass
-        # if self._constraints:
-        #     self._constraints.update()
-
-    def rehint(self):
-        pass
-
-    def set_font(self, font):
-        raise NotImplementedError()
-
-    @property
-    def enabled(self):
-        raise NotImplementedError()
-
-    @enabled.setter
-    def enabled(self, value):
-        raise NotImplementedError()
-
     @property
     def container(self):
         return self._container
@@ -77,3 +42,42 @@ class Widget:
         for child in self.interface.children:
             child._impl.container = container
         self.interface.rehint()
+
+    def set_enabled(self, value):
+        self.native.set_sensitive(value)
+
+    ### APPLICATOR
+
+    def set_bounds(self, x, y, width, height):
+        # No implementation required here; the new sizing will be picked up
+        # by the box's allocation handler.
+        pass
+
+    def set_alignment(self, alignment):
+        pass
+
+    def set_hidden(self, hidden):
+        pass
+
+    def set_font(self, font):
+        pass
+
+    def set_color(self, color):
+        pass
+
+    def set_background_color(self, color):
+        pass
+
+
+    ### INTERFACE
+
+    def add_child(self, child):
+        pass
+        # if self._container:
+            # child._set_container(self._container)
+
+    def rehint(self):
+        pass
+
+    def set_font(self, font):
+        raise NotImplementedError()

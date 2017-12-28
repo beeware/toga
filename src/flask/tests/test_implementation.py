@@ -1,4 +1,5 @@
 import os
+
 from toga_dummy import test_implementation
 
 globals().update(

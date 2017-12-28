@@ -1,9 +1,8 @@
-from __future__ import print_function, absolute_import, division
-
-from ..libs import *
 from toga.constants import LEFT_ALIGNED, RIGHT_ALIGNED
 
 from .base import Widget
+from ..libs import *
+
 
 class Label(Widget):
     window_class = 'static'

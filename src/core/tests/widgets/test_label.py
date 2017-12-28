@@ -27,8 +27,3 @@ class LabelTests(TestCase):
         self.assertEqual(self.label.text, '')
 
         self.assertValueSet(self.label, 'text', '')
-
-    def test_setting_alignment_invokes_call_to_impl(self):
-        self.label.alignment = constants.CENTER_ALIGNED
-        self.assertEqual(self.label.alignment, constants.CENTER_ALIGNED)
-        self.assertValueSet(self.label, 'alignment', constants.CENTER_ALIGNED)

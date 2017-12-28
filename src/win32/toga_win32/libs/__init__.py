@@ -33,13 +33,9 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 # ----------------------------------------------------------------------------
-from __future__ import print_function, absolute_import, division
-
 from .constants import *
 from .debug import *
-
 from .gdi32 import *
 from .kernel32 import *
-from .user32 import *
-
 from .macro_equivalents import *
+from .user32 import *

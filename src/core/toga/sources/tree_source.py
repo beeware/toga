@@ -21,7 +21,7 @@ class Node(Row):
         else:
             return len(self._children)
 
-    def has_children(self):
+    def can_have_children(self):
         return self._children is not None
 
     ######################################################################
@@ -29,7 +29,10 @@ class Node(Row):
     ######################################################################
 
     def __iter__(self):
-        return iter(self._children)
+        if self._children:
+            return iter(self._children)
+        else:
+            return iter([])
 
     def __setitem__(self, index, value):
         node = self._source._create_node(value)
@@ -137,10 +140,10 @@ class TreeSource(Source):
         return self.insert(parent, len(self) if parent is None else len(parent), *value, **named)
 
     def remove(self, node):
-        self._notify('remove', item=node)
         if node._parent is None:
             self._roots.remove(node)
         else:
             node._parent._children.remove(node)
 
+        self._notify('remove', item=node)
         return node

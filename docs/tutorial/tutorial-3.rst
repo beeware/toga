@@ -11,57 +11,10 @@ web browser, in less than 40 lines of code!
 
 .. image:: screenshots/tutorial-3.png
 
-Here's the source code::
+Here's the source code:
 
-    #!/usr/bin/env python
-
-    import toga
-    from colosseum import CSS
-
-
-    class Graze(toga.App):
-        def startup(self):
-            self.main_window = toga.MainWindow(self.name)
-            self.main_window.app = self
-
-            self.webview = toga.WebView(style=CSS(flex=1))
-            self.url_input = toga.TextInput(
-                initial='https://github.com/',
-                style=CSS(flex=1, margin=5)
-            )
-
-            box = toga.Box(
-                children = [
-                    toga.Box(
-                        children = [
-                            self.url_input,
-                            toga.Button('Go', on_press=self.load_page, style=CSS(width=50)),
-                        ],
-                        style=CSS(
-                            flex_direction='row'
-                        )
-                    ),
-                    self.webview,
-                ],
-                style=CSS(
-                    flex_direction='column'
-                )
-            )
-
-            self.main_window.content = box
-            self.webview.url = self.url_input.value
-
-            # Show the main window
-            self.main_window.show()
-
-        def load_page(self, widget):
-            self.webview.url = self.url_input.value
-
-    if __name__ == '__main__':
-        app = Graze('Graze', 'org.pybee.graze')
-
-        app.main_loop()
-
+.. literalinclude:: /../examples/tutorial3/tutorial/app.py
+   :language: python
 
 In this example, you can see an application being developed as a class, rather
 than as a build method. You can also see boxes defined in a declarative

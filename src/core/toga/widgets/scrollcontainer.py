@@ -6,7 +6,7 @@ class ScrollContainer(Widget):
 
     Args:
         id (str): An identifier for this widget.
-        style (:class:`colosseum.CSSNode`): An optional style object.
+        style (:obj:`Style`): An optional style object.
             If no style is provided then a new one will be created for the widget.
         horizontal (bool):  If True enable horizontal scroll bar.
         vertical (bool): If True enable vertical scroll bar.
@@ -14,6 +14,9 @@ class ScrollContainer(Widget):
         factory (:module:): A provided factory module will be used to create the
             implementation of the ScrollContainer.
     """
+    MIN_WIDTH = 100
+    MIN_HEIGHT = 100
+
     def __init__(self, id=None, style=None, horizontal=True,
                  vertical=True, content=None, factory=None):
         super().__init__(id=id, style=style, factory=factory)
@@ -40,13 +43,22 @@ class ScrollContainer(Widget):
     @content.setter
     def content(self, widget):
         if widget:
-            widget._update_layout()
             widget.app = self.app
             widget.window = self.window
 
             self._content = widget
 
             self._impl.set_content(widget._impl)
+            self._impl.rehint()
+
+            widget.refresh()
+
+    def refresh(self):
+        """Refresh the layout and appearance of this widget."""
+        super().refresh()
+        # If the scroll container has content, refresh that layout too.
+        if self.content:
+            self.content.refresh()
 
     @property
     def vertical(self):
@@ -75,3 +87,8 @@ class ScrollContainer(Widget):
     def horizontal(self, value):
         self._horizontal = value
         self._impl.set_horizontal(value)
+
+    def refresh_sublayouts(self):
+        """Refresh the layout and appearance of this widget."""
+        for widget in self._content:
+            widget.refresh()

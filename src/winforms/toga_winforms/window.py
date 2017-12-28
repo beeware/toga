@@ -1,22 +1,32 @@
+from travertino.layout import Viewport
+
 from .libs import *
 
-from .container import Container
-from . import dialogs
-# from .command import SEPARATOR, SPACER, EXPANDING_SPACER
 
+class WinFormsViewport:
+    def __init__(self, native):
+        self.native = native
+        self.dpi = 96  # FIXME This is almost certainly wrong...
+
+    @property
+    def width(self):
+        return self.native.ClientSize.Width
+
+    @property
+    def height(self):
+        return self.native.ClientSize.Height
 
 
 class Window:
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
-        self.container = None
         self.create()
 
     def create(self):
         self.native = WinForms.Form(self)
         self.native.ClientSize = Size(self.interface._size[0], self.interface._size[1])
-        self.native.Resize += self._on_resize
+        self.native.Resize += self.on_resize
 
         self.toolbar_native = None
         self.toolbar_items = None
@@ -43,15 +53,17 @@ class Window:
 
     def set_content(self, widget):
         if widget.native is None:
-            self.container = Container()
-            self.container.content = widget
-        else:
-            self.container = widget
+            widget.native = WinForms.Panel()
+        widget.viewport = WinFormsViewport(self.native)
+
+        # Add all children to the content widget.
+        for child in widget.interface.children:
+            child._impl.container = widget
 
         if self.toolbar_native:
             self.native.Controls.Add(self.toolbar_native)
 
-        self.native.Controls.Add(self.container.native)
+        self.native.Controls.Add(widget.native)
 
     def set_title(self, title):
         self.native.Text = title
@@ -61,18 +73,14 @@ class Window:
         # minimum possible content size; use that to enforce
         # a minimum window size.
         TITLEBAR_HEIGHT = 36  # FIXME: this shouldn't be hard coded...
+
+        # Now that the content is visible, we can do our initial hinting,
+        # and use that as the basis for setting the minimum window size.
+        self.interface.content._impl.rehint()
+        self.interface.content.style.layout(self.interface.content, Viewport(0, 0))
         self.native.MinimumSize = Size(
             int(self.interface.content.layout.width),
             int(self.interface.content.layout.height) + TITLEBAR_HEIGHT
-        )
-
-        # Set the size of the container to be the same as the window
-        self.container.native.Size = self.native.ClientSize
-
-        # Do the first layout render.
-        self.container.update_layout(
-            width=self.native.ClientSize.Width,
-            height=self.native.ClientSize.Height,
         )
 
     def on_close(self):
@@ -81,15 +89,10 @@ class Window:
     def close(self):
         self.native.Close()
 
-    def _on_resize(self, sender, args):
+    def on_resize(self, sender, args):
         if self.interface.content:
-            # Set the size of the container to be the same as the window
-            self.container.native.Size = self.native.ClientSize
             # Re-layout the content
-            self.interface.content._update_layout(
-                width=sender.ClientSize.Width,
-                height=sender.ClientSize.Height,
-            )
+            self.interface.content.refresh()
 
     def info_dialog(self, title, message):
         pass

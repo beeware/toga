@@ -5,48 +5,41 @@ from .base import Widget
 
 class Table(Widget):
     def create(self):
-        self.store = Gtk.ListStore(*[str for h in self.interface.headings])
-        self.rows = {}
+        self.store = Gtk.ListStore(*[object] + [str for h in self.interface.headings])
 
         # Create a table view, and put it in a scroll view.
         # The scroll view is the native, because it's the outer container.
-        self.treeview = Gtk.TreeView(self.store)
+        self.treeview = Gtk.TreeView(model=self.store)
         self.selection = self.treeview.get_selection()
         self.selection.set_mode(Gtk.SelectionMode.SINGLE)
-        self.selection.connect("changed", self._on_select)
+        self.selection.connect("changed", self.on_select)
 
         for i, heading in enumerate(self.interface.headings):
             renderer = Gtk.CellRendererText()
-            column = Gtk.TreeViewColumn(heading, renderer, text=i)
+            column = Gtk.TreeViewColumn(heading, renderer, text=i + 1)
             self.treeview.append_column(column)
 
         self.native = Gtk.ScrolledWindow()
         self.native.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
         self.native.add(self.treeview)
-        self.native.set_min_content_width(200)
-        self.native.set_min_content_height(200)
+        # self.native.set_min_content_width(200)
+        # self.native.set_min_content_height(200)
         self.native.interface = self.interface
 
-    def _on_select(self, selection):
-        if hasattr(self.interface, "_on_select") and self.interface.on_select:
-            tree_model, impl = selection.get_selected()
-            path = str(tree_model.get_path(impl))
-            self.interface.on_select(None, row=self.rows.get(path, None))
+    def on_select(self, selection):
+        if self.interface.on_select:
+            tree_model, tree_iter = selection.get_selected()
+            if tree_iter:
+                row = tree_model.get(tree_iter, 0)[0]
+            else:
+                row = None
+            self.interface.on_select(None, row=row)
 
     def row_data(self, row):
-        return [
+        return [row] + [
             str(getattr(row, attr))
             for attr in self.interface._accessors
         ]
-
-    def set_impl(self, item, impl):
-        try:
-            item._impl[self] = impl
-        except AttributeError:
-            item._impl = {self: impl}
-
-        path = self.store.get_path(impl)
-        self.rows[str(path)] = item
 
     def change_source(self, source):
         """
@@ -58,22 +51,24 @@ class Table(Widget):
         self.treeview.set_model(None) # temporarily disconnect the view
 
         self.store.clear()
-        for item in self.interface.data:
-            impl = self.store.append(self.row_data(item))
-            self.set_impl(item, impl)
+        for i, row in enumerate(self.interface.data):
+            self.insert(i, row)
 
         self.treeview.set_model(self.store)
 
     def insert(self, index, item):
         impl = self.store.insert(index, self.row_data(item))
-        self.set_impl(item, impl)
+        try:
+            item._impl[self] = impl
+        except AttributeError:
+            item._impl = {self: impl}
 
     def change(self, item):
-        item._impl[self] = self.row_data(item)
+        self.store[item._impl[self]] = self.row_data(item)
 
     def remove(self, item):
-        self.store.remove(item._impl[self])
-        del self.rows[item._impl[self]]
+        del self.store[item._impl[self]]
+        del item._impl[self]
 
     def clear(self):
         self.store.clear()
