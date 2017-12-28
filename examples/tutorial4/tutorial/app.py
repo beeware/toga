@@ -1,5 +1,7 @@
-import toga
 import math
+
+import toga
+from toga.style import Pack
 
 
 class StartApp(toga.App):
@@ -9,7 +11,7 @@ class StartApp(toga.App):
         self.main_window = toga.MainWindow(self.name, size=(148, 200))
         self.main_window.app = self
 
-        self.canvas = toga.Canvas(on_draw=self.draw_tiberius)
+        self.canvas = toga.Canvas(on_draw=self.draw_tiberius, style=Pack(flex=1))
         box = toga.Box(children=[self.canvas])
 
         # Add the content on the main window
@@ -91,6 +93,17 @@ class StartApp(toga.App):
             self.canvas.move_to(45, 145)
             self.canvas.bezier_curve_to(51, 123, 96, 123, 102, 145)
 
+    def draw_text(self):
+        x = 32
+        y = 185
+        font = toga.Font(family='sans-serif', size=20)
+        width, height = font.measure('Tiberius', tight=True)
+        with self.canvas.stroke():
+            self.canvas.rect(x - 10, y - height + 2, width, height + 2)
+        with self.canvas.fill():
+            self.canvas.fill_style('rgba(149.0, 119, 73, 1)')
+            self.canvas.write_text('Tiberius', x, y, font)
+
     def draw_tiberius(self, canvas, context):
         self.canvas.set_context(context)
         self.fill_head()
@@ -98,7 +111,12 @@ class StartApp(toga.App):
         self.draw_horns()
         self.draw_nostrils()
         self.stroke_head()
+        self.draw_text()
 
 
-def main():
-    return StartApp('Tutorial 4', 'org.pybee.helloworld')
+if __name__ == '__main__':
+    # Application class
+    #   App name and namespace
+    app = StartApp('Tutorial 4', 'org.pybee.helloworld')
+
+    app.main_loop()

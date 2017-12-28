@@ -1,9 +1,5 @@
-import os
-
-from .libs import *
-
 from .window import Window
-# from .widgets.icon import Icon, TIBERIUS_ICON
+from .libs import Threading, WinForms
 
 
 class MainWindow(Window):
@@ -19,7 +15,6 @@ class App:
         self.interface._impl = self
 
     def create(self):
-        print("CREATE")
         self.native = WinForms.Application
 
         # self.native.setApplicationIconImage_(self.icon.native)

@@ -1,5 +1,6 @@
-from toga.sources import to_accessor
+from travertino.size import at_least
 
+from toga.sources import to_accessor
 from toga_cocoa.libs import *
 
 from .base import Widget
@@ -35,9 +36,9 @@ class TogaTable(NSTableView):
             icon, value = value
         else:
             # If the value has an icon attribute, get the _impl.
-            # Icons are deferred resources, so we provide the factory.
+            # Icons are deferred resources, so we bind to the factory.
             try:
-                icon = value.icon._impl(self.interface.factory)
+                icon = value.icon.bind(self.interface.factory)
             except AttributeError:
                 icon = None
 
@@ -57,11 +58,27 @@ class TogaTable(NSTableView):
 
     @objc_method
     def tableViewSelectionDidChange_(self, notification) -> None:
-        self.interface.selection = notification.object.selectedRow
-        self.interface.selected = self.interface.data[notification.object.selectedRow]
+        selection = []
+        current_index = self.selectedRowIndexes.firstIndex
+        for i in range(self.selectedRowIndexes.count):
+            selection.append(self.interface.data[current_index])
+            current_index = self.selectedRowIndexes.indexGreaterThanIndex(current_index)
+
+        if not self.interface.multiple_select:
+            try:
+                self.interface._selection = selection[0]
+            except IndexError:
+                self.interface._selection = None
+        else:
+            self.interface._selection = selection
+
+        if notification.object.selectedRow == -1:
+            selected = None
+        else:
+            selected = self.interface.data[notification.object.selectedRow]
+
         if self.interface.on_select:
-            row = notification.object.selectedRow if notification.object.selectedRow != -1 else None
-            self.interface.on_select(self.interface, row=row)
+            self.interface.on_select(self.interface, row=selected)
 
 
 class Table(Widget):
@@ -79,8 +96,7 @@ class Table(Widget):
         self.table._impl = self
         self.table.columnAutoresizingStyle = NSTableViewUniformColumnAutoresizingStyle
 
-        # TODO: Optionally enable multiple selection
-        self.table.allowsMultipleSelection = False
+        self.table.allowsMultipleSelection = self.interface.multiple_select
 
         # Create columns for the table
         self.columns = []
@@ -123,3 +139,7 @@ class Table(Widget):
 
     def scroll_to_row(self, row):
         self.table.scrollRowToVisible(row)
+
+    def rehint(self):
+        self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
+        self.interface.intrinsic.height = at_least(self.interface.MIN_HEIGHT)

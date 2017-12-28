@@ -31,9 +31,8 @@
 # SOFTWARE.
 #
 #----------------------------------------------------------------------
-import string
-import re
 import random
+import re
 
 
 class Eliza:

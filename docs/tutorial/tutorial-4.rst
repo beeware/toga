@@ -1,10 +1,14 @@
-=====================================
-Let's draw on a canvas! (Gtk+ only for now, help needed!)
-=====================================
+=======================
+Let's draw on a canvas!
+=======================
+
+.. note:: This tutorial only works on GTK for now!
+
+    Want to help out? Maybe you could port the Canvas widget to other platforms?
 
 One of the main capabilities needed to create many types of GUI applications is
-the ability to draw and manipulate lines, shapes, and other graphics. To do this
-in Toga, we use the Canvas Widget.
+the ability to draw and manipulate lines, shapes, text, and other graphics. To
+do this in Toga, we use the Canvas Widget.
 
 Utilizing the Canvas is easy as determining the drawing operations you want to
 perform, placing them in a function, and then creating a new Canvas while
@@ -38,7 +42,7 @@ drawing capabilities.
 
 Here's the source code
 
-.. literalinclude:: /tutorial/source/tutorial-4.py
+.. literalinclude:: /../examples/tutorial4/tutorial/app.py
    :language: python
 
 Although not shown in this tutorial, it is also possible to directly do simple

@@ -1,6 +1,6 @@
 import os
-from toga_dummy import test_implementation
 
+from toga_dummy import test_implementation
 
 globals().update(
     test_implementation.create_impl_tests(

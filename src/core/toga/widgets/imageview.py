@@ -7,7 +7,7 @@ class ImageView(Widget):
     Args:
         image (:class:`toga.Image`): The image to display.
         id (str): An identifier for this widget.
-        style (:class:`colosseum.CSSNode`):
+        style (:obj:`Style`):
         factory (:obj:`module`): A python module that is capable to return a
             implementation of this class with the same name. (optional & normally not needed)
 

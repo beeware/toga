@@ -5,29 +5,10 @@ Your first Toga app
 In this example, we're going to build a desktop app with a single
 button, that prints to the console when you press the button.
 
-Here's a complete code listing for our "Hello world" app::
+Here's a complete code listing for our "Hello world" app:
 
-    import toga
-
-
-    def button_handler(widget):
-        print("hello")
-
-
-    def build(app):
-        box = toga.Box()
-
-        button = toga.Button('Hello world', on_press=button_handler)
-        button.style.set(margin=50)
-        box.add(button)
-
-        return box
-
-    def main():
-        return toga.App('First App', 'org.pybee.helloworld', startup=build)
-
-    if __name__ == '__main__':
-        main().main_loop()
+.. literalinclude:: /../examples/tutorial0/tutorial/app.py
+   :language: python
 
 
 Let's walk through this one line at a time.
@@ -67,27 +48,27 @@ pressed, referencing the handler that we defined earlier::
 
         button = toga.Button('Hello world', on_press=button_handler)
 
-Now we have to define how the button will appear in the window. Toga uses a
-CSS-based layout scheme, so we can apply CSS styles to each widget::
+Now we have to define how the button will appear in the window. By default,
+Toga uses a style algorithm called ``Pack``, which is a bit like "CSS-lite".
+We can set style properties of the button::
 
-        button.style.set(margin=50)
+        button.style.padding = 50
 
-Each widget is a "block" in CSS terms, what we've done here is say that the
-button with have a margin of 50 pixels on each side. If we wanted to define a
-margin of 20 pixels on top of the button, we could have defined ``margin_top=20``,
-or we could have specified the ``margin=(20, 50, 50, 50)``.
+What we've done here is say that the button with have a padding of 50 pixels
+on all sides. If we wanted to define padding of 20 pixels on top of the
+button, we could have defined ``padding_top = 20``, or we could have specified
+the ``padding = (20, 50, 50, 50)``.
 
 The next step is to add the button to the box::
 
         box.add(button)
 
-The button will, by default, stretch to the size of the box it is placed
-in. The outer box is also a block, which will stretch to the size of
-box it is placed in - which, in our case, is the window itself. The
-button has a default height, defined by the way that the underlying platform
-draws buttons). As a result, this means we'll see a single button in the app
-window that stretches to the width of the screen, but has a 50 pixel margin
-surrounding it.
+The button will, by default, stretch to the size of the box it is placed in.
+The outer box will also stretch to the size of box it is placed in - which, in
+our case, is the window itself. The button has a default height, defined by
+the way that the underlying platform draws buttons). As a result, this means
+we'll see a single button in the app window that stretches to the width of the
+screen, but has a 50 pixel space surrounding it.
 
 Now we've set up the box, we return the outer box that holds all
 the UI content. This box will be the content of the app's main window::

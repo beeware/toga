@@ -1,5 +1,4 @@
 from .. import impl
-from .base import WidgetMixin
 
 
 class Button(Widget):

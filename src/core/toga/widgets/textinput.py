@@ -6,7 +6,7 @@ class TextInput(Widget):
 
     Args:
         id (str): An identifier for this widget.
-        style (:class:`colosseum.CSSNode`): An optional style object. If no style is provided then
+        style (:obj:`Style`): An optional style object. If no style is provided then
             a new one will be created for the widget.
         factory (:obj:`module`): A python module that is capable to return a
             implementation of this class with the same name. (optional & normally not needed)
@@ -14,6 +14,7 @@ class TextInput(Widget):
         placeholder (str): If no input is present this text is shown.
         readonly (bool):  Whether a user can write into the text input, defaults to `False`.
     """
+    MIN_WIDTH = 100
 
     def __init__(
             self, id=None, style=None, factory=None,
@@ -58,7 +59,7 @@ class TextInput(Widget):
         else:
             self._placeholder = str(value)
         self._impl.set_placeholder(value)
-        self.rehint()
+        self._impl.rehint()
 
     @property
     def value(self):
@@ -76,7 +77,7 @@ class TextInput(Widget):
         else:
             v = str(value)
         self._impl.set_value(v)
-        self.rehint()
+        self._impl.rehint()
 
     def clear(self):
         """ Clears the text of the widget """

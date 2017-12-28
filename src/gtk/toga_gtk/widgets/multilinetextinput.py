@@ -1,4 +1,4 @@
-from gi.repository import Gtk, Gdk
+from gi.repository import Gtk
 
 from .base import Widget
 
@@ -52,12 +52,6 @@ class MultilineTextInput(Widget):
                                   self.buffer.get_end_iter())  # make the placeholder text gray.
         return False
 
-    # @property
-    # def _width_hint(self):
-    #     print("WIDGET WIDTH", self, self.native.get_preferred_width())
-    #     return self.native.get_preferred_width()
-    #
-    # @property
-    # def _height_hint(self):
-    #     print("WIDGET HEIGHT", self, self.native.get_preferred_height())
-    #     return self.native.get_preferred_height()
+    def rehint(self):
+        self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
+        self.interface.intrinsic.height = at_least(self.interface.MIN_HEIGHT)

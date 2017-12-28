@@ -29,7 +29,7 @@ class WebView(Widget):
         if WebKit2 is None:
             raise RuntimeError(
                 "Import 'from gi.repository import WebKit' failed;" +
-                " may need to install  gir1.2-webkit2-4.0 or gir1.2-webkit2-3.0.")
+                " may need to install gir1.2-webkit2-4.0 or gir1.2-webkit2-3.0.")
 
         self.native = Gtk.ScrolledWindow()
         self.native.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)

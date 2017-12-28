@@ -1,13 +1,12 @@
 from rubicon.objc import objc_method, SEL
+from travertino.size import at_least
 
 import toga
 from toga.widgets.base import Widget as InterfaceWidget
+from toga_cocoa.libs import NSStepper, NSObject
 
-from toga_cocoa.libs import NSStepper, NSView, NSMakeRect, NSObject
-
-from .box import Box
 from .base import Widget
-
+from .box import Box
 
 
 class NumberInput(Box):
@@ -33,7 +32,7 @@ class NumberInput(Box):
         self.interface.add(self.stepper)
         self.set_value(self.interface._min_value)
 
-        self.interface.style.flex_direction = 'row'
+        # self.interface.style.flex_direction = 'row'
         self.rehint()
 
     def text_update(self, handler):
@@ -50,13 +49,8 @@ class NumberInput(Box):
         return self.text_input.value
 
     def rehint(self):
-        self.text_input.rehint()
-        self.stepper.rehint()
-
-        self.interface.style.hint(
-            height=self.text_input.style.height,
-            min_width=120,
-        )
+        self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
+        self.interface.intrinsic.height = self.text_input.style.height
 
 
 class TextInputVerifier(NSObject):
@@ -109,11 +103,10 @@ class Stepper(Widget):
         self.add_constraints()
 
     def rehint(self):
-        self.interface.style.hint(
-            height=self.native.fittingSize().height,
-            min_width=self.native.fittingSize().width
-        )
-        self.interface.style.margin_top = -3
+        fitting_size = self.native.fittingSize()
+        self.interface._intrinsic.width = fitting_size.width
+        self.interface._intrinsic.height = fitting_size.height
+        # self.interface.style.margin_top = -3
 
 
 class TogaStepper(NSStepper):

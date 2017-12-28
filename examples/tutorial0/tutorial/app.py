@@ -9,7 +9,8 @@ def build(app):
     box = toga.Box()
 
     button = toga.Button('Hello world', on_press=button_handler)
-    button.style.set(margin=50)
+    button.style.padding = 50
+    button.style.flex = 1
     box.add(button)
 
     return box
@@ -17,3 +18,7 @@ def build(app):
 
 def main():
     return toga.App('First App', 'org.pybee.helloworld', startup=build)
+
+
+if __name__ == '__main__':
+    main().main_loop()

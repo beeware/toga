@@ -1,5 +1,4 @@
 from rubicon.objc import objc_method
-
 from toga_iOS.libs import *
 
 from .base import Widget
@@ -25,9 +24,9 @@ class TogaTableViewController(UITableViewController):
         cell.detailTextLabel.text = str(getattr(value, 'subtitle', ''))
 
         # If the value has an icon attribute, get the _impl.
-        # Icons are deferred resources, so we provide the factory.
+        # Icons are deferred resources, so we bind to factory.
         try:
-            cell.imageView.image = value.icon._impl(self.interface.factory).native
+            cell.imageView.image = value.icon.bind(self.interface.factory).native
         except AttributeError:
             pass
 

@@ -1,4 +1,5 @@
 from rubicon.objc import objc_method
+from travertino.size import at_least
 
 from toga_cocoa.libs import *
 
@@ -66,3 +67,7 @@ class WebView(Widget):
         :type  javascript: ``str``
         """
         return self.native.stringByEvaluatingJavaScriptFromString(javascript)
+
+    def rehint(self):
+        self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
+        self.interface.intrinsic.height = at_least(self.interface.MIN_HEIGHT)

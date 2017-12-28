@@ -1,8 +1,8 @@
 from android.view import Gravity
 
-from toga.constants import *
+from travertino.size import at_least
 
-from .base import WidgetMixin
+from toga.constants import *
 
 
 class TogaLabel(extends=android.widget.TextView):
@@ -30,7 +30,5 @@ class Label(Widget):
 
     def rehint(self):
         # print("REHINT label", self, self.native.getMeasuredWidth(), self.native.getMeasuredHeight())
-        self.interface.style.hint(
-            width=self.native.getMeasuredWidth() / self.app.device_scale,
-            height=self.native.getMeasuredHeight() / self.app.device_scale,
-        )
+        self.interface.intrinsic.width = at_least(self.native.getMeasuredWidth() / self.app.device_scale)
+        self.interface.intrinsic.height = self.native.getMeasuredHeight() / self.app.device_scale

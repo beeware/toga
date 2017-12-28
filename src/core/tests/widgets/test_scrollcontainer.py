@@ -1,13 +1,13 @@
 import toga
 import toga_dummy
-from toga_dummy.utils import TestCase
+from toga_dummy.utils import TestCase, TestStyle
 
 
 class ScrollContainerTests(TestCase):
     def setUp(self):
         super().setUp()
 
-        self.sc = toga.ScrollContainer(factory=toga_dummy.factory)
+        self.sc = toga.ScrollContainer(style=TestStyle(), factory=toga_dummy.factory)
 
     def test_widget_created(self):
         self.assertEqual(self.sc._impl.interface, self.sc)
@@ -16,11 +16,13 @@ class ScrollContainerTests(TestCase):
     def test_set_content_with_widget(self):
         self.assertEqual(self.sc.content, None, 'The default value of content should be None')
 
-        new_content = toga.Box(factory=toga_dummy.factory)
+        new_content = toga.Box(style=TestStyle(), factory=toga_dummy.factory)
         self.sc.content = new_content
         self.assertEqual(self.sc.content, new_content)
         self.assertEqual(self.sc._content, new_content)
         self.assertActionPerformedWith(self.sc, 'set content', widget=new_content._impl)
+
+        self.assertActionPerformedWith(new_content, 'set bounds', x=0, y=0, width=0, height=0)
 
     def test_set_content_with_None(self):
         new_content = None

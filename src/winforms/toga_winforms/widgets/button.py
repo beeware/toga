@@ -1,3 +1,5 @@
+from travertino.size import at_least
+
 from toga_winforms.libs import *
 
 from .base import Widget
@@ -19,7 +21,7 @@ class Button(Widget):
         self.native = TogaButton(self.interface)
 
     def set_label(self, label):
-        self.native.Text = label
+        self.native.Text = self.interface.label
         self.rehint()
 
     def set_enabled(self, value):
@@ -34,7 +36,5 @@ class Button(Widget):
     def rehint(self):
         # self.native.Size = Size(0, 0)
         # print("REHINT Button", self, self.native.PreferredSize)
-        self.interface.style.hint(
-            height=self.native.PreferredSize.Height,
-            min_width=self.native.PreferredSize.Width,
-        )
+        self.interface.intrinsic.width = at_least(self.native.PreferredSize.Width)
+        self.interface.intrinsic.height = self.native.PreferredSize.Height
