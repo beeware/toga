@@ -76,10 +76,7 @@ class TreeSource(Source):
         if isinstance(data, dict):
             node = Node(**data)
         else:
-            node = Node(**{
-                accessor: value
-                for accessor, value in zip(self._accessors, data)
-            })
+            node = Node(**dict(zip(self._accessors, data)))
         node._source = self
 
         if children is not None:
@@ -116,13 +113,8 @@ class TreeSource(Source):
         return iter(self._roots)
 
     def insert(self, parent, index, *values, **named):
-        node = self._create_node(dict(
-            named,
-            **{
-                accessor: value
-                for accessor, value in zip(self._accessors, values)
-            }
-        ))
+        node = self._create_node(dict(zip(self._accessors, values), **named))
+
         if parent is None:
             self._roots.insert(index, node)
         else:
