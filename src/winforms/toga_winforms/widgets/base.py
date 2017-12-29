@@ -61,7 +61,6 @@ class Widget:
 
     def add_child(self, child):
         if self.container:
-            child.viewport = self.root.viewport
             child.container = self.container
 
     def rehint(self):

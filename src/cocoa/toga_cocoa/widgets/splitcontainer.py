@@ -25,11 +25,12 @@ class TogaSplitViewDelegate(NSObject):
     @objc_method
     def splitViewDidResizeSubviews_(self, notification) -> None:
         # If the window is actually visible, and the split has moved,
-        # a resize of all the content panels is required.
+        # a resize of all the content panels is required. The refresh
+        # needs to be directed at the root container holding the widget,
+        # as the splitview may not be the root container.
         if self.interface.window and self.interface.window._impl.native.isVisible:
-            # print("SPLIT CONTAINER LAYOUT CHILDREN", self.interface._impl.containers[0].native.frame.size.width, self.interface._impl.containers[1].native.frame.size.width)
             self.interface.refresh()
-            self.interface._impl.on_resize()
+            self._impl.on_resize()
 
 
 class SplitContainer(Widget):

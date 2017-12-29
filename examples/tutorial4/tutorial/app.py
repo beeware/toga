@@ -114,9 +114,9 @@ class StartApp(toga.App):
         self.draw_text()
 
 
-if __name__ == '__main__':
-    # Application class
-    #   App name and namespace
-    app = StartApp('Tutorial 4', 'org.pybee.helloworld')
+def main():
+    return StartApp('Tutorial 4', 'org.pybee.helloworld')
 
-    app.main_loop()
+
+if __name__ == '__main__':
+    main().main_loop()
