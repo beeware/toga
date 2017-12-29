@@ -7,6 +7,7 @@ class Widget:
         self.interface._impl = self
         self._container = None
         self.constraints = None
+        self.viewport = None
         self.native = None
         self.create()
         self.interface.style.reapply()
@@ -24,9 +25,8 @@ class Widget:
     @container.setter
     def container(self, container):
         self._container = container
-        if self.constraints:
-            self._container.native.addSubview(self.native)
-            self.constraints.container = container
+        self._container.native.addSubview(self.native)
+        self.constraints.container = container
 
         for child in self.interface.children:
             child._impl.container = container
@@ -63,7 +63,6 @@ class Widget:
 
     def add_child(self, child):
         if self.container:
-            child.viewport = self.root.viewport
             child.container = self.container
 
     def add_constraints(self):

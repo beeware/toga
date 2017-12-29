@@ -11,7 +11,7 @@ class TogaBox(Gtk.Fixed):
 
     def do_get_preferred_width(self):
         # Calculate the minimum and natural width of the container.
-        # print("GET PREFERRED WIDTH")
+        # print("GET PREFERRED WIDTH", self._impl.native)
         width = self._impl.interface.layout.width
         min_width = self._impl.min_width
         if min_width is None:
@@ -25,7 +25,7 @@ class TogaBox(Gtk.Fixed):
     def do_get_preferred_height(self):
         # Calculate the minimum and natural height of the container.
         # height = self._impl.layout.height
-        # print("GET PREFERRED HEIGHT")
+        # print("GET PREFERRED HEIGHT", self._impl.native)
         height = self._impl.interface.layout.height
         min_height = self._impl.min_height
         if min_height is None:
@@ -37,28 +37,29 @@ class TogaBox(Gtk.Fixed):
 
     def do_size_allocate(self, allocation):
         # print(self._impl, "Container layout", allocation.width, 'x', allocation.height, ' @ ', allocation.x, 'x', allocation.y)
-        self.set_allocation(allocation)
-        self.interface.refresh()
+        if self._impl.viewport is not None:
+            self.set_allocation(allocation)
+            self.interface.refresh()
 
-        # WARNING! This list of children is *not* the same
-        # as the list provided by the interface!
-        # For GTK's layout purposes, all widgets in the tree
-        # are children of the *container* - that is, the impl
-        # object of the root object in the tree of widgets.
-        for widget in self.get_children():
-            if not widget.get_visible():
-                # print("CHILD NOT VISIBLE", widget.interface)
-                pass
-            else:
-                # print("update ", widget.interface, widget.interface.layout)
-                widget.interface._impl.rehint()
-                widget_allocation = Gdk.Rectangle()
-                widget_allocation.x = widget.interface.layout.absolute_content_left
-                widget_allocation.y = widget.interface.layout.absolute_content_top
-                widget_allocation.width = widget.interface.layout.content_width
-                widget_allocation.height = widget.interface.layout.content_height
+            # WARNING! This list of children is *not* the same
+            # as the list provided by the interface!
+            # For GTK's layout purposes, all widgets in the tree
+            # are children of the *container* - that is, the impl
+            # object of the root object in the tree of widgets.
+            for widget in self.get_children():
+                if not widget.get_visible():
+                    # print("CHILD NOT VISIBLE", widget.interface)
+                    pass
+                else:
+                    # print("update ", widget.interface, widget.interface.layout)
+                    widget.interface._impl.rehint()
+                    widget_allocation = Gdk.Rectangle()
+                    widget_allocation.x = widget.interface.layout.absolute_content_left
+                    widget_allocation.y = widget.interface.layout.absolute_content_top
+                    widget_allocation.width = widget.interface.layout.content_width
+                    widget_allocation.height = widget.interface.layout.content_height
 
-                widget.size_allocate(widget_allocation)
+                    widget.size_allocate(widget_allocation)
 
 
 class Box(Widget):
