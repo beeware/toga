@@ -80,3 +80,6 @@ class Tree(Widget):
 
     def set_on_select(self, handler):
         pass
+
+    def scroll_to_row(self, row):
+        raise NotImplementedError
