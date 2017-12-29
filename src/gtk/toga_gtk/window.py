@@ -73,12 +73,8 @@ class Window:
             self.toolbar_native.insert(item_impl, -1)
 
     def set_content(self, widget):
-        widget.viewport = GtkViewport(widget.native)
-
-        # Add all children to the content widget.
-        for child in widget.interface.children:
-            child._impl.container = widget
-
+        # Construct the top-level layout, and set the window's view to
+        # the be the widget's native object.
         self.layout = Gtk.VBox()
 
         if self.toolbar_native:
@@ -87,7 +83,15 @@ class Window:
 
         self.native.add(self.layout)
 
+        # Make the window sensitive to size changes
         widget.native.connect('size-allocate', self.on_size_allocate)
+
+        # Set the widget's viewport to be based on the window's content.
+        widget.viewport = GtkViewport(widget.native)
+
+        # Add all children to the content widget.
+        for child in widget.interface.children:
+            child._impl.container = widget
 
     def show(self):
         self.native.show_all()

@@ -108,6 +108,7 @@ class Widget(Node):
         self._window = window
         if self._impl:
             self._impl.set_window(window)
+
         if self._children is not None:
             for child in self._children:
                 child.window = window
@@ -123,8 +124,11 @@ class Widget(Node):
 
     def refresh(self):
         """Refresh the layout and appearance of the tree this node is contained in."""
-        super().refresh(self._impl.viewport)
-        self.refresh_sublayouts()
+        if self._root:
+            self._root.refresh()
+        else:
+            super().refresh(self._impl.viewport)
+            self.refresh_sublayouts()
 
     def refresh_sublayouts(self):
         if self._children is not None:

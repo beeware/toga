@@ -32,7 +32,7 @@ class Button(Widget):
             self.native.font = value._impl.native
 
     def set_label(self, label):
-        self.native.title = label
+        self.native.title = self.interface.label
 
     def set_on_press(self, handler):
         pass

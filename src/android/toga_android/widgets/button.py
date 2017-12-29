@@ -27,7 +27,7 @@ class Button(Widget):
         self.native.setOnClickListener(self._listener)
 
     def set_label(self, label):
-        self.native.setText(self.label)
+        self.native.setText(self.interface.label)
 
     def set_enabled(self, value):
         pass
