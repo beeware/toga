@@ -5,7 +5,8 @@ from ctypes import *
 from ctypes import util
 
 from rubicon.objc.types import register_preferred_encoding
-from toga.constants import *
+from rubicon.objc import *
+
 
 ######################################################################
 core_graphics = cdll.LoadLibrary(util.find_library('CoreGraphics'))
@@ -13,35 +14,43 @@ core_graphics = cdll.LoadLibrary(util.find_library('CoreGraphics'))
 
 ######################################################################
 # CGContext.h
-CGContextAddArc = ObjCClass('CGContextAddArc')
-CGContextAddCurveToPoint = ObjCClass('CGContextAddCurveToPoint')
-CGContextAddLineToPoint = ObjCClass('CGContextAddLineToPoint')
-CGContextAddQuadCurveToPoint = ObjCClass('CGContextAddQuadCurveToPoint')
-CGContextAddRect = ObjCClass('CGContextAddRect')
-CGContextBeginPath = ObjCClass('CGContextBeginPath')
-CGContextClosePath = ObjCClass('CGContextClosePath')
-CGContextDrawPath = ObjCClass('CGContextDrawPath')
-CGContextMoveToPoint = ObjCClass('CGContextMoveToPoint')
-CGContextRestoreGState = ObjCClass('CGContextRestoreGState')
-CGContextRotateCTM = ObjCClass('CGContextRotateCTM')
-CGContextSaveGState = ObjCClass('CGContextSaveGState')
-CGContextScaleCTM = ObjCClass('CGContextScaleCTM')
-CGContextSetLineWidth = ObjCClass('CGContextSetLineWidth')
-CGContextSetRGBFillColor = ObjCClass('CGContextSetRGBFillColor')
-CGContextSetRGBStrokeColor = ObjCClass('CGContextSetRGBStrokeColor')
-CGContextTranslateCTM = ObjCClass('CGContextTranslateCTM')
 
-CGPathDrawingMode = c_int32
+CGPathDrawingMode = c_uint32
 
-kCGPathFill = 0
-kCGPathEOFill = 1
-kCGPathStroke = 2
-kCGPathFillStroke = 3
-kCGPathFillStrokeEOL = 4
-
-
-######################################################################
-
+core_graphics.CGContextAddArc.restype = c_void_p
+core_graphics.CGContextAddArc.argtypes = [c_void_p, CGFloat, CGFloat, CGFloat, CGFloat, CGFloat, c_int]
+core_graphics.CGContextAddCurveToPoint.restype = c_void_p
+core_graphics.CGContextAddCurveToPoint.argtypes = [c_void_p, CGFloat, CGFloat, CGFloat, CGFloat, CGFloat, CGFloat]
+core_graphics.CGContextAddLineToPoint.restype = c_void_p
+core_graphics.CGContextAddLineToPoint.argtypes = [c_void_p, CGFloat, CGFloat]
+core_graphics.CGContextAddQuadCurveToPoint.restype = c_void_p
+core_graphics.CGContextAddQuadCurveToPoint.argtypes = [c_void_p, CGFloat, CGFloat, CGFloat, CGFloat]
+core_graphics.CGContextAddRect.restype = c_void_p
+core_graphics.CGContextAddRect.argtypes = [c_void_p, CGRect]
+core_graphics.CGContextBeginPath.restype = c_void_p
+core_graphics.CGContextBeginPath.argtypes = [c_void_p]
+core_graphics.CGContextClosePath.restype = c_void_p
+core_graphics.CGContextClosePath.argtypes = [c_void_p]
+core_graphics.CGContextDrawPath.restype = c_void_p
+core_graphics.CGContextDrawPath.argtypes = [c_void_p, CGPathDrawingMode]
+core_graphics.CGContextMoveToPoint.restype = c_void_p
+core_graphics.CGContextMoveToPoint.argtypes = [c_void_p, CGFloat, CGFloat]
+core_graphics.CGContextRestoreGState.restype = c_void_p
+core_graphics.CGContextRestoreGState.argtypes = [c_void_p]
+core_graphics.CGContextRotateCTM.restype = c_void_p
+core_graphics.CGContextRotateCTM.argtypes = [c_void_p, CGFloat]
+core_graphics.CGContextSaveGState.restype = c_void_p
+core_graphics.CGContextSaveGState.argtypes = [c_void_p]
+core_graphics.CGContextScaleCTM.restype = c_void_p
+core_graphics.CGContextScaleCTM.argtypes = [c_void_p, CGFloat, CGFloat]
+core_graphics.CGContextSetLineWidth.restype = c_void_p
+core_graphics.CGContextSetLineWidth.argtypes = [c_void_p, CGFloat]
+core_graphics.CGContextSetRGBFillColor.restype = c_void_p
+core_graphics.CGContextSetRGBFillColor.argtypes = [c_void_p, CGFloat, CGFloat, CGFloat, CGFloat]
+core_graphics.CGContextSetRGBStrokeColor.restype = c_void_p
+core_graphics.CGContextSetRGBStrokeColor.argtypes = [c_void_p, CGFloat, CGFloat, CGFloat, CGFloat]
+core_graphics.CGContextTranslateCTM.restype = c_void_p
+core_graphics.CGContextTranslateCTM.argtypes = [c_void_p, CGFloat, CGFloat]
 
 ######################################################################
 # CGEvent.h
