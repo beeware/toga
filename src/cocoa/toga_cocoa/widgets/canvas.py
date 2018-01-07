@@ -116,7 +116,7 @@ class Canvas(Widget):
         core_graphics.CGContextRestoreGState(self.native.context)
 
     def rect(self, x, y, width, height):
-        rectangle = core_graphics.CGMakeRect(self.native.context, x, y, width, height)
+        rectangle = CGRectMake(x, y, width, height)
         core_graphics.CGContextAddRect(self.native.context, rectangle)
 
     # Drawing Paths

@@ -76,6 +76,10 @@ kCGScrollEventUnitPixel = 0
 kCGScrollEventUnitLine = 1
 
 ######################################################################
+# CGGeometry.h
+CGRectMake = CGRect
+
+######################################################################
 # CGImage.h
 kCGImageAlphaNone = 0
 kCGImageAlphaPremultipliedLast = 1
