@@ -36,5 +36,5 @@ class Label(Widget):
             self._text = ''
         else:
             self._text = str(value)
-        self._impl.set_text(value)
+        self._impl.set_text(self._text)
         self._impl.rehint()
