@@ -43,5 +43,7 @@ class Font:
         self.native = font
 
     def measure(self, text, tight=False):
-        # TODO
-        pass
+        # TODO implement
+        width = 10
+        height = 10
+        return width, height

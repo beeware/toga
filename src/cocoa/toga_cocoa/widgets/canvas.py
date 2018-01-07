@@ -146,6 +146,16 @@ class Canvas(Widget):
     def reset_transform(self):
         pass
 
+    # Text
+
+    def measure_text(self, text, font):
+        # TODO
+        pass
+
+    def write_text(self, text, x, y, font):
+        # TODO
+        pass
+
     def rehint(self):
         fitting_size = self.native.fittingSize()
         self.interface.intrinsic.height = fitting_size.height
