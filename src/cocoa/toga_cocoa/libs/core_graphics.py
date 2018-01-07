@@ -14,8 +14,13 @@ core_graphics = cdll.LoadLibrary(util.find_library('CoreGraphics'))
 
 ######################################################################
 # CGContext.h
+CGPathDrawingMode = c_int32
 
-CGPathDrawingMode = c_uint32
+kCGPathFill = 0
+kCGPathEOFill = 1
+kCGPathStroke = 2
+kCGPathFillStroke = 3
+kCGPathEOFillStroke = 4
 
 core_graphics.CGContextAddArc.restype = c_void_p
 core_graphics.CGContextAddArc.argtypes = [c_void_p, CGFloat, CGFloat, CGFloat, CGFloat, CGFloat, c_int]
