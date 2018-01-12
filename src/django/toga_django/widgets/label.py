@@ -12,7 +12,7 @@ class Label(Widget):
         )
 
     def set_text(self, value):
-        self._impl.innerText = value
+        self._impl.innerText = self.interface._text
 
     def set_alignment(self, value):
         raise NotImplementedError()
