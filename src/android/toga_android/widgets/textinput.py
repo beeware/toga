@@ -21,6 +21,12 @@ class TextInput(Widget):
         # self.native.cell.placeholderString = self._placeholder
         pass
 
+    def set_alignment(self, value):
+        pass
+
+    def set_font(self, value):
+        pass
+
     def get_value(self, value):
         raise NotImplementedError()
 
@@ -32,3 +38,6 @@ class TextInput(Widget):
         # print("REHINT text input", self, self.native.getMeasuredWidth(), self.native.getMeasuredHeight())
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
         self.interface.intrinsic.height = self.native.getMeasuredHeight() / self.app.native.device_scale
+
+    def set_on_change(self, handler):
+        pass

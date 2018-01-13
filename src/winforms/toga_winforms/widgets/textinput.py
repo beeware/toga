@@ -29,3 +29,6 @@ class TextInput(Widget):
         # print("REHINT TextInput", self, self.native.PreferredSize)
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
         self.interface.intrinsic.height = self.native.PreferredSize.Height
+
+    def set_on_change(self, handler):
+        pass
