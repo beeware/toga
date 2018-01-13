@@ -23,6 +23,12 @@ class TextInput(Widget):
     def set_value(self, value):
         self.native.Text = value
 
+    def set_alignment(self, value):
+        pass
+
+    def set_font(self, value):
+        pass
+
     def rehint(self):
         # Height of a text input is known and fixed.
         # Width must be > 100
