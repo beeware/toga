@@ -1,7 +1,7 @@
-from rubicon.objc import objc_method, SEL
+from rubicon.objc import objc_method, CGSize, SEL
 from travertino.size import at_least
 
-from toga_iOS.libs import *
+from toga_iOS.libs import UIButton
 
 from .base import Widget
 
