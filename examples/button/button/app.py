@@ -9,7 +9,6 @@ class ExampleButtonApp(toga.App):
         # Window class
         #   Main window of the application with title and size
         self.main_window = toga.MainWindow(self.name, size=(200, 200))
-        self.main_window.app = self
 
         # Common style of the inner boxes
         style_inner_box = Pack(direction=ROW)
