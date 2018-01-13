@@ -76,7 +76,7 @@ class TextInput(Widget):
             v = ''
         else:
             v = str(value)
-        self._impl.set_value(v)
+        self._impl.set_value(value)
         self._impl.rehint()
 
     def clear(self):

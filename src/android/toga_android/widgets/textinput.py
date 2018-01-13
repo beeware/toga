@@ -25,7 +25,7 @@ class TextInput(Widget):
         raise NotImplementedError()
 
     def set_value(self, value):
-        self.native.setText(value)
+        self.native.setText(self.interface.value)
 
     def rehint(self):
         # Height of a text input is known and fixed.

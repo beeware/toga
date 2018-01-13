@@ -21,7 +21,7 @@ class TextInput(Widget):
         return self.native.Text
 
     def set_value(self, value):
-        self.native.Text = value
+        self.native.Text = self.interface.value
 
     def rehint(self):
         # Height of a text input is known and fixed.
