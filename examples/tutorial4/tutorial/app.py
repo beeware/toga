@@ -9,7 +9,6 @@ class StartApp(toga.App):
         # Window class
         #   Main window of the application with title and size
         self.main_window = toga.MainWindow(self.name, size=(148, 200))
-        self.main_window.app = self
 
         self.canvas = toga.Canvas(on_draw=self.draw_tiberius, style=Pack(flex=1))
         box = toga.Box(children=[self.canvas])

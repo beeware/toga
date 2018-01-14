@@ -8,7 +8,6 @@ class SwitchApp(toga.App):
         # Window class
         #   Main window of the application with title and size
         self.main_window = toga.MainWindow(self.name, size=(300, 150))
-        self.main_window.app = self
 
         switch_style = Pack(padding=24)
 

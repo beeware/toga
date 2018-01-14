@@ -12,12 +12,12 @@ from .widgets.image import *
 from .widgets.imageview import *
 from .widgets.label import Label
 # from .widgets.multilinetextinput import *
-# from .widgets.numberinput import NumberInput
+from .widgets.numberinput import NumberInput
 # from .widgets.optioncontainer import *
 from .widgets.passwordinput import *
 # from .widgets.progressbar import *
 # from .widgets.scrollcontainer import *
-# from .widgets.selection import Selection
+from .widgets.selection import Selection
 from .widgets.slider import *
 # from .widgets.splitcontainer import *
 from .widgets.switch import *
@@ -42,12 +42,12 @@ __all__ = [
     'ImageView',
     'Label',
     # 'MultilineTextInput',
-    # 'NumberInput',
+    'NumberInput',
     # 'OptionContainer',
     'PasswordInput',
     # 'ProgressBar',
     # 'ScrollContainer',
-    # 'Selection',
+    'Selection',
     'Slider',
     # 'SplitContainer',
     'Switch',

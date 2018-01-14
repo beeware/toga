@@ -37,7 +37,6 @@ class ExampleTableApp(toga.App):
 
     def startup(self):
         self.main_window = toga.MainWindow(self.name)
-        self.main_window.app = self
 
         # Label to show which row is currently selected.
         self.label = toga.Label('Ready.')

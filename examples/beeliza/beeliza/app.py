@@ -42,7 +42,6 @@ class BeelizaApp(toga.App):
     def startup(self):
         # Set up main window
         self.main_window = toga.MainWindow(title=self.name)
-        self.main_window.app = self
 
         self.partner = Eliza()
 

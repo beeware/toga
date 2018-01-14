@@ -40,4 +40,5 @@ class Slider(Widget):
         )
 
     def set_on_slide(self, handler):
+        # No special handling required
         pass

@@ -79,6 +79,7 @@ class Tree(Widget):
         self.store.clear()
 
     def set_on_select(self, handler):
+        # No special handling required
         pass
 
     def scroll_to_node(self, node):
