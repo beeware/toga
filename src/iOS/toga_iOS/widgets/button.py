@@ -29,6 +29,7 @@ class Button(Widget):
         self.native.setTitle(self.interface.label, forState=UIControlStateNormal)
 
     def set_on_press(self, handler):
+        # No special handling required.
         pass
 
     def rehint(self):

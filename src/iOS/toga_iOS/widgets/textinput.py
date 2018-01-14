@@ -56,4 +56,5 @@ class TextInput(Widget):
         self.interface.intrinsic.height = fitting_size.height
 
     def set_on_change(self, handler):
+        # No special handling required
         pass

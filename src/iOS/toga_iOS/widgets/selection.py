@@ -51,6 +51,7 @@ class Selection(Widget):
         self.interface.intrinsic.height = fitting_size.height
 
     def remove_all_items(self):
+        # No special handling required
         pass
 
     def add_item(self, item):
@@ -58,10 +59,11 @@ class Selection(Widget):
             self.native.text = item
 
     def select_item(self, item):
-        pass
+        raise NotImplementedError()
 
     def get_selected_item(self):
         return self.interface.items[self.picker.selectedRowInComponent(0)]
 
     def set_on_select(self, handler):
+        # No special handling required
         pass

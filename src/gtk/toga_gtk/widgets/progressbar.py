@@ -22,4 +22,5 @@ class ProgressBar(Widget):
             self.interface._running = False
 
     def set_max(self, value):
+        # No special handling required
         pass

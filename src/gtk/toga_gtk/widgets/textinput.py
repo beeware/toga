@@ -18,10 +18,10 @@ class TextInput(Widget):
         self.native.set_placeholder_text(value)
 
     def set_alignment(self, value):
-        pass
+        raise NotImplementedError()
 
     def set_font(self, value):
-        pass
+        raise NotImplementedError()
 
     def get_value(self):
         return self.native.get_text()
@@ -38,4 +38,5 @@ class TextInput(Widget):
         self.interface.intrinsic.height = height[1]
 
     def set_on_change(self, handler):
+        # No special handling required
         pass

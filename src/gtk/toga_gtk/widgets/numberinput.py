@@ -26,14 +26,15 @@ class NumberInput(Widget):
         self.native.set_value(value)
 
     def set_alignment(self, value):
-        pass
+        raise NotImplementedError()
 
     def set_font(self, value):
-        pass
+        raise NotImplementedError()
 
     def rehint(self):
         self.interface.style.min_width = 120
         self.interface.style.height = 32
 
     def set_on_change(self, handler):
+        # No special handling required.
         pass

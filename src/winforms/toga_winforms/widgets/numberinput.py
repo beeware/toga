@@ -8,7 +8,7 @@ class NumberInput(Widget):
         self.native = WinForms.NumericUpDown()
 
     def set_readonly(self, value):
-        pass
+        raise NotImplementedError()
 
     def get_value(self):
         raise NotImplementedError()
@@ -18,14 +18,14 @@ class NumberInput(Widget):
             self.native.Value = ClrDecimal.Parse(value)
 
     def set_alignment(self, value):
-        pass
+        raise NotImplementedError()
 
     def set_font(self, value):
-        pass
+        raise NotImplementedError()
 
     def rehint(self):
         self.interface.intrinsic.width = 120
         self.interface.intrinsic.height = 32
 
     def set_on_change(self, handler):
-        pass
+        raise NotImplementedError()

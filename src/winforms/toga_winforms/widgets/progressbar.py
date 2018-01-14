@@ -11,11 +11,11 @@ class ProgressBar(Widget):
 
     def start(self):
         '''Not supported for WinForms implementation'''
-        pass
+        raise NotImplementedError()
 
     def stop(self):
         '''Not supported for WinForms implementation'''
-        pass
+        raise NotImplementedError()
 
     def set_max(self, value):
         self.native.Maximum = value
