@@ -34,7 +34,7 @@ setup(
     install_requires=[
         'django==1.10.6',
         'django-environ==0.4.1',
-        'toga-core>=%s' % version,
+        'toga-core==%s' % version,
     ],
     tests_require=[
         'toga-dummy==%s' % version

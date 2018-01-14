@@ -32,7 +32,7 @@ setup(
     packages=find_packages(exclude='tests'),
     install_requires=[
         'pythonnet',
-        'toga-core>=%s' % version,
+        'toga-core==%s' % version,
     ],
     tests_require=[
         'toga-dummy==%s' % version
