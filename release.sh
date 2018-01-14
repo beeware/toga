@@ -113,8 +113,8 @@ elif [ "$action" = "release" ]; then
     done
 
     git tag v$version
-    git push upstream master
-    git push --tags upstream master
+    git push upstream release:master
+    git push --tags upstream release:master
 
 elif [ "$action" = "bump" ]; then
     version=$1
