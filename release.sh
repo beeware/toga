@@ -143,4 +143,5 @@ elif [ "$action" == "dev" ]; then
     done
 
     git commit -m "Bumped version number for v$version.dev$dev development."
+    git push upstream release:master
 fi
