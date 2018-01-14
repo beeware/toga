@@ -1,122 +1,171 @@
+import sys
+
 from rubicon.objc import objc_method, SEL
 from travertino.size import at_least
 
 import toga
-from toga_cocoa.libs import NSTextAlignment, NSTextFieldSquareBezel, NSTextField, NSObject
+from toga_cocoa.libs import (
+    NSTextAlignment, NSTextFieldSquareBezel, NSTextField, NSStepper,
+    NSLayoutAttributeTop, NSLayoutAttributeBottom,
+    NSLayoutAttributeLeft, NSLayoutAttributeRight,
+    NSLayoutAttributeCenterY, NSLayoutRelationEqual, NSLayoutConstraint
+)
 
 from .base import Widget
+from .box import TogaView
 
 
-class TogaNumberFieldDelegate(NSObject):
+class TogaStepper(NSStepper):
     @objc_method
-    def controlTextDidChange_(self, notification) -> None:
+    def onChange_(self, stepper) -> None:
+        self.interface.value = stepper.integerValue
         if self.interface.on_change:
             self.interface.on_change(self.interface)
 
     @objc_method
-    def control_textShouldEndEditing_(self, text) -> int:
+    def controlTextDidChange_(self, notification) -> None:
         try:
-            float(text.stringValue)
-            return 1
-        except Exception as e:
-            return 0
-
-    @objc_method
-    def controlTextDidEndEditing_(self, notification) -> None:
-        if self.controller.text_update:
-            self.controller.text_update(self.controller)
+            self.interface.value = int(self._impl.input.stringValue)
+            if self.interface.on_change:
+                self.interface.on_change(self.interface)
+        except ValueError:
+            # If the string value isn't valid, reset the widget
+            # to the widget's stored value. This will update the
+            # display, removing any invalid values from view.
+            self._impl.set_value(self.interface.value)
 
 
 class NumberInput(Widget):
     def create(self):
-        self.native = NSTextField.new()
-        self.native.interface = self.interface
+        self.native = TogaView.alloc().init()
 
-        delegate = TogaNumberFieldDelegate.new()
-        delegate.interface = self.interface
-        delegate.controller = self.native
-        self.native.delegate = delegate
+        self.input = NSTextField.new()
+        self.input.interface = self.interface
+        self.input.bezeled = True
+        self.input.bezelStyle = NSTextFieldSquareBezel
+        self.input.translatesAutoresizingMaskIntoConstraints = False
 
-        self.native.bezeled = True
-        self.native.bezelStyle = NSTextFieldSquareBezel
+        self.stepper = TogaStepper.alloc().init()
+        self.stepper.interface = self.interface
+        self.stepper._impl = self
+        self.stepper.translatesAutoresizingMaskIntoConstraints = False
 
-        # Add the layout constraints
+        self.stepper.target = self.stepper
+        self.stepper.action = SEL('onChange:')
+
+        self.stepper.controller = self.input
+        self.input.delegate = self.stepper
+
+        # Add the input and stepper to the constraining box.
+        self.native.addSubview(self.input)
+        self.native.addSubview(self.stepper)
+
+        # Add constraints to lay out the input and stepper.
+        # Stepper is always top right corner.
+        self.native.addConstraint(
+            NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
+                self.native, NSLayoutAttributeTop,
+                NSLayoutRelationEqual,
+                self.stepper, NSLayoutAttributeTop,
+                1.0, 0
+            )
+        )
+        self.native.addConstraint(
+            NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
+                self.native, NSLayoutAttributeRight,
+                NSLayoutRelationEqual,
+                self.stepper, NSLayoutAttributeRight,
+                1.0, 0
+            )
+        )
+
+        # Stepper height matches container box height
+        self.native.addConstraint(
+            NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
+                self.native, NSLayoutAttributeBottom,
+                NSLayoutRelationEqual,
+                self.stepper, NSLayoutAttributeBottom,
+                1.0, 0
+            )
+        )
+
+        # Input is always left, centred vertically on the stepper
+        self.native.addConstraint(
+            NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
+                self.stepper, NSLayoutAttributeCenterY,
+                NSLayoutRelationEqual,
+                self.input, NSLayoutAttributeCenterY,
+                1.0, 0
+            )
+        )
+        self.native.addConstraint(
+            NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
+                self.native, NSLayoutAttributeLeft,
+                NSLayoutRelationEqual,
+                self.input, NSLayoutAttributeLeft,
+                1.0, 0
+            )
+        )
+
+        # Stepper and input meet in the middle with a small gap
+        self.native.addConstraint(
+            NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
+                self.stepper, NSLayoutAttributeLeft,
+                NSLayoutRelationEqual,
+                self.input, NSLayoutAttributeRight,
+                1.0, 2
+            )
+        )
+
+        # Add the layout constraints for the main box
         self.add_constraints()
 
     def set_readonly(self, value):
         # Even if it's not editable, it's still selectable.
-        self.native.editable = not value
-        self.native.selectable = True
+        self.input.editable = not value
+        self.input.selectable = True
 
     def set_placeholder(self, value):
-        self.native.cell.placeholderString = value
+        self.input.cell.placeholderString = value
+
+    def set_step(self, step):
+        self.stepper.increment = self.interface.step
+
+    def set_min_value(self, value):
+        if self.interface.min_value is None:
+            self.stepper.minValue = -sys.maxsize
+        else:
+            self.stepper.minValue = value
+
+    def set_max_value(self, value):
+        if self.interface.max_value is None:
+            self.stepper.maxValue = sys.maxsize
+        else:
+            self.stepper.maxValue = value
 
     def set_alignment(self, value):
-        self.native.alignment = NSTextAlignment(value)
+        self.input.alignment = NSTextAlignment(value)
 
     def set_font(self, value):
         if value:
-            self.native.font = value._impl.native
-
-    def get_value(self):
-        return self.native.stringValue
+            self.input.font = value._impl.native
 
     def set_value(self, value):
-        self.native.stringValue = value
+        if self.interface.value is None:
+            self.stepper.integerValue = 0
+            self.input.stringValue = ''
+        else:
+            self.stepper.integerValue = self.interface.value
+            self.input.stringValue = str(self.interface.value)
 
     def rehint(self):
         # Height of a text input is known and fixed.
-        # Width must be > 100
-        # print("REHINT TextInput", self, self._impl.fittingSize().width, self._impl.fittingSize().height)
+        stepper_size = self.input.fittingSize()
+        input_size = self.input.fittingSize()
+
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
-        self.interface.intrinsic.height = self.native.fittingSize().height
+        self.interface.intrinsic.height = max(input_size.height, stepper_size.height)
 
     def set_on_change(self, handler):
+        # No special handling required
         pass
-
-
-# class StepperInterface(InterfaceWidget):
-#     def __init__(self, id=None, style=None, factory=None,
-#                  min_value=0, max_value=100, step=1):
-#         self.min_value = min_value
-#         self.max_value = max_value
-#         self.step = step
-#         super().__init__(id=id, style=style, factory=factory)
-#         self._impl = Stepper(interface=self)
-
-#     @property
-#     def value(self):
-#         return self._impl.native.floatValue
-
-#     @value.setter
-#     def value(self, val):
-#         self._impl.native.floatValue = float(val)
-
-#     def on_change(self, handler):
-#         self.controller.stepper_update()
-
-
-# class TogaStepper(NSStepper):
-#     @objc_method
-#     def onChange_(self, obj) -> None:
-#         process_callback(self.interface.on_change(self.interface))
-
-
-# class Stepper(Widget):
-#     def create(self):
-#         self.native = TogaStepper.alloc().init()
-#         self.native.interface = self.interface
-
-#         self.native.minValue = self.interface.min_value
-#         self.native.maxValue = self.interface.max_value
-#         self.native.increment = self.interface.step
-#         self.native.target = self.native
-#         self.native.action = SEL('onChange:')
-
-#         self.add_constraints()
-
-#     def rehint(self):
-#         fitting_size = self.native.fittingSize()
-#         self.interface._intrinsic.width = fitting_size.width
-#         self.interface._intrinsic.height = fitting_size.height
-#         # self.interface.style.margin_top = -3

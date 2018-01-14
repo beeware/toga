@@ -10,7 +10,13 @@ class NumberInput(Widget):
     def set_readonly(self, value):
         raise NotImplementedError()
 
-    def get_value(self):
+    def set_step(self, step):
+        raise NotImplementedError()
+
+    def set_min_value(self, value):
+        raise NotImplementedError()
+
+    def set_max_value(self, value):
         raise NotImplementedError()
 
     def set_value(self, value):

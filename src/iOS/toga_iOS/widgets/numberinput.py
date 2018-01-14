@@ -57,8 +57,18 @@ class NumberInput(Widget):
     def set_placeholder(self, value):
         self.native.placeholder = value
 
-    def get_value(self):
-        return self.native.text
+    def set_step(self, step):
+        # No implementation required.
+        # Step functionality doesn't make sense on iOS
+        pass
+
+    def set_min_value(self, value):
+        # No special handling required
+        pass
+
+    def set_max_value(self, value):
+        # No special handling required
+        pass
 
     def set_value(self, value):
         self.native.text = value

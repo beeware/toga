@@ -62,7 +62,6 @@ class TextInput(Widget):
         else:
             self._placeholder = str(value)
         self._impl.set_placeholder(value)
-        self._impl.rehint()
 
     @property
     def value(self):
@@ -80,7 +79,6 @@ class TextInput(Widget):
         else:
             v = str(value)
         self._impl.set_value(v)
-        self._impl.rehint()
 
     def clear(self):
         """ Clears the text of the widget """
