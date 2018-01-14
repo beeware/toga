@@ -48,8 +48,8 @@ function release {
         twine upload "dist/toga-$2-py3-none-any.whl"
         twine upload "dist/toga-$2.tar.gz"
     elif [ "$1" = "demo" ]; then
-        twine upload "demo/dist/toga-$2-py3-none-any.whl"
-        twine upload "demo/dist/toga-$2.tar.gz"
+        twine upload "demo/dist/toga_demo-$2-py3-none-any.whl"
+        twine upload "demo/dist/toga-demo-$2.tar.gz"
     else
         twine upload "src/$1/dist/toga_$1-$2-py3-none-any.whl"
         twine upload "src/$1/dist/toga-$1-$2.tar.gz"
@@ -96,8 +96,8 @@ if [ "$action" = "" ]; then
     echo "  Release the build products and tag the repo."
     echo "    ./release.sh release 1.2.3"
     echo
-    echo "  Bump version number for next version development"
-    echo "    ./release.sh dev 1.2.4"
+    echo "  Bump version number for next development version (dev3)"
+    echo "    ./release.sh dev 1.2.4 3"
 
 elif [ "$action" = "build" ]; then
     for module in $MODULES; do
@@ -113,8 +113,8 @@ elif [ "$action" = "release" ]; then
     done
 
     git tag v$version
-    git push
-    git push --tags
+    git push upstream master
+    git push --tags upstream master
 
 elif [ "$action" = "bump" ]; then
     version=$1
@@ -127,15 +127,20 @@ elif [ "$action" = "bump" ]; then
     done
 
     git commit -m "Bumped version number for v$version release."
-elif [ "$action" = "dev" ]; then
+elif [ "$action" == "dev" ]; then
     version=$1
     shift
+    dev=$1
+    shift
+    if [ -z "$dev" ]; then
+        dev=1
+    fi
 
     git pull
 
     for module in $MODULES; do
-        bump $module $version.dev1
+        bump $module $version.dev$dev
     done
 
-    git commit -m "Bumped version number for v$version development."
+    git commit -m "Bumped version number for v$version.dev$dev development."
 fi
