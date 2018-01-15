@@ -28,10 +28,11 @@ class Button(Widget):
         self.native.Enabled = value
 
     def set_on_press(self, handler):
+        # No special handling required
         pass
 
     def set_background_color(self, value):
-        pass
+        raise NotImplementedError()
 
     def rehint(self):
         # self.native.Size = Size(0, 0)

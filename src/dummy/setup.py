@@ -31,7 +31,7 @@ setup(
     url='http://pybee.org/toga',
     packages=find_packages(),
     install_requires=[
-        'toga-core>=%s' % version,
+        'toga-core==%s' % version,
     ],
     license='New BSD',
     classifiers=[

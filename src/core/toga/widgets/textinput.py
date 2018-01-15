@@ -1,3 +1,5 @@
+from toga.handlers import wrapped_handler
+
 from .base import Widget
 
 
@@ -18,7 +20,7 @@ class TextInput(Widget):
 
     def __init__(
             self, id=None, style=None, factory=None,
-            initial=None, placeholder=None, readonly=False):
+            initial=None, placeholder=None, readonly=False, on_change=None):
         super().__init__(id=id, style=style, factory=factory)
 
         # Create a platform specific implementation of a TextInput
@@ -27,6 +29,7 @@ class TextInput(Widget):
         self.value = initial
         self.placeholder = placeholder
         self.readonly = readonly
+        self.on_change = on_change
 
     @property
     def readonly(self):
@@ -59,7 +62,6 @@ class TextInput(Widget):
         else:
             self._placeholder = str(value)
         self._impl.set_placeholder(value)
-        self._impl.rehint()
 
     @property
     def value(self):
@@ -76,9 +78,27 @@ class TextInput(Widget):
             v = ''
         else:
             v = str(value)
-        self._impl.set_value(value)
-        self._impl.rehint()
+        self._impl.set_value(v)
 
     def clear(self):
         """ Clears the text of the widget """
         self.value = ''
+
+    @property
+    def on_change(self):
+        """The handler to invoke when the value changes
+
+        Returns:
+            The function ``callable`` that is called on a content change.
+        """
+        return self._on_change
+
+    @on_change.setter
+    def on_change(self, handler):
+        """Set the handler to invoke when the value is changeed.
+
+        Args:
+            handler (:obj:`callable`): The handler to invoke when the value is changeed.
+        """
+        self._on_change = wrapped_handler(self, handler)
+        self._impl.set_on_change(self._on_change)

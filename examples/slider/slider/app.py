@@ -4,11 +4,9 @@ from toga.constants import COLUMN, ROW
 
 
 class SliderApp(toga.App):
-
     def startup(self):
         # Main window of the application with title and size
         self.main_window = toga.MainWindow(self.name, size=(700, 500))
-        self.main_window.app = self
 
         # set up common styls
         label_style = Pack(flex=1, padding_right=24)

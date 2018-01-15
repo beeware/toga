@@ -71,6 +71,7 @@ class App:
 
         self.default_icon = Icon('tiberius', system=True)
         self.icon = icon
+        self._main_window = None
 
         self._impl = self.factory.App(interface=self)
 
@@ -107,6 +108,20 @@ class App:
         self._icon = Icon.load(name, default=self.default_icon)
 
     @property
+    def main_window(self):
+        """The main Windows for the app.
+
+        Returns:
+            The main Window of the app.
+        """
+        return self._main_window
+
+    @main_window.setter
+    def main_window(self, window):
+        self._main_window = window
+        window.app = self
+
+    @property
     def documents(self):
         """ Return the list of documents associated with this app.
 
@@ -136,7 +151,6 @@ class App:
         """ Create and show the main window for the application
         """
         self.main_window = MainWindow(title=self.name, factory=self.factory)
-        self.main_window.app = self
 
         if self._startup_method:
             self.main_window.content = self._startup_method(self)

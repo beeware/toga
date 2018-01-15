@@ -5,7 +5,6 @@ from toga.style.pack import *
 class Graze(toga.App):
     def startup(self):
         self.main_window = toga.MainWindow(self.name)
-        self.main_window.app = self
 
         self.webview = toga.WebView(style=Pack(flex=1))
         self.url_input = toga.TextInput(

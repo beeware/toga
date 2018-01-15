@@ -43,18 +43,22 @@ class Widget:
             self.native.Location = Point(x, y)
 
     def set_alignment(self, alignment):
+        # By default, alignment can't be changed
         pass
 
     def set_hidden(self, hidden):
-        pass
+        raise NotImplementedError()
 
     def set_font(self, font):
+        # By default, font can't be changed
         pass
 
     def set_color(self, color):
+        # By default, color can't be changed
         pass
 
     def set_background_color(self, color):
+        # By default, background color can't be changed.
         pass
 
     ### INTERFACE
