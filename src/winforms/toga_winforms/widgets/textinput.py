@@ -21,7 +21,7 @@ class TextInput(Widget):
         return self.native.Text
 
     def set_value(self, value):
-        self.native.Text = value
+        self.native.Text = self.interface.value
 
     def set_alignment(self, value):
         raise NotImplementedError()

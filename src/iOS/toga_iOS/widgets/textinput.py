@@ -39,7 +39,7 @@ class TextInput(Widget):
         return self.native.text
 
     def set_value(self, value):
-        self.native.text = value
+        self.native.text = self.interface.value
 
     def set_alignment(self, value):
         if value:

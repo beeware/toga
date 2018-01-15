@@ -15,7 +15,7 @@ class TextInput(Widget):
         return self._get_value('value')
 
     def set_value(self, value):
-        self._set_value('value', value)
+        self._set_value('value', self.interface.value)
 
     def set_font(self, value):
         self._set_value('font', value)

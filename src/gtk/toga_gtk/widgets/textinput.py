@@ -27,7 +27,7 @@ class TextInput(Widget):
         return self.native.get_text()
 
     def set_value(self, value):
-        self.native.set_text(value)
+        self.native.set_text(self.interface.value)
 
     def rehint(self):
         # print("REHINT", self, self._impl.get_preferred_width(), self._impl.get_preferred_height(), getattr(self, '_fixed_height', False), getattr(self, '_fixed_width', False))
