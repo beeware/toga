@@ -14,6 +14,9 @@ core_graphics = cdll.LoadLibrary(util.find_library('CoreGraphics'))
 
 ######################################################################
 # CGContext.h
+CGContextRef = c_void_p
+register_preferred_encoding(b'^{__CGContext=}', CGContextRef)
+
 CGPathDrawingMode = c_int32
 
 kCGPathFill = 0
@@ -23,39 +26,39 @@ kCGPathFillStroke = 3
 kCGPathEOFillStroke = 4
 
 core_graphics.CGContextAddArc.restype = c_void_p
-core_graphics.CGContextAddArc.argtypes = [c_void_p, CGFloat, CGFloat, CGFloat, CGFloat, CGFloat, c_int]
+core_graphics.CGContextAddArc.argtypes = [CGContextRef, CGFloat, CGFloat, CGFloat, CGFloat, CGFloat, c_int]
 core_graphics.CGContextAddCurveToPoint.restype = c_void_p
-core_graphics.CGContextAddCurveToPoint.argtypes = [c_void_p, CGFloat, CGFloat, CGFloat, CGFloat, CGFloat, CGFloat]
+core_graphics.CGContextAddCurveToPoint.argtypes = [CGContextRef, CGFloat, CGFloat, CGFloat, CGFloat, CGFloat, CGFloat]
 core_graphics.CGContextAddLineToPoint.restype = c_void_p
-core_graphics.CGContextAddLineToPoint.argtypes = [c_void_p, CGFloat, CGFloat]
+core_graphics.CGContextAddLineToPoint.argtypes = [CGContextRef, CGFloat, CGFloat]
 core_graphics.CGContextAddQuadCurveToPoint.restype = c_void_p
-core_graphics.CGContextAddQuadCurveToPoint.argtypes = [c_void_p, CGFloat, CGFloat, CGFloat, CGFloat]
+core_graphics.CGContextAddQuadCurveToPoint.argtypes = [CGContextRef, CGFloat, CGFloat, CGFloat, CGFloat]
 core_graphics.CGContextAddRect.restype = c_void_p
-core_graphics.CGContextAddRect.argtypes = [c_void_p, CGRect]
+core_graphics.CGContextAddRect.argtypes = [CGContextRef, CGRect]
 core_graphics.CGContextBeginPath.restype = c_void_p
 core_graphics.CGContextBeginPath.argtypes = [c_void_p]
 core_graphics.CGContextClosePath.restype = c_void_p
 core_graphics.CGContextClosePath.argtypes = [c_void_p]
 core_graphics.CGContextDrawPath.restype = c_void_p
-core_graphics.CGContextDrawPath.argtypes = [c_void_p, CGPathDrawingMode]
+core_graphics.CGContextDrawPath.argtypes = [CGContextRef, CGPathDrawingMode]
 core_graphics.CGContextMoveToPoint.restype = c_void_p
-core_graphics.CGContextMoveToPoint.argtypes = [c_void_p, CGFloat, CGFloat]
+core_graphics.CGContextMoveToPoint.argtypes = [CGContextRef, CGFloat, CGFloat]
 core_graphics.CGContextRestoreGState.restype = c_void_p
 core_graphics.CGContextRestoreGState.argtypes = [c_void_p]
 core_graphics.CGContextRotateCTM.restype = c_void_p
-core_graphics.CGContextRotateCTM.argtypes = [c_void_p, CGFloat]
+core_graphics.CGContextRotateCTM.argtypes = [CGContextRef, CGFloat]
 core_graphics.CGContextSaveGState.restype = c_void_p
 core_graphics.CGContextSaveGState.argtypes = [c_void_p]
 core_graphics.CGContextScaleCTM.restype = c_void_p
-core_graphics.CGContextScaleCTM.argtypes = [c_void_p, CGFloat, CGFloat]
+core_graphics.CGContextScaleCTM.argtypes = [CGContextRef, CGFloat, CGFloat]
 core_graphics.CGContextSetLineWidth.restype = c_void_p
-core_graphics.CGContextSetLineWidth.argtypes = [c_void_p, CGFloat]
+core_graphics.CGContextSetLineWidth.argtypes = [CGContextRef, CGFloat]
 core_graphics.CGContextSetRGBFillColor.restype = c_void_p
-core_graphics.CGContextSetRGBFillColor.argtypes = [c_void_p, CGFloat, CGFloat, CGFloat, CGFloat]
+core_graphics.CGContextSetRGBFillColor.argtypes = [CGContextRef, CGFloat, CGFloat, CGFloat, CGFloat]
 core_graphics.CGContextSetRGBStrokeColor.restype = c_void_p
-core_graphics.CGContextSetRGBStrokeColor.argtypes = [c_void_p, CGFloat, CGFloat, CGFloat, CGFloat]
+core_graphics.CGContextSetRGBStrokeColor.argtypes = [CGContextRef, CGFloat, CGFloat, CGFloat, CGFloat]
 core_graphics.CGContextTranslateCTM.restype = c_void_p
-core_graphics.CGContextTranslateCTM.argtypes = [c_void_p, CGFloat, CGFloat]
+core_graphics.CGContextTranslateCTM.argtypes = [CGContextRef, CGFloat, CGFloat]
 
 ######################################################################
 # CGEvent.h

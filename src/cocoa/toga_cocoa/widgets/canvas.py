@@ -12,15 +12,18 @@ from .base import Widget
 class TogaCanvas(NSView):
     @objc_method
     def drawRect_(self, rect: NSRect) -> None:
+        context = NSGraphicsContext.currentContext.graphicsPort()
+
         if self.interface.on_draw:
-            self.interface.on_draw(self.interface, NSGraphicsContext.currentContext)
+            self.interface.on_draw(self.interface, context)
 
 
 class Canvas(Widget):
     def create(self):
         self.native = TogaCanvas.alloc().init()
-        self.native.context = NSGraphicsContext.currentContext
         self.native.interface = self.interface
+
+        self.context = NSGraphicsContext.currentContext
 
         self.native.target = self.native
         self.native.action = SEL('onDraw:')
@@ -32,10 +35,10 @@ class Canvas(Widget):
         pass
 
     def set_context(self, context):
-        core_graphics = context
+        self.context = context
 
     def line_width(self, width=1.0):
-        core_graphics.CGContextSetLineWidth(self.native.context, width)
+        core_graphics.CGContextSetLineWidth(self.context, width)
 
     def fill_style(self, color=None):
         if color is not None:
@@ -46,7 +49,7 @@ class Canvas(Widget):
                 g = float(num.group(2)) / 255
                 b = float(num.group(3)) / 255
                 a = float(num.group(4))
-                core_graphics.CGContextSetRGBFillColor(self.native.context, r, g, b, a)
+                core_graphics.CGContextSetRGBFillColor(self.context, r, g, b, a)
             else:
                 pass
                 # Support future colosseum versions
@@ -55,7 +58,7 @@ class Canvas(Widget):
                 #         exec('self.native.set_source_' + str(rgb))
         else:
             # set color to black
-            core_graphics.CGContextSetRGBFillColor(self.native.context, 0, 0, 0, 1)
+            core_graphics.CGContextSetRGBFillColor(self.context, 0, 0, 0, 1)
 
     def stroke_style(self, color=None):
         if color is not None:
@@ -66,7 +69,7 @@ class Canvas(Widget):
                 g = float(num.group(2)) / 255
                 b = float(num.group(3)) / 255
                 a = float(num.group(4))
-                core_graphics.CGContextSetRGBStrokeColor(self.native.context, r, g, b, a)
+                core_graphics.CGContextSetRGBStrokeColor(self.context, r, g, b, a)
             else:
                 pass
                 # Support future colosseum versions
@@ -75,35 +78,35 @@ class Canvas(Widget):
                 #         exec('self.native.set_source_' + str(rgb))
         else:
             # set color to black
-            core_graphics.CGContextSetRGBStrokeColor(self.native.context, 0, 0, 0, 1)
+            core_graphics.CGContextSetRGBStrokeColor(self.context, 0, 0, 0, 1)
 
     def new_path(self):
-        core_graphics.CGContextBeginPath(self.native.context)
+        core_graphics.CGContextBeginPath(self.context)
 
     def close_path(self):
-        core_graphics.CGContextClosePath(self.native.context)
+        core_graphics.CGContextClosePath(self.context)
 
     def move_to(self, x, y):
-        core_graphics.CGContextMoveToPoint(self.native.context, x, y)
+        core_graphics.CGContextMoveToPoint(self.context, x, y)
 
     def line_to(self, x, y):
-        core_graphics.CGContextAddLineToPoint(self.native.context, x, y)
+        core_graphics.CGContextAddLineToPoint(self.context, x, y)
 
     def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y):
-        core_graphics.CGContextAddCurveToPoint(self.native.context, cp1x, cp1y, cp2x, cp2y, x, y)
+        core_graphics.CGContextAddCurveToPoint(self.context, cp1x, cp1y, cp2x, cp2y, x, y)
 
     def quadratic_curve_to(self, cpx, cpy, x, y):
-        core_graphics.CGContextAddQuadCurveToPoint(self.native.context, cpx, cpy, cpx, cpy, x, y)
+        core_graphics.CGContextAddQuadCurveToPoint(self.context, cpx, cpy, cpx, cpy, x, y)
 
     def arc(self, x, y, radius, startangle, endangle, anticlockwise):
         if anticlockwise:
             clockwise = 0
         else:
             clockwise = 1
-        core_graphics.CGContextAddArc(self.native.context, x, y, radius, startangle, endangle, clockwise)
+        core_graphics.CGContextAddArc(self.context, x, y, radius, startangle, endangle, clockwise)
 
     def ellipse(self, x, y, radiusx, radiusy, rotation, startangle, endangle, anticlockwise):
-        core_graphics.CGContextSaveGState(self.native.context)
+        core_graphics.CGContextSaveGState(self.context)
         self.translate(x, y)
         if radiusx >= radiusy:
             self.scale(1, radiusy / radiusx)
@@ -113,11 +116,11 @@ class Canvas(Widget):
             self.arc(0, 0, radiusy, startangle, endangle, anticlockwise)
         self.rotate(rotation)
         self.reset_transform()
-        core_graphics.CGContextRestoreGState(self.native.context)
+        core_graphics.CGContextRestoreGState(self.context)
 
     def rect(self, x, y, width, height):
         rectangle = CGRectMake(x, y, width, height)
-        core_graphics.CGContextAddRect(self.native.context, rectangle)
+        core_graphics.CGContextAddRect(self.context, rectangle)
 
     # Drawing Paths
 
@@ -126,22 +129,22 @@ class Canvas(Widget):
             mode = CGPathDrawingMode(kCGPathEOFill)
         else:
             mode = CGPathDrawingMode(kCGPathFill)
-        core_graphics.CGContextDrawPath(self.native.context, mode)
+        core_graphics.CGContextDrawPath(self.context, mode)
 
     def stroke(self):
         mode = CGPathDrawingMode(kCGPathStroke)
-        core_graphics.CGContextDrawPath(self.native.context, mode)
+        core_graphics.CGContextDrawPath(self.context, mode)
 
     # Transformations
 
     def rotate(self, radians):
-        core_graphics.CGContextRotateCTM(self.native.context, radians)
+        core_graphics.CGContextRotateCTM(self.context, radians)
 
     def scale(self, sx, sy):
-        core_graphics.CGContextScaleCTM(self.native.context, sx, sy)
+        core_graphics.CGContextScaleCTM(self.context, sx, sy)
 
     def translate(self, tx, ty):
-        core_graphics.CGContextTranslateCTM(self.native.context, tx, ty)
+        core_graphics.CGContextTranslateCTM(self.context, tx, ty)
 
     def reset_transform(self):
         pass
