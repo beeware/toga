@@ -91,6 +91,8 @@ Toga is part of the `BeeWare suite`_. You can talk to the community through:
 Contributing
 ~~~~~~~~~~~~
 
+If you'd like to contribute to Toga development, our [guide for first time contributors](https://toga.readthedocs.io/en/latest/how-to/contribute.html) will help you get started.
+
 If you experience problems with Toga, `log them on GitHub`_. If you
 want to contribute code, please `fork the code`_ and `submit a pull request`_.
 
