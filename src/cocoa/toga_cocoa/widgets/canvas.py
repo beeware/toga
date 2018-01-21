@@ -102,7 +102,7 @@ class Canvas(Widget):
         core_graphics.CGContextAddCurveToPoint(self.context, cp1x, cp1y, cp2x, cp2y, x, y)
 
     def quadratic_curve_to(self, cpx, cpy, x, y):
-        core_graphics.CGContextAddQuadCurveToPoint(self.context, cpx, cpy, cpx, cpy, x, y)
+        core_graphics.CGContextAddQuadCurveToPoint(self.context, cpx, cpy, x, y)
 
     def arc(self, x, y, radius, startangle, endangle, anticlockwise):
         # Cocoa Box Widget is using a flipped coordinate system, so clockwise is actually anticlockwise
