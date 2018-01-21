@@ -14,6 +14,12 @@ class TogaCanvas(NSView):
     def drawRect_(self, rect: NSRect) -> None:
         context = NSGraphicsContext.currentContext.graphicsPort()
 
+        # Flip the coordinate system back to normal (unflipped)
+        xform = NSAffineTransform.transform()
+        xform.translateXBy(0.0, yBy=rect.size.height)
+        xform.scaleXBy(1.0, yBy=-1.0)
+        xform.concat()
+
         if self.interface.on_draw:
             self.interface.on_draw(self.interface, context)
 
@@ -99,10 +105,11 @@ class Canvas(Widget):
         core_graphics.CGContextAddQuadCurveToPoint(self.context, cpx, cpy, cpx, cpy, x, y)
 
     def arc(self, x, y, radius, startangle, endangle, anticlockwise):
+        # Cocoa Box Widget is using a flipped coordinate system, so clockwise is actually anticlockwise
         if anticlockwise:
-            clockwise = 0
-        else:
             clockwise = 1
+        else:
+            clockwise = 0
         core_graphics.CGContextAddArc(self.context, x, y, radius, startangle, endangle, clockwise)
 
     def ellipse(self, x, y, radiusx, radiusy, rotation, startangle, endangle, anticlockwise):
