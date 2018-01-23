@@ -27,7 +27,14 @@ from .widgets.tree import Tree
 from .widgets.webview import WebView
 from .window import Window
 
+
+def not_implemented(feature):
+    print('[GTK backend] Not implemented: {}'.format(feature))
+
+
 __all__ = [
+    'not_implemented',
+
     'App', 'MainWindow',
     'native_color',
     'Command',

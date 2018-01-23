@@ -30,7 +30,7 @@ class App:
         print("STUB: If you want to handle opening documents, implement App.open_document(fileURL)")
 
     def create_menus(self):
-        raise NotImplementedError()
+        self.platform.not_implemented('App.create_menus()')
 
     def run_app(self):
         self.create()
@@ -43,4 +43,4 @@ class App:
         thread.Join()
 
     def exit(self):
-        raise NotImplementedError()
+        self.platform.not_implemented('App.exit()')

@@ -14,25 +14,21 @@ def info(window, title, message):
 
 
 def question(window, title, message):
-    # TODO
-    raise NotImplementedError()
+    window.platform.not_implemented('dialogs.question()')
 
 
 def confirm(window, title, message):
-    # TODO
-    raise NotImplementedError()
+    window.platform.not_implemented('dialogs.confirm()')
 
 
 def error(window, title, message):
-    # TODO
-    raise NotImplementedError()
+    window.platform.not_implemented('dialogs.error()')
 
 
 def stack_trace(window, title, message, content, retry=False):
-    # TODO
-    raise NotImplementedError()
+    window.platform.not_implemented('dialogs.stack_trace()')
 
 
 def save_file(window, title, suggested_filename, file_types):
-    # TODO
-    raise NotImplementedError()
+    window.platform.not_implemented('dialogs.save_file()')
+

@@ -40,7 +40,7 @@ class Widget:
         pass
 
     def set_hidden(self, hidden):
-        raise NotImplementedError()
+        self.platform.not_implemented('Widget.set_hidden()')
 
     def set_font(self, font):
         # By default, font can't be changed

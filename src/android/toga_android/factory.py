@@ -26,7 +26,14 @@ from .widgets.textinput import TextInput
 # from .widgets.webview import *
 from .window import Window
 
+
+def not_implemented(feature):
+    print('[GTK backend] Not implemented: {}'.format(feature))
+
+
 __all__ = [
+    'not_implemented',
+
     'App', 'MainWindow',
     # 'color',
     # 'Command',

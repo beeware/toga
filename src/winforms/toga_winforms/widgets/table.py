@@ -33,19 +33,19 @@ class Table(Widget):
         self.native.Items.Insert(index, item._impl)
 
     def change(self, item):
-        raise NotImplementedError()
+        self.platform.not_implemented('Table.change()')
 
     def remove(self, item):
-        raise NotImplementedError()
+        self.platform.not_implemented('Table.remove()')
 
     def clear(self):
         self.native.Clear()
 
     def set_on_select(self, handler):
-        raise NotImplementedError()
+        self.platform.not_implemented('Table.set_on_select()')
 
     def scroll_to_row(self, row):
-        raise NotImplementedError()
+        self.platform.not_implemented('Table.scroll_to_row()')
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)

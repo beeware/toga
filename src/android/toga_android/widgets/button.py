@@ -30,10 +30,10 @@ class Button(Widget):
         self.native.setText(self.interface.label)
 
     def set_enabled(self, value):
-        raise NotImplementedError()
+        self.platform.not_implemented('Button.set_enabled()')
 
     def set_background_color(self, value):
-        raise NotImplementedError()
+        self.platform.not_implemented('Button.set_background_color()')
 
     def set_on_press(self, handler):
         # No special handling required

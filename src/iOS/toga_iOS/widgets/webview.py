@@ -43,7 +43,7 @@ class WebView(Widget):
 
     def set_user_agent(self, value):
         # self.native.customUserAgent = value if value else "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/603.3.8 (KHTML, like Gecko) Version/10.1.2 Safari/603.3.8"
-        raise NotImplementedError()
+        self.platform.not_implemented('WebView.set_user_agent()')
 
     def evaluate(self, javascript):
         return self.native.stringByEvaluatingJavaScriptFromString_(javascript)

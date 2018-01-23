@@ -59,7 +59,7 @@ class Selection(Widget):
             self.native.text = item
 
     def select_item(self, item):
-        raise NotImplementedError()
+        self.platform.not_implemented('Selection.select_item()')
 
     def get_selected_item(self):
         return self.interface.items[self.picker.selectedRowInComponent(0)]

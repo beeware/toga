@@ -15,7 +15,7 @@ class Label(Widget):
         self._impl.innerText = self.interface._text
 
     def set_alignment(self, value):
-        raise NotImplementedError()
+        self.platform.not_implemented('Label.set_alignment()')
 
     def rehint(self):
         pass
