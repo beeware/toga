@@ -18,6 +18,7 @@ class Slider(Widget):
             self.interface.on_slide(widget)
 
     def set_on_slide(self, handler):
+        # No special handling required
         pass
 
     def set_value(self, value):

@@ -24,6 +24,8 @@ to run::
     $ source venv/bin/activate
     (venv) $ cd toga
 
+If you're running Windows, download a copy of the source code, and browse to that directory.
+
 Then, install Toga into your development environment. The Toga source repository
 contains multiple packages. Since we're installing from source, we can't rely
 on pip to install the packages in dependency order. Therefore, we have to manually
@@ -40,6 +42,10 @@ if we're on a Mac, you'd run::
 If you were on a Linux box, you'd run::
 
     (venv) $ pip install -e src/gtk
+
+If you were on a Windows machine, you'd run::
+
+    (venv) C:\...>\venv\Scripts\activate
 
 And so on.
 
@@ -79,6 +85,11 @@ different way so that we can gather some data about the test run::
     (venv) $ pip install coverage
     (venv) $ coverage run setup.py test
 
+For Windows::
+
+    (venv) C:\...>pip install coverage
+    (venv) C:\...>coverage run setup.py test
+
 Then, generate a report for the coverage data you just gathered::
 
     (venv) $ coverage report -m --include=toga/*
@@ -90,6 +101,10 @@ Then, generate a report for the coverage data you just gathered::
     toga/window.py                          79     18    77%   58, 75, 87, 92, 104, 141, 155, 164, 168, 172-173, 176, 192, 204, 216, 228, 243, 257
     ------------------------------------------------------------------
     TOTAL                                 1034    258    75%
+
+For Windows::
+
+    (venv) C:\...>coverage report -m --include=toga/*
 
 What does this all mean? Well, the "Cover" column tells you what proportion of
 lines in a given file were executed during the test run. In this run, every
@@ -123,6 +138,10 @@ Once you've written a test, re-run the test suite to generate fresh coverage dat
     toga/window.py                          79     17    78%   75, 87, 92, 104, 141, 155, 164, 168, 172-173, 176, 192, 204, 216, 228, 243, 257
     ------------------------------------------------------------------
     TOTAL                                 1034    257    75%
+
+Or on Windows::
+
+    (venv) C:\...>coverage run setup.py test
 
 That is, one more test has been executed, resulting in one less missing line
 in the coverage results.

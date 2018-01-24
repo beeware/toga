@@ -36,5 +36,14 @@ class TextInput(TextInputInterface, WidgetMixin):
     def set_value(self, value):
         raise NotImplementedError()
 
+    def set_alignment(self, value):
+        pass
+
+    def set_font(self, value):
+        pass
+
     def rehint(self):
+        pass
+
+    def set_on_change(self, handler):
         pass

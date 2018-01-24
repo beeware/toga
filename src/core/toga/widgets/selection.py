@@ -14,6 +14,7 @@ class Selection(Widget):
         factory (:obj:`module`): A python module that is capable to return a
             implementation of this class with the same name. (optional & normally not needed)
     """
+    MIN_WIDTH = 100
 
     def __init__(self, id=None, style=None, items=None, on_select=None, enabled=True, factory=None):
         super().__init__(id=id, style=style, factory=factory)

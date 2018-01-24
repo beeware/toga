@@ -42,7 +42,7 @@ class Table(Widget):
         self.native.Clear()
 
     def set_on_select(self, handler):
-        pass
+        raise NotImplementedError()
 
     def scroll_to_row(self, row):
         raise NotImplementedError()
