@@ -27,4 +27,4 @@ class OptionContainer(Widget):
         self.native.Controls.Add(item)
 
     def set_on_select(self, handler):
-        pass
+        raise NotImplementedError()

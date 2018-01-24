@@ -44,6 +44,7 @@ class Switch(Widget):
         return self.native_switch.isOn()
 
     def set_on_toggle(self, handler):
+        # No special handling required
         pass
 
     @property

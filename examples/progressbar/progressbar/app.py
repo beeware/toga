@@ -7,7 +7,6 @@ class ProgressBarApp(toga.App):
     def startup(self):
         # Main window of the application with title and size
         self.main_window = toga.MainWindow(self.name, size=(400, 400))
-        self.main_window.app = self
 
         # the user may change the value with +/- buttons
         self.progress2 = toga.ProgressBar(value=0)
@@ -48,7 +47,7 @@ class ProgressBarApp(toga.App):
 
                 toga.Box(style=box_style, children=[
                     toga.Switch("Toggle running mode")
-                    self.progress3    
+                    self.progress3
                 ])
             ],
             style=CSS(padding=24)

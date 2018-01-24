@@ -107,9 +107,11 @@ class DetailedList(Widget):
         self.native.reloadData()
 
     def set_on_select(self, handler):
+        # No special handling required
         pass
 
     def set_on_delete(self, handler):
+        # No special handling required
         pass
 
     def scroll_to_row(self, row):
