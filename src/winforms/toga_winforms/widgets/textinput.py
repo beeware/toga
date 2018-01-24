@@ -15,7 +15,7 @@ class TextInput(Widget):
 
     def set_placeholder(self, value):
         # self.native.cell.placeholderString = self._placeholder
-        self.platform.not_implemented('TextInput.set_placeholder()')
+        self.interface.factory.not_implemented('TextInput.set_placeholder()')
 
     def get_value(self):
         return self.native.Text
@@ -24,10 +24,10 @@ class TextInput(Widget):
         self.native.Text = value
 
     def set_alignment(self, value):
-        self.platform.not_implemented('TextInput.set_alignment()')
+        self.interface.factory.not_implemented('TextInput.set_alignment()')
 
     def set_font(self, value):
-        self.platform.not_implemented('TextInput.set_font()')
+        self.interface.factory.not_implemented('TextInput.set_font()')
 
     def rehint(self):
         # Height of a text input is known and fixed.

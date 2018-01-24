@@ -20,22 +20,22 @@ class NumberInput(Widget):
         self.native.editable = not value
 
     def set_step(self, step):
-        self.platform.not_implemented('NumberInput.set_step()')
+        self.interface.factory.not_implemented('NumberInput.set_step()')
 
     def set_min_value(self, value):
-        self.platform.not_implemented('NumberInput.set_min_value()')
+        self.interface.factory.not_implemented('NumberInput.set_min_value()')
 
     def set_max_value(self, value):
-        self.platform.not_implemented('NumberInput.set_max_value()')
+        self.interface.factory.not_implemented('NumberInput.set_max_value()')
 
     def set_value(self, value):
         self.native.set_value(value)
 
     def set_alignment(self, value):
-        self.platform.not_implemented('NumberInput.set_alignment()')
+        self.interface.factory.not_implemented('NumberInput.set_alignment()')
 
     def set_font(self, value):
-        self.platform.not_implemented('NumberInput.set_font()')
+        self.interface.factory.not_implemented('NumberInput.set_font()')
 
     def rehint(self):
         self.interface.style.min_width = self.interface.MIN_WIDTH

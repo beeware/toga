@@ -32,7 +32,7 @@ class Button(Widget):
         pass
 
     def set_background_color(self, value):
-        self.platform.not_implemented('Button.set_background_color()')
+        self.interface.factory.not_implemented('Button.set_background_color()')
 
     def rehint(self):
         # self.native.Size = Size(0, 0)

@@ -33,7 +33,7 @@ class Widget:
         self.rehint()
 
     def set_enabled(self, value):
-        self.platform.not_implemented('Widget.set_enabled()')
+        self.interface.factory.not_implemented('Widget.set_enabled()')
 
     ### APPLICATOR
 
@@ -47,7 +47,7 @@ class Widget:
         pass
 
     def set_hidden(self, hidden):
-        self.platform.not_implemented('Widget.set_hidden()')
+        self.interface.factory.not_implemented('Widget.set_hidden()')
 
     def set_font(self, font):
         # By default, font can't be changed

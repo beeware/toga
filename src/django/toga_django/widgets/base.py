@@ -80,4 +80,4 @@ class Widget:
         pass
 
     def set_font(self, font):
-        self.platform.not_implemented('Widget.set_font()')
+        self.interface.factory.not_implemented('Widget.set_font()')
