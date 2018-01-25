@@ -28,7 +28,7 @@ from .window import Window
 
 
 def not_implemented(feature):
-    print('[Winforms backend] Not implemented: {}'.format(feature))
+    print('[Winforms] Not implemented: {}'.format(feature))
 
 
 __all__ = [

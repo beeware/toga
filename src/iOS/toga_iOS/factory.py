@@ -29,7 +29,7 @@ from .window import Window
 
 
 def not_implemented(feature):
-    print('[iOS backend] Not implemented: {}'.format(feature))
+    print('[iOS] Not implemented: {}'.format(feature))
 
 
 __all__ = [

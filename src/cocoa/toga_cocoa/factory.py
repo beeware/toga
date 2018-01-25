@@ -29,7 +29,7 @@ from .window import Window
 
 
 def not_implemented(feature):
-    print('[GTK backend] Not implemented: {}'.format(feature))
+    print('[Cocoa] Not implemented: {}'.format(feature))
 
 
 __all__ = [
