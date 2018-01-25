@@ -36,10 +36,10 @@ class App(AppInterface):
         pass
 
     def open_document(self, fileURL):
-        raise NotImplementedError()
+        self.interface.factory.not_implemented('App.open_document()')
 
     def create_menus(self):
-        raise NotImplementedError()
+        self.interface.factory.not_implemented('App.create_menus()')
 
     # ====
 

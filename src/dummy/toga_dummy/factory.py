@@ -28,7 +28,15 @@ from .widgets.tree import *
 from .widgets.webview import *
 from .window import Window
 
+
+
+def not_implemented(feature):
+    raise NotImplementedError()
+
+
 __all__ = [
+    'not_implemented',
+
     'App', 'MainWindow',
     'native_color',
     'Command',

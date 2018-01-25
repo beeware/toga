@@ -42,7 +42,7 @@ def error(window, title, message):
 
 
 def stack_trace(window, title, message, content, retry=False):
-    raise NotImplementedError()
+    window.platform.not_implemented('dialogs.stack_trace()')
 
 
 def save_file(window, title, suggested_filename, file_types):
