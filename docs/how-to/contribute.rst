@@ -84,7 +84,7 @@ Now that you have the source code, you can install Toga into your development
 environment. The Toga source repository contains multiple packages. Since
 we're installing from source, we can't rely on pip to install the packages in
 dependency order. Therefore, we have to manually install each package in a
-specific order. We start with the core packages::
+specific order. We start with the core packages:
 
 .. tabs::
 
@@ -263,7 +263,7 @@ Your task: create a test that improves coverage - even by one more line.
 
 Once you've written a test, re-run the test suite to generate fresh coverage
 data. Let's say we added a test for line 58 of ``toga/window.py`` - we'd
-expect to see something like::
+expect to see something like:
 
 .. tabs::
 
