@@ -27,16 +27,12 @@ start coding. To set up a virtual environment, run:
       $ python3 -m venv venv
       $ source venv/bin/activate
 
-    Your prompt should now have a `(venv)` prefix in front of it.
-
   .. group-tab:: Linux
 
     .. code-block:: bash
 
       $ python3 -m venv venv
       $ source venv/bin/activate
-
-    Your prompt should now have a `(venv)` prefix in front of it.
 
   .. group-tab:: Windows
 
@@ -45,7 +41,7 @@ start coding. To set up a virtual environment, run:
       C:\...>python3 -m venv venv
       C:\...>venv/Scripts/activate
 
-    Your prompt should now have a `(venv)` prefix in front of it.
+Your prompt should now have a ``(venv)`` prefix in front of it.
 
 Next, go to `the Toga page on Github <https://github.com/pybee/toga>`__, and
 fork the repository into your own account, and then clone a copy of that
@@ -79,6 +75,8 @@ to clone using the command line:
     .. code-block:: doscon
 
       (venv) C:\...>git clone git@github.com:<your username>/toga.git
+
+    (substituting your Github username)
 
 Now that you have the source code, you can install Toga into your development
 environment. The Toga source repository contains multiple packages. Since
@@ -362,7 +360,7 @@ One error you might see...
 
 When you're running these tests - especially when you submit your PR, and the
 tests run on our continous integration (CI) server - it's possible you might get
-and error that reads:
+and error that reads::
 
     ModuleNotFoundError: No module named 'toga_gtk'.
 
