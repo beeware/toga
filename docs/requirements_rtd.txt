@@ -1,2 +1,2 @@
--e requirements.txt
+-r requirements.txt
 git+https://github.com/pybee/toga-gtk
