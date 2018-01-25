@@ -20,7 +20,7 @@ start coding. To set up a virtual environment, run:
 
 .. tabs::
 
-  .. tab:: macOS
+  .. group-tab:: macOS
 
     .. code-block:: bash
 
@@ -29,7 +29,7 @@ start coding. To set up a virtual environment, run:
 
     Your prompt should now have a `(venv)` prefix in front of it.
 
-  .. tab:: Linux
+  .. group-tab:: Linux
 
     .. code-block:: bash
 
@@ -38,7 +38,7 @@ start coding. To set up a virtual environment, run:
 
     Your prompt should now have a `(venv)` prefix in front of it.
 
-  .. tab:: Windows
+  .. group-tab:: Windows
 
     .. code-block:: doscon
 
@@ -56,7 +56,7 @@ to clone using the command line:
 
 .. tabs::
 
-  .. tab:: macOS
+  .. group-tab:: macOS
 
     Fork the Toga repository, and then::
 
@@ -64,7 +64,7 @@ to clone using the command line:
 
     (substituting your Github username)
 
-  .. tab:: Linux
+  .. group-tab:: Linux
 
     Fork the Toga repository, and then::
 
@@ -72,7 +72,7 @@ to clone using the command line:
 
     (substituting your Github username)
 
-  .. tab:: Windows
+  .. group-tab:: Windows
 
     Fork the Toga repository, and then:
 
@@ -88,7 +88,7 @@ specific order. We start with the core packages:
 
 .. tabs::
 
-  .. tab:: macOS
+  .. group-tab:: macOS
 
     .. code-block:: bash
 
@@ -96,7 +96,7 @@ specific order. We start with the core packages:
       (venv) $ pip install -e src/core
       (venv) $ pip install -e src/dummy
 
-  .. tab:: Linux
+  .. group-tab:: Linux
 
     .. code-block:: bash
 
@@ -104,7 +104,7 @@ specific order. We start with the core packages:
       (venv) $ pip install -e src/core
       (venv) $ pip install -e src/dummy
 
-  .. tab:: Windows
+  .. group-tab:: Windows
 
     .. code-block:: doscon
 
@@ -116,19 +116,19 @@ Then, we can install the code for the specific platform we want to use:
 
 .. tabs::
 
-  .. tab:: macOS
+  .. group-tab:: macOS
 
     .. code-block:: bash
 
       (venv) $ pip install -e src/cocoa
 
-  .. tab:: Linux
+  .. group-tab:: Linux
 
     .. code-block:: bash
 
       (venv) $ pip install -e src/gtk
 
-  .. tab:: Windows
+  .. group-tab:: Windows
 
     .. code-block:: doscon
 
@@ -138,7 +138,7 @@ You can then run the core test suite:
 
 .. tabs::
 
-  .. tab:: macOS
+  .. group-tab:: macOS
 
     .. code-block:: bash
 
@@ -150,7 +150,7 @@ You can then run the core test suite:
 
       OK (skipped=1)
 
-  .. tab:: Linux
+  .. group-tab:: Linux
 
     .. code-block:: bash
 
@@ -162,7 +162,7 @@ You can then run the core test suite:
 
       OK (skipped=1)
 
-  .. tab:: Windows
+  .. group-tab:: Windows
 
     .. code-block:: doscon
 
@@ -199,7 +199,7 @@ ask coverage to generate a report of the data that was gathered:
 
 .. tabs::
 
-  .. tab:: macOS
+  .. group-tab:: macOS
 
     .. code-block:: bash
 
@@ -215,7 +215,7 @@ ask coverage to generate a report of the data that was gathered:
       ------------------------------------------------------------------
       TOTAL                                 1034    258    75%
 
-  .. tab:: Linux
+  .. group-tab:: Linux
 
     .. code-block:: bash
 
@@ -231,7 +231,7 @@ ask coverage to generate a report of the data that was gathered:
       ------------------------------------------------------------------
       TOTAL                                 1034    258    75%
 
-  .. tab:: Windows
+  .. group-tab:: Windows
 
     .. code-block:: doscon
 
@@ -267,7 +267,7 @@ expect to see something like:
 
 .. tabs::
 
-  .. tab:: macOS
+  .. group-tab:: macOS
 
     .. code-block:: bash
 
@@ -288,7 +288,7 @@ expect to see something like:
       ------------------------------------------------------------------
       TOTAL                                 1034    257    75%
 
-  .. tab:: Linux
+  .. group-tab:: Linux
 
     .. code-block:: bash
 
@@ -309,9 +309,9 @@ expect to see something like:
       ------------------------------------------------------------------
       TOTAL                                 1034    257    75%
 
-  .. tab:: Windows
+  .. group-tab:: Windows
 
-    .. code-block:: bash
+    .. code-block:: doscon
 
       (venv) C:\...>coverage run setup.py test
       running test
