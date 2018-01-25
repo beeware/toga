@@ -30,6 +30,7 @@ from .widgets.tree import *
 from .widgets.webview import *
 from .window import Window
 
+
 __all__ = [
     # Applications
     'App', 'MainWindow',
