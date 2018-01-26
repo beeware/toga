@@ -19,7 +19,6 @@ class Node(Row):
         if self.can_have_children():
             return len(self._children)
         else:
-            
             return 0
 
     def can_have_children(self):
@@ -132,12 +131,12 @@ class TreeSource(Source):
         return self.insert(parent, len(parent or self), *values, **named)
 
     def remove(self, node):
-        self._notify('remove', item=node)
         if node._parent is None:
             self._roots.remove(node)
         else:
             node._parent._children.remove(node)
 
+        self._notify('remove', item=node)
         return node
 
     def index(self, node):

@@ -35,7 +35,6 @@ class LeafNodeTests(TestCase):
         self.assertEqual(result, 0)
 
 
-
 class NodeTests(TestCase):
     def setUp(self):
         self.source = Mock()
