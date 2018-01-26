@@ -91,3 +91,6 @@ class ListSource(Source):
         self._data.remove(row)
         self._notify('remove', item=row)
         return row
+
+    def index(self, row):
+        return self._data.index(row)

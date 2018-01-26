@@ -732,3 +732,39 @@ class TreeSourceTests(TestCase):
         self.assertEqual(source[2][0].val2, -331)
 
         listener.change.assert_called_once_with(item=source[2][0])
+
+    def test_get_node_index(self):
+        "You can get the index of any node within a tree source, relative to its parent"
+
+        source = TreeSource(
+            data={
+                ('first', 111): None,
+                ('second', 222): [],
+                ('third', 333): [
+                    ('third.one', 331),
+                    ('third.two', 332)
+                ]
+            },
+            accessors=['val1', 'val2']
+        )
+
+        for i, node in enumerate(source):
+            self.assertEqual(i, source.index(node))
+
+        # Test indices on deep nodes, too
+        third = source[2]
+        for i, node in enumerate(third):
+            self.assertEqual(i, source.index(node))
+
+        # look-alike nodes are not equal, so index lookup should fail
+        with self.assertRaises(ValueError):
+            lookalike_node = Node(val1='second', val2=222)
+            source.index(lookalike_node)
+
+        # Describe how edge cases are handled
+
+        with self.assertRaises(AttributeError):
+            source.index(None)
+
+        with self.assertRaises(ValueError):
+            source.index(Node())
