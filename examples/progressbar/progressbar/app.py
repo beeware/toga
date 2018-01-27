@@ -13,7 +13,7 @@ class ProgressBarApp(toga.App):
         self.progress_adder = toga.ProgressBar()
 
         # the user may switch between "running" mode and a set value
-        self.progress_runner = toga.ProgressBar(value=3)
+        self.progress_runner = toga.ProgressBar(max=None)
 
         # set up common styles
         label_style = Pack(flex=1, padding_right=24)
@@ -36,13 +36,10 @@ class ProgressBarApp(toga.App):
                 ]),
             ]),
 
-            toga.Box(style=col_box_style, children=[
-                toga.Label("Toggle the switch and watch the running mode change",
-                           style=label_style),
-
-                self.progress_runner,
-                # toga.Switch("toggle running mode", on_toggle=self.toggle_running)
-            ]),
+            # toga.Box(style=col_box_style, children=[
+            #     self.progress_runner,
+            #     toga.Switch("Toggle running mode", on_toggle=self.toggle_running)
+            # ]),
 
             toga.Box(style=row_box_style, children=[
                 toga.Label("default ProgressBar", style=label_style),
@@ -79,7 +76,7 @@ class ProgressBarApp(toga.App):
         self.progress_adder.value -= 0.1 * self.progress_adder.max
 
     def toggle_running(self, switch, **kw):
-        self.progress_runner.running = switch.value
+        self.progress_runner.running = switch.is_on
 
 
 def main():
