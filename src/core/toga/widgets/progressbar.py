@@ -5,7 +5,13 @@ from types import GeneratorType
 class ProgressBar(Widget):
     """"""
 
-    def __init__(self, id=None, style=None, max=1, value=None, factory=None):
+    def __init__(self,
+                 id=None,
+                 style=None,
+                 max=1,
+                 value=0,
+                 running=False,
+                 factory=None):
         """
 
         Args:
@@ -19,10 +25,11 @@ class ProgressBar(Widget):
         """
         super().__init__(id=id, style=style, factory=factory)
 
-        self._value = None
+        self._running = False
         self._impl = self.factory.ProgressBar(interface=self)
 
         self.max = max
+        self.running = running
         self.value = value
 
         self.rehint()
@@ -32,14 +39,23 @@ class ProgressBar(Widget):
         """
         Returns:
             True if the progress bar is running,
-            False if a specific value is displayed
+            False if not
         """
-        return self.value is None
+        return self._running
+
+    @running.setter
+    def running(self, value):
+        #changed = value != self._running
+
+        self._running = value
+
+        # if changed:
+        self.enabled = bool(value or self.max)
+        self._impl.set_running(value)
 
     @property
     def value(self):
-        """ The progress value. Set to None to enter "running" mode.
-
+        """
         Returns:
             The current value as a ``int`` or ``float``.
         """
@@ -47,20 +63,11 @@ class ProgressBar(Widget):
 
     @value.setter
     def value(self, value):
-        if not isinstance(value, (int, float)) and value is not None:
-            raise TypeError("expected int or float, got {}".format(type(value)))
-
-        if value:
-            if self.running:
-                self._impl.stop()
-                
+        if self.max:
+            # default to 0 if value is None
             # bound value between 0 and self.max
-            value = max(0, min(self.max, value))
+            self._value = max(0, min(self.max, value or 0))
             self._impl.set_value(value)
-        elif not self.running:
-            self._impl.start()
-
-        self._value = value
 
     @property
     def max(self):
@@ -73,8 +80,7 @@ class ProgressBar(Widget):
 
     @max.setter
     def max(self, value):
-        if not isinstance(value, (int, float)) and value is not None:
-            raise TypeError("expected int or float, got {}".format(type(value)))
+        self.enabled = bool(value or self.running)
 
         self._max = value
         self._impl.set_max(value)
