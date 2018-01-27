@@ -33,9 +33,7 @@ class ProgressBar(Widget):
         self.max = max
         self.running = running
         self.value = value
-
-        self.rehint()
-
+        
     @property
     def running(self):
         """
