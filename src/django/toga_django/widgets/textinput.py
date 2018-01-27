@@ -25,16 +25,16 @@ class TextInput(TextInputInterface, WidgetMixin):
     #         self.window.callbacks[(self.id, 'on_press')] = self.on_press
 
     def set_placeholder(self, value):
-        raise NotImplementedError()
+        self.interface.factory.not_implemented('TextInput.set_placeholder()')
 
     def set_readonly(self, value):
-        raise NotImplementedError()
+        self.interface.factory.not_implemented('TextInput.set_readonly()')
 
     def get_value(self):
         return self._impl.value
 
     def set_value(self, value):
-        raise NotImplementedError()
+        self.interface.factory.not_implemented('TextInput.set_value()')
 
     def set_alignment(self, value):
         pass

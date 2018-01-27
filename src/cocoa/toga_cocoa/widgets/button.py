@@ -35,6 +35,7 @@ class Button(Widget):
         self.native.title = self.interface.label
 
     def set_on_press(self, handler):
+        # No special handling required
         pass
 
     def rehint(self):
