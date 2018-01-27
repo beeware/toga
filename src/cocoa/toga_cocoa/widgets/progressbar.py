@@ -32,7 +32,5 @@ class ProgressBar(Widget):
             self.native.indeterminate = True
 
     def rehint(self):
-        self.interface.style.hint(
-            height=self.native.fittingSize().height,
-            min_width=100
-        )
+        self.interface.intrinsic.width = at_least(100)
+        self.interface.intrinsic.height = self.native.fittingSize().height
