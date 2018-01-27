@@ -60,10 +60,10 @@ class ProgressBarTests(TestCase):
 
         self.progress_bar.running = True
         self.assertEqual(self.progress_bar._running, True)
-        self.assertActionPerformed(self.progress_bar, 'start')
+        self.assertValueSet(self.progress_bar, 'running', value=True)
 
         self.progress_bar.running = False
-        self.assertActionPerformed(self.progress_bar, 'stop')
+        self.assertValueSet(self.progress_bar, 'running', value=False)
 
     def test_set_value_to_number_less_than_max(self):
         new_value = self.progress_bar.max / 2;
