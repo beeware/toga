@@ -1,6 +1,7 @@
 from gi.repository import Gtk, GObject
 
 from .base import Widget
+from travertino.size import at_least
 
 
 class ProgressBar(Widget):
@@ -31,8 +32,8 @@ class ProgressBar(Widget):
                 GObject.timeout_add(60, self._pulse, None)
 
     def rehint(self):
-        size = self.native.size_request()
-        self.interface.style.hint(
-            min_width=size.width,
-            min_height=size.height
-        )
+        width = self.native.get_preferred_width()
+        height = self.native.get_preferred_height()
+
+        self.interface.intrinsic.width = at_least(width[0])
+        self.interface.intrinsic.height = height[1]
