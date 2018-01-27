@@ -19,7 +19,7 @@ class ProgressBar(Widget):
     def set_max(self, value):
         if value:
             if self.interface.running:
-                pass # GTK has no 'working' animation
+                pass  # GTK has no 'working' animation
         else:
             if self.interface.running:
                 GObject.timeout_add(60, self._pulse, None)
@@ -27,7 +27,7 @@ class ProgressBar(Widget):
     def set_running(self, value):
         if value:
             if self.interface.max:
-                pass # GTK has no 'working' animation
+                pass  # GTK has no 'working' animation
             else:
                 GObject.timeout_add(60, self._pulse, None)
 

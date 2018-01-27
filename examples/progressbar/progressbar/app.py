@@ -41,7 +41,7 @@ class ProgressBarApp(toga.App):
                            style=label_style),
 
                 self.progress_runner,
-                #toga.Switch("toggle running mode", on_toggle=self.toggle_running)
+                # toga.Switch("toggle running mode", on_toggle=self.toggle_running)
             ]),
 
             toga.Box(style=row_box_style, children=[
@@ -80,6 +80,7 @@ class ProgressBarApp(toga.App):
 
     def toggle_running(self, switch, **kw):
         self.progress_runner.running = switch.value
+
 
 def main():
     # App name and namespace

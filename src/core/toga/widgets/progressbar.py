@@ -1,5 +1,4 @@
 from .base import Widget
-from types import GeneratorType
 
 
 class ProgressBar(Widget):
@@ -33,7 +32,7 @@ class ProgressBar(Widget):
         self.max = max
         self.running = running
         self.value = value
-        
+
     @property
     def running(self):
         """
@@ -45,12 +44,8 @@ class ProgressBar(Widget):
 
     @running.setter
     def running(self, value):
-        #changed = value != self._running
-
-        self._running = value
-
-        # if changed:
         self.enabled = bool(value or self.max)
+        self._running = value
         self._impl.set_running(value)
 
     @property

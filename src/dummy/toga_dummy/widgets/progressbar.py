@@ -8,11 +8,8 @@ class ProgressBar(Widget):
     def set_value(self, value):
         self._set_value('value', value)
 
-    def start(self):
-        self._action('start')
-
-    def stop(self):
-        self._action('stop')
+    def set_running(self, value):
+        self._set_value('running', value)
 
     def set_max(self, value):
         self._set_value('max', value)
