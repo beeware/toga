@@ -1,9 +1,8 @@
-from __future__ import print_function, absolute_import, division
-
-from ..libs import *
 from toga.constants import LEFT_ALIGNED, RIGHT_ALIGNED
 
 from .base import Widget
+from ..libs import *
+
 
 class Label(Widget):
     window_class = 'static'
@@ -11,7 +10,7 @@ class Label(Widget):
 
 
     def __init__(self, text=None, alignment=LEFT_ALIGNED):
-        super(Label, self).__init__(text=text)
+        super(Label, self).__init__(text=self.interface._text)
         self.alignment = alignment
         alignments = {LEFT_ALIGNED: SS_LEFT, RIGHT_ALIGNED: SS_RIGHT}
         alignment = alignments[self.alignment]

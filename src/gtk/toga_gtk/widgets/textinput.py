@@ -1,4 +1,5 @@
 from gi.repository import Gtk
+from travertino.size import at_least
 
 from .base import Widget
 
@@ -16,6 +17,12 @@ class TextInput(Widget):
     def set_placeholder(self, value):
         self.native.set_placeholder_text(value)
 
+    def set_alignment(self, value):
+        self.interface.factory.not_implemented('TextInput.set_alignment()')
+
+    def set_font(self, value):
+        self.interface.factory.not_implemented('TextInput.set_font()')
+
     def get_value(self):
         return self.native.get_text()
 
@@ -24,21 +31,12 @@ class TextInput(Widget):
 
     def rehint(self):
         # print("REHINT", self, self._impl.get_preferred_width(), self._impl.get_preferred_height(), getattr(self, '_fixed_height', False), getattr(self, '_fixed_width', False))
-        hints = {}
         width = self.native.get_preferred_width()
-        minimum_width = width[0]
-        natural_width = width[1]
-
         height = self.native.get_preferred_height()
-        minimum_height = height[0]
-        natural_height = height[1]
 
-        if minimum_width > 0:
-            hints['min_width'] = minimum_width
-        if minimum_height > 0:
-            hints['min_height'] = minimum_height
-        if natural_height > 0:
-            hints['height'] = natural_height
+        self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
+        self.interface.intrinsic.height = height[1]
 
-        if hints:
-            self.interface.style.hint(**hints)
+    def set_on_change(self, handler):
+        # No special handling required
+        pass

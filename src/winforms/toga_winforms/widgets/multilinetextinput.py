@@ -1,3 +1,5 @@
+from travertino.size import at_least
+
 from toga_winforms.libs import *
 
 from .base import Widget
@@ -14,16 +16,12 @@ class MultilineTextInput(Widget):
 
     def set_placeholder(self, value):
         # self.native.cell.placeholderString = self._placeholder
-        pass
+        self.interface.factory.not_implemented('MultilineTextInput.set_placeholder()')
 
     def set_value(self, value):
         self.native.Text = value
 
     def rehint(self):
-        # Width must be > 100
-        s = Size(self.native.Width, 0)
-        self.interface.style.hint(
-            height=self.native.GetPreferredSize(s).Height,
-            min_width=100,
-        )
+        self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
+        self.interface.intrinsic.height = at_least(self.interface.MIN_HEIGHT)
 

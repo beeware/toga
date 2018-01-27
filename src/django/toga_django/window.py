@@ -1,15 +1,14 @@
-from toga.interface.window import Window as WindowInterface
-
 import base64
 import marshal
 import os
 import py_compile
-from django.conf.urls import url
+
 from django.shortcuts import render
 from django.utils.safestring import mark_safe
+from toga.interface.window import Window as WindowInterface
 
-from . import impl
 from . import dialogs
+from . import impl
 from .bootstrap import bootstrap
 from .container import Container
 
@@ -103,19 +102,19 @@ class Window(WindowInterface):
         })
 
     def info_dialog(self, title, message):
-        raise NotImplementedError()
+        self.interface.factory.not_implemented('Window.info_dialog()')
 
     def question_dialog(self, title, message):
-        raise NotImplementedError()
+        self.interface.factory.not_implemented('Window.question_dialog()')
 
     def confirm_dialog(self, title, message):
-        raise NotImplementedError()
+        self.interface.factory.not_implemented('Window.confirm_dialog()')
 
     def error_dialog(self, title, message):
-        raise NotImplementedError()
+        self.interface.factory.not_implemented('Window.error_dialog()')
 
     def stack_trace_dialog(self, title, message, content, retry=False):
-        raise NotImplementedError()
+        self.interface.factory.not_implemented('Window.stack_trace_dialog()')
 
     def save_file_dialog(self, title, suggested_filename, file_types):
-        raise NotImplementedError()
+        self.interface.factory.not_implemented('Window.save_file_dialog()')

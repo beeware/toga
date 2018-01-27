@@ -7,23 +7,15 @@ class Widget:
         self.interface._impl = self
 
         self._container = None
-        self.constraints = None
         self.native = None
         self.create()
+        self.interface.style.reapply()
 
     def set_app(self, app):
         pass
 
     def set_window(self, window):
         pass
-
-    @property
-    def enabled(self):
-        raise NotImplmementedError()
-
-    @enabled.setter
-    def enabled(self, value):
-        raise NotImplmementedError()
 
     @property
     def container(self):
@@ -38,23 +30,42 @@ class Widget:
         for child in self.interface.children:
             child._impl.container = container
 
-        self.interface.rehint()
+        self.rehint()
+
+    def set_enabled(self, value):
+        self.interface.factory.not_implemented('Widget.set_enabled()')
+
+    ### APPLICATOR
+
+    def set_bounds(self, x, y, width, height):
+        if self.native:
+            self.native.Size = Size(width, height)
+            self.native.Location = Point(x, y)
+
+    def set_alignment(self, alignment):
+        # By default, alignment can't be changed
+        pass
+
+    def set_hidden(self, hidden):
+        self.interface.factory.not_implemented('Widget.set_hidden()')
+
+    def set_font(self, font):
+        # By default, font can't be changed
+        pass
+
+    def set_color(self, color):
+        # By default, color can't be changed
+        pass
+
+    def set_background_color(self, color):
+        # By default, background color can't be changed.
+        pass
+
+    ### INTERFACE
 
     def add_child(self, child):
         if self.container:
-            child._set_container(self.container)
-
-    def apply_layout(self):
-        if self.native:
-            self.native.Size = Size(int(self.interface.layout.width), int(self.interface.layout.height))
-            self.native.Location = Point(int(self.interface.layout.absolute.left), int(self.interface.layout.absolute.top))
-
-    def apply_sub_layout(self):
-        # If widget have sub layouts like the ScrollContainer or SplitView,                                                                                                                                                                                                                                                                                                                                     update them.
-        pass
+            child.container = self.container
 
     def rehint(self):
-        pass
-
-    def set_font(self, font):
         pass

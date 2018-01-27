@@ -4,7 +4,6 @@ class Widget:
         self.interface = interface
         self.interface._impl = self
         self._container = None
-        self.constraints = None
         self.native = None
         self.create()
 
@@ -21,34 +20,42 @@ class Widget:
     @container.setter
     def container(self, container):
         self._container = container
-        if self.constraints and self.native:
+
+        if self.native:
             self._container.native.addSubview_(self.native)
-            self.constraints.container = container
 
         for child in self.interface.children:
             child._impl.container = container
-        self.interface.rehint()
 
-    def add_child(self, child):
-        if self._container:
-            child._set_container(self._container)
+        self.rehint()
 
-    def apply_layout(self):
+    def set_enabled(self, value):
+        self.native.enabled = value
+
+    ### APPLICATOR
+
+    def set_bounds(self, x, y, width, height):
+        # No implementation required here; the new sizing will be picked up
+        # by the container layout.
         pass
 
-    def apply_sub_layout(self):
-        pass
+    def set_hidden(self, hidden):
+        self.interface.factory.not_implemented('Widget.set_hidden()')
 
     def set_font(self, font):
-        self.native.setFont_(font.native)
+        # By default, font can't be changed
+        pass
 
-    @property
-    def enabled(self):
-        raise NotImplementedError()
+    def set_background_color(self, color):
+        # By default, background color can't be changed.
+        pass
 
-    @enabled.setter
-    def enabled(self, value):
-        self.native.enabled = value
+    ### INTERFACE
+
+    def add_child(self, child):
+        if self.container:
+            child.viewport = self.root.viewport
+            child.container = self.container
 
     def rehint(self):
         pass

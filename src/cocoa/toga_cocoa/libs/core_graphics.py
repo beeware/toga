@@ -3,13 +3,9 @@
 ##########################################################################
 from ctypes import *
 from ctypes import util
-from enum import Enum
 
-from rubicon.objc import *
 from rubicon.objc.types import register_preferred_encoding
-
 from toga.constants import *
-from toga.constants.color import *
 
 ######################################################################
 core_graphics = cdll.LoadLibrary(util.find_library('CoreGraphics'))

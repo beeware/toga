@@ -1,7 +1,5 @@
-from __future__ import print_function, absolute_import, division
-
-from ..window import key
 from .constants import *
+from ..window import key
 
 keymap = {
     ord('A'): key.A,

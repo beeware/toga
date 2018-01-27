@@ -1,4 +1,7 @@
+from travertino.size import at_least
+
 from toga_winforms.libs import *
+
 from .base import Widget
 
 
@@ -8,11 +11,11 @@ class ProgressBar(Widget):
 
     def start(self):
         '''Not supported for WinForms implementation'''
-        pass
+        self.interface.factory.not_implemented('ProgressBar.start()')
 
     def stop(self):
         '''Not supported for WinForms implementation'''
-        pass
+        self.interface.factory.not_implemented('ProgressBar.stop()')
 
     def set_max(self, value):
         self.native.Maximum = value
@@ -23,7 +26,5 @@ class ProgressBar(Widget):
     def rehint(self):
         # Height must be non-zero
         # Set a sensible min-width
-        self.interface.style.hint(
-            height=self.native.PreferredSize.Height,
-            min_width=100,
-        )
+        self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
+        self.interface.intrinsic.height = self.native.PreferredSize.Height

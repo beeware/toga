@@ -8,7 +8,7 @@ class Slider(Widget):
 
     Args:
         id: An identifier for this widget.
-        style (:class:`colosseum.CSSNode`):
+        style (:obj:`Style`):
         default (float): Default value of the slider
         range (``tuple``): Min and max values of the slider in this form (min, max).
         on_slide (``callable``): The function that is executed on_slide.
@@ -16,6 +16,7 @@ class Slider(Widget):
         factory (:obj:`module`): A python module that is capable to return a
             implementation of this class with the same name. (optional & normally not needed)
     """
+    MIN_WIDTH = 100
 
     def __init__(self, id=None, style=None, default=None, range=None, on_slide=None, enabled=True, factory=None):
         super().__init__(id=id, style=style, factory=factory)

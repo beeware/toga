@@ -1,12 +1,23 @@
-from .container import Container
-from . import dialogs
+
+class AndroidViewport:
+    def __init__(self, native):
+        self.native = native
+        self.dpi = 96  # FIXME This is almost certainly wrong...
+        # self.dpi = ... self.interface.app._impl.device_scale
+
+    @property
+    def width(self):
+        return self.native.ClientSize.Width
+
+    @property
+    def height(self):
+        return self.native.ClientSize.Height
 
 
 class Window:
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
-        self.container = None
         self.create()
 
     def create(self):
@@ -16,8 +27,14 @@ class Window:
         self._create()
 
     def set_content(self, widget):
-        self.app._impl.setContentView(self._container._impl)
+        if self.native is None:
+            widget.native = TogaLayout(self.app.native, widget)
 
+        # Add all children to the content widget.
+        for child in widget.interface.children:
+            child._impl.container = widget
+
+        self.app._impl.setContentView(self._container._impl)
 
     def set_title(self, title):
         pass
@@ -38,19 +55,19 @@ class Window:
         pass
 
     def info_dialog(self, title, message):
-        raise NotImplementedError()
+        self.interface.factory.not_implemented('Window.info_dialog()')
 
     def question_dialog(self, title, message):
-        raise NotImplementedError()
+        self.interface.factory.not_implemented('Window.question_dialog()')
 
     def confirm_dialog(self, title, message):
-        raise NotImplementedError()
+        self.interface.factory.not_implemented('Window.confirm_dialog()')
 
     def error_dialog(self, title, message):
-        raise NotImplementedError()
+        self.interface.factory.not_implemented('Window.error_dialog()')
 
     def stack_trace_dialog(self, title, message, content, retry=False):
-        raise NotImplementedError()
+        self.interface.factory.not_implemented('Window.stack_trace_dialog()')
 
     def save_file_dialog(self, title, suggested_filename, file_types):
-        raise NotImplementedError()
+        self.interface.factory.not_implemented('Window.save_file_dialog()')

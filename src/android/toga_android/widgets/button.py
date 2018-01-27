@@ -1,3 +1,5 @@
+from travertino.size import at_least
+
 from .base import Widget
 
 
@@ -25,21 +27,20 @@ class Button(Widget):
         self.native.setOnClickListener(self._listener)
 
     def set_label(self, label):
-        self.native.setText(self.label)
+        self.native.setText(self.interface.label)
 
     def set_enabled(self, value):
-        pass
+        self.interface.factory.not_implemented('Button.set_enabled()')
 
     def set_background_color(self, value):
-        pass
+        self.interface.factory.not_implemented('Button.set_background_color()')
 
     def set_on_press(self, handler):
+        # No special handling required
         pass
 
     def rehint(self):
         if self.native.getMeasuredWidth():
             # print("REHINT button", self, self.native.getMeasuredWidth(), self.native.getMeasuredHeight())
-            self.interface.style.hint(
-                min_width=self.native.getMeasuredWidth() / self.app._impl.device_scale,
-                height=self.native.getMeasuredHeight() / self.app._impl.device_scale,
-            )
+            self.interface.intrinsic.width = at_least(self.native.getMeasuredWidth() / self.app._impl.device_scale)
+            self.interface.intrinsic.height = self.native.getMeasuredHeight() / self.app._impl.device_scale

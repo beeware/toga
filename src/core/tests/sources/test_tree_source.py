@@ -15,7 +15,7 @@ class LeafNodeTests(TestCase):
         "A node holds values as expected"
         self.assertEqual(self.example.val1, 'value 1')
         self.assertEqual(self.example.val2, 42)
-        self.assertFalse(self.example.has_children())
+        self.assertFalse(self.example.can_have_children())
         self.assertEqual(len(self.example), 0)
 
     def test_change_value(self):
@@ -24,6 +24,16 @@ class LeafNodeTests(TestCase):
 
         self.assertEqual(self.example.val1, 'new value')
         self.source._notify.assert_called_once_with('change', item=self.example)
+
+    def test_iterate_children(self):
+        "Children of a node can be iterated over -- should have no children"
+        result = 0
+
+        for child in self.example:
+            result += child.val2
+
+        self.assertEqual(result, 0)
+
 
 
 class NodeTests(TestCase):
@@ -50,7 +60,7 @@ class NodeTests(TestCase):
 
         self.assertEqual(self.parent.val1, 'value 1')
         self.assertEqual(self.parent.val2, 42)
-        self.assertTrue(self.parent.has_children())
+        self.assertTrue(self.parent.can_have_children())
         self.assertEqual(len(self.parent), 2)
 
     def test_change_value(self):
@@ -65,7 +75,7 @@ class NodeTests(TestCase):
         parent = Node(source=self.source, val1='value 1', val2=42)
         parent._children = []
 
-        self.assertTrue(parent.has_children())
+        self.assertTrue(parent.can_have_children())
         self.assertEqual(len(parent), 0)
 
     def test_change_child(self):
@@ -130,12 +140,12 @@ class TreeSourceTests(TestCase):
 
         self.assertEqual(source[0].val1, 'first')
         self.assertEqual(source[0].val2, 111)
-        self.assertFalse(source[0].has_children())
+        self.assertFalse(source[0].can_have_children())
         self.assertEqual(len(source[0]), 0)
 
         self.assertEqual(source[1].val1, 'second')
         self.assertEqual(source[1].val2, 222)
-        self.assertFalse(source[1].has_children())
+        self.assertFalse(source[1].can_have_children())
         self.assertEqual(len(source[1]), 0)
 
         listener = Mock()
@@ -148,7 +158,7 @@ class TreeSourceTests(TestCase):
 
         self.assertEqual(source[1].val1, 'new element')
         self.assertEqual(source[1].val2, 999)
-        self.assertFalse(source[1].has_children())
+        self.assertFalse(source[1].can_have_children())
         self.assertEqual(len(source[1]), 0)
 
         listener.change.assert_called_once_with(item=source[1])
@@ -168,12 +178,12 @@ class TreeSourceTests(TestCase):
 
         self.assertEqual(source[0].val1, 'first')
         self.assertEqual(source[0].val2, 111)
-        self.assertFalse(source[0].has_children())
+        self.assertFalse(source[0].can_have_children())
         self.assertEqual(len(source[0]), 0)
 
         self.assertEqual(source[1].val1, 'second')
         self.assertEqual(source[1].val2, 222)
-        self.assertFalse(source[1].has_children())
+        self.assertFalse(source[1].can_have_children())
         self.assertEqual(len(source[1]), 0)
 
         listener = Mock()
@@ -186,7 +196,7 @@ class TreeSourceTests(TestCase):
 
         self.assertEqual(source[1].val1, 'new element')
         self.assertEqual(source[1].val2, 999)
-        self.assertFalse(source[1].has_children())
+        self.assertFalse(source[1].can_have_children())
         self.assertEqual(len(source[1]), 0)
 
         listener.change.assert_called_once_with(item=source[1])
@@ -209,32 +219,32 @@ class TreeSourceTests(TestCase):
 
         self.assertEqual(source[0].val1, 'first')
         self.assertEqual(source[0].val2, 111)
-        self.assertFalse(source[0].has_children())
+        self.assertFalse(source[0].can_have_children())
         self.assertEqual(len(source[0]), 0)
 
         self.assertEqual(source[1].val1, 'second')
         self.assertEqual(source[1].val2, 222)
-        self.assertTrue(source[1].has_children())
+        self.assertTrue(source[1].can_have_children())
         self.assertEqual(len(source[1]), 0)
 
         self.assertEqual(source[2].val1, 'third')
         self.assertEqual(source[2].val2, 333)
-        self.assertTrue(source[2].has_children())
+        self.assertTrue(source[2].can_have_children())
         self.assertEqual(len(source[2]), 2)
 
         self.assertEqual(source[2].val1, 'third')
         self.assertEqual(source[2].val2, 333)
-        self.assertTrue(source[2].has_children())
+        self.assertTrue(source[2].can_have_children())
         self.assertEqual(len(source[2]), 2)
 
         self.assertEqual(source[2][0].val1, 'third.one')
         self.assertEqual(source[2][0].val2, 331)
-        self.assertFalse(source[2][0].has_children())
+        self.assertFalse(source[2][0].can_have_children())
         self.assertEqual(len(source[2][0]), 0)
 
         self.assertEqual(source[2][1].val1, 'third.two')
         self.assertEqual(source[2][1].val2, 332)
-        self.assertFalse(source[2][1].has_children())
+        self.assertFalse(source[2][1].can_have_children())
         self.assertEqual(len(source[2][1]), 0)
 
         listener = Mock()
@@ -270,37 +280,37 @@ class TreeSourceTests(TestCase):
 
         self.assertEqual(source[0].val1, 'first')
         self.assertEqual(source[0].val2, 111)
-        self.assertFalse(source[0].has_children())
+        self.assertFalse(source[0].can_have_children())
         self.assertEqual(len(source[0]), 0)
 
         self.assertEqual(source[1].val1, 'second')
         self.assertEqual(source[1].val2, 222)
-        self.assertTrue(source[1].has_children())
+        self.assertTrue(source[1].can_have_children())
         self.assertEqual(len(source[1]), 0)
 
         self.assertEqual(source[2].val1, 'third')
         self.assertEqual(source[2].val2, 333)
-        self.assertTrue(source[2].has_children())
+        self.assertTrue(source[2].can_have_children())
         self.assertEqual(len(source[2]), 2)
 
         self.assertEqual(source[2].val1, 'third')
         self.assertEqual(source[2].val2, 333)
-        self.assertTrue(source[2].has_children())
+        self.assertTrue(source[2].can_have_children())
         self.assertEqual(len(source[2]), 2)
 
         self.assertEqual(source[2][0].val1, 'third.one')
         self.assertEqual(source[2][0].val2, 331)
-        self.assertFalse(source[2][0].has_children())
+        self.assertFalse(source[2][0].can_have_children())
         self.assertEqual(len(source[2][0]), 0)
 
         self.assertEqual(source[2][1].val1, 'third.two')
         self.assertEqual(source[2][1].val2, 332)
-        self.assertTrue(source[2][1].has_children())
+        self.assertTrue(source[2][1].can_have_children())
         self.assertEqual(len(source[2][1]), 1)
 
         self.assertEqual(source[2][1][0].val1, 'third.two.sub')
         self.assertEqual(source[2][1][0].val2, 321)
-        self.assertFalse(source[2][1][0].has_children())
+        self.assertFalse(source[2][1][0].can_have_children())
         self.assertEqual(len(source[2][1][0]), 0)
 
         listener = Mock()
@@ -471,7 +481,7 @@ class TreeSourceTests(TestCase):
         )
 
         self.assertEqual(len(source), 3)
-        self.assertFalse(source[0].has_children())
+        self.assertFalse(source[0].can_have_children())
         self.assertEqual(len(source[0]), 0)
 
         listener = Mock()
@@ -481,7 +491,7 @@ class TreeSourceTests(TestCase):
         node = source.insert(source[0], 0, val1='new element', val2=999)
 
         self.assertEqual(len(source), 3)
-        self.assertTrue(source[0].has_children())
+        self.assertTrue(source[0].can_have_children())
         self.assertEqual(len(source[0]), 1)
         self.assertEqual(source[0][0], node)
         self.assertEqual(node.val1, 'new element')

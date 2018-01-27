@@ -1,4 +1,5 @@
 from rubicon.objc import *
+from travertino.size import at_least
 
 from toga_cocoa.libs import *
 
@@ -13,7 +14,7 @@ def attr_impl(value, attr, factory):
     # This will manifest any impl-specific attributes.
     impl = getattr(value, attr, None)
     try:
-        return impl._impl(factory)
+        return impl.bind(factory)
     except AttributeError:
         return impl
 
@@ -150,3 +151,7 @@ class DetailedList(Widget):
 
     def scroll_to_row(self, row):
         self.detailedlist.scrollRowToVisible(row)
+
+    def rehint(self):
+        self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
+        self.interface.intrinsic.height = at_least(self.interface.MIN_HEIGHT)

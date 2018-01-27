@@ -1,6 +1,6 @@
 from gi.repository import Gtk
 
-from toga_gtk.container import Container
+from toga_gtk.window import GtkViewport
 
 from .base import Widget
 
@@ -11,17 +11,15 @@ class OptionContainer(Widget):
         self.native = Gtk.Notebook()
         self.native.interface = self.interface
 
-        self.containers = []
-
     def add_content(self, label, widget):
-        # FIXME? Is there a better way to prevent the content of being occluded from the tabs?
-        # Also 25 is just a guesstimate not based on anything.
-        widget.interface.style.margin_top += 25  # increase top margin to prevent occlusion.
-        if widget.native is None:
-            container = Container()
-            container.content = widget
-        else:
-            container = widget
+        widget.viewport = GtkViewport(widget.native)
 
-        self.containers.append((label, container, widget))
-        self.native.append_page(container.native, Gtk.Label(label))
+        # Add all children to the content widget.
+        for child in widget.interface.children:
+            child._impl.container = widget
+
+        self.native.append_page(widget.native, Gtk.Label(label))
+
+    def set_on_select(self, handler):
+        # No special handling required
+        pass

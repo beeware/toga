@@ -1,4 +1,3 @@
-# import types
 import base64
 import marshal
 import os
@@ -8,13 +7,11 @@ import tempfile
 from django.conf.urls import url
 from django.shortcuts import render
 from django.utils.safestring import mark_safe
-
 from toga.interface.app import App as AppInterface
 from toga.interface.widgets.base import Widget
 
-from .window import Window
 from .bootstrap import bootstrap
-from . import impl
+from .window import Window
 
 
 class MainWindow(Window):
@@ -39,10 +36,10 @@ class App(AppInterface):
         pass
 
     def open_document(self, fileURL):
-        raise NotImplementedError()
+        self.interface.factory.not_implemented('App.open_document()')
 
     def create_menus(self):
-        raise NotImplementedError()
+        self.interface.factory.not_implemented('App.create_menus()')
 
     # ====
 

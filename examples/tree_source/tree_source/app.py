@@ -1,9 +1,9 @@
 from random import choice
 
 import toga
+from toga.style import Pack
+from toga.constants import ROW, COLUMN
 from toga.sources import Source
-from colosseum import CSS
-
 
 bee_movies = [
     {'year': 2008, 'title': 'The Secret Life of Bees', 'rating': '7.3', 'genre': 'Drama'},
@@ -43,7 +43,7 @@ class Decade:
     def __getitem__(self, index):
         return self._data[index]
 
-    def has_children(self):
+    def can_have_children(self):
         return True
 
 
@@ -71,13 +71,16 @@ class DecadeSource(Source):
             self._decades.sort(key=lambda v: v.decade)
         movie = Movie(**entry)
         decade_root._data.append(movie)
-        self._notify('insert', item=movie)
+        self._notify('insert', parent=decade_root, index=len(decade_root._data) - 1, item=movie)
 
 
 class ExampleTreeSourceApp(toga.App):
     # Table callback functions
-    def on_select_handler(self, widget, row, **kwargs):
-        self.label.text = 'You selected row: {}'.format(row) if row is not None else 'No row selected'
+    def on_select_handler(self, widget, node):
+        if node and hasattr(node, 'title'):
+            self.label.text = 'You selected node: {}'.format(node.title)
+        else:
+            self.label.text = 'No row selected'
 
     # Button callback functions
     def insert_handler(self, widget, **kwargs):
@@ -87,7 +90,6 @@ class ExampleTreeSourceApp(toga.App):
     def startup(self):
         # Set up main window
         self.main_window = toga.MainWindow(self.name)
-        self.main_window.app = self
 
         # Label to show responses.
         self.label = toga.Label('Ready.')
@@ -96,23 +98,21 @@ class ExampleTreeSourceApp(toga.App):
             headings=['Year', 'Title', 'Rating', 'Genre'],
             data=DecadeSource(),
             on_select=self.on_select_handler,
-            style=CSS(flex=1)
+            style=Pack(flex=1)
         )
 
         # Buttons
-        btn_style = CSS(flex=1)
+        btn_style = Pack(flex=1)
         btn_insert = toga.Button('Insert Row', on_press=self.insert_handler, style=btn_style)
-        btn_box = toga.Box(children=[btn_insert], style=CSS(flex_direction='row'))
+        btn_box = toga.Box(children=[btn_insert], style=Pack(direction=ROW))
 
         # Outermost box
         outer_box = toga.Box(
             children=[btn_box, self.tree, self.label],
-            style=CSS(
+            style=Pack(
                 flex=1,
-                flex_direction='column',
+                direction=COLUMN,
                 padding=10,
-                min_width=500,
-                min_height=300
             )
         )
 

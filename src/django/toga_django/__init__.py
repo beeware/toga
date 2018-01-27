@@ -1,55 +1,63 @@
-# Django app definition
 from . import django
-
-# Core capabilities
-from .app import *
-from .window import *
-# from .command import *
-
-# Widgets
+from .app import App, MainWindow
+# from .color import color
+# from .command import Command
+# from .font import font
 from .widgets.box import *
 from .widgets.button import *
+# from .widgets.canvas import Canvas
+# from .widgets.detailedlist import DetailedList
 # from .widgets.icon import *
 # from .widgets.image import *
 # from .widgets.imageview import *
 from .widgets.label import *
-# from .widgets.list import *
-# from .widgets.dialog import *
 # from .widgets.multilinetextinput import *
+# from .widgets.numberinput import NumberInput
 # from .widgets.optioncontainer import *
 # from .widgets.passwordinput import *
 # from .widgets.progressbar import *
 # from .widgets.scrollcontainer import *
+# from .widgets.selection import Selection
+# from .widgets.slider import *
 # from .widgets.splitcontainer import *
+# from .widgets.switch import *
 # from .widgets.table import *
 from .widgets.textinput import *
 # from .widgets.tree import *
 from .widgets.webview import *
+from .window import Window
+
 
 __all__ = [
     '__version__',
     'django',
-    'App',
-    'Window', 'MainWindow',
-#     'Command', 'SEPARATOR', 'SPACER', 'EXPANDING_SPACER',
+    'App', 'MainWindow',
+    # 'color',
+    # 'Command',
+    # 'font',
     'Box',
     'Button',
-#     'Icon', 'TIBERIUS_ICON',
-#     'Image',
-#     'ImageView',
+    # 'Canvas',
+    # 'DetailedList',
+    # 'Icon',
+    # 'Image',
+    # 'ImageView',
     'Label',
-    # 'List', 'SimpleListElement',
-#     'Dialog',
-#     'MultilineTextInput',
-#     'OptionContainer',
-#     'PasswordInput',
-#     'ProgressBar',
-#     'ScrollContainer',
-#     'SplitContainer',
-#     'Table',
+    # 'MultilineTextInput',
+    # 'NumberInput',
+    # 'OptionContainer',
+    # 'PasswordInput',
+    # 'ProgressBar',
+    # 'ScrollContainer',
+    # 'Selection',
+    # 'Slider',
+    # 'SplitContainer',
+    # 'Switch',
+    # 'Table',
     'TextInput',
-#     'Tree',
+    # 'Tree',
     'WebView',
+    'Window',
 ]
 
 # Examples of valid version strings
@@ -60,4 +68,4 @@ __all__ = [
 # __version__ = '1.2.3'       # Final Release
 # __version__ = '1.2.3.post1' # Post Release 1
 
-__version__ = '0.3.0.dev1'
+__version__ = '0.3.0.dev5'

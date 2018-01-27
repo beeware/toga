@@ -1,7 +1,7 @@
 from rubicon.objc import CGSize
+from travertino.size import at_least
 
-from toga.constants import LEFT_ALIGNED
-
+from toga_iOS.color import native_color
 from toga_iOS.libs import UILabel, NSTextAlignment, NSLineBreakByWordWrapping, CGSize
 
 from .base import Widget
@@ -10,23 +10,32 @@ from .base import Widget
 class Label(Widget):
     def create(self):
         self.native = UILabel.new()
+        self.native.impl = self
         self.native.interface = self
 
-        self.native.setTranslatesAutoresizingMaskIntoConstraints_(False)
-        self.native.setLineBreakMode_(NSLineBreakByWordWrapping)
+        self.native.lineBreakMode = NSLineBreakByWordWrapping
 
         # Add the layout constraints
         self.add_constraints()
 
     def set_alignment(self, value):
-        self.native.setTextAlignment_(NSTextAlignment(value))
+        if value:
+            self.native.textAlignment = NSTextAlignment(value)
+
+    def set_color(self, value):
+        if value:
+            self.native.textColor = native_color(value)
+
+    def set_font(self, value):
+        if value:
+            self.native.font = value._impl.native
 
     def set_text(self, value):
-        self.native.setText_(value)
+        self.native.text = self.interface.text
 
     def rehint(self):
-        fitting_size = self.native.systemLayoutSizeFittingSize_(CGSize(0, 0))
-        self.interface.style.hint(
-            height=fitting_size.height,
-            width=fitting_size.width
-        )
+        # Width & height of a label is known and fixed.
+        # print("REHINT label", self, self.native.fittingSize().width, self.native.fittingSize().height)
+        fitting_size = self.native.systemLayoutSizeFittingSize(CGSize(0, 0))
+        self.interface.intrinsic.width = at_least(fitting_size.width)
+        self.interface.intrinsic.height = fitting_size.height

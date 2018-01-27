@@ -9,7 +9,7 @@ class Canvas(Widget):
 
     Args:
         id (str):  An identifier for this widget.
-        style (:class:`colosseum.CSSNode`): An optional style object. If no
+        style (:obj:`Style`): An optional style object. If no
             style is provided then a new one will be created for the widget.
         on_draw (``callable``): Function to draw on the canvas.
         factory (:obj:`module`): A python module that is capable to return a
@@ -313,3 +313,21 @@ class Canvas(Widget):
 
         """
         self._impl.reset_transform()
+
+    # Text
+
+    def write_text(self, text, x=0, y=0, font=None):
+        """Writes a given text
+
+        Writes a given text at the given (x,y) position. If no font is provided,
+        then it will use the font assigned to the Canvas Widget, if it exists,
+        or use the default font if there is no font assigned.
+
+        Args:
+            text (string): The text to fill.
+            x (float, optional): The x coordinate of the text. Default to 0.
+            y (float, optional): The y coordinate of the text. Default to 0.
+            font (:class:`toga.Font`, optional): The font to write with.
+
+        """
+        self._impl.write_text(text, x, y, font)

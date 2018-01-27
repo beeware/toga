@@ -1,7 +1,8 @@
 import asyncio
 
 import toga
-from colosseum import CSS
+from toga.style import Pack
+from toga.constants import COLUMN
 
 from .translations import bee_translations
 
@@ -25,7 +26,6 @@ class ExampleDetailedListApp(toga.App):
     def startup(self):
         # Set up main window
         self.main_window = toga.MainWindow(self.name)
-        self.main_window.app = self
 
         # Label to show responses.
         self.label = toga.Label('Ready.')
@@ -42,18 +42,16 @@ class ExampleDetailedListApp(toga.App):
             on_select=self.on_select_handler,
             # on_delete=self.on_delete_handler,
             on_refresh=self.on_refresh_handler,
-            style=CSS(flex=1)
+            style=Pack(flex=1)
         )
 
         # Outermost box
         outer_box = toga.Box(
             children=[widget, self.label],
-            style=CSS(
+            style=Pack(
                 flex=1,
-                flex_direction='column',
+                direction=COLUMN,
                 padding=10,
-                min_width=500,
-                min_height=300
             )
         )
 

@@ -5,7 +5,7 @@ from toga.platform import get_platform_factory
 
 
 class Window:
-    """ The window is the top level container of a app.
+    """The top level container of a application.
 
     Args:
         id (str): The ID of the window (optional).
@@ -13,11 +13,11 @@ class Window:
         position (``tuple`` of (int, int)): Position of the window, as x,y coordinates.
         size (``tuple`` of (int, int)):  Size of the window, as (width, height) sizes, in pixels.
         toolbar (``list`` of :class:`toga.Widget`): A list of widgets to add to a toolbar
-        resizeable (bool): Toggle if the window is resizable by the user, defaults to `True.
+        resizeable (bool): Toggle if the window is resizable by the user, defaults to `True`.
         closeable (bool): Toggle if the window is closable by the user, defaults to `True`.
         minimizable (bool): Toggle if the window is minimizable by the user, defaults to `True`.
         factory (:obj:`module`): A python module that is capable to return a
-            implementation of this class with the same name. (optional & normally not needed)
+            implementation of this class with the same name. (optional; normally not needed)
     """
     _WINDOW_CLASS = 'Window'
 
@@ -33,6 +33,7 @@ class Window:
         self._position = position
         self._size = size
         self._is_full_screen = False
+
         self.resizeable = resizeable
         self.closeable = closeable
         self.minimizable = minimizable
@@ -114,9 +115,6 @@ class Window:
 
     @content.setter
     def content(self, widget):
-        # Update the geometry of the widget
-        widget._update_layout()
-
         # Assign the content widget to the same app as the window.
         widget.app = self.app
 
@@ -128,6 +126,9 @@ class Window:
 
         # Manifest the widget
         self._impl.set_content(widget._impl)
+
+        # Update the geometry of the widget
+        widget.refresh()
 
     @property
     def size(self):
@@ -143,6 +144,8 @@ class Window:
     def size(self, size):
         self._size = size
         self._impl.set_size(size)
+        if self.content:
+            self.content.refresh()
 
     @property
     def position(self):
@@ -186,7 +189,7 @@ class Window:
             message (str): The dialog message to display.
 
         Returns:
-            Returns `None after the user pressed the 'OK' button.
+            Returns `None` after the user pressed the 'OK' button.
         """
         return self._impl.info_dialog(title, message)
 

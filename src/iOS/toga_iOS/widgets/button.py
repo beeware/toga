@@ -1,6 +1,7 @@
-from rubicon.objc import objc_method
+from rubicon.objc import objc_method, CGSize, SEL
+from travertino.size import at_least
 
-from toga_iOS.libs import *
+from toga_iOS.libs import UIButton
 
 from .base import Widget
 
@@ -17,40 +18,21 @@ class Button(Widget):
         self.native = TogaButton.alloc().init()
         self.native.interface = self.interface
 
-        self.native.setTitleColor_forState_(self.native.tintColor, UIControlStateNormal)
-        self.native.setTitleColor_forState_(UIColor.grayColor, UIControlStateDisabled)
-        self.native.addTarget_action_forControlEvents_(self.native, SEL('onPress:'), UIControlEventTouchDown)
+        self.native.setTitleColor(self.native.tintColor, forState=UIControlStateNormal)
+        self.native.setTitleColor(UIColor.grayColor, forState=UIControlStateDisabled)
+        self.native.addTarget(self.native, action=SEL('onPress:'), forControlEvents=UIControlEventTouchDown)
 
         # Add the layout constraints
         self.add_constraints()
 
     def set_label(self, label):
-        self.native.setTitle_forState_(label, UIControlStateNormal)
+        self.native.setTitle(self.interface.label, forState=UIControlStateNormal)
 
     def set_on_press(self, handler):
+        # No special handling required.
         pass
 
-    def set_background_color(self, background_color):
-        if background_color:
-            if isinstance(background_color, tuple):
-                background_color = NSColor.colorWithRed_green_blue_alpha_(background_color[0]/255,
-                                                    background_color[1]/255,
-                                                    background_color[2]/255, 1.0)
-            elif isinstance(background_color, str):
-                try:
-                    background_color = NSColorUsingColorName(background_color.upper())
-                except:
-                    raise ValueError('Background color %s does not exist, try a RGB number (red, green, blue).' % background_color)
-            else:
-                raise ValueError('_set_background_color on button widget must receive a tuple or a string')
-
-            self.native.setBordered_(False)
-            self.native.setWantsLayer_(True)
-            self.native.setBackgroundColor_(background_color)
-
     def rehint(self):
-        fitting_size = self.native.systemLayoutSizeFittingSize_(CGSize(0, 0))
-        self.interface.style.hint(
-            height=fitting_size.height,
-            min_width=fitting_size.width,
-        )
+        fitting_size = self.native.systemLayoutSizeFittingSize(CGSize(0, 0))
+        self.interface.intrinsic.width = at_least(fitting_size.width)
+        self.interface.intrinsic.height = fitting_size.height

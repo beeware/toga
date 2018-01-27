@@ -3,7 +3,9 @@ from types import GeneratorType
 
 
 class ProgressBar(Widget):
-    """"""
+    """
+    """
+    MIN_WIDTH = 100
 
     def __init__(self,
                  id=None,
@@ -16,7 +18,7 @@ class ProgressBar(Widget):
 
         Args:
             id (str):  An identifier for this widget.
-            style (:class:`colosseum.CSSNode`): An optional style object. If no style is provided then a
+            style (:obj:`Style`): An optional style object. If no style is provided then a
                 new one will be created for the widget.
             max (float): The maximum value of the progressbar.
             value (float): To define the current progress of the progressbar.

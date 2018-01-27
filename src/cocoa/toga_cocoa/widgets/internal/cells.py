@@ -15,8 +15,7 @@ class TogaIconCell(NSTextFieldCell):
             label = self.objectValue
             icon = None
 
-        if icon:
-            nicon = icon.native
+        if icon and icon.native:
             offset = 28.5
 
             NSGraphicsContext.currentContext.saveGraphicsState()
@@ -31,9 +30,9 @@ class TogaIconCell(NSTextFieldCell):
             interpolation = NSGraphicsContext.currentContext.imageInterpolation
             NSGraphicsContext.currentContext.imageInterpolation = NSImageInterpolationHigh
 
-            nicon.drawInRect(
+            icon.native.drawInRect(
                 NSRect(NSPoint(cellFrame.origin.x, yOffset), NSSize(16.0, 16.0)),
-                fromRect=NSRect(NSPoint(0, 0), NSSize(nicon.size.width, nicon.size.height)),
+                fromRect=NSRect(NSPoint(0, 0), NSSize(icon.native.size.width, icon.native.size.height)),
                 operation=NSCompositingOperationSourceOver,
                 fraction=1.0
             )
@@ -76,9 +75,7 @@ class TogaDetailedCell(NSTextFieldCell):
         title = self.objectValue.attrs['title']
         subtitle = self.objectValue.attrs['subtitle']
 
-        if icon:
-            nicon = icon.native
-
+        if icon and icon.native:
             NSGraphicsContext.currentContext.saveGraphicsState()
             yOffset = cellFrame.origin.y
             if view.isFlipped:
@@ -91,9 +88,9 @@ class TogaDetailedCell(NSTextFieldCell):
             interpolation = NSGraphicsContext.currentContext.imageInterpolation
             NSGraphicsContext.currentContext.imageInterpolation = NSImageInterpolationHigh
 
-            nicon.drawInRect(
+            icon.native.drawInRect(
                 NSRect(NSPoint(cellFrame.origin.x, yOffset + 4), NSSize(40.0, 40.0)),
-                fromRect=NSRect(NSPoint(0, 0), NSSize(nicon.size.width, nicon.size.height)),
+                fromRect=NSRect(NSPoint(0, 0), NSSize(icon.native.size.width, icon.native.size.height)),
                 operation=NSCompositingOperationSourceOver,
                 fraction=1.0
             )

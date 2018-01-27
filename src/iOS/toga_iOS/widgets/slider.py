@@ -1,7 +1,7 @@
 from rubicon.objc import objc_method, SEL
+from toga_iOS.libs import UISlider, CGSize, UIControlEventValueChanged
 
 from .base import Widget
-from toga_iOS.libs import UISlider, CGSize, UIControlEventValueChanged
 
 
 class TogaSlider(UISlider):
@@ -40,4 +40,5 @@ class Slider(Widget):
         )
 
     def set_on_slide(self, handler):
+        # No special handling required
         pass

@@ -1,12 +1,5 @@
 from gi.repository import Gtk
-
-
-def wrapped_handler(widget, handler):
-    def _handler(impl, data=None):
-        if handler:
-            return handler(widget)
-
-    return _handler
+from travertino.size import at_least
 
 
 class Widget:
@@ -14,9 +7,10 @@ class Widget:
         self.interface = interface
         self.interface._impl = self
         self._container = None
-        self.constraints = None
+        self.viewport = None
         self.native = None
         self.create()
+        self.interface.style.reapply()
 
     def set_app(self, app):
         pass
@@ -31,38 +25,52 @@ class Widget:
     @container.setter
     def container(self, container):
         self._container = container
-        if self.native:
-            self._container.native.add(self.native)
+        self._container.native.add(self.native)
 
         for child in self.interface.children:
             child._impl.container = container
-        self.interface.rehint()
 
-    @property
-    def enabled(self):
-        return self.native.get_sensitive()
-
-    @enabled.setter
-    def enabled(self, value):
-        self.native.set_sensitive(value)
-
-    def add_child(self, child):
-        if self._container:
-            child.container = self.container
         self.rehint()
 
-    def apply_layout(self):
+    def set_enabled(self, value):
+        self.native.set_sensitive(value)
+
+    ### APPLICATOR
+
+    def set_bounds(self, x, y, width, height):
+        # No implementation required here; the new sizing will be picked up
+        # by the box's allocation handler.
         pass
 
-    def apply_sub_layout(self):
+    def set_alignment(self, alignment):
+        # By default, alignment can't be changed
         pass
+
+    def set_hidden(self, hidden):
+        self.interface.factory.not_implemented('Widget.set_hidden()')
 
     def set_font(self, font):
-        self.native.override_font(font._impl)
-
-    def set_background_color(self, background_color):
+        # By default, fon't can't be changed
         pass
 
+    def set_color(self, color):
+        # By default, color can't be changed
+        pass
+
+    def set_background_color(self, color):
+        # By default, background color can't be changed
+        pass
+
+    ### INTERFACE
+
+    def add_child(self, child):
+        if self.container:
+            child.container = self.container
+
     def rehint(self):
-        for c in self.interface.children:
-            c.rehint()
+        # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height())
+        width = self.native.get_preferred_width()
+        height = self.native.get_preferred_height()
+
+        self.interface.intrinsic.width = at_least(width[0])
+        self.interface.intrinsic.height = at_least(height[0])

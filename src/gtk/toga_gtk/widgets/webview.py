@@ -29,7 +29,7 @@ class WebView(Widget):
         if WebKit2 is None:
             raise RuntimeError(
                 "Import 'from gi.repository import WebKit' failed;" +
-                " may need to install  gir1.2-webkit2-4.0 or gir1.2-webkit2-3.0.")
+                " may need to install gir1.2-webkit2-4.0 or gir1.2-webkit2-3.0.")
 
         self.native = Gtk.ScrolledWindow()
         self.native.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
@@ -47,17 +47,14 @@ class WebView(Widget):
             self.webview.load_uri(value)
 
     def set_user_agent(self, value):
-        pass
+        self.interface.factory.not_implemented('Window.info_dialog()')
         # self.native.user_agent = value if value else "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.101 Safari/537.36"
 
     def set_content(self, root_url, content):
         self.webview.load_html(content, root_url)
 
-    def set_user_agent(self, value):
-        pass
-
     def get_dom(self):
-        raise NotImplementedError()
+        self.interface.factory.not_implemented('WebView.get_dom()')
 
     def evaluate(self, javascript):
         return self.webview.run_javascript(javascript, None, None, None)

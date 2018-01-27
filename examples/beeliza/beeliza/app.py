@@ -2,7 +2,8 @@ import asyncio
 import random
 
 import toga
-from colosseum import CSS
+from toga.constants import ROW, COLUMN
+from toga.style import Pack
 
 from .bot import Eliza
 
@@ -41,7 +42,6 @@ class BeelizaApp(toga.App):
     def startup(self):
         # Set up main window
         self.main_window = toga.MainWindow(title=self.name)
-        self.main_window.app = self
 
         self.partner = Eliza()
 
@@ -53,30 +53,24 @@ class BeelizaApp(toga.App):
                     'subtitle': 'Hello. How are you feeling today?',
                 }
             ],
-            style=CSS(flex=1)
+            style=Pack(flex=1)
         )
 
         # Buttons
-        self.text_input = toga.TextInput(style=CSS(flex=1))
-        send_button = toga.Button('Send', on_press=self.handle_input, style=CSS(margin_left=10))
+        self.text_input = toga.TextInput(style=Pack(flex=1, padding=5))
+        send_button = toga.Button('Send', on_press=self.handle_input, style=Pack(padding=5))
         input_box = toga.Box(
             children=[
                 self.text_input,
                 send_button
             ],
-            style=CSS(
-                flex_direction='row',
-                padding=10,
-            )
+            style=Pack(direction=ROW)
         )
 
         # Outermost box
         outer_box = toga.Box(
             children=[self.chat, input_box],
-            style=CSS(
-                flex=1,
-                flex_direction='column'
-            )
+            style=Pack(direction=COLUMN)
         )
 
         # Add the content on the main window

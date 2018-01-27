@@ -100,6 +100,6 @@ class ListSource(Source):
         return self.insert(len(self), *values, **named)
 
     def remove(self, node):
-        self._notify('remove', item=node)
         self._data.remove(node)
+        self._notify('remove', item=node)
         return node

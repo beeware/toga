@@ -1,5 +1,4 @@
 from toga.constants import *
-
 from toga_iOS.libs import *
 
 from .base import Widget

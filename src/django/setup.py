@@ -1,9 +1,9 @@
 #/usr/bin/env python
 import io
 import re
-from setuptools import setup, find_packages
 import sys
 
+from setuptools import setup, find_packages
 
 if sys.version_info[:3] < (3, 4):
     raise SystemExit("Toga requires Python 3.4+.")
@@ -34,7 +34,7 @@ setup(
     install_requires=[
         'django==1.10.6',
         'django-environ==0.4.1',
-        'toga-core>=%s' % version,
+        'toga-core==%s' % version,
     ],
     tests_require=[
         'toga-dummy==%s' % version

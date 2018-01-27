@@ -6,7 +6,7 @@ class WebView(Widget):
 
     Args:
         id (str): An identifier for this widget.
-        style (:class:`colosseum.CSSNode`): An optional style object. If no style is provided then
+        style (:obj:`Style`): An optional style object. If no style is provided then
             a new one will be created for the widget.
         factory (:obj:`module`): A python module that is capable to return a
             implementation of this class with the same name. (optional & normally not needed)
@@ -16,6 +16,8 @@ class WebView(Widget):
             the web view
         on_webview_load (``callable``): The callback method for when the webview loads (or reloads).
     """
+    MIN_WIDTH = 100
+    MIN_HEIGHT = 100
 
     def __init__(self, id=None, style=None, factory=None,
                  url=None, user_agent=None, on_key_down=None, on_webview_load=None):

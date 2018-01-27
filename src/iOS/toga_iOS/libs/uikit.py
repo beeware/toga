@@ -6,7 +6,6 @@ from ctypes import util
 from enum import Enum
 
 from rubicon.objc import *
-
 from toga.constants import *
 
 ######################################################################
@@ -90,20 +89,19 @@ NSLineBreakByTruncatingTail = 4
 NSLineBreakByTruncatingMiddle = 5
 
 ######################################################################
-# NSText.h
+# NSText.h (The order is different on macOS and iOS)
 NSLeftTextAlignment = 0
-NSRightTextAlignment = 1
-NSCenterTextAlignment = 2
+NSCenterTextAlignment = 1
+NSRightTextAlignment = 2
 NSJustifiedTextAlignment = 3
 NSNaturalTextAlignment = 4
 
 def NSTextAlignment(alignment):
     return {
-        LEFT_ALIGNED: NSLeftTextAlignment,
-        RIGHT_ALIGNED: NSRightTextAlignment,
-        CENTER_ALIGNED: NSCenterTextAlignment,
-        JUSTIFIED_ALIGNED: NSJustifiedTextAlignment,
-        NATURAL_ALIGNED: NSNaturalTextAlignment,
+        LEFT: NSLeftTextAlignment,
+        RIGHT: NSRightTextAlignment,
+        CENTER: NSCenterTextAlignment,
+        JUSTIFY: NSJustifiedTextAlignment,
     }[alignment]
 
 ######################################################################
@@ -232,6 +230,10 @@ UILabel = ObjCClass('UILabel')
 UINavigationController = ObjCClass('UINavigationController')
 
 ######################################################################
+# UIPickerView.h
+UIPickerView = ObjCClass('UIPickerView')
+
+######################################################################
 # UIRefreshControl.h
 UIRefreshControl = ObjCClass('UIRefreshControl')
 
@@ -291,10 +293,28 @@ UITableViewCellSeparatorStyleSingleLine = 1
 # UITextField.h
 UITextField = ObjCClass('UITextField')
 
-UITextBorderStyleNone = 0
-UITextBorderStyleLine = 1
-UITextBorderStyleBezel = 2
-UITextBorderStyleRoundedRect = 3
+class UITextBorderStyle(Enum):
+    NoBorder = 0
+    Line = 1
+    Bezel = 2
+    RoundedRect = 3
+
+######################################################################
+# UITextInputTraits.h
+
+class UIKeyboardType(Enum):
+    Default = 0
+    ASCIICapable = 1
+    NumbersAndPunctuation = 2
+    URL = 3
+    NumberPad = 4
+    PhonePad = 5
+    NamePhonePad = 6
+    EmailAddress = 7
+    DecimalPad = 8
+    Twitter = 9
+    WebSearch = 10
+    ASCIICapableNumberPad = 11
 
 ######################################################################
 # UIView.h

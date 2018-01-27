@@ -1,4 +1,4 @@
-from toga_iOS.container import Constraints
+from toga_iOS.constraints import Constraints
 
 
 class Widget:
@@ -9,6 +9,7 @@ class Widget:
         self.constraints = None
         self.native = None
         self.create()
+        self.interface.style.reapply()
 
     def set_app(self, app):
         pass
@@ -23,48 +24,52 @@ class Widget:
     @container.setter
     def container(self, container):
         self._container = container
-        if self.constraints and self.native:
-            self._container.native.addSubview_(self.native)
+        if self.constraints:
+            self._container.native.addSubview(self.native)
             self.constraints.container = container
 
         for child in self.interface.children:
             child._impl.container = container
-        self.interface.rehint()
-
-    @property
-    def enabled(self):
-        value = self.native.isEnabled()
-        if value == 0:
-            return False
-        elif value == 1:
-            return True
-        else:
-            raise RuntimeError('Got not allowed return value: {}'.format(value))
-
-    @enabled.setter
-    def enabled(self, value):
-        self.native.enabled = value
-
-    def add_child(self, child):
-        if self.container:
-            child.container = self.container
-
-    def add_constraints(self):
-        self.native.setTranslatesAutoresizingMaskIntoConstraints_(False)
-        self.constraints = Constraints(self)
-
-    def apply_layout(self):
-        if self.constraints:
-            self.constraints.update()
-
-    def apply_sub_layout(self):
-        pass
-
-    def set_font(self, font):
-        self.native.setFont_(font.native)
+        self.rehint()
 
     def set_enabled(self, value):
         self.native.enabled = value
+
+    ### APPLICATOR
+
+    def set_bounds(self, x, y, width, height):
+        self.constraints.update(x, y, width, height)
+
+    def set_alignment(self, alignment):
+        pass
+
+    def set_hidden(self, hidden):
+        for view in self._container._impl.subviews:
+            if child._impl == view:
+                view.setHidden(hidden)
+
+    def set_font(self, font):
+        # By default, font can't be changed
+        pass
+
+    def set_color(self, color):
+        # By default, color can't be changed
+        pass
+
+    def set_background_color(self, color):
+        # By default, background color can't be changed
+        pass
+
+    ### INTERFACE
+
+    def add_child(self, child):
+        if self.container:
+            child.viewport = self.root.viewport
+            child.container = self.container
+
+    def add_constraints(self):
+        self.native.translatesAutoresizingMaskIntoConstraints = False
+        self.constraints = Constraints(self)
 
     def rehint(self):
         pass

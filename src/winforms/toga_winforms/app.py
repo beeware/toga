@@ -1,9 +1,5 @@
-import os
-
-from .libs import *
-
 from .window import Window
-# from .widgets.icon import Icon, TIBERIUS_ICON
+from .libs import Threading, WinForms
 
 
 class MainWindow(Window):
@@ -19,7 +15,6 @@ class App:
         self.interface._impl = self
 
     def create(self):
-        print("CREATE")
         self.native = WinForms.Application
 
         # self.native.setApplicationIconImage_(self.icon.native)
@@ -35,7 +30,7 @@ class App:
         print("STUB: If you want to handle opening documents, implement App.open_document(fileURL)")
 
     def create_menus(self):
-        raise NotImplementedError()
+        self.interface.factory.not_implemented('App.create_menus()')
 
     def run_app(self):
         self.create()
@@ -48,4 +43,4 @@ class App:
         thread.Join()
 
     def exit(self):
-        raise NotImplementedError()
+        self.interface.factory.not_implemented('App.exit()')

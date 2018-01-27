@@ -1,53 +1,40 @@
 from gi.repository import Gtk
+from travertino.size import at_least
 
 from .base import Widget
 
 
 class Button(Widget):
     def create(self):
-        self._connections = []
         self.native = Gtk.Button()
         self.native.interface = self.interface
 
         self.native.connect('show', lambda event: self.rehint())
+        self.native.connect('clicked', self.on_press)
 
     def set_label(self, label):
-        self.native.set_label(label)
+        self.native.set_label(self.interface.label)
         self.rehint()
 
     def set_enabled(self, value):
         # self._impl.set_sensitive(value)
-        pass
+        self.interface.factory.not_implemented('Button.set_enabled()')
 
     def set_background_color(self, value):
-        pass
+        self.interface.factory.not_implemented('Button.set_background_color()')
 
     def set_on_press(self, handler):
-        for conn_id in self._connections:
-            # Disconnect all other on-click handlers, so that if you reassign
-            # the on_press, it doesn't trigger the old ones too.
-            self.native.disconnect(conn_id)
-            self._connections.remove(conn_id)
-
-        self._connections.append(self.native.connect("clicked", handler))
+        # No special handling required
+        pass
 
     def rehint(self):
-        # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height(), getattr(self, '_fixed_height', False), getattr(self, '_fixed_width', False))
-        hints = {}
+        # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height())
         width = self.native.get_preferred_width()
-        minimum_width = width[0]
-        natural_width = width[1]
-
         height = self.native.get_preferred_height()
-        minimum_height = height[0]
-        natural_height = height[1]
 
-        if minimum_width > 0:
-            hints['min_width'] = minimum_width
-        if minimum_height > 0:
-            hints['min_height'] = minimum_height
-        if natural_height > 0:
-            hints['height'] = natural_height
+        self.interface.intrinsic.width = at_least(width[0])
+        self.interface.intrinsic.height = height[1]
 
-        if hints:
-            self.interface.style.hint(**hints)
+    def on_press(self, event):
+        if self.interface.on_press:
+            self.interface.on_press(self.interface)

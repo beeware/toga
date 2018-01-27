@@ -1,5 +1,7 @@
-from toga_cocoa.container import Container
+from rubicon.objc import at
+
 from toga_cocoa.libs import *
+from toga_cocoa.window import CocoaViewport
 
 from .base import Widget
 
@@ -7,18 +9,18 @@ from .base import Widget
 class TogaTabViewDelegate(NSObject):
     @objc_method
     def tabView_didSelectTabViewItem_(self, view, item) -> None:
-        pass
+        index = at(item.identifier).longValue
+        if self.interface.on_select:
+            self.interface.on_select(self.interface, option=self.interface.content[index])
 
 
 class OptionContainer(Widget):
     def create(self):
         self.native = NSTabView.alloc().init()
-
         self.delegate = TogaTabViewDelegate.alloc().init()
-        self.delegate.interface = self
+        self.delegate.interface = self.interface
+        self.delegate._impl = self
         self.native.delegate = self.delegate
-
-        self.containers = []
 
         # Add the layout constraints
         self.add_constraints()
@@ -30,21 +32,21 @@ class OptionContainer(Widget):
             label (str): The label for the option container
             widget: The widget or widget tree that belongs to the label.
         """
-        if widget.native is None:
-            container = Container()
-            container.content = widget
-        else:
-            container = widget
+        widget.viewport = CocoaViewport(widget.native)
 
-        self.containers.append((label, container, widget))
+        for child in widget.interface.children:
+            child._impl.container = widget
 
-        item = NSTabViewItem.alloc().initWithIdentifier('%s-Tab-%s' % (id(self), id(widget)))
+        item = NSTabViewItem.alloc().initWithIdentifier(len(self.interface.content) - 1)
         item.label = label
 
-        # Turn the autoresizing mask on the container widget
-        # into constraints. This makes the container fill the
+        # Turn the autoresizing mask on the widget widget
+        # into constraints. This makes the widget fill the
         # available space inside the OptionContainer.
-        container.native.translatesAutoresizingMaskIntoConstraints = True
+        widget.native.translatesAutoresizingMaskIntoConstraints = True
 
-        item.view = container.native
+        item.view = widget.native
         self.native.addTabViewItem(item)
+
+    def set_on_select(self, handler):
+        pass

@@ -1,9 +1,9 @@
 #/usr/bin/env python
 import io
 import re
-from setuptools import setup, find_packages
 import sys
 
+from setuptools import setup, find_packages
 
 if sys.version_info[:3] < (3, 4):
     raise SystemExit("Toga requires Python 3.4+.")
@@ -59,34 +59,36 @@ setup(
         'app': {
             'formal_name': 'Toga Demo',
             'bundle': 'org.pybee',
-            # 'icon': 'icons/macos',
         },
-        # 'ios': {
-        #     'app_requires': [
-        #         'toga-ios'
-        #     ]
-        # },
+        'ios': {
+            'app_requires': [
+                'toga-ios==%s' % version,
+            ]
+        },
         'django': {
             'app_requires': [
-                'toga-django'
+                'toga-django==%s' % version,
             ]
         },
         'macos': {
             'app_requires': [
+                'toga-cocoa==%s' % version,
             ]
         },
         'linux': {
             'app_requires': [
+                'toga-gtk==%s' % version,
             ]
         },
         'windows': {
             'app_requires': [
+                'toga-winform==%s' % version,
             ]
         },
-        # 'android': {
-        #     'app_requires': [
-        #         'toga-android'
-        #     ]
-        # }
+        'android': {
+            'app_requires': [
+                'toga-android==%s' % version,
+            ]
+        }
     }
 )
