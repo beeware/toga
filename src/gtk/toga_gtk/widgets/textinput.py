@@ -11,8 +11,8 @@ class TextInput(Widget):
 
         self.native.connect('show', lambda event: self.rehint())
 
-    def set_readonly(self, editable):
-        self.native.set_property('editable', not editable)
+    def set_readonly(self, value):
+        self.native.set_property('editable', not value)
 
     def set_placeholder(self, value):
         self.native.set_placeholder_text(value)
