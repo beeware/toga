@@ -1,4 +1,4 @@
-from .libs import NSFont
+from .libs import NSFont, NSDictionary
 from toga.font import MESSAGE, NORMAL, SYSTEM, SERIF, SANS_SERIF, CURSIVE, FANTASY, MONOSPACE
 
 _FONT_CACHE = {}
@@ -43,7 +43,7 @@ class Font:
         self.native = font
 
     def measure(self, text, tight=False):
-        # TODO implement
-        width = 10
-        height = 10
+        string_text = NSString.initWithString(text)
+        font_attrs = {self.native : NSFontAttributeName}
+        [width, height] = string_text.sizeWithAttributes(font_attrs)
         return width, height
