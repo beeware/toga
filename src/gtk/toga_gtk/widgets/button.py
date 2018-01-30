@@ -18,13 +18,14 @@ class Button(Widget):
 
     def set_enabled(self, value):
         # self._impl.set_sensitive(value)
-        raise NotImplementedError()
+        self.interface.factory.not_implemented('Button.set_enabled()')
 
     def set_background_color(self, value):
-        raise NotImplementedError()
+        self.interface.factory.not_implemented('Button.set_background_color()')
 
     def set_on_press(self, handler):
-        raise NotImplementedError()
+        # No special handling required
+        pass
 
     def rehint(self):
         # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height())

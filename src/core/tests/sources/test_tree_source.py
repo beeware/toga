@@ -25,6 +25,16 @@ class LeafNodeTests(TestCase):
         self.assertEqual(self.example.val1, 'new value')
         self.source._notify.assert_called_once_with('change', item=self.example)
 
+    def test_iterate_children(self):
+        "Children of a node can be iterated over -- should have no children"
+        result = 0
+
+        for child in self.example:
+            result += child.val2
+
+        self.assertEqual(result, 0)
+
+
 
 class NodeTests(TestCase):
     def setUp(self):

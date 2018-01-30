@@ -40,4 +40,4 @@ class SplitContainer(Widget):
             self.interface.content[1].window = self.interface.window
 
     def set_direction(self, value):
-        raise NotImplementedError()
+        self.interface.factory.not_implemented('SplitContainer.set_direction()')

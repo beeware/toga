@@ -16,42 +16,160 @@ Set up your development environment
 
 The recommended way of setting up your development environment for Toga
 is to install a virtual environment, install the required dependencies and
-start coding. Assuming that you are using ``virtualenvwrapper``, you only have
-to run::
+start coding. To set up a virtual environment, run:
 
-    $ git clone git@github.com:pybee/toga.git
-    $ python3 -m venv venv
-    $ source venv/bin/activate
-    (venv) $ cd toga
+.. tabs::
 
-Then, install Toga into your development environment. The Toga source repository
-contains multiple packages. Since we're installing from source, we can't rely
-on pip to install the packages in dependency order. Therefore, we have to manually
-install each package in a specific order. We start with the core packages::
+  .. group-tab:: macOS
 
-    (venv) $ pip install -e src/core
-    (venv) $ pip install -e src/dummy
+    .. code-block:: bash
 
-Then, we can install the code for the specific platform we want to use. For example,
-if we're on a Mac, you'd run::
+      $ python3 -m venv venv
+      $ source venv/bin/activate
 
-    (venv) $ pip install -e src/cocoa
+  .. group-tab:: Linux
 
-If you were on a Linux box, you'd run::
+    .. code-block:: bash
 
-    (venv) $ pip install -e src/gtk
+      $ python3 -m venv venv
+      $ source venv/bin/activate
 
-And so on.
+  .. group-tab:: Windows
 
-You can then run the core test suite::
+    .. code-block:: doscon
 
-    (venv) $ cd src/core
-    (venv) $ python setup.py test
-    ...
-    ----------------------------------------------------------------------
-    Ran 100 tests in 0.343s
+      C:\...>python3 -m venv venv
+      C:\...>venv/Scripts/activate
 
-    OK (skipped=1)
+Your prompt should now have a ``(venv)`` prefix in front of it.
+
+Next, go to `the Toga page on Github <https://github.com/pybee/toga>`__, and
+fork the repository into your own account, and then clone a copy of that
+repository onto your computer by clicking on "Clone or Download". If you
+have the Github desktop application installed on your computer, you can
+select "Open in Desktop"; otherwise, copy the URL provided, and use it
+to clone using the command line:
+
+.. tabs::
+
+  .. group-tab:: macOS
+
+    Fork the Toga repository, and then::
+
+      (venv) $ git clone git@github.com:<your username>/toga.git
+
+    (substituting your Github username)
+
+  .. group-tab:: Linux
+
+    Fork the Toga repository, and then::
+
+      (venv) $ git clone git@github.com:<your username>/toga.git
+
+    (substituting your Github username)
+
+  .. group-tab:: Windows
+
+    Fork the Toga repository, and then:
+
+    .. code-block:: doscon
+
+      (venv) C:\...>git clone git@github.com:<your username>/toga.git
+
+    (substituting your Github username)
+
+Now that you have the source code, you can install Toga into your development
+environment. The Toga source repository contains multiple packages. Since
+we're installing from source, we can't rely on pip to install the packages in
+dependency order. Therefore, we have to manually install each package in a
+specific order. We start with the core packages:
+
+.. tabs::
+
+  .. group-tab:: macOS
+
+    .. code-block:: bash
+
+      (venv) $ cd toga
+      (venv) $ pip install -e src/core
+      (venv) $ pip install -e src/dummy
+
+  .. group-tab:: Linux
+
+    .. code-block:: bash
+
+      (venv) $ cd toga
+      (venv) $ pip install -e src/core
+      (venv) $ pip install -e src/dummy
+
+  .. group-tab:: Windows
+
+    .. code-block:: doscon
+
+      (venv) C:\...>cd toga
+      (venv) C:\...>pip install -e src/core
+      (venv) C:\...>pip install -e src/dummy
+
+Then, we can install the code for the specific platform we want to use:
+
+.. tabs::
+
+  .. group-tab:: macOS
+
+    .. code-block:: bash
+
+      (venv) $ pip install -e src/cocoa
+
+  .. group-tab:: Linux
+
+    .. code-block:: bash
+
+      (venv) $ pip install -e src/gtk
+
+  .. group-tab:: Windows
+
+    .. code-block:: doscon
+
+      (venv) C:\...>pip install -e src/winforms
+
+You can then run the core test suite:
+
+.. tabs::
+
+  .. group-tab:: macOS
+
+    .. code-block:: bash
+
+      (venv) $ cd src/core
+      (venv) $ python setup.py test
+      ...
+      ----------------------------------------------------------------------
+      Ran 181 tests in 0.343s
+
+      OK (skipped=1)
+
+  .. group-tab:: Linux
+
+    .. code-block:: bash
+
+      (venv) $ cd src/core
+      (venv) $ python setup.py test
+      ...
+      ----------------------------------------------------------------------
+      Ran 181 tests in 0.343s
+
+      OK (skipped=1)
+
+  .. group-tab:: Windows
+
+    .. code-block:: doscon
+
+      (venv) C:\...>python setup.py test
+      ...
+      ----------------------------------------------------------------------
+      Ran 181 tests in 0.343s
+
+      OK (skipped=1)
 
 You should get some output indicating that tests have been run. You shouldn’t
 ever get any FAIL or ERROR test results. We run our full test suite before
@@ -74,22 +192,58 @@ check which lines of code have (and haven't) been executed - which then gives
 you an idea of what code has (and hasn't) been tested.
 
 Install coverage, and then re-run the test suite -- this time, in a slightly
-different way so that we can gather some data about the test run::
+different way so that we can gather some data about the test run. Then we can
+ask coverage to generate a report of the data that was gathered:
 
-    (venv) $ pip install coverage
-    (venv) $ coverage run setup.py test
+.. tabs::
 
-Then, generate a report for the coverage data you just gathered::
+  .. group-tab:: macOS
 
-    (venv) $ coverage report -m --include=toga/*
-    Name                                 Stmts   Miss  Cover   Missing
-    ------------------------------------------------------------------
-    toga/__init__.py                        29      0   100%
-    toga/app.py                             50      0   100%
-    ...
-    toga/window.py                          79     18    77%   58, 75, 87, 92, 104, 141, 155, 164, 168, 172-173, 176, 192, 204, 216, 228, 243, 257
-    ------------------------------------------------------------------
-    TOTAL                                 1034    258    75%
+    .. code-block:: bash
+
+      (venv) $ pip install coverage
+      (venv) $ coverage run setup.py test
+      (venv) $ coverage report -m --include=toga/*
+      Name                                 Stmts   Miss  Cover   Missing
+      ------------------------------------------------------------------
+      toga/__init__.py                        29      0   100%
+      toga/app.py                             50      0   100%
+      ...
+      toga/window.py                          79     18    77%   58, 75, 87, 92, 104, 141, 155, 164, 168, 172-173, 176, 192, 204, 216, 228, 243, 257
+      ------------------------------------------------------------------
+      TOTAL                                 1034    258    75%
+
+  .. group-tab:: Linux
+
+    .. code-block:: bash
+
+      (venv) $ pip install coverage
+      (venv) $ coverage run setup.py test
+      (venv) $ coverage report -m --include=toga/*
+      Name                                 Stmts   Miss  Cover   Missing
+      ------------------------------------------------------------------
+      toga/__init__.py                        29      0   100%
+      toga/app.py                             50      0   100%
+      ...
+      toga/window.py                          79     18    77%   58, 75, 87, 92, 104, 141, 155, 164, 168, 172-173, 176, 192, 204, 216, 228, 243, 257
+      ------------------------------------------------------------------
+      TOTAL                                 1034    258    75%
+
+  .. group-tab:: Windows
+
+    .. code-block:: doscon
+
+      (venv) C:\...>pip install coverage
+      (venv) C:\...>coverage run setup.py test
+      (venv) C:\...>coverage report -m --include=toga/*
+      Name                                 Stmts   Miss  Cover   Missing
+      ------------------------------------------------------------------
+      toga/__init__.py                        29      0   100%
+      toga/app.py                             50      0   100%
+      ...
+      toga/window.py                          79     18    77%   58, 75, 87, 92, 104, 141, 155, 164, 168, 172-173, 176, 192, 204, 216, 228, 243, 257
+      ------------------------------------------------------------------
+      TOTAL                                 1034    258    75%
 
 What does this all mean? Well, the "Cover" column tells you what proportion of
 lines in a given file were executed during the test run. In this run, every
@@ -105,24 +259,75 @@ create it!
 
 Your task: create a test that improves coverage - even by one more line.
 
-Once you've written a test, re-run the test suite to generate fresh coverage data. Let's say we added a test for line 58 of ``toga/window.py`` - we'd expect to see something like::
+Once you've written a test, re-run the test suite to generate fresh coverage
+data. Let's say we added a test for line 58 of ``toga/window.py`` - we'd
+expect to see something like:
 
-    (venv) $ coverage run setup.py test
-    running test
-    ...
-    ----------------------------------------------------------------------
-    Ran 101 tests in 0.343s
+.. tabs::
 
-    OK (skipped=1)
-    (venv) $ coverage report -m --include=toga/*
-    Name                                 Stmts   Miss  Cover   Missing
-    ------------------------------------------------------------------
-    toga/__init__.py                        29      0   100%
-    toga/app.py                             50      0   100%
-    ...
-    toga/window.py                          79     17    78%   75, 87, 92, 104, 141, 155, 164, 168, 172-173, 176, 192, 204, 216, 228, 243, 257
-    ------------------------------------------------------------------
-    TOTAL                                 1034    257    75%
+  .. group-tab:: macOS
+
+    .. code-block:: bash
+
+      (venv) $ coverage run setup.py test
+      running test
+      ...
+      ----------------------------------------------------------------------
+      Ran 101 tests in 0.343s
+
+      OK (skipped=1)
+      (venv) $ coverage report -m --include=toga/*
+      Name                                 Stmts   Miss  Cover   Missing
+      ------------------------------------------------------------------
+      toga/__init__.py                        29      0   100%
+      toga/app.py                             50      0   100%
+      ...
+      toga/window.py                          79     17    78%   75, 87, 92, 104, 141, 155, 164, 168, 172-173, 176, 192, 204, 216, 228, 243, 257
+      ------------------------------------------------------------------
+      TOTAL                                 1034    257    75%
+
+  .. group-tab:: Linux
+
+    .. code-block:: bash
+
+      (venv) $ coverage run setup.py test
+      running test
+      ...
+      ----------------------------------------------------------------------
+      Ran 101 tests in 0.343s
+
+      OK (skipped=1)
+      (venv) $ coverage report -m --include=toga/*
+      Name                                 Stmts   Miss  Cover   Missing
+      ------------------------------------------------------------------
+      toga/__init__.py                        29      0   100%
+      toga/app.py                             50      0   100%
+      ...
+      toga/window.py                          79     17    78%   75, 87, 92, 104, 141, 155, 164, 168, 172-173, 176, 192, 204, 216, 228, 243, 257
+      ------------------------------------------------------------------
+      TOTAL                                 1034    257    75%
+
+  .. group-tab:: Windows
+
+    .. code-block:: doscon
+
+      (venv) C:\...>coverage run setup.py test
+      running test
+      ...
+      ----------------------------------------------------------------------
+      Ran 101 tests in 0.343s
+
+      OK (skipped=1)
+      (venv) $ coverage report -m --include=toga/*
+      Name                                 Stmts   Miss  Cover   Missing
+      ------------------------------------------------------------------
+      toga/__init__.py                        29      0   100%
+      toga/app.py                             50      0   100%
+      ...
+      toga/window.py                          79     17    78%   75, 87, 92, 104, 141, 155, 164, 168, 172-173, 176, 192, 204, 216, 228, 243, 257
+      ------------------------------------------------------------------
+      TOTAL                                 1034    257    75%
+
 
 That is, one more test has been executed, resulting in one less missing line
 in the coverage results.
@@ -155,7 +360,7 @@ One error you might see...
 
 When you're running these tests - especially when you submit your PR, and the
 tests run on our continous integration (CI) server - it's possible you might get
-and error that reads:
+and error that reads::
 
     ModuleNotFoundError: No module named 'toga_gtk'.
 

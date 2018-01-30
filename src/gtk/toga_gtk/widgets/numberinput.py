@@ -35,10 +35,10 @@ class NumberInput(Widget):
         self.native.set_value(value)
 
     def set_alignment(self, value):
-        raise NotImplementedError()
+        self.interface.factory.not_implemented('NumberInput.set_alignment()')
 
     def set_font(self, value):
-        raise NotImplementedError()
+        self.interface.factory.not_implemented('NumberInput.set_font()')
 
     def rehint(self):
         self.interface.style.min_width = self.interface.MIN_WIDTH
