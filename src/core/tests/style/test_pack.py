@@ -1,22 +1,86 @@
 from unittest import TestCase
+from unittest.mock import Mock
 
 from travertino.layout import Viewport
 from travertino.node import Node
 from travertino.size import at_least
 
 from toga.style.pack import *
+from toga.style.applicator import TogaApplicator
+from toga.color import rgb
 
 
 class TestNode(Node):
     def __init__(self, name, style, size=None, children=None):
-        super().__init__(style=style, children=children)
+        super().__init__(style=style, children=children,
+                         applicator=TogaApplicator(self))
         self.name = name
+        self._impl = Mock()
         if size:
             self.intrinsic.width = size[0]
             self.intrinsic.height = size[1]
 
     def __repr__(self):
         return '<{} at {}>'.format(self.name, id(self))
+
+
+class TestPackStyleApply(TestCase):
+
+    def test_set_default_right_textalign_when_rtl(self):
+        root = TestNode(
+            'app', style=Pack(text_align=None, text_direction=RTL)
+        )
+        root.style.reapply()
+        root._impl.set_alignment.assert_called_once_with(RIGHT)
+
+    def test_set_default_left_textalign_when_no_rtl(self):
+        root = TestNode(
+            'app', style=Pack(text_align=None)
+        )
+        root.style.reapply()
+        root._impl.set_alignment.assert_called_once_with(LEFT)
+
+    def test_set_center_alignment(self):
+        root = TestNode(
+            'app', style=Pack(text_align='center')
+        )
+        root.style.reapply()
+        root._impl.set_alignment.assert_called_once_with(CENTER)
+
+    def test_set_color(self):
+        color = '#ffffff'
+        root = TestNode(
+            'app', style=Pack(color=color)
+        )
+        root.style.reapply()
+        root._impl.set_color.assert_called_once_with(rgb(255, 255, 255))
+
+    def test_set_background_color(self):
+        color = '#ffffff'
+        root = TestNode(
+            'app', style=Pack(background_color=color)
+        )
+        root.style.reapply()
+        root._impl.set_background_color.assert_called_once_with(rgb(255, 255, 255))
+
+    def test_set_font(self):
+        root = TestNode(
+            'app', style=Pack(font_family='Roboto',
+                              font_size=12,
+                              font_style='normal',
+                              font_variant='small-caps',
+                              font_weight='bold')
+        )
+        root.style.reapply()
+        root._impl.set_font.assert_called_with(
+            Font('Roboto', 12, 'normal', 'small-caps', 'bold'))
+
+    def test_set_hidden(self):
+        root = TestNode(
+            'app', style=Pack(hidden='true')
+        )
+        root.style.reapply()
+        root._impl.set_hidden.assert_called_once_with('hidden')
 
 
 class PackLayoutTests(TestCase):
