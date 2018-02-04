@@ -100,7 +100,7 @@ Running the app
 Before you run the app, you'll need to install toga. Although you *can* install
 toga by just running::
 
-    $ pip install toga
+    $ pip install --pre toga
 
 We strongly suggest that you **don't** do this. We'd suggest creating a `virtual
 environment`_ first, and installing toga in that virtual environment.
