@@ -75,12 +75,12 @@ class TestPackStyleApply(TestCase):
         root._impl.set_font.assert_called_with(
             Font('Roboto', 12, 'normal', 'small-caps', 'bold'))
 
-    def test_set_hidden(self):
+    def test_set_visibility_hidden(self):
         root = TestNode(
-            'app', style=Pack(hidden='true')
+            'app', style=Pack(visibility=HIDDEN)
         )
         root.style.reapply()
-        root._impl.set_hidden.assert_called_once_with('hidden')
+        root._impl.set_hidden.assert_called_once_with(True)
 
 
 class PackLayoutTests(TestCase):

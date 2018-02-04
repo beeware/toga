@@ -84,8 +84,11 @@ class Pack(BaseStyle):
                 self._applicator.set_color(value)
             elif prop == 'background_color':
                 self._applicator.set_background_color(value)
-            elif prop == 'hidden':
-                self._applicator.set_hidden(value)
+            elif prop == 'visibility':
+                hidden = False
+                if value == HIDDEN:
+                    hidden = True
+                self._applicator.set_hidden(hidden)
             elif prop in ('font_family', 'font_size', 'font_style', 'font_variant', 'font_weight'):
                 self._applicator.set_font(
                     Font(
