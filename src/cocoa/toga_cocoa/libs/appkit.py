@@ -507,6 +507,7 @@ NSStepper = ObjCClass('NSStepper')
 ######################################################################
 # NSStringDrawing.h
 
+NSString = ObjCClass('NSString')
 NSStringDrawingUsesLineFragmentOrigin = 1 << 0
 NSStringDrawingUsesFontLeading = 1 << 1
 NSStringDrawingDisableScreenFontSubstitution = 1 << 2  # DEPRECATED
