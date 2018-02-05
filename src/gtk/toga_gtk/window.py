@@ -117,6 +117,7 @@ class Window:
         pass
 
     def set_size(self, size):
+        self.native.resize(size[0],size[1])
         pass
 
     def info_dialog(self, title, message):

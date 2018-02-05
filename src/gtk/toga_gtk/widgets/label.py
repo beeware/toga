@@ -21,18 +21,17 @@ class Label(Widget):
         self.native.set_alignment(*gtk_alignment(value))
 
     def set_color(self, value):
-        if value:
-            pass
-            # print('set color', value, native_color(value))
-            # FIXME
-            # self.native.set_color(native_color(value))
+        pass
+        # print('set color', value, native_color(value))
+        # FIXME
+        # self.native.set_color(native_color(value))
 
     def set_font(self, value):
-        if value:
-            pass
-            # print('set font', value._impl, value._impl.native)
-            # FIXME
-            # self.native.set_font(native_font(value))
+        # self.native.set_attributes('font', value)
+        pass
+        # print('set font', value._impl, value._impl.native)
+        # FIXME
+        # self.native.set_font(native_font(value))
 
     def set_text(self, value):
         # FIXME after setting the label the label jumps to the top left

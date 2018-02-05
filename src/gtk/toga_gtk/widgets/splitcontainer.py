@@ -40,4 +40,9 @@ class SplitContainer(Widget):
             self.interface.content[1].window = self.interface.window
 
     def set_direction(self, value):
-        self.interface.factory.not_implemented('SplitContainer.set_direction()')
+        if value == self.interface.HORIZONTAL:
+            self.native = Gtk.VPaned()
+        else:
+            self.native = Gtk.HPaned()
+        self.native.interface = self.interface
+        self.ratio = None
