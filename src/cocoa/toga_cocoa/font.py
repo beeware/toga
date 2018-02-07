@@ -1,4 +1,4 @@
-from rubicon.objc import NSDictionary, NSSize, send_super, objc_method
+from rubicon.objc import ObjCInstance
 from .libs import NSString, NSFont, NSFontAttributeName
 from toga.font import MESSAGE, NORMAL, SYSTEM, SERIF, SANS_SERIF, CURSIVE, FANTASY, MONOSPACE
 
@@ -44,19 +44,14 @@ class Font:
         self.native = font
 
     def measure(self, text, tight=False):
-        font_attrs = {self.native: NSFontAttributeName}
-        print(font_attrs)
-        text_string = TextString(text)
-        print(text_string)
-        [width, height] = text_string.sizeWithAttributes(font_attrs)
+        font_attrs = {NSFontAttributeName: self.native}
+
+        # Workaround for rubicon since it doesn't yet provide an ObjCStringInstance
+        text_string = ObjCInstance(ObjCInstance(NSString.alloc(convert_result=False)).initWithString_(text, convert_result=False))
+
+        size = text_string.sizeWithAttributes(font_attrs)
+        print(repr(size))
+        width = 50
+        height = 50
         return width, height
 
-
-class TextString(NSString):
-    @objc_method
-    def sizeWithAttributes(self, attrs: NSDictionary) -> NSSize:
-        size = send_super(
-            self, 'sizeWithAttributes:', attrs, restype=NSSize, argtypes=[NSDictionary]
-        )
-
-        return size
