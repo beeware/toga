@@ -52,6 +52,7 @@ class StartApp(toga.App):
             self.canvas.arc(58, 92, 15)
             self.canvas.arc(88, 92, 15, math.pi, 3 * math.pi)
         with self.canvas.fill():
+            self.canvas.fill_style('rgba(0, 0, 0, 1)')
             self.canvas.arc(58, 97, 3)
             self.canvas.arc(88, 97, 3)
 
