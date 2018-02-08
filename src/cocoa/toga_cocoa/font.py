@@ -46,12 +46,10 @@ class Font:
     def measure(self, text, tight=False):
         font_attrs = {NSFontAttributeName: self.native}
 
-        # Workaround for rubicon since it doesn't yet provide an ObjCStringInstance
-        text_string = ObjCInstance(ObjCInstance(NSString.alloc(convert_result=False)).initWithString_(text, convert_result=False))
+        # The double ObjCInstance wrapping is workaround for rubicon since it doesn't yet provide an ObjCStringInstance
+        text_string = ObjCInstance(
+            ObjCInstance(NSString.alloc(convert_result=False)).initWithString_(text, convert_result=False)
+        )
 
         size = text_string.sizeWithAttributes(font_attrs)
-        print(repr(size))
-        width = 50
-        height = 50
-        return width, height
-
+        return size.width, size.height
