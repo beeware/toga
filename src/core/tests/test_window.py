@@ -12,8 +12,8 @@ class TestWindow(TestCase):
     def test_widget_created(self):
         id = self.window.id
         self.assertIsNotNone(self.window.id)
-        app = toga.App('test_name', 'id.app')
-        new_app = toga.App('error_name', 'id.error')
+        app = toga.App('test_name', 'id.app', factory=toga_dummy.factory)
+        new_app = toga.App('error_name', 'id.error', factory=toga_dummy.factory)
         self.window.app = app
         with self.assertRaises(Exception):
             self.window.app = new_app
