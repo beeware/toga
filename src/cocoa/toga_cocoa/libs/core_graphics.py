@@ -18,12 +18,25 @@ CGContextRef = c_void_p
 register_preferred_encoding(b'^{__CGContext=}', CGContextRef)
 
 CGPathDrawingMode = c_int32
-
 kCGPathFill = 0
 kCGPathEOFill = 1
 kCGPathStroke = 2
 kCGPathFillStroke = 3
 kCGPathEOFillStroke = 4
+
+CGTextDrawingMode = c_int32
+kCGTextFill = 0
+kCGTextStroke = 1
+kCGTextFillStroke = 2
+kCGTextInvisible = 3
+kCGTextFillClip = 4
+kCGTextStrokeClip = 5
+kCGTextFillStrokeClip = 6
+kCGTextClip = 7
+
+CGTextEncoding = c_int32
+kCGEncodingFontSpecific = 0
+kCGEncodingMacRoman = 1
 
 core_graphics.CGContextAddArc.restype = c_void_p
 core_graphics.CGContextAddArc.argtypes = [CGContextRef, CGFloat, CGFloat, CGFloat, CGFloat, CGFloat, c_int]
@@ -51,6 +64,8 @@ core_graphics.CGContextSaveGState.restype = c_void_p
 core_graphics.CGContextSaveGState.argtypes = [c_void_p]
 core_graphics.CGContextScaleCTM.restype = c_void_p
 core_graphics.CGContextScaleCTM.argtypes = [CGContextRef, CGFloat, CGFloat]
+core_graphics.CGContextSelectFont.restype = c_void_p
+core_graphics.CGContextSelectFont.argtypes = [CGContextRef, c_wchar_p, CGFloat, CGTextEncoding]
 core_graphics.CGContextSetLineWidth.restype = c_void_p
 core_graphics.CGContextSetLineWidth.argtypes = [CGContextRef, CGFloat]
 core_graphics.CGContextSetRGBFillColor.restype = c_void_p

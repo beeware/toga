@@ -1,6 +1,6 @@
 import re
 
-from rubicon.objc import objc_method, SEL
+from rubicon.objc import objc_method, SEL, ObjCInstance
 
 # TODO import colosseum once updated to support colors
 # from colosseum import colors
@@ -159,12 +159,43 @@ class Canvas(Widget):
     # Text
 
     def measure_text(self, text, font):
-        # TODO
-        pass
+        # Set font family and size
+        if font:
+            meas_font = font
+        elif self.native.font:
+            meas_font = self.native.font
+        else:
+            raise ValueError('No font to measure with')
+
+        font_attrs = {NSFontAttributeName: meas_font}
+
+        # The double ObjCInstance wrapping is workaround for rubicon since it doesn't yet provide an ObjCStringInstance
+        text_string = ObjCInstance(
+            ObjCInstance(NSString.alloc(convert_result=False)).initWithString_(text, convert_result=False)
+        )
+
+        size = text_string.sizeWithAttributes(font_attrs)
+        return size.width, size.height
 
     def write_text(self, text, x, y, font):
-        # TODO
-        pass
+        # Set font family and size
+        if font:
+            write_font = font
+        elif self.native.font:
+            write_font = self.native.font
+        else:
+            raise ValueError('No font to write with')
+
+        print(write_font.family)
+
+        core_graphics.CGContextSelectFont(self.context, write_font.family, write_font.size, kCGEncodingFontSpecific)
+        # core_graphics.CGContextSetTextDrawingMode(self.context, kCGTextFillStroke)
+
+        # Support writing multiline text
+        for line in text.splitlines():
+            width, height = write_font.measure(line)
+            core_graphics.CGContextShowTextAtPoint(self.context, x, y, line, len(line))
+            y += height
 
     def rehint(self):
         fitting_size = self.native.fittingSize()
