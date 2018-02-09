@@ -43,3 +43,10 @@ class TextInputTests(TestCase):
         new_value = 'New Value'
         self.text_input.value = new_value
         self.assertValueSet(self.text_input, 'value', new_value)
+
+    def test_on_change_callback_set(self):
+        def dummy_function():
+            pass
+
+        self.text_input.on_change = dummy_function
+        self.assertIsNotNone(self.text_input.on_change)
