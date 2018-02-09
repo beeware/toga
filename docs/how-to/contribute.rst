@@ -164,6 +164,7 @@ You can then run the core test suite:
 
     .. code-block:: doscon
 
+      (venv) C:\...>cd src/core
       (venv) C:\...>python setup.py test
       ...
       ----------------------------------------------------------------------
