@@ -6,7 +6,7 @@ from .font import Font
 from .widgets.box import Box
 from .widgets.button import Button
 from .widgets.canvas import Canvas
-# from .widgets.detailedlist import DetailedList
+from .widgets.detailedlist import DetailedList
 from .widgets.icon import Icon
 # from .widgets.image import Image
 # from .widgets.imageview import ImageView
@@ -43,7 +43,7 @@ __all__ = [
     'Box',
     'Button',
     'Canvas',
-    # 'DetailedList',
+    'DetailedList',
     'Icon',
     # 'Image',
     # 'ImageView',
