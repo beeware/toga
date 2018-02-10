@@ -72,6 +72,10 @@ core_graphics.CGContextSetRGBFillColor.restype = c_void_p
 core_graphics.CGContextSetRGBFillColor.argtypes = [CGContextRef, CGFloat, CGFloat, CGFloat, CGFloat]
 core_graphics.CGContextSetRGBStrokeColor.restype = c_void_p
 core_graphics.CGContextSetRGBStrokeColor.argtypes = [CGContextRef, CGFloat, CGFloat, CGFloat, CGFloat]
+core_graphics.CGContextSetTextDrawingMode.restype = c_void_p
+core_graphics.CGContextSetTextDrawingMode.argtypes = [CGContextRef, CGTextDrawingMode]
+core_graphics.CGContextShowTextAtPoint.restype = c_void_p
+core_graphics.CGContextShowTextAtPoint.argtypes = [CGContextRef, CGFloat, CGFloat, c_wchar_p, c_size_t]
 core_graphics.CGContextTranslateCTM.restype = c_void_p
 core_graphics.CGContextTranslateCTM.argtypes = [CGContextRef, CGFloat, CGFloat]
 
