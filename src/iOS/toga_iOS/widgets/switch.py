@@ -3,7 +3,8 @@ from toga_iOS.libs import (
     UIControlEventValueChanged,
     UISwitch,
     UITableViewCell,
-    UITableViewCellStyleDefault,
+    UITableViewCellStyleDefault
+)
 
 from .base import Widget
 
