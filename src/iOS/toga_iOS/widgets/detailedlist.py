@@ -11,7 +11,6 @@ from toga_iOS.libs import UIControlEventValueChanged,
     UITableViewRowAnimationLeft,
     UITableViewScrollPositionNone
 
-
 from .base import Widget
 
 
