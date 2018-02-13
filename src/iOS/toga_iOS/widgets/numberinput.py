@@ -2,7 +2,13 @@ from ctypes import c_int
 from rubicon.objc import objc_method, CGSize, NSObject, SEL, NSRange, send_message
 from travertino.size import at_least
 
-from toga_iOS.libs import NSTextAlignment, UIKeyboardType, UITextField, UITextBorderStyle, UIControlEventEditingChanged
+from toga_iOS.libs import(
+    NSTextAlignment, 
+    UIControlEventEditingChanged, 
+    UIKeyboardType, 
+    UITextBorderStyle, 
+    UITextField
+)
 
 from .base import Widget
 

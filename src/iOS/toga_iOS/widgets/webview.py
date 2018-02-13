@@ -1,5 +1,5 @@
 from rubicon.objc import objc_method
-from toga_iOS.libs import *
+from toga_iOS.libs import UIWebView, NSURL
 
 from .base import Widget
 

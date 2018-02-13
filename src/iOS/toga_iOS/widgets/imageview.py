@@ -1,5 +1,5 @@
 from toga.constants import *
-from toga_iOS.libs import *
+from toga_iOS.libs import UIImageView
 
 from .base import Widget
 

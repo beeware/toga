@@ -1,6 +1,6 @@
 from rubicon.objc import *
 from toga.interface import NavigationView as NavigationViewInterface
-from toga_iOS.libs import *
+from toga_iOS.libs import UINavigationController, UIBarButtonItem
 
 from .base import WidgetMixin
 
