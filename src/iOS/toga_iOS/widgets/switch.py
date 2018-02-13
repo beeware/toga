@@ -1,5 +1,5 @@
 from rubicon.objc import objc_method, CGSize, SEL
-from toga_iOS.libs import (
+from toga_iOS.libs import(
     UIControlEventValueChanged,
     UISwitch,
     UITableViewCell,
