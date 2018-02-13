@@ -1,6 +1,5 @@
 from rubicon.objc import objc_method
-from toga_iOS.libs import (
-    UIControlEventValueChanged
+from toga_iOS.libs import UIControlEventValueChanged,
     UIRefreshControl,
     UITableViewCell,
     UITableViewCellEditingStyleDelete,
@@ -11,7 +10,7 @@ from toga_iOS.libs import (
     UITableViewController,
     UITableViewRowAnimationLeft,
     UITableViewScrollPositionNone
-)
+
 
 from .base import Widget
 
