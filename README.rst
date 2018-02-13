@@ -69,7 +69,7 @@ Quickstart
 
 To get a demonstration of the capabilities of Toga, run the following::
 
-    $ pip install toga-demo
+    $ pip3 install toga-demo
     $ toga-demo
 
 This will pop up a GUI window with some sample widgets.
