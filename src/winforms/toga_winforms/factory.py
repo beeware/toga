@@ -1,5 +1,5 @@
 from .app import App, MainWindow
-# from .color import color
+from .color import native_color
 from .command import Command
 # from .font import font
 from .widgets.box import Box
@@ -11,7 +11,7 @@ from .widgets.icon import Icon
 # from .widgets.imageview import *
 from .widgets.label import *
 from .widgets.multilinetextinput import *
-# from .widgets.numberinput import NumberInput
+from .widgets.numberinput import NumberInput
 from .widgets.optioncontainer import *
 from .widgets.passwordinput import *
 from .widgets.progressbar import *
