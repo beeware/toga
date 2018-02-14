@@ -1,6 +1,5 @@
 from travertino.layout import Viewport
-
-from .libs import *
+from libs import *
 
 
 class WinFormsViewport:
@@ -46,7 +45,7 @@ class Window:
         pass
 
     def set_size(self, size):
-        pass
+        self.native.ClientSize = Size(self.interface._size[0], self.interface._size[1])
 
     def set_app(self, app):
         pass
