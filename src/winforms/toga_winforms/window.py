@@ -1,5 +1,5 @@
 from travertino.layout import Viewport
-from libs import *
+from .libs import *
 
 
 class WinFormsViewport:
