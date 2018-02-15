@@ -36,16 +36,15 @@ class ProgressBarTests(TestCase):
         self.assertEqual(self.progress_bar._max, None)
         self.assertValueSet(self.progress_bar, 'max', value=None)
 
-    def test_set_running(self):
-        self.progress_bar.running = False
-        self.assertEqual(self.progress_bar._running, False)
+    def test_start(self):
+        self.progress_bar.start()
+        self.assertEqual(self.progress_bar.running, True)
+        self.assertActionPerformed(self.progress_bar, 'start')
 
-        self.progress_bar.running = True
-        self.assertEqual(self.progress_bar._running, True)
-        self.assertValueSet(self.progress_bar, 'running', value=True)
-
-        self.progress_bar.running = False
-        self.assertValueSet(self.progress_bar, 'running', value=False)
+    def test_stop(self):
+        self.progress_bar.stop()
+        self.assertEqual(self.progress_bar.running, False)
+        self.assertActionPerformed(self.progress_bar, 'stop')
 
     def test_set_value_to_number_less_than_max(self):
         new_value = self.progress_bar.max / 2
@@ -69,19 +68,23 @@ class ProgressBarTests(TestCase):
         self.progress_bar = toga.ProgressBar(factory=toga_dummy.factory)
         self.assertTrue(self.progress_bar.enabled)
 
-        # It should be disabled if both max and running are falsy
+        # It should be disabled if it is stopped and max is None
 
         self.progress_bar.max = None
-        self.progress_bar.running = False
+        self.progress_bar.stop()
         self.progress_bar.value = 0
         self.assertFalse(self.progress_bar.enabled)
 
+        # Starting the progress bar should enable it again
+
         # self.progress_bar.max = None
-        self.progress_bar.running = True
+        self.progress_bar.start()
         # self.progress_bar.value = 0
         self.assertTrue(self.progress_bar.enabled)
 
+        # Stopping AND providing a max will cause it to display the percentage.
+
         self.progress_bar.max = 1
-        self.progress_bar.running = False
+        self.progress_bar.stop()
         # self.progress_bar.value = 0
         self.assertTrue(self.progress_bar.enabled)
