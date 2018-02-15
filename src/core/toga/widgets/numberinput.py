@@ -89,7 +89,7 @@ class NumberInput(Widget):
         except ValueError:
             raise ValueError("min_value must be an integer")
         except TypeError:
-            self._min_value = (-179769313486231580793728971405303415079934132710037826936173778980444968292764750946649017977587207096330286416692887910946555547851940402630657488671505820681908902000708383676273854845817711531764475730270069855571366959622842914819860834936475292719074168444365510704342711559699508093042880177904174497791)
+            self._min_value = int(-1.7976931348623157e+308)
         self._impl.set_min_value(self._min_value)
 
     @property
@@ -109,7 +109,7 @@ class NumberInput(Widget):
         except ValueError:
             raise ValueError("max_value must be an integer")
         except TypeError:
-            self._max_value = (179769313486231580793728971405303415079934132710037826936173778980444968292764750946649017977587207096330286416692887910946555547851940402630657488671505820681908902000708383676273854845817711531764475730270069855571366959622842914819860834936475292719074168444365510704342711559699508093042880177904174497791)
+            self._max_value = int(1.7976931348623157e+308)
         self._impl.set_max_value(self._max_value)
 
     @property
@@ -135,7 +135,7 @@ class NumberInput(Widget):
             self._value = self.min_value
         elif self.max_value is not None and value > self.max_value:
             self._value = self.max_value
-        self._impl.set_value(self._value)
+        self._impl.set_value(value)
 
     @property
     def on_change(self):
