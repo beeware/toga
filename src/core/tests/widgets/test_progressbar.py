@@ -5,22 +5,6 @@ from toga_dummy.utils import TestCase
 
 # ### ProgressBar truth table
 #
-# Assuming ProgressBar has three attributes: `max`, `running`, and `value`
-#
-# | max     | running   | value     | Behavior                |
-# |---------|-----------|-----------|-------------------------|
-# | None    | False     | None      | disabled                |
-# | None    | False     | number    | disabled                |
-# | None    | True      | None      | indeterminate anim.     |
-# | None    | True      | number    | indeterminate anim.     |
-# | number  | False     | None      | show 0%                 |
-# | number  | False     | number    | show percentage         |
-# | number  | True      | None      | show 0%, working anim.  |
-# | number  | True      | number    | show %, working anim.   |
-#
-# The table can be reduced since the value is rendered the same
-# regardless of it being None or not
-#
 # | max     | running   | Behavior                |
 # |---------|-----------|-------------------------|
 # | None    | False     | disabled                |
@@ -28,9 +12,7 @@ from toga_dummy.utils import TestCase
 # | number  | False     | show percentage         |
 # | number  | True      | show %, working anim.   |
 #
-# Ultimately, the question is about what should be done when the progress bar has
-# a `max` but its `value` happens to be None. Personally, I feel that it should
-# render as if the value were zero.
+# Note: if ``value`` is None, the widget will render as if the value were zero.
 
 
 class ProgressBarTests(TestCase):
