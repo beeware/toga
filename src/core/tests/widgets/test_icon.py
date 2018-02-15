@@ -17,3 +17,4 @@ class TestIcon(unittest.TestCase):
         self.assertEqual(self.icon._impl, None)
         self.icon.bind(factory=toga_dummy.factory)
         self.assertEqual(self.icon._impl.interface, self.icon)
+        self.assertEqual(self.icon.path, self.test_path)
