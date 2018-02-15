@@ -17,17 +17,27 @@ class Table(Widget):
             dataColumn.append(col)
 
         self.native.View = WinForms.View.Details
+        self.native.FullRowSelect = True
+        self.native.Multiselect = self.interface.multiple_select
         self.native.Columns.AddRange(dataColumn)
 
     def change_source(self, source):
-        for row in self.interface.data:
-            row._impl = WinForms.ListViewItem(*[
+        for index, row in enumerate(self.interface.data):
+            row._impl = WinForms.ListViewItem([
+                getattr(row, attr) for attr in self.interface._accessors
+            ])
+            self.native.Items.Insert(index, row._impl)
+
+    def update_data(self):
+        self.native.Items.Clear()
+        for index, row in enumerate(self.interface.data):
+            row._impl = WinForms.ListViewItem([
                 getattr(row, attr) for attr in self.interface._accessors
             ])
             self.native.Items.Insert(index, row._impl)
 
     def insert(self, index, item):
-        item._impl = WinForms.ListViewItem(*[
+        item._impl = WinForms.ListViewItem([
             getattr(item, attr) for attr in self.interface._accessors
         ])
         self.native.Items.Insert(index, item._impl)
@@ -36,15 +46,16 @@ class Table(Widget):
         self.interface.factory.not_implemented('Table.change()')
 
     def remove(self, item):
-        self.interface.factory.not_implemented('Table.remove()')
+        self.update_data()
 
     def clear(self):
-        self.native.Clear()
+        self.native.Items.Clear()
 
     def set_on_select(self, handler):
         self.interface.factory.not_implemented('Table.set_on_select()')
 
     def scroll_to_row(self, row):
+        self.native.EnsureVisible(row)
         self.interface.factory.not_implemented('Table.scroll_to_row()')
 
     def rehint(self):
