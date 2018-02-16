@@ -27,7 +27,7 @@ class ProgressBar(Widget):
         """
         super().__init__(id=id, style=style, factory=factory)
 
-        self._running = False
+        self._is_running = False
         self._impl = self.factory.ProgressBar(interface=self)
         self._value = value
 
@@ -41,22 +41,22 @@ class ProgressBar(Widget):
         self.value = value
 
     @property
-    def running(self):
+    def is_running(self):
         """
         Returns:
             True if the progress bar is running,
             False if not
         """
-        return self._running
+        return self._is_running
 
     def start(self):
         self.enabled = True
-        self._running = True
+        self._is_running = True
         self._impl.start()
 
     def stop(self):
         self._enabled = bool(self.max)
-        self._running = False
+        self._is_running = False
         self._impl.stop()
 
     @property
@@ -86,7 +86,7 @@ class ProgressBar(Widget):
 
     @max.setter
     def max(self, value):
-        self.enabled = bool(value or self.running)
+        self.enabled = bool(value or self.is_running)
 
         self._max = value
         self._impl.set_max(value)

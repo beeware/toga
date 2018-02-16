@@ -38,12 +38,12 @@ class ProgressBarTests(TestCase):
 
     def test_start(self):
         self.progress_bar.start()
-        self.assertEqual(self.progress_bar.running, True)
+        self.assertEqual(self.progress_bar.is_running, True)
         self.assertActionPerformed(self.progress_bar, 'start')
 
     def test_stop(self):
         self.progress_bar.stop()
-        self.assertEqual(self.progress_bar.running, False)
+        self.assertEqual(self.progress_bar.is_running, False)
         self.assertActionPerformed(self.progress_bar, 'stop')
 
     def test_set_value_to_number_less_than_max(self):

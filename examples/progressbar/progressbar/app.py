@@ -67,11 +67,11 @@ class ProgressBarApp(toga.App):
         self.main_window.show()
 
     def increase_progress(self, button, **kw):
-        if not self.progress_adder.running:
+        if not self.progress_adder.is_running:
             self.progress_adder.value += 0.1 * self.progress_adder.max
 
     def decrease_progress(self, button, **kw):
-        if not self.progress_adder.running:
+        if not self.progress_adder.is_running:
             self.progress_adder.value -= 0.1 * self.progress_adder.max
 
     def toggle_running(self, switch, **kw):

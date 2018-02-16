@@ -11,7 +11,7 @@ class ProgressBar(Widget):
 
     def _pulse(self, *a, **kw):
         self.native.pulse()
-        return not self.interface.max and self.interface.running
+        return not self.interface.max and self.interface.is_running
 
     def _render_disabled(self):
         self.native.set_fraction(0)

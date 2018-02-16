@@ -23,7 +23,7 @@ A progress bar can be in one of four visual states, determined by its ``max`` pr
 Calling the ``start()`` method will make the progress bar enter running mode, and calling ``stop()`` will exit running mode.
 See the table below:
 
-| ``max`` | ``running`` | Behavior                |
+| ``max`` | ``is_running`` | Behavior                |
 |---------|-------------|-------------------------|
 | None    | False       | disabled                |
 | None    | True        | indeterminate (continuous animation).     |
@@ -43,6 +43,7 @@ ProgressBar state examples:
     # use indeterminate mode
     progess.max = None
     progress.start()
+    print(progress.is_running) #  => True
 
     # show percentage and busy animation (if supported)
     progress.max = 100
@@ -50,6 +51,7 @@ ProgressBar state examples:
     # signal that no work is begin done with the disabled state
     progress.max = None
     progress.stop()
+    print(progress.is_running) #  => False
 
 Supported Platforms
 -------------------
