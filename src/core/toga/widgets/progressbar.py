@@ -21,6 +21,7 @@ class ProgressBar(Widget):
                 new one will be created for the widget.
             max (float): The maximum value of the progressbar.
             value (float): To define the current progress of the progressbar.
+            running (bool): Set the inital running mode.
             factory (:obj:`module`): A python module that is capable to return a
                 implementation of this class with the same name. (optional & normally not needed)
         """
@@ -30,7 +31,12 @@ class ProgressBar(Widget):
         self._impl = self.factory.ProgressBar(interface=self)
 
         self.max = max
-        self.running = running
+
+        if running:
+            self.start()
+        else:
+            self.stop()
+
         self.value = value
 
     @property
@@ -42,11 +48,15 @@ class ProgressBar(Widget):
         """
         return self._running
 
-    @running.setter
-    def running(self, value):
-        self.enabled = bool(value or self.max)
-        self._running = value
-        self._impl.set_running(value)
+    def start(self):
+        self.enabled = True
+        self._running = True
+        self._impl.start()
+
+    def stop(self):
+        self._enabled = bool(self.max)
+        self._running = False
+        self._impl.stop()
 
     @property
     def value(self):
