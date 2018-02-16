@@ -9,10 +9,6 @@ class ProgressBar(Widget):
     def create(self):
         self.native = WinForms.ProgressBar()
 
-    def set_running(self, value):
-        '''Not supported for WinForms implementation'''
-        self.interface.factory.not_implemented('ProgressBar.set_running()')
-
     def start(self):
         '''Not supported for WinForms implementation'''
         self.interface.factory.not_implemented('ProgressBar.start()')
