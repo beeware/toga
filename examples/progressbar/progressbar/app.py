@@ -36,10 +36,10 @@ class ProgressBarApp(toga.App):
                 ]),
             ]),
 
-            # toga.Box(style=col_box_style, children=[
-            #     self.progress_runner,
-            #     toga.Switch("Toggle running mode", on_toggle=self.toggle_running)
-            # ]),
+            toga.Box(style=col_box_style, children=[
+                self.progress_runner,
+                toga.Switch("Toggle running mode", on_toggle=self.toggle_running)
+            ]),
 
             toga.Box(style=row_box_style, children=[
                 toga.Label("default ProgressBar", style=label_style),
@@ -57,12 +57,12 @@ class ProgressBarApp(toga.App):
             ]),
 
             toga.Box(style=row_box_style, children=[
-                toga.Label("inactive determinate ProgressBar", style=label_style),
+                toga.Label("determinate ProgressBar", style=label_style),
                 toga.ProgressBar(max=1, running=False, value=0.5),
             ]),
 
             toga.Box(style=row_box_style, children=[
-                toga.Label("working determinate ProgressBar", style=label_style),
+                toga.Label("running determinate ProgressBar", style=label_style),
                 toga.ProgressBar(max=1, running=True, value=0.5),
             ]),
         ])
@@ -76,7 +76,10 @@ class ProgressBarApp(toga.App):
         self.progress_adder.value -= 0.1 * self.progress_adder.max
 
     def toggle_running(self, switch, **kw):
-        self.progress_runner.running = switch.is_on
+        if switch.is_on:
+            self.progress_runner.start()
+        else:
+            self.progress_runner.stop()
 
 
 def main():
