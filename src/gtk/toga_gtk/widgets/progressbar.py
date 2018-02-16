@@ -13,16 +13,15 @@ class ProgressBar(Widget):
         self.native.pulse()
         return not self.interface.max and self.interface.running
 
+    def _render_disabled(self):
+        self.native.set_fraction(0)
+
     def set_value(self, value):
         self.native.set_fraction(self.interface.value / self.interface.max)
 
     def set_max(self, value):
-        if value:
-            if self.interface.running:
-                pass  # GTK has no 'working' animation
-        else:
-            if self.interface.running:
-                GObject.timeout_add(60, self._pulse, None)
+        if not self.interface.enabled:
+            self._render_disabled()
 
     def start(self):
         if self.interface.max:
@@ -31,7 +30,14 @@ class ProgressBar(Widget):
             GObject.timeout_add(60, self._pulse, None)
 
     def stop(self):
-        pass
+        # set_value uses self.interface.value, not the parameter.
+        # Therefore, passing None does NOT change the value to None, but it
+        # will put the native widget back into determinate mode.
+
+        if self.interface.enabled:
+            self.set_value(None)
+        else:
+            self._render_disabled()
 
     def rehint(self):
         width = self.native.get_preferred_width()

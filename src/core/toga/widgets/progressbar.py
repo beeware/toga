@@ -29,6 +29,7 @@ class ProgressBar(Widget):
 
         self._running = False
         self._impl = self.factory.ProgressBar(interface=self)
+        self._value = value
 
         self.max = max
 
