@@ -49,7 +49,9 @@ class Canvas(Widget):
     @on_draw.setter
     def on_draw(self, handler):
         self._on_draw = handler
-        self._impl.set_on_draw(self._on_draw)
+
+        if self._on_draw:
+            self._impl.set_on_draw(self._on_draw)
 
     # Line Styles
 
