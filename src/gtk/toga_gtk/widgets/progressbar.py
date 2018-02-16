@@ -24,10 +24,7 @@ class ProgressBar(Widget):
             self._render_disabled()
 
     def start(self):
-        if self.interface.max:
-            pass  # GTK has no 'working' animation
-        else:
-            GObject.timeout_add(60, self._pulse, None)
+        GObject.timeout_add(60, self._pulse, None)
 
     def stop(self):
         # set_value uses self.interface.value, not the parameter.
@@ -38,10 +35,3 @@ class ProgressBar(Widget):
             self.set_value(None)
         else:
             self._render_disabled()
-
-    def rehint(self):
-        width = self.native.get_preferred_width()
-        height = self.native.get_preferred_height()
-
-        self.interface.intrinsic.width = at_least(width[0])
-        self.interface.intrinsic.height = height[1]
