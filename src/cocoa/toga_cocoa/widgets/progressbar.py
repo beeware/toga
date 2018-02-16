@@ -18,11 +18,11 @@ class ProgressBar(Widget):
     def set_value(self, value):
         self.native.doubleValue = self.interface.value
 
-    def set_running(self, value):
-        if value:
-            self.native.startAnimation(self.native)
-        else:
-            self.native.stopAnimation(self.native)
+    def start(self):
+        self.native.startAnimation(self.native)
+
+    def stop(self):
+        self.native.stopAnimation(self.native)
 
     def set_max(self, value):
         if value:

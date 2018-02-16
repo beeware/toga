@@ -13,6 +13,20 @@ class ProgressBar(Widget):
         '''Not supported for WinForms implementation'''
         self.interface.factory.not_implemented('ProgressBar.set_running()')
 
+    def start(self):
+        '''Not supported for WinForms implementation'''
+        self.interface.factory.not_implemented('ProgressBar.start()')
+
+        # possible implementation (not tested):
+        # self.native.Style = ProgressBarStyle.Marquee
+
+    def stop(self):
+        '''Not supported for WinForms implementation'''
+        self.interface.factory.not_implemented('ProgressBar.stop()')
+
+        # possible implementation (not tested):
+        # self.native.Style = ProgressBarStyle.Continuous
+
     def set_max(self, value):
         self.native.Maximum = value
 

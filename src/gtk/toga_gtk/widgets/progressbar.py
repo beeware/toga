@@ -24,12 +24,14 @@ class ProgressBar(Widget):
             if self.interface.running:
                 GObject.timeout_add(60, self._pulse, None)
 
-    def set_running(self, value):
-        if value:
-            if self.interface.max:
-                pass  # GTK has no 'working' animation
-            else:
-                GObject.timeout_add(60, self._pulse, None)
+    def start(self):
+        if self.interface.max:
+            pass  # GTK has no 'working' animation
+        else:
+            GObject.timeout_add(60, self._pulse, None)
+
+    def stop(self):
+        pass
 
     def rehint(self):
         width = self.native.get_preferred_width()
