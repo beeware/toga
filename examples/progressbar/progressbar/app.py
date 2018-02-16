@@ -34,10 +34,7 @@ class ProgressBarApp(toga.App):
                     toga.Button("-", on_press=self.decrease_progress,
                                 style=Pack(flex=1)),
                 ]),
-            ]),
 
-            toga.Box(style=col_box_style, children=[
-                self.progress_runner,
                 toga.Switch("Toggle running mode", on_toggle=self.toggle_running)
             ]),
 
@@ -70,16 +67,20 @@ class ProgressBarApp(toga.App):
         self.main_window.show()
 
     def increase_progress(self, button, **kw):
-        self.progress_adder.value += 0.1 * self.progress_adder.max
+        if not self.progress_adder.running:
+            self.progress_adder.value += 0.1 * self.progress_adder.max
 
     def decrease_progress(self, button, **kw):
-        self.progress_adder.value -= 0.1 * self.progress_adder.max
+        if not self.progress_adder.running:
+            self.progress_adder.value -= 0.1 * self.progress_adder.max
 
     def toggle_running(self, switch, **kw):
         if switch.is_on:
-            self.progress_runner.start()
+            self.progress_adder.max = None
+            self.progress_adder.start()
         else:
-            self.progress_runner.stop()
+            self.progress_adder.max = 1
+            self.progress_adder.stop()
 
 
 def main():
