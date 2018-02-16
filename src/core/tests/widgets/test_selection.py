@@ -8,6 +8,7 @@ class SelectionTests(TestCase):
         super().setUp()
 
         self.items = ['item_{}'.format(x) for x in range(0, 3)]
+        self.selection = toga.Selection(factory=toga_dummy.factory)
         self.selection = toga.Selection(items=self.items, factory=toga_dummy.factory)
 
     def test_widget_created(self):
@@ -21,7 +22,7 @@ class SelectionTests(TestCase):
         self.assertActionPerformedWith(self.selection, 'add item', item=self.items[2])
 
     def test_set_items(self):
-        new_items = ['new_item_{}'.format(x) for x in range(0,3)]
+        new_items = ['new_item_{}'.format(x) for x in range(0, 3)]
         self.selection.items = new_items
         self.assertActionPerformed(self.selection, 'remove all items')
         for item in new_items:
@@ -42,3 +43,7 @@ class SelectionTests(TestCase):
 
         with self.assertRaises(ValueError):
             self.selection.value = 'not in items'
+
+    def test_on_select(self):
+        on_select = self.selection.on_select
+        self.assertEqual(on_select, None)

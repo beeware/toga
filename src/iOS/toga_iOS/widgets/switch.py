@@ -1,5 +1,10 @@
-from rubicon.objc import objc_method, CGSize
-from toga_iOS.libs import *
+from rubicon.objc import objc_method, CGSize, SEL
+from toga_iOS.libs import(
+    UIControlEventValueChanged,
+    UISwitch,
+    UITableViewCell,
+    UITableViewCellStyleDefault
+)
 
 from .base import Widget
 

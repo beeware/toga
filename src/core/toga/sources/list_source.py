@@ -51,15 +51,9 @@ class ListSource(Source):
 
     def _create_row(self, data):
         if isinstance(data, dict):
-            row = Row(**{
-                name: value
-                for name, value in data.items()
-            })
+            row = Row(**data)
         else:
-            row = Row(**{
-                accessor: value
-                for accessor, value in zip(self._accessors, data)
-            })
+            row = Row(**dict(zip(self._accessors, data)))
         row._source = self
         return row
 
@@ -81,17 +75,11 @@ class ListSource(Source):
 
     def insert(self, index, *values, **named):
         # Coalesce values and data into a single data dictionary,
-        # and use that to create the data row
-        node = self._create_row(dict(
-            named,
-            **{
-                accessor: value
-                for accessor, value in zip(self._accessors, values)
-            }
-        ))
-        self._data.insert(index, node)
-        self._notify('insert', index=index, item=node)
-        return node
+        # and use that to create the data row. Explicitly named data override.
+        row = self._create_row(dict(zip(self._accessors, values), **named))
+        self._data.insert(index, row)
+        self._notify('insert', index=index, item=row)
+        return row
 
     def prepend(self, *values, **named):
         return self.insert(0, *values, **named)
@@ -99,7 +87,10 @@ class ListSource(Source):
     def append(self, *values, **named):
         return self.insert(len(self), *values, **named)
 
-    def remove(self, node):
-        self._data.remove(node)
-        self._notify('remove', item=node)
-        return node
+    def remove(self, row):
+        self._data.remove(row)
+        self._notify('remove', item=row)
+        return row
+
+    def index(self, row):
+        return self._data.index(row)

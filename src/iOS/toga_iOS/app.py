@@ -2,7 +2,7 @@ import asyncio
 
 from rubicon.objc.eventloop import EventLoopPolicy, iOSLifecycle
 
-from .libs import *
+from .libs import NSNotificationCenter
 from .window import Window
 
 

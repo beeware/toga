@@ -49,15 +49,6 @@ class Icon:
             self._impl = factory.Icon(interface=self)
         return self._impl
 
-    @property
-    def filename(self):
-        if self.system:
-            toga_dir = os.path.dirname(os.path.dirname(__file__))
-            return os.path.join(toga_dir, 'resources', self.path)
-        else:
-            from toga.app import App
-            return os.path.join(App.app_dir, self.path)
-
     @classmethod
     def load(cls, path_or_icon, default=None):
         if path_or_icon:

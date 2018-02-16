@@ -22,10 +22,10 @@
 
 * Operating System and Version (select from the following and list the specific version number; if your OS is not listed, list that as well)
 
-  - [ ] OSX
-  - [ ] Linux
-  - [ ] Windows
-  - [ ] Ubuntu
+  - [ ] macOS - version: 
+  - [ ] Linux - distro:   - version:
+  - [ ] Windows - version:
+  - [ ] Other - name:  - version:
 
 * Toga Target (the type of app you are trying to generate)
  
