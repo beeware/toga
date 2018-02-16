@@ -19,7 +19,9 @@ Usage
     # Update progress
     progress.value = 10
 
-A progress bar can have 4 different visual states, and its current state is determined by its ``max`` and ``running`` properties. See the table below:
+A progress bar can be in one of four visual states, determined by its ``max`` properties, and with the ``start()`` and ``stop()`` methods.
+Calling the ``start()`` method will make the progress bar enter running mode, and calling ``stop()`` will exit running mode.
+See the table below:
 
 | ``max`` | ``running`` | Behavior                |
 |---------|-------------|-------------------------|
@@ -27,8 +29,6 @@ A progress bar can have 4 different visual states, and its current state is dete
 | None    | True        | indeterminate (continuous animation).     |
 | number  | False       | show percentage         |
 | number  | True        | show percentage and busy animation  |
-
-Two different animations may be
 
 If a progress bar is indeterminate, it is communicating that it has no exact percentage to report, but that work is still begin done. It may communicate this by continuously pulsing back and forth, for example.
 
@@ -42,14 +42,14 @@ ProgressBar state examples:
 
     # use indeterminate mode
     progess.max = None
-    progress.running = True
+    progress.start()
 
     # show percentage and busy animation (if supported)
     progress.max = 100
 
     # signal that no work is begin done with the disabled state
     progress.max = None
-    progress.running = False
+    progress.stop()
 
 Supported Platforms
 -------------------
