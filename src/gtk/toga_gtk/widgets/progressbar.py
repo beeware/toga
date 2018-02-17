@@ -59,8 +59,8 @@ class ProgressBar(Widget):
                 # handle disabled state manually
                 self._render_disabled()
 
-        # If `reset()` should be scheduled for at least one tick interval in the
-        # future to gaurauntee that it will execute after the last tick,
-        # otherwise the last tick will put the native progress bar in pulsing
+        # If `reset()` should be scheduled for two tick intervals in the
+        # future to guarantee that it will execute after the last tick,
+        # otherwise the last tick will put the native progress bar back in pulsing
         # mode.
-        threading.Timer(PROGRESSBAR_TICK_INTERVAL + 0.01, reset).start()
+        threading.Timer(PROGRESSBAR_TICK_INTERVAL * 2, reset).start()
