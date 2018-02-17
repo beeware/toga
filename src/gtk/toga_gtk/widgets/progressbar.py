@@ -23,9 +23,10 @@ class ProgressBar(Widget):
     def start(self):
         def tick(*a, **kw):
             self.native.pulse()
-            return not self.interface.max or self.interface.is_running
+            return not self.interface.is_determinate
 
-        GObject.timeout_add(PROGRESSBAR_TICK_INTERVAL, tick, None)
+        if not self.interface.is_determinate:
+            GObject.timeout_add(PROGRESSBAR_TICK_INTERVAL, tick, None)
 
     def stop(self):
         def restore_fraction():
