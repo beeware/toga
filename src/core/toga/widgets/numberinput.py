@@ -1,5 +1,4 @@
 from toga.handlers import wrapped_handler
-from sys import maxsize
 
 from .base import Widget
 
@@ -28,11 +27,6 @@ class NumberInput(Widget):
                  min_value=None, max_value=None, readonly=False, on_change=None):
         super().__init__(id=id, style=style, factory=factory)
         self._value = None
-        # Needed for _impl initialization
-        self._min_value = 0
-        self._max_value = 0
-        self._step = 1
-        
         self._impl = self.factory.NumberInput(interface=self)
 
         self.readonly = readonly
@@ -90,7 +84,7 @@ class NumberInput(Widget):
         except ValueError:
             raise ValueError("min_value must be an integer")
         except TypeError:
-            self._min_value = -maxsize - 1
+            self._min_value = None
         self._impl.set_min_value(self._min_value)
 
     @property
@@ -110,7 +104,7 @@ class NumberInput(Widget):
         except ValueError:
             raise ValueError("max_value must be an integer")
         except TypeError:
-            self._max_value = maxsize
+            self._max_value = None
         self._impl.set_max_value(self._max_value)
 
     @property
