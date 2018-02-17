@@ -41,17 +41,21 @@ ProgressBar state examples:
 .. code-block:: Python
 
     # use indeterminate mode
-    progess.max = None
+    progress.max = None
+    print(progress.is_determinate) #  => False
     progress.start()
     print(progress.is_running) #  => True
 
     # show percentage and busy animation (if supported)
     progress.max = 100
+    print(progress.is_determinate) #  => True
 
     # signal that no work is begin done with the disabled state
     progress.max = None
+    print(progress.is_determinate) #  => False
     progress.stop()
     print(progress.is_running) #  => False
+
 
 Supported Platforms
 -------------------

@@ -42,12 +42,11 @@ class ProgressBar(Widget):
 
     @property
     def is_running(self):
-        """
-        Returns:
-            True if the progress bar is running,
-            False if not
-        """
         return self._is_running
+
+    @property
+    def is_determinate(self):
+        return self.max is not None
 
     def start(self):
         self.enabled = True
