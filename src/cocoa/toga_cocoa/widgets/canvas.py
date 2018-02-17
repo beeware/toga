@@ -162,42 +162,56 @@ class Canvas(Widget):
         # Set font family and size
         if font:
             meas_font = font
+            self._debug('measure_text using font parameter:', font)
         elif self.native.font:
+            self._debug('measure_text using native.font', self.native.font)
             meas_font = self.native.font
         else:
             raise ValueError('No font to measure with')
 
+        self._debug('set font_attrs')
         font_attrs = {NSFontAttributeName: meas_font}
 
         # The double ObjCInstance wrapping is workaround for rubicon since it doesn't yet provide an ObjCStringInstance
+        self._debug('text_string to NSString')
         text_string = ObjCInstance(
             ObjCInstance(NSString.alloc(convert_result=False)).initWithString_(text, convert_result=False)
         )
 
+        self._debug('Set size with attributes')
         size = text_string.sizeWithAttributes(font_attrs)
+        self._debug('measure_text return', size.width, size.height)
         return size.width, size.height
 
     def write_text(self, text, x, y, font):
         # Set font family and size
         if font:
+            self._debug('write_text using font parameter:', font)
             write_font = font
         elif self.native.font:
+            self._debug('write_text using native.font', self.native.font)
             write_font = self.native.font
         else:
             raise ValueError('No font to write with')
 
-        print(write_font.family)
-
-        core_graphics.CGContextSelectFont(self.context, write_font.family, write_font.size, kCGEncodingFontSpecific)
-        # core_graphics.CGContextSetTextDrawingMode(self.context, kCGTextFillStroke)
+        core_graphics.CGContextSelectFont(self.context, write_font.family, write_font.size, kCGEncodingMacRoman)
+        self._debug('Set drawing mode', self.context, kCGTextFillStroke)
+        core_graphics.CGContextSetTextDrawingMode(self.context, kCGTextFillStroke)
+        self._debug('Show text at point', self.context, x, y, text, len(text))
+        core_graphics.CGContextShowTextAtPoint(self.context, x, y, text, len(text))
 
         # Support writing multiline text
-        for line in text.splitlines():
-            width, height = write_font.measure(line)
-            core_graphics.CGContextShowTextAtPoint(self.context, x, y, line, len(line))
-            y += height
+        # for line in text.splitlines():
+        #     width, height = write_font.measure(line)
+        #     print("show text at point")
+        #     core_graphics.CGContextShowTextAtPoint(self.context, x, y, line, len(line))
+        #     print("finished show text")
+        #     y += height
 
     def rehint(self):
         fitting_size = self.native.fittingSize()
         self.interface.intrinsic.height = fitting_size.height
         self.interface.intrinsic.width = fitting_size.width
+
+    def _debug(self, *args):
+        print('    ', *args)
