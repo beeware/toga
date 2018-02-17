@@ -2,6 +2,7 @@ import math
 
 import toga
 from toga.style import Pack
+from toga.font import SANS_SERIF
 
 
 class StartApp(toga.App):
@@ -97,7 +98,7 @@ class StartApp(toga.App):
     def draw_text(self):
         x = 32
         y = 185
-        font = toga.Font(family='sans-serif', size=20)
+        font = toga.Font(family=SANS_SERIF, size=20)
         width, height = font.measure('Tiberius', tight=True)
         with self.canvas.stroke():
             self.canvas.rect(x - 10, y - height + 2, width, height + 2)
