@@ -30,11 +30,13 @@ class ProgressBarTests(TestCase):
         self.progress_bar.max = new_max
         self.assertEqual(self.progress_bar.max, new_max)
         self.assertValueSet(self.progress_bar, 'max', value=new_max)
+        self.assertTrue(self.progress_bar.is_determinate)
 
     def test_set_max_to_none(self):
         self.progress_bar.max = None
         self.assertEqual(self.progress_bar._max, None)
         self.assertValueSet(self.progress_bar, 'max', value=None)
+        self.assertFalse(self.progress_bar.is_determinate)
 
     def test_start(self):
         # Start the progress bar
