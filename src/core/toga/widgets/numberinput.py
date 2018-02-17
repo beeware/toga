@@ -1,4 +1,5 @@
 from toga.handlers import wrapped_handler
+from sys import maxsize
 
 from .base import Widget
 
@@ -15,6 +16,10 @@ class NumberInput(Widget):
             implementation of this class with the same name. (optional & normally not needed)
 
         step (int): Step size of the adjustment buttons.
+        min_value (int): The minimum bound for the widget's value.
+        max_value (int): The maximum bound for the widget's value.
+        readonly (bool):  Whether a user can write/change the number input, defaults to `False`.
+        on_change (``callable``): The handler to invoke when the value changes.
         **ex:
     """
     MIN_WIDTH = 100
@@ -23,6 +28,11 @@ class NumberInput(Widget):
                  min_value=None, max_value=None, readonly=False, on_change=None):
         super().__init__(id=id, style=style, factory=factory)
         self._value = None
+        # Needed for _impl initialization
+        self._min_value = 0
+        self._max_value = 0
+        self._step = 1
+        
         self._impl = self.factory.NumberInput(interface=self)
 
         self.readonly = readonly
@@ -33,7 +43,7 @@ class NumberInput(Widget):
 
     @property
     def readonly(self):
-        """ Whether a user can write into the text input
+        """ Whether a user can write/change the number input
 
         Returns:
             ``True`` if only read is possible.
@@ -61,7 +71,7 @@ class NumberInput(Widget):
             self._step = int(step)
         except (ValueError, TypeError):
             raise ValueError("step must be an integer")
-        self._impl.set_step(step)
+        self._impl.set_step(self._step)
 
     @property
     def min_value(self):
@@ -80,8 +90,8 @@ class NumberInput(Widget):
         except ValueError:
             raise ValueError("min_value must be an integer")
         except TypeError:
-            self._min_value = None
-        self._impl.set_min_value(value)
+            self._min_value = -maxsize - 1
+        self._impl.set_min_value(self._min_value)
 
     @property
     def max_value(self):
@@ -100,8 +110,8 @@ class NumberInput(Widget):
         except ValueError:
             raise ValueError("max_value must be an integer")
         except TypeError:
-            self._max_value = None
-        self._impl.set_max_value(value)
+            self._max_value = maxsize
+        self._impl.set_max_value(self._max_value)
 
     @property
     def value(self):
