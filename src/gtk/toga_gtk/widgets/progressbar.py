@@ -1,17 +1,34 @@
-from gi.repository import Gtk, GObject
+import threading
+from gi.repository import Gtk
 
 from .base import Widget
-from travertino.size import at_least
 
+
+def interval(period, f, *a, **kw):
+    stop_event = threading.Event()
+
+    def stop():
+        stop_event.set()
+
+    def run():
+        f(*a, **kw)
+        if not stop_event.is_set():
+            t = threading.Timer(period, run)
+            t.daemon = True
+            t.start()
+
+    run()
+    return stop
+
+PROGRESSBAR_TICK_INTERVAL = 0.1 # seconds per tick
 
 class ProgressBar(Widget):
     def create(self):
         self.native = Gtk.ProgressBar()
         self.native.interface = self.interface
 
-    def _pulse(self, *a, **kw):
+    def _tick(self):
         self.native.pulse()
-        return not self.interface.max and self.interface.is_running
 
     def _render_disabled(self):
         self.native.set_fraction(0)
@@ -24,14 +41,26 @@ class ProgressBar(Widget):
             self._render_disabled()
 
     def start(self):
-        GObject.timeout_add(60, self._pulse, None)
+        def tick():
+            self.native.pulse()
+
+        self.stop_animation = interval(PROGRESSBAR_TICK_INTERVAL, tick)
 
     def stop(self):
-        # set_value uses self.interface.value, not the parameter.
-        # Therefore, passing None does NOT change the value to None, but it
-        # will put the native widget back into determinate mode.
+        self.stop_animation()
 
-        if self.interface.enabled:
-            self.set_value(None)
-        else:
-            self._render_disabled()
+        def reset():
+            if self.interface.enabled:
+                # set_value uses self.interface.value, not the parameter.
+                # Therefore, passing None does NOT change the value to None, but it
+                # will put the native widget back into determinate mode.
+                self.set_value(None)
+            else:
+                # handle disabled state manually
+                self._render_disabled()
+
+        # If `reset()` should be scheduled for at least one tick interval in the
+        # future to gaurauntee that it will execute after the last tick,
+        # otherwise the last tick will put the native progress bar in pulsing
+        # mode.
+        threading.Timer(PROGRESSBAR_TICK_INTERVAL + 0.01, reset).start()
