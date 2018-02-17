@@ -51,13 +51,15 @@ class ProgressBar(Widget):
 
     def start(self):
         self.enabled = True
+        if not self.is_running:
+            self._impl.start()
         self._is_running = True
-        self._impl.start()
 
     def stop(self):
         self._enabled = bool(self.max)
+        if self.is_running:
+            self._impl.stop()
         self._is_running = False
-        self._impl.stop()
 
     @property
     def value(self):
