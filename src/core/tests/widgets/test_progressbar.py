@@ -37,14 +37,36 @@ class ProgressBarTests(TestCase):
         self.assertValueSet(self.progress_bar, 'max', value=None)
 
     def test_start(self):
+        # Start the progress bar
         self.progress_bar.start()
         self.assertEqual(self.progress_bar.is_running, True)
         self.assertActionPerformed(self.progress_bar, 'start')
 
+        # Forget that `start` was performed so it can be checked again
+        del self.progress_bar._impl._actions['start']
+
+        # Already started, no action performed
+        with self.assertRaises(AssertionError):
+            self.progress_bar.start()
+            self.assertActionPerformed(self.progress_bar, 'start')
+
     def test_stop(self):
+        # Start the progress bar
+        self.progress_bar.start()
+        self.assertEqual(self.progress_bar.is_running, True)
+        self.assertActionPerformed(self.progress_bar, 'start')
+
         self.progress_bar.stop()
         self.assertEqual(self.progress_bar.is_running, False)
         self.assertActionPerformed(self.progress_bar, 'stop')
+
+        # Forget that `stop` was performed so it can be checked again
+        del self.progress_bar._impl._actions['stop']
+
+        # Already started, no action performed
+        with self.assertRaises(AssertionError):
+            self.progress_bar.stop()
+            self.assertActionPerformed(self.progress_bar, 'stop')
 
     def test_set_value_to_number_less_than_max(self):
         new_value = self.progress_bar.max / 2
