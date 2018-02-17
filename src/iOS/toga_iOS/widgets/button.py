@@ -1,7 +1,7 @@
-from rubicon.objc import objc_method, SEL
+from rubicon.objc import objc_method, CGSize, SEL
 from travertino.size import at_least
 
-from toga_iOS.libs import *
+from toga_iOS.libs import UIColor, UIControlEventTouchDown, UIControlStateDisabled, UIControlStateNormal
 
 from .base import Widget
 
@@ -29,6 +29,7 @@ class Button(Widget):
         self.native.setTitle(self.interface.label, forState=UIControlStateNormal)
 
     def set_on_press(self, handler):
+        # No special handling required.
         pass
 
     def rehint(self):

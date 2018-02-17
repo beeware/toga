@@ -12,7 +12,6 @@ class TogaDemo(toga.App):
     def startup(self):
         # Create the main window
         self.main_window = toga.MainWindow(self.name)
-        self.main_window.app = self
 
         left_container = toga.OptionContainer()
 

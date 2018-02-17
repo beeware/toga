@@ -13,7 +13,6 @@ class Example{{ cookiecutter.widget_name }}App(toga.App):
     def startup(self):
         # Set up main window
         self.main_window = toga.MainWindow(self.name)
-        self.main_window.app = self
 
         # Label to show responses.
         label = toga.Label('Ready.')

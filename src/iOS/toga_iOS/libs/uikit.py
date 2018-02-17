@@ -230,6 +230,10 @@ UILabel = ObjCClass('UILabel')
 UINavigationController = ObjCClass('UINavigationController')
 
 ######################################################################
+# UIPickerView.h
+UIPickerView = ObjCClass('UIPickerView')
+
+######################################################################
 # UIRefreshControl.h
 UIRefreshControl = ObjCClass('UIRefreshControl')
 
@@ -289,10 +293,28 @@ UITableViewCellSeparatorStyleSingleLine = 1
 # UITextField.h
 UITextField = ObjCClass('UITextField')
 
-UITextBorderStyleNone = 0
-UITextBorderStyleLine = 1
-UITextBorderStyleBezel = 2
-UITextBorderStyleRoundedRect = 3
+class UITextBorderStyle(Enum):
+    NoBorder = 0
+    Line = 1
+    Bezel = 2
+    RoundedRect = 3
+
+######################################################################
+# UITextInputTraits.h
+
+class UIKeyboardType(Enum):
+    Default = 0
+    ASCIICapable = 1
+    NumbersAndPunctuation = 2
+    URL = 3
+    NumberPad = 4
+    PhonePad = 5
+    NamePhonePad = 6
+    EmailAddress = 7
+    DecimalPad = 8
+    Twitter = 9
+    WebSearch = 10
+    ASCIICapableNumberPad = 11
 
 ######################################################################
 # UIView.h

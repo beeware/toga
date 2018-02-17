@@ -43,18 +43,22 @@ class Widget:
         pass
 
     def set_alignment(self, alignment):
+        # By default, alignment can't be changed
         pass
 
     def set_hidden(self, hidden):
-        pass
+        self.interface.factory.not_implemented('Widget.set_hidden()')
 
     def set_font(self, font):
+        # By default, fon't can't be changed
         pass
 
     def set_color(self, color):
+        # By default, color can't be changed
         pass
 
     def set_background_color(self, color):
+        # By default, background color can't be changed
         pass
 
     ### INTERFACE

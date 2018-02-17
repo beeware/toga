@@ -31,7 +31,7 @@ setup(
     url='http://pybee.org/toga',
     packages=find_packages(exclude='tests'),
     install_requires=[
-        'toga-core>=%s' % version,
+        'toga-core==%s' % version,
         'gbulb>=0.5.3',
     ],
     tests_require=[

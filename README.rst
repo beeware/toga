@@ -91,6 +91,8 @@ Toga is part of the `BeeWare suite`_. You can talk to the community through:
 Contributing
 ~~~~~~~~~~~~
 
+If you'd like to contribute to Toga development, our `guide for first time contributors`_ will help you get started.
+
 If you experience problems with Toga, `log them on GitHub`_. If you
 want to contribute code, please `fork the code`_ and `submit a pull request`_.
 
@@ -98,6 +100,7 @@ want to contribute code, please `fork the code`_ and `submit a pull request`_.
 .. _Read The Docs: https://toga.readthedocs.io
 .. _@pybeeware on Twitter: https://twitter.com/pybeeware
 .. _pybee/general: https://gitter.im/pybee/general
+.. _guide for first time contributors: https://toga.readthedocs.io/en/latest/how-to/contribute.html 
 .. _log them on Github: https://github.com/pybee/toga/issues
 .. _fork the code: https://github.com/pybee/toga
 .. _submit a pull request: https://github.com/pybee/toga/pulls

@@ -31,9 +31,9 @@ setup(
     url='http://pybee.org/toga',
     extras_require={
         # Automatically installed platform backends
-        ':sys_platform=="win32"': ['toga-winforms'],
-        ':sys_platform=="linux"': ['toga-gtk'],
-        ':sys_platform=="darwin"': ['toga-cocoa'],
+        ':sys_platform=="win32"': ['toga-winforms==%s' % version],
+        ':sys_platform=="linux"': ['toga-gtk==%s' % version],
+        ':sys_platform=="darwin"': ['toga-cocoa==%s' % version],
     },
     license='New BSD',
     classifiers=[

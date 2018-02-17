@@ -1,5 +1,5 @@
-from .window import Window
 from .libs import Threading, WinForms
+from .window import Window
 
 
 class MainWindow(Window):
@@ -30,7 +30,7 @@ class App:
         print("STUB: If you want to handle opening documents, implement App.open_document(fileURL)")
 
     def create_menus(self):
-        raise NotImplementedError()
+        self.interface.factory.not_implemented('App.create_menus()')
 
     def run_app(self):
         self.create()
@@ -43,4 +43,4 @@ class App:
         thread.Join()
 
     def exit(self):
-        raise NotImplementedError()
+        self.interface.factory.not_implemented('App.exit()')

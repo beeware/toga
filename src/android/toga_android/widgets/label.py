@@ -26,7 +26,7 @@ class Label(Widget):
             }[value])
 
     def set_text(self, value):
-        self.native.setText(value)
+        self.native.setText(self.interface._text)
 
     def rehint(self):
         # print("REHINT label", self, self.native.getMeasuredWidth(), self.native.getMeasuredHeight())

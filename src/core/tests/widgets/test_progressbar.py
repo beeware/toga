@@ -22,5 +22,5 @@ class ProgressBarTests(TestCase):
     def test_set_max(self):
         new_max = 100
         self.progress_bar.max = new_max
-        self.assertEqual(self.progress_bar._max, new_max)
+        self.assertEqual(self.progress_bar.max, new_max)
         self.assertValueSet(self.progress_bar, 'max', value=new_max)
