@@ -15,10 +15,10 @@ from .widgets.numberinput import NumberInput
 from .widgets.optioncontainer import *
 from .widgets.passwordinput import *
 from .widgets.progressbar import *
-# from .widgets.scrollcontainer import *
+from .widgets.scrollcontainer import *
 # from .widgets.selection import Selection
 # from .widgets.slider import *
-# from .widgets.splitcontainer import *
+from .widgets.splitcontainer import *
 # from .widgets.switch import *
 from .widgets.table import *
 from .widgets.textinput import *
@@ -54,7 +54,7 @@ __all__ = [
     'ScrollContainer',
     # 'Selection',
     # 'Slider',
-    # 'SplitContainer',
+    'SplitContainer',
     # 'Switch',
     'Table',
     'TextInput',
