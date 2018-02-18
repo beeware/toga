@@ -126,10 +126,11 @@ class NumberInput(Widget):
         except TypeError:
             self._value = None
 
-        if self.min_value is not None and value < self.min_value:
-            self._value = self.min_value
-        elif self.max_value is not None and value > self.max_value:
-            self._value = self.max_value
+        if self._value is not None:
+            if self.min_value is not None and value < self.min_value:
+                self._value = self.min_value
+            elif self.max_value is not None and value > self.max_value:
+                self._value = self.max_value
         self._impl.set_value(value)
 
     @property
