@@ -6,7 +6,13 @@ class ProgressBar(Widget):
     """
     MIN_WIDTH = 100
 
-    def __init__(self, id=None, style=None, max=None, value=None, factory=None):
+    def __init__(self,
+                 id=None,
+                 style=None,
+                 max=1,
+                 value=0,
+                 running=False,
+                 factory=None):
         """
 
         Args:
@@ -15,20 +21,48 @@ class ProgressBar(Widget):
                 new one will be created for the widget.
             max (float): The maximum value of the progressbar.
             value (float): To define the current progress of the progressbar.
+            running (bool): Set the inital running mode.
             factory (:obj:`module`): A python module that is capable to return a
                 implementation of this class with the same name. (optional & normally not needed)
         """
         super().__init__(id=id, style=style, factory=factory)
+
+        self._is_running = False
         self._impl = self.factory.ProgressBar(interface=self)
+        self._value = value
 
         self.max = max
+
+        if running:
+            self.start()
+        else:
+            self.stop()
+
         self.value = value
-        self._running = False
+
+    @property
+    def is_running(self):
+        return self._is_running
+
+    @property
+    def is_determinate(self):
+        return self.max is not None
+
+    def start(self):
+        self.enabled = True
+        if not self.is_running:
+            self._impl.start()
+        self._is_running = True
+
+    def stop(self):
+        self._enabled = bool(self.max)
+        if self.is_running:
+            self._impl.stop()
+        self._is_running = False
 
     @property
     def value(self):
-        """ The progress value
-
+        """
         Returns:
             The current value as a ``int`` or ``float``.
         """
@@ -36,9 +70,11 @@ class ProgressBar(Widget):
 
     @value.setter
     def value(self, value):
-        self._value = value
-        self._impl.set_value(value)
-        self._running = self._value is not None
+        if self.max:
+            # default to 0 if value is None
+            # bound value between 0 and self.max
+            self._value = max(0, min(self.max, value or 0))
+            self._impl.set_value(value)
 
     @property
     def max(self):
@@ -50,6 +86,8 @@ class ProgressBar(Widget):
         return self._max
 
     @max.setter
-    def max(self, max):
-        self._max = max
-        self._impl.set_max(max)
+    def max(self, value):
+        self.enabled = bool(value or self.is_running)
+
+        self._max = value
+        self._impl.set_max(value)

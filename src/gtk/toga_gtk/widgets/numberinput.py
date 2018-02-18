@@ -1,3 +1,4 @@
+import sys
 from gi.repository import Gtk
 
 from .base import Widget
@@ -5,12 +6,10 @@ from .base import Widget
 
 class NumberInput(Widget):
     def create(self):
-        adjustment = Gtk.Adjustment(0, self.interface.min_value,
-                                    self.interface.max_value,
-                                    self.interface.step, 10, 0)
+        self.adjustment = Gtk.Adjustment()
 
         self.native = Gtk.SpinButton()
-        self.native.set_adjustment(adjustment)
+        self.native.set_adjustment(self.adjustment)
         self.native.set_numeric(True)
         self.native.interface = self.interface
 
@@ -20,13 +19,22 @@ class NumberInput(Widget):
         self.native.editable = not value
 
     def set_step(self, step):
-        self.interface.factory.not_implemented('NumberInput.set_step()')
+        self.adjustment.set_step_increment(step)
+        self.native.set_adjustment(self.adjustment)
 
     def set_min_value(self, value):
-        self.interface.factory.not_implemented('NumberInput.set_min_value()')
+        if value is None:
+            self.adjustment.set_lower(-sys.maxsize - 1)
+        else:
+            self.adjustment.set_lower(value)
+        self.native.set_adjustment(self.adjustment)
 
     def set_max_value(self, value):
-        self.interface.factory.not_implemented('NumberInput.set_max_value()')
+        if value is None:
+            self.adjustment.set_upper(sys.maxsize)
+        else:
+            self.adjustment.set_upper(value)
+        self.native.set_adjustment(self.adjustment)
 
     def set_value(self, value):
         self.native.set_value(value)
