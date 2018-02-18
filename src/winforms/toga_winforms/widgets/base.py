@@ -1,4 +1,4 @@
-from toga_winforms.libs import *
+from toga_winforms.libs import WinForms, Point, Size
 
 
 class Widget:
@@ -26,6 +26,7 @@ class Widget:
         self._container = container
         if self.native:
             self._container.native.Controls.Add(self.native)
+            self.native.BringToFront()
 
         for child in self.interface.children:
             child._impl.container = container
@@ -48,7 +49,7 @@ class Widget:
 
     def set_hidden(self, hidden):
         if self.native:
-            self.native.Visibility = not hidden
+            self.native.Visible = not hidden
 
     def set_font(self, font):
         # By default, font can't be changed

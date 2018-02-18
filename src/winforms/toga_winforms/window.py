@@ -1,5 +1,9 @@
 from travertino.layout import Viewport
-from .libs import *
+
+from toga import GROUP_BREAK, SECTION_BREAK
+from .libs import WinForms, Size
+from toga.command import Command as BaseCommand
+
 
 
 class WinFormsViewport:
@@ -26,7 +30,6 @@ class Window:
         self.native = WinForms.Form(self)
         self.native.ClientSize = Size(self.interface._size[0], self.interface._size[1])
         self.native.Resize += self.on_resize
-
         self.toolbar_native = None
         self.toolbar_items = None
 
@@ -51,12 +54,6 @@ class Window:
         pass
 
     def set_content(self, widget):
-        # If the content widget doesn't have a native, manifest a Panel as that native.
-        if widget.native is None:
-            widget.native = WinForms.Panel()
-
-        # Construct the top-level layout, and set the window's view to
-        # the be the widget's native object.
         if self.toolbar_native:
             self.native.Controls.Add(self.toolbar_native)
 
