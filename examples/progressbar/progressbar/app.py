@@ -1,65 +1,86 @@
 import toga
-from colosseum import CSS
+from toga.style import Pack
+from toga.constants import ROW, COLUMN
 
 
 class ProgressBarApp(toga.App):
 
     def startup(self):
         # Main window of the application with title and size
-        self.main_window = toga.MainWindow(self.name, size=(400, 400))
+        self.main_window = toga.MainWindow(self.name, size=(500, 500))
 
         # the user may change the value with +/- buttons
-        self.progress2 = toga.ProgressBar(value=0)
+        self.progress_adder = toga.ProgressBar()
 
         # the user may switch between "running" mode and a set value
-        self.progress3 = toga.ProgressBar(value=3)
+        self.progress_runner = toga.ProgressBar(max=None)
 
-        # set up common styls
-        label_style = CSS(flex=1, padding_right=24)
-        box_style = CSS(flex_direction="row", padding=24)
+        # set up common styles
+        label_style = Pack(flex=1, padding_right=24)
+        row_box_style = Pack(direction=ROW, padding=24)
+        col_box_style = Pack(direction=COLUMN, padding=24)
 
         # Add the content on the main window
-        self.main_window.content = toga.Box(
-            children=[
+        self.main_window.content = toga.Box(style=col_box_style, children=[
+            toga.Box(style=col_box_style, children=[
+                toga.Label("Use the +/- buttons to change the progress",
+                           style=label_style),
 
-                toga.Box(style=box_style, children=[
-                    toga.Label("default ProgressBar", style=label_style),
+                self.progress_adder,
 
-                    toga.ProgressBar(),
+                toga.Box(children=[
+                    toga.Button("+", on_press=self.increase_progress,
+                                style=Pack(flex=1)),
+                    toga.Button("-", on_press=self.decrease_progress,
+                                style=Pack(flex=1)),
                 ]),
 
-                toga.Box(style=CSS(padding=24), children=[
-                    toga.Label("Use the +/- buttons to change the progress",
-                               style=label_style),
+                toga.Switch("Toggle running mode", on_toggle=self.toggle_running)
+            ]),
 
-                    self.progress2,
+            toga.Box(style=row_box_style, children=[
+                toga.Label("default ProgressBar", style=label_style),
+                toga.ProgressBar(),
+            ]),
 
-                    toga.Box(
-                        children=[
-                            toga.Button("+", on_press=self.increase_progress2,
-                                        style=CSS(margin=8, flex=1)),
-                            toga.Button("-", on_press=self.decrease_progress2,
-                                        style=CSS(margin=8, flex=1)),
-                        ],
-                        style=CSS(flex=1, flex_direction="row")
-                    ),
-                ]),
+            toga.Box(style=row_box_style, children=[
+                toga.Label("disabled ProgressBar", style=label_style),
+                toga.ProgressBar(max=None,  running=False),
+            ]),
 
-                toga.Box(style=box_style, children=[
-                    toga.Switch("Toggle running mode")
-                    self.progress3
-                ])
-            ],
-            style=CSS(padding=24)
-        )
+            toga.Box(style=row_box_style, children=[
+                toga.Label("indeterminate ProgressBar", style=label_style),
+                toga.ProgressBar(max=None,  running=True),
+            ]),
+
+            toga.Box(style=row_box_style, children=[
+                toga.Label("determinate ProgressBar", style=label_style),
+                toga.ProgressBar(max=1, running=False, value=0.5),
+            ]),
+
+            toga.Box(style=row_box_style, children=[
+                toga.Label("running determinate ProgressBar", style=label_style),
+                toga.ProgressBar(max=1, running=True, value=0.5),
+            ]),
+        ])
 
         self.main_window.show()
 
-    def increase_progress2(self, button, **kw):
-        self.progress2.value += 0.1 * self.progress2.max
+    def increase_progress(self, button, **kw):
+        if not self.progress_adder.is_running:
+            self.progress_adder.value += 0.1 * self.progress_adder.max
 
-    def decrease_progress2(self, button, **kw):
-        self.progress2.value -= 0.1 * self.progress2.max
+    def decrease_progress(self, button, **kw):
+        if not self.progress_adder.is_running:
+            self.progress_adder.value -= 0.1 * self.progress_adder.max
+
+    def toggle_running(self, switch, **kw):
+        if switch.is_on:
+            self.progress_adder.max = None
+            self.progress_adder.start()
+        else:
+            self.progress_adder.max = 1
+            self.progress_adder.stop()
 
 
 def main():
