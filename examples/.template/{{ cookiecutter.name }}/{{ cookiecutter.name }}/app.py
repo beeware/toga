@@ -1,5 +1,6 @@
 import toga
-from colosseum import CSS
+from toga.style import Pack
+from toga.constants import COLUMN, ROW
 
 
 class Example{{ cookiecutter.widget_name }}App(toga.App):
@@ -13,34 +14,33 @@ class Example{{ cookiecutter.widget_name }}App(toga.App):
     def startup(self):
         # Set up main window
         self.main_window = toga.MainWindow(self.name)
-        self.main_window.app = self
 
         # Label to show responses.
-        label = toga.Label('Ready.')
+        self.label = toga.Label('Ready.')
 
         widget = toga.{{ cookiecutter.widget_name }}()
 
         # Buttons
-        btn_style = CSS(flex=1)
+        btn_style = Pack(flex=1)
         btn_do_stuff = toga.Button('Do stuff', on_press=self.do_stuff, style=btn_style)
-        btn_clear = toga.Button('Clear', on_press=do_clear, style=btn_style)
+        btn_clear = toga.Button('Clear', on_press=self.do_clear, style=btn_style)
         btn_box = toga.Box(
             children=[
                 btn_do_stuff,
                 btn_clear
             ],
-            style=CSS(flex_direction='row')
+            style=Pack(direction=ROW)
         )
 
         # Outermost box
         outer_box = toga.Box(
-            children=[btn_box, widget, label],
-            style=CSS(
+            children=[btn_box, widget, self.label],
+            style=Pack(
                 flex=1,
-                flex_direction='column',
+                direction=COLUMN,
                 padding=10,
-                min_width=500,
-                min_height=300
+                width=500,
+                height=300
             )
         )
 

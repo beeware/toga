@@ -14,3 +14,6 @@ class ImageTests(TestCase):
     def test_object_created(self):
         self.assertEqual(self.image._impl.interface, self.image)
         self.assertActionPerformedWith(self.image, 'load image', path=self.path)
+
+    def test_path(self):
+        self.assertEqual(self.image.path, self.path)

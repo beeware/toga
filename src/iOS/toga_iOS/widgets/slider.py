@@ -1,5 +1,5 @@
-from rubicon.objc import objc_method, SEL
-from toga_iOS.libs import UISlider, CGSize, UIControlEventValueChanged
+from rubicon.objc import objc_method, SEL, CGSize
+from toga_iOS.libs import UISlider, UIControlEventValueChanged
 
 from .base import Widget
 

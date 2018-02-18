@@ -41,7 +41,7 @@ Supported widgets by platform
     +-------------------------------------------------------------------+-----+-----+----+------+-----+-----+-------+
     |:mod:`toga.interface.widgets.passwordinput.PasswordInput`          ||no| ||yes|||no|||no|  ||yes|||no| ||no|   |
     +-------------------------------------------------------------------+-----+-----+----+------+-----+-----+-------+
-    |:mod:`toga.interface.widgets.progressbar.ProgressBar`              ||no| ||no| ||no|||no|  ||yes|||no| ||no|   |
+    |:mod:`toga.interface.widgets.progressbar.ProgressBar`              ||no| ||no| ||no|||no|  ||yes|||yes|||no|   |
     +-------------------------------------------------------------------+-----+-----+----+------+-----+-----+-------+
     |:mod:`toga.interface.widgets.scrollcontainer.ScrollContainer`      ||no| ||no| ||no|||no|  ||yes|||yes|||no|   |
     +-------------------------------------------------------------------+-----+-----+----+------+-----+-----+-------+

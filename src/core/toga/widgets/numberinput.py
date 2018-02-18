@@ -15,6 +15,10 @@ class NumberInput(Widget):
             implementation of this class with the same name. (optional & normally not needed)
 
         step (int): Step size of the adjustment buttons.
+        min_value (int): The minimum bound for the widget's value.
+        max_value (int): The maximum bound for the widget's value.
+        readonly (bool):  Whether a user can write/change the number input, defaults to `False`.
+        on_change (``callable``): The handler to invoke when the value changes.
         **ex:
     """
     MIN_WIDTH = 100
@@ -33,7 +37,7 @@ class NumberInput(Widget):
 
     @property
     def readonly(self):
-        """ Whether a user can write into the text input
+        """ Whether a user can write/change the number input
 
         Returns:
             ``True`` if only read is possible.
@@ -61,7 +65,7 @@ class NumberInput(Widget):
             self._step = int(step)
         except (ValueError, TypeError):
             raise ValueError("step must be an integer")
-        self._impl.set_step(step)
+        self._impl.set_step(self._step)
 
     @property
     def min_value(self):
@@ -81,7 +85,7 @@ class NumberInput(Widget):
             raise ValueError("min_value must be an integer")
         except TypeError:
             self._min_value = None
-        self._impl.set_min_value(value)
+        self._impl.set_min_value(self._min_value)
 
     @property
     def max_value(self):
@@ -101,7 +105,7 @@ class NumberInput(Widget):
             raise ValueError("max_value must be an integer")
         except TypeError:
             self._max_value = None
-        self._impl.set_max_value(value)
+        self._impl.set_max_value(self._max_value)
 
     @property
     def value(self):

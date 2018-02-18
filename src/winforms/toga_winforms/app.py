@@ -1,5 +1,5 @@
-from .window import Window
 from .libs import Threading, WinForms
+from .window import Window
 
 
 class MainWindow(Window):
