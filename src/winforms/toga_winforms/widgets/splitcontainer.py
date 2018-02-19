@@ -8,8 +8,6 @@ class SplitContainer(Widget):
 
     def create(self):
         self.native = WinForms.SplitContainer()
-        if self.interface.direction == self.interface.HORIZONTAL:
-            self.native.Orientation = WinForms.Orientation.Horizontal
         self.native.interface = self.interface
         self.ratio = None
 
