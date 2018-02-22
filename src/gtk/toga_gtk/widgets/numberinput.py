@@ -37,7 +37,10 @@ class NumberInput(Widget):
         self.native.set_adjustment(self.adjustment)
 
     def set_value(self, value):
-        self.native.set_value(value)
+        if value is None:
+            pass
+        else:
+            self.native.set_value(value)
 
     def set_alignment(self, value):
         self.interface.factory.not_implemented('NumberInput.set_alignment()')
