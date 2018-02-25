@@ -11,62 +11,50 @@ class Canvas(Widget):
         id (str):  An identifier for this widget.
         style (:obj:`Style`): An optional style object. If no
             style is provided then a new one will be created for the widget.
-        on_draw (``callable``): Function to draw on the canvas.
         factory (:obj:`module`): A python module that is capable to return a
             implementation of this class with the same name. (optional &
             normally not needed)
     """
 
-    def __init__(self, id=None, style=None, on_draw=None, factory=None):
+    def __init__(self, id=None, style=None, factory=None):
         super().__init__(id=id, style=style, factory=factory)
 
         # Create a platform specific implementation of Canvas
         self._impl = self.factory.Canvas(interface=self)
-        self.on_draw = on_draw
 
-    def set_context(self, context):
-        """The context of the Canvas to pass through from a callable function
+    def set_context(self, name, remove=False):
+        """The context of the Canvas to draw to
+
+        Creates a context or switches to an already existing context. There is a
+        context created automatically called 'default' that is used if another
+        context isn't created. The top left corner of the canvas must be painted
+        at the origin of the context and is sized using the rehint() method.
 
         Args:
-            context (:obj:'context'): The context to pass
+            name (str): The name of the context
+            remove (bool, optional): Removes the operation from the drawing
+                stack. Default to False.
+
 
         """
-        self._impl.set_context(context)
-
-    @property
-    def on_draw(self):
-        """The callable function to draw on a Canvas
-
-        Creates a context or saves the current context, draws the operations
-        using the passed function, then renders the drawing, and finally
-        restores the saved context. The top left corner of the canvas must be
-        painted at the origin of the context and is sized using the rehint()
-        method.
-
-        """
-        return self._on_draw
-
-    @on_draw.setter
-    def on_draw(self, handler):
-        self._on_draw = handler
-
-        if self._on_draw:
-            self._impl.set_on_draw(self._on_draw)
+        self._impl.set_context(name, remove)
 
     # Line Styles
 
-    def line_width(self, width=2.0):
+    def line_width(self, width=2.0, remove=False):
         """Set width of lines
 
         Args:
             width (float): line width
+            remove (bool, optional): Removes the operation from the drawing
+                stack. Default to False.
 
         """
-        self._impl.line_width(width)
+        self._impl.line_width(width, remove)
 
     # Fill and Stroke Styles
 
-    def fill_style(self, color=None):
+    def fill_style(self, color=None, remove=False):
         """Color to use inside shapes
 
         Currently supports color, in the future could support gradient and
@@ -74,11 +62,13 @@ class Canvas(Widget):
         to black.
         Args:
             color (str): CSS color value or in rgba(0, 0, 0, 1) format
+            remove (bool, optional): Removes the operation from the drawing
+                stack. Default to False.
 
         """
-        self._impl.fill_style(color)
+        self._impl.fill_style(color, remove)
 
-    def stroke_style(self, color=None):
+    def stroke_style(self, color=None, remove=False):
         """Color to use for lines around shapes
 
         Currently supports color, in the future could support gradient and
@@ -88,34 +78,44 @@ class Canvas(Widget):
 
         Args:
             color (str): CSS color value or in rgba(0, 0, 0, 1) format
+            remove (bool, optional): Removes the operation from the drawing
+                stack. Default to False.
 
         """
-        self._impl.stroke_style(color)
+        self._impl.stroke_style(color, remove)
 
     # Paths
 
     @contextmanager
-    def closed_path(self, x, y):
+    def closed_path(self, x, y, remove=False):
         """Creates a new path and then closes it
+
+        Args:
+            x (float): The x axis of the beginning point
+            y (float): The y axis of the beginning point
+            remove (bool, optional): Removes the operation from the drawing
+                stack. Default to False.
 
         Yields: None
 
         """
-        self._impl.move_to(x, y)
+        self._impl.move_to(x, y, remove)
         yield
-        self._impl.close_path()
+        self._impl.close_path(remove)
 
-    def move_to(self, x, y):
+    def move_to(self, x, y, remove=False):
         """Moves the starting point of a new sub-path to the (x, y) coordinates.
 
         Args:
             x (float): The x axis of the point
             y (float): The y axis of the point
+            remove (bool, optional): Removes the operation from the drawing
+                stack. Default to False.
 
         """
-        self._impl.move_to(x, y)
+        self._impl.move_to(x, y, remove)
 
-    def line_to(self, x, y):
+    def line_to(self, x, y, remove=False):
         """Connects the last point with a line.
 
         Connects the last point in the sub-path to the (x, y) coordinates
@@ -124,11 +124,13 @@ class Canvas(Widget):
         Args:
             x (float): The x axis of the coordinate for the end of the line
             y (float): The y axis of the coordinate for the end of the line
+            remove (bool, optional): Removes the operation from the drawing
+                stack. Default to False.
 
         """
-        self._impl.line_to(x, y)
+        self._impl.line_to(x, y, remove)
 
-    def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y):
+    def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y, remove=False):
         """Adds a cubic Bézier curve to the path.
 
         It requires three points. The first two points are control points
@@ -143,11 +145,13 @@ class Canvas(Widget):
             cp2y (float): y coordinate for the second control point
             x (float): x coordinate for the end point
             y (float): y coordinate for the end point
+            remove (bool, optional): Removes the operation from the drawing
+                stack. Default to False.
 
         """
-        self._impl.bezier_curve_to(cp1x, cp1y, cp2x, cp2y, x, y)
+        self._impl.bezier_curve_to(cp1x, cp1y, cp2x, cp2y, x, y, remove)
 
-    def quadratic_curve_to(self, cpx, cpy, x, y):
+    def quadratic_curve_to(self, cpx, cpy, x, y, remove=False):
         """Adds a quadratic Bézier curve to the path.
 
         It requires two points. The first point is a control point and the
@@ -160,11 +164,13 @@ class Canvas(Widget):
             cpy (float): The y axis of the coordinate for the control point
             x (float): The x axis of the coordinate for the end point
             y (float): he y axis of the coordinate for the end point
+            remove (bool, optional): Removes the operation from the drawing
+                stack. Default to False.
 
         """
-        self._impl.quadratic_curve_to(cpx, cpy, x, y)
+        self._impl.quadratic_curve_to(cpx, cpy, x, y, remove)
 
-    def arc(self, x, y, radius, startangle=0, endangle=2 * pi, anticlockwise=False):
+    def arc(self, x, y, radius, startangle=0, endangle=2 * pi, anticlockwise=False, remove=False):
         """Adds an arc to the path.
 
         The arc is centered at (x, y) position with radius r starting at
@@ -181,11 +187,14 @@ class Canvas(Widget):
                 measured clockwise from the positive x axis
             anticlockwise (bool): Optional, if true, causes the arc to be drawn
                 counter-clockwise between the two angles instead of clockwise
+            remove (bool, optional): Removes the operation from the drawing
+                stack. Default to False.
 
         """
-        self._impl.arc(x, y, radius, startangle, endangle, anticlockwise)
+        self._impl.arc(x, y, radius, startangle, endangle, anticlockwise, remove)
 
-    def ellipse(self, x, y, radiusx, radiusy, rotation=0, startangle=0, endangle=2 * pi, anticlockwise=False):
+    def ellipse(self, x, y, radiusx, radiusy, rotation=0, startangle=0, endangle=2 * pi,
+                anticlockwise=False, remove=False):
         """Adds an ellipse to the path.
 
         The ellipse is centered at (x, y) position with the radii radiusx and radiusy
@@ -204,11 +213,13 @@ class Canvas(Widget):
                 be drawn
             anticlockwise (bool): Optional, if true, draws the ellipse
                 anticlockwise (counter-clockwise) instead of clockwise
+            remove (bool, optional): Removes the operation from the drawing
+                stack. Default to False.
 
         """
-        self._impl.ellipse(x, y, radiusx, radiusy, rotation, startangle, endangle, anticlockwise)
+        self._impl.ellipse(x, y, radiusx, radiusy, rotation, startangle, endangle, anticlockwise, remove)
 
-    def rect(self, x, y, width, height):
+    def rect(self, x, y, width, height, remove=False):
         """ Creates a path for a rectangle.
 
         The rectangle is at position (x, y) with a size that is determined by
@@ -221,14 +232,16 @@ class Canvas(Widget):
             y (float): y coordinate for the rectangle starting point
             width (float): The rectangle's width
             height (float): The rectangle's width
+            remove (bool, optional): Removes the operation from the drawing
+                stack. Default to False.
 
         """
-        self._impl.rect(x, y, width, height)
+        self._impl.rect(x, y, width, height, remove)
 
     # Drawing Paths
 
     @contextmanager
-    def fill(self, fill_rule='nonzero', preserve=False):
+    def fill(self, fill_rule='nonzero', preserve=False, remove=False):
         """Fills the subpaths with the current fill style
 
         A drawing operator that fills the current path according to the current
@@ -238,29 +251,39 @@ class Canvas(Widget):
             fill_rule (str): 'nonzero' is the non-zero winding rule and
                              'evenodd' is the even-odd winding rule
             preserve (bool): Preserves the path within the Context
+            remove (bool, optional): Removes the operation from the drawing
+                stack. Default to False.
+
+        Yields: None
 
         """
-        self._impl.new_path()
+        self._impl.new_path(remove)
         yield
         if fill_rule is 'evenodd':
-            self._impl.fill(fill_rule, preserve)
+            self._impl.fill(fill_rule, preserve, remove)
         else:
-            self._impl.fill('nonzero', preserve)
+            self._impl.fill('nonzero', preserve, remove)
 
     @contextmanager
-    def stroke(self):
+    def stroke(self, remove=False):
         """Strokes the subpaths with the current stroke style
 
         A drawing operator that strokes the current path according to the
         current line style settings.
 
+        Args:
+            remove (bool, optional): Removes the operation from the drawing
+                stack. Default to False.
+
+        Yields: None
+
         """
         yield
-        self._impl.stroke()
+        self._impl.stroke(remove)
 
     # Transformations
 
-    def rotate(self, radians):
+    def rotate(self, radians, remove=False):
         """Moves the transformation matrix by the angle
 
         Modifies the current transformation matrix (CTM) by rotating the
@@ -271,11 +294,13 @@ class Canvas(Widget):
 
         Args:
             radians (float): The angle to rotate clockwise in radians
+            remove (bool, optional): Removes the operation from the drawing
+                stack. Default to False.
 
         """
-        self._impl.rotate(radians)
+        self._impl.rotate(radians, remove)
 
-    def scale(self, sx, sy):
+    def scale(self, sx, sy, remove=False):
         """Adds a scaling transformation to the canvas
 
         Modifies the current transformation matrix (CTM) by scaling the X and Y
@@ -285,11 +310,13 @@ class Canvas(Widget):
         Args:
             sx (float): scale factor for the X dimension
             sy (float): scale factor for the Y dimension
+            remove (bool, optional): Removes the operation from the drawing
+                stack. Default to False.
 
         """
-        self._impl.scale(sx, sy)
+        self._impl.scale(sx, sy, remove)
 
-    def translate(self, tx, ty):
+    def translate(self, tx, ty, remove=False):
         """Moves the canvas and its origin
 
         Modifies the current transformation matrix (CTM) by translating the
@@ -301,11 +328,13 @@ class Canvas(Widget):
         Args:
             tx (float): X value of coordinate
             ty (float): Y value of coordinate
+            remove (bool, optional): Removes the operation from the drawing
+                stack. Default to False.
 
         """
-        self._impl.translate(tx, ty)
+        self._impl.translate(tx, ty, remove)
 
-    def reset_transform(self):
+    def reset_transform(self, remove=False):
         """Reset the current transform by the identity matrix
 
         Resets the current transformation Matrix (CTM) by setting it equal to
@@ -313,12 +342,16 @@ class Canvas(Widget):
         be aligned and one user-space unit will transform to one device-space
         unit.
 
+        Args:
+            remove (bool, optional): Removes the operation from the drawing
+                stack. Default to False.
+
         """
-        self._impl.reset_transform()
+        self._impl.reset_transform(remove)
 
     # Text
 
-    def write_text(self, text, x=0, y=0, font=None):
+    def write_text(self, text, x=0, y=0, font=None, remove=False):
         """Writes a given text
 
         Writes a given text at the given (x,y) position. If no font is provided,
@@ -330,6 +363,8 @@ class Canvas(Widget):
             x (float, optional): The x coordinate of the text. Default to 0.
             y (float, optional): The y coordinate of the text. Default to 0.
             font (:class:`toga.Font`, optional): The font to write with.
+            remove (bool, optional): Removes the operation from the drawing
+                stack. Default to False.
 
         """
-        self._impl.write_text(text, x, y, font)
+        self._impl.write_text(text, x, y, font, remove)
