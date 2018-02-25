@@ -1,4 +1,5 @@
 import re
+from collections import defaultdict
 
 import gi
 
@@ -35,35 +36,43 @@ class Canvas(Widget):
         self.native.interface = self.interface
         self.surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, self.native.get_allocated_width(),
                                      self.native.get_allocated_height())
-        default_stack = []
-        self.current_context = default_stack
-        self.context_map = {'default': default_stack}
-        self.current_context.append(cairo.Context(self.surface))
+        self.context_dict = defaultdict(list)
+        self.set_context('default')
+        self.native_context, self.draw_stack = self.context_dict['default']
+        self.native.connect('draw', self.draw_all_contexts)
         self.native.font = None
 
     def set_on_draw(self, handler):
         self.native.connect('draw', handler)
 
+    def create_context_values(self):
+        self.native_context = cairo.Context(self.surface)
+        draw_stack = []
+        return [self.native_context, draw_stack]
+
+    def draw_all_contexts(self):
+        for context, context_values in self.context_dict.items():
+            self.native_context, draw_stack = context_values
+            for draw_operation in draw_stack:
+                draw_operation()
+
     def set_context(self, context):
         if context:
-            for context in self.context_map:
-                self.current_context = self.context_map[context]
+            for context in self.context_dict:
+                self.draw_stack = self.context_dict[context]
             else:
-                self.context_map[context] = []
-                self.current_context = self.context_map[context]
-                self.current_context.append(cairo.Context(self.surface))
+                self.context_dict[context] = self.create_context_values()
+                self.native_context, self.draw_stack = self.context_dict[context]
         else:
             print("No context provided")
 
     def line_width(self, width=2.0, remove=False):
-        context = self.current_context[cairo.Context(self.surface)]
         if remove:
-            self.current_context.remove(context.set_line_width(width))
+            self.draw_stack.remove(self.native_context.set_line_width(width))
         else:
-            self.current_context.append(context.set_line_width(width))
+            self.draw_stack.append(self.native_context.set_line_width(width))
 
     def fill_style(self, color=None, remove=False):
-        context = self.current_context[cairo.Context(self.surface)]
         if color is not None:
             num = re.search('^rgba\((\d*\.?\d*), (\d*\.?\d*), (\d*\.?\d*), (\d*\.?\d*)\)$', color)
             if num is not None:
@@ -73,9 +82,9 @@ class Canvas(Widget):
                 b = float(num.group(3)) / 255
                 a = float(num.group(4))
                 if remove:
-                    self.current_context.remove(context.set_source_rga(r, g, b, a))
+                    self.draw_stack.remove(self.native_context.set_source_rga(r, g, b, a))
                 else:
-                    self.current_context.append(context.set_source_rgba(r, g, b, a))
+                    self.draw_stack.append(self.native_context.set_source_rgba(r, g, b, a))
             else:
                 pass
                 # Support future colosseum versions
@@ -85,74 +94,65 @@ class Canvas(Widget):
         else:
             # Default to black
             if remove:
-                self.current_context.remove(context.set_source_rga(0, 0, 0, 1))
+                self.draw_stack.remove(self.native_context.set_source_rga(0, 0, 0, 1))
             else:
-                self.current_context.append(context.set_source_rgba(0, 0, 0, 1))
+                self.draw_stack.append(self.native_context.set_source_rgba(0, 0, 0, 1))
 
     def stroke_style(self, color=None, remove=False):
-        context = self.current_context[cairo.Context(self.surface)]
         if remove:
-            self.current_context.remove(context.fill_style(color))
+            self.draw_stack.remove(self.native_context.fill_style(color))
         else:
-            self.current_context.append(context.fill_style(color))
+            self.draw_stack.append(self.native_context.fill_style(color))
 
     def new_path(self, remove=False):
-        context = self.current_context[cairo.Context(self.surface)]
         if remove:
-            self.current_context.remove(context.new_path())
+            self.draw_stack.remove(self.native_context.new_path())
         else:
-            self.current_context.append(context.new_path())
+            self.draw_stack.append(self.native_context.new_path())
 
     def close_path(self, remove=False):
-        context = self.current_context[cairo.Context(self.surface)]
         if remove:
-            self.current_context.remove(context.close_path())
+            self.draw_stack.remove(self.native_context.close_path())
         else:
-            self.current_context.append(context.close_path())
+            self.draw_stack.append(self.native_context.close_path())
 
     def move_to(self, x, y, remove=False):
-        context = self.current_context[cairo.Context(self.surface)]
         if remove:
-            self.current_context.remove(context.move_to(x, y))
+            self.draw_stack.remove(self.native_context.move_to(x, y))
         else:
-            self.current_context.append(context.move_to(x, y))
+            self.draw_stack.append(self.native_context.move_to(x, y))
 
     def line_to(self, x, y, remove=False):
-        context = self.current_context[cairo.Context(self.surface)]
         if remove:
-            self.current_context.remove(context.line_to(x, y))
+            self.draw_stack.remove(self.native_context.line_to(x, y))
         else:
-            self.current_context.append(context.line_to(x, y))
+            self.draw_stack.append(self.native_context.line_to(x, y))
 
     def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y, remove=False):
-        context = self.current_context[cairo.Context(self.surface)]
         if remove:
-            self.current_context.remove(context.curve_to(cp1x, cp1y, cp2x, cp2y, x, y))
+            self.draw_stack.remove(self.native_context.curve_to(cp1x, cp1y, cp2x, cp2y, x, y))
         else:
-            self.current_context.append(context.curve_to(cp1x, cp1y, cp2x, cp2y, x, y))
+            self.draw_stack.append(self.native_context.curve_to(cp1x, cp1y, cp2x, cp2y, x, y))
 
     def quadratic_curve_to(self, cpx, cpy, x, y, remove=False):
-        context = self.current_context[cairo.Context(self.surface)]
         if remove:
-            self.current_context.remove(context.curve_to(cpx, cpy, cpx, cpy, x, y))
+            self.draw_stack.remove(self.native_context.curve_to(cpx, cpy, cpx, cpy, x, y))
         else:
-            self.current_context.append(context.curve_to(cpx, cpy, cpx, cpy, x, y))
+            self.draw_stack.append(self.native_context.curve_to(cpx, cpy, cpx, cpy, x, y))
 
     def arc(self, x, y, radius, startangle, endangle, anticlockwise, remove=False):
-        context = self.current_context[cairo.Context(self.surface)]
         if anticlockwise and remove:
-            self.current_context.remove(context.arc_negative(x, y, radius, startangle, endangle))
+            self.draw_stack.remove(self.native_context.arc_negative(x, y, radius, startangle, endangle))
         elif anticlockwise:
-            self.current_context.append(context.arc_negative(x, y, radius, startangle, endangle))
+            self.draw_stack.append(self.native_context.arc_negative(x, y, radius, startangle, endangle))
         elif remove:
-            self.current_context.remove(context.arc(x, y, radius, startangle, endangle))
+            self.draw_stack.remove(self.native_context.arc(x, y, radius, startangle, endangle))
         else:
-            self.current_context.append(context.arc(x, y, radius, startangle, endangle))
+            self.draw_stack.append(self.native_context.arc(x, y, radius, startangle, endangle))
 
     def ellipse(self, x, y, radiusx, radiusy, rotation, startangle, endangle, anticlockwise, remove=False):
-        context = self.current_context[cairo.Context(self.surface)]
         if remove:
-            self.current_context.remove(context.save())
+            self.draw_stack.remove(self.native_context.save())
             self.translate(x, y, remove=True)
             if radiusx >= radiusy:
                 self.scale(1, radiusy / radiusx, remove=True)
@@ -162,9 +162,9 @@ class Canvas(Widget):
                 self.arc(0, 0, radiusy, startangle, endangle, anticlockwise, remove=True)
             self.rotate(rotation, remove=True)
             self.reset_transform(remove=True)
-            self.current_context.remove(context.restore())
+            self.draw_stack.remove(self.native_context.restore())
         else:
-            self.current_context.remove(context.save())
+            self.draw_stack.remove(self.native_context.save())
             self.translate(x, y)
             if radiusx >= radiusy:
                 self.scale(1, radiusy / radiusx)
@@ -174,75 +174,67 @@ class Canvas(Widget):
                 self.arc(0, 0, radiusy, startangle, endangle, anticlockwise)
             self.rotate(rotation)
             self.reset_transform()
-            self.current_context.restore()
+            self.draw_stack.restore()
 
     def rect(self, x, y, width, height, remove=False):
-        context = self.current_context[cairo.Context(self.surface)]
         if remove:
-            self.current_context.remove(context.rectangle(x, y, width, height))
+            self.draw_stack.remove(self.native_context.rectangle(x, y, width, height))
         else:
-            self.current_context.append(context.rectangle(x, y, width, height))
+            self.draw_stack.append(self.native_context.rectangle(x, y, width, height))
 
     # Drawing Paths
 
     def fill(self, fill_rule, preserve, remove=False):
-        context = self.current_context[cairo.Context(self.surface)]
         if fill_rule is 'evenodd' and remove:
-            self.current_context.remove(context.set_fill_rule(cairo.FILL_RULE_EVEN_ODD))
+            self.draw_stack.remove(self.native_context.set_fill_rule(cairo.FILL_RULE_EVEN_ODD))
         elif fill_rule is 'evenodd':
-            self.current_context.append(context.set_fill_rule(cairo.FILL_RULE_EVEN_ODD))
+            self.draw_stack.append(self.native_context.set_fill_rule(cairo.FILL_RULE_EVEN_ODD))
         elif remove:
-            self.current_context.remove(context.set_fill_rule(cairo.FILL_RULE_WINDING))
+            self.draw_stack.remove(self.native_context.set_fill_rule(cairo.FILL_RULE_WINDING))
         else:
-            self.current_context.append(context.set_fill_rule(cairo.FILL_RULE_WINDING))
+            self.draw_stack.append(self.native_context.set_fill_rule(cairo.FILL_RULE_WINDING))
         if preserve and remove:
-            self.current_context.remove(context.fill_preserve())
+            self.draw_stack.remove(self.native_context.fill_preserve())
         elif preserve:
-            self.current_context.append(context.fill_preserve())
+            self.draw_stack.append(self.native_context.fill_preserve())
         elif remove:
-            self.current_context.remove(context.fill())
+            self.draw_stack.remove(self.native_context.fill())
         else:
-            self.current_context.append(context.fill())
+            self.draw_stack.append(self.native_context.fill())
 
     def stroke(self, remove=False):
-        context = self.current_context[cairo.Context(self.surface)]
         if remove:
-            self.current_context.remove(context.stroke())
+            self.draw_stack.remove(self.native_context.stroke())
         else:
-            self.current_context.append(context.stroke())
+            self.draw_stack.append(self.native_context.stroke())
 
     # Transformations
 
     def rotate(self, radians, remove=False):
-        context = self.current_context[cairo.Context(self.surface)]
         if remove:
-            self.current_context.remove(context.rotate(radians))
+            self.draw_stack.remove(self.native_context.rotate(radians))
         else:
-            self.current_context.append(context.rotate(radians))
+            self.draw_stack.append(self.native_context.rotate(radians))
 
     def scale(self, sx, sy, remove=False):
-        context = self.current_context[cairo.Context(self.surface)]
         if remove:
-            self.current_context.remove(context.scale(sx, sy))
+            self.draw_stack.remove(self.native_context.scale(sx, sy))
         else:
-            self.current_context.append(context.scale(sx, sy))
+            self.draw_stack.append(self.native_context.scale(sx, sy))
 
     def translate(self, tx, ty, remove=False):
-        context = self.current_context[cairo.Context(self.surface)]
         if remove:
-            self.current_context.remove(context.translate(tx, ty))
+            self.draw_stack.remove(self.native_context.translate(tx, ty))
         else:
-            self.current_context.append(context.translate(tx, ty))
+            self.draw_stack.append(self.native_context.translate(tx, ty))
 
     def reset_transform(self, remove=False):
-        context = self.current_context[cairo.Context(self.surface)]
         if remove:
-            self.current_context.remove(context.identity_matrix())
+            self.draw_stack.remove(self.native_context.identity_matrix())
         else:
-            self.current_context.append(context.identity_matrix())
+            self.draw_stack.append(self.native_context.identity_matrix())
 
     def write_text(self, text, x, y, font, remove=False):
-        context = self.current_context[cairo.Context(self.surface)]
         # Set font family and size
         if font:
             write_font = font
@@ -253,34 +245,33 @@ class Canvas(Widget):
         else:
             return
         if remove:
-            self.current_context.remove(context.select_font_face(write_font.family))
-            self.current_context.remove(context.set_font_size(write_font.size))
+            self.draw_stack.remove(self.native_context.select_font_face(write_font.family))
+            self.draw_stack.remove(self.native_context.set_font_size(write_font.size))
         else:
-            self.current_context.append(context.select_font_face(write_font.family))
-            self.current_context.append(context.set_font_size(write_font.size))
+            self.draw_stack.append(self.native_context.select_font_face(write_font.family))
+            self.draw_stack.append(self.native_context.set_font_size(write_font.size))
 
         # Support writing multiline text
         for line in text.splitlines():
             width, height = write_font.measure(line)
             if remove:
-                self.current_context.remove(context.move_to(x, y))
-                self.current_context.remove(context.text_path(line))
+                self.draw_stack.remove(self.native_context.move_to(x, y))
+                self.draw_stack.remove(self.native_context.text_path(line))
             else:
-                self.current_context.append(context.move_to(x, y))
-                self.current_context.append(context.text_path(line))
+                self.draw_stack.append(self.native_context.move_to(x, y))
+                self.draw_stack.append(self.native_context.text_path(line))
             y += height
 
     def measure_text(self, text, font):
-        context = self.current_context[cairo.Context(self.surface)]
         # Set font family and size
         if font:
-            self.context.select_font_face(font.family)
-            self.context.set_font_size(font.size)
+            self.native_context.select_font_face(font.family)
+            self.native_context.set_font_size(font.size)
         elif self.native.font:
-            self.context.select_font_face(self.native.font.get_family())
-            self.context.set_font_size(self.native.font.get_size() / SCALE)
+            self.native_context.select_font_face(self.native.font.get_family())
+            self.native_context.set_font_size(self.native.font.get_size() / SCALE)
 
-        x_bearing, y_bearing, width, height, x_advance, y_advance = self.current_context.text_extents(text)
+        x_bearing, y_bearing, width, height, x_advance, y_advance = self.draw_stack.text_extents(text)
         return width, height
 
     def rehint(self):
