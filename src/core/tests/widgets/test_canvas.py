@@ -18,16 +18,6 @@ class CanvasTests(TestCase):
         self.assertEqual(self.testing_canvas._impl.interface, self.testing_canvas)
         self.assertActionPerformed(self.testing_canvas, 'create Canvas')
 
-    def test_canvas_on_draw(self):
-        self.assertIsNone(self.testing_canvas._on_draw)
-
-        # set a new callback
-        def callback(widget, **extra):
-            return 'called {} with {}'.format(type(widget), extra)
-
-        self.testing_canvas.on_draw = callback
-        self.assertValueSet(self.testing_canvas, 'on_draw', self.testing_canvas.on_draw)
-
     def test_basic_drawing(self):
         def drawing(widget):
             self.testing_canvas.rect(-3, -3, 6, 6)
@@ -170,6 +160,11 @@ class CanvasTests(TestCase):
         self.assertActionPerformedWith(self.testing_canvas, 'arc', x=-10, y=-10, radius=10, startangle=math.pi / 2,
                                        endangle=0, anticlockwise=True)
 
+    def test_remove_arc(self):
+        self.testing_canvas.arc(-10, -10, 10, math.pi / 2, 0, True)
+        self.testing_canvas.arc(-10, -10, 10, math.pi / 2, 0, True, True)
+        self.assertActionPerformedWith(self.testing_canvas, 'arc', x=-10, y=-10, radius=10, startangle=math.pi / 2,
+                                       endangle=0, anticlockwise=True, remove=True)
     def test_ellipse(self):
         self.testing_canvas.ellipse(1, 1, 50, 20, 0, math.pi, 2 * math.pi, False)
         self.assertActionPerformedWith(self.testing_canvas, 'ellipse', x=1, y=1, radiusx=50, radiusy=20, rotation=0,
