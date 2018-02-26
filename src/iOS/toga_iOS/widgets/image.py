@@ -1,4 +1,9 @@
-from toga_iOS.libs import UIImage
+import os
+from toga_iOS.libs import(
+    NSData,
+    NSURL,
+    UIImage
+)
 
 
 class Image(object):
@@ -9,4 +14,4 @@ class Image(object):
         if path.startswith('http://') or path.startswith('https://'):
             self.native = UIImage.imageWithData_(NSData.dataWithContentsOfURL_(NSURL.URLWithString_(path)))
         else:
-            self.native = UIImage.alloc().initWithContentsOfFile_(path)
+            self.native = UIImage.imageNamed_(os.path.basename(path))
