@@ -36,33 +36,33 @@ class Canvas(Widget):
         self.native.interface = self.interface
         self.surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, self.native.get_allocated_width(),
                                      self.native.get_allocated_height())
-        self.context_dict = defaultdict(list)
+        self.context_dict = {}
         self.set_context('default')
-        self.native_context, self.draw_stack = self.context_dict['default']
+        self.draw_stack = self.context_dict['default']
+        print(self.draw_stack)
         self.native.connect('draw', self.draw_all_contexts)
         self.native.font = None
 
-    def set_on_draw(self, handler):
-        self.native.connect('draw', handler)
-
-    def create_context_values(self):
-        self.native_context = cairo.Context(self.surface)
-        draw_stack = []
-        return [self.native_context, draw_stack]
-
-    def draw_all_contexts(self):
-        for context, context_values in self.context_dict.items():
-            self.native_context, draw_stack = context_values
+    def draw_all_contexts(self, canvas, context):
+        print("Start to draw")
+        self.native_context = context
+        print(self.context_dict)
+        for context, draw_stack in self.context_dict.items():
+            print(draw_stack)
             for draw_operation in draw_stack:
                 draw_operation()
+                print("draw op")
 
     def set_context(self, context):
         if context:
             for context in self.context_dict:
+                print("Set context", context)
                 self.draw_stack = self.context_dict[context]
             else:
-                self.context_dict[context] = self.create_context_values()
-                self.native_context, self.draw_stack = self.context_dict[context]
+                print("Create context", context)
+                self.context_dict[context] = []
+                self.draw_stack = self.context_dict[context]
+                print(self.draw_stack)
         else:
             print("No context provided")
 
@@ -85,6 +85,7 @@ class Canvas(Widget):
                     self.draw_stack.remove(self.native_context.set_source_rga(r, g, b, a))
                 else:
                     self.draw_stack.append(self.native_context.set_source_rgba(r, g, b, a))
+                    print("append")
             else:
                 pass
                 # Support future colosseum versions
@@ -103,12 +104,14 @@ class Canvas(Widget):
             self.draw_stack.remove(self.native_context.fill_style(color))
         else:
             self.draw_stack.append(self.native_context.fill_style(color))
+            print("append")
 
     def new_path(self, remove=False):
         if remove:
             self.draw_stack.remove(self.native_context.new_path())
         else:
             self.draw_stack.append(self.native_context.new_path())
+            print("append")
 
     def close_path(self, remove=False):
         if remove:
@@ -117,10 +120,11 @@ class Canvas(Widget):
             self.draw_stack.append(self.native_context.close_path())
 
     def move_to(self, x, y, remove=False):
-        if remove:
-            self.draw_stack.remove(self.native_context.move_to(x, y))
-        else:
-            self.draw_stack.append(self.native_context.move_to(x, y))
+        # if remove:
+        #     self.draw_stack.remove(self.native_context.move_to(x, y))
+        # else:
+            # self.draw_stack.append(self.native_context.move_to(x, y))
+        self.native_context.move_to(x, y)
 
     def line_to(self, x, y, remove=False):
         if remove:
