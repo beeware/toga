@@ -10,7 +10,7 @@ class StartApp(toga.App):
         #   Main window of the application with title and size
         self.main_window = toga.MainWindow(self.name, size=(148, 200))
 
-        self.canvas = toga.Canvas(on_draw=self.draw_tiberius, style=Pack(flex=1))
+        self.canvas = toga.Canvas(style=Pack(flex=1))
         box = toga.Box(children=[self.canvas])
 
         # Add the content on the main window
@@ -103,8 +103,8 @@ class StartApp(toga.App):
             self.canvas.fill_style('rgba(149.0, 119, 73, 1)')
             self.canvas.write_text('Tiberius', x, y, font)
 
-    def draw_tiberius(self, canvas, context):
-        self.canvas.set_context(context)
+    def draw_tiberius(self):
+        # self.canvas.set_context('tiberius')
         self.fill_head()
         self.draw_eyes()
         self.draw_horns()
