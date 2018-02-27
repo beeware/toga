@@ -39,6 +39,7 @@ class Icon:
     def filename(self):
         if self.system:
             toga_dir = os.path.dirname(os.path.dirname(__file__))
+            print(toga_dir)
             return os.path.join(toga_dir, 'resources', self.path)
         else:
             # from toga.app import App
@@ -52,7 +53,6 @@ class Icon:
     @classmethod
     def load(cls, path_or_icon, default=None):
         if path_or_icon:
-            # import pdb;pdb.set_trace()
             if isinstance(path_or_icon, Icon):
                 obj = path_or_icon
             else:

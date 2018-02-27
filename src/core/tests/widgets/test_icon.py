@@ -1,3 +1,4 @@
+import os
 import unittest
 from unittest.mock import MagicMock
 
@@ -25,8 +26,9 @@ class TestIcon(unittest.TestCase):
         self.assertEqual(self.icon.filename, "Example.bmp")
 
         self.icon = toga.Icon(self.test_path, system=True)
-        self.assertEqual(self.icon.filename, "/home/anthonyabeo/Documents/projects/OSS/toga"
-                                             "/src/core/toga/resources/Example.bmp")
+        toga_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+
+        self.assertEqual(self.icon.filename, os.path.join(toga_dir, "toga/resources", self.test_path))
 
     def test_icon_load(self):
         obj = toga.Icon.load(path_or_icon=self.icon, default=None)
@@ -35,7 +37,3 @@ class TestIcon(unittest.TestCase):
         self.assertIsInstance(obj, toga.Icon)
         obj = toga.Icon.load(path_or_icon=None, default=toga.Button)
         self.assertIs(obj, toga.Button)
-
-
-if __name__ == '__main__':
-    unittest.TestCase().run()
