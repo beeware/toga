@@ -42,10 +42,10 @@ class DetailedList(Widget):
     @property
     def data(self):
         """ The data source of the widget. It accepts table data
-        in the form of ``list``, ``tuple``, or :obj:`ListDataSource`
+        in the form of ``list``, ``tuple``, or :obj:`ListSource`
 
         Returns:
-            Returns a (:obj:`ListDataSource`).
+            Returns a (:obj:`ListSource`).
         """
         return self._data
 
