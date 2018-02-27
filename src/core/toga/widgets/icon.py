@@ -52,6 +52,7 @@ class Icon:
     @classmethod
     def load(cls, path_or_icon, default=None):
         if path_or_icon:
+            # import pdb;pdb.set_trace()
             if isinstance(path_or_icon, Icon):
                 obj = path_or_icon
             else:
