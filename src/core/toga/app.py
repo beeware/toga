@@ -47,6 +47,8 @@ class App:
         >>> app.main_loop()
     """
     app = None
+    app_dir = None
+    app_module = None
 
     def __init__(self, name, app_id,
                  id=None, icon=None, startup=None, document_types=None, factory=None):

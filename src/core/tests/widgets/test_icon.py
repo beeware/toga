@@ -11,6 +11,7 @@ class TestIcon(unittest.TestCase):
         self.factory.Icon = MagicMock(return_value=MagicMock(spec=toga_dummy.factory.Icon))
 
         self.test_path = "Example.bmp"
+        self.system = False
         self.icon = toga.Icon(self.test_path)
 
     def test_icon_bind(self):
@@ -19,8 +20,13 @@ class TestIcon(unittest.TestCase):
         self.assertEqual(self.icon._impl.interface, self.icon)
         self.assertEqual(self.icon.path, self.test_path)
 
-    # def test_icon_filename(self):
-    #     self.assertEqual(self.icon.filename, "Example.bmp")
+    def test_icon_filename(self):
+        self.icon = toga.Icon(self.test_path, system=False)
+        self.assertEqual(self.icon.filename, "Example.bmp")
+
+        self.icon = toga.Icon(self.test_path, system=True)
+        self.assertEqual(self.icon.filename, "/home/anthonyabeo/Documents/projects/OSS/toga"
+                                             "/src/core/toga/resources/Example.bmp")
 
     def test_icon_load(self):
         obj = toga.Icon.load(path_or_icon=self.icon, default=None)
@@ -30,6 +36,6 @@ class TestIcon(unittest.TestCase):
         obj = toga.Icon.load(path_or_icon=None, default=toga.Button)
         self.assertIs(obj, toga.Button)
 
-#
-# if __name__ == '__main__':
-#     unittest.TestCase().run()
+
+if __name__ == '__main__':
+    unittest.TestCase().run()
