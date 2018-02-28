@@ -36,45 +36,35 @@ class Canvas(Widget):
         self.native.interface = self.interface
         self.surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, self.native.get_allocated_width(),
                                      self.native.get_allocated_height())
-        self.context_dict = {}
+        self.native_context = cairo.Context(self.surface)
+        self.contexts = {}
         self.set_context('default')
-        self.draw_stack = self.context_dict['default']
-        print(self.draw_stack)
-        self.native.connect('draw', self.draw_all_contexts)
+        self.draw_commands = self.contexts['default']
+        self.native.connect('draw', self.draw_contexts)
         self.native.font = None
 
-    def draw_all_contexts(self, canvas, context):
-        print("Start to draw")
-        self.native.context = context
-        print(self.context_dict)
-        for context, draw_stack in self.context_dict.items():
-            print(draw_stack)
-            for draw_operation in draw_stack:
-                draw_operation()
-                print("draw op")
-
     def set_context(self, context):
-        if context:
-            for context in self.context_dict:
-                print("Set context", context)
-                self.draw_stack = self.context_dict[context]
+        if context is not None:
+            for context in self.contexts:
+                self.draw_commands = self.contexts[context]
             else:
-                print("Create context", context)
-                self.context_dict[context] = []
-                self.draw_stack = self.context_dict[context]
-                print(self.draw_stack)
-        else:
-            print("No context provided")
+                self.contexts[context] = []
+                self.draw_commands = self.contexts[context]
 
-    def append_to_draw_stack(self, method):
-        print("Append", method)
-        self.draw_stack.append(method)
+    def draw_contexts(self, canvas, context):
+        self.native_context = context
+        for context, draw_commands in self.contexts.items():
+            for draw_command in draw_commands:
+                draw_command()
 
-    def remove_from_draw_stack(self, method):
-        self.draw_stack.remove(method)
+    def add(self, draw_command):
+        self.draw_commands.append(draw_command)
+
+    def delete(self, draw_command):
+        self.draw_commands.remove(draw_command)
 
     def line_width(self, width=2.0):
-        self.native.context.set_line_width(width)
+        self.native_context.set_line_width(width)
 
     def fill_style(self, color=None):
         if color is not None:
@@ -85,7 +75,7 @@ class Canvas(Widget):
                 g = float(num.group(2)) / 255
                 b = float(num.group(3)) / 255
                 a = float(num.group(4))
-                self.native.context.set_source_rgba(r, g, b, a)
+                self.native_context.set_source_rgba(r, g, b, a)
             else:
                 pass
                 # Support future colosseum versions
@@ -94,37 +84,37 @@ class Canvas(Widget):
                 #         exec('self.native.set_source_' + str(rgb))
         else:
             # set color to black
-            self.native.context.set_source_rgba(0, 0, 0, 1)
+            self.native_context.set_source_rgba(0, 0, 0, 1)
 
     def stroke_style(self, color=None):
         self.fill_style(color)
 
     def new_path(self):
-        self.native.context.new_path()
+        self.native_context.new_path()
 
     def close_path(self):
-        self.native.context.close_path()
+        self.native_context.close_path()
 
     def move_to(self, x, y):
-        self.native.context.move_to(x, y)
+        self.native_context.move_to(x, y)
 
     def line_to(self, x, y):
-        self.native.context.line_to(x, y)
+        self.native_context.line_to(x, y)
 
     def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y):
-        self.native.context.curve_to(cp1x, cp1y, cp2x, cp2y, x, y)
+        self.native_context.curve_to(cp1x, cp1y, cp2x, cp2y, x, y)
 
     def quadratic_curve_to(self, cpx, cpy, x, y):
-        self.native.context.curve_to(cpx, cpy, cpx, cpy, x, y)
+        self.native_context.curve_to(cpx, cpy, cpx, cpy, x, y)
 
     def arc(self, x, y, radius, startangle, endangle, anticlockwise):
         if anticlockwise:
-            self.native.context.arc_negative(x, y, radius, startangle, endangle)
+            self.native_context.arc_negative(x, y, radius, startangle, endangle)
         else:
-            self.native.context.arc(x, y, radius, startangle, endangle)
+            self.native_context.arc(x, y, radius, startangle, endangle)
 
     def ellipse(self, x, y, radiusx, radiusy, rotation, startangle, endangle, anticlockwise):
-        self.native.context.save()
+        self.native_context.save()
         self.translate(x, y)
         if radiusx >= radiusy:
             self.scale(1, radiusy / radiusx)
@@ -134,39 +124,39 @@ class Canvas(Widget):
             self.arc(0, 0, radiusy, startangle, endangle, anticlockwise)
         self.rotate(rotation)
         self.reset_transform()
-        self.native.context.restore()
+        self.native_context.restore()
 
     def rect(self, x, y, width, height):
-        self.native.context.rectangle(x, y, width, height)
+        self.native_context.rectangle(x, y, width, height)
 
     # Drawing Paths
 
     def fill(self, fill_rule, preserve):
         if fill_rule is 'evenodd':
-            self.native.context.set_fill_rule(cairo.FILL_RULE_EVEN_ODD)
+            self.native_context.set_fill_rule(cairo.FILL_RULE_EVEN_ODD)
         else:
-            self.native.context.set_fill_rule(cairo.FILL_RULE_WINDING)
+            self.native_context.set_fill_rule(cairo.FILL_RULE_WINDING)
         if preserve:
-            self.native.context.fill_preserve()
+            self.native_context.fill_preserve()
         else:
-            self.native.context.fill()
+            self.native_context.fill()
 
     def stroke(self):
-        self.native.context.stroke()
+        self.native_context.stroke()
 
     # Transformations
 
     def rotate(self, radians):
-        self.native.context.rotate(radians)
+        self.native_context.rotate(radians)
 
     def scale(self, sx, sy):
-        self.native.context.scale(sx, sy)
+        self.native_context.scale(sx, sy)
 
     def translate(self, tx, ty):
-        self.native.context.translate(tx, ty)
+        self.native_context.translate(tx, ty)
 
     def reset_transform(self):
-        self.native.context.identity_matrix()
+        self.native_context.identity_matrix()
 
     def write_text(self, text, x, y, font):
         # Set font family and size
@@ -176,26 +166,26 @@ class Canvas(Widget):
             write_font = self.native.font
             write_font.family = self.native.font.get_family()
             write_font.size = self.native.font.get_size() / SCALE
-        self.native.context.select_font_face(write_font.family)
-        self.native.context.set_font_size(write_font.size)
+        self.native_context.select_font_face(write_font.family)
+        self.native_context.set_font_size(write_font.size)
 
         # Support writing multiline text
         for line in text.splitlines():
             width, height = write_font.measure(line)
-            self.native.context.move_to(x, y)
-            self.native.context.text_path(line)
+            self.native_context.move_to(x, y)
+            self.native_context.text_path(line)
             y += height
 
     def measure_text(self, text, font):
         # Set font family and size
         if font:
-            self.native.context.select_font_face(font.family)
-            self.native.context.set_font_size(font.size)
+            self.native_context.select_font_face(font.family)
+            self.native_context.set_font_size(font.size)
         elif self.native.font:
-            self.native.context.select_font_face(self.native.font.get_family())
-            self.native.context.set_font_size(self.native.font.get_size() / SCALE)
+            self.native_context.select_font_face(self.native.font.get_family())
+            self.native_context.set_font_size(self.native.font.get_size() / SCALE)
 
-        x_bearing, y_bearing, width, height, x_advance, y_advance = self.native.context.text_extents(text)
+        x_bearing, y_bearing, width, height, x_advance, y_advance = self.native_context.text_extents(text)
         return width, height
 
     def rehint(self):

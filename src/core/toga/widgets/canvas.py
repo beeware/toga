@@ -38,9 +38,9 @@ class Canvas(Widget):
 
         """
         if remove:
-            self._impl.remove_from_draw_stack(self.set_context(name))
+            self._impl.delete(lambda: self._impl.set_context(name))
         else:
-            self._impl.append_to_draw_stack(self.set_context(name))
+            self._impl.add(lambda: self._impl.set_context(name))
 
     # Line Styles
 
@@ -54,9 +54,9 @@ class Canvas(Widget):
 
         """
         if remove:
-            self._impl.remove_from_draw_stack(self.line_width(width))
+            self._impl.delete(lambda: self._impl.line_width(width))
         else:
-            self._impl.append_to_draw_stack(self.line_width(width))
+            self._impl.add(lambda: self._impl.line_width(width))
 
     # Fill and Stroke Styles
 
@@ -73,9 +73,9 @@ class Canvas(Widget):
 
         """
         if remove:
-            self._impl.remove_from_draw_stack(self.fill_style(color))
+            self._impl.delete(lambda: self._impl.fill_style(color))
         else:
-            self._impl.append_to_draw_stack(self.fill_style(color))
+            self._impl.add(lambda: self._impl.fill_style(color))
 
     def stroke_style(self, color=None, remove=False):
         """Color to use for lines around shapes
@@ -92,9 +92,9 @@ class Canvas(Widget):
 
         """
         if remove:
-            self._impl.remove_from_draw_stack(self.stroke_style(color))
+            self._impl.delete(lambda: self._impl.stroke_style(color))
         else:
-            self._impl.append_to_draw_stack(self.stroke_style(color))
+            self._impl.add(lambda: self._impl.stroke_style(color))
 
     # Paths
 
@@ -112,13 +112,13 @@ class Canvas(Widget):
 
         """
         if remove:
-            self._impl.remove_from_draw_stack(self.move_to(x, y))
+            self._impl.delete(lambda: self._impl.move_to(x, y))
             yield
-            self._impl.remove_from_draw_stack(self.close_path())
+            self._impl.delete(self._impl.close_path)
         else:
-            self._impl.append_to_draw_stack(self.move_to(x, y))
+            self._impl.add(lambda: self._impl.move_to(x, y))
             yield
-            self._impl.append_to_draw_stack(self.close_path())
+            self._impl.add(self._impl.close_path)
 
     def move_to(self, x, y, remove=False):
         """Moves the starting point of a new sub-path to the (x, y) coordinates.
@@ -131,9 +131,9 @@ class Canvas(Widget):
 
         """
         if remove:
-            self._impl.remove_from_draw_stack(self.move_to(x, y))
+            self._impl.delete(lambda: self._impl.move_to(x, y))
         else:
-            self._impl.append_to_draw_stack(self.move_to(x, y))
+            self._impl.add(lambda: self._impl.move_to(x, y))
 
     def line_to(self, x, y, remove=False):
         """Connects the last point with a line.
@@ -149,9 +149,9 @@ class Canvas(Widget):
 
         """
         if remove:
-            self._impl.remove_from_draw_stack(self.line_to(x, y))
+            self._impl.delete(lambda: self._impl.line_to(x, y))
         else:
-            self._impl.append_to_draw_stack(self.line_to(x, y))
+            self._impl.add(lambda: self._impl.line_to(x, y))
 
     def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y, remove=False):
         """Adds a cubic Bézier curve to the path.
@@ -173,9 +173,9 @@ class Canvas(Widget):
 
         """
         if remove:
-            self._impl.remove_from_draw_stack(self.bezier_curve_to(cp1x, cp1y, cp2x, cp2y, x, y))
+            self._impl.delete(lambda: self._impl.bezier_curve_to(cp1x, cp1y, cp2x, cp2y, x, y))
         else:
-            self._impl.append_to_draw_stack(self.bezier_curve_to(cp1x, cp1y, cp2x, cp2y, x, y))
+            self._impl.add(lambda: self._impl.bezier_curve_to(cp1x, cp1y, cp2x, cp2y, x, y))
 
     def quadratic_curve_to(self, cpx, cpy, x, y, remove=False):
         """Adds a quadratic Bézier curve to the path.
@@ -195,9 +195,9 @@ class Canvas(Widget):
 
         """
         if remove:
-            self._impl.remove_from_draw_stack(self.quadratic_curve_to(cpx, cpy, x, y))
+            self._impl.delete(lambda: self._impl.quadratic_curve_to(cpx, cpy, x, y))
         else:
-            self._impl.append_to_draw_stack(self.quadratic_curve_to(cpx, cpy, x, y))
+            self._impl.add(lambda: self._impl.quadratic_curve_to(cpx, cpy, x, y))
 
     def arc(self, x, y, radius, startangle=0, endangle=2 * pi, anticlockwise=False, remove=False):
         """Adds an arc to the path.
@@ -221,9 +221,9 @@ class Canvas(Widget):
 
         """
         if remove:
-            self._impl.remove_from_draw_stack(self.arc(x, y, radius, startangle, endangle, anticlockwise))
+            self._impl.delete(lambda: self._impl.arc(x, y, radius, startangle, endangle, anticlockwise))
         else:
-            self._impl.append_to_draw_stack(self.arc(x, y, radius, startangle, endangle, anticlockwise))
+            self._impl.add(lambda: self._impl.arc(x, y, radius, startangle, endangle, anticlockwise))
 
     def ellipse(self, x, y, radiusx, radiusy, rotation=0, startangle=0, endangle=2 * pi,
                 anticlockwise=False, remove=False):
@@ -250,11 +250,11 @@ class Canvas(Widget):
 
         """
         if remove:
-            self._impl.remove_from_draw_stack(
+            self._impl.delete(
                 self.ellipse(x, y, radiusx, radiusy, rotation, startangle, endangle, anticlockwise))
         else:
-            self._impl.append_to_draw_stack(
-                self.ellipse(x, y, radiusx, radiusy, rotation, startangle, endangle, anticlockwise))
+            self._impl.add(
+                lambda: self._impl.ellipse(x, y, radiusx, radiusy, rotation, startangle, endangle, anticlockwise))
 
     def rect(self, x, y, width, height, remove=False):
         """ Creates a path for a rectangle.
@@ -274,9 +274,9 @@ class Canvas(Widget):
 
         """
         if remove:
-            self._impl.remove_from_draw_stack(self.rect(x, y, width, height))
+            self._impl.delete(lambda: self._impl.rect(x, y, width, height))
         else:
-            self._impl.append_to_draw_stack(self.rect(x, y, width, height))
+            self._impl.add(lambda: self._impl.rect(x, y, width, height))
 
     # Drawing Paths
 
@@ -298,19 +298,19 @@ class Canvas(Widget):
 
         """
         if remove:
-            self._impl.remove_from_draw_stack(self.new_path())
+            self._impl.delete(self._impl.new_path)
             yield
             if fill_rule is 'evenodd':
-                self._impl.remove_from_draw_stack(self.fill(fill_rule, preserve))
+                self._impl.delete(lambda: self._impl.fill(fill_rule, preserve))
             else:
-                self._impl.remove_from_draw_stack(self.fill('nonzero', preserve))
+                self._impl.delete(lambda: self._impl.fill('nonzero', preserve))
         else:
-            self._impl.append_to_draw_stack(self.new_path())
+            self._impl.add(self._impl.new_path)
             yield
             if fill_rule is 'evenodd':
-                self._impl.append_to_draw_stack(self.fill(fill_rule, preserve))
+                self._impl.add(lambda: self._impl.fill(fill_rule, preserve))
             else:
-                self._impl.append_to_draw_stack(self.fill('nonzero', preserve))
+                self._impl.add(lambda: self._impl.fill('nonzero', preserve))
 
     @contextmanager
     def stroke(self, remove=False):
@@ -328,10 +328,10 @@ class Canvas(Widget):
         """
         if remove:
             yield
-            self._impl.remove_from_draw_stack(self.stroke())
+            self._impl.delete(self._impl.stroke)
         else:
             yield
-            self._impl.append_to_draw_stack(self.stroke())
+            self._impl.add(self._impl.stroke)
 
     # Transformations
 
@@ -351,9 +351,9 @@ class Canvas(Widget):
 
         """
         if remove:
-            self._impl.remove_from_draw_stack(self.rotate(radians))
+            self._impl.delete(lambda: self._impl.rotate(radians))
         else:
-            self._impl.append_to_draw_stack(self.rotate(radians))
+            self._impl.add(lambda: self._impl.rotate(radians))
 
     def scale(self, sx, sy, remove=False):
         """Adds a scaling transformation to the canvas
@@ -370,9 +370,9 @@ class Canvas(Widget):
 
         """
         if remove:
-            self._impl.remove_from_draw_stack(self.scale(sx, sy))
+            self._impl.delete(lambda: self._impl.scale(sx, sy))
         else:
-            self._impl.append_to_draw_stack(self.scale(sx, sy))
+            self._impl.add(lambda: self._impl.scale(sx, sy))
 
     def translate(self, tx, ty, remove=False):
         """Moves the canvas and its origin
@@ -391,9 +391,9 @@ class Canvas(Widget):
 
         """
         if remove:
-            self._impl.remove_from_draw_stack(self.translate(tx, ty))
+            self._impl.delete(lambda: self._impl.translate(tx, ty))
         else:
-            self._impl.append_to_draw_stack(self.translate(tx, ty))
+            self._impl.add(lambda: self._impl.translate(tx, ty))
 
     def reset_transform(self, remove=False):
         """Reset the current transform by the identity matrix
@@ -409,9 +409,9 @@ class Canvas(Widget):
 
         """
         if remove:
-            self._impl.remove_from_draw_stack(self.reset_transform())
+            self._impl.delete(self._impl.reset_transform)
         else:
-            self._impl.append_to_draw_stack(self.reset_transform())
+            self._impl.add(self._impl.reset_transform)
 
     # Text
 
@@ -432,6 +432,6 @@ class Canvas(Widget):
 
         """
         if remove:
-            self._impl.remove_from_draw_stack(self.write_text(text, x, y, font))
+            self._impl.delete(lambda: self.write_text(text, x, y, font))
         else:
-            self._impl.append_to_draw_stack(self.write_text(text, x, y, font))
+            self._impl.add(lambda: self._impl.write_text(text, x, y, font))

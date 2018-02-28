@@ -10,6 +10,15 @@ class Canvas(Widget):
     def set_context(self, context, remove=False):
         self._set_value('context', context, remove)
 
+    def draw_contexts(self, canvas, context):
+        self._action('draw contexts', canvas=canvas, context=context)
+
+    def add(self, draw_command):
+        self._action('add', draw_command=draw_command)
+
+    def delete(self, draw_command):
+        self._action('delete', draw_command=draw_command)
+
     def line_width(self, width=2.0, remove=False):
         self._set_value('line_width', width, remove)
 
