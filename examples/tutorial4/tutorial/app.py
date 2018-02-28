@@ -12,6 +12,7 @@ class StartApp(toga.App):
 
         self.canvas = toga.Canvas(style=Pack(flex=1))
         box = toga.Box(children=[self.canvas])
+        self.draw_tiberius()
 
         # Add the content on the main window
         self.main_window.content = box
