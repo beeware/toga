@@ -17,7 +17,13 @@ class WinFormsViewport:
 
     @property
     def height(self):
-        return self.native.ClientSize.Height
+        # Subtract toolbar height if it's the top-level container
+        toolbar_height = 0
+        if isinstance(self.native, WinForms.Form):
+            cs = [x for x in self.native.Controls if isinstance(x, WinForms.ToolStrip)]
+            if cs:
+                toolbar_height = cs[0].Height
+        return self.native.ClientSize.Height - toolbar_height
 
 
 class Window:
@@ -73,8 +79,7 @@ class Window:
         # The first render of the content will establish the
         # minimum possible content size; use that to enforce
         # a minimum window size.
-        TITLEBAR_HEIGHT = 36  # FIXME: this shouldn't be hard coded...
-
+        TITLEBAR_HEIGHT = WinForms.SystemInformation.CaptionHeight
         # Now that the content is visible, we can do our initial hinting,
         # and use that as the basis for setting the minimum window size.
         self.interface.content._impl.rehint()
@@ -83,6 +88,7 @@ class Window:
             int(self.interface.content.layout.width),
             int(self.interface.content.layout.height) + TITLEBAR_HEIGHT
         )
+        self.interface.content.refresh()
 
     def on_close(self):
         pass

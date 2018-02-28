@@ -22,18 +22,21 @@ class SplitContainer(Widget):
 
         if position == 0:
             self.native.Panel1.Controls.Add(widget.native)
+            widget.viewport = WinFormsViewport(self.native.Panel1)
         elif position == 1:
             self.native.Panel2.Controls.Add(widget.native)
+            widget.viewport = WinFormsViewport(self.native.Panel2)
+
 
     def set_app(self, app):
         if self.interface.content:
-            self.interface.content[0].app = self.interface.app
-            self.interface.content[1].app = self.interface.app
+            for content in self.interface.content:
+                content.app = self.interface.app
 
     def set_window(self, window):
         if self.interface.content:
-            self.interface.content[0].window = self.interface.window
-            self.interface.content[1].window = self.interface.window
+            for content in self.interface.content:
+                content.window = self.interface.window
 
     def set_direction(self, value):
         self.native.Orientation = WinForms.Orientation.Vertical if value \
