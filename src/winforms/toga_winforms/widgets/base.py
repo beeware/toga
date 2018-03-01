@@ -1,4 +1,4 @@
-from toga_winforms.libs import WinForms, Point, Size
+from toga_winforms.libs import Point, Size
 
 
 class Widget:
@@ -39,19 +39,9 @@ class Widget:
     ### APPLICATOR
 
     def set_bounds(self, x, y, width, height):
-        # If a widget is the top content of the window, it needs
-        # to be shifted down to accommodate the height of the
-        # toolbar
-        vertical_shift = 0
         if self.native:
-            try:
-                if self.interface.window:
-                    if self.interface.window.content == self.interface:
-                        vertical_shift = self.interface.window._impl.toolbar_native.Height
-            except AttributeError:
-                pass
             self.native.Size = Size(width, height)
-            self.native.Location = Point(x, y + vertical_shift)
+            self.native.Location = Point(x, y)
 
     def set_alignment(self, alignment):
         # By default, alignment can't be changed

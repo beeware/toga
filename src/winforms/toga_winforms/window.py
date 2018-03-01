@@ -59,6 +59,14 @@ class Window:
     def set_app(self, app):
         pass
 
+    @property
+    def vertical_shift(self):
+        # vertical shift is the toolbar height or 0
+        try:
+            return self.native.interface._impl.toolbar_native.Height
+        except AttributeError:
+            return self.native.ClientSize.Height - toolbar_height
+
     def set_content(self, widget):
         if self.toolbar_native:
             self.native.Controls.Add(self.toolbar_native)

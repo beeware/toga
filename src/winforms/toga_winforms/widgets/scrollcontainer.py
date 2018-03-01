@@ -1,6 +1,6 @@
 from travertino.size import at_least
 
-from toga_winforms.libs import *
+from toga_winforms.libs import WinForms, Size, Point
 from toga_winforms.window import WinFormsViewport
 
 from .base import Widget
@@ -38,3 +38,21 @@ class ScrollContainer(Widget):
     def set_window(self, window):
         if self.interface.content:
             self.interface.content.window = window
+
+    @property
+    def vertical_shift(self):
+        vertical_shift = 0
+        try:
+            if self.interface.window:
+                if self.interface.window.content == self.interface:
+                    vertical_shift = self.interface.window._impl.toolbar_native.Height
+            return vertical_shift
+        except AttributeError:
+            return vertical_shift
+
+    def set_bounds(self, x, y, width, height):
+        # Containers accommodate vertical_shift to take into account the
+        # toolbar height
+        if self.native:
+            self.native.Size = Size(width, height)
+            self.native.Location = Point(x, y + self.vertical_shift)
