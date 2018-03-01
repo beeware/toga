@@ -9,6 +9,7 @@ from .base import Widget
 class ScrollContainer(Widget):
     def create(self):
         self.native = WinForms.Panel()
+        self.native.interface = self.interface
         self.native.AutoScroll = True
 
     def set_content(self, widget):

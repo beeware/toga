@@ -45,8 +45,9 @@ class Widget:
         vertical_shift = 0
         if self.native:
             try:
-                if isinstance(self.native.Parent, WinForms.Form):
-                    vertical_shift = self.interface.window._impl.toolbar_native.Height
+                if self.interface.window:
+                    if self.interface.window.content == self.interface:
+                        vertical_shift = self.interface.window._impl.toolbar_native.Height
             except AttributeError:
                 pass
             self.native.Size = Size(width, height)

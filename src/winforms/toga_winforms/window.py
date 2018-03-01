@@ -1,9 +1,7 @@
+from toga import GROUP_BREAK, SECTION_BREAK
 from travertino.layout import Viewport
 
-from toga import GROUP_BREAK, SECTION_BREAK
 from .libs import WinForms, Size
-from toga.command import Command as BaseCommand
-
 
 
 class WinFormsViewport:
@@ -19,10 +17,11 @@ class WinFormsViewport:
     def height(self):
         # Subtract toolbar height if it's the top-level container
         toolbar_height = 0
-        if isinstance(self.native, WinForms.Form):
-            cs = [x for x in self.native.Controls if isinstance(x, WinForms.ToolStrip)]
-            if cs:
-                toolbar_height = cs[0].Height
+        try:
+            if self.native.interface.toolbar is not None:
+                toolbar_height = self.native.interface._impl.toolbar_native.Height
+        except AttributeError:
+            pass
         return self.native.ClientSize.Height - toolbar_height
 
 
@@ -35,6 +34,7 @@ class Window:
     def create(self):
         self.native = WinForms.Form(self)
         self.native.ClientSize = Size(self.interface._size[0], self.interface._size[1])
+        self.native.interface = self.interface
         self.native.Resize += self.on_resize
         self.toolbar_native = None
         self.toolbar_items = None
