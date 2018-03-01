@@ -5,8 +5,9 @@ from .libs import WinForms, Size
 
 
 class WinFormsViewport:
-    def __init__(self, native):
+    def __init__(self, native, frame):
         self.native = native
+        self.frame = frame
         self.dpi = 96  # FIXME This is almost certainly wrong...
 
     @property
@@ -15,14 +16,9 @@ class WinFormsViewport:
 
     @property
     def height(self):
-        # Subtract toolbar height if it's the top-level container
-        toolbar_height = 0
-        try:
-            if self.native.interface.toolbar is not None:
-                toolbar_height = self.native.interface._impl.toolbar_native.Height
-        except AttributeError:
-            pass
-        return self.native.ClientSize.Height - toolbar_height
+        # Subtract any vertical shift of the frame. This is to allow
+        # for toolbars, or any other viewport-level decoration.
+        return self.native.ClientSize.Height - self.frame.vertical_shift
 
 
 class Window:
@@ -65,7 +61,7 @@ class Window:
         try:
             return self.native.interface._impl.toolbar_native.Height
         except AttributeError:
-            return self.native.ClientSize.Height - toolbar_height
+            return 0
 
     def set_content(self, widget):
         if self.toolbar_native:
@@ -74,7 +70,8 @@ class Window:
         self.native.Controls.Add(widget.native)
 
         # Set the widget's viewport to be based on the window's content.
-        widget.viewport = WinFormsViewport(self.native)
+        widget.viewport = WinFormsViewport(self.native, self)
+        widget.frame = self
 
         # Add all children to the content widget.
         for child in widget.interface.children:

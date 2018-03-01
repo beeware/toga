@@ -14,9 +14,13 @@ class ScrollContainer(Widget):
 
     def set_content(self, widget):
         self.inner_container = widget
-        widget.viewport = WinFormsViewport(self.native)
+
+        widget.viewport = WinFormsViewport(self.native, self)
+        widget.frame = self
+
         for child in widget.interface.children:
             child._impl.container = widget
+
         self.native.Controls.Add(self.inner_container.native)
 
     def set_horizontal(self, value):
@@ -38,21 +42,3 @@ class ScrollContainer(Widget):
     def set_window(self, window):
         if self.interface.content:
             self.interface.content.window = window
-
-    @property
-    def vertical_shift(self):
-        vertical_shift = 0
-        try:
-            if self.interface.window:
-                if self.interface.window.content == self.interface:
-                    vertical_shift = self.interface.window._impl.toolbar_native.Height
-            return vertical_shift
-        except AttributeError:
-            return vertical_shift
-
-    def set_bounds(self, x, y, width, height):
-        # Containers accommodate vertical_shift to take into account the
-        # toolbar height
-        if self.native:
-            self.native.Size = Size(width, height)
-            self.native.Location = Point(x, y + self.vertical_shift)

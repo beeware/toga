@@ -38,10 +38,21 @@ class Widget:
 
     ### APPLICATOR
 
+    @property
+    def vertical_shift(self):
+        return 0
+
     def set_bounds(self, x, y, width, height):
         if self.native:
+            # Root level widgets may require vertical adjustment to
+            # account for toolbars, etc.
+            if self.interface.parent is None:
+                vertical_shift = self.frame.vertical_shift
+            else:
+                vertical_shift = 0
+
             self.native.Size = Size(width, height)
-            self.native.Location = Point(x, y)
+            self.native.Location = Point(x, y + vertical_shift)
 
     def set_alignment(self, alignment):
         # By default, alignment can't be changed
