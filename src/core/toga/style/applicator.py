@@ -5,7 +5,7 @@ class TogaApplicator:
         self.widget = widget
 
     def set_bounds(self):
-        # print("LAYOUT", widget, widget._layout)
+        # print("LAYOUT", self.widget, self.widget.layout)
         self.widget._impl.set_bounds(
             self.widget.layout.absolute_content_left, self.widget.layout.absolute_content_top,
             self.widget.layout.content_width, self.widget.layout.content_height
