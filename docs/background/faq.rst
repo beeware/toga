@@ -35,9 +35,9 @@ something like this:
     yak. And all you wanted to do was wash your car.
 
 An easy to use widget toolkit is the yak standing in the way of progress of a
-number of PyBee_ projects, and the original creator of Toga has been tinkering
+number of BeeWare_ projects, and the original creator of Toga has been tinkering
 with various widget toolkits for over 20 years, so the metaphor seemed
 appropriate.
 
 .. _yak shaving: http://en.wiktionary.org/wiki/yak_shaving
-.. _PyBee: http://pybee.org
+.. _BeeWare: http://pybee.org
