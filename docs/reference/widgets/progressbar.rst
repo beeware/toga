@@ -23,12 +23,14 @@ A progress bar can be in one of four visual states, determined by its ``max`` pr
 Calling the ``start()`` method will make the progress bar enter running mode, and calling ``stop()`` will exit running mode.
 See the table below:
 
-``max``   ``is_running``   Behavior
---------- ---------------- --------------------------------------
-None      False            disabled
-None      True             indeterminate (continuous animation).
-number    False            show percentage
-number    True             show percentage and busy animation
+======= ============== ===================================
+``max`` ``is_running`` Behavior
+======= ============== ===================================
+None    False          disabled
+None    True           indeterminate (continuous animation)
+number  False          show percentage
+number  True           show percentage and busy animation
+======= ============== ===================================
 
 If a progress bar is indeterminate, it is communicating that it has no exact percentage to report, but that work is still begin done. It may communicate this by continuously pulsing back and forth, for example.
 

@@ -204,7 +204,7 @@ ask coverage to generate a report of the data that was gathered:
 
       (venv) $ pip install coverage
       (venv) $ coverage run setup.py test
-      (venv) $ coverage report -m --include=toga/*
+      (venv) $ coverage report -m --include="toga/*"
       Name                                 Stmts   Miss  Cover   Missing
       ------------------------------------------------------------------
       toga/__init__.py                        29      0   100%
@@ -220,7 +220,7 @@ ask coverage to generate a report of the data that was gathered:
 
       (venv) $ pip install coverage
       (venv) $ coverage run setup.py test
-      (venv) $ coverage report -m --include=toga/*
+      (venv) $ coverage report -m --include="toga/*"
       Name                                 Stmts   Miss  Cover   Missing
       ------------------------------------------------------------------
       toga/__init__.py                        29      0   100%
@@ -277,7 +277,7 @@ expect to see something like:
       Ran 101 tests in 0.343s
 
       OK (skipped=1)
-      (venv) $ coverage report -m --include=toga/*
+      (venv) $ coverage report -m --include="toga/*"
       Name                                 Stmts   Miss  Cover   Missing
       ------------------------------------------------------------------
       toga/__init__.py                        29      0   100%
@@ -298,7 +298,7 @@ expect to see something like:
       Ran 101 tests in 0.343s
 
       OK (skipped=1)
-      (venv) $ coverage report -m --include=toga/*
+      (venv) $ coverage report -m --include="toga/*"
       Name                                 Stmts   Miss  Cover   Missing
       ------------------------------------------------------------------
       toga/__init__.py                        29      0   100%

@@ -1,5 +1,5 @@
 from travertino.size import at_least
-from toga_winforms.libs import *
+from toga_winforms.libs import WinForms
 from toga_winforms import color
 from .base import Widget
 

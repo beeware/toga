@@ -1,10 +1,13 @@
+from toga import GROUP_BREAK, SECTION_BREAK
 from travertino.layout import Viewport
-from .libs import *
+
+from .libs import WinForms, Size
 
 
 class WinFormsViewport:
-    def __init__(self, native):
+    def __init__(self, native, frame):
         self.native = native
+        self.frame = frame
         self.dpi = 96  # FIXME This is almost certainly wrong...
 
     @property
@@ -13,7 +16,9 @@ class WinFormsViewport:
 
     @property
     def height(self):
-        return self.native.ClientSize.Height
+        # Subtract any vertical shift of the frame. This is to allow
+        # for toolbars, or any other viewport-level decoration.
+        return self.native.ClientSize.Height - self.frame.vertical_shift
 
 
 class Window:
@@ -25,8 +30,8 @@ class Window:
     def create(self):
         self.native = WinForms.Form(self)
         self.native.ClientSize = Size(self.interface._size[0], self.interface._size[1])
+        self.native.interface = self.interface
         self.native.Resize += self.on_resize
-
         self.toolbar_native = None
         self.toolbar_items = None
 
@@ -50,20 +55,23 @@ class Window:
     def set_app(self, app):
         pass
 
-    def set_content(self, widget):
-        # If the content widget doesn't have a native, manifest a Panel as that native.
-        if widget.native is None:
-            widget.native = WinForms.Panel()
+    @property
+    def vertical_shift(self):
+        # vertical shift is the toolbar height or 0
+        try:
+            return self.native.interface._impl.toolbar_native.Height
+        except AttributeError:
+            return 0
 
-        # Construct the top-level layout, and set the window's view to
-        # the be the widget's native object.
+    def set_content(self, widget):
         if self.toolbar_native:
             self.native.Controls.Add(self.toolbar_native)
 
         self.native.Controls.Add(widget.native)
 
         # Set the widget's viewport to be based on the window's content.
-        widget.viewport = WinFormsViewport(self.native)
+        widget.viewport = WinFormsViewport(self.native, self)
+        widget.frame = self
 
         # Add all children to the content widget.
         for child in widget.interface.children:
@@ -76,8 +84,7 @@ class Window:
         # The first render of the content will establish the
         # minimum possible content size; use that to enforce
         # a minimum window size.
-        TITLEBAR_HEIGHT = 36  # FIXME: this shouldn't be hard coded...
-
+        TITLEBAR_HEIGHT = WinForms.SystemInformation.CaptionHeight
         # Now that the content is visible, we can do our initial hinting,
         # and use that as the basis for setting the minimum window size.
         self.interface.content._impl.rehint()
@@ -86,6 +93,7 @@ class Window:
             int(self.interface.content.layout.width),
             int(self.interface.content.layout.height) + TITLEBAR_HEIGHT
         )
+        self.interface.content.refresh()
 
     def on_close(self):
         pass
