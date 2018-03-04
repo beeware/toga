@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from toga.handlers import wrapped_handler
 
 from .base import Widget
@@ -6,6 +8,9 @@ from .base import Widget
 class NumberInput(Widget):
     """ A `NumberInput` widget specifies a fixed range of possible numbers.
     The user has two buttons to increment/decrement the value by a step size.
+    Step, min and max can be integers, floats, or Decimals; They can also be specified
+    as strings, which will be converted to Decimals internally. The value of the
+    widget will be evaluated as a Decimal.
 
     Args:
         id (str): An identifier for this widget.
@@ -14,9 +19,9 @@ class NumberInput(Widget):
         factory (:obj:`module`): A python module that is capable to return a
             implementation of this class with the same name. (optional & normally not needed)
 
-        step (int): Step size of the adjustment buttons.
-        min_value (int): The minimum bound for the widget's value.
-        max_value (int): The maximum bound for the widget's value.
+        step (number): Step size of the adjustment buttons.
+        min_value (number): The minimum bound for the widget's value.
+        max_value (number): The maximum bound for the widget's value.
         readonly (bool):  Whether a user can write/change the number input, defaults to `False`.
         on_change (``callable``): The handler to invoke when the value changes.
         **ex:
@@ -27,6 +32,7 @@ class NumberInput(Widget):
                  min_value=None, max_value=None, readonly=False, on_change=None):
         super().__init__(id=id, style=style, factory=factory)
         self._value = None
+        self._on_change = None
         self._impl = self.factory.NumberInput(interface=self)
 
         self.readonly = readonly
@@ -62,9 +68,9 @@ class NumberInput(Widget):
     @step.setter
     def step(self, step):
         try:
-            self._step = int(step)
+            self._step = Decimal(step)
         except (ValueError, TypeError):
-            raise ValueError("step must be an integer")
+            raise ValueError("step must be an number")
         self._impl.set_step(self._step)
 
     @property
@@ -80,9 +86,9 @@ class NumberInput(Widget):
     @min_value.setter
     def min_value(self, value):
         try:
-            self._min_value = int(value)
+            self._min_value = Decimal(value)
         except ValueError:
-            raise ValueError("min_value must be an integer")
+            raise ValueError("min_value must be a number")
         except TypeError:
             self._min_value = None
         self._impl.set_min_value(self._min_value)
@@ -100,9 +106,9 @@ class NumberInput(Widget):
     @max_value.setter
     def max_value(self, value):
         try:
-            self._max_value = int(value)
+            self._max_value = Decimal(value)
         except ValueError:
-            raise ValueError("max_value must be an integer")
+            raise ValueError("max_value must be a number")
         except TypeError:
             self._max_value = None
         self._impl.set_max_value(self._max_value)
@@ -120,16 +126,17 @@ class NumberInput(Widget):
     @value.setter
     def value(self, value):
         try:
-            self._value = int(value)
+            self._value = Decimal(value)
+
+            if self.min_value is not None and self._value < self.min_value:
+                self._value = self.min_value
+            elif self.max_value is not None and self._value > self.max_value:
+                self._value = self.max_value
         except ValueError:
-            raise ValueError("value must be an integer")
+            raise ValueError("value must be a number")
         except TypeError:
             self._value = None
 
-        if self.min_value is not None and value < self.min_value:
-            self._value = self.min_value
-        elif self.max_value is not None and value > self.max_value:
-            self._value = self.max_value
         self._impl.set_value(value)
 
     @property
