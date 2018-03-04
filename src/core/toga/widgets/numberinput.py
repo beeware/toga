@@ -1,4 +1,4 @@
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 
 from toga.handlers import wrapped_handler
 
@@ -69,7 +69,7 @@ class NumberInput(Widget):
     def step(self, step):
         try:
             self._step = Decimal(step)
-        except (ValueError, TypeError):
+        except (ValueError, TypeError, InvalidOperation):
             raise ValueError("step must be an number")
         self._impl.set_step(self._step)
 
@@ -87,7 +87,7 @@ class NumberInput(Widget):
     def min_value(self, value):
         try:
             self._min_value = Decimal(value)
-        except ValueError:
+        except (ValueError, InvalidOperation):
             raise ValueError("min_value must be a number")
         except TypeError:
             self._min_value = None
@@ -107,7 +107,7 @@ class NumberInput(Widget):
     def max_value(self, value):
         try:
             self._max_value = Decimal(value)
-        except ValueError:
+        except (ValueError, InvalidOperation):
             raise ValueError("max_value must be a number")
         except TypeError:
             self._max_value = None
@@ -132,7 +132,7 @@ class NumberInput(Widget):
                 self._value = self.min_value
             elif self.max_value is not None and self._value > self.max_value:
                 self._value = self.max_value
-        except ValueError:
+        except (ValueError, InvalidOperation):
             raise ValueError("value must be a number")
         except TypeError:
             self._value = None
