@@ -1,4 +1,6 @@
 from ctypes import c_int
+from decimal import Decimal
+
 from rubicon.objc import objc_method, CGSize, NSObject, SEL, NSRange, send_message
 from travertino.size import at_least
 
