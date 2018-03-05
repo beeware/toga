@@ -21,9 +21,10 @@ class ImageViewApp(toga.App):
         imageview_from_path.style.height = 72
         imageview_from_path.style.width = 72
         box.add(imageview_from_path)
-        
+
         # image from remote URL
-        # no style parameters - we let Pack do its thig
+        # no style parameters - we let Pack determine how to allocate
+        # the space
         image_from_url = toga.Image('https://pybee.org/project/projects/libraries/toga/toga.png')
         imageview_from_url = toga.ImageView(image_from_url)
         box.add(imageview_from_url)
