@@ -16,7 +16,6 @@ def question(window, title, message):
 
     result = dialog.run()
     dialog.destroy()
-    print("found")
     return result == Gtk.ResponseType.YES
 
 

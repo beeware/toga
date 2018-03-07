@@ -64,7 +64,7 @@ class SplitContainerTests(TestCase):
         ]
         self.split.content = new_content
 
-        self.split.set_app()
+        self.assertIs(self.split.set_app(), None)
 
     def test_setting_window_for_container_content(self):
         new_content = [
@@ -73,7 +73,7 @@ class SplitContainerTests(TestCase):
         ]
         self.split.content = new_content
 
-        self.split.set_window()
+        self.assertIs(self.split.set_window(), None)
 
     def test_refresh_sublayouts(self):
         new_content = [
@@ -81,4 +81,4 @@ class SplitContainerTests(TestCase):
             toga.Box(style=TestStyle(), factory=toga_dummy.factory)
         ]
         self.split.content = new_content
-        self.split.refresh_sublayouts()
+        self.assertIs(self.split.refresh_sublayouts(), None)
