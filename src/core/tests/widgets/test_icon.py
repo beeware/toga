@@ -12,7 +12,6 @@ class TestIcon(unittest.TestCase):
         self.factory.Icon = MagicMock(return_value=MagicMock(spec=toga_dummy.factory.Icon))
 
         self.test_path = "Example.bmp"
-        self.system = False
         self.icon = toga.Icon(self.test_path)
 
     def test_icon_bind(self):

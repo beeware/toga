@@ -42,6 +42,13 @@ class SplitContainerTests(TestCase):
         self.assertActionPerformedWith(new_content[0], 'set bounds', x=0, y=0, width=0, height=0)
         self.assertActionPerformedWith(new_content[1], 'set bounds', x=0, y=0, width=0, height=0)
 
+    def test_setting_content_with_weights(self):
+        new_content = [
+            (toga.Box(style=TestStyle(), factory=toga_dummy.factory), 0.3),
+            (toga.Box(style=TestStyle(), factory=toga_dummy.factory), 0.7)
+        ]
+        self.split.content = new_content
+
     def test_direction_property_default(self):
         self.assertEqual(self.split.direction, True)
 
