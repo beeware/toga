@@ -56,3 +56,29 @@ class SplitContainerTests(TestCase):
         new_value = False
         self.split.direction = new_value
         self.assertValueSet(self.split, 'direction', new_value)
+
+    def test_setting_app_for_container_content(self):
+        new_content = [
+            toga.Box(style=TestStyle(), factory=toga_dummy.factory),
+            toga.Box(style=TestStyle(), factory=toga_dummy.factory)
+        ]
+        self.split.content = new_content
+
+        self.split.set_app()
+
+    def test_setting_window_for_container_content(self):
+        new_content = [
+            toga.Box(style=TestStyle(), factory=toga_dummy.factory),
+            toga.Box(style=TestStyle(), factory=toga_dummy.factory)
+        ]
+        self.split.content = new_content
+
+        self.split.set_window()
+
+    def test_refresh_sublayouts(self):
+        new_content = [
+            toga.Box(style=TestStyle(), factory=toga_dummy.factory),
+            toga.Box(style=TestStyle(), factory=toga_dummy.factory)
+        ]
+        self.split.content = new_content
+        self.split.refresh_sublayouts()
