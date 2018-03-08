@@ -14,9 +14,7 @@ class ImageViewApp(toga.App):
         # image from local path
         # load brutus.png from the package
         # We set the style width/height parameters for this one
-        full_path = os.path.join(ImageViewApp.app_dir,
-                                 'resources/brutus.png')
-        image_from_path = toga.Image(full_path)
+        image_from_path = toga.Image('resources/brutus.png')
         imageview_from_path = toga.ImageView(image_from_path)
         imageview_from_path.style.height = 72
         imageview_from_path.style.width = 72
