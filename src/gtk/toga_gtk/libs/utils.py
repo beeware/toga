@@ -46,12 +46,20 @@ def css_rule_factory(selector, decls):
     Args:
     selector(str): Properties are applied to this CSS selector
     decl(dict): CSS property-value pairs
+
     Returns:
     str: Gtk CSS rule
+
+    Raises:
+    ValueError: on empty arguments
     """
+
+    if selector == '' or decls == {}:
+        raise ValueError('Cannot create CSS rule with empty arguments!')
+
     res = selector + ' {\n'
     for attr, val in decls.items():
-        res += f'\t{attr}: {val};\n'
+        res += '\t{attr}: {val};\n'.format(attr=attr, val=val)
     res += '}'
 
     return res
