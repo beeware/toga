@@ -165,6 +165,10 @@ class Window:
         """ Show window, if hidden """
         self._impl.show()
 
+    def close(self):
+        """ Close window"""
+        self._impl.close()
+
     @property
     def full_screen(self):
         return self._is_full_screen
