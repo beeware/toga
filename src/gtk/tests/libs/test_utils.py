@@ -1,7 +1,20 @@
-import gi
+import sys
+from collections import OrderedDict
 import unittest
-gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gdk
+try:
+    import gi
+    gi.require_version('Gtk', '3.0')
+    from gi.repository import Gtk
+except ImportError:
+    import sys
+    # If we're on Linux, Gtk *should* be available. If it isn't, make
+    # Gtk an object... but in such a way that every test will fail,
+    # because the object isn't actually the Gtk interface.
+    if sys.platform == 'linux':
+        Gtk = object()
+    else:
+        Gtk = None
+
 from toga_gtk.libs.utils import css_rule_factory, gtk_apply_css
 
 
@@ -13,6 +26,14 @@ class TestCSSRuleFactoryMethod(unittest.TestCase):
             'font-size': '12px',
             'font-style': 'italic',
         }
+
+        # Use OrderedDict for Python < 3.6
+        if sys.version_info < (3,6):
+            d = OrderedDict()
+            d['font-family'] = self.multi_line_property['font-family']
+            d['font-size'] = self.multi_line_property['font-size']
+            d['font-style'] = self.multi_line_property['font-style']
+            self.multi_line_property = d
 
     def test_single_selectors_with_single_line_property(self):
         expected = 'button {\n\tcolor: #f00;\n}'
@@ -62,7 +83,7 @@ class TestCSSRuleFactoryMethod(unittest.TestCase):
         with self.assertRaises(ValueError):
             css_rule_factory('button', {})
 
-
+@unittest.skipIf(Gtk is None, "Can't run GTK implementation tests on a non-Linux platform")
 class TestGTKApplyCSSMethod(unittest.TestCase):
     def setUp(self):
         self.widget = Gtk.Button()  # Any example widget
