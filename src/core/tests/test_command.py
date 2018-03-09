@@ -108,23 +108,6 @@ class TestCommandSet(unittest.TestCase):
                            factory=toga_dummy.factory
                            )
         cs.add(cmd)
-        toga.Widget.app = toga.App('Test App',
-                            'beeware.org',
-                            factory=toga_dummy.factory,
-                            id=self.id)
-        cs = toga.CommandSet(test_widget, on_change=self._changed)
-        grp = toga.Group('Test group', order=10)
-        cmd = toga.Command(lambda x: print('Hello World'),
-                           label='test',
-                           tooltip='test command',
-                           shortcut='t',
-                           icon='icons/none.png',
-                           group=grp,
-                           section=1,
-                           order=1,
-                           factory=toga_dummy.factory
-                           )
-        cs.add(cmd)
         self.assertTrue(self.changed)
 
     def test_cmdset_iter(self):
