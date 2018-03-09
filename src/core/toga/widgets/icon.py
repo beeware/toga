@@ -1,5 +1,5 @@
 import os
-import sys
+
 
 class ClassProperty(property):
     """ This class makes it possible to use a classmethod like a property.
@@ -26,14 +26,12 @@ class Icon:
     """
 
     def __init__(self, path, system=False):
+        # Only one filename is provided; platform implementation classes check
+        # if file with suitable extension is available.
         if os.path.splitext(path)[1] in ('.png', '.icns', '.bmp', '.ico'):
             self.path = path
         else:
-            if sys.platform == 'win32':
-                # Tiberius works. Is there a better solution?
-                self.path = path + '.ico'
-            else:
-                self.path = path + '.icns'
+            self.path = path
 
         self.system = system
 
