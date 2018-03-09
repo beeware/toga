@@ -1,4 +1,5 @@
 import sys
+from decimal import Decimal
 
 from rubicon.objc import objc_method, SEL
 from travertino.size import at_least
@@ -18,14 +19,18 @@ from .box import TogaView
 class TogaStepper(NSStepper):
     @objc_method
     def onChange_(self, stepper) -> None:
-        self.interface.value = stepper.integerValue
+        self.interface.value = Decimal(stepper.floatValue).quantize(self.interface.step)
         if self.interface.on_change:
             self.interface.on_change(self.interface)
 
     @objc_method
     def controlTextDidChange_(self, notification) -> None:
         try:
-            self.interface.value = int(self._impl.input.stringValue)
+            value = Decimal(self._impl.input.stringValue)
+            # We set the input widget's value to the literal text input
+            # This preserves the display of "123.", which Decimal will
+            # convert to "123"
+            self.interface.value = self._impl.input.stringValue
             if self.interface.on_change:
                 self.interface.on_change(self.interface)
         except ValueError:
@@ -152,11 +157,18 @@ class NumberInput(Widget):
 
     def set_value(self, value):
         if self.interface.value is None:
-            self.stepper.integerValue = 0
+            self.stepper.floatValue = 0
             self.input.stringValue = ''
         else:
-            self.stepper.integerValue = self.interface.value
-            self.input.stringValue = str(self.interface.value)
+            self.stepper.floatValue = float(self.interface.value)
+            # We use the *literal* input value here, not the value
+            # stored in the interface, because we want to display
+            # what the user has actually input, not the interpreted
+            # Decimal value. Any invalid input value should result
+            # in the interface to a value of None, so this branch
+            # should only execute if we know the raw value can be
+            # converted to a Decimal.
+            self.input.stringValue = value
 
     def rehint(self):
         # Height of a text input is known and fixed.

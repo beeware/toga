@@ -320,6 +320,21 @@ class UIKeyboardType(Enum):
 # UIView.h
 UIView = ObjCClass('UIView')
 
+class UIViewContentMode(Enum):
+    ScaleToFill = 0
+    ScaleAspectFit = 1
+    ScaleAspectFill = 2
+    Redraw = 3
+    Center = 4
+    Top = 5
+    Bottom = 6
+    Left = 7
+    Right = 8
+    TopLeft = 9
+    TopRight = 10
+    BottomLeft = 11
+    BottomRight = 12
+
 ######################################################################
 # UIViewController.h
 UIViewController = ObjCClass('UIViewController')
