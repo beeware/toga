@@ -4,7 +4,7 @@ import unittest
 try:
     import gi
     gi.require_version('Gtk', '3.0')
-    from gi.repository import Gtk
+    from gi.repository import Gtk, Gdk
 except ImportError:
     import sys
     # If we're on Linux, Gtk *should* be available. If it isn't, make
