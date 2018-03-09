@@ -21,10 +21,4 @@ class Image(object):
         if path.startswith('http://') or path.startswith('https://'):
             self.native = UIImage.imageWithData_(NSData.dataWithContentsOfURL_(NSURL.URLWithString_(path)))
         else:
-            basename = os.path.basename(path)
-            if basename == path:
-                # if a path isn't provided, assume that the image is bundled into the app
-                self.native = UIImage.imageNamed_(basename)
-            else:
-                # load with the full path
-                self.native = UIImage.alloc().initWithContentsOfFile_(self.__get_full_path(path))
+            self.native = UIImage.alloc().initWithContentsOfFile_(self.__get_full_path(path))
