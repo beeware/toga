@@ -1,8 +1,9 @@
-# from ..libs import NSImage
+from toga_winforms.libs import WinIcon
+import os
 
 
 class Icon:
     def __init__(self, interface):
         self.interface = interface
-        interface._impl = self
-        # self.native = NSImage.alloc().initWithContentsOfFile(interface.filename)
+        self.interface._impl = self
+        self.native = WinIcon(self.interface.filename)

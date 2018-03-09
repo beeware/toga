@@ -9,6 +9,7 @@ from System import Convert
 from System import Threading
 from System import Uri
 from System.Drawing import Size, Point, Color, ContentAlignment
+from System.Drawing import Icon as WinIcon
 
 
 def TextAlignment(value):
