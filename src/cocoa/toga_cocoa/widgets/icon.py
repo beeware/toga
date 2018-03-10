@@ -2,7 +2,7 @@ import os
 
 from toga import Icon as toga_Icon
 from toga_cocoa.libs import NSImage
-
+import os
 
 class Icon:
     def __init__(self, interface):
