@@ -3,7 +3,6 @@ import os
 from toga import Icon as toga_Icon
 from toga_winforms.libs import Bitmap, WinIcon
 
-
 class Icon:
     def __init__(self, interface):
 
@@ -14,6 +13,7 @@ class Icon:
 
         self.interface = interface
         self.interface._impl = self
+
         valid_icon_extensions = ('.png', '.bmp', '.ico')
         file_path, file_extension = os.path.splitext(self.interface.filename)
 
