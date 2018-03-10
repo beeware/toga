@@ -64,6 +64,9 @@ class App:
 
         self.commands = CommandSet(None)
 
+        self.document_types = document_types
+        self._documents = []
+
         self._startup_method = startup
 
         self.default_icon = Icon('tiberius', system=True)
@@ -71,9 +74,6 @@ class App:
         self._main_window = None
 
         self._impl = self.factory.App(interface=self)
-
-        self._impl.document_types = document_types
-        self._documents = []
 
     @property
     def app_id(self):
