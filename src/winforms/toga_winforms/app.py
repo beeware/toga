@@ -17,13 +17,16 @@ class App:
     def create(self):
         self.native = WinForms.Application
 
-        # self.native.setApplicationIconImage_(self.icon.native)
-
         # Set the menu for the app.
         # self.native.setMainMenu_(self.menu)
 
         # Call user code to populate the main window
         self.interface.startup()
+
+        self.interface.main_window._impl.native.Icon = \
+            self.interface.icon.bind(self.interface.factory).native
+
+
 
     def open_document(self, fileURL):
         '''Add a new document to this app.'''
