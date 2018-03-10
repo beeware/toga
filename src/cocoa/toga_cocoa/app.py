@@ -35,7 +35,7 @@ class AppDelegate(NSObject):
 
         NSDocumentController.sharedDocumentController.runModalOpenPanel(panel, forTypes=fileTypes)
 
-        print("Untitled File opened?", panel.URLs)
+        # print("Untitled File opened?", panel.URLs)
         self.application_openFiles_(None, panel.URLs)
 
         return True
