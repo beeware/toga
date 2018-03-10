@@ -26,10 +26,12 @@ class Icon:
     """
 
     def __init__(self, path, system=False):
-        if os.path.splitext(path)[1] in ('.png', '.icns', '.bmp'):
+        # Only one filename is provided; platform implementation classes check
+        # if file with suitable extension is available.
+        if os.path.splitext(path)[1] in ('.png', '.icns', '.bmp', '.ico'):
             self.path = path
         else:
-            self.path = path + '.icns'
+            self.path = path
 
         self.system = system
 
