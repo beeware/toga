@@ -227,6 +227,7 @@ NSDocument = ObjCClass('NSDocument')
 ######################################################################
 # NSDocumentController.h
 NSDocumentController = ObjCClass('NSDocumentController')
+NSDocumentController.declare_class_property('sharedDocumentController')
 
 ######################################################################
 # NSEvent.h
