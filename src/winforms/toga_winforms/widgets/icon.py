@@ -14,7 +14,6 @@ class Icon:
 
         self.interface = interface
         self.interface._impl = self
-
         valid_icon_extensions = ('.png', '.bmp', '.ico')
         file_path, file_extension = os.path.splitext(self.interface.filename)
 

@@ -2,7 +2,8 @@ import toga
 from toga import GROUP_BREAK, SECTION_BREAK
 from travertino.layout import Viewport
 
-from .libs import WinForms, Size
+from .libs import WinForms, Size, Bitmap, WinIcon
+import os
 
 
 class WinFormsViewport:
@@ -60,6 +61,7 @@ class Window:
                     return handler
 
                 item.Click += add_handler(cmd)
+
             self.toolbar_native.Items.Add(item)
 
     def create_menus(self):
