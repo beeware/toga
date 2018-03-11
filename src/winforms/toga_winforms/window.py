@@ -1,7 +1,8 @@
 from toga import GROUP_BREAK, SECTION_BREAK
 from travertino.layout import Viewport
 
-from .libs import WinForms, Size
+from .libs import WinForms, Size, Bitmap, WinIcon
+import os
 
 
 class WinFormsViewport:
@@ -36,14 +37,30 @@ class Window:
         self.toolbar_items = None
 
     def create_toolbar(self):
-        self.toolbar_native = WinForms.ToolStrip()
+        self.toolbar_native = WinForms.MenuStrip()
         for cmd in self.interface.toolbar:
             if cmd == GROUP_BREAK:
                 item = WinForms.ToolStripSeparator()
             elif cmd == SECTION_BREAK:
                 item = WinForms.ToolStripSeparator()
             else:
-                item = WinForms.ToolStripButton()
+                cmd.native = cmd.bind(self.interface.factory)
+                native_icon = cmd.icon.bind(self.interface.factory).native
+                if cmd.icon is not None:
+                    item = WinForms.ToolStripMenuItem(cmd.label, native_icon.ToBitmap())
+                else:
+                    item = WinForms.ToolStripMenuItem(cmd.label)
+
+                def add_handler(cmd):
+                    action = cmd.action
+
+                    def handler(sender, event):
+                        return action(None)
+
+                    return handler
+
+                item.Click += add_handler(cmd)
+
             self.toolbar_native.Items.Add(item)
 
     def set_position(self, position):
