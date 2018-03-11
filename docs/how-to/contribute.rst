@@ -74,7 +74,7 @@ to clone using the command line:
 
     .. code-block:: doscon
 
-      (venv) C:\...>git clone git@github.com:<your username>/toga.git
+      (venv) C:\...>git clone https://github.com/<your username>/toga.git
 
     (substituting your Github username)
 
