@@ -29,6 +29,7 @@ Component            Usage                                                      
 ==================== ============================================================ ====================================== ===================================================================
 Button               :doc:`Documentation </reference/widgets/button>`             Basic clickable button                 :mod:`toga.widgets.button.Button`
 Canvas               :doc:`Documentation </reference/widgets/canvas>`             Area you can draw on                   :mod:`toga.widgets.canvas.Canvas`
+Detailed List        :doc:`Documentation </reference/widgets/detailedlist>`       Detailed list of data                  :mod:`toga.widgets.detailedlist.DetailedList`
 Image View           :doc:`Documentation </reference/widgets/imageview>`          Image Viewer                           :mod:`toga.widgets.imageview.ImageView`
 Label                :doc:`Documentation </reference/widgets/label>`              Text label                             :mod:`toga.widgets.label.Label`
 Multiline Text Input :doc:`Documentation </reference/widgets/multilinetextinput>` Multi-line Text Input field            :mod:`toga.widgets.multilinetextinput.MultilineTextInput`
