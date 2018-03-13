@@ -46,4 +46,4 @@ class TableTests(TestCase):
         self.assertIs(self.table.data, data_source)
 
     def test_nothing_selected(self):
-        self.assertEqual(self.table.selection.heading_1, None)
+        self.assertEqual(self.table.selection, None)
