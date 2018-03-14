@@ -21,7 +21,7 @@ report ``sys.platform == 'darwin'``), or can be manually installed by invoking::
 
 The OS X backend has seen the most development to date.
 
-.. _toga-cocoa: https://github.com/pybee/toga/tree/master/src/cocoa
+.. _toga_cocoa: https://github.com/pybee/toga/tree/master/src/cocoa
 
 Linux
 ~~~~~
@@ -41,9 +41,9 @@ with widget layout.
 .. _toga_gtk: https://github.com/pybee/toga/tree/master/src/gtk
 
 Winforms
-~~~~~
+~~~~~~~~
 
-The backend for Windows is named `toga-winforms`_. It supports Windows XP or
+The backend for Windows is named `toga_winforms`_. It supports Windows XP or
 later with .NET installed. It is installed automatically on Windows machines
 (machines that report ``sys.platform == 'win32'``), or can be manually
 installed by invoking::
@@ -53,7 +53,7 @@ installed by invoking::
 The Windows backend is currently proof-of-concept only. Most widgets have not been
 implemented.
 
-.. _toga-winforms: https://github.com/pybee/toga/tree/master/src/winforms
+.. _toga_winforms: https://github.com/pybee/toga/tree/master/src/winforms
 
 Mobile platforms
 ----------------
@@ -72,10 +72,10 @@ The iOS backend is currently proof-of-concept only. Most widgets have not been
 implemented.
 
 .. _Python-iOS-template cookiecutter: http://github.com/pybee/Python-iOS-template
-.. _toga-iOS: http://github.com/pybee/toga/tree/master/src/iOS
+.. _toga_iOS: http://github.com/pybee/toga/tree/master/src/iOS
 
 Android
-~~~
+~~~~~~~
 
 The backend for Android is named `toga_android`_. It can be manually installed
 by invoking::
@@ -85,7 +85,7 @@ by invoking::
 The android backend is currently proof-of-concept only. Most widgets have not been
 implemented.
 
-.. _toga-android: http://github.com/pybee/toga/tree/master/src/android
+.. _toga_android: http://github.com/pybee/toga/tree/master/src/android
 
 Planned platform support
 ========================
