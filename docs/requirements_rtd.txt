@@ -1,3 +1,4 @@
 -r requirements.txt
 git+https://github.com/pybee/toga#egg=toga-core&subdirectory=src/core
 git+https://github.com/pybee/toga#egg=toga-gtk&subdirectory=src/gtk
+git+https://github.com/pybee/toga#egg=toga-winforms&subdirectory=src/winforms
