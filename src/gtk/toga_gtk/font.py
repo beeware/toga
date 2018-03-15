@@ -9,13 +9,13 @@ try:
 except ImportError:
     Pango = None
 
-
 _FONT_CACHE = {}
 
 
 class Measure(Gtk.Widget):
     """Gtk.Widget for Font.measure in order to create a Pango Layout
     """
+
     def create(self):
         pass
 
@@ -32,7 +32,9 @@ class Font:
         try:
             font = _FONT_CACHE[self.interface]
         except KeyError:
-            font = Pango.FontDescription.from_string('{font.family} {font.size}'.format(font=self.interface))
+            font = Pango.FontDescription.from_string(
+                '{font.family} {font.style} {font.variant} {font.weight} {font.size}'.
+                format(font=self.interface))
             _FONT_CACHE[font] = font
 
         self.native = font
