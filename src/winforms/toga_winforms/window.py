@@ -1,8 +1,7 @@
 from toga import GROUP_BREAK, SECTION_BREAK
 from travertino.layout import Viewport
 
-from .libs import WinForms, Size, Bitmap, WinIcon
-import os
+from .libs import WinForms, Size
 
 
 class WinFormsViewport:
@@ -50,18 +49,55 @@ class Window:
                     item = WinForms.ToolStripMenuItem(cmd.label, native_icon.ToBitmap())
                 else:
                     item = WinForms.ToolStripMenuItem(cmd.label)
-
                 def add_handler(cmd):
                     action = cmd.action
-
                     def handler(sender, event):
                         return action(None)
-
                     return handler
-
                 item.Click += add_handler(cmd)
-
             self.toolbar_native.Items.Add(item)
+
+    def create_menus(self):
+        # Should I put this to libs? or somewhere in the window? It is repeated twice
+        # TODO: add standard commands
+        def add_handler(cmd):
+            action = cmd.action
+
+            def handler(sender, event):
+                return action(None)
+
+            return handler
+
+        # Only create the menu if the menu item index has been created.
+        if hasattr(self, '_menu_items'):
+            self._menu_items = {}
+            menubar = WinForms.MenuStrip()
+            submenu = None
+            for cmd in self.interface._app.commands:
+                if cmd == GROUP_BREAK:
+                    menubar.Items.Add(submenu)
+                    submenu = None
+                elif cmd == SECTION_BREAK:
+                    submenu.DropDownItems.Add(WinForms.ToolStripSeparator)
+                else:
+                    if submenu is None:
+                        submenu = WinForms.ToolStripMenuItem(cmd.group.label)
+
+                    item = WinForms.ToolStripMenuItem(cmd.label)
+                    item.Click += add_handler(cmd)
+                    cmd._widgets.append(item)
+                    self._menu_items[item] = cmd
+                    # This line may appear redundant, but it triggers the logic
+                    # to force the enabled status on the underlying widgets.
+                    cmd.enabled = cmd.enabled
+                    submenu.DropDownItems.Add(item)
+            if submenu:
+                menubar.Items.Add(submenu)
+
+            # Set the menu for the app.
+            self.native.MainMenuStrip = menubar
+            self.native.Controls.Add(menubar)
+
 
     def set_position(self, position):
         pass
@@ -83,6 +119,10 @@ class Window:
     def set_content(self, widget):
         if self.toolbar_native:
             self.native.Controls.Add(self.toolbar_native)
+            # Create the lookup table of menu items,
+            # then force the creation of the menus.
+        self._menu_items = {}
+        self.create_menus()
 
         self.native.Controls.Add(widget.native)
 
