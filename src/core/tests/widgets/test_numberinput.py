@@ -43,8 +43,8 @@ class NumberInputTests(TestCase):
         self.nr_input.max_value = 5
 
         new_value = []
-        self.nr_input.value = new_value
-        self.assertEqual(self.nr_input.value, None)
+        with self.assertRaises(ValueError):
+            self.nr_input.value = new_value
 
         new_value = 3
         self.nr_input.value = new_value
