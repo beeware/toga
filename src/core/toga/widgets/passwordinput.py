@@ -14,10 +14,10 @@ class PasswordInput(Widget):
         placeholder (str): The text that is displayed if no input text is present.
         readonly (bool): Whether a user can write into the text input, defaults to `False`.
     """
+    MIN_WIDTH = 100
 
-    def __init__(
-            self, id=None, style=None, factory=None,
-            initial=None, placeholder=None, readonly=False):
+    def __init__(self, id=None, style=None, factory=None,
+                initial=None, placeholder=None, readonly=False):
         super().__init__(id=id, style=style, factory=factory)
 
         # Create a platform specific implementation of a PasswordInput
