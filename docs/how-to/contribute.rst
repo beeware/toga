@@ -56,7 +56,7 @@ to clone using the command line:
 
     Fork the Toga repository, and then::
 
-      (venv) $ git clone git@github.com:<your username>/toga.git
+      (venv) $ git clone https://github.com/<your username>/toga.git
 
     (substituting your Github username)
 
@@ -64,7 +64,7 @@ to clone using the command line:
 
     Fork the Toga repository, and then::
 
-      (venv) $ git clone git@github.com:<your username>/toga.git
+      (venv) $ git clone https://github.com/<your username>/toga.git
 
     (substituting your Github username)
 
@@ -74,7 +74,7 @@ to clone using the command line:
 
     .. code-block:: doscon
 
-      (venv) C:\...>git clone git@github.com:<your username>/toga.git
+      (venv) C:\...>git clone https://github.com/<your username>/toga.git
 
     (substituting your Github username)
 
@@ -204,7 +204,7 @@ ask coverage to generate a report of the data that was gathered:
 
       (venv) $ pip install coverage
       (venv) $ coverage run setup.py test
-      (venv) $ coverage report -m --include=toga/*
+      (venv) $ coverage report -m --include="toga/*"
       Name                                 Stmts   Miss  Cover   Missing
       ------------------------------------------------------------------
       toga/__init__.py                        29      0   100%
@@ -220,7 +220,7 @@ ask coverage to generate a report of the data that was gathered:
 
       (venv) $ pip install coverage
       (venv) $ coverage run setup.py test
-      (venv) $ coverage report -m --include=toga/*
+      (venv) $ coverage report -m --include="toga/*"
       Name                                 Stmts   Miss  Cover   Missing
       ------------------------------------------------------------------
       toga/__init__.py                        29      0   100%
@@ -277,7 +277,7 @@ expect to see something like:
       Ran 101 tests in 0.343s
 
       OK (skipped=1)
-      (venv) $ coverage report -m --include=toga/*
+      (venv) $ coverage report -m --include="toga/*"
       Name                                 Stmts   Miss  Cover   Missing
       ------------------------------------------------------------------
       toga/__init__.py                        29      0   100%
@@ -298,7 +298,7 @@ expect to see something like:
       Ran 101 tests in 0.343s
 
       OK (skipped=1)
-      (venv) $ coverage report -m --include=toga/*
+      (venv) $ coverage report -m --include="toga/*"
       Name                                 Stmts   Miss  Cover   Missing
       ------------------------------------------------------------------
       toga/__init__.py                        29      0   100%

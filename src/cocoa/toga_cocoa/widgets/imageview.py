@@ -58,8 +58,5 @@ class ImageView(Widget):
             self.native.image = NSImage.alloc().initWithSize(NSSize(width, height))
 
     def rehint(self):
-        self.interface.style.hint(
-            height=self.native.fittingSize().height,
-            width=self.native.fittingSize().width
-        )
+        pass
 
