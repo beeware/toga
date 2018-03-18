@@ -1,3 +1,4 @@
+from toga.constants import ITALIC, OBLIQUE, SMALL_CAPS, BOLD
 import gi
 
 gi.require_version("Gtk", "3.0")
@@ -32,9 +33,31 @@ class Font:
         try:
             font = _FONT_CACHE[self.interface]
         except KeyError:
-            font = Pango.FontDescription.from_string(
-                '{font.family} {font.style} {font.variant} {font.weight} {font.size}'.
-                format(font=self.interface))
+
+            # Initialize font with properties 'None NORMAL NORMAL NORMAL 0'
+            font = Pango.FontDescription()
+
+            # Set font family
+            # TODO: Check whether font is installed in system
+            font.set_family(self.interface.family)
+
+            # Set font size
+            font.set_size(self.interface.size)
+
+            # Set font style
+            if self.interface.style is ITALIC:
+                font.set_style(Pango.Style.ITALIC)
+            elif self.interface.style is OBLIQUE:
+                font.set_style(Pango.Style.OBLIQUE)
+
+            # Set font variant
+            if self.interface.variant is SMALL_CAPS:
+                font.set_variant(Pango.Variant.SMALL_CAPS)
+
+            # Set font weight
+            if self.interface.weight is BOLD:
+                font.set_weight(Pango.Weight.BOLD)
+
             _FONT_CACHE[font] = font
 
         self.native = font
