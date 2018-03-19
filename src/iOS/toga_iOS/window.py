@@ -11,12 +11,22 @@ class iOSViewport:
         self.kb_height = 0.0
 
     @property
+    def statusbar_height(self):
+        if UIApplication.sharedApplication.statusBarOrientation == UIInterfaceOrientation.Portrait.value:
+            # This is the height of the status bar.
+            return 16
+        else:
+            return 0
+
+    @property
     def width(self):
         return self.screen.bounds.size.width
 
     @property
     def height(self):
-        return self.screen.bounds.size.height - self.kb_height
+        # Remove the height of the keyboard and the titlebar
+        # from the available viewport height
+        return self.screen.bounds.size.height - self.kb_height - self.statusbar_height
 
 
 class Window:

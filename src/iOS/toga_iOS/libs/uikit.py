@@ -105,6 +105,17 @@ def NSTextAlignment(alignment):
     }[alignment]
 
 ######################################################################
+# UIApplication.h
+UIApplication = ObjCClass('UIApplication')
+
+class UIInterfaceOrientation(Enum):
+    Unknown = 0
+    Portrait = 1
+    PortraitUpsideDown = 2
+    LandscapeLeft = 3
+    LandscapeRight = 4
+
+######################################################################
 # UIBarButtonItem.h
 UIBarButtonItem = ObjCClass('UIBarButtonItem')
 
