@@ -1,5 +1,6 @@
 import toga
 from toga.constants import ITALIC, OBLIQUE, SMALL_CAPS, BOLD, SYSTEM
+from toga_gtk import font as gtk_font
 import unittest
 import gi
 
@@ -29,7 +30,7 @@ except ImportError:
                  "Can't run GTK implementation tests on a non-Linux platform")
 class TestFontImplementation(unittest.TestCase):
     def setUp(self):
-        self.font = None
+        self.interface = None
         self.native = None
         self.font_family = SYSTEM
         self.font_size = 12
@@ -39,8 +40,8 @@ class TestFontImplementation(unittest.TestCase):
             self.native.free()
 
     def test_font_default_has_all_attr_set(self):
-        self.font = toga.Font(self.font_family, self.font_size)
-        self.native = self.font._impl.native
+        self.interface = toga.Font(self.font_family, self.font_size)
+        self.native = self.interface._impl.native
         self.assertEqual(self.native.get_family(), SYSTEM)
         self.assertEqual(self.native.get_size(), self.font_size)
         self.assertEqual(self.native.get_style(), Pango.Style.NORMAL)
@@ -49,30 +50,39 @@ class TestFontImplementation(unittest.TestCase):
 
     def test_font_size(self):
         self.font_size = 22
-        self.font = toga.Font(self.font_family, self.font_size)
-        self.native = self.font._impl.native
+        self.interface = toga.Font(self.font_family, self.font_size)
+        self.native = self.interface._impl.native
         self.assertEqual(self.native.get_size(), self.font_size)
 
     def test_font_style_italic(self):
-        self.font = toga.Font(self.font_family, self.font_size, style=ITALIC)
-        self.native = self.font._impl.native
+        self.interface = toga.Font(
+            self.font_family, self.font_size, style=ITALIC)
+        self.native = self.interface._impl.native
         self.assertEqual(self.native.get_style(), Pango.Style.ITALIC)
 
     def test_font_style_oblique(self):
-        self.font = toga.Font(self.font_family, self.font_size, style=OBLIQUE)
-        self.native = self.font._impl.native
+        self.interface = toga.Font(
+            self.font_family, self.font_size, style=OBLIQUE)
+        self.native = self.interface._impl.native
         self.assertEqual(self.native.get_style(), Pango.Style.OBLIQUE)
 
     def test_font_variant_small_caps(self):
-        self.font = toga.Font(
+        self.interface = toga.Font(
             self.font_family, self.font_size, variant=SMALL_CAPS)
-        self.native = self.font._impl.native
+        self.native = self.interface._impl.native
         self.assertEqual(self.native.get_variant(), Pango.Variant.SMALL_CAPS)
 
     def test_font_weight_bold(self):
-        self.font = toga.Font(self.font_family, self.font_size, weight=BOLD)
-        self.native = self.font._impl.native
+        self.interface = toga.Font(
+            self.font_family, self.font_size, weight=BOLD)
+        self.native = self.interface._impl.native
         self.assertEqual(self.native.get_weight(), Pango.Weight.BOLD)
+
+    def test_font_cache(self):
+        self.interface = toga.Font(self.font_family, self.font_size)
+        self.impl = gtk_font.Font(self.interface)
+        self.cache = gtk_font._FONT_CACHE
+        self.assertEqual(self.cache[self.interface], self.impl.native)
 
 
 if __name__ == '__main__':

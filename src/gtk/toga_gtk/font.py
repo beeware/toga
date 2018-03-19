@@ -58,7 +58,7 @@ class Font:
             if self.interface.weight is BOLD:
                 font.set_weight(Pango.Weight.BOLD)
 
-            _FONT_CACHE[font] = font
+            _FONT_CACHE[self.interface] = font
 
         self.native = font
 
