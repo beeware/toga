@@ -52,9 +52,11 @@ class ImageView(Widget):
         else:
             width = 0
             height = 0
-            if self.style and self.style.width and self.style.height:
-                width = self.style.width
-                height = self.style.height
+            if self.interface.style.width:
+                width = self.interface.style.width
+            if self.interface.style.height:
+                height = self.interface.style.height
+
             self.native.image = NSImage.alloc().initWithSize(NSSize(width, height))
 
     def rehint(self):
