@@ -43,7 +43,7 @@ class TestFontImplementation(unittest.TestCase):
         self.interface = toga.Font(self.font_family, self.font_size)
         self.native = self.interface._impl.native
         self.assertEqual(self.native.get_family(), SYSTEM)
-        self.assertEqual(self.native.get_size(), self.font_size)
+        self.assertEqual(self.native.get_size() / Pango.SCALE, self.font_size)
         self.assertEqual(self.native.get_style(), Pango.Style.NORMAL)
         self.assertEqual(self.native.get_variant(), Pango.Variant.NORMAL)
         self.assertEqual(self.native.get_weight(), Pango.Weight.NORMAL)
@@ -52,7 +52,7 @@ class TestFontImplementation(unittest.TestCase):
         self.font_size = 22
         self.interface = toga.Font(self.font_family, self.font_size)
         self.native = self.interface._impl.native
-        self.assertEqual(self.native.get_size(), self.font_size)
+        self.assertEqual(self.native.get_size() / Pango.SCALE, self.font_size)
 
     def test_font_style_italic(self):
         self.interface = toga.Font(

@@ -42,7 +42,7 @@ class Font:
             font.set_family(self.interface.family)
 
             # Set font size
-            font.set_size(self.interface.size)
+            font.set_size(self.interface.size * Pango.SCALE)
 
             # Set font style
             if self.interface.style is ITALIC:
