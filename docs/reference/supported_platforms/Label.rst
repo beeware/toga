@@ -7,7 +7,7 @@
     +---------+-----+--------+----+------+-----+-----+-------+
     |Component| iOS |winforms|web |django|cocoa| gtk |android|
     +=========+=====+========+====+======+=====+=====+=======+
-    |Label    ||yes|||yes|   ||no|||no|  ||yes|||yes|||no|   |
+    |Label    ||yes|||yes|   ||no|||no|  ||yes|||yes|||yes|   |
     +---------+-----+--------+----+------+-----+-----+-------+
 
 .. |yes| image:: /_static/yes.png
