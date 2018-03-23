@@ -6,7 +6,7 @@ class SelectionApp(toga.App):
 
     def startup(self):
         # Main window of the application with title and size
-        self.main_window = toga.MainWindow(self.name, size=(640, 400))
+        self.main_window = toga.MainWindow(title=self.name, size=(640, 400))
 
         # set up common styles
         label_style = Pack(flex=1, padding_right=24)

@@ -7,7 +7,7 @@ class ProgressBarApp(toga.App):
 
     def startup(self):
         # Main window of the application with title and size
-        self.main_window = toga.MainWindow(self.name, size=(500, 500))
+        self.main_window = toga.MainWindow(title=self.name, size=(500, 500))
 
         # the user may change the value with +/- buttons
         self.progress_adder = toga.ProgressBar()
