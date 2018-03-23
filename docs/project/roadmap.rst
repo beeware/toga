@@ -30,7 +30,7 @@ Inputs are mechanisms for displaying and editing input provided by the user.
 * Switch - A native control for enabled/disabled
 
     - Cocoa: Done
-    - GTK+: Gtk.CheckButton (maybe Gtk.Switch?)
+    - GTK+: Done
     - iOS: UISwitch
     - Winforms: ?
     - Android: ?
@@ -38,7 +38,7 @@ Inputs are mechanisms for displaying and editing input provided by the user.
 * DateInput - A widget for selecting a date
 
     - Cocoa: NSDatePicker, constrained to DMY
-    - GTK+: Gtk.Calendar?
+    - GTK+: Gtk.Calendar
     - iOS: UIDatePicker
     - Winforms: ?
     - Android: ?
@@ -46,7 +46,7 @@ Inputs are mechanisms for displaying and editing input provided by the user.
 * TimeInput - A widget for selecting a time
 
     - Cocoa: NSDatePicker, Constrained to Time
-    - GTK+: ?
+    - GTK+: Custom Gtk.SpinButton
     - iOS: UIDatePicker
     - Winforms: ?
     - Android: ?
@@ -62,7 +62,7 @@ Inputs are mechanisms for displaying and editing input provided by the user.
 * MultilineTextInput - A widget for displaying multiline text, optionally editable.
 
     - Cocoa: NSTextView inside an NSScrollView
-    - GTK+: Gtk.TextView? (is there a simpler version than a full text editor?)
+    - GTK+: Done
     - iOS: UITextView
     - Winforms: ?
     - Android: ?
@@ -70,7 +70,7 @@ Inputs are mechanisms for displaying and editing input provided by the user.
 * Selection - A button that allows the user to choose from one of a fixed number of options
 
     - Cocoa: NSPopupButton, with NSMenu for options.
-    - GTK+: Gtk.ComboBox.new_with_model
+    - GTK+: Done
     - iOS: UIPickerView
     - Winforms: ?
     - Android: ?
@@ -78,7 +78,7 @@ Inputs are mechanisms for displaying and editing input provided by the user.
 * ColorInput - A widget for selecting a color
 
     - Cocoa: NSColorWell
-    - GTK+: Gtk.ColorButton
+    - GTK+: Gtk.ColorButton or Gtk.ColorSelection
     - iOS: ?
     - Winforms: ?
     - Android: ?
@@ -86,7 +86,7 @@ Inputs are mechanisms for displaying and editing input provided by the user.
 * SliderInput (H & V) - A widget for selecting a value from a range.
 
     - Cocoa: NSSlider
-    - GTK+: Gtk.Scale
+    - GTK+: Done
     - iOS: UISlider
     - Winforms: ?
     - Android: ?
@@ -94,7 +94,7 @@ Inputs are mechanisms for displaying and editing input provided by the user.
 * NumberInput - A widget to allow entry of a numerical value, possibly with helper buttons to make it easy to increase/decrease the value.
 
     - Cocoa: NSTextField with NSStepper
-    - GTK+: GTKSpinButton
+    - GTK+: Done
     - iOS: UITextField with UIStepper
     - Winforms: ?
     - Android: ?
@@ -102,7 +102,7 @@ Inputs are mechanisms for displaying and editing input provided by the user.
 * Table: A scrollable display of columns of tabular data
 
     - Cocoa: Done
-    - GTK+: Gtk.TreeView with a Gtk.ListStore
+    - GTK+: Done
     - iOS: UITableView
     - Winforms: ListView (ListView.View.Details)
     - Android: ?
@@ -110,7 +110,7 @@ Inputs are mechanisms for displaying and editing input provided by the user.
 * Tree: A scrollable display of hierarchical data
 
     - Cocoa: Done
-    - GTK+: Gtk.TreeView with a Gtk.TreeStore
+    - GTK+: Done
     - iOS: UITableView with navigation
     - Winforms: ?
     - Android: ?
@@ -118,6 +118,7 @@ Inputs are mechanisms for displaying and editing input provided by the user.
 * DetailedList: A scrollable list of a single column of detailed data
 
     - Cocoa: NSTableView with custom view?
+    - GTK+: Gtk.ScrolledWindow
     - iOS: UITableView with navigation
     - Winforms: ?
     - Android: ?
@@ -125,7 +126,7 @@ Inputs are mechanisms for displaying and editing input provided by the user.
 * SearchInput - A variant of TextField that is decorated as a search box.
 
     - Cocoa: NSSearchField
-    - GTK+: ?
+    - GTK+: Gtk.Entry
     - iOS: UISearchBar?
     - Winforms: ?
     - Android: ?
@@ -133,12 +134,13 @@ Inputs are mechanisms for displaying and editing input provided by the user.
 Views
 ~~~~~
 
-Views are mechanisms for displaying rich content, usually in a read-only manner.
+Views are mechanisms for displaying rich content,
+usually in a read-only manner.
 
 * Separator - a visual separator; usually a faint line.
 
     - Cocoa: NSSeparator
-    - GTK+:
+    - GTK+: Gtk.Separator
     - iOS:
     - Winforms: ?
     - Android: ?
@@ -208,7 +210,7 @@ Containers are widgets that can contain other widgets.
 * Box - A box drawn around a collection of widgets; often has a label
 
     - Cocoa: NSBox
-    - GTK+:
+    - GTK+: Done
     - iOS:
     - Winforms: ?
     - Android: ?
@@ -216,7 +218,7 @@ Containers are widgets that can contain other widgets.
 * ButtonContainer - A layout for a group of radio/checkbox options
 
     - Cocoa: NSMatrix, or NSView with pre-set constraints.
-    - GTK+: ListBox?
+    - GTK+: Gtk.ListBox
     - iOS:
     - Winforms: ?
     - Android: ?
@@ -224,7 +226,7 @@ Containers are widgets that can contain other widgets.
 * ScrollContainer - A container whose internal content can be scrolled.
 
     - Cocoa: Done
-    - GTK+:
+    - GTK+: Done
     - iOS: UIScrollView?
     - Winforms: Panel
     - Android: ?
@@ -232,7 +234,7 @@ Containers are widgets that can contain other widgets.
 * SplitContainer - An adjustable separator bar between 2+ visible panes of content
 
     - Cocoa: Done
-    - GTK+:
+    - GTK+: Done
     - iOS:
     - Winforms: SplitContainer
     - Android: ?
@@ -247,10 +249,11 @@ Containers are widgets that can contain other widgets.
 
 * OptionContainer - (suggestions for better name welcome)
 
-    A container view that holds a small, fixed number of subviews, only one of which is visible at any
-    given time. Generally rendered as something with "lozenge" style buttons
-    over a box. Examples of use: OS X System preference panes that contain
-    multiple options (e.g., Keyboard settings have an option layout for "Keyboard",
+    A container view that holds a small, fixed number of subviews,
+    only one of which is visible at any given time.
+    Generally rendered as something with "lozenge" style buttons over a box.
+    Examples of use: OS X System preference panes that contain multiple options
+    (e.g., Keyboard settings have an option layout for "Keyboard",
     "Text", "Shortcuts" and "Input sources")
 
     - Cocoa: Done
@@ -261,9 +264,10 @@ Containers are widgets that can contain other widgets.
 
 * SectionContainer - (suggestions for better name welcome)
 
-    A container view that holds a small number of subviews, only one of which is visible at any
-    given time. Each "section" has a name and icon. Examples of use: top level
-    navigation in Safari's preferences panel.
+    A container view that holds a small number of subviews,
+    only one of which is visible at any given time.
+    Each "section" has a name and icon.
+    Examples of use: top level navigation in Safari's preferences panel.
 
     - Cocoa: NSTabView
     - GTK+: ?
@@ -279,7 +283,7 @@ Containers are widgets that can contain other widgets.
     - Winforms: ?
     - Android: ?
 
-* NavigationContainer - A container view that holds a navigable tree of subviews,
+* NavigationContainer - A container view that holds a navigable tree of subviews
 
     Essentially a view that has a "back" button to return to the previous view
     in a hierarchy. Example of use: Top level navigation in the OS X System
@@ -366,13 +370,14 @@ features.
     periodically update a GUI based on some long running background task.
     They usually accomplish this with some sort of timer-based API to ensure
     that the main event loop keeps running. Python has a "yield" keyword that
-    can be prepurposed for this.
+    can be repurposed for this.
 
 * Toolbar -
 
-    Support for adding a toolbar to an app definition. Interpretation
-    in mobile will be difficult; maybe some sort of top level action menu available
-    via a slideout tray (e.g., GMail account selection tray)
+    Support for adding a toolbar to an app definition.
+    Interpretation in mobile will be difficult;
+    maybe some sort of top level action menu available via a slideout tray
+    (e.g., GMail account selection tray)
 
 * Preferences -
 
@@ -387,7 +392,8 @@ features.
 
 * Easy Licensing/registration of apps -
 
-    Monetization is not a bad thing, and shouldn't be mutually exclusive with open source.
+    Monetization is not a bad thing,
+    and shouldn't be mutually exclusive with open source.
 
 Platforms
 ---------
