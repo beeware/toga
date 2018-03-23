@@ -5,9 +5,10 @@ Background
 =============
 
 .. toctree::
-   :maxdepth: 1
+    :maxdepth: 1
 
-   philosophy
-   faq
-   commands
-   data-sources
+    philosophy
+    faq
+    commands
+    data-sources
+    project/index

@@ -5,8 +5,7 @@ About the project
 =================
 
 .. toctree::
-   :maxdepth: 2
-   :glob:
+    :maxdepth: 2
 
-   releases
-   roadmap
+    releases
+    roadmap
