@@ -7,7 +7,7 @@
     +---------+-----+--------+----+------+-----+-----+-------+
     |Component| iOS |winforms|web |django|cocoa| gtk |android|
     +=========+=====+========+====+======+=====+=====+=======+
-    |TextInput||yes|||yes|   ||no|||yes| ||yes|||yes|||no|   |
+    |TextInput||yes|||yes|   ||no|||yes| ||yes|||yes|||yes|   |
     +---------+-----+--------+----+------+-----+-----+-------+
 
 .. |yes| image:: /_static/yes.png
