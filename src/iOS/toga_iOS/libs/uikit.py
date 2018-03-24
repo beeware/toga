@@ -257,6 +257,10 @@ UIResponder = ObjCClass('UIResponder')
 UIScreen = ObjCClass('UIScreen')
 UIScreen.declare_class_property('mainScreen')
 
+#####################################################################
+# UIScrollView.h
+UIScrollView = ObjCClass('UIScrollView')
+
 ######################################################################
 # UISlider.h
 UISlider = ObjCClass('UISlider')

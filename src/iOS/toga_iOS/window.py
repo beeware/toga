@@ -4,8 +4,8 @@ from .libs import *
 
 
 class iOSViewport:
-    def __init__(self, screen):
-        self.screen = screen
+    def __init__(self, view):
+        self.view = view
         self.dpi = 96  # FIXME This is almost certainly wrong...
 
         self.kb_height = 0.0
@@ -20,13 +20,13 @@ class iOSViewport:
 
     @property
     def width(self):
-        return self.screen.bounds.size.width
+        return self.view.bounds.size.width
 
     @property
     def height(self):
         # Remove the height of the keyboard and the titlebar
         # from the available viewport height
-        return self.screen.bounds.size.height - self.kb_height - self.statusbar_height
+        return self.view.bounds.size.height - self.kb_height - self.statusbar_height
 
 
 class Window:
@@ -36,12 +36,11 @@ class Window:
         self.create()
 
     def create(self):
-        self.screen = UIScreen.mainScreen
-        self.native = UIWindow.alloc().initWithFrame(self.screen.bounds)
+        self.native = UIWindow.alloc().initWithFrame(UIScreen.mainScreen.bounds)
         self.native.interface = self.interface
 
     def set_content(self, widget):
-        widget.viewport = iOSViewport(self.screen)
+        widget.viewport = iOSViewport(self.native)
 
         # Add all children to the content widget.
         for child in widget.interface.children:
