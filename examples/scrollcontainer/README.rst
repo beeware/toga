@@ -2,7 +2,7 @@ Scroll Container
 ================
 
 Test app for the Scroll Container widget. The app creates a box
-layout containing 100 labels, and adds it to a scroll container.
+layout containing 50 labels, and adds it to a scroll container.
 
 Quickstart
 ~~~~~~~~~~
