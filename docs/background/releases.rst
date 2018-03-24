@@ -1,6 +1,27 @@
 Release History
 ===============
 
+0.3.0 - In development
+----------------------
+
+* Move to a three-layered Interface/Implementation/Native code structure
+* Added a test framework
+* Added a simplified "Pack" layout
+
+0.2.15
+------
+
+* Added more widgets and cross-plaform support, especially for GTK+ and Winforms
+
+0.2.14
+------
+
+* Removed use of Namedtuple
+
+0.2.13
+------
+
+* Various fixes in peparation for PyCon AU demo
 
 0.2.12
 ------
