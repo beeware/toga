@@ -7,8 +7,9 @@ Background
 .. toctree::
     :maxdepth: 1
 
-    philosophy
-    faq
-    commands
-    data-sources
-    project/index
+   philosophy
+   faq
+   releases
+   commands
+   data-sources
+   roadmap

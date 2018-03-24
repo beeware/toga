@@ -42,6 +42,10 @@ class NumberInputTests(TestCase):
         self.nr_input.min_value = 0
         self.nr_input.max_value = 5
 
+        new_value = []
+        with self.assertRaises(ValueError):
+            self.nr_input.value = new_value
+
         new_value = 3
         self.nr_input.value = new_value
         self.assertEqual(self.nr_input.value, new_value)
@@ -56,14 +60,6 @@ class NumberInputTests(TestCase):
 
         with self.assertRaises(ValueError):
             self.nr_input.value = self.non_int_value
-
-        # new_value = []
-        # self.nr_input.value = new_value
-        # self.assertEqual(self.nr_input.value, None)
-        # Value setter doesn't work correctly with type errors:
-        # when list is assigned, it raises a TypeError, sets self._value to None,
-        # but still tries to compare value (which is '[]') to min_value etc
-        # it is impossible add coverage for lines 122-123
 
     def test_on_change(self):
         def dummy_function():

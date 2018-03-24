@@ -4,7 +4,7 @@ from toga.style.pack import *
 
 class ImageViewApp(toga.App):
     def startup(self):
-        self.main_window = toga.MainWindow(self.name)
+        self.main_window = toga.MainWindow(title=self.name)
         
         box = toga.Box()
         box.style.padding = 40
