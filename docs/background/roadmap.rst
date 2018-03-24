@@ -19,7 +19,7 @@ Input
 
 Inputs are mechanisms for displaying and editing input provided by the user.
 
-- ComboBox - A free entry TextField that provides options (e.g., text with past choices)
+* ComboBox - A free entry TextField that provides options (e.g., text with past choices)
 
     - Cocoa: NSComboBox
     - GTK+: Gtk.ComboBox.new_with_model_and_entry
