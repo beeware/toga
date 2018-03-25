@@ -94,6 +94,8 @@ class Window:
             int(self.interface.content.layout.height) + TITLEBAR_HEIGHT
         )
         self.interface.content.refresh()
+        if self.interface is not self.interface.app._main_window:
+            self.native.Show()
 
     def on_close(self):
         pass
