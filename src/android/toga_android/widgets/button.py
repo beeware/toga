@@ -1,5 +1,7 @@
 from travertino.size import at_least
 
+from toga_android.color import native_color
+
 from .base import Widget
 
 
@@ -30,10 +32,10 @@ class Button(Widget):
         self.native.setText(self.interface.label)
 
     def set_enabled(self, value):
-        self.interface.factory.not_implemented('Button.set_enabled()')
+        self.native.setEnabled(value)
 
     def set_background_color(self, value):
-        self.interface.factory.not_implemented('Button.set_background_color()')
+        self.native.setBackgroundColor(native_color(value))
 
     def set_on_press(self, handler):
         # No special handling required

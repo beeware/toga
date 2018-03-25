@@ -1,3 +1,4 @@
+from android.view import View
 
 class Widget:
     def __init__(self, interface):
@@ -40,7 +41,10 @@ class Widget:
         pass
 
     def set_hidden(self, hidden):
-        self.interface.factory.not_implemented('Widget.set_hidden()')
+        if hidden:
+            self.native.setVisiblity(View.INVISIBLE)
+        else:
+            self.native.setVisiblity(View.VISIBLE)
 
     def set_font(self, font):
         # By default, font can't be changed

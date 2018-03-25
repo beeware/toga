@@ -2,6 +2,7 @@ from android.view import Gravity
 
 from travertino.size import at_least
 
+from toga_android.color import native_color
 from toga.constants import *
 
 
@@ -27,6 +28,9 @@ class Label(Widget):
 
     def set_text(self, value):
         self.native.setText(self.interface._text)
+
+    def set_color(self, value):
+        self.native.setTextColor(native_color(value))
 
     def rehint(self):
         # print("REHINT label", self, self.native.getMeasuredWidth(), self.native.getMeasuredHeight())
