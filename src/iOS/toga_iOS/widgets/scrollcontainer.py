@@ -19,24 +19,25 @@ from .base import Widget
 class ScrollContainer(Widget):
     def update_content_size(self):
         # We need a layout pass to figure out how big the scrollable area should be
-        self.current_content.interface.refresh()
+        scrollable_content = self.interface.content._impl
+        scrollable_content.interface.refresh()
         
         content_width = 0
         padding_horizontal = 0
         content_height = 0
         padding_vertical = 0
         
-        if self.horizontal_enabled:
-            content_width = self.current_content.interface.layout.width
-            padding_horizontal = self.current_content.interface.style.padding_left + self.current_content.interface.style.padding_right
+        if self.interface.horizontal:
+            content_width = scrollable_content.interface.layout.width
+            padding_horizontal = scrollable_content.interface.style.padding_left + scrollable_content.interface.style.padding_right
         else:
             content_width = self.native.frame.size.width
         
-        if self.vertical_enabled:
-            content_height = self.current_content.interface.layout.height
-            padding_vertical = self.current_content.interface.style.padding_top + self.current_content.interface.style.padding_bottom
+        if self.interface.vertical:
+            content_height = scrollable_content.interface.layout.height
+            padding_vertical = scrollable_content.interface.style.padding_top + scrollable_content.interface.style.padding_bottom
             # pad the scrollview for the statusbar offset
-            padding_vertical = padding_vertical + self.current_content.viewport.statusbar_height
+            padding_vertical = padding_vertical + scrollable_content.viewport.statusbar_height
         else:
             content_height = self.native.frame.size.height
 
@@ -92,18 +93,14 @@ class ScrollContainer(Widget):
         ])
 
     def create(self):
-        self.current_content = None
-        self.vertical_enabled = True
-        self.horizontal_enabled = True
         self.native = UIScrollView.alloc().init()
         self.native.translatesAutoresizingMaskIntoConstraints = False
         self.native.backgroundColor = UIColor.whiteColor
         self.add_constraints()
 
     def set_content(self, widget):
-        if self.current_content != None:
-            self.current_content.removeFromSuperview()
-        self.current_content = widget
+        if self.interface.content != None:
+            self.interface.content._impl.native.removeFromSuperview()
         self.native.addSubview(widget.native)
         widget.viewport = iOSViewport(self.native)
 
@@ -113,13 +110,11 @@ class ScrollContainer(Widget):
         self.constrain_to_scrollview(widget)
 
     def set_vertical(self, value):
-        self.vertical_enabled = value
-        if self.current_content:
+        if self.interface.content:
             self.update_content_size()
 
     def set_horizontal(self, value):
-        self.horizontal_enabled = value
-        if self.current_content:
+        if self.interface.content:
             self.update_content_size()
 
     def rehint(self):
