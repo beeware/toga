@@ -21,7 +21,7 @@ class Icon:
 
     Args:
         path(str): Path to the icon file.
-        system(bool): Set to `True if the icon is located in the 'resource' folder
+        system(bool): Set to `True` if the icon is located in the 'resource' folder
             of the Toga package. Default is False.
     """
 
