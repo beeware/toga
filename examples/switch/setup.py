@@ -51,8 +51,7 @@ setup(
         },
         'ios': {
             'app_requires': [
-                '../../src/core',
-                '../../src/iOS',
+                'toga-ios',
             ]
         },
     }
