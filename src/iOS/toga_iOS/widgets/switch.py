@@ -60,7 +60,6 @@ class Switch(Widget):
         else:
             raise RuntimeError('Undefined value for enabled: {} in {}'.format(value, __class__))
 
-    @enabled.setter
     def set_enabled(self, value):
         if value:
             self.native_label.enabled = True
