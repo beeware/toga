@@ -1,10 +1,12 @@
 from rubicon.objc import objc_method, CGSize, SEL
 from toga_iOS.libs import(
     UIControlEventValueChanged,
+    UILabel,
+    UILayoutConstraintAxis,
+    UIStackView,
     UISwitch,
-    UITableViewCell,
-    UITableViewCellStyleDefault
 )
+from travertino.size import at_least
 
 from .base import Widget
 
@@ -18,28 +20,25 @@ class TogaSwitch(UISwitch):
 
 class Switch(Widget):
     def create(self):
-        # Hack! Because UISwitch has no label, we place it in a UITableViewCell to get a label
-        self.native = UITableViewCell.alloc().initWithStyle_reuseIdentifier_(UITableViewCellStyleDefault, 'row')
+        self.native = UIStackView.alloc().init()
         self.native.interface = self.interface
+        self.native.axis = UILayoutConstraintAxis.Horizontal
+
+        self.native_label = UILabel.alloc().init()
 
         self.native_switch = TogaSwitch.alloc().init()
         self.native_switch.interface = self.interface
         self.native_switch.addTarget_action_forControlEvents_(self.native_switch, SEL('onPress:'),
                                                               UIControlEventValueChanged)
-        # Add Switch to UITableViewCell
-        self.native.accessoryView = self.native_switch
-
+        # Add switch and label to UIStackView
+        self.native.addArrangedSubview_(self.native_label)
+        self.native.addArrangedSubview_(self.native_switch)
+        
         # Add the layout constraints
         self.add_constraints()
 
-        fitting_size = self.native.systemLayoutSizeFittingSize_(CGSize(0, 0))
-        self.interface.style.hint(
-            min_height=fitting_size.height,
-            min_width=fitting_size.width,
-        )
-
     def set_label(self, label):
-        self.native.textLabel.text = str(label)
+        self.native_label.text = str(label)
         self.rehint()
 
     def set_is_on(self, value):
@@ -52,9 +51,8 @@ class Switch(Widget):
         # No special handling required
         pass
 
-    @property
-    def enabled(self):
-        value = self.native.accessoryView.isEnabled()
+    def get_enabled(self):
+        value = self.native_switch.isEnabled()
         if value == 1:
             return True
         elif value == 0:
@@ -62,18 +60,15 @@ class Switch(Widget):
         else:
             raise RuntimeError('Undefined value for enabled: {} in {}'.format(value, __class__))
 
-    @enabled.setter
-    def enabled(self, value):
+    def set_enabled(self, value):
         if value:
-            self.native.textLabel.enabled = True
-            self.native.accessoryView.enabled = True
+            self.native_label.enabled = True
+            self.native_switch.enabled = True
         else:
-            self.native.textLabel.enabled = False
-            self.native.accessoryView.enabled = False
+            self.native_label.enabled = False
+            self.native_switch.enabled = False
 
     def rehint(self):
         fitting_size = self.native.systemLayoutSizeFittingSize_(CGSize(0, 0))
-        self.interface.style.hint(
-            height=fitting_size.height,
-            min_width=fitting_size.width,
-        )
+        self.interface.intrinsic.width = at_least(fitting_size.width)
+        self.interface.intrinsic.height = fitting_size.height
