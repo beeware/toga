@@ -1,5 +1,6 @@
 from rubicon.objc import objc_method, SEL, CGSize
 from toga_iOS.libs import UISlider, UIControlEventValueChanged
+from travertino.size import at_least
 
 from .base import Widget
 
@@ -29,15 +30,13 @@ class Slider(Widget):
         self.native.setValue_animated_(value, True)
 
     def set_range(self, range):
-        self.native.minimumValue = range.min
-        self.native.maximumValue = range.max
+        self.native.minimumValue = range[0]
+        self.native.maximumValue = range[1]
 
     def rehint(self):
         fitting_size = self.native.systemLayoutSizeFittingSize_(CGSize(0, 0))
-        self.interface.style.hint(
-            height=fitting_size.height,
-            min_width=fitting_size.width,
-        )
+        self.interface.intrinsic.width = at_least(fitting_size.width)
+        self.interface.intrinsic.height = fitting_size.height
 
     def set_on_slide(self, handler):
         # No special handling required
