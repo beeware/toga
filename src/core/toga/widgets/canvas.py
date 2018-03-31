@@ -22,64 +22,39 @@ class Canvas(Widget):
         # Create a platform specific implementation of Canvas
         self._impl = self.factory.Canvas(interface=self)
 
-    def add(self, draw_widget):
-        self._impl.add(draw_widget)
+        self.default_context = Context()
+        self.drawing_objects = self.default_context.drawing_objects
 
-    def remove(self, draw_widget):
-        self._impl.add(draw_widget)
+    def remove(self, drawing_object):
+        self.drawing_objects.remove(drawing_object)
 
-    def set_context(self, name):
+    def create_context(self):
+        """Create a new context to draw to
+
+        """
+        context = Context()
+        context(self._impl)
+        return context
+
+    @contextmanager
+    def context(self, context=None):
         """The context of the Canvas to draw to
 
-        Creates a context or switches to an already existing context. There is a
-        context created automatically called 'default' that is used if another
-        context isn't created. The top left corner of the canvas must be painted
-        at the origin of the context and is sized using the rehint() method.
+        Makes use of an existing context. There is a default context created
+        automatically that is used if another context isn't created. The top
+        left corner of the canvas must be painted at the origin of the context
+        and is sized using the rehint() method.
 
         Args:
-            name (str): The name of the context
+            context (:obj:`Context`, optional): The context object to use,
+                defaults to the default context
 
         """
-        self._impl.add(lambda: self._impl.set_context(name))
-
-    # Line Styles
-
-    def line_width(self, width=2.0):
-        """Set width of lines
-
-        Args:
-            width (float): line width
-
-        """
-        self._impl.add(lambda: self._impl.line_width(width))
-
-    # Fill and Stroke Styles
-
-    def fill_style(self, color=None):
-        """Color to use inside shapes
-
-        Currently supports color, in the future could support gradient and
-        pattern. A named color or RGBA value must be passed, or default
-        to black.
-        Args:
-            color (str): CSS color value or in rgba(0, 0, 0, 1) format
-
-        """
-        self._impl.add(lambda: self._impl.fill_style(color))
-
-    def stroke_style(self, color=None):
-        """Color to use for lines around shapes
-
-        Currently supports color, in the future could support gradient and
-        pattern. A named color or RGBA value must be passed, or default to
-        black. If using RGBA values, RGB are in the range 0-255, A is in the
-        range 0-1.
-
-        Args:
-            color (str): CSS color value or in rgba(0, 0, 0, 1) format
-
-        """
-        self._impl.add(lambda: self._impl.stroke_style(color))
+        if context is None:
+            context = self.default_context
+        self.drawing_objects = context.drawing_objects
+        yield
+        self.drawing_objects = self.default_context.drawing_objects
 
     # Paths
 
@@ -94,9 +69,11 @@ class Canvas(Widget):
         Yields: None
 
         """
-        self._impl.add(lambda: self._impl.move_to(x, y))
+        self.move_to(x, y)
         yield
-        self._impl.add(self._impl.close_path)
+        closed_path = ClosedPath()
+        self.drawing_objects.append(closed_path(self._impl))
+        return closed_path
 
     def move_to(self, x, y):
         """Moves the starting point of a new sub-path to the (x, y) coordinates.
@@ -107,7 +84,7 @@ class Canvas(Widget):
 
         """
         move_to = MoveTo(x, y)
-        self.root_context.add(move_to)
+        self.drawing_objects.append(move_to(self._impl))
         return move_to
 
     def line_to(self, x, y):
@@ -122,7 +99,7 @@ class Canvas(Widget):
 
         """
         line_to = LineTo(x, y)
-        self.root_context.add(line_to)
+        self.drawing_objects.append(line_to(self._impl))
         return line_to
 
     def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y):
@@ -143,7 +120,7 @@ class Canvas(Widget):
 
         """
         bezier_curve_to = BezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y)
-        self.root_context.add(bezier_curve_to)
+        self.drawing_objects.append(bezier_curve_to(self._impl))
         return bezier_curve_to
 
     def quadratic_curve_to(self, cpx, cpy, x, y):
@@ -162,7 +139,7 @@ class Canvas(Widget):
 
         """
         quadratic_curve_to = QuadraticCurveTo(cpx, cpy, x, y)
-        self.root_context.add(quadratic_curve_to)
+        self.drawing_objects.append(quadratic_curve_to(self._impl))
         return quadratic_curve_to
 
     def arc(self, x, y, radius, startangle=0.0, endangle=2 * pi, anticlockwise=False):
@@ -176,16 +153,18 @@ class Canvas(Widget):
             x (float): The x coordinate of the arc's center
             y (float): The y coordinate of the arc's center
             radius (float): The arc's radius
-            startangle (float): The angle (in radians) at which the arc starts,
-                measured clockwise from the positive x axis
-            endangle (float): The angle (in radians) at which the arc ends,
-                measured clockwise from the positive x axis
-            anticlockwise (bool): Optional, if true, causes the arc to be drawn
-                counter-clockwise between the two angles instead of clockwise
+            startangle (float, optional): The angle (in radians) at which the
+                arc starts, measured clockwise from the positive x axis,
+                default 0.0
+            endangle (float, optional): The angle (in radians) at which the arc ends,
+                measured clockwise from the positive x axis, default 2*pi
+            anticlockwise (bool, optional): If true, causes the arc to be drawn
+                counter-clockwise between the two angles instead of clockwise,
+                default false
 
         """
         arc = Arc(x, y, radius, startangle, endangle, anticlockwise)
-        self.root_context.add(arc)
+        self.drawing_objects.append(arc(self._impl))
         return arc
 
     def ellipse(self, x, y, radiusx, radiusy, rotation=0.0, startangle=0.0, endangle=2 * pi,
@@ -201,17 +180,17 @@ class Canvas(Widget):
             y (float): The y axis of the coordinate for the ellipse's center
             radiusx (float): The ellipse's major-axis radius
             radiusy (float): The ellipse's minor-axis radius
-            rotation (float): The rotation for this ellipse, expressed in radians
-            startangle (float): The starting point in radians, measured from the x
-                axis, from which it will be drawn
-            endangle (float): The end ellipse's angle in radians to which it will
-                be drawn
-            anticlockwise (bool): Optional, if true, draws the ellipse
-                anticlockwise (counter-clockwise) instead of clockwise
+            rotation (float, optional): The rotation for this ellipse, expressed in radians, default 0.0
+            startangle (float, optional): The starting point in radians, measured from the x
+                axis, from which it will be drawn, default 0.0
+            endangle (float, optional): The end ellipse's angle in radians to which it will
+                be drawn, default 2*pi
+            anticlockwise (bool, optional): If true, draws the ellipse
+                anticlockwise (counter-clockwise) instead of clockwise, default false
 
         """
         ellipse = Ellipse(x, y, radiusx, radiusy, rotation, startangle, endangle, anticlockwise)
-        self.root_context.add(ellipse)
+        self.drawing_objects.append(ellipse(self._impl))
         return ellipse
 
     def rect(self, x, y, width, height):
@@ -230,45 +209,59 @@ class Canvas(Widget):
 
         """
         rect = Rect(x, y, width, height)
-        self.root_context.add(rect)
+        self.drawing_objects.append(rect(self._impl))
         return rect
 
     # Drawing Paths
 
     @contextmanager
-    def fill(self, fill_rule='nonzero', preserve=False):
+    def fill(self, color=None, fill_rule='nonzero', preserve=False):
         """Fills the subpaths with the current fill style
 
         A drawing operator that fills the current path according to the current
         fill rule, (each sub-path is implicitly closed before being filled).
 
         Args:
-            fill_rule (str): 'nonzero' is the non-zero winding rule and
-                             'evenodd' is the even-odd winding rule
-            preserve (bool): Preserves the path within the Context
+            fill_rule (str, optional): 'nonzero' is the non-zero winding rule and
+                                       'evenodd' is the even-odd winding rule
+            preserve (bool, optional): Preserves the path within the Context
+            color (str, optional): CSS color value or in rgba(0, 0, 0, 1)
+                format, default to black
 
         Yields: None
 
         """
-        self._impl.add(self._impl.new_path)
+        new_path = NewPath()
+        self.drawing_objects.append(new_path(self._impl))
         yield
         if fill_rule is 'evenodd':
-            self._impl.add(lambda: self._impl.fill(fill_rule, preserve))
+            fill = Fill(color, fill_rule, preserve)
+            self.drawing_objects.append(fill(self._impl))
+            return fill
         else:
-            self._impl.add(lambda: self._impl.fill('nonzero', preserve))
+            fill = Fill(color, 'nonzero', preserve)
+            self.drawing_objects.append(fill(self._impl))
+            return fill
 
     @contextmanager
-    def stroke(self):
+    def stroke(self, color=None, line_width=2.0):
         """Strokes the subpaths with the current stroke style
 
         A drawing operator that strokes the current path according to the
         current line style settings.
 
+        Args:
+            color (str): CSS color value or in rgba(0, 0, 0, 1) format, default
+                to black
+            line_width (float, optional): stroke line width, default is 2.0
+
         Yields: None
 
         """
         yield
-        self._impl.add(self._impl.stroke)
+        stroke = Stroke(color, line_width)
+        self.drawing_objects.append(stroke(self._impl))
+        return stroke
 
     # Transformations
 
@@ -286,7 +279,7 @@ class Canvas(Widget):
 
         """
         rotate = Rotate(radians)
-        self.root_context.add(rotate)
+        self.drawing_objects.append(rotate(self._impl))
         return rotate
 
     def scale(self, sx, sy):
@@ -302,7 +295,7 @@ class Canvas(Widget):
 
         """
         scale = Scale(sx, sy)
-        self.root_context.add(scale)
+        self.drawing_objects.append(scale(self._impl))
         return scale
 
     def translate(self, tx, ty):
@@ -320,7 +313,7 @@ class Canvas(Widget):
 
         """
         translate = Translate(tx, ty)
-        self.root_context.add(translate)
+        self.drawing_objects.append(translate(self._impl))
         return translate
 
     def reset_transform(self):
@@ -333,7 +326,7 @@ class Canvas(Widget):
 
         """
         reset_transform = ResetTransform()
-        self.root_context.add(reset_transform)
+        self.drawing_objects.append(reset_transform(self._impl))
         return reset_transform
 
     # Text
@@ -353,8 +346,21 @@ class Canvas(Widget):
 
         """
         write_text = WriteText(text, x, y, font)
-        self.root_context.add(write_text)
+        self.drawing_objects.append(write_text(self._impl))
         return write_text
+
+
+class Context:
+    def __init__(self):
+        self.drawing_objects = []
+
+    def __call__(self, impl):
+        impl.context(self.drawing_objects)
+
+
+class ClosedPath:
+    def __call__(self, impl):
+        impl.closed_path()
 
 
 class MoveTo:
@@ -441,6 +447,25 @@ class Rect:
         impl.rect(self.x, self.y, self.width, self.height)
 
 
+class Fill:
+    def __init__(self, color=None, fill_rule='nonzero', preserve=False):
+        self.color = color
+        self.fill_rule = fill_rule
+        self.preserve = preserve
+
+    def __call__(self, impl):
+        impl.fill(self.color, self.fill_rule, self.preserve)
+
+
+class Stroke:
+    def __init__(self, color=None, width=2.0):
+        self.color = color
+        self.width = width
+
+    def __call__(self, impl):
+        impl.stroke(self.color, self.width)
+
+
 class Rotate:
     def __init__(self, rotate):
         self.rotate = rotate
@@ -481,3 +506,8 @@ class WriteText:
 
     def __call__(self, impl):
         impl.write_text(self.text, self.x, self.y, self.font)
+
+
+class NewPath:
+    def __call__(self, impl):
+        impl.new_path()

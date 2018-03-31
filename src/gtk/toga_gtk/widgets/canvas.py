@@ -1,23 +1,19 @@
 import re
-from collections import defaultdict
 
 import gi
 
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
-
 try:
     import cairo
 except ImportError:
     cairo = None
-
 try:
     gi.require_version("Pango", "1.0")
     from gi.repository import Pango
-
-    SCALE = Pango.SCALE
+    scale = Pango.SCALE
 except ImportError:
-    SCALE = 1024
+    scale = 1024
 
 # TODO import colosseum once updated to support colors
 # from colosseum import colors
@@ -35,64 +31,28 @@ class Canvas(Widget):
         self.native = Gtk.DrawingArea()
         self.native.interface = self.interface
         self.surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, self.native.get_allocated_width(),
-                                     self.native.get_allocated_height())
+                                          self.native.get_allocated_height())
         self.native_context = cairo.Context(self.surface)
-        self.contexts = {}
-        self.set_context('default')
-        self.draw_commands = self.contexts['default']
-        self.native.connect('draw', self.draw_contexts)
+        self.contexts = []
+        self.native.connect('draw', self.draw_callback)
         self.native.font = None
 
-    def set_context(self, context):
-        if context is not None:
-            for context in self.contexts:
-                self.draw_commands = self.contexts[context]
-            else:
-                self.contexts[context] = []
-                self.draw_commands = self.contexts[context]
+    def context(self, drawing_objects):
+        self.contexts.append(drawing_objects)
+        print(drawing_objects)
 
-    def draw_contexts(self, canvas, context):
+    def draw_callback(self, canvas, context):
         self.native_context = context
-        for context, draw_commands in self.contexts.items():
-            for draw_command in draw_commands:
-                draw_command()
+        for context in self.contexts:
+            for drawing_object in context:
+                drawing_object()
 
-    def add(self, draw_command):
-        self.draw_commands.append(draw_command)
-
-    def delete(self, draw_command):
-        self.draw_commands.remove(draw_command)
-
-    def line_width(self, width=2.0):
-        self.native_context.set_line_width(width)
-
-    def fill_style(self, color=None):
-        if color is not None:
-            num = re.search('^rgba\((\d*\.?\d*), (\d*\.?\d*), (\d*\.?\d*), (\d*\.?\d*)\)$', color)
-            if num is not None:
-                #  Convert RGB values to be a float between 0 and 1
-                r = float(num.group(1)) / 255
-                g = float(num.group(2)) / 255
-                b = float(num.group(3)) / 255
-                a = float(num.group(4))
-                self.native_context.set_source_rgba(r, g, b, a)
-            else:
-                pass
-                # Support future colosseum versions
-                # for named_color, rgb in colors.NAMED_COLOR.items():
-                #     if named_color == color:
-                #         exec('self.native.set_source_' + str(rgb))
-        else:
-            # set color to black
-            self.native_context.set_source_rgba(0, 0, 0, 1)
-
-    def stroke_style(self, color=None):
-        self.fill_style(color)
+    # Basic paths
 
     def new_path(self):
         self.native_context.new_path()
 
-    def close_path(self):
+    def closed_path(self):
         self.native_context.close_path()
 
     def move_to(self, x, y):
@@ -100,6 +60,8 @@ class Canvas(Widget):
 
     def line_to(self, x, y):
         self.native_context.line_to(x, y)
+
+    # Basic shapes
 
     def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y):
         self.native_context.curve_to(cp1x, cp1y, cp2x, cp2y, x, y)
@@ -131,7 +93,28 @@ class Canvas(Widget):
 
     # Drawing Paths
 
-    def fill(self, fill_rule, preserve):
+    def set_color(self, color=None):
+        if color is not None:
+            num = re.search('^rgba\((\d*\.?\d*), (\d*\.?\d*), (\d*\.?\d*), (\d*\.?\d*)\)$', color)
+            if num is not None:
+                #  Convert RGB values to be a float between 0 and 1
+                r = float(num.group(1)) / 255
+                g = float(num.group(2)) / 255
+                b = float(num.group(3)) / 255
+                a = float(num.group(4))
+                self.native_context.set_source_rgba(r, g, b, a)
+            else:
+                pass
+                # Support future colosseum versions
+                # for named_color, rgb in colors.NAMED_COLOR.items():
+                #     if named_color == color:
+                #         exec('self.native.set_source_' + str(rgb))
+        else:
+            # set color to black
+            self.native_context.set_source_rgba(0, 0, 0, 1)
+
+    def fill(self, color, fill_rule, preserve):
+        self.set_color(color)
         if fill_rule is 'evenodd':
             self.native_context.set_fill_rule(cairo.FILL_RULE_EVEN_ODD)
         else:
@@ -141,7 +124,9 @@ class Canvas(Widget):
         else:
             self.native_context.fill()
 
-    def stroke(self):
+    def stroke(self, color, line_width):
+        self.set_color(color)
+        self.native_context.set_line_width(line_width)
         self.native_context.stroke()
 
     # Transformations
@@ -158,6 +143,8 @@ class Canvas(Widget):
     def reset_transform(self):
         self.native_context.identity_matrix()
 
+    # Text
+
     def write_text(self, text, x, y, font):
         # Set font family and size
         if font:
@@ -165,7 +152,7 @@ class Canvas(Widget):
         elif self.native.font:
             write_font = self.native.font
             write_font.family = self.native.font.get_family()
-            write_font.size = self.native.font.get_size() / SCALE
+            write_font.size = self.native.font.get_size() / scale
         self.native_context.select_font_face(write_font.family)
         self.native_context.set_font_size(write_font.size)
 
@@ -187,6 +174,8 @@ class Canvas(Widget):
 
         x_bearing, y_bearing, width, height, x_advance, y_advance = self.native_context.text_extents(text)
         return width, height
+
+    # Rehint
 
     def rehint(self):
         # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height())
