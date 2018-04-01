@@ -92,7 +92,8 @@ class StartApp(toga.App):
             self.canvas.write_text('Tiberius', x, y, font)
 
     def draw_tiberius(self):
-        with self.canvas.context():
+        context = self.canvas.create_context()
+        with self.canvas.context(context):
             self.fill_head()
             self.draw_eyes()
             self.draw_horns()

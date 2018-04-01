@@ -22,8 +22,8 @@ class Canvas(Widget):
         # Create a platform specific implementation of Canvas
         self._impl = self.factory.Canvas(interface=self)
 
-        self.default_context = Context()
-        self.drawing_objects = self.default_context.drawing_objects
+        self.context_root = []
+        self.drawing_objects = self.context_root
 
     def remove(self, drawing_object):
         self.drawing_objects.remove(drawing_object)
@@ -33,28 +33,25 @@ class Canvas(Widget):
 
         """
         context = Context()
+        self.context_root.append(context.drawing_objects)
         context(self._impl)
         return context
 
     @contextmanager
-    def context(self, context=None):
+    def context(self, context):
         """The context of the Canvas to draw to
 
-        Makes use of an existing context. There is a default context created
-        automatically that is used if another context isn't created. The top
-        left corner of the canvas must be painted at the origin of the context
-        and is sized using the rehint() method.
+        Makes use of an existing context. The top left corner of the canvas must
+        be painted at the origin of the context and is sized using the rehint()
+        method.
 
         Args:
-            context (:obj:`Context`, optional): The context object to use,
-                defaults to the default context
+            context (:obj:`Context`): The context object to use
 
         """
-        if context is None:
-            context = self.default_context
         self.drawing_objects = context.drawing_objects
         yield
-        self.drawing_objects = self.default_context.drawing_objects
+        self.drawing_objects = self.context_root
 
     # Paths
 
