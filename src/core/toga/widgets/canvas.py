@@ -23,6 +23,7 @@ class Canvas(Widget):
         self._impl = self.factory.Canvas(interface=self)
 
         self.context_root = []
+        self._impl.set_context_root(self.context_root)
         self.drawing_objects = self.context_root
 
     def remove(self, drawing_object):
@@ -34,7 +35,6 @@ class Canvas(Widget):
         """
         context = Context()
         self.context_root.append(context.drawing_objects)
-        context(self._impl)
         return context
 
     @contextmanager
@@ -69,7 +69,7 @@ class Canvas(Widget):
         self.move_to(x, y)
         yield
         closed_path = ClosedPath()
-        self.drawing_objects.append(closed_path(self._impl))
+        self.drawing_objects.append(closed_path)
         return closed_path
 
     def move_to(self, x, y):
@@ -81,7 +81,7 @@ class Canvas(Widget):
 
         """
         move_to = MoveTo(x, y)
-        self.drawing_objects.append(move_to(self._impl))
+        self.drawing_objects.append(move_to)
         return move_to
 
     def line_to(self, x, y):
@@ -96,7 +96,7 @@ class Canvas(Widget):
 
         """
         line_to = LineTo(x, y)
-        self.drawing_objects.append(line_to(self._impl))
+        self.drawing_objects.append(line_to)
         return line_to
 
     def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y):
@@ -117,7 +117,7 @@ class Canvas(Widget):
 
         """
         bezier_curve_to = BezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y)
-        self.drawing_objects.append(bezier_curve_to(self._impl))
+        self.drawing_objects.append(bezier_curve_to)
         return bezier_curve_to
 
     def quadratic_curve_to(self, cpx, cpy, x, y):
@@ -136,7 +136,7 @@ class Canvas(Widget):
 
         """
         quadratic_curve_to = QuadraticCurveTo(cpx, cpy, x, y)
-        self.drawing_objects.append(quadratic_curve_to(self._impl))
+        self.drawing_objects.append(quadratic_curve_to)
         return quadratic_curve_to
 
     def arc(self, x, y, radius, startangle=0.0, endangle=2 * pi, anticlockwise=False):
@@ -161,7 +161,7 @@ class Canvas(Widget):
 
         """
         arc = Arc(x, y, radius, startangle, endangle, anticlockwise)
-        self.drawing_objects.append(arc(self._impl))
+        self.drawing_objects.append(arc)
         return arc
 
     def ellipse(self, x, y, radiusx, radiusy, rotation=0.0, startangle=0.0, endangle=2 * pi,
@@ -187,7 +187,7 @@ class Canvas(Widget):
 
         """
         ellipse = Ellipse(x, y, radiusx, radiusy, rotation, startangle, endangle, anticlockwise)
-        self.drawing_objects.append(ellipse(self._impl))
+        self.drawing_objects.append(ellipse)
         return ellipse
 
     def rect(self, x, y, width, height):
@@ -206,7 +206,7 @@ class Canvas(Widget):
 
         """
         rect = Rect(x, y, width, height)
-        self.drawing_objects.append(rect(self._impl))
+        self.drawing_objects.append(rect)
         return rect
 
     # Drawing Paths
@@ -229,15 +229,15 @@ class Canvas(Widget):
 
         """
         new_path = NewPath()
-        self.drawing_objects.append(new_path(self._impl))
+        self.drawing_objects.append(new_path)
         yield
         if fill_rule is 'evenodd':
             fill = Fill(color, fill_rule, preserve)
-            self.drawing_objects.append(fill(self._impl))
+            self.drawing_objects.append(fill)
             return fill
         else:
             fill = Fill(color, 'nonzero', preserve)
-            self.drawing_objects.append(fill(self._impl))
+            self.drawing_objects.append(fill)
             return fill
 
     @contextmanager
@@ -257,7 +257,7 @@ class Canvas(Widget):
         """
         yield
         stroke = Stroke(color, line_width)
-        self.drawing_objects.append(stroke(self._impl))
+        self.drawing_objects.append(stroke)
         return stroke
 
     # Transformations
@@ -276,7 +276,7 @@ class Canvas(Widget):
 
         """
         rotate = Rotate(radians)
-        self.drawing_objects.append(rotate(self._impl))
+        self.drawing_objects.append(rotate)
         return rotate
 
     def scale(self, sx, sy):
@@ -292,7 +292,7 @@ class Canvas(Widget):
 
         """
         scale = Scale(sx, sy)
-        self.drawing_objects.append(scale(self._impl))
+        self.drawing_objects.append(scale)
         return scale
 
     def translate(self, tx, ty):
@@ -310,7 +310,7 @@ class Canvas(Widget):
 
         """
         translate = Translate(tx, ty)
-        self.drawing_objects.append(translate(self._impl))
+        self.drawing_objects.append(translate)
         return translate
 
     def reset_transform(self):
@@ -323,7 +323,7 @@ class Canvas(Widget):
 
         """
         reset_transform = ResetTransform()
-        self.drawing_objects.append(reset_transform(self._impl))
+        self.drawing_objects.append(reset_transform)
         return reset_transform
 
     # Text
@@ -343,7 +343,7 @@ class Canvas(Widget):
 
         """
         write_text = WriteText(text, x, y, font)
-        self.drawing_objects.append(write_text(self._impl))
+        self.drawing_objects.append(write_text)
         return write_text
 
 
@@ -352,7 +352,7 @@ class Context:
         self.drawing_objects = []
 
     def __call__(self, impl):
-        impl.context(self.drawing_objects)
+        impl.context()
 
 
 class ClosedPath:

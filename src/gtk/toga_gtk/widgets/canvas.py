@@ -33,19 +33,20 @@ class Canvas(Widget):
         self.surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, self.native.get_allocated_width(),
                                           self.native.get_allocated_height())
         self.native_context = cairo.Context(self.surface)
-        self.contexts = []
+        self.context_root = None
         self.native.connect('draw', self.draw_callback)
         self.native.font = None
 
-    def context(self, drawing_objects):
-        self.contexts.append(drawing_objects)
-        print(drawing_objects)
+    def context(self):
+        pass
+
+    def set_context_root(self, context_root):
+        self.context_root = context_root
 
     def draw_callback(self, canvas, context):
         self.native_context = context
-        for context in self.contexts:
-            for drawing_object in context:
-                drawing_object()
+        for drawing_object in traverse(self.context_root):
+            drawing_object(self)
 
     # Basic paths
 
@@ -170,7 +171,7 @@ class Canvas(Widget):
             self.native_context.set_font_size(font.size)
         elif self.native.font:
             self.native_context.select_font_face(self.native.font.get_family())
-            self.native_context.set_font_size(self.native.font.get_size() / SCALE)
+            self.native_context.set_font_size(self.native.font.get_size() / scale)
 
         x_bearing, y_bearing, width, height, x_advance, y_advance = self.native_context.text_extents(text)
         return width, height
@@ -181,3 +182,12 @@ class Canvas(Widget):
         # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height())
         width = self.native.get_preferred_width()
         height = self.native.get_preferred_height()
+
+
+def traverse(nested_list):
+    if isinstance(nested_list, list):
+        for drawing_object in nested_list:
+            for subdrawing_object in traverse(drawing_object):
+                yield subdrawing_object
+    else:
+        yield nested_list
