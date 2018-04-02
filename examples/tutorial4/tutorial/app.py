@@ -55,7 +55,7 @@ class StartApp(toga.App):
             self.canvas.move_to(112, 99)
             self.canvas.quadratic_curve_to(145, 65, 139, 36)
             self.canvas.quadratic_curve_to(130, 60, 109, 75)
-        with self.canvas.stroke():
+        with self.canvas.stroke(line_width=4.0):
             self.canvas.move_to(112, 99)
             self.canvas.quadratic_curve_to(145, 65, 139, 36)
             self.canvas.quadratic_curve_to(130, 60, 109, 75)
@@ -64,7 +64,7 @@ class StartApp(toga.App):
             self.canvas.move_to(35, 99)
             self.canvas.quadratic_curve_to(2, 65, 6, 36)
             self.canvas.quadratic_curve_to(17, 60, 37, 75)
-        with self.canvas.stroke():
+        with self.canvas.stroke(line_width=4.0):
             self.canvas.move_to(35, 99)
             self.canvas.quadratic_curve_to(2, 65, 6, 36)
             self.canvas.quadratic_curve_to(17, 60, 37, 75)
@@ -77,7 +77,7 @@ class StartApp(toga.App):
         with self.canvas.fill():
             arc1 = self.canvas.arc(63, 140, 3)
             arc2 = self.canvas.arc(83, 140, 3)
-        with self.canvas.stroke():
+        with self.canvas.stroke(line_width=4.0):
             self.canvas.move_to(45, 145)
             self.canvas.bezier_curve_to(51, 123, 96, 123, 102, 145)
 
@@ -86,7 +86,7 @@ class StartApp(toga.App):
         y = 185
         font = toga.Font(family='sans-serif', size=20)
         width, height = font.measure('Tiberius', tight=True)
-        with self.canvas.stroke():
+        with self.canvas.stroke(line_width=4.0):
             self.canvas.rect(x - 10, y - height + 2, width, height + 2)
         with self.canvas.fill(color='rgba(149.0, 119, 73, 1)'):
             self.canvas.write_text('Tiberius', x, y, font)
