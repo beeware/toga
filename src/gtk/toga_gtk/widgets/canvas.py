@@ -48,6 +48,9 @@ class Canvas(Widget):
         for drawing_object in traverse(self.context_root):
             drawing_object(self)
 
+    def redraw(self):
+        pass
+
     # Basic paths
 
     def new_path(self):
