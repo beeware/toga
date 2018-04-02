@@ -79,7 +79,7 @@ class Canvas(Widget):
         """
         self.move_to(x, y)
         yield
-        closed_path = ClosedPath()
+        closed_path = ClosedPath(x, y)
         self._add(closed_path)
         return closed_path
 
@@ -367,8 +367,12 @@ class Context:
 
 
 class ClosedPath:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
     def __call__(self, impl):
-        impl.closed_path()
+        impl.closed_path(self.x, self.y)
 
 
 class MoveTo:

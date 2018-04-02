@@ -56,7 +56,7 @@ class Canvas(Widget):
     def new_path(self):
         self.native_context.new_path()
 
-    def closed_path(self):
+    def closed_path(self, x, y):
         self.native_context.close_path()
 
     def move_to(self, x, y):
