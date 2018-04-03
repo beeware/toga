@@ -1,52 +1,30 @@
-import re
-
 from .base import Widget
 
 
 class Canvas(Widget):
     def create(self):
         self._action('create Canvas')
+        self.context_root = None
 
-    def set_context(self, context):
-        self._set_value('context', context)
+    def context(self):
+        self._action('context')
 
-    def draw_contexts(self, canvas, context):
+    def set_context_root(self, context_root):
+        self.context_root = context_root
+        self._set_value('context root', context_root)
+
+    def draw_callback(self, canvas, context):
         self._action('draw contexts', canvas=canvas, context=context)
 
-    def add(self, draw_command):
-        self._action('add', draw_command=draw_command)
+    def redraw(self):
+        self._action('redraw')
+        for drawing_object in traverse(self.context_root):
+            drawing_object(self)
 
-    def delete(self, draw_command):
-        self._action('delete', draw_command=draw_command)
+    # Basic paths
 
-    def line_width(self, width=2.0):
-        self._set_value('line_width', width)
-
-    def fill_style(self, color=None):
-        if color is not None:
-            num = re.search('^rgba\((\d*\.?\d*), (\d*\.?\d*), (\d*\.?\d*), (\d*\.?\d*)\)$', color)
-            if num is not None:
-                r = num.group(1)
-                g = num.group(2)
-                b = num.group(3)
-                a = num.group(4)
-                rgba = str(r + ', ' + g + ', ' + b + ', ' + a)
-                self._set_value('fill_style', rgba)
-            else:
-                pass
-                # Support future colosseum versions
-                # for named_color, rgb in colors.NAMED_COLOR.items():
-                #     if named_color == color:
-                #         exec('self._set_value('fill_style', color)
-        else:
-            # set color to black
-            self._set_value('fill_style', '0, 0, 0, 1')
-
-    def stroke_style(self, color=None):
-        self.fill_style(color)
-
-    def close_path(self):
-        self._action('close path')
+    def new_path(self):
+        self._action('new path')
 
     def closed_path(self, x, y):
         self._action('closed path', x=x, y=y)
@@ -56,6 +34,8 @@ class Canvas(Widget):
 
     def line_to(self, x, y):
         self._action('line to', x=x, y=y)
+
+    # Basic shapes
 
     def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y):
         self._action('bezier curve to', cp1x=cp1x, cp1y=cp1y, cp2x=cp2x, cp2y=cp2y, x=x, y=y)
@@ -76,14 +56,20 @@ class Canvas(Widget):
 
     # Drawing Paths
 
-    def fill(self, fill_rule, preserve):
+    def set_color(self, color):
+        self._set_value('color', color)
+
+    def fill(self, color, fill_rule, preserve):
+        self._set_value('color', color)
         self._set_value('fill rule', fill_rule)
         if preserve:
             self._action('fill preserve')
         else:
             self._action('fill')
 
-    def stroke(self):
+    def stroke(self, color, line_width):
+        self._set_value('color', color)
+        self._set_value('line width', line_width)
         self._action('stroke')
 
     # Transformations
@@ -103,5 +89,16 @@ class Canvas(Widget):
     def write_text(self, text, x, y, font):
         self._action('write text', text=text, x=x, y=y, font=font)
 
+    # Rehint
+
     def rehint(self):
         self._action('rehint Canvas')
+
+
+def traverse(nested_list):
+    if isinstance(nested_list, list):
+        for drawing_object in nested_list:
+            for subdrawing_object in traverse(drawing_object):
+                yield subdrawing_object
+    else:
+        yield nested_list
