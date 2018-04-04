@@ -50,19 +50,21 @@ class Window:
                     item = WinForms.ToolStripMenuItem(cmd.label, native_icon.ToBitmap())
                 else:
                     item = WinForms.ToolStripMenuItem(cmd.label)
+
                 def add_handler(cmd):
                     action = cmd.action
+
                     def handler(sender, event):
                         return action(None)
+
                     return handler
+
                 item.Click += add_handler(cmd)
             self.toolbar_native.Items.Add(item)
 
     def create_menus(self):
         toga.Group.FILE.order = 0
 
-        # Should I put this to libs? or somewhere in the window? It is repeated twice
-        # TODO: add standard commands
         def add_handler(cmd):
             action = cmd.action
 
@@ -81,11 +83,10 @@ class Window:
                     menubar.Items.Add(submenu)
                     submenu = None
                 elif cmd == SECTION_BREAK:
-                    submenu.DropDownItems.Add(WinForms.ToolStripSeparator)
+                    submenu.DropDownItems.Add('-')
                 else:
                     if submenu is None:
                         submenu = WinForms.ToolStripMenuItem(cmd.group.label)
-
                     item = WinForms.ToolStripMenuItem(cmd.label)
                     item.Click += add_handler(cmd)
                     cmd._widgets.append(item)
@@ -124,8 +125,8 @@ class Window:
             # Create the lookup table of menu items,
             # then force the creation of the menus.
         self._menu_items = {}
-        self.create_menus()
-
+        if self.interface is self.interface.app._main_window:
+            self.create_menus()
         self.native.Controls.Add(widget.native)
 
         # Set the widget's viewport to be based on the window's content.
