@@ -257,9 +257,17 @@ UIResponder = ObjCClass('UIResponder')
 UIScreen = ObjCClass('UIScreen')
 UIScreen.declare_class_property('mainScreen')
 
+#####################################################################
+# UIScrollView.h
+UIScrollView = ObjCClass('UIScrollView')
+
 ######################################################################
 # UISlider.h
 UISlider = ObjCClass('UISlider')
+
+######################################################################
+# UIStackView.h
+UIStackView = ObjCClass('UIStackView')
 
 ######################################################################
 # UISwitch.h
@@ -330,6 +338,10 @@ class UIKeyboardType(Enum):
 ######################################################################
 # UIView.h
 UIView = ObjCClass('UIView')
+
+class UILayoutConstraintAxis(Enum):
+    Horizontal = 0
+    Vertical = 1
 
 class UIViewContentMode(Enum):
     ScaleToFill = 0

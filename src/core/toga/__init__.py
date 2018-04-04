@@ -35,16 +35,16 @@ __all__ = [
     # Applications
     'App', 'MainWindow',
     # Colors
-    'hsv', 'hsva', 'rgb', 'rgba',
+    'hsl', 'hsla', 'rgb', 'rgba',
     # Commands
     'Command', 'Group', 'GROUP_BREAK', 'SECTION_BREAK',
     # Fonts
     'Font',
 
     # Widgets
-    'DetailedList'
+    'DetailedList',
     'Window',
-    'Widget'
+    'Widget',
     'Box',
     'Button',
     'Canvas',
@@ -65,7 +65,7 @@ __all__ = [
     'Table',
     'TextInput',
     'Tree',
-    'WebView',
+    'WebView'
 ]
 
 # Examples of valid version strings

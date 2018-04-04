@@ -4,7 +4,7 @@ import re
 
 from setuptools import setup, find_packages
 
-with io.open('./imageview/__init__.py', encoding='utf8') as version_file:
+with io.open('./scrollcontainer/__init__.py', encoding='utf8') as version_file:
     version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]", version_file.read(), re.M)
     if version_match:
         version = version_match.group(1)
@@ -17,9 +17,9 @@ with io.open('README.rst', encoding='utf8') as readme:
 
 
 setup(
-    name='imageview',
+    name='scrollcontainer',
     version=version,
-    description='Test app for the ImageView widget.',
+    description='Test app for the Scroll Container widget.',
     long_description=long_description,
     author='BeeWare Project',
     author_email='contact@pybee.org',
@@ -33,7 +33,7 @@ setup(
         ]
     ),
     package_data={
-        'imageview': ['resources/*'],
+        'scrollcontainer': ['resources/*'],
     },
     install_package_data=True,
     classifiers=[
@@ -44,7 +44,7 @@ setup(
     ],
     options={
         'app': {
-            'formal_name': 'ImageView',
+            'formal_name': 'Scroll Container',
             'bundle': 'org.pybee.widgets'
         },
 
