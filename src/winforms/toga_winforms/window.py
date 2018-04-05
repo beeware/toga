@@ -2,7 +2,7 @@ import toga
 from toga import GROUP_BREAK, SECTION_BREAK
 from travertino.layout import Viewport
 
-from .libs import WinForms, Size
+from .libs import WinForms, Size, add_handler
 
 
 class WinFormsViewport:
@@ -51,27 +51,11 @@ class Window:
                 else:
                     item = WinForms.ToolStripMenuItem(cmd.label)
 
-                def add_handler(cmd):
-                    action = cmd.action
-
-                    def handler(sender, event):
-                        return action(None)
-
-                    return handler
-
                 item.Click += add_handler(cmd)
             self.toolbar_native.Items.Add(item)
 
     def create_menus(self):
         toga.Group.FILE.order = 0
-
-        def add_handler(cmd):
-            action = cmd.action
-
-            def handler(sender, event):
-                return action(None)
-
-            return handler
 
         # Only create the menu if the menu item index has been created.
         if hasattr(self, '_menu_items'):

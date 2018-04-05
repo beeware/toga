@@ -42,9 +42,6 @@ class App:
         '''Add a new document to this app.'''
         print("STUB: If you want to handle opening documents, implement App.open_document(fileURL)")
 
-    def create_menus(self):
-        self.interface.factory.not_implemented('App.create_menus()')
-
     def run_app(self):
         self.create()
         self.native.Run(self.interface.main_window._impl.native)
@@ -56,4 +53,4 @@ class App:
         thread.Join()
 
     def exit(self):
-        self.interface.factory.not_implemented('App.exit()')
+        self.native.Exit()
