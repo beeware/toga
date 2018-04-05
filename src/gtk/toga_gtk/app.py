@@ -1,23 +1,11 @@
 import asyncio
-import os
 import signal
 import sys
 
 try:
     import gi
 except ImportError:
-    # app.py is the first module that will be imported when you import toga_gtk.
-    #
-    # If Gtk can't be imported, it may be because we're in a virtualenv,
-    # and the system python libraries aren't visible. This can be fixed by
-    # creating a symlink into the site-packages
-    # Try creating a symlink to the system library location.
-    # base_packages_dir is where the packages installed by the package manager
-    # can be found.
-    # gi_system_install_path is where gi can be found in the packages dir.
-    # installer_command is the command the user can run to install gi.
     py_version = "%d.%d" % (sys.version_info.major, sys.version_info.minor)
-
     if sys.version_info.major == 3:
         raise RuntimeError("Are you sure you have installed the Python GTK+ bindings? If not, run pip install pygobject")
     else:
