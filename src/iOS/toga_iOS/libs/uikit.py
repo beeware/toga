@@ -245,6 +245,14 @@ UINavigationController = ObjCClass('UINavigationController')
 UIPickerView = ObjCClass('UIPickerView')
 
 ######################################################################
+# UIProgressView.h
+UIProgressView = ObjCClass('UIProgressView')
+
+class UIProgressViewStyle(Enum):
+    Default = 0
+    Bar = 1
+
+######################################################################
 # UIRefreshControl.h
 UIRefreshControl = ObjCClass('UIRefreshControl')
 
