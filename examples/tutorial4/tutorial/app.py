@@ -21,7 +21,7 @@ class StartApp(toga.App):
         self.main_window.show()
 
     def fill_head(self):
-        with self.canvas.fill(color='rgba(149.0, 119, 73, 1)'):
+        with self.canvas.fill(color='rgba(149, 119, 73, 1)'):
             self.canvas.move_to(112, 103)
             self.canvas.line_to(112, 113)
             self.canvas.ellipse(73, 114, 39, 47, 0, 0, math.pi)
@@ -88,7 +88,7 @@ class StartApp(toga.App):
         width, height = font.measure('Tiberius', tight=True)
         with self.canvas.stroke(line_width=4.0):
             self.canvas.rect(x - 10, y - height + 2, width, height + 2)
-        with self.canvas.fill(color='rgba(149.0, 119, 73, 1)'):
+        with self.canvas.fill(color='rgba(149, 119, 73, 1)'):
             self.canvas.write_text('Tiberius', x, y, font)
 
     def draw_tiberius(self):

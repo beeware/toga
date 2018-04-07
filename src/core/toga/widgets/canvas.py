@@ -1,6 +1,7 @@
 from contextlib import contextmanager
 from math import pi
 
+from ..color import color as parse_color
 from .base import Widget
 
 
@@ -25,7 +26,13 @@ class Canvas(Widget):
         self.context_root = []
         self._impl.set_context_root(self.context_root)
         self.drawing_objects = self.context_root
-    
+
+    def __enter__(self):
+        pass
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        pass
+
     def _add(self, drawing_object):
         self.drawing_objects.append(drawing_object)
         self._impl.redraw()
@@ -368,8 +375,9 @@ class Canvas(Widget):
         return write_text
 
 
-class Context:
+class Context(Canvas):
     def __init__(self):
+        super().__init__()
         self.drawing_objects = []
 
     def __call__(self, impl):
@@ -517,7 +525,10 @@ class Rect:
 
 class Fill:
     def __init__(self, color=None, fill_rule='nonzero', preserve=False):
-        self.color = color
+        if color:
+            self.color = parse_color(color)
+        else:
+            self.color = None
         self.fill_rule = fill_rule
         self.preserve = preserve
 
@@ -525,21 +536,30 @@ class Fill:
         impl.fill(self.color, self.fill_rule, self.preserve)
 
     def modify(self, color=None, fill_rule='nonzero', preserve=False):
-        self.color = color
+        if color:
+            self.color = parse_color(color)
+        else:
+            self.color = None
         self.fill_rule = fill_rule
         self.preserve = preserve
 
 
 class Stroke:
     def __init__(self, color=None, width=2.0):
-        self.color = color
+        if color:
+            self.color = parse_color(color)
+        else:
+            self.color = None
         self.width = width
 
     def __call__(self, impl):
         impl.stroke(self.color, self.width)
 
     def modify(self, color=None, width=2.0):
-        self.color = color
+        if color:
+            self.color = parse_color(color)
+        else:
+            self.color = None
         self.width = width
 
 

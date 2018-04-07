@@ -15,10 +15,8 @@ try:
 except ImportError:
     scale = 1024
 
-# TODO import colosseum once updated to support colors
-# from colosseum import colors
-
 from .base import Widget
+from ..color import native_color
 
 
 class Canvas(Widget):
@@ -99,23 +97,10 @@ class Canvas(Widget):
 
     def set_color(self, color=None):
         if color is not None:
-            num = re.search('^rgba\((\d*\.?\d*), (\d*\.?\d*), (\d*\.?\d*), (\d*\.?\d*)\)$', color)
-            if num is not None:
-                #  Convert RGB values to be a float between 0 and 1
-                r = float(num.group(1)) / 255
-                g = float(num.group(2)) / 255
-                b = float(num.group(3)) / 255
-                a = float(num.group(4))
-                self.native_context.set_source_rgba(r, g, b, a)
-            else:
-                pass
-                # Support future colosseum versions
-                # for named_color, rgb in colors.NAMED_COLOR.items():
-                #     if named_color == color:
-                #         exec('self.native.set_source_' + str(rgb))
+            self.native_context.set_source_rgba(*native_color(color))
         else:
             # set color to black
-            self.native_context.set_source_rgba(0, 0, 0, 1)
+            self.native_context.set_source_rgba(0, 0, 0, 1.0)
 
     def fill(self, color, fill_rule, preserve):
         self.set_color(color)
