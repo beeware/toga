@@ -113,8 +113,8 @@ class Key(Enum):
     HOME = '<home>'
     END = '<end>'
     DELETE = '<delete>'
-    PAGE_UP = '<pg> up'
-    PAGE_DOWN = '<pg> down'
+    PAGE_UP = '<pg up>'
+    PAGE_DOWN = '<pg dn>'
 
     UP = '<up>'
     DOWN = '<down>'
@@ -139,3 +139,6 @@ class Key(Enum):
     NUMPAD_MINUS = 'numpad:-'
     NUMPAD_MULTIPLY = 'numpad:*'
     NUMPAD_PLUS = 'numpad:+'
+
+    def is_printable(self):
+        return not (self.value.startswith('<') and self.value.endswith('>'))

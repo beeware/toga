@@ -67,7 +67,7 @@ def toga_key(keyCode, modifierFlags):
         41: modified_key(Key.COLON, shift=Key.SEMICOLON)(modifierFlags),
         42: Key.BACKSLASH,
         43: modified_key(Key.COMMA, shift=Key.LESS_THAN)(modifierFlags),
-        44: modified_key(Key.QUESTION, shift=Key.SLASH)(modifierFlags),
+        44: modified_key(Key.SLASH, shift=Key.QUESTION)(modifierFlags),
         45: Key.N,
         46: Key.M,
         47: modified_key(Key.FULL_STOP, shift=Key.GREATER_THAN)(modifierFlags),
