@@ -54,38 +54,6 @@ class Window:
                 item.Click += add_handler(cmd)
             self.toolbar_native.Items.Add(item)
 
-    def create_menus(self):
-        toga.Group.FILE.order = 0
-
-        # Only create the menu if the menu item index has been created.
-        if hasattr(self, '_menu_items'):
-            self._menu_items = {}
-            menubar = WinForms.MenuStrip()
-            submenu = None
-            for cmd in self.interface._app.commands:
-                if cmd == GROUP_BREAK:
-                    menubar.Items.Add(submenu)
-                    submenu = None
-                elif cmd == SECTION_BREAK:
-                    submenu.DropDownItems.Add('-')
-                else:
-                    if submenu is None:
-                        submenu = WinForms.ToolStripMenuItem(cmd.group.label)
-                    item = WinForms.ToolStripMenuItem(cmd.label)
-                    item.Click += add_handler(cmd)
-                    cmd._widgets.append(item)
-                    self._menu_items[item] = cmd
-                    # This line may appear redundant, but it triggers the logic
-                    # to force the enabled status on the underlying widgets.
-                    cmd.enabled = cmd.enabled
-                    submenu.DropDownItems.Add(item)
-            if submenu:
-                menubar.Items.Add(submenu)
-
-            # Set the menu for the app.
-            self.native.MainMenuStrip = menubar
-            self.native.Controls.Add(menubar)
-
     def set_position(self, position):
         pass
 
