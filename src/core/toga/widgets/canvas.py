@@ -40,6 +40,16 @@ class Canvas(Widget):
         self.drawing_objects.remove(drawing_object)
         self._impl.redraw()
 
+    def redraw(self):
+        """Force a redraw of the Canvas
+
+        The Canvas will be automatically redrawn after adding or remove a
+        drawing object. If you modify a drawing object, this method is used to
+        force a redraw.
+
+        """
+        self._impl.redraw()
+
     def create_context(self):
         """Create a new context to draw to
 
@@ -383,6 +393,10 @@ class MoveTo:
     def __call__(self, impl):
         impl.move_to(self.x, self.y)
 
+    def modify(self, x, y):
+        self.x = x
+        self.y = y
+
 
 class LineTo:
     def __init__(self, x, y):
@@ -391,6 +405,10 @@ class LineTo:
 
     def __call__(self, impl):
         impl.line_to(self.x, self.y)
+
+    def modify(self, x, y):
+        self.x = x
+        self.y = y
 
 
 class BezierCurveTo:
@@ -405,6 +423,14 @@ class BezierCurveTo:
     def __call__(self, impl):
         impl.bezier_curve_to(self.cp1x, self.cp1y, self.cp2x, self.cp2y, self.x, self.y)
 
+    def modify(self, cp1x, cp1y, cp2x, cp2y, x, y):
+        self.cp1x = cp1x
+        self.cp1y = cp1y
+        self.cp2x = cp2x
+        self.cp2y = cp2y
+        self.x = x
+        self.y = y
+
 
 class QuadraticCurveTo:
     def __init__(self, cpx, cpy, x, y):
@@ -415,6 +441,12 @@ class QuadraticCurveTo:
 
     def __call__(self, impl):
         impl.quadratic_curve_to(self.cpx, self.cpy, self.x, self.y)
+
+    def modify(self, cpx, cpy, x, y):
+        self.cpx = cpx
+        self.cpy = cpy
+        self.x = x
+        self.y = y
 
 
 class Ellipse:
@@ -434,6 +466,16 @@ class Ellipse:
             self.endangle, self.anticlockwise
         )
 
+    def modify(self, x, y, radiusx, radiusy, rotation=0.0, startangle=0.0, endangle=2 * pi, anticlockwise=False):
+        self.x = x
+        self.y = y
+        self.radiusx = radiusx
+        self.radiusy = radiusy
+        self.rotation = rotation
+        self.startangle = startangle
+        self.endangle = endangle
+        self.anticlockwise = anticlockwise
+
 
 class Arc:
     def __init__(self, x, y, radius, startangle=0.0, endangle=2 * pi, anticlockwise=False):
@@ -447,6 +489,14 @@ class Arc:
     def __call__(self, impl):
         impl.arc(self.x, self.y, self.radius, self.startangle, self.endangle, self.anticlockwise)
 
+    def modify(self, x, y, radius, startangle=0.0, endangle=2 * pi, anticlockwise=False):
+        self.x = x
+        self.y = y
+        self.radius = radius
+        self.startangle = startangle
+        self.endangle = endangle
+        self.anticlockwise = anticlockwise
+
 
 class Rect:
     def __init__(self, x, y, width, height):
@@ -458,6 +508,12 @@ class Rect:
     def __call__(self, impl):
         impl.rect(self.x, self.y, self.width, self.height)
 
+    def modify(self, x, y, width, height):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+
 
 class Fill:
     def __init__(self, color=None, fill_rule='nonzero', preserve=False):
@@ -468,6 +524,11 @@ class Fill:
     def __call__(self, impl):
         impl.fill(self.color, self.fill_rule, self.preserve)
 
+    def modify(self, color=None, fill_rule='nonzero', preserve=False):
+        self.color = color
+        self.fill_rule = fill_rule
+        self.preserve = preserve
+
 
 class Stroke:
     def __init__(self, color=None, width=2.0):
@@ -477,6 +538,10 @@ class Stroke:
     def __call__(self, impl):
         impl.stroke(self.color, self.width)
 
+    def modify(self, color=None, width=2.0):
+        self.color = color
+        self.width = width
+
 
 class Rotate:
     def __init__(self, rotate):
@@ -484,6 +549,9 @@ class Rotate:
 
     def __call__(self, impl):
         impl.rotate(self.rotate)
+
+    def modify(self, rotate):
+        self.rotate = rotate
 
 
 class Scale:
@@ -494,6 +562,10 @@ class Scale:
     def __call__(self, impl):
         impl.scale(self.sx, self.sy)
 
+    def modify(self, sx, sy):
+        self.sx = sx
+        self.sy = sy
+
 
 class Translate:
     def __init__(self, tx, ty):
@@ -502,6 +574,10 @@ class Translate:
 
     def __call__(self, impl):
         impl.translate(self.tx, self.ty)
+
+    def modify(self, tx, ty):
+        self.tx = tx
+        self.ty = ty
 
 
 class ResetTransform:
@@ -518,6 +594,12 @@ class WriteText:
 
     def __call__(self, impl):
         impl.write_text(self.text, self.x, self.y, self.font)
+
+    def modify(self, text, x, y, font):
+        self.text = text
+        self.x = x
+        self.y = y
+        self.font = font
 
 
 class NewPath:
