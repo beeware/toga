@@ -1,5 +1,5 @@
 import toga
-from toga.constants import ITALIC, OBLIQUE, SMALL_CAPS, BOLD, SYSTEM
+from toga.constants import ITALIC, OBLIQUE, SMALL_CAPS, BOLD, SYSTEM, CURSIVE
 from toga_gtk import font as gtk_font
 import unittest
 import gi
@@ -83,6 +83,12 @@ class TestFontImplementation(unittest.TestCase):
         self.impl = gtk_font.Font(self.interface)
         self.cache = gtk_font._FONT_CACHE
         self.assertEqual(self.cache[self.interface], self.impl.native)
+
+    def test_font_family_defaults_to_system(self):
+        self.interface = toga.Font(CURSIVE, self.font_size)
+        self.native = self.interface._impl.native
+        self.assertIn(CURSIVE, self.native.get_family())
+        self.assertIn(SYSTEM, self.native.get_family())
 
 
 if __name__ == '__main__':

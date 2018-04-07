@@ -1,4 +1,4 @@
-from toga.constants import ITALIC, OBLIQUE, SMALL_CAPS, BOLD
+from toga.constants import ITALIC, OBLIQUE, SMALL_CAPS, BOLD, SYSTEM
 import gi
 
 gi.require_version("Gtk", "3.0")
@@ -38,8 +38,11 @@ class Font:
             font = Pango.FontDescription()
 
             # Set font family
-            # TODO: Check whether font is installed in system
-            font.set_family(self.interface.family)
+            family = self.interface.family
+            if family is not SYSTEM:
+                family = '{}, {}'.format(family, SYSTEM)  # Default to system
+
+            font.set_family(family)
 
             # Set font size
             font.set_size(self.interface.size * Pango.SCALE)
