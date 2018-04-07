@@ -3,6 +3,7 @@ from .command import *
 from .constants import *
 from .color import hsl, hsla, rgb, rgba
 from .font import Font
+from .keys import Key
 
 # Widgets
 from .widgets.base import Widget
@@ -40,6 +41,8 @@ __all__ = [
     'Command', 'Group', 'GROUP_BREAK', 'SECTION_BREAK',
     # Fonts
     'Font',
+    # Keys
+    'Key',
 
     # Widgets
     'DetailedList',

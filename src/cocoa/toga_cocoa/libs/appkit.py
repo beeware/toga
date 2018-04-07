@@ -266,6 +266,12 @@ NSEndFunctionKey = 0xF72B
 NSPageUpFunctionKey = 0xF72C
 NSPageDownFunctionKey = 0xF72D
 
+NSEventModifierFlagCapsLock = 1 << 16
+NSEventModifierFlagShift = 1 << 17
+NSEventModifierFlagControl = 1 << 18
+NSEventModifierFlagOption = 1 << 19
+NSEventModifierFlagCommand = 1 << 20
+
 ######################################################################
 # NSFont.h
 NSFont = ObjCClass('NSFont')
