@@ -57,16 +57,8 @@ class Canvas(Widget):
         """
         self._impl.redraw()
 
-    def create_context(self):
-        """Create a new context to draw to
-
-        """
-        context = Context()
-        self._add(context.drawing_objects)
-        return context
-
     @contextmanager
-    def context(self, context):
+    def context(self):
         """The context of the Canvas to draw to
 
         Makes use of an existing context. The top left corner of the canvas must
@@ -77,8 +69,10 @@ class Canvas(Widget):
             context (:obj:`Context`): The context object to use
 
         """
+        context = Context()
+        self._add(context.drawing_objects)
         self.drawing_objects = context.drawing_objects
-        yield
+        yield context
         self.drawing_objects = self.context_root
 
     # Paths
