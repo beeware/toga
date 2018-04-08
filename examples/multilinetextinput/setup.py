@@ -68,8 +68,7 @@ setup(
         # Mobile deployments
         'ios': {
             'app_requires': [
-                '../../src/core',
-                '../../src/iOS',
+                'toga-ios',
             ]
         },
         'android': {
