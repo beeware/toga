@@ -21,10 +21,10 @@ class CanvasTests(TestCase):
     def test_basic_drawing(self):
         basic_context = self.testing_canvas.create_context()
         with self.testing_canvas.context(basic_context):
-            fill = self.testing_canvas.fill(color='rgba(0, 0.5, 0, 0.4)', preserve=True)
+            fill = self.testing_canvas.fill(color='rgba(0, 0, 0, 0.4)', preserve=True)
             with fill:
                 self.assertActionPerformedWith(self.testing_canvas, 'new path')
-                stroke = self.testing_canvas.stroke(color='rgba(0.25, 0.25, 0.25, 0.6)', line_width=1)
+                stroke = self.testing_canvas.stroke(color='rgba(0, 0, 0, 0.6)', line_width=1)
                 with stroke:
                     rect = self.testing_canvas.rect(-3, -3, 6, 6)
                     self.assertIn(rect, self.testing_canvas.drawing_objects)
@@ -59,14 +59,14 @@ class CanvasTests(TestCase):
         y = -10
         width = 200
         height = 200
-        fill1 = self.testing_canvas.fill(color='rgba(0.4, 0.4, 0.4, 1)')
+        fill1 = self.testing_canvas.fill(color='rgba(1, 1, 1, 1)')
         with fill1:
             rect = self.testing_canvas.rect(x, y, width, height)
             self.assertIn(rect, self.testing_canvas.drawing_objects)
             self.assertActionPerformedWith(self.testing_canvas, 'rect', x=10, y=-10, width=200, height=200)
         self.assertActionPerformedWith(self.testing_canvas, 'fill')
 
-        fill2 = self.testing_canvas.fill(color='rgba(0.7, 0.7, 0.7, 1)')
+        fill2 = self.testing_canvas.fill(color='rgba(1, 1, 1, 1)')
         with fill2:
             # Only works for check_size a power of 2
             for j in range(x & -check_size, height, check_size):
