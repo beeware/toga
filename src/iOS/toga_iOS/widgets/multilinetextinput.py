@@ -18,7 +18,7 @@ from toga_iOS.libs import (
 
 from .base import Widget
 
-class TogaMultilineTextView(UITextView):
+class TogaMultilineTextView(UITextView, protocols=[UITextViewDelegate]):
     @objc_method
     def pointInside_withEvent_(self, point: CGPoint, event) -> bool:
         # To keep consistency with non-mobile platforms, we'll resign the
@@ -31,7 +31,6 @@ class TogaMultilineTextView(UITextView):
             self.resignFirstResponder()
         return in_view
 
-class MultilineTextInputDelegate(NSObject, protocols=[UITextViewDelegate]):
     @objc_method
     def textViewShouldEndEditing_(self, text_view):
         return True
@@ -47,6 +46,7 @@ class MultilineTextInputDelegate(NSObject, protocols=[UITextViewDelegate]):
 class MultilineTextInput(Widget):
     def create(self):
         self.native = TogaMultilineTextView.alloc().init()
+        self.native.delegate = self.native
         
         # Placeholder isn't natively supported, so we create our
         # own
@@ -59,9 +59,7 @@ class MultilineTextInput(Widget):
         
         # Delegate needs to update the placeholder depending on
         # input, so we give it just that to avoid a retain cycle
-        self.delegate = MultilineTextInputDelegate.alloc().init()
-        self.native.delegate = self.delegate
-        self.delegate.placeholder_label = self.placeholder_label
+        self.native.placeholder_label = self.placeholder_label
         
         self.add_constraints()
 
