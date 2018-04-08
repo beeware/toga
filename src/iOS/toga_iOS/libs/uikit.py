@@ -344,6 +344,11 @@ class UIKeyboardType(Enum):
     ASCIICapableNumberPad = 11
 
 ######################################################################
+# UITextView.h
+UITextView = ObjCClass('UITextView')
+UITextViewDelegate = ObjCProtocol('UITextViewDelegate')
+
+######################################################################
 # UIView.h
 UIView = ObjCClass('UIView')
 
