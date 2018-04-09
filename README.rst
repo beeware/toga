@@ -80,6 +80,9 @@ To get a demonstration of the capabilities of Toga, run the following::
     $ pip install toga-demo
     $ toga-demo
 
+.. attention ::
+   toga-demo will not run on Windows.
+
 This will pop up a GUI window with some sample widgets.
 
 Documentation
