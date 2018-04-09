@@ -76,9 +76,6 @@ class Window:
             self.native.Controls.Add(self.toolbar_native)
             # Create the lookup table of menu items,
             # then force the creation of the menus.
-        self._menu_items = {}
-        if self.interface is self.interface.app._main_window:
-            self.create_menus()
         self.native.Controls.Add(widget.native)
 
         # Set the widget's viewport to be based on the window's content.

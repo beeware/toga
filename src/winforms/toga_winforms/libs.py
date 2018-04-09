@@ -23,8 +23,6 @@ def TextAlignment(value):
 
 def add_handler(cmd):
     action = cmd.action
-
     def handler(sender, event):
         return action(None)
-
     return handler

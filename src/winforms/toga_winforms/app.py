@@ -1,4 +1,4 @@
-from .libs import Threading, WinForms
+from .libs import Threading, WinForms, add_handler
 from .window import Window
 import toga
 import sys
