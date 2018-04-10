@@ -38,8 +38,6 @@ class Widget(Node):
         self._app = None
         self._impl = None
 
-        self._enabled = enabled
-
         self.factory = get_platform_factory(factory)
 
     def __repr__(self):

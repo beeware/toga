@@ -16,10 +16,6 @@ class Button(Widget):
         self.native.set_label(self.interface.label)
         self.rehint()
 
-    def set_enabled(self, value):
-        # self._impl.set_sensitive(value)
-        self.interface.factory.not_implemented('Button.set_enabled()')
-
     def set_background_color(self, value):
         self.interface.factory.not_implemented('Button.set_background_color()')
 
