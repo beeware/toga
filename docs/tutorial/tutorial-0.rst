@@ -54,7 +54,7 @@ We can set style properties of the button::
 
         button.style.padding = 50
 
-What we've done here is say that the button with have a padding of 50 pixels
+What we've done here is say that the button will have a padding of 50 pixels
 on all sides. If we wanted to define padding of 20 pixels on top of the
 button, we could have defined ``padding_top = 20``, or we could have specified
 the ``padding = (20, 50, 50, 50)``.
