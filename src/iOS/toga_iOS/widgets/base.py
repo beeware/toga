@@ -38,7 +38,15 @@ class Widget:
     ### APPLICATOR
 
     def set_bounds(self, x, y, width, height):
-        self.constraints.update(x, y, width, height)
+        if self.container:
+            viewport = self.container.viewport
+        else:
+            viewport = self.viewport
+
+        self.constraints.update(
+            x, y + viewport.statusbar_height,
+            width, height
+        )
 
     def set_alignment(self, alignment):
         pass

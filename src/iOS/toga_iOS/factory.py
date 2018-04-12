@@ -11,12 +11,12 @@ from .widgets.icon import Icon
 from .widgets.image import *
 from .widgets.imageview import *
 from .widgets.label import Label
-# from .widgets.multilinetextinput import *
+from .widgets.multilinetextinput import *
 from .widgets.numberinput import NumberInput
 # from .widgets.optioncontainer import *
 from .widgets.passwordinput import *
-# from .widgets.progressbar import *
-# from .widgets.scrollcontainer import *
+from .widgets.progressbar import *
+from .widgets.scrollcontainer import *
 from .widgets.selection import Selection
 from .widgets.slider import *
 # from .widgets.splitcontainer import *
@@ -48,11 +48,11 @@ __all__ = [
     'Image',
     'ImageView',
     'Label',
-    # 'MultilineTextInput',
+    'MultilineTextInput',
     'NumberInput',
     # 'OptionContainer',
     'PasswordInput',
-    # 'ProgressBar',
+    'ProgressBar',
     # 'ScrollContainer',
     'Selection',
     'Slider',

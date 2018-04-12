@@ -1,12 +1,14 @@
 from ctypes import c_int
+from decimal import Decimal
+
 from rubicon.objc import objc_method, CGSize, NSObject, SEL, NSRange, send_message
 from travertino.size import at_least
 
 from toga_iOS.libs import(
-    NSTextAlignment, 
-    UIControlEventEditingChanged, 
-    UIKeyboardType, 
-    UITextBorderStyle, 
+    NSTextAlignment,
+    UIControlEventEditingChanged,
+    UIKeyboardType,
+    UITextBorderStyle,
     UITextField
 )
 
@@ -16,6 +18,7 @@ from .base import Widget
 class TogaNumericTextField(UITextField):
     @objc_method
     def textFieldDidChange_(self, notification) -> None:
+        self.interface._value = Decimal(self.text).quantize(self.interface.step)
         if self.interface.on_change:
             self.interface.on_change(self.interface)
 
@@ -25,7 +28,7 @@ class TogaNumericTextField(UITextField):
         # otherwise, accept any number, or '.' (as long as this is the first one)
         if (len(chars) == 0
                     or chars.isdigit()
-                    or (chars == '.' and '.' not in self.interface.value)
+                    or (chars == '.' and '.' not in self.text)
                 ):
             return True
         return False

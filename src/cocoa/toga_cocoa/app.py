@@ -17,7 +17,7 @@ class MainWindow(Window):
 class AppDelegate(NSObject):
     @objc_method
     def applicationDidFinishLaunching_(self, notification):
-        self.interface.native.activateIgnoringOtherApps(True)
+        self.native.activateIgnoringOtherApps(True)
 
     @objc_method
     def applicationOpenUntitledFile_(self, sender) -> bool:
@@ -33,7 +33,7 @@ class AppDelegate(NSObject):
         for filetype in self.interface.document_types:
             fileTypes.addObject(filetype)
 
-        NSDocumentController.sharedDocumentController().runModalOpenPanel(panel, forTypes=fileTypes)
+        NSDocumentController.sharedDocumentController.runModalOpenPanel(panel, forTypes=fileTypes)
 
         # print("Untitled File opened?", panel.URLs)
         self.application_openFiles_(None, panel.URLs)
@@ -70,7 +70,7 @@ class AppDelegate(NSObject):
 
     @objc_method
     def selectMenuItem_(self, sender) -> None:
-        cmd = self.interface._menu_items[sender]
+        cmd = self.interface._impl._menu_items[sender]
         if cmd.action:
             cmd.action(None)
 
@@ -94,7 +94,8 @@ class App:
         self.resource_path = os.path.dirname(os.path.dirname(NSBundle.mainBundle.bundlePath))
 
         appDelegate = AppDelegate.alloc().init()
-        appDelegate.interface = self
+        appDelegate.interface = self.interface
+        appDelegate.native = self.native
         self.native.setDelegate_(appDelegate)
 
         app_name = self.interface.name

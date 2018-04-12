@@ -227,6 +227,7 @@ NSDocument = ObjCClass('NSDocument')
 ######################################################################
 # NSDocumentController.h
 NSDocumentController = ObjCClass('NSDocumentController')
+NSDocumentController.declare_class_property('sharedDocumentController')
 
 ######################################################################
 # NSEvent.h
@@ -264,6 +265,12 @@ NSBeginFunctionKey = 0xF72A
 NSEndFunctionKey = 0xF72B
 NSPageUpFunctionKey = 0xF72C
 NSPageDownFunctionKey = 0xF72D
+
+NSEventModifierFlagCapsLock = 1 << 16
+NSEventModifierFlagShift = 1 << 17
+NSEventModifierFlagControl = 1 << 18
+NSEventModifierFlagOption = 1 << 19
+NSEventModifierFlagCommand = 1 << 20
 
 ######################################################################
 # NSFont.h

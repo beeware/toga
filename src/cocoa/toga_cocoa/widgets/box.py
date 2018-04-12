@@ -21,6 +21,7 @@ class TogaView(NSView):
 class Box(Widget):
     def create(self):
         self.native = TogaView.alloc().init()
+        self.native.wantsLayer = True
 
         # Add the layout constraints
         self.add_constraints()

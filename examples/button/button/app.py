@@ -8,7 +8,7 @@ class ExampleButtonApp(toga.App):
     def startup(self):
         # Window class
         #   Main window of the application with title and size
-        self.main_window = toga.MainWindow(self.name, size=(200, 200))
+        self.main_window = toga.MainWindow(title=self.name, size=(200, 200))
 
         # Common style of the inner boxes
         style_inner_box = Pack(direction=ROW)
@@ -86,5 +86,5 @@ class ExampleButtonApp(toga.App):
 def main():
     # Application class
     #   App name and namespace
-    app = ExampleButtonApp('Buttona', 'org.pybee.widgets.buttons')
+    app = ExampleButtonApp('Button', 'org.pybee.widgets.buttons')
     return app
