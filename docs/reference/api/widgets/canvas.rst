@@ -51,10 +51,10 @@ the canvas:
     canvas = toga.Canvas(style=Pack(flex=1))
     box = toga.Box(children=[canvas])
     with canvas.context() as hero:
-        with hero.fill():
-            hero.arc(50, 50, 15)
-        with hero.stroke():
-            hero.rect(50, 50, 15, 15)
+        with hero.fill() as body:
+            body.arc(50, 50, 15)
+        with hero.stroke() as outline:
+            outline.rect(50, 50, 15, 15)
 
     hero.translate(10, 0)
 
