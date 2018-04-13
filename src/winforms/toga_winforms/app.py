@@ -51,12 +51,12 @@ class App:
                     if submenu is None:
                         submenu = WinForms.ToolStripMenuItem(cmd.group.label)
                     item = WinForms.ToolStripMenuItem(cmd.label)
-                    item.Click += add_handler(cmd)
+                    if cmd.action:
+                        item.Click += add_handler(cmd)
+                    else:
+                        item.Enabled = False
                     cmd._widgets.append(item)
                     self._menu_items[item] = cmd
-                    # This line may appear redundant, but it triggers the logic
-                    # to force the enabled status on the underlying widgets.
-                    cmd.enabled = cmd.enabled
                     submenu.DropDownItems.Add(item)
             if submenu:
                 menubar.Items.Add(submenu)
