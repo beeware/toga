@@ -39,7 +39,7 @@ class Font:
 
             # Set font family
             family = self.interface.family
-            if family is not SYSTEM:
+            if family != SYSTEM:
                 family = '{}, {}'.format(family, SYSTEM)  # Default to system
 
             font.set_family(family)
@@ -48,17 +48,17 @@ class Font:
             font.set_size(self.interface.size * Pango.SCALE)
 
             # Set font style
-            if self.interface.style is ITALIC:
+            if self.interface.style == ITALIC:
                 font.set_style(Pango.Style.ITALIC)
-            elif self.interface.style is OBLIQUE:
+            elif self.interface.style == OBLIQUE:
                 font.set_style(Pango.Style.OBLIQUE)
 
             # Set font variant
-            if self.interface.variant is SMALL_CAPS:
+            if self.interface.variant == SMALL_CAPS:
                 font.set_variant(Pango.Variant.SMALL_CAPS)
 
             # Set font weight
-            if self.interface.weight is BOLD:
+            if self.interface.weight == BOLD:
                 font.set_weight(Pango.Weight.BOLD)
 
             _FONT_CACHE[self.interface] = font
