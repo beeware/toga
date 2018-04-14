@@ -1,4 +1,3 @@
-import toga
 from toga import GROUP_BREAK, SECTION_BREAK
 from travertino.layout import Viewport
 
@@ -66,10 +65,16 @@ class Window:
     @property
     def vertical_shift(self):
         # vertical shift is the toolbar height or 0
+        result = 0
         try:
-            return self.native.interface._impl.toolbar_native.Height
+            result += self.native.interface._impl.toolbar_native.Height
         except AttributeError:
-            return 0
+            pass
+        try:
+            result += self.native.interface._impl.native.MainMenuStrip.Height
+        except AttributeError:
+            pass
+        return result
 
     def set_content(self, widget):
         if self.toolbar_native:

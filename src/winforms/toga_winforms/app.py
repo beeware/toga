@@ -1,7 +1,9 @@
+import sys
+
+import toga
+
 from .libs import Threading, WinForms, add_handler
 from .window import Window
-import toga
-import sys
 
 
 class MainWindow(Window):
@@ -60,10 +62,9 @@ class App:
                     submenu.DropDownItems.Add(item)
             if submenu:
                 menubar.Items.Add(submenu)
-
             self.interface.main_window._impl.native.Controls.Add(menubar)
-            
-
+            self.interface.main_window._impl.native.MainMenuStrip = menubar
+        self.interface.main_window.content.refresh()
 
     def open_document(self, fileURL):
         '''Add a new document to this app.'''
