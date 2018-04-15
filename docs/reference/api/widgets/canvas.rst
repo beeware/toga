@@ -75,69 +75,52 @@ Lower-Level Classes
 
 .. autoclass:: toga.widgets.canvas.Context
    :members:
-   :inherited-members:
 
 .. autoclass:: toga.widgets.canvas.Fill
    :members:
-   :inherited-members:
 
 .. autoclass:: toga.widgets.canvas.Stroke
    :members:
-   :inherited-members:
 
 .. autoclass:: toga.widgets.canvas.ClosedPath
    :members:
-   :inherited-members:
 
 .. autoclass:: toga.widgets.canvas.MoveTo
    :members:
-   :inherited-members:
 
 .. autoclass:: toga.widgets.canvas.LineTo
    :members:
-   :inherited-members:
 
 .. autoclass:: toga.widgets.canvas.BezierCurveTo
    :members:
-   :inherited-members:
 
 .. autoclass:: toga.widgets.canvas.QuadraticCurveTo
    :members:
-   :inherited-members:
 
 .. autoclass:: toga.widgets.canvas.Ellipse
    :members:
-   :inherited-members:
 
 .. autoclass:: toga.widgets.canvas.Arc
    :members:
-   :inherited-members:
 
 .. autoclass:: toga.widgets.canvas.Arc
    :members:
-   :inherited-members:
 
 .. autoclass:: toga.widgets.canvas.Rect
    :members:
-   :inherited-members:
 
 .. autoclass:: toga.widgets.canvas.Rotate
    :members:
-   :inherited-members:
 
 .. autoclass:: toga.widgets.canvas.Scale
    :members:
-   :inherited-members:
 
 .. autoclass:: toga.widgets.canvas.Translate
    :members:
-   :inherited-members:
 
 .. autoclass:: toga.widgets.canvas.WriteText
    :members:
-   :inherited-members:
 
 .. autoclass:: toga.widgets.canvas.NewPath
    :members:
-   :inherited-members:
 
