@@ -5,29 +5,87 @@ from .base import Widget
 from ..color import color as parse_color
 
 
-class Canvas(Widget):
-    """Create new canvas
+class InterfaceMixin:
+    def __init__(self, **kwargs):  # kwargs used to support multiple inheritance
+        super().__init__(**kwargs)
 
-    Args:
-        id (str):  An identifier for this widget.
-        style (:obj:`Style`): An optional style object. If no
-            style is provided then a new one will be created for the widget.
-        factory (:obj:`module`): A python module that is capable to return a
-            implementation of this class with the same name. (optional &
-            normally not needed)
-    """
+        self.drawing_objects = []
+        self._parent_context = None
+        self._child_context = None
+        self._canvas = None
+        self._children_contexts = None
 
-    def __init__(self, id=None, style=None, factory=None):
-        super().__init__(id=id, style=style, factory=factory)
+    ###########################################################################
+    # Private methods to keep track of the canvas, automatically redraw it
+    ###########################################################################
 
-        # Create a platform specific implementation of Canvas
-        self._impl = self.factory.Canvas(interface=self)
+    @staticmethod
+    def __set_canvas(node, canvas):
+        """Propagate a canvas node change through a tree of contexts.
 
-        self.context_root = []
-        self._impl.set_context_root(self.context_root)
-        self.drawing_objects = self.context_root
+        Args:
+            node: The context node to add.
+            canvas: :class:`ResetTransform <ResetTransform>` object.
 
-    def _add(self, drawing_object):
+        """
+        node._canvas = canvas
+        for child in node.__children_contexts:
+            node.__set_canvas(child, canvas)
+
+    @property
+    def __canvas(self):
+        """The canvas of the tree containing this context.
+
+        Returns:
+            The canvas node. Returns self if this node *is* the canvas node.
+
+        """
+        return self._canvas if self._canvas else self
+
+    @property
+    def __parent_context(self):
+        """ The parent of this node.
+
+        Returns:
+            The parent of this node. Returns None if this node is the canvas node.
+
+        """
+        return self._parent_context
+
+    @property
+    def __children_contexts(self):
+        """The children of this node.
+
+        This *always* returns a list, even if the node is a non-context drawing
+        object and cannot have children.
+
+        Returns:
+            A list of the children contexts for this widget.
+
+        """
+        if self._children_contexts is None:
+            return []
+        else:
+            return self._children_contexts
+
+    def __add_child(self, child):
+        """Add a context as a child of this one.
+
+        Args:
+            child: A context to add as a child to this context.
+
+        Raises:
+            ValueError: If this node is not a context, and cannot have children.
+
+        """
+        if self._children_contexts is None:
+            raise ValueError('Cannot add children')
+
+        self._children_contexts.append(child)
+        child._parent_context = self
+        self.__set_canvas(child, self.__canvas)
+
+    def __add_drawing_object(self, drawing_object):
         """A drawing object to add to the drawing object stack on a context
 
         Args:
@@ -35,19 +93,9 @@ class Canvas(Widget):
 
         """
         self.drawing_objects.append(drawing_object)
-        self._impl.redraw()
+        self.__redraw()
 
-    def remove(self, drawing_object):
-        """Remove a drawing object
-        
-        Args:
-            drawing_object (:obj:'Drawing Object'): The drawing object to remove 
-
-        """
-        self.drawing_objects.remove(drawing_object)
-        self._impl.redraw()
-
-    def redraw(self):
+    def __redraw(self):
         """Force a redraw of the Canvas
 
         The Canvas will be automatically redrawn after adding or remove a
@@ -55,7 +103,25 @@ class Canvas(Widget):
         force a redraw.
 
         """
-        self._impl.redraw()
+        self._canvas._impl.redraw()
+
+    ###########################################################################
+    # Operations on drawing objects
+    ###########################################################################
+
+    def remove(self, drawing_object):
+        """Remove a drawing object
+
+        Args:
+            drawing_object (:obj:'Drawing Object'): The drawing object to remove
+
+        """
+        self.drawing_objects.remove(drawing_object)
+        self.__redraw()
+
+    ###########################################################################
+    # Contexts to draw with
+    ###########################################################################
 
     @contextmanager
     def context(self):
@@ -70,10 +136,9 @@ class Canvas(Widget):
 
         """
         context = Context()
-        self._add(context.drawing_objects)
-        self.drawing_objects = context.drawing_objects
+        self.__add_drawing_object(context.drawing_objects)
+        self.__add_child(context)
         yield context
-        self.drawing_objects = self.context_root
 
     @contextmanager
     def fill(self, color=None, fill_rule='nonzero', preserve=False):
@@ -93,14 +158,16 @@ class Canvas(Widget):
             :class:`Fill <Fill>` object.
 
         """
-        new_path = NewPath()
-        self._add(new_path)
         if fill_rule is 'evenodd':
             fill = Fill(color, fill_rule, preserve)
         else:
             fill = Fill(color, 'nonzero', preserve)
+        self.__add_drawing_object(fill.drawing_objects)
+        self.__add_child(fill)
+        new_path = NewPath()
+        fill.__add_drawing_object(new_path)
         yield fill
-        self._add(fill)
+        self.__add_drawing_object(fill)
 
     @contextmanager
     def stroke(self, color=None, line_width=2.0):
@@ -116,8 +183,10 @@ class Canvas(Widget):
 
         """
         stroke = Stroke(color, line_width)
+        self.__add_drawing_object(stroke.drawing_objects)
+        self.__add_child(stroke)
         yield stroke
-        self._add(stroke)
+        self.__add_drawing_object(stroke)
 
     @contextmanager
     def closed_path(self, x, y):
@@ -132,12 +201,16 @@ class Canvas(Widget):
             :class:`ClosedPath <ClosedPath>` object.
 
         """
-        self.move_to(x, y)
         closed_path = ClosedPath(x, y)
+        self.__add_drawing_object(closed_path.drawing_objects)
+        self.__add_child(closed_path)
+        closed_path.move_to(x, y)
         yield closed_path
-        self._add(closed_path)
+        self.__add_drawing_object(closed_path)
 
-    # Paths
+    ###########################################################################
+    # Paths to draw with
+    ###########################################################################
 
     def move_to(self, x, y):
         """Constructs and returns a :class:`MoveTo <MoveTo>`.
@@ -151,7 +224,7 @@ class Canvas(Widget):
 
         """
         move_to = MoveTo(x, y)
-        self._add(move_to)
+        self.__add_drawing_object(move_to)
         return move_to
 
     def line_to(self, x, y):
@@ -166,7 +239,7 @@ class Canvas(Widget):
 
         """
         line_to = LineTo(x, y)
-        self._add(line_to)
+        self.__add_drawing_object(line_to)
         return line_to
 
     def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y):
@@ -185,7 +258,7 @@ class Canvas(Widget):
 
         """
         bezier_curve_to = BezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y)
-        self._add(bezier_curve_to)
+        self.__add_drawing_object(bezier_curve_to)
         return bezier_curve_to
 
     def quadratic_curve_to(self, cpx, cpy, x, y):
@@ -202,7 +275,7 @@ class Canvas(Widget):
 
         """
         quadratic_curve_to = QuadraticCurveTo(cpx, cpy, x, y)
-        self._add(quadratic_curve_to)
+        self.__add_drawing_object(quadratic_curve_to)
         return quadratic_curve_to
 
     def arc(self, x, y, radius, startangle=0.0, endangle=2 * pi, anticlockwise=False):
@@ -226,7 +299,7 @@ class Canvas(Widget):
 
         """
         arc = Arc(x, y, radius, startangle, endangle, anticlockwise)
-        self._add(arc)
+        self.__add_drawing_object(arc)
         return arc
 
     def ellipse(self, x, y, radiusx, radiusy, rotation=0.0, startangle=0.0, endangle=2 * pi, anticlockwise=False):
@@ -250,7 +323,7 @@ class Canvas(Widget):
 
         """
         ellipse = Ellipse(x, y, radiusx, radiusy, rotation, startangle, endangle, anticlockwise)
-        self._add(ellipse)
+        self.__add_drawing_object(ellipse)
         return ellipse
 
     def rect(self, x, y, width, height):
@@ -267,10 +340,12 @@ class Canvas(Widget):
 
         """
         rect = Rect(x, y, width, height)
-        self._add(rect)
+        self.__add_drawing_object(rect)
         return rect
 
-    # Transformations
+    ###########################################################################
+    # Transformations of a context
+    ###########################################################################
 
     def rotate(self, radians):
         """Constructs and returns a :class:`Rotate <Rotate>`.
@@ -283,7 +358,7 @@ class Canvas(Widget):
 
         """
         rotate = Rotate(radians)
-        self._add(rotate)
+        self.__add_drawing_object(rotate)
         return rotate
 
     def scale(self, sx, sy):
@@ -298,7 +373,7 @@ class Canvas(Widget):
 
         """
         scale = Scale(sx, sy)
-        self._add(scale)
+        self.__add_drawing_object(scale)
         return scale
 
     def translate(self, tx, ty):
@@ -313,7 +388,7 @@ class Canvas(Widget):
 
         """
         translate = Translate(tx, ty)
-        self._add(translate)
+        self.__add_drawing_object(translate)
         return translate
 
     def reset_transform(self):
@@ -324,10 +399,12 @@ class Canvas(Widget):
 
         """
         reset_transform = ResetTransform()
-        self._add(reset_transform)
+        self.__add_drawing_object(reset_transform)
         return reset_transform
 
-    # Text
+    ###########################################################################
+    # Text drawing
+    ###########################################################################
 
     def write_text(self, text, x=0, y=0, font=None):
         """Constructs and returns a :class:`WriteText <WriteText>`.
@@ -347,11 +424,36 @@ class Canvas(Widget):
 
         """
         write_text = WriteText(text, x, y, font)
-        self._add(write_text)
+        self.__add_drawing_object(write_text)
         return write_text
 
 
-class Context:
+class Canvas(InterfaceMixin, Widget):
+    """Create new canvas
+
+    Args:
+        id (str):  An identifier for this widget.
+        style (:obj:`Style`): An optional style object. If no
+            style is provided then a new one will be created for the widget.
+        factory (:obj:`module`): A python module that is capable to return a
+            implementation of this class with the same name. (optional &
+            normally not needed)
+    """
+
+    def __init__(self, id=None, style=None, factory=None):
+        super().__init__(id=id, style=style, factory=factory)
+
+        self._canvas = self
+
+        # Create a platform specific implementation of Canvas
+        self._impl = self.factory.Canvas(interface=self)
+        self._impl.set_context_root(self.drawing_objects)
+
+        # Canvas can have children contexts
+        self._children_contexts = []
+
+
+class Context(InterfaceMixin, object):
     """The user-created :class:`Context <Context>` drawing object to populate a
     drawing with visual context.
 
@@ -361,7 +463,9 @@ class Context:
     """
     def __init__(self):
         super().__init__()
-        self.drawing_objects = []
+
+        # Context can have children contexts
+        self._children_contexts = []
 
     def __call__(self, impl):
         """Allow the implementation to callback the Class instance.
@@ -370,7 +474,7 @@ class Context:
         impl.context()
 
 
-class Fill:
+class Fill(InterfaceMixin, object):
     """A user-created :class:`Fill <Fill>` drawing object for a fill context.
 
     A drawing object that fills the current path according to the current
@@ -385,12 +489,16 @@ class Fill:
 
     """
     def __init__(self, color=None, fill_rule='nonzero', preserve=False):
+        super().__init__()
         if color:
             self.color = parse_color(color)
         else:
             self.color = None
         self.fill_rule = fill_rule
         self.preserve = preserve
+
+        # Fill context can have children contexts
+        self._children_contexts = []
 
     def __call__(self, impl):
         """Allow the implementation to callback the Class instance.
@@ -417,7 +525,7 @@ class Fill:
         self.preserve = preserve
 
 
-class Stroke:
+class Stroke(InterfaceMixin, object):
     """A user-created :class:`Stroke <Stroke>` drawing object for a stroke context.
 
     A drawing operator that strokes the current path according to the
@@ -430,11 +538,15 @@ class Stroke:
 
     """
     def __init__(self, color=None, width=2.0):
+        super().__init__()
         if color:
             self.color = parse_color(color)
         else:
             self.color = None
         self.width = width
+
+        # Stroke context can have children contexts
+        self._children_contexts = []
 
     def __call__(self, impl):
         """Allow the implementation to callback the Class instance.
@@ -458,7 +570,7 @@ class Stroke:
         self.width = width
 
 
-class ClosedPath:
+class ClosedPath(InterfaceMixin, object):
     """A user-created :class:`ClosedPath <ClosedPath>` drawing object for a
     closed path context.
 
@@ -470,8 +582,12 @@ class ClosedPath:
 
     """
     def __init__(self, x, y):
+        super().__init__()
         self.x = x
         self.y = y
+
+        # ClosedPath context can have children contexts
+        self._children_contexts = []
 
     def __call__(self, impl):
         """Allow the implementation to callback the Class instance.
