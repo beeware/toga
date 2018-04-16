@@ -1,3 +1,4 @@
+from builtins import id as identifier
 from contextlib import contextmanager
 from math import pi
 
@@ -442,15 +443,13 @@ class Canvas(InterfaceMixin, Widget):
 
     def __init__(self, id=None, style=None, factory=None):
         super().__init__(id=id, style=style, factory=factory)
-
         self._canvas = self
 
         # Create a platform specific implementation of Canvas
         self._impl = self.factory.Canvas(interface=self)
-        self._impl.set_context_root(self.drawing_objects)
 
-        # Canvas can have children contexts
-        self._children_contexts = []
+        self._impl.set_context_root(self.drawing_objects)
+        self._children_contexts = []  # Canvas can have children contexts
 
 
 class Context(InterfaceMixin, object):
@@ -463,9 +462,10 @@ class Context(InterfaceMixin, object):
     """
     def __init__(self):
         super().__init__()
+        self._children_contexts = []  # Context can have children contexts
 
-        # Context can have children contexts
-        self._children_contexts = []
+    def __repr__(self):
+        return '{} at {} ()'.format(self.__class__, identifier(self))
 
     def __call__(self, impl):
         """Allow the implementation to callback the Class instance.
@@ -496,9 +496,12 @@ class Fill(InterfaceMixin, object):
             self.color = None
         self.fill_rule = fill_rule
         self.preserve = preserve
+        self._children_contexts = []  # Fill context can have children contexts
 
-        # Fill context can have children contexts
-        self._children_contexts = []
+    def __repr__(self):
+        return '{} at {} (color={}, fill_rule={}, preserve={})'.format(
+            self.__class__, identifier(self), self.color, self.fill_rule, self.preserve
+        )
 
     def __call__(self, impl):
         """Allow the implementation to callback the Class instance.
@@ -544,9 +547,10 @@ class Stroke(InterfaceMixin, object):
         else:
             self.color = None
         self.width = width
+        self._children_contexts = []  # Stroke context can have children contexts
 
-        # Stroke context can have children contexts
-        self._children_contexts = []
+    def __repr__(self):
+        return '{} at {} (color={}, width={})'.format(self.__class__, identifier(self), self.color, self.width)
 
     def __call__(self, impl):
         """Allow the implementation to callback the Class instance.
@@ -589,6 +593,9 @@ class ClosedPath(InterfaceMixin, object):
         # ClosedPath context can have children contexts
         self._children_contexts = []
 
+    def __repr__(self):
+        return '{} at {} (x={}, y={})'.format(self.__class__, identifier(self), self.x, self.y)
+
     def __call__(self, impl):
         """Allow the implementation to callback the Class instance.
 
@@ -610,6 +617,9 @@ class MoveTo:
     def __init__(self, x, y):
         self.x = x
         self.y = y
+
+    def __repr__(self):
+        return '{} at {} (x={}, y={})'.format(self.__class__, identifier(self), self.x, self.y)
 
     def __call__(self, impl):
         """Allow the implementation to callback the Class instance.
@@ -644,6 +654,9 @@ class LineTo:
     def __init__(self, x, y):
         self.x = x
         self.y = y
+
+    def __repr__(self):
+        return '{} at {} (x={}, y={})'.format(self.__class__, identifier(self), self.x, self.y)
 
     def __call__(self, impl):
         """Allow the implementation to callback the Class instance.
@@ -688,6 +701,11 @@ class BezierCurveTo:
         self.cp2y = cp2y
         self.x = x
         self.y = y
+
+    def __repr__(self):
+        return '{} at {} (cp1x={}, cp1y={}, cp2x={}, cp2y={}, x={}, y={})'.format(
+            self.__class__, identifier(self), self.cp1x, self.cp1y, self.cp2x, self.cp2y, self.x, self.y
+        )
 
     def __call__(self, impl):
         """Allow the implementation to callback the Class instance.
@@ -736,6 +754,11 @@ class QuadraticCurveTo:
         self.cpy = cpy
         self.x = x
         self.y = y
+
+    def __repr__(self):
+        return '{} at {} (cpx={}, cpy={}, x={}, y={})'.format(
+            self.__class__, identifier(self), self.cpx, self.cpy, self.x, self.y
+        )
 
     def __call__(self, impl):
         """Allow the implementation to callback the Class instance.
@@ -789,6 +812,11 @@ class Ellipse:
         self.startangle = startangle
         self.endangle = endangle
         self.anticlockwise = anticlockwise
+
+    def __repr__(self):
+        return '{} at {} (x={}, y={}, radiusx={}, radiusy={}, rotation={}, startangle={}, endangle={}, anticlockwise)' \
+            .format(self.__class__, identifier(self), self.x, self.y, self.radiusx, self.radiusy, self.rotation,
+                    self.startangle, self.endangle, self.anticlockwise)
 
     def __call__(self, impl):
         """Allow the implementation to callback the Class instance.
@@ -854,6 +882,12 @@ class Arc:
         self.endangle = endangle
         self.anticlockwise = anticlockwise
 
+    def __repr__(self):
+        return '{} at {} (x={}, y={}, radius={}, startangle={}, endangle={}, anticlockwise)'.format(
+            self.__class__, identifier(self), self.x, self.y, self.radius, self.startangle,
+            self.endangle, self.anticlockwise
+        )
+
     def __call__(self, impl):
         """Allow the implementation to callback the Class instance.
 
@@ -906,6 +940,11 @@ class Rect:
         self.width = width
         self.height = height
 
+    def __repr__(self):
+        return '{} at {} (x={}, y={}, width={}, height={})'.format(
+            self.__class__, identifier(self), self.x, self.y, self.width, self.height
+        )
+
     def __call__(self, impl):
         """Allow the implementation to callback the Class instance.
 
@@ -944,6 +983,9 @@ class Rotate:
     def __init__(self, radians):
         self.radians = radians
 
+    def __repr__(self):
+        return '{} at {} (radians={})'.format(self.__class__, identifier(self), self.radians)
+
     def __call__(self, impl):
         """Allow the implementation to callback the Class instance.
 
@@ -975,6 +1017,9 @@ class Scale:
     def __init__(self, sx, sy):
         self.sx = sx
         self.sy = sy
+
+    def __repr__(self):
+        return '{} at {} (sx={}, sy={})'.format(self.__class__, identifier(self), self.sx, self.sy)
 
     def __call__(self, impl):
         """Allow the implementation to callback the Class instance.
@@ -1012,6 +1057,9 @@ class Translate:
         self.tx = tx
         self.ty = ty
 
+    def __repr__(self):
+        return '{} at {} (tx={}, ty={})'.format(self.__class__, identifier(self), self.tx, self.ty)
+
     def __call__(self, impl):
         """Allow the implementation to callback the Class instance.
 
@@ -1040,6 +1088,9 @@ class ResetTransform:
     unit.
 
     """
+    def __repr__(self):
+        return '{} at {} ()'.format(self.__class__, identifier(self))
+
     def __call__(self, impl):
         """Allow the implementation to callback the Class instance.
 
@@ -1067,6 +1118,11 @@ class WriteText:
         self.y = y
         self.font = font
 
+    def __repr__(self):
+        return '{} at {} (text={}, x={}, y={}, font={})'.format(
+            self.__class__, identifier(self), self.text, self.x, self.y, self.font
+        )
+
     def __call__(self, impl):
         """Allow the implementation to callback the Class instance.
 
@@ -1093,6 +1149,9 @@ class NewPath:
     """A user-created :class:`NewPath <NewPath>` to add a new path.
 
     """
+    def __repr__(self):
+        return '{} at {} ()'.format(self.__class__, identifier(self))
+
     def __call__(self, impl):
         """Allow the implementation to callback the Class instance.
 
