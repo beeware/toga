@@ -8,7 +8,7 @@ class ImageView(Widget):
     def create(self):
         self.native = WinForms.PictureBox()
         self.native.interface = self.interface
-        self.native.BorderStyle = WinForms.BorderStyle.Fixed3D
+        self.native.SizeMode = WinForms.PictureBoxSizeMode.CenterImage
 
     def get_image(self):
         return self.native.image
@@ -21,7 +21,6 @@ class ImageView(Widget):
             else:
                 self.native.Image = image._impl.native
         else:
-            # When do we have no image here???
             width = 0
             height = 0
             if self.interface.style.width:

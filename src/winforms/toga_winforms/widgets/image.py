@@ -1,4 +1,4 @@
-from toga_winforms.libs import *
+from toga_winforms.libs import WinImage
 
 
 class Image(object):
@@ -7,10 +7,7 @@ class Image(object):
         self.interface.impl = self
 
     def load_image(self, path):
-        print('[Image.py] Loading image, path: ', path)
         if path.startswith('http://') or path.startswith('https://'):
-            print('[Image.py] Temporarily image is the path')
             self.native = path
-            print('[Image.py] native is: ', self.native)
         else:
             self.native = WinImage.FromFile(path)
