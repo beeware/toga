@@ -9,5 +9,7 @@ Background
 
    philosophy
    faq
+   releases
    commands
    data-sources
+   roadmap

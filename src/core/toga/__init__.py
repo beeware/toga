@@ -3,6 +3,7 @@ from .command import *
 from .constants import *
 from .color import hsl, hsla, rgb, rgba
 from .font import Font
+from .keys import Key
 
 # Widgets
 from .widgets.base import Widget
@@ -35,16 +36,18 @@ __all__ = [
     # Applications
     'App', 'MainWindow',
     # Colors
-    'hsv', 'hsva', 'rgb', 'rgba',
+    'hsl', 'hsla', 'rgb', 'rgba',
     # Commands
     'Command', 'Group', 'GROUP_BREAK', 'SECTION_BREAK',
     # Fonts
     'Font',
+    # Keys
+    'Key',
 
     # Widgets
-    'DetailedList'
+    'DetailedList',
     'Window',
-    'Widget'
+    'Widget',
     'Box',
     'Button',
     'Canvas',
@@ -65,7 +68,7 @@ __all__ = [
     'Table',
     'TextInput',
     'Tree',
-    'WebView',
+    'WebView'
 ]
 
 # Examples of valid version strings
@@ -76,5 +79,5 @@ __all__ = [
 # __version__ = '1.2.3'       # Final Release
 # __version__ = '1.2.3.post1' # Post Release 1
 
-__version__ = '0.3.0.dev8'
+__version__ = '0.3.0.dev9'
 

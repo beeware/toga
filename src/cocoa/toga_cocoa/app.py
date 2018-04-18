@@ -70,7 +70,7 @@ class AppDelegate(NSObject):
 
     @objc_method
     def selectMenuItem_(self, sender) -> None:
-        cmd = self.interface._menu_items[sender]
+        cmd = self.interface._impl._menu_items[sender]
         if cmd.action:
             cmd.action(None)
 

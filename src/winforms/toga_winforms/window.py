@@ -1,7 +1,7 @@
 from toga import GROUP_BREAK, SECTION_BREAK
 from travertino.layout import Viewport
 
-from .libs import WinForms, Size
+from .libs import WinForms, Size, add_handler
 
 
 class WinFormsViewport:
@@ -36,14 +36,21 @@ class Window:
         self.toolbar_items = None
 
     def create_toolbar(self):
-        self.toolbar_native = WinForms.ToolStrip()
+        self.toolbar_native = WinForms.MenuStrip()
         for cmd in self.interface.toolbar:
             if cmd == GROUP_BREAK:
                 item = WinForms.ToolStripSeparator()
             elif cmd == SECTION_BREAK:
                 item = WinForms.ToolStripSeparator()
             else:
-                item = WinForms.ToolStripButton()
+                cmd.native = cmd.bind(self.interface.factory)
+                native_icon = cmd.icon.bind(self.interface.factory).native
+                if cmd.icon is not None:
+                    item = WinForms.ToolStripMenuItem(cmd.label, native_icon.ToBitmap())
+                else:
+                    item = WinForms.ToolStripMenuItem(cmd.label)
+
+                item.Click += add_handler(cmd)
             self.toolbar_native.Items.Add(item)
 
     def set_position(self, position):
@@ -58,15 +65,22 @@ class Window:
     @property
     def vertical_shift(self):
         # vertical shift is the toolbar height or 0
+        result = 0
         try:
-            return self.native.interface._impl.toolbar_native.Height
+            result += self.native.interface._impl.toolbar_native.Height
         except AttributeError:
-            return 0
+            pass
+        try:
+            result += self.native.interface._impl.native.MainMenuStrip.Height
+        except AttributeError:
+            pass
+        return result
 
     def set_content(self, widget):
         if self.toolbar_native:
             self.native.Controls.Add(self.toolbar_native)
-
+            # Create the lookup table of menu items,
+            # then force the creation of the menus.
         self.native.Controls.Add(widget.native)
 
         # Set the widget's viewport to be based on the window's content.
@@ -94,6 +108,8 @@ class Window:
             int(self.interface.content.layout.height) + TITLEBAR_HEIGHT
         )
         self.interface.content.refresh()
+        if self.interface is not self.interface.app._main_window:
+            self.native.Show()
 
     def on_close(self):
         pass

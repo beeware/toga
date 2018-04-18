@@ -105,6 +105,17 @@ def NSTextAlignment(alignment):
     }[alignment]
 
 ######################################################################
+# UIApplication.h
+UIApplication = ObjCClass('UIApplication')
+
+class UIInterfaceOrientation(Enum):
+    Unknown = 0
+    Portrait = 1
+    PortraitUpsideDown = 2
+    LandscapeLeft = 3
+    LandscapeRight = 4
+
+######################################################################
 # UIBarButtonItem.h
 UIBarButtonItem = ObjCClass('UIBarButtonItem')
 
@@ -234,6 +245,14 @@ UINavigationController = ObjCClass('UINavigationController')
 UIPickerView = ObjCClass('UIPickerView')
 
 ######################################################################
+# UIProgressView.h
+UIProgressView = ObjCClass('UIProgressView')
+
+class UIProgressViewStyle(Enum):
+    Default = 0
+    Bar = 1
+
+######################################################################
 # UIRefreshControl.h
 UIRefreshControl = ObjCClass('UIRefreshControl')
 
@@ -246,9 +265,17 @@ UIResponder = ObjCClass('UIResponder')
 UIScreen = ObjCClass('UIScreen')
 UIScreen.declare_class_property('mainScreen')
 
+#####################################################################
+# UIScrollView.h
+UIScrollView = ObjCClass('UIScrollView')
+
 ######################################################################
 # UISlider.h
 UISlider = ObjCClass('UISlider')
+
+######################################################################
+# UIStackView.h
+UIStackView = ObjCClass('UIStackView')
 
 ######################################################################
 # UISwitch.h
@@ -317,8 +344,17 @@ class UIKeyboardType(Enum):
     ASCIICapableNumberPad = 11
 
 ######################################################################
+# UITextView.h
+UITextView = ObjCClass('UITextView')
+UITextViewDelegate = ObjCProtocol('UITextViewDelegate')
+
+######################################################################
 # UIView.h
 UIView = ObjCClass('UIView')
+
+class UILayoutConstraintAxis(Enum):
+    Horizontal = 0
+    Vertical = 1
 
 class UIViewContentMode(Enum):
     ScaleToFill = 0

@@ -49,5 +49,10 @@ setup(
                 'toga-gtk',
             ]
         },
+        'ios': {
+            'app_requires': [
+                'toga-ios',
+            ]
+        },
     }
 )
