@@ -126,19 +126,23 @@ class Window:
             self.interface.content.refresh()
 
     def info_dialog(self, title, message):
-        pass
+        return WinForms.MessageBox.Show(message, title, WinForms.MessageBoxButtons.OK)
 
     def question_dialog(self, title, message):
-        pass
+        result = WinForms.MessageBox.Show(message, title, WinForms.MessageBoxButtons.YesNo)
+        return result
 
     def confirm_dialog(self, title, message):
-        pass
+        result = WinForms.MessageBox.Show(message, title, WinForms.MessageBoxButtons.OKCancel)
+        # this returns 1 (DialogResult.OK enum) for OK and 2 for Cancel
+        return True if result == WinForms.DialogResult.OK else False
 
     def error_dialog(self, title, message):
-        pass
+        return WinForms.MessageBox.Show(message, title, WinForms.MessageBoxButtons.OK,
+                                        WinForms.MessageBoxIcon.Error)
 
     def stack_trace_dialog(self, title, message, content, retry=False):
         pass
 
     def save_file_dialog(self, title, suggested_filename, file_types):
-        pass
+        self.interface.factory.not_implemented('Window.save_file_dialog()')

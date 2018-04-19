@@ -10,6 +10,7 @@ from System import Threading
 from System import Uri
 from System.Drawing import Size, Point, Color, ContentAlignment, Bitmap
 from System.Drawing import Icon as WinIcon
+from System.Drawing import Image as WinImage
 
 
 def TextAlignment(value):
