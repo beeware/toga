@@ -7,7 +7,7 @@ class Window(LoggedObject):
         self.interface = interface
 
     def create(self):
-        self.action('create Window')
+        self._action('create Window')
 
     def create_toolbar(self):
         self._action('create toolbar')
@@ -26,6 +26,9 @@ class Window(LoggedObject):
 
     def set_app(self, app):
         self._set_value('app', app)
+
+    def set_full_screen(self, is_full_screen):
+        self._action('set full screen', is_full_screen=is_full_screen)
 
     def show(self):
         self._action('show')

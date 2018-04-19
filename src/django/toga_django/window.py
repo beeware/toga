@@ -49,6 +49,9 @@ class Window(WindowInterface):
     def set_size(self, size):
         pass
 
+    def set_full_screen(self, is_full_screen):
+        pass
+
     def on_close(self, widget, data):
         pass
 
