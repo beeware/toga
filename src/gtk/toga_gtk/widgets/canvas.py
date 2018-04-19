@@ -32,19 +32,14 @@ class Canvas(Widget):
                                           self.native.get_allocated_height())
         self.native_context = cairo.Context(self.surface)
         self.context_root = None
-        self.native.connect('draw', self.draw_callback)
         self.native.font = None
 
-    def context(self):
-        pass
-
-    def set_context_root(self, context_root):
-        self.context_root = context_root
-
-    def draw_callback(self, canvas, context):
-        self.native_context = context
-        for drawing_object in traverse(self.context_root):
-            drawing_object(self)
+    def context(self, context):
+        def draw_callback(canvas, native_context):
+            self.native_context = native_context
+            for drawing_object in context.drawing_objects:
+                drawing_object(self)
+        self.native.connect('draw', draw_callback)
 
     def redraw(self):
         pass
@@ -171,11 +166,3 @@ class Canvas(Widget):
         width = self.native.get_preferred_width()
         height = self.native.get_preferred_height()
 
-
-def traverse(nested_list):
-    if isinstance(nested_list, list):
-        for drawing_object in nested_list:
-            for subdrawing_object in traverse(drawing_object):
-                yield subdrawing_object
-    else:
-        yield nested_list

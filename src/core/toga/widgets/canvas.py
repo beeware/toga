@@ -137,7 +137,7 @@ class InterfaceMixin:
 
         """
         context = Context()
-        self.__add_drawing_object(context.drawing_objects)
+        self.__add_drawing_object(context)
         self.__add_child(context)
         yield context
 
@@ -159,16 +159,17 @@ class InterfaceMixin:
             :class:`Fill <Fill>` object.
 
         """
+        fill_context = Context()
+        self.__add_drawing_object(fill_context)
+        self.__add_child(fill_context)
+        new_path = NewPath()
+        fill_context.__add_drawing_object(new_path)
+        yield fill_context
         if fill_rule is 'evenodd':
             fill = Fill(color, fill_rule, preserve)
         else:
             fill = Fill(color, 'nonzero', preserve)
-        self.__add_drawing_object(fill.drawing_objects)
-        self.__add_child(fill)
-        new_path = NewPath()
-        fill.__add_drawing_object(new_path)
-        yield fill
-        self.__add_drawing_object(fill)
+        fill_context.__add_drawing_object(fill)
 
     @contextmanager
     def stroke(self, color=None, line_width=2.0):
@@ -183,11 +184,12 @@ class InterfaceMixin:
             :class:`Stroke <Stroke>` object.
 
         """
+        stroke_context = Context()
+        self.__add_drawing_object(stroke_context)
+        self.__add_child(stroke_context)
+        yield stroke_context
         stroke = Stroke(color, line_width)
-        self.__add_drawing_object(stroke.drawing_objects)
-        self.__add_child(stroke)
-        yield stroke
-        self.__add_drawing_object(stroke)
+        stroke_context.__add_drawing_object(stroke)
 
     @contextmanager
     def closed_path(self, x, y):
@@ -202,12 +204,13 @@ class InterfaceMixin:
             :class:`ClosedPath <ClosedPath>` object.
 
         """
+        cp_context = Context()
+        self.__add_drawing_object(cp_context)
+        self.__add_child(cp_context)
+        cp_context.move_to(x, y)
+        yield cp_context
         closed_path = ClosedPath(x, y)
-        self.__add_drawing_object(closed_path.drawing_objects)
-        self.__add_child(closed_path)
-        closed_path.move_to(x, y)
-        yield closed_path
-        self.__add_drawing_object(closed_path)
+        cp_context.__add_drawing_object(closed_path)
 
     ###########################################################################
     # Paths to draw with
@@ -444,11 +447,12 @@ class Canvas(InterfaceMixin, Widget):
     def __init__(self, id=None, style=None, factory=None):
         super().__init__(id=id, style=style, factory=factory)
         self._canvas = self
+        self.drawing_objects = []
 
         # Create a platform specific implementation of Canvas
         self._impl = self.factory.Canvas(interface=self)
 
-        self._impl.set_context_root(self.drawing_objects)
+        self._impl.context(self)  # Create root context
         self._children_contexts = []  # Canvas can have children contexts
 
 
@@ -471,7 +475,7 @@ class Context(InterfaceMixin, object):
         """Allow the implementation to callback the Class instance.
 
         """
-        impl.context()
+        impl.context(self)
 
 
 class Fill(InterfaceMixin, object):
