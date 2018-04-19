@@ -7,8 +7,8 @@ from .widgets.button import Button
 # from .widgets.canvas import Canvas
 # from .widgets.detailedlist import DetailedList
 from .widgets.icon import Icon
-# from .widgets.image import *
-# from .widgets.imageview import *
+from .widgets.image import *
+from .widgets.imageview import *
 from .widgets.label import *
 from .widgets.multilinetextinput import *
 from .widgets.numberinput import NumberInput
@@ -43,8 +43,8 @@ __all__ = [
     # 'Canvas',
     # 'DetailedList',
     'Icon',
-    # 'Image',
-    # 'ImageView',
+    'Image',
+    'ImageView',
     'Label',
     'MultilineTextInput',
     'NumberInput',
