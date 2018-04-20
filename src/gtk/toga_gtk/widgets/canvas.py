@@ -31,13 +31,12 @@ class Canvas(Widget):
         self.surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, self.native.get_allocated_width(),
                                           self.native.get_allocated_height())
         self.native_context = cairo.Context(self.surface)
-        self.context_root = None
         self.native.font = None
 
     def context(self, context):
         def draw_callback(canvas, native_context):
             self.native_context = native_context
-            for drawing_object in context.drawing_objects:
+            for drawing_object in traverse(context.drawing_objects):
                 drawing_object(self)
         self.native.connect('draw', draw_callback)
 
@@ -166,3 +165,11 @@ class Canvas(Widget):
         width = self.native.get_preferred_width()
         height = self.native.get_preferred_height()
 
+
+def traverse(nested_list):
+    if isinstance(nested_list, list):
+        for drawing_object in nested_list:
+            for subdrawing_object in traverse(drawing_object):
+                yield subdrawing_object
+    else:
+        yield nested_list

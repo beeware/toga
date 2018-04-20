@@ -26,7 +26,7 @@ class InterfaceMixin:
 
         Args:
             node: The context node to add.
-            canvas: :class:`ResetTransform <ResetTransform>` object.
+            canvas: :class:`Canvas <Canvas>` object.
 
         """
         node._canvas = canvas
@@ -159,17 +159,16 @@ class InterfaceMixin:
             :class:`Fill <Fill>` object.
 
         """
-        fill_context = Context()
-        self.__add_drawing_object(fill_context)
-        self.__add_child(fill_context)
-        new_path = NewPath()
-        fill_context.__add_drawing_object(new_path)
-        yield fill_context
         if fill_rule is 'evenodd':
             fill = Fill(color, fill_rule, preserve)
         else:
             fill = Fill(color, 'nonzero', preserve)
-        fill_context.__add_drawing_object(fill)
+        self.__add_drawing_object(fill.drawing_objects)
+        self.__add_child(fill)
+        new_path = NewPath()
+        fill.__add_drawing_object(new_path)
+        yield fill
+        fill.__add_drawing_object(fill)
 
     @contextmanager
     def stroke(self, color=None, line_width=2.0):
@@ -184,12 +183,11 @@ class InterfaceMixin:
             :class:`Stroke <Stroke>` object.
 
         """
-        stroke_context = Context()
-        self.__add_drawing_object(stroke_context)
-        self.__add_child(stroke_context)
-        yield stroke_context
         stroke = Stroke(color, line_width)
-        stroke_context.__add_drawing_object(stroke)
+        self.__add_drawing_object(stroke.drawing_objects)
+        self.__add_child(stroke)
+        yield stroke
+        stroke.__add_drawing_object(stroke)
 
     @contextmanager
     def closed_path(self, x, y):
@@ -204,13 +202,12 @@ class InterfaceMixin:
             :class:`ClosedPath <ClosedPath>` object.
 
         """
-        cp_context = Context()
-        self.__add_drawing_object(cp_context)
-        self.__add_child(cp_context)
-        cp_context.move_to(x, y)
-        yield cp_context
         closed_path = ClosedPath(x, y)
-        cp_context.__add_drawing_object(closed_path)
+        self.__add_drawing_object(closed_path.drawing_objects)
+        self.__add_child(closed_path)
+        closed_path.move_to(x, y)
+        yield closed_path
+        closed_path.__add_drawing_object(closed_path)
 
     ###########################################################################
     # Paths to draw with
