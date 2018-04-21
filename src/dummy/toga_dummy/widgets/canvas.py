@@ -4,22 +4,14 @@ from .base import Widget
 class Canvas(Widget):
     def create(self):
         self._action('create Canvas')
-        self.context_root = None
 
-    def context(self):
+    def context(self, context):
         self._action('context')
-
-    def set_context_root(self, context_root):
-        self.context_root = context_root
-        self._set_value('context root', context_root)
-
-    def draw_callback(self, canvas, context):
-        self._action('draw contexts', canvas=canvas, context=context)
+        for drawing_object in traverse(context.drawing_objects):
+            drawing_object(self)
 
     def redraw(self):
-        self._action('redraw')
-        for drawing_object in traverse(self.context_root):
-            drawing_object(self)
+        pass
 
     # Basic paths
 
