@@ -24,12 +24,11 @@ class Slider(Widget):
         return self.native.Value
 
     def set_value(self, value):
-        self.native.Value = value
+        self.native.Value = self.interface.value
 
     def set_range(self, range):
-        # TODO: Should I use self.interface.range etc for the values?
-        self.native.Minimum = range[0]
-        self.native.Maximum = range[1]
+        self.native.Minimum = self.interface.range[0]
+        self.native.Maximum = self.interface.range[1]
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.native.PreferredSize.Width)
