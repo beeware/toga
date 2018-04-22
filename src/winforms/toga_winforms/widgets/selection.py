@@ -7,6 +7,7 @@ class TogaComboBox(WinForms.ComboBox):
     def __init__(self, interface):
         super().__init__()
         self.interface = interface
+        self.DropDownStyle = WinForms.ComboBoxStyle.DropDownList
         self.SelectedIndexChanged += self.on_select
 
     def on_select(self, sender, event):
@@ -25,7 +26,6 @@ class Selection(Widget):
         self.native.Items.Add(item)
 
     def select_item(self, item):
-        print('Item: ', item)
         index = self.native.FindString(item)
         self.native.SelectedItem = index
 
