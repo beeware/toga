@@ -27,11 +27,11 @@ class Slider(Widget):
         return self.native.floatValue
 
     def set_value(self, value):
-        self.native.doubleValue = value
+        self.native.doubleValue = self.interface.value
 
     def set_range(self, range):
-        self.native.minValue = range[0]
-        self.native.maxValue = range[1]
+        self.native.minValue = self.interface.range[0]
+        self.native.maxValue = self.interface.range[1]
 
     def rehint(self):
         fitting_size = self.native.fittingSize()
