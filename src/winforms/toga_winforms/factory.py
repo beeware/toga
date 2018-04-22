@@ -16,7 +16,7 @@ from .widgets.optioncontainer import *
 from .widgets.passwordinput import *
 from .widgets.progressbar import *
 from .widgets.scrollcontainer import *
-# from .widgets.selection import Selection
+from .widgets.selection import Selection
 from .widgets.slider import *
 from .widgets.splitcontainer import *
 from .widgets.switch import *
@@ -52,7 +52,7 @@ __all__ = [
     'PasswordInput',
     'ProgressBar',
     'ScrollContainer',
-    # 'Selection',
+    'Selection',
     'Slider',
     'SplitContainer',
     'Switch',
