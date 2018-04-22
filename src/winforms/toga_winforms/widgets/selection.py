@@ -1,4 +1,5 @@
 from toga_winforms.libs import WinForms
+from travertino.size import at_least
 
 from .base import Widget
 
@@ -36,5 +37,5 @@ class Selection(Widget):
         pass
 
     def rehint(self):
-        self.interface.intrinsic.width = 120
-        self.interface.intrinsic.height = 32
+        self.interface.intrinsic.width = at_least(self.native.PreferredSize.Width)
+        self.interface.intrinsic.height = self.native.PreferredSize.Height
