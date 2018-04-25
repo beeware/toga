@@ -36,16 +36,16 @@ class Window:
         self.toolbar_items = None
 
     def create_toolbar(self):
-        self.toolbar_native = WinForms.MenuStrip()
+        self.toolbar_native = WinForms.ToolStrip()
         for cmd in self.interface.toolbar:
             if cmd == GROUP_BREAK:
                 item = WinForms.ToolStripSeparator()
             elif cmd == SECTION_BREAK:
                 item = WinForms.ToolStripSeparator()
             else:
-                cmd.native = cmd.bind(self.interface.factory)
-                native_icon = cmd.icon.bind(self.interface.factory).native
+                cmd.bind(self.interface.factory)
                 if cmd.icon is not None:
+                    native_icon = cmd.icon.bind(self.interface.factory).native
                     item = WinForms.ToolStripMenuItem(cmd.label, native_icon.ToBitmap())
                 else:
                     item = WinForms.ToolStripMenuItem(cmd.label)
