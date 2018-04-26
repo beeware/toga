@@ -257,3 +257,19 @@ class Window:
             The absolute path(str) to the selected location.
         """
         return self._impl.save_file_dialog(title, suggested_filename, file_types)
+
+
+def open_file_dialog(self, title, initial_directory=None, file_types=None):
+    """ This opens a native dialog where the user can select the file to open.
+    It is possible to set the initial folder and and only show files with specified file extensions.
+
+    Args:
+        title (str): The title of the dialog window.
+        initial_directory(str): Initial folder displayed in the dialog.
+        file_types: A list of strings with the allowed file extensions.
+
+    Returns:
+        The absolute path(str) to the selected file or None
+    """
+    # Should we allow multiselect?
+    return self._impl.save_file_dialog(title, initial_directory, file_types)

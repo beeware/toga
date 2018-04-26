@@ -143,3 +143,16 @@ class Window:
 
     def save_file_dialog(self, title, suggested_filename, file_types):
         self.interface.factory.not_implemented('Window.save_file_dialog()')
+
+    def open_file_dialog(self, title, initial_directory, file_types):
+        dialog = WinForms.OpenFileDialog()
+        dialog.Title = title
+        if initial_directory is not None:
+            dialog.InitialDirectory = initial_directory
+        if file_types is not None:
+            # FIXME This is the example of Filter string: Text files (*.txt)|*.txt|All files (*.*)|*.*
+            dialog.Filter = file_types
+        if dialog.ShowDialog() == WinForms.DialogResult.OK:
+            return dialog.FileName
+        else:
+            return None
