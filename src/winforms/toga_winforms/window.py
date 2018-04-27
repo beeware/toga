@@ -152,7 +152,6 @@ class Window:
             return None
 
     def open_file_dialog(self, title, initial_directory, file_types):
-        print('Open file dialog')
         dialog = WinForms.OpenFileDialog()
         dialog.Title = title
         if initial_directory is not None:
@@ -160,7 +159,6 @@ class Window:
         if file_types is not None:
             # FIXME This is the example of Filter string: Text files (*.txt)|*.txt|All files (*.*)|*.*
             dialog.Filter = file_types
-        print('Dialog: ', dialog)
         if dialog.ShowDialog() == WinForms.DialogResult.OK:
             return dialog.FileName
         else:

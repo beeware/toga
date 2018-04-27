@@ -24,7 +24,6 @@ class ExampledialogsApp(toga.App):
         fname = self.main_window.open_file_dialog(
             title="Open file with Toga",
         )
-        print('FNAME: ', fname)
         if fname is not None:
             self.label.text = "File to open:" + fname
         else:
@@ -36,7 +35,7 @@ class ExampledialogsApp(toga.App):
             "Save file with Toga",
             suggested_filename=fname)
         if save_path is not None:
-            self.label.text = "File saved:" + fname
+            self.label.text = "File saved with Toga:" + fname
         else:
             self.label.text = "Save file dialog was canceled"
 
