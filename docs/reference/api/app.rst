@@ -47,7 +47,7 @@ Alternatively, you can subclass App and implement the startup method
 
 
     if __name__ == '__main__':
-        app = MyApp('First App', 'org.pybee.helloworld', startup=build)
+        app = MyApp('First App', 'org.pybee.helloworld')
         app.main_loop()
 
 Reference
