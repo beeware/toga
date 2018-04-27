@@ -1,9 +1,7 @@
 from gi.repository import Gtk
 from travertino.size import at_least
-
-from toga.constants import *
-from toga_gtk.libs import gtk_alignment
 from toga_gtk.color import native_color
+from toga_gtk.libs import gtk_alignment
 
 from .base import Widget
 
@@ -29,10 +27,8 @@ class Label(Widget):
 
     def set_font(self, value):
         if value:
-            pass
-            # print('set font', value._impl, value._impl.native)
-            # FIXME
-            # self.native.set_font(native_font(value))
+            font_context = self.native.get_pango_context()
+            font_context.set_font_description(value._impl.native)
 
     def set_text(self, value):
         # FIXME after setting the label the label jumps to the top left
