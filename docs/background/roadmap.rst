@@ -24,15 +24,7 @@ Inputs are mechanisms for displaying and editing input provided by the user.
     - Cocoa: NSComboBox
     - GTK+: Gtk.ComboBox.new_with_model_and_entry
     - iOS: ?
-    - Winforms: ?
-    - Android: ?
-
-* Switch - A native control for enabled/disabled
-
-    - Cocoa: Done
-    - GTK+: Done
-    - iOS: UISwitch
-    - Winforms: ?
+    - Winforms: ComboBox
     - Android: ?
 
 * DateInput - A widget for selecting a date
@@ -40,7 +32,7 @@ Inputs are mechanisms for displaying and editing input provided by the user.
     - Cocoa: NSDatePicker, constrained to DMY
     - GTK+: Gtk.Calendar
     - iOS: UIDatePicker
-    - Winforms: ?
+    - Winforms: DateTimePicker
     - Android: ?
 
 * TimeInput - A widget for selecting a time
@@ -48,7 +40,7 @@ Inputs are mechanisms for displaying and editing input provided by the user.
     - Cocoa: NSDatePicker, Constrained to Time
     - GTK+: Custom Gtk.SpinButton
     - iOS: UIDatePicker
-    - Winforms: ?
+    - Winforms: DateTimePicker
     - Android: ?
 
 * DateTimeInput - A widget for selecting a date and a time.
@@ -56,23 +48,7 @@ Inputs are mechanisms for displaying and editing input provided by the user.
     - Cocoa: NSDatePicker
     - GTK+: Gtk.Calendar + ?
     - iOS: UIDatePicker
-    - Winforms: ?
-    - Android: ?
-
-* MultilineTextInput - A widget for displaying multiline text, optionally editable.
-
-    - Cocoa: NSTextView inside an NSScrollView
-    - GTK+: Done
-    - iOS: UITextView
-    - Winforms: ?
-    - Android: ?
-
-* Selection - A button that allows the user to choose from one of a fixed number of options
-
-    - Cocoa: NSPopupButton, with NSMenu for options.
-    - GTK+: Done
-    - iOS: UIPickerView
-    - Winforms: ?
+    - Winforms: DateTimePicker
     - Android: ?
 
 * ColorInput - A widget for selecting a color
@@ -88,38 +64,6 @@ Inputs are mechanisms for displaying and editing input provided by the user.
     - Cocoa: NSSlider
     - GTK+: Done
     - iOS: UISlider
-    - Winforms: ?
-    - Android: ?
-
-* NumberInput - A widget to allow entry of a numerical value, possibly with helper buttons to make it easy to increase/decrease the value.
-
-    - Cocoa: NSTextField with NSStepper
-    - GTK+: Done
-    - iOS: UITextField with UIStepper
-    - Winforms: ?
-    - Android: ?
-
-* Table: A scrollable display of columns of tabular data
-
-    - Cocoa: Done
-    - GTK+: Done
-    - iOS: UITableView
-    - Winforms: ListView (ListView.View.Details)
-    - Android: ?
-
-* Tree: A scrollable display of hierarchical data
-
-    - Cocoa: Done
-    - GTK+: Done
-    - iOS: UITableView with navigation
-    - Winforms: ?
-    - Android: ?
-
-* DetailedList: A scrollable list of a single column of detailed data
-
-    - Cocoa: NSTableView with custom view?
-    - GTK+: Gtk.ScrolledWindow
-    - iOS: UITableView with navigation
     - Winforms: ?
     - Android: ?
 
@@ -145,27 +89,11 @@ usually in a read-only manner.
     - Winforms: ?
     - Android: ?
 
-* ProgressBar - A horizontal bar that displays progress, either progress against a known value, or indeterminate
-
-    - Cocoa: Done
-    - GTK+: Gtk.ProgressBar
-    - iOS: UIProgressView
-    - Winforms: ?
-    - Android: ?
-
 * ActivityIndicator - A spinner widget showing that something is happening
 
     - Cocoa: NSProgressIndicator, Spinning style
     - GTK+: Gtk.Spinner
     - iOS: UIActivityIndicatorView
-    - Winforms: ?
-    - Android: ?
-
-* ImageView - Display an graphical image
-
-    - Cocoa: Done
-    - GTK+: Gtk.Image
-    - iOS: UIImageView
     - Winforms: ?
     - Android: ?
 
@@ -175,14 +103,6 @@ usually in a read-only manner.
     - GTK+: Custom Integrate with GStreamer
     - iOS: MPMoviePlayerController
     - Winforms: ?
-    - Android: ?
-
-* WebView - Display a web page. Just the web page; no URL chrome, etc.
-
-    - Cocoa: Done
-    - GTK+: Webkit.WebView (via WebkitGtk)
-    - iOS: UIWebView
-    - Winforms: WebBrowser
     - Android: ?
 
 * PDFView - Display a PDF document
@@ -207,14 +127,6 @@ Container widgets
 
 Containers are widgets that can contain other widgets.
 
-* Box - A box drawn around a collection of widgets; often has a label
-
-    - Cocoa: NSBox
-    - GTK+: Done
-    - iOS:
-    - Winforms: ?
-    - Android: ?
-
 * ButtonContainer - A layout for a group of radio/checkbox options
 
     - Cocoa: NSMatrix, or NSView with pre-set constraints.
@@ -223,43 +135,12 @@ Containers are widgets that can contain other widgets.
     - Winforms: ?
     - Android: ?
 
-* ScrollContainer - A container whose internal content can be scrolled.
-
-    - Cocoa: Done
-    - GTK+: Done
-    - iOS: UIScrollView?
-    - Winforms: Panel
-    - Android: ?
-
-* SplitContainer - An adjustable separator bar between 2+ visible panes of content
-
-    - Cocoa: Done
-    - GTK+: Done
-    - iOS:
-    - Winforms: SplitContainer
-    - Android: ?
-
 * FormContainer - A layout for a "key/value" or "label/widget" form
 
     - Cocoa: NSForm, or NSView with pre-set constraints.
     - GTK+:
     - iOS:
     - Winforms: ?
-    - Android: ?
-
-* OptionContainer - (suggestions for better name welcome)
-
-    A container view that holds a small, fixed number of subviews,
-    only one of which is visible at any given time.
-    Generally rendered as something with "lozenge" style buttons over a box.
-    Examples of use: OS X System preference panes that contain multiple options
-    (e.g., Keyboard settings have an option layout for "Keyboard",
-    "Text", "Shortcuts" and "Input sources")
-
-    - Cocoa: Done
-    - GTK+: GtkNotebook (Maybe GtkStack on 3.10+?)
-    - iOS: ?
-    - Winforms: TabControl
     - Android: ?
 
 * SectionContainer - (suggestions for better name welcome)
@@ -299,60 +180,13 @@ Dialogs and windows
 ~~~~~~~~~~~~~~~~~~~
 
 GUIs aren't all about widgets - sometimes you need to pop up a dialog to query
-the user.
-
-* Info - a modal dialog providing an "OK" option
-
-    - Cocoa: Done
-    - GTK+: Gtk.MessageDialog, type Gtk.MessageType.INFO, buttons Gtk.ButtonsType.OK
-    - iOS:
-    - Winforms: ?
-    - Android: ?
-
-* Error - a modal dialog showing an error, and a continue option.
-
-    - Cocoa: Done
-    - GTK+: Gtk.MessageDialog, type Gtk.MessageType.ERROR, buttons Gtk.ButtonsType.CANCEL
-    - iOS:
-    - Winforms: ?
-    - Android: ?
-
-* Question - a modal dialog that asks a Yes/No question
-
-    - Cocoa: Done
-    - GTK+: Gtk.MessageDialog, type Gtk.MessageType.QUESTION, buttons Gtk.ButtonsType.YES_NO
-    - iOS:
-    - Winforms: ?
-    - Android: ?
-
-* Confirm - a modal dialog confirming "OK" or "cancel"
-
-    - Cocoa: Done
-    - GTK+: Gtk.MessageDialog, type Gtk.MessageType.WARNING, buttons Gtk.ButtonsType.OK_CANCEL
-    - iOS:
-    - Winforms: ?
-    - Android: ?
-
-* StackTrace - a modal dialog for displaying a long stack trace.
-
-    - Cocoa: Done
-    - GTK+: Custom Gtk.Dialog
-    - iOS:
-    - Winforms: ?
-    - Android: ?
+the user. Info, Error, Question, Confirm, StackTrace and Save File Dialogs have been
+implemented.
 
 * File Open - a mechanism for finding and specifying a file on disk.
 
     - Cocoa:
     - GTK+: Gtk.FileChooserDialog
-    - iOS:
-    - Winforms: ?
-    - Android: ?
-
-* File Save - a mechanism for finding and specifying a filename to save to.
-
-    - Cocoa: Done
-    - GTK+:
     - iOS:
     - Winforms: ?
     - Android: ?
