@@ -24,9 +24,9 @@ class ExampledialogsApp(toga.App):
         fname = self.main_window.open_file_dialog(
             title="Open file with Toga",
         )
-        if fname is not None:
+        try:
             self.label.text = "File to open:" + fname
-        else:
+        except ValueError:
             self.label.text = "Open file dialog was canceled"
 
     def action_save_file_dialog(self, widget):

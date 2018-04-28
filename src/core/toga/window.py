@@ -247,6 +247,7 @@ class Window:
     def save_file_dialog(self, title, suggested_filename, file_types=None):
         """ This opens a native dialog where the user can select a place to save a file.
         It is possible to suggest a filename and force the user to use a specific file extension.
+        If no path is returned (eg. dialog is canceled), a ValueError is raised.
 
         Args:
             title (str): The title of the dialog window.
@@ -258,10 +259,10 @@ class Window:
         """
         return self._impl.save_file_dialog(title, suggested_filename, file_types)
 
-    def open_file_dialog(self, title, initial_directory=None, file_types=None):
+    def open_file_dialog(self, title, initial_directory=None, file_types=None, multiselect=False):
         """ This opens a native dialog where the user can select the file to open.
         It is possible to set the initial folder and and only show files with specified file extensions.
-
+        If no path is returned (eg. dialog is canceled), a ValueError is raised.
         Args:
             title (str): The title of the dialog window.
             initial_directory(str): Initial folder displayed in the dialog.
@@ -270,5 +271,4 @@ class Window:
         Returns:
             The absolute path(str) to the selected file or None
         """
-        # Should we allow multiselect?
-        return self._impl.open_file_dialog(title, initial_directory, file_types)
+        return self._impl.open_file_dialog(title, initial_directory, file_types, multiselect)
