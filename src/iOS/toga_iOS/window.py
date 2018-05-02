@@ -66,6 +66,7 @@ class Window:
     def set_app(self, app):
         pass
 
+    @not_required_on('mobile', 'web')
     def set_full_screen(self, is_full_screen):
         pass
 
