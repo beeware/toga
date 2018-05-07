@@ -1,9 +1,8 @@
 import math
 
 import toga
-from toga.font import SANS_SERIF
-
 import toga_dummy
+from toga.font import SANS_SERIF
 from toga_dummy.utils import TestCase
 
 
@@ -30,7 +29,7 @@ class CanvasTests(TestCase):
                 self.assertActionPerformedWith(self.testing_canvas, 'stroke')
             self.assertIn(fill_test.drawing_objects, basic_context.drawing_objects)
             self.assertActionPerformedWith(self.testing_canvas, 'fill preserve')
-        self.assertIn(basic_context.drawing_objects, self.testing_canvas.drawing_objects)
+        self.assertIn(basic_context, self.testing_canvas.drawing_objects)
 
     def test_self_oval_path(self):
         xc = 50

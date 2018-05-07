@@ -3,15 +3,18 @@ from .base import Widget
 
 class Canvas(Widget):
     def create(self):
+        self.dummy_context = None
         self._action('create Canvas')
 
     def context(self, context):
         self._action('context')
+        self.dummy_context = context
         for drawing_object in traverse(context.drawing_objects):
             drawing_object(self)
 
     def redraw(self):
-        pass
+        for drawing_object in traverse(self.dummy_context.drawing_objects):
+            drawing_object(self)
 
     # Basic paths
 
@@ -77,6 +80,8 @@ class Canvas(Widget):
 
     def reset_transform(self):
         self._action('reset transform')
+
+    # Text
 
     def write_text(self, text, x, y, font):
         self._action('write text', text=text, x=x, y=y, font=font)
