@@ -21,7 +21,7 @@ class MultilineTextInput(Widget):
     def set_value(self, value):
         self.native.Text = value
 
-    def get_value(value):
+    def get_value(self):
         return self.native.Text
 
     def rehint(self):

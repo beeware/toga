@@ -117,7 +117,7 @@ class MultilineTextInput(Widget):
         self.native.text = self.interface._value
         self.placeholder_label.setHidden_(len(self.native.text) > 0)
 
-    def get_value(value):
+    def get_value(self):
         return self.native.text
 
     def rehint(self):
