@@ -25,6 +25,8 @@ On top of that, native widgets are always faster than a themed generic widget.
 After all, you're using native system capability that has been tuned and
 optimized, not a drawing engine that's been layered on top of a generic widget.
 
+.. _abstract-broad-concepts:
+
 Abstract the broad concepts
 ---------------------------
 
