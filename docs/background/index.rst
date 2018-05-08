@@ -10,6 +10,7 @@ Background
    philosophy
    faq
    releases
+   architecture
    commands
    data-sources
    roadmap
