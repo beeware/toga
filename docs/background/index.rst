@@ -11,6 +11,7 @@ Background
    faq
    releases
    architecture
+   layout
    commands
    data-sources
    roadmap
