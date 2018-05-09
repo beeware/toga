@@ -35,7 +35,7 @@ Implementation
 --------------
 
 The implementation layer is the platform-specific representation of each
-widget. Each platform that Toga supports has its own implmentation layer,
+widget. Each platform that Toga supports has its own implementation layer,
 named after the widget toolkit that the implementation layer is wrapping --
 ``toga-cocoa`` for macOS (Cocoa being the name of the underlying macOS widget
 toolkit); ``toga-gtk`` for Linux (using the GTK+ toolkit); and so on.
