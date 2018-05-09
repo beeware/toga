@@ -137,7 +137,7 @@ class InterfaceMixin:
 
         """
         context = Context()
-        self.__add_drawing_object(context)
+        self.__add_drawing_object(context.drawing_objects)
         self.__add_child(context)
         yield context
 
