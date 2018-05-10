@@ -77,7 +77,6 @@ class TestCommand(unittest.TestCase):
                            order=1,
                            factory=toga_dummy.factory
                            )
-        factory = toga_dummy.factory
         retur_val = cmd.bind(factory=toga_dummy.factory)
         self.assertEqual(retur_val, cmd._impl)
 
