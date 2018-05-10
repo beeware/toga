@@ -1,4 +1,4 @@
-from toga_winforms.libs import WinForms
+from toga_winforms.libs import WinForms, HorizontalTextAlignment
 from travertino.size import at_least
 
 from .base import Widget
@@ -22,16 +22,7 @@ class TextInput(Widget):
         self.native.Text = value
 
     def set_alignment(self, value):
-        if value == 'center':
-            win_value = WinForms.HorizontalAlignment.Center
-        elif value == 'left':
-            win_value = WinForms.HorizontalAlignment.Left
-        elif value == 'right':
-            win_value = WinForms.HorizontalAlignment.Right
-        else:
-            raise ValueError("Justify alignment is not supported in Windows; "
-                             "choose left, right or center")
-        self.native.TextAlign = win_value
+        self.native.TextAlign = HorizontalTextAlignment(value)
 
     def set_font(self, value):
         self.interface.factory.not_implemented('TextInput.set_font()')
