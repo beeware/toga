@@ -4,20 +4,10 @@ from travertino.size import at_least
 from .base import Widget
 
 
-class TogaTextInput(WinForms.TextBox):
-    def __init__(self, interface):
-        super().__init__()
-        self.Multiline = False
-        self.interface = interface
-
-    def on_text_change(self, sender, event):
-        if self.interface._on_change:
-            self.interface.on_change(self.interface)
-
-
 class TextInput(Widget):
     def create(self):
-        self.native = TogaTextInput(self.interface)
+        self.native = WinForms.TextBox()
+        self.native.Multiline = False
 
     def set_readonly(self, value):
         self.native.ReadOnly = value
@@ -32,7 +22,6 @@ class TextInput(Widget):
         self.native.Text = value
 
     def set_alignment(self, value):
-        print('Alignment: ', value)
         if value == 'center':
             win_value = WinForms.HorizontalAlignment.Center
         elif value == 'left':
@@ -55,4 +44,8 @@ class TextInput(Widget):
         self.interface.intrinsic.height = self.native.PreferredSize.Height
 
     def set_on_change(self, handler):
-        self.native.TextChanged += self.native.on_text_change
+        self.native.TextChanged += self.on_text_change
+
+    def on_text_change(self, sender, event):
+        if self.interface._on_change:
+            self.interface.on_change(self.interface)
