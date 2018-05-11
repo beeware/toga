@@ -3,7 +3,7 @@ The Pack Style Engine
 =====================
 
 Toga's default style engine, **Pack**, is a layout algorithm based around the
-idea of packing boxes inside boxes. Each box specifies a direction for it's
+idea of packing boxes inside boxes. Each box specifies a direction for its
 children, and each child specifies how it will consume the available space -
 either as a specific width, or as a proportion of the available width. Other
 properties exist to control color, text alignment and so on.
@@ -22,7 +22,7 @@ Pack style properties
 **Initial value:** ``pack``
 
 Used to define the how to display the element. A value of ``pack`` will apply
-the pack layout algorithm to this node and it's descendents. A value of
+the pack layout algorithm to this node and its descendents. A value of
 ``none`` removes the element from the layout entirely. Space will be allocated
 for the element as if it were there, but the element itself will not be
 visible.
@@ -100,7 +100,7 @@ fit inside the specified space.
 
 **Initial value:** 0
 
-A weighting that is used to compare this box with it's siblings when
+A weighting that is used to compare this box with its siblings when
 allocating remaining space in a box.
 
 Once fixed space allocations have been performed, this box will assume ``flex

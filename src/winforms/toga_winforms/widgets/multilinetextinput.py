@@ -21,7 +21,9 @@ class MultilineTextInput(Widget):
     def set_value(self, value):
         self.native.Text = value
 
+    def get_value(self):
+        return self.native.Text
+
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
         self.interface.intrinsic.height = at_least(self.interface.MIN_HEIGHT)
-

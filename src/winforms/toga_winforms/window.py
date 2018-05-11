@@ -1,7 +1,7 @@
 from toga import GROUP_BREAK, SECTION_BREAK
 from travertino.layout import Viewport
 
-from .libs import WinForms, Size
+from .libs import WinForms, Size, add_handler
 
 
 class WinFormsViewport:
@@ -43,7 +43,14 @@ class Window:
             elif cmd == SECTION_BREAK:
                 item = WinForms.ToolStripSeparator()
             else:
-                item = WinForms.ToolStripButton()
+                cmd.bind(self.interface.factory)
+                if cmd.icon is not None:
+                    native_icon = cmd.icon.bind(self.interface.factory).native
+                    item = WinForms.ToolStripMenuItem(cmd.label, native_icon.ToBitmap())
+                else:
+                    item = WinForms.ToolStripMenuItem(cmd.label)
+
+                item.Click += add_handler(cmd)
             self.toolbar_native.Items.Add(item)
 
     def set_position(self, position):
@@ -58,15 +65,22 @@ class Window:
     @property
     def vertical_shift(self):
         # vertical shift is the toolbar height or 0
+        result = 0
         try:
-            return self.native.interface._impl.toolbar_native.Height
+            result += self.native.interface._impl.toolbar_native.Height
         except AttributeError:
-            return 0
+            pass
+        try:
+            result += self.native.interface._impl.native.MainMenuStrip.Height
+        except AttributeError:
+            pass
+        return result
 
     def set_content(self, widget):
         if self.toolbar_native:
             self.native.Controls.Add(self.toolbar_native)
-
+            # Create the lookup table of menu items,
+            # then force the creation of the menus.
         self.native.Controls.Add(widget.native)
 
         # Set the widget's viewport to be based on the window's content.
@@ -109,19 +123,23 @@ class Window:
             self.interface.content.refresh()
 
     def info_dialog(self, title, message):
-        pass
+        return WinForms.MessageBox.Show(message, title, WinForms.MessageBoxButtons.OK)
 
     def question_dialog(self, title, message):
-        pass
+        result = WinForms.MessageBox.Show(message, title, WinForms.MessageBoxButtons.YesNo)
+        return result
 
     def confirm_dialog(self, title, message):
-        pass
+        result = WinForms.MessageBox.Show(message, title, WinForms.MessageBoxButtons.OKCancel)
+        # this returns 1 (DialogResult.OK enum) for OK and 2 for Cancel
+        return True if result == WinForms.DialogResult.OK else False
 
     def error_dialog(self, title, message):
-        pass
+        return WinForms.MessageBox.Show(message, title, WinForms.MessageBoxButtons.OK,
+                                        WinForms.MessageBoxIcon.Error)
 
     def stack_trace_dialog(self, title, message, content, retry=False):
         pass
 
     def save_file_dialog(self, title, suggested_filename, file_types):
-        pass
+        self.interface.factory.not_implemented('Window.save_file_dialog()')

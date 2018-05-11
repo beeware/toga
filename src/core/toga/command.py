@@ -76,6 +76,8 @@ class Command:
         self._enabled = value
         for widget in self._widgets:
             widget.enabled = value
+        if self._impl is not None:
+            self._impl.enabled = value
 
 
 GROUP_BREAK = object()

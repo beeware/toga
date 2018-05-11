@@ -23,14 +23,14 @@ class Slider(Widget):
         pass
 
     def set_value(self, value):
-        self.adj.set_value(value)
+        self.adj.set_value(self.interface.value)
 
     def get_value(self):
         return self.native.get_value()
 
     def set_range(self, range):
-        self.adj.set_lower(range[0])
-        self.adj.set_upper(range[1])
+        self.adj.set_lower(self.interface.range[0])
+        self.adj.set_upper(self.interface.range[1])
 
     def rehint(self):
         # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height())
