@@ -20,12 +20,13 @@ class App:
 
     def create(self):
         self.native = WinForms.Application
-
+        self.native.ApplicationExit += self.exit_application
         self.interface.commands.add(
             toga.Command(None, 'About ' + self.interface.name, group=toga.Group.HELP),
             toga.Command(None, 'Preferences', group=toga.Group.FILE),
             # Quit should always be the last item, in a section on it's own
-            toga.Command(lambda s: self.interface.exit(), 'Exit ' + self.interface.name, shortcut='q', group=toga.Group.FILE,
+            toga.Command(lambda s: self.interface.exit(), 'Exit ' + self.interface.name, shortcut='q',
+                         group=toga.Group.FILE,
                          section=sys.maxsize),
             toga.Command(None, 'Visit homepage', group=toga.Group.HELP)
         )
@@ -79,6 +80,9 @@ class App:
         thread.SetApartmentState(Threading.ApartmentState.STA)
         thread.Start()
         thread.Join()
+
+    def exit_application(self, sender, event):
+        self.interface.exit()
 
     def exit(self):
         self.native.Exit()
