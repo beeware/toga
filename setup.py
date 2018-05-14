@@ -50,4 +50,10 @@ setup(
         'Topic :: Software Development :: User Interfaces',
         'Topic :: Software Development :: Widget Sets',
     ],
+    package_urls={
+        'Funding': 'https://pybee.org/contributing/membership/',
+        'Documentation': 'https://toga.readthedocs.io/',
+        'Tracker': 'https://github.com/pybee/toga/issues',
+        'Source': 'https://github.com/pybee/toga',
+    },
 )
