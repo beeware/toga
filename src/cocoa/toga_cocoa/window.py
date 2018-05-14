@@ -108,7 +108,7 @@ class Window:
     def create(self):
         # OSX origin is bottom left of screen, and the screen might be
         # offset relative to other screens. Adjust for this.
-        screen = NSScreen.mainScreen.visibleFrame()
+        screen = NSScreen.mainScreen.visibleFrame
         position = NSMakeRect(
             screen.origin.x + self.interface.position[0],
             screen.size.height + screen.origin.y - self.interface.position[1] - self.interface._size[1],

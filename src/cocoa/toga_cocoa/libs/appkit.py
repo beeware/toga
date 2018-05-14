@@ -488,6 +488,7 @@ NSFileHandlingPanelOKButton = 1
 # NSScreen.h
 NSScreen = ObjCClass('NSScreen')
 NSScreen.declare_class_property('mainScreen')
+NSScreen.declare_property('visibleFrame')
 
 ######################################################################
 # NSScrollView.h
