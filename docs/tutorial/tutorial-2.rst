@@ -25,6 +25,9 @@ Here's the source code:
 .. literalinclude:: /../examples/tutorial2/tutorial/app.py
    :language: python
 
+In order to render the icons, you will need to move the icons folder into the
+same directory as your app file.
+
 Here are the :download:`Icons <./resources/icons.zip>`
 
 In this example, we see a couple of new Toga widgets - :class:`.Table`,
