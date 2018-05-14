@@ -25,8 +25,8 @@ Here's the source code:
 .. literalinclude:: /../examples/tutorial2/tutorial/app.py
    :language: python
 
-You will need to move the icons folder into the same directory as your app
-file.
+In order to render the icons, you will need to move the icons folder into the
+same directory as your app file.
 
 Here are the :download:`Icons <./resources/icons.zip>`
 
