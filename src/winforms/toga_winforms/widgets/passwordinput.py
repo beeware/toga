@@ -3,5 +3,5 @@ from .textinput import TextInput
 
 class PasswordInput(TextInput):
     def create(self):
-        super(PasswordInput, self).create()
+        super().create()
         self.native.UseSystemPasswordChar = True

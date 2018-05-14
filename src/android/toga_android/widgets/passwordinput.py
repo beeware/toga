@@ -3,6 +3,6 @@ from .textinput import TextInput, TogaTextInput
 
 class PasswordInput(TextInput):
     def create(self):
-        super(PasswordInput, self).create()
+        super().create()
         self.native.inputType = 'textPassword'
 
