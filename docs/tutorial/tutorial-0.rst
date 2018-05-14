@@ -5,7 +5,69 @@ Your first Toga app
 In this example, we're going to build a desktop app with a single
 button, that prints to the console when you press the button.
 
-Here's a complete code listing for our "Hello world" app:
+
+Set up your development environment
+===================================
+
+Open a command prompt on your computer and make sure that you can successfully run the :code:`python3` command. Create a working directory for your code and change to it.
+
+The recommended way of setting up your development environment for Toga
+is to install a virtual environment, install the required dependencies and
+start coding. To set up a virtual environment, run:
+
+.. tabs::
+
+  .. group-tab:: macOS
+
+    .. code-block:: bash
+
+      $ python3 -m venv venv
+      $ source venv/bin/activate
+
+  .. group-tab:: Linux
+
+    .. code-block:: bash
+
+      $ python3 -m venv venv
+      $ source venv/bin/activate
+
+  .. group-tab:: Windows
+
+    .. code-block:: doscon
+
+      C:\...>python3 -m venv venv
+      C:\...>venv/Scripts/activate
+
+Your prompt should now have a ``(venv)`` prefix in front of it. 
+
+Next, install Toga into your virtual environment:
+
+.. tabs::
+
+  .. group-tab:: macOS
+
+    .. code-block:: bash
+
+      (venv) $ pip install --pre toga
+
+  .. group-tab:: Linux
+
+    .. code-block:: bash
+
+      (venv) $ pip install --pre toga
+
+  .. group-tab:: Windows
+
+    .. code-block:: doscon
+
+      (venv) C:\...>pip install --pre toga
+
+After a successful installation of Toga you are ready to get coding.
+
+Write the app
+=============
+
+Create a new file called ``helloworld.py`` and add the following code for the "Hello world" app:
 
 .. literalinclude:: /../examples/tutorial0/tutorial/app.py
    :language: python
@@ -97,13 +159,50 @@ And that's it! Save this script as ``helloworld.py``, and you're ready to go.
 Running the app
 ---------------
 
+To run the app you'll need to execute the correct command for your platform from your working directory:
+
+.. tabs::
+
+  .. group-tab:: macOS
+
+    .. code-block:: bash
+
+      (venv) $ python -m helloworld
+
+  .. group-tab:: Linux
+
+    .. code-block:: bash
+
+      (venv) $ python -m helloworld
+
+  .. group-tab:: Windows
+
+    .. code-block:: doscon
+
+      (venv) C:\...>python -m helloworld
+
+This should pop up a window with a button:
+
+.. image:: screenshots/tutorial-0.png
+
+If you click on the button, you should see messages appear in the console.
+Even though we didn't define anything about menus, the app will have default
+menu entries to quit the app, and an About page. The keyboard bindings to quit
+the app, plus the "close" button on the window will also work as expected. The
+app will have a default Toga icon (a picture of Tiberius the yak).
+
+Troubleshooting issues
+----------------------
+
+Occasionally you might run into issues running Toga on your computer. 
+
 Before you run the app, you'll need to install toga. Although you *can* install
 toga by just running::
 
     $ pip install --pre toga
 
 We strongly suggest that you **don't** do this. We'd suggest creating a `virtual
-environment`_ first, and installing toga in that virtual environment.
+environment`_ first, and installing toga in that virtual environment as directed at the top of this guide.
 
 .. _virtual environment: http://docs.python-guide.org/en/latest/dev/virtualenvs/
 
@@ -129,7 +228,7 @@ environment`_ first, and installing toga in that virtual environment.
 
 Once you've got toga installed, you can run your script::
 
-    $ python -m helloworld
+    (venv) $ python -m helloworld
 
 .. note:: ``python -m helloworld`` vs ``python helloworld.py``
 
@@ -139,13 +238,3 @@ Once you've got toga installed, you can run your script::
         NotImplementedError: Application does not define open_document()
 
     Toga apps must be executed as modules - hence the ``-m`` flag.
-
-This should pop up a window with a button:
-
-.. image:: screenshots/tutorial-0.png
-
-If you click on the button, you should see messages appear in the console.
-Even though we didn't define anything about menus, the app will have default
-menu entries to quit the app, and an About page. The keyboard bindings to quit
-the app, plus the "close" button on the window will also work as expected. The
-app will have a default Toga icon (a picture of Tiberius the yak).
