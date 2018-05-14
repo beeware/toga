@@ -179,6 +179,19 @@ the patch. If you do find a test error or failure, either there’s something
 odd in your test environment, or you’ve found an edge case that we haven’t
 seen before - either way, let us know!
 
+In windows you will likely need another step.
+
+.. tabs::
+  .. group-tab:: Windows
+
+    .. code-block:: doscon
+
+      (venv) C:\...>pip install -e .
+      ...
+      Installing collected packages: toga
+         Running setup.py develop for toga
+      Successfully installed toga
+      
 Now you are ready to start hacking on Toga!
 
 What should I do?
