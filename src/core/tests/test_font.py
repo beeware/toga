@@ -43,3 +43,13 @@ class FontTests(TestCase):
     def test_measure(self):
         self.font.measure('measured text', tight=True)
         self.assertActionPerformedWith(self.font, 'measure', text='measured text', tight=True)
+
+    def test_bind(self):
+        font = toga.Font(
+            family=SANS_SERIF,
+            size=14,
+            style=ITALIC,
+            variant=SMALL_CAPS,
+            weight=BOLD)
+        ret_val = font._impl
+        self.assertEqual(ret_val, font._Font__impl)
