@@ -17,6 +17,7 @@ foundation.NSMouseInRect.argtypes = [NSPoint, NSRect, c_bool]
 # NSBundle.h
 NSBundle = ObjCClass('NSBundle')
 NSBundle.declare_class_property('mainBundle')
+NSBundle.declare_property('bundlePath')
 
 ######################################################################
 # NSFileWrapper.h
