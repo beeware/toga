@@ -609,6 +609,8 @@ NSGrooveBorder = 3
 ######################################################################
 # NSWindow.h
 NSWindow = ObjCClass('NSWindow')
+NSWindow.declare_property('frame')
+
 
 NSBorderlessWindowMask = 0
 NSTitledWindowMask = 1 << 0
