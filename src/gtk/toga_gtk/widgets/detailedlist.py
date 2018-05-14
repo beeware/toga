@@ -15,30 +15,30 @@ class DetailedList(Widget):
 
     def change_source(self, source):
         # TODO
-        raise NotImplementedError()
+        self.interface.factory.not_implemented('DetailedList.change_source()')
 
     def insert(self, index, item):
         # TODO
-        raise NotImplementedError()
+        self.interface.factory.not_implemented('DetailedList.insert()')
 
     def change(self, item):
         # TODO
-        raise NotImplementedError()
+        self.interface.factory.not_implemented('DetailedList.change()')
 
     def remove(self, item):
         # TODO
-        raise NotImplementedError()
+        self.interface.factory.not_implemented('DetailedList.remove()')
 
     def clear(self):
         # TODO
-        raise NotImplementedError()
+        self.interface.factory.not_implemented('DetailedList.clear()')
 
     def set_on_refresh(self, handler):
         pass
 
     def after_on_refresh(self):
         # TODO
-        raise NotImplementedError()
+        self.interface.factory.not_implemented('DetailedList.after_on_refresh()')
 
     def set_on_select(self, handler):
         pass
@@ -48,8 +48,8 @@ class DetailedList(Widget):
 
     def scroll_to_row(self, row):
         # TODO
-        raise NotImplementedError()
+        self.interface.factory.not_implemented('DetailedList.scroll_to_row()')
 
     def rehint(self):
         # TODO
-        raise NotImplementedError()
+        self.interface.factory.not_implemented('DetailedList.rehint()')
