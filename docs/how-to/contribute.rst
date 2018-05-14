@@ -385,7 +385,7 @@ created. As a result, most Toga widgets should accept a ``factory`` argument -
 and that factory should be used to instantiate any widget implementations or
 sub-widgets.
 
-However, *some* widgets - like Icon - are "late loaded" - the implmementation
+However, *some* widgets - like Icon - are "late loaded" - the implementation
 isn't created until the widget is actually *used*. Late loaded widgets don't
 accept a ``factory`` when they're created - but they *do* have an `_impl()`
 method that accepts a factory.
@@ -418,7 +418,7 @@ widget refreshes then updates), flag it and bring it to our attention by
 raising a ticket. Or, if you're confident that you know what needs to be done,
 create a pull request that fixes the problem you've found.
 
-On example of the type of consistency we're looking for is described in
+One example of the type of consistency we're looking for is described in
 `this ticket <https://github.com/pybee/toga/issues/299>`__.
 
 What next?
@@ -459,7 +459,7 @@ might want to look into a more advanced problem. Here are some suggestions:
   this document are all platform independent. They use the dummy backend to
   validate that data is being passed around correctly, but they don't validate
   that on a given platform, widgets behave they way they should. If I put a
-  button on Toga app, is that button displayed? Is it in the right place? Does
+  button on a Toga app, is that button displayed? Is it in the right place? Does
   it respond to mouse clicks? Ideally, we'd have automated tests to validate
   these properties. However, automated tests of GUI operations can be difficult
   to set up. If you've got experience with automated GUI testing, we'd love to
