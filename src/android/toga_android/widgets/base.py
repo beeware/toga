@@ -30,7 +30,7 @@ class Widget:
         self.rehint()
 
     def set_enabled(self, value):
-        self.native.enabled = value
+        self.native.enabled = self.interface.enabled
 
     ### APPLICATOR
 

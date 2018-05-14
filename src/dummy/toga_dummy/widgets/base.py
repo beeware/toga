@@ -24,7 +24,7 @@ class Widget(LoggedObject):
         self._set_value('container', container)
 
     def set_enabled(self, value):
-        self._action('set enabled', value=value)
+        self._action('set enabled', value=self.interface.enabled)
 
     ### APPLICATOR
 

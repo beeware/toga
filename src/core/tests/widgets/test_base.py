@@ -24,6 +24,13 @@ class WidgetTests(TestCase):
     def test_create_widget_with_no_style(self):
         widget = toga.Widget(factory=toga_dummy.factory)
         self.assertTrue(isinstance(widget.style, Pack))
+    
+    def test_enabled_with_None(self):
+        # Using a Box for test because we need a concrete implementation to use this property.
+        box = toga.Box(factory=toga_dummy.factory)
+        box.enabled = None
+        self.assertFalse(box.enabled)
+        self.assertActionPerformedWith(box, 'set enabled', value=False)
 
     def test_adding_children(self):
         """
