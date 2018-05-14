@@ -30,7 +30,7 @@ class WidgetTests(TestCase):
         box = toga.Box(factory=toga_dummy.factory)
         box.enabled = None
         self.assertFalse(box.enabled)
-        self.assertActionPerformedWith(box, 'set enabled', value=False)
+        self.assertActionPerformedWith(box, 'set enabled', value=None)
 
     def test_adding_children(self):
         """
