@@ -12,15 +12,19 @@ For details of Toga's pre-requisites, see the `toga repository on GitHub`_.
 
 Once those pre-requisites have been met, in your virtualenv, install Toga Demo,
 and then run it::
-
     $ pip install toga-demo
     $ toga-demo
 
 This will pop up a GUI window.
 
-If you have cloned the toga-demo repository, you can run the demo like this::
+If you have cloned the toga repository, you can run the demo like this::
+* Install pre-requisites from toga root directory
+    $ pip install -e src/core
+    $ pip install -e src/gtk
+    $ pip install -e .
 
-    $ pip install toga
+* Move to demo directory and run toga_demo
+    $ cd demo
     $ python -m toga_demo
 
 Community
