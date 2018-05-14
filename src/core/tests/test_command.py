@@ -1,4 +1,5 @@
 import unittest
+from unittest.mock import Mock
 
 import toga
 import toga_dummy
@@ -79,6 +80,28 @@ class TestCommand(unittest.TestCase):
                            )
         retur_val = cmd.bind(factory=toga_dummy.factory)
         self.assertEqual(retur_val, cmd._impl)
+
+    def test_command_enabler(self):
+        test_widget = toga.Widget(factory=toga_dummy.factory)
+        grp = toga.Group('Test group', order=10)
+        cmd = toga.Command(
+                           lambda x: print('Hello World'),
+                           label='test',
+                           tooltip='test command',
+                           shortcut='t',
+                           icon='icons/none.png',
+                           group=grp,
+                           section=1,
+                           order=1,
+                           factory=toga_dummy.factory
+                           )
+        cmd._widgets.append(test_widget)
+        cmd._widgets[0]._impl = Mock()
+        cmd.enabled = False
+        self.assertEqual(cmd._enabled,False)
+
+        for widget in cmd._widgets:
+          self.assertEqual(widget.enabled, False)        
 
     def test_cmd_sort_key(self):
         grp = toga.Group('Test group', order=10)
