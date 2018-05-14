@@ -17,13 +17,20 @@ and then run it::
 
 This will pop up a GUI window.
 
-If you have cloned the toga repository, you can run the demo like this::
+If you have cloned the toga repository, you can run the demo like this:
+
 * Install pre-requisites from toga root directory
+
+::
+
     $ pip install -e src/core
     $ pip install -e src/gtk
     $ pip install -e .
 
 * Move to demo directory and run toga_demo
+
+::
+
     $ cd demo
     $ python -m toga_demo
 
