@@ -2,12 +2,12 @@ Toga Roadmap
 ============
 
 Toga is a new project - we have lots of things that we'd like to do. If
-you'd like to contribute, providing a patch for one of these features.
+you'd like to contribute, you can provide a patch for one of these features.
 
 Widgets
 -------
 
-The core of Toga is it's widget set. Modern GUI apps have lots of native
+The core of Toga is its widget set. Modern GUI apps have lots of native
 controls that need to be represented. The following widgets have no
 representation at present, and need to be added.
 
@@ -25,7 +25,7 @@ Inputs are mechanisms for displaying and editing input provided by the user.
     - GTK+: Gtk.ComboBox.new_with_model_and_entry
     - iOS: ?
     - Winforms: ComboBox
-    - Android: ?
+    - Android: Spinner
 
 * DateInput - A widget for selecting a date
 
