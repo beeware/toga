@@ -2,14 +2,10 @@ import asyncio
 import signal
 import sys
 
-try:
-    import gi
-except ImportError:
-    py_version = "%d.%d" % (sys.version_info.major, sys.version_info.minor)
-    if sys.version_info.major == 3:
-        raise RuntimeError("Are you sure you have installed the Python GTK+ bindings? If not, run pip install pygobject")
-    else:
-        raise RuntimeError("Toga requires Python 3.")
+if sys.version_info[:3] < (3, 4):
+    raise SystemExit("Toga requires Python 3.4+.")
+
+import gi
 
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gio, GLib
