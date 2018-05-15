@@ -13,7 +13,7 @@ class MainWindow(Window):
     _WINDOW_CLASS = 'MainWindow'
 
     def __init__(self, id=None, title=None, position=(100, 100), size=(640, 480), factory=None):
-        super(MainWindow, self).__init__(id=id, title=title, position=position, size=size, factory=factory)
+        super().__init__(id=id, title=title, position=position, size=size, factory=factory)
 
 
 class App:
