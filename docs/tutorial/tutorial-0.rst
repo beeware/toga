@@ -2,6 +2,8 @@
 Your first Toga app
 ===================
 
+.. include:: /tutorial/tutorial-issues-note.rst
+
 In this example, we're going to build a desktop app with a single
 button, that prints to the console when you press the button.
 
@@ -238,6 +240,3 @@ Once you've got toga installed, you can run your script::
         NotImplementedError: Application does not define open_document()
 
     Toga apps must be executed as modules - hence the ``-m`` flag.
-    
-.. note:: Windows crashes on button click.
-    While the tutorial will render in windows.  If you click on the button it will crash due to not having the windows event    loop integrated fully.  See issue https://github.com/pybee/toga/issues/481 and https://github.com/pybee/toga/issues/97 for more information.  Contributions are welcome.
