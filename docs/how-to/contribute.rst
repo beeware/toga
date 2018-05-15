@@ -52,7 +52,7 @@ Next install any additional dependencies for your operating system:
     .. code-block:: bash
 
       $ sudo apt-get update
-      $ sudo apt-get install python3-dev libgirepository1.0-dev libcairo2-dev build-essential
+      $ sudo apt-get install python3-dev libgirepository1.0-dev libcairo2-dev
 
   .. group-tab:: Windows
 
