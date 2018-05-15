@@ -143,8 +143,6 @@ specific order. We start with the core packages:
     .. code-block:: bash
 
       (venv) $ cd toga
-      (venv) $ pip install pycairo
-      (venv) $ pip install pygobject
       (venv) $ pip install -e src/core
       (venv) $ pip install -e src/dummy
 
