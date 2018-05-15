@@ -1,5 +1,6 @@
-from .base import Widget
 from toga_winforms.libs import WinForms
+
+from .base import Widget
 
 
 class Tree(Widget):
