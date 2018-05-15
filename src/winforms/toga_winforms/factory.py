@@ -22,7 +22,7 @@ from .widgets.splitcontainer import *
 from .widgets.switch import *
 from .widgets.table import *
 from .widgets.textinput import *
-# from .widgets.tree import *
+from .widgets.tree import *
 from .widgets.webview import *
 from .window import Window
 
