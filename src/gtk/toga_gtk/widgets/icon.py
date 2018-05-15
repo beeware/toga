@@ -1,3 +1,5 @@
+import os
+
 from gi.repository import Gtk, GdkPixbuf
 
 
@@ -17,8 +19,14 @@ class Icon:
         try:
             return self.native[size]
         except KeyError:
+            valid_icon_extensions = ('.png', '.ico', self.EXTENSION)
+            file_path, file_extension = os.path.splitext(self.interface.filename)
+            if file_extension not in valid_icon_extensions:
+                file_extension = self.EXTENSION
+
             self.native[size] = Gtk.Image.new_from_pixbuf(
-                GdkPixbuf.Pixbuf.new_from_file(self.interface.filename).scale_simple(size, size, GdkPixbuf.InterpType.BILINEAR)
+                GdkPixbuf.Pixbuf.new_from_file(file_path + file_extension).scale_simple(
+                    size, size, GdkPixbuf.InterpType.BILINEAR)
             )
         return self.native[size]
 
