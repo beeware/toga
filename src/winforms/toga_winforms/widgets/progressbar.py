@@ -8,6 +8,8 @@ from .base import Widget
 class ProgressBar(Widget):
     def create(self):
         self.native = WinForms.ProgressBar()
+        # Windows expects integers provide 3 decimal precision for % resolution
+        self.native.Maximum = 1000
 
     def start(self):
         '''Not supported for WinForms implementation'''
@@ -24,9 +26,19 @@ class ProgressBar(Widget):
         # self.native.Style = ProgressBarStyle.Continuous
 
     def set_max(self, value):
-        self.native.Maximum = value
+        self.interface.factory.not_implemented('ProgressBar.set_max()')
 
     def set_value(self, value):
+        if value is None:
+            value = self.native.Minimum
+        if not isinstance(value, float):
+            value = float(value)
+        # convert to integer that is % of max.
+        value = int(value * self.native.Maximum)
+        if value > self.native.Maximum:
+            value = self.native.Maximum
+        if value < self.native.Minimum:
+            value = self.native.Minimum
         self.native.Value = value
 
     def rehint(self):
