@@ -30,7 +30,7 @@ setup(
         'toga-core==%s' % version,
         'gbulb>=0.5.3',
         'pycairo>=1.17.0',
-        'pygobject>=3.28.0',
+        'pygobject>=3.14.0',
     ],
     python_requires='~=3.4',
     tests_require=[
