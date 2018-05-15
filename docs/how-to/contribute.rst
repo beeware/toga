@@ -39,46 +39,6 @@ First thing is to ensure that you have Python 3 and pip installed. To do this ru
       C:\...>python3 --version
       C:\...>pip3 --version
 
-If you don't have Python 3 or pip installed, run:
-
-.. tabs::
-
-  .. group-tab:: macOS
-
-    If you don't have homebrew installed run:
-
-    .. code-block:: bash
-
-      $ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-
-    Then install python:
-
-    .. code-block:: bash
-
-      $ brew install python
-
-  .. group-tab:: Linux
-
-    .. code-block:: bash
-
-      $ sudo apt-get update
-      $ sudo apt-get install python3 python3-pip
-
-  .. group-tab:: Windows
-
-    If you don't have chocolatey installed run:
-
-    .. code-block:: doscon
-
-      C:\...>@"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
-
-    Then install python:
-
-    .. code-block:: docon
-
-      C:\...>choco install python
-
-
 Next install any additional dependencies for your operating system:
 
 .. tabs::
