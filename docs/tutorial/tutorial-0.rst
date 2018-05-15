@@ -2,6 +2,8 @@
 Your first Toga app
 ===================
 
+.. include:: /tutorial/tutorial-issues-note.rst
+
 In this example, we're going to build a desktop app with a single
 button, that prints to the console when you press the button.
 
