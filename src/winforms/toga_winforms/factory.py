@@ -3,7 +3,7 @@ from .command import Command
 # from .font import font
 from .widgets.box import Box
 from .widgets.button import Button
-# from .widgets.canvas import Canvas
+from .widgets.canvas import Canvas
 # from .widgets.detailedlist import DetailedList
 from .widgets.icon import Icon
 from .widgets.image import *
