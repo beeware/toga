@@ -33,20 +33,29 @@ class Widget:
         self.rehint()
 
     def set_enabled(self, value):
-        self.native.enabled = value
+        self.native.enabled = self.interface.enabled
 
     ### APPLICATOR
 
     def set_bounds(self, x, y, width, height):
-        self.constraints.update(x, y, width, height)
+        if self.container:
+            viewport = self.container.viewport
+        else:
+            viewport = self.viewport
+
+        self.constraints.update(
+            x, y + viewport.statusbar_height,
+            width, height
+        )
 
     def set_alignment(self, alignment):
         pass
 
     def set_hidden(self, hidden):
-        for view in self._container._impl.subviews:
-            if child._impl == view:
-                view.setHidden(hidden)
+        if self._container:
+            for view in self._container._impl.subviews:
+                if child._impl == view:
+                    view.setHidden(hidden)
 
     def set_font(self, font):
         # By default, font can't be changed

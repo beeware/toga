@@ -7,7 +7,7 @@ class SwitchApp(toga.App):
     def startup(self):
         # Window class
         #   Main window of the application with title and size
-        self.main_window = toga.MainWindow(self.name, size=(300, 150))
+        self.main_window = toga.MainWindow(title=self.name, size=(300, 150))
 
         switch_style = Pack(padding=24)
 
@@ -38,5 +38,5 @@ class SwitchApp(toga.App):
 def main():
     # Application class
     #   App name and namespace
-    app = SwitchApp('Switchs', 'org.pybee.helloworld')
+    app = SwitchApp('Switches', 'org.pybee.helloworld')
     return app

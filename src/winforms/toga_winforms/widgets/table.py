@@ -1,6 +1,6 @@
 from travertino.size import at_least
 
-from toga_winforms.libs import *
+from toga_winforms.libs import WinForms
 
 from .base import Widget
 
@@ -9,6 +9,7 @@ class Table(Widget):
     def create(self):
         self._container = self
         self.native = WinForms.ListView()
+        self.native.View = WinForms.View.Details
 
         dataColumn = []
         for heading in self.interface.headings:
@@ -16,7 +17,6 @@ class Table(Widget):
             col.Text = heading
             dataColumn.append(col)
 
-        self.native.View = WinForms.View.Details
         self.native.FullRowSelect = True
         self.native.Multiselect = self.interface.multiple_select
         self.native.Columns.AddRange(dataColumn)

@@ -34,7 +34,7 @@ class AppTests(TestCase):
         self.assertEqual(self.app.icon, self.app.default_icon)
 
         # Set the icon to a different resource
-        self.app.icon = "other"
+        self.app.icon = "other.icns"
         self.assertEqual(self.app.icon.path, "other.icns")
 
     def test_app_app_id(self):

@@ -64,7 +64,7 @@ def build(app):
     things = toga.Group('Things')
 
     cmd0 = toga.Command(
-        action1,
+        action0,
         label='Action 0',
         tooltip='Perform action 0',
         icon=brutus_icon,

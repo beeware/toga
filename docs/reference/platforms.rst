@@ -8,20 +8,22 @@ Official platform support
 Desktop platforms
 -----------------
 
-OS X
-~~~~
+macOS
+~~~~~
 
 .. image:: /reference/screenshots/cocoa.png
 
-The backend for OS X is named `toga-cocoa`_. It supports OS X 10.7 (Lion)
-and later. It is installed automatically on OS X machines (machines that
+The backend for macOS is named `toga-cocoa`_. It supports macOS 10.7 (Lion)
+and later. It is installed automatically on macOS machines (machines that
 report ``sys.platform == 'darwin'``), or can be manually installed by invoking::
 
-    $ pip install toga[cocoa]
+    $ pip install toga-cocoa
 
-The OS X backend has seen the most development to date.
+The macOS backend has seen the most development to date. It uses `Rubicon`_ to
+provide a bridge to native macOS libraries.
 
-.. _toga-cocoa: http://github.com/pybee/toga-cocoa
+.. _toga-cocoa: https://github.com/pybee/toga/tree/master/src/cocoa
+.. _Rubicon: https://github.com/pybee/rubicon-objc
 
 Linux
 ~~~~~
@@ -33,26 +35,28 @@ and later. It is installed automatically on Linux machines (machines that
 report ``sys.platform == 'linux'``), or can be manually installed by
 invoking::
 
-    $ pip install toga[gtk]
+    $ pip install toga-gtk
 
 The GTK+ backend is reasonably well developed, but currently has some known issues
-with widget layout.
+with widget layout. It uses the native GObject Python bindings.
 
-.. _toga-gtk: http://github.com/pybee/toga-gtk
+.. _toga-gtk: https://github.com/pybee/toga/tree/master/src/gtk
 
-Win32
-~~~~~
+Winforms
+~~~~~~~~
 
-The backend for Windows is named `toga-win32`_. It supports Windows XP or
-later. It is installed automatically on Windows machines (machines that report
-``sys.platform == 'win32'``), or can be manually installed by invoking::
+The backend for Windows is named `toga-winforms`_. It supports Windows XP or
+later with .NET installed. It is installed automatically on Windows machines
+(machines that report ``sys.platform == 'win32'``), or can be manually
+installed by invoking::
 
-    $ pip install toga[win32]
+    $ pip install toga-winforms
 
 The Windows backend is currently proof-of-concept only. Most widgets have not been
-implemented.
+implemented. It uses `Python.net`_
 
-.. _toga-win32: http://github.com/pybee/toga-win32
+.. _toga-winforms: https://github.com/pybee/toga/tree/master/src/winforms
+.. _Python.net: https://pythonnet.github.io
 
 Mobile platforms
 ----------------
@@ -65,29 +69,69 @@ must be manually installed into an iOS Python project (such as one that has
 been developed using the `Python-iOS-template cookiecutter`_). It can be
 manually installed by invoking::
 
-    $ pip install toga[iOS]
+    $ pip install toga-iOS
 
 The iOS backend is currently proof-of-concept only. Most widgets have not been
-implemented.
+implemented. It uses `Rubicon`_ to provide a bridge to native macOS libraries.
 
 .. _Python-iOS-template cookiecutter: http://github.com/pybee/Python-iOS-template
-.. _toga-iOS: http://github.com/pybee/toga-iOS
+.. _toga-iOS: http://github.com/pybee/toga/tree/master/src/iOS
 
+Android
+~~~~~~~
+
+The backend for Android is named `toga-android`_. It can be manually installed
+by invoking::
+
+    $ pip install toga-android
+
+The android backend is currently proof-of-concept only. Most widgets have not
+been implemented. It uses `VOC`_ to compile Python code to Java class files
+for execution on Android devices.
+
+.. _toga-android: http://github.com/pybee/toga/tree/master/src/android
+.. _VOC: http://github.com/pybee/voc
+
+Web platforms
+-------------
+
+Django
+~~~~~~
+
+The backend for Django is named `toga-django`_. It can be manually installed
+by invoking::
+
+    $ pip install toga-django
+
+The Django backend is currently proof-of-concept only. Most widgets have not been
+implemented. It uses `Batavia`_ to run Python code in the browser.
+
+.. _toga-django: http://github.com/pybee/toga/tree/master/src/django
+.. _Batavia: https://github.com/pybee/batavia
+
+The Dummy platform
+------------------
+
+Toga also provides a Dummy platform - this is a backend that implements the full
+interface required by a platform backend, but does not display any widgets visually.
+It is intended for use in tests, and provides an API that can be used to verify
+widget operation.
 
 Planned platform support
 ========================
 
-There are plans to provide support for the following platforms:
+Eventually, the Toga project would like to provide support for the following platforms:
 
- * Web (using Batavia_ to run Python on the browser)
- * Android
- * WinRT (Native Windows 8 and Windows mobile)
+ * Other Python web frameworks (e.g., Flask, Pyramid)
+ * UWP (Native Windows 8 and Windows mobile)
  * Qt (for KDE based desktops)
+ * tvOS (for AppleTV devices)
+ * watchOS (for AppleWatch devices)
+ * Curses (for console)
 
 If you are interested in these platforms and would like to contribute, please
 get in touch on Twitter_ or Gitter_.
 
-.. _Batavia: https://github.com/pybee/batavia
 .. _Twitter: https://twitter.com/pybeeware
 .. _Gitter: https://gitter.im/pybee/general
 
