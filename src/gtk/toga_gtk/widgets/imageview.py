@@ -46,6 +46,11 @@ class ImageView(Widget):
 
     @staticmethod
     def _resize_max(original_height, original_width, max_height, max_width):
+
+        # Check to make sure all dimensions have valid sizes
+        if min(original_height, original_width, max_height, max_width) <= 0:
+            return 1, 1
+
         width_ratio = max_width/original_width
         height_ratio = max_height/original_height
 
