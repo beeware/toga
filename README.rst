@@ -43,7 +43,7 @@ Minimum requirements
   * **Ubuntu / Debian** ``sudo apt-get install python3-dev python3-gi python3-gi-cairo gir1.2-gtk-3.0 libgirepository1.0-dev libcairo2-dev``
 
   * **Fedora** ``sudo dnf install pygobject3 python3-gobject python3-cairo-devel cairo-gobject-devel gobject-introspection-devel``
-  or ``sudo yum install pygobject3 python3-gobject python3-cairo-devel cairo-gobject-devel gobject-introspection-devel``
+    or ``sudo yum install pygobject3 python3-gobject python3-cairo-devel cairo-gobject-devel gobject-introspection-devel``
 
   * **Arch Linux** ``sudo pacman -S gobject-introspection``
 
