@@ -1,18 +1,19 @@
-#FIXME: Image alignment is still wrong
-#FIXME: Image resizing is still wrong
-
 import os
 from urllib.request import Request, urlopen
 
-from gi.repository import Gtk, GdkPixbuf, Gio
+from gi.repository import GdkPixbuf, Gio, Gtk
 
 import toga
+
 from .base import Widget
+
 
 class ImageView(Widget):
 
     def create(self):
-        self.native = Gtk.Image()
+        self.native = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        self._image = Gtk.Image()
+        self.native.add(self._image)
         self.native.interface = self.interface
 
     def get_image(self):
@@ -31,14 +32,28 @@ class ImageView(Widget):
         else:
             self._original_pixbuf = GdkPixbuf.Pixbuf.new_from_file(os.path.join(toga.App.app_dir, self.image.path))
 
-        self.interface.style.update(height=self._original_pixbuf.get_height(), width=self._original_pixbuf.get_width())
-        self.native.set_asignment
-
         self.rehint()
 
     def rehint(self):
-        width = self.native.get_allocated_width()
-        height = self.native.get_allocated_height()
+        height, width = self._resize_max(
+                original_height=self._original_pixbuf.get_height(),
+                original_width=self._original_pixbuf.get_width(),
+                max_height=self.native.get_allocated_height(),
+                max_width=self.native.get_allocated_width())
 
-        pixbuf = self._original_pixbuf.scale_simple(width, height, GdkPixbuf.InterpType.NEAREST)
-        self.native.set_from_pixbuf(pixbuf)
+        pixbuf = self._original_pixbuf.scale_simple(width, height, GdkPixbuf.InterpType.BILINEAR)
+        self._image.set_from_pixbuf(pixbuf)
+
+    @staticmethod
+    def _resize_max(original_height, original_width, max_height, max_width):
+        width_ratio = max_width/original_width
+        height_ratio = max_height/original_height
+
+        height = original_height * width_ratio
+        if height <= max_height:
+            width = original_width * width_ratio
+        else:
+            height = original_height * height_ratio
+            width = original_width * height_ratio
+
+        return int(height), int(width)
