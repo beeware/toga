@@ -28,6 +28,10 @@ NSFileWrapper = ObjCClass('NSFileWrapper')
 NSNotificationCenter = ObjCClass('NSNotificationCenter')
 
 ######################################################################
+NSNotification = ObjCClass('NSNotification')
+NSNotification.declare_property('object')
+
+######################################################################
 # NSURL.h
 NSURL = ObjCClass('NSURL')
 
