@@ -13,7 +13,7 @@ class Widget(CassowaryWidget):
 
     def __init__(self, text=''):
         self.text = text
-        super(Widget, self).__init__()
+        super().__init__()
 
 
     @property

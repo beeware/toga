@@ -1,5 +1,4 @@
 from .app import App, MainWindow
-from .color import native_color
 from .command import Command
 # from .font import font
 from .widgets.box import Box
@@ -21,8 +20,6 @@ from .widgets.slider import *
 from .widgets.splitcontainer import *
 from .widgets.switch import *
 from .widgets.table import *
-from .widgets.textinput import *
-# from .widgets.tree import *
 from .widgets.webview import *
 from .window import Window
 

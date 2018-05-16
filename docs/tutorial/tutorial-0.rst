@@ -2,6 +2,8 @@
 Your first Toga app
 ===================
 
+.. include:: /tutorial/tutorial-issues-note.rst
+
 In this example, we're going to build a desktop app with a single
 button, that prints to the console when you press the button.
 
@@ -10,6 +12,7 @@ Set up your development environment
 ===================================
 
 Open a command prompt on your computer and make sure that you can successfully run the :code:`python3` command. Create a working directory for your code and change to it.
+If Python 3 is *not* installed, you can do so via `the official installer <https://www.python.org/downloads>`_, or via `pyenv <https://github.com/pyenv/pyenv#simple-python-version-management-pyenv>`_, as described in the `environment page <https://pybee.org/contributing/how/first-time/setup>`_.
 
 The recommended way of setting up your development environment for Toga
 is to install a virtual environment, install the required dependencies and
