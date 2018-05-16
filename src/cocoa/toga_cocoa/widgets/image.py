@@ -9,7 +9,8 @@ class Image(object):
         self.interface = interface
         self.interface.impl = self
 
-    def __get_full_path(self, path):
+    @staticmethod
+    def _get_full_path(path):
         if path.startswith(('http://', 'https://')) or os.path.isabs(path):
             return path
         else:
@@ -19,4 +20,4 @@ class Image(object):
         if path.startswith(('http://', 'https://')):
             self.native = NSImage.alloc().initByReferencingURL(NSURL.URLWithString_(path))
         else:
-            self.native = NSImage.alloc().initWithContentsOfFile(self.__get_full_path(path))
+            self.native = NSImage.alloc().initWithContentsOfFile(self._get_full_path(path))
