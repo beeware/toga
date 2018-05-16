@@ -44,7 +44,7 @@ class Widget:
         self.interface.rehint()
 
     def set_enabled(self, value):
-        self.native.set_sensitive(value)
+        self.native.set_sensitive(self.interface.enabled)
 
     ### APPLICATOR
 

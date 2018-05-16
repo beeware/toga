@@ -2,6 +2,8 @@
 A slightly less toy example
 ===========================
 
+.. include:: /tutorial/tutorial-issues-note.rst
+
 Most applications require a little more than a button on a page. Lets
 build a slightly more complex example - a Fahrenheit to Celsius converter:
 

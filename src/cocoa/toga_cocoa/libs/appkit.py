@@ -59,7 +59,10 @@ NSUnderlineStyleAttributeName = objc_const(appkit, "NSUnderlineStyleAttributeNam
 NSStrokeColorAttributeName = objc_const(appkit, "NSStrokeColorAttributeName")
 NSStrokeWidthAttributeName = objc_const(appkit, "NSStrokeWidthAttributeName")
 NSShadowAttributeName = objc_const(appkit, "NSShadowAttributeName")
-NSTextEffectAttributeName = objc_const(appkit, "NSTextEffectAttributeName")
+
+# NSTextEffectAttributeName is supported in OS 10.10+
+# goes against minimum requirements: current support is for OS 10.7+
+# NSTextEffectAttributeName = objc_const(appkit, "NSTextEffectAttributeName")
 
 NSAttachmentAttributeName = objc_const(appkit, "NSAttachmentAttributeName")
 NSLinkAttributeName = objc_const(appkit, "NSLinkAttributeName")
@@ -485,6 +488,7 @@ NSFileHandlingPanelOKButton = 1
 # NSScreen.h
 NSScreen = ObjCClass('NSScreen')
 NSScreen.declare_class_property('mainScreen')
+NSScreen.declare_property('visibleFrame')
 
 ######################################################################
 # NSScrollView.h
@@ -606,6 +610,8 @@ NSGrooveBorder = 3
 ######################################################################
 # NSWindow.h
 NSWindow = ObjCClass('NSWindow')
+NSWindow.declare_property('frame')
+
 
 NSBorderlessWindowMask = 0
 NSTitledWindowMask = 1 << 0

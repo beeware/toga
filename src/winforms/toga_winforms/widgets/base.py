@@ -34,7 +34,8 @@ class Widget:
         self.rehint()
 
     def set_enabled(self, value):
-        self.interface.factory.not_implemented('Widget.set_enabled()')
+        if self.native:
+            self.native.Enabled = self.interface.enabled
 
     ### APPLICATOR
 

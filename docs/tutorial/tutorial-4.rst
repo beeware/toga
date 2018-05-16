@@ -2,6 +2,8 @@
 Let's draw on a canvas!
 =======================
 
+.. include:: /tutorial/tutorial-issues-note.rst
+
 .. note:: This tutorial only works on GTK for now!
 
     Want to help out? Maybe you could port the Canvas widget to other platforms?

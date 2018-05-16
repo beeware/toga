@@ -62,7 +62,7 @@ class MultilineTextInput(Widget):
         Returns:
             The text of the Widget as a ``str``.
         """
-        return self._value
+        return self._impl.get_value()
 
     @value.setter
     def value(self, value):

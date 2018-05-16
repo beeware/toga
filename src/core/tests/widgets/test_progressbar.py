@@ -73,18 +73,18 @@ class ProgressBarTests(TestCase):
     def test_set_value_to_number_less_than_max(self):
         new_value = self.progress_bar.max / 2
         self.progress_bar.value = new_value
-        self.assertEqual(self.progress_bar._value, new_value)
+        self.assertEqual(self.progress_bar.value, new_value)
         self.assertValueSet(self.progress_bar, 'value', value=new_value)
 
     def test_set_value_to_number_greater_than_max(self):
         new_value = self.progress_bar.max + 1
         self.progress_bar.value = new_value
-        self.assertEqual(self.progress_bar._value, self.progress_bar.max)
+        self.assertEqual(self.progress_bar.value, self.progress_bar.max)
         self.assertValueSet(self.progress_bar, 'value', value=new_value)
 
     def test_set_value_to_none(self):
         self.progress_bar.value = None
-        self.assertEqual(self.progress_bar._value, 0)  # 0 is clean value for None
+        self.assertEqual(self.progress_bar.value, 0)  # 0 is clean value for None
         self.assertValueSet(self.progress_bar, 'value', value=None)
 
     def test_disabled_cases(self):
