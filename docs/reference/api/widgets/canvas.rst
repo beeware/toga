@@ -15,7 +15,7 @@ The canvas is used for creating a blank widget that you can draw on.
 Usage
 -----
 
-Simple usage to draw an image on the screen:
+Simple usage to draw a black circle on the screen using the arc drawing object:
 
 .. code-block:: Python
 
@@ -25,8 +25,10 @@ Simple usage to draw an image on the screen:
     with canvas.fill() as fill:
         fill.arc(50, 50, 15)
 
-More advanced usage for something like a vector drawing app where you would want
-to modify the parameters of the drawing objects:
+More advanced usage for something like a vector drawing app where you would
+want to modify the parameters of the drawing objects. Here we draw a black
+circle and black rectangle. We then change the size of the circle, move the
+rectangle, and finally delete the rectangle.
 
 .. code-block:: Python
 
@@ -41,9 +43,11 @@ to modify the parameters of the drawing objects:
     rect1.x = 75
     fill.remove(rect1)
 
-Use of drawing contexts, for example with a platformer game. Here you would want
-to modify the x/y coordinate of a drawing context that draws each character on
-the canvas:
+Use of drawing contexts, for example with a platformer game. Here you would
+want to modify the x/y coordinate of a drawing context that draws each
+character on the canvas. First, we create a hero context. Next, we create a
+black circle and a black outlined rectangle for the hero's body. Finally, we
+move the hero by 10 on the x-axis.
 
 .. code-block:: Python
 
@@ -73,54 +77,6 @@ Main Interface
 Lower-Level Classes
 ^^^^^^^^^^^^^^^^^^^
 
-.. autoclass:: toga.widgets.canvas.Context
+.. automodule:: toga.widgets.canvas
    :members:
-
-.. autoclass:: toga.widgets.canvas.Fill
-   :members:
-
-.. autoclass:: toga.widgets.canvas.Stroke
-   :members:
-
-.. autoclass:: toga.widgets.canvas.ClosedPath
-   :members:
-
-.. autoclass:: toga.widgets.canvas.MoveTo
-   :members:
-
-.. autoclass:: toga.widgets.canvas.LineTo
-   :members:
-
-.. autoclass:: toga.widgets.canvas.BezierCurveTo
-   :members:
-
-.. autoclass:: toga.widgets.canvas.QuadraticCurveTo
-   :members:
-
-.. autoclass:: toga.widgets.canvas.Ellipse
-   :members:
-
-.. autoclass:: toga.widgets.canvas.Arc
-   :members:
-
-.. autoclass:: toga.widgets.canvas.Arc
-   :members:
-
-.. autoclass:: toga.widgets.canvas.Rect
-   :members:
-
-.. autoclass:: toga.widgets.canvas.Rotate
-   :members:
-
-.. autoclass:: toga.widgets.canvas.Scale
-   :members:
-
-.. autoclass:: toga.widgets.canvas.Translate
-   :members:
-
-.. autoclass:: toga.widgets.canvas.WriteText
-   :members:
-
-.. autoclass:: toga.widgets.canvas.NewPath
-   :members:
-
+   :exclude-members: Canvas
