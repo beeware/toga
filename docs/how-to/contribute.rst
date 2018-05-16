@@ -14,6 +14,50 @@ If you experience problems with Toga, `log them on GitHub`_. If you want to cont
 Set up your development environment
 ===================================
 
+First thing is to ensure that you have Python 3 and pip installed. To do this run the following commands:
+
+.. tabs::
+
+  .. group-tab:: macOS
+
+    .. code-block:: bash
+
+      $ python3 --version
+      $ pip3 --version
+
+  .. group-tab:: Linux
+
+    .. code-block:: bash
+
+      $ python3 --version
+      $ pip3 --version
+
+  .. group-tab:: Windows
+
+    .. code-block:: doscon
+
+      C:\...>python3 --version
+      C:\...>pip3 --version
+
+Next install any additional dependencies for your operating system:
+
+.. tabs::
+
+  .. group-tab:: macOS
+
+    No additional dependencies
+
+  .. group-tab:: Linux
+
+    .. code-block:: bash
+
+      $ sudo apt-get update
+      $ sudo apt-get install python3-dev libgirepository1.0-dev libcairo2-dev
+
+  .. group-tab:: Windows
+
+    No additional dependencies
+
 The recommended way of setting up your development environment for Toga
 is to install a virtual environment, install the required dependencies and
 start coding. To set up a virtual environment, run:

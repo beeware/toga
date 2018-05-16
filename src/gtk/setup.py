@@ -1,12 +1,8 @@
 #/usr/bin/env python
 import io
 import re
-import sys
 
 from setuptools import setup, find_packages
-
-if sys.version_info[:3] < (3, 4):
-    raise SystemExit("Toga requires Python 3.4+.")
 
 
 with io.open('toga_gtk/__init__.py', encoding='utf8') as version_file:
@@ -33,7 +29,10 @@ setup(
     install_requires=[
         'toga-core==%s' % version,
         'gbulb>=0.5.3',
+        'pycairo>=1.17.0',
+        'pygobject>=3.14.0',
     ],
+    python_requires='~=3.4',
     tests_require=[
         'toga-dummy==%s' % version
     ],

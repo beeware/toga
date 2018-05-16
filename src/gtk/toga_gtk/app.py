@@ -1,84 +1,11 @@
 import asyncio
-import os
 import signal
 import sys
 
-try:
-    import gi
-except ImportError:
-    # app.py is the first module that will be imported when you import toga_gtk.
-    #
-    # If Gtk can't be imported, it may be because we're in a virtualenv,
-    # and the system python libraries aren't visible. This can be fixed by
-    # creating a symlink into the site-packages
-    # Try creating a symlink to the system library location.
-    # base_packages_dir is where the packages installed by the package manager
-    # can be found.
-    # gi_system_install_path is where gi can be found in the packages dir.
-    # installer_command is the command the user can run to install gi.
-    py_version = "%d.%d" % (sys.version_info.major, sys.version_info.minor)
+if sys.version_info[:3] < (3, 4):
+    raise SystemExit("Toga requires Python 3.4+.")
 
-    if sys.version_info.major == 3:
-        if os.path.isdir('/usr/lib64/python%s/site-packages/' % (py_version,)):
-            # Fedora
-            base_packages_dir = '/usr/lib64/python%s/site-packages/' % (py_version,)
-            gi_system_install_path = '/usr/lib64/python%s/site-packages/gi' % (py_version,)
-            installer_command = 'dnf install pygobject3 python3-gobject'
-        elif os.path.isdir('/usr/lib/python3/dist-packages/'):
-            # Ubuntu, Debian
-            base_packages_dir = '/usr/lib/python3/dist-packages/'
-            gi_system_install_path = '/usr/local/lib/python3/dist-packages/gi'
-            installer_command = 'apt-get install python3-gi'
-        elif os.path.isdir('/usr/lib/python%s/site-packages/' % (py_version,)):
-            # Arch
-            base_packages_dir = '/usr/lib/python%s/site-packages/' % (py_version,)
-            gi_system_install_path = '/usr/lib/python%s/site-packages/gi' % (py_version,)
-            installer_command = 'pacman -S python-gobject'
-        else:
-            raise RuntimeError("Unable to locate your Python packages dir.")
-    else:
-        raise RuntimeError("Toga requires Python 3.")
-
-    # Use the location of this package to guide us to
-    # the location of the virtualenv.
-    gi_symlink_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'gi')
-    pygtkcompat_symlink_path = os.path.join(os.path.dirname(os.path.dirname(__file__)),  'pygtkcompat')
-    cairo_symlink_path = os.path.join(os.path.dirname(os.path.dirname(__file__)),  'cairo')
-
-    if gi_symlink_path == gi_system_install_path:
-        # If we're not in a virtualenv, just raise the original import error.
-        raise
-    else:
-        gi_path = os.path.join(base_packages_dir, 'gi')
-        pygtkcompat_path = os.path.join(base_packages_dir, 'pygtkcompat')
-        cairo_path = os.path.join(base_packages_dir, 'cairo')
-        if os.path.exists(gi_path) and os.path.isdir(gi_path):
-
-            # If we can identify the gi library, create a symlink to it.
-            try:
-                print("Creating symlink (%s & %s) to system GTK+ libraries..." % (gi_symlink_path, pygtkcompat_symlink_path))
-                os.symlink(gi_path, gi_symlink_path)
-                os.symlink(pygtkcompat_path, pygtkcompat_symlink_path)
-
-                try:
-                    print("Creating symlink (%s) to system Cairo libraries..." % cairo_symlink_path)
-                    os.symlink(cairo_path, cairo_symlink_path)
-                except OSError:
-                    # If we can't create the symlink, we'll get an error importing cairo;
-                    # report the error at time of use, rather than now.
-                    pass
-
-                # The call to os.symlink will return almost immediately,
-                # but for some reason, it may not be fully flushed to
-                # the file system. One way to fix this is to start
-                # the process again. This call to os.execl restarts the
-                # program with the same arguments, replacing the original
-                # operating system process.
-                os.execl(sys.executable, sys.executable, *sys.argv)
-            except OSError:
-                raise RuntimeError("Unable to automatically create symlink to system Python GTK+ bindings.")
-        else:
-            raise RuntimeError("Unable to locate the Python GTK+ bindings. Have you run '%s'?" % installer_command)
+import gi
 
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gio, GLib
