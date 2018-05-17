@@ -564,6 +564,9 @@ def NSTextAlignment(alignment):
 NSTextField = ObjCClass('NSTextField')
 NSTextFieldCell = ObjCClass('NSTextFieldCell')
 
+NSTextField.declare_property('editable')
+NSTextField.declare_property('bezeled')
+
 ######################################################################
 # NSTextFieldCell.h
 
