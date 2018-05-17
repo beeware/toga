@@ -45,9 +45,9 @@ class Switch(Widget):
             raise Exception('Undefined value for is_on of {}'.format(__class__))
 
     def rehint(self):
-        fitting_size = self.native.fittingSize()
-        self.interface.intrinsic.height = fitting_size.height
-        self.interface.intrinsic.width = at_least(fitting_size.width)
+        content_size = self.native.intrinsicContentSize()
+        self.interface.intrinsic.height = content_size.height
+        self.interface.intrinsic.width = at_least(content_size.width)
 
     def set_on_toggle(self, handler):
         pass
