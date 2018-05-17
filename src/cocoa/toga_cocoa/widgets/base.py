@@ -41,8 +41,6 @@ class Widget:
     def set_bounds(self, x, y, width, height):
         # print("SET BOUNDS ON", self.interface, x, y, width, height)
         self.constraints.update(x, y, width, height)
-        # print('horiz', self.native.constraintsAffectingLayoutForOrientation(0))
-        # print('vert', self.native.constraintsAffectingLayoutForOrientation(1))
 
     def set_alignment(self, alignment):
         pass
