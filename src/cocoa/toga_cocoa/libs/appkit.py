@@ -586,6 +586,7 @@ NSTimer = ObjCClass('NSTimer')
 NSToolbar = ObjCClass('NSToolbar')
 NSToolbarItem = ObjCClass('NSToolbarItem')
 
+NSToolbarItem.declare_property('itemIdentifier')
 ######################################################################
 # NSTrackingArea.h
 NSTrackingMouseEnteredAndExited = 0x01
