@@ -7,7 +7,7 @@ from toga.style import Pack
 class StartApp(toga.App):
     def startup(self):
         # Main window of the application with title and size
-        self.main_window = toga.MainWindow(self.name, size=(148, 200))
+        self.main_window = toga.MainWindow(title=self.name, size=(148, 200))
 
         # Create canvas and draw tiberius on it
         self.canvas = toga.Canvas(style=Pack(flex=1))
