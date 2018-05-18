@@ -6,13 +6,12 @@ from .base import Widget
 from ..color import color as parse_color
 
 
-class InterfaceMixin:
-    def __init__(self, **kwargs):  # kwargs used to support multiple inheritance
-        super().__init__(**kwargs)
+class CanvasContextMixin:
+    def __init__(self, *args, **kwargs):  # kwargs used to support multiple inheritance
+        super().__init__(*args, **kwargs)
 
         self.drawing_objects = []
         self._parent_context = None
-        self._child_context = None
         self._canvas = None
         self._children_contexts = None
 
@@ -20,8 +19,17 @@ class InterfaceMixin:
     # Private methods to keep track of the canvas, automatically redraw it
     ###########################################################################
 
-    @staticmethod
-    def __set_canvas(node, canvas):
+    @property
+    def canvas(self):
+        """The canvas property of the tree containing this context.
+
+        Returns:
+            The canvas node. Returns self if this node *is* the canvas node.
+
+        """
+        return self._canvas if self._canvas else self
+
+    def propogate_canvas(self, node, canvas):
         """Propagate a canvas node change through a tree of contexts.
 
         Args:
@@ -30,46 +38,10 @@ class InterfaceMixin:
 
         """
         node._canvas = canvas
-        for child in node.__children_contexts:
-            node.__set_canvas(child, canvas)
+        for child in node._children_contexts:
+            node.canvas(child, canvas)
 
-    @property
-    def __canvas(self):
-        """The canvas of the tree containing this context.
-
-        Returns:
-            The canvas node. Returns self if this node *is* the canvas node.
-
-        """
-        return self._canvas if self._canvas else self
-
-    @property
-    def __parent_context(self):
-        """ The parent of this node.
-
-        Returns:
-            The parent of this node. Returns None if this node is the canvas node.
-
-        """
-        return self._parent_context
-
-    @property
-    def __children_contexts(self):
-        """The children of this node.
-
-        This *always* returns a list, even if the node is a non-context drawing
-        object and cannot have children.
-
-        Returns:
-            A list of the children contexts for this widget.
-
-        """
-        if self._children_contexts is None:
-            return []
-        else:
-            return self._children_contexts
-
-    def __add_child(self, child):
+    def add_child(self, child):
         """Add a context as a child of this one.
 
         Args:
@@ -84,9 +56,9 @@ class InterfaceMixin:
 
         self._children_contexts.append(child)
         child._parent_context = self
-        self.__set_canvas(child, self.__canvas)
+        self.propogate_canvas(child, self._canvas)
 
-    def __add_drawing_object(self, drawing_object):
+    def add_drawing_object(self, drawing_object):
         """A drawing object to add to the drawing object stack on a context
 
         Args:
@@ -94,9 +66,9 @@ class InterfaceMixin:
 
         """
         self.drawing_objects.append(drawing_object)
-        self.__redraw()
+        self.redraw()
 
-    def __redraw(self):
+    def redraw(self):
         """Force a redraw of the Canvas
 
         The Canvas will be automatically redrawn after adding or remove a
@@ -118,7 +90,7 @@ class InterfaceMixin:
 
         """
         self.drawing_objects.remove(drawing_object)
-        self.__redraw()
+        self.redraw()
 
     ###########################################################################
     # Contexts to draw with
@@ -137,8 +109,8 @@ class InterfaceMixin:
 
         """
         context = Context()
-        self.__add_drawing_object(context.drawing_objects)
-        self.__add_child(context)
+        self.add_drawing_object(context.drawing_objects)
+        self.add_child(context)
         yield context
 
     @contextmanager
@@ -163,12 +135,12 @@ class InterfaceMixin:
             fill = Fill(color, fill_rule, preserve)
         else:
             fill = Fill(color, 'nonzero', preserve)
-        self.__add_drawing_object(fill.drawing_objects)
-        self.__add_child(fill)
+        self.add_drawing_object(fill.drawing_objects)
+        self.add_child(fill)
         new_path = NewPath()
-        fill.__add_drawing_object(new_path)
+        fill.add_drawing_object(new_path)
         yield fill
-        fill.__add_drawing_object(fill)
+        fill.add_drawing_object(fill)
 
     @contextmanager
     def stroke(self, color=None, line_width=2.0):
@@ -184,10 +156,10 @@ class InterfaceMixin:
 
         """
         stroke = Stroke(color, line_width)
-        self.__add_drawing_object(stroke.drawing_objects)
-        self.__add_child(stroke)
+        self.add_drawing_object(stroke.drawing_objects)
+        self.add_child(stroke)
         yield stroke
-        stroke.__add_drawing_object(stroke)
+        stroke.add_drawing_object(stroke)
 
     @contextmanager
     def closed_path(self, x, y):
@@ -203,11 +175,11 @@ class InterfaceMixin:
 
         """
         closed_path = ClosedPath(x, y)
-        self.__add_drawing_object(closed_path.drawing_objects)
-        self.__add_child(closed_path)
+        self.add_drawing_object(closed_path.drawing_objects)
+        self.add_child(closed_path)
         closed_path.move_to(x, y)
         yield closed_path
-        closed_path.__add_drawing_object(closed_path)
+        closed_path.add_drawing_object(closed_path)
 
     ###########################################################################
     # Paths to draw with
@@ -225,7 +197,7 @@ class InterfaceMixin:
 
         """
         move_to = MoveTo(x, y)
-        self.__add_drawing_object(move_to)
+        self.add_drawing_object(move_to)
         return move_to
 
     def line_to(self, x, y):
@@ -240,7 +212,7 @@ class InterfaceMixin:
 
         """
         line_to = LineTo(x, y)
-        self.__add_drawing_object(line_to)
+        self.add_drawing_object(line_to)
         return line_to
 
     def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y):
@@ -259,7 +231,7 @@ class InterfaceMixin:
 
         """
         bezier_curve_to = BezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y)
-        self.__add_drawing_object(bezier_curve_to)
+        self.add_drawing_object(bezier_curve_to)
         return bezier_curve_to
 
     def quadratic_curve_to(self, cpx, cpy, x, y):
@@ -276,7 +248,7 @@ class InterfaceMixin:
 
         """
         quadratic_curve_to = QuadraticCurveTo(cpx, cpy, x, y)
-        self.__add_drawing_object(quadratic_curve_to)
+        self.add_drawing_object(quadratic_curve_to)
         return quadratic_curve_to
 
     def arc(self, x, y, radius, startangle=0.0, endangle=2 * pi, anticlockwise=False):
@@ -300,7 +272,7 @@ class InterfaceMixin:
 
         """
         arc = Arc(x, y, radius, startangle, endangle, anticlockwise)
-        self.__add_drawing_object(arc)
+        self.add_drawing_object(arc)
         return arc
 
     def ellipse(self, x, y, radiusx, radiusy, rotation=0.0, startangle=0.0, endangle=2 * pi, anticlockwise=False):
@@ -324,7 +296,7 @@ class InterfaceMixin:
 
         """
         ellipse = Ellipse(x, y, radiusx, radiusy, rotation, startangle, endangle, anticlockwise)
-        self.__add_drawing_object(ellipse)
+        self.add_drawing_object(ellipse)
         return ellipse
 
     def rect(self, x, y, width, height):
@@ -341,7 +313,7 @@ class InterfaceMixin:
 
         """
         rect = Rect(x, y, width, height)
-        self.__add_drawing_object(rect)
+        self.add_drawing_object(rect)
         return rect
 
     ###########################################################################
@@ -359,7 +331,7 @@ class InterfaceMixin:
 
         """
         rotate = Rotate(radians)
-        self.__add_drawing_object(rotate)
+        self.add_drawing_object(rotate)
         return rotate
 
     def scale(self, sx, sy):
@@ -374,7 +346,7 @@ class InterfaceMixin:
 
         """
         scale = Scale(sx, sy)
-        self.__add_drawing_object(scale)
+        self.add_drawing_object(scale)
         return scale
 
     def translate(self, tx, ty):
@@ -389,7 +361,7 @@ class InterfaceMixin:
 
         """
         translate = Translate(tx, ty)
-        self.__add_drawing_object(translate)
+        self.add_drawing_object(translate)
         return translate
 
     def reset_transform(self):
@@ -400,7 +372,7 @@ class InterfaceMixin:
 
         """
         reset_transform = ResetTransform()
-        self.__add_drawing_object(reset_transform)
+        self.add_drawing_object(reset_transform)
         return reset_transform
 
     ###########################################################################
@@ -425,11 +397,11 @@ class InterfaceMixin:
 
         """
         write_text = WriteText(text, x, y, font)
-        self.__add_drawing_object(write_text)
+        self.add_drawing_object(write_text)
         return write_text
 
 
-class Canvas(InterfaceMixin, Widget):
+class Canvas(CanvasContextMixin, Widget):
     """Create new canvas
 
     Args:
@@ -444,7 +416,6 @@ class Canvas(InterfaceMixin, Widget):
     def __init__(self, id=None, style=None, factory=None):
         super().__init__(id=id, style=style, factory=factory)
         self._canvas = self
-        self.drawing_objects = []
 
         # Create a platform specific implementation of Canvas
         self._impl = self.factory.Canvas(interface=self)
@@ -453,7 +424,7 @@ class Canvas(InterfaceMixin, Widget):
         self._children_contexts = []  # Canvas can have children contexts
 
 
-class Context(InterfaceMixin, object):
+class Context(CanvasContextMixin):
     """The user-created :class:`Context <Context>` drawing object to populate a
     drawing with visual context.
 
@@ -475,7 +446,7 @@ class Context(InterfaceMixin, object):
         impl.context(self)
 
 
-class Fill(InterfaceMixin, object):
+class Fill(CanvasContextMixin):
     """A user-created :class:`Fill <Fill>` drawing object for a fill context.
 
     A drawing object that fills the current path according to the current
@@ -529,7 +500,7 @@ class Fill(InterfaceMixin, object):
         self.preserve = preserve
 
 
-class Stroke(InterfaceMixin, object):
+class Stroke(CanvasContextMixin):
     """A user-created :class:`Stroke <Stroke>` drawing object for a stroke context.
 
     A drawing operator that strokes the current path according to the
@@ -575,7 +546,7 @@ class Stroke(InterfaceMixin, object):
         self.width = width
 
 
-class ClosedPath(InterfaceMixin, object):
+class ClosedPath(CanvasContextMixin):
     """A user-created :class:`ClosedPath <ClosedPath>` drawing object for a
     closed path context.
 
