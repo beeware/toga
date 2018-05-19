@@ -261,14 +261,28 @@ class Window:
 
     def open_file_dialog(self, title, initial_directory=None, file_types=None, multiselect=False):
         """ This opens a native dialog where the user can select the file to open.
-        It is possible to set the initial folder and and only show files with specified file extensions.
+        It is possible to set the initial folder and only show files with specified file extensions.
         If no path is returned (eg. dialog is canceled), a ValueError is raised.
         Args:
             title (str): The title of the dialog window.
             initial_directory(str): Initial folder displayed in the dialog.
             file_types: A list of strings with the allowed file extensions.
+            multiselect: Value showing whether a user can select multiple files.
 
         Returns:
             The absolute path(str) to the selected file or None
         """
         return self._impl.open_file_dialog(title, initial_directory, file_types, multiselect)
+
+    def select_folder_dialog(self, title, initial_directory=None):
+        """ This opens a native dialog where the user can select a folder.
+        It is possible to set the initial folder.
+        If no path is returned (eg. dialog is canceled), a ValueError is raised.
+        Args:
+            title (str): The title of the dialog window.
+            initial_directory(str): Initial folder displayed in the dialog.
+
+        Returns:
+            The absolute path(str) to the selected file or None
+        """
+        return self._impl.select_folder_dialog(title, initial_directory)

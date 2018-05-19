@@ -167,3 +167,14 @@ class Window:
             return dialog.FileName
         else:
             raise ValueError("No filename provided in the open file dialog")
+
+    def select_folder_dialog(self, title, initial_directory):
+        dialog = WinForms.FolderBrowserDialog()
+        dialog.Title = title
+        if initial_directory is not None:
+            dialog.InitialDirectory = initial_directory
+
+        if dialog.ShowDialog() == WinForms.DialogResult.OK:
+            return dialog.SelectedPath
+        else:
+            raise ValueError("No folder provided in the select folder dialog")
