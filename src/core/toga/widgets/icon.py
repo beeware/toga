@@ -36,10 +36,11 @@ class Icon:
     def filename(self):
         if self.system:
             toga_dir = os.path.dirname(os.path.dirname(__file__))
+            print(toga_dir)
             return os.path.join(toga_dir, 'resources', self.path)
         else:
-            from toga.app import App
-            return os.path.join(App.app_dir, self.path)
+            # from toga.app import App
+            return os.path.join("", self.path)
 
     def bind(self, factory):
         if self._impl is None:

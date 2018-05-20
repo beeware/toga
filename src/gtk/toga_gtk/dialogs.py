@@ -11,13 +11,11 @@ def info(window, title, message):
 
 
 def question(window, title, message):
-    dialog = Gtk.MessageDialog(window._impl.native, 0, Gtk.MessageType.QUESTION,
-        Gtk.ButtonsType.YES_NO, title)
+    dialog = Gtk.MessageDialog(window._impl.native, 0, Gtk.MessageType.QUESTION, Gtk.ButtonsType.YES_NO, title)
     dialog.format_secondary_text(message)
 
     result = dialog.run()
     dialog.destroy()
-
     return result == Gtk.ResponseType.YES
 
 

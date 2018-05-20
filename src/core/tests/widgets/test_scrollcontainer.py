@@ -45,3 +45,13 @@ class ScrollContainerTests(TestCase):
         self.sc.horizontal = new_value
         self.assertEqual(self.sc.horizontal, new_value)
         self.assertValueSet(self.sc, 'horizontal', new_value)
+
+    def test_refresh_sublayouts(self):
+        new_content = toga.Box(style=TestStyle(), factory=toga_dummy.factory)
+        self.sc.content = new_content
+        self.assertIsNone(self.sc.refresh_sublayouts())
+
+    def test_refresh(self):
+        new_content = toga.Box(style=TestStyle(), factory=toga_dummy.factory)
+        self.sc.content = new_content
+        self.assertIsNone(self.sc.refresh())

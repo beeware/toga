@@ -68,12 +68,12 @@ class SplitContainer(Widget):
             self._impl.add_content(position, widget._impl)
             widget.refresh()
 
-    def set_app(self, app):
+    def set_app(self, app=None):
         if self._content:
             for content in self._content:
                 content.app = self.app
 
-    def set_window(self, window):
+    def set_window(self, window=None):
         if self._content:
             for content in self._content:
                 content.window = self.window
