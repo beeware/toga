@@ -34,3 +34,6 @@ class TestWindow(TestCase):
 
     def test_full_screen_set(self):
         self.assertEqual(self.window.full_screen, False)
+        is_full_screen = True
+        self.window.full_screen = is_full_screen
+        self.assertEqual(self.window.full_screen, is_full_screen)
