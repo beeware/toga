@@ -73,6 +73,9 @@ class Window(WindowInterface):
     def show(self):
         pass
 
+    def set_full_screen(self, is_full_screen):
+        pass
+
     def home(self, request):
         # app = self.app.materialize()
         # if app.main_window.id == self.id:

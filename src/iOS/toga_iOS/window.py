@@ -75,6 +75,9 @@ class Window:
         # Refresh with the actual viewport to do the proper rendering.
         self.interface.content.refresh()
 
+    def set_full_screen(self, is_full_screen):
+        pass
+
     def info_dialog(self, title, message):
         self.interface.factory.not_implemented('Window.info_dialog()')
 

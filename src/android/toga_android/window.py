@@ -54,6 +54,9 @@ class Window:
     def show(self):
         pass
 
+    def set_full_screen(self, is_full_screen):
+        pass
+
     def info_dialog(self, title, message):
         self.interface.factory.not_implemented('Window.info_dialog()')
 
