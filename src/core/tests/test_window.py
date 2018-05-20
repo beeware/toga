@@ -1,3 +1,5 @@
+from unittest.mock import MagicMock
+
 import toga
 import toga_dummy
 from toga.command import CommandSet
@@ -37,3 +39,11 @@ class TestWindow(TestCase):
         is_full_screen = True
         self.window.full_screen = is_full_screen
         self.assertEqual(self.window.full_screen, is_full_screen)
+
+    def test_set_size_with_content(self):
+        content = MagicMock()
+        size = (750, 1334)
+        self.window.content = content
+        self.window.size = size
+        self.assertEqual(size, self.window.size)
+        self.assertEqual(content, self.window.content)
