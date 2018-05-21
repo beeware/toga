@@ -29,7 +29,7 @@ class TestWindow(TestCase):
 
     def test_size_getter_and_setter(self):
         # Add some content
-        mock_content = MagicMock(toga.Box())
+        mock_content = MagicMock(toga.Box(factory=toga_dummy.factory))
         self.window.content = mock_content
 
         # Confirm defaults
