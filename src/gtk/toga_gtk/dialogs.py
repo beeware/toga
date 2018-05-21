@@ -91,7 +91,7 @@ def open_file(window, title, file_types, multiselect):
     for file_type in file_types if file_types else ():
         _set_filetype_filter(dialog, file_type)
     if multiselect:
-        dialog.set_select_multiple()
+        dialog.set_select_multiple(True)
 
     response = dialog.run()
 
