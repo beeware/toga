@@ -270,8 +270,7 @@ class Window:
             multiselect: Value showing whether a user can select multiple files.
 
         Returns:
-            The absolute path(str) to the selected file, a list(str)
-            if multiselect, or None
+            The absolute path(str) to the selected file or a list(str) if multiselect
         """
         return self._impl.open_file_dialog(title, initial_directory, file_types, multiselect)
 
