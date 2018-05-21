@@ -99,4 +99,6 @@ def open_file(window, title, file_types, multiselect):
         filename_or_filenames = (dialog.get_filenames() if multiselect else
                                  dialog.get_filename())
     dialog.destroy()
+    if filename_or_filenames is None:
+        raise ValueError('No filename provided in the open file dialog')
     return filename_or_filenames
