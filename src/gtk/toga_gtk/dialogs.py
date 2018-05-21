@@ -1,6 +1,19 @@
 from gi.repository import Gtk
 
 
+def _set_filetype_filter(dialog, file_type):
+    '''Mutating function that Takes a dialog and inserts a Gtk.FileFilter
+
+    Args:
+        dialog: Gtk.FileChooserDialog to apply the filter
+        file_type: (str) the file type to filter
+    '''
+    filter_filetype = Gtk.FileFilter()
+    filter_filetype.set_name("." + file_type + " files")
+    filter_filetype.add_pattern("*." + file_type)
+    dialog.add_filter(filter_filetype)
+
+
 def info(window, title, message):
     dialog = Gtk.MessageDialog(window._impl.native, 0, Gtk.MessageType.INFO,
         Gtk.ButtonsType.OK, title)
@@ -55,10 +68,7 @@ def save_file(window, title, suggested_filename, file_types):
          Gtk.STOCK_SAVE, Gtk.ResponseType.OK))
 
     for x in file_types:
-        filter_filetype = Gtk.FileFilter()
-        filter_filetype.set_name("." + x + " files")
-        filter_filetype.add_pattern("*." + x)
-        dialog.add_filter(filter_filetype)
+        _set_filetype_filter(dialog, x)
 
     dialog.set_current_name(suggested_filename + "." + file_types[0])
 
@@ -69,3 +79,26 @@ def save_file(window, title, suggested_filename, file_types):
 
     dialog.destroy()
     return filename
+
+
+def open_file(window, title, file_types, multiselect):
+    filename_or_filenames = None
+    dialog = Gtk.FileChooserDialog(
+        title, window._impl.native,
+        Gtk.FileChooserAction.OPEN,
+        (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
+         Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
+    for file_type in file_types if file_types else ():
+        _set_filetype_filter(dialog, file_type)
+    if multiselect:
+        dialog.set_select_multiple(True)
+
+    response = dialog.run()
+
+    if response == Gtk.ResponseType.OK:
+        filename_or_filenames = (dialog.get_filenames() if multiselect else
+                                 dialog.get_filename())
+    dialog.destroy()
+    if filename_or_filenames is None:
+        raise ValueError('No filename provided in the open file dialog')
+    return filename_or_filenames
