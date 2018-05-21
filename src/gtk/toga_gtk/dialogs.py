@@ -99,4 +99,4 @@ def open_file(window, title, file_types, multiselect):
         filename_or_filenames = (dialog.get_filenames() if multiselect else
                                  dialog.get_filename())
     dialog.destroy()
-    return file_or_files
+    return filename_or_filenames
