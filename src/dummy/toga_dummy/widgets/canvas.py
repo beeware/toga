@@ -67,20 +67,6 @@ class Canvas(Widget):
         self._set_value('line width', line_width)
         self._action('stroke')
 
-    # Transformations
-
-    def rotate(self, radians):
-        self._action('rotate', radians=radians)
-
-    def scale(self, sx, sy):
-        self._action('scale', sx=sx, sy=sy)
-
-    def translate(self, tx, ty):
-        self._action('translate', tx=tx, ty=ty)
-
-    def reset_transform(self):
-        self._action('reset transform')
-
     # Text
 
     def write_text(self, text, x, y, font):

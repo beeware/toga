@@ -112,20 +112,6 @@ class Canvas(Widget):
         self.native_context.set_line_width(line_width)
         self.native_context.stroke()
 
-    # Transformations
-
-    def rotate(self, radians):
-        self.native_context.rotate(radians)
-
-    def scale(self, sx, sy):
-        self.native_context.scale(sx, sy)
-
-    def translate(self, tx, ty):
-        self.native_context.translate(tx, ty)
-
-    def reset_transform(self):
-        self.native_context.identity_matrix()
-
     # Text
 
     def write_text(self, text, x, y, font):
