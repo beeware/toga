@@ -33,10 +33,10 @@ class Canvas(Widget):
         self.native_context = cairo.Context(self.surface)
         self.native.font = None
 
-    def context(self, context):
+    def set_root_context(self, root_context):
         def draw_callback(canvas, native_context):
             self.native_context = native_context
-            for drawing_object in traverse(context.drawing_objects):
+            for drawing_object in traverse(root_context.drawing_objects):
                 drawing_object(self)
         self.native.connect('draw', draw_callback)
 

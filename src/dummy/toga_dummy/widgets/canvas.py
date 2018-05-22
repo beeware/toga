@@ -6,10 +6,10 @@ class Canvas(Widget):
         self.dummy_context = None
         self._action('create Canvas')
 
-    def context(self, context):
+    def set_root_context(self, root_context):
         self._action('context')
-        self.dummy_context = context
-        for drawing_object in traverse(context.drawing_objects):
+        self.dummy_context = root_context
+        for drawing_object in root_context.drawing_objects:
             drawing_object(self)
 
     def redraw(self):

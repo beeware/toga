@@ -481,7 +481,7 @@ class Canvas(CanvasContextMixin, Widget):
         # Create a platform specific implementation of Canvas
         self._impl = self.factory.Canvas(interface=self)
 
-        self._impl.context(self)  # Create root context
+        self._impl.set_root_context(self)
         self._children_contexts = []  # Canvas can have children contexts
 
 
@@ -499,12 +499,6 @@ class Context(CanvasContextMixin):
 
     def __repr__(self):
         return '{} at {} ()'.format(self.__class__, identifier(self))
-
-    def __call__(self, impl):
-        """Allow the implementation to callback the Class instance.
-
-        """
-        impl.context(self)
 
 
 class Fill(CanvasContextMixin):
