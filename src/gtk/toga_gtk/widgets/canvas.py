@@ -73,15 +73,15 @@ class Canvas(Widget):
 
     def ellipse(self, x, y, radiusx, radiusy, rotation, startangle, endangle, anticlockwise):
         self.native_context.save()
-        self.translate(x, y)
+        self.native_context.translate(x, y)
         if radiusx >= radiusy:
-            self.scale(1, radiusy / radiusx)
+            self.native_context.scale(1, radiusy / radiusx)
             self.arc(0, 0, radiusx, startangle, endangle, anticlockwise)
         elif radiusy > radiusx:
-            self.scale(radiusx / radiusy, 1)
+            self.native_context.scale(radiusx / radiusy, 1)
             self.arc(0, 0, radiusy, startangle, endangle, anticlockwise)
-        self.rotate(rotation)
-        self.reset_transform()
+        self.native_context.rotate(rotation)
+        self.native_context.identity_matrix()
         self.native_context.restore()
 
     def rect(self, x, y, width, height):
