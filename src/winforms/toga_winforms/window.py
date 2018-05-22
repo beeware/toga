@@ -145,4 +145,39 @@ class Window:
         pass
 
     def save_file_dialog(self, title, suggested_filename, file_types):
-        self.interface.factory.not_implemented('Window.save_file_dialog()')
+        dialog = WinForms.SaveFileDialog()
+        dialog.Title = title
+        if suggested_filename is not None:
+            dialog.FileName = suggested_filename
+        if dialog.ShowDialog() == WinForms.DialogResult.OK:
+            return dialog.FileName
+        else:
+            raise ValueError("No filename provided in the save file dialog")
+
+    def open_file_dialog(self, title, initial_directory, file_types, multiselect):
+        dialog = WinForms.OpenFileDialog()
+        dialog.Title = title
+        if initial_directory is not None:
+            dialog.InitialDirectory = initial_directory
+        if file_types is not None:
+            # FIXME This is the example of Filter string: Text files (*.txt)|*.txt|All files (*.*)|*.*
+
+            dialog.Filter = ';'.join(["*." + ext for ext in file_types]) + \
+                            "|All files (*.*)|*.*"
+        if multiselect:
+            dialog.Multiselect = True
+        if dialog.ShowDialog() == WinForms.DialogResult.OK:
+            return dialog.FileName
+        else:
+            raise ValueError("No filename provided in the open file dialog")
+
+    def select_folder_dialog(self, title, initial_directory):
+        dialog = WinForms.FolderBrowserDialog()
+        dialog.Title = title
+        if initial_directory is not None:
+            dialog.InitialDirectory = initial_directory
+
+        if dialog.ShowDialog() == WinForms.DialogResult.OK:
+            return dialog.SelectedPath
+        else:
+            raise ValueError("No folder provided in the select folder dialog")
