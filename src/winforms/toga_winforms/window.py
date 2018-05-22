@@ -32,6 +32,7 @@ class Window:
         self.native.ClientSize = Size(self.interface._size[0], self.interface._size[1])
         self.native.interface = self.interface
         self.native.Resize += self.on_resize
+        self.native.FormClosing += self.on_formclose
         self.toolbar_native = None
         self.toolbar_items = None
 
@@ -110,6 +111,11 @@ class Window:
         self.interface.content.refresh()
         if self.interface is not self.interface.app._main_window:
             self.native.Show()
+
+    def on_formclose(self, event, handler):
+        if self.interface.app.on_exit:
+            self.interface.app.on_exit(self.interface.app)
+        print('On form close')
 
     def on_close(self):
         pass
