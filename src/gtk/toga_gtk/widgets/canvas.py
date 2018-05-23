@@ -1,5 +1,3 @@
-import re
-
 import gi
 
 gi.require_version("Gtk", "3.0")
@@ -22,22 +20,24 @@ from ..color import native_color
 class Canvas(Widget):
     def create(self):
         if cairo is None:
-            raise RuntimeError(
-                "'import cairo' failed; may need to install python-gi-cairo."
-            )
+            raise RuntimeError("'import cairo' failed; may need to install python-gi-cairo.")
 
         self.native = Gtk.DrawingArea()
         self.native.interface = self.interface
-        self.surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, self.native.get_allocated_width(),
-                                          self.native.get_allocated_height())
-        self.native_context = cairo.Context(self.surface)
-        self.native.font = None
 
     def set_root_context(self, root_context):
+        """Sets the root context from the interface so that it can be traversed.
+
+        Gtk+ uses a drawing callback to draw on a DrawingArea. Assignment of the
+        callback function creates a Gtk+ canvas and Gtk+ context automatically
+        using the canvas and native_context function arguments. This method
+        traverses through the full tree of drawing objects and uses the
+        callback to call each one.
+
+        """
         def draw_callback(canvas, native_context):
-            self.native_context = native_context
             for drawing_object in traverse(root_context.drawing_objects):
-                drawing_object(self)
+                drawing_object(self, native_context)
         self.native.connect('draw', draw_callback)
 
     def redraw(self):
@@ -45,76 +45,76 @@ class Canvas(Widget):
 
     # Basic paths
 
-    def new_path(self):
-        self.native_context.new_path()
+    def new_path(self, native_context):
+        native_context.new_path()
 
-    def closed_path(self, x, y):
-        self.native_context.close_path()
+    def closed_path(self, x, y, native_context):
+        native_context.close_path()
 
-    def move_to(self, x, y):
-        self.native_context.move_to(x, y)
+    def move_to(self, x, y, native_context):
+        native_context.move_to(x, y)
 
-    def line_to(self, x, y):
-        self.native_context.line_to(x, y)
+    def line_to(self, x, y, native_context):
+        native_context.line_to(x, y)
 
     # Basic shapes
 
-    def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y):
-        self.native_context.curve_to(cp1x, cp1y, cp2x, cp2y, x, y)
+    def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y, native_context):
+        native_context.curve_to(cp1x, cp1y, cp2x, cp2y, x, y)
 
-    def quadratic_curve_to(self, cpx, cpy, x, y):
-        self.native_context.curve_to(cpx, cpy, cpx, cpy, x, y)
+    def quadratic_curve_to(self, cpx, cpy, x, y, native_context):
+        native_context.curve_to(cpx, cpy, cpx, cpy, x, y)
 
-    def arc(self, x, y, radius, startangle, endangle, anticlockwise):
+    def arc(self, x, y, radius, startangle, endangle, anticlockwise, native_context):
         if anticlockwise:
-            self.native_context.arc_negative(x, y, radius, startangle, endangle)
+            native_context.arc_negative(x, y, radius, startangle, endangle)
         else:
-            self.native_context.arc(x, y, radius, startangle, endangle)
+            native_context.arc(x, y, radius, startangle, endangle)
 
-    def ellipse(self, x, y, radiusx, radiusy, rotation, startangle, endangle, anticlockwise):
-        self.native_context.save()
-        self.native_context.translate(x, y)
+    def ellipse(self, x, y, radiusx, radiusy, rotation, startangle, endangle, anticlockwise, native_context):
+        native_context.save()
+        native_context.translate(x, y)
         if radiusx >= radiusy:
-            self.native_context.scale(1, radiusy / radiusx)
+            native_context.scale(1, radiusy / radiusx)
             self.arc(0, 0, radiusx, startangle, endangle, anticlockwise)
         elif radiusy > radiusx:
-            self.native_context.scale(radiusx / radiusy, 1)
+            native_context.scale(radiusx / radiusy, 1)
             self.arc(0, 0, radiusy, startangle, endangle, anticlockwise)
-        self.native_context.rotate(rotation)
-        self.native_context.identity_matrix()
-        self.native_context.restore()
+        native_context.rotate(rotation)
+        native_context.identity_matrix()
+        native_context.restore()
 
-    def rect(self, x, y, width, height):
-        self.native_context.rectangle(x, y, width, height)
+    def rect(self, x, y, width, height, native_context):
+        native_context.rectangle(x, y, width, height)
 
     # Drawing Paths
 
-    def set_color(self, color=None):
+    def apply_color(self, color, native_context):
         if color is not None:
-            self.native_context.set_source_rgba(*native_color(color))
+            native_context.set_source_rgba(*native_color(color))
         else:
             # set color to black
-            self.native_context.set_source_rgba(0, 0, 0, 1.0)
+            native_context.set_source_rgba(0, 0, 0, 1.0)
 
-    def fill(self, color, fill_rule, preserve):
-        self.set_color(color)
+    def fill(self, color, fill_rule, preserve, native_context):
+        self.apply_color(color, native_context)
         if fill_rule is 'evenodd':
-            self.native_context.set_fill_rule(cairo.FILL_RULE_EVEN_ODD)
+            native_context.set_fill_rule(cairo.FILL_RULE_EVEN_ODD)
         else:
-            self.native_context.set_fill_rule(cairo.FILL_RULE_WINDING)
+            native_context.set_fill_rule(cairo.FILL_RULE_WINDING)
         if preserve:
-            self.native_context.fill_preserve()
+            native_context.fill_preserve()
         else:
-            self.native_context.fill()
+            native_context.fill()
 
-    def stroke(self, color, line_width):
-        self.set_color(color)
-        self.native_context.set_line_width(line_width)
-        self.native_context.stroke()
+    def stroke(self, color, line_width, native_context):
+        self.apply_color(color, native_context)
+        native_context.set_line_width(line_width)
+        native_context.stroke()
 
     # Text
 
-    def write_text(self, text, x, y, font):
+    def write_text(self, text, x, y, font, native_context):
         # Set font family and size
         if font:
             write_font = font
@@ -122,26 +122,115 @@ class Canvas(Widget):
             write_font = self.native.font
             write_font.family = self.native.font.get_family()
             write_font.size = self.native.font.get_size() / scale
-        self.native_context.select_font_face(write_font.family)
-        self.native_context.set_font_size(write_font.size)
+        native_context.select_font_face(write_font.family)
+        native_context.set_font_size(write_font.size)
 
         # Support writing multiline text
         for line in text.splitlines():
             width, height = write_font.measure(line)
-            self.native_context.move_to(x, y)
-            self.native_context.text_path(line)
+            native_context.move_to(x, y)
+            native_context.text_path(line)
             y += height
 
-    def measure_text(self, text, font):
+    def measure_text(self, text, font, native_context):
         # Set font family and size
         if font:
-            self.native_context.select_font_face(font.family)
-            self.native_context.set_font_size(font.size)
+            native_context.select_font_face(font.family)
+            native_context.set_font_size(font.size)
         elif self.native.font:
-            self.native_context.select_font_face(self.native.font.get_family())
-            self.native_context.set_font_size(self.native.font.get_size() / scale)
+            native_context.select_font_face(self.native.font.get_family())
+            native_context.set_font_size(self.native.font.get_size() / scale)
+    def move_to(self, x, y, native_context):
+        native_context.move_to(x, y)
 
-        x_bearing, y_bearing, width, height, x_advance, y_advance = self.native_context.text_extents(text)
+    def line_to(self, x, y, native_context):
+        native_context.line_to(x, y)
+
+    # Basic shapes
+
+    def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y, native_context):
+        native_context.curve_to(cp1x, cp1y, cp2x, cp2y, x, y)
+
+    def quadratic_curve_to(self, cpx, cpy, x, y, native_context):
+        native_context.curve_to(cpx, cpy, cpx, cpy, x, y)
+
+    def arc(self, x, y, radius, startangle, endangle, anticlockwise, native_context):
+        if anticlockwise:
+            native_context.arc_negative(x, y, radius, startangle, endangle)
+        else:
+            native_context.arc(x, y, radius, startangle, endangle)
+
+    def ellipse(self, x, y, radiusx, radiusy, rotation, startangle, endangle, anticlockwise, native_context):
+        native_context.save()
+        native_context.translate(x, y)
+        if radiusx >= radiusy:
+            native_context.scale(1, radiusy / radiusx)
+            self.arc(0, 0, radiusx, startangle, endangle, anticlockwise, native_context)
+        elif radiusy > radiusx:
+            native_context.scale(radiusx / radiusy, 1)
+            self.arc(0, 0, radiusy, startangle, endangle, anticlockwise, native_context)
+        native_context.rotate(rotation)
+        native_context.identity_matrix()
+        native_context.restore()
+
+    def rect(self, x, y, width, height, native_context):
+        native_context.rectangle(x, y, width, height)
+
+    # Drawing Paths
+
+    def apply_color(self, color, native_context):
+        if color is not None:
+            native_context.set_source_rgba(*native_color(color))
+        else:
+            # set color to black
+            native_context.set_source_rgba(0, 0, 0, 1.0)
+
+    def fill(self, color, fill_rule, preserve, native_context):
+        self.apply_color(color, native_context)
+        if fill_rule is 'evenodd':
+            native_context.set_fill_rule(cairo.FILL_RULE_EVEN_ODD)
+        else:
+            native_context.set_fill_rule(cairo.FILL_RULE_WINDING)
+        if preserve:
+            native_context.fill_preserve()
+        else:
+            native_context.fill()
+
+    def stroke(self, color, line_width, native_context):
+        self.apply_color(color, native_context)
+        native_context.set_line_width(line_width)
+        native_context.stroke()
+
+    # Text
+
+    def write_text(self, text, x, y, font, native_context):
+        # Set font family and size
+        if font:
+            write_font = font
+        elif self.native.font:
+            write_font = self.native.font
+            write_font.family = self.native.font.get_family()
+            write_font.size = self.native.font.get_size() / scale
+        native_context.select_font_face(write_font.family)
+        native_context.set_font_size(write_font.size)
+
+        # Support writing multiline text
+        for line in text.splitlines():
+            width, height = write_font.measure(line)
+            native_context.move_to(x, y)
+            native_context.text_path(line)
+            y += height
+
+    def measure_text(self, text, font, native_context):
+        # Set font family and size
+        if font:
+            native_context.select_font_face(font.family)
+            native_context.set_font_size(font.size)
+        elif self.native.font:
+            native_context.select_font_face(self.native.font.get_family())
+            native_context.set_font_size(self.native.font.get_size() / scale)
+
+        x_bearing, y_bearing, width, height, x_advance, y_advance = native_context.text_extents(text)
         return width, height
 
     # Rehint

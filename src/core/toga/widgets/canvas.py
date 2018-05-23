@@ -530,11 +530,11 @@ class Fill(CanvasContextMixin):
             self.__class__, identifier(self), self.color, self.fill_rule, self.preserve
         )
 
-    def __call__(self, impl):
+    def __call__(self, impl, *args, **kwargs):
         """Allow the implementation to callback the Class instance.
 
         """
-        impl.fill(self.color, self.fill_rule, self.preserve)
+        impl.fill(self.color, self.fill_rule, self.preserve, *args, **kwargs)
 
     def modify(self, color=None, fill_rule='nonzero', preserve=False):
         """Modify the fill properties after it has been drawn with.
@@ -579,11 +579,11 @@ class Stroke(CanvasContextMixin):
     def __repr__(self):
         return '{} at {} (color={}, width={})'.format(self.__class__, identifier(self), self.color, self.width)
 
-    def __call__(self, impl):
+    def __call__(self, impl, *args, **kwargs):
         """Allow the implementation to callback the Class instance.
 
         """
-        impl.stroke(self.color, self.width)
+        impl.stroke(self.color, self.width, *args, **kwargs)
 
     def modify(self, color=None, width=2.0):
         """Modify the stroke properties after it has been drawn with.
@@ -623,11 +623,11 @@ class ClosedPath(CanvasContextMixin):
     def __repr__(self):
         return '{} at {} (x={}, y={})'.format(self.__class__, identifier(self), self.x, self.y)
 
-    def __call__(self, impl):
+    def __call__(self, impl, *args, **kwargs):
         """Allow the implementation to callback the Class instance.
 
         """
-        impl.closed_path(self.x, self.y)
+        impl.closed_path(self.x, self.y, *args, **kwargs)
 
 
 class MoveTo:
@@ -648,11 +648,11 @@ class MoveTo:
     def __repr__(self):
         return '{} at {} (x={}, y={})'.format(self.__class__, identifier(self), self.x, self.y)
 
-    def __call__(self, impl):
+    def __call__(self, impl, *args, **kwargs):
         """Allow the implementation to callback the Class instance.
 
         """
-        impl.move_to(self.x, self.y)
+        impl.move_to(self.x, self.y, *args, **kwargs)
 
     def modify(self, x, y):
         """Modify the move to operation after it has been drawn.
@@ -685,11 +685,11 @@ class LineTo:
     def __repr__(self):
         return '{} at {} (x={}, y={})'.format(self.__class__, identifier(self), self.x, self.y)
 
-    def __call__(self, impl):
+    def __call__(self, impl, *args, **kwargs):
         """Allow the implementation to callback the Class instance.
 
         """
-        impl.line_to(self.x, self.y)
+        impl.line_to(self.x, self.y, *args, **kwargs)
 
     def modify(self, x, y):
         """Modify the line to operation after it has been drawn.
@@ -734,11 +734,11 @@ class BezierCurveTo:
             self.__class__, identifier(self), self.cp1x, self.cp1y, self.cp2x, self.cp2y, self.x, self.y
         )
 
-    def __call__(self, impl):
+    def __call__(self, impl, *args, **kwargs):
         """Allow the implementation to callback the Class instance.
 
         """
-        impl.bezier_curve_to(self.cp1x, self.cp1y, self.cp2x, self.cp2y, self.x, self.y)
+        impl.bezier_curve_to(self.cp1x, self.cp1y, self.cp2x, self.cp2y, self.x, self.y, *args, **kwargs)
 
     def modify(self, cp1x, cp1y, cp2x, cp2y, x, y):
         """Modify the rectangle after it has been drawn.
@@ -787,11 +787,11 @@ class QuadraticCurveTo:
             self.__class__, identifier(self), self.cpx, self.cpy, self.x, self.y
         )
 
-    def __call__(self, impl):
+    def __call__(self, impl, *args, **kwargs):
         """Allow the implementation to callback the Class instance.
 
         """
-        impl.quadratic_curve_to(self.cpx, self.cpy, self.x, self.y)
+        impl.quadratic_curve_to(self.cpx, self.cpy, self.x, self.y, *args, **kwargs)
 
     def modify(self, cpx, cpy, x, y):
         """Modify the rectangle after it has been drawn.
@@ -845,13 +845,13 @@ class Ellipse:
             .format(self.__class__, identifier(self), self.x, self.y, self.radiusx, self.radiusy, self.rotation,
                     self.startangle, self.endangle, self.anticlockwise)
 
-    def __call__(self, impl):
+    def __call__(self, impl, *args, **kwargs):
         """Allow the implementation to callback the Class instance.
 
         """
         impl.ellipse(
             self.x, self.y, self.radiusx, self.radiusy, self.rotation, self.startangle,
-            self.endangle, self.anticlockwise
+            self.endangle, self.anticlockwise, *args, **kwargs
         )
 
     def modify(self, x, y, radiusx, radiusy, rotation=0.0, startangle=0.0, endangle=2 * pi, anticlockwise=False):
@@ -915,11 +915,11 @@ class Arc:
             self.endangle, self.anticlockwise
         )
 
-    def __call__(self, impl):
+    def __call__(self, impl, *args, **kwargs):
         """Allow the implementation to callback the Class instance.
 
         """
-        impl.arc(self.x, self.y, self.radius, self.startangle, self.endangle, self.anticlockwise)
+        impl.arc(self.x, self.y, self.radius, self.startangle, self.endangle, self.anticlockwise, *args, **kwargs)
 
     def modify(self, x, y, radius, startangle=0.0, endangle=2 * pi, anticlockwise=False):
         """Modify the arc after it has been drawn.
@@ -972,11 +972,11 @@ class Rect:
             self.__class__, identifier(self), self.x, self.y, self.width, self.height
         )
 
-    def __call__(self, impl):
+    def __call__(self, impl, *args, **kwargs):
         """Allow the implementation to callback the Class instance.
 
         """
-        impl.rect(self.x, self.y, self.width, self.height)
+        impl.rect(self.x, self.y, self.width, self.height, *args, **kwargs)
 
     def modify(self, x, y, width, height):
         """Modify the rectangle after it has been drawn.
@@ -1020,11 +1020,11 @@ class WriteText:
             self.__class__, identifier(self), self.text, self.x, self.y, self.font
         )
 
-    def __call__(self, impl):
+    def __call__(self, impl, *args, **kwargs):
         """Allow the implementation to callback the Class instance.
 
         """
-        impl.write_text(self.text, self.x, self.y, self.font)
+        impl.write_text(self.text, self.x, self.y, self.font, *args, **kwargs)
 
     def modify(self, text, x, y, font):
         """Modify the text after it has been drawn.
@@ -1049,8 +1049,8 @@ class NewPath:
     def __repr__(self):
         return '{} at {} ()'.format(self.__class__, identifier(self))
 
-    def __call__(self, impl):
+    def __call__(self, impl, *args, **kwargs):
         """Allow the implementation to callback the Class instance.
 
         """
-        impl.new_path()
+        impl.new_path(*args, **kwargs)
