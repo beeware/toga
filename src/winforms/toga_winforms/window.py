@@ -31,8 +31,7 @@ class Window:
         self.native = WinForms.Form(self)
         self.native.ClientSize = Size(self.interface._size[0], self.interface._size[1])
         self.native.interface = self.interface
-        self.native.Resize += self.on_resize
-        self.native.FormClosing += self.on_formclose
+        self.native.Resize += self.winforms_Resize
         self.toolbar_native = None
         self.toolbar_items = None
 
@@ -109,13 +108,15 @@ class Window:
             int(self.interface.content.layout.height) + TITLEBAR_HEIGHT
         )
         self.interface.content.refresh()
+        if self.interface is self.interface.app._main_window:
+            self.native.FormClosing += self.winforms_FormClosing
+
         if self.interface is not self.interface.app._main_window:
             self.native.Show()
 
-    def on_formclose(self, event, handler):
+    def winforms_FormClosing(self, event, handler):
         if self.interface.app.on_exit:
             self.interface.app.on_exit(self.interface.app)
-        print('On form close')
 
     def on_close(self):
         pass
@@ -123,7 +124,7 @@ class Window:
     def close(self):
         self.native.Close()
 
-    def on_resize(self, sender, args):
+    def winforms_Resize(self, sender, args):
         if self.interface.content:
             # Re-layout the content
             self.interface.content.refresh()
