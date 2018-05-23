@@ -50,7 +50,7 @@ class App:
     app = None
 
     def __init__(self, name, app_id,
-                 id=None, icon=None, startup=None, document_types=None, factory=None):
+                 id=None, icon=None, startup=None, document_types=None, on_exit=None, factory=None):
         self.factory = get_platform_factory(factory)
 
         # Keep an accessible copy of the app instance
@@ -72,6 +72,7 @@ class App:
         self.default_icon = Icon('tiberius', system=True)
         self.icon = icon
         self._main_window = None
+        self._on_exit = None
 
         self._impl = self.factory.App(interface=self)
 
