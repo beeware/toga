@@ -67,10 +67,11 @@ def save_file(window, title, suggested_filename, file_types):
         (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
          Gtk.STOCK_SAVE, Gtk.ResponseType.OK))
 
-    for x in file_types:
-        _set_filetype_filter(dialog, x)
+    for file_type in file_types or []:
+        _set_filetype_filter(dialog, file_type)
 
-    dialog.set_current_name(suggested_filename + "." + file_types[0])
+    dialog.set_current_name(suggested_filename if not file_types else
+                            suggested_filename + "." + file_types[0])
 
     response = dialog.run()
 
@@ -88,7 +89,7 @@ def open_file(window, title, file_types, multiselect):
         Gtk.FileChooserAction.OPEN,
         (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
          Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
-    for file_type in file_types if file_types else ():
+    for file_type in file_types or []:
         _set_filetype_filter(dialog, file_type)
     if multiselect:
         dialog.set_select_multiple(True)
@@ -102,3 +103,23 @@ def open_file(window, title, file_types, multiselect):
     if filename_or_filenames is None:
         raise ValueError('No filename provided in the open file dialog')
     return filename_or_filenames
+
+
+def select_folder(window, title):
+    '''This function is very similar to the open_file function but more limited
+    in scope. If broadening scope here, or aligning features with the other
+    dialogs, consider refactoring around a common base function or set of
+    functions'''
+    filename = None
+    dialog = Gtk.FileChooserDialog(
+        title, window._impl.native,
+        Gtk.FileChooserAction.SELECT_FOLDER,
+        (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
+         Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
+    response = dialog.run()
+    if response == Gtk.ResponseType.OK:
+        filename = dialog.get_filename()
+    dialog.destroy()
+    if filename is None:
+        raise ValueError("No folder provided in the select folder dialog")
+    return filename
