@@ -14,7 +14,7 @@ class ImageView(Widget):
         return self.native.Image
 
     def set_image(self, image):
-        if image:
+        if image and image.path is not None:
             # Workaround for loading image from url
             if isinstance(image._impl.native, str):
                 self.native.Load(image._impl.native)
