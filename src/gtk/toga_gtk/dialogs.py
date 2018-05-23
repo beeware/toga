@@ -67,8 +67,8 @@ def save_file(window, title, suggested_filename, file_types):
         (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
          Gtk.STOCK_SAVE, Gtk.ResponseType.OK))
 
-    for x in file_types or []:
-        _set_filetype_filter(dialog, x)
+    for file_type in file_types or []:
+        _set_filetype_filter(dialog, file_type)
 
     dialog.set_current_name(suggested_filename if not file_types else
                             suggested_filename + "." + file_types[0])
