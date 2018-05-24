@@ -75,6 +75,7 @@ class App:
         self._on_exit = None
 
         self._impl = self.factory.App(interface=self)
+        self.on_exit = on_exit
 
     @property
     def app_id(self):
