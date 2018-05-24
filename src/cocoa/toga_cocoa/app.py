@@ -168,5 +168,5 @@ class App:
     def exit(self):
         self.native.terminate(None)
 
-    def set_on_exit(self):
+    def set_on_exit(self, value):
         self.interface.factory.not_implemented('App.set_on_exit()')
