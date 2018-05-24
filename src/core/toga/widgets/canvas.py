@@ -14,6 +14,7 @@ class CanvasContextMixin:
         self._parent_context = None
         self._canvas = None
         self._children_contexts = None
+        self._ctm = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
 
     ###########################################################################
     # Private methods to keep track of the canvas, automatically redraw it
@@ -320,6 +321,15 @@ class CanvasContextMixin:
     # Transformations of a context
     ###########################################################################
 
+    def matrix_multiply(self, m_a, m_b):
+        m_c = [[0 for row in range(3)] for col in range(3)]
+
+        for i in range(3):
+            for j in range(3):
+                for k in range(3):
+                    m_c[i][j] += m_a[i][k] * m_b[k][j]
+        return m_c
+
     def save(self):
         """Saves the entire state of the current context.
 
@@ -404,7 +414,8 @@ class CanvasContextMixin:
             f (float): vertical scaling (matrix position dy)
 
         """
-        pass
+        m = [[a, c, e], [b, d, f], [0, 0, 1]]
+        self._ctm = self.matrix_multiply(m, self._ctm)
 
     def set_transform(self, a=1, b=0, c=0, d=1, e=0, f=0):
         """Undo the current transform and then set the specified transform.
@@ -422,7 +433,7 @@ class CanvasContextMixin:
             f (float): vertical scaling (matrix position dy)
 
         """
-        self.transform()
+        self.reset_transform()
         self.transform(a, b, c, d, e, f)
 
     def reset_transform(self):
@@ -434,7 +445,7 @@ class CanvasContextMixin:
         unit.
 
         """
-        self.transform()
+        self._ctm = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
 
     ###########################################################################
     # Text drawing

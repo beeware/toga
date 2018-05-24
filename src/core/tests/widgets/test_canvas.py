@@ -1,4 +1,4 @@
-import math
+from math import pi, cos, sin
 
 import toga
 import toga_dummy
@@ -44,10 +44,10 @@ class CanvasTests(TestCase):
         # self.assertActionPerformedWith(self.testing_canvas, 'scale', sx=1.0, sy=yr / xr)
         with self.testing_canvas.closed_path(xr, 0.0) as closed:
             self.assertActionPerformedWith(self.testing_canvas, 'move to', x=xr, y=0.0)
-            arc = closed.arc(0, 0, xr, 0, 2 * math.pi)
+            arc = closed.arc(0, 0, xr, 0, 2 * pi)
             self.assertIn(arc, closed.drawing_objects)
             self.assertActionPerformedWith(self.testing_canvas, 'arc', x=0, y=0, radius=xr, startangle=0,
-                                           endangle=2 * math.pi, anticlockwise=False)
+                                           endangle=2 * pi, anticlockwise=False)
         self.assertActionPerformedWith(self.testing_canvas, 'closed path')
 
     def test_fill_checks(self):
@@ -81,35 +81,35 @@ class CanvasTests(TestCase):
         subradius = radius * (2 / 3. - 0.1)
 
         with self.testing_canvas.fill(color='rgba(1, 0, 0, ' + str(alpha) + ')') as fill1:
-            ellipse1 = fill1.ellipse(xc + radius / 3. * math.cos(math.pi * 0.5),
-                                     yc - radius / 3. * math.sin(math.pi * 0.5),
-                                     subradius, subradius, 2.0 * math.pi)
+            ellipse1 = fill1.ellipse(xc + radius / 3. * cos(pi * 0.5),
+                                     yc - radius / 3. * sin(pi * 0.5),
+                                     subradius, subradius, 2.0 * pi)
             self.assertIn(ellipse1, fill1.drawing_objects)
             self.assertActionPerformedWith(self.testing_canvas, 'ellipse',
-                                           x=xc + radius / 3. * math.cos(math.pi * 0.5),
-                                           y=yc - radius / 3. * math.sin(math.pi * 0.5),
-                                           radiusx=subradius, radiusy=subradius, rotation=2.0 * math.pi)
+                                           x=xc + radius / 3. * cos(pi * 0.5),
+                                           y=yc - radius / 3. * sin(pi * 0.5),
+                                           radiusx=subradius, radiusy=subradius, rotation=2.0 * pi)
         self.assertActionPerformedWith(self.testing_canvas, 'fill')
 
         with self.testing_canvas.fill(color='rgba(0, 1, 0, ' + str(alpha) + ')') as fill2:
-            ellipse2 = fill2.ellipse(xc + radius / 3. * math.cos(math.pi * (0.5 + 2 / .3)),
-                                     yc - radius / 3. * math.sin(math.pi * (0.5 + 2 / .3)),
+            ellipse2 = fill2.ellipse(xc + radius / 3. * cos(pi * (0.5 + 2 / .3)),
+                                     yc - radius / 3. * sin(pi * (0.5 + 2 / .3)),
                                      subradius, subradius)
             self.assertIn(ellipse2, fill2.drawing_objects)
             self.assertActionPerformedWith(self.testing_canvas, 'ellipse',
-                                           x=xc + radius / 3. * math.cos(math.pi * (0.5 + 2 / .3)),
-                                           y=yc - radius / 3. * math.sin(math.pi * (0.5 + 2 / .3)),
+                                           x=xc + radius / 3. * cos(pi * (0.5 + 2 / .3)),
+                                           y=yc - radius / 3. * sin(pi * (0.5 + 2 / .3)),
                                            radiusx=subradius, radiusy=subradius)
         self.assertActionPerformedWith(self.testing_canvas, 'fill')
 
         with self.testing_canvas.fill(color='rgba(0, 0, 1, ' + str(alpha) + ')') as fill3:
-            ellipse3 = fill3.ellipse(xc + radius / 3. * math.cos(math.pi * (0.5 + 4 / .3)),
-                                     yc - radius / 3. * math.sin(math.pi * (0.5 + 4 / .3)),
+            ellipse3 = fill3.ellipse(xc + radius / 3. * cos(pi * (0.5 + 4 / .3)),
+                                     yc - radius / 3. * sin(pi * (0.5 + 4 / .3)),
                                      subradius, subradius)
             self.assertIn(ellipse3, fill3.drawing_objects)
             self.assertActionPerformedWith(self.testing_canvas, 'ellipse',
-                                           x=xc + radius / 3. * math.cos(math.pi * (0.5 + 4 / .3)),
-                                           y=yc - radius / 3. * math.sin(math.pi * (0.5 + 4 / .3)),
+                                           x=xc + radius / 3. * cos(pi * (0.5 + 4 / .3)),
+                                           y=yc - radius / 3. * sin(pi * (0.5 + 4 / .3)),
                                            radiusx=subradius, radiusy=subradius)
         self.assertActionPerformedWith(self.testing_canvas, 'fill')
 
@@ -148,29 +148,42 @@ class CanvasTests(TestCase):
         self.assertActionPerformedWith(self.testing_canvas, 'quadratic curve to', cpx=1, cpy=1, x=5, y=5)
 
     def test_arc(self):
-        arc = self.testing_canvas.arc(-10, -10, 10, math.pi / 2, 0, True)
+        arc = self.testing_canvas.arc(-10, -10, 10, pi / 2, 0, True)
         self.assertIn(arc, self.testing_canvas.drawing_objects)
-        self.assertActionPerformedWith(self.testing_canvas, 'arc', x=-10, y=-10, radius=10, startangle=math.pi / 2,
+        self.assertActionPerformedWith(self.testing_canvas, 'arc', x=-10, y=-10, radius=10, startangle=pi / 2,
                                        endangle=0, anticlockwise=True)
 
     def test_remove_arc(self):
-        arc = self.testing_canvas.arc(-10, -10, 10, math.pi / 2, 0, True)
+        arc = self.testing_canvas.arc(-10, -10, 10, pi / 2, 0, True)
         self.assertIn(arc, self.testing_canvas.drawing_objects)
-        self.assertActionPerformedWith(self.testing_canvas, 'arc', x=-10, y=-10, radius=10, startangle=math.pi / 2,
+        self.assertActionPerformedWith(self.testing_canvas, 'arc', x=-10, y=-10, radius=10, startangle=pi / 2,
                                        endangle=0, anticlockwise=True)
         self.testing_canvas.remove(arc)
         self.assertNotIn(arc, self.testing_canvas.drawing_objects)
 
     def test_ellipse(self):
-        ellipse = self.testing_canvas.ellipse(1, 1, 50, 20, 0, math.pi, 2 * math.pi, False)
+        ellipse = self.testing_canvas.ellipse(1, 1, 50, 20, 0, pi, 2 * pi, False)
         self.assertIn(ellipse, self.testing_canvas.drawing_objects)
         self.assertActionPerformedWith(self.testing_canvas, 'ellipse', x=1, y=1, radiusx=50, radiusy=20, rotation=0,
-                                       startangle=math.pi, endangle=2 * math.pi, anticlockwise=False)
+                                       startangle=pi, endangle=2 * pi, anticlockwise=False)
+
+    def test_matrix_multiply(self):
+        identity = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
+        scale = [[2, 0, 0], [0, 3, 0], [0, 0, 1]]
+        rotate = [[cos(pi), -sin(pi), 0], [sin(pi), cos(pi), 0], [0, 0, 1]]
+        translate = [[1, 0, .5], [0, -.5, 0], [0, 0, 1]]
+        scale_rotate = [[2*cos(pi), -2*sin(pi), 0], [3*sin(pi), 3*cos(pi), 0], [0, 0, 1]]
+        translate_scale_rotate = [[2*cos(pi), -2*sin(pi), .5], [-1.5*sin(pi), -1.5*cos(pi), 0], [0, 0, 1]]
+        self.assertEqual(self.testing_canvas.matrix_multiply(scale, identity), scale)
+        self.assertEqual(self.testing_canvas.matrix_multiply(rotate, identity), rotate)
+        self.assertEqual(self.testing_canvas.matrix_multiply(translate, identity), translate)
+        self.assertEqual(self.testing_canvas.matrix_multiply(scale, rotate), scale_rotate)
+        self.assertEqual(self.testing_canvas.matrix_multiply(translate, scale_rotate), translate_scale_rotate)
 
     def test_rotate(self):
-        rotate = self.testing_canvas.rotate(math.pi)
+        rotate = self.testing_canvas.rotate(pi)
         # self.assertIn(rotate, self.testing_canvas.drawing_objects)
-        # self.assertActionPerformedWith(self.testing_canvas, 'rotate', radians=math.pi)
+        # self.assertActionPerformedWith(self.testing_canvas, 'rotate', radians=pi)
 
     def test_scale(self):
         scale = self.testing_canvas.scale(2, 1.5)
