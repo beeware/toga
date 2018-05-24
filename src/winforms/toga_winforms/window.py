@@ -112,7 +112,7 @@ class Window:
             self.native.Show()
 
     def set_full_screen(self, is_full_screen):
-        pass
+        self.interface.factory.not_implemented('Window.set_full_screen()')
 
     def on_close(self):
         pass
