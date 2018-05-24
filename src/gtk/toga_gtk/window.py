@@ -149,3 +149,10 @@ class Window:
         https://developer.gnome.org/gtk3/stable/GtkFileChooser.html#gtk-file-chooser-set-current-folder
         '''
         return dialogs.open_file(self.interface, title, file_types, multiselect)
+
+    def select_folder_dialog(self, title, initial_directory):
+        '''Note that at this time, GTK does not recommend setting the initial
+        directory. This function explicitly chooses not to pass it along:
+        https://developer.gnome.org/gtk3/stable/GtkFileChooser.html#gtk-file-chooser-set-current-folder
+        '''
+        return dialogs.select_folder(self.interface, title)
