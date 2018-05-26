@@ -22,4 +22,7 @@ class Image(object):
     @path.setter
     def path(self, path):
         self._path = path
-        self._impl.load_image(self._path)
+        try:
+            self._impl.load_image(self._path)
+        except ValueError:
+            self._path = None
