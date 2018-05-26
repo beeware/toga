@@ -155,4 +155,4 @@ class App:
         self.native.quit()
 
     def set_on_exit(self, value):
-        self.interface.factory.not_implemented('App.set_on_exit()')
+        pass
