@@ -1,6 +1,5 @@
-from travertino.size import at_least
-
 from toga_winforms.libs import WinForms
+from travertino.size import at_least
 
 from .base import Widget
 
@@ -12,7 +11,7 @@ class MultilineTextInput(Widget):
         self.native.Multiline = True
 
     def set_readonly(self, value):
-        self.native.ReadOnly = value
+        self.native.ReadOnly = self.interface.readonly
 
     def set_placeholder(self, value):
         # self.native.cell.placeholderString = self._placeholder
