@@ -16,7 +16,7 @@ pull_request:
                 environment:
                     TEST_DIR: src/core
                     SRC_DEPENDANTS: src/dummy
-            - py3.5:
+            - py3.6:
                 name: Python 3.6 Core API tests
                 task: py36
                 environment:
