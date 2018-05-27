@@ -401,17 +401,17 @@ class CanvasContextMixin:
         matrix described by its arguments. The transformation matrix is
         described by:
 
-        | a c e \
+        | a c e |
         | b d f |
         | 0 0 1 |
 
         Args:
             a (float): horizontal scaling (matrix position m11)
-            b (float): horizontal scaling (matrix position m12)
+            b (float): horizontal skewing (matrix position m12)
             c (float): vertical skewing (matrix position m21)
             d (float): vertical scaling (matrix position m22)
-            e (float): horizontal scaling (matrix position dx)
-            f (float): vertical scaling (matrix position dy)
+            e (float): horizontal moving (matrix position dx)
+            f (float): vertical moving (matrix position dy)
 
         """
         m = [[a, c, e], [b, d, f], [0, 0, 1]]
@@ -426,11 +426,11 @@ class CanvasContextMixin:
 
         Args:
             a (float): horizontal scaling (matrix position m11)
-            b (float): horizontal scaling (matrix position m12)
+            b (float): horizontal skewing (matrix position m12)
             c (float): vertical skewing (matrix position m21)
             d (float): vertical scaling (matrix position m22)
-            e (float): horizontal scaling (matrix position dx)
-            f (float): vertical scaling (matrix position dy)
+            e (float): horizontal moving (matrix position dx)
+            f (float): vertical moving (matrix position dy)
 
         """
         self.reset_transform()
