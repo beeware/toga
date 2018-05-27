@@ -35,9 +35,9 @@ class Canvas(Widget):
         callback to call each one.
 
         """
-        def draw_callback(canvas, native_context):
+        def draw_callback(canvas, context):
             for drawing_object in traverse(root_context.drawing_objects):
-                drawing_object(self, native_context)
+                drawing_object(self, native_context=context)
         self.native.connect('draw', draw_callback)
 
     def redraw(self):
@@ -76,10 +76,10 @@ class Canvas(Widget):
         native_context.translate(x, y)
         if radiusx >= radiusy:
             native_context.scale(1, radiusy / radiusx)
-            self.arc(0, 0, radiusx, startangle, endangle, anticlockwise)
+            self.arc(0, 0, radiusx, startangle, endangle, anticlockwise, native_context)
         elif radiusy > radiusx:
             native_context.scale(radiusx / radiusy, 1)
-            self.arc(0, 0, radiusy, startangle, endangle, anticlockwise)
+            self.arc(0, 0, radiusy, startangle, endangle, anticlockwise, native_context)
         native_context.rotate(rotation)
         native_context.identity_matrix()
         native_context.restore()
