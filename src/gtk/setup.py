@@ -26,13 +26,13 @@ setup(
     author_email='russell@keith-magee.com',
     url='http://pybee.org/toga',
     packages=find_packages(exclude='tests'),
+    python_requires=~3.5,
     install_requires=[
         'toga-core==%s' % version,
         'gbulb>=0.5.3',
         'pycairo>=1.17.0',
         'pygobject>=3.14.0',
     ],
-    python_requires='~=3.4',
     tests_require=[
         'toga-dummy==%s' % version
     ],
@@ -44,9 +44,9 @@ setup(
         'Environment :: X11 Applications :: GTK',
         'Operating System :: POSIX',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3 :: Only',
         'Topic :: Software Development',
         'Topic :: Software Development :: User Interfaces',

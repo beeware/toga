@@ -2,9 +2,6 @@ import asyncio
 import signal
 import sys
 
-if sys.version_info[:3] < (3, 4):
-    raise SystemExit("Toga requires Python 3.4+.")
-
 import gi
 
 gi.require_version('Gtk', '3.0')

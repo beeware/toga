@@ -1,13 +1,8 @@
 #/usr/bin/env python
 import io
 import re
-import sys
 
 from setuptools import setup, find_packages
-
-if sys.version_info[:3] < (3, 4):
-    raise SystemExit("Toga requires Python 3.4+.")
-
 
 with io.open('./toga_demo/__init__.py', encoding='utf8') as version_file:
     version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]", version_file.read(), re.M)
@@ -31,6 +26,7 @@ setup(
     url='http://pybee.org/toga-demo',
     include_package_data=True,
     packages=find_packages(),
+    python_requires=~3.5,
     package_data={
         'toga_demo': ['icons/*.icns', 'icons/*.png'],
     },
@@ -49,8 +45,8 @@ setup(
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3 :: Only',
         'Topic :: Software Development',
         'Topic :: Utilities',

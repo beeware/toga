@@ -32,6 +32,7 @@ setup(
             'django'
         ]
     ),
+    python_requires=~3.5,
     package_data={
         'imageview': ['resources/*'],
     },

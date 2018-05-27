@@ -31,6 +31,7 @@ setup(
             'django'
         ]
     ),
+    python_requires=~3.5,
     classifiers=[
         'Development Status :: 1 - Planning',
         'License :: OSI Approved :: BSD license',
