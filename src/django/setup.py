@@ -25,7 +25,7 @@ setup(
     author_email='russell@keith-magee.com',
     url='http://pybee.org/toga',
     packages=find_packages(exclude='tests'),
-    python_requires=~3.5,
+    python_requires='>=3.5',
     include_package_data=True,
     install_requires=[
         'django==1.10.6',

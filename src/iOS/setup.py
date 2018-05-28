@@ -25,7 +25,7 @@ setup(
     author_email='russell@keith-magee.com',
     url='http://pybee.org/toga',
     packages=find_packages(exclude='tests'),
-    python_requires=~3.5,
+    python_requires='>=3.5',
     install_requires=[
         'rubicon-objc>=0.2.10',
         'toga-core==%s' % version,

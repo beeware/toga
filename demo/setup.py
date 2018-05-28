@@ -26,7 +26,7 @@ setup(
     url='http://pybee.org/toga-demo',
     include_package_data=True,
     packages=find_packages(),
-    python_requires=~3.5,
+    python_requires='>=3.5',
     package_data={
         'toga_demo': ['icons/*.icns', 'icons/*.png'],
     },

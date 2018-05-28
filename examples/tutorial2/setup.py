@@ -25,7 +25,7 @@ setup(
     author_email='russell@keith-magee.com',
     license='New BSD',
     packages=find_packages(exclude=['docs', 'tests']),
-    python_requires=~3.5,
+    python_requires='>=3.5',
     package_data={
         'tutorial': ['icons/*'],
     },

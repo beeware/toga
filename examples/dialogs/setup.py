@@ -30,7 +30,7 @@ setup(
             'django'
         ]
     ),
-    python_requires=~3.5,
+    python_requires='>=3.5',
     package_data={
         'dialogs': ['resources/*'],
     },

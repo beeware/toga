@@ -25,7 +25,7 @@ setup(
     author_email='russell@keith-magee.com',
     url='http://pybee.org/toga',
     packages=find_packages(exclude='tests'),
-    python_requires=~3.5,
+    python_requires='>=3.5',
     install_requires=[
         'toga-core==%s' % version,
     ],
