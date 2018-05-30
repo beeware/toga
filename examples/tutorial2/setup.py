@@ -25,6 +25,7 @@ setup(
     author_email='russell@keith-magee.com',
     license='New BSD',
     packages=find_packages(exclude=['docs', 'tests']),
+    python_requires='>=3.5',
     package_data={
         'tutorial': ['icons/*'],
     },
@@ -35,9 +36,9 @@ setup(
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3 :: Only',
         'Topic :: Software Development',
         'Topic :: Software Development :: User Interfaces',
