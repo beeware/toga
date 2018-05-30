@@ -6,6 +6,7 @@ from .font import Font
 from .widgets.box import Box
 from .widgets.button import Button
 from .widgets.canvas import Canvas
+from .widgets.combobox import ComboBox
 from .widgets.detailedlist import DetailedList
 from .widgets.icon import Icon
 from .widgets.image import *
@@ -45,6 +46,7 @@ __all__ = [
     'Box',
     'Button',
     'Canvas',
+    'ComboBox',
     'DetailedList',
     'Icon',
     'Image',
