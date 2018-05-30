@@ -509,7 +509,7 @@ class Context(CanvasContextMixin):
         self._children_contexts = []  # Context can have children contexts
 
     def __repr__(self):
-        return '{} at {} ()'.format(self.__class__, identifier(self))
+        return '{}()'.format(self.__class__.__name__)
 
 
 class Fill(CanvasContextMixin):
@@ -537,8 +537,8 @@ class Fill(CanvasContextMixin):
         self._children_contexts = []  # Fill context can have children contexts
 
     def __repr__(self):
-        return '{} at {} (color={}, fill_rule={}, preserve={})'.format(
-            self.__class__, identifier(self), self.color, self.fill_rule, self.preserve
+        return '{}(color={}, fill_rule={}, preserve={})'.format(
+            self.__class__.__name__, self.color, self.fill_rule, self.preserve
         )
 
     def __call__(self, impl, *args, **kwargs):
@@ -588,7 +588,7 @@ class Stroke(CanvasContextMixin):
         self._children_contexts = []  # Stroke context can have children contexts
 
     def __repr__(self):
-        return '{} at {} (color={}, width={})'.format(self.__class__, identifier(self), self.color, self.width)
+        return '{}(color={}, width={})'.format(self.__class__.__name__, self.color, self.width)
 
     def __call__(self, impl, *args, **kwargs):
         """Allow the implementation to callback the Class instance.
@@ -632,7 +632,7 @@ class ClosedPath(CanvasContextMixin):
         self._children_contexts = []
 
     def __repr__(self):
-        return '{} at {} (x={}, y={})'.format(self.__class__, identifier(self), self.x, self.y)
+        return '{}(x={}, y={})'.format(self.__class__.__name__, self.x, self.y)
 
     def __call__(self, impl, *args, **kwargs):
         """Allow the implementation to callback the Class instance.
@@ -657,7 +657,7 @@ class MoveTo:
         self.y = y
 
     def __repr__(self):
-        return '{} at {} (x={}, y={})'.format(self.__class__, identifier(self), self.x, self.y)
+        return '{}(x={}, y={})'.format(self.__class__.__name__, self.x, self.y)
 
     def __call__(self, impl, *args, **kwargs):
         """Allow the implementation to callback the Class instance.
@@ -694,7 +694,7 @@ class LineTo:
         self.y = y
 
     def __repr__(self):
-        return '{} at {} (x={}, y={})'.format(self.__class__, identifier(self), self.x, self.y)
+        return '{}(x={}, y={})'.format(self.__class__.__name__, self.x, self.y)
 
     def __call__(self, impl, *args, **kwargs):
         """Allow the implementation to callback the Class instance.
@@ -741,8 +741,8 @@ class BezierCurveTo:
         self.y = y
 
     def __repr__(self):
-        return '{} at {} (cp1x={}, cp1y={}, cp2x={}, cp2y={}, x={}, y={})'.format(
-            self.__class__, identifier(self), self.cp1x, self.cp1y, self.cp2x, self.cp2y, self.x, self.y
+        return '{}(cp1x={}, cp1y={}, cp2x={}, cp2y={}, x={}, y={})'.format(
+            self.__class__.__name__, self.cp1x, self.cp1y, self.cp2x, self.cp2y, self.x, self.y
         )
 
     def __call__(self, impl, *args, **kwargs):
@@ -794,8 +794,8 @@ class QuadraticCurveTo:
         self.y = y
 
     def __repr__(self):
-        return '{} at {} (cpx={}, cpy={}, x={}, y={})'.format(
-            self.__class__, identifier(self), self.cpx, self.cpy, self.x, self.y
+        return '{}(cpx={}, cpy={}, x={}, y={})'.format(
+            self.__class__.__name__, self.cpx, self.cpy, self.x, self.y
         )
 
     def __call__(self, impl, *args, **kwargs):
@@ -852,8 +852,8 @@ class Ellipse:
         self.anticlockwise = anticlockwise
 
     def __repr__(self):
-        return '{} at {} (x={}, y={}, radiusx={}, radiusy={}, rotation={}, startangle={}, endangle={}, anticlockwise)' \
-            .format(self.__class__, identifier(self), self.x, self.y, self.radiusx, self.radiusy, self.rotation,
+        return '{}(x={}, y={}, radiusx={}, radiusy={}, rotation={}, startangle={}, endangle={}, anticlockwise={})' \
+            .format(self.__class__.__name__, self.x, self.y, self.radiusx, self.radiusy, self.rotation,
                     self.startangle, self.endangle, self.anticlockwise)
 
     def __call__(self, impl, *args, **kwargs):
@@ -921,8 +921,8 @@ class Arc:
         self.anticlockwise = anticlockwise
 
     def __repr__(self):
-        return '{} at {} (x={}, y={}, radius={}, startangle={}, endangle={}, anticlockwise)'.format(
-            self.__class__, identifier(self), self.x, self.y, self.radius, self.startangle,
+        return '{}(x={}, y={}, radius={}, startangle={}, endangle={}, anticlockwise={})'.format(
+            self.__class__.__name__, self.x, self.y, self.radius, self.startangle,
             self.endangle, self.anticlockwise
         )
 
@@ -979,8 +979,8 @@ class Rect:
         self.height = height
 
     def __repr__(self):
-        return '{} at {} (x={}, y={}, width={}, height={})'.format(
-            self.__class__, identifier(self), self.x, self.y, self.width, self.height
+        return '{}(x={}, y={}, width={}, height={})'.format(
+            self.__class__.__name__, self.x, self.y, self.width, self.height
         )
 
     def __call__(self, impl, *args, **kwargs):
@@ -1027,9 +1027,7 @@ class WriteText:
         self.font = font
 
     def __repr__(self):
-        return '{} at {} (text={}, x={}, y={}, font={})'.format(
-            self.__class__, identifier(self), self.text, self.x, self.y, self.font
-        )
+        return '{}(text={}, x={}, y={}, font={})'.format(self.__class__.__name__, self.text, self.x, self.y, self.font)
 
     def __call__(self, impl, *args, **kwargs):
         """Allow the implementation to callback the Class instance.
@@ -1058,7 +1056,7 @@ class NewPath:
 
     """
     def __repr__(self):
-        return '{} at {} ()'.format(self.__class__, identifier(self))
+        return '{}()'.format(self.__class__.__name__)
 
     def __call__(self, impl, *args, **kwargs):
         """Allow the implementation to callback the Class instance.
