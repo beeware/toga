@@ -2,6 +2,8 @@
 You put the box inside another box...
 =====================================
 
+.. include:: /tutorial/tutorial-issues-note.rst
+
 If you've done any GUI programming before, you will know that one of the
 biggest problems that any widget toolkit solves is how to put widgets on the
 screen in the right place. Different widget toolkits use different approaches
@@ -24,6 +26,9 @@ Here's the source code:
 
 .. literalinclude:: /../examples/tutorial2/tutorial/app.py
    :language: python
+
+In order to render the icons, you will need to move the icons folder into the
+same directory as your app file.
 
 Here are the :download:`Icons <./resources/icons.zip>`
 

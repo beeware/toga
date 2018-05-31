@@ -32,6 +32,7 @@ setup(
             'django'
         ]
     ),
+    python_requires='>=3.5',
     package_data={
         'imageview': ['resources/*'],
     },
@@ -68,8 +69,7 @@ setup(
         # Mobile deployments
         'ios': {
             'app_requires': [
-                '../../src/core',
-                '../../src/iOS',
+                'toga-ios',
             ]
         },
         'android': {

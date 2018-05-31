@@ -59,7 +59,10 @@ NSUnderlineStyleAttributeName = objc_const(appkit, "NSUnderlineStyleAttributeNam
 NSStrokeColorAttributeName = objc_const(appkit, "NSStrokeColorAttributeName")
 NSStrokeWidthAttributeName = objc_const(appkit, "NSStrokeWidthAttributeName")
 NSShadowAttributeName = objc_const(appkit, "NSShadowAttributeName")
-NSTextEffectAttributeName = objc_const(appkit, "NSTextEffectAttributeName")
+
+# NSTextEffectAttributeName is supported in OS 10.10+
+# goes against minimum requirements: current support is for OS 10.7+
+# NSTextEffectAttributeName = objc_const(appkit, "NSTextEffectAttributeName")
 
 NSAttachmentAttributeName = objc_const(appkit, "NSAttachmentAttributeName")
 NSLinkAttributeName = objc_const(appkit, "NSLinkAttributeName")
@@ -227,6 +230,7 @@ NSDocument = ObjCClass('NSDocument')
 ######################################################################
 # NSDocumentController.h
 NSDocumentController = ObjCClass('NSDocumentController')
+NSDocumentController.declare_class_property('sharedDocumentController')
 
 ######################################################################
 # NSEvent.h
@@ -264,6 +268,12 @@ NSBeginFunctionKey = 0xF72A
 NSEndFunctionKey = 0xF72B
 NSPageUpFunctionKey = 0xF72C
 NSPageDownFunctionKey = 0xF72D
+
+NSEventModifierFlagCapsLock = 1 << 16
+NSEventModifierFlagShift = 1 << 17
+NSEventModifierFlagControl = 1 << 18
+NSEventModifierFlagOption = 1 << 19
+NSEventModifierFlagCommand = 1 << 20
 
 ######################################################################
 # NSFont.h
@@ -478,6 +488,7 @@ NSFileHandlingPanelOKButton = 1
 # NSScreen.h
 NSScreen = ObjCClass('NSScreen')
 NSScreen.declare_class_property('mainScreen')
+NSScreen.declare_property('visibleFrame')
 
 ######################################################################
 # NSScrollView.h
@@ -553,6 +564,9 @@ def NSTextAlignment(alignment):
 NSTextField = ObjCClass('NSTextField')
 NSTextFieldCell = ObjCClass('NSTextFieldCell')
 
+NSTextField.declare_property('editable')
+NSTextField.declare_property('bezeled')
+
 ######################################################################
 # NSTextFieldCell.h
 
@@ -572,6 +586,7 @@ NSTimer = ObjCClass('NSTimer')
 NSToolbar = ObjCClass('NSToolbar')
 NSToolbarItem = ObjCClass('NSToolbarItem')
 
+NSToolbarItem.declare_property('itemIdentifier')
 ######################################################################
 # NSTrackingArea.h
 NSTrackingMouseEnteredAndExited = 0x01
@@ -599,6 +614,8 @@ NSGrooveBorder = 3
 ######################################################################
 # NSWindow.h
 NSWindow = ObjCClass('NSWindow')
+NSWindow.declare_property('frame')
+
 
 NSBorderlessWindowMask = 0
 NSTitledWindowMask = 1 << 0

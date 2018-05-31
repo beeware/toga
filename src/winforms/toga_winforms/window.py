@@ -1,7 +1,7 @@
 from toga import GROUP_BREAK, SECTION_BREAK
 from travertino.layout import Viewport
 
-from .libs import WinForms, Size
+from .libs import WinForms, Size, add_handler
 
 
 class WinFormsViewport:
@@ -31,7 +31,7 @@ class Window:
         self.native = WinForms.Form(self)
         self.native.ClientSize = Size(self.interface._size[0], self.interface._size[1])
         self.native.interface = self.interface
-        self.native.Resize += self.on_resize
+        self.native.Resize += self.winforms_Resize
         self.toolbar_native = None
         self.toolbar_items = None
 
@@ -43,7 +43,14 @@ class Window:
             elif cmd == SECTION_BREAK:
                 item = WinForms.ToolStripSeparator()
             else:
-                item = WinForms.ToolStripButton()
+                cmd.bind(self.interface.factory)
+                if cmd.icon is not None:
+                    native_icon = cmd.icon.bind(self.interface.factory).native
+                    item = WinForms.ToolStripMenuItem(cmd.label, native_icon.ToBitmap())
+                else:
+                    item = WinForms.ToolStripMenuItem(cmd.label)
+
+                item.Click += add_handler(cmd)
             self.toolbar_native.Items.Add(item)
 
     def set_position(self, position):
@@ -58,15 +65,22 @@ class Window:
     @property
     def vertical_shift(self):
         # vertical shift is the toolbar height or 0
+        result = 0
         try:
-            return self.native.interface._impl.toolbar_native.Height
+            result += self.native.interface._impl.toolbar_native.Height
         except AttributeError:
-            return 0
+            pass
+        try:
+            result += self.native.interface._impl.native.MainMenuStrip.Height
+        except AttributeError:
+            pass
+        return result
 
     def set_content(self, widget):
         if self.toolbar_native:
             self.native.Controls.Add(self.toolbar_native)
-
+            # Create the lookup table of menu items,
+            # then force the creation of the menus.
         self.native.Controls.Add(widget.native)
 
         # Set the widget's viewport to be based on the window's content.
@@ -94,32 +108,84 @@ class Window:
             int(self.interface.content.layout.height) + TITLEBAR_HEIGHT
         )
         self.interface.content.refresh()
+        if self.interface is self.interface.app._main_window:
+            self.native.FormClosing += self.winforms_FormClosing
 
+        if self.interface is not self.interface.app._main_window:
+            self.native.Show()
+
+            
+    def winforms_FormClosing(self, event, handler):
+        if self.interface.app.on_exit:
+            self.interface.app.on_exit(self.interface.app)
+          
+    def set_full_screen(self, is_full_screen):
+        self.interface.factory.not_implemented('Window.set_full_screen()')
+        
     def on_close(self):
         pass
 
     def close(self):
         self.native.Close()
 
-    def on_resize(self, sender, args):
+    def winforms_Resize(self, sender, args):
         if self.interface.content:
             # Re-layout the content
             self.interface.content.refresh()
 
     def info_dialog(self, title, message):
-        pass
+        return WinForms.MessageBox.Show(message, title, WinForms.MessageBoxButtons.OK)
 
     def question_dialog(self, title, message):
-        pass
+        result = WinForms.MessageBox.Show(message, title, WinForms.MessageBoxButtons.YesNo)
+        return result
 
     def confirm_dialog(self, title, message):
-        pass
+        result = WinForms.MessageBox.Show(message, title, WinForms.MessageBoxButtons.OKCancel)
+        # this returns 1 (DialogResult.OK enum) for OK and 2 for Cancel
+        return True if result == WinForms.DialogResult.OK else False
 
     def error_dialog(self, title, message):
-        pass
+        return WinForms.MessageBox.Show(message, title, WinForms.MessageBoxButtons.OK,
+                                        WinForms.MessageBoxIcon.Error)
 
     def stack_trace_dialog(self, title, message, content, retry=False):
         pass
 
     def save_file_dialog(self, title, suggested_filename, file_types):
-        pass
+        dialog = WinForms.SaveFileDialog()
+        dialog.Title = title
+        if suggested_filename is not None:
+            dialog.FileName = suggested_filename
+        if dialog.ShowDialog() == WinForms.DialogResult.OK:
+            return dialog.FileName
+        else:
+            raise ValueError("No filename provided in the save file dialog")
+
+    def open_file_dialog(self, title, initial_directory, file_types, multiselect):
+        dialog = WinForms.OpenFileDialog()
+        dialog.Title = title
+        if initial_directory is not None:
+            dialog.InitialDirectory = initial_directory
+        if file_types is not None:
+            # FIXME This is the example of Filter string: Text files (*.txt)|*.txt|All files (*.*)|*.*
+
+            dialog.Filter = ';'.join(["*." + ext for ext in file_types]) + \
+                            "|All files (*.*)|*.*"
+        if multiselect:
+            dialog.Multiselect = True
+        if dialog.ShowDialog() == WinForms.DialogResult.OK:
+            return dialog.FileName
+        else:
+            raise ValueError("No filename provided in the open file dialog")
+
+    def select_folder_dialog(self, title, initial_directory):
+        dialog = WinForms.FolderBrowserDialog()
+        dialog.Title = title
+        if initial_directory is not None:
+            dialog.InitialDirectory = initial_directory
+
+        if dialog.ShowDialog() == WinForms.DialogResult.OK:
+            return dialog.SelectedPath
+        else:
+            raise ValueError("No folder provided in the select folder dialog")

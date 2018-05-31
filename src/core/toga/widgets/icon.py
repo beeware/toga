@@ -21,15 +21,12 @@ class Icon:
 
     Args:
         path(str): Path to the icon file.
-        system(bool): Set to `True if the icon is located in the 'resource' folder
+        system(bool): Set to `True` if the icon is located in the 'resource' folder
             of the Toga package. Default is False.
     """
 
     def __init__(self, path, system=False):
-        if os.path.splitext(path)[1] in ('.png', '.icns', '.bmp'):
-            self.path = path
-        else:
-            self.path = path + '.icns'
+        self.path = path
 
         self.system = system
 

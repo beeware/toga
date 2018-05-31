@@ -14,6 +14,50 @@ If you experience problems with Toga, `log them on GitHub`_. If you want to cont
 Set up your development environment
 ===================================
 
+First thing is to ensure that you have Python 3 and pip installed. To do this run the following commands:
+
+.. tabs::
+
+  .. group-tab:: macOS
+
+    .. code-block:: bash
+
+      $ python3 --version
+      $ pip3 --version
+
+  .. group-tab:: Linux
+
+    .. code-block:: bash
+
+      $ python3 --version
+      $ pip3 --version
+
+  .. group-tab:: Windows
+
+    .. code-block:: doscon
+
+      C:\...>python3 --version
+      C:\...>pip3 --version
+
+Next install any additional dependencies for your operating system:
+
+.. tabs::
+
+  .. group-tab:: macOS
+
+    No additional dependencies
+
+  .. group-tab:: Linux
+
+    .. code-block:: bash
+
+      $ sudo apt-get update
+      $ sudo apt-get install python3-dev libgirepository1.0-dev libcairo2-dev
+
+  .. group-tab:: Windows
+
+    No additional dependencies
+
 The recommended way of setting up your development environment for Toga
 is to install a virtual environment, install the required dependencies and
 start coding. To set up a virtual environment, run:
@@ -56,7 +100,7 @@ to clone using the command line:
 
     Fork the Toga repository, and then::
 
-      (venv) $ git clone git@github.com:<your username>/toga.git
+      (venv) $ git clone https://github.com/<your username>/toga.git
 
     (substituting your Github username)
 
@@ -64,7 +108,7 @@ to clone using the command line:
 
     Fork the Toga repository, and then::
 
-      (venv) $ git clone git@github.com:<your username>/toga.git
+      (venv) $ git clone https://github.com/<your username>/toga.git
 
     (substituting your Github username)
 
@@ -74,7 +118,7 @@ to clone using the command line:
 
     .. code-block:: doscon
 
-      (venv) C:\...>git clone git@github.com:<your username>/toga.git
+      (venv) C:\...>git clone https://github.com/<your username>/toga.git
 
     (substituting your Github username)
 
@@ -385,7 +429,7 @@ created. As a result, most Toga widgets should accept a ``factory`` argument -
 and that factory should be used to instantiate any widget implementations or
 sub-widgets.
 
-However, *some* widgets - like Icon - are "late loaded" - the implmementation
+However, *some* widgets - like Icon - are "late loaded" - the implementation
 isn't created until the widget is actually *used*. Late loaded widgets don't
 accept a ``factory`` when they're created - but they *do* have an `_impl()`
 method that accepts a factory.
@@ -418,7 +462,7 @@ widget refreshes then updates), flag it and bring it to our attention by
 raising a ticket. Or, if you're confident that you know what needs to be done,
 create a pull request that fixes the problem you've found.
 
-On example of the type of consistency we're looking for is described in
+One example of the type of consistency we're looking for is described in
 `this ticket <https://github.com/pybee/toga/issues/299>`__.
 
 What next?
@@ -459,7 +503,7 @@ might want to look into a more advanced problem. Here are some suggestions:
   this document are all platform independent. They use the dummy backend to
   validate that data is being passed around correctly, but they don't validate
   that on a given platform, widgets behave they way they should. If I put a
-  button on Toga app, is that button displayed? Is it in the right place? Does
+  button on a Toga app, is that button displayed? Is it in the right place? Does
   it respond to mouse clicks? Ideally, we'd have automated tests to validate
   these properties. However, automated tests of GUI operations can be difficult
   to set up. If you've got experience with automated GUI testing, we'd love to

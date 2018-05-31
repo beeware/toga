@@ -2,11 +2,6 @@
 import io
 import re
 from setuptools import setup
-import sys
-
-
-if sys.version_info[:3] < (3, 4):
-    raise SystemExit("Toga requires Python 3.4+.")
 
 
 with io.open('src/core/toga/__init__.py', encoding='utf8') as version_file:
@@ -42,12 +37,18 @@ setup(
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3 :: Only',
         'Topic :: Software Development',
         'Topic :: Software Development :: User Interfaces',
         'Topic :: Software Development :: Widget Sets',
     ],
+    package_urls={
+        'Funding': 'https://pybee.org/contributing/membership/',
+        'Documentation': 'https://toga.readthedocs.io/',
+        'Tracker': 'https://github.com/pybee/toga/issues',
+        'Source': 'https://github.com/pybee/toga',
+    },
 )
