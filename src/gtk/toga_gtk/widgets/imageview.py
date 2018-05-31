@@ -31,7 +31,7 @@ class ImageView(Widget):
         if os.path.isfile(full_image_path):
             self._original_pixbuf = GdkPixbuf.Pixbuf.new_from_file
         else:
-            raise ValueError("No image file available at ", path)
+            raise ValueError("No image file available at ", full_image_path)
         self.rehint()
 
     def rehint(self):
