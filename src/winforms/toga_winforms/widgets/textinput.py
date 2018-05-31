@@ -1,6 +1,5 @@
+from toga_winforms.libs import WinForms, HorizontalTextAlignment
 from travertino.size import at_least
-
-from toga_winforms.libs import WinForms
 
 from .base import Widget
 
@@ -14,8 +13,7 @@ class TextInput(Widget):
         self.native.ReadOnly = value
 
     def set_placeholder(self, value):
-        # self.native.cell.placeholderString = self._placeholder
-        self.interface.factory.not_implemented('TextInput.set_placeholder()')
+        self.native.Text = self.interface.placeholder
 
     def get_value(self):
         return self.native.Text
@@ -24,7 +22,7 @@ class TextInput(Widget):
         self.native.Text = value
 
     def set_alignment(self, value):
-        self.interface.factory.not_implemented('TextInput.set_alignment()')
+        self.native.TextAlign = HorizontalTextAlignment(value)
 
     def set_font(self, value):
         self.interface.factory.not_implemented('TextInput.set_font()')
@@ -37,4 +35,8 @@ class TextInput(Widget):
         self.interface.intrinsic.height = self.native.PreferredSize.Height
 
     def set_on_change(self, handler):
-        pass
+        self.native.TextChanged += self.on_text_change
+
+    def on_text_change(self, sender, event):
+        if self.interface._on_change:
+            self.interface.on_change(self.interface)

@@ -7,7 +7,7 @@ from ..libs import List as TogaList, SimpleListElement as TogaSimpleListElement
 
 class SimpleListElement(Widget):
     def __init__(self, content, detail=None, **style):
-        super(SimpleListElement, self).__init__(**style)
+        super().__init__(**style)
 
         self.content = content
         self.detail = detail
@@ -34,7 +34,7 @@ class List(Widget):
     IMPL_CLASS = TogaList
 
     def __init__(self, source=None, detail=None, item_class=None, on_item_press=None, **style):
-        super(List, self).__init__(**style)
+        super().__init__(**style)
         self.source = source
         self.detail = detail
         self.item_class = item_class

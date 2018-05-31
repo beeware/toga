@@ -39,6 +39,6 @@ class Button(Widget):
         pass
 
     def rehint(self):
-        fitting_size = self.native.fittingSize()
-        self.interface.intrinsic.width = at_least(fitting_size.width)
-        self.interface.intrinsic.height = fitting_size.height
+        content_size = self.native.intrinsicContentSize()
+        self.interface.intrinsic.width = at_least(content_size.width)
+        self.interface.intrinsic.height = content_size.height

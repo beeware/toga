@@ -34,15 +34,13 @@ class Widget:
         self.rehint()
 
     def set_enabled(self, value):
-        self.native.enabled = value
+        self.native.enabled = self.interface.enabled
 
     ### APPLICATOR
 
     def set_bounds(self, x, y, width, height):
         # print("SET BOUNDS ON", self.interface, x, y, width, height)
         self.constraints.update(x, y, width, height)
-        # print('horiz', self.native.constraintsAffectingLayoutForOrientation(0))
-        # print('vert', self.native.constraintsAffectingLayoutForOrientation(1))
 
     def set_alignment(self, alignment):
         pass

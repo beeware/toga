@@ -167,3 +167,6 @@ class App:
 
     def exit(self):
         self.native.terminate(None)
+
+    def set_on_exit(self, value):
+        pass

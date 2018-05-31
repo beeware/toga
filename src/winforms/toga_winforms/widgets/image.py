@@ -1,5 +1,5 @@
 from toga_winforms.libs import WinImage
-
+import os
 
 class Image(object):
     def __init__(self, interface):
@@ -10,4 +10,7 @@ class Image(object):
         if path.startswith('http://') or path.startswith('https://'):
             self.native = path
         else:
-            self.native = WinImage.FromFile(path)
+            if os.path.isfile(path):
+                self.native = WinImage.FromFile(path)
+            else:
+                raise ValueError("No image file available at ", path)

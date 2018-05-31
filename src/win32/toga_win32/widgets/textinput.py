@@ -9,12 +9,12 @@ class TextInput(Widget):
     default_style = WS_VISIBLE | WS_CHILD | WS_TABSTOP| ES_AUTOHSCROLL
 
     def __init__(self, initial=None, placeholder=None, readonly=False):
-        super(TextInput, self).__init__(text=initial)
+        super().__init__(text=initial)
         self.placeholder = placeholder #not used on win32!
         self._readonly = readonly
 
     def startup(self):
-        super(TextInput, self).startup()
+        super().startup()
         self.readonly = self._readonly
 
     @property
