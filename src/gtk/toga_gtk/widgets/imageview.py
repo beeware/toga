@@ -27,11 +27,12 @@ class ImageView(Widget):
             with urlopen(request) as result:
                 input_stream = Gio.MemoryInputStream.new_from_data(result.read(), None)
                 self._original_pixbuf = GdkPixbuf.Pixbuf.new_from_stream(input_stream, None)
-        full_image_path = self.image.path if os.path.isabs(self.image.path) else os.path.join(toga.App.app_dir, self.image.path)
-        if os.path.isfile(full_image_path):
-            self._original_pixbuf = GdkPixbuf.Pixbuf.new_from_file
         else:
-            raise ValueError("No image file available at ", full_image_path)
+            full_image_path = self.image.path if os.path.isabs(self.image.path) else os.path.join(toga.App.app_dir, self.image.path)
+            if os.path.isfile(full_image_path):
+                self._original_pixbuf = GdkPixbuf.Pixbuf.new_from_file
+            else:
+                raise ValueError("No image file available at ", full_image_path)
         self.rehint()
 
     def rehint(self):
