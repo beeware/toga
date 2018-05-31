@@ -547,23 +547,24 @@ class Fill(CanvasContextMixin):
         """
         impl.fill(self.color, self.fill_rule, self.preserve, *args, **kwargs)
 
-    def modify(self, color=None, fill_rule='nonzero', preserve=False):
+    def modify(self, color=None, fill_rule=None, preserve=None):
         """Modify the fill properties after it has been drawn with.
 
+        All arguments default to the current value.
+
         Args:
-            color (str, optional): Color value in any valid color format,
-                default to black.
+            color (str, optional): Color value in any valid color format.
             fill_rule (str, optional): 'nonzero' is the non-zero winding rule and
                                        'evenodd' is the even-odd winding rule.
             preserve (bool, optional): Preserves the path within the Context.
 
         """
-        if color:
+        if color is not None:
             self.color = parse_color(color)
-        else:
-            self.color = None
-        self.fill_rule = fill_rule
-        self.preserve = preserve
+        if fill_rule is not None:
+            self.fill_rule = fill_rule
+        if preserve is not None:
+            self.preserve = preserve
 
 
 class Stroke(CanvasContextMixin):
@@ -596,20 +597,20 @@ class Stroke(CanvasContextMixin):
         """
         impl.stroke(self.color, self.width, *args, **kwargs)
 
-    def modify(self, color=None, width=2.0):
+    def modify(self, color=None, line_width=None):
         """Modify the stroke properties after it has been drawn with.
 
+        All arguments default to the current value.
+
         Args:
-            color (str, optional): Color value in any valid color format,
-                default to black.
-            width (float, optional): Stroke line width, default is 2.0.
+            color (str, optional): Color value in any valid color format.
+            line_width (float, optional): Stroke line width.
 
         """
-        if color:
+        if color is not None:
             self.color = parse_color(color)
-        else:
-            self.color = None
-        self.width = width
+        if line_width is not None:
+            self.line_width = line_width
 
 
 class ClosedPath(CanvasContextMixin):
@@ -665,16 +666,20 @@ class MoveTo:
         """
         impl.move_to(self.x, self.y, *args, **kwargs)
 
-    def modify(self, x, y):
+    def modify(self, x=None, y=None):
         """Modify the move to operation after it has been drawn.
 
+        All arguments default to the current value.
+
         Args:
-            x (float): The x axis of the point.
-            y (float): The y axis of the point.
+            x (float, optional): The x axis of the point.
+            y (float, optional): The y axis of the point.
 
         """
-        self.x = x
-        self.y = y
+        if x is not None:
+            self.x = x
+        if y is not None:
+            self.y = y
 
 
 class LineTo:
@@ -702,16 +707,22 @@ class LineTo:
         """
         impl.line_to(self.x, self.y, *args, **kwargs)
 
-    def modify(self, x, y):
+    def modify(self, x=None, y=None):
         """Modify the line to operation after it has been drawn.
 
+        All arguments default to the current value.
+
         Args:
-            x (float): The x axis of the coordinate for the end of the line.
-            y (float): The y axis of the coordinate for the end of the line.
+            x (float, optional): The x axis of the coordinate for the end of
+                the line.
+            y (float, optional): The y axis of the coordinate for the
+                end of the line.
 
         """
-        self.x = x
-        self.y = y
+        if x is not None:
+            self.x = x
+        if y is not None:
+            self.y = y
 
 
 class BezierCurveTo:
@@ -751,24 +762,32 @@ class BezierCurveTo:
         """
         impl.bezier_curve_to(self.cp1x, self.cp1y, self.cp2x, self.cp2y, self.x, self.y, *args, **kwargs)
 
-    def modify(self, cp1x, cp1y, cp2x, cp2y, x, y):
+    def modify(self, cp1x=None, cp1y=None, cp2x=None, cp2y=None, x=None, y=None):
         """Modify the rectangle after it has been drawn.
 
+        All arguments default to the current value.
+
         Args:
-            cp1x (float): x coordinate for the first control point.
-            cp1y (float): y coordinate for first control point.
-            cp2x (float): x coordinate for the second control point.
-            cp2y (float): y coordinate for the second control point.
-            x (float): x coordinate for the end point.
-            y (float): y coordinate for the end point.
+            cp1x (float, optional): x coordinate for the first control point.
+            cp1y (float, optional): y coordinate for first control point.
+            cp2x (float, optional): x coordinate for the second control point.
+            cp2y (float, optional): y coordinate for the second control point.
+            x (float, optional): x coordinate for the end point.
+            y (float, optional): y coordinate for the end point.
 
         """
-        self.cp1x = cp1x
-        self.cp1y = cp1y
-        self.cp2x = cp2x
-        self.cp2y = cp2y
-        self.x = x
-        self.y = y
+        if cp1x is not None:
+            self.cp1x = cp1x
+        if cp1y is not None:
+            self.cp1y = cp1y
+        if cp2x is not None:
+            self.cp2x = cp2x
+        if cp2y is not None:
+            self.cp2y = cp2y
+        if x is not None:
+            self.x = x
+        if y is not None:
+            self.y = y
 
 
 class QuadraticCurveTo:
@@ -804,20 +823,29 @@ class QuadraticCurveTo:
         """
         impl.quadratic_curve_to(self.cpx, self.cpy, self.x, self.y, *args, **kwargs)
 
-    def modify(self, cpx, cpy, x, y):
+    def modify(self, cpx=None, cpy=None, x=None, y=None):
         """Modify the rectangle after it has been drawn.
 
+        All arguments default to the current value.
+
         Args:
-            cpx (float): The x axis of the coordinate for the control point.
-            cpy (float): The y axis of the coordinate for the control point.
-            x (float): The x axis of the coordinate for the end point.
-            y (float): he y axis of the coordinate for the end point.
+            cpx (float, optional): The x axis of the coordinate for the control
+                point.
+            cpy (float, optional): The y axis of the coordinate for the control
+                point.
+            x (float, optional): The x axis of the coordinate for the end
+                point.
+            y (float, optional): he y axis of the coordinate for the end point.
 
         """
-        self.cpx = cpx
-        self.cpy = cpy
-        self.x = x
-        self.y = y
+        if cpx is not None:
+            self.cpx = cpx
+        if cpy is not None:
+            self.cpy = cpy
+        if x is not None:
+            self.x = x
+        if y is not None:
+            self.y = y
 
 
 class Ellipse:
@@ -865,30 +893,44 @@ class Ellipse:
             self.endangle, self.anticlockwise, *args, **kwargs
         )
 
-    def modify(self, x, y, radiusx, radiusy, rotation=0.0, startangle=0.0, endangle=2 * pi, anticlockwise=False):
+    def modify(
+            self, x=None, y=None, radiusx=None, radiusy=None, rotation=None, startangle=None, endangle=None,
+            anticlockwise=None
+    ):
         """Modify the ellipse after it has been drawn.
 
         Args:
-            x (float): The x axis of the coordinate for the ellipse's center.
-            y (float): The y axis of the coordinate for the ellipse's center.
-            radiusx (float): The ellipse's major-axis radius.
-            radiusy (float): The ellipse's minor-axis radius.
-            rotation (float, optional): The rotation for this ellipse, expressed in radians, default 0.0.
-            startangle (float, optional): The starting point in radians, measured from the x
-                axis, from which it will be drawn, default 0.0.
-            endangle (float, optional): The end ellipse's angle in radians to which it will
-                be drawn, default 2*pi.
+            x (float, optional): The x axis of the coordinate for the ellipse's
+                center.
+            y (float, optional): The y axis of the coordinate for the ellipse's
+                center.
+            radiusx (float, optional): The ellipse's major-axis radius.
+            radiusy (float, optional): The ellipse's minor-axis radius.
+            rotation (float, optional): The rotation for this ellipse,
+                expressed in radians, default 0.0.
+            startangle (float, optional): The starting point in radians,
+                measured from the x axis, from which it will be drawn, default 0.0.
+            endangle (float, optional): The end ellipse's angle in radians to
+                which it will be drawn, default 2*pi.
             anticlockwise (bool, optional): If true, draws the ellipse
                 anticlockwise (counter-clockwise) instead of clockwise, default false.
         """
-        self.x = x
-        self.y = y
-        self.radiusx = radiusx
-        self.radiusy = radiusy
-        self.rotation = rotation
-        self.startangle = startangle
-        self.endangle = endangle
-        self.anticlockwise = anticlockwise
+        if x is not None:
+            self.x = x
+        if y is not None:
+            self.y = y
+        if radiusx is not None:
+            self.radiusx = radiusx
+        if radiusy is not None:
+            self.radiusy = radiusy
+        if rotation is not None:
+            self.rotation = rotation
+        if startangle is not None:
+            self.startangle = startangle
+        if endangle is not None:
+            self.endangle = endangle
+        if anticlockwise is not None:
+            self.anticlockwise = anticlockwise
 
 
 class Arc:
@@ -932,13 +974,15 @@ class Arc:
         """
         impl.arc(self.x, self.y, self.radius, self.startangle, self.endangle, self.anticlockwise, *args, **kwargs)
 
-    def modify(self, x, y, radius, startangle=0.0, endangle=2 * pi, anticlockwise=False):
+    def modify(self, x=None, y=None, radius=None, startangle=None, endangle=None, anticlockwise=None):
         """Modify the arc after it has been drawn.
 
+        All arguments default to the current value.
+
         Args:
-            x (float): The x coordinate of the arc's center.
-            y (float): The y coordinate of the arc's center.
-            radius (float): The arc's radius.
+            x (float, optional): The x coordinate of the arc's center.
+            y (float, optional): The y coordinate of the arc's center.
+            radius (float, optional): The arc's radius.
             startangle (float, optional): The angle (in radians) at which the
                 arc starts, measured clockwise from the positive x axis,
                 default 0.0.
@@ -949,12 +993,18 @@ class Arc:
                 default false.
 
         """
-        self.x = x
-        self.y = y
-        self.radius = radius
-        self.startangle = startangle
-        self.endangle = endangle
-        self.anticlockwise = anticlockwise
+        if x is not None:
+            self.x = x
+        if y is not None:
+            self.y = y
+        if radius is not None:
+            self.radius = radius
+        if startangle is not None:
+            self.startangle = startangle
+        if endangle is not None:
+            self.endangle = endangle
+        if anticlockwise is not None:
+            self.anticlockwise = anticlockwise
 
 
 class Rect:
@@ -989,20 +1039,26 @@ class Rect:
         """
         impl.rect(self.x, self.y, self.width, self.height, *args, **kwargs)
 
-    def modify(self, x, y, width, height):
+    def modify(self, x=None, y=None, width=None, height=None):
         """Modify the rectangle after it has been drawn.
 
+        All arguments default to the current value.
+
         Args:
-            x (float): x coordinate for the rectangle starting point.
-            y (float): y coordinate for the rectangle starting point.
-            width (float): The rectangle's width.
-            height (float): The rectangle's width.
+            x (float, optional): x coordinate for the rectangle starting point.
+            y (float, optional): y coordinate for the rectangle starting point.
+            width (float, optional): The rectangle's width.
+            height (float, optional): The rectangle's width.
 
         """
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
+        if x is not None:
+            self.x = x
+        if y is not None:
+            self.y = y
+        if width is not None:
+            self.width = width
+        if height is not None:
+            self.height = height
 
 
 
@@ -1035,20 +1091,26 @@ class WriteText:
         """
         impl.write_text(self.text, self.x, self.y, self.font, *args, **kwargs)
 
-    def modify(self, text, x, y, font):
+    def modify(self, text=None, x=None, y=None, font=None):
         """Modify the text after it has been drawn.
 
+        All arguments default to the current value.
+
         Args:
-            text (string): The text to fill.
-            x (float, optional): The x coordinate of the text. Default to 0.
-            y (float, optional): The y coordinate of the text. Default to 0.
+            text (string, optional): The text to fill.
+            x (float, optional): The x coordinate of the text.
+            y (float, optional): The y coordinate of the text.
             font (:class:`toga.Font`, optional): The font to write with.
 
         """
-        self.text = text
-        self.x = x
-        self.y = y
-        self.font = font
+        if text is not None:
+            self.text = text
+        if x is not None:
+            self.x = x
+        if y is not None:
+            self.y = y
+        if font is not None:
+            self.font = font
 
 
 class NewPath:
