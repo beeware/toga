@@ -8,11 +8,13 @@ class TextInput(Widget):
     def create(self):
         self.native = WinForms.TextBox()
         self.native.Multiline = False
+        self.native.TextChanged += self.winforms_onTextChanged
 
     def set_readonly(self, value):
         self.native.ReadOnly = value
 
     def set_placeholder(self, value):
+        #TODO Placeholder should reappear when the user leaves the field blank
         if self.interface.placeholder:
             self.native.Click += self.winforms_Click
             self.native.KeyDown += self.winforms_KeyDown
@@ -39,7 +41,7 @@ class TextInput(Widget):
         self.interface.intrinsic.height = self.native.PreferredSize.Height
 
     def set_on_change(self, handler):
-        self.native.TextChanged += self.winforms_onTextChanged
+        pass
 
     def winforms_onTextChanged(self, sender, event):
          if self.interface._on_change:
