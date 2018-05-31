@@ -593,26 +593,26 @@ class Stroke(CanvasContextMixin):
     Args:
         color (str, optional): Color value in any valid color format,
             default to black.
-        width (float, optional): Stroke line width, default is 2.0.
+        line_width (float, optional): Stroke line width, default is 2.0.
 
     """
-    def __init__(self, color=None, width=2.0):
+    def __init__(self, color=None, line_width=2.0):
         super().__init__()
         if color:
             self.color = parse_color(color)
         else:
             self.color = None
-        self.width = width
+        self.line_width = line_width
         self._children_contexts = []  # Stroke context can have children contexts
 
     def __repr__(self):
-        return '{}(color={}, width={})'.format(self.__class__.__name__, self.color, self.width)
+        return '{}(color={}, line_width={})'.format(self.__class__.__name__, self.color, self.line_width)
 
     def __call__(self, impl, *args, **kwargs):
         """Allow the implementation to callback the Class instance.
 
         """
-        impl.stroke(self.color, self.width, *args, **kwargs)
+        impl.stroke(self.color, self.line_width, *args, **kwargs)
 
     def modify(self, color=None, line_width=None):
         """Modify the stroke properties after it has been drawn with.
