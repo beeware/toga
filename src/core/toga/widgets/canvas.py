@@ -120,6 +120,8 @@ class CanvasContextMixin:
 
         A drawing operator that fills the current path according to the current
         fill rule, (each sub-path is implicitly closed before being filled).
+        Access to the :class:`NewPath <NewPath>` that is automatically created is
+        through the Fill.new_path_obj object.
 
         Args:
             fill_rule (str, optional): 'nonzero' is the non-zero winding rule and
@@ -138,8 +140,8 @@ class CanvasContextMixin:
             fill = Fill(color, 'nonzero', preserve)
         self.add_drawing_object(fill.drawing_objects)
         self.add_child(fill)
-        new_path = NewPath()
-        fill.add_drawing_object(new_path)
+        fill.new_path_obj = fill.new_path()
+        fill.add_drawing_object(fill.new_path_obj)
         yield fill
         fill.add_drawing_object(fill)
 
@@ -167,6 +169,9 @@ class CanvasContextMixin:
         """Calls move_to(x,y) and then constructs and yields a
         :class:`ClosedPath <ClosedPath>`.
 
+        Access to the :class:`MoveTo <MoveTo>` that is automatically created is
+        through the ClosedPath.move_to_obj object.
+
         Args:
             x (float): The x axis of the beginning point.
             y (float): The y axis of the beginning point.
@@ -178,13 +183,25 @@ class CanvasContextMixin:
         closed_path = ClosedPath(x, y)
         self.add_drawing_object(closed_path.drawing_objects)
         self.add_child(closed_path)
-        closed_path.move_to(x, y)
+        closed_path.move_to_obj = closed_path.move_to(x, y)
+        closed_path.add_drawing_object(closed_path.move_to_obj)
         yield closed_path
         closed_path.add_drawing_object(closed_path)
 
     ###########################################################################
     # Paths to draw with
     ###########################################################################
+
+    def new_path(self):
+        """Constructs and returns a :class:`NewPath <NewPath>`.
+
+        Returns:
+            :class: `NewPath <NewPath>` object.
+
+        """
+        new_path = NewPath()
+        self.add_drawing_object(new_path)
+        return new_path
 
     def move_to(self, x, y):
         """Constructs and returns a :class:`MoveTo <MoveTo>`.

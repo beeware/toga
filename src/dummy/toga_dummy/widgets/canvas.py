@@ -51,21 +51,11 @@ class Canvas(Widget):
 
     # Drawing Paths
 
-    def set_color(self, color):
-        self._set_value('color', color)
-
     def fill(self, color, fill_rule, preserve):
-        self._set_value('color', color)
-        self._set_value('fill rule', fill_rule)
-        if preserve:
-            self._action('fill preserve')
-        else:
-            self._action('fill')
+            self._action('fill', color=color, fill_rule=fill_rule, preserve=preserve)
 
     def stroke(self, color, line_width):
-        self._set_value('color', color)
-        self._set_value('line width', line_width)
-        self._action('stroke')
+        self._action('stroke', color=color, line_width=line_width)
 
     # Text
 
