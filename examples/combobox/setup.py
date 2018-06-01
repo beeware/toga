@@ -19,7 +19,7 @@ with io.open('README.rst', encoding='utf8') as readme:
 setup(
     name='combobox',
     version=version,
-    description='A demonstration of all features of a toga.Selection example for the native GUI toolkit, Toga.',
+    description='A demonstration of all features of a toga.ComboBox example for the native GUI toolkit, Toga.',
     long_description=long_description,
     author='BeeWare',
     author_email='contact@pybee.org',
@@ -42,7 +42,7 @@ setup(
     ],
     options={
         'app': {
-            'formal_name': 'Selection',
+            'formal_name': 'ComboBox',
             'bundle': 'org.pybee'
         },
         'macos': {
