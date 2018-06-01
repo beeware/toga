@@ -4,8 +4,20 @@ class ComboBox(Widget):
     def create(self):
         self._action('create ComboBox')
 
+    def remove_all_items(self):
+        self._action('remove all items')
+
+    def add_item(self, item):
+        self._action('add item', item)
+
+    def select_item(self, item):
+        self._action('select item', item)
+
     def get_value(self):
         return self._get_value('value')
+
+    def set_placeholder(self, value):
+        self._set_value('placeholder', value)
 
     def set_value(self, value):
         self._set_value('value', value)
