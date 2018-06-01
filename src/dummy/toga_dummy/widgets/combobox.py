@@ -9,10 +9,10 @@ class ComboBox(Widget):
         self._action('remove all items')
 
     def add_item(self, item):
-        self._action('add item', item)
+        self._action('add item', item=item)
 
     def select_item(self, item):
-        self._action('select item', item)
+        self._action('select item', item=item)
 
     def get_value(self):
         return self._get_value('value')
