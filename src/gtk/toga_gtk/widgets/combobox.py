@@ -1,4 +1,4 @@
-from gi.repository import Gtk, GLib
+from gi.repository import Gtk
 from travertino.size import at_least
 
 from .base import Widget
