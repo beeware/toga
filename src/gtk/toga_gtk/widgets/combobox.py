@@ -31,7 +31,7 @@ class ComboBox(Widget):
 
     def get_value(self):
         # TODO: Confirm this does not leak memory (not sure if the ctypes/cffi
-        # wrapper is handling; see:
+        # wrapper is handling). See:
         # https://lazka.github.io/pgi-docs/#Gtk-3.0/classes/ComboBoxText.html#Gtk.ComboBoxText.get_active_text
         return self.native.get_active_text()
 
