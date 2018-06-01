@@ -27,6 +27,8 @@ class CocoaViewport:
 class WindowDelegate(NSObject):
     @objc_method
     def windowWillClose_(self, notification) -> None:
+        if self.interface.app.on_exit:
+            self.interface.app.on_exit(self.interface.app)
         self.interface.on_close()
 
     @objc_method
