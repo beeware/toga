@@ -1,5 +1,6 @@
 from .base import Widget
 
+
 class ComboBox(Widget):
     def create(self):
         self._action('create ComboBox')
