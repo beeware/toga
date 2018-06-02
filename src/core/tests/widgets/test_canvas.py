@@ -2,8 +2,9 @@ from math import pi, cos, sin
 
 import toga
 import toga_dummy
-from toga.font import SANS_SERIF
+from toga.font import SANS_SERIF, SERIF
 from toga_dummy.utils import TestCase
+from toga.color import REBECCAPURPLE, BLANCHEDALMOND, CRIMSON, rgb
 
 
 class CanvasTests(TestCase):
@@ -28,7 +29,7 @@ class CanvasTests(TestCase):
                 self.assertIn(stroke_test.drawing_objects, fill_test.drawing_objects)
                 self.assertActionPerformedWith(self.testing_canvas, 'stroke')
             self.assertIn(fill_test.drawing_objects, basic_context.drawing_objects)
-            self.assertActionPerformedWith(self.testing_canvas, 'fill preserve')
+            self.assertActionPerformedWith(self.testing_canvas, 'fill')
         self.assertIn(basic_context.drawing_objects, self.testing_canvas.drawing_objects)
 
     def test_self_oval_path(self):
@@ -124,34 +125,110 @@ class CanvasTests(TestCase):
             self.assertActionPerformedWith(self.testing_canvas, 'line to', x=-64, y=0)
         self.assertActionPerformedWith(self.testing_canvas, 'closed path')
 
-    def test_move_to(self):
+    def test_new_path_simple(self):
+        new_path = self.testing_canvas.new_path()
+        self.assertIn(new_path, self.testing_canvas.drawing_objects)
+        self.assertActionPerformedWith(self.testing_canvas, 'new path')
+
+    def test_new_path_remove(self):
+        new_path = self.testing_canvas.new_path()
+        self.testing_canvas.remove(new_path)
+        self.assertNotIn(new_path, self.testing_canvas.drawing_objects)
+
+    def test_new_path_repr(self):
+        new_path = self.testing_canvas.new_path()
+        self.assertEqual(repr(new_path), 'NewPath()')
+
+    def test_closed_path_modify(self):
+        with self.testing_canvas.closed_path(0, -5) as closed:
+            closed.line_to(10, 10)
+            closed.line_to(10, 0)
+            closed.move_to_obj.modify(0, 0)
+            closed.redraw()
+            self.assertActionPerformedWith(self.testing_canvas, 'move to', x=0, y=0)
+
+    def test_closed_path_repr(self):
+        with self.testing_canvas.closed_path(0.5, -0.5) as closed:
+            self.assertEqual(repr(closed), 'ClosedPath(x=0.5, y=-0.5)')
+
+    def test_move_to_simple(self):
         move_to1 = self.testing_canvas.move_to(5, 7)
         self.assertIn(move_to1, self.testing_canvas.drawing_objects)
         self.assertActionPerformedWith(self.testing_canvas, 'move to', x=5, y=7)
-        move_to2 = self.testing_canvas.move_to(-5, 20.0)
-        self.assertIn(move_to2, self.testing_canvas.drawing_objects)
-        self.assertActionPerformedWith(self.testing_canvas, 'move to', x=-5, y=20.0)
 
-    def test_line_to(self):
+    def test_move_to_modify(self):
+        move_to2 = self.testing_canvas.move_to(-5, 20.0)
+        move_to2.modify(x=0, y=-10)
+        self.testing_canvas.redraw()
+        self.assertActionPerformedWith(self.testing_canvas, 'move to', x=0, y=-10)
+
+    def test_move_to_repr(self):
+        move_to3 = self.testing_canvas.move_to(x=0.5, y=1000)
+        self.assertEqual(repr(move_to3), 'MoveTo(x=0.5, y=1000)')
+
+    def test_line_to_simple(self):
         line_to = self.testing_canvas.line_to(2, 3)
         self.assertIn(line_to, self.testing_canvas.drawing_objects)
         self.assertActionPerformedWith(self.testing_canvas, 'line to', x=2, y=3)
 
-    def test_bezier_curve_to(self):
+    def test_line_to_modify(self):
+        line_to = self.testing_canvas.line_to(-40.5, 50.5)
+        line_to.modify(x=0, y=5)
+        self.testing_canvas.redraw()
+        self.assertActionPerformedWith(self.testing_canvas, 'line to', x=0, y=5)
+
+    def test_line_to_repr(self):
+        line_to = self.testing_canvas.line_to(x=1.5, y=-1000)
+        self.assertEqual(repr(line_to), 'LineTo(x=1.5, y=-1000)')
+
+    def test_bezier_curve_to_simple(self):
         bezier = self.testing_canvas.bezier_curve_to(1, 1, 2, 2, 5, 5)
         self.assertIn(bezier, self.testing_canvas.drawing_objects)
         self.assertActionPerformedWith(self.testing_canvas, 'bezier curve to', cp1x=1, cp1y=1, cp2x=2, cp2y=2, x=5, y=5)
 
-    def test_quadratic_curve_to(self):
+    def test_bezier_curve_to_modify(self):
+        bezier = self.testing_canvas.bezier_curve_to(0, 0, -2, -2, 5.5, 5.5)
+        bezier.modify(cp1x=6, cp1y=-5, cp2x=2.0, cp2y=0, x=-2, y=-3)
+        self.testing_canvas.redraw()
+        self.assertActionPerformedWith(
+            self.testing_canvas, 'bezier curve to', cp1x=6, cp1y=-5, cp2x=2.0, cp2y=0, x=-2, y=-3
+        )
+
+    def test_bezier_curve_to_repr(self):
+        bezier = self.testing_canvas.bezier_curve_to(cp1x=2.0, cp1y=2.0, cp2x=4.0, cp2y=4.0, x=10, y=10)
+        self.assertEqual(repr(bezier), 'BezierCurveTo(cp1x=2.0, cp1y=2.0, cp2x=4.0, cp2y=4.0, x=10, y=10)')
+
+    def test_quadratic_curve_to_simple(self):
         quad = self.testing_canvas.quadratic_curve_to(1, 1, 5, 5)
         self.assertIn(quad, self.testing_canvas.drawing_objects)
         self.assertActionPerformedWith(self.testing_canvas, 'quadratic curve to', cpx=1, cpy=1, x=5, y=5)
 
-    def test_arc(self):
+    def test_quadratic_curve_to_modify(self):
+        quad = self.testing_canvas.quadratic_curve_to(-1, -1, -5, -5)
+        quad.modify(0, 0.5, -0.4, 1000)
+        self.testing_canvas.redraw()
+        self.assertActionPerformedWith(self.testing_canvas, 'quadratic curve to', cpx=0, cpy=0.5, x=-0.4, y=1000)
+
+    def test_quadratic_curve_to_repr(self):
+        quad = self.testing_canvas.quadratic_curve_to(1020.2, 1, -5, 0.5)
+        self.assertEqual(repr(quad), 'QuadraticCurveTo(cpx=1020.2, cpy=1, x=-5, y=0.5)')
+
+    def test_arc_simple(self):
         arc = self.testing_canvas.arc(-10, -10, 10, pi / 2, 0, True)
         self.assertIn(arc, self.testing_canvas.drawing_objects)
         self.assertActionPerformedWith(self.testing_canvas, 'arc', x=-10, y=-10, radius=10, startangle=pi / 2,
                                        endangle=0, anticlockwise=True)
+
+    def test_arc_modify(self):
+        arc = self.testing_canvas.arc(10, 10, 10.0, 2, pi, False)
+        arc.modify(x=1000, y=2000, radius=0.1, startangle=pi, endangle=2 * pi, anticlockwise=False)
+        self.testing_canvas.redraw()
+        self.assertActionPerformedWith(self.testing_canvas, 'arc', x=1000, y=2000, radius=0.1, startangle=pi,
+                                       endangle=2 * pi, anticlockwise=False)
+
+    def test_arc_repr(self):
+        arc = self.testing_canvas.arc(1, 2, 3, 2, -3.141592, False)
+        self.assertEqual(repr(arc), 'Arc(x=1, y=2, radius=3, startangle=2, endangle=-3.141592, anticlockwise=False)')
 
     def test_remove_arc(self):
         arc = self.testing_canvas.arc(-10, -10, 10, pi / 2, 0, True)
@@ -161,24 +238,57 @@ class CanvasTests(TestCase):
         self.testing_canvas.remove(arc)
         self.assertNotIn(arc, self.testing_canvas.drawing_objects)
 
-    def test_ellipse(self):
+    def test_ellipse_simple(self):
         ellipse = self.testing_canvas.ellipse(1, 1, 50, 20, 0, pi, 2 * pi, False)
         self.assertIn(ellipse, self.testing_canvas.drawing_objects)
         self.assertActionPerformedWith(self.testing_canvas, 'ellipse', x=1, y=1, radiusx=50, radiusy=20, rotation=0,
                                        startangle=pi, endangle=2 * pi, anticlockwise=False)
 
-    def test_matrix_multiply(self):
-        identity = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
-        scale = [[2, 0, 0], [0, 3, 0], [0, 0, 1]]
-        rotate = [[cos(pi), -sin(pi), 0], [sin(pi), cos(pi), 0], [0, 0, 1]]
-        translate = [[1, 0, .5], [0, -.5, 0], [0, 0, 1]]
-        scale_rotate = [[2*cos(pi), -2*sin(pi), 0], [3*sin(pi), 3*cos(pi), 0], [0, 0, 1]]
-        translate_scale_rotate = [[2*cos(pi), -2*sin(pi), .5], [-1.5*sin(pi), -1.5*cos(pi), 0], [0, 0, 1]]
-        self.assertEqual(self.testing_canvas.matrix_multiply(scale, identity), scale)
-        self.assertEqual(self.testing_canvas.matrix_multiply(rotate, identity), rotate)
-        self.assertEqual(self.testing_canvas.matrix_multiply(translate, identity), translate)
-        self.assertEqual(self.testing_canvas.matrix_multiply(scale, rotate), scale_rotate)
-        self.assertEqual(self.testing_canvas.matrix_multiply(translate, scale_rotate), translate_scale_rotate)
+    def test_ellipse_modify(self):
+        ellipse = self.testing_canvas.ellipse(0, -1, -50, 20.2, pi, pi, 2 * pi, False)
+        ellipse.modify(x=1, y=0, radiusx=0.1, radiusy=1000, rotation=2 * pi, startangle=0, endangle=pi)
+        self.testing_canvas.redraw()
+        self.assertActionPerformedWith(self.testing_canvas, 'ellipse', x=1, y=0, radiusx=0.1, radiusy=1000,
+                                       rotation=2 * pi, startangle=0, endangle=pi, anticlockwise=False)
+
+    def test_ellipse_repr(self):
+        ellipse = self.testing_canvas.ellipse(1.0, 1.0, 0, 0, 0, 2, 3.1415, False)
+        self.assertEqual(
+            repr(ellipse), 'Ellipse(x=1.0, y=1.0, radiusx=0, radiusy=0, rotation=0, startangle=2, endangle=3.1415, '
+            'anticlockwise=False)'
+        )
+
+    def test_rect_modify(self):
+        rect = self.testing_canvas.rect(-5, 5, 10, 15)
+        rect.modify(5, -5, 0.5, -0.5)
+        self.testing_canvas.redraw()
+        self.assertActionPerformedWith(self.testing_canvas, 'rect', x=5, y=-5, width=0.5, height=-0.5)
+
+    def test_rect_repr(self):
+        rect = self.testing_canvas.rect(x=1000.2, y=2000, width=3000, height=-4000.0)
+        self.assertEqual(repr(rect), 'Rect(x=1000.2, y=2000, width=3000, height=-4000.0)')
+
+    def test_fill_modify(self):
+        with self.testing_canvas.fill(color='rgb(0, 255, 0)', fill_rule='nonzero', preserve=False) as filler:
+            filler.modify(color=REBECCAPURPLE, fill_rule='evenodd', preserve=True)
+            self.testing_canvas.redraw()
+        self.assertActionPerformedWith(
+            self.testing_canvas, 'fill', color=rgb(102, 51, 153), fill_rule='evenodd', preserve=True
+        )
+
+    def test_fill_repr(self):
+        with self.testing_canvas.fill(color=CRIMSON, fill_rule='evenodd', preserve=True) as filler:
+            self.assertEqual(repr(filler), 'Fill(color=rgb(220, 20, 60), fill_rule=evenodd, preserve=True)')
+
+    def test_stroke_modify(self):
+        with self.testing_canvas.stroke(color=BLANCHEDALMOND, line_width=5.0) as stroker:
+            stroker.modify(color=REBECCAPURPLE, line_width=1)
+            self.testing_canvas.redraw()
+        self.assertActionPerformedWith(self.testing_canvas, 'stroke', color=rgb(102, 51, 153), line_width=1)
+
+    def test_stroke_repr(self):
+        with self.testing_canvas.stroke() as stroker:
+            self.assertEqual(repr(stroker), 'Stroke(color=rgb(0, 0, 0), line_width=2.0)')
 
     def test_rotate(self):
         rotate = self.testing_canvas.rotate(pi)
@@ -200,8 +310,27 @@ class CanvasTests(TestCase):
         # self.assertIn(reset_transform, self.testing_canvas.drawing_objects)
         # self.assertActionPerformedWith(self.testing_canvas, 'reset transform')
 
-    def test_write_text(self):
+    def test_write_text_simple(self):
         test_font = toga.Font(family=SANS_SERIF, size=15)
         write_text = self.testing_canvas.write_text('test text', 0, 0, test_font)
         self.assertIn(write_text, self.testing_canvas.drawing_objects)
         self.assertActionPerformedWith(self.testing_canvas, 'write text', text='test text', x=0, y=0, font=test_font)
+
+    def test_write_text_default(self):
+        write_text = self.testing_canvas.write_text('test text')
+        self.assertActionPerformedWith(self.testing_canvas, 'write text', text='test text')
+        self.assertEqual(repr(write_text), 'WriteText(text=test text, x=0, y=0, font=<Font: 12pt system>)')
+
+    def test_write_text_modify(self):
+        write_text = self.testing_canvas.write_text('test text')
+        modify_font = toga.Font(family=SERIF, size=1.2)
+        write_text.modify('hello again', x=10, y=-1999, font=modify_font)
+        self.testing_canvas.redraw()
+        self.assertActionPerformedWith(
+            self.testing_canvas, 'write text', text='hello again', x=10, y=-1999, font=modify_font
+        )
+
+    def test_write_text_repr(self):
+        font = toga.Font(family=SERIF, size=4)
+        write_text = self.testing_canvas.write_text('hello', x=10, y=-4.2, font=font)
+        self.assertEqual(repr(write_text), 'WriteText(text=hello, x=10, y=-4.2, font=<Font: 4pt serif>)')
