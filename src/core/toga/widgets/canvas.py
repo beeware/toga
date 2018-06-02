@@ -1,9 +1,10 @@
-from builtins import id as identifier
 from contextlib import contextmanager
 from math import pi, cos, sin
 
 from .base import Widget
+from ..color import BLACK
 from ..color import color as parse_color
+from ..font import Font, SYSTEM
 
 
 class CanvasContextMixin:
@@ -115,7 +116,7 @@ class CanvasContextMixin:
         yield context
 
     @contextmanager
-    def fill(self, color=None, fill_rule='nonzero', preserve=False):
+    def fill(self, color=BLACK, fill_rule='nonzero', preserve=False):
         """Constructs and yields a :class:`Fill <Fill>`.
 
         A drawing operator that fills the current path according to the current
@@ -146,7 +147,7 @@ class CanvasContextMixin:
         fill.add_drawing_object(fill)
 
     @contextmanager
-    def stroke(self, color=None, line_width=2.0):
+    def stroke(self, color=BLACK, line_width=2.0):
         """Constructs and yields a :class:`Stroke <Stroke>`.
 
         Args:
@@ -367,13 +368,9 @@ class CanvasContextMixin:
         pass
 
     def translate(self, tx, ty):
-        """Move the context and its origin to a different point in the grid.
+        """Move the canvas to a different point in the grid.
 
-        Modifies the current transformation matrix (CTM) by translating the
-        user-space origin by (tx, ty). This offset is interpreted as a
-        user-space coordinate according to the CTM in place before the new call
-        to translate(). In other words, the translation of the user-space origin
-        takes place after any existing transformation.
+        Modifies the canvas by translating the user-space origin by (tx, ty).
 
         Args:
             tx (float): X value of coordinate.
@@ -485,6 +482,8 @@ class CanvasContextMixin:
             :class:`WriteText <WriteText>` object.
 
         """
+        if font is None:
+            font = Font(family=SYSTEM, size=self._canvas.style.font_size)
         write_text = WriteText(text, x, y, font)
         self.add_drawing_object(write_text)
         return write_text
@@ -543,12 +542,9 @@ class Fill(CanvasContextMixin):
         preserve (bool, optional): Preserves the path within the Context.
 
     """
-    def __init__(self, color=None, fill_rule='nonzero', preserve=False):
+    def __init__(self, color=BLACK, fill_rule='nonzero', preserve=False):
         super().__init__()
-        if color:
-            self.color = parse_color(color)
-        else:
-            self.color = None
+        self.color = parse_color(color)
         self.fill_rule = fill_rule
         self.preserve = preserve
         self._children_contexts = []  # Fill context can have children contexts
@@ -596,12 +592,9 @@ class Stroke(CanvasContextMixin):
         line_width (float, optional): Stroke line width, default is 2.0.
 
     """
-    def __init__(self, color=None, line_width=2.0):
+    def __init__(self, color=BLACK, line_width=2.0):
         super().__init__()
-        if color:
-            self.color = parse_color(color)
-        else:
-            self.color = None
+        self.color = parse_color(color)
         self.line_width = line_width
         self._children_contexts = []  # Stroke context can have children contexts
 
