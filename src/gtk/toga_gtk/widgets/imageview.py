@@ -30,7 +30,7 @@ class ImageView(Widget):
         else:
             full_image_path = self.image.path if os.path.isabs(self.image.path) else os.path.join(toga.App.app_dir, self.image.path)
             if os.path.isfile(full_image_path):
-                self._original_pixbuf = GdkPixbuf.Pixbuf.new_from_file
+                self._original_pixbuf = GdkPixbuf.Pixbuf.new_from_file(full_image_path)
             else:
                 raise ValueError("No image file available at ", full_image_path)
         self.rehint()
