@@ -1,6 +1,8 @@
 import math
 
 import toga
+from toga.color import WHITE, rgb
+from toga.font import SANS_SERIF
 from toga.style import Pack
 
 
@@ -21,7 +23,7 @@ class StartApp(toga.App):
         self.main_window.show()
 
     def fill_head(self):
-        with self.canvas.fill(color='rgba(149, 119, 73, 1)') as head_filler:
+        with self.canvas.fill(color=rgb(149, 119, 73)) as head_filler:
             head_filler.move_to(112, 103)
             head_filler.line_to(112, 113)
             head_filler.ellipse(73, 114, 39, 47, 0, 0, math.pi)
@@ -39,7 +41,7 @@ class StartApp(toga.App):
                 closed_head.arc(82, 84, 30, 3 * math.pi / 2, 2 * math.pi)
 
     def draw_eyes(self):
-        with self.canvas.fill(color='rgba(255, 255, 255, 1)') as eye_whites:
+        with self.canvas.fill(color=WHITE) as eye_whites:
             eye_whites.arc(58, 92, 15)
             eye_whites.arc(88, 92, 15, math.pi, 3 * math.pi)
         with self.canvas.stroke(line_width=4.0) as eye_outline:
@@ -51,7 +53,7 @@ class StartApp(toga.App):
 
     def draw_horns(self):
         with self.canvas.context() as r_horn:
-            with r_horn.fill(color='rgba(212, 212, 212, 1)') as r_horn_filler:
+            with r_horn.fill(color=rgb(212, 212, 212)) as r_horn_filler:
                 r_horn_filler.move_to(112, 99)
                 r_horn_filler.quadratic_curve_to(145, 65, 139, 36)
                 r_horn_filler.quadratic_curve_to(130, 60, 109, 75)
@@ -60,7 +62,7 @@ class StartApp(toga.App):
                 r_horn_stroker.quadratic_curve_to(145, 65, 139, 36)
                 r_horn_stroker.quadratic_curve_to(130, 60, 109, 75)
         with self.canvas.context() as l_horn:
-            with l_horn.fill(color='rgba(212, 212, 212, 1)') as l_horn_filler:
+            with l_horn.fill(color=rgb(212, 212, 212)) as l_horn_filler:
                 l_horn_filler.move_to(35, 99)
                 l_horn_filler.quadratic_curve_to(2, 65, 6, 36)
                 l_horn_filler.quadratic_curve_to(17, 60, 37, 75)
@@ -70,7 +72,7 @@ class StartApp(toga.App):
                 l_horn_stroker.quadratic_curve_to(17, 60, 37, 75)
 
     def draw_nostrils(self):
-        with self.canvas.fill(color='rgba(212, 212, 212, 1)') as nose_filler:
+        with self.canvas.fill(color=rgb(212, 212, 212)) as nose_filler:
             nose_filler.move_to(45, 145)
             nose_filler.bezier_curve_to(51, 123, 96, 123, 102, 145)
             nose_filler.ellipse(73, 114, 39, 47, 0, math.pi / 4, 3 * math.pi / 4)
@@ -84,11 +86,11 @@ class StartApp(toga.App):
     def draw_text(self):
         x = 32
         y = 185
-        font = toga.Font(family='sans-serif', size=20)
+        font = toga.Font(family=SANS_SERIF, size=20)
         width, height = font.measure('Tiberius', tight=True)
         with self.canvas.stroke(line_width=4.0) as rect_stroker:
             rect_stroker.rect(x - 10, y - height + 2, width, height + 2)
-        with self.canvas.fill(color='rgba(149, 119, 73, 1)') as text_filler:
+        with self.canvas.fill(color=rgb(149, 119, 73)) as text_filler:
             text_filler.write_text('Tiberius', x, y, font)
 
     def draw_tiberius(self):
