@@ -336,130 +336,63 @@ class CanvasContextMixin:
         return rect
 
     ###########################################################################
-    # Transformations of a context
+    # Transformations of a canvas
     ###########################################################################
 
-    def matrix_multiply(self, m_a, m_b):
-        m_c = [[0 for row in range(3)] for col in range(3)]
-
-        for i in range(3):
-            for j in range(3):
-                for k in range(3):
-                    m_c[i][j] += m_a[i][k] * m_b[k][j]
-        return m_c
-
-    def save(self):
-        """Saves the entire state of the current context.
-
-        Saves the current state of the context by pushing the current state onto a
-        stack. You can save the state as many times as you like, a new saved state
-        will be added to the stack each time.
-
-        """
-        pass
-
-    def restore(self):
-        """Restores the most recently saved context state.
-
-        Restores the most recently saved context state by popping the top entry in
-        the save stack. If there is no saved state, calling restore does nothing.
-
-        """
-        pass
-
-    def translate(self, tx, ty):
-        """Move the canvas to a different point in the grid.
-
-        Modifies the canvas by translating the user-space origin by (tx, ty).
-
-        Args:
-            tx (float): X value of coordinate.
-            ty (float): Y value of coordinate.
-
-        """
-        self.transform(d=tx, e=ty)
-
     def rotate(self, radians):
-        """Rotate the context around the context origin.
-
-        Modifies the current transformation matrix (CTM) by rotating the
-        user-space axes by angle radians. The rotation of the axes takes places
-        after any existing transformation of user space. The rotation center
-        point is always the context origin. To change the center point, move the
-        context by using the translate() method.
+        """Constructs and returns a :class:`Rotate <Rotate>`.
 
         Args:
             radians (float): The angle to rotate clockwise in radians.
 
+        Returns:
+            :class:`Rotate <Rotate>` object.
+
         """
-        self.transform(a=cos(radians), b=sin(radians), c=-sin(radians), d=cos(radians))
+        rotate = Rotate(radians)
+        self.add_drawing_object(rotate)
+        return rotate
 
     def scale(self, sx, sy):
-        """Scales the context grid.
-
-        Modifies the current transformation matrix (CTM) by scaling the X and Y
-        user-space axes by sx and sy respectively. The scaling of the axes takes
-        place after any existing transformation of user space.
+        """Constructs and returns a :class:`Scale <Scale>`.
 
         Args:
             sx (float): scale factor for the X dimension.
             sy (float): scale factor for the Y dimension.
 
+        Returns:
+            :class:`Scale <Scale>` object.
+
         """
-        self.transform(a=sx, d=sy)
+        scale = Scale(sx, sy)
+        self.add_drawing_object(scale)
+        return scale
 
-    def transform(self, a=1, b=0, c=0, d=1, e=0, f=0):
-        """Directly modify the transformation matrix.
-
-        Modifies the current transformation matrix (CTM) by multiplying by the
-        matrix described by its arguments. The transformation matrix is
-        described by:
-
-        | a c e |
-        | b d f |
-        | 0 0 1 |
+    def translate(self, tx, ty):
+        """Constructs and returns a :class:`Translate <Translate>`.
 
         Args:
-            a (float): horizontal scaling (matrix position m11)
-            b (float): horizontal skewing (matrix position m12)
-            c (float): vertical skewing (matrix position m21)
-            d (float): vertical scaling (matrix position m22)
-            e (float): horizontal moving (matrix position dx)
-            f (float): vertical moving (matrix position dy)
+            tx (float): X value of coordinate.
+            ty (float): Y value of coordinate.
+
+        Returns:
+            :class:`Translate <Translate>` object.
 
         """
-        m = [[a, c, e], [b, d, f], [0, 0, 1]]
-        self._ctm = self.matrix_multiply(m, self._ctm)
-
-    def set_transform(self, a=1, b=0, c=0, d=1, e=0, f=0):
-        """Undo the current transform and then set the specified transform.
-
-        Resets the current transform to the identity matrix, and then invokes
-        the transform method with the same arguments. This basically calls
-        reset_transform and set_transform, all in one step.
-
-        Args:
-            a (float): horizontal scaling (matrix position m11)
-            b (float): horizontal skewing (matrix position m12)
-            c (float): vertical skewing (matrix position m21)
-            d (float): vertical scaling (matrix position m22)
-            e (float): horizontal moving (matrix position dx)
-            f (float): vertical moving (matrix position dy)
-
-        """
-        self.reset_transform()
-        self.transform(a, b, c, d, e, f)
+        translate = Translate(tx, ty)
+        self.add_drawing_object(translate)
+        return translate
 
     def reset_transform(self):
         """Constructs and returns a :class:`ResetTransform <ResetTransform>`.
 
-        Resets the current transformation Matrix (CTM) by setting it equal to
-        the identity matrix. That is, the user-space and device-space axes will
-        be aligned and one user-space unit will transform to one device-space
-        unit.
+        Returns:
+            :class:`ResetTransform <ResetTransform>` object.
 
         """
-        self._ctm = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
+        reset_transform = ResetTransform()
+        self.add_drawing_object(reset_transform)
+        return reset_transform
 
     ###########################################################################
     # Text drawing
@@ -1070,6 +1003,134 @@ class Rect:
         if height is not None:
             self.height = height
 
+
+class Rotate:
+    """A user-created :class:`Rotate <Rotate>` to add canvas rotation.
+
+    Modifies the canvas by rotating the canvas by angle radians. The rotation
+    center point is always the canvas origin. To change the center point, move
+    the canvas by using the translate() method.
+
+    Args:
+        radians (float): The angle to rotate clockwise in radians.
+
+    """
+    def __init__(self, radians):
+        self.radians = radians
+
+    def __repr__(self):
+        return '{}(radians={})'.format(self.__class__.__name__, self.radians)
+
+    def __call__(self, impl):
+        """Allow the implementation to callback the Class instance.
+
+        """
+        impl.rotate(self.radians)
+
+    def modify(self, radians):
+        """Modify the rotation after it has been drawn.
+
+        Args:
+            radians (float): The angle to rotate clockwise in radians.
+
+        """
+        self.radians = radians
+
+
+class Scale:
+    """A user-created :class:`Scale <Scale>` to add canvas scaling.
+
+    Modifies the canvas by scaling the X and Y canvas axes by sx and sy.
+
+    Args:
+        sx (float): scale factor for the X dimension.
+        sy (float): scale factor for the Y dimension.
+
+    """
+    def __init__(self, sx, sy):
+        self.sx = sx
+        self.sy = sy
+
+    def __repr__(self):
+        return '{}(sx={}, sy={})'.format(self.__class__.__name__, self.sx, self.sy)
+
+    def __call__(self, impl):
+        """Allow the implementation to callback the Class instance.
+
+        """
+        impl.scale(self.sx, self.sy)
+
+    def modify(self, sx=None, sy=None):
+        """Modify the scale after it has been drawn.
+
+        All arguments default to the current value.
+
+        Args:
+            sx (float, optional): scale factor for the X dimension.
+            sy (float, optional): scale factor for the Y dimension.
+
+        """
+        if sx is not None:
+            self.sx = sx
+        if sy is not None:
+            self.sy = sy
+
+
+class Translate:
+    """A user-created :class:`Translate <Translate>` to translate the canvas.
+
+    Modifies the canvas by translating the canvas origin by (tx, ty).
+
+    Args:
+        tx (float): X value of coordinate.
+        ty (float): Y value of coordinate.
+
+    """
+    def __init__(self, tx, ty):
+        self.tx = tx
+        self.ty = ty
+
+    def __repr__(self):
+        return '{}(tx={}, ty={})'.format(self.__class__.__name__, self.tx, self.ty)
+
+    def __call__(self, impl):
+        """Allow the implementation to callback the Class instance.
+
+        """
+        impl.translate(self.tx, self.ty)
+
+    def modify(self, tx=None, ty=None):
+        """Modify the translation after it has been drawn.
+
+        All arguments default to the current value.
+
+        Args:
+            tx (float, optional): X value of coordinate.
+            ty (float, optional): Y value of coordinate.
+
+        """
+        if tx is not None:
+            self.tx = tx
+        if ty is not None:
+            self.ty = ty
+
+
+class ResetTransform:
+    """A user-created :class:`ResetTransform <ResetTransform>` to reset the
+    canvas.
+
+    Resets the canvas by setting it equal to the canvas with no
+    transformations.
+
+    """
+    def __repr__(self):
+        return '{}()'.format(self.__class__.__name__)
+
+    def __call__(self, impl):
+        """Allow the implementation to callback the Class instance.
+
+        """
+        impl.reset_transform()
 
 
 class WriteText:

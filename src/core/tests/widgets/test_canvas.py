@@ -38,11 +38,11 @@ class CanvasTests(TestCase):
         xr = 25
         yr = 30
         translate = self.testing_canvas.translate(xc, yc)
-        # self.assertIn(translate, self.testing_canvas.drawing_objects)
-        # self.assertActionPerformedWith(self.testing_canvas, 'translate', tx=xc, ty=yc)
+        self.assertIn(translate, self.testing_canvas.drawing_objects)
+        self.assertActionPerformedWith(self.testing_canvas, 'translate', tx=xc, ty=yc)
         scale = self.testing_canvas.scale(1.0, yr / xr)
-        # self.assertIn(scale, self.testing_canvas.drawing_objects)
-        # self.assertActionPerformedWith(self.testing_canvas, 'scale', sx=1.0, sy=yr / xr)
+        self.assertIn(scale, self.testing_canvas.drawing_objects)
+        self.assertActionPerformedWith(self.testing_canvas, 'scale', sx=1.0, sy=yr / xr)
         with self.testing_canvas.closed_path(xr, 0.0) as closed:
             self.assertActionPerformedWith(self.testing_canvas, 'move to', x=xr, y=0.0)
             arc = closed.arc(0, 0, xr, 0, 2 * pi)
@@ -124,6 +124,10 @@ class CanvasTests(TestCase):
             self.assertIn(line_to2, closed.drawing_objects)
             self.assertActionPerformedWith(self.testing_canvas, 'line to', x=-64, y=0)
         self.assertActionPerformedWith(self.testing_canvas, 'closed path')
+
+    def test_context_repr(self):
+        with self.testing_canvas.context() as context:
+            self.assertEqual(repr(context), 'Context()')
 
     def test_new_path_simple(self):
         new_path = self.testing_canvas.new_path()
@@ -290,25 +294,59 @@ class CanvasTests(TestCase):
         with self.testing_canvas.stroke() as stroker:
             self.assertEqual(repr(stroker), 'Stroke(color=rgb(0, 0, 0), line_width=2.0)')
 
-    def test_rotate(self):
+    def test_rotate_simple(self):
         rotate = self.testing_canvas.rotate(pi)
-        # self.assertIn(rotate, self.testing_canvas.drawing_objects)
-        # self.assertActionPerformedWith(self.testing_canvas, 'rotate', radians=pi)
+        self.assertIn(rotate, self.testing_canvas.drawing_objects)
+        self.assertActionPerformedWith(self.testing_canvas, 'rotate', radians=pi)
 
-    def test_scale(self):
+    def test_rotate_modify(self):
+        rotate = self.testing_canvas.rotate(radians=-2 * pi)
+        rotate.modify(radians=3 * pi / 2)
+        self.testing_canvas.redraw()
+        self.assertActionPerformedWith(self.testing_canvas, 'rotate', radians=3 * pi / 2)
+
+    def test_rotate_repr(self):
+        rotate = self.testing_canvas.rotate(0.1)
+        self.assertEqual(repr(rotate), 'Rotate(radians=0.1)')
+
+    def test_scale_simple(self):
         scale = self.testing_canvas.scale(2, 1.5)
-        # self.assertIn(scale, self.testing_canvas.drawing_objects)
-        # self.assertActionPerformedWith(self.testing_canvas, 'scale', sx=2, sy=1.5)
+        self.assertIn(scale, self.testing_canvas.drawing_objects)
+        self.assertActionPerformedWith(self.testing_canvas, 'scale', sx=2, sy=1.5)
 
-    def test_translate(self):
+    def test_scale_modify(self):
+        scale = self.testing_canvas.scale(sx=-2, sy=0)
+        scale.modify(sx=-2.0, sy=3.0)
+        self.testing_canvas.redraw()
+        self.assertActionPerformedWith(self.testing_canvas, 'scale', sx=-2.0, sy=3.0)
+
+    def test_scale_repr(self):
+        scale = self.testing_canvas.scale(sx=500, sy=-500)
+        self.assertEqual(repr(scale), 'Scale(sx=500, sy=-500)')
+
+    def test_translate_simple(self):
         translate = self.testing_canvas.translate(5, 3.5)
-        # self.assertIn(translate, self.testing_canvas.drawing_objects)
-        # self.assertActionPerformedWith(self.testing_canvas, 'translate', tx=5, ty=3.5)
+        self.assertIn(translate, self.testing_canvas.drawing_objects)
+        self.assertActionPerformedWith(self.testing_canvas, 'translate', tx=5, ty=3.5)
 
-    def test_reset_transform(self):
+    def test_translate_modify(self):
+        translate = self.testing_canvas.translate(tx=2.3, ty=-2)
+        translate.modify(tx=0, ty=-500)
+        self.testing_canvas.redraw()
+        self.assertActionPerformedWith(self.testing_canvas, 'translate', tx=0, ty=-500)
+
+    def test_translate_repr(self):
+        translate = self.testing_canvas.translate(tx=0, ty=-3.2)
+        self.assertEqual(repr(translate), 'Translate(tx=0, ty=-3.2)')
+
+    def test_reset_transform_simple(self):
         reset_transform = self.testing_canvas.reset_transform()
-        # self.assertIn(reset_transform, self.testing_canvas.drawing_objects)
-        # self.assertActionPerformedWith(self.testing_canvas, 'reset transform')
+        self.assertIn(reset_transform, self.testing_canvas.drawing_objects)
+        self.assertActionPerformedWith(self.testing_canvas, 'reset transform')
+
+    def test_reset_transform_repr(self):
+        reset_transform = self.testing_canvas.reset_transform()
+        self.assertEqual(repr(reset_transform), 'ResetTransform()')
 
     def test_write_text_simple(self):
         test_font = toga.Font(family=SANS_SERIF, size=15)
