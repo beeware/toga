@@ -34,6 +34,11 @@ class Window:
         self._size = size
         self._is_full_screen = False
 
+        self._closed = False
+        # The identifier used when calling an App.add_window. Set by that
+        # method.
+        self._app_id = None
+
         self.resizeable = resizeable
         self.closeable = closeable
         self.minimizable = minimizable
@@ -163,10 +168,13 @@ class Window:
 
     def show(self):
         """ Show window, if hidden """
-        self._impl.show()
+        if not self._closed:
+            self._impl.show()
 
     def close(self):
         """ Close window"""
+
+        self._closed = True
         self._impl.close()
 
     @property
@@ -179,6 +187,10 @@ class Window:
         self._impl.set_full_screen(is_full_screen)
 
     def on_close(self):
+        # If we registered this window with the app, make sure we remove
+        # that registration.
+        if self.app and self._app_id:
+            self.app.del_window(self._app_id)
         self._impl.on_close()
 
     ############################################################

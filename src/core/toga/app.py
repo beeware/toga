@@ -132,7 +132,11 @@ class App:
 
     def add_window(self, window_id, window):
         self._windows[window_id] = window
+        window._app_id = window_id
         window.app = self
+
+    def del_window(self, window_id):
+        del self._windows[window_id]
 
     @property
     def documents(self):
