@@ -70,7 +70,17 @@ class AppTests(TestCase):
         self.assertEqual(self.app.main_window.app, self.app)
         self.assertActionPerformed(self.app.main_window, 'show')
 
+        self.assertEqual(self.app.window('main').content, self.content)
+        self.assertEqual(self.app.windows['main'].content, self.content)
+
     def test_app_exit(self):
         self.app.exit()
 
         self.assertActionPerformed(self.app, 'exit')
+
+    def test_add_window(self):
+        window = MagicMock()
+        self.app.add_window('new', window)
+        self.assertEqual(self.app.window('new'), window)
+        self.assertEqual(self.app.windows, {'main': None, 'new': window})
+        
