@@ -1112,11 +1112,11 @@ class Rotate:
     def __repr__(self):
         return "{}(radians={})".format(self.__class__.__name__, self.radians)
 
-    def __call__(self, impl):
+    def __call__(self, impl, *args, **kwargs):
         """Allow the implementation to callback the Class instance.
 
         """
-        impl.rotate(self.radians)
+        impl.rotate(self.radians, *args, **kwargs)
 
     def modify(self, radians):
         """Modify the rotation after it has been drawn.
@@ -1146,11 +1146,11 @@ class Scale:
     def __repr__(self):
         return "{}(sx={}, sy={})".format(self.__class__.__name__, self.sx, self.sy)
 
-    def __call__(self, impl):
+    def __call__(self, impl, *args, **kwargs):
         """Allow the implementation to callback the Class instance.
 
         """
-        impl.scale(self.sx, self.sy)
+        impl.scale(self.sx, self.sy, *args, **kwargs)
 
     def modify(self, sx=None, sy=None):
         """Modify the scale after it has been drawn.
@@ -1186,11 +1186,11 @@ class Translate:
     def __repr__(self):
         return "{}(tx={}, ty={})".format(self.__class__.__name__, self.tx, self.ty)
 
-    def __call__(self, impl):
+    def __call__(self, impl, *args, **kwargs):
         """Allow the implementation to callback the Class instance.
 
         """
-        impl.translate(self.tx, self.ty)
+        impl.translate(self.tx, self.ty, *args, **kwargs)
 
     def modify(self, tx=None, ty=None):
         """Modify the translation after it has been drawn.
@@ -1220,11 +1220,11 @@ class ResetTransform:
     def __repr__(self):
         return "{}()".format(self.__class__.__name__)
 
-    def __call__(self, impl):
+    def __call__(self, impl, *args, **kwargs):
         """Allow the implementation to callback the Class instance.
 
         """
-        impl.reset_transform()
+        impl.reset_transform(*args, **kwargs)
 
 
 class WriteText:
