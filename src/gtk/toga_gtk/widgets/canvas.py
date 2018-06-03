@@ -2,6 +2,7 @@ import gi
 
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
+
 try:
     import cairo
 except ImportError:
@@ -9,6 +10,7 @@ except ImportError:
 try:
     gi.require_version("Pango", "1.0")
     from gi.repository import Pango
+
     scale = Pango.SCALE
 except ImportError:
     scale = 1024
@@ -20,7 +22,9 @@ from ..color import native_color
 class Canvas(Widget):
     def create(self):
         if cairo is None:
-            raise RuntimeError("'import cairo' failed; may need to install python-gi-cairo.")
+            raise RuntimeError(
+                "'import cairo' failed; may need to install python-gi-cairo."
+            )
 
         self.native = Gtk.DrawingArea()
         self.native.interface = self.interface
@@ -35,10 +39,12 @@ class Canvas(Widget):
         callback to call each one.
 
         """
+
         def draw_callback(canvas, context):
             for drawing_object in traverse(root_context.drawing_objects):
                 drawing_object(self, native_context=context)
-        self.native.connect('draw', draw_callback)
+
+        self.native.connect("draw", draw_callback)
 
     def redraw(self):
         pass
@@ -71,7 +77,18 @@ class Canvas(Widget):
         else:
             native_context.arc(x, y, radius, startangle, endangle)
 
-    def ellipse(self, x, y, radiusx, radiusy, rotation, startangle, endangle, anticlockwise, native_context):
+    def ellipse(
+        self,
+        x,
+        y,
+        radiusx,
+        radiusy,
+        rotation,
+        startangle,
+        endangle,
+        anticlockwise,
+        native_context,
+    ):
         native_context.save()
         native_context.translate(x, y)
         if radiusx >= radiusy:
@@ -98,7 +115,7 @@ class Canvas(Widget):
 
     def fill(self, color, fill_rule, preserve, native_context):
         self.apply_color(color, native_context)
-        if fill_rule is 'evenodd':
+        if fill_rule is "evenodd":
             native_context.set_fill_rule(cairo.FILL_RULE_EVEN_ODD)
         else:
             native_context.set_fill_rule(cairo.FILL_RULE_WINDING)
@@ -155,7 +172,9 @@ class Canvas(Widget):
             native_context.select_font_face(self.native.font.get_family())
             native_context.set_font_size(self.native.font.get_size() / scale)
 
-        x_bearing, y_bearing, width, height, x_advance, y_advance = native_context.text_extents(text)
+        x_bearing, y_bearing, width, height, x_advance, y_advance = native_context.text_extents(
+            text
+        )
         return width, height
 
     # Rehint

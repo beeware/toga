@@ -1,5 +1,5 @@
 from contextlib import contextmanager
-from math import pi, cos, sin
+from math import pi
 
 from .base import Widget
 from ..color import BLACK
@@ -54,7 +54,7 @@ class CanvasContextMixin:
 
         """
         if self._children_contexts is None:
-            raise ValueError('Cannot add children')
+            raise ValueError("Cannot add children")
 
         self._children_contexts.append(child)
         child._parent_context = self
@@ -116,7 +116,7 @@ class CanvasContextMixin:
         yield context
 
     @contextmanager
-    def fill(self, color=BLACK, fill_rule='nonzero', preserve=False):
+    def fill(self, color=BLACK, fill_rule="nonzero", preserve=False):
         """Constructs and yields a :class:`Fill <Fill>`.
 
         A drawing operator that fills the current path according to the current
@@ -135,10 +135,10 @@ class CanvasContextMixin:
             :class:`Fill <Fill>` object.
 
         """
-        if fill_rule is 'evenodd':
+        if fill_rule is "evenodd":
             fill = Fill(color, fill_rule, preserve)
         else:
-            fill = Fill(color, 'nonzero', preserve)
+            fill = Fill(color, "nonzero", preserve)
         self.add_drawing_object(fill.drawing_objects)
         self.add_child(fill)
         fill.new_path_obj = fill.new_path()
@@ -294,7 +294,17 @@ class CanvasContextMixin:
         self.add_drawing_object(arc)
         return arc
 
-    def ellipse(self, x, y, radiusx, radiusy, rotation=0.0, startangle=0.0, endangle=2 * pi, anticlockwise=False):
+    def ellipse(
+        self,
+        x,
+        y,
+        radiusx,
+        radiusy,
+        rotation=0.0,
+        startangle=0.0,
+        endangle=2 * pi,
+        anticlockwise=False,
+    ):
         """Constructs and returns a :class:`Ellipse <Ellipse>`.
 
         Args:
@@ -314,7 +324,9 @@ class CanvasContextMixin:
             :class:`Ellipse <Ellipse>` object.
 
         """
-        ellipse = Ellipse(x, y, radiusx, radiusy, rotation, startangle, endangle, anticlockwise)
+        ellipse = Ellipse(
+            x, y, radiusx, radiusy, rotation, startangle, endangle, anticlockwise
+        )
         self.add_drawing_object(ellipse)
         return ellipse
 
@@ -453,12 +465,13 @@ class Context(CanvasContextMixin):
     context and is sized using the rehint() method.
 
     """
+
     def __init__(self):
         super().__init__()
         self._children_contexts = []  # Context can have children contexts
 
     def __repr__(self):
-        return '{}()'.format(self.__class__.__name__)
+        return "{}()".format(self.__class__.__name__)
 
 
 class Fill(CanvasContextMixin):
@@ -475,7 +488,8 @@ class Fill(CanvasContextMixin):
         preserve (bool, optional): Preserves the path within the Context.
 
     """
-    def __init__(self, color=BLACK, fill_rule='nonzero', preserve=False):
+
+    def __init__(self, color=BLACK, fill_rule="nonzero", preserve=False):
         super().__init__()
         self.color = parse_color(color)
         self.fill_rule = fill_rule
@@ -483,7 +497,7 @@ class Fill(CanvasContextMixin):
         self._children_contexts = []  # Fill context can have children contexts
 
     def __repr__(self):
-        return '{}(color={}, fill_rule={}, preserve={})'.format(
+        return "{}(color={}, fill_rule={}, preserve={})".format(
             self.__class__.__name__, self.color, self.fill_rule, self.preserve
         )
 
@@ -525,6 +539,7 @@ class Stroke(CanvasContextMixin):
         line_width (float, optional): Stroke line width, default is 2.0.
 
     """
+
     def __init__(self, color=BLACK, line_width=2.0):
         super().__init__()
         self.color = parse_color(color)
@@ -532,7 +547,9 @@ class Stroke(CanvasContextMixin):
         self._children_contexts = []  # Stroke context can have children contexts
 
     def __repr__(self):
-        return '{}(color={}, line_width={})'.format(self.__class__.__name__, self.color, self.line_width)
+        return "{}(color={}, line_width={})".format(
+            self.__class__.__name__, self.color, self.line_width
+        )
 
     def __call__(self, impl, *args, **kwargs):
         """Allow the implementation to callback the Class instance.
@@ -567,6 +584,7 @@ class ClosedPath(CanvasContextMixin):
         y (float): The y axis of the beginning point.
 
     """
+
     def __init__(self, x, y):
         super().__init__()
         self.x = x
@@ -576,7 +594,7 @@ class ClosedPath(CanvasContextMixin):
         self._children_contexts = []
 
     def __repr__(self):
-        return '{}(x={}, y={})'.format(self.__class__.__name__, self.x, self.y)
+        return "{}(x={}, y={})".format(self.__class__.__name__, self.x, self.y)
 
     def __call__(self, impl, *args, **kwargs):
         """Allow the implementation to callback the Class instance.
@@ -596,12 +614,13 @@ class MoveTo:
         y (float): The y axis of the point.
 
     """
+
     def __init__(self, x, y):
         self.x = x
         self.y = y
 
     def __repr__(self):
-        return '{}(x={}, y={})'.format(self.__class__.__name__, self.x, self.y)
+        return "{}(x={}, y={})".format(self.__class__.__name__, self.x, self.y)
 
     def __call__(self, impl, *args, **kwargs):
         """Allow the implementation to callback the Class instance.
@@ -637,12 +656,13 @@ class LineTo:
         y (float): The y axis of the coordinate for the end of the line.
 
     """
+
     def __init__(self, x, y):
         self.x = x
         self.y = y
 
     def __repr__(self):
-        return '{}(x={}, y={})'.format(self.__class__.__name__, self.x, self.y)
+        return "{}(x={}, y={})".format(self.__class__.__name__, self.x, self.y)
 
     def __call__(self, impl, *args, **kwargs):
         """Allow the implementation to callback the Class instance.
@@ -686,6 +706,7 @@ class BezierCurveTo:
         y (float): y coordinate for the end point.
 
     """
+
     def __init__(self, cp1x, cp1y, cp2x, cp2y, x, y):
         self.cp1x = cp1x
         self.cp1y = cp1y
@@ -695,15 +716,23 @@ class BezierCurveTo:
         self.y = y
 
     def __repr__(self):
-        return '{}(cp1x={}, cp1y={}, cp2x={}, cp2y={}, x={}, y={})'.format(
-            self.__class__.__name__, self.cp1x, self.cp1y, self.cp2x, self.cp2y, self.x, self.y
+        return "{}(cp1x={}, cp1y={}, cp2x={}, cp2y={}, x={}, y={})".format(
+            self.__class__.__name__,
+            self.cp1x,
+            self.cp1y,
+            self.cp2x,
+            self.cp2y,
+            self.x,
+            self.y,
         )
 
     def __call__(self, impl, *args, **kwargs):
         """Allow the implementation to callback the Class instance.
 
         """
-        impl.bezier_curve_to(self.cp1x, self.cp1y, self.cp2x, self.cp2y, self.x, self.y, *args, **kwargs)
+        impl.bezier_curve_to(
+            self.cp1x, self.cp1y, self.cp2x, self.cp2y, self.x, self.y, *args, **kwargs
+        )
 
     def modify(self, cp1x=None, cp1y=None, cp2x=None, cp2y=None, x=None, y=None):
         """Modify the rectangle after it has been drawn.
@@ -749,6 +778,7 @@ class QuadraticCurveTo:
         y (float): he y axis of the coordinate for the end point.
 
     """
+
     def __init__(self, cpx, cpy, x, y):
         self.cpx = cpx
         self.cpy = cpy
@@ -756,7 +786,7 @@ class QuadraticCurveTo:
         self.y = y
 
     def __repr__(self):
-        return '{}(cpx={}, cpy={}, x={}, y={})'.format(
+        return "{}(cpx={}, cpy={}, x={}, y={})".format(
             self.__class__.__name__, self.cpx, self.cpy, self.x, self.y
         )
 
@@ -812,7 +842,18 @@ class Ellipse:
             (counter-clockwise) instead of clockwise, default false.
 
     """
-    def __init__(self, x, y, radiusx, radiusy, rotation=0.0, startangle=0.0, endangle=2 * pi, anticlockwise=False):
+
+    def __init__(
+        self,
+        x,
+        y,
+        radiusx,
+        radiusy,
+        rotation=0.0,
+        startangle=0.0,
+        endangle=2 * pi,
+        anticlockwise=False,
+    ):
         self.x = x
         self.y = y
         self.radiusx = radiusx
@@ -823,22 +864,45 @@ class Ellipse:
         self.anticlockwise = anticlockwise
 
     def __repr__(self):
-        return '{}(x={}, y={}, radiusx={}, radiusy={}, rotation={}, startangle={}, endangle={}, anticlockwise={})' \
-            .format(self.__class__.__name__, self.x, self.y, self.radiusx, self.radiusy, self.rotation,
-                    self.startangle, self.endangle, self.anticlockwise)
+        return "{}(x={}, y={}, radiusx={}, radiusy={}, rotation={}, startangle={}, endangle={}, anticlockwise={})".format(
+            self.__class__.__name__,
+            self.x,
+            self.y,
+            self.radiusx,
+            self.radiusy,
+            self.rotation,
+            self.startangle,
+            self.endangle,
+            self.anticlockwise,
+        )
 
     def __call__(self, impl, *args, **kwargs):
         """Allow the implementation to callback the Class instance.
 
         """
         impl.ellipse(
-            self.x, self.y, self.radiusx, self.radiusy, self.rotation, self.startangle,
-            self.endangle, self.anticlockwise, *args, **kwargs
+            self.x,
+            self.y,
+            self.radiusx,
+            self.radiusy,
+            self.rotation,
+            self.startangle,
+            self.endangle,
+            self.anticlockwise,
+            *args,
+            **kwargs
         )
 
     def modify(
-            self, x=None, y=None, radiusx=None, radiusy=None, rotation=None, startangle=None, endangle=None,
-            anticlockwise=None
+        self,
+        x=None,
+        y=None,
+        radiusx=None,
+        radiusy=None,
+        rotation=None,
+        startangle=None,
+        endangle=None,
+        anticlockwise=None,
     ):
         """Modify the ellipse after it has been drawn.
 
@@ -897,7 +961,10 @@ class Arc:
             default false.
 
     """
-    def __init__(self, x, y, radius, startangle=0.0, endangle=2 * pi, anticlockwise=False):
+
+    def __init__(
+        self, x, y, radius, startangle=0.0, endangle=2 * pi, anticlockwise=False
+    ):
         self.x = x
         self.y = y
         self.radius = radius
@@ -906,18 +973,40 @@ class Arc:
         self.anticlockwise = anticlockwise
 
     def __repr__(self):
-        return '{}(x={}, y={}, radius={}, startangle={}, endangle={}, anticlockwise={})'.format(
-            self.__class__.__name__, self.x, self.y, self.radius, self.startangle,
-            self.endangle, self.anticlockwise
+        return "{}(x={}, y={}, radius={}, startangle={}, endangle={}, anticlockwise={})".format(
+            self.__class__.__name__,
+            self.x,
+            self.y,
+            self.radius,
+            self.startangle,
+            self.endangle,
+            self.anticlockwise,
         )
 
     def __call__(self, impl, *args, **kwargs):
         """Allow the implementation to callback the Class instance.
 
         """
-        impl.arc(self.x, self.y, self.radius, self.startangle, self.endangle, self.anticlockwise, *args, **kwargs)
+        impl.arc(
+            self.x,
+            self.y,
+            self.radius,
+            self.startangle,
+            self.endangle,
+            self.anticlockwise,
+            *args,
+            **kwargs
+        )
 
-    def modify(self, x=None, y=None, radius=None, startangle=None, endangle=None, anticlockwise=None):
+    def modify(
+        self,
+        x=None,
+        y=None,
+        radius=None,
+        startangle=None,
+        endangle=None,
+        anticlockwise=None,
+    ):
         """Modify the arc after it has been drawn.
 
         All arguments default to the current value.
@@ -965,6 +1054,7 @@ class Rect:
         height (float): The rectangle's width.
 
     """
+
     def __init__(self, x, y, width, height):
         self.x = x
         self.y = y
@@ -972,7 +1062,7 @@ class Rect:
         self.height = height
 
     def __repr__(self):
-        return '{}(x={}, y={}, width={}, height={})'.format(
+        return "{}(x={}, y={}, width={}, height={})".format(
             self.__class__.__name__, self.x, self.y, self.width, self.height
         )
 
@@ -1015,11 +1105,12 @@ class Rotate:
         radians (float): The angle to rotate clockwise in radians.
 
     """
+
     def __init__(self, radians):
         self.radians = radians
 
     def __repr__(self):
-        return '{}(radians={})'.format(self.__class__.__name__, self.radians)
+        return "{}(radians={})".format(self.__class__.__name__, self.radians)
 
     def __call__(self, impl):
         """Allow the implementation to callback the Class instance.
@@ -1047,12 +1138,13 @@ class Scale:
         sy (float): scale factor for the Y dimension.
 
     """
+
     def __init__(self, sx, sy):
         self.sx = sx
         self.sy = sy
 
     def __repr__(self):
-        return '{}(sx={}, sy={})'.format(self.__class__.__name__, self.sx, self.sy)
+        return "{}(sx={}, sy={})".format(self.__class__.__name__, self.sx, self.sy)
 
     def __call__(self, impl):
         """Allow the implementation to callback the Class instance.
@@ -1086,12 +1178,13 @@ class Translate:
         ty (float): Y value of coordinate.
 
     """
+
     def __init__(self, tx, ty):
         self.tx = tx
         self.ty = ty
 
     def __repr__(self):
-        return '{}(tx={}, ty={})'.format(self.__class__.__name__, self.tx, self.ty)
+        return "{}(tx={}, ty={})".format(self.__class__.__name__, self.tx, self.ty)
 
     def __call__(self, impl):
         """Allow the implementation to callback the Class instance.
@@ -1123,8 +1216,9 @@ class ResetTransform:
     transformations.
 
     """
+
     def __repr__(self):
-        return '{}()'.format(self.__class__.__name__)
+        return "{}()".format(self.__class__.__name__)
 
     def __call__(self, impl):
         """Allow the implementation to callback the Class instance.
@@ -1147,6 +1241,7 @@ class WriteText:
         font (:class:`toga.Font`, optional): The font to write with.
 
     """
+
     def __init__(self, text, x, y, font):
         self.text = text
         self.x = x
@@ -1154,7 +1249,9 @@ class WriteText:
         self.font = font
 
     def __repr__(self):
-        return '{}(text={}, x={}, y={}, font={})'.format(self.__class__.__name__, self.text, self.x, self.y, self.font)
+        return "{}(text={}, x={}, y={}, font={})".format(
+            self.__class__.__name__, self.text, self.x, self.y, self.font
+        )
 
     def __call__(self, impl, *args, **kwargs):
         """Allow the implementation to callback the Class instance.
@@ -1188,8 +1285,9 @@ class NewPath:
     """A user-created :class:`NewPath <NewPath>` to add a new path.
 
     """
+
     def __repr__(self):
-        return '{}()'.format(self.__class__.__name__)
+        return "{}()".format(self.__class__.__name__)
 
     def __call__(self, impl, *args, **kwargs):
         """Allow the implementation to callback the Class instance.
