@@ -28,17 +28,12 @@ class CanvasTests(TestCase):
                     color="rgba(0, 0, 0, 0.6)", line_width=1
                 ) as stroke_test:
                     rect = stroke_test.rect(-3, -3, 6, 6)
-                    self.assertIn(rect, stroke_test.drawing_objects)
+                    self.assertIn(rect, self.testing_canvas.drawing_objects)
                     self.assertActionPerformedWith(
                         self.testing_canvas, "rect", x=-3, y=-3, width=6, height=6
                     )
-                self.assertIn(stroke_test.drawing_objects, fill_test.drawing_objects)
                 self.assertActionPerformedWith(self.testing_canvas, "stroke")
-            self.assertIn(fill_test.drawing_objects, basic_context.drawing_objects)
             self.assertActionPerformedWith(self.testing_canvas, "fill")
-        self.assertIn(
-            basic_context.drawing_objects, self.testing_canvas.drawing_objects
-        )
 
     def test_self_oval_path(self):
         xc = 50
@@ -54,7 +49,7 @@ class CanvasTests(TestCase):
         with self.testing_canvas.closed_path(xr, 0.0) as closed:
             self.assertActionPerformedWith(self.testing_canvas, "move to", x=xr, y=0.0)
             arc = closed.arc(0, 0, xr, 0, 2 * pi)
-            self.assertIn(arc, closed.drawing_objects)
+            self.assertIn(arc, self.testing_canvas.drawing_objects)
             self.assertActionPerformedWith(
                 self.testing_canvas,
                 "arc",
@@ -75,7 +70,7 @@ class CanvasTests(TestCase):
         height = 200
         with self.testing_canvas.fill(color="rgba(1, 1, 1, 1)") as fill1:
             rect = fill1.rect(x, y, width, height)
-            self.assertIn(rect, fill1.drawing_objects)
+            self.assertIn(rect, self.testing_canvas.drawing_objects)
             self.assertActionPerformedWith(
                 self.testing_canvas, "rect", x=10, y=-10, width=200, height=200
             )
@@ -87,7 +82,7 @@ class CanvasTests(TestCase):
                 for i in range(y & -check_size, width, check_size):
                     if (i / check_size + j / check_size) % 2 == 0:
                         rect = fill2.rect(i, j, check_size, check_size)
-                        self.assertIn(rect, fill2.drawing_objects)
+                        self.assertIn(rect, self.testing_canvas.drawing_objects)
                         self.assertActionPerformedWith(
                             self.testing_canvas,
                             "rect",
@@ -115,7 +110,7 @@ class CanvasTests(TestCase):
                 subradius,
                 2.0 * pi,
             )
-            self.assertIn(ellipse1, fill1.drawing_objects)
+            self.assertIn(ellipse1, self.testing_canvas.drawing_objects)
             self.assertActionPerformedWith(
                 self.testing_canvas,
                 "ellipse",
@@ -136,7 +131,7 @@ class CanvasTests(TestCase):
                 subradius,
                 subradius,
             )
-            self.assertIn(ellipse2, fill2.drawing_objects)
+            self.assertIn(ellipse2, self.testing_canvas.drawing_objects)
             self.assertActionPerformedWith(
                 self.testing_canvas,
                 "ellipse",
@@ -156,7 +151,7 @@ class CanvasTests(TestCase):
                 subradius,
                 subradius,
             )
-            self.assertIn(ellipse3, fill3.drawing_objects)
+            self.assertIn(ellipse3, self.testing_canvas.drawing_objects)
             self.assertActionPerformedWith(
                 self.testing_canvas,
                 "ellipse",
@@ -171,10 +166,10 @@ class CanvasTests(TestCase):
         with self.testing_canvas.closed_path(32, 0) as closed:
             self.assertActionPerformedWith(self.testing_canvas, "move to", x=32, y=0)
             line_to1 = closed.line_to(32, 64)
-            self.assertIn(line_to1, closed.drawing_objects)
+            self.assertIn(line_to1, self.testing_canvas.drawing_objects)
             self.assertActionPerformedWith(self.testing_canvas, "line to", x=32, y=64)
             line_to2 = closed.line_to(-64, 0)
-            self.assertIn(line_to2, closed.drawing_objects)
+            self.assertIn(line_to2, self.testing_canvas.drawing_objects)
             self.assertActionPerformedWith(self.testing_canvas, "line to", x=-64, y=0)
         self.assertActionPerformedWith(self.testing_canvas, "closed path")
 

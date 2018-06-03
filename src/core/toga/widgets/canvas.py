@@ -15,7 +15,6 @@ class CanvasContextMixin:
         self._parent_context = None
         self._canvas = None
         self._children_contexts = None
-        self._ctm = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
 
     ###########################################################################
     # Private methods to keep track of the canvas, automatically redraw it
@@ -67,7 +66,7 @@ class CanvasContextMixin:
             drawing_object: (:obj:`Drawing Object`): The drawing object to add
 
         """
-        self.drawing_objects.append(drawing_object)
+        self._canvas.drawing_objects.append(drawing_object)
         self.redraw()
 
     def redraw(self):
@@ -78,7 +77,7 @@ class CanvasContextMixin:
         force a redraw.
 
         """
-        self._canvas._impl.redraw()
+        self._canvas._impl.redraw(self._canvas)
 
     ###########################################################################
     # Operations on drawing objects
@@ -111,7 +110,6 @@ class CanvasContextMixin:
 
         """
         context = Context()
-        self.add_drawing_object(context.drawing_objects)
         self.add_child(context)
         yield context
 
@@ -139,7 +137,6 @@ class CanvasContextMixin:
             fill = Fill(color, fill_rule, preserve)
         else:
             fill = Fill(color, "nonzero", preserve)
-        self.add_drawing_object(fill.drawing_objects)
         self.add_child(fill)
         fill.new_path_obj = fill.new_path()
         fill.add_drawing_object(fill.new_path_obj)
@@ -160,7 +157,6 @@ class CanvasContextMixin:
 
         """
         stroke = Stroke(color, line_width)
-        self.add_drawing_object(stroke.drawing_objects)
         self.add_child(stroke)
         yield stroke
         stroke.add_drawing_object(stroke)
@@ -182,7 +178,6 @@ class CanvasContextMixin:
 
         """
         closed_path = ClosedPath(x, y)
-        self.add_drawing_object(closed_path.drawing_objects)
         self.add_child(closed_path)
         closed_path.move_to_obj = closed_path.move_to(x, y)
         closed_path.add_drawing_object(closed_path.move_to_obj)
@@ -453,7 +448,9 @@ class Canvas(CanvasContextMixin, Widget):
         # Create a platform specific implementation of Canvas
         self._impl = self.factory.Canvas(interface=self)
 
-        self._impl.set_root_context(self)
+        # Draw callback needed for Gtk+, other platforms use redraw
+        self._impl.create_draw_callback(self)
+
         self._children_contexts = []  # Canvas can have children contexts
 
 
@@ -1098,8 +1095,9 @@ class Rotate:
     """A user-created :class:`Rotate <Rotate>` to add canvas rotation.
 
     Modifies the canvas by rotating the canvas by angle radians. The rotation
-    center point is always the canvas origin. To change the center point, move
-    the canvas by using the translate() method.
+    center point is always the canvas origin which is in the upper left of the
+    canvas. To change the center point, move the canvas by using the
+    translate() method.
 
     Args:
         radians (float): The angle to rotate clockwise in radians.

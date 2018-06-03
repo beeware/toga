@@ -10,7 +10,6 @@ except ImportError:
 try:
     gi.require_version("Pango", "1.0")
     from gi.repository import Pango
-
     scale = Pango.SCALE
 except ImportError:
     scale = 1024
@@ -29,8 +28,8 @@ class Canvas(Widget):
         self.native = Gtk.DrawingArea()
         self.native.interface = self.interface
 
-    def set_root_context(self, root_context):
-        """Sets the root context from the interface so that it can be traversed.
+    def create_draw_callback(self, root_context):
+        """Creates a draw callback
 
         Gtk+ uses a drawing callback to draw on a DrawingArea. Assignment of the
         callback function creates a Gtk+ canvas and Gtk+ context automatically
@@ -41,12 +40,12 @@ class Canvas(Widget):
         """
 
         def draw_callback(canvas, context):
-            for drawing_object in traverse(root_context.drawing_objects):
+            for drawing_object in root_context.drawing_objects:
                 drawing_object(self, native_context=context)
 
         self.native.connect("draw", draw_callback)
 
-    def redraw(self):
+    def redraw(self, root_context):
         pass
 
     # Basic paths
@@ -132,6 +131,7 @@ class Canvas(Widget):
     # Transformations
 
     def rotate(self, radians, native_context):
+        print('Rotate(', radians, ')')
         native_context.rotate(radians)
 
     def scale(self, sx, sy, native_context):
@@ -183,12 +183,3 @@ class Canvas(Widget):
         # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height())
         width = self.native.get_preferred_width()
         height = self.native.get_preferred_height()
-
-
-def traverse(nested_list):
-    if isinstance(nested_list, list):
-        for drawing_object in nested_list:
-            for subdrawing_object in traverse(drawing_object):
-                yield subdrawing_object
-    else:
-        yield nested_list
