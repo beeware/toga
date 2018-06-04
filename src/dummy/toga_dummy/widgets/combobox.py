@@ -11,9 +11,6 @@ class ComboBox(Widget):
     def add_item(self, item):
         self._action('add item', item=item)
 
-    def select_item(self, item):
-        self._action('select item', item=item)
-
     def get_value(self):
         return self._get_value('value')
 

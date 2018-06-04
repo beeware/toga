@@ -22,10 +22,6 @@ class ComboBox(Widget):
     def add_item(self, item):
         self.native.append_text(item)
 
-    def select_item(self, item):
-        # here we rely on the fact that the first item is the entry
-        self.native.set_active(self.interface.items.index(item) + 1)
-
     def set_placeholder(self, value):
         self.interface.factory.not_implemented('ComboBox.set_placeholder()')
 
