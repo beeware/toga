@@ -30,7 +30,7 @@ class CanvasContextMixin:
         """
         return self._canvas if self._canvas else self
 
-    def propogate_canvas(self, node, canvas):
+    def propagate_canvas(self, node, canvas):
         """Propagate a canvas node change through a tree of contexts.
 
         Args:
@@ -57,7 +57,7 @@ class CanvasContextMixin:
 
         self._children_contexts.append(child)
         child._parent_context = self
-        self.propogate_canvas(child, self._canvas)
+        self.propagate_canvas(child, self._canvas)
 
     def add_drawing_object(self, drawing_object):
         """A drawing object to add to the drawing object stack on a context
@@ -68,6 +68,7 @@ class CanvasContextMixin:
         """
         self._canvas.drawing_objects.append(drawing_object)
         self.redraw()
+        return drawing_object
 
     def redraw(self):
         """Force a redraw of the Canvas
@@ -196,8 +197,7 @@ class CanvasContextMixin:
 
         """
         new_path = NewPath()
-        self.add_drawing_object(new_path)
-        return new_path
+        return self.add_drawing_object(new_path)
 
     def move_to(self, x, y):
         """Constructs and returns a :class:`MoveTo <MoveTo>`.
@@ -211,8 +211,7 @@ class CanvasContextMixin:
 
         """
         move_to = MoveTo(x, y)
-        self.add_drawing_object(move_to)
-        return move_to
+        return self.add_drawing_object(move_to)
 
     def line_to(self, x, y):
         """Constructs and returns a :class:`LineTo <LineTo>`.
@@ -226,8 +225,7 @@ class CanvasContextMixin:
 
         """
         line_to = LineTo(x, y)
-        self.add_drawing_object(line_to)
-        return line_to
+        return self.add_drawing_object(line_to)
 
     def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y):
         """Constructs and returns a :class:`BezierCurveTo <BezierCurveTo>`.
@@ -245,8 +243,7 @@ class CanvasContextMixin:
 
         """
         bezier_curve_to = BezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y)
-        self.add_drawing_object(bezier_curve_to)
-        return bezier_curve_to
+        return self.add_drawing_object(bezier_curve_to)
 
     def quadratic_curve_to(self, cpx, cpy, x, y):
         """Constructs and returns a :class:`QuadraticCurveTo <QuadraticCurveTo>`.
@@ -262,8 +259,7 @@ class CanvasContextMixin:
 
         """
         quadratic_curve_to = QuadraticCurveTo(cpx, cpy, x, y)
-        self.add_drawing_object(quadratic_curve_to)
-        return quadratic_curve_to
+        return self.add_drawing_object(quadratic_curve_to)
 
     def arc(self, x, y, radius, startangle=0.0, endangle=2 * pi, anticlockwise=False):
         """Constructs and returns a :class:`Arc <Arc>`.
@@ -286,8 +282,7 @@ class CanvasContextMixin:
 
         """
         arc = Arc(x, y, radius, startangle, endangle, anticlockwise)
-        self.add_drawing_object(arc)
-        return arc
+        return self.add_drawing_object(arc)
 
     def ellipse(
         self,
@@ -339,8 +334,7 @@ class CanvasContextMixin:
 
         """
         rect = Rect(x, y, width, height)
-        self.add_drawing_object(rect)
-        return rect
+        return self.add_drawing_object(rect)
 
     ###########################################################################
     # Transformations of a canvas
@@ -357,8 +351,7 @@ class CanvasContextMixin:
 
         """
         rotate = Rotate(radians)
-        self.add_drawing_object(rotate)
-        return rotate
+        return self.add_drawing_object(rotate)
 
     def scale(self, sx, sy):
         """Constructs and returns a :class:`Scale <Scale>`.
@@ -372,8 +365,7 @@ class CanvasContextMixin:
 
         """
         scale = Scale(sx, sy)
-        self.add_drawing_object(scale)
-        return scale
+        return self.add_drawing_object(scale)
 
     def translate(self, tx, ty):
         """Constructs and returns a :class:`Translate <Translate>`.
@@ -387,8 +379,7 @@ class CanvasContextMixin:
 
         """
         translate = Translate(tx, ty)
-        self.add_drawing_object(translate)
-        return translate
+        return self.add_drawing_object(translate)
 
     def reset_transform(self):
         """Constructs and returns a :class:`ResetTransform <ResetTransform>`.
@@ -398,8 +389,7 @@ class CanvasContextMixin:
 
         """
         reset_transform = ResetTransform()
-        self.add_drawing_object(reset_transform)
-        return reset_transform
+        return self.add_drawing_object(reset_transform)
 
     ###########################################################################
     # Text drawing
@@ -425,8 +415,7 @@ class CanvasContextMixin:
         if font is None:
             font = Font(family=SYSTEM, size=self._canvas.style.font_size)
         write_text = WriteText(text, x, y, font)
-        self.add_drawing_object(write_text)
-        return write_text
+        return self.add_drawing_object(write_text)
 
 
 class Canvas(CanvasContextMixin, Widget):
