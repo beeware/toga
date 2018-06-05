@@ -31,9 +31,9 @@ class ComboBox(Widget):
         self._on_change = None
 
         # Use public setters
+        self.placeholder = placeholder
         self.items = items if items else []
         self.value = initial
-        self.placeholder = placeholder
         self.on_change = on_change
 
     @property

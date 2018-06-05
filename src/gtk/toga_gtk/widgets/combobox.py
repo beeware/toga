@@ -23,22 +23,15 @@ class ComboBox(Widget):
         self.native.append_text(item)
 
     def set_placeholder(self, value):
-        self.interface.factory.not_implemented('ComboBox.set_placeholder()')
+        entry = self.native.get_child()
+        entry.set_placeholder_text(value)
 
     def get_value(self):
         return self.native.get_active_text()
 
     def set_value(self, value):
-        # Set the active item to the entry
-        entry_id = self.native.get_entry_text_column()
-        self.native.set_active(entry_id)
-
-        # Pull out the ListStore
-        model = self.native.get_model()
-
-        # Get the TreeIter object for setting values in a TreeModel
-        tree_iter = model.get_iter_first()
-        model.set_value(tree_iter, entry_id, value)
+        entry = self.native.get_child()
+        entry.set_text(value)
 
     def set_font(self, value):
         self.interface.factory.not_implemented('ComboBox.set_font()')
