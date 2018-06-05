@@ -5,6 +5,7 @@ Widgets
 
    button
    canvas
+   combobox
    detailedlist
    imageview
    label

@@ -23,6 +23,7 @@ General widgets
 ======================================================================= ====================================
  :doc:`Button </reference/api/widgets/button>`                           Basic clickable Button
  :doc:`Canvas </reference/api/widgets/canvas>`                           Area you can draw on
+ :doc:`ComboBox </reference/api/widgets/combobox>`                       A text input with options
  :doc:`DetailedList </reference/api/widgets/detailedlist>`               A list of complex content
  :doc:`ImageView </reference/api/widgets/imageview>`                     Image Viewer
  :doc:`Label </reference/api/widgets/label>`                             Text label
