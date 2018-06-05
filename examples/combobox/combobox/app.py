@@ -16,39 +16,63 @@ class ComboBoxApp(toga.App):
         # Add the content on the main window
         self.main_window.content = toga.Box(
             children=[
-                toga.Box(style=box_style, children=[
-                    toga.Label("Select an element",
-                        style=label_style),
+                toga.Box(
+                    style=box_style,
+                    children=[
+                        toga.Label(
+                            "Select an element",
+                            style=label_style
+                        ),
+                        toga.ComboBox(
+                            initial='toga',
+                            placeholder='shoutout',
+                            items=['batavia', 'voc', 'beekeeper'],
+                        ),
+                    ]
+                ),
 
-                    toga.ComboBox(items=["Carbon", "Ytterbium", "Thulium"])
-                ]),
+                toga.Box(
+                    style=box_style,
+                    children=[
+                        toga.Label(
+                            "use the 'on_change' callback to respond to changes",
+                            style=label_style
+                        ),
+                        toga.ComboBox(
+                            on_change=self.my_on_change,
+                            placeholder='!!!',
+                            items=["Dubnium", "Holmium", "Zirconium"],
+                        )
 
-                toga.Box(style=box_style, children=[
-                    toga.Label("use the 'on_change' callback to respond to changes",
-                        style=label_style),
+                    ]),
 
-                    toga.ComboBox(
-                      on_change=self.my_on_change,
-                      items=["Dubnium", "Holmium", "Zirconium"])
+                toga.Box(
+                    style=box_style,
+                    children=[
+                        toga.Label(
+                            "Long lists of items should scroll",
+                            style=label_style
+                        ),
+                        toga.ComboBox(
+                            placeholder='dir(toga)',
+                            items=dir(toga)
+                        ),
+                    ]),
 
-                ]),
+                toga.Box(
+                    style=box_style, children=[
+                        toga.Label(
+                            "use some style!",
+                            style=label_style,
+                        ),
 
-                toga.Box(style=box_style, children=[
-                    toga.Label("Long lists of items should scroll",
-                        style=label_style),
-
-                    toga.ComboBox(items=dir(toga)),
-                ]),
-
-                toga.Box(style=box_style, children=[
-                    toga.Label("use some style!", style=label_style),
-
-                    toga.ComboBox(
-                        style=Pack(width=200, padding=24),
-                        items=["Curium", "Titanium", "Copernicium"])
-                ]),
+                        toga.ComboBox(
+                            style=Pack(width=200, padding=24),
+                            items=["Curium", "Titanium", "Copernicium"]
+                        )
+                    ]),
             ],
-            style=Pack(direction=COLUMN, padding=24)
+        style=Pack(direction=COLUMN, padding=24)
         )
 
         self.main_window.show()
