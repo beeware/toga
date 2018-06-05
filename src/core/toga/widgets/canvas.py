@@ -12,17 +12,15 @@ class CanvasContextMixin:
         super().__init__(*args, **kwargs)
 
         self.drawing_objects = []
-        self._parent_context = None
         self._canvas = None
-        self._children_contexts = None
 
     ###########################################################################
-    # Private methods to keep track of the canvas, automatically redraw it
+    # Methods to keep track of the canvas, automatically redraw it
     ###########################################################################
 
     @property
     def canvas(self):
-        """The canvas property of the tree containing this context.
+        """The canvas property of the current context.
 
         Returns:
             The canvas node. Returns self if this node *is* the canvas node.
@@ -30,34 +28,14 @@ class CanvasContextMixin:
         """
         return self._canvas if self._canvas else self
 
-    def propagate_canvas(self, node, canvas):
-        """Propagate a canvas node change through a tree of contexts.
+    def add_canvas_to_child(self, child):
+        """Add the canvas of the current context node to a child context.
 
         Args:
-            node: The context node to add.
-            canvas: :class:`Canvas <Canvas>` object.
+            child: The child context.
 
         """
-        node._canvas = canvas
-        for child in node._children_contexts:
-            node.canvas(child, canvas)
-
-    def add_child(self, child):
-        """Add a context as a child of this one.
-
-        Args:
-            child: A context to add as a child to this context.
-
-        Raises:
-            ValueError: If this node is not a context, and cannot have children.
-
-        """
-        if self._children_contexts is None:
-            raise ValueError("Cannot add children")
-
-        self._children_contexts.append(child)
-        child._parent_context = self
-        self.propagate_canvas(child, self._canvas)
+        child._canvas = self.canvas
 
     def add_drawing_object(self, drawing_object):
         """A drawing object to add to the drawing object stack on a context
@@ -66,7 +44,7 @@ class CanvasContextMixin:
             drawing_object: (:obj:`Drawing Object`): The drawing object to add
 
         """
-        self._canvas.drawing_objects.append(drawing_object)
+        self.drawing_objects.append(drawing_object)
         self.redraw()
         return drawing_object
 
@@ -78,7 +56,7 @@ class CanvasContextMixin:
         force a redraw.
 
         """
-        self._canvas._impl.redraw(self._canvas)
+        self.canvas._impl.redraw(self.canvas)
 
     ###########################################################################
     # Operations on drawing objects
@@ -111,7 +89,8 @@ class CanvasContextMixin:
 
         """
         context = Context()
-        self.add_child(context)
+        self.add_drawing_object(context.drawing_objects)
+        self.add_canvas_to_child(context)
         yield context
 
     @contextmanager
@@ -138,7 +117,8 @@ class CanvasContextMixin:
             fill = Fill(color, fill_rule, preserve)
         else:
             fill = Fill(color, "nonzero", preserve)
-        self.add_child(fill)
+        self.add_drawing_object(fill.drawing_objects)
+        self.add_canvas_to_child(fill)
         fill.new_path_obj = fill.new_path()
         fill.add_drawing_object(fill.new_path_obj)
         yield fill
@@ -158,7 +138,8 @@ class CanvasContextMixin:
 
         """
         stroke = Stroke(color, line_width)
-        self.add_child(stroke)
+        self.add_drawing_object(stroke.drawing_objects)
+        self.add_canvas_to_child(stroke)
         yield stroke
         stroke.add_drawing_object(stroke)
 
@@ -179,7 +160,8 @@ class CanvasContextMixin:
 
         """
         closed_path = ClosedPath(x, y)
-        self.add_child(closed_path)
+        self.add_drawing_object(closed_path.drawing_objects)
+        self.add_canvas_to_child(closed_path)
         closed_path.move_to_obj = closed_path.move_to(x, y)
         closed_path.add_drawing_object(closed_path.move_to_obj)
         yield closed_path
@@ -440,8 +422,6 @@ class Canvas(CanvasContextMixin, Widget):
         # Draw callback needed for Gtk+, other platforms use redraw
         self._impl.create_draw_callback(self)
 
-        self._children_contexts = []  # Canvas can have children contexts
-
 
 class Context(CanvasContextMixin):
     """The user-created :class:`Context <Context>` drawing object to populate a
@@ -454,7 +434,6 @@ class Context(CanvasContextMixin):
 
     def __init__(self):
         super().__init__()
-        self._children_contexts = []  # Context can have children contexts
 
     def __repr__(self):
         return "{}()".format(self.__class__.__name__)
@@ -480,7 +459,6 @@ class Fill(CanvasContextMixin):
         self.color = parse_color(color)
         self.fill_rule = fill_rule
         self.preserve = preserve
-        self._children_contexts = []  # Fill context can have children contexts
 
     def __repr__(self):
         return "{}(color={}, fill_rule={}, preserve={})".format(
@@ -530,7 +508,6 @@ class Stroke(CanvasContextMixin):
         super().__init__()
         self.color = parse_color(color)
         self.line_width = line_width
-        self._children_contexts = []  # Stroke context can have children contexts
 
     def __repr__(self):
         return "{}(color={}, line_width={})".format(
@@ -575,9 +552,6 @@ class ClosedPath(CanvasContextMixin):
         super().__init__()
         self.x = x
         self.y = y
-
-        # ClosedPath context can have children contexts
-        self._children_contexts = []
 
     def __repr__(self):
         return "{}(x={}, y={})".format(self.__class__.__name__, self.x, self.y)

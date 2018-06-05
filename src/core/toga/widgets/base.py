@@ -66,7 +66,7 @@ class Widget(Node):
 
         child.app = self.app
         if self._impl:
-            self._impl.add_child(child._impl)
+            self._impl.add_canvas_to_child(child._impl)
 
     @property
     def app(self):
