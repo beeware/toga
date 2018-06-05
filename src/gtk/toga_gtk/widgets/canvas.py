@@ -93,7 +93,7 @@ class Canvas(Widget):
         if radiusx >= radiusy:
             native_context.scale(1, radiusy / radiusx)
             self.arc(0, 0, radiusx, startangle, endangle, anticlockwise, native_context)
-        elif radiusy > radiusx:
+        else:
             native_context.scale(radiusx / radiusy, 1)
             self.arc(0, 0, radiusy, startangle, endangle, anticlockwise, native_context)
         native_context.rotate(rotation)
@@ -131,7 +131,6 @@ class Canvas(Widget):
     # Transformations
 
     def rotate(self, radians, native_context):
-        print('Rotate(', radians, ')')
         native_context.rotate(radians)
 
     def scale(self, sx, sy, native_context):
