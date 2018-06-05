@@ -15,70 +15,68 @@ class ComboBoxApp(toga.App):
 
         # Add the content on the main window
         self.main_window.content = toga.Box(
-            children=[
+            style=Pack(direction=COLUMN, padding=24),
+            children=(
                 toga.Box(
                     style=box_style,
                     children=[
                         toga.Label(
                             "Select an element",
-                            style=label_style
+                            style=label_style,
                         ),
                         toga.ComboBox(
                             initial='toga',
                             placeholder='shoutout',
                             items=['batavia', 'voc', 'beekeeper'],
                         ),
-                    ]
+                    ],
                 ),
-
                 toga.Box(
                     style=box_style,
                     children=[
                         toga.Label(
-                            "use the 'on_change' callback to respond to changes",
-                            style=label_style
+                            "use 'on_change' callback to respond to changes",
+                            style=label_style,
                         ),
                         toga.ComboBox(
                             on_change=self.my_on_change,
                             placeholder='!!!',
                             items=["Dubnium", "Holmium", "Zirconium"],
-                        )
-
-                    ]),
-
+                        ),
+                    ],
+                ),
                 toga.Box(
                     style=box_style,
                     children=[
                         toga.Label(
                             "Long lists of items should scroll",
-                            style=label_style
+                            style=label_style,
                         ),
                         toga.ComboBox(
                             placeholder='dir(toga)',
                             items=dir(toga)
                         ),
-                    ]),
-
+                    ],
+                ),
                 toga.Box(
-                    style=box_style, children=[
+                    style=box_style,
+                    children=[
                         toga.Label(
                             "use some style!",
                             style=label_style,
                         ),
-
                         toga.ComboBox(
                             style=Pack(width=200, padding=24),
-                            items=["Curium", "Titanium", "Copernicium"]
-                        )
-                    ]),
-            ],
-        style=Pack(direction=COLUMN, padding=24)
+                            items=["Curium", "Titanium", "Copernicium"],
+                        ),
+                    ],
+                ),
+            ),
         )
-
         self.main_window.show()
 
     def my_on_change(self, combobox):
-        # get the current value of the slider with `combobox.value`
+        # get the current value of the combobox with `combobox.value`
         print("The combobox widget changed to {0}".format(combobox.value))
 
 

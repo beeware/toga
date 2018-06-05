@@ -27,7 +27,7 @@ class ComboBox(Widget):
         # Create a platform specific implementation of a ComboBox
         self._impl = self.factory.ComboBox(interface=self)
 
-        # # Initialize private values
+        # Initialize private values
         self._on_change = None
 
         # Use public setters
