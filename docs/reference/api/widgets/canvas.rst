@@ -36,10 +36,10 @@ rectangle, and finally delete the rectangle.
     canvas = toga.Canvas(style=Pack(flex=1))
     box = toga.Box(children=[canvas])
     with canvas.fill() as fill:
-        arc1 = fill.arc(50, 50, 15)
-        rect1 = fill.rect(50, 50, 15, 15)
+        arc1 = fill.arc(x=50, y=50, radius=15)
+        rect1 = fill.rect(x=50, y=50, width=15, height=15)
 
-    arc1.modify(25, 25, 5)
+    arc1.x, arc1.y, arc1.radius = (25, 25, 5)
     rect1.x = 75
     fill.remove(rect1)
 

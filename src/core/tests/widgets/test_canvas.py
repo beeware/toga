@@ -200,7 +200,8 @@ class CanvasTests(TestCase):
         with self.testing_canvas.closed_path(0, -5) as closed:
             closed.line_to(10, 10)
             closed.line_to(10, 0)
-            closed.move_to_obj.modify(0, 0)
+            closed.move_to_obj.x = 0
+            closed.move_to_obj.y = 0
             closed.redraw()
             self.assertActionPerformedWith(self.testing_canvas, "move to", x=0, y=0)
 
@@ -215,7 +216,7 @@ class CanvasTests(TestCase):
 
     def test_move_to_modify(self):
         move_to2 = self.testing_canvas.move_to(-5, 20.0)
-        move_to2.modify(x=0, y=-10)
+        move_to2.x, move_to2.y = (0, -10)
         self.testing_canvas.redraw()
         self.assertActionPerformedWith(self.testing_canvas, "move to", x=0, y=-10)
 
@@ -230,7 +231,8 @@ class CanvasTests(TestCase):
 
     def test_line_to_modify(self):
         line_to = self.testing_canvas.line_to(-40.5, 50.5)
-        line_to.modify(x=0, y=5)
+        line_to.x = 0
+        line_to.y = 5
         self.testing_canvas.redraw()
         self.assertActionPerformedWith(self.testing_canvas, "line to", x=0, y=5)
 
@@ -254,7 +256,14 @@ class CanvasTests(TestCase):
 
     def test_bezier_curve_to_modify(self):
         bezier = self.testing_canvas.bezier_curve_to(0, 0, -2, -2, 5.5, 5.5)
-        bezier.modify(cp1x=6, cp1y=-5, cp2x=2.0, cp2y=0, x=-2, y=-3)
+        bezier.cp1x, bezier.cp1y, bezier.cp2x, bezier.cp2y, bezier.x, bezier.y = (
+            6,
+            -5,
+            2.0,
+            0,
+            -2,
+            -3,
+        )
         self.testing_canvas.redraw()
         self.assertActionPerformedWith(
             self.testing_canvas,
@@ -285,7 +294,10 @@ class CanvasTests(TestCase):
 
     def test_quadratic_curve_to_modify(self):
         quad = self.testing_canvas.quadratic_curve_to(-1, -1, -5, -5)
-        quad.modify(0, 0.5, -0.4, 1000)
+        quad.cpx = 0
+        quad.cpy = 0.5
+        quad.x = -0.4
+        quad.y = 1000
         self.testing_canvas.redraw()
         self.assertActionPerformedWith(
             self.testing_canvas, "quadratic curve to", cpx=0, cpy=0.5, x=-0.4, y=1000
@@ -311,14 +323,8 @@ class CanvasTests(TestCase):
 
     def test_arc_modify(self):
         arc = self.testing_canvas.arc(10, 10, 10.0, 2, pi, False)
-        arc.modify(
-            x=1000,
-            y=2000,
-            radius=0.1,
-            startangle=pi,
-            endangle=2 * pi,
-            anticlockwise=False,
-        )
+        arc.x, arc.y, arc.radius = (1000, 2000, 0.1)
+        arc.startangle, arc.endangle, arc.anticlockwise = (pi, 2 * pi, False)
         self.testing_canvas.redraw()
         self.assertActionPerformedWith(
             self.testing_canvas,
@@ -372,28 +378,14 @@ class CanvasTests(TestCase):
 
     def test_ellipse_modify(self):
         ellipse = self.testing_canvas.ellipse(0, -1, -50, 20.2, pi, pi, 2 * pi, False)
-        ellipse.modify(
-            x=1,
-            y=0,
-            radiusx=0.1,
-            radiusy=1000,
-            rotation=2 * pi,
-            startangle=0,
-            endangle=pi,
-        )
+        ellipse.x = 1
+        ellipse.y = 0
+        ellipse.radiusx = 0.1
+        ellipse.radiusy = 1000
+        ellipse.rotation = 2 * pi
+        ellipse.startangle = 0
+        ellipse.endangle = pi
         self.testing_canvas.redraw()
-        self.assertActionPerformedWith(
-            self.testing_canvas,
-            "ellipse",
-            x=1,
-            y=0,
-            radiusx=0.1,
-            radiusy=1000,
-            rotation=2 * pi,
-            startangle=0,
-            endangle=pi,
-            anticlockwise=False,
-        )
 
     def test_ellipse_repr(self):
         ellipse = self.testing_canvas.ellipse(1.0, 1.0, 0, 0, 0, 2, 3.1415, False)
@@ -405,7 +397,7 @@ class CanvasTests(TestCase):
 
     def test_rect_modify(self):
         rect = self.testing_canvas.rect(-5, 5, 10, 15)
-        rect.modify(5, -5, 0.5, -0.5)
+        rect.x, rect.y, rect.width, rect.height = (5, -5, 0.5, -0.5)
         self.testing_canvas.redraw()
         self.assertActionPerformedWith(
             self.testing_canvas, "rect", x=5, y=-5, width=0.5, height=-0.5
@@ -421,7 +413,9 @@ class CanvasTests(TestCase):
         with self.testing_canvas.fill(
             color="rgb(0, 255, 0)", fill_rule="nonzero", preserve=False
         ) as filler:
-            filler.modify(color=REBECCAPURPLE, fill_rule="evenodd", preserve=True)
+            filler.color = REBECCAPURPLE
+            filler.fill_rule = "evenodd"
+            filler.preserve = True
             self.testing_canvas.redraw()
         self.assertActionPerformedWith(
             self.testing_canvas,
@@ -444,7 +438,8 @@ class CanvasTests(TestCase):
         with self.testing_canvas.stroke(
             color=BLANCHEDALMOND, line_width=5.0
         ) as stroker:
-            stroker.modify(color=REBECCAPURPLE, line_width=1)
+            stroker.color = REBECCAPURPLE
+            stroker.line_width = 1
             self.testing_canvas.redraw()
         self.assertActionPerformedWith(
             self.testing_canvas, "stroke", color=rgb(102, 51, 153), line_width=1
@@ -463,7 +458,7 @@ class CanvasTests(TestCase):
 
     def test_rotate_modify(self):
         rotate = self.testing_canvas.rotate(radians=-2 * pi)
-        rotate.modify(radians=3 * pi / 2)
+        rotate.radians = 3 * pi / 2
         self.testing_canvas.redraw()
         self.assertActionPerformedWith(
             self.testing_canvas, "rotate", radians=3 * pi / 2
@@ -480,7 +475,8 @@ class CanvasTests(TestCase):
 
     def test_scale_modify(self):
         scale = self.testing_canvas.scale(sx=-2, sy=0)
-        scale.modify(sx=-2.0, sy=3.0)
+        scale.sx = -2.0
+        scale.sy = 3.0
         self.testing_canvas.redraw()
         self.assertActionPerformedWith(self.testing_canvas, "scale", sx=-2.0, sy=3.0)
 
@@ -495,7 +491,8 @@ class CanvasTests(TestCase):
 
     def test_translate_modify(self):
         translate = self.testing_canvas.translate(tx=2.3, ty=-2)
-        translate.modify(tx=0, ty=-500)
+        translate.tx = 0
+        translate.ty = -500
         self.testing_canvas.redraw()
         self.assertActionPerformedWith(self.testing_canvas, "translate", tx=0, ty=-500)
 
@@ -538,7 +535,12 @@ class CanvasTests(TestCase):
     def test_write_text_modify(self):
         write_text = self.testing_canvas.write_text("test text")
         modify_font = toga.Font(family=SERIF, size=1.2)
-        write_text.modify("hello again", x=10, y=-1999, font=modify_font)
+        write_text.text, write_text.x, write_text.y, write_text.font = (
+            "hello again",
+            10,
+            -1999,
+            modify_font,
+        )
         self.testing_canvas.redraw()
         self.assertActionPerformedWith(
             self.testing_canvas,
