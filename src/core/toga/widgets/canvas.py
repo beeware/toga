@@ -44,7 +44,11 @@ class CanvasContextMixin:
 
         """
         self.drawing_objects.append(drawing_object)
-        self.redraw()
+
+        # Only redraw if drawing to canvas directly
+        if self.canvas is self:
+            self.redraw()
+
         return drawing_object
 
     def redraw(self):
@@ -91,6 +95,7 @@ class CanvasContextMixin:
         self.add_drawing_object(context)
         self.add_canvas_to_child(context)
         yield context
+        self.redraw()
 
     @contextmanager
     def fill(self, color=BLACK, fill_rule="nonzero", preserve=False):
@@ -116,6 +121,7 @@ class CanvasContextMixin:
             fill = Fill(color, "nonzero", preserve)
         self.add_canvas_to_child(fill)
         yield self.add_drawing_object(fill)
+        self.redraw()
 
     @contextmanager
     def stroke(self, color=BLACK, line_width=2.0):
@@ -133,6 +139,7 @@ class CanvasContextMixin:
         stroke = Stroke(color, line_width)
         self.add_canvas_to_child(stroke)
         yield self.add_drawing_object(stroke)
+        self.redraw()
 
     @contextmanager
     def closed_path(self, x, y):
@@ -150,6 +157,7 @@ class CanvasContextMixin:
         closed_path = ClosedPath(x, y)
         self.add_canvas_to_child(closed_path)
         yield self.add_drawing_object(closed_path)
+        self.redraw()
 
     ###########################################################################
     # Paths to draw with
@@ -406,6 +414,9 @@ class Canvas(CanvasContextMixin, Widget):
         self.drawing_objects = []
 
     def __call__(self, impl, *args, **kwargs):
+        """Allow implementation to call the Class instance to draw objects recursively.
+
+        """
         for obj in self.drawing_objects:
             obj(impl, *args, **kwargs)
 
