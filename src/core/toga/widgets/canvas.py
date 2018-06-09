@@ -11,7 +11,6 @@ class CanvasContextMixin:
     def __init__(self, *args, **kwargs):  # kwargs used to support multiple inheritance
         super().__init__(*args, **kwargs)
 
-        self.drawing_objects = []
         self._canvas = None
 
     ###########################################################################
@@ -56,7 +55,7 @@ class CanvasContextMixin:
         force a redraw.
 
         """
-        self.canvas._impl.redraw(self.canvas)
+        self.canvas._impl.redraw()
 
     ###########################################################################
     # Operations on drawing objects
@@ -89,7 +88,7 @@ class CanvasContextMixin:
 
         """
         context = Context()
-        self.add_drawing_object(context.drawing_objects)
+        self.add_drawing_object(context)
         self.add_canvas_to_child(context)
         yield context
 
@@ -99,8 +98,6 @@ class CanvasContextMixin:
 
         A drawing operator that fills the current path according to the current
         fill rule, (each sub-path is implicitly closed before being filled).
-        Access to the :class:`NewPath <NewPath>` that is automatically created is
-        through the Fill.new_path_obj object.
 
         Args:
             fill_rule (str, optional): 'nonzero' is the non-zero winding rule and
@@ -117,12 +114,8 @@ class CanvasContextMixin:
             fill = Fill(color, fill_rule, preserve)
         else:
             fill = Fill(color, "nonzero", preserve)
-        self.add_drawing_object(fill.drawing_objects)
         self.add_canvas_to_child(fill)
-        fill.new_path_obj = fill.new_path()
-        fill.add_drawing_object(fill.new_path_obj)
-        yield fill
-        fill.add_drawing_object(fill)
+        yield self.add_drawing_object(fill)
 
     @contextmanager
     def stroke(self, color=BLACK, line_width=2.0):
@@ -138,18 +131,13 @@ class CanvasContextMixin:
 
         """
         stroke = Stroke(color, line_width)
-        self.add_drawing_object(stroke.drawing_objects)
         self.add_canvas_to_child(stroke)
-        yield stroke
-        stroke.add_drawing_object(stroke)
+        yield self.add_drawing_object(stroke)
 
     @contextmanager
     def closed_path(self, x, y):
         """Calls move_to(x,y) and then constructs and yields a
         :class:`ClosedPath <ClosedPath>`.
-
-        Access to the :class:`MoveTo <MoveTo>` that is automatically created is
-        through the ClosedPath.move_to_obj object.
 
         Args:
             x (float): The x axis of the beginning point.
@@ -160,12 +148,8 @@ class CanvasContextMixin:
 
         """
         closed_path = ClosedPath(x, y)
-        self.add_drawing_object(closed_path.drawing_objects)
         self.add_canvas_to_child(closed_path)
-        closed_path.move_to_obj = closed_path.move_to(x, y)
-        closed_path.add_drawing_object(closed_path.move_to_obj)
-        yield closed_path
-        closed_path.add_drawing_object(closed_path)
+        yield self.add_drawing_object(closed_path)
 
     ###########################################################################
     # Paths to draw with
@@ -401,7 +385,7 @@ class CanvasContextMixin:
 
 
 class Canvas(CanvasContextMixin, Widget):
-    """Create new canvas
+    """Create new canvas.
 
     Args:
         id (str):  An identifier for this widget.
@@ -419,8 +403,11 @@ class Canvas(CanvasContextMixin, Widget):
         # Create a platform specific implementation of Canvas
         self._impl = self.factory.Canvas(interface=self)
 
-        # Draw callback needed for Gtk+, other platforms use redraw
-        self._impl.create_draw_callback(self)
+        self.drawing_objects = []
+
+    def __call__(self, impl, *args, **kwargs):
+        for obj in self.drawing_objects:
+            obj(impl, *args, **kwargs)
 
 
 class Context(CanvasContextMixin):
@@ -434,9 +421,17 @@ class Context(CanvasContextMixin):
 
     def __init__(self):
         super().__init__()
+        self.drawing_objects = []
 
     def __repr__(self):
         return "{}()".format(self.__class__.__name__)
+
+    def __call__(self, impl, *args, **kwargs):
+        """Allow parent to call the Class instance so that it can be drawn.
+
+        """
+        for obj in self.drawing_objects:
+            obj(impl, *args, **kwargs)
 
 
 class Fill(CanvasContextMixin):
@@ -459,6 +454,7 @@ class Fill(CanvasContextMixin):
         self._color = parse_color(color)
         self.fill_rule = fill_rule
         self.preserve = preserve
+        self.drawing_objects = []
 
     def __repr__(self):
         return "{}(color={}, fill_rule={}, preserve={})".format(
@@ -466,9 +462,12 @@ class Fill(CanvasContextMixin):
         )
 
     def __call__(self, impl, *args, **kwargs):
-        """Allow the implementation to callback the Class instance.
+        """Allow parent to call the Class instance so that it can be drawn.
 
         """
+        impl.new_path(*args, **kwargs)
+        for obj in self.drawing_objects:
+            obj(impl, *args, **kwargs)
         impl.fill(self.color, self.fill_rule, self.preserve, *args, **kwargs)
 
     @property
@@ -498,6 +497,7 @@ class Stroke(CanvasContextMixin):
         super().__init__()
         self._color = parse_color(color)
         self.line_width = line_width
+        self.drawing_objects = []
 
     def __repr__(self):
         return "{}(color={}, line_width={})".format(
@@ -505,9 +505,11 @@ class Stroke(CanvasContextMixin):
         )
 
     def __call__(self, impl, *args, **kwargs):
-        """Allow the implementation to callback the Class instance.
+        """Allow parent to call the Class instance so that it can be drawn.
 
         """
+        for obj in self.drawing_objects:
+            obj(impl, *args, **kwargs)
         impl.stroke(self.color, self.line_width, *args, **kwargs)
 
     @property
@@ -536,14 +538,18 @@ class ClosedPath(CanvasContextMixin):
         super().__init__()
         self.x = x
         self.y = y
+        self.drawing_objects = []
 
     def __repr__(self):
         return "{}(x={}, y={})".format(self.__class__.__name__, self.x, self.y)
 
     def __call__(self, impl, *args, **kwargs):
-        """Allow the implementation to callback the Class instance.
+        """Allow parent to call the Class instance so that it can be drawn.
 
         """
+        impl.move_to(self.x, self.y, *args, **kwargs)
+        for obj in self.drawing_objects:
+            obj(impl, *args, **kwargs)
         impl.closed_path(self.x, self.y, *args, **kwargs)
 
 

@@ -32,13 +32,11 @@ class CanvasTests(TestCase):
                     self.assertActionPerformedWith(
                         self.testing_canvas, "rect", x=-3, y=-3, width=6, height=6
                     )
-                self.assertIn(stroke_test.drawing_objects, fill_test.drawing_objects)
+                self.assertIn(stroke_test, fill_test.drawing_objects)
                 self.assertActionPerformedWith(self.testing_canvas, "stroke")
-            self.assertIn(fill_test.drawing_objects, basic_context.drawing_objects)
+            self.assertIn(fill_test, basic_context.drawing_objects)
             self.assertActionPerformedWith(self.testing_canvas, "fill")
-        self.assertIn(
-            basic_context.drawing_objects, self.testing_canvas.drawing_objects
-        )
+        self.assertIn(basic_context, self.testing_canvas.drawing_objects)
 
     def test_self_oval_path(self):
         xc = 50
@@ -200,8 +198,8 @@ class CanvasTests(TestCase):
         with self.testing_canvas.closed_path(0, -5) as closed:
             closed.line_to(10, 10)
             closed.line_to(10, 0)
-            closed.move_to_obj.x = 0
-            closed.move_to_obj.y = 0
+            closed.x = 0
+            closed.y = 0
             closed.redraw()
             self.assertActionPerformedWith(self.testing_canvas, "move to", x=0, y=0)
 

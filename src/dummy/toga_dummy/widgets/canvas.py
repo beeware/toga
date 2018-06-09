@@ -5,13 +5,9 @@ class Canvas(Widget):
     def create(self):
         self._action("create Canvas")
 
-    def create_draw_callback(self, root_context):
-        self._action("create draw callback")
-
-    def redraw(self, root_context):
+    def redraw(self):
         self._action("redraw")
-        for drawing_object in traverse(root_context.drawing_objects):
-            drawing_object(self)
+        self.interface(self)
 
     # Basic paths
 
@@ -97,12 +93,3 @@ class Canvas(Widget):
 
     def rehint(self):
         self._action('rehint Canvas')
-
-
-def traverse(nested_list):
-    if isinstance(nested_list, list):
-        for drawing_object in nested_list:
-            for subdrawing_object in traverse(drawing_object):
-                yield subdrawing_object
-    else:
-        yield nested_list
