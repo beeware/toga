@@ -14,7 +14,7 @@ class TogaView(NSView):
 
     @objc_method
     def display(self) -> None:
-        self.layer.setNeedsDisplay_(True)
+        self.layer.needsDisplay = True
         self.layer.displayIfNeeded()
 
 

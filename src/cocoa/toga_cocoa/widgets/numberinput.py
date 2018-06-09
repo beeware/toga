@@ -172,8 +172,8 @@ class NumberInput(Widget):
 
     def rehint(self):
         # Height of a text input is known and fixed.
-        stepper_size = self.input.fittingSize()
-        input_size = self.input.fittingSize()
+        stepper_size = self.input.intrinsicContentSize()
+        input_size = self.input.intrinsicContentSize()
 
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
         self.interface.intrinsic.height = max(input_size.height, stepper_size.height)

@@ -82,7 +82,7 @@ class Key(Enum):
     BACKSPACE = '<backspace>'
     ENTER = '<enter>'
 
-    CAPSLOCK = '<caps> lock'
+    CAPSLOCK = '<caps lock>'
     SHIFT = '<shift>'
     CONTROL = '<control>'
     OPTION = '<option>'
