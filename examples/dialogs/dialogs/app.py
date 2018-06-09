@@ -21,31 +21,35 @@ class ExampledialogsApp(toga.App):
             self.main_window.info_dialog('Shucks...', "Well aren't you a spoilsport... :-(")
 
     def action_open_file_dialog(self, widget):
-        fname = self.main_window.open_file_dialog(
-            title="Open file with Toga",
-        )
         try:
+            fname = self.main_window.open_file_dialog(
+                title="Open file with Toga",
+            )
             self.label.text = "File to open:" + fname
         except ValueError:
             self.label.text = "Open file dialog was canceled"
 
     def action_select_folder_dialog(self, widget):
-        path_name = self.main_window.select_folder_dialog(
-            title="Select folder with Toga",
-        )
         try:
+            path_name = self.main_window.select_folder_dialog(
+                title="Select folder with Toga",
+            )
             self.label.text = "Folder selected:" + path_name
         except ValueError:
             self.label.text = "Folder select dialog was canceled"
 
     def action_save_file_dialog(self, widget):
         fname = 'Toga_file.txt'
-        save_path = self.main_window.save_file_dialog(
-            "Save file with Toga",
-            suggested_filename=fname)
-        if save_path is not None:
-            self.label.text = "File saved with Toga:" + fname
-        else:
+        try:
+            save_path = self.main_window.save_file_dialog(
+                "Save file with Toga",
+                suggested_filename=fname)
+            print('save_path', save_path)
+            if save_path is not None:
+                self.label.text = "File saved with Toga:" + save_path
+            else:
+                self.label.text = "Save file dialog was canceled"
+        except ValueError:
             self.label.text = "Save file dialog was canceled"
 
     def startup(self):
