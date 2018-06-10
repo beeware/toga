@@ -465,7 +465,8 @@ class Fill(CanvasContextMixin):
 
     def __init__(self, color=BLACK, fill_rule="nonzero", preserve=False):
         super().__init__()
-        self._color = parse_color(color)
+        self._color = None
+        self.color = color
         self.fill_rule = fill_rule
         self.preserve = preserve
         self.drawing_objects = []
@@ -490,7 +491,9 @@ class Fill(CanvasContextMixin):
 
     @color.setter
     def color(self, value):
-        if value is not None:
+        if value is None:
+            self._color = None
+        else:
             self._color = parse_color(value)
 
 
@@ -509,7 +512,8 @@ class Stroke(CanvasContextMixin):
 
     def __init__(self, color=BLACK, line_width=2.0):
         super().__init__()
-        self._color = parse_color(color)
+        self._color = None
+        self.color = color
         self.line_width = line_width
         self.drawing_objects = []
 
@@ -532,9 +536,10 @@ class Stroke(CanvasContextMixin):
 
     @color.setter
     def color(self, value):
-        if value is not None:
+        if value is None:
+            self._color = None
+        else:
             self._color = parse_color(value)
-
 
 class ClosedPath(CanvasContextMixin):
     """A user-created :class:`ClosedPath <ClosedPath>` drawing object for a
