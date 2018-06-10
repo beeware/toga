@@ -27,14 +27,15 @@ class CanvasContextMixin:
         """
         return self._canvas if self._canvas else self
 
-    def add_canvas_to_child(self, child):
-        """Add the canvas of the current context node to a child context.
+    @canvas.setter
+    def canvas(self, value):
+        """Set the canvas of the context.
 
         Args:
-            child: The child context.
+            value: The canvas to set.
 
         """
-        child._canvas = self.canvas
+        self._canvas = value
 
     def add_drawing_object(self, drawing_object):
         """A drawing object to add to the drawing object stack on a context
@@ -93,7 +94,7 @@ class CanvasContextMixin:
         """
         context = Context()
         self.add_drawing_object(context)
-        self.add_canvas_to_child(context)
+        context.canvas = self.canvas
         yield context
         self.redraw()
 
@@ -119,7 +120,7 @@ class CanvasContextMixin:
             fill = Fill(color, fill_rule, preserve)
         else:
             fill = Fill(color, "nonzero", preserve)
-        self.add_canvas_to_child(fill)
+        fill.canvas = self.canvas
         yield self.add_drawing_object(fill)
         self.redraw()
 
@@ -137,7 +138,7 @@ class CanvasContextMixin:
 
         """
         stroke = Stroke(color, line_width)
-        self.add_canvas_to_child(stroke)
+        stroke.canvas = self.canvas
         yield self.add_drawing_object(stroke)
         self.redraw()
 
@@ -155,7 +156,7 @@ class CanvasContextMixin:
 
         """
         closed_path = ClosedPath(x, y)
-        self.add_canvas_to_child(closed_path)
+        closed_path.canvas = self.canvas
         yield self.add_drawing_object(closed_path)
         self.redraw()
 
