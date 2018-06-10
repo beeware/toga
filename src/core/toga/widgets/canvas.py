@@ -7,11 +7,34 @@ from ..color import color as parse_color
 from ..font import Font, SYSTEM
 
 
-class CanvasContextMixin:
+class Context:
+    """The user-created :class:`Context <Context>` drawing object to populate a
+    drawing with visual context.
+
+    The top left corner of the canvas must be painted at the origin of the
+    context and is sized using the rehint() method.
+
+    """
+
     def __init__(self, *args, **kwargs):  # kwargs used to support multiple inheritance
         super().__init__(*args, **kwargs)
-
         self._canvas = None
+        self.drawing_objects = []
+
+    def __repr__(self):
+        return "{}()".format(self.__class__.__name__)
+
+    def draw(self, impl, *args, **kwargs):
+        """Draw all drawing objects that are on the context or canvas.
+
+
+        This method is used by the implementation to tell the interface canvas
+        to draw all objects on it, and used by a context to draw all the
+        objects that are on the context.
+
+        """
+        for obj in self.drawing_objects:
+            obj.draw(impl, *args, **kwargs)
 
     ###########################################################################
     # Methods to keep track of the canvas, automatically redraw it
@@ -338,7 +361,129 @@ class CanvasContextMixin:
         return self.add_drawing_object(write_text)
 
 
-class Canvas(CanvasContextMixin, Widget):
+class Fill(Context):
+    """A user-created :class:`Fill <Fill>` drawing object for a fill context.
+
+    A drawing object that fills the current path according to the current
+    fill rule, (each sub-path is implicitly closed before being filled).
+
+    Args:
+        color (str, optional): Color value in any valid color format,
+            default to black.
+        fill_rule (str, optional): 'nonzero' if the non-zero winding rule and
+                                   'evenodd' if the even-odd winding rule.
+        preserve (bool, optional): Preserves the path within the Context.
+
+    """
+
+    def __init__(self, color=BLACK, fill_rule="nonzero", preserve=False):
+        super().__init__()
+        self._color = None
+        self.color = color
+        self.fill_rule = fill_rule
+        self.preserve = preserve
+
+    def __repr__(self):
+        return "{}(color={}, fill_rule={}, preserve={})".format(
+            self.__class__.__name__, self.color, self.fill_rule, self.preserve
+        )
+
+    def draw(self, impl, *args, **kwargs):
+        """Used by parent to draw all objects that are part of the context.
+
+        """
+        impl.new_path(*args, **kwargs)
+        for obj in self.drawing_objects:
+            obj.draw(impl, *args, **kwargs)
+        impl.fill(self.color, self.fill_rule, self.preserve, *args, **kwargs)
+
+    @property
+    def color(self):
+        return self._color
+
+    @color.setter
+    def color(self, value):
+        if value is None:
+            self._color = None
+        else:
+            self._color = parse_color(value)
+
+
+class Stroke(Context):
+    """A user-created :class:`Stroke <Stroke>` drawing object for a stroke context.
+
+    A drawing operator that strokes the current path according to the
+    current line style settings.
+
+    Args:
+        color (str, optional): Color value in any valid color format,
+            default to black.
+        line_width (float, optional): Stroke line width, default is 2.0.
+
+    """
+
+    def __init__(self, color=BLACK, line_width=2.0):
+        super().__init__()
+        self._color = None
+        self.color = color
+        self.line_width = line_width
+
+    def __repr__(self):
+        return "{}(color={}, line_width={})".format(
+            self.__class__.__name__, self.color, self.line_width
+        )
+
+    def draw(self, impl, *args, **kwargs):
+        """Used by parent to draw all objects that are part of the context.
+
+        """
+        for obj in self.drawing_objects:
+            obj.draw(impl, *args, **kwargs)
+        impl.stroke(self.color, self.line_width, *args, **kwargs)
+
+    @property
+    def color(self):
+        return self._color
+
+    @color.setter
+    def color(self, value):
+        if value is None:
+            self._color = None
+        else:
+            self._color = parse_color(value)
+
+
+class ClosedPath(Context):
+    """A user-created :class:`ClosedPath <ClosedPath>` drawing object for a
+    closed path context.
+
+    Creates a new path and then closes it.
+
+    Args:
+        x (float): The x axis of the beginning point.
+        y (float): The y axis of the beginning point.
+
+    """
+
+    def __init__(self, x, y):
+        super().__init__()
+        self.x = x
+        self.y = y
+
+    def __repr__(self):
+        return "{}(x={}, y={})".format(self.__class__.__name__, self.x, self.y)
+
+    def draw(self, impl, *args, **kwargs):
+        """Used by parent to draw all objects that are part of the context.
+
+        """
+        impl.move_to(self.x, self.y, *args, **kwargs)
+        for obj in self.drawing_objects:
+            obj.draw(impl, *args, **kwargs)
+        impl.closed_path(self.x, self.y, *args, **kwargs)
+
+
+class Canvas(Context, Widget):
     """Create new canvas.
 
     Args:
@@ -356,18 +501,6 @@ class Canvas(CanvasContextMixin, Widget):
 
         # Create a platform specific implementation of Canvas
         self._impl = self.factory.Canvas(interface=self)
-
-        self.drawing_objects = []
-
-    def draw(self, impl, *args, **kwargs):
-        """Draw all drawing objects that are on the canvas.
-
-        This method is used by the implementation to tell the interface canvas
-        to draw all objects on it.
-
-        """
-        for obj in self.drawing_objects:
-            obj.draw(impl, *args, **kwargs)
 
     ###########################################################################
     # Transformations of a canvas
@@ -423,154 +556,6 @@ class Canvas(CanvasContextMixin, Widget):
         """
         reset_transform = ResetTransform()
         return self.add_drawing_object(reset_transform)
-
-
-class Context(CanvasContextMixin):
-    """The user-created :class:`Context <Context>` drawing object to populate a
-    drawing with visual context.
-
-    The top left corner of the canvas must be painted at the origin of the
-    context and is sized using the rehint() method.
-
-    """
-
-    def __init__(self):
-        super().__init__()
-        self.drawing_objects = []
-
-    def __repr__(self):
-        return "{}()".format(self.__class__.__name__)
-
-    def draw(self, impl, *args, **kwargs):
-        """Used by parent to draw all objects that are part of the context.
-
-        """
-        for obj in self.drawing_objects:
-            obj.draw(impl, *args, **kwargs)
-
-
-class Fill(CanvasContextMixin):
-    """A user-created :class:`Fill <Fill>` drawing object for a fill context.
-
-    A drawing object that fills the current path according to the current
-    fill rule, (each sub-path is implicitly closed before being filled).
-
-    Args:
-        color (str, optional): Color value in any valid color format,
-            default to black.
-        fill_rule (str, optional): 'nonzero' if the non-zero winding rule and
-                                   'evenodd' if the even-odd winding rule.
-        preserve (bool, optional): Preserves the path within the Context.
-
-    """
-
-    def __init__(self, color=BLACK, fill_rule="nonzero", preserve=False):
-        super().__init__()
-        self._color = None
-        self.color = color
-        self.fill_rule = fill_rule
-        self.preserve = preserve
-        self.drawing_objects = []
-
-    def __repr__(self):
-        return "{}(color={}, fill_rule={}, preserve={})".format(
-            self.__class__.__name__, self.color, self.fill_rule, self.preserve
-        )
-
-    def draw(self, impl, *args, **kwargs):
-        """Used by parent to draw all objects that are part of the context.
-
-        """
-        impl.new_path(*args, **kwargs)
-        for obj in self.drawing_objects:
-            obj.draw(impl, *args, **kwargs)
-        impl.fill(self.color, self.fill_rule, self.preserve, *args, **kwargs)
-
-    @property
-    def color(self):
-        return self._color
-
-    @color.setter
-    def color(self, value):
-        if value is None:
-            self._color = None
-        else:
-            self._color = parse_color(value)
-
-
-class Stroke(CanvasContextMixin):
-    """A user-created :class:`Stroke <Stroke>` drawing object for a stroke context.
-
-    A drawing operator that strokes the current path according to the
-    current line style settings.
-
-    Args:
-        color (str, optional): Color value in any valid color format,
-            default to black.
-        line_width (float, optional): Stroke line width, default is 2.0.
-
-    """
-
-    def __init__(self, color=BLACK, line_width=2.0):
-        super().__init__()
-        self._color = None
-        self.color = color
-        self.line_width = line_width
-        self.drawing_objects = []
-
-    def __repr__(self):
-        return "{}(color={}, line_width={})".format(
-            self.__class__.__name__, self.color, self.line_width
-        )
-
-    def draw(self, impl, *args, **kwargs):
-        """Used by parent to draw all objects that are part of the context.
-
-        """
-        for obj in self.drawing_objects:
-            obj.draw(impl, *args, **kwargs)
-        impl.stroke(self.color, self.line_width, *args, **kwargs)
-
-    @property
-    def color(self):
-        return self._color
-
-    @color.setter
-    def color(self, value):
-        if value is None:
-            self._color = None
-        else:
-            self._color = parse_color(value)
-
-class ClosedPath(CanvasContextMixin):
-    """A user-created :class:`ClosedPath <ClosedPath>` drawing object for a
-    closed path context.
-
-    Creates a new path and then closes it.
-
-    Args:
-        x (float): The x axis of the beginning point.
-        y (float): The y axis of the beginning point.
-
-    """
-
-    def __init__(self, x, y):
-        super().__init__()
-        self.x = x
-        self.y = y
-        self.drawing_objects = []
-
-    def __repr__(self):
-        return "{}(x={}, y={})".format(self.__class__.__name__, self.x, self.y)
-
-    def draw(self, impl, *args, **kwargs):
-        """Used by parent to draw all objects that are part of the context.
-
-        """
-        impl.move_to(self.x, self.y, *args, **kwargs)
-        for obj in self.drawing_objects:
-            obj.draw(impl, *args, **kwargs)
-        impl.closed_path(self.x, self.y, *args, **kwargs)
 
 
 class MoveTo:
