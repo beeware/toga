@@ -20,7 +20,7 @@ removed.
 1. We first define the drawing operations we want to perform in a new function::
 
     def draw_eyes(self):
-        with self.canvas.fill(color='rgba(255, 255, 255, 1)') as eye_whites:
+        with self.canvas.fill(color=WHITE) as eye_whites:
             eye_whites.arc(58, 92, 15)
             eye_whites.arc(88, 92, 15, math.pi, 3 * math.pi)
 
