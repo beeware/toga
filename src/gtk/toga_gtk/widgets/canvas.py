@@ -28,19 +28,18 @@ class Canvas(Widget):
 
         self.native = Gtk.DrawingArea()
         self.native.interface = self.interface
+        self.native.connect("draw", self.gtk_draw_callback)
 
-        def gtk_draw_callback(canvas, gtk_context):
-            """Creates a draw callback
+    def gtk_draw_callback(self, canvas, gtk_context):
+        """Creates a draw callback
 
-            Gtk+ uses a drawing callback to draw on a DrawingArea. Assignment of the
-            callback function creates a Gtk+ canvas and Gtk+ context automatically
-            using the canvas and gtk_context function arguments. This method calls
-            the Canvas on the interface to draw the objects.
+        Gtk+ uses a drawing callback to draw on a DrawingArea. Assignment of the
+        callback function creates a Gtk+ canvas and Gtk+ context automatically
+        using the canvas and gtk_context function arguments. This method calls
+        the draw method on the interface Canvas to draw the objects.
 
-            """
-            self.interface.draw(self, draw_context=gtk_context)
-
-        self.native.connect("draw", gtk_draw_callback)
+        """
+        self.interface.draw(self, draw_context=gtk_context)
 
     def redraw(self):
         pass
