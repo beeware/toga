@@ -358,12 +358,15 @@ class Canvas(CanvasContextMixin, Widget):
 
         self.drawing_objects = []
 
-    def __call__(self, impl, *args, **kwargs):
-        """Allow implementation to call the Class instance to draw objects recursively.
+    def draw(self, impl, *args, **kwargs):
+        """Draw all drawing objects that are on the canvas.
+
+        This method is used by the implementation to tell the interface canvas
+        to draw all objects on it.
 
         """
         for obj in self.drawing_objects:
-            obj(impl, *args, **kwargs)
+            obj.draw(impl, *args, **kwargs)
 
     ###########################################################################
     # Transformations of a canvas
@@ -437,12 +440,12 @@ class Context(CanvasContextMixin):
     def __repr__(self):
         return "{}()".format(self.__class__.__name__)
 
-    def __call__(self, impl, *args, **kwargs):
-        """Allow parent to call the Class instance so that it can be drawn.
+    def draw(self, impl, *args, **kwargs):
+        """Used by parent to draw all objects that are part of the context.
 
         """
         for obj in self.drawing_objects:
-            obj(impl, *args, **kwargs)
+            obj.draw(impl, *args, **kwargs)
 
 
 class Fill(CanvasContextMixin):
@@ -472,13 +475,13 @@ class Fill(CanvasContextMixin):
             self.__class__.__name__, self.color, self.fill_rule, self.preserve
         )
 
-    def __call__(self, impl, *args, **kwargs):
-        """Allow parent to call the Class instance so that it can be drawn.
+    def draw(self, impl, *args, **kwargs):
+        """Used by parent to draw all objects that are part of the context.
 
         """
         impl.new_path(*args, **kwargs)
         for obj in self.drawing_objects:
-            obj(impl, *args, **kwargs)
+            obj.draw(impl, *args, **kwargs)
         impl.fill(self.color, self.fill_rule, self.preserve, *args, **kwargs)
 
     @property
@@ -515,12 +518,12 @@ class Stroke(CanvasContextMixin):
             self.__class__.__name__, self.color, self.line_width
         )
 
-    def __call__(self, impl, *args, **kwargs):
-        """Allow parent to call the Class instance so that it can be drawn.
+    def draw(self, impl, *args, **kwargs):
+        """Used by parent to draw all objects that are part of the context.
 
         """
         for obj in self.drawing_objects:
-            obj(impl, *args, **kwargs)
+            obj.draw(impl, *args, **kwargs)
         impl.stroke(self.color, self.line_width, *args, **kwargs)
 
     @property
@@ -554,13 +557,13 @@ class ClosedPath(CanvasContextMixin):
     def __repr__(self):
         return "{}(x={}, y={})".format(self.__class__.__name__, self.x, self.y)
 
-    def __call__(self, impl, *args, **kwargs):
-        """Allow parent to call the Class instance so that it can be drawn.
+    def draw(self, impl, *args, **kwargs):
+        """Used by parent to draw all objects that are part of the context.
 
         """
         impl.move_to(self.x, self.y, *args, **kwargs)
         for obj in self.drawing_objects:
-            obj(impl, *args, **kwargs)
+            obj.draw(impl, *args, **kwargs)
         impl.closed_path(self.x, self.y, *args, **kwargs)
 
 
@@ -584,8 +587,8 @@ class MoveTo:
     def __repr__(self):
         return "{}(x={}, y={})".format(self.__class__.__name__, self.x, self.y)
 
-    def __call__(self, impl, *args, **kwargs):
-        """Allow the implementation to callback the Class instance.
+    def draw(self, impl, *args, **kwargs):
+        """Draw the drawing object using the implementation.
 
         """
         impl.move_to(self.x, self.y, *args, **kwargs)
@@ -611,8 +614,8 @@ class LineTo:
     def __repr__(self):
         return "{}(x={}, y={})".format(self.__class__.__name__, self.x, self.y)
 
-    def __call__(self, impl, *args, **kwargs):
-        """Allow the implementation to callback the Class instance.
+    def draw(self, impl, *args, **kwargs):
+        """Draw the drawing object using the implementation.
 
         """
         impl.line_to(self.x, self.y, *args, **kwargs)
@@ -656,8 +659,8 @@ class BezierCurveTo:
             self.y,
         )
 
-    def __call__(self, impl, *args, **kwargs):
-        """Allow the implementation to callback the Class instance.
+    def draw(self, impl, *args, **kwargs):
+        """Draw the drawing object using the implementation.
 
         """
         impl.bezier_curve_to(
@@ -693,8 +696,8 @@ class QuadraticCurveTo:
             self.__class__.__name__, self.cpx, self.cpy, self.x, self.y
         )
 
-    def __call__(self, impl, *args, **kwargs):
-        """Allow the implementation to callback the Class instance.
+    def draw(self, impl, *args, **kwargs):
+        """Draw the drawing object using the implementation.
 
         """
         impl.quadratic_curve_to(self.cpx, self.cpy, self.x, self.y, *args, **kwargs)
@@ -755,8 +758,8 @@ class Ellipse:
             self.anticlockwise,
         )
 
-    def __call__(self, impl, *args, **kwargs):
-        """Allow the implementation to callback the Class instance.
+    def draw(self, impl, *args, **kwargs):
+        """Draw the drawing object using the implementation.
 
         """
         impl.ellipse(
@@ -816,8 +819,8 @@ class Arc:
             self.anticlockwise,
         )
 
-    def __call__(self, impl, *args, **kwargs):
-        """Allow the implementation to callback the Class instance.
+    def draw(self, impl, *args, **kwargs):
+        """Draw the drawing object using the implementation.
 
         """
         impl.arc(
@@ -859,8 +862,8 @@ class Rect:
             self.__class__.__name__, self.x, self.y, self.width, self.height
         )
 
-    def __call__(self, impl, *args, **kwargs):
-        """Allow the implementation to callback the Class instance.
+    def draw(self, impl, *args, **kwargs):
+        """Draw the drawing object using the implementation.
 
         """
         impl.rect(self.x, self.y, self.width, self.height, *args, **kwargs)
@@ -885,8 +888,8 @@ class Rotate:
     def __repr__(self):
         return "{}(radians={})".format(self.__class__.__name__, self.radians)
 
-    def __call__(self, impl, *args, **kwargs):
-        """Allow the implementation to callback the Class instance.
+    def draw(self, impl, *args, **kwargs):
+        """Draw the drawing object using the implementation.
 
         """
         impl.rotate(self.radians, *args, **kwargs)
@@ -910,8 +913,8 @@ class Scale:
     def __repr__(self):
         return "{}(sx={}, sy={})".format(self.__class__.__name__, self.sx, self.sy)
 
-    def __call__(self, impl, *args, **kwargs):
-        """Allow the implementation to callback the Class instance.
+    def draw(self, impl, *args, **kwargs):
+        """Draw the drawing object using the implementation.
 
         """
         impl.scale(self.sx, self.sy, *args, **kwargs)
@@ -935,8 +938,8 @@ class Translate:
     def __repr__(self):
         return "{}(tx={}, ty={})".format(self.__class__.__name__, self.tx, self.ty)
 
-    def __call__(self, impl, *args, **kwargs):
-        """Allow the implementation to callback the Class instance.
+    def draw(self, impl, *args, **kwargs):
+        """Draw the drawing object using the implementation.
 
         """
         impl.translate(self.tx, self.ty, *args, **kwargs)
@@ -954,8 +957,8 @@ class ResetTransform:
     def __repr__(self):
         return "{}()".format(self.__class__.__name__)
 
-    def __call__(self, impl, *args, **kwargs):
-        """Allow the implementation to callback the Class instance.
+    def draw(self, impl, *args, **kwargs):
+        """Draw the drawing object using the implementation.
 
         """
         impl.reset_transform(*args, **kwargs)
@@ -987,8 +990,8 @@ class WriteText:
             self.__class__.__name__, self.text, self.x, self.y, self.font
         )
 
-    def __call__(self, impl, *args, **kwargs):
-        """Allow the implementation to callback the Class instance.
+    def draw(self, impl, *args, **kwargs):
+        """Draw the drawing object using the implementation.
 
         """
         impl.write_text(self.text, self.x, self.y, self.font, *args, **kwargs)
@@ -1002,8 +1005,8 @@ class NewPath:
     def __repr__(self):
         return "{}()".format(self.__class__.__name__)
 
-    def __call__(self, impl, *args, **kwargs):
-        """Allow the implementation to callback the Class instance.
+    def draw(self, impl, *args, **kwargs):
+        """Draw the drawing object using the implementation.
 
         """
         impl.new_path(*args, **kwargs)

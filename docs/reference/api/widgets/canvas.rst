@@ -73,8 +73,8 @@ Main Interface
    :members:
    :undoc-members:
    :inherited-members:
-   :exclude-members: canvas, propogate_canvas, add_child, redraw,
-     add_drawing_object
+   :exclude-members: canvas, redraw, add_drawing_object, draw,
+      add_canvas_to_child
 
 Lower-Level Classes
 ^^^^^^^^^^^^^^^^^^^

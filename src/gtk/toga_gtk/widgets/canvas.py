@@ -38,7 +38,7 @@ class Canvas(Widget):
             the Canvas on the interface to draw the objects.
 
             """
-            self.interface(self, draw_context=gtk_context)
+            self.interface.draw(self, draw_context=gtk_context)
 
         self.native.connect("draw", gtk_draw_callback)
 
