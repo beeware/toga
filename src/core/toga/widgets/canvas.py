@@ -378,7 +378,6 @@ class Fill(Context):
 
     def __init__(self, color=BLACK, fill_rule="nonzero", preserve=False):
         super().__init__()
-        self._color = None
         self.color = color
         self.fill_rule = fill_rule
         self.preserve = preserve
