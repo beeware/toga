@@ -44,7 +44,6 @@ class ExampledialogsApp(toga.App):
             save_path = self.main_window.save_file_dialog(
                 "Save file with Toga",
                 suggested_filename=fname)
-            print('save_path', save_path)
             if save_path is not None:
                 self.label.text = "File saved with Toga:" + save_path
             else:
