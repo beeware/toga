@@ -311,61 +311,6 @@ class CanvasContextMixin:
         return self.add_drawing_object(rect)
 
     ###########################################################################
-    # Transformations of a canvas
-    ###########################################################################
-
-    def rotate(self, radians):
-        """Constructs and returns a :class:`Rotate <Rotate>`.
-
-        Args:
-            radians (float): The angle to rotate clockwise in radians.
-
-        Returns:
-            :class:`Rotate <Rotate>` object.
-
-        """
-        rotate = Rotate(radians)
-        return self.add_drawing_object(rotate)
-
-    def scale(self, sx, sy):
-        """Constructs and returns a :class:`Scale <Scale>`.
-
-        Args:
-            sx (float): scale factor for the X dimension.
-            sy (float): scale factor for the Y dimension.
-
-        Returns:
-            :class:`Scale <Scale>` object.
-
-        """
-        scale = Scale(sx, sy)
-        return self.add_drawing_object(scale)
-
-    def translate(self, tx, ty):
-        """Constructs and returns a :class:`Translate <Translate>`.
-
-        Args:
-            tx (float): X value of coordinate.
-            ty (float): Y value of coordinate.
-
-        Returns:
-            :class:`Translate <Translate>` object.
-
-        """
-        translate = Translate(tx, ty)
-        return self.add_drawing_object(translate)
-
-    def reset_transform(self):
-        """Constructs and returns a :class:`ResetTransform <ResetTransform>`.
-
-        Returns:
-            :class:`ResetTransform <ResetTransform>` object.
-
-        """
-        reset_transform = ResetTransform()
-        return self.add_drawing_object(reset_transform)
-
-    ###########################################################################
     # Text drawing
     ###########################################################################
 
@@ -419,6 +364,61 @@ class Canvas(CanvasContextMixin, Widget):
         """
         for obj in self.drawing_objects:
             obj(impl, *args, **kwargs)
+
+    ###########################################################################
+    # Transformations of a canvas
+    ###########################################################################
+
+    def rotate(self, radians):
+        """Constructs and returns a :class:`Rotate <Rotate>`.
+
+        Args:
+            radians (float): The angle to rotate clockwise in radians.
+
+        Returns:
+            :class:`Rotate <Rotate>` object.
+
+        """
+        rotate = Rotate(radians)
+        return self.add_drawing_object(rotate)
+
+    def scale(self, sx, sy):
+        """Constructs and returns a :class:`Scale <Scale>`.
+
+        Args:
+            sx (float): scale factor for the X dimension.
+            sy (float): scale factor for the Y dimension.
+
+        Returns:
+            :class:`Scale <Scale>` object.
+
+        """
+        scale = Scale(sx, sy)
+        return self.add_drawing_object(scale)
+
+    def translate(self, tx, ty):
+        """Constructs and returns a :class:`Translate <Translate>`.
+
+        Args:
+            tx (float): X value of coordinate.
+            ty (float): Y value of coordinate.
+
+        Returns:
+            :class:`Translate <Translate>` object.
+
+        """
+        translate = Translate(tx, ty)
+        return self.add_drawing_object(translate)
+
+    def reset_transform(self):
+        """Constructs and returns a :class:`ResetTransform <ResetTransform>`.
+
+        Returns:
+            :class:`ResetTransform <ResetTransform>` object.
+
+        """
+        reset_transform = ResetTransform()
+        return self.add_drawing_object(reset_transform)
 
 
 class Context(CanvasContextMixin):
