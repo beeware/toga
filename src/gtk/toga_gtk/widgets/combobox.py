@@ -9,10 +9,9 @@ class ComboBox(Widget):
     def create(self):
         self.native = Gtk.ComboBoxText.new_with_entry()
         self.native.interface = self.interface
-        self.native.connect('changed', self._on_change)
-        self.native.connect('show', lambda event: self.rehint())
+        self.native.connect('changed', self.gtk_on_change)
 
-    def _on_change(self, widget):
+    def gtk_on_change(self, widget):
         if self.interface.on_change:
             self.interface.on_change(self.interface)
 
