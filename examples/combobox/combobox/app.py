@@ -27,7 +27,7 @@ class ComboBoxApp(toga.App):
                         toga.ComboBox(
                             initial='toga',
                             placeholder='shoutout',
-                            items=['batavia', 'voc', 'beekeeper'],
+                            data=['batavia', 'voc', 'beekeeper'],
                         ),
                     ],
                 ),
@@ -41,7 +41,7 @@ class ComboBoxApp(toga.App):
                         toga.ComboBox(
                             on_change=self.my_on_change,
                             placeholder='!!!',
-                            items=["Dubnium", "Holmium", "Zirconium"],
+                            data=["Dubnium", "Holmium", "Zirconium"],
                         ),
                     ],
                 ),
@@ -49,12 +49,12 @@ class ComboBoxApp(toga.App):
                     style=box_style,
                     children=[
                         toga.Label(
-                            "Long lists of items should scroll",
+                            "Long lists of data should scroll",
                             style=label_style,
                         ),
                         toga.ComboBox(
                             placeholder='dir(toga)',
-                            items=dir(toga)
+                            data=dir(toga)
                         ),
                     ],
                 ),
@@ -67,7 +67,7 @@ class ComboBoxApp(toga.App):
                         ),
                         toga.ComboBox(
                             style=Pack(width=200, padding=24),
-                            items=["Curium", "Titanium", "Copernicium"],
+                            data=["Curium", "Titanium", "Copernicium"],
                         ),
                     ],
                 ),
