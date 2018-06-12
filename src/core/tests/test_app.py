@@ -74,3 +74,9 @@ class AppTests(TestCase):
         self.app.exit()
 
         self.assertActionPerformed(self.app, 'exit')
+
+    def test_add_window(self):
+        window = MagicMock()
+        self.app.windows.add(window)
+        self.assertIn(window, self.app.windows)
+        self.assertEqual(window.app, self.app)

@@ -10,7 +10,7 @@ class ExampleExtraWindowsApp(toga.App):
         self.window_count += 1
         w = ExtraWindow()
         w.startup(window_name, self)
-        self.add_window(window_name, w)
+        self.windows.add(w)
         w.show()
         self.update()
 
@@ -20,24 +20,22 @@ class ExampleExtraWindowsApp(toga.App):
         if selection is None:
             return
         window_name = selection.open_windows
-        w = self.window(window_name)
-        w.close()
+        for w in list(self.windows):
+            if w.name != window_name:
+                continue
+            w.close()
 
     def update(self):
         '''Update what is displayed in the tables, and enable/disable some
         buttons as appropriate'''
         self.table_open_windows.data.clear()
 
-        for window_id in self.windows:
-            if window_id == 'main':
-                continue
+        for window in self.windows:
 
-            self.table_open_windows.data.append(window_id)
+            self.table_open_windows.data.append(window.name)
 
         # enable/disable the top box buttons, for open windows
-        if len(self.windows) == 1:
-            # If just one window, the main window, there are no child
-            # windows.
+        if len(self.windows) == 0:
             self.btn_close.enabled = False
         else:
             self.btn_close.enabled = True

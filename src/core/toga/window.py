@@ -189,8 +189,8 @@ class Window:
     def on_close(self):
         # If we registered this window with the app, make sure we remove
         # that registration.
-        if self.app and self._app_id:
-            self.app.del_window(self._app_id)
+        if self.app:
+            self.app.windows.discard(self)
         self._impl.on_close()
 
     ############################################################

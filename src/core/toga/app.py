@@ -16,6 +16,14 @@ class MainWindow(Window):
     def __init__(self, id=None, title=None, position=(100, 100), size=(640, 480), factory=None):
         super().__init__(id=id, title=title, position=position, size=size, factory=factory)
 
+class WindowsRegistry(set):
+
+    def __init__(self, app):
+        self.app = app
+
+    def add(self, window):
+        super().add(window)
+        window.app = self.app
 
 class App:
     """ The App is the top level of any GUI program. It is the manager of all
@@ -72,6 +80,7 @@ class App:
         self.default_icon = Icon('tiberius', system=True)
         self.icon = icon
         self._main_window = None
+        self.windows = WindowsRegistry(self)
         self._on_exit = None
 
         self._impl = self.factory.App(interface=self)
