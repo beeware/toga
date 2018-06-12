@@ -1,4 +1,5 @@
 from toga.handlers import wrapped_handler
+from toga.sources import ListSource
 
 from .base import Widget
 
@@ -13,14 +14,14 @@ class ComboBox(Widget):
         factory (:obj:`module`): A python module that is capable to return a
             implementation of this class with the same name. (optional & normally not needed)
         initial (str): The initial text for the combobox.
-        items (list[str]): The dropdown list of items
+        data (list[str]): The dropdown list of data
         placeholder (str): If no input is present this text is shown.
         on_change (callable[[], None]): Handle input/selection change
     '''
     MIN_WIDTH = 100
 
     def __init__(
-            self, id=None, style=None, factory=None, items=None,
+            self, id=None, style=None, factory=None, data=None,
             initial=None, placeholder=None, on_change=None):
         super().__init__(id=id, style=style, factory=factory)
 
@@ -32,27 +33,30 @@ class ComboBox(Widget):
 
         # Use public setters
         self.placeholder = placeholder
-        self.items = items if items else []
+        self.data = data if data else []
         self.value = initial
         self.on_change = on_change
 
     @property
-    def items(self):
-        ''' The list of items.
+    def data(self):
+        ''' The data to display. It accepts data in the form of ``list``,
+        ``tuple``, or :obj:`ListSource`
 
         Returns:
-             The ``list`` of ``str`` of all selectable items.
+            Returns a (:obj:`ListSource`).
         '''
-        return self._items
+        return self._data
 
-    @items.setter
-    def items(self, items):
-        self._impl.remove_all_items()
-
-        for i in items:
-            self._impl.add_item(i)
-
-        self._items = items
+    @data.setter
+    def data(self, data):
+        if data is None:
+            self._data = ListSource(data=[], accessors=['field'])
+        if isinstance(data, (list, tuple)):
+            self._data = ListSource(data=data, accessors=['field'])
+        else:
+            self._data = data
+        self._data.add_listener(self._impl)
+        self._impl.change_source(source=self._data)
 
     @property
     def placeholder(self):

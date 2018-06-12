@@ -5,11 +5,8 @@ class ComboBox(Widget):
     def create(self):
         self._action('create ComboBox')
 
-    def remove_all_items(self):
-        self._action('remove all items')
-
-    def add_item(self, item):
-        self._action('add item', item=item)
+    def change_source(self, source):
+        self._set_value('source', source)
 
     def get_value(self):
         return self._get_value('value')

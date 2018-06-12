@@ -15,11 +15,10 @@ class ComboBox(Widget):
         if self.interface.on_change:
             self.interface.on_change(self.interface)
 
-    def remove_all_items(self):
+    def change_source(self, source):
         self.native.remove_all()
-
-    def add_item(self, item):
-        self.native.append_text(item)
+        for row in source:
+            self.native.append_text(row.field)
 
     def set_placeholder(self, value):
         entry = self.native.get_child()
