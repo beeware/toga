@@ -75,8 +75,34 @@ class AppTests(TestCase):
 
         self.assertActionPerformed(self.app, 'exit')
 
-    def test_add_window(self):
-        window = MagicMock()
-        self.app.windows.add(window)
-        self.assertIn(window, self.app.windows)
-        self.assertEqual(window.app, self.app)
+class TestWindowSet(TestCase):
+
+    def setUp(self):
+        super().setUp()
+        self.app = toga.App('test_name', 'id.app', factory=toga_dummy.factory)
+        self.window = MagicMock()
+
+    def test_add(self):
+        self.app.windows.add(self.window)
+        self.assertIn(self.window, self.app.windows)
+        self.assertEqual(self.window.app, self.app)
+        self.assertEqual(1, len(self.app.windows))
+
+    def test_discard(self):
+        self.app.windows.add(self.window)
+        self.app.windows.discard(self.window)
+        self.assertNotIn(self.window, self.app.windows)
+
+    def test_remove(self):
+        self.app.windows.add(self.window)
+        self.app.windows.remove(self.window)
+        self.assertNotIn(self.window, self.app.windows)
+
+        with self.assertRaises(KeyError):
+            self.app.windows.remove(self.window)
+
+    def test_iter(self):
+        self.app.windows.add(self.window)
+
+        for w in self.app.windows:
+            self.assertEqual(w, self.window)

@@ -16,14 +16,31 @@ class MainWindow(Window):
     def __init__(self, id=None, title=None, position=(100, 100), size=(640, 480), factory=None):
         super().__init__(id=id, title=title, position=position, size=size, factory=factory)
 
-class WindowsRegistry(set):
+class WindowSet:
+    '''The set of windows. Provides a set like API'''
 
     def __init__(self, app):
+        self._set = set()
         self.app = app
 
+    def __iter__(self):
+        return self._set.__iter__()
+
     def add(self, window):
-        super().add(window)
+        self._set.add(window)
         window.app = self.app
+
+    def remove(self, item):
+        return self._set.remove(item)
+
+    def discard(self, item):
+        self._set.discard(item)
+
+    def __contains__(self, item):
+        return self._set.__contains__(item)
+
+    def __len__(self):
+        return len(self._set)
 
 class App:
     """ The App is the top level of any GUI program. It is the manager of all
@@ -80,7 +97,7 @@ class App:
         self.default_icon = Icon('tiberius', system=True)
         self.icon = icon
         self._main_window = None
-        self.windows = WindowsRegistry(self)
+        self.windows = WindowSet(self)
         self._on_exit = None
 
         self._impl = self.factory.App(interface=self)
@@ -131,9 +148,6 @@ class App:
     def main_window(self, window):
         self._main_window = window
         window.app = self
-
-    def del_window(self, window_id):
-        del self._windows[window_id]
 
     @property
     def documents(self):

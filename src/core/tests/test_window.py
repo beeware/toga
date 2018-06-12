@@ -61,11 +61,20 @@ class TestWindow(TestCase):
             self.window._impl.set_full_screen.assert_called_once_with(True)
 
     def test_on_close(self):
+        app = toga.App('test_name', 'id.app', factory=toga_dummy.factory)
+        app.windows.add(self.window)
         with patch.object(self.window, '_impl'):
             self.window.on_close()
             self.window._impl.on_close.assert_called_once_with()
+            self.assertNotIn(self.window, app.windows)
 
     def test_close(self):
         with patch.object(self.window, '_impl'):
             self.window.close()
             self.window._impl.close.assert_called_once_with()
+
+    def test_windows_registry(self):
+        app = toga.App('test_name', 'id.app', factory=toga_dummy.factory)
+        app.windows.add(self.window)
+        self.assertIn(self.window, app.windows)
+
