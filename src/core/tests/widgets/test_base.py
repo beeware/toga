@@ -1,5 +1,3 @@
-import unittest
-
 import toga
 from toga.style import Pack
 import toga_dummy
@@ -24,7 +22,7 @@ class WidgetTests(TestCase):
     def test_create_widget_with_no_style(self):
         widget = toga.Widget(factory=toga_dummy.factory)
         self.assertTrue(isinstance(widget.style, Pack))
-    
+
     def test_enabled_with_None(self):
         # Using a Box for test because we need a concrete implementation to use this property.
         box = toga.Box(factory=toga_dummy.factory)
@@ -57,5 +55,3 @@ class WidgetTests(TestCase):
         self.widget._children = []
         self.widget.add(child1, child2)
         self.assertEqual(self.widget.children, [child1, child2])
-
-
