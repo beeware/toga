@@ -1,6 +1,7 @@
 import toga
 from toga.style import Pack
-from toga.constants import COLUMN, ROW
+from toga.constants import COLUMN
+
 
 class ExampleExtraWindowsApp(toga.App):
     # Button callback functions
@@ -16,14 +17,11 @@ class ExampleExtraWindowsApp(toga.App):
     def do_close(self, widget, **kwargs):
         '''Close a window, but only if a window is selected in the table.'''
         selection = self.table_open_windows.selection
-        if selection == None:
+        if selection is None:
             return
         window_name = selection.open_windows
         w = self.window(window_name)
         w.close()
-
-
-
 
     def update(self):
         '''Update what is displayed in the tables, and enable/disable some
@@ -43,7 +41,6 @@ class ExampleExtraWindowsApp(toga.App):
             self.btn_close.enabled = False
         else:
             self.btn_close.enabled = True
-
 
     def startup(self):
         # Set up main window
@@ -69,8 +66,6 @@ class ExampleExtraWindowsApp(toga.App):
         # Add the content on the main window
         self.main_window.content = box
 
-
-
         # Show the main window
         self.main_window.show()
 
@@ -79,22 +74,22 @@ class ExampleExtraWindowsApp(toga.App):
 
         self.update()
 
+
 class ExtraWindow(toga.Window):
     def startup(self, name, parent_app):
         self.parent = parent_app
         self.name = name
-        window_index = int(name.split()[1])
 
         box = toga.Box()
-        self.title=name
-        l = toga.Label(name)
-        box.add(l)
+        self.title = name
+        label = toga.Label(name)
+        box.add(label)
         self.content = box
-
 
     def on_close(self):
         super().on_close()
         self.parent.update()
+
 
 def main():
     return ExampleExtraWindowsApp('Extra Windows', 'org.pybee.widgets.extrawindows')
