@@ -12,10 +12,19 @@ from toga.command import GROUP_BREAK, SECTION_BREAK, Command
 import toga
 from .window import Window
 from toga import Icon
-from toga.handlers import wrapped_handler
 
 import gbulb
 
+def _wrapped_activate(action):
+    """Handles the case where data is a second positional argument in an
+    activate action; since wrapped_handler takes **kwargs, it does not accept
+    positional arguments"""
+    def activate(widget, data=None):
+        if data is not None:
+            return action(widget, data=data)
+        else:
+            return action(widget)
+    return activate
 
 class MainWindow(Window):
     _IMPL_CLASS = Gtk.ApplicationWindow
@@ -115,7 +124,7 @@ class App:
                         cmd_id = "command-%s" % id(cmd)
                         action = Gio.SimpleAction.new(cmd_id, None)
                         if cmd.action:
-                            action.connect("activate", wrapped_handler(cmd, cmd.action))
+                            action.connect("activate", _wrapped_activate(cmd.action))
                         cmd._widgets.append(action)
                         self._actions[cmd] = action
                         self.native.add_action(action)
