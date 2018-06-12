@@ -71,7 +71,7 @@ class App:
 
         self.default_icon = Icon('tiberius', system=True)
         self.icon = icon
-        self._windows = {'main': None}
+        self._main_window = None
         self._on_exit = None
 
         self._impl = self.factory.App(interface=self)
@@ -116,23 +116,11 @@ class App:
         Returns:
             The main Window of the app.
         """
-        return self._windows['main']
+        return self._main_window
 
     @main_window.setter
     def main_window(self, window):
-        self._windows['main'] = window
-        window.app = self
-
-    @property
-    def windows(self):
-        return self._windows
-
-    def window(self, window_id):
-        return self._windows[window_id]
-
-    def add_window(self, window_id, window):
-        self._windows[window_id] = window
-        window._app_id = window_id
+        self._main_window = window
         window.app = self
 
     def del_window(self, window_id):
