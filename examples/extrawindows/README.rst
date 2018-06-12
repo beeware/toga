@@ -1,7 +1,7 @@
 extrawindows example
 ===============
 
-An example for opening and closing extar windows.
+An example for opening and closing extra windows.
 
 Quickstart
 ~~~~~~~~~~
@@ -9,5 +9,5 @@ Quickstart
 To run this example:
 
     > pip install toga
-    > python -m slider
+    > python -m extrawindows
 
