@@ -73,11 +73,11 @@ Main Interface
    :members:
    :undoc-members:
    :inherited-members:
-   :exclude-members: canvas, redraw, add_drawing_object, draw
+   :exclude-members: canvas, add_draw_obj
 
 Lower-Level Classes
 ^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: toga.widgets.canvas
    :members:
-   :exclude-members: Canvas
+   :exclude-members: Canvas, add_draw_obj

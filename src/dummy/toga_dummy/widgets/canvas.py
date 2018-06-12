@@ -7,7 +7,7 @@ class Canvas(Widget):
 
     def redraw(self):
         self._action("redraw")
-        self.interface.draw(self)
+        self.interface._draw(self)
 
     # Basic paths
 

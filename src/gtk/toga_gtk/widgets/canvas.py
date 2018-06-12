@@ -39,7 +39,7 @@ class Canvas(Widget):
         the draw method on the interface Canvas to draw the objects.
 
         """
-        self.interface.draw(self, draw_context=gtk_context)
+        self.interface._draw(self, draw_context=gtk_context)
 
     def redraw(self):
         pass

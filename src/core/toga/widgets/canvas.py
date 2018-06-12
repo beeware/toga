@@ -24,7 +24,7 @@ class Context:
     def __repr__(self):
         return "{}()".format(self.__class__.__name__)
 
-    def draw(self, impl, *args, **kwargs):
+    def _draw(self, impl, *args, **kwargs):
         """Draw all drawing objects that are on the context or canvas.
 
 
@@ -34,7 +34,7 @@ class Context:
 
         """
         for obj in self.drawing_objects:
-            obj.draw(impl, *args, **kwargs)
+            obj._draw(impl, *args, **kwargs)
 
     ###########################################################################
     # Methods to keep track of the canvas, automatically redraw it
@@ -60,20 +60,20 @@ class Context:
         """
         self._canvas = value
 
-    def add_drawing_object(self, drawing_object):
+    def add_draw_obj(self, draw_obj):
         """A drawing object to add to the drawing object stack on a context
 
         Args:
-            drawing_object: (:obj:`Drawing Object`): The drawing object to add
+            draw_obj: (:obj:`Drawing Object`): The drawing object to add
 
         """
-        self.drawing_objects.append(drawing_object)
+        self.drawing_objects.append(draw_obj)
 
         # Only redraw if drawing to canvas directly
         if self.canvas is self:
             self.redraw()
 
-        return drawing_object
+        return draw_obj
 
     def redraw(self):
         """Force a redraw of the Canvas
@@ -116,7 +116,7 @@ class Context:
 
         """
         context = Context()
-        self.add_drawing_object(context)
+        self.add_draw_obj(context)
         context.canvas = self.canvas
         yield context
         self.redraw()
@@ -144,7 +144,7 @@ class Context:
         else:
             fill = Fill(color, "nonzero", preserve)
         fill.canvas = self.canvas
-        yield self.add_drawing_object(fill)
+        yield self.add_draw_obj(fill)
         self.redraw()
 
     @contextmanager
@@ -162,7 +162,7 @@ class Context:
         """
         stroke = Stroke(color, line_width)
         stroke.canvas = self.canvas
-        yield self.add_drawing_object(stroke)
+        yield self.add_draw_obj(stroke)
         self.redraw()
 
     @contextmanager
@@ -180,7 +180,7 @@ class Context:
         """
         closed_path = ClosedPath(x, y)
         closed_path.canvas = self.canvas
-        yield self.add_drawing_object(closed_path)
+        yield self.add_draw_obj(closed_path)
         self.redraw()
 
     ###########################################################################
@@ -195,7 +195,7 @@ class Context:
 
         """
         new_path = NewPath()
-        return self.add_drawing_object(new_path)
+        return self.add_draw_obj(new_path)
 
     def move_to(self, x, y):
         """Constructs and returns a :class:`MoveTo <MoveTo>`.
@@ -209,7 +209,7 @@ class Context:
 
         """
         move_to = MoveTo(x, y)
-        return self.add_drawing_object(move_to)
+        return self.add_draw_obj(move_to)
 
     def line_to(self, x, y):
         """Constructs and returns a :class:`LineTo <LineTo>`.
@@ -223,7 +223,7 @@ class Context:
 
         """
         line_to = LineTo(x, y)
-        return self.add_drawing_object(line_to)
+        return self.add_draw_obj(line_to)
 
     def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y):
         """Constructs and returns a :class:`BezierCurveTo <BezierCurveTo>`.
@@ -241,7 +241,7 @@ class Context:
 
         """
         bezier_curve_to = BezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y)
-        return self.add_drawing_object(bezier_curve_to)
+        return self.add_draw_obj(bezier_curve_to)
 
     def quadratic_curve_to(self, cpx, cpy, x, y):
         """Constructs and returns a :class:`QuadraticCurveTo <QuadraticCurveTo>`.
@@ -257,7 +257,7 @@ class Context:
 
         """
         quadratic_curve_to = QuadraticCurveTo(cpx, cpy, x, y)
-        return self.add_drawing_object(quadratic_curve_to)
+        return self.add_draw_obj(quadratic_curve_to)
 
     def arc(self, x, y, radius, startangle=0.0, endangle=2 * pi, anticlockwise=False):
         """Constructs and returns a :class:`Arc <Arc>`.
@@ -280,7 +280,7 @@ class Context:
 
         """
         arc = Arc(x, y, radius, startangle, endangle, anticlockwise)
-        return self.add_drawing_object(arc)
+        return self.add_draw_obj(arc)
 
     def ellipse(
         self,
@@ -315,7 +315,7 @@ class Context:
         ellipse = Ellipse(
             x, y, radiusx, radiusy, rotation, startangle, endangle, anticlockwise
         )
-        self.add_drawing_object(ellipse)
+        self.add_draw_obj(ellipse)
         return ellipse
 
     def rect(self, x, y, width, height):
@@ -332,7 +332,7 @@ class Context:
 
         """
         rect = Rect(x, y, width, height)
-        return self.add_drawing_object(rect)
+        return self.add_draw_obj(rect)
 
     ###########################################################################
     # Text drawing
@@ -358,7 +358,7 @@ class Context:
         if font is None:
             font = Font(family=SYSTEM, size=self._canvas.style.font_size)
         write_text = WriteText(text, x, y, font)
-        return self.add_drawing_object(write_text)
+        return self.add_draw_obj(write_text)
 
 
 class Fill(Context):
@@ -387,13 +387,13 @@ class Fill(Context):
             self.__class__.__name__, self.color, self.fill_rule, self.preserve
         )
 
-    def draw(self, impl, *args, **kwargs):
+    def _draw(self, impl, *args, **kwargs):
         """Used by parent to draw all objects that are part of the context.
 
         """
         impl.new_path(*args, **kwargs)
         for obj in self.drawing_objects:
-            obj.draw(impl, *args, **kwargs)
+            obj._draw(impl, *args, **kwargs)
         impl.fill(self.color, self.fill_rule, self.preserve, *args, **kwargs)
 
     @property
@@ -432,12 +432,12 @@ class Stroke(Context):
             self.__class__.__name__, self.color, self.line_width
         )
 
-    def draw(self, impl, *args, **kwargs):
+    def _draw(self, impl, *args, **kwargs):
         """Used by parent to draw all objects that are part of the context.
 
         """
         for obj in self.drawing_objects:
-            obj.draw(impl, *args, **kwargs)
+            obj._draw(impl, *args, **kwargs)
         impl.stroke(self.color, self.line_width, *args, **kwargs)
 
     @property
@@ -472,13 +472,13 @@ class ClosedPath(Context):
     def __repr__(self):
         return "{}(x={}, y={})".format(self.__class__.__name__, self.x, self.y)
 
-    def draw(self, impl, *args, **kwargs):
+    def _draw(self, impl, *args, **kwargs):
         """Used by parent to draw all objects that are part of the context.
 
         """
         impl.move_to(self.x, self.y, *args, **kwargs)
         for obj in self.drawing_objects:
-            obj.draw(impl, *args, **kwargs)
+            obj._draw(impl, *args, **kwargs)
         impl.closed_path(self.x, self.y, *args, **kwargs)
 
 
@@ -516,7 +516,7 @@ class Canvas(Context, Widget):
 
         """
         rotate = Rotate(radians)
-        return self.add_drawing_object(rotate)
+        return self.add_draw_obj(rotate)
 
     def scale(self, sx, sy):
         """Constructs and returns a :class:`Scale <Scale>`.
@@ -530,7 +530,7 @@ class Canvas(Context, Widget):
 
         """
         scale = Scale(sx, sy)
-        return self.add_drawing_object(scale)
+        return self.add_draw_obj(scale)
 
     def translate(self, tx, ty):
         """Constructs and returns a :class:`Translate <Translate>`.
@@ -544,7 +544,7 @@ class Canvas(Context, Widget):
 
         """
         translate = Translate(tx, ty)
-        return self.add_drawing_object(translate)
+        return self.add_draw_obj(translate)
 
     def reset_transform(self):
         """Constructs and returns a :class:`ResetTransform <ResetTransform>`.
@@ -554,7 +554,7 @@ class Canvas(Context, Widget):
 
         """
         reset_transform = ResetTransform()
-        return self.add_drawing_object(reset_transform)
+        return self.add_draw_obj(reset_transform)
 
 
 class MoveTo:
@@ -577,7 +577,7 @@ class MoveTo:
     def __repr__(self):
         return "{}(x={}, y={})".format(self.__class__.__name__, self.x, self.y)
 
-    def draw(self, impl, *args, **kwargs):
+    def _draw(self, impl, *args, **kwargs):
         """Draw the drawing object using the implementation.
 
         """
@@ -604,7 +604,7 @@ class LineTo:
     def __repr__(self):
         return "{}(x={}, y={})".format(self.__class__.__name__, self.x, self.y)
 
-    def draw(self, impl, *args, **kwargs):
+    def _draw(self, impl, *args, **kwargs):
         """Draw the drawing object using the implementation.
 
         """
@@ -649,7 +649,7 @@ class BezierCurveTo:
             self.y,
         )
 
-    def draw(self, impl, *args, **kwargs):
+    def _draw(self, impl, *args, **kwargs):
         """Draw the drawing object using the implementation.
 
         """
@@ -686,7 +686,7 @@ class QuadraticCurveTo:
             self.__class__.__name__, self.cpx, self.cpy, self.x, self.y
         )
 
-    def draw(self, impl, *args, **kwargs):
+    def _draw(self, impl, *args, **kwargs):
         """Draw the drawing object using the implementation.
 
         """
@@ -748,7 +748,7 @@ class Ellipse:
             self.anticlockwise,
         )
 
-    def draw(self, impl, *args, **kwargs):
+    def _draw(self, impl, *args, **kwargs):
         """Draw the drawing object using the implementation.
 
         """
@@ -809,7 +809,7 @@ class Arc:
             self.anticlockwise,
         )
 
-    def draw(self, impl, *args, **kwargs):
+    def _draw(self, impl, *args, **kwargs):
         """Draw the drawing object using the implementation.
 
         """
@@ -852,7 +852,7 @@ class Rect:
             self.__class__.__name__, self.x, self.y, self.width, self.height
         )
 
-    def draw(self, impl, *args, **kwargs):
+    def _draw(self, impl, *args, **kwargs):
         """Draw the drawing object using the implementation.
 
         """
@@ -878,7 +878,7 @@ class Rotate:
     def __repr__(self):
         return "{}(radians={})".format(self.__class__.__name__, self.radians)
 
-    def draw(self, impl, *args, **kwargs):
+    def _draw(self, impl, *args, **kwargs):
         """Draw the drawing object using the implementation.
 
         """
@@ -903,7 +903,7 @@ class Scale:
     def __repr__(self):
         return "{}(sx={}, sy={})".format(self.__class__.__name__, self.sx, self.sy)
 
-    def draw(self, impl, *args, **kwargs):
+    def _draw(self, impl, *args, **kwargs):
         """Draw the drawing object using the implementation.
 
         """
@@ -928,7 +928,7 @@ class Translate:
     def __repr__(self):
         return "{}(tx={}, ty={})".format(self.__class__.__name__, self.tx, self.ty)
 
-    def draw(self, impl, *args, **kwargs):
+    def _draw(self, impl, *args, **kwargs):
         """Draw the drawing object using the implementation.
 
         """
@@ -947,7 +947,7 @@ class ResetTransform:
     def __repr__(self):
         return "{}()".format(self.__class__.__name__)
 
-    def draw(self, impl, *args, **kwargs):
+    def _draw(self, impl, *args, **kwargs):
         """Draw the drawing object using the implementation.
 
         """
@@ -980,7 +980,7 @@ class WriteText:
             self.__class__.__name__, self.text, self.x, self.y, self.font
         )
 
-    def draw(self, impl, *args, **kwargs):
+    def _draw(self, impl, *args, **kwargs):
         """Draw the drawing object using the implementation.
 
         """
@@ -995,7 +995,7 @@ class NewPath:
     def __repr__(self):
         return "{}()".format(self.__class__.__name__)
 
-    def draw(self, impl, *args, **kwargs):
+    def _draw(self, impl, *args, **kwargs):
         """Draw the drawing object using the implementation.
 
         """
