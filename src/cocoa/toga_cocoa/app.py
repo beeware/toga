@@ -16,6 +16,11 @@ class MainWindow(Window):
 
 class AppDelegate(NSObject):
     @objc_method
+    def applicationWillTerminate_(self, sender):
+        if self.interface.app.on_exit:
+            self.interface.app.on_exit(self.interface.app)
+
+    @objc_method
     def applicationDidFinishLaunching_(self, notification):
         self.native.activateIgnoringOtherApps(True)
 
