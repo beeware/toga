@@ -1,8 +1,16 @@
 import asyncio
 
+from rubicon.objc import objc_method
 from rubicon.objc.eventloop import EventLoopPolicy, iOSLifecycle
 
-from .libs import NSNotificationCenter
+from .libs import (NSNotificationCenter,
+    SEL,
+    UIKeyboardFrameEndUserInfoKey,
+    UIKeyboardWillHideNotification,
+    UIKeyboardWillShowNotification,
+    UIResponder
+)
+    
 from .window import Window
 
 
@@ -11,7 +19,7 @@ class MainWindow(Window):
         super().__init__(interface)
 
     # def startup(self):
-    #     super(MainWindow, self).startup()
+    #     super().startup()
     #     self.native.setBackgroundColor_(UIColor.whiteColor())
 
 

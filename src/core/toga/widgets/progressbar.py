@@ -42,19 +42,39 @@ class ProgressBar(Widget):
 
     @property
     def is_running(self):
+        """
+        Use ``start()`` and ``stop()`` to change the running state.
+
+        Returns:
+            True if this progress bar is running
+            False otherwise
+        """
         return self._is_running
 
     @property
     def is_determinate(self):
+        """
+        Determinate progress bars have a numeric ``max`` value (not None).
+
+        Returns:
+            True if this progress bar is determinate (``max`` is not None)
+            False if ``max`` is None
+        """
         return self.max is not None
 
     def start(self):
+        """
+        Starting this progress bar puts it into running mode.
+        """
         self.enabled = True
         if not self.is_running:
             self._impl.start()
         self._is_running = True
 
     def stop(self):
+        """
+        Stop this progress bar (if not already stopped).
+        """
         self._enabled = bool(self.max)
         if self.is_running:
             self._impl.stop()

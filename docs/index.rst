@@ -107,4 +107,3 @@ Toga is part of the `BeeWare suite`_. You can talk to the community through:
    how-to/index
    reference/index
    background/index
-   project/index

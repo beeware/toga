@@ -1,5 +1,5 @@
 from toga_winforms.libs import LEFT, RIGHT, CENTER
-from toga_winforms.libs import WinForms, Convert
+from toga_winforms.libs import WinForms, Convert, HorizontalTextAlignment
 
 from .base import Widget
 
@@ -27,16 +27,7 @@ class NumberInput(Widget):
             self.native.Value = Convert.ToDecimal(self.interface.value)
 
     def set_alignment(self, value):
-        if value is not None:
-            if value == CENTER:
-                self.native.TextAlign = WinForms.HorizontalAlignment.Center
-            elif value == LEFT:
-                self.native.TextAlign = WinForms.HorizontalAlignment.Left
-            elif value == RIGHT:
-                self.native.TextAlign = WinForms.HorizontalAlignment.Right
-            else:
-                self.interface.factory.not_implemented(
-                    'NumberInput.set_alignment() with anything else but center, left and right')
+        self.native.TextAlign = HorizontalTextAlignment(value)
 
     def set_font(self, value):
         self.interface.factory.not_implemented('NumberInput.set_font()')

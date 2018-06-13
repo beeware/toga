@@ -119,6 +119,12 @@ class Window:
     def set_size(self, size):
         pass
 
+    def set_full_screen(self, is_full_screen):
+        if is_full_screen:
+            self.native.fullscreen()
+        else:
+            self.native.unfullscreen()
+
     def info_dialog(self, title, message):
         return dialogs.info(self.interface, title, message)
 
@@ -137,3 +143,16 @@ class Window:
     def save_file_dialog(self, title, suggested_filename, file_types):
         return dialogs.save_file(self.interface, title, suggested_filename, file_types)
 
+    def open_file_dialog(self, title, initial_directory, file_types, multiselect):
+        '''Note that at this time, GTK does not recommend setting the initial
+        directory. This function explicitly chooses not to pass it along:
+        https://developer.gnome.org/gtk3/stable/GtkFileChooser.html#gtk-file-chooser-set-current-folder
+        '''
+        return dialogs.open_file(self.interface, title, file_types, multiselect)
+
+    def select_folder_dialog(self, title, initial_directory):
+        '''Note that at this time, GTK does not recommend setting the initial
+        directory. This function explicitly chooses not to pass it along:
+        https://developer.gnome.org/gtk3/stable/GtkFileChooser.html#gtk-file-chooser-set-current-folder
+        '''
+        return dialogs.select_folder(self.interface, title)

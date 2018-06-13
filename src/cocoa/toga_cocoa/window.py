@@ -206,6 +206,9 @@ class Window:
         # Refresh with the actual viewport to do the proper rendering.
         self.interface.content.refresh()
 
+    def set_full_screen(self, is_full_screen):
+        self.interface.factory.not_implemented('Window.set_full_screen()')
+
     def on_close(self):
         pass
 

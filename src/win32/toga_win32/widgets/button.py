@@ -14,7 +14,7 @@ class Button(Widget):
     control_style = BS_DEFPUSHBUTTON | BS_TEXT
 
     def __init__(self, label, on_press=None):
-        super(Button, self).__init__(text=self.interface.label)
+        super().__init__(text=self.interface.label)
         self._expand_vertical = False
         self.on_press = on_press
 
@@ -27,7 +27,7 @@ class Button(Widget):
         return 30, 30
 
     def _on_wm_command(self, msg, wParam, lParam):
-        super(Button, self)._on_wm_command(msg, wParam, lParam)
+        super()._on_wm_command(msg, wParam, lParam)
         notification = HIWORD(wParam)
         print("Notification received", notification, "should be", BN_CLICKED)
         if notification == BN_CLICKED:

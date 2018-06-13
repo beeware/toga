@@ -33,4 +33,4 @@ class ProgressBar(Widget):
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
-        self.interface.intrinsic.height = self.native.fittingSize().height
+        self.interface.intrinsic.height = self.native.intrinsicContentSize().height

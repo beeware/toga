@@ -1,3 +1,4 @@
+from toga.constants import ITALIC, OBLIQUE, SMALL_CAPS, BOLD, SYSTEM
 import gi
 
 gi.require_version("Gtk", "3.0")
@@ -9,13 +10,13 @@ try:
 except ImportError:
     Pango = None
 
-
 _FONT_CACHE = {}
 
 
 class Measure(Gtk.Widget):
     """Gtk.Widget for Font.measure in order to create a Pango Layout
     """
+
     def create(self):
         pass
 
@@ -32,8 +33,35 @@ class Font:
         try:
             font = _FONT_CACHE[self.interface]
         except KeyError:
-            font = Pango.FontDescription.from_string('{font.family} {font.size}'.format(font=self.interface))
-            _FONT_CACHE[font] = font
+
+            # Initialize font with properties 'None NORMAL NORMAL NORMAL 0'
+            font = Pango.FontDescription()
+
+            # Set font family
+            family = self.interface.family
+            if family != SYSTEM:
+                family = '{}, {}'.format(family, SYSTEM)  # Default to system
+
+            font.set_family(family)
+
+            # Set font size
+            font.set_size(self.interface.size * Pango.SCALE)
+
+            # Set font style
+            if self.interface.style == ITALIC:
+                font.set_style(Pango.Style.ITALIC)
+            elif self.interface.style == OBLIQUE:
+                font.set_style(Pango.Style.OBLIQUE)
+
+            # Set font variant
+            if self.interface.variant == SMALL_CAPS:
+                font.set_variant(Pango.Variant.SMALL_CAPS)
+
+            # Set font weight
+            if self.interface.weight == BOLD:
+                font.set_weight(Pango.Weight.BOLD)
+
+            _FONT_CACHE[self.interface] = font
 
         self.native = font
 

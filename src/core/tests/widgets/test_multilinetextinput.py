@@ -16,7 +16,7 @@ class MultilineTextInputTests(TestCase):
 
     def test_multiline_properties_with_None(self):
         self.assertEqual(self.multiline.readonly, False)
-        self.assertEqual(self.multiline.value, '')  # TODO: shouldn't the value be self.initial in the beginning?
+        self.assertEqual(self.multiline.value, None)  # TODO: shouldn't the value be self.initial in the beginning?
         self.assertEqual(self.multiline.placeholder, '')
 
     def test_multiline_values(self):

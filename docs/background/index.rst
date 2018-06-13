@@ -9,5 +9,9 @@ Background
 
    philosophy
    faq
+   releases
+   architecture
+   layout
    commands
    data-sources
+   roadmap

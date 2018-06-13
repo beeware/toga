@@ -14,13 +14,14 @@ class TogaView(NSView):
 
     @objc_method
     def display(self) -> None:
-        self.layer.setNeedsDisplay_(True)
+        self.layer.needsDisplay = True
         self.layer.displayIfNeeded()
 
 
 class Box(Widget):
     def create(self):
         self.native = TogaView.alloc().init()
+        self.native.wantsLayer = True
 
         # Add the layout constraints
         self.add_constraints()

@@ -5,7 +5,7 @@
 Toga
 ====
 
-.. image:: https://img.shields.io/pypi/pyversions/toga.svg
+.. image:: https://img.shields.io/badge/python-3.5%2C%203.6%2C%203.7-blue.svg
     :target: https://pypi.python.org/pypi/toga
 
 .. image:: https://img.shields.io/pypi/v/toga.svg
@@ -38,31 +38,33 @@ Minimum requirements
 
 * If you're on Linux, you need to have GTK+ 3.10 or later. This is the version
   that ships starting with Ubuntu 14.04 and Fedora 20. You also need to install
-  the Python 3 bindings to GTK+.
+  the Python 3 bindings and development files for GTK+.
 
-* We're working on Windows support, but not all features and widgets are supported. At a minimum, you'll need Python 3 and .NET Framework 4. This has been tested on Windows 10, but should work on 7 and 8. Pull requests, help and corrections are most welcome.
+  * **Ubuntu / Debian** ``sudo apt-get install python3-dev python3-gi python3-gi-cairo gir1.2-gtk-3.0 libgirepository1.0-dev libcairo2-dev``
 
-Optional extras
-^^^^^^^^^^^^^^^
+  * **Fedora** ``sudo dnf install pygobject3 python3-gobject python3-cairo-devel cairo-gobject-devel gobject-introspection-devel``
+    or ``sudo yum install pygobject3 python3-gobject python3-cairo-devel cairo-gobject-devel gobject-introspection-devel``
 
-If you want to use the WebView widget, you'll
-also need to have WebKit, plus the GI bindings to WebKit installed. This means
-you'll need to install the following:
+  * **Arch Linux** ``sudo pacman -S gobject-introspection``
 
-* **Ubuntu 14.04** ``apt-get install python3-gi gir1.2-webkit-3.0``
+* We're working on Windows support, but not all features and widgets are
+  supported. At a minimum, you'll need Python 3 and .NET Framework 4. This has
+  been tested on Windows 10, but should work on 7 and 8. Pull requests, help and
+  corrections are most welcome.
 
-* **Ubuntu 16.04 / Debian 8** ``apt-get install python3-gi gir1.2-webkit2-4.0``
-  or ``apt-get install python3-gi gir1.2-webkit-3.0``
-  
-* **Fedora** ``dnf install python3-gobject pywebkitgtk``
-  or ``yum install python3-gobject pywebkitgtk`` 
-  
-* **Arch Linux** ``pacman -S python-gobject webkit2gtk`` 
- 
-Other distros should be similar, but feel free to send a pull request with updated dependencies if needed.
+Optional extras for Linux
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
-If these requirements aren't met, Toga either won't work at all, or won't have
-full functionality.
+In Linux, extra packages are needed if you want to use the WebView widget:
+
+* **Ubuntu / Debian** ``sudo apt-get install gir1.2-webkit2-4.0``
+  Note: for Ubuntu 14.04 install ``gir1.2-webkit-3.0`` instead of ``gir1.2-webkit-4.0``
+
+* **Fedora** ``sudo dnf install pywebkitgtk``
+  or ``sudo yum install pywebkitgtk``
+
+* **Arch Linux** ``sudo pacman -S webkit2gtk``
+
 
 Quickstart
 ~~~~~~~~~~
@@ -91,10 +93,11 @@ Toga is part of the `BeeWare suite`_. You can talk to the community through:
 Contributing
 ~~~~~~~~~~~~
 
-If you'd like to contribute to Toga development, our `guide for first time contributors`_ will help you get started.
+If you'd like to contribute to Toga development, our `guide for first time
+contributors`_ will help you get started.
 
-If you experience problems with Toga, `log them on GitHub`_. If you
-want to contribute code, please `fork the code`_ and `submit a pull request`_.
+If you experience problems with Toga, `log them on GitHub`_. If you want to
+contribute code, please `fork the code`_ and `submit a pull request`_.
 
 .. _BeeWare suite: http://pybee.org
 .. _Read The Docs: https://toga.readthedocs.io
@@ -104,3 +107,4 @@ want to contribute code, please `fork the code`_ and `submit a pull request`_.
 .. _log them on Github: https://github.com/pybee/toga/issues
 .. _fork the code: https://github.com/pybee/toga
 .. _submit a pull request: https://github.com/pybee/toga/pulls
+.. _Virtual Environment: https://www.virtualenv.org

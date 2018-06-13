@@ -9,8 +9,8 @@ class OptionContainer(Widget):
         self.native = WinForms.TabControl()
 
     def add_content(self, label, widget):
-        widget.viewport = WinFormsViewport(widget.native)
-
+        widget.viewport = WinFormsViewport(self.native, self)
+        widget.frame = self
         # Add all children to the content widget.
         for child in widget.interface.children:
             child._impl.container = widget
@@ -22,8 +22,7 @@ class OptionContainer(Widget):
         # the available space in the OptionContainer.
         widget.AutoSize = True
 
-        item.Controls.Add(widget)
-
+        item.Controls.Add(widget.native)
         self.native.Controls.Add(item)
 
     def set_on_select(self, handler):

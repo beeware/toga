@@ -13,7 +13,7 @@ from toga.platform import get_platform_factory
 
 class Font(BaseFont):
     def __init__(self, family, size, style=NORMAL, variant=NORMAL, weight=NORMAL):
-        super().__init__(family, size, style=NORMAL, variant=NORMAL, weight=NORMAL)
+        super().__init__(family, size, style, variant, weight)
         self.__impl = None
 
     @property

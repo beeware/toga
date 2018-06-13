@@ -4,7 +4,7 @@ from toga.style import Pack
 class ExampleCanvasApp(toga.App):
     def startup(self):
         # Set up main window
-        self.main_window = toga.MainWindow(self.name, size=(148, 200))
+        self.main_window = toga.MainWindow(title=self.name, size=(148, 200))
 
         canvas = toga.Canvas(style=Pack(flex=1))
         box = toga.Box(children=[canvas])
@@ -15,9 +15,10 @@ class ExampleCanvasApp(toga.App):
         # Show the main window
         self.main_window.show()
 
-        with canvas.stroke():
-            with canvas.closed_path(50, 50):
-                canvas.line_to(100, 100)
+        with canvas.stroke() as stroker:
+            with stroker.closed_path(50, 50) as closer:
+                closer.line_to(100, 100)
+                closer.line_to(100, 50)
 
 
 def main():
