@@ -16,9 +16,6 @@ class TogaCanvas(NSView):
         xform.scaleXBy(1.0, yBy=-1.0)
         xform.concat()
 
-        if self.interface.on_draw:
-            self.interface.on_draw(self.interface, context)
-
 
 class Canvas(Widget):
     def create(self):
@@ -27,40 +24,37 @@ class Canvas(Widget):
 
         self.context = NSGraphicsContext.currentContext
 
-        self.native.target = self.native
-        self.native.action = SEL("onDraw:")
-
         # Add the layout constraints
         self.add_constraints()
 
     def redraw(self):
-        self.interface.draw(self)
+        self.interface._draw(self, draw_context=self.context)
 
     # Basic paths
 
-    def new_path(self):
-        core_graphics.CGContextBeginPath(self.context)
+    def new_path(self, draw_context):
+        core_graphics.CGContextBeginPath(draw_context)
 
-    def closed_path(self, x, y):
-        core_graphics.CGContextClosePath(self.context)
+    def closed_path(self, x, y, draw_context):
+        core_graphics.CGContextClosePath(draw_context)
 
-    def move_to(self, x, y):
-        core_graphics.CGContextMoveToPoint(self.context, x, y)
+    def move_to(self, x, y, draw_context):
+        core_graphics.CGContextMoveToPoint(draw_context, x, y)
 
-    def line_to(self, x, y):
-        core_graphics.CGContextAddLineToPoint(self.context, x, y)
+    def line_to(self, x, y, draw_context):
+        core_graphics.CGContextAddLineToPoint(draw_context, x, y)
 
     # Basic shapes
 
-    def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y):
+    def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y, draw_context):
         core_graphics.CGContextAddCurveToPoint(
-            self.context, cp1x, cp1y, cp2x, cp2y, x, y
+            draw_context, cp1x, cp1y, cp2x, cp2y, x, y
         )
 
-    def quadratic_curve_to(self, cpx, cpy, x, y):
-        core_graphics.CGContextAddQuadCurveToPoint(self.context, cpx, cpy, x, y)
+    def quadratic_curve_to(self, cpx, cpy, x, y, draw_context):
+        core_graphics.CGContextAddQuadCurveToPoint(draw_context, cpx, cpy, x, y)
 
-    def arc(self, x, y, radius, startangle, endangle, anticlockwise):
+    def arc(self, x, y, radius, startangle, endangle, anticlockwise, draw_context):
         # Cocoa Box Widget is using a flipped coordinate system, so clockwise
         # is actually anticlockwise
         if anticlockwise:
@@ -68,69 +62,75 @@ class Canvas(Widget):
         else:
             clockwise = 0
         core_graphics.CGContextAddArc(
-            self.context, x, y, radius, startangle, endangle, clockwise
+            draw_context, x, y, radius, startangle, endangle, clockwise
         )
 
     def ellipse(
-        self, x, y, radiusx, radiusy, rotation, startangle, endangle, anticlockwise
+        self, x, y, radiusx, radiusy, rotation, startangle, endangle, anticlockwise, draw_context
     ):
-        core_graphics.CGContextSaveGState(self.context)
-        self.translate(x, y)
+        core_graphics.CGContextSaveGState(draw_context)
+        self.translate(x, y, draw_context)
         if radiusx >= radiusy:
-            self.scale(1, radiusy / radiusx)
-            self.arc(0, 0, radiusx, startangle, endangle, anticlockwise)
+            self.scale(1, radiusy / radiusx, draw_context)
+            self.arc(0, 0, radiusx, startangle, endangle, anticlockwise, draw_context)
         elif radiusy > radiusx:
-            self.scale(radiusx / radiusy, 1)
-            self.arc(0, 0, radiusy, startangle, endangle, anticlockwise)
-        self.rotate(rotation)
-        self.reset_transform()  # TODO Reset transform is not implemented
-        core_graphics.CGContextRestoreGState(self.context)
+            self.scale(radiusx / radiusy, 1, draw_context)
+            self.arc(0, 0, radiusy, startangle, endangle, anticlockwise, draw_context)
+        self.rotate(rotation, draw_context)
+        self.reset_transform(draw_context)  # TODO Reset transform is not implemented
+        core_graphics.CGContextRestoreGState(draw_context)
 
-    def rect(self, x, y, width, height):
+    def rect(self, x, y, width, height, draw_context):
         rectangle = CGRectMake(x, y, width, height)
-        core_graphics.CGContextAddRect(self.context, rectangle)
+        core_graphics.CGContextAddRect(draw_context, rectangle)
 
     # Drawing Paths
 
-    def fill(self, color, fill_rule, preserve):
+    def fill(self, color, fill_rule, preserve, draw_context):
         if fill_rule is "evenodd":
             mode = CGPathDrawingMode(kCGPathEOFill)
         else:
             mode = CGPathDrawingMode(kCGPathFill)
         if color is not None:
-            core_graphics.CGContextSetRGBFillColor(self.context, *native_color(color))
+            c = native_color(color)
+            core_graphics.CGContextSetRGBFillColor(
+                draw_context, c.redComponent, c.greenComponent, c.blueComponent, c.alphaComponent
+            )
         else:
             # Set color to black
-            core_graphics.CGContextSetRGBFillColor(self.context, 0, 0, 0, 1)
-        core_graphics.CGContextDrawPath(self.context, mode)
+            core_graphics.CGContextSetRGBFillColor(draw_context, 0, 0, 0, 1)
+        core_graphics.CGContextDrawPath(draw_context, mode)
 
-    def stroke(self, color, line_width):
-        core_graphics.CGContextSetLineWidth(self.context, line_width)
+    def stroke(self, color, line_width, draw_context):
+        core_graphics.CGContextSetLineWidth(draw_context, line_width)
         mode = CGPathDrawingMode(kCGPathStroke)
         if color is not None:
-            core_graphics.CGContextSetRGBStrokeColor(self.context, *native_color(color))
+            c = native_color(color)
+            core_graphics.CGContextSetRGBStrokeColor(
+                draw_context, c.redComponent, c.greenComponent, c.blueComponent, c.alphaComponent
+            )
         else:
             # Set color to black
-            core_graphics.CGContextSetRGBStrokeColor(self.context, 0, 0, 0, 1)
-        core_graphics.CGContextDrawPath(self.context, mode)
+            core_graphics.CGContextSetRGBStrokeColor(draw_context, 0, 0, 0, 1)
+        core_graphics.CGContextDrawPath(draw_context, mode)
 
     # Transformations
 
-    def rotate(self, radians):
-        core_graphics.CGContextRotateCTM(self.context, radians)
+    def rotate(self, radians, draw_context):
+        core_graphics.CGContextRotateCTM(draw_context, radians)
 
-    def scale(self, sx, sy):
-        core_graphics.CGContextScaleCTM(self.context, sx, sy)
+    def scale(self, sx, sy, draw_context):
+        core_graphics.CGContextScaleCTM(draw_context, sx, sy)
 
-    def translate(self, tx, ty):
-        core_graphics.CGContextTranslateCTM(self.context, tx, ty)
+    def translate(self, tx, ty, draw_context):
+        core_graphics.CGContextTranslateCTM(draw_context, tx, ty)
 
-    def reset_transform(self):
+    def reset_transform(self, draw_context):
         pass
 
     # Text
 
-    def measure_text(self, text, font):
+    def measure_text(self, text, font, draw_context):
         # Set font family and size
         if font:
             meas_font = font
@@ -152,7 +152,7 @@ class Canvas(Widget):
         size = text_string.sizeWithAttributes(font_attrs)
         return size.width, size.height
 
-    def write_text(self, text, x, y, font):
+    def write_text(self, text, x, y, font, draw_context):
         # Set font family and size
         if font:
             write_font = font
@@ -161,20 +161,17 @@ class Canvas(Widget):
         else:
             raise ValueError("No font to write with")
 
-        core_graphics.CGContextSelectFont(self.context, write_font.family, write_font.size, kCGEncodingMacRoman)
-        self._debug('Set drawing mode', self.context, kCGTextFillStroke)
-        core_graphics.CGContextSetTextDrawingMode(self.context, kCGTextFillStroke)
-        self._debug('Show text at point', self.context, x, y, text, len(text))
-        core_graphics.CGContextShowTextAtPoint(self.context, x, y, text, len(text))
         core_graphics.CGContextSelectFont(
-            self.context, write_font.family, write_font.size, kCGEncodingFontSpecific
+            draw_context, write_font.family, write_font.size, kCGEncodingFontSpecific
         )
-        # core_graphics.CGContextSetTextDrawingMode(self.context, kCGTextFillStroke)
+        core_graphics.CGContextSetTextDrawingMode(draw_context, kCGTextFillStroke)
+        core_graphics.CGContextShowTextAtPoint(draw_context, x, y, text, len(text))
+        # core_graphics.CGContextSetTextDrawingMode(draw_context, kCGTextFillStroke)
 
         # Support writing multiline text
         for line in text.splitlines():
             width, height = write_font.measure(line)
-            core_graphics.CGContextShowTextAtPoint(self.context, x, y, line, len(line))
+            core_graphics.CGContextShowTextAtPoint(draw_context, x, y, line, len(line))
             y += height
 
     # Rehint
