@@ -1,4 +1,4 @@
-from rubicon.objc import objc_method, SEL, ObjCInstance
+from rubicon.objc import objc_method, ObjCInstance
 from toga_cocoa.libs import *
 
 from .base import Widget
@@ -16,19 +16,21 @@ class TogaCanvas(NSView):
         xform.scaleXBy(1.0, yBy=-1.0)
         xform.concat()
 
+        if self.interface.redraw:
+            self.interface._draw(self._impl, draw_context=context)
+
 
 class Canvas(Widget):
     def create(self):
         self.native = TogaCanvas.alloc().init()
         self.native.interface = self.interface
-
-        self.context = NSGraphicsContext.currentContext
+        self.native._impl = self
 
         # Add the layout constraints
         self.add_constraints()
 
     def redraw(self):
-        self.interface._draw(self, draw_context=self.context)
+        pass
 
     # Basic paths
 
