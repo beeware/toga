@@ -40,7 +40,7 @@ class Selection(Widget):
     def items(self, items):
         if items is None:
             self._items = ListSource(data=[], accessors=['field'])
-        if isinstance(items, (list, tuple)):
+        elif isinstance(items, (list, tuple)):
             self._items = ListSource(data=items, accessors=['field'])
         else:
             self._items = items

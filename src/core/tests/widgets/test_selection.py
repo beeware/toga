@@ -8,7 +8,7 @@ class SelectionTests(TestCase):
         super().setUp()
 
         self.items = ['item_{}'.format(x) for x in range(0, 3)]
-        # self.selection = toga.Selection(factory=toga_dummy.factory)
+        self.selection = toga.Selection(factory=toga_dummy.factory)
         self.selection = toga.Selection(items=self.items, factory=toga_dummy.factory)
 
     def test_widget_created(self):
