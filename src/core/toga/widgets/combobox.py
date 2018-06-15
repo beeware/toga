@@ -14,14 +14,14 @@ class ComboBox(Widget):
         factory (:obj:`module`): A python module that is capable to return a
             implementation of this class with the same name. (optional & normally not needed)
         initial (str): The initial text for the combobox.
-        data (list[str]): The dropdown list of data
+        items (list[str]): The dropdown list of items
         placeholder (str): If no input is present this text is shown.
         on_change (callable[[], None]): Handle input/selection change
     '''
     MIN_WIDTH = 100
 
     def __init__(
-            self, id=None, style=None, factory=None, data=None,
+            self, id=None, style=None, factory=None, items=None,
             initial=None, placeholder=None, on_change=None):
         super().__init__(id=id, style=style, factory=factory)
 
@@ -33,30 +33,30 @@ class ComboBox(Widget):
 
         # Use public setters
         self.placeholder = placeholder
-        self.data = data if data else []
+        self.items = items if items else []
         self.value = initial
         self.on_change = on_change
 
     @property
-    def data(self):
-        ''' The data to display. It accepts data in the form of ``list``,
+    def items(self):
+        ''' The items to display. It accepts items in the form of ``list``,
         ``tuple``, or :obj:`ListSource`
 
         Returns:
             Returns a (:obj:`ListSource`).
         '''
-        return self._data
+        return self._items
 
-    @data.setter
-    def data(self, data):
-        if data is None:
-            self._data = ListSource(data=[], accessors=['field'])
-        if isinstance(data, (list, tuple)):
-            self._data = ListSource(data=data, accessors=['field'])
+    @items.setter
+    def items(self, items):
+        if items is None:
+            self._items = ListSource(data=[], accessors=['field'])
+        if isinstance(items, (list, tuple)):
+            self._items = ListSource(data=items, accessors=['field'])
         else:
-            self._data = data
-        self._data.add_listener(self._impl)
-        self._impl.change_source(source=self._data)
+            self._items = items
+        self._items.add_listener(self._impl)
+        self._impl.change_source(source=self._items)
 
     @property
     def placeholder(self):
