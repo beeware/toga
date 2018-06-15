@@ -8,7 +8,7 @@ class SelectionTests(TestCase):
         super().setUp()
 
         self.items = ['item_{}'.format(x) for x in range(0, 3)]
-        self.selection = toga.Selection(factory=toga_dummy.factory)
+        # self.selection = toga.Selection(factory=toga_dummy.factory)
         self.selection = toga.Selection(items=self.items, factory=toga_dummy.factory)
 
     def test_widget_created(self):
@@ -16,19 +16,14 @@ class SelectionTests(TestCase):
         self.assertActionPerformed(self.selection, 'create Selection')
 
     def test_items_were_set(self):
-        self.assertEqual(self.selection.items, self.items)
-        self.assertActionPerformedWith(self.selection, 'add item', item=self.items[0])
-        self.assertActionPerformedWith(self.selection, 'add item', item=self.items[1])
-        self.assertActionPerformedWith(self.selection, 'add item', item=self.items[2])
+        self.assertEqual([i.field for i in self.selection.items], self.items)
 
     def test_set_items(self):
-        new_items = ['new_item_{}'.format(x) for x in range(0, 3)]
-        self.selection.items = new_items
-        self.assertActionPerformed(self.selection, 'remove all items')
-        for item in new_items:
-            self.assertActionPerformedWith(self.selection, 'add item', item=item)
-        self.assertEqual(self.selection.items, new_items)
-        self.assertEqual(self.selection._items, new_items)
+        expected_items = ['new_item_{}'.format(x) for x in range(0, 3)]
+        self.selection.items = expected_items
+        self.assertActionPerformedWith(self.selection, 'change source')
+        actual_items = [i.field for i in self.selection.items]
+        self.assertEqual(expected_items, actual_items)
 
     def test_get_selected_item_invokes_impl_method(self):
         value = self.selection.value

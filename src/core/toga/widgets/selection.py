@@ -1,4 +1,5 @@
 from toga.handlers import wrapped_handler
+from toga.sources import ListSource
 
 from .base import Widget
 
@@ -21,13 +22,8 @@ class Selection(Widget):
         self._on_select = None # needed for _impl initialization
         self._impl = self.factory.Selection(interface=self)
 
-        if items is None:
-            self._items = []
-        else:
-            self._items = items
-            for item in self._items:
-                self._impl.add_item(item)
-
+        # use public setters
+        self.items = items
         self.on_select = on_select
         self.enabled = enabled
 
@@ -42,12 +38,15 @@ class Selection(Widget):
 
     @items.setter
     def items(self, items):
-        self._impl.remove_all_items()
+        if items is None:
+            self._items = ListSource(data=[], accessors=['field'])
+        if isinstance(items, (list, tuple)):
+            self._items = ListSource(data=items, accessors=['field'])
+        else:
+            self._items = items
 
-        for i in items:
-            self._impl.add_item(i)
-
-        self._items = items
+        self._items.add_listener(self._impl)
+        self._impl.change_source(self._items)
 
     @property
     def value(self):
@@ -60,7 +59,7 @@ class Selection(Widget):
 
     @value.setter
     def value(self, value):
-        if value not in self._items:
+        if value not in (i.field for i in self.items):
             raise ValueError("Not an item in the list.")
 
         self._impl.select_item(value)
