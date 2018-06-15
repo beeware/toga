@@ -68,7 +68,16 @@ class Canvas(Widget):
         )
 
     def ellipse(
-        self, x, y, radiusx, radiusy, rotation, startangle, endangle, anticlockwise, draw_context
+        self,
+        x,
+        y,
+        radiusx,
+        radiusy,
+        rotation,
+        startangle,
+        endangle,
+        anticlockwise,
+        draw_context,
     ):
         core_graphics.CGContextSaveGState(draw_context)
         self.translate(x, y, draw_context)
@@ -96,7 +105,11 @@ class Canvas(Widget):
         if color is not None:
             c = native_color(color)
             core_graphics.CGContextSetRGBFillColor(
-                draw_context, c.redComponent, c.greenComponent, c.blueComponent, c.alphaComponent
+                draw_context,
+                c.redComponent,
+                c.greenComponent,
+                c.blueComponent,
+                c.alphaComponent,
             )
         else:
             # Set color to black
@@ -109,7 +122,11 @@ class Canvas(Widget):
         if color is not None:
             c = native_color(color)
             core_graphics.CGContextSetRGBStrokeColor(
-                draw_context, c.redComponent, c.greenComponent, c.blueComponent, c.alphaComponent
+                draw_context,
+                c.redComponent,
+                c.greenComponent,
+                c.blueComponent,
+                c.alphaComponent,
             )
         else:
             # Set color to black
@@ -132,28 +149,6 @@ class Canvas(Widget):
 
     # Text
 
-    def measure_text(self, text, font, draw_context):
-        # Set font family and size
-        if font:
-            meas_font = font
-        elif self.native.font:
-            meas_font = self.native.font
-        else:
-            raise ValueError("No font to measure with")
-
-        font_attrs = {NSFontAttributeName: meas_font}
-
-        # The double ObjCInstance wrapping is workaround for rubicon since it
-        # doesn't yet provide an ObjCStringInstance
-        text_string = ObjCInstance(
-            ObjCInstance(NSString.alloc(convert_result=False)).initWithString_(
-                text, convert_result=False
-            )
-        )
-
-        size = text_string.sizeWithAttributes(font_attrs)
-        return size.width, size.height
-
     def write_text(self, text, x, y, font, draw_context):
         # Set font family and size
         if font:
@@ -168,7 +163,6 @@ class Canvas(Widget):
         )
         core_graphics.CGContextSetTextDrawingMode(draw_context, kCGTextFillStroke)
         core_graphics.CGContextShowTextAtPoint(draw_context, x, y, text, len(text))
-        # core_graphics.CGContextSetTextDrawingMode(draw_context, kCGTextFillStroke)
 
         # Support writing multiline text
         for line in text.splitlines():

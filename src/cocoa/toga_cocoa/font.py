@@ -1,6 +1,14 @@
-from rubicon.objc import ObjCInstance
-from .libs import NSString, NSFont, NSFontAttributeName
-from toga.font import MESSAGE, NORMAL, SYSTEM, SERIF, SANS_SERIF, CURSIVE, FANTASY, MONOSPACE
+from .libs import NSString, NSFont, NSFontAttributeName, NSMutableDictionary
+from toga.font import (
+    MESSAGE,
+    NORMAL,
+    SYSTEM,
+    SERIF,
+    SANS_SERIF,
+    CURSIVE,
+    FANTASY,
+    MONOSPACE,
+)
 
 _FONT_CACHE = {}
 
@@ -37,19 +45,21 @@ class Font:
                 font = NSFont.fontWithName(full_name, size=self.interface.size)
 
                 if font is None:
-                    print("Unable to load font: {}pt {}".format(self.interface.size, full_name))
+                    print(
+                        "Unable to load font: {}pt {}".format(
+                            self.interface.size, full_name
+                        )
+                    )
                 else:
                     _FONT_CACHE[self.interface] = font
 
         self.native = font
 
     def measure(self, text, tight=False):
-        font_attrs = {NSFontAttributeName: self.native}
+        font_attrs = NSMutableDictionary.alloc().init()
+        font_attrs[NSFontAttributeName] = self.native
 
-        # The double ObjCInstance wrapping is workaround for rubicon since it doesn't yet provide an ObjCStringInstance
-        text_string = ObjCInstance(
-            ObjCInstance(NSString.alloc(convert_result=False)).initWithString_(text, convert_result=False)
-        )
+        text_string = NSString.alloc().initWithString_(text)
 
         size = text_string.sizeWithAttributes(font_attrs)
         return size.width, size.height
