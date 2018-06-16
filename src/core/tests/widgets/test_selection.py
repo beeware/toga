@@ -25,6 +25,22 @@ class SelectionTests(TestCase):
         actual_items = [i.field for i in self.selection.items]
         self.assertEqual(expected_items, actual_items)
 
+    def test_items_cleared(self):
+        self.selection.items.clear()
+        self.assertActionPerformedWith(self.selection, 'clear')
+
+    def test_item_removed(self):
+        removed = self.selection.items[0]
+        self.selection.items.remove(removed)
+        self.assertActionPerformedWith(self.selection, 'remove', item=removed)
+
+    def test_item_insert(self):
+        added_text = 'adding text'
+        self.selection.items.insert(1, added_text)
+        item = self.selection.items[1]
+        self.assertEqual(item.field, added_text)
+        self.assertActionPerformedWith(self.selection, 'insert', index=1, item=item)
+
     def test_get_selected_item_invokes_impl_method(self):
         value = self.selection.value
         self.assertValueGet(self.selection, 'selected_item')
