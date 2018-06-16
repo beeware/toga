@@ -38,7 +38,7 @@ class Selection(Widget):
         # TODO
         self.interface.factory.not_implemented('Selection.remove()')
 
-    def clear(self, *, item):
+    def clear(self):
         '''Listener method for ListSource'''
         self.native.remove_all()
 
