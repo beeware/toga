@@ -8,13 +8,12 @@ class Selection(Widget):
     def change_source(self, source):
         self._action('change source', source=source)
 
-    def insert(self, *, index, item):
+    def insert(self, index, item):
         '''Listener method for ListSource'''
         self._action('insert', index=index, item=item)
 
-    def remove(self, *, item):
+    def remove(self, item):
         '''Listener method for ListSource'''
-        # TODO
         self._action('remove', item=item)
 
     def clear(self):
