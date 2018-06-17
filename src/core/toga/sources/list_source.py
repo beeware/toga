@@ -98,9 +98,8 @@ class ListSource(Source):
         return self.insert(len(self), *values, **named)
 
     def remove(self, row):
-        index = self._data.index(row)
         self._data.remove(row)
-        self._notify('remove', index=index, item=row)
+        self._notify('remove', item=row)
         return row
 
     def index(self, row):

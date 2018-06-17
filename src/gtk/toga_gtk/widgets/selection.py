@@ -21,9 +21,9 @@ class Selection(Widget):
         '''Listener method for ListSource'''
         self.native.insert_text(index, item.label)
 
-    def remove(self, index, item):
+    def remove(self, item):
         '''Listener method for ListSource'''
-        self.native.remove(index)
+        self.interface.factory.not_implemented('Selection.remove()')
 
     def clear(self):
         '''Listener method for ListSource'''

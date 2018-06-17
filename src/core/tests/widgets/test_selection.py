@@ -47,7 +47,7 @@ class SelectionTests(TestCase):
 
     def test_set_selected_item_invokes_impl_methods(self):
         self.selection.value = self.items[0]
-        self.assertActionPerformedWith(self.selection, 'select item', item=self.items[0])
+        self.assertActionPerformedWith(self.selection, 'select item', item=self.selection.items[0])
 
     def test_set_selected_item_is_in_items(self):
         self.selection.value = self.items[2]
