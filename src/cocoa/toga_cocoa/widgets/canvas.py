@@ -1,8 +1,6 @@
-from rubicon.objc import objc_method, ObjCInstance
 from toga_cocoa.libs import *
 
 from .base import Widget
-from ..color import native_color
 
 
 class TogaCanvas(NSView):
@@ -103,13 +101,12 @@ class Canvas(Widget):
         else:
             mode = CGPathDrawingMode(kCGPathFill)
         if color is not None:
-            c = native_color(color)
             core_graphics.CGContextSetRGBFillColor(
                 draw_context,
-                c.redComponent,
-                c.greenComponent,
-                c.blueComponent,
-                c.alphaComponent,
+                color.r/255,
+                color.g/255,
+                color.b/255,
+                color.a,
             )
         else:
             # Set color to black
@@ -120,15 +117,15 @@ class Canvas(Widget):
         core_graphics.CGContextSetLineWidth(draw_context, line_width)
         mode = CGPathDrawingMode(kCGPathStroke)
         if color is not None:
-            c = native_color(color)
             core_graphics.CGContextSetRGBStrokeColor(
                 draw_context,
-                c.redComponent,
-                c.greenComponent,
-                c.blueComponent,
-                c.alphaComponent,
+                color.r/255,
+                color.g/255,
+                color.b/255,
+                color.a,
             )
         else:
+            pass
             # Set color to black
             core_graphics.CGContextSetRGBStrokeColor(draw_context, 0, 0, 0, 1)
         core_graphics.CGContextDrawPath(draw_context, mode)
