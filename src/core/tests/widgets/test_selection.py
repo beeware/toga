@@ -16,13 +16,13 @@ class SelectionTests(TestCase):
         self.assertActionPerformed(self.selection, 'create Selection')
 
     def test_items_were_set(self):
-        self.assertEqual([i.field for i in self.selection.items], self.items)
+        self.assertEqual([i.label for i in self.selection.items], self.items)
 
     def test_set_items(self):
         expected_items = ['new_item_{}'.format(x) for x in range(0, 3)]
         self.selection.items = expected_items
         self.assertActionPerformedWith(self.selection, 'change source')
-        actual_items = [i.field for i in self.selection.items]
+        actual_items = [i.label for i in self.selection.items]
         self.assertEqual(expected_items, actual_items)
 
     def test_items_cleared(self):
@@ -38,7 +38,7 @@ class SelectionTests(TestCase):
         added_text = 'adding text'
         self.selection.items.insert(1, added_text)
         item = self.selection.items[1]
-        self.assertEqual(item.field, added_text)
+        self.assertEqual(item.label, added_text)
         self.assertActionPerformedWith(self.selection, 'insert', index=1, item=item)
 
     def test_get_selected_item_invokes_impl_method(self):

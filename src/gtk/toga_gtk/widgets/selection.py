@@ -17,26 +17,13 @@ class Selection(Widget):
         if self.interface.on_select:
             self.interface.on_select(widget)
 
-    def _get_index(self, item):
-        '''Gets the index of the ListSource Row'''
-        try:
-            index = next(
-                idx
-                for idx, row in enumerate(self.interface.items)
-                if row.field == item
-            )
-        except StopIteration:
-            raise ValueError('Item {} not found'.format(item.field))
-        return index
-
-    def insert(self, *, index, item):
+    def insert(self, index, item):
         '''Listener method for ListSource'''
-        self.native.insert_text(index, item.field)
+        self.native.insert_text(index, item.label)
 
-    def remove(self, *, item):
+    def remove(self, index, item):
         '''Listener method for ListSource'''
-        # TODO
-        self.interface.factory.not_implemented('Selection.remove()')
+        self.native.remove(index)
 
     def clear(self):
         '''Listener method for ListSource'''
@@ -44,14 +31,14 @@ class Selection(Widget):
 
     def change_source(self, source):
         self.native.remove_all()
-        for index, row in enumerate(source):
-            self.insert(index=index, item=row)
+        for row in source:
+            self.native.append_text(row.label)
             # Gtk.ComboBox does not select the first item, so it's done here.
             if not self.get_selected_item():
-                self.select_item(row.field)
+                self.select_item(row)
 
     def select_item(self, item):
-        self.native.set_active(self._get_index(item))
+        self.native.set_active(self.interface.items.index(item))
 
     def get_selected_item(self):
         return self.native.get_active_text()
@@ -64,4 +51,5 @@ class Selection(Widget):
         self.interface.intrinsic.height = height[1]
 
     def set_on_select(self, handler):
-        '''No special handling required'''
+        # No special handling required
+        pass

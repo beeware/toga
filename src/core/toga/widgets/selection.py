@@ -39,9 +39,9 @@ class Selection(Widget):
     @items.setter
     def items(self, items):
         if items is None:
-            self._items = ListSource(data=[], accessors=['field'])
+            self._items = ListSource(data=[], accessors=['label'])
         elif isinstance(items, (list, tuple)):
-            self._items = ListSource(data=items, accessors=['field'])
+            self._items = ListSource(data=items, accessors=['label'])
         else:
             self._items = items
 
@@ -59,10 +59,14 @@ class Selection(Widget):
 
     @value.setter
     def value(self, value):
-        if value not in (i.field for i in self.items):
-            raise ValueError("Not an item in the list.")
-
-        self._impl.select_item(value)
+        if value in self.items:
+            self._impl.select_item(value)
+        else:
+            try:
+                item = next(i for i in self.items if i.label == value)
+            except StopIteration:
+                raise ValueError("Not an item in the list.")
+            self._impl.select_item(item)
 
     @property
     def on_select(self):

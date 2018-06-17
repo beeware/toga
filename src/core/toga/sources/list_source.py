@@ -24,7 +24,7 @@ class ListSource(Source):
 
     Args:
         data (`list`): The data in the list. Each entry in the list should have the
-            same number of entries as there are accessors. 
+            same number of entries as there are accessors.
         accessors (`list`): A list of attribute names for accessing the value
             in each column of the row.
     """
@@ -98,8 +98,9 @@ class ListSource(Source):
         return self.insert(len(self), *values, **named)
 
     def remove(self, row):
+        index = self._data.index(row)
         self._data.remove(row)
-        self._notify('remove', item=row)
+        self._notify('remove', index=index, item=row)
         return row
 
     def index(self, row):
