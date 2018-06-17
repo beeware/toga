@@ -60,7 +60,7 @@ class Selection(Widget):
 
     def clear(self):
         '''Listener method for ListSource'''
-        self.interface.factory.not_implemented('Selection.remove()')
+        self.interface.factory.not_implemented('Selection.clear()')
 
     def change_source(self, source):
         # Still need to clear items first...
