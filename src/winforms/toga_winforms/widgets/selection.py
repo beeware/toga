@@ -20,11 +20,22 @@ class Selection(Widget):
     def create(self):
         self.native = TogaComboBox(self.interface)
 
-    def remove_all_items(self):
+    def insert(self, index, item):
+        '''Listener method for ListSource'''
+        self.interface.factory.not_implemented('Selection.insert()')
+
+    def remove(self, item):
+        '''Listener method for ListSource'''
+        self.interface.factory.not_implemented('Selection.remove()')
+
+    def clear(self):
+        '''Listener method for ListSource'''
         self.native.Items.Clear()
 
-    def add_item(self, item):
-        self.native.Items.Add(item)
+    def change_source(self, source):
+        self.native.Items.Clear()
+        for row in source:
+            self.native.Items.Add(row.label)
 
     def select_item(self, item):
         index = self.native.FindString(item)

@@ -28,11 +28,22 @@ class Selection(Widget):
         self.interface.intrinsic.height = content_size.height
         self.interface.intrinsic.width = at_least(max(self.interface.MIN_WIDTH, content_size.width))
 
-    def remove_all_items(self):
+    def insert(self, index, item):
+        '''Listener method for ListSource'''
+        self.interface.factory.not_implemented('Selection.insert()')
+
+    def remove(self, item):
+        '''Listener method for ListSource'''
+        self.interface.factory.not_implemented('Selection.remove()')
+
+    def clear(self):
+        '''Listener method for ListSource'''
         self.native.removeAllItems()
 
-    def add_item(self, item):
-        self.native.addItemWithTitle(item)
+    def change_source(self, source):
+        self.native.removeAllItems()
+        for row in self.source:
+            self.native.addItemWithTitle(row.label)
 
     def select_item(self, item):
         self.native.selectItemWithTitle(item)

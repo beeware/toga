@@ -50,13 +50,23 @@ class Selection(Widget):
         self.interface.intrinsic.width = at_least(fitting_size.width)
         self.interface.intrinsic.height = fitting_size.height
 
-    def remove_all_items(self):
-        # No special handling required
-        pass
+    def insert(self, index, item):
+        '''Listener method for ListSource'''
+        self.interface.factory.not_implemented('Selection.insert()')
 
-    def add_item(self, item):
-        if not self.native.text:
-            self.native.text = item
+    def remove(self, item):
+        '''Listener method for ListSource'''
+        self.interface.factory.not_implemented('Selection.remove()')
+
+    def clear(self):
+        '''Listener method for ListSource'''
+        self.interface.factory.not_implemented('Selection.remove()')
+
+    def change_source(self, source):
+        # Still need to clear items first...
+        for row in source:
+            if not self.native.text:
+                self.native.text = row.label
 
     def select_item(self, item):
         self.interface.factory.not_implemented('Selection.select_item()')
