@@ -148,6 +148,9 @@ class App:
     def activate(self, data=None):
         pass
 
+    def set_full_screen(self, is_full_screen):
+        pass
+
     def open_document(self, fileURL):
         '''Add a new document to this app.'''
         print("STUB: If you want to handle opening documents, implement App.open_document(fileURL)")

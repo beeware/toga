@@ -212,9 +212,6 @@ class Window:
     def close(self):
         self.native.close()
 
-    def set_full_screen(self, is_full_screen):
-        pass
-
     def info_dialog(self, title, message):
         return dialogs.info(self.interface, title, message)
 

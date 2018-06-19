@@ -72,6 +72,7 @@ class App:
         self.default_icon = Icon('tiberius', system=True)
         self.icon = icon
         self._main_window = None
+        self._is_full_screen = False
 
         self._impl = self.factory.App(interface=self)
 
@@ -120,6 +121,15 @@ class App:
     def main_window(self, window):
         self._main_window = window
         window.app = self
+
+    @property
+    def full_screen(self):
+        return self._is_full_screen
+
+    @full_screen.setter
+    def full_screen(self, is_full_screen):
+        self._is_full_screen = is_full_screen
+        self._impl.set_full_screen(is_full_screen)
 
     @property
     def documents(self):

@@ -32,7 +32,6 @@ class Window:
         self._content = None
         self._position = position
         self._size = size
-        self._is_full_screen = False
 
         self.resizeable = resizeable
         self.closeable = closeable
@@ -164,15 +163,6 @@ class Window:
     def show(self):
         """ Show window, if hidden """
         self._impl.show()
-
-    @property
-    def full_screen(self):
-        return self._is_full_screen
-
-    @full_screen.setter
-    def full_screen(self, is_full_screen):
-        self._is_full_screen = is_full_screen
-        self._impl.set_full_screen(is_full_screen)
 
     def on_close(self):
         self._impl.on_close()

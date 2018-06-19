@@ -16,6 +16,10 @@ class App(LoggedObject):
     def create(self):
         self._action('create')
 
+    @not_required_on('mobile', 'web')
+    def set_full_screen(self, is_full_screen):
+        self._action('set full screen', is_full_screen=is_full_screen)
+
     def open_document(self, fileURL):
         self._action('open document', fileURL=fileURL)
 

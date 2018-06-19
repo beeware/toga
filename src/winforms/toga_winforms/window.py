@@ -62,9 +62,6 @@ class Window:
     def set_app(self, app):
         pass
 
-    def set_full_screen(self, is_full_screen):
-        pass
-
     @property
     def vertical_shift(self):
         # vertical shift is the toolbar height or 0

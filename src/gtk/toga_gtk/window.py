@@ -119,12 +119,6 @@ class Window:
     def set_size(self, size):
         pass
 
-    def set_full_screen(self, is_full_screen):
-        if is_full_screen:
-            self.native.fullscreen()
-        else:
-            self.native.unfullscreen()
-
     def info_dialog(self, title, message):
         return dialogs.info(self.interface, title, message)
 

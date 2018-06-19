@@ -88,6 +88,10 @@ class App:
         """ Calls the startup method on the interface """
         self.interface.startup()
 
+    @not_required_on('mobile', 'web')
+    def set_full_screen(self, is_full_screen):
+        pass
+
     def open_document(self, fileURL):
         """ Add a new document to this app."""
         pass
