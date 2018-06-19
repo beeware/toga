@@ -21,7 +21,7 @@ class WebView(Widget):
 
     def __init__(self, id=None, style=None, factory=None,
                  url=None, user_agent=None, on_key_down=None, on_webview_load=None):
-        super(WebView, self).__init__(id=id, style=style, factory=factory)
+        super().__init__(id=id, style=style, factory=factory)
 
         self._impl = self.factory.WebView(interface=self)
         self.user_agent = user_agent

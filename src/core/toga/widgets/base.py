@@ -54,7 +54,7 @@ class Widget(Node):
         """
         return self._id
 
-    def add(self, child):
+    def add(self, *children):
         """Add a node as a child of this one.
         Args:
             child: A node to add as a child to this node.
@@ -62,11 +62,12 @@ class Widget(Node):
         Raises:
             ValueError: If this node is a leaf, and cannot have children.
         """
-        super().add(child)
+        for child in children:
+            super().add(child)
 
-        child.app = self.app
-        if self._impl:
-            self._impl.add_child(child._impl)
+            child.app = self.app
+            if self._impl:
+                self._impl.add_child(child._impl)
 
     @property
     def app(self):

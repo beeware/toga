@@ -5,7 +5,8 @@ class Image(object):
     """
 
     Args:
-        path (str): Path to the image.
+        path (str): Path to the image. Allowed values can be local file (relative or absolute path)
+            or URL (HTTP or HTTPS). Relative paths will be relative to `toga.App.app_dir`.
         factory (:obj:`module`): A python module that is capable to return a
             implementation of this class with the same name. (optional & normally not needed)
     """
@@ -21,4 +22,7 @@ class Image(object):
     @path.setter
     def path(self, path):
         self._path = path
-        self._impl.load_image(self._path)
+        try:
+            self._impl.load_image(self._path)
+        except ValueError:
+            self._path = None

@@ -31,6 +31,7 @@ class ImageView(Widget):
     def image(self, image):
         self._image = image
         self._impl.set_image(self._image)
+        self._impl.rehint()
 
         # @property
         # def alignment(self):

@@ -4,6 +4,7 @@ import sys
 from builtins import id as identifier
 
 from toga.command import CommandSet
+from toga.handlers import wrapped_handler
 from toga.platform import get_platform_factory
 from toga.widgets.icon import Icon
 from toga.window import Window
@@ -13,7 +14,7 @@ class MainWindow(Window):
     _WINDOW_CLASS = 'MainWindow'
 
     def __init__(self, id=None, title=None, position=(100, 100), size=(640, 480), factory=None):
-        super(MainWindow, self).__init__(id=id, title=title, position=position, size=size, factory=factory)
+        super().__init__(id=id, title=title, position=position, size=size, factory=factory)
 
 
 class App:
@@ -49,8 +50,7 @@ class App:
     app = None
 
     def __init__(self, name, app_id,
-                 id=None, icon=None, startup=None, document_types=None, factory=None):
-
+                 id=None, icon=None, startup=None, document_types=None, on_exit=None, factory=None):
         self.factory = get_platform_factory(factory)
 
         # Keep an accessible copy of the app instance
@@ -73,8 +73,10 @@ class App:
         self.icon = icon
         self._main_window = None
         self._is_full_screen = False
+        self._on_exit = None
 
         self._impl = self.factory.App(interface=self)
+        self.on_exit = on_exit
 
     @property
     def app_id(self):
@@ -180,3 +182,22 @@ class App:
         """ Quit the application gracefully.
         """
         self._impl.exit()
+
+    @property
+    def on_exit(self):
+        """The handler to invoke before the application exits.
+
+        Returns:
+            The function ``callable`` that is called on application exit.
+        """
+        return self._on_exit
+
+    @on_exit.setter
+    def on_exit(self, handler):
+        """Set the handler to invoke before the app exits.
+
+        Args:
+            handler (:obj:`callable`): The handler to invoke before the app exits.
+        """
+        self._on_exit = wrapped_handler(self, handler)
+        self._impl.set_on_exit(self._on_exit)

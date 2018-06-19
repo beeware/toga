@@ -5,7 +5,7 @@
 Toga
 ====
 
-.. image:: https://img.shields.io/pypi/pyversions/toga.svg
+.. image:: https://img.shields.io/badge/python-3.5%2C%203.6%2C%203.7-blue.svg
     :target: https://pypi.python.org/pypi/toga
 
 .. image:: https://img.shields.io/pypi/v/toga.svg
@@ -38,7 +38,14 @@ Minimum requirements
 
 * If you're on Linux, you need to have GTK+ 3.10 or later. This is the version
   that ships starting with Ubuntu 14.04 and Fedora 20. You also need to install
-  the Python 3 bindings to GTK+.
+  the Python 3 bindings and development files for GTK+.
+
+  * **Ubuntu / Debian** ``sudo apt-get install python3-dev python3-gi python3-gi-cairo gir1.2-gtk-3.0 libgirepository1.0-dev libcairo2-dev``
+
+  * **Fedora** ``sudo dnf install pygobject3 python3-gobject python3-cairo-devel cairo-gobject-devel gobject-introspection-devel``
+    or ``sudo yum install pygobject3 python3-gobject python3-cairo-devel cairo-gobject-devel gobject-introspection-devel``
+
+  * **Arch Linux** ``sudo pacman -S gobject-introspection``
 
 * We're working on Windows support, but not all features and widgets are
   supported. At a minimum, you'll need Python 3 and .NET Framework 4. This has
@@ -48,29 +55,16 @@ Minimum requirements
 Optional extras for Linux
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-In Linux, extra packages are needed if you want to:
-1. Use the WebView widget
-2. Use Toga inside a `Virtual Environment`_
+In Linux, extra packages are needed if you want to use the WebView widget:
 
-* **Ubuntu / Debian** ``sudo apt-get install python3-gi python3-gi-cairo gir1.2-gtk-3.0 gir1.2-webkit2-4.0 libgirepository1.0-dev``
+* **Ubuntu / Debian** ``sudo apt-get install gir1.2-webkit2-4.0``
   Note: for Ubuntu 14.04 install ``gir1.2-webkit-3.0`` instead of ``gir1.2-webkit-4.0``
 
-* **Fedora** ``sudo dnf install pygobject3 python3-gobject pywebkitgtk python3-cairo-devel cairo-gobject-devel gobject-introspection-devel``
-  or ``sudo yum install pygobject3 python3-gobject pywebkitgtk python3-cairo-devel cairo-gobject-devel gobject-introspection-devel``
+* **Fedora** ``sudo dnf install pywebkitgtk``
+  or ``sudo yum install pywebkitgtk``
 
-* **Arch Linux** ``sudo pacman -S python-gobject webkit2gtk gobject-introspection``
+* **Arch Linux** ``sudo pacman -S webkit2gtk``
 
-Other distros should be similar, but feel free to send a pull request with
-updated dependencies if needed.
-
-If you are going to use Toga inside a `Virtual Environment`_, you need to
-install pycairo and pygobject (in that order) in the virtualenv first::
-
-    $ pip install pycairo
-    $ pip install pygobject
-
-If these requirements aren't met, Toga either won't work at all, or won't have
-full functionality.
 
 Quickstart
 ~~~~~~~~~~

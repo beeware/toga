@@ -85,3 +85,6 @@ class App:
 
     def exit(self):
         self.native.Exit()
+
+    def set_on_exit(self, value):
+        pass

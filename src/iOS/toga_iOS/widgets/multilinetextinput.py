@@ -34,7 +34,7 @@ class TogaMultilineTextView(UITextView, protocols=[UITextViewDelegate]):
     @objc_method
     def textViewShouldEndEditing_(self, text_view):
         return True
-    
+
     @objc_method
     def textViewDidBeginEditing_(self, text_view):
         self.placeholder_label.setHidden_(True)
@@ -47,7 +47,7 @@ class MultilineTextInput(Widget):
     def create(self):
         self.native = TogaMultilineTextView.alloc().init()
         self.native.delegate = self.native
-        
+
         # Placeholder isn't natively supported, so we create our
         # own
         self.placeholder_label = UILabel.alloc().init()
@@ -56,11 +56,11 @@ class MultilineTextInput(Widget):
         self.placeholder_label.alpha = 0.5
         self.native.addSubview_(self.placeholder_label)
         self.constrain_placeholder_label()
-        
+
         # Delegate needs to update the placeholder depending on
         # input, so we give it just that to avoid a retain cycle
         self.native.placeholder_label = self.placeholder_label
-        
+
         self.add_constraints()
 
     def constrain_placeholder_label(self):
@@ -116,6 +116,9 @@ class MultilineTextInput(Widget):
     def set_value(self, value):
         self.native.text = self.interface._value
         self.placeholder_label.setHidden_(len(self.native.text) > 0)
+
+    def get_value(self):
+        return self.native.text
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)

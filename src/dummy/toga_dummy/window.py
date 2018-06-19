@@ -30,6 +30,9 @@ class Window(LoggedObject):
     def show(self):
         self._action('show')
 
+    def set_full_screen(self, is_full_screen):
+        self._set_value('is_full_screen', is_full_screen)
+
     @not_required_on('mobile')
     def on_close(self):
         self._action('handle Window on_close')

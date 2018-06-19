@@ -19,7 +19,7 @@ class MainWindow(Window):
         super().__init__(interface)
 
     # def startup(self):
-    #     super(MainWindow, self).startup()
+    #     super().startup()
     #     self.native.setBackgroundColor_(UIColor.whiteColor())
 
 

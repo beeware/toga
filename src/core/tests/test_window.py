@@ -1,3 +1,4 @@
+from unittest.mock import patch, MagicMock
 import toga
 import toga_dummy
 from toga.command import CommandSet
@@ -26,11 +27,40 @@ class TestWindow(TestCase):
         toolbar = self.window.toolbar
         self.assertIsInstance(toolbar, CommandSet)
 
-    def test_size_and_position_properties(self):
-        size = (640, 480)
-        self.assertEqual(size, self.window.size)
-        position = (100, 100)
-        self.assertEqual(position, self.window.position)
+    def test_size_getter_and_setter(self):
+        # Add some content
+        mock_content = MagicMock(toga.Box(factory=toga_dummy.factory))
+        self.window.content = mock_content
+
+        # Confirm defaults
+        self.assertEqual((640, 480), self.window.size)
+
+        # Test setter
+        new_size = (1200, 40)
+        mock_content.reset_mock()
+        with patch.object(self.window, '_impl'):
+            self.window.size = new_size
+            self.window._impl.set_size.assert_called_once_with(new_size)
+            self.window.content.refresh.assert_called_once_with()
+
+    def test_position_getter_and_setter(self):
+        # Confirm defaults
+        self.assertEqual((100, 100), self.window.position)
+
+        # Test setter
+        new_position = (40, 79)
+        with patch.object(self.window, '_impl'):
+            self.window.position = new_position
+            self.window._impl.set_position.assert_called_once_with(new_position)
 
     def test_full_screen_set(self):
-        self.assertEqual(self.window.full_screen, False)
+        self.assertFalse(self.window.full_screen)
+        with patch.object(self.window, '_impl'):
+            self.window.full_screen = True
+            self.assertTrue(self.window.full_screen)
+            self.window._impl.set_full_screen.assert_called_once_with(True)
+
+    def test_on_close(self):
+        with patch.object(self.window, '_impl'):
+            self.window.on_close()
+            self.window._impl.on_close.assert_called_once_with()

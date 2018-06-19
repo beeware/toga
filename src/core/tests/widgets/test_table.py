@@ -47,3 +47,33 @@ class TableTests(TestCase):
 
     def test_nothing_selected(self):
         self.assertEqual(self.table.selection, None)
+
+    def test_scroll_to_row(self):
+        self.table.data = [
+            ['a1', 'b1', 'c1'],
+            ['a2', 'b2', 'c2'],
+            ['a3', 'b3', 'c3'],
+            ['a4', 'b3', 'c4']
+        ]
+        self.table.scroll_to_row(2)
+        self.assertValueSet(self.table, 'scroll to', 2)
+
+    def test_scroll_to_top(self):
+        self.table.data = [
+            ['a1', 'b1', 'c1'],
+            ['a2', 'b2', 'c2'],
+            ['a3', 'b3', 'c3'],
+            ['a4', 'b3', 'c4']
+        ]
+        self.table.scroll_to_top()
+        self.assertValueSet(self.table, 'scroll to', 0)
+
+    def test_scroll_to_bottom(self):
+        self.table.data = [
+            ['a1', 'b1', 'c1'],
+            ['a2', 'b2', 'c2'],
+            ['a3', 'b3', 'c3'],
+            ['a4', 'b3', 'c4']
+        ]
+        self.table.scroll_to_bottom()
+        self.assertValueSet(self.table, 'scroll to', len(self.table.data) - 1)

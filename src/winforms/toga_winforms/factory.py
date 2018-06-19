@@ -1,5 +1,4 @@
 from .app import App, MainWindow
-from .color import native_color
 from .command import Command
 # from .font import font
 from .widgets.box import Box
@@ -16,13 +15,11 @@ from .widgets.optioncontainer import *
 from .widgets.passwordinput import *
 from .widgets.progressbar import *
 from .widgets.scrollcontainer import *
-# from .widgets.selection import Selection
-# from .widgets.slider import *
+from .widgets.selection import Selection
+from .widgets.slider import *
 from .widgets.splitcontainer import *
-# from .widgets.switch import *
+from .widgets.switch import *
 from .widgets.table import *
-from .widgets.textinput import *
-# from .widgets.tree import *
 from .widgets.webview import *
 from .window import Window
 
@@ -52,10 +49,10 @@ __all__ = [
     'PasswordInput',
     'ProgressBar',
     'ScrollContainer',
-    # 'Selection',
-    # 'Slider',
+    'Selection',
+    'Slider',
     'SplitContainer',
-    # 'Switch',
+    'Switch',
     'Table',
     'TextInput',
     # 'Tree',

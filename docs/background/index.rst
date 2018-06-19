@@ -9,7 +9,10 @@ Background
 
    philosophy
    faq
+   success
    releases
+   roadmap
+   architecture
+   layout
    commands
    data-sources
-   roadmap
