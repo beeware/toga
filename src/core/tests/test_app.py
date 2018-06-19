@@ -43,6 +43,13 @@ class AppTests(TestCase):
     def test_app_id(self):
         self.assertEqual(self.app.id, self.id)
 
+    def test_app_full_screen_set(self):
+        self.assertFalse(self.app.full_screen)
+        with patch.object(self.app, '_impl'):
+            self.app.full_screen = True
+            self.assertTrue(self.app.full_screen)
+            self.app._impl.set_full_screen.assert_called_once_with(True)
+
     def test_app_documents(self):
         self.assertEqual(self.app.documents, [])
         doc = MagicMock()

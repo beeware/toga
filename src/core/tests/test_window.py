@@ -53,13 +53,6 @@ class TestWindow(TestCase):
             self.window.position = new_position
             self.window._impl.set_position.assert_called_once_with(new_position)
 
-    def test_full_screen_set(self):
-        self.assertFalse(self.window.full_screen)
-        with patch.object(self.window, '_impl'):
-            self.window.full_screen = True
-            self.assertTrue(self.window.full_screen)
-            self.window._impl.set_full_screen.assert_called_once_with(True)
-
     def test_on_close(self):
         with patch.object(self.window, '_impl'):
             self.window.on_close()
