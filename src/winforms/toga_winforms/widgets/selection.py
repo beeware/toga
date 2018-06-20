@@ -26,6 +26,10 @@ class Selection(Widget):
     def add_item(self, item):
         self.native.Items.Add(item)
 
+        # WinfForm.ComboBox does not select the first item, so it's done here.
+        if not self.get_selected_item():
+            self.native.SelectedIndex = 0
+
     def select_item(self, item):
         index = self.native.FindString(item)
         self.native.SelectedItem = index
