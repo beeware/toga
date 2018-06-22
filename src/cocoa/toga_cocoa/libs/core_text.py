@@ -71,12 +71,27 @@ kCTFontItalicTrait = (1 << 0)
 kCTFontBoldTrait = (1 << 1)
 
 ######################################################################
+# CTFrame.h
+
+core_text.CTFrameGetLines.restype = c_void_p
+core_text.CTFrameGetLines.argtypes = [c_void_p]
+
+######################################################################
+# CTFramesetter.h
+
+core_text.CTFramesetterCreateWithAttributedString.restype = c_void_p
+core_text.CTFramesetterCreateWithAttributedString.argtypes = [c_void_p]
+
+core_text.CTFramesetterCreateFrame.restype = c_void_p
+core_text.CTFramesetterCreateFrame.argtypes = [c_void_p, c_void_p, c_void_p, c_void_p]
+
+######################################################################
 # CTLine.h
 
 core_text.CTLineCreateWithAttributedString.restype = c_void_p
 core_text.CTLineCreateWithAttributedString.argtypes = [c_void_p]
 
-core_text.CTLineDraw.restype = None
+core_text.CTLineDraw.restype = c_void_p
 core_text.CTLineDraw.argtypes = [c_void_p, c_void_p]
 
 ######################################################################

@@ -1,4 +1,4 @@
-from .libs import NSString, NSFont, NSFontAttributeName, NSMutableDictionary
+from .libs import NSAttributedString, NSFont, NSFontAttributeName, NSMutableDictionary
 from toga.font import (
     MESSAGE,
     NORMAL,
@@ -55,11 +55,13 @@ class Font:
 
         self.native = font
 
-    def measure(self, text, tight=False):
+    def create_string(self, text):
         font_attrs = NSMutableDictionary.alloc().init()
         font_attrs[NSFontAttributeName] = self.native
+        text_string = NSAttributedString.alloc().initWithString_(text, font_attrs)
+        return text_string
 
-        text_string = NSString.alloc().initWithString_(text)
-
-        size = text_string.sizeWithAttributes(font_attrs)
+    def measure(self, text, tight=False):
+        text_string = self.create_string(text)
+        size = text_string.size()
         return size.width, size.height

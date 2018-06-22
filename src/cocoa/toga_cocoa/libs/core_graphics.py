@@ -99,6 +99,7 @@ kCGScrollEventUnitLine = 1
 
 ######################################################################
 # CGGeometry.h
+
 CGRectMake = CGRect
 
 ######################################################################
@@ -123,3 +124,9 @@ kCGBitmapByteOrder16Little = 1 << 12
 kCGBitmapByteOrder32Little = 2 << 12
 kCGBitmapByteOrder16Big = 3 << 12
 kCGBitmapByteOrder32Big = 4 << 12
+
+######################################################################
+# CGPath.h
+
+core_graphics.CGPathCreateWithRect.argtypes = [c_void_p, c_void_p]
+core_graphics.CGPathCreateWithRect.restype = c_void_p

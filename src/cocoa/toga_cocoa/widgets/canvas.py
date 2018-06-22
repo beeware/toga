@@ -102,11 +102,7 @@ class Canvas(Widget):
             mode = CGPathDrawingMode(kCGPathFill)
         if color is not None:
             core_graphics.CGContextSetRGBFillColor(
-                draw_context,
-                color.r/255,
-                color.g/255,
-                color.b/255,
-                color.a,
+                draw_context, color.r / 255, color.g / 255, color.b / 255, color.a
             )
         else:
             # Set color to black
@@ -118,11 +114,7 @@ class Canvas(Widget):
         mode = CGPathDrawingMode(kCGPathStroke)
         if color is not None:
             core_graphics.CGContextSetRGBStrokeColor(
-                draw_context,
-                color.r/255,
-                color.g/255,
-                color.b/255,
-                color.a,
+                draw_context, color.r / 255, color.g / 255, color.b / 255, color.a
             )
         else:
             pass
@@ -154,17 +146,21 @@ class Canvas(Widget):
             write_font = self.native.font
         else:
             raise ValueError("No font to write with")
-
-        core_graphics.CGContextSelectFont(
-            draw_context, write_font.family, write_font.size, kCGEncodingFontSpecific
+        text_string = font.create_string(text)
+        frame_setter = core_text.CTFramesetterCreateWithAttributedString(text_string)
+        width, height = font.measure(text)
+        rect = CGRect(CGPoint(x, y), CGSize(width, height))
+        path = core_graphics.CGPathCreateWithRect(rect, None)
+        frame = core_text.CTFramesetterCreateFrame(
+            frame_setter, CFRange(0, 0), path, None
         )
-        core_graphics.CGContextSetTextDrawingMode(draw_context, kCGTextFillStroke)
-        core_graphics.CGContextShowTextAtPoint(draw_context, x, y, text, len(text))
+        lines = core_text.CTFrameGetLines(frame)
 
         # Support writing multiline text
-        for line in text.splitlines():
+        for line in lines:
             width, height = write_font.measure(line)
-            core_graphics.CGContextShowTextAtPoint(draw_context, x, y, line, len(line))
+            core_graphics.CGContextSetTextPosition(draw_context, x, y)
+            core_text.CTLineDraw(draw_context, line)
             y += height
 
     # Rehint
