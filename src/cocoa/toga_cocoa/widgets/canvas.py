@@ -1,4 +1,21 @@
-from toga_cocoa.libs import *
+from toga_cocoa.libs import (
+    core_graphics,
+    core_text,
+    CGPathDrawingMode,
+    CGRectMake,
+    CGRect,
+    CGSize,
+    CGPoint,
+    CFRange,
+    kCGPathStroke,
+    kCGPathEOFill,
+    kCGPathFill,
+    NSGraphicsContext,
+    NSAffineTransform,
+    NSView,
+    NSRect,
+    objc_method,
+)
 
 from .base import Widget
 
