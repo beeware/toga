@@ -44,7 +44,7 @@ class TextInput(Widget):
             self.native.font = value._impl.native
 
     def get_value(self):
-        return self.native.stringValue
+        return str(self.native.stringValue)
 
     def set_value(self, value):
         self.native.stringValue = value
