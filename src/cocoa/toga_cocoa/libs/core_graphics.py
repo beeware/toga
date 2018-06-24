@@ -13,6 +13,11 @@ core_graphics = cdll.LoadLibrary(util.find_library('CoreGraphics'))
 ######################################################################
 
 ######################################################################
+# CGAffineTransform.h
+
+CGAffineTransform_p = c_void_p
+
+######################################################################
 # CGContext.h
 CGContextRef = c_void_p
 register_preferred_encoding(b'^{__CGContext=}', CGContextRef)
@@ -74,6 +79,8 @@ core_graphics.CGContextSetRGBStrokeColor.restype = c_void_p
 core_graphics.CGContextSetRGBStrokeColor.argtypes = [CGContextRef, CGFloat, CGFloat, CGFloat, CGFloat]
 core_graphics.CGContextSetTextDrawingMode.restype = c_void_p
 core_graphics.CGContextSetTextDrawingMode.argtypes = [CGContextRef, CGTextDrawingMode]
+core_graphics.CGContextSetTextPosition.restype = c_void_p
+core_graphics.CGContextSetTextPosition.argtypes = [CGContextRef, CGFloat, CGFloat]
 core_graphics.CGContextShowTextAtPoint.restype = c_void_p
 core_graphics.CGContextShowTextAtPoint.argtypes = [CGContextRef, CGFloat, CGFloat, c_wchar_p, c_size_t]
 core_graphics.CGContextTranslateCTM.restype = c_void_p
@@ -81,7 +88,12 @@ core_graphics.CGContextTranslateCTM.argtypes = [CGContextRef, CGFloat, CGFloat]
 
 ######################################################################
 # CGEvent.h
-CGEventRef = c_void_p
+
+
+class CGEventRef(c_void_p):
+    pass
+
+
 register_preferred_encoding(b'^{__CGEvent=}', CGEventRef)
 
 CGEventSourceRef = c_void_p
@@ -100,7 +112,13 @@ kCGScrollEventUnitLine = 1
 ######################################################################
 # CGGeometry.h
 
-CGRectMake = CGRect
+
+class CGRectMake(Structure):
+    _fields_ = [
+        ("origin", CGPoint),
+        ("size", CGSize),
+    ]
+
 
 ######################################################################
 # CGImage.h
@@ -112,8 +130,6 @@ kCGImageAlphaFirst = 4
 kCGImageAlphaNoneSkipLast = 5
 kCGImageAlphaNoneSkipFirst = 6
 kCGImageAlphaOnly = 7
-
-kCGImageAlphaPremultipliedLast = 1
 
 kCGBitmapAlphaInfoMask = 0x1F
 kCGBitmapFloatComponents = 1 << 8
@@ -128,5 +144,12 @@ kCGBitmapByteOrder32Big = 4 << 12
 ######################################################################
 # CGPath.h
 
-core_graphics.CGPathCreateWithRect.argtypes = [c_void_p, c_void_p]
-core_graphics.CGPathCreateWithRect.restype = c_void_p
+
+class CGPathRef(c_void_p):
+    pass
+
+
+register_preferred_encoding(b'^{__CGPath=}', CGPathRef)
+
+core_graphics.CGPathCreateWithRect.argtypes = [CGRect, CGAffineTransform_p]
+core_graphics.CGPathCreateWithRect.restype = CGPathRef

@@ -1,17 +1,16 @@
 from toga_cocoa.libs import (
+    core_found,
     core_graphics,
     core_text,
     CGPathDrawingMode,
     CGRectMake,
-    CGRect,
-    CGSize,
-    CGPoint,
     CFRange,
     kCGPathStroke,
     kCGPathEOFill,
     kCGPathFill,
     NSGraphicsContext,
     NSAffineTransform,
+    NSPoint,
     NSView,
     NSRect,
     objc_method,
@@ -166,19 +165,22 @@ class Canvas(Widget):
         text_string = font.create_string(text)
         frame_setter = core_text.CTFramesetterCreateWithAttributedString(text_string)
         width, height = font.measure(text)
-        rect = CGRect(CGPoint(x, y), CGSize(width, height))
+        rect = CGRectMake(x, y, width, height)
         path = core_graphics.CGPathCreateWithRect(rect, None)
+        cf_range = CFRange(0, 0)
         frame = core_text.CTFramesetterCreateFrame(
-            frame_setter, CFRange(0, 0), path, None
+            frame_setter, cf_range, path, None
         )
         lines = core_text.CTFrameGetLines(frame)
-
-        # Support writing multiline text
-        for line in lines:
-            width, height = write_font.measure(line)
-            core_graphics.CGContextSetTextPosition(draw_context, x, y)
-            core_text.CTLineDraw(draw_context, line)
-            y += height
+        line_count = core_found.CFArrayGetCount(lines)
+        line_origins = (NSPoint * line_count)()
+        for count in range(line_count):
+            core_text.CTFrameGetLineOrigins(frame, cf_range, line_origins)
+            line = core_found.CFArrayGetValueAtIndex(lines, count)
+            core_graphics.CGContextSetTextPosition(
+                draw_context, line_origins[count].x, line_origins[count].y
+            )
+            core_text.CTLineDraw(line, draw_context)
 
     # Rehint
 
