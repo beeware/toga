@@ -36,7 +36,7 @@ class TextInput(Widget):
         self.native.placeholder = value
 
     def get_value(self):
-        return self.native.text
+        return str(self.native.text)
 
     def set_value(self, value):
         self.native.text = value
