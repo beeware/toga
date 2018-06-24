@@ -26,9 +26,10 @@ class TogaTable(NSTableView):
             }
             data_row._impls = data
 
-        datum = data[column.identifier]
+        col_identifier = str(column.identifier)
 
-        value = getattr(data_row, column.identifier)
+        datum = data[col_identifier]
+        value = getattr(data_row, col_identifier)
 
         # Allow for an (icon, value) tuple as the simple case
         # for encoding an icon in a table cell.
