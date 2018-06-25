@@ -17,6 +17,7 @@ from toga_cocoa.libs import (
 )
 
 from .base import Widget
+from .box import TogaView
 
 
 class TogaCanvas(NSView):
@@ -174,11 +175,11 @@ class Canvas(Widget):
         lines = core_text.CTFrameGetLines(frame)
         line_count = core_found.CFArrayGetCount(lines)
         line_origins = (NSPoint * line_count)()
+        core_text.CTFrameGetLineOrigins(frame, cf_range, line_origins)
         for count in range(line_count):
-            core_text.CTFrameGetLineOrigins(frame, cf_range, line_origins)
             line = core_found.CFArrayGetValueAtIndex(lines, count)
             core_graphics.CGContextSetTextPosition(
-                draw_context, line_origins[count].x, line_origins[count].y
+                draw_context, x + line_origins[count].x, y + line_origins[count].y
             )
             core_text.CTLineDraw(line, draw_context)
 
