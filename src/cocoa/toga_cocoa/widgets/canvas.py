@@ -17,7 +17,6 @@ from toga_cocoa.libs import (
 )
 
 from .base import Widget
-from .box import TogaView
 
 
 class TogaCanvas(NSView):
@@ -26,10 +25,11 @@ class TogaCanvas(NSView):
         context = NSGraphicsContext.currentContext.graphicsPort()
 
         # Flip the coordinate system back to normal (unflipped)
-        xform = NSAffineTransform.transform()
-        xform.translateXBy(0.0, yBy=rect.size.height)
-        xform.scaleXBy(1.0, yBy=-1.0)
-        xform.concat()
+        if self.isFlipped:
+            xform = NSAffineTransform.transform()
+            xform.translateXBy(0.0, yBy=rect.size.height)
+            xform.scaleXBy(1.0, yBy=-1.0)
+            xform.concat()
 
         if self.interface.redraw:
             self.interface._draw(self._impl, draw_context=context)
@@ -163,7 +163,12 @@ class Canvas(Widget):
             write_font = self.native.font
         else:
             raise ValueError("No font to write with")
-        text_string = font.create_string(text)
+
+        # Flip the coordinate system for text drawing
+        flip = core_graphics.CGAffineTransformMakeScale(1, -1)
+        core_graphics.CGContextSetTextMatrix(draw_context, flip)
+
+        text_string = write_font.create_string(text)
         frame_setter = core_text.CTFramesetterCreateWithAttributedString(text_string)
         width, height = font.measure(text)
         rect = CGRectMake(x, y, width, height)
@@ -176,12 +181,18 @@ class Canvas(Widget):
         line_count = core_found.CFArrayGetCount(lines)
         line_origins = (NSPoint * line_count)()
         core_text.CTFrameGetLineOrigins(frame, cf_range, line_origins)
-        for count in range(line_count):
-            line = core_found.CFArrayGetValueAtIndex(lines, count)
+        for c in range(line_count):
+            line = core_found.CFArrayGetValueAtIndex(lines, c)
             core_graphics.CGContextSetTextPosition(
-                draw_context, x + line_origins[count].x, y + line_origins[count].y
+                draw_context, x + line_origins[c].x, y + line_origins[c].y
             )
             core_text.CTLineDraw(line, draw_context)
+
+        # Cleanup
+        core_found.CFRelease(frame)
+        core_found.CFRelease(path)
+        core_found.CFRelease(frame_setter)
+        core_found.CFRelease(text_string)
 
     # Rehint
 

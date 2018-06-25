@@ -33,3 +33,6 @@ core_found.CFArrayGetCount.restype = CFIndex
 core_found.CFArrayGetValueAtIndex.argtypes = [CFArrayRef, CFIndex]
 core_found.CFArrayGetValueAtIndex.restype = c_void_p
 
+CFTypeRef = c_void_p
+core_found.CFRelease.argtypes = [CFTypeRef]
+core_found.CFRelease.restype = c_void_p

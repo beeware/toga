@@ -15,7 +15,22 @@ core_graphics = cdll.LoadLibrary(util.find_library('CoreGraphics'))
 ######################################################################
 # CGAffineTransform.h
 
+
+class CGAffineTransform(Structure):
+    _fields_ = [
+        ("a", CGFloat),
+        ("b", CGFloat),
+        ("c", CGFloat),
+        ("d", CGFloat),
+        ("tx", CGFloat),
+        ("ty", CGFloat),
+    ]
+
+
 CGAffineTransform_p = c_void_p
+core_graphics.CGAffineTransformIdentity = CGAffineTransform
+core_graphics.CGAffineTransformMakeScale.restype = CGAffineTransform
+core_graphics.CGAffineTransformMakeScale.argtypes = [CGFloat, CGFloat]
 
 ######################################################################
 # CGContext.h
@@ -79,6 +94,8 @@ core_graphics.CGContextSetRGBStrokeColor.restype = c_void_p
 core_graphics.CGContextSetRGBStrokeColor.argtypes = [CGContextRef, CGFloat, CGFloat, CGFloat, CGFloat]
 core_graphics.CGContextSetTextDrawingMode.restype = c_void_p
 core_graphics.CGContextSetTextDrawingMode.argtypes = [CGContextRef, CGTextDrawingMode]
+core_graphics.CGContextSetTextMatrix.restype = c_void_p
+core_graphics.CGContextSetTextMatrix.argtypes = [CGContextRef, CGAffineTransform]
 core_graphics.CGContextSetTextPosition.restype = c_void_p
 core_graphics.CGContextSetTextPosition.argtypes = [CGContextRef, CGFloat, CGFloat]
 core_graphics.CGContextShowTextAtPoint.restype = c_void_p
