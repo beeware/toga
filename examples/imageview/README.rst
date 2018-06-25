@@ -9,12 +9,12 @@ parameters are set for height and width.
 
 The bottom image view has an image loaded from a remote URL. No
 style parameters are set so Pack should figure out how to use
-the remaining space. 
+the remaining space.
 
 Quickstart
 ~~~~~~~~~~
 
 To run this example:
 
-    $ pip install toga
+    $ pip install --pre toga
     $ python -m imageview

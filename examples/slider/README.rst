@@ -13,6 +13,5 @@ Quickstart
 
 To run this example:
 
-    > pip install toga
+    > pip install --pre toga
     > python -m slider
-
