@@ -14,5 +14,4 @@ Quickstart
 
 To run this example:
 
-    > pip install --pre toga
-    > python -m selection
+    $ python -m selection

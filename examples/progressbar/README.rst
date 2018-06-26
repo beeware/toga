@@ -12,5 +12,4 @@ Quickstart
 
 To run this example:
 
-    > pip install --pre toga
-    > python -m progressbar
+    $ python -m progressbar
