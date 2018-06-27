@@ -183,9 +183,14 @@ class Canvas(Widget):
         core_text.CTFrameGetLineOrigins(frame, cf_range, line_origins)
         for c in range(line_count):
             line = core_found.CFArrayGetValueAtIndex(lines, c)
+
+            # Calculate line origin with coordinates flipped back (top to bottom)
             core_graphics.CGContextSetTextPosition(
-                draw_context, x + line_origins[c].x, y + line_origins[c].y
+                draw_context,
+                rect.origin.x + line_origins[c].x,
+                rect.origin.y - line_origins[c].y,
             )
+
             core_text.CTLineDraw(line, draw_context)
 
         # Cleanup

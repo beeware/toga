@@ -86,7 +86,8 @@ core_text.CTFrameGetLines.restype = CFArrayRef
 core_text.CTFrameGetLines.argtypes = [CTFrameRef]
 
 core_text.CTFrameGetLineOrigins.restype = c_void_p
-core_text.CTFrameGetLineOrigins.argtypes = [CTFrameRef, CFRange, CGPoint * 1] # TODO make array size variable
+# ctypes allows array instances of CGPoint to be passed to POINTER(CGPoint)
+core_text.CTFrameGetLineOrigins.argtypes = [CTFrameRef, CFRange, POINTER(CGPoint)]
 
 ######################################################################
 # CTFramesetter.h
