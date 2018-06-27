@@ -112,7 +112,7 @@ class DetailedList(Widget):
     def change(self, item):
         self.native.reloadData()
 
-    def remove(self, item):
+    def remove(self, item, index):
         self.native.reloadData()
 
     def clear(self):

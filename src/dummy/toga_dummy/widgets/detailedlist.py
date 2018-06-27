@@ -14,8 +14,8 @@ class DetailedList(Widget):
     def change(self, item):
         self._action('change', item=item)
 
-    def remove(self, item):
-        self._action('remove', item=item)
+    def remove(self, item, index):
+        self._action('remove', item=item, index=index)
 
     def clear(self):
         self._action('clear')

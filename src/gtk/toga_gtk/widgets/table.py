@@ -43,7 +43,9 @@ class Table(Tree):
     def change(self, item):
         super().change(item)
 
-    def remove(self, item):
+    def remove(self, item, index):
+        # TODO: fix this confusing super call; the remove function signature is
+        # different here
         super().remove(item)
 
     def clear(self):

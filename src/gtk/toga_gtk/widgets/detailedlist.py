@@ -25,7 +25,7 @@ class DetailedList(Widget):
         # TODO
         self.interface.factory.not_implemented('DetailedList.change()')
 
-    def remove(self, item):
+    def remove(self, item, index):
         # TODO
         self.interface.factory.not_implemented('DetailedList.remove()')
 
