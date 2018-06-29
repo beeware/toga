@@ -9,7 +9,7 @@ from rubicon.objc.types import register_preferred_encoding
 from rubicon.objc import *
 
 from .core_graphics import CGPathRef, CGContextRef
-from .core_foundation import CFArrayRef
+from .core_foundation import CFArrayRef, CFAttributedStringRef
 
 ######################################################################
 core_text = cdll.LoadLibrary(util.find_library('CoreText'))
@@ -96,13 +96,16 @@ core_text.CTFrameGetLineOrigins.argtypes = [CTFrameRef, CFRange, POINTER(CGPoint
 class CTFramesetterRef(c_void_p):
     pass
 
+
 register_preferred_encoding(b'^{__CTFramesetter=}', CTFramesetterRef)
 
-NSAttributedStringRef = c_void_p
-register_preferred_encoding(b'^{__NSAttributedString=}', NSAttributedStringRef)
+
+class NSAttributedStringRef(c_void_p):
+    pass
+
 
 core_text.CTFramesetterCreateWithAttributedString.restype = CTFramesetterRef
-core_text.CTFramesetterCreateWithAttributedString.argtypes = [NSAttributedStringRef]
+core_text.CTFramesetterCreateWithAttributedString.argtypes = [CFAttributedStringRef]
 
 
 class CTFrameRef(c_void_p):

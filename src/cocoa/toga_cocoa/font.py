@@ -1,4 +1,4 @@
-from .libs import NSAttributedString, NSFont, NSFontAttributeName, NSMutableDictionary
+from .libs import NSAttributedString, NSFont, NSFontAttributeName, NSMutableDictionary, pointer
 from toga.font import (
     MESSAGE,
     NORMAL,

@@ -86,7 +86,7 @@ class StartApp(toga.App):
     def draw_text(self):
         x = 32
         y = 185
-        font = toga.Font(family=SANS_SERIF, size=20)
+        font = toga.Font(family=SANS_SERIF, size=50)
         width, height = font.measure('Tiberius', tight=True)
         with self.canvas.stroke(line_width=4.0) as rect_stroker:
             rect_stroker.rect(x - 10, y - height + 2, width, height + 2)

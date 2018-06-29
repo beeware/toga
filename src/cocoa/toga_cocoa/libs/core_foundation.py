@@ -13,6 +13,17 @@ core_found = cdll.LoadLibrary(util.find_library('CoreFoundation'))
 ######################################################################
 
 ######################################################################
+# CFAttributedString.h
+
+
+class CFAttributedStringRef(c_void_p):
+    pass
+
+
+register_preferred_encoding(b'^{__CFAttributedString=}', CFAttributedStringRef)
+
+
+######################################################################
 # CFArray.h
 
 

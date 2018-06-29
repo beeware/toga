@@ -1,7 +1,9 @@
 from toga_cocoa.libs import (
+    cast,
     core_found,
     core_graphics,
     core_text,
+    CFAttributedStringRef,
     CGPathDrawingMode,
     CGRectMake,
     CFRange,
@@ -169,7 +171,8 @@ class Canvas(Widget):
         core_graphics.CGContextSetTextMatrix(draw_context, flip)
 
         text_string = write_font.create_string(text)
-        frame_setter = core_text.CTFramesetterCreateWithAttributedString(text_string)
+        cf_string = cast(text_string, CFAttributedStringRef)
+        frame_setter = core_text.CTFramesetterCreateWithAttributedString(cf_string)
         width, height = font.measure(text)
         rect = CGRectMake(x, y, width, height)
         path = core_graphics.CGPathCreateWithRect(rect, None)
