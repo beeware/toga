@@ -21,15 +21,15 @@ class Selection(Widget):
         self.native = TogaComboBox(self.interface)
 
     def insert(self, index, item):
-        '''Listener method for ListSource'''
+        # Listener method for ListSource
         self.interface.factory.not_implemented('Selection.insert()')
 
     def remove(self, item):
-        '''Listener method for ListSource'''
+        # Listener method for ListSource
         self.interface.factory.not_implemented('Selection.remove()')
 
     def clear(self):
-        '''Listener method for ListSource'''
+        # Listener method for ListSource
         self.native.Items.Clear()
 
     def change_source(self, source):

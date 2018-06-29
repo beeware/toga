@@ -51,15 +51,15 @@ class Selection(Widget):
         self.interface.intrinsic.height = fitting_size.height
 
     def insert(self, index, item):
-        '''Listener method for ListSource'''
+        # Listener method for ListSource
         self.interface.factory.not_implemented('Selection.insert()')
 
     def remove(self, item):
-        '''Listener method for ListSource'''
+        # Listener method for ListSource
         self.interface.factory.not_implemented('Selection.remove()')
 
     def clear(self):
-        '''Listener method for ListSource'''
+        # Listener method for ListSource
         self.interface.factory.not_implemented('Selection.clear()')
 
     def change_source(self, source):

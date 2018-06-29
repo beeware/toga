@@ -18,15 +18,15 @@ class Selection(Widget):
             self.interface.on_select(widget)
 
     def insert(self, index, item):
-        '''Listener method for ListSource'''
+        # Listener method for ListSource
         self.native.insert_text(index, item.label)
 
     def remove(self, item):
-        '''Listener method for ListSource'''
+        # Listener method for ListSource
         self.interface.factory.not_implemented('Selection.remove()')
 
     def clear(self):
-        '''Listener method for ListSource'''
+        # Listener method for ListSource
         self.native.remove_all()
 
     def change_source(self, source):

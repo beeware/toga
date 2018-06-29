@@ -29,15 +29,15 @@ class Selection(Widget):
         self.interface.intrinsic.width = at_least(max(self.interface.MIN_WIDTH, content_size.width))
 
     def insert(self, index, item):
-        '''Listener method for ListSource'''
+        # Listener method for ListSource
         self.interface.factory.not_implemented('Selection.insert()')
 
     def remove(self, item):
-        '''Listener method for ListSource'''
+        # Listener method for ListSource
         self.interface.factory.not_implemented('Selection.remove()')
 
     def clear(self):
-        '''Listener method for ListSource'''
+        # Listener method for ListSource
         self.native.removeAllItems()
 
     def change_source(self, source):
