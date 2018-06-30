@@ -18,7 +18,10 @@ from .base import Widget
 class TogaNumericTextField(UITextField):
     @objc_method
     def textFieldDidChange_(self, notification) -> None:
-        self.interface._value = Decimal(self.text).quantize(self.interface.step)
+        if self.text:
+            self.interface._value = Decimal(str(self.text)).quantize(self.interface.step)
+        else:
+            self.interface._value = None
         if self.interface.on_change:
             self.interface.on_change(self.interface)
 
