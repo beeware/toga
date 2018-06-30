@@ -10,7 +10,7 @@ from .libs import (NSNotificationCenter,
     UIKeyboardWillShowNotification,
     UIResponder
 )
-    
+
 from .window import Window
 
 
@@ -97,3 +97,9 @@ class App:
         # main iOS event loop.
 
         self.loop.run_forever(lifecycle=iOSLifecycle())
+
+    def exit(self):
+        pass
+
+    def set_on_exit(self, value):
+        pass
