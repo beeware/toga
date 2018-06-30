@@ -148,6 +148,8 @@ kCGImageAlphaNoneSkipLast = 5
 kCGImageAlphaNoneSkipFirst = 6
 kCGImageAlphaOnly = 7
 
+kCGImageAlphaPremultipliedLast = 1
+
 kCGBitmapAlphaInfoMask = 0x1F
 kCGBitmapFloatComponents = 1 << 8
 
