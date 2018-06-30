@@ -11,7 +11,6 @@ from toga_cocoa.libs import (
     kCGPathEOFill,
     kCGPathFill,
     NSGraphicsContext,
-    NSAffineTransform,
     NSPoint,
     NSView,
     NSRect,
@@ -26,15 +25,13 @@ class TogaCanvas(NSView):
     def drawRect_(self, rect: NSRect) -> None:
         context = NSGraphicsContext.currentContext.graphicsPort()
 
-        # Flip the coordinate system back to normal (unflipped)
-        if self.isFlipped:
-            xform = NSAffineTransform.transform()
-            xform.translateXBy(0.0, yBy=rect.size.height)
-            xform.scaleXBy(1.0, yBy=-1.0)
-            xform.concat()
-
         if self.interface.redraw:
             self.interface._draw(self._impl, draw_context=context)
+
+    @objc_method
+    def isFlipped(self) -> bool:
+        # Default Cocoa coordinate frame is around the wrong way.
+        return True
 
 
 class Canvas(Widget):
