@@ -89,7 +89,7 @@ class StartApp(toga.App):
         font = toga.Font(family=SANS_SERIF, size=20)
         width, height = font.measure('Tiberius', tight=True)
         with self.canvas.stroke(line_width=4.0) as rect_stroker:
-            rect_stroker.rect(x, y - height + 2, width, height + 2)
+            rect_stroker.rect(x - 2, y - height + 2, width, height + 2)
         with self.canvas.fill(color=rgb(149, 119, 73)) as text_filler:
             text_filler.write_text('Tiberius', x, y, font)
 
