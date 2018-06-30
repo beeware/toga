@@ -157,16 +157,3 @@ kCGBitmapByteOrder16Little = 1 << 12
 kCGBitmapByteOrder32Little = 2 << 12
 kCGBitmapByteOrder16Big = 3 << 12
 kCGBitmapByteOrder32Big = 4 << 12
-
-######################################################################
-# CGPath.h
-
-
-class CGPathRef(c_void_p):
-    pass
-
-
-register_preferred_encoding(b'^{__CGPath=}', CGPathRef)
-
-core_graphics.CGPathCreateWithRect.argtypes = [CGRect, CGAffineTransform_p]
-core_graphics.CGPathCreateWithRect.restype = CGPathRef
