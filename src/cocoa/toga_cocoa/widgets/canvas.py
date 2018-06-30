@@ -1,16 +1,14 @@
 from toga_cocoa.libs import (
-    cast,
-    core_found,
     core_graphics,
-    core_text,
-    CFAttributedStringRef,
     CGPathDrawingMode,
     CGRectMake,
-    CFRange,
     kCGPathStroke,
     kCGPathEOFill,
     kCGPathFill,
+    NSAttributedString,
+    NSFontAttributeName,
     NSGraphicsContext,
+    NSMutableDictionary,
     NSPoint,
     NSView,
     NSRect,
@@ -163,41 +161,11 @@ class Canvas(Widget):
         else:
             raise ValueError("No font to write with")
 
-        # Flip the coordinate system for text drawing
-        flip = core_graphics.CGAffineTransformMakeScale(1, -1)
-        core_graphics.CGContextSetTextMatrix(draw_context, flip)
-
-        text_string = write_font.create_string(text)
-        cf_string = cast(text_string, CFAttributedStringRef)
-        frame_setter = core_text.CTFramesetterCreateWithAttributedString(cf_string)
-        width, height = font.measure(text)
-        rect = CGRectMake(x, y, width, height)
-        path = core_graphics.CGPathCreateWithRect(rect, None)
-        cf_range = CFRange(0, 0)
-        frame = core_text.CTFramesetterCreateFrame(
-            frame_setter, cf_range, path, None
-        )
-        lines = core_text.CTFrameGetLines(frame)
-        line_count = core_found.CFArrayGetCount(lines)
-        line_origins = (NSPoint * line_count)()
-        core_text.CTFrameGetLineOrigins(frame, cf_range, line_origins)
-        for c in range(line_count):
-            line = core_found.CFArrayGetValueAtIndex(lines, c)
-
-            # Calculate line origin with coordinates flipped back (top to bottom)
-            core_graphics.CGContextSetTextPosition(
-                draw_context,
-                rect.origin.x + line_origins[c].x,
-                rect.origin.y - line_origins[c].y,
-            )
-
-            core_text.CTLineDraw(line, draw_context)
-
-        # Cleanup
-        core_found.CFRelease(frame)
-        core_found.CFRelease(path)
-        core_found.CFRelease(frame_setter)
-        core_found.CFRelease(text_string)
+        width, height = write_font.measure(text)
+        textAttributes = NSMutableDictionary.alloc().init()
+        textAttributes[NSFontAttributeName] = write_font._impl.native
+        text_string = NSAttributedString.alloc().initWithString_attributes_(text, textAttributes)
+        text_string.drawAtPoint(NSPoint(x, y - height))
 
     # Rehint
 
