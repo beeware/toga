@@ -7,15 +7,20 @@ from toga_cocoa.libs import (
     kCGPathFill,
     NSAttributedString,
     NSFontAttributeName,
+    NSForegroundColorAttributeName,
     NSGraphicsContext,
     NSMutableDictionary,
     NSPoint,
-    NSView,
+    NSStrokeColorAttributeName,
+    NSStrokeWidthAttributeName,
+    NSRange,
     NSRect,
+    NSView,
     objc_method,
 )
 
 from .base import Widget
+from ..color import native_color
 
 
 class TogaCanvas(NSView):
@@ -46,29 +51,42 @@ class Canvas(Widget):
 
     # Basic paths
 
-    def new_path(self, draw_context):
+    def new_path(self, draw_context, *args, **kwargs):
         core_graphics.CGContextBeginPath(draw_context)
 
-    def closed_path(self, x, y, draw_context):
+    def closed_path(self, x, y, draw_context, *args, **kwargs):
         core_graphics.CGContextClosePath(draw_context)
 
-    def move_to(self, x, y, draw_context):
+    def move_to(self, x, y, draw_context, *args, **kwargs):
         core_graphics.CGContextMoveToPoint(draw_context, x, y)
 
-    def line_to(self, x, y, draw_context):
+    def line_to(self, x, y, draw_context, *args, **kwargs):
         core_graphics.CGContextAddLineToPoint(draw_context, x, y)
 
     # Basic shapes
 
-    def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y, draw_context):
+    def bezier_curve_to(
+        self, cp1x, cp1y, cp2x, cp2y, x, y, draw_context, *args, **kwargs
+    ):
         core_graphics.CGContextAddCurveToPoint(
             draw_context, cp1x, cp1y, cp2x, cp2y, x, y
         )
 
-    def quadratic_curve_to(self, cpx, cpy, x, y, draw_context):
+    def quadratic_curve_to(self, cpx, cpy, x, y, draw_context, *args, **kwargs):
         core_graphics.CGContextAddQuadCurveToPoint(draw_context, cpx, cpy, x, y)
 
-    def arc(self, x, y, radius, startangle, endangle, anticlockwise, draw_context):
+    def arc(
+        self,
+        x,
+        y,
+        radius,
+        startangle,
+        endangle,
+        anticlockwise,
+        draw_context,
+        *args,
+        **kwargs,
+    ):
         # Cocoa Box Widget is using a flipped coordinate system, so clockwise
         # is actually anticlockwise
         if anticlockwise:
@@ -90,6 +108,8 @@ class Canvas(Widget):
         endangle,
         anticlockwise,
         draw_context,
+        *args,
+        **kwargs,
     ):
         core_graphics.CGContextSaveGState(draw_context)
         self.translate(x, y, draw_context)
@@ -103,13 +123,13 @@ class Canvas(Widget):
         self.reset_transform(draw_context)  # TODO Reset transform is not implemented
         core_graphics.CGContextRestoreGState(draw_context)
 
-    def rect(self, x, y, width, height, draw_context):
+    def rect(self, x, y, width, height, draw_context, *args, **kwargs):
         rectangle = CGRectMake(x, y, width, height)
         core_graphics.CGContextAddRect(draw_context, rectangle)
 
     # Drawing Paths
 
-    def fill(self, color, fill_rule, preserve, draw_context):
+    def fill(self, color, fill_rule, preserve, draw_context, *args, **kwargs):
         if fill_rule is "evenodd":
             mode = CGPathDrawingMode(kCGPathEOFill)
         else:
@@ -123,7 +143,7 @@ class Canvas(Widget):
             core_graphics.CGContextSetRGBFillColor(draw_context, 0, 0, 0, 1)
         core_graphics.CGContextDrawPath(draw_context, mode)
 
-    def stroke(self, color, line_width, draw_context):
+    def stroke(self, color, line_width, draw_context, *args, **kwargs):
         core_graphics.CGContextSetLineWidth(draw_context, line_width)
         mode = CGPathDrawingMode(kCGPathStroke)
         if color is not None:
@@ -138,21 +158,21 @@ class Canvas(Widget):
 
     # Transformations
 
-    def rotate(self, radians, draw_context):
+    def rotate(self, radians, draw_context, *args, **kwargs):
         core_graphics.CGContextRotateCTM(draw_context, radians)
 
-    def scale(self, sx, sy, draw_context):
+    def scale(self, sx, sy, draw_context, *args, **kwargs):
         core_graphics.CGContextScaleCTM(draw_context, sx, sy)
 
-    def translate(self, tx, ty, draw_context):
+    def translate(self, tx, ty, draw_context, *args, **kwargs):
         core_graphics.CGContextTranslateCTM(draw_context, tx, ty)
 
-    def reset_transform(self, draw_context):
+    def reset_transform(self, draw_context, *args, **kwargs):
         pass
 
     # Text
 
-    def write_text(self, text, x, y, font, draw_context):
+    def write_text(self, text, x, y, font, *args, **kwargs):
         # Set font family and size
         if font:
             write_font = font
@@ -164,7 +184,32 @@ class Canvas(Widget):
         width, height = write_font.measure(text)
         textAttributes = NSMutableDictionary.alloc().init()
         textAttributes[NSFontAttributeName] = write_font._impl.native
-        text_string = NSAttributedString.alloc().initWithString_attributes_(text, textAttributes)
+
+        if "stroke_color" in kwargs and "fill_color" in kwargs:
+            textAttributes[NSStrokeColorAttributeName] = native_color(
+                kwargs["stroke_color"]
+            )
+            # Apply negative NSStrokeWidthAttributeName to get stroke and fill
+            textAttributes[NSStrokeWidthAttributeName] = -1 * kwargs["text_line_width"]
+            textAttributes[NSForegroundColorAttributeName] = native_color(
+                kwargs["fill_color"]
+            )
+        elif "stroke_color" in kwargs:
+            textAttributes[NSStrokeColorAttributeName] = native_color(
+                kwargs["stroke_color"]
+            )
+            textAttributes[NSStrokeWidthAttributeName] = kwargs["text_line_width"]
+        elif "fill_color" in kwargs:
+            textAttributes[NSForegroundColorAttributeName] = native_color(
+                kwargs["fill_color"]
+            )
+        else:
+            raise ValueError("No stroke or fill of write text")
+
+        text_string = NSAttributedString.alloc().initWithString_attributes_(
+            text, textAttributes
+        )
+        print(text_string.attributesAtIndex_effectiveRange_(0, NSRange(0, 0)))
         text_string.drawAtPoint(NSPoint(x, y - height))
 
     # Rehint
