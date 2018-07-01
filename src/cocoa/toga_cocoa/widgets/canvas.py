@@ -85,7 +85,7 @@ class Canvas(Widget):
         anticlockwise,
         draw_context,
         *args,
-        **kwargs,
+        **kwargs
     ):
         # Cocoa Box Widget is using a flipped coordinate system, so clockwise
         # is actually anticlockwise
@@ -109,7 +109,7 @@ class Canvas(Widget):
         anticlockwise,
         draw_context,
         *args,
-        **kwargs,
+        **kwargs
     ):
         core_graphics.CGContextSaveGState(draw_context)
         self.translate(x, y, draw_context)

@@ -78,7 +78,7 @@ class Canvas(Widget):
         anticlockwise,
         draw_context,
         *args,
-        **kwargs,
+        **kwargs
     ):
         if anticlockwise:
             draw_context.arc_negative(x, y, radius, startangle, endangle)
@@ -97,7 +97,7 @@ class Canvas(Widget):
         anticlockwise,
         draw_context,
         *args,
-        **kwargs,
+        **kwargs
     ):
         draw_context.save()
         draw_context.translate(x, y)
