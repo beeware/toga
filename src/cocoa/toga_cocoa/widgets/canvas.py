@@ -13,7 +13,6 @@ from toga_cocoa.libs import (
     NSPoint,
     NSStrokeColorAttributeName,
     NSStrokeWidthAttributeName,
-    NSRange,
     NSRect,
     NSView,
     objc_method,
@@ -120,7 +119,7 @@ class Canvas(Widget):
             self.scale(radiusx / radiusy, 1, draw_context)
             self.arc(0, 0, radiusy, startangle, endangle, anticlockwise, draw_context)
         self.rotate(rotation, draw_context)
-        self.reset_transform(draw_context)  # TODO Reset transform is not implemented
+        self.reset_transform(draw_context)
         core_graphics.CGContextRestoreGState(draw_context)
 
     def rect(self, x, y, width, height, draw_context, *args, **kwargs):
@@ -151,7 +150,6 @@ class Canvas(Widget):
                 draw_context, color.r / 255, color.g / 255, color.b / 255, color.a
             )
         else:
-            pass
             # Set color to black
             core_graphics.CGContextSetRGBStrokeColor(draw_context, 0, 0, 0, 1)
         core_graphics.CGContextDrawPath(draw_context, mode)
@@ -168,7 +166,9 @@ class Canvas(Widget):
         core_graphics.CGContextTranslateCTM(draw_context, tx, ty)
 
     def reset_transform(self, draw_context, *args, **kwargs):
-        pass
+        ctm = core_graphics.CGContextGetCTM(draw_context)
+        invert_transform = core_graphics.CGAffineTransformInvert(ctm)
+        core_graphics.CGContextConcatCTM(draw_context, invert_transform)
 
     # Text
 
@@ -209,7 +209,6 @@ class Canvas(Widget):
         text_string = NSAttributedString.alloc().initWithString_attributes_(
             text, textAttributes
         )
-        print(text_string.attributesAtIndex_effectiveRange_(0, NSRange(0, 0)))
         text_string.drawAtPoint(NSPoint(x, y - height))
 
     # Rehint

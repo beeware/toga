@@ -27,8 +27,9 @@ class CGAffineTransform(Structure):
     ]
 
 
-CGAffineTransform_p = c_void_p
 core_graphics.CGAffineTransformIdentity = CGAffineTransform
+core_graphics.CGAffineTransformInvert.restype = CGAffineTransform
+core_graphics.CGAffineTransformInvert.argtypes = [CGAffineTransform]
 core_graphics.CGAffineTransformMakeScale.restype = CGAffineTransform
 core_graphics.CGAffineTransformMakeScale.argtypes = [CGFloat, CGFloat]
 
@@ -70,10 +71,14 @@ core_graphics.CGContextAddRect.restype = c_void_p
 core_graphics.CGContextAddRect.argtypes = [CGContextRef, CGRect]
 core_graphics.CGContextBeginPath.restype = c_void_p
 core_graphics.CGContextBeginPath.argtypes = [c_void_p]
+core_graphics.CGContextConcatCTM.restype = c_void_p
+core_graphics.CGContextConcatCTM.argtypes = [CGContextRef, CGAffineTransform]
 core_graphics.CGContextClosePath.restype = c_void_p
 core_graphics.CGContextClosePath.argtypes = [c_void_p]
 core_graphics.CGContextDrawPath.restype = c_void_p
 core_graphics.CGContextDrawPath.argtypes = [CGContextRef, CGPathDrawingMode]
+core_graphics.CGContextGetCTM.restype = CGAffineTransform
+core_graphics.CGContextGetCTM.argtypes = [CGContextRef]
 core_graphics.CGContextMoveToPoint.restype = c_void_p
 core_graphics.CGContextMoveToPoint.argtypes = [CGContextRef, CGFloat, CGFloat]
 core_graphics.CGContextRestoreGState.restype = c_void_p
