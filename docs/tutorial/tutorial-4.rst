@@ -4,10 +4,6 @@ Let's draw on a canvas!
 
 .. include:: /tutorial/tutorial-issues-note.rst
 
-.. note:: This tutorial only works on GTK for now!
-
-    Want to help out? Maybe you could port the Canvas widget to other platforms?
-
 One of the main capabilities needed to create many types of GUI applications is
 the ability to draw and manipulate lines, shapes, text, and other graphics. To
 do this in Toga, we use the Canvas Widget.

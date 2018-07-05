@@ -393,6 +393,7 @@ class Fill(Context):
         """
         impl.new_path(*args, **kwargs)
         for obj in self.drawing_objects:
+            kwargs["fill_color"] = self.color
             obj._draw(impl, *args, **kwargs)
         impl.fill(self.color, self.fill_rule, self.preserve, *args, **kwargs)
 
@@ -437,6 +438,8 @@ class Stroke(Context):
 
         """
         for obj in self.drawing_objects:
+            kwargs["stroke_color"] = self.color
+            kwargs["text_line_width"] = self.line_width
             obj._draw(impl, *args, **kwargs)
         impl.stroke(self.color, self.line_width, *args, **kwargs)
 
