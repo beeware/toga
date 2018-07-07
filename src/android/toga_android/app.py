@@ -56,3 +56,9 @@ class App:
         # Main loop is a no-op on Android; the app loop is integrated with the
         # main Android event loop.
         pass
+
+    def exit(self):
+        pass
+
+    def set_on_exit(self, value):
+        pass

@@ -58,8 +58,9 @@ class TogaTree(NSOutlineView):
 
     @objc_method
     def outlineView_objectValueForTableColumn_byItem_(self, tree, column, item):
+        col_identifier = str(column.identifier)
         try:
-            value = getattr(item.attrs['node'], column.identifier)
+            value = getattr(item.attrs['node'], col_identifier)
 
             # Allow for an (icon, value) tuple as the simple case
             # for encoding an icon in a table cell. Otherwise, look
@@ -91,7 +92,7 @@ class TogaTree(NSOutlineView):
         # If an icon is present, create a TogaData object.
         # Otherwise, just use the string (because a Python string)
         # is transparently an ObjC object, so it works as a value.
-        obj = item.attrs['values'][column.identifier]
+        obj = item.attrs['values'][col_identifier]
         if obj is None or isinstance(obj, str):
             if icon:
                 # Create a TogaData value
@@ -103,7 +104,7 @@ class TogaTree(NSOutlineView):
             else:
                 # Create/Update the string value
                 obj = str(value)
-            item.attrs['values'][column.identifier] = obj
+            item.attrs['values'][col_identifier] = obj
         else:
             # Datum exists, and is currently an icon.
             if icon:
@@ -115,7 +116,7 @@ class TogaTree(NSOutlineView):
             else:
                 # Convert to a simple string.
                 obj = str(value)
-                item.attrs['values'][column.identifier] = obj
+                item.attrs['values'][col_identifier] = obj
 
         return obj
 

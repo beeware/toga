@@ -41,6 +41,12 @@ class App(AppInterface):
     def create_menus(self):
         self.interface.factory.not_implemented('App.create_menus()')
 
+    def exit(self):
+        pass
+
+    def set_on_exit(self, value):
+        pass
+
     # ====
 
     # def materialize(self):
