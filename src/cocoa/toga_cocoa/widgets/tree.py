@@ -58,7 +58,8 @@ class TogaTree(NSOutlineView):
 
     @objc_method
     def outlineView_objectValueForTableColumn_byItem_(self, tree, column, item):
-        col_identifier = str(column.identifier)
+        col_identifier = self._impl.column_identifiers[id(column.identifier)]
+
         try:
             value = getattr(item.attrs['node'], col_identifier)
 
@@ -166,11 +167,18 @@ class Tree(Widget):
 
         # Create columns for the tree
         self.columns = []
+        # Cocoa identifies columns by an accessor; to avoid repeated
+        # conversion from ObjC string to Python String, create the
+        # ObjC string once and cache it.
+        self.column_identifiers = {}
         for i, (heading, accessor) in enumerate(zip(
                     self.interface.headings,
                     self.interface._accessors
                 )):
-            column = NSTableColumn.alloc().initWithIdentifier(accessor)
+
+            column_identifier = at(accessor)
+            self.column_identifiers[id(column_identifier)] = accessor
+            column = NSTableColumn.alloc().initWithIdentifier(column_identifier)
             self.tree.addTableColumn(column)
             self.columns.append(column)
 

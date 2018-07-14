@@ -101,8 +101,18 @@ class Table(Widget):
 
         # Create columns for the table
         self.columns = []
-        for i, heading in enumerate(self.interface.headings):
-            column = NSTableColumn.alloc().initWithIdentifier(to_accessor(heading))
+        # Cocoa identifies columns by an accessor; to avoid repeated
+        # conversion from ObjC string to Python String, create the
+        # ObjC string once and cache it.
+        self.column_identifiers = {}
+        for i, (heading, accessor) in enumerate(zip(
+                    self.interface.headings,
+                    self.interface._accessors
+                )):
+
+            column_identifier = at(accessor)
+            self.column_identifiers[id(column_identifier)] = accessor
+            column = NSTableColumn.alloc().initWithIdentifier(column_identifier)
             self.table.addTableColumn(column)
             self.columns.append(column)
 
