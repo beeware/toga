@@ -1,13 +1,20 @@
 from travertino.constants import (
     NORMAL, SERIF, SANS_SERIF, CURSIVE, FANTASY, MONOSPACE, ITALIC, OBLIQUE,
     SMALL_CAPS, BOLD, LEFT, RIGHT, TOP, BOTTOM, CENTER, JUSTIFY, RTL, LTR,
-    TRANSPARENT, SYSTEM, PACK, VISIBLE, HIDDEN, NONE, ROW, COLUMN
+    TRANSPARENT, SYSTEM, VISIBLE, HIDDEN, NONE, ROW, COLUMN
 )
 from travertino.declaration import BaseStyle, Choices
 from travertino.layout import BaseBox
 from travertino.size import BaseIntrinsicSize
 
 from toga.font import Font
+
+######################################################################
+# Display
+######################################################################
+
+PACK = 'pack'
+
 
 DISPLAY_CHOICES = Choices(PACK, NONE)
 VISIBILITY_CHOICES = Choices(VISIBLE, HIDDEN, NONE)
