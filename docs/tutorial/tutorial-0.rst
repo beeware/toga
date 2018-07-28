@@ -79,7 +79,7 @@ or we could have specified the ``margin=(20, 50, 50, 50)``.
 
 	button.style.flex = 1
 
-The flex property sets the flexible length on flexible items. If the element is not flexible, the flex property has no use. In this case, it gives a flexibility of 1 to the button created.
+The flex property sets the flexible length on flexible items. If the element is not flexible, the flex property has no use. In this case, it gives a flexibility of 1 to the button created. For more information on this check out https://css-tricks.com/almanac/properties/f/flex/
 
 The next step is to add the button to the box::
 
