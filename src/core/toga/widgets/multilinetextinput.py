@@ -23,7 +23,7 @@ class MultilineTextInput(Widget):
         super().__init__(id=id, style=style, factory=factory)
 
         self._impl = self.factory.MultilineTextInput(interface=self)
-        self.value = initial
+        self.value = "initial"
         self.readonly = readonly
         self.placeholder = placeholder
 
