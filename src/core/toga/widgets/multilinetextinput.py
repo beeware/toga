@@ -23,7 +23,7 @@ class MultilineTextInput(Widget):
         super().__init__(id=id, style=style, factory=factory)
 
         self._impl = self.factory.MultilineTextInput(interface=self)
-        self.value = "initial"
+        self.value = initial
         self.readonly = readonly
         self.placeholder = placeholder
 
@@ -39,7 +39,7 @@ class MultilineTextInput(Widget):
     @placeholder.setter
     def placeholder(self, value):
         self._placeholder = '' if value is None else str(value)
-        self._impl.set_placeholder(value)
+        self._impl.set_placeholder(self._placeholder)
 
     @property
     def readonly(self):
@@ -67,7 +67,7 @@ class MultilineTextInput(Widget):
     @value.setter
     def value(self, value):
         self._value = '' if value is None else str(value)
-        self._impl.set_value(value)
+        self._impl.set_value(self._value)
         self._impl.rehint()
 
     def clear(self):
