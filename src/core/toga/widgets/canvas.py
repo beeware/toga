@@ -148,19 +148,20 @@ class Context:
         self.redraw()
 
     @contextmanager
-    def stroke(self, color=BLACK, line_width=2.0):
+    def stroke(self, color=BLACK, line_width=2.0, line_dash=None):
         """Constructs and yields a :class:`Stroke <Stroke>`.
 
         Args:
             color (str, optional): color value in any valid color format,
                 default to black.
             line_width (float, optional): stroke line width, default is 2.0.
+            line_dash (array of floats, optional): stroke line dash pattern, default is None.
 
         Yields:
             :class:`Stroke <Stroke>` object.
 
         """
-        stroke = Stroke(color, line_width)
+        stroke = Stroke(color, line_width, line_dash)
         stroke.canvas = self.canvas
         yield self.add_draw_obj(stroke)
         self.redraw()
@@ -419,18 +420,20 @@ class Stroke(Context):
         color (str, optional): Color value in any valid color format,
             default to black.
         line_width (float, optional): Stroke line width, default is 2.0.
+        line_dash (array of floats, optional): Stroke line dash pattern, default is None.
 
     """
 
-    def __init__(self, color=BLACK, line_width=2.0):
+    def __init__(self, color=BLACK, line_width=2.0, line_dash=None):
         super().__init__()
         self._color = None
         self.color = color
         self.line_width = line_width
+        self.line_dash = line_dash
 
     def __repr__(self):
-        return "{}(color={}, line_width={})".format(
-            self.__class__.__name__, self.color, self.line_width
+        return "{}(color={}, line_width={}, line_dash={})".format(
+            self.__class__.__name__, self.color, self.line_width, self.line_dash
         )
 
     def _draw(self, impl, *args, **kwargs):
@@ -440,8 +443,9 @@ class Stroke(Context):
         for obj in self.drawing_objects:
             kwargs["stroke_color"] = self.color
             kwargs["text_line_width"] = self.line_width
+            kwargs["text_line_dash"] = self.line_dash
             obj._draw(impl, *args, **kwargs)
-        impl.stroke(self.color, self.line_width, *args, **kwargs)
+        impl.stroke(self.color, self.line_width, self.line_dash, *args, **kwargs)
 
     @property
     def color(self):
