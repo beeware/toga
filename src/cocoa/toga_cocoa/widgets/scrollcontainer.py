@@ -22,7 +22,12 @@ class ScrollContainer(Widget):
 
     def set_content(self, widget):
         self.native.documentView = widget.native
-        widget.viewport = CocoaViewport(self.native.documentView)
+
+        if self.interface.content != None:
+            self.interface.content._impl.native.removeFromSuperview()
+        self.native.addSubview(widget.native)
+
+        widget.viewport = CocoaViewport(self.native)
 
         for child in widget.interface.children:
             child._impl.container = widget
