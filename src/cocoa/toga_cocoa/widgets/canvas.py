@@ -153,7 +153,7 @@ class Canvas(Widget):
             # Set color to black
             core_graphics.CGContextSetRGBStrokeColor(draw_context, 0, 0, 0, 1)
         if line_dash is not None:
-            core_graphics.CGContextSetLineDash(draw_context, 0, (CGFloat*len(line_dash))(*line_dash), 2)
+            core_graphics.CGContextSetLineDash(draw_context, 0, (CGFloat*len(line_dash))(*line_dash), len(line_dash))
         else:
             core_graphics.CGContextSetLineDash(draw_context, 0, None, 0)
         core_graphics.CGContextDrawPath(draw_context, mode)
