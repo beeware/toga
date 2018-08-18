@@ -432,14 +432,14 @@ class CanvasTests(TestCase):
 
     def test_stroke_modify(self):
         with self.testing_canvas.stroke(
-            color=BLANCHEDALMOND, line_width=5.0, line_dash=[2,2]
+            color=BLANCHEDALMOND, line_width=5.0, line_dash=[2, 2]
         ) as stroker:
             stroker.color = REBECCAPURPLE
             stroker.line_width = 1
-            stroker.line_dash = None
+            stroker.line_dash = [1, 1]
             self.testing_canvas.redraw()
         self.assertActionPerformedWith(
-            self.testing_canvas, "stroke", color=rgb(102, 51, 153), line_width=1, line_dash=None
+            self.testing_canvas, "stroke", color=rgb(102, 51, 153), line_width=1, line_dash=[1, 1]
         )
 
     def test_stroke_repr(self):
