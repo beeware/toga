@@ -17,7 +17,7 @@ from toga_cocoa.libs import (
     NSView,
     objc_method,
 )
-
+from rubicon.objc import CGFloat
 from .base import Widget
 from ..color import native_color
 
@@ -142,7 +142,7 @@ class Canvas(Widget):
             core_graphics.CGContextSetRGBFillColor(draw_context, 0, 0, 0, 1)
         core_graphics.CGContextDrawPath(draw_context, mode)
 
-    def stroke(self, color, line_width, draw_context, *args, **kwargs):
+    def stroke(self, color, line_width, line_dash, draw_context, *args, **kwargs):
         core_graphics.CGContextSetLineWidth(draw_context, line_width)
         mode = CGPathDrawingMode(kCGPathStroke)
         if color is not None:
@@ -152,6 +152,10 @@ class Canvas(Widget):
         else:
             # Set color to black
             core_graphics.CGContextSetRGBStrokeColor(draw_context, 0, 0, 0, 1)
+        if line_dash is not None:
+            core_graphics.CGContextSetLineDash(draw_context, 0, (CGFloat*len(line_dash))(*line_dash), len(line_dash))
+        else:
+            core_graphics.CGContextSetLineDash(draw_context, 0, None, 0)
         core_graphics.CGContextDrawPath(draw_context, mode)
 
     # Transformations
