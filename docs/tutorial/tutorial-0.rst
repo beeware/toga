@@ -124,6 +124,16 @@ on all sides. If we wanted to define padding of 20 pixels on top of the
 button, we could have defined ``padding_top = 20``, or we could have specified
 the ``padding = (20, 50, 50, 50)``.
 
+Also the size of the button::
+
+        button.style.flex = 1
+
+Flex determines the space to be givin by the parent to the child, which is
+calculated by this equation ``space = (child flex / sum of all flex for all siblings flex)``.
+In this example ``space`` is ``(1/1 == 1)``, this mean ``button`` will take the entire space.
+If we wanted to take half of the space, we could add another child with flex value of 1,
+or set ``style.flex`` to ``0.5``.
+
 The next step is to add the button to the box::
 
         box.add(button)
