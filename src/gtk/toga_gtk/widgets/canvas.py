@@ -134,9 +134,11 @@ class Canvas(Widget):
         else:
             draw_context.fill()
 
-    def stroke(self, color, line_width, draw_context, *args, **kwargs):
+    def stroke(self, color, line_width, line_dash, draw_context, *args, **kwargs):
         self.apply_color(color, draw_context)
         draw_context.set_line_width(line_width)
+	if line_dash is not None:
+		draw_context.set_dash(line_dash, 1, 0) 
         draw_context.stroke()
 
     # Transformations
