@@ -138,8 +138,9 @@ class Canvas(Widget):
         self.apply_color(color, draw_context)
         draw_context.set_line_width(line_width)
         if line_dash is not None:
-            draw_context.set_dash(line_dash, 1)
+            draw_context.set_dash(line_dash)
         draw_context.stroke()
+        draw_context.set_dash([])
 
     # Transformations
 
