@@ -11,6 +11,7 @@ from .widgets.base import Widget
 from .widgets.box import Box
 from .widgets.button import Button
 from .widgets.canvas import Canvas
+from .widgets.chart import Chart
 from .widgets.detailedlist import DetailedList
 from .widgets.image import *
 from .widgets.imageview import *
@@ -51,6 +52,7 @@ __all__ = [
     'Box',
     'Button',
     'Canvas',
+    'Chart',
     'Icon',
     'Image',
     'ImageView',
