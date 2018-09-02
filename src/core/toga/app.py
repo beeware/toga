@@ -38,7 +38,6 @@ class App:
         id (str): The DOM identifier for the app (optional)
         startup(``callable``): The callback method before starting the app, typically to add the components.
             Must be a ``callable`` that expects a single argument of :class:`toga.App`.
-        document_types (:obj:`list` of :obj:`str`): Document types.
         factory (:obj:`module`): A python module that is capable to return a
             implementation of this class with the same name. (optional & normally not needed)
 
@@ -50,7 +49,7 @@ class App:
     app = None
 
     def __init__(self, name, app_id,
-                 id=None, icon=None, startup=None, document_types=None, on_exit=None, factory=None):
+                 id=None, icon=None, startup=None, on_exit=None, factory=None):
         self.factory = get_platform_factory(factory)
 
         # Keep an accessible copy of the app instance
@@ -64,9 +63,6 @@ class App:
 
         self.commands = CommandSet(None)
 
-        self.document_types = document_types
-        self._documents = []
-
         self._startup_method = startup
 
         self.default_icon = Icon('tiberius', system=True)
@@ -74,8 +70,11 @@ class App:
         self._main_window = None
         self._on_exit = None
 
-        self._impl = self.factory.App(interface=self)
+        self._impl = self._create_impl()
         self.on_exit = on_exit
+
+    def _create_impl(self):
+        return self.factory.App(interface=self)
 
     @property
     def app_id(self):
@@ -124,30 +123,9 @@ class App:
         window.app = self
 
     @property
-    def documents(self):
-        """ Return the list of documents associated with this app.
-
-        Returns:
-            A ``list`` of ``str``.
-        """
-        return self._documents
-
-    def add_document(self, doc):
-        """ Add a new document to this app.
-
-        Args:
-            doc (str): The document to add.
-        """
-        doc.app = self
-        self._documents.append(doc)
-
-    def open_document(self, fileURL):
-        """ Add a new document to this app.
-
-        Args:
-            fileURL (str): The URL/path to the file to add as a document.
-        """
-        raise NotImplementedError('Application class must define open_document()')
+    def current_window(self):
+        """Return the currently active content window"""
+        return self._impl.current_window().interface
 
     def startup(self):
         """ Create and show the main window for the application
@@ -191,3 +169,52 @@ class App:
         """
         self._on_exit = wrapped_handler(self, handler)
         self._impl.set_on_exit(self._on_exit)
+
+
+class DocumentApp(App):
+    """
+    A document-based application.
+
+    Definition and arguments are the same as a base App, plus the following:
+
+    Args:
+        document_types (:obj:`list` of :obj:`str`): Document types.
+
+    """
+    def __init__(self, name, app_id,
+                 id=None, icon=None, startup=None, document_types=None, on_exit=None, factory=None):
+
+        self.document_types = document_types
+        self._documents = []
+
+        super().__init__(name, app_id,
+                         id=id, icon=icon, startup=startup, on_exit=on_exit, factory=factory)
+
+    def _create_impl(self):
+        return self.factory.DocumentApp(interface=self)
+
+    @property
+    def documents(self):
+        """ Return the list of documents associated with this app.
+
+        Returns:
+            A ``list`` of ``str``.
+        """
+        return self._documents
+
+    def add_document(self, doc):
+        """ Add a new document to this app.
+
+        Args:
+            doc (str): The document to add.
+        """
+        doc.app = self
+        self._documents.append(doc)
+
+    def open_document(self, fileURL):
+        """ Add a new document to this app.
+
+        Args:
+            fileURL (str): The URL/path to the file to add as a document.
+        """
+        raise NotImplementedError('Application class must define open_document()')

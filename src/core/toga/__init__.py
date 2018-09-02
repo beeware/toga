@@ -1,5 +1,5 @@
-from .app import *
-from .command import *
+from .app import App, DocumentApp, MainWindow
+from .command import Command, Group, GROUP_BREAK, SECTION_BREAK
 from .constants import *
 from .color import hsl, hsla, rgb, rgba
 from .font import Font
@@ -12,6 +12,7 @@ from .widgets.box import Box
 from .widgets.button import Button
 from .widgets.canvas import Canvas
 from .widgets.detailedlist import DetailedList
+from .widgets.icon import Icon
 from .widgets.image import *
 from .widgets.imageview import *
 from .widgets.label import Label
@@ -34,7 +35,7 @@ from .window import Window
 
 __all__ = [
     # Applications
-    'App', 'MainWindow',
+    'App', 'DocumentApp', 'MainWindow',
     # Colors
     'hsl', 'hsla', 'rgb', 'rgba',
     # Commands
