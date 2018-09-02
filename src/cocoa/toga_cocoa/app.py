@@ -26,23 +26,7 @@ class AppDelegate(NSObject):
 
     @objc_method
     def applicationOpenUntitledFile_(self, sender) -> bool:
-        # FIXME This should be all we need; but for some reason, application types
-        # aren't being registered correctly..
-        # NSDocumentController.sharedDocumentController().openDocument_(None)
-
-        # ...so we do this instead.
-        panel = NSOpenPanel.openPanel()
-        # print("Open documents of type", NSDocumentController.sharedDocumentController().defaultType)
-
-        fileTypes = NSMutableArray.alloc().init()
-        for filetype in self.interface.document_types:
-            fileTypes.addObject(filetype)
-
-        NSDocumentController.sharedDocumentController.runModalOpenPanel(panel, forTypes=fileTypes)
-
-        # print("Untitled File opened?", panel.URLs)
-        self.application_openFiles_(None, panel.URLs)
-
+        self.impl.select_file()
         return True
 
     @objc_method
@@ -57,7 +41,7 @@ class AppDelegate(NSObject):
     @objc_method
     def application_openFiles_(self, app, filenames) -> None:
         for i in range(0, len(filenames)):
-            filename = filenames.objectAtIndex(i)
+            filename = filenames[i]
             if isinstance(filename, NSString):
                 fileURL = NSURL.fileURLWithPath(filename)
 
@@ -71,7 +55,6 @@ class AppDelegate(NSObject):
                 return
 
             self.interface.open_document(fileURL.absoluteString)
-            # NSDocumentController.sharedDocumentController().openDocumentWithContentsOfURL_display_completionHandler_(fileURL, True, None)
 
     @objc_method
     def selectMenuItem_(self, sender) -> None:
@@ -98,10 +81,11 @@ class App:
 
         self.resource_path = os.path.dirname(os.path.dirname(NSBundle.mainBundle.bundlePath))
 
-        appDelegate = AppDelegate.alloc().init()
-        appDelegate.interface = self.interface
-        appDelegate.native = self.native
-        self.native.setDelegate_(appDelegate)
+        self.appDelegate = AppDelegate.alloc().init()
+        self.appDelegate.impl = self
+        self.appDelegate.interface = self.interface
+        self.appDelegate.native = self.native
+        self.native.setDelegate_(self.appDelegate)
 
         app_name = self.interface.name
 
@@ -113,6 +97,7 @@ class App:
 
             toga.Command(None, 'Visit homepage', group=toga.Group.HELP)
         )
+        self._populate_default_menus()
 
         # Call user code to populate the main window
         self.interface.startup()
@@ -122,9 +107,9 @@ class App:
         self._menu_items = {}
         self.create_menus()
 
-    def open_document(self, fileURL):
-        '''Add a new document to this app.'''
-        print("STUB: If you want to handle opening documents, implement App.open_document(fileURL)")
+    def _populate_default_menus(self):
+        # No extra menus
+        pass
 
     def create_menus(self):
         # Only create the menu if the menu item index has been created.
@@ -175,3 +160,42 @@ class App:
 
     def set_on_exit(self, value):
         pass
+
+    def current_window(self):
+        return self.native.keyWindow
+
+
+class DocumentApp(App):
+    def _populate_default_menus(self):
+        self.interface.commands.add(
+            toga.Command(
+                lambda w: self.open_file,
+                label='Open...',
+                shortcut='o',
+                group=toga.Group.FILE,
+                section=0
+            ),
+        )
+
+    def select_file(self, **kwargs):
+        print('Open file...')
+        # FIXME This should be all we need; but for some reason, application types
+        # aren't being registered correctly..
+        # NSDocumentController.sharedDocumentController().openDocument_(None)
+
+        # ...so we do this instead.
+        panel = NSOpenPanel.openPanel()
+        # print("Open documents of type", NSDocumentController.sharedDocumentController().defaultType)
+
+        fileTypes = NSMutableArray.alloc().init()
+        for filetype in self.interface.document_types:
+            fileTypes.addObject(filetype)
+
+        NSDocumentController.sharedDocumentController.runModalOpenPanel(panel, forTypes=fileTypes)
+
+        # print("Untitled File opened?", panel.URLs)
+        self.appDelegate.application_openFiles_(None, panel.URLs)
+
+    def open_document(self, fileURL):
+        '''Add a new document to this app.'''
+        print("STUB: If you want to handle opening documents, implement App.open_document(fileURL)")
