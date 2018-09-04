@@ -56,7 +56,7 @@ __all__ = [
     'Switch',
     'Table',
     'TextInput',
-    # 'Tree',
+    'Tree',
     'WebView',
     'Window',
 ]
