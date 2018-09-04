@@ -17,10 +17,10 @@ from .widgets.progressbar import *
 from .widgets.scrollcontainer import *
 from .widgets.selection import Selection
 from .widgets.slider import *
-from .widgets.splitcontainer import *
-from .widgets.switch import *
+from .widgets.splitcontainer import SplitContainer
+from .widgets.switch import Switch
 from .widgets.table import *
-from .widgets.tree import *
+from .widgets.tree import Tree
 from .widgets.webview import *
 from .window import Window
 
