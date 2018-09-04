@@ -20,6 +20,7 @@ from .widgets.slider import *
 from .widgets.splitcontainer import *
 from .widgets.switch import *
 from .widgets.table import *
+from .widgets.tree import *
 from .widgets.webview import *
 from .window import Window
 
