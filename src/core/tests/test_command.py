@@ -3,6 +3,7 @@ from unittest.mock import Mock
 
 import toga
 import toga_dummy
+from toga.command import cmd_sort_key
 
 
 class TestCommand(unittest.TestCase):
@@ -42,16 +43,17 @@ class TestCommand(unittest.TestCase):
 
     def test_command_init_kargs(self):
         grp = toga.Group('Test group', order=10)
-        cmd = toga.Command(lambda x: print('Hello World'),
-                           label='test',
-                           tooltip='test command',
-                           shortcut='t',
-                           icon='icons/none.png',
-                           group=grp,
-                           section=1,
-                           order=1,
-                           factory=toga_dummy.factory
-                           )
+        cmd = toga.Command(
+            lambda x: print('Hello World'),
+            label='test',
+            tooltip='test command',
+            shortcut='t',
+            icon='icons/none.png',
+            group=grp,
+            section=1,
+            order=1,
+            factory=toga_dummy.factory
+        )
         self.assertEqual(cmd.label, 'test')
         self.assertEqual(cmd.shortcut, 't')
         self.assertEqual(cmd.tooltip, 'test command')
@@ -68,16 +70,17 @@ class TestCommand(unittest.TestCase):
 
     def test_command_bind(self):
         grp = toga.Group('Test group', order=10)
-        cmd = toga.Command(lambda x: print('Hello World'),
-                           label='test',
-                           tooltip='test command',
-                           shortcut='t',
-                           icon='icons/none.png',
-                           group=grp,
-                           section=1,
-                           order=1,
-                           factory=toga_dummy.factory
-                           )
+        cmd = toga.Command(
+            lambda x: print('Hello World'),
+            label='test',
+            tooltip='test command',
+            shortcut='t',
+            icon='icons/none.png',
+            group=grp,
+            section=1,
+            order=1,
+            factory=toga_dummy.factory
+        )
         retur_val = cmd.bind(factory=toga_dummy.factory)
         self.assertEqual(retur_val, cmd._impl)
 
@@ -85,37 +88,39 @@ class TestCommand(unittest.TestCase):
         test_widget = toga.Widget(factory=toga_dummy.factory)
         grp = toga.Group('Test group', order=10)
         cmd = toga.Command(
-                           lambda x: print('Hello World'),
-                           label='test',
-                           tooltip='test command',
-                           shortcut='t',
-                           icon='icons/none.png',
-                           group=grp,
-                           section=1,
-                           order=1,
-                           factory=toga_dummy.factory
-                           )
+            lambda x: print('Hello World'),
+            label='test',
+            tooltip='test command',
+            shortcut='t',
+            icon='icons/none.png',
+            group=grp,
+            section=1,
+            order=1,
+            factory=toga_dummy.factory,
+        )
         cmd._widgets.append(test_widget)
         cmd._widgets[0]._impl = Mock()
         cmd.enabled = False
-        self.assertEqual(cmd._enabled,False)
+        self.assertEqual(cmd._enabled, False)
 
         for widget in cmd._widgets:
-          self.assertEqual(widget.enabled, False)        
+            self.assertEqual(widget.enabled, False)
 
     def test_cmd_sort_key(self):
         grp = toga.Group('Test group', order=10)
-        cmd = toga.Command(lambda x: print('Hello World'),
-                           label='test',
-                           tooltip='test command',
-                           shortcut='t',
-                           icon='icons/none.png',
-                           group=grp,
-                           section=1,
-                           order=1,
-                           factory=toga_dummy.factory
-                           )
-        self.assertEqual(toga.cmd_sort_key(cmd), (grp, 1, 1, 'test'))
+        cmd = toga.Command(
+            lambda x: print('Hello World'),
+            label='test',
+            tooltip='test command',
+            shortcut='t',
+            icon='icons/none.png',
+            group=grp,
+            section=1,
+            order=1,
+            factory=toga_dummy.factory
+        )
+        self.assertEqual(cmd_sort_key(cmd), (grp, 1, 1, 'test'))
+
 
 class TestCommandSet(unittest.TestCase):
     changed = False
@@ -135,16 +140,17 @@ class TestCommandSet(unittest.TestCase):
         test_widget = toga.Widget(factory=toga_dummy.factory)
         cs = toga.CommandSet(test_widget, on_change=self._changed)
         grp = toga.Group('Test group', order=10)
-        cmd = toga.Command(lambda x: print('Hello World'),
-                           label='test',
-                           tooltip='test command',
-                           shortcut='t',
-                           icon='icons/none.png',
-                           group=grp,
-                           section=1,
-                           order=1,
-                           factory=toga_dummy.factory
-                           )
+        cmd = toga.Command(
+            lambda x: print('Hello World'),
+            label='test',
+            tooltip='test command',
+            shortcut='t',
+            icon='icons/none.png',
+            group=grp,
+            section=1,
+            order=1,
+            factory=toga_dummy.factory
+        )
         cs.add(cmd)
         self.assertTrue(self.changed)
 
@@ -152,15 +158,16 @@ class TestCommandSet(unittest.TestCase):
         test_widget = toga.Widget(factory=toga_dummy.factory)
         cs = toga.CommandSet(test_widget)
         grp = toga.Group('Test group', order=10)
-        cmd = toga.Command(lambda x: print('Hello World'),
-                           label='test',
-                           tooltip='test command',
-                           shortcut='t',
-                           icon='icons/none.png',
-                           group=grp,
-                           section=1,
-                           order=1,
-                           factory=toga_dummy.factory
-                           )
+        cmd = toga.Command(
+            lambda x: print('Hello World'),
+            label='test',
+            tooltip='test command',
+            shortcut='t',
+            icon='icons/none.png',
+            group=grp,
+            section=1,
+            order=1,
+            factory=toga_dummy.factory
+        )
         cs.add(cmd)
         self.assertEqual(list(cs), [cmd])

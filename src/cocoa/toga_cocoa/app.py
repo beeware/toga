@@ -3,9 +3,13 @@ import os
 import sys
 
 import toga
+from rubicon.objc import objc_method, NSMutableArray, NSObject, SEL
 from rubicon.objc.eventloop import EventLoopPolicy, CocoaLifecycle
 
-from .libs import *
+from .libs import (
+    NSURL, NSBundle, NSOpenPanel, NSDocumentController, NSString, NSApplication,
+    NSApplicationActivationPolicyRegular, NSMenu, NSMenuItem
+)
 from .window import Window
 
 
