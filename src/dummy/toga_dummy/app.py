@@ -16,9 +16,6 @@ class App(LoggedObject):
     def create(self):
         self._action('create')
 
-    def open_document(self, fileURL):
-        self._action('open document', fileURL=fileURL)
-
     @not_required_on('mobile')
     def create_menus(self):
         self._action('create menus')
@@ -31,3 +28,8 @@ class App(LoggedObject):
 
     def set_on_exit(self, value):
         self._set_value('on_exit', value)
+
+
+class DocumentApp(App):
+    def open_document(self, fileURL):
+        self._action('open document', fileURL=fileURL)

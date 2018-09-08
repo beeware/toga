@@ -60,6 +60,7 @@ class App:
             Command(lambda widget, data: self.exit(), 'Quit ' + self.interface.name, shortcut='q', group=toga.Group.APP, section=sys.maxsize),
             Command(None, 'Visit homepage', group=toga.Group.HELP)
         )
+        self._populate_default_menus()
 
         self.interface.startup()
 
@@ -68,6 +69,10 @@ class App:
         self._actions = {}
         self.create_menus()
         # self.interface.main_window._impl.create_toolbar()
+
+    def _populate_default_menus(self):
+        # No extra menus
+        pass
 
     def activate(self, data=None):
         pass
@@ -153,3 +158,20 @@ class App:
 
     def set_on_exit(self, value):
         pass
+
+
+class DocumentApp(App):
+    def _populate_default_menus(self):
+        self.interface.commands.add(
+            toga.Command(
+                lambda w: self.open_file,
+                label='Open...',
+                shortcut='o',
+                group=toga.Group.FILE,
+                section=0
+            ),
+        )
+
+    def open_document(self, fileURL):
+        '''Add a new document to this app.'''
+        print("STUB: If you want to handle opening documents, implement App.open_document(fileURL)")

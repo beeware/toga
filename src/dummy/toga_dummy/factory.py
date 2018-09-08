@@ -1,4 +1,4 @@
-from .app import App, MainWindow
+from .app import App, DocumentApp, MainWindow
 from .color import native_color
 from .command import Command
 from .font import Font
@@ -37,7 +37,7 @@ def not_implemented(feature):
 __all__ = [
     'not_implemented',
 
-    'App', 'MainWindow',
+    'App', 'DocumentApp', 'MainWindow',
     'native_color',
     'Command',
     'Font',

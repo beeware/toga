@@ -1,6 +1,7 @@
 from .app import App, DocumentApp, MainWindow
 from .color import native_color
 from .command import Command
+from .documents import Document
 from .font import Font
 
 from .widgets.box import Box
@@ -38,6 +39,7 @@ __all__ = [
     'App', 'DocumentApp', 'MainWindow',
     'native_color',
     'Command',
+    'Document',
     'Font',
 
     'Box',
