@@ -346,7 +346,6 @@ class UIKeyboardType(Enum):
 ######################################################################
 # UITextView.h
 UITextView = ObjCClass('UITextView')
-UITextViewDelegate = ObjCProtocol('UITextViewDelegate')
 
 ######################################################################
 # UIView.h

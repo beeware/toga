@@ -1,11 +1,14 @@
 import toga
-from toga.style import Pack
 from toga.constants import COLUMN, ROW
+from toga.style import Pack
 
 
 class ExampleMultilineTextInputApp(toga.App):
     # Button callback functions
     def enable_toggle_pressed(self, widget, **kwargs):
+        self.multiline_input.enabled = not self.multiline_input.enabled
+
+    def readonly_toggle_pressed(self, widget, **kwargs):
         self.multiline_input.readonly = not self.multiline_input.readonly
 
     def clear_pressed(self, widget, **kwargs):
@@ -25,6 +28,11 @@ class ExampleMultilineTextInputApp(toga.App):
             on_press=self.enable_toggle_pressed,
             style=Pack(flex=1)
         )
+        button_toggle_readonly = toga.Button(
+            'Toggle readonly',
+            on_press=self.readonly_toggle_pressed,
+            style=Pack(flex=1)
+        )
         button_clear = toga.Button(
             'Clear',
             on_press=self.clear_pressed,
@@ -33,6 +41,7 @@ class ExampleMultilineTextInputApp(toga.App):
         btn_box = toga.Box(
             children=[
                 button_toggle_enabled,
+                button_toggle_readonly,
                 button_clear
             ],
             style=Pack(

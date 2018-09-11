@@ -39,7 +39,7 @@ start coding. To set up a virtual environment, run:
     .. code-block:: doscon
 
       C:\...>python3 -m venv venv
-      C:\...>venv/Scripts/activate
+      C:\...>venv\Scripts\activate
 
 Your prompt should now have a ``(venv)`` prefix in front of it. 
 

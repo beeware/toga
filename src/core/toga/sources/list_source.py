@@ -24,7 +24,7 @@ class ListSource(Source):
 
     Args:
         data (`list`): The data in the list. Each entry in the list should have the
-            same number of entries as there are accessors.
+            same number of entries as there are accessors. 
         accessors (`list`): A list of attribute names for accessing the value
             in each column of the row.
     """
@@ -50,10 +50,20 @@ class ListSource(Source):
     ######################################################################
 
     def _create_row(self, data):
+        """Create a Row object from the given data.
+        Args:
+            data (any): The type of `data` determines how it is handled
+                ``dict``: each key corresponds to a column accessor
+                iterables, except ``str`` and ``dict``: each item corresponds to a column
+                all else: `data` will fill the first column
+        """
+
         if isinstance(data, dict):
             row = Row(**data)
-        else:
+        elif hasattr(data, '__iter__') and not isinstance(data, str):
             row = Row(**dict(zip(self._accessors, data)))
+        else:
+            row = Row(**{self._accessors[0]: data})
         row._source = self
         return row
 

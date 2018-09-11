@@ -26,10 +26,8 @@ class App(LoggedObject):
     def main_loop(self):
         self._action('main loop')
 
-    @not_required_on('mobile', 'web')
     def exit(self):
         self._action('exit')
 
-    @not_required_on('mobile', 'web')
     def set_on_exit(self, value):
         self._set_value('on_exit', value)

@@ -16,6 +16,11 @@ class MainWindow(Window):
 
 class AppDelegate(NSObject):
     @objc_method
+    def applicationWillTerminate_(self, sender):
+        if self.interface.app.on_exit:
+            self.interface.app.on_exit(self.interface.app)
+
+    @objc_method
     def applicationDidFinishLaunching_(self, notification):
         self.native.activateIgnoringOtherApps(True)
 
@@ -53,10 +58,10 @@ class AppDelegate(NSObject):
     def application_openFiles_(self, app, filenames) -> None:
         for i in range(0, len(filenames)):
             filename = filenames.objectAtIndex(i)
-            if isinstance(filename, str):
+            if isinstance(filename, NSString):
                 fileURL = NSURL.fileURLWithPath(filename)
 
-            elif filename.objc_class.name == 'NSURL':
+            elif isinstance(filename, NSURL):
                 # This case only exists because we aren't using the
                 # DocumentController to display the file open dialog.
                 # If we were, *all* filenames passed in would be

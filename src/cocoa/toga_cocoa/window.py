@@ -65,7 +65,7 @@ class WindowDelegate(NSObject):
         "Create the requested toolbar button"
         _item = NSToolbarItem.alloc().initWithItemIdentifier_(identifier)
         try:
-            item = self.interface._impl._toolbar_items[identifier]
+            item = self.interface._impl._toolbar_items[str(identifier)]
             impl = item.bind(self.interface.factory)
             if item.label:
                 _item.setLabel(item.label)
@@ -86,7 +86,7 @@ class WindowDelegate(NSObject):
     @objc_method
     def validateToolbarItem_(self, item) -> bool:
         "Confirm if the toolbar item should be enabled"
-        return self.interface._impl._toolbar_items[item.itemIdentifier].enabled
+        return self.interface._impl._toolbar_items[str(item.itemIdentifier)].enabled
 
     ######################################################################
     # Toolbar button press delegate methods
@@ -95,7 +95,7 @@ class WindowDelegate(NSObject):
     @objc_method
     def onToolbarButtonPress_(self, obj) -> None:
         "Invoke the action tied to the toolbar button"
-        item = self.interface._impl._toolbar_items[obj.itemIdentifier]
+        item = self.interface._impl._toolbar_items[str(obj.itemIdentifier)]
         item.action(obj)
 
 

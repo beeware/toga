@@ -8,6 +8,4 @@ Quickstart
 
 To run this example:
 
-    > pip install toga
-    > python -m tutorial
-
+    $ python -m tutorial
