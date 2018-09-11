@@ -1,4 +1,3 @@
-import sys
 from collections import OrderedDict
 import unittest
 try:
@@ -28,7 +27,7 @@ class TestCSSRuleFactoryMethod(unittest.TestCase):
         }
 
         # Use OrderedDict for Python < 3.6
-        if sys.version_info < (3,6):
+        if sys.version_info < (3, 6):
             d = OrderedDict()
             d['font-family'] = self.multi_line_property['font-family']
             d['font-size'] = self.multi_line_property['font-size']
@@ -83,7 +82,9 @@ class TestCSSRuleFactoryMethod(unittest.TestCase):
         with self.assertRaises(ValueError):
             css_rule_factory('button', {})
 
-@unittest.skipIf(Gtk is None, "Can't run GTK implementation tests on a non-Linux platform")
+
+@unittest.skipIf(Gtk is None,
+                 "Can't run GTK implementation tests on a non-Linux platform")
 class TestGTKApplyCSSMethod(unittest.TestCase):
     def setUp(self):
         self.widget = Gtk.Button()  # Any example widget
@@ -97,12 +98,10 @@ class TestGTKApplyCSSMethod(unittest.TestCase):
         css = css_rule_factory(self.css_element, self.css_property)
         gtk_apply_css(self.style_context, css)
         final = self.style_context.get_color(self.state)
-        self.assertEqual(final,
-                         Gdk.RGBA(
-                             red=0.000000,
-                             green=1.000000,
-                             blue=1.000000,
-                             alpha=1.000000))
+        self.assertEqual(
+            final,
+            Gdk.RGBA(
+                red=0.000000, green=1.000000, blue=1.000000, alpha=1.000000))
 
 
 if __name__ == '__main__':
