@@ -1,7 +1,7 @@
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk
-from toga.constants import LEFT, RIGHT, CENTER, JUSTIFY
+from gi.repository import Gtk  # noqa: E402
+from toga.constants import LEFT, RIGHT, CENTER, JUSTIFY  # noqa: E402
 
 try:
     text = unicode
