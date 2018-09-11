@@ -47,6 +47,7 @@ NSApplicationDidUnhideNotification = c_void_p.in_dll(appkit, 'NSApplicationDidUn
 
 ######################################################################
 # NSAttributedString.h
+NSAttributedString = ObjCClass('NSAttributedString')
 
 NSFontAttributeName = objc_const(appkit, "NSFontAttributeName")
 NSParagraphStyleAttributeName = objc_const(appkit, "NSParagraphStyleAttributeName")
@@ -518,6 +519,7 @@ NSStepper = ObjCClass('NSStepper')
 ######################################################################
 # NSStringDrawing.h
 
+NSString = ObjCClass('NSString')
 NSStringDrawingUsesLineFragmentOrigin = 1 << 0
 NSStringDrawingUsesFontLeading = 1 << 1
 NSStringDrawingDisableScreenFontSubstitution = 1 << 2  # DEPRECATED

@@ -27,7 +27,7 @@ setup(
     packages=find_packages(exclude='tests'),
     python_requires='>=3.5',
     install_requires=[
-        'rubicon-objc>=0.2.10',
+        'rubicon-objc>=0.3.0',
         'toga-core==%s' % version,
     ],
     tests_require=[

@@ -13,12 +13,11 @@ from toga_iOS.libs import (
     NSLayoutRelationEqual,
     UILabel,
     UITextView,
-    UITextViewDelegate,
 )
 
 from .base import Widget
 
-class TogaMultilineTextView(UITextView, protocols=[UITextViewDelegate]):
+class TogaMultilineTextView(UITextView):
     @objc_method
     def pointInside_withEvent_(self, point: CGPoint, event) -> bool:
         # To keep consistency with non-mobile platforms, we'll resign the

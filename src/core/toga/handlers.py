@@ -20,9 +20,9 @@ async def long_running_task(generator, cleanup):
         traceback.print_exc()
 
 
-async def handler_with_cleanup(handler, cleanup, interface, **extra):
+async def handler_with_cleanup(handler, cleanup, interface, *args, **kwargs):
     try:
-        await handler(interface, **extra)
+        await handler(interface, *args, **kwargs)
         if cleanup:
             cleanup()
     except Exception as e:
@@ -46,13 +46,13 @@ def wrapped_handler(interface, handler, cleanup=None):
     the original handler function on the `_raw` attribute.
     """
     if handler:
-        def _handler(widget, **extra):
+        def _handler(widget, *args, **kwargs):
             if asyncio.iscoroutinefunction(handler):
                 asyncio.ensure_future(
-                    handler_with_cleanup(handler, cleanup, interface, **extra)
+                    handler_with_cleanup(handler, cleanup, interface, *args, **kwargs)
                 )
             else:
-                result = handler(interface, **extra)
+                result = handler(interface, *args, **kwargs)
                 if inspect.isgenerator(result):
                     asyncio.ensure_future(
                         long_running_task(result, cleanup)
