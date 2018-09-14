@@ -19,32 +19,33 @@ def gtk_alignment(alignment):
     }[alignment]
 
 
-def gtk_apply_css(style_context, css_rule):
+def gtk_apply_css(widget, css_rule):
     """Set custom css styles for Gtk widgets
 
     Args:
-        style_context (Gtk.StyleContext): CSS is applied th the style context of this widget
-        css_rule (str): A valid Gtk CSS rule
+        widget (Gtk.Widget): CSS rule is applied to this Gtk widget
+        css_rule (dict): An attribute-value Gtk CSS property pair
     """
 
     # Create style and convert to binary data
-    css = bytes(css_rule, 'utf-8')
+    css = bytes(generate_css(widget.get_css_name(), css_rule), 'utf-8')
 
     # Load CSS
     style_provider = Gtk.CssProvider()
     style_provider.load_from_data(css)
 
     # Apply CSS to widget
+    style_context = widget.get_style_context()
     Gtk.StyleContext.add_provider(style_context, style_provider,
                                   Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
 
-def css_rule_factory(selector, decls):
+def generate_css(selector, decls):
     """Generate Gtk CSS from property-value pairs for a single selector
 
     Args:
         selector (str): Properties are applied to this CSS selector
-        decls (dict): CSS property-value pairs
+        decls (dict): An attribute-value Gtk CSS property pair
 
     Returns:
         A Gtk CSS rule as a ``str``
