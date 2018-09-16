@@ -1,6 +1,7 @@
 from .app import App, DocumentApp, MainWindow
 from .command import Command, CommandSet, Group, GROUP_BREAK, SECTION_BREAK
 from .color import hsl, hsla, rgb, rgba
+from .documents import Document
 from .font import Font
 from .keys import Key
 
@@ -35,10 +36,12 @@ from .window import Window
 __all__ = [
     # Applications
     'App', 'DocumentApp', 'MainWindow',
-    # Colors
-    'hsl', 'hsla', 'rgb', 'rgba',
     # Commands
     'Command', 'CommandSet', 'Group', 'GROUP_BREAK', 'SECTION_BREAK',
+    # Colors
+    'hsl', 'hsla', 'rgb', 'rgba',
+    # Documents
+    'Document',
     # Fonts
     'Font',
     # Keys

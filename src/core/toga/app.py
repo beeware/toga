@@ -201,20 +201,3 @@ class DocumentApp(App):
             A ``list`` of ``str``.
         """
         return self._documents
-
-    def add_document(self, doc):
-        """ Add a new document to this app.
-
-        Args:
-            doc (str): The document to add.
-        """
-        doc.app = self
-        self._documents.append(doc)
-
-    def open_document(self, fileURL):
-        """ Add a new document to this app.
-
-        Args:
-            fileURL (str): The URL/path to the file to add as a document.
-        """
-        raise NotImplementedError('Application class must define open_document()')

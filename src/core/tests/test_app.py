@@ -85,10 +85,7 @@ class DocumentAppTests(TestCase):
 
     def test_app_documents(self):
         self.assertEqual(self.app.documents, [])
-        doc = MagicMock()
-        self.app.add_document(doc)
-        self.assertEqual(self.app.documents, [doc])
 
-    def test_app_open_documents_raise_not_implemented(self):
-        with self.assertRaises(NotImplementedError):
-            self.app.open_document('file/url')
+        doc = MagicMock()
+        self.app._documents.append(doc)
+        self.assertEqual(self.app.documents, [doc])

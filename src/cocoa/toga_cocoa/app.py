@@ -1,6 +1,7 @@
 import asyncio
 import os
 import sys
+from urllib.parse import unquote, urlparse
 
 import toga
 from rubicon.objc import objc_method, NSMutableArray, NSObject, SEL
@@ -58,7 +59,7 @@ class AppDelegate(NSObject):
             else:
                 return
 
-            self.interface.open_document(fileURL.absoluteString)
+            self.impl.open_document(str(fileURL.absoluteString))
 
     @objc_method
     def selectMenuItem_(self, sender) -> None:
@@ -182,7 +183,6 @@ class DocumentApp(App):
         )
 
     def select_file(self, **kwargs):
-        print('Open file...')
         # FIXME This should be all we need; but for some reason, application types
         # aren't being registered correctly..
         # NSDocumentController.sharedDocumentController().openDocument_(None)
@@ -201,5 +201,19 @@ class DocumentApp(App):
         self.appDelegate.application_openFiles_(None, panel.URLs)
 
     def open_document(self, fileURL):
-        '''Add a new document to this app.'''
-        print("STUB: If you want to handle opening documents, implement App.open_document(fileURL)")
+        """ Add a new document to this app.
+
+        Args:
+            fileURL (str): The URL/path to the file to add as a document.
+        """
+        # Convert a cocoa fileURL to a file path.
+        path = unquote(urlparse(fileURL).path)
+        extension = os.path.splitext(path)[1][1:]
+
+        # Create the document instance
+        DocType = self.interface.document_types[extension]
+        document = DocType(path, app=self.interface)
+        self.interface._documents.append(document)
+
+        # Show the document.
+        document.show()

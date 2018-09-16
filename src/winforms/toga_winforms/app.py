@@ -85,3 +85,7 @@ class App:
 
     def set_on_exit(self, value):
         pass
+
+
+class DocumentApp(App):
+    pass

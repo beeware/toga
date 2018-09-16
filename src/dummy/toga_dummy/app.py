@@ -30,6 +30,6 @@ class App(LoggedObject):
         self._set_value('on_exit', value)
 
 
+@not_required_on('mobile', 'web')
 class DocumentApp(App):
-    def open_document(self, fileURL):
-        self._action('open document', fileURL=fileURL)
+    pass

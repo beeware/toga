@@ -57,7 +57,13 @@ class App:
             Command(None, 'About ' + self.interface.name, group=toga.Group.APP),
             Command(None, 'Preferences', group=toga.Group.APP),
             # Quit should always be the last item, in a section on it's own
-            Command(lambda widget, data: self.exit(), 'Quit ' + self.interface.name, shortcut='q', group=toga.Group.APP, section=sys.maxsize),
+            Command(
+                lambda widget, data: self.exit(),
+                'Quit ' + self.interface.name,
+                shortcut='q',
+                group=toga.Group.APP,
+                section=sys.maxsize
+            ),
             Command(None, 'Visit homepage', group=toga.Group.HELP)
         )
         self._populate_default_menus()
