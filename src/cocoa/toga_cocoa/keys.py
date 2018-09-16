@@ -1,4 +1,4 @@
-from toga.keys import Key
+from toga import Key
 
 from toga_cocoa.libs import (
     NSEventModifierFlagCapsLock,
@@ -20,7 +20,8 @@ def modified_key(key, shift=None):
             return key
     return mod_fn
 
-def toga_key(keyCode, modifierFlags):
+
+def toga_key(event):
     key = {
         0: Key.A,
         1: Key.S,
@@ -39,19 +40,19 @@ def toga_key(keyCode, modifierFlags):
         15: Key.R,
         16: Key.Y,
         17: Key.T,
-        18: modified_key(Key._1, shift=Key.EXCLAMATION)(modifierFlags),
-        19: modified_key(Key._2, shift=Key.AT)(modifierFlags),
-        20: modified_key(Key._3, shift=Key.HASH)(modifierFlags),
-        21: modified_key(Key._4, shift=Key.DOLLAR)(modifierFlags),
-        22: modified_key(Key._6, shift=Key.CARET)(modifierFlags),
-        23: modified_key(Key._5, shift=Key.PERCENT)(modifierFlags),
+        18: modified_key(Key._1, shift=Key.EXCLAMATION)(event.modifierFlags),
+        19: modified_key(Key._2, shift=Key.AT)(event.modifierFlags),
+        20: modified_key(Key._3, shift=Key.HASH)(event.modifierFlags),
+        21: modified_key(Key._4, shift=Key.DOLLAR)(event.modifierFlags),
+        22: modified_key(Key._6, shift=Key.CARET)(event.modifierFlags),
+        23: modified_key(Key._5, shift=Key.PERCENT)(event.modifierFlags),
         24: Key.EQUAL,
         24: Key.PLUS,
-        25: modified_key(Key._9, shift=Key.OPEN_PARENTHESIS)(modifierFlags),
-        26: modified_key(Key._7, shift=Key.AND)(modifierFlags),
-        27: modified_key(Key.MINUS, shift=Key.UNDERSCORE)(modifierFlags),
-        28: modified_key(Key._8, shift=Key.ASTERISK)(modifierFlags),
-        29: modified_key(Key._0, shift=Key.CLOSE_PARENTHESIS)(modifierFlags),
+        25: modified_key(Key._9, shift=Key.OPEN_PARENTHESIS)(event.modifierFlags),
+        26: modified_key(Key._7, shift=Key.AND)(event.modifierFlags),
+        27: modified_key(Key.MINUS, shift=Key.UNDERSCORE)(event.modifierFlags),
+        28: modified_key(Key._8, shift=Key.ASTERISK)(event.modifierFlags),
+        29: modified_key(Key._0, shift=Key.CLOSE_PARENTHESIS)(event.modifierFlags),
         30: Key.CLOSE_BRACKET,
         31: Key.O,
         32: Key.U,
@@ -64,16 +65,16 @@ def toga_key(keyCode, modifierFlags):
         39: Key.DOUBLE_QUOTE,
         39: Key.QUOTE,
         40: Key.K,
-        41: modified_key(Key.COLON, shift=Key.SEMICOLON)(modifierFlags),
+        41: modified_key(Key.COLON, shift=Key.SEMICOLON)(event.modifierFlags),
         42: Key.BACKSLASH,
-        43: modified_key(Key.COMMA, shift=Key.LESS_THAN)(modifierFlags),
-        44: modified_key(Key.SLASH, shift=Key.QUESTION)(modifierFlags),
+        43: modified_key(Key.COMMA, shift=Key.LESS_THAN)(event.modifierFlags),
+        44: modified_key(Key.SLASH, shift=Key.QUESTION)(event.modifierFlags),
         45: Key.N,
         46: Key.M,
-        47: modified_key(Key.FULL_STOP, shift=Key.GREATER_THAN)(modifierFlags),
+        47: modified_key(Key.FULL_STOP, shift=Key.GREATER_THAN)(event.modifierFlags),
         48: Key.TAB,
         49: Key.SPACE,
-        50: modified_key(Key.BACK_QUOTE, shift=Key.TILDE)(modifierFlags),
+        50: modified_key(Key.BACK_QUOTE, shift=Key.TILDE)(event.modifierFlags),
         51: Key.BACKSPACE,
         53: Key.ESCAPE,
         65: Key.NUMPAD_DECIMAL_POINT,
@@ -115,19 +116,19 @@ def toga_key(keyCode, modifierFlags):
         125: Key.DOWN,
         126: Key.UP,
 
-    }.get(keyCode, None)
+    }.get(event.keyCode, None)
 
     modifiers = set()
 
-    if modifierFlags & NSEventModifierFlagCapsLock:
+    if event.modifierFlags & NSEventModifierFlagCapsLock:
         modifiers.add(Key.CAPS_LOCK)
-    if modifierFlags & NSEventModifierFlagShift:
+    if event.modifierFlags & NSEventModifierFlagShift:
         modifiers.add(Key.SHIFT)
-    if modifierFlags & NSEventModifierFlagControl:
+    if event.modifierFlags & NSEventModifierFlagControl:
         modifiers.add(Key.CONTROL)
-    if modifierFlags & NSEventModifierFlagOption:
+    if event.modifierFlags & NSEventModifierFlagOption:
         modifiers.add(Key.OPTION)
-    if modifierFlags & NSEventModifierFlagCommand:
+    if event.modifierFlags & NSEventModifierFlagCommand:
         modifiers.add(Key.COMMAND)
 
     return {

@@ -1,6 +1,7 @@
 from rubicon.objc import objc_method
 from travertino.size import at_least
 
+from toga_cocoa.keys import toga_key
 from toga_cocoa.libs import *
 
 from .base import Widget
@@ -20,7 +21,7 @@ class TogaWebView(WebView):
     def keyDown_(self, event) -> None:
         print('in keyDown', event.keyCode)
         if self.interface.on_key_down:
-            self.interface.on_key_down(event.keyCode, event.modifierFlags)
+            self.interface.on_key_down(**toga_key(event))
 
     @objc_method
     def touchBar(self):
