@@ -4,12 +4,12 @@ import sys
 from urllib.parse import unquote, urlparse
 
 import toga
-from rubicon.objc import objc_method, NSMutableArray, NSObject, SEL
+from rubicon.objc import objc_method, NSMutableArray, NSMutableDictionary, NSObject, SEL
 from rubicon.objc.eventloop import EventLoopPolicy, CocoaLifecycle
 
 from .libs import (
     NSURL, NSBundle, NSOpenPanel, NSDocumentController, NSString, NSApplication,
-    NSApplicationActivationPolicyRegular, NSMenu, NSMenuItem
+    NSApplicationActivationPolicyRegular, NSNumber, NSMenu, NSMenuItem, NSScreen
 )
 from .window import Window
 
@@ -102,7 +102,7 @@ class App:
 
             toga.Command(None, 'Visit homepage', group=toga.Group.HELP)
         )
-        self._populate_default_menus()
+        self._create_app_commands()
 
         # Call user code to populate the main window
         self.interface.startup()
@@ -112,8 +112,8 @@ class App:
         self._menu_items = {}
         self.create_menus()
 
-    def _populate_default_menus(self):
-        # No extra menus
+    def _create_app_commands(self):
+        # No extra commands
         pass
 
     def create_menus(self):
@@ -169,9 +169,28 @@ class App:
     def current_window(self):
         return self.native.keyWindow
 
+    def enter_full_screen(self, windows):
+        # If we're already in full screen mode, exit so that
+        # we can re-assign windows to screens.
+        if self.interface.is_full_screen:
+            self.interface.exit_full_screen()
+
+        opts = NSMutableDictionary.alloc().init()
+        opts.setObject(NSNumber.numberWithBool(True), forKey="NSFullScreenModeAllScreens")
+
+        for window, screen in zip(windows, NSScreen.screens):
+            window.content._impl.native.enterFullScreenMode(screen, withOptions=opts)
+
+    def exit_full_screen(self, windows):
+        opts = NSMutableDictionary.alloc().init()
+        opts.setObject(NSNumber.numberWithBool(True), forKey="NSFullScreenModeAllScreens")
+
+        for window in windows:
+            window.content._impl.native.exitFullScreenModeWithOptions(opts)
+
 
 class DocumentApp(App):
-    def _populate_default_menus(self):
+    def _create_app_commands(self):
         self.interface.commands.add(
             toga.Command(
                 lambda w: self.open_file,
@@ -201,7 +220,7 @@ class DocumentApp(App):
         self.appDelegate.application_openFiles_(None, panel.URLs)
 
     def open_document(self, fileURL):
-        """ Add a new document to this app.
+        """Open a new document in this app.
 
         Args:
             fileURL (str): The URL/path to the file to add as a document.

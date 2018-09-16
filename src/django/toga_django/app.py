@@ -47,6 +47,15 @@ class App(AppInterface):
     def set_on_exit(self, value):
         pass
 
+    def current_window(self):
+        self.interface.factory.not_implemented('App.current_window()')
+
+    def enter_full_screen(self, windows):
+        self.interface.factory.not_implemented('App.enter_full_screen()')
+
+    def exit_full_screen(self, windows):
+        self.interface.factory.not_implemented('App.exit_full_screen()')
+
     # ====
 
     # def materialize(self):

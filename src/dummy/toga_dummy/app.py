@@ -29,6 +29,18 @@ class App(LoggedObject):
     def set_on_exit(self, value):
         self._set_value('on_exit', value)
 
+    @not_required_on('mobile')
+    def current_window(self):
+        self._action('current_window')
+
+    @not_required_on('mobile')
+    def enter_full_screen(self, windows):
+        self._action('enter_full_screen', windows=windows)
+
+    @not_required_on('mobile')
+    def exit_full_screen(self, windows):
+        self._action('exit_full_screen', windows=windows)
+
 
 @not_required_on('mobile', 'web')
 class DocumentApp(App):
