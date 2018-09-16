@@ -5,9 +5,9 @@ from travertino.layout import Viewport
 from travertino.node import Node
 from travertino.size import at_least
 
+from toga.resources.colors import rgb
 from toga.style.pack import *
 from toga.style.applicator import TogaApplicator
-from toga.color import rgb
 
 
 class TestNode(Node):

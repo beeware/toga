@@ -1,14 +1,15 @@
 from .app import App, DocumentApp, MainWindow
-from .color import native_color
 from .command import Command
-from .font import Font
+
+from .resources.colors import native_color
+from .resources.fonts import Font
+from .resources.icons import Icon
+from .resources.images import Image
 
 from .widgets.box import Box
 from .widgets.button import Button
 from .widgets.canvas import Canvas
 from .widgets.detailedlist import DetailedList
-from .widgets.icon import Icon
-from .widgets.image import Image
 from .widgets.imageview import ImageView
 from .widgets.label import Label
 from .widgets.multilinetextinput import MultilineTextInput
@@ -36,16 +37,19 @@ __all__ = [
     'not_implemented',
 
     'App', 'DocumentApp', 'MainWindow',
-    'native_color',
     'Command',
-    'Font',
 
+    # Resources
+    'native_color',
+    'Font',
+    'Icon',
+    'Image',
+
+    # Widgets
     'Box',
     'Button',
     'Canvas',
     'DetailedList',
-    'Icon',
-    'Image',
     'ImageView',
     'Label',
     'MultilineTextInput',

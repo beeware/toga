@@ -41,6 +41,14 @@ class App(LoggedObject):
     def exit_full_screen(self, windows):
         self._action('exit_full_screen', windows=windows)
 
+    @not_required_on('mobile')
+    def show_cursor(self):
+        self._action('show_cursor')
+
+    @not_required_on('mobile')
+    def hide_cursor(self):
+        self._action('hide_cursor')
+
 
 @not_required_on('mobile', 'web')
 class DocumentApp(App):

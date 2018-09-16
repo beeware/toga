@@ -6,7 +6,7 @@ from builtins import id as identifier
 from toga.command import CommandSet
 from toga.handlers import wrapped_handler
 from toga.platform import get_platform_factory
-from toga.widgets.icon import Icon
+from toga.resources.icons import Icon
 from toga.window import Window
 
 
@@ -159,6 +159,14 @@ class App:
         if self.is_full_screen:
             self._impl.exit_full_screen(self._full_screen_windows)
             self._full_screen_windows = None
+
+    def show_cursor(self):
+        """Show cursor."""
+        self._impl.show_cursor()
+
+    def hide_cursor(self):
+        """Hide cursor from view."""
+        self._impl.hide_cursor()
 
     def startup(self):
         """ Create and show the main window for the application

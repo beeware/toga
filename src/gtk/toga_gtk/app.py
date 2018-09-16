@@ -170,6 +170,12 @@ class App:
     def exit_full_screen(self, windows):
         self.interface.factory.not_implemented('App.exit_full_screen()')
 
+    def show_cursor(self):
+        self.interface.factory.not_implemented('App.show_cursor()')
+
+    def hide_cursor(self):
+        self.interface.factory.not_implemented('App.hide_cursor()')
+
 
 class DocumentApp(App):
     def _create_app_commands(self):

@@ -1,6 +1,6 @@
 # from toga.interface.command import Group, Command as BaseCommand
 
-from toga.widgets.icon import Icon
+from toga.resources.icons import Icon
 
 
 class Command:

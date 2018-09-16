@@ -2,7 +2,7 @@ from rubicon.objc import objc_method, SEL
 from travertino.size import at_least
 
 from toga_cocoa.libs import *
-from toga_cocoa.color import native_color
+from toga_cocoa.resources.colors import native_color
 
 from .base import Widget
 

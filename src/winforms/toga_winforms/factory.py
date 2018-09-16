@@ -1,12 +1,15 @@
 from .app import App, MainWindow
 from .command import Command
-# from .font import font
+
+# from resources.colors import ...
+# from resources.fonts import font
+from .resources.icon import Icon
+from .resources.image import *
+
 from .widgets.box import Box
 from .widgets.button import Button
 # from .widgets.canvas import Canvas
 # from .widgets.detailedlist import DetailedList
-from .widgets.icon import Icon
-from .widgets.image import *
 from .widgets.imageview import *
 from .widgets.label import *
 from .widgets.multilinetextinput import *
@@ -32,15 +35,19 @@ __all__ = [
     'not_implemented',
 
     'App', 'MainWindow',
-    # 'color',
     'Command',
+
+    # Resources
+    # 'color',
     # 'font',
+    'Icon',
+    'Image',
+
+    # Widgets
     'Box',
     'Button',
     # 'Canvas',
     # 'DetailedList',
-    'Icon',
-    'Image',
     'ImageView',
     'Label',
     'MultilineTextInput',

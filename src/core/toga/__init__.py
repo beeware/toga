@@ -1,9 +1,13 @@
 from .app import App, DocumentApp, MainWindow
 from .command import Command, CommandSet, Group, GROUP_BREAK, SECTION_BREAK
-from .color import hsl, hsla, rgb, rgba
 from .documents import Document
-from .font import Font
 from .keys import Key
+
+# Resources
+from .resources.colors import hsl, hsla, rgb, rgba
+from .resources.fonts import Font
+from .resources.icons import Icon
+from .resources.images import Image
 
 # Widgets
 from .widgets.base import Widget
@@ -12,8 +16,6 @@ from .widgets.box import Box
 from .widgets.button import Button
 from .widgets.canvas import Canvas
 from .widgets.detailedlist import DetailedList
-from .widgets.icon import Icon
-from .widgets.image import Image
 from .widgets.imageview import ImageView
 from .widgets.label import Label
 from .widgets.multilinetextinput import MultilineTextInput
@@ -38,14 +40,16 @@ __all__ = [
     'App', 'DocumentApp', 'MainWindow',
     # Commands
     'Command', 'CommandSet', 'Group', 'GROUP_BREAK', 'SECTION_BREAK',
-    # Colors
-    'hsl', 'hsla', 'rgb', 'rgba',
     # Documents
     'Document',
-    # Fonts
-    'Font',
     # Keys
     'Key',
+
+    # Resources
+    'hsl', 'hsla', 'rgb', 'rgba',  # Colors
+    'Font',
+    'Icon',
+    'Image',
 
     # Widgets
     'DetailedList',
@@ -54,8 +58,6 @@ __all__ = [
     'Box',
     'Button',
     'Canvas',
-    'Icon',
-    'Image',
     'ImageView',
     'Label',
     'MultilineTextInput',

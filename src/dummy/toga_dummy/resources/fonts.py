@@ -1,4 +1,4 @@
-from .utils import LoggedObject
+from ..utils import LoggedObject
 
 
 class Font(LoggedObject):

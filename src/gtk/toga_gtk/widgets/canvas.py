@@ -15,8 +15,9 @@ try:
 except ImportError:
     SCALE = 1024
 
+from toga_gtk.resources.colors import native_color
+
 from .base import Widget
-from ..color import native_color
 
 
 class Canvas(Widget):

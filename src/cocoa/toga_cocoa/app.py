@@ -9,7 +9,8 @@ from rubicon.objc.eventloop import EventLoopPolicy, CocoaLifecycle
 
 from .libs import (
     NSURL, NSBundle, NSOpenPanel, NSDocumentController, NSString, NSApplication,
-    NSApplicationActivationPolicyRegular, NSNumber, NSMenu, NSMenuItem, NSScreen
+    NSApplicationActivationPolicyRegular, NSNumber, NSMenu, NSMenuItem, NSScreen,
+    NSCursor
 )
 from .window import Window
 
@@ -74,6 +75,8 @@ class App:
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
+
+        self._cursor_visible = True
 
         asyncio.set_event_loop_policy(EventLoopPolicy())
         self.loop = asyncio.get_event_loop()
@@ -187,6 +190,18 @@ class App:
 
         for window in windows:
             window.content._impl.native.exitFullScreenModeWithOptions(opts)
+
+    def show_cursor(self):
+        if not self._cursor_visible:
+            NSCursor.unhide()
+
+        self._cursor_visible = True
+
+    def hide_cursor(self):
+        if self._cursor_visible:
+            NSCursor.show()
+
+        self._cursor_visible = False
 
 
 class DocumentApp(App):
