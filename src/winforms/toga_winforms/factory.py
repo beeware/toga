@@ -3,8 +3,8 @@ from .command import Command
 
 # from resources.colors import ...
 # from resources.fonts import font
-from .resources.icon import Icon
-from .resources.image import *
+from .resources.icons import Icon
+from .resources.images import Image
 
 from .widgets.box import Box
 from .widgets.button import Button
