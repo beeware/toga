@@ -1,14 +1,17 @@
-from .app import App, MainWindow
-from .color import native_color
+from .app import App, DocumentApp, MainWindow
 from .command import Command
-from .font import Font
+from .documents import Document
 
+# Resources
+from .fonts import Font
+from .icons import Icon
+from .images import Image
+
+# Widgets
 from .widgets.box import Box
 from .widgets.button import Button
 from .widgets.canvas import Canvas
 from .widgets.detailedlist import DetailedList
-from .widgets.icon import Icon
-from .widgets.image import Image
 from .widgets.imageview import ImageView
 from .widgets.label import Label
 from .widgets.multilinetextinput import MultilineTextInput
@@ -35,17 +38,20 @@ def not_implemented(feature):
 __all__ = [
     'not_implemented',
 
-    'App', 'MainWindow',
-    'native_color',
+    'App', 'DocumentApp', 'MainWindow',
     'Command',
-    'Font',
+    'Document',
 
+    # Resources
+    'Font',
+    'Icon',
+    'Image',
+
+    # Widgets
     'Box',
     'Button',
     'Canvas',
     'DetailedList',
-    'Icon',
-    'Image',
     'ImageView',
     'Label',
     'MultilineTextInput',

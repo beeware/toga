@@ -1,4 +1,4 @@
-from .libs import NSColor
+from toga_cocoa.libs import NSColor
 
 
 CACHE = {}

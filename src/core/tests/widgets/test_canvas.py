@@ -1,10 +1,11 @@
 from math import pi, cos, sin
 
 import toga
+from toga.colors import REBECCAPURPLE, BLANCHEDALMOND, CRIMSON, rgb
+from toga.fonts import SANS_SERIF, SERIF
+
 import toga_dummy
-from toga.font import SANS_SERIF, SERIF
 from toga_dummy.utils import TestCase
-from toga.color import REBECCAPURPLE, BLANCHEDALMOND, CRIMSON, rgb
 
 
 class CanvasTests(TestCase):

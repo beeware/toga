@@ -4,36 +4,36 @@ pull_request:
         subtasks:
             - eslint:
                 name: JavaScript lint checks
-                task: beefore-javascript
+                image: pybee/beefore-javascript
             - pycodestyle:
                 name: Python lint checks
-                task: beefore
+                image: pybee/beefore
     - core:
         subtasks:
             - py3.5:
                 name: Python 3.5 Core API tests
-                task: py35
+                image: pybee/py35
                 environment:
                     TEST_DIR: src/core
                     SRC_DEPENDANTS: src/dummy
             - py3.6:
                 name: Python 3.6 Core API tests
-                task: py36
+                image: pybee/py36
                 environment:
                     TEST_DIR: src/core
                     SRC_DEPENDANTS: src/dummy
             - py3.7:
                 name: Python 3.7 Core API tests
-                task: py37
+                image: pybee/py37
                 environment:
                     TEST_DIR: src/core
                     SRC_DEPENDANTS: src/dummy
     - implementations:
-        task: py35
+        image: pybee/py35
         subtasks:
             - gtk:
                 name: GTK+ implementation compliance check
-                task: gtk-py35
+                image: pybee/gtk-py35
                 environment:
                     TEST_DIR: src/gtk
                     SRC_DEPENDANTS: src/core src/dummy
@@ -65,7 +65,7 @@ pull_request:
                     SRC_DEPENDANTS: src/core src/dummy
 push:
     - smoke:
-        task: py35
+        image: pybee/py35
         name: Core API tests
         environment:
             TEST_DIR: src/core

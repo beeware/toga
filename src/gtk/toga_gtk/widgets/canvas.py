@@ -1,7 +1,11 @@
 import gi
+from gi.repository import Gtk
+
+from toga_gtk.colors import native_color
+
+from .base import Widget
 
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk
 
 try:
     import cairo
@@ -14,9 +18,6 @@ try:
     SCALE = Pango.SCALE
 except ImportError:
     SCALE = 1024
-
-from .base import Widget
-from ..color import native_color
 
 
 class Canvas(Widget):
@@ -60,45 +61,20 @@ class Canvas(Widget):
 
     # Basic shapes
 
-    def bezier_curve_to(
-        self, cp1x, cp1y, cp2x, cp2y, x, y, draw_context, *args, **kwargs
-    ):
+    def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y, draw_context, *args, **kwargs):
         draw_context.curve_to(cp1x, cp1y, cp2x, cp2y, x, y)
 
     def quadratic_curve_to(self, cpx, cpy, x, y, draw_context, *args, **kwargs):
         draw_context.curve_to(cpx, cpy, cpx, cpy, x, y)
 
-    def arc(
-        self,
-        x,
-        y,
-        radius,
-        startangle,
-        endangle,
-        anticlockwise,
-        draw_context,
-        *args,
-        **kwargs
-    ):
+    def arc(self, x, y, radius, startangle, endangle, anticlockwise, draw_context, *args, **kwargs):
         if anticlockwise:
             draw_context.arc_negative(x, y, radius, startangle, endangle)
         else:
             draw_context.arc(x, y, radius, startangle, endangle)
 
-    def ellipse(
-        self,
-        x,
-        y,
-        radiusx,
-        radiusy,
-        rotation,
-        startangle,
-        endangle,
-        anticlockwise,
-        draw_context,
-        *args,
-        **kwargs
-    ):
+    def ellipse(self, x, y, radiusx, radiusy, rotation, startangle, endangle, anticlockwise,
+                draw_context, *args, **kwargs):
         draw_context.save()
         draw_context.translate(x, y)
         if radiusx >= radiusy:

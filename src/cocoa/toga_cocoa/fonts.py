@@ -1,5 +1,4 @@
-from .libs import NSAttributedString, NSFont, NSFontAttributeName, NSMutableDictionary
-from toga.font import (
+from toga.fonts import (
     MESSAGE,
     NORMAL,
     SYSTEM,
@@ -9,6 +8,8 @@ from toga.font import (
     FANTASY,
     MONOSPACE,
 )
+
+from toga_cocoa.libs import NSAttributedString, NSFont, NSFontAttributeName, NSMutableDictionary
 
 _FONT_CACHE = {}
 
