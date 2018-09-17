@@ -1,4 +1,4 @@
-from rubicon.objc import *
+from rubicon.objc import objc_method
 
 from toga_cocoa.libs import NSColor, NSView
 from toga_cocoa.resources.colors import native_color
@@ -26,8 +26,8 @@ class Box(Widget):
         # Add the layout constraints
         self.add_constraints()
 
-    def set_background_color(self, value):
-        if value is None:
+    def set_background_color(self, color):
+        if color is None:
             self.native.backgroundColor = NSColor.windowBackgroundColor
         else:
-            self.native.backgroundColor = native_color(value)
+            self.native.backgroundColor = native_color(color)

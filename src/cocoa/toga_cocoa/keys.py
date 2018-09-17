@@ -16,12 +16,12 @@ def modified_key(key, shift=None):
     def mod_fn(modifierFlags):
         if modifierFlags & NSEventModifierFlagShift:
             return shift
-        else:
-            return key
+        return key
     return mod_fn
 
 
 def toga_key(event):
+    """Convert a Cocoa NSKeyEvent into a Toga event."""
     key = {
         0: Key.A,
         1: Key.S,
@@ -46,8 +46,7 @@ def toga_key(event):
         21: modified_key(Key._4, shift=Key.DOLLAR)(event.modifierFlags),
         22: modified_key(Key._6, shift=Key.CARET)(event.modifierFlags),
         23: modified_key(Key._5, shift=Key.PERCENT)(event.modifierFlags),
-        24: Key.EQUAL,
-        24: Key.PLUS,
+        24: modified_key(Key.PLUS, shift=Key.EQUAL)(event.modifierFlags),
         25: modified_key(Key._9, shift=Key.OPEN_PARENTHESIS)(event.modifierFlags),
         26: modified_key(Key._7, shift=Key.AND)(event.modifierFlags),
         27: modified_key(Key.MINUS, shift=Key.UNDERSCORE)(event.modifierFlags),
@@ -62,8 +61,7 @@ def toga_key(event):
         36: Key.ENTER,
         37: Key.L,
         38: Key.J,
-        39: Key.DOUBLE_QUOTE,
-        39: Key.QUOTE,
+        39: modified_key(Key.QUOTE, shift=Key.DOUBLE_QUOTE)(event.modifierFlags),
         40: Key.K,
         41: modified_key(Key.COLON, shift=Key.SEMICOLON)(event.modifierFlags),
         42: Key.BACKSLASH,

@@ -6,7 +6,8 @@ from travertino.node import Node
 from travertino.size import at_least
 
 from toga.resources.colors import rgb
-from toga.style.pack import *
+from toga.resources.fonts import Font
+from toga.style.pack import Pack, CENTER, COLUMN, HIDDEN, LEFT, RIGHT, ROW, RTL
 from toga.style.applicator import TogaApplicator
 
 
@@ -73,7 +74,8 @@ class TestPackStyleApply(TestCase):
         )
         root.style.reapply()
         root._impl.set_font.assert_called_with(
-            Font('Roboto', 12, 'normal', 'small-caps', 'bold'))
+            Font('Roboto', 12, 'normal', 'small-caps', 'bold')
+        )
 
     def test_set_visibility_hidden(self):
         root = TestNode(

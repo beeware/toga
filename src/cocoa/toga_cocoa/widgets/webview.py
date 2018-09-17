@@ -1,8 +1,8 @@
-from rubicon.objc import objc_method
 from travertino.size import at_least
+from rubicon.objc import objc_method
 
 from toga_cocoa.keys import toga_key
-from toga_cocoa.libs import *
+from toga_cocoa.libs import NSURL, NSURLRequest, WebView
 
 from .base import Widget
 
@@ -45,8 +45,9 @@ class WebView(Widget):
 
     def get_dom(self):
         # Utilises Step 2) of:
-        # https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/DisplayWebContent/Tasks/SaveAndLoad.html
-        html = self.native.mainFrame.DOMDocument.documentElement.outerHTML  ##domDocument.markupString
+        # https://developer.apple.com/library/content/documentation/
+        #       Cocoa/Conceptual/DisplayWebContent/Tasks/SaveAndLoad.html
+        html = self.native.mainFrame.DOMDocument.documentElement.outerHTML
         return html
 
     def set_url(self, value):

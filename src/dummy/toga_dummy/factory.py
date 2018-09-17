@@ -11,25 +11,24 @@ from .widgets.box import Box
 from .widgets.button import Button
 from .widgets.canvas import Canvas
 from .widgets.detailedlist import DetailedList
-from .widgets.imageview import *
+from .widgets.imageview import ImageView
 from .widgets.label import Label
-from .widgets.multilinetextinput import *
-from .widgets.navigationview import *
-from .widgets.numberinput import *
-from .widgets.optioncontainer import *
-from .widgets.passwordinput import *
-from .widgets.progressbar import *
-from .widgets.scrollcontainer import *
+from .widgets.multilinetextinput import MultilineTextInput
+from .widgets.navigationview import NavigationView
+from .widgets.numberinput import NumberInput
+from .widgets.optioncontainer import OptionContainer
+from .widgets.passwordinput import PasswordInput
+from .widgets.progressbar import ProgressBar
+from .widgets.scrollcontainer import ScrollContainer
 from .widgets.selection import Selection
-from .widgets.slider import *
-from .widgets.splitcontainer import *
-from .widgets.switch import *
-from .widgets.table import *
+from .widgets.slider import Slider
+from .widgets.splitcontainer import SplitContainer
+from .widgets.switch import Switch
+from .widgets.table import Table
 from .widgets.textinput import TextInput
-from .widgets.tree import *
-from .widgets.webview import *
+from .widgets.tree import Tree
+from .widgets.webview import WebView
 from .window import Window
-
 
 
 def not_implemented(feature):
@@ -57,7 +56,7 @@ __all__ = [
     'MultilineTextInput',
     'NavigationView',
     'NumberInput',
-    'OptionContainer'
+    'OptionContainer',
     'PasswordInput',
     'ProgressBar',
     'ScrollContainer',
