@@ -5,8 +5,8 @@ from builtins import id as identifier
 
 from toga.command import CommandSet
 from toga.handlers import wrapped_handler
+from toga.icons import Icon
 from toga.platform import get_platform_factory
-from toga.resources.icons import Icon
 from toga.window import Window
 
 

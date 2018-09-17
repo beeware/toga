@@ -1,7 +1,7 @@
 from rubicon.objc import objc_method
 
 from toga_cocoa.libs import NSColor, NSView
-from toga_cocoa.resources.colors import native_color
+from toga_cocoa.colors import native_color
 
 from .base import Widget
 

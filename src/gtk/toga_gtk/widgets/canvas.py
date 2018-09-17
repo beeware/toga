@@ -1,7 +1,7 @@
 import gi
 from gi.repository import Gtk
 
-from toga_gtk.resources.colors import native_color
+from toga_gtk.colors import native_color
 
 from .base import Widget
 

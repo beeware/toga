@@ -5,8 +5,8 @@ from travertino.layout import Viewport
 from travertino.node import Node
 from travertino.size import at_least
 
-from toga.resources.colors import rgb
-from toga.resources.fonts import Font
+from toga.colors import rgb
+from toga.fonts import Font
 from toga.style.pack import Pack, CENTER, COLUMN, HIDDEN, LEFT, RIGHT, ROW, RTL
 from toga.style.applicator import TogaApplicator
 

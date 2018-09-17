@@ -1,7 +1,7 @@
 from travertino.size import at_least
 
 from toga_cocoa.libs import NSTextField, NSTextAlignment
-from toga_cocoa.resources.colors import native_color
+from toga_cocoa.colors import native_color
 
 from .base import Widget
 

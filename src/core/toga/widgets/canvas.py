@@ -1,8 +1,8 @@
 from contextlib import contextmanager
 from math import pi
 
-from toga.resources.colors import color as parse_color, BLACK
-from toga.resources.fonts import Font, SYSTEM
+from toga.colors import color as parse_color, BLACK
+from toga.fonts import Font, SYSTEM
 
 from .base import Widget
 

@@ -1,10 +1,9 @@
 from .app import App, DocumentApp, MainWindow
 from .command import Command
 
-from .resources.colors import native_color
-from .resources.fonts import Font
-from .resources.icons import Icon
-from .resources.images import Image
+from .fonts import Font
+from .icons import Icon
+from .images import Image
 
 from .widgets.box import Box
 from .widgets.button import Button
@@ -40,7 +39,6 @@ __all__ = [
     'Command',
 
     # Resources
-    'native_color',
     'Font',
     'Icon',
     'Image',

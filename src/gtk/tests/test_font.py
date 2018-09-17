@@ -2,7 +2,7 @@ import unittest
 
 import toga
 from toga.constants import ITALIC, OBLIQUE, SMALL_CAPS, BOLD, SYSTEM, CURSIVE
-from toga_gtk.resources import fonts as gtk_fonts
+from toga_gtk import fonts as gtk_fonts
 
 try:
     import gi

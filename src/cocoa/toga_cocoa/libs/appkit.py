@@ -202,6 +202,7 @@ NSColor.declare_class_property('redColor')
 NSColor.declare_class_property('whiteColor')
 NSColor.declare_class_property('yellowColor')
 
+
 def NSColorUsingColorName(background_color):
     return {
         BLACK: NSColor.blackColor,

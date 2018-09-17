@@ -1,10 +1,9 @@
 from .app import App, MainWindow
 from .command import Command
 
-# from resources.colors import ...
-# from resources.fonts import font
-from .resources.icons import Icon
-from .resources.images import Image
+# from .fonts import Font
+from .icons import Icon
+from .images import Image
 
 from .widgets.box import Box
 from .widgets.button import Button
@@ -39,8 +38,7 @@ __all__ = [
     'Command',
 
     # Resources
-    # 'color',
-    # 'font',
+    # 'Font',
     'Icon',
     'Image',
 

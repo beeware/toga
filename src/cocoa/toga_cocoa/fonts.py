@@ -1,4 +1,4 @@
-from toga.resources.fonts import (
+from toga.fonts import (
     MESSAGE,
     NORMAL,
     SYSTEM,

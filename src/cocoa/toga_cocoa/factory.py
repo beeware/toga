@@ -2,11 +2,12 @@ from .app import App, DocumentApp, MainWindow
 from .command import Command
 from .documents import Document
 
-from .resources.colors import native_color
-from .resources.fonts import Font
-from .resources.icons import Icon
-from .resources.images import Image
+# Resources
+from .fonts import Font
+from .icons import Icon
+from .images import Image
 
+# Widgets
 from .widgets.box import Box
 from .widgets.button import Button
 from .widgets.canvas import Canvas
@@ -42,7 +43,6 @@ __all__ = [
     'Document',
 
     # Resources
-    'native_color',  # Colors
     'Font',
     'Icon',
     'Image',

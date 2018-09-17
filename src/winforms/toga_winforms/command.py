@@ -1,4 +1,4 @@
-from toga.resources.icons import Icon as CoreIcon
+from toga.icons import Icon as CoreIcon
 
 
 class Command:

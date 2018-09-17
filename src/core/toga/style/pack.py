@@ -6,7 +6,7 @@ from travertino.declaration import BaseStyle, Choices
 from travertino.layout import BaseBox
 from travertino.size import BaseIntrinsicSize
 
-from toga.resources.fonts import Font
+from toga.fonts import Font
 
 ######################################################################
 # Display

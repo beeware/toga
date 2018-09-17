@@ -19,7 +19,7 @@ from toga_cocoa.libs import (
     NSView,
     objc_method,
 )
-from toga_cocoa.resources.colors import native_color
+from toga_cocoa.colors import native_color
 
 from .base import Widget
 

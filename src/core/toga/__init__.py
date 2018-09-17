@@ -4,10 +4,10 @@ from .documents import Document
 from .keys import Key
 
 # Resources
-from .resources.colors import hsl, hsla, rgb, rgba
-from .resources.fonts import Font
-from .resources.icons import Icon
-from .resources.images import Image
+from .colors import hsl, hsla, rgb, rgba
+from .fonts import Font
+from .icons import Icon
+from .images import Image
 
 # Widgets
 from .widgets.base import Widget
