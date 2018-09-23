@@ -14,7 +14,7 @@ class iOSViewport:
     def statusbar_height(self):
         if UIApplication.sharedApplication.statusBarOrientation == UIInterfaceOrientation.Portrait.value:
             # This is the height of the status bar.
-            return 16
+            return UIApplication.sharedApplication.statusBarFrame.size.height
         else:
             return 0
 
