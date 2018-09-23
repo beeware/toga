@@ -33,7 +33,7 @@ pull_request:
         subtasks:
             - gtk:
                 name: GTK+ implementation compliance check
-                image: pybee/gtk-py36
+                image: pybee/gtk-py35
                 environment:
                     TEST_DIR: src/gtk
                     SRC_DEPENDANTS: src/core src/dummy
