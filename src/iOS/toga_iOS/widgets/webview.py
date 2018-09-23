@@ -1,10 +1,10 @@
 from rubicon.objc import objc_method
-from toga_iOS.libs import UIWebView, NSURL
+from toga_iOS.libs import WKWebView, NSURL, NSURLRequest
 
 from .base import Widget
 
 
-class TogaWebView(UIWebView):
+class TogaWebView(WKWebView):
     @objc_method
     def webView_didFinishLoadForFrame_(self, sender, frame) -> None:
         if self.interface.on_webview_load:
@@ -30,7 +30,7 @@ class WebView(Widget):
         self.add_constraints()
 
     def get_dom(self):
-        html = self.native.mainFrame.DOMDocument.documentElement.outerHTML
+        html = self.native.DOMDocument.documentElement.outerHTML
         return html
 
     def set_url(self, value):
@@ -47,4 +47,3 @@ class WebView(Widget):
 
     def evaluate(self, javascript):
         return self.native.stringByEvaluatingJavaScriptFromString_(javascript)
-

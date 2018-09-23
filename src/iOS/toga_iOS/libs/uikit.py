@@ -1,12 +1,11 @@
 ##########################################################################
 # System/Library/Frameworks/UIKit.framework
 ##########################################################################
-from ctypes import *
-from ctypes import util
+from ctypes import c_char_p, c_int, c_void_p, cdll, util, POINTER, Structure
 from enum import Enum
 
-from rubicon.objc import *
-from toga.constants import *
+from rubicon.objc import objc_const, CGFloat, ObjCClass, ObjCClass
+from toga.constants import LEFT, RIGHT, CENTER, JUSTIFY
 
 ######################################################################
 uikit = cdll.LoadLibrary(util.find_library('UIKit'))
@@ -373,10 +372,6 @@ class UIViewContentMode(Enum):
 ######################################################################
 # UIViewController.h
 UIViewController = ObjCClass('UIViewController')
-
-######################################################################
-# UIWebView.h
-UIWebView = ObjCClass('UIWebView')
 
 ######################################################################
 # UIWindow.h
