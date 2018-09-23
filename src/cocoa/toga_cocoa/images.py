@@ -1,7 +1,7 @@
 import os
 
 import toga
-from toga_cocoa.libs import *
+from toga_cocoa.libs import NSImage, NSURL
 
 
 class Image(object):

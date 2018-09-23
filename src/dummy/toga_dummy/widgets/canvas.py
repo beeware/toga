@@ -67,8 +67,8 @@ class Canvas(Widget):
     def fill(self, color, fill_rule, preserve, *args, **kwargs):
         self._action("fill", color=color, fill_rule=fill_rule, preserve=preserve)
 
-    def stroke(self, color, line_width, *args, **kwargs):
-        self._action("stroke", color=color, line_width=line_width)
+    def stroke(self, color, line_width, line_dash, *args, **kwargs):
+        self._action("stroke", color=color, line_width=line_width, line_dash=line_dash)
 
     # Transformations
 

@@ -1,9 +1,17 @@
 from travertino.layout import Viewport
+from rubicon.objc import objc_method, NSMakeRect, NSMutableArray, NSObject, SEL
 
 from toga.command import Command as BaseCommand
 
 from toga_cocoa import dialogs
-from toga_cocoa.libs import *
+from toga_cocoa.libs import (
+    NSScreen, NSToolbar, NSToolbarItem, NSTitledWindowMask,
+    NSClosableWindowMask, NSResizableWindowMask, NSMiniaturizableWindowMask,
+    NSWindow, NSBackingStoreBuffered, NSLayoutConstraint,
+    NSLayoutAttributeBottom, NSLayoutAttributeLeft, NSLayoutAttributeRight,
+    NSLayoutAttributeTop, NSLayoutRelationGreaterThanOrEqual,
+    NSLayoutRelationEqual, NSSize
+)
 
 
 def toolbar_identifier(cmd):
@@ -133,6 +141,8 @@ class Window:
             defer=False
         )
         self.native.setFrame(position, display=True, animate=False)
+        self.native.interface = self.interface
+        self.native.impl = self
 
         self.delegate = WindowDelegate.alloc().init()
         self.delegate.interface = self.interface

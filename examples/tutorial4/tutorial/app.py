@@ -1,8 +1,8 @@
 import math
 
 import toga
-from toga.color import WHITE, rgb
-from toga.font import SANS_SERIF
+from toga.colors import WHITE, rgb
+from toga.fonts import SANS_SERIF
 from toga.style import Pack
 
 
