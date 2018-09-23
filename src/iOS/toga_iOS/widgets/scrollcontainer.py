@@ -11,7 +11,6 @@ from toga_iOS.libs import (
 )
 from toga_iOS.window import iOSViewport
 
-from travertino.size import at_least
 from .base import Widget
 
 
