@@ -1,8 +1,13 @@
-from .app import *
-from .command import *
-from .constants import *
-from .color import hsl, hsla, rgb, rgba
-from .font import Font
+from .app import App, DocumentApp, MainWindow
+from .command import Command, CommandSet, Group, GROUP_BREAK, SECTION_BREAK
+from .documents import Document
+from .keys import Key
+
+# Resources
+from .colors import hsl, hsla, rgb, rgba
+from .fonts import Font
+from .icons import Icon
+from .images import Image
 
 # Widgets
 from .widgets.base import Widget
@@ -11,44 +16,48 @@ from .widgets.box import Box
 from .widgets.button import Button
 from .widgets.canvas import Canvas
 from .widgets.detailedlist import DetailedList
-from .widgets.image import *
-from .widgets.imageview import *
+from .widgets.imageview import ImageView
 from .widgets.label import Label
-from .widgets.multilinetextinput import *
+from .widgets.multilinetextinput import MultilineTextInput
 from .widgets.numberinput import NumberInput
-from .widgets.optioncontainer import *
-from .widgets.passwordinput import *
-from .widgets.progressbar import *
-from .widgets.scrollcontainer import *
+from .widgets.optioncontainer import OptionContainer
+from .widgets.passwordinput import PasswordInput
+from .widgets.progressbar import ProgressBar
+from .widgets.scrollcontainer import ScrollContainer
 from .widgets.selection import Selection
-from .widgets.slider import *
-from .widgets.splitcontainer import *
-from .widgets.switch import *
-from .widgets.table import *
+from .widgets.slider import Slider
+from .widgets.splitcontainer import SplitContainer
+from .widgets.switch import Switch
+from .widgets.table import Table
 from .widgets.textinput import TextInput
-from .widgets.tree import *
-from .widgets.webview import *
+from .widgets.tree import Tree
+from .widgets.webview import WebView
 from .window import Window
+
 
 __all__ = [
     # Applications
-    'App', 'MainWindow',
-    # Colors
-    'hsv', 'hsva', 'rgb', 'rgba',
+    'App', 'DocumentApp', 'MainWindow',
     # Commands
-    'Command', 'Group', 'GROUP_BREAK', 'SECTION_BREAK',
-    # Fonts
+    'Command', 'CommandSet', 'Group', 'GROUP_BREAK', 'SECTION_BREAK',
+    # Documents
+    'Document',
+    # Keys
+    'Key',
+
+    # Resources
+    'hsl', 'hsla', 'rgb', 'rgba',  # Colors
     'Font',
+    'Icon',
+    'Image',
 
     # Widgets
-    'DetailedList'
+    'DetailedList',
     'Window',
-    'Widget'
+    'Widget',
     'Box',
     'Button',
     'Canvas',
-    'Icon',
-    'Image',
     'ImageView',
     'Label',
     'MultilineTextInput',
@@ -64,7 +73,7 @@ __all__ = [
     'Table',
     'TextInput',
     'Tree',
-    'WebView',
+    'WebView'
 ]
 
 # Examples of valid version strings
@@ -75,5 +84,5 @@ __all__ = [
 # __version__ = '1.2.3'       # Final Release
 # __version__ = '1.2.3.post1' # Post Release 1
 
-__version__ = '0.3.0.dev1'
+__version__ = '0.3.0.dev10'
 

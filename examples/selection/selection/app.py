@@ -6,10 +6,9 @@ class SelectionApp(toga.App):
 
     def startup(self):
         # Main window of the application with title and size
-        self.main_window = toga.MainWindow(self.name, size=(640, 400))
-        self.main_window.app = self
+        self.main_window = toga.MainWindow(title=self.name, size=(640, 400))
 
-        # set up common styls
+        # set up common styles
         label_style = Pack(flex=1, padding_right=24)
         box_style = Pack(direction=ROW, padding=10)
 
@@ -66,9 +65,9 @@ class SelectionApp(toga.App):
 
         # get the current value of the slider with `selection.value`
 
-        print("The slection widget changed to {0}".format(selection.value))
+        print("The selection widget changed to {0}".format(selection.value))
 
 
 def main():
     # App name and namespace
-    return SelectionApp('Switchs', 'org.pybee.helloworld')
+    return SelectionApp('Selection', 'org.pybee.selection')

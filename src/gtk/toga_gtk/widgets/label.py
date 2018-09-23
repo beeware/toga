@@ -1,9 +1,8 @@
-from gi.repository import Gtk
 from travertino.size import at_least
+from gi.repository import Gtk
 
-from toga.constants import *
 from toga_gtk.libs import gtk_alignment
-from toga_gtk.color import native_color
+# from toga_gtk.colors import native_color
 
 from .base import Widget
 
@@ -37,7 +36,7 @@ class Label(Widget):
     def set_text(self, value):
         # FIXME after setting the label the label jumps to the top left
         # corner and only jumps back at its place after resizing the window.
-        self.native.set_text(value)
+        self.native.set_text(self.interface._text)
 
     def rehint(self):
         # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height(), getattr(self, '_fixed_height', False), getattr(self, '_fixed_width', False))

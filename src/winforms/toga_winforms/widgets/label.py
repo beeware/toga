@@ -1,6 +1,6 @@
 from travertino.size import at_least
 
-from toga_winforms.libs import *
+from toga_winforms.libs import WinForms, TextAlignment
 
 from .base import Widget
 
@@ -13,7 +13,7 @@ class Label(Widget):
         self.native.TextAlign = TextAlignment(value)
 
     def set_text(self, value):
-        self.native.Text = value
+        self.native.Text = self.interface._text
 
     def rehint(self):
         # Width & height of a label is known and fixed.

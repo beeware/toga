@@ -33,7 +33,7 @@ class Tree(Widget):
         ]
 
     def on_select(self, selection):
-        if hasattr(self.interface, "on_select") and self.interface.on_select:
+        if self.interface.on_select:
             tree_model, tree_iter = selection.get_selected()
             if tree_iter:
                 node = tree_model.get(tree_iter, 0)[0]
@@ -80,4 +80,8 @@ class Tree(Widget):
         self.store.clear()
 
     def set_on_select(self, handler):
+        # No special handling required
         pass
+
+    def scroll_to_node(self, node):
+        raise NotImplementedError

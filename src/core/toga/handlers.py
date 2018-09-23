@@ -4,19 +4,14 @@ import sys
 import traceback
 
 
-@asyncio.coroutine
-def long_running_task(generator, cleanup):
+async def long_running_task(generator, cleanup):
     """Run a generator as an asynchronous coroutine
 
-    When we drop Python 3.4 support, we can:
-    * drop the decorator,
-    * rename the method as `async def`
-    * change from `yield from` to `await`
     """
     try:
         while True:
             delay = next(generator)
-            yield from asyncio.sleep(delay)
+            await asyncio.sleep(delay)
     except StopIteration:
         if cleanup:
             cleanup()
@@ -25,10 +20,9 @@ def long_running_task(generator, cleanup):
         traceback.print_exc()
 
 
-@asyncio.coroutine
-def handler_with_cleanup(handler, cleanup, interface, **extra):
+async def handler_with_cleanup(handler, cleanup, interface, *args, **kwargs):
     try:
-        yield from handler(interface, **extra)
+        await handler(interface, *args, **kwargs)
         if cleanup:
             cleanup()
     except Exception as e:
@@ -52,13 +46,13 @@ def wrapped_handler(interface, handler, cleanup=None):
     the original handler function on the `_raw` attribute.
     """
     if handler:
-        def _handler(widget, **extra):
+        def _handler(widget, *args, **kwargs):
             if asyncio.iscoroutinefunction(handler):
                 asyncio.ensure_future(
-                    handler_with_cleanup(handler, cleanup, interface, **extra)
+                    handler_with_cleanup(handler, cleanup, interface, *args, **kwargs)
                 )
             else:
-                result = handler(interface, **extra)
+                result = handler(interface, *args, **kwargs)
                 if inspect.isgenerator(result):
                     asyncio.ensure_future(
                         long_running_task(result, cleanup)

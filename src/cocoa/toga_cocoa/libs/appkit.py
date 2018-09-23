@@ -1,13 +1,15 @@
 ##########################################################################
 # System/Library/Frameworks/AppKit.framework
 ##########################################################################
-from ctypes import *
-from ctypes import util
+from ctypes import cdll, c_void_p, util, Structure
 from enum import Enum
 
-from rubicon.objc import *
-from toga.constants import *
-from toga.color import *
+from rubicon.objc import objc_const, CGFloat, ObjCClass
+from toga.constants import LEFT, RIGHT, CENTER, JUSTIFY
+from travertino.colors import (
+    BLACK, BLUE, BROWN, CYAN, DARKGRAY, GRAY, GREEN, LIGHTGRAY,
+    MAGENTA, ORANGE, PURPLE, RED, WHITE, YELLOW
+)
 
 ######################################################################
 appkit = cdll.LoadLibrary(util.find_library('AppKit'))
@@ -47,6 +49,7 @@ NSApplicationDidUnhideNotification = c_void_p.in_dll(appkit, 'NSApplicationDidUn
 
 ######################################################################
 # NSAttributedString.h
+NSAttributedString = ObjCClass('NSAttributedString')
 
 NSFontAttributeName = objc_const(appkit, "NSFontAttributeName")
 NSParagraphStyleAttributeName = objc_const(appkit, "NSParagraphStyleAttributeName")
@@ -59,7 +62,10 @@ NSUnderlineStyleAttributeName = objc_const(appkit, "NSUnderlineStyleAttributeNam
 NSStrokeColorAttributeName = objc_const(appkit, "NSStrokeColorAttributeName")
 NSStrokeWidthAttributeName = objc_const(appkit, "NSStrokeWidthAttributeName")
 NSShadowAttributeName = objc_const(appkit, "NSShadowAttributeName")
-NSTextEffectAttributeName = objc_const(appkit, "NSTextEffectAttributeName")
+
+# NSTextEffectAttributeName is supported in OS 10.10+
+# goes against minimum requirements: current support is for OS 10.7+
+# NSTextEffectAttributeName = objc_const(appkit, "NSTextEffectAttributeName")
 
 NSAttachmentAttributeName = objc_const(appkit, "NSAttachmentAttributeName")
 NSLinkAttributeName = objc_const(appkit, "NSLinkAttributeName")
@@ -196,23 +202,23 @@ NSColor.declare_class_property('redColor')
 NSColor.declare_class_property('whiteColor')
 NSColor.declare_class_property('yellowColor')
 
+
 def NSColorUsingColorName(background_color):
     return {
-        Black: NSColor.blackColor,
-        Blue: NSColor.blueColor,
-        Brown: NSColor.brownColor,
-        Clear : NSColor.clearColor,
-        Cyan: NSColor.cyanColor,
-        DarkGray: NSColor.darkGrayColor,
-        Gray: NSColor.grayColor,
-        Green: NSColor.greenColor,
-        LightGray: NSColor.lightGrayColor,
-        Magenta: NSColor.magentaColor,
-        Orange: NSColor.orangeColor,
-        Purple: NSColor.purpleColor,
-        Red: NSColor.redColor,
-        White: NSColor.whiteColor,
-        Yellow: NSColor.yellowColor,
+        BLACK: NSColor.blackColor,
+        BLUE: NSColor.blueColor,
+        BROWN: NSColor.brownColor,
+        CYAN: NSColor.cyanColor,
+        DARKGRAY: NSColor.darkGrayColor,
+        GRAY: NSColor.grayColor,
+        GREEN: NSColor.greenColor,
+        LIGHTGRAY: NSColor.lightGrayColor,
+        MAGENTA: NSColor.magentaColor,
+        ORANGE: NSColor.orangeColor,
+        PURPLE: NSColor.purpleColor,
+        RED: NSColor.redColor,
+        WHITE: NSColor.whiteColor,
+        YELLOW: NSColor.yellowColor,
     }[background_color]
 
 ######################################################################
@@ -227,6 +233,7 @@ NSDocument = ObjCClass('NSDocument')
 ######################################################################
 # NSDocumentController.h
 NSDocumentController = ObjCClass('NSDocumentController')
+NSDocumentController.declare_class_property('sharedDocumentController')
 
 ######################################################################
 # NSEvent.h
@@ -264,6 +271,12 @@ NSBeginFunctionKey = 0xF72A
 NSEndFunctionKey = 0xF72B
 NSPageUpFunctionKey = 0xF72C
 NSPageDownFunctionKey = 0xF72D
+
+NSEventModifierFlagCapsLock = 1 << 16
+NSEventModifierFlagShift = 1 << 17
+NSEventModifierFlagControl = 1 << 18
+NSEventModifierFlagOption = 1 << 19
+NSEventModifierFlagCommand = 1 << 20
 
 ######################################################################
 # NSFont.h
@@ -361,7 +374,7 @@ NSLayoutAttributeNotAnAttribute = 0
 # NSLayoutConstraintOrientationVertical = 1
 
 
-class NSEdgetInsets(Structure):
+class NSEdgeInsets(Structure):
     _fields_ = [
         ("top", CGFloat),
         ("left", CGFloat),
@@ -478,6 +491,7 @@ NSFileHandlingPanelOKButton = 1
 # NSScreen.h
 NSScreen = ObjCClass('NSScreen')
 NSScreen.declare_class_property('mainScreen')
+NSScreen.declare_property('visibleFrame')
 
 ######################################################################
 # NSScrollView.h
@@ -507,6 +521,7 @@ NSStepper = ObjCClass('NSStepper')
 ######################################################################
 # NSStringDrawing.h
 
+NSString = ObjCClass('NSString')
 NSStringDrawingUsesLineFragmentOrigin = 1 << 0
 NSStringDrawingUsesFontLeading = 1 << 1
 NSStringDrawingDisableScreenFontSubstitution = 1 << 2  # DEPRECATED
@@ -553,6 +568,9 @@ def NSTextAlignment(alignment):
 NSTextField = ObjCClass('NSTextField')
 NSTextFieldCell = ObjCClass('NSTextFieldCell')
 
+NSTextField.declare_property('editable')
+NSTextField.declare_property('bezeled')
+
 ######################################################################
 # NSTextFieldCell.h
 
@@ -572,6 +590,7 @@ NSTimer = ObjCClass('NSTimer')
 NSToolbar = ObjCClass('NSToolbar')
 NSToolbarItem = ObjCClass('NSToolbarItem')
 
+NSToolbarItem.declare_property('itemIdentifier')
 ######################################################################
 # NSTrackingArea.h
 NSTrackingMouseEnteredAndExited = 0x01
@@ -599,6 +618,7 @@ NSGrooveBorder = 3
 ######################################################################
 # NSWindow.h
 NSWindow = ObjCClass('NSWindow')
+NSWindow.declare_property('frame')
 
 NSBorderlessWindowMask = 0
 NSTitledWindowMask = 1 << 0
@@ -638,4 +658,3 @@ NSCompositingOperationHue = 25
 NSCompositingOperationSaturation = 26
 NSCompositingOperationColor = 27
 NSCompositingOperationLuminosity = 28
-

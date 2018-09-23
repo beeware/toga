@@ -1,6 +1,6 @@
 from travertino.size import at_least
 
-from toga_winforms.libs import *
+from toga_winforms.libs import WinForms
 
 from .base import Widget
 
@@ -11,11 +11,17 @@ class ProgressBar(Widget):
 
     def start(self):
         '''Not supported for WinForms implementation'''
-        pass
+        self.interface.factory.not_implemented('ProgressBar.start()')
+
+        # possible implementation (not tested):
+        # self.native.Style = ProgressBarStyle.Marquee
 
     def stop(self):
         '''Not supported for WinForms implementation'''
-        pass
+        self.interface.factory.not_implemented('ProgressBar.stop()')
+
+        # possible implementation (not tested):
+        # self.native.Style = ProgressBarStyle.Continuous
 
     def set_max(self, value):
         self.native.Maximum = value

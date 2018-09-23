@@ -34,7 +34,7 @@ class Widget:
         self.rehint()
 
     def set_enabled(self, value):
-        self.native.enabled = value
+        self.native.enabled = self.interface.enabled
 
     ### APPLICATOR
 
@@ -46,9 +46,10 @@ class Widget:
         pass
 
     def set_hidden(self, hidden):
-        for view in self._container._impl.subviews:
-            if child._impl == view:
-                view.setHidden(hidden)
+        if self._container:
+            for view in self._container._impl.subviews:
+                if child._impl == view:
+                    view.setHidden(hidden)
 
     def set_font(self, font):
         pass

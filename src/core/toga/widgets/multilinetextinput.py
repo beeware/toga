@@ -39,7 +39,7 @@ class MultilineTextInput(Widget):
     @placeholder.setter
     def placeholder(self, value):
         self._placeholder = '' if value is None else str(value)
-        self._impl.set_placeholder(value)
+        self._impl.set_placeholder(self._placeholder)
 
     @property
     def readonly(self):
@@ -62,12 +62,12 @@ class MultilineTextInput(Widget):
         Returns:
             The text of the Widget as a ``str``.
         """
-        return self._value
+        return self._impl.get_value()
 
     @value.setter
     def value(self, value):
         self._value = '' if value is None else str(value)
-        self._impl.set_value(value)
+        self._impl.set_value(self._value)
         self._impl.rehint()
 
     def clear(self):

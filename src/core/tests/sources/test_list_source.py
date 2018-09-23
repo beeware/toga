@@ -122,6 +122,63 @@ class ListSourceTests(TestCase):
 
         listener.insert.assert_called_once_with(index=1, item=source[1])
 
+    def test_init_with_flat_list_of_objects(self):
+        "A list source can be created from a flat list of objects"
+
+        class MyObject:
+            def __init__(self, info):
+                self.info = info
+            def __str__(self):
+                return "string value %s" % self.info
+
+        data = [
+            MyObject(True),
+            MyObject(2),
+            MyObject("string"),
+        ]
+
+        source = ListSource(
+            data=data,
+            accessors=['col1'],
+        )
+
+        for i, row in enumerate(source):
+            self.assertEqual(row.col1, data[i])
+
+    def test_init_with_flat_list_of_numbers(self):
+        "A list source can be created from a flat list of numbers"
+
+        data = [
+            100,
+            200.0,
+            -3.14,
+        ]
+
+        source = ListSource(
+            data=data,
+            accessors=['col1'],
+        )
+
+        for i, row in enumerate(source):
+            self.assertEqual(row.col1, data[i])
+
+    def test_init_with_flat_list_of_strings(self):
+        "A list source can be created from a flat list of strings"
+
+        data = [
+            "xxx",
+            "yyy",
+            "zzz",
+        ]
+
+        source = ListSource(
+            data=data,
+            accessors=['col1'],
+        )
+
+        for i, row in enumerate(source):
+            self.assertEqual(row.col1, data[i])
+
     def test_iter(self):
         "A list source can be iterated over"
         source = ListSource(
@@ -346,3 +403,29 @@ class ListSourceTests(TestCase):
         self.assertEqual(source[1].val2, 333)
 
         listener.remove.assert_called_once_with(item=row)
+
+    def test_get_row_index(self):
+        "You can get the index of any row within a list source"
+
+        source = ListSource(
+            data=[
+                ('first', 111),
+                ('second', 222),
+                ('third', 333),
+            ],
+            accessors=['val1', 'val2']
+        )
+
+        for i, row in enumerate(source):
+            self.assertEqual(i, source.index(row))
+
+        # look-alike rows are not equal, so index lookup should fail
+        with self.assertRaises(ValueError):
+            lookalike_row = Row(val1='second', val2=222)
+            source.index(lookalike_row)
+
+        with self.assertRaises(ValueError):
+            source.index(None)
+
+        with self.assertRaises(ValueError):
+            source.index(Row())

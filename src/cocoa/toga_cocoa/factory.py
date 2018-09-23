@@ -1,14 +1,17 @@
-from .app import App, MainWindow
-from .color import native_color
+from .app import App, DocumentApp, MainWindow
 from .command import Command
-from .font import Font
+from .documents import Document
 
+# Resources
+from .fonts import Font
+from .icons import Icon
+from .images import Image
+
+# Widgets
 from .widgets.box import Box
 from .widgets.button import Button
-# from .widgets.canvas import Canvas
+from .widgets.canvas import Canvas
 from .widgets.detailedlist import DetailedList
-from .widgets.icon import Icon
-from .widgets.image import Image
 from .widgets.imageview import ImageView
 from .widgets.label import Label
 from .widgets.multilinetextinput import MultilineTextInput
@@ -27,18 +30,28 @@ from .widgets.tree import Tree
 from .widgets.webview import WebView
 from .window import Window
 
-__all__ = [
-    'App', 'MainWindow',
-    'native_color',
-    'Command',
-    'Font',
 
-    'Box',
-    'Button',
-    # 'Canvas',
-    'DetailedList',
+def not_implemented(feature):
+    print('[Cocoa] Not implemented: {}'.format(feature))
+
+
+__all__ = [
+    'not_implemented',
+
+    'App', 'DocumentApp', 'MainWindow',
+    'Command',
+    'Document',
+
+    # Resources
+    'Font',
     'Icon',
     'Image',
+
+    # Widgets
+    'Box',
+    'Button',
+    'Canvas',
+    'DetailedList',
     'ImageView',
     'Label',
     'MultilineTextInput',

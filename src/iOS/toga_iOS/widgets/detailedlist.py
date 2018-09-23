@@ -1,5 +1,17 @@
 from rubicon.objc import objc_method
-from toga_iOS.libs import *
+from toga_iOS.libs import (
+    UIControlEventValueChanged,
+    UIRefreshControl,
+    UITableViewCell,
+    UITableViewCellEditingStyleDelete,
+    UITableViewCellEditingStyleInsert,
+    UITableViewCellEditingStyleNone,
+    UITableViewCellSeparatorStyleNone,
+    UITableViewCellStyleSubtitle,
+    UITableViewController,
+    UITableViewRowAnimationLeft,
+    UITableViewScrollPositionNone
+)
 
 from .base import Widget
 
@@ -107,9 +119,11 @@ class DetailedList(Widget):
         self.native.reloadData()
 
     def set_on_select(self, handler):
+        # No special handling required
         pass
 
     def set_on_delete(self, handler):
+        # No special handling required
         pass
 
     def scroll_to_row(self, row):

@@ -17,6 +17,7 @@ foundation.NSMouseInRect.argtypes = [NSPoint, NSRect, c_bool]
 # NSBundle.h
 NSBundle = ObjCClass('NSBundle')
 NSBundle.declare_class_property('mainBundle')
+NSBundle.declare_property('bundlePath')
 
 ######################################################################
 # NSFileWrapper.h
@@ -25,6 +26,10 @@ NSFileWrapper = ObjCClass('NSFileWrapper')
 ######################################################################
 # NSNotification.h
 NSNotificationCenter = ObjCClass('NSNotificationCenter')
+
+######################################################################
+NSNotification = ObjCClass('NSNotification')
+NSNotification.declare_property('object')
 
 ######################################################################
 # NSURL.h

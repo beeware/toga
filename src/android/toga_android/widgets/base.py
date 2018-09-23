@@ -30,7 +30,7 @@ class Widget:
         self.rehint()
 
     def set_enabled(self, value):
-        self.native.enabled = value
+        self.native.enabled = self.interface.enabled
 
     ### APPLICATOR
 
@@ -40,12 +40,14 @@ class Widget:
         pass
 
     def set_hidden(self, hidden):
-        pass
+        self.interface.factory.not_implemented('Widget.set_hidden()')
 
     def set_font(self, font):
+        # By default, font can't be changed
         pass
 
     def set_background_color(self, color):
+        # By default, background color can't be changed.
         pass
 
     ### INTERFACE

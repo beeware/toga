@@ -9,7 +9,7 @@ class RefreshableClipView(NSClipView):
     @objc_method
     def constrainScrollPoint_(self, proposedNewOrigin: NSPoint) -> NSPoint:
         constrained = send_super(
-            self, 'constrainScrollPoint:', proposedNewOrigin,
+            __class__, self, 'constrainScrollPoint:', proposedNewOrigin,
             restype=NSPoint, argtypes=[NSPoint]
         )
 
@@ -27,7 +27,7 @@ class RefreshableClipView(NSClipView):
 
     @objc_method
     def documentRect(self) -> NSRect:
-        rect = send_super(self, 'documentRect', restype=NSRect, argtypes=[])
+        rect = send_super(__class__, self, 'documentRect', restype=NSRect, argtypes=[])
 
         if self.superview and self.superview.refreshTriggered:
             return NSMakeRect(
@@ -49,7 +49,7 @@ class RefreshableScrollView(NSScrollView):
 
     @objc_method
     def createContentView(self):
-        superClipView = ObjCInstance(send_super(self, 'contentView'))
+        superClipView = ObjCInstance(send_super(__class__, self, 'contentView'))
         if not isinstance(superClipView, RefreshableClipView):
             # create new clipview
             documentView = superClipView.documentView
@@ -60,7 +60,7 @@ class RefreshableScrollView(NSScrollView):
             clipView.drawsBackground = False
 
             self.setContentView(clipView)
-            superClipView = ObjCInstance(send_super(self, 'contentView'))
+            superClipView = ObjCInstance(send_super(__class__, self, 'contentView'))
 
         return superClipView
 
@@ -169,7 +169,7 @@ class RefreshableScrollView(NSScrollView):
             if self.refreshTriggered and not self.isRefreshing:
                 self.reload()
 
-        send_super(self, 'scrollWheel:', event)
+        send_super(__class__, self, 'scrollWheel:', event)
 
     @objc_method
     def viewBoundsChanged_(self, note) -> None:

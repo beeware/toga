@@ -10,7 +10,7 @@ class Label(Widget):
 
 
     def __init__(self, text=None, alignment=LEFT_ALIGNED):
-        super(Label, self).__init__(text=text)
+        super().__init__(text=self.interface._text)
         self.alignment = alignment
         alignments = {LEFT_ALIGNED: SS_LEFT, RIGHT_ALIGNED: SS_RIGHT}
         alignment = alignments[self.alignment]

@@ -16,10 +16,10 @@ class Node(Row):
         return self._children[index]
 
     def __len__(self):
-        if self._children is None:
-            return 0
-        else:
+        if self.can_have_children():
             return len(self._children)
+        else:
+            return 0
 
     def can_have_children(self):
         return self._children is not None
@@ -29,10 +29,7 @@ class Node(Row):
     ######################################################################
 
     def __iter__(self):
-        if self._children:
-            return iter(self._children)
-        else:
-            return iter([])
+        return iter(self._children or [])
 
     def __setitem__(self, index, value):
         node = self._source._create_node(value)
@@ -79,10 +76,8 @@ class TreeSource(Source):
         if isinstance(data, dict):
             node = Node(**data)
         else:
-            node = Node(**{
-                accessor: value
-                for accessor, value in zip(self._accessors, data)
-            })
+            node = Node(**dict(zip(self._accessors, data)))
+
         node._source = self
 
         if children is not None:
@@ -119,28 +114,24 @@ class TreeSource(Source):
         return iter(self._roots)
 
     def insert(self, parent, index, *values, **named):
-        node = self._create_node(dict(
-            named,
-            **{
-                accessor: value
-                for accessor, value in zip(self._accessors, values)
-            }
-        ))
+        node = self._create_node(dict(zip(self._accessors, values), **named))
+
         if parent is None:
             self._roots.insert(index, node)
         else:
             if parent._children is None:
                 parent._children = []
             parent._children.insert(index, node)
+
         node._parent = parent
         self._notify('insert', parent=parent, index=index, item=node)
         return node
 
-    def prepend(self, parent, *value, **named):
-        return self.insert(parent, 0, *value, **named)
+    def prepend(self, parent, *values, **named):
+        return self.insert(parent, 0, *values, **named)
 
-    def append(self, parent, *value, **named):
-        return self.insert(parent, len(self) if parent is None else len(parent), *value, **named)
+    def append(self, parent, *values, **named):
+        return self.insert(parent, len(parent or self), *values, **named)
 
     def remove(self, node):
         if node._parent is None:
@@ -150,3 +141,9 @@ class TreeSource(Source):
 
         self._notify('remove', item=node)
         return node
+
+    def index(self, node):
+        if node._parent:
+            return node._parent._children.index(node)
+        else:
+            return self._roots.index(node)

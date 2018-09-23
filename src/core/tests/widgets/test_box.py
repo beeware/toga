@@ -8,8 +8,8 @@ from toga_dummy.utils import TestCase
 class BoxTests(TestCase):
     def setUp(self):
         super().setUp()
-
-        self.box = toga.Box(factory=toga_dummy.factory)
+        self.children = [toga.Widget(factory=toga_dummy.factory)]
+        self.box = toga.Box(children=self.children, factory=toga_dummy.factory)
 
     def test_widget_created(self):
         self.assertEqual(self.box._impl.interface, self.box)
@@ -20,3 +20,5 @@ class BoxTests(TestCase):
         btn = toga.Box()
         mock_function.assert_called_once_with(None)
 
+    def test_children_added(self):
+        self.assertEqual(self.box._children, self.children)

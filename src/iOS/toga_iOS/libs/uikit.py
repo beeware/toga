@@ -1,12 +1,11 @@
 ##########################################################################
 # System/Library/Frameworks/UIKit.framework
 ##########################################################################
-from ctypes import *
-from ctypes import util
+from ctypes import c_char_p, c_int, c_void_p, cdll, util, POINTER, Structure
 from enum import Enum
 
-from rubicon.objc import *
-from toga.constants import *
+from rubicon.objc import objc_const, CGFloat, ObjCClass
+from toga.constants import LEFT, RIGHT, CENTER, JUSTIFY
 
 ######################################################################
 uikit = cdll.LoadLibrary(util.find_library('UIKit'))
@@ -103,6 +102,17 @@ def NSTextAlignment(alignment):
         CENTER: NSCenterTextAlignment,
         JUSTIFY: NSJustifiedTextAlignment,
     }[alignment]
+
+######################################################################
+# UIApplication.h
+UIApplication = ObjCClass('UIApplication')
+
+class UIInterfaceOrientation(Enum):
+    Unknown = 0
+    Portrait = 1
+    PortraitUpsideDown = 2
+    LandscapeLeft = 3
+    LandscapeRight = 4
 
 ######################################################################
 # UIBarButtonItem.h
@@ -230,6 +240,18 @@ UILabel = ObjCClass('UILabel')
 UINavigationController = ObjCClass('UINavigationController')
 
 ######################################################################
+# UIPickerView.h
+UIPickerView = ObjCClass('UIPickerView')
+
+######################################################################
+# UIProgressView.h
+UIProgressView = ObjCClass('UIProgressView')
+
+class UIProgressViewStyle(Enum):
+    Default = 0
+    Bar = 1
+
+######################################################################
 # UIRefreshControl.h
 UIRefreshControl = ObjCClass('UIRefreshControl')
 
@@ -242,9 +264,17 @@ UIResponder = ObjCClass('UIResponder')
 UIScreen = ObjCClass('UIScreen')
 UIScreen.declare_class_property('mainScreen')
 
+#####################################################################
+# UIScrollView.h
+UIScrollView = ObjCClass('UIScrollView')
+
 ######################################################################
 # UISlider.h
 UISlider = ObjCClass('UISlider')
+
+######################################################################
+# UIStackView.h
+UIStackView = ObjCClass('UIStackView')
 
 ######################################################################
 # UISwitch.h
@@ -289,22 +319,60 @@ UITableViewCellSeparatorStyleSingleLine = 1
 # UITextField.h
 UITextField = ObjCClass('UITextField')
 
-UITextBorderStyleNone = 0
-UITextBorderStyleLine = 1
-UITextBorderStyleBezel = 2
-UITextBorderStyleRoundedRect = 3
+class UITextBorderStyle(Enum):
+    NoBorder = 0
+    Line = 1
+    Bezel = 2
+    RoundedRect = 3
+
+######################################################################
+# UITextInputTraits.h
+
+class UIKeyboardType(Enum):
+    Default = 0
+    ASCIICapable = 1
+    NumbersAndPunctuation = 2
+    URL = 3
+    NumberPad = 4
+    PhonePad = 5
+    NamePhonePad = 6
+    EmailAddress = 7
+    DecimalPad = 8
+    Twitter = 9
+    WebSearch = 10
+    ASCIICapableNumberPad = 11
+
+######################################################################
+# UITextView.h
+UITextView = ObjCClass('UITextView')
 
 ######################################################################
 # UIView.h
 UIView = ObjCClass('UIView')
 
+class UILayoutConstraintAxis(Enum):
+    Horizontal = 0
+    Vertical = 1
+
+class UIViewContentMode(Enum):
+    ScaleToFill = 0
+    ScaleAspectFit = 1
+    ScaleAspectFill = 2
+    Redraw = 3
+    Center = 4
+    Top = 5
+    Bottom = 6
+    Left = 7
+    Right = 8
+    TopLeft = 9
+    TopRight = 10
+    BottomLeft = 11
+    BottomRight = 12
+
+
 ######################################################################
 # UIViewController.h
 UIViewController = ObjCClass('UIViewController')
-
-######################################################################
-# UIWebView.h
-UIWebView = ObjCClass('UIWebView')
 
 ######################################################################
 # UIWindow.h

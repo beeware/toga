@@ -1,11 +1,12 @@
+from rubicon.objc import objc_method, SEL
 from travertino.size import at_least
 
-from toga_cocoa.libs import *
+from toga_cocoa.libs import NSPopUpButton
 
 from .base import Widget
 
 
-class TogaSelection(NSPopUpButton):
+class TogaPopupButton(NSPopUpButton):
     @objc_method
     def onSelect_(self, obj) -> None:
         if self.interface.on_select:
@@ -14,16 +15,18 @@ class TogaSelection(NSPopUpButton):
 
 class Selection(Widget):
     def create(self):
-        rect = NSMakeRect(0, 0, 0, 0)
-        self.native = NSPopUpButton.alloc().initWithFrame_pullsDown_(rect, 0)
+        self.native = TogaPopupButton.alloc().init()
         self.native.interface = self.interface
+
+        self.native.target = self.native
+        self.native.action = SEL('onSelect:')
 
         self.add_constraints()
 
     def rehint(self):
-        fitting_size = self.native.fittingSize()
-        self.interface.intrinsic.height = fitting_size.height
-        self.interface.intrinsic.width = at_least(fitting_size.width)
+        content_size = self.native.intrinsicContentSize()
+        self.interface.intrinsic.height = content_size.height
+        self.interface.intrinsic.width = at_least(max(self.interface.MIN_WIDTH, content_size.width))
 
     def remove_all_items(self):
         self.native.removeAllItems()

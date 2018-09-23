@@ -9,7 +9,7 @@ class Label(Widget):
         self._set_value('alignment', value)
 
     def set_text(self, value):
-        self._set_value('text', value)
+        self._set_value('text', self.interface._text)
 
     def rehint(self):
         self._action('rehint Label')

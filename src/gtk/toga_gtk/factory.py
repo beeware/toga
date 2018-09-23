@@ -1,15 +1,15 @@
-from .app import App, MainWindow
-from .color import native_color
+from .app import App, DocumentApp, MainWindow
 from .command import Command
-from .font import Font
+
+from .fonts import Font
+from .icons import Icon
+from .images import Image
 
 from .widgets.box import Box
 from .widgets.button import Button
 from .widgets.canvas import Canvas
-# from .widgets.detailedlist import DetailedList
-from .widgets.icon import Icon
-# from .widgets.image import Image
-# from .widgets.imageview import ImageView
+from .widgets.detailedlist import DetailedList
+from .widgets.imageview import ImageView
 from .widgets.label import Label
 from .widgets.multilinetextinput import MultilineTextInput
 from .widgets.numberinput import NumberInput
@@ -27,19 +27,28 @@ from .widgets.tree import Tree
 from .widgets.webview import WebView
 from .window import Window
 
-__all__ = [
-    'App', 'MainWindow',
-    'native_color',
-    'Command',
-    'Font',
 
+def not_implemented(feature):
+    print('[GTK+] Not implemented: {}'.format(feature))
+
+
+__all__ = [
+    'not_implemented',
+
+    'App', 'DocumentApp', 'MainWindow',
+    'Command',
+
+    # Resources
+    'Font',
+    'Icon',
+    'Image',
+
+    # Widgets
     'Box',
     'Button',
     'Canvas',
-    # 'DetailedList',
-    'Icon',
-    # 'Image',
-    # 'ImageView',
+    'DetailedList',
+    'ImageView',
     'Label',
     'MultilineTextInput',
     'NumberInput',

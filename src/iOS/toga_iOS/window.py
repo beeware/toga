@@ -1,22 +1,29 @@
-from travertino.layout import Viewport
-
-from .libs import *
+from .libs import UIApplication, UIScreen, UIViewController, UIWindow
 
 
 class iOSViewport:
-    def __init__(self, screen):
-        self.screen = screen
+    def __init__(self, view):
+        self.view = view
         self.dpi = 96  # FIXME This is almost certainly wrong...
 
         self.kb_height = 0.0
 
     @property
+    def statusbar_height(self):
+        # This is the height of the status bar frame.
+        # If the status bar isn't visible (e.g., on iPhones in landscape orientation)
+        # the size will be 0.
+        return UIApplication.sharedApplication.statusBarFrame.size.height
+
+    @property
     def width(self):
-        return self.screen.bounds.size.width
+        return self.view.bounds.size.width
 
     @property
     def height(self):
-        return self.screen.bounds.size.height - self.kb_height
+        # Remove the height of the keyboard and the titlebar
+        # from the available viewport height
+        return self.view.bounds.size.height - self.kb_height - self.statusbar_height
 
 
 class Window:
@@ -26,12 +33,11 @@ class Window:
         self.create()
 
     def create(self):
-        self.screen = UIScreen.mainScreen
-        self.native = UIWindow.alloc().initWithFrame(self.screen.bounds)
+        self.native = UIWindow.alloc().initWithFrame(UIScreen.mainScreen.bounds)
         self.native.interface = self.interface
 
     def set_content(self, widget):
-        widget.viewport = iOSViewport(self.screen)
+        widget.viewport = iOSViewport(self.native)
 
         # Add all children to the content widget.
         for child in widget.interface.children:
@@ -66,20 +72,23 @@ class Window:
         # Refresh with the actual viewport to do the proper rendering.
         self.interface.content.refresh()
 
+    def set_full_screen(self, is_full_screen):
+        self.interface.factory.not_implemented('Window.set_full_screen()')
+
     def info_dialog(self, title, message):
-        raise NotImplementedError()
+        self.interface.factory.not_implemented('Window.info_dialog()')
 
     def question_dialog(self, title, message):
-        raise NotImplementedError()
+        self.interface.factory.not_implemented('Window.question_dialog()')
 
     def confirm_dialog(self, title, message):
-        raise NotImplementedError()
+        self.interface.factory.not_implemented('Window.confirm_dialog()')
 
     def error_dialog(self, title, message):
-        raise NotImplementedError()
+        self.interface.factory.not_implemented('Window.error_dialog()')
 
     def stack_trace_dialog(self, title, message, content, retry=False):
-        raise NotImplementedError()
+        self.interface.factory.not_implemented('Window.stack_trace_dialog()')
 
     def save_file_dialog(self, title, suggested_filename, file_types):
-        raise NotImplementedError()
+        self.interface.factory.not_implemented('Window.save_file_dialog()')

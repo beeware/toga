@@ -1,13 +1,8 @@
 #/usr/bin/env python
 import io
 import re
-import sys
 
 from setuptools import setup, find_packages
-
-if sys.version_info[:3] < (3, 4):
-    raise SystemExit("Toga requires Python 3.4+.")
-
 
 with io.open('toga_dummy/__init__.py', encoding='utf8') as version_file:
     version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]", version_file.read(), re.M)
@@ -30,8 +25,9 @@ setup(
     author_email='russell@keith-magee.com',
     url='http://pybee.org/toga',
     packages=find_packages(),
+    python_requires='>=3.5',
     install_requires=[
-        'toga-core>=%s' % version,
+        'toga-core==%s' % version,
     ],
     license='New BSD',
     classifiers=[
@@ -41,9 +37,9 @@ setup(
         'Environment :: Handhelds/PDA\'s',
         'Operating System :: Android',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3 :: Only',
         'Topic :: Software Development',
         'Topic :: Software Development :: User Interfaces',

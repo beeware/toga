@@ -24,7 +24,7 @@ class ListSource(Source):
 
     Args:
         data (`list`): The data in the list. Each entry in the list should have the
-            same number of entries as there are accessors.
+            same number of entries as there are accessors. 
         accessors (`list`): A list of attribute names for accessing the value
             in each column of the row.
     """
@@ -50,16 +50,20 @@ class ListSource(Source):
     ######################################################################
 
     def _create_row(self, data):
+        """Create a Row object from the given data.
+        Args:
+            data (any): The type of `data` determines how it is handled
+                ``dict``: each key corresponds to a column accessor
+                iterables, except ``str`` and ``dict``: each item corresponds to a column
+                all else: `data` will fill the first column
+        """
+
         if isinstance(data, dict):
-            row = Row(**{
-                name: value
-                for name, value in data.items()
-            })
+            row = Row(**data)
+        elif hasattr(data, '__iter__') and not isinstance(data, str):
+            row = Row(**dict(zip(self._accessors, data)))
         else:
-            row = Row(**{
-                accessor: value
-                for accessor, value in zip(self._accessors, data)
-            })
+            row = Row(**{self._accessors[0]: data})
         row._source = self
         return row
 
@@ -81,17 +85,11 @@ class ListSource(Source):
 
     def insert(self, index, *values, **named):
         # Coalesce values and data into a single data dictionary,
-        # and use that to create the data row
-        node = self._create_row(dict(
-            named,
-            **{
-                accessor: value
-                for accessor, value in zip(self._accessors, values)
-            }
-        ))
-        self._data.insert(index, node)
-        self._notify('insert', index=index, item=node)
-        return node
+        # and use that to create the data row. Explicitly named data override.
+        row = self._create_row(dict(zip(self._accessors, values), **named))
+        self._data.insert(index, row)
+        self._notify('insert', index=index, item=row)
+        return row
 
     def prepend(self, *values, **named):
         return self.insert(0, *values, **named)
@@ -99,7 +97,10 @@ class ListSource(Source):
     def append(self, *values, **named):
         return self.insert(len(self), *values, **named)
 
-    def remove(self, node):
-        self._data.remove(node)
-        self._notify('remove', item=node)
-        return node
+    def remove(self, row):
+        self._data.remove(row)
+        self._notify('remove', item=row)
+        return row
+
+    def index(self, row):
+        return self._data.index(row)

@@ -46,6 +46,9 @@ class MultilineTextInput(Widget):
     def set_readonly(self, value):
         self.text.editable = not self.interface.readonly
 
+    def get_value(self):
+        return self.text.string
+
     def set_value(self, value):
         self.text.string = self.interface.value
 
