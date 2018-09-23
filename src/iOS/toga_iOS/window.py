@@ -1,4 +1,4 @@
-from .libs import UIApplication, UIInterfaceOrientation, UIScreen, UIViewController, UIWindow
+from .libs import UIApplication, UIScreen, UIViewController, UIWindow
 
 
 class iOSViewport:
