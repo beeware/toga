@@ -1,5 +1,5 @@
 import toga
-from toga.style.pack import *
+from toga.style.pack import Pack, ROW, CENTER, COLUMN
 
 
 class Graze(toga.App):

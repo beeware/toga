@@ -6,12 +6,11 @@ from toga_iOS.libs import (
     NSLayoutAttributeTrailing,
     NSLayoutConstraint,
     NSLayoutRelationEqual,
+    UIColor,
     UIScrollView
 )
-from toga_iOS.window import (
-    iOSViewport,
-    UIColor
-)
+from toga_iOS.window import iOSViewport
+
 from travertino.size import at_least
 from .base import Widget
 

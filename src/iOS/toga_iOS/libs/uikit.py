@@ -4,7 +4,7 @@
 from ctypes import c_char_p, c_int, c_void_p, cdll, util, POINTER, Structure
 from enum import Enum
 
-from rubicon.objc import objc_const, CGFloat, ObjCClass, ObjCClass
+from rubicon.objc import objc_const, CGFloat, ObjCClass
 from toga.constants import LEFT, RIGHT, CENTER, JUSTIFY
 
 ######################################################################
@@ -368,6 +368,7 @@ class UIViewContentMode(Enum):
     TopRight = 10
     BottomLeft = 11
     BottomRight = 12
+
 
 ######################################################################
 # UIViewController.h
