@@ -29,7 +29,7 @@ pull_request:
                     TEST_DIR: src/core
                     SRC_DEPENDANTS: src/dummy
     - implementations:
-        image: pybee/py35
+        image: pybee/py36
         subtasks:
             - gtk:
                 name: GTK+ implementation compliance check
@@ -65,7 +65,7 @@ pull_request:
                     SRC_DEPENDANTS: src/core src/dummy
 push:
     - smoke:
-        image: pybee/py35
+        image: pybee/py36
         name: Core API tests
         environment:
             TEST_DIR: src/core
