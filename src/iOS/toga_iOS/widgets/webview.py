@@ -35,7 +35,12 @@ class WebView(Widget):
 
     def set_url(self, value):
         if value:
-            request = NSURLRequest.requestWithURL_(NSURL.URLWithString_(self.interface.url))
+            if self.interface.url.startswith('file://'):
+                url = NSURL.fileURLWithPath(self.interface.url[7:])
+            else:
+                url = NSURL.URLWithString(self.interface.url)
+
+            request = NSURLRequest.requestWithURL_(url)
             self.native.loadRequest_(request)
 
     def set_content(self, root_url, content):
