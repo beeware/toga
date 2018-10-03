@@ -1,4 +1,4 @@
-from ..libs import Color
+from toga_winforms.libs import Color
 
 CACHE = {}
 
