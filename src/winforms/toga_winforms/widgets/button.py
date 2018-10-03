@@ -1,6 +1,6 @@
 from travertino.size import at_least
 from toga_winforms.libs import WinForms
-from toga_winforms.resources.colors import native_color
+from toga_winforms.colors import native_color
 from .base import Widget
 
 
