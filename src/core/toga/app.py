@@ -68,6 +68,7 @@ class App:
         self.default_icon = Icon('tiberius', system=True)
         self.icon = icon
         self._main_window = None
+        self._is_full_screen = False
         self._on_exit = None
 
         self._full_screen_windows = None
