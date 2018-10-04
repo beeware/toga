@@ -43,27 +43,10 @@ class AppTests(TestCase):
     def test_app_id(self):
         self.assertEqual(self.app.id, self.id)
 
-    def test_app_full_screen_set(self):
-        self.assertFalse(self.app.full_screen)
-        with patch.object(self.app, '_impl'):
-            self.app.full_screen = True
-            self.assertTrue(self.app.full_screen)
-            self.app._impl.set_full_screen.assert_called_once_with(True)
-
-    def test_app_documents(self):
-        self.assertEqual(self.app.documents, [])
-        doc = MagicMock()
-        self.app.add_document(doc)
-        self.assertEqual(self.app.documents, [doc])
-
     @patch('toga.app.get_platform_factory')
     def test_app_init_with_no_factory(self, mock_function):
-        app = toga.App(self.name, self.app_id)
+        toga.App(self.name, self.app_id)
         mock_function.assert_called_once_with(None)
-
-    def test_app_open_docuemnts_raise_not_implemented(self):
-        with self.assertRaises(NotImplementedError):
-            self.app.open_document('file/url')
 
     def test_app_main_loop_call_impl_main_loop(self):
         self.app.main_loop()
@@ -81,3 +64,28 @@ class AppTests(TestCase):
         self.app.exit()
 
         self.assertActionPerformed(self.app, 'exit')
+
+
+class DocumentAppTests(TestCase):
+    def setUp(self):
+        super().setUp()
+
+        self.name = 'Test Document App'
+        self.app_id = 'beeware.org'
+        self.id = 'id'
+
+        self.content = MagicMock()
+
+        self.app = toga.DocumentApp(
+            self.name,
+            self.app_id,
+            factory=toga_dummy.factory,
+            id=self.id
+        )
+
+    def test_app_documents(self):
+        self.assertEqual(self.app.documents, [])
+
+        doc = MagicMock()
+        self.app._documents.append(doc)
+        self.assertEqual(self.app.documents, [doc])

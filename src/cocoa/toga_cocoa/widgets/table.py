@@ -26,9 +26,10 @@ class TogaTable(NSTableView):
             }
             data_row._impls = data
 
-        datum = data[column.identifier]
+        col_identifier = str(column.identifier)
 
-        value = getattr(data_row, column.identifier)
+        datum = data[col_identifier]
+        value = getattr(data_row, col_identifier)
 
         # Allow for an (icon, value) tuple as the simple case
         # for encoding an icon in a table cell.
@@ -100,8 +101,18 @@ class Table(Widget):
 
         # Create columns for the table
         self.columns = []
-        for i, heading in enumerate(self.interface.headings):
-            column = NSTableColumn.alloc().initWithIdentifier(to_accessor(heading))
+        # Cocoa identifies columns by an accessor; to avoid repeated
+        # conversion from ObjC string to Python String, create the
+        # ObjC string once and cache it.
+        self.column_identifiers = {}
+        for i, (heading, accessor) in enumerate(zip(
+                    self.interface.headings,
+                    self.interface._accessors
+                )):
+
+            column_identifier = at(accessor)
+            self.column_identifiers[id(column_identifier)] = accessor
+            column = NSTableColumn.alloc().initWithIdentifier(column_identifier)
             self.table.addTableColumn(column)
             self.columns.append(column)
 

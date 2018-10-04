@@ -1,5 +1,5 @@
 import toga
-from toga.style.pack import *
+from toga.style.pack import Pack, ROW, CENTER, COLUMN
 
 
 class Graze(toga.App):
@@ -9,7 +9,7 @@ class Graze(toga.App):
         self.webview = toga.WebView(style=Pack(flex=1))
         self.url_input = toga.TextInput(
             initial='https://github.com/',
-            style=Pack(flex=1, padding=5)
+            style=Pack(flex=1)
         )
 
         box = toga.Box(
@@ -17,10 +17,12 @@ class Graze(toga.App):
                 toga.Box(
                     children=[
                         self.url_input,
-                        toga.Button('Go', on_press=self.load_page, style=Pack(width=50, padding_right=5)),
+                        toga.Button('Go', on_press=self.load_page, style=Pack(width=50, padding_left=5)),
                     ],
                     style=Pack(
-                        direction=ROW
+                        direction=ROW,
+                        alignment=CENTER,
+                        padding=5,
                     )
                 ),
                 self.webview,

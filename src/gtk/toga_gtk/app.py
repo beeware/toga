@@ -57,9 +57,16 @@ class App:
             Command(None, 'About ' + self.interface.name, group=toga.Group.APP),
             Command(None, 'Preferences', group=toga.Group.APP),
             # Quit should always be the last item, in a section on it's own
-            Command(lambda widget, data: self.exit(), 'Quit ' + self.interface.name, shortcut='q', group=toga.Group.APP, section=sys.maxsize),
+            Command(
+                lambda widget, data: self.exit(),
+                'Quit ' + self.interface.name,
+                shortcut='q',
+                group=toga.Group.APP,
+                section=sys.maxsize
+            ),
             Command(None, 'Visit homepage', group=toga.Group.HELP)
         )
+        self._create_app_commands()
 
         self.interface.startup()
 
@@ -69,15 +76,12 @@ class App:
         self.create_menus()
         # self.interface.main_window._impl.create_toolbar()
 
+    def _create_app_commands(self):
+        # No extra menus
+        pass
+
     def activate(self, data=None):
         pass
-
-    def set_full_screen(self, is_full_screen):
-        pass
-
-    def open_document(self, fileURL):
-        '''Add a new document to this app.'''
-        print("STUB: If you want to handle opening documents, implement App.open_document(fileURL)")
 
     def create_menus(self):
         # Only create the menu if the menu item index has been created.
@@ -156,3 +160,39 @@ class App:
 
     def set_on_exit(self, value):
         pass
+
+    def current_window(self):
+        self.interface.factory.not_implemented('App.current_window()')
+
+    def enter_full_screen(self, windows):
+        self.interface.factory.not_implemented('App.enter_full_screen()')
+
+    def exit_full_screen(self, windows):
+        self.interface.factory.not_implemented('App.exit_full_screen()')
+
+    def show_cursor(self):
+        self.interface.factory.not_implemented('App.show_cursor()')
+
+    def hide_cursor(self):
+        self.interface.factory.not_implemented('App.hide_cursor()')
+
+
+class DocumentApp(App):
+    def _create_app_commands(self):
+        self.interface.commands.add(
+            toga.Command(
+                lambda w: self.open_file,
+                label='Open...',
+                shortcut='o',
+                group=toga.Group.FILE,
+                section=0
+            ),
+        )
+
+    def open_document(self, fileURL):
+        """Open a new document in this app.
+
+        Args:
+            fileURL (str): The URL/path to the file to add as a document.
+        """
+        self.interface.factory.not_implemented('DocumentApp.open_document()')

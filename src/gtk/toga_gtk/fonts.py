@@ -71,10 +71,10 @@ class Font:
         layout.set_font_description(self.native)
         ink, logical = layout.get_extents()
         if tight:
-            width = ink.width / Pango.SCALE
+            width = (ink.width / Pango.SCALE) - (ink.width * 0.2) / Pango.SCALE
             height = ink.height / Pango.SCALE
         else:
-            width = logical.width / Pango.SCALE
+            width = (logical.width / Pango.SCALE) - (logical.width * 0.2) / Pango.SCALE
             height = logical.height / Pango.SCALE
 
         return width, height

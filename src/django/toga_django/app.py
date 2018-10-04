@@ -45,6 +45,27 @@ class App(AppInterface):
     def create_menus(self):
         self.interface.factory.not_implemented('App.create_menus()')
 
+    def exit(self):
+        pass
+
+    def set_on_exit(self, value):
+        pass
+
+    def current_window(self):
+        self.interface.factory.not_implemented('App.current_window()')
+
+    def enter_full_screen(self, windows):
+        self.interface.factory.not_implemented('App.enter_full_screen()')
+
+    def exit_full_screen(self, windows):
+        self.interface.factory.not_implemented('App.exit_full_screen()')
+
+    def show_cursor(self):
+        self.interface.factory.not_implemented('App.show_cursor()')
+
+    def hide_cursor(self):
+        self.interface.factory.not_implemented('App.hide_cursor()')
+
     # ====
 
     # def materialize(self):

@@ -1,13 +1,15 @@
 ##########################################################################
 # System/Library/Frameworks/AppKit.framework
 ##########################################################################
-from ctypes import *
-from ctypes import util
+from ctypes import cdll, c_void_p, util, Structure
 from enum import Enum
 
-from rubicon.objc import *
-from toga.constants import *
-from toga.color import *
+from rubicon.objc import objc_const, CGFloat, ObjCClass
+from toga.constants import LEFT, RIGHT, CENTER, JUSTIFY
+from travertino.colors import (
+    BLACK, BLUE, BROWN, CYAN, DARKGRAY, GRAY, GREEN, LIGHTGRAY,
+    MAGENTA, ORANGE, PURPLE, RED, WHITE, YELLOW
+)
 
 ######################################################################
 appkit = cdll.LoadLibrary(util.find_library('AppKit'))
@@ -47,6 +49,7 @@ NSApplicationDidUnhideNotification = c_void_p.in_dll(appkit, 'NSApplicationDidUn
 
 ######################################################################
 # NSAttributedString.h
+NSAttributedString = ObjCClass('NSAttributedString')
 
 NSFontAttributeName = objc_const(appkit, "NSFontAttributeName")
 NSParagraphStyleAttributeName = objc_const(appkit, "NSParagraphStyleAttributeName")
@@ -199,23 +202,23 @@ NSColor.declare_class_property('redColor')
 NSColor.declare_class_property('whiteColor')
 NSColor.declare_class_property('yellowColor')
 
+
 def NSColorUsingColorName(background_color):
     return {
-        Black: NSColor.blackColor,
-        Blue: NSColor.blueColor,
-        Brown: NSColor.brownColor,
-        Clear : NSColor.clearColor,
-        Cyan: NSColor.cyanColor,
-        DarkGray: NSColor.darkGrayColor,
-        Gray: NSColor.grayColor,
-        Green: NSColor.greenColor,
-        LightGray: NSColor.lightGrayColor,
-        Magenta: NSColor.magentaColor,
-        Orange: NSColor.orangeColor,
-        Purple: NSColor.purpleColor,
-        Red: NSColor.redColor,
-        White: NSColor.whiteColor,
-        Yellow: NSColor.yellowColor,
+        BLACK: NSColor.blackColor,
+        BLUE: NSColor.blueColor,
+        BROWN: NSColor.brownColor,
+        CYAN: NSColor.cyanColor,
+        DARKGRAY: NSColor.darkGrayColor,
+        GRAY: NSColor.grayColor,
+        GREEN: NSColor.greenColor,
+        LIGHTGRAY: NSColor.lightGrayColor,
+        MAGENTA: NSColor.magentaColor,
+        ORANGE: NSColor.orangeColor,
+        PURPLE: NSColor.purpleColor,
+        RED: NSColor.redColor,
+        WHITE: NSColor.whiteColor,
+        YELLOW: NSColor.yellowColor,
     }[background_color]
 
 ######################################################################
@@ -371,7 +374,7 @@ NSLayoutAttributeNotAnAttribute = 0
 # NSLayoutConstraintOrientationVertical = 1
 
 
-class NSEdgetInsets(Structure):
+class NSEdgeInsets(Structure):
     _fields_ = [
         ("top", CGFloat),
         ("left", CGFloat),
@@ -518,6 +521,7 @@ NSStepper = ObjCClass('NSStepper')
 ######################################################################
 # NSStringDrawing.h
 
+NSString = ObjCClass('NSString')
 NSStringDrawingUsesLineFragmentOrigin = 1 << 0
 NSStringDrawingUsesFontLeading = 1 << 1
 NSStringDrawingDisableScreenFontSubstitution = 1 << 2  # DEPRECATED
@@ -616,7 +620,6 @@ NSGrooveBorder = 3
 NSWindow = ObjCClass('NSWindow')
 NSWindow.declare_property('frame')
 
-
 NSBorderlessWindowMask = 0
 NSTitledWindowMask = 1 << 0
 NSClosableWindowMask = 1 << 1
@@ -655,4 +658,3 @@ NSCompositingOperationHue = 25
 NSCompositingOperationSaturation = 26
 NSCompositingOperationColor = 27
 NSCompositingOperationLuminosity = 28
-

@@ -16,13 +16,6 @@ class App(LoggedObject):
     def create(self):
         self._action('create')
 
-    @not_required_on('mobile', 'web')
-    def set_full_screen(self, is_full_screen):
-        self._action('set full screen', is_full_screen=is_full_screen)
-
-    def open_document(self, fileURL):
-        self._action('open document', fileURL=fileURL)
-
     @not_required_on('mobile')
     def create_menus(self):
         self._action('create menus')
@@ -30,10 +23,33 @@ class App(LoggedObject):
     def main_loop(self):
         self._action('main loop')
 
-    @not_required_on('mobile', 'web')
     def exit(self):
         self._action('exit')
 
-    @not_required_on('mobile', 'web')
     def set_on_exit(self, value):
         self._set_value('on_exit', value)
+
+    @not_required_on('mobile')
+    def current_window(self):
+        self._action('current_window')
+
+    @not_required_on('mobile')
+    def enter_full_screen(self, windows):
+        self._action('enter_full_screen', windows=windows)
+
+    @not_required_on('mobile')
+    def exit_full_screen(self, windows):
+        self._action('exit_full_screen', windows=windows)
+
+    @not_required_on('mobile')
+    def show_cursor(self):
+        self._action('show_cursor')
+
+    @not_required_on('mobile')
+    def hide_cursor(self):
+        self._action('hide_cursor')
+
+
+@not_required_on('mobile', 'web')
+class DocumentApp(App):
+    pass

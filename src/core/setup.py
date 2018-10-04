@@ -27,7 +27,7 @@ setup(
     packages=find_packages(exclude='tests'),
     python_requires='>=3.5',
     package_data={
-        'toga': ['resources/*.icns', 'resources/*.png'],
+        'toga': ['resources/*.icns', 'resources/*.ico', 'resources/*.png'],
     },
     include_package_data=True,
     install_requires=[

@@ -5,8 +5,8 @@ from builtins import id as identifier
 
 from toga.command import CommandSet
 from toga.handlers import wrapped_handler
+from toga.icons import Icon
 from toga.platform import get_platform_factory
-from toga.widgets.icon import Icon
 from toga.window import Window
 
 
@@ -38,7 +38,6 @@ class App:
         id (str): The DOM identifier for the app (optional)
         startup(``callable``): The callback method before starting the app, typically to add the components.
             Must be a ``callable`` that expects a single argument of :class:`toga.App`.
-        document_types (:obj:`list` of :obj:`str`): Document types.
         factory (:obj:`module`): A python module that is capable to return a
             implementation of this class with the same name. (optional & normally not needed)
 
@@ -50,7 +49,7 @@ class App:
     app = None
 
     def __init__(self, name, app_id,
-                 id=None, icon=None, startup=None, document_types=None, on_exit=None, factory=None):
+                 id=None, icon=None, startup=None, on_exit=None, factory=None):
         self.factory = get_platform_factory(factory)
 
         # Keep an accessible copy of the app instance
@@ -64,9 +63,6 @@ class App:
 
         self.commands = CommandSet(None)
 
-        self.document_types = document_types
-        self._documents = []
-
         self._startup_method = startup
 
         self.default_icon = Icon('tiberius', system=True)
@@ -75,8 +71,13 @@ class App:
         self._is_full_screen = False
         self._on_exit = None
 
-        self._impl = self.factory.App(interface=self)
+        self._full_screen_windows = None
+
+        self._impl = self._create_impl()
         self.on_exit = on_exit
+
+    def _create_impl(self):
+        return self.factory.App(interface=self)
 
     @property
     def app_id(self):
@@ -125,39 +126,48 @@ class App:
         window.app = self
 
     @property
-    def full_screen(self):
-        return self._is_full_screen
-
-    @full_screen.setter
-    def full_screen(self, is_full_screen):
-        self._is_full_screen = is_full_screen
-        self._impl.set_full_screen(is_full_screen)
+    def current_window(self):
+        """Return the currently active content window"""
+        return self._impl.current_window().interface
 
     @property
-    def documents(self):
-        """ Return the list of documents associated with this app.
+    def is_full_screen(self):
+        """Is the app currently in full screen mode?"""
+        return self._full_screen_windows is not None
 
-        Returns:
-            A ``list`` of ``str``.
-        """
-        return self._documents
+    def set_full_screen(self, *windows):
+        """Make one or more windows full screen.
 
-    def add_document(self, doc):
-        """ Add a new document to this app.
-
-        Args:
-            doc (str): The document to add.
-        """
-        doc.app = self
-        self._documents.append(doc)
-
-    def open_document(self, fileURL):
-        """ Add a new document to this app.
+        Full screen is not the same as "maximized"; full screen mode
+        is when all window borders and other chrome is no longer
+        visible.
 
         Args:
-            fileURL (str): The URL/path to the file to add as a document.
+            windows: The list of windows to go full screen,
+                in order of allocation to screens. If the number of
+                windows exceeds the number of available displays,
+                those windows will not be visible. If no windows
+                are specified, the app will exit full screen mode.
         """
-        raise NotImplementedError('Application class must define open_document()')
+        if not windows:
+            self.exit_full_screen()
+        else:
+            self._impl.enter_full_screen(windows)
+            self._full_screen_windows = windows
+
+    def exit_full_screen(self):
+        """Exit full screen mode."""
+        if self.is_full_screen:
+            self._impl.exit_full_screen(self._full_screen_windows)
+            self._full_screen_windows = None
+
+    def show_cursor(self):
+        """Show cursor."""
+        self._impl.show_cursor()
+
+    def hide_cursor(self):
+        """Hide cursor from view."""
+        self._impl.hide_cursor()
 
     def startup(self):
         """ Create and show the main window for the application
@@ -201,3 +211,35 @@ class App:
         """
         self._on_exit = wrapped_handler(self, handler)
         self._impl.set_on_exit(self._on_exit)
+
+
+class DocumentApp(App):
+    """
+    A document-based application.
+
+    Definition and arguments are the same as a base App, plus the following:
+
+    Args:
+        document_types (:obj:`list` of :obj:`str`): Document types.
+
+    """
+    def __init__(self, name, app_id,
+                 id=None, icon=None, startup=None, document_types=None, on_exit=None, factory=None):
+
+        self.document_types = document_types
+        self._documents = []
+
+        super().__init__(name, app_id,
+                         id=id, icon=icon, startup=startup, on_exit=on_exit, factory=factory)
+
+    def _create_impl(self):
+        return self.factory.DocumentApp(interface=self)
+
+    @property
+    def documents(self):
+        """ Return the list of documents associated with this app.
+
+        Returns:
+            A ``list`` of ``str``.
+        """
+        return self._documents

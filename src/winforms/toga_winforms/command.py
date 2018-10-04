@@ -1,4 +1,5 @@
-from toga.widgets.icon import Icon as CoreIcon
+from toga.icons import Icon as CoreIcon
+
 
 class Command:
     def __init__(self, interface):

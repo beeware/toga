@@ -29,6 +29,7 @@ class App:
                          section=sys.maxsize),
             toga.Command(None, 'Visit homepage', group=toga.Group.HELP)
         )
+        self._create_app_commands()
 
         # Call user code to populate the main window
         self.interface.startup()
@@ -66,7 +67,8 @@ class App:
             self.interface.main_window._impl.native.MainMenuStrip = menubar
         self.interface.main_window.content.refresh()
 
-    def set_full_screen(self, is_full_screen):
+    def _create_app_commands(self):
+        # No extra menus
         pass
 
     def open_document(self, fileURL):
@@ -88,3 +90,42 @@ class App:
 
     def set_on_exit(self, value):
         pass
+
+    def current_window(self):
+        self.interface.factory.not_implemented('App.current_window()')
+
+    def enter_full_screen(self, windows):
+        self.interface.factory.not_implemented('App.enter_full_screen()')
+
+    def exit_full_screen(self, windows):
+        self.interface.factory.not_implemented('App.exit_full_screen()')
+
+    def set_cursor(self, value):
+        self.interface.factory.not_implemented('App.set_cursor()')
+
+    def show_cursor(self):
+        self.interface.factory.not_implemented('App.show_cursor()')
+
+    def hide_cursor(self):
+        self.interface.factory.not_implemented('App.hide_cursor()')
+
+
+class DocumentApp(App):
+    def _create_app_commands(self):
+        self.interface.commands.add(
+            toga.Command(
+                lambda w: self.open_file,
+                label='Open...',
+                shortcut='o',
+                group=toga.Group.FILE,
+                section=0
+            ),
+        )
+
+    def open_document(self, fileURL):
+        """Open a new document in this app.
+
+        Args:
+            fileURL (str): The URL/path to the file to add as a document.
+        """
+        self.interface.factory.not_implemented('DocumentApp.open_document()')

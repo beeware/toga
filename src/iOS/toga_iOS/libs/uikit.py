@@ -1,12 +1,11 @@
 ##########################################################################
 # System/Library/Frameworks/UIKit.framework
 ##########################################################################
-from ctypes import *
-from ctypes import util
+from ctypes import c_char_p, c_int, c_void_p, cdll, util, POINTER, Structure
 from enum import Enum
 
-from rubicon.objc import *
-from toga.constants import *
+from rubicon.objc import objc_const, CGFloat, ObjCClass
+from toga.constants import LEFT, RIGHT, CENTER, JUSTIFY
 
 ######################################################################
 uikit = cdll.LoadLibrary(util.find_library('UIKit'))
@@ -346,7 +345,6 @@ class UIKeyboardType(Enum):
 ######################################################################
 # UITextView.h
 UITextView = ObjCClass('UITextView')
-UITextViewDelegate = ObjCProtocol('UITextViewDelegate')
 
 ######################################################################
 # UIView.h
@@ -371,13 +369,10 @@ class UIViewContentMode(Enum):
     BottomLeft = 11
     BottomRight = 12
 
+
 ######################################################################
 # UIViewController.h
 UIViewController = ObjCClass('UIViewController')
-
-######################################################################
-# UIWebView.h
-UIWebView = ObjCClass('UIWebView')
 
 ######################################################################
 # UIWindow.h

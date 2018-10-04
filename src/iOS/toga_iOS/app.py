@@ -10,7 +10,7 @@ from .libs import (NSNotificationCenter,
     UIKeyboardWillShowNotification,
     UIResponder
 )
-    
+
 from .window import Window
 
 
@@ -25,8 +25,20 @@ class MainWindow(Window):
 
 class PythonAppDelegate(UIResponder):
     @objc_method
-    def applicationDidBecomeActive(self) -> None:
+    def applicationDidBecomeActive_(self, application) -> None:
         print("App became active.")
+
+    @objc_method
+    def applicationWillResignActive_(self, application) -> None:
+        print("App about to leave foreground.", flush=True)
+
+    @objc_method
+    def applicationDidEnterBackground_(self, application) -> None:
+        print("App entered background.")
+
+    @objc_method
+    def applicationWillEnterForeground_(self, application) -> None:
+        print("App about to enter foreground.")
 
     @objc_method
     def application_didFinishLaunchingWithOptions_(self, application, launchOptions) -> bool:
@@ -49,6 +61,10 @@ class PythonAppDelegate(UIResponder):
         App.app.interface.main_window.content._impl.viewport.kb_height = 0.0
 
         return True
+
+    @objc_method
+    def applicationWillTerminate_(self, application) -> None:
+        print("App about to Terminate.")
 
     @objc_method
     def application_didChangeStatusBarOrientation_(self, application, oldStatusBarOrientation: int) -> None:
@@ -101,3 +117,9 @@ class App:
         # main iOS event loop.
 
         self.loop.run_forever(lifecycle=iOSLifecycle())
+
+    def exit(self):
+        pass
+
+    def set_on_exit(self, value):
+        pass

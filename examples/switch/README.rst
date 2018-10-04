@@ -14,6 +14,4 @@ Quickstart
 
 To run this example:
 
-    > pip install toga
-    > python -m switch
-
+    $ python -m switch
