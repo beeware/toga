@@ -48,6 +48,9 @@ class TableTests(TestCase):
     def test_nothing_selected(self):
         self.assertEqual(self.table.selection, None)
 
+    def test_multiple_select(self):
+        self.assertEqual(self.table.multiple_select, False)
+
     def test_scroll_to_row(self):
         self.table.data = [
             ['a1', 'b1', 'c1'],
