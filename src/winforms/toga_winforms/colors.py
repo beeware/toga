@@ -1,4 +1,4 @@
-from ..libs import Color
+from .libs import Color
 
 CACHE = {}
 

@@ -1,7 +1,8 @@
 import os
 
 from toga import Icon as toga_Icon
-from toga_winforms.libs import Bitmap, WinIcon
+
+from .libs import Bitmap, WinIcon
 
 
 class Icon:
