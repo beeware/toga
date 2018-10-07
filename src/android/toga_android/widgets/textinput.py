@@ -19,16 +19,17 @@ class TextInput(Widget):
 
     def set_placeholder(self, value):
         # self.native.cell.placeholderString = self._placeholder
-        self.interface.factory.not_implemented('TextInput.set_placeholder()')
+        self._placeholder = value
+        self.native.setHint(self._placeholder)
 
-    def set_alignment(self, value):
-        self.interface.factory.not_implemented('TextInput.set_alignment()')
+    def set_alignment(self, value): # value example -> android.view.Gravity.CENTER
+        self.native.setGravity(value)
 
     def set_font(self, value):
         self.interface.factory.not_implemented('TextInput.set_font()')
 
     def get_value(self, value):
-        self.interface.factory.not_implemented('TextInput.get_value()')
+        return str(self.native.getText())
 
     def set_value(self, value):
         self.native.setText(value)
