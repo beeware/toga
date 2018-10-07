@@ -32,8 +32,8 @@ class Button(Widget):
     def set_enabled(self, value):
         self.interface.factory.not_implemented('Button.set_enabled()')
 
-    def set_background_color(self, value):
-        self.interface.factory.not_implemented('Button.set_background_color()')
+    def set_background_color(self, value, mode=android.graphics.PorterDuff.Mode.MULTIPLY):
+        self.native.getBackground().setColorFilter(value)
 
     def set_on_press(self, handler):
         # No special handling required
