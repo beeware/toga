@@ -36,7 +36,7 @@ setup(
     package_data={
         'imageview': ['resources/*'],
     },
-    install_package_data=True,
+    include_package_data=True,
     classifiers=[
         'Development Status :: 1 - Planning',
         'License :: OSI Approved :: BSD license',
