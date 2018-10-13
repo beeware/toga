@@ -1,3 +1,5 @@
+from android.view import Gravity
+
 from travertino.size import at_least
 
 from .base import Widget
@@ -20,8 +22,14 @@ class TextInput(Widget):
     def set_placeholder(self, value):
         self.native.setHint(value)
 
-    def set_alignment(self, value): # value example -> android.view.Gravity.CENTER
-        self.native.setGravity(value)
+    def set_alignment(self, value):
+        self.native.setGravity({
+                LEFT_ALIGNED: Gravity.CENTER_VERTICAL | Gravity.LEFT,
+                RIGHT_ALIGNED: Gravity.CENTER_VERTICAL | Gravity.RIGHT,
+                CENTER_ALIGNED: Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL,
+                JUSTIFIED_ALIGNED: Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL,
+                NATURAL_ALIGNED: Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL,
+            }[value])
 
     def set_font(self, value):
         self.interface.factory.not_implemented('TextInput.set_font()')
