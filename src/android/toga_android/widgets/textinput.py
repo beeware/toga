@@ -18,9 +18,7 @@ class TextInput(Widget):
         self.interface.factory.not_implemented('TextInput.set_readonly()')
 
     def set_placeholder(self, value):
-        # self.native.cell.placeholderString = self._placeholder
-        self._placeholder = value
-        self.native.setHint(self._placeholder)
+        self.native.setHint(value)
 
     def set_alignment(self, value): # value example -> android.view.Gravity.CENTER
         self.native.setGravity(value)
