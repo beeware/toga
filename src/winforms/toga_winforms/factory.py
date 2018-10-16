@@ -50,7 +50,7 @@ __all__ = [
     # 'Canvas',
     # 'DetailedList',
     'ImageView',
-    'DatePicker'
+    'DatePicker',
     'Label',
     'MultilineTextInput',
     'NumberInput',

@@ -14,6 +14,6 @@ class DatePickerTests(TestCase):
         self.assertActionPerformed(self.date_picker, 'create DatePicker')
 
     def test_getting_value_invokes_impl_method(self):
-        value = self.date_picker.value
+        self.date_picker.value
         self.assertValueGet(self.date_picker, 'value')
 

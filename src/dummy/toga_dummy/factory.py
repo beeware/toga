@@ -51,6 +51,7 @@ __all__ = [
     'Canvas',
     'DetailedList',
     'ImageView',
+    'DatePicker',
     'Label',
     'MultilineTextInput',
     'NavigationView',
