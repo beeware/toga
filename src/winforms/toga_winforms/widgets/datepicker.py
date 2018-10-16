@@ -1,4 +1,4 @@
-from toga_winforms.libs import WinForms, HorizontalTextAlignment
+from toga_winforms.libs import WinForms
 from travertino.size import at_least
 
 from .base import Widget
