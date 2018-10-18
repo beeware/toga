@@ -30,7 +30,6 @@ class DatePicker(Widget):
         """
         return self._impl.get_value()
 
-
     @value.setter
     def value(self, value):
         if value is None:
