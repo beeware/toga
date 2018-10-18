@@ -182,7 +182,7 @@ To run the app you'll need to execute the correct command for your platform from
 
     .. code-block:: doscon
 
-      (venv) C:\...>python -m helloworld
+      (venv) C:\...>py -m helloworld
 
 This should pop up a window with a button:
 
