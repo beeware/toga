@@ -1,4 +1,5 @@
 from .base import Widget
+import datetime
 
 
 class DatePicker(Widget):
@@ -14,18 +15,26 @@ class DatePicker(Widget):
     """
     MIN_WIDTH = 200
 
-    def __init__(self, id=None, style=None, factory=None):
+    def __init__(self, id=None, style=None, factory=None, initial=None):
         super().__init__(id=id, style=style, factory=factory)
         # Create a platform specific implementation of a DatePicker
         self._impl = self.factory.DatePicker(interface=self)
+        self.value = initial
 
     @property
     def value(self):
         """
         The value of the currently selected date.
 
-        :return: Selected date as DateTime object
+        :return: Selected date as Date object
         """
         return self._impl.get_value()
 
 
+    @value.setter
+    def value(self, value):
+        if value is None:
+            v = str(datetime.date.today())
+        else:
+            v = str(value)
+        self._impl.set_value(v)

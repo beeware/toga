@@ -4,6 +4,7 @@ clr.AddReference("System.Windows.Forms")
 import System.Windows.Forms as WinForms
 from System import Decimal as ClrDecimal
 from System import Convert
+from System import DateTime as WinDateTime
 from System import Threading
 from System import Uri
 from System.Drawing import Size, Point, Color, ContentAlignment, Bitmap

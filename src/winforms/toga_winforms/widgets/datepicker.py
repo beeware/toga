@@ -1,5 +1,6 @@
-from toga_winforms.libs import WinForms
+from toga_winforms.libs import WinForms, WinDateTime
 from travertino.size import at_least
+import datetime
 
 from .base import Widget
 
@@ -9,7 +10,14 @@ class DatePicker(Widget):
         self.native = WinForms.DateTimePicker()
 
     def get_value(self):
-        return self.native.Value
+        date = self.native.Text
+        date = datetime.datetime.strptime(date, '%A, %B %d, %Y')
+        date = date.date()
+        return date
+
+    def set_value(self, value):
+        value = WinDateTime.Parse(value)
+        self.native.Value = value
 
     def rehint(self):
         # Height of a date input is known and fixed.
