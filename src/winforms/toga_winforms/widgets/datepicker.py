@@ -19,6 +19,14 @@ class DatePicker(Widget):
         value = WinDateTime.Parse(value)
         self.native.Value = value
 
+    def set_min_date(self, value):
+        value = WinDateTime.Parse(value)
+        self.native.MinDate = value
+
+    def set_max_date(self, value):
+        value = WinDateTime.Parse(value)
+        self.native.MaxDate = value
+
     def rehint(self):
         # Height of a date input is known and fixed.
         # Width must be > 200

@@ -32,3 +32,13 @@ class DatePickerTests(TestCase):
         new_value = 'New Value'
         self.date_picker.value = new_value
         self.assertValueSet(self.date_picker, 'value', new_value)
+
+    def test_min_max_dates(self):
+        self.assertEqual(self.date_picker.min_date, None)
+        self.assertEqual(self.date_picker.max_date, None)
+
+        yesterday = datetime.date.today() - datetime.timedelta(days=1)
+        self.date_picker.min_date = yesterday
+        self.date_picker.max_date = yesterday
+        self.assertEqual(self.date_picker.min_date, yesterday.strftime('%Y-%m-%d'))
+        self.assertEqual(self.date_picker.max_date, yesterday.strftime('%Y-%m-%d'))

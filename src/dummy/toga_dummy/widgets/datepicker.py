@@ -11,5 +11,11 @@ class DatePicker(Widget):
     def set_value(self, value):
         return self._set_value('value', value)
 
+    def set_min_date(self, value):
+        return self._set_value('min date', value)
+
+    def set_max_date(self, value):
+        return self._set_value('max date', value)
+
     def rehint(self):
         self._action('rehint DatePicker')

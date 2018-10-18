@@ -15,11 +15,13 @@ class DatePicker(Widget):
     """
     MIN_WIDTH = 200
 
-    def __init__(self, id=None, style=None, factory=None, initial=None):
+    def __init__(self, id=None, style=None, factory=None, initial=None, min_date=None, max_date=None):
         super().__init__(id=id, style=style, factory=factory)
         # Create a platform specific implementation of a DatePicker
         self._impl = self.factory.DatePicker(interface=self)
         self.value = initial
+        self.min_date = min_date
+        self.max_date = max_date
 
     @property
     def value(self):
@@ -37,3 +39,35 @@ class DatePicker(Widget):
         else:
             v = str(value)
         self._impl.set_value(v)
+
+    @property
+    def min_date(self):
+        """
+        The minimum allowable date for the widget. All dates prior to the minimum date will be blanked out.
+
+        :return: The minimum date specified. Returns None if min_date not specified
+        """
+        return self._min_date
+
+    @min_date.setter
+    def min_date(self, value):
+        self._min_date = None
+        if value is not None:
+            self._min_date = str(value)
+            self._impl.set_min_date(self._min_date)
+
+    @property
+    def max_date(self):
+        """
+        The maximum allowable date for the widget. All dates prior to the minimum date will be blanked out.
+
+        :return: The maximum date specified. Returns None if max_date not specified
+        """
+        return self._max_date
+
+    @max_date.setter
+    def max_date(self, value):
+        self._max_date = None
+        if value is not None:
+            self._max_date = str(value)
+            self._impl.set_max_date(self._max_date)
