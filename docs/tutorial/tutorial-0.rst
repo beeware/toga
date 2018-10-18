@@ -63,7 +63,7 @@ Next, install Toga into your virtual environment:
 
     .. code-block:: doscon
 
-      (venv) C:\...>pip install --pre toga
+      (venv) C:\...>py -m pip install --pre toga
 
 After a successful installation of Toga you are ready to get coding.
 
