@@ -23,6 +23,6 @@ class DatePickerTests(TestCase):
         self.assertValueSet(self.date_picker, 'value', datetime.date.today().strftime('%Y-%m-%d'))
 
     def test_set_value_with_yesterdays_date(self):
-        yesterday = datetime.date.today() - datetime.timedelta(days=-1)
+        yesterday = datetime.date.today() - datetime.timedelta(days=1)
         self.date_picker.value = yesterday
         self.assertValueSet(self.date_picker, 'value', yesterday.strftime('%Y-%m-%d'))
