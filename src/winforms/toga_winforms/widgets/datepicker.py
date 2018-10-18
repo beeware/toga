@@ -32,4 +32,3 @@ class DatePicker(Widget):
         # Width must be > 200
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
         self.interface.intrinsic.height = self.native.PreferredSize.Height
-
