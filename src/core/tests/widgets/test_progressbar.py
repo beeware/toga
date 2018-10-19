@@ -125,4 +125,3 @@ class ProgressBarTests(TestCase):
 
         # Asserting enabled to be True
         self.assertTrue(self.progress_bar.enabled)
-
