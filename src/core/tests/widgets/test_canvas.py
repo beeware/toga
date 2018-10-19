@@ -72,6 +72,7 @@ class CanvasTests(TestCase):
         y = -10
         width = 200
         height = 200
+
         with self.testing_canvas.fill(color="rgba(1, 1, 1, 1)") as fill1:
             rect = fill1.rect(x, y, width, height)
             self.assertIn(rect, fill1.drawing_objects)
@@ -88,6 +89,32 @@ class CanvasTests(TestCase):
                         rect = fill2.rect(i, j, check_size, check_size)
                         self.testing_canvas.redraw()
                         self.assertIn(rect, fill2.drawing_objects)
+                        self.assertActionPerformedWith(
+                            self.testing_canvas,
+                            "rect",
+                            x=i,
+                            y=j,
+                            width=check_size,
+                            height=check_size,
+                        )
+        self.assertActionPerformedWith(self.testing_canvas, "fill")
+
+        with self.testing_canvas.fill(color=None) as fill3:
+            rect = fill3.rect(x, y, width, height)
+            self.assertIn(rect, fill3.drawing_objects)
+        self.assertActionPerformedWith(
+            self.testing_canvas, "rect", x=10, y=-10, width=200, height=200
+        )
+        self.assertActionPerformedWith(self.testing_canvas, "fill")
+
+        with self.testing_canvas.fill(color=None) as fill4:
+            # Only works for check_size a power of 2
+            for j in range(x & -check_size, height, check_size):
+                for i in range(y & -check_size, width, check_size):
+                    if (i / check_size + j / check_size) % 2 == 0:
+                        rect = fill4.rect(i, j, check_size, check_size)
+                        self.testing_canvas.redraw()
+                        self.assertIn(rect, fill4.drawing_objects)
                         self.assertActionPerformedWith(
                             self.testing_canvas,
                             "rect",
@@ -444,9 +471,15 @@ class CanvasTests(TestCase):
         )
 
     def test_stroke_repr(self):
-        with self.testing_canvas.stroke() as stroker:
+        with self.testing_canvas.stroke() as stroker1:
             self.assertEqual(
-                repr(stroker), "Stroke(color=rgb(0, 0, 0), line_width=2.0, line_dash=None)"
+                repr(stroker1), "Stroke(color=rgb(0, 0, 0), line_width=2.0, line_dash=None)"
+            )
+
+        # Testing to draw a colorless stroke, i.e. with color=None
+        with self.testing_canvas.stroke(color=None) as stroker2:
+            self.assertEqual(
+                repr(stroker2), "Stroke(color=None, line_width=2.0, line_dash=None)"
             )
 
     def test_rotate_simple(self):
