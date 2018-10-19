@@ -3,6 +3,7 @@ import toga_dummy
 from toga.sources import ListSource
 from toga_dummy.utils import TestCase
 
+
 class TestDetailedList(TestCase):
     def setUp(self):
         super().setUp()
