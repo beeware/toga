@@ -117,6 +117,9 @@ class ProgressBarTests(TestCase):
         # Creating a new progress bar with running=True so it is already running
         self.progress_bar = toga.ProgressBar(factory=toga_dummy.factory, running=True)
 
+        # Asserting that start() function is invoked on the underlying widget
+        self.assertActionPerformed(self.progress_bar, 'start')
+
         # The constructor which is __init__ function will call the function start if running=True
         # which will make enabled=True
 
