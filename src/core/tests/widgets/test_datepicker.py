@@ -42,3 +42,10 @@ class DatePickerTests(TestCase):
         self.date_picker.max_date = yesterday
         self.assertEqual(self.date_picker.min_date, yesterday.strftime('%Y-%m-%d'))
         self.assertEqual(self.date_picker.max_date, yesterday.strftime('%Y-%m-%d'))
+
+    def test_on_change_callback_set(self):
+        def dummy_function():
+            pass
+
+        self.date_picker.on_change = dummy_function
+        self.assertIsNotNone(self.date_picker.on_change)

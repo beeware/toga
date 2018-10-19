@@ -1,4 +1,5 @@
 from .base import Widget
+from toga.handlers import wrapped_handler
 import datetime
 
 
@@ -15,13 +16,14 @@ class DatePicker(Widget):
     """
     MIN_WIDTH = 200
 
-    def __init__(self, id=None, style=None, factory=None, initial=None, min_date=None, max_date=None):
+    def __init__(self, id=None, style=None, factory=None, initial=None, min_date=None, max_date=None, on_change=None):
         super().__init__(id=id, style=style, factory=factory)
         # Create a platform specific implementation of a DatePicker
         self._impl = self.factory.DatePicker(interface=self)
         self.value = initial
         self.min_date = min_date
         self.max_date = max_date
+        self.on_change = on_change
 
     @property
     def value(self):
@@ -71,3 +73,22 @@ class DatePicker(Widget):
         if value is not None:
             self._max_date = str(value)
             self._impl.set_max_date(self._max_date)
+
+    @property
+    def on_change(self):
+        """The handler to invoke when the value changes
+
+        Returns:
+            The function ``callable`` that is called on a content change.
+        """
+        return self._on_change
+
+    @on_change.setter
+    def on_change(self, handler):
+        """Set the handler to invoke when the date is changed.
+
+        Args:
+            handler (:obj:`callable`): The handler to invoke when the date is changed.
+        """
+        self._on_change = wrapped_handler(self, handler)
+        self._impl.set_on_change(self._on_change)

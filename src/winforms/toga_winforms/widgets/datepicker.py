@@ -32,3 +32,10 @@ class DatePicker(Widget):
         # Width must be > 200
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
         self.interface.intrinsic.height = self.native.PreferredSize.Height
+
+    def set_on_change(self, handler):
+        self.native.ValueChanged += self.on_date_change
+
+    def on_date_change(self, sender, event):
+        if self.interface._on_change:
+            self.interface.on_change(self.interface)

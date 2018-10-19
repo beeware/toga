@@ -19,3 +19,6 @@ class DatePicker(Widget):
 
     def rehint(self):
         self._action('rehint DatePicker')
+
+    def set_on_change(self, handler):
+        self._set_value('on_change', handler)
