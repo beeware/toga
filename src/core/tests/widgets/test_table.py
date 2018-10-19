@@ -77,3 +77,21 @@ class TableTests(TestCase):
         ]
         self.table.scroll_to_bottom()
         self.assertValueSet(self.table, 'scroll to', len(self.table.data) - 1)
+
+    def test_multiple_select(self):
+        self.assertEqual(self.table.multiple_select, False)
+        self.table.multiple_select = True
+        self.assertEqual(self.table.multiple_select, True)
+
+    def test_on_select(self):
+        # set a new callback
+        def callback(widget, **extra):
+            return 'called {} with {}'.format(type(widget), extra)
+
+        self.table.on_select = callback
+        self.assertEqual(self.table.on_select._raw, callback)
+        self.assertEqual(
+            self.table.on_select('widget', a=1),
+            "called <class 'toga.widgets.table.Table'> with {'a': 1}"
+        )
+        self.assertValueSet(self.table, 'on_select', self.table.on_select)
