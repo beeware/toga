@@ -27,7 +27,7 @@ class ProgressBar(Widget):
         """
         super().__init__(id=id, style=style, factory=factory)
 
-        self._is_running = False
+        self._is_running = running
         self._impl = self.factory.ProgressBar(interface=self)
         self._value = value
 

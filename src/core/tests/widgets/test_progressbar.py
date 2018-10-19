@@ -112,3 +112,17 @@ class ProgressBarTests(TestCase):
         self.progress_bar.stop()
         # self.progress_bar.value = 0
         self.assertTrue(self.progress_bar.enabled)
+
+    def test_already_running(self):
+        # Creating a new progress bar with running=True so it is already running
+        self.progress_bar = toga.ProgressBar(running=True)
+
+        # The constructor which is __init__ function will call the function start if running=True
+        # which will make enabled=True
+
+        # Asserting is_running to be True
+        self.assertTrue(self.progress_bar.is_running)
+
+        # Asserting enabled to be True
+        self.assertTrue(self.progress_bar.enabled)
+
