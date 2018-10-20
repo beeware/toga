@@ -18,11 +18,11 @@ class Label(Widget):
 
     def set_alignment(self, value):
         self.native.setGravity({
-                LEFT_ALIGNED: Gravity.CENTER_VERTICAL | Gravity.LEFT,
-                RIGHT_ALIGNED: Gravity.CENTER_VERTICAL | Gravity.RIGHT,
-                CENTER_ALIGNED: Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL,
-                JUSTIFIED_ALIGNED: Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL,
-                NATURAL_ALIGNED: Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL,
+                'LEFT_ALIGNED': Gravity.CENTER_VERTICAL | Gravity.LEFT,
+                'RIGHT_ALIGNED': Gravity.CENTER_VERTICAL | Gravity.RIGHT,
+                'CENTER_ALIGNED': Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL,
+                'JUSTIFIED_ALIGNED': Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL,
+                'NATURAL_ALIGNED': Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL,
             }[value])
 
     def set_text(self, value):
