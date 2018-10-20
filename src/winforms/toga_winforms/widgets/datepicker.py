@@ -10,9 +10,7 @@ class DatePicker(Widget):
         self.native = WinForms.DateTimePicker()
 
     def get_value(self):
-        date = self.native.Text
-        date = datetime.datetime.strptime(date, '%A, %B %d, %Y')
-        date = date.date()
+        date = datetime.datetime.strptime(self.native.Text, '%A, %B %d, %Y').date()
         return date
 
     def set_value(self, value):
