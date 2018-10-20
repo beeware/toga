@@ -49,3 +49,37 @@ class TreeTests(TestCase):
 
     def test_data_setter_creates_tree_with_data_none(self):
         pass
+
+    def test_data_with_treesource(self):
+        self.data = {
+            ('first', 111): None,
+            ('second', 222): [],
+            ('third', 333): [
+                ('third.one', 331),
+                {'heading_0': 'third.two', 'heading_1': 332}
+            ]
+        }
+        self.tree.data = TreeSource(accessors=self.tree._accessors, data=self.data)
+
+    def test_multiple_select(self):
+        self.assertEqual(self.tree.multiple_select, False)
+        self.tree.multiple_select = True
+        self.assertEqual(self.tree.multiple_select, True)
+
+    def test_nothing_selected(self):
+        self.assertIsNone(self.tree.selection)
+
+    def test_on_select(self):
+        self.assertIsNone(self.tree._on_select)
+
+        # set a new callback
+        def callback(widget, **extra):
+            return 'called {} with {}'.format(type(widget), extra)
+
+        self.tree.on_select = callback
+        self.assertEqual(self.tree.on_select._raw, callback)
+        self.assertEqual(
+            self.tree.on_select('widget', a=1),
+            "called <class 'toga.widgets.tree.Tree'> with {'a': 1}"
+        )
+        self.assertValueSet(self.tree, 'on_select', self.tree.on_select)

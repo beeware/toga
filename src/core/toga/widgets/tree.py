@@ -65,6 +65,10 @@ class Tree(Widget):
         """Does the table allow multiple rows to be selected?"""
         return self._multiple_select
 
+    @multiple_select.setter
+    def multiple_select(self, multiple_select: bool):
+        self._multiple_select = multiple_select
+
     @property
     def selection(self):
         """The current selection of the table.
