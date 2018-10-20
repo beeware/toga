@@ -11,6 +11,7 @@ from .widgets.button import Button
 from .widgets.canvas import Canvas
 from .widgets.detailedlist import DetailedList
 from .widgets.imageview import ImageView
+from .widgets.datepicker import DatePicker
 from .widgets.label import Label
 from .widgets.multilinetextinput import MultilineTextInput
 from .widgets.navigationview import NavigationView
@@ -50,6 +51,7 @@ __all__ = [
     'Canvas',
     'DetailedList',
     'ImageView',
+    'DatePicker',
     'Label',
     'MultilineTextInput',
     'NavigationView',
