@@ -2,7 +2,7 @@ from android.view import Gravity
 
 from travertino.size import at_least
 
-from toga.constants import *
+from toga.constants import LEFT, RIGH, CENTER, JUSTIFY
 
 
 class TogaLabel(extends=android.widget.TextView):
@@ -18,11 +18,10 @@ class Label(Widget):
 
     def set_alignment(self, value):
         self.native.setGravity({
-                'LEFT_ALIGNED': Gravity.CENTER_VERTICAL | Gravity.LEFT,
-                'RIGHT_ALIGNED': Gravity.CENTER_VERTICAL | Gravity.RIGHT,
-                'CENTER_ALIGNED': Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL,
-                'JUSTIFIED_ALIGNED': Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL,
-                'NATURAL_ALIGNED': Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL,
+                LEFT: Gravity.CENTER_VERTICAL | Gravity.LEFT,
+                RIGHT: Gravity.CENTER_VERTICAL | Gravity.RIGHT,
+                CENTER: Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL,
+                JUSTIFY: Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL,
             }[value])
 
     def set_text(self, value):
