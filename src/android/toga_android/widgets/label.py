@@ -2,7 +2,7 @@ from android.view import Gravity
 
 from travertino.size import at_least
 
-from toga.constants import LEFT, RIGH, CENTER, JUSTIFY
+from toga.constants import LEFT, RIGHT, CENTER, JUSTIFY
 
 
 class TogaLabel(extends=android.widget.TextView):
