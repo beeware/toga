@@ -18,6 +18,7 @@ from .widgets.canvas import Canvas
 from .widgets.detailedlist import DetailedList
 from .widgets.imageview import ImageView
 from .widgets.datepicker import DatePicker
+from .widgets.timepicker import TimePicker
 from .widgets.label import Label
 from .widgets.multilinetextinput import MultilineTextInput
 from .widgets.numberinput import NumberInput
@@ -62,6 +63,7 @@ __all__ = [
     'ImageView',
     'Label',
     'DatePicker',
+    'TimePicker',
     'MultilineTextInput',
     'NumberInput',
     'OptionContainer',
