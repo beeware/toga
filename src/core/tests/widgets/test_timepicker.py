@@ -21,12 +21,13 @@ class TimePickerTests(TestCase):
 
     def test_set_value_with_None(self):
         self.time_picker.value = None
-        self.assertValueSet(self.time_picker, 'value', datetime.datetime.today().strftime('%-I:%M:%S %p'))
+        none_default = datetime.datetime.today().time()
+        self.assertValueSet(self.time_picker, 'value', none_default.strftime('%H:%M:%S.%f'))
 
     def test_set_value_with_an_hour_ago(self):
-        hour_ago = datetime.date.today() - datetime.timedelta(hours=1)
-        self.time_picker.value = hour_ago
-        self.assertValueSet(self.time_picker, 'value', hour_ago.strftime('%-I:%M:%S %p'))
+        hour_ago = datetime.datetime.today() - datetime.timedelta(hours=1)
+        self.time_picker.value = hour_ago.time()
+        self.assertValueSet(self.time_picker, 'value', hour_ago.strftime('%H:%M:%S.%f'))
 
     def test_setting_value_invokes_impl_method(self):
         new_value = 'New Value'
@@ -37,11 +38,11 @@ class TimePickerTests(TestCase):
         self.assertEqual(self.time_picker.min_time, None)
         self.assertEqual(self.time_picker.max_time, None)
 
-        hour_ago = datetime.date.today() - datetime.timedelta(hours=1)
-        self.time_picker.min_date = hour_ago
-        self.time_picker.max_date = hour_ago
-        self.assertEqual(self.time_picker.min_date, hour_ago.strftime('%-I:%M:%S %p'))
-        self.assertEqual(self.time_picker.max_date, hour_ago.strftime('%-I:%M:%S %p'))
+        hour_ago = datetime.datetime.today() - datetime.timedelta(hours=1)
+        self.time_picker.min_time = hour_ago.time()
+        self.time_picker.max_time = hour_ago.time()
+        self.assertEqual(self.time_picker.min_time, hour_ago.strftime('%H:%M:%S.%f'))
+        self.assertEqual(self.time_picker.max_time, hour_ago.strftime('%H:%M:%S.%f'))
 
     def test_on_change_callback_set(self):
         def dummy_function():
