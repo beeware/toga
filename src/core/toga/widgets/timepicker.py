@@ -13,6 +13,10 @@ class TimePicker(Widget):
             a new one will be created for the widget.
         factory (:obj:`module`): A python module that is capable to return a
             implementation of this class with the same name. (optional & normally not needed)
+        initial (str): The initial value to set the widget to. (Defaults to time of program execution)
+        min_time (str): The minimum allowable time for the widget.
+        max_time (str): The maximum allowable time for the widget.
+        on_change (``callable``): Function that is invoked on time value change.
     """
     MIN_WIDTH = 100
 
@@ -28,16 +32,16 @@ class TimePicker(Widget):
     @property
     def value(self):
         """
-        The value of the currently selected date.
+        The value of the currently selected time.
 
-        :return: Selected date as Date object
+        :return: Selected time as time object
         """
         return self._impl.get_value()
 
     @value.setter
     def value(self, value):
         if value is None:
-            v = str(datetime.datetime.today())
+            v = str(datetime.datetime.today().time())
         else:
             v = str(value)
         self._impl.set_value(v)
@@ -45,9 +49,10 @@ class TimePicker(Widget):
     @property
     def min_time(self):
         """
-        The minimum allowable date for the widget. All dates prior to the minimum date will be blanked out.
+        The minimum allowable time for the widget. The widget will not allow the user to enter at time less than the
+        min time. If initial time set is less than the minimum time, the minimum time will be used as the initial value.
 
-        :return: The minimum date specified. Returns None if min_date not specified
+        :return: The minimum time specified. Returns None if min_time not specified
         """
         return self._min_time
 
@@ -61,9 +66,11 @@ class TimePicker(Widget):
     @property
     def max_time(self):
         """
-        The maximum allowable date for the widget. All dates prior to the minimum date will be blanked out.
+        The maximum allowable time for the widget. The widget will not allow the user to enter at time greater than the
+        max time. If initial time set is greater than the maximum time, the maximum time will be used as
+        the initial value.
 
-        :return: The maximum date specified. Returns None if max_date not specified
+        :return: The maximum time specified. Returns None if max_time not specified
         """
         return self._max_time
 
