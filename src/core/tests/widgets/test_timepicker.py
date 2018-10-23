@@ -21,7 +21,7 @@ class TimePickerTests(TestCase):
 
     def test_set_value_with_None(self):
         self.time_picker.value = None
-        none_default = datetime.datetime.today().time()
+        none_default = datetime.datetime.today().time().replace(microsecond=0)
         self.assertValueSet(self.time_picker, 'value', none_default.strftime('%H:%M:%S'))
 
     def test_set_value_with_an_hour_ago(self):
