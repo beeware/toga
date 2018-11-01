@@ -61,15 +61,18 @@ _footer = """
     :width: 32
 """
 
-# Credit http://stackoverflow.com/questions/42195468/how-can-i-inspect-an-attribute-of-a-module-without-importing-it?noredirect=1#comment71553012_42195468
+# Credit http://stackoverflow.com/questions/42195468/
+#        how-can-i-inspect-an-attribute-of-a-module-without-importing-it?noredirect=1#comment71553012_42195468
+
+
 def get_declaration_from_source(text, name="__all__"):
     tree = ast.parse(text)
     for node in tree.body:
-        if isinstance(node, ast.Assign) and len(node.targets)==1:
+        if isinstance(node, ast.Assign) and len(node.targets) == 1:
             target = node.targets[0]
             if isinstance(target, ast.Name) and target.id == name:
                 return ast.literal_eval(node.value)
-    raise NameError("name %r was not found"%(name,))
+    raise NameError("name %r was not found" % (name, ))
 
 
 _maps = dict.fromkeys(COMPONENT_LIST)
