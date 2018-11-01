@@ -11,8 +11,7 @@ import pytablewriter
 """
 A dictionary of components, index is the module name and value is the class name
 """
-COMPONENT_LIST =  [
-    # Constants, high-level classes, etc.
+COMPONENT_LIST = [
     ('EXPANDING_SPACER', None),
     ('SEPARATOR', None),
     ('SPACER', None),
@@ -23,7 +22,6 @@ COMPONENT_LIST =  [
     ('Font', 'toga.interface.font.Font'),
     ('MainWindow', 'toga.interface.app.MainWindow'),
     ('Window', 'toga.interface.window.Window'),
-    # Widgets
     ('Box', 'toga.interface.widgets.box.Box'),
     ('Button', 'toga.interface.widgets.button.Button'),
     ('Canvas', 'toga.interface.widgets.canvas.Canvas'),
@@ -31,16 +29,16 @@ COMPONENT_LIST =  [
     ('ImageView', 'toga.interface.widgets.imageview.ImageView'),
     ('Label', 'toga.interface.widgets.label.Label'),
     ('MultilineTextInput', 'toga.interface.widgets.multilinetextinput.MultilineTextInput'),
-    ('NumberInput','toga.interface.widgets.numberinput.NumberInput'),
-    ('OptionContainer','toga.interface.widgets.optioncontainer.OptionContainer'),
-    ('PasswordInput','toga.interface.widgets.passwordinput.PasswordInput'),
-    ('ProgressBar','toga.interface.widgets.progressbar.ProgressBar'),
-    ('ScrollContainer','toga.interface.widgets.scrollcontainer.ScrollContainer'),
-    ('Selection','toga.interface.widgets.selection.Selection'),
-    ('SplitContainer','toga.interface.widgets.splitcontainer.SplitContainer'),
-    ('Table','toga.interface.widgets.table.Table'),
-    ('TextInput','toga.interface.widgets.textinput.TextInput'),
-    ('Tree','toga.interface.widgets.tree.Tree'),
+    ('NumberInput', 'toga.interface.widgets.numberinput.NumberInput'),
+    ('OptionContainer', 'toga.interface.widgets.optioncontainer.OptionContainer'),
+    ('PasswordInput', 'toga.interface.widgets.passwordinput.PasswordInput'),
+    ('ProgressBar', 'toga.interface.widgets.progressbar.ProgressBar'),
+    ('ScrollContainer', 'toga.interface.widgets.scrollcontainer.ScrollContainer'),
+    ('Selection', 'toga.interface.widgets.selection.Selection'),
+    ('SplitContainer', 'toga.interface.widgets.splitcontainer.SplitContainer'),
+    ('Table', 'toga.interface.widgets.table.Table'),
+    ('TextInput', 'toga.interface.widgets.textinput.TextInput'),
+    ('Tree', 'toga.interface.widgets.tree.Tree'),
     ('WebView', 'toga.interface.widgets.webview.WebView')]
 
 """
@@ -72,6 +70,7 @@ def get_declaration_from_source(text, name="__all__"):
             if isinstance(target, ast.Name) and target.id == name:
                 return ast.literal_eval(node.value)
     raise NameError("name %r was not found"%(name,))
+
 
 _maps = dict.fromkeys(COMPONENT_LIST)
 
