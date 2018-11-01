@@ -1,6 +1,6 @@
 """
  This script builds a table to show the supported platforms for Toga and the components that are supported
- 
+
  Requires: pytablewriter from PyPi
 """
 import ast
@@ -12,21 +12,23 @@ import pytablewriter
 A dictionary of components, index is the module name and value is the class name
 """
 COMPONENT_LIST =  [
-    ('App', 'toga.interface.app.App'),
-    ('MainWindow', 'toga.interface.app.MainWindow'),
-    ('Window', 'toga.interface.window.Window'),
-    ('Command', None),
+    # Constants, high-level classes, etc.
+    ('EXPANDING_SPACER', None),
     ('SEPARATOR', None),
     ('SPACER', None),
-    ('EXPANDING_SPACER', None),
+    ('TIBERIUS_ICON', None),
+    ('Command', None),
+    ('Image', None),
+    ('App', 'toga.interface.app.App'),
+    ('Font', 'toga.interface.font.Font'),
+    ('MainWindow', 'toga.interface.app.MainWindow'),
+    ('Window', 'toga.interface.window.Window'),
+    # Widgets
     ('Box', 'toga.interface.widgets.box.Box'),
     ('Button', 'toga.interface.widgets.button.Button'),
     ('Canvas', 'toga.interface.widgets.canvas.Canvas'),
     ('Icon', 'toga.interface.widgets.icon.Icon'),
-    ('TIBERIUS_ICON', None),
-    ('Image', None),
     ('ImageView', 'toga.interface.widgets.imageview.ImageView'),
-    ('Font', 'toga.interface.font.Font'),
     ('Label', 'toga.interface.widgets.label.Label'),
     ('MultilineTextInput', 'toga.interface.widgets.multilinetextinput.MultilineTextInput'),
     ('NumberInput','toga.interface.widgets.numberinput.NumberInput'),
@@ -74,7 +76,11 @@ def get_declaration_from_source(text, name="__all__"):
 _maps = dict.fromkeys(COMPONENT_LIST)
 
 for module, label in PLATFORM_LIST.items():
-    path = os.path.join('../src', module, 'toga_'+module, '__init__.py')
+    factory_path = os.path.join('../src', module, 'toga_'+module, 'factory.py')
+    if os.path.exists(factory_path):
+        path = factory_path
+    else:
+        path = os.path.join('../src', module, 'toga_'+module, '__init__.py')
     with open(path, 'r') as f:
         names = get_declaration_from_source(f.read())
         for key in _maps.keys():
@@ -97,12 +103,12 @@ with open('../docs/supported_platforms.rst', 'w+') as doc:
         label = ':mod:`{0}`'.format(c[1]) if c[1] is not None else c[0]
         i = list([label])
         for platform in _platforms:
-            if platform in v:
+            if v and platform in v:
                 i.append('|yes|')
             else:
                 i.append('|no|')
         writer.value_matrix.append(i)
-    
+
     writer.write_table()
     doc.write(_footer)
 
@@ -115,13 +121,13 @@ for component, value in _maps.items():
         writer.value_matrix = []
         i = list([component[0]])
         for platform in _platforms:
-            if platform in value:
+            if value and platform in value:
                 i.append('|yes|')
             else:
                 i.append('|no|')
         writer.value_matrix.append(i)
         writer.write_table()
-        
+
         doc.write(_footer)
 
 print("Done.")
