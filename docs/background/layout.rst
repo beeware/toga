@@ -14,6 +14,6 @@ Widgets are constructed in a tree structure. The widget at the root of the tree 
 
 When a widget is added to a window, a *Viewport* is created. This viewport connects the widget to the available space provided by the window.
 
-When a window needs to perform a layout, the layout engine asks the style object for the container to lay out its contents with the space that the viewport has available. This will perform whatever calculations are required, and apply any position information to the widgets in the widget tree.
+When a window needs to perform a layout, the layout engine asks the style object for the container to lay out its contents with the space that the viewport has available. This will perform whatever calculations are required and apply any position information to the widgets in the widget tree.
 
 Every window has a container and viewport, representing the total viewable area of the window. However, some widgets (called Container widgets) establish sub-containers. When a refresh is requested on a container, any sub-containers will also be refreshed.
