@@ -41,7 +41,7 @@ named after the widget toolkit that the implementation layer is wrapping --
 toolkit); ``toga-gtk`` for Linux (using the GTK+ toolkit); and so on.
 
 The API exposed by the implementation layer is different to that exposed by
-the interface layer, and is *not* intended for end-user consumption. It is a
+the interface layer and is *not* intended for end-user consumption. It is a
 utility API, servicing the requirements of the interface layer.
 
 Every widget in the implementation layer corresponds to exactly one widget in the
