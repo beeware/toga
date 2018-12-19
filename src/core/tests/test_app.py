@@ -64,10 +64,10 @@ class AppTests(TestCase):
         self.app.exit()
 
         self.assertActionPerformed(self.app, 'exit')
-    
+
     def test_app_is_full_screen(self):
         self.app.set_full_screen(self.app.main_window)
-        self.assertEqual(self.app.is_full_screen, True)    
+        self.assertEqual(self.app.is_full_screen, True)
 
 
 class DocumentAppTests(TestCase):
