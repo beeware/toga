@@ -4,7 +4,7 @@
 How to contribute to Toga
 =========================
 
-If you experience problems with Toga, `log them on GitHub`_. If you want to contribute code, please `fork the code`_ and `submit a pull request`_.
+If you experience problems with Toga, `log them on GitHub`_. If you want to contribute code, please `for the code`_ and `submit a pull request`_.
 
 .. _log them on Github: https://github.com/pybee/toga/issues
 .. _fork the code: https://github.com/pybee/toga
@@ -236,8 +236,8 @@ going to use a tool called `coverage
 check which lines of code have (and haven't) been executed - which then gives
 you an idea of what code has (and hasn't) been tested.
 
-Install coverage, and then re-run the test suite -- this time, in a slightly
-different way so that we can gather some data about the test run. Then we can
+Install coverage, and then re-run the test suite -- this time, in slightly
+a different way so that we can gather some data about the test run. Then we can
 ask coverage to generate a report of the data that was gathered:
 
 .. tabs::
@@ -386,7 +386,7 @@ How does this all work?
 Since you're writing tests for a GUI toolkit, you might be wondering why you
 haven't seen a GUI yet. The Toga Core package contains the API definitions for
 the Toga widget kit. This is completely platform agnostic - it just provides
-an interface, and defers actually drawing anything on the screen to the
+an interface and defers actually drawing anything on the screen to the
 platform backends.
 
 When you run the test suite, the test runner uses a "dummy" backend - a
@@ -397,19 +397,19 @@ doesn’t actually display a button).
 In this way, it's possible to for the Toga Core tests to exercise every API
 entry point in the Toga Core package, verify that data is stored correctly on
 the interface layer, and sent through to the right endpoints in the Dummy
-backend. If the *dummy* backend is invoked correcty, then any other backend
+backend. If the *dummy* backend is invoked correctly, then any other backend
 will be handled correctly, too.
 
 One error you might see...
 --------------------------
 
-When you're running these tests - especially when you submit your PR, and the
-tests run on our continous integration (CI) server - it's possible you might get
+When you're running these tests - especially when you submit your PR and the
+tests run on our continuous integration (CI) server - it's possible you might get
 and error that reads::
 
     ModuleNotFoundError: No module named 'toga_gtk'.
 
-If this happens, you've found an bug in the way the widget you're testing
+If this happens, you've found a bug in the way the widget you're testing
 has been constructed.
 
 The Core API is designed to be platform independent. When a widget is created,
@@ -421,7 +421,7 @@ a Linux box, it will use the GTK factory.
 
 However, when writing tests, we want to use the "dummy" factory. The Dummy
 factory isn't the "native" platform anywhere - it's just a placeholder. As a
-result, the  dummy factory won't be used unless you specifically request it -
+result, the dummy factory won't be used unless you specifically request it -
 which means every widget has to honor that request.
 
 Most Toga widgets create their platform-specific implementation when they are
@@ -453,11 +453,10 @@ code as you go. You could write a comprehensive set of tests for a concrete
 life jacket... but a concrete life jacket would still be useless for the
 purpose it was intended!
 
-As you develop tests and improve coverage, you should be checking that the
-core module is internally **consistent** as well. If you notice any method
+As you develop tests and improve coverage, you should be checking that the core module is internal **consistent** as well. If you notice any method
 names that aren’t internally consistent (e.g., something called ``on_select``
 in one module, but called ``on_selected`` in another), or where the data isn’t
-being handled consistently (one widget updates then refreshes, but another
+being handled consistently (one widget updates then refresh, but another
 widget refreshes then updates), flag it and bring it to our attention by
 raising a ticket. Or, if you're confident that you know what needs to be done,
 create a pull request that fixes the problem you've found.
@@ -499,21 +498,11 @@ might want to look into a more advanced problem. Here are some suggestions:
   than an existing widget should have? Propose a new API for that widget, and
   provide a sample implementation.
 
-* **Improve platform specific testing** The tests that have been described in
-  this document are all platform independent. They use the dummy backend to
-  validate that data is being passed around correctly, but they don't validate
-  that on a given platform, widgets behave they way they should. If I put a
-  button on a Toga app, is that button displayed? Is it in the right place? Does
-  it respond to mouse clicks? Ideally, we'd have automated tests to validate
-  these properties. However, automated tests of GUI operations can be difficult
-  to set up. If you've got experience with automated GUI testing, we'd love to
-  hear your suggestions.
+* **Improve platform-specific testing** The tests that have been described in
+  this document is all platform independent. They use the dummy backend to validate that data is being passed around correctly, but they don't validate that on a given platform, widgets behave they way they should. If I put a
+  button on a Toga app, is that button displayed? Is it in the right place? Does it respond to mouse clicks? Ideally, we'd have automated tests to validate these properties. However, automated tests of GUI operations can be difficult to set up. If you've got experience with automated GUI testing, we'd love to hear your suggestions.
 
 * **Improve the testing API for application writers** The dummy backend exists
-  to validate that Toga's internal API works as expected. However, we would like
-  it to be a useful resource for *application* authors as well. Testing GUI
-  applications is a difficult task; a Dummy backend would potentially allow an
-  end user to write an application, and validate behavior by testing the
-  properties of the Dummy. Think of it as a GUI mock - but one that is baked into
-  Toga as a framework. See if you can write a GUI app of your own, and write
-  a test suite that uses the Dummy backend to validate the behavior of that app.
+  to validate that Toga's internal API works as expected. However, we would like it to be a useful resource for *application* authors as well. Testing GUI
+  applications is a difficult task; a Dummy backend would potentially allow an end user to write an application, and validate behavior by testing the properties of the Dummy. Think of it as a GUI mock - but one that is baked into
+  Toga as a framework. See if you can write a GUI app of your own, and write a test suite that uses the Dummy backend to validate the behavior of that app.
