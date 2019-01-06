@@ -43,8 +43,8 @@ classify and organize the commands in your application:
 * An **order** - (optional) an integer indicating where a command falls within a section. If a ``Command`` doesn't have an order, it will be sorted alphabetically by label within its section.
 
 Commands may not use all the metadata - for example, on some platforms, menus
-will contain icons; on other platforms they won't. Toga will use the metadata
-if it is provided, but ignore it (or substitute an appropriate default) if it
+will contain icons; on other platforms, they won't. Toga will use the metadata
+if it is provided but ignore it (or substitute an appropriate default) if it
 isn't.
 
 Commands can be enabled and disabled; if you disable a command, it will
@@ -55,7 +55,7 @@ Groups
 
 Toga provides a number of ready-to-use groups:
 
-* ``Group.APP`` - Application level control
+* ``Group.APP`` - Application-level control
 * ``Group.FILE`` - File commands
 * ``Group.EDIT`` - Editing commands
 * ``Group.VIEW`` - Commands to alter the appearance of content
