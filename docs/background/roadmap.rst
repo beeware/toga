@@ -9,7 +9,7 @@ Widgets
 
 The core of Toga is its widget set. Modern GUI apps have lots of native
 controls that need to be represented. The following widgets have no
-representation at present, and need to be added.
+representation at present and need to be added.
 
 There's also the task of porting widgets available on one platform to
 another platform.
@@ -148,7 +148,7 @@ Containers are widgets that can contain other widgets.
     A container view that holds a small number of subviews,
     only one of which is visible at any given time.
     Each "section" has a name and icon.
-    Examples of use: top level navigation in Safari's preferences panel.
+    Examples of use: top-level navigation in Safari's preferences panel.
 
     - Cocoa: NSTabView
     - GTK+: ?
@@ -166,8 +166,7 @@ Containers are widgets that can contain other widgets.
 
 * NavigationContainer - A container view that holds a navigable tree of subviews
 
-    Essentially a view that has a "back" button to return to the previous view
-    in a hierarchy. Example of use: Top level navigation in the OS X System
+    Essentially a view that has a "back" button to return to the previous view in a hierarchy. Example of use: Top level navigation in the OS X System
     Preferences panel.
 
     - Cocoa: No native control
@@ -202,15 +201,13 @@ features.
 
     GUI toolkits have a common pattern of needing to
     periodically update a GUI based on some long running background task.
-    They usually accomplish this with some sort of timer-based API to ensure
-    that the main event loop keeps running. Python has a "yield" keyword that
-    can be repurposed for this.
+    They usually accomplish this with some sort of timer-based API to ensure that the main event loop keeps running. Python has a "yield" keyword that can be repurposed for this.
 
 * Toolbar -
 
     Support for adding a toolbar to an app definition.
     Interpretation in mobile will be difficult;
-    maybe some sort of top level action menu available via a slideout tray
+    maybe some sort of top-level action menu available via a slideout tray
     (e.g., GMail account selection tray)
 
 * Preferences -
@@ -218,7 +215,7 @@ features.
     Support for saving app preferences, and visualizing them in a
     platform native way.
 
-* Easy handling of long running tasks -
+* Easy handling of long-running tasks -
 
     Possibly using generators to yield control back to the event loop.
 
