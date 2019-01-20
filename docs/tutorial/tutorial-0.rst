@@ -124,7 +124,9 @@ on all sides. If we wanted to define padding of 20 pixels on top of the
 button, we could have defined ``padding_top = 20``, or we could have specified
 the ``padding = (20, 50, 50, 50)``.
 
-        button.style.flex = 1
+Now we will make the button take up all the available width::
+
+       button.style.flex = 1
 
 `flex` property specifies how an element is sized with respect to other
 elements along its direction. The default direction is row (horizontal) and
