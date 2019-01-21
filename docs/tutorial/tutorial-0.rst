@@ -128,11 +128,11 @@ Now we will make the button take up all the available width::
 
        button.style.flex = 1
 
-`flex` property specifies how an element is sized with respect to other
+``flex`` attribute specifies how an element is sized with respect to other
 elements along its direction. The default direction is row (horizontal) and
 since the button is the only element here, it will take up the whole width.
-Check out https://toga.readthedocs.io/en/latest/reference/style/pack.html#flex
-for more information on how to use the `flex` property.
+Check out `style docs <https://toga.readthedocs.io/en/latest/reference/style/pack.html#flex>`_
+for more information on how to use the ``flex`` attribute.
 
 The next step is to add the button to the box::
 
