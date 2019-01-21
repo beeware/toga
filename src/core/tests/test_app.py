@@ -60,6 +60,18 @@ class AppTests(TestCase):
         self.assertEqual(self.app.main_window.app, self.app)
         self.assertActionPerformed(self.app.main_window, 'show')
 
+    def test_is_full_screen(self):
+        self.assertFalse(self.app.is_full_screen)
+
+        self.app.set_full_screen(self.app.main_window)
+        self.assertTrue(self.app.is_full_screen)
+
+        self.app.set_full_screen(["window1", "window2", "window3"])
+        self.assertTrue(self.app.is_full_screen)
+
+        self.app.set_full_screen()
+        self.assertFalse(self.app.is_full_screen)
+        
     def test_app_exit(self):
         self.app.exit()
 
