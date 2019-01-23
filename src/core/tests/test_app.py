@@ -71,7 +71,7 @@ class AppTests(TestCase):
         
         self.app.set_full_screen()
         self.assertFalse(self.app.is_full_screen)
-       
+        
     def test_app_exit(self):
         self.app.exit()
 
