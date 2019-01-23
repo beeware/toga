@@ -62,13 +62,13 @@ class AppTests(TestCase):
 
     def test_is_full_screen(self):
         self.assertFalse(self.app.is_full_screen)
-
+        
         self.app.set_full_screen(self.app.main_window)
         self.assertTrue(self.app.is_full_screen)
-
+        
         self.app.set_full_screen(["window1", "window2", "window3"])
         self.assertTrue(self.app.is_full_screen)
-
+        
         self.app.set_full_screen()
         self.assertFalse(self.app.is_full_screen)
 
