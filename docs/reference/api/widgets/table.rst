@@ -26,10 +26,10 @@ Usage
     table = toga.Table(['Heading 1', 'Heading 2'])
 
     # Append to end of table
-    table.insert(None, 'Value 1', 'Value 2')
+    table.data.append('Value 1', 'Value 2')
 
     # Insert to row 2
-    table.insert(2, 'Value 1', 'Value 2')
+    table.data.insert(2, 'Value 1', 'Value 2')
 
 Reference
 ---------
