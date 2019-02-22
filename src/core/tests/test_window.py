@@ -66,8 +66,9 @@ class TestWindow(TestCase):
             self.window._impl.on_close.assert_called_once_with()
 
     def test_info_dialog(self):
-        title  ='checking_info_dialog'
-        message = 'completed'
-        with patch.object(self.window ,'_impl'):
-            self.window.info_dialog(title ,message)
-            self.window._impl.info_dialog.assert_called_once_with(title ,message)
+        # title and message for testing
+        title = 'checking_info_dialog' 
+        message = 'completed' 
+        with patch.object(self.window, '_impl'):
+            self.window.info_dialog(title, message)
+            self.window._impl.info_dialog.assert_called_once_with(title, message)
