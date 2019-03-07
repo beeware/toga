@@ -1,11 +1,25 @@
 ##########################################################################
 # System/Library/Frameworks/CoreGraphics.framework
 ##########################################################################
-from ctypes import *
-from ctypes import util
+from ctypes import (
+    cdll,
+    c_int,
+    c_int32,
+    c_size_t,
+    c_void_p,
+    c_wchar_p,
+    POINTER,
+    Structure,
+    util
+)
 
 from rubicon.objc.types import register_preferred_encoding
-from rubicon.objc import *
+from rubicon.objc import (
+    CGFloat,
+    CGPoint,
+    CGRect,
+    CGSize
+)
 
 
 ######################################################################
