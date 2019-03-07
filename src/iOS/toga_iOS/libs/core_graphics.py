@@ -149,6 +149,8 @@ kCGBitmapByteOrder32Big = 4 << 12
 
 ######################################################################
 # CGGeometry.h
+
+
 class CGRectMake(Structure):
     _fields_ = [
         ("origin", CGPoint),

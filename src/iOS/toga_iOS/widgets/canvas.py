@@ -33,6 +33,7 @@ class TogaCanvas(UIView):
         if self.interface.redraw:
             self.interface._draw(self._impl, draw_context=context)
 
+
 class Canvas(Widget):
     def create(self):
         self.native = TogaCanvas.alloc().init()
