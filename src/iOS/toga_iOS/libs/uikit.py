@@ -7,12 +7,23 @@ from enum import Enum
 from rubicon.objc import objc_const, CGFloat, ObjCClass
 from toga.constants import LEFT, RIGHT, CENTER, JUSTIFY
 
+from .core_graphics import CGContextRef
+
 ######################################################################
 uikit = cdll.LoadLibrary(util.find_library('UIKit'))
 ######################################################################
 
 uikit.UIApplicationMain.restype = c_int
 uikit.UIApplicationMain.argtypes = [c_int, POINTER(c_char_p), c_void_p, c_void_p]
+
+######################################################################
+# NSAttributedString.h
+NSAttributedString = ObjCClass('NSAttributedString')
+
+NSFontAttributeName = objc_const(uikit, 'NSFontAttributeName')
+NSForegroundColorAttributeName = objc_const(uikit, 'NSForegroundColorAttributeName')
+NSStrokeColorAttributeName = objc_const(uikit, 'NSStrokeColorAttributeName')
+NSStrokeWidthAttributeName = objc_const(uikit, 'NSStrokeWidthAttributeName')
 
 ######################################################################
 # NSLayoutConstraint.h
@@ -222,6 +233,10 @@ UIControlStateReserved = 0xFF000000
 ######################################################################
 # UIFont.h
 UIFont = ObjCClass('UIFont')
+
+######################################################################
+# UIGraphics.h
+uikit.UIGraphicsGetCurrentContext.restype = CGContextRef
 
 ######################################################################
 # UIImage.h

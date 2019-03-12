@@ -7,7 +7,7 @@ from .images import Image
 
 from .widgets.box import Box
 from .widgets.button import Button
-# from .widgets.canvas import Canvas
+from .widgets.canvas import Canvas
 from .widgets.detailedlist import DetailedList
 from .widgets.imageview import ImageView
 from .widgets.label import Label
@@ -47,7 +47,7 @@ __all__ = [
     # Widgets
     'Box',
     'Button',
-    # 'Canvas',
+    'Canvas',
     'DetailedList',
     'ImageView',
     'Label',
