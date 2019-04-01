@@ -1,6 +1,6 @@
-.. image:: http://pybee.org/project/projects/libraries/toga/toga.png
+.. image:: https://beeware.org/project/projects/libraries/toga/toga.png
     :width: 72px
-    :target: https://pybee.org/toga
+    :target: https://beeware.org/toga
 
 Toga
 ====
