@@ -99,7 +99,7 @@ contributors`_ will help you get started.
 If you experience problems with Toga, `log them on GitHub`_. If you want to
 contribute code, please `fork the code`_ and `submit a pull request`_.
 
-.. _BeeWare suite: http://pybee.org
+.. _BeeWare suite: https://beeware.org/
 .. _Read The Docs: https://toga.readthedocs.io
 .. _@pybeeware on Twitter: https://twitter.com/pybeeware
 .. _pybee/general: https://gitter.im/pybee/general
