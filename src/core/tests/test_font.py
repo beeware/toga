@@ -1,5 +1,5 @@
 import toga
-from toga.font import Font, SANS_SERIF, ITALIC, SMALL_CAPS, BOLD
+from toga.fonts import SANS_SERIF, ITALIC, SMALL_CAPS, BOLD
 
 import toga_dummy
 from toga_dummy.utils import TestCase

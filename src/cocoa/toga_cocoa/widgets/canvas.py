@@ -1,3 +1,5 @@
+from rubicon.objc import CGFloat
+
 from toga_cocoa.libs import (
     core_graphics,
     CGPathDrawingMode,
@@ -17,9 +19,9 @@ from toga_cocoa.libs import (
     NSView,
     objc_method,
 )
-from rubicon.objc import CGFloat
+from toga_cocoa.colors import native_color
+
 from .base import Widget
-from ..color import native_color
 
 
 class TogaCanvas(NSView):

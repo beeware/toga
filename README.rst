@@ -1,6 +1,6 @@
-.. image:: http://pybee.org/project/projects/libraries/toga/toga.png
+.. image:: https://beeware.org/project/projects/libraries/toga/toga.png
     :width: 72px
-    :target: https://pybee.org/toga
+    :target: https://beeware.org/toga
 
 Toga
 ====
@@ -17,8 +17,8 @@ Toga
 .. image:: https://img.shields.io/pypi/l/toga.svg
     :target: https://github.com/pybee/toga/blob/master/LICENSE
 
-.. image:: https://beekeeper.herokuapp.com/projects/pybee/batavia/shield
-    :target: https://beekeeper.herokuapp.com/projects/pybee/batavia
+.. image:: https://beekeeper.beeware.org/projects/beeware/batavia/shield
+    :target: https://beekeeper.beeware.org/projects/beeware/batavia
 
 .. image:: https://badges.gitter.im/pybee/general.svg
     :target: https://gitter.im/pybee/general

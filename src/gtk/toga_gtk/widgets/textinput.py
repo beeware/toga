@@ -8,8 +8,12 @@ class TextInput(Widget):
     def create(self):
         self.native = Gtk.Entry()
         self.native.interface = self.interface
-
         self.native.connect('show', lambda event: self.rehint())
+        self.native.connect('changed', self._on_change)
+
+    def _on_change(self, entry):
+        if self.interface.on_change:
+            self.interface.on_change(self.interface)
 
     def set_readonly(self, value):
         self.native.set_property('editable', not value)

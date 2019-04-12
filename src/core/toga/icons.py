@@ -35,7 +35,7 @@ class Icon:
     @property
     def filename(self):
         if self.system:
-            toga_dir = os.path.dirname(os.path.dirname(__file__))
+            toga_dir = os.path.dirname(__file__)
             return os.path.join(toga_dir, 'resources', self.path)
         else:
             from toga.app import App

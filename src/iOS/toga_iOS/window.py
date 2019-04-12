@@ -1,6 +1,4 @@
-from travertino.layout import Viewport
-
-from .libs import *
+from .libs import UIApplication, UIScreen, UIViewController, UIWindow
 
 
 class iOSViewport:
@@ -12,11 +10,10 @@ class iOSViewport:
 
     @property
     def statusbar_height(self):
-        if UIApplication.sharedApplication.statusBarOrientation == UIInterfaceOrientation.Portrait.value:
-            # This is the height of the status bar.
-            return 16
-        else:
-            return 0
+        # This is the height of the status bar frame.
+        # If the status bar isn't visible (e.g., on iPhones in landscape orientation)
+        # the size will be 0.
+        return UIApplication.sharedApplication.statusBarFrame.size.height
 
     @property
     def width(self):

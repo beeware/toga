@@ -1,6 +1,6 @@
 from travertino.size import at_least
 from toga_winforms.libs import WinForms
-from toga_winforms import color
+from toga_winforms.colors import native_color
 from .base import Widget
 
 
@@ -33,7 +33,7 @@ class Button(Widget):
 
     def set_background_color(self, value):
         if value is not None:
-            new_color = color.native_color(value)
+            new_color = native_color(value)
             self.native.BackColor = new_color
 
     def rehint(self):

@@ -38,10 +38,18 @@ start coding. To set up a virtual environment, run:
 
     .. code-block:: doscon
 
-      C:\...>python3 -m venv venv
-      C:\...>venv/Scripts/activate
+      C:\...>py -m venv venv
+      C:\...>venv\Scripts\activate.bat
 
-Your prompt should now have a ``(venv)`` prefix in front of it. 
+Your prompt should now have a ``(venv)`` prefix in front of it.
+
+If you are using Python 3.7 on Windows, you might get an error in the next step. Before proceeding, download unofficial pythonnet wheel file from `<https://www.lfd.uci.edu/~gohlke/pythonlibs/#pythonnet>` to your current directory, rename it to ``pythonnet.whl`` and run:
+
+  .. group-tab:: Windows
+    
+    .. code-block:: doscon
+    
+      C:\..> pip install pythonnet.whl
 
 Next, install Toga into your virtual environment:
 
@@ -124,13 +132,21 @@ on all sides. If we wanted to define padding of 20 pixels on top of the
 button, we could have defined ``padding_top = 20``, or we could have specified
 the ``padding = (20, 50, 50, 50)``.
 
+Now we will make the button take up all the available width::
+
+       button.style.flex = 1
+
+``flex`` attribute specifies how an element is sized with respect to other
+elements along its direction. The default direction is row (horizontal) and
+since the button is the only element here, it will take up the whole width.
+Check out `style docs <https://toga.readthedocs.io/en/latest/reference/style/pack.html#flex>`_
+for more information on how to use the ``flex`` attribute.
+
 The next step is to add the button to the box::
 
         box.add(button)
 
-The button will, by default, stretch to the size of the box it is placed in.
-The outer box will also stretch to the size of box it is placed in - which, in
-our case, is the window itself. The button has a default height, defined by
+The button has a default height, defined by
 the way that the underlying platform draws buttons). As a result, this means
 we'll see a single button in the app window that stretches to the width of the
 screen, but has a 50 pixel space surrounding it.
@@ -197,7 +213,7 @@ app will have a default Toga icon (a picture of Tiberius the yak).
 Troubleshooting issues
 ----------------------
 
-Occasionally you might run into issues running Toga on your computer. 
+Occasionally you might run into issues running Toga on your computer.
 
 Before you run the app, you'll need to install toga. Although you *can* install
 toga by just running::
