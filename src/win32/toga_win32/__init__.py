@@ -9,10 +9,10 @@ from .widgets.button import Button
 # from .widgets.image import *
 # from .widgets.imageview import *
 from .widgets.label import Label
-from .widgets.multilinetextinput import *
+from .widgets.multilinetextinput import MultilineTextInput
 from .widgets.numberinput import NumberInput
 # from .widgets.optioncontainer import *
-from .widgets.passwordinput import *
+from .widgets.passwordinput import PasswordInput
 # from .widgets.progressbar import *
 # from .widgets.scrollcontainer import *
 # from .widgets.selection import Selection
@@ -25,7 +25,7 @@ from .widgets.textinput import TextInput
 # from .widgets.webview import *
 from .window import Window
 
-__all__ = [
+__all__ = (
     'App', 'MainWindow',
     # 'Command',
     # 'Font',
@@ -52,7 +52,7 @@ __all__ = [
     # 'Tree',
     # 'WebView',
     'Window',
-]
+)
 
 # Examples of valid version strings
 # __version__ = '1.2.3.dev1'  # Development release 1
@@ -62,4 +62,4 @@ __all__ = [
 # __version__ = '1.2.3'       # Final Release
 # __version__ = '1.2.3.post1' # Post Release 1
 
-__version__ = '0.2.3.dev1'
+__version__ = '0.3.0.dev12'
