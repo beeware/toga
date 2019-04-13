@@ -2,6 +2,7 @@ class Win32Container(object):
     def add(self, widget):
         pass
 
+
 class Container:
     def _create_container(self):
         # No impl is requried for a container, but we need a placeholder
