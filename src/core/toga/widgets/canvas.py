@@ -464,6 +464,7 @@ class Stroke(Context):
         else:
             self._color = parse_color(value)
 
+
 class ClosedPath(Context):
     """A user-created :class:`ClosedPath <ClosedPath>` drawing object for a
     closed path context.
