@@ -1,12 +1,8 @@
-from toga_cassowary.widget import Container as CassowaryContainer
-
-
 class Win32Container(object):
     def add(self, widget):
         pass
 
-class Container(CassowaryContainer):
-
+class Container:
     def _create_container(self):
         # No impl is requried for a container, but we need a placeholder
         # to keep the cross-platform logic happy.

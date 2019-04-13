@@ -1,12 +1,10 @@
 from ctypes import c_wchar_p
 
-from toga_cassowary.widget import Widget as CassowaryWidget
-
 from ..libs import user32
 from ..libs.constants import WS_VISIBLE, WS_CHILD, WS_TABSTOP, HWND_TOP
 
 
-class Widget(CassowaryWidget):
+class Widget:
     window_class = None
     default_style = WS_VISIBLE | WS_CHILD | WS_TABSTOP
     control_style = 0
