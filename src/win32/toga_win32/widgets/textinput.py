@@ -1,16 +1,23 @@
 from ctypes import c_wchar_p
 
+from ..libs import (
+    EM_SETREADONLY,
+    ES_AUTOHSCROLL,
+    WS_CHILD,
+    WS_TABSTOP,
+    WS_VISIBLE,
+    user32,
+)
 from .base import Widget
-from ..libs import *
 
 
 class TextInput(Widget):
-    window_class = 'edit'
-    default_style = WS_VISIBLE | WS_CHILD | WS_TABSTOP| ES_AUTOHSCROLL
+    window_class = "edit"
+    default_style = WS_VISIBLE | WS_CHILD | WS_TABSTOP | ES_AUTOHSCROLL
 
     def __init__(self, initial=None, placeholder=None, readonly=False):
         super().__init__(text=initial)
-        self.placeholder = placeholder #not used on win32!
+        self.placeholder = placeholder  # not used on win32!
         self._readonly = readonly
 
     def startup(self):
