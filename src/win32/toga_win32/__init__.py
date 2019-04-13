@@ -1,8 +1,14 @@
+"""Toga win32 backend.
+
+Useful for importing important library functions for the win32 backend.
+"""
 from .app import App, MainWindow
+
 # from .command import Command
 # from .font import Font
-from .widgets.box import Box
+# from .widgets.box import Box
 from .widgets.button import Button
+
 # from .widgets.canvas import Canvas
 # from .widgets.detailedlist import DetailedList
 # from .widgets.icon import Icon
@@ -11,8 +17,10 @@ from .widgets.button import Button
 from .widgets.label import Label
 from .widgets.multilinetextinput import MultilineTextInput
 from .widgets.numberinput import NumberInput
+
 # from .widgets.optioncontainer import *
 from .widgets.passwordinput import PasswordInput
+
 # from .widgets.progressbar import *
 # from .widgets.scrollcontainer import *
 # from .widgets.selection import Selection
@@ -21,26 +29,28 @@ from .widgets.passwordinput import PasswordInput
 # from .widgets.switch import *
 # from .widgets.table import *
 from .widgets.textinput import TextInput
+
 # from .widgets.tree import *
 # from .widgets.webview import *
 from .window import Window
 
 __all__ = (
-    'App', 'MainWindow',
+    "App",
+    "MainWindow",
     # 'Command',
     # 'Font',
     # 'Box',
-    'Button',
+    "Button",
     # 'Canvas',
     # 'DetailedList',
     # 'Icon',
     # 'Image',
     # 'ImageView',
-    'Label',
-    'MultilineTextInput',
-    'NumberInput',
+    "Label",
+    "MultilineTextInput",
+    "NumberInput",
     # 'OptionContainer',
-    'PasswordInput',
+    "PasswordInput",
     # 'ProgressBar',
     # 'ScrollContainer',
     # 'Selection',
@@ -48,10 +58,10 @@ __all__ = (
     # 'SplitContainer',
     # 'Switch',
     # 'Table',
-    'TextInput',
+    "TextInput",
     # 'Tree',
     # 'WebView',
-    'Window',
+    "Window",
 )
 
 # Examples of valid version strings
@@ -62,4 +72,4 @@ __all__ = (
 # __version__ = '1.2.3'       # Final Release
 # __version__ = '1.2.3.post1' # Post Release 1
 
-__version__ = '0.3.0.dev12'
+__version__ = "0.3.0.dev12"
