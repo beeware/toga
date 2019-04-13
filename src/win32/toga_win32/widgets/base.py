@@ -3,7 +3,7 @@ from ctypes import c_wchar_p
 from toga_cassowary.widget import Widget as CassowaryWidget
 
 from ..libs import user32
-from ..libs.constants import *
+from ..libs.constants import WS_VISIBLE, WS_CHILD, WS_TABSTOP, HWND_TOP
 
 
 class Widget(CassowaryWidget):
@@ -11,10 +11,9 @@ class Widget(CassowaryWidget):
     default_style = WS_VISIBLE | WS_CHILD | WS_TABSTOP
     control_style = 0
 
-    def __init__(self, text=''):
+    def __init__(self, text=""):
         self.text = text
         super().__init__()
-
 
     @property
     def _width_hint(self):
@@ -24,7 +23,7 @@ class Widget(CassowaryWidget):
     def _height_hint(self):
         return (100, 100)
 
-    def create_win32_window(self, window_class=None, text="", style=0, identifier=None, ):
+    def create_win32_window(self, window_class=None, text="", style=0, identifier=None):
         window_class = window_class or self.window_class
         window_class = c_wchar_p(window_class)
         text = c_wchar_p(text)
@@ -32,9 +31,9 @@ class Widget(CassowaryWidget):
         style |= self.control_style
         x, y, width, height = self.geometry
         parent = self.window._impl
-        self._impl = user32.CreateWindowExW(0, window_class, text, style,
-            x, y, width, height,
-            parent, identifier, 0, 0)
+        self._impl = user32.CreateWindowExW(
+            0, window_class, text, style, x, y, width, height, parent, identifier, 0, 0
+        )
 
     def startup(self):
         identifier = self.window._allocate_id()
@@ -64,11 +63,10 @@ class Widget(CassowaryWidget):
 
     def _resize(self):
         x, y, width, height = self._geometry
-        print("RESIZE", self.text,x,y,width,height)
-        user32.SetWindowPos(self._impl, HWND_TOP,
-                  int(x), int(y), int(width), int(height),
-                  0)
-
+        print("RESIZE", self.text, x, y, width, height)
+        user32.SetWindowPos(
+            self._impl, HWND_TOP, int(x), int(y), int(width), int(height), 0
+        )
 
     def _on_wm_command(self, msg, wParam, lParam):
         "Called when a WM_COMMAND message is received referencing this widget."
