@@ -99,6 +99,12 @@ class Context:
         self.drawing_objects.remove(drawing_object)
         self.redraw()
 
+    def clear(self):
+        """Remove all drawing objects
+        """
+        self.drawing_objects.clear()
+        self.redraw()
+
     ###########################################################################
     # Contexts to draw with
     ###########################################################################
