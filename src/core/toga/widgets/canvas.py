@@ -99,7 +99,7 @@ class Context:
         self.drawing_objects.remove(drawing_object)
         self.redraw()
 
-    def clearAll(self):
+    def clear(self):
         """Remove all drawing objects
         """
         self.drawing_objects.clear()
@@ -188,20 +188,6 @@ class Context:
         closed_path = ClosedPath(x, y)
         closed_path.canvas = self.canvas
         yield self.add_draw_obj(closed_path)
-        self.redraw()
-
-    @contextmanager
-    def path(self):
-        """constructs and yields a
-        :class:`Path <Path>`.
-
-        Yields:
-            :class:`Path <Path>` object.
-
-        """
-        path = Path()
-        path.canvas = self.canvas
-        yield self.add_draw_obj(path)
         self.redraw()
 
     ###########################################################################
@@ -491,28 +477,6 @@ class Stroke(Context):
             self._color = None
         else:
             self._color = parse_color(value)
-
-
-class Path(Context):
-    """A user-created :class:`Path <Path>` drawing object for a
-    path context.
-
-    Creates a new path.
-    """
-
-    def __init__(self):
-        super().__init__()
-
-    def __repr__(self):
-        return "{}(x={}, y={})".format(self.__class__.__name__)
-
-    def _draw(self, impl, *args, **kwargs):
-        """Used by parent to draw all objects that are part of the context.
-
-        """
-        for obj in self.drawing_objects:
-            obj._draw(impl, *args, **kwargs)
-
 
 class ClosedPath(Context):
     """A user-created :class:`ClosedPath <ClosedPath>` drawing object for a
