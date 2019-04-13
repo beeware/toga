@@ -48,7 +48,6 @@ class Canvas(Widget):
         self.add_constraints()
 
     def redraw(self):
-        # pass
         self.native.needsDisplay = True
 
     # Basic paths

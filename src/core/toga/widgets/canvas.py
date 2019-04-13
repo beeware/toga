@@ -218,20 +218,6 @@ class Context:
         move_to = MoveTo(x, y)
         return self.add_draw_obj(move_to)
 
-    def close_to(self, x, y):
-        """Constructs and returns a :class:`CloseTo <CloseTo>`.
-
-        Args:
-            x (float): The x axis of the point.
-            y (float): The y axis of the point.
-
-        Returns:
-            :class:`CloseTo <CloseTo>` object.
-
-        """
-        close_to = CloseTo(x, y)
-        return self.add_draw_obj(close_to)
-
     def line_to(self, x, y):
         """Constructs and returns a :class:`LineTo <LineTo>`.
 
@@ -608,32 +594,6 @@ class MoveTo:
 
         """
         impl.move_to(self.x, self.y, *args, **kwargs)
-
-
-class CloseTo:
-    """A user-created :class:`CloseTo <CloseTo>` drawing object which closes
-     the polyline vack to the starting point
-
-    Closes the path to the first point in the polyline.
-
-    Args:
-        x (float): The x axis of the point.
-        y (float): The y axis of the point.
-
-    """
-
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-
-    def __repr__(self):
-        return "{}(x={}, y={})".format(self.__class__.__name__, self.x, self.y)
-
-    def _draw(self, impl, *args, **kwargs):
-        """Draw the drawing object using the implementation.
-
-        """
-        impl.closed_path(self.x, self.y, *args, **kwargs)
 
 
 class LineTo:
