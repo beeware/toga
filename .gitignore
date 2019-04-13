@@ -1,19 +1,11 @@
 *.pyc
 *~
 .*.sw[op]
-*.egg-info
-.eggs
 .coverage
-dist
-build
 _build
 distribute-*
 docs/env
 local
-venv
-.idea
-.tox
-node_modules
 README.md
 src/django/toga.js
 src/django/toga.min.js
@@ -25,7 +17,6 @@ src/gtk/cairo
 .DS_Store
 pip-selfcheck.json
 pyvenv.cfg
-.vscode
 bin/
 lib/
 
@@ -37,3 +28,26 @@ examples/*/android/
 examples/*/django/
 examples/*/windows/
 
+# Editor configs
+.vscode/
+.idea/
+
+# Compiled dependencies
+node_modules/
+
+# Lock files
+Pipfile.lock
+
+# Build/packaging files
+*.pyc
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Tests outputs
+.tox/
+
+# Virtual environments
+venv/
+.env/
