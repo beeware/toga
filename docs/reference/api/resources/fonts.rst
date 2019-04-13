@@ -15,7 +15,7 @@ The font class is used for abstracting the platforms implementation of fonts.
 Reference
 ---------
 
-.. autoclass:: toga.font.Font
+.. autoclass:: toga.fonts.Font
    :members:
    :undoc-members:
    :inherited-members:
