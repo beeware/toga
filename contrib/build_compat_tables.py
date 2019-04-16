@@ -1,5 +1,6 @@
 """
- This script builds a table to show the supported platforms for Toga and the components that are supported
+ This script builds a table to show the supported platforms for Toga
+ and the components that are supported per platform.
 
  Requires: pytablewriter from PyPi
 """
@@ -61,8 +62,9 @@ _footer = """
     :width: 32
 """
 
-# Credit: http://stackoverflow.com/q/42195468#comment71553012_42195468
+
 def get_declaration_from_source(text, name="__all__"):
+    # Credit: http://stackoverflow.com/q/42195468#comment71553012_42195468
     tree = ast.parse(text)
     for node in tree.body:
         if isinstance(node, ast.Assign) and len(node.targets) == 1:
