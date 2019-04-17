@@ -56,10 +56,8 @@ PLATFORM_LIST = {
 }
 
 _footer = """
-.. |yes| image:: /_static/yes.png
-    :width: 32
-.. |no| image:: /_static/no.png
-    :width: 32
+.. |yes| replace:: ✔
+.. |no| replace:: ✘
 """
 
 
