@@ -106,7 +106,7 @@ with open('../docs/supported_platforms.rst', 'w+') as doc:
             if v and platform in v:
                 i.append('|yes|')
             else:
-                i.append(' ')
+                i.append('|no|')
         writer.value_matrix.append(i)
 
     writer.write_table()
