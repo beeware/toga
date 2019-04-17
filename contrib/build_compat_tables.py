@@ -112,22 +112,4 @@ with open('../docs/supported_platforms.rst', 'w+') as doc:
     writer.write_table()
     doc.write(_footer)
 
-for component, value in _maps.items():
-    with open('../docs/reference/supported_platforms/{0}.rst'.format(component[0]), 'w+') as doc:
-        writer = pytablewriter.RstGridTableWriter()
-        writer.stream = doc
-        # writer.table_name = "Supported platforms"
-        writer.header_list = ["Component"] + _platforms
-        writer.value_matrix = []
-        i = list([component[0]])
-        for platform in _platforms:
-            if value and platform in value:
-                i.append('|yes|')
-            else:
-                i.append(' ')
-        writer.value_matrix.append(i)
-        writer.write_table()
-
-        doc.write(_footer)
-
 print("Done.")
