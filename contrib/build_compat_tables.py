@@ -56,8 +56,13 @@ PLATFORM_LIST = {
 }
 
 _footer = """
+.. Note that X and O symbols can have opposite meanings depending on the culture
+.. so for yes, replace with a check mark and for no, replace with a blank space.
+.. To prevent whitespace-stripping-on-save errors, represent a single blank
+.. space by surrounding it with backslashes.
 .. |yes| replace:: ✔
-.. |no| replace::  ''
+.. |no| replace::  \ \
+
 """
 
 
