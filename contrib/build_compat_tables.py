@@ -57,7 +57,7 @@ PLATFORM_LIST = {
 
 _footer = """
 .. |yes| replace:: ✔
-.. |no| replace:: ✘
+.. |no| replace::  ''
 """
 
 
@@ -106,7 +106,7 @@ with open('../docs/supported_platforms.rst', 'w+') as doc:
             if v and platform in v:
                 i.append('|yes|')
             else:
-                i.append('|no|')
+                i.append(' ')
         writer.value_matrix.append(i)
 
     writer.write_table()
@@ -124,7 +124,7 @@ for component, value in _maps.items():
             if value and platform in value:
                 i.append('|yes|')
             else:
-                i.append('|no|')
+                i.append(' ')
         writer.value_matrix.append(i)
         writer.write_table()
 
