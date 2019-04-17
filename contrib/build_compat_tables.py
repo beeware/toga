@@ -55,13 +55,8 @@ PLATFORM_LIST = {
     'win32': 'Windows'
 }
 
-# Note that X and O symbols can have opposite meanings depending on the culture
-# so for yes, replace with a check mark and for no, replace with a blank space.
-# To prevent whitespace-stripping-on-save errors, represent a single blank
-# space by surrounding it with backslashes.
 _footer = """
 .. |yes| replace:: ✔
-.. |no| replace::  \ \
 
 """
 
@@ -111,7 +106,9 @@ with open('../docs/supported_platforms.rst', 'w+') as doc:
             if v and platform in v:
                 i.append('|yes|')
             else:
-                i.append('|no|')
+                # X and O symbols have opposite meanings depending on
+                # the culture so we use blank spaces for "no"
+                i.append(' ')
         writer.value_matrix.append(i)
 
     writer.write_table()
