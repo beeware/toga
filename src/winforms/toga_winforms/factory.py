@@ -1,13 +1,16 @@
 from .app import App, MainWindow
 from .command import Command
-# from .font import font
+
+# from .fonts import Font
+from .icons import Icon
+from .images import Image
+
 from .widgets.box import Box
 from .widgets.button import Button
 # from .widgets.canvas import Canvas
 # from .widgets.detailedlist import DetailedList
-from .widgets.icon import Icon
-from .widgets.image import Image
 from .widgets.imageview import ImageView
+from .widgets.datepicker import DatePicker
 from .widgets.label import Label
 from .widgets.multilinetextinput import MultilineTextInput
 from .widgets.numberinput import NumberInput
@@ -20,6 +23,7 @@ from .widgets.slider import Slider
 from .widgets.splitcontainer import SplitContainer
 from .widgets.switch import Switch
 from .widgets.table import Table
+from .widgets.textinput import TextInput
 from .widgets.tree import Tree
 from .widgets.webview import WebView
 from .window import Window
@@ -33,16 +37,20 @@ __all__ = [
     'not_implemented',
 
     'App', 'MainWindow',
-    # 'color',
     'Command',
-    # 'font',
+
+    # Resources
+    # 'Font',
+    'Icon',
+    'Image',
+
+    # Widgets
     'Box',
     'Button',
     # 'Canvas',
     # 'DetailedList',
-    'Icon',
-    'Image',
     'ImageView',
+    'DatePicker',
     'Label',
     'MultilineTextInput',
     'NumberInput',

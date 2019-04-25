@@ -1,12 +1,13 @@
 ##########################################################################
 # System/Library/Frameworks/UIKit.framework
 ##########################################################################
-from ctypes import *
-from ctypes import util
+from ctypes import c_char_p, c_int, c_void_p, cdll, util, POINTER, Structure
 from enum import Enum
 
-from rubicon.objc import *
-from toga.constants import *
+from rubicon.objc import objc_const, CGFloat, ObjCClass
+from toga.constants import LEFT, RIGHT, CENTER, JUSTIFY
+
+from .core_graphics import CGContextRef
 
 ######################################################################
 uikit = cdll.LoadLibrary(util.find_library('UIKit'))
@@ -14,6 +15,15 @@ uikit = cdll.LoadLibrary(util.find_library('UIKit'))
 
 uikit.UIApplicationMain.restype = c_int
 uikit.UIApplicationMain.argtypes = [c_int, POINTER(c_char_p), c_void_p, c_void_p]
+
+######################################################################
+# NSAttributedString.h
+NSAttributedString = ObjCClass('NSAttributedString')
+
+NSFontAttributeName = objc_const(uikit, 'NSFontAttributeName')
+NSForegroundColorAttributeName = objc_const(uikit, 'NSForegroundColorAttributeName')
+NSStrokeColorAttributeName = objc_const(uikit, 'NSStrokeColorAttributeName')
+NSStrokeWidthAttributeName = objc_const(uikit, 'NSStrokeWidthAttributeName')
 
 ######################################################################
 # NSLayoutConstraint.h
@@ -225,6 +235,10 @@ UIControlStateReserved = 0xFF000000
 UIFont = ObjCClass('UIFont')
 
 ######################################################################
+# UIGraphics.h
+uikit.UIGraphicsGetCurrentContext.restype = CGContextRef
+
+######################################################################
 # UIImage.h
 UIImage = ObjCClass('UIImage')
 
@@ -370,13 +384,10 @@ class UIViewContentMode(Enum):
     BottomLeft = 11
     BottomRight = 12
 
+
 ######################################################################
 # UIViewController.h
 UIViewController = ObjCClass('UIViewController')
-
-######################################################################
-# UIWebView.h
-UIWebView = ObjCClass('UIWebView')
 
 ######################################################################
 # UIWindow.h

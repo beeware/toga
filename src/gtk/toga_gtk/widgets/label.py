@@ -1,9 +1,8 @@
-from gi.repository import Gtk
 from travertino.size import at_least
+from gi.repository import Gtk
 
-from toga.constants import *
 from toga_gtk.libs import gtk_alignment
-from toga_gtk.color import native_color
+# from toga_gtk.colors import native_color
 
 from .base import Widget
 

@@ -1,10 +1,10 @@
 from contextlib import contextmanager
 from math import pi
 
+from toga.colors import color as parse_color, BLACK
+from toga.fonts import Font, SYSTEM
+
 from .base import Widget
-from ..color import BLACK
-from ..color import color as parse_color
-from ..font import Font, SYSTEM
 
 
 class Context:
@@ -97,6 +97,12 @@ class Context:
 
         """
         self.drawing_objects.remove(drawing_object)
+        self.redraw()
+
+    def clear(self):
+        """Remove all drawing objects
+        """
+        self.drawing_objects.clear()
         self.redraw()
 
     ###########################################################################

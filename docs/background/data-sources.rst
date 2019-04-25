@@ -29,7 +29,7 @@ There are three built-in data source types in Toga:
   expect of a ``list``, and return ``Row`` objects. The attributes of each
   ``Row`` object are the values that should be displayed.
 
-* **Tree Sources**: For managing a heirarchy of items, each of which has one
+* **Tree Sources**: For managing a hierarchy of items, each of which has one
   or more values. Tree data sources also behave like a ``list``, except that each
   item returned is a ``Node``. The attributes of the ``Node`` are the values
   that should be displayed; a ``Node`` also has children, accessible using
@@ -69,7 +69,7 @@ your own ``FileSystemSource`` that reflects the files on the file system. Your
 file system data source doesn't need to expose ``insert()`` or ``remove()``
 methods - because the end user doesn't need an interface to "insert" files
 into your filesystem. However, you might have a `create_empty_file()` method
-that creates a new file in the filesystem, and adds a representation to the
+that creates a new file in the filesystem and adds a representation to the
 tree.
 
 Custom data sources are also required to emit notifications whenever notable

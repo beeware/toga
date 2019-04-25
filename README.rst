@@ -1,6 +1,6 @@
-.. image:: http://pybee.org/project/projects/libraries/toga/toga.png
+.. image:: https://beeware.org/project/projects/libraries/toga/toga.png
     :width: 72px
-    :target: https://pybee.org/toga
+    :target: https://beeware.org/toga
 
 Toga
 ====
@@ -17,8 +17,8 @@ Toga
 .. image:: https://img.shields.io/pypi/l/toga.svg
     :target: https://github.com/pybee/toga/blob/master/LICENSE
 
-.. image:: https://beekeeper.herokuapp.com/projects/pybee/batavia/shield
-    :target: https://beekeeper.herokuapp.com/projects/pybee/batavia
+.. image:: https://beekeeper.beeware.org/projects/beeware/batavia/shield
+    :target: https://beekeeper.beeware.org/projects/beeware/batavia
 
 .. image:: https://badges.gitter.im/pybee/general.svg
     :target: https://gitter.im/pybee/general
@@ -99,7 +99,7 @@ contributors`_ will help you get started.
 If you experience problems with Toga, `log them on GitHub`_. If you want to
 contribute code, please `fork the code`_ and `submit a pull request`_.
 
-.. _BeeWare suite: http://pybee.org
+.. _BeeWare suite: https://beeware.org/
 .. _Read The Docs: https://toga.readthedocs.io
 .. _@pybeeware on Twitter: https://twitter.com/pybeeware
 .. _pybee/general: https://gitter.im/pybee/general

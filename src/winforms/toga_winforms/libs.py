@@ -1,16 +1,17 @@
 import clr
 clr.AddReference("System.Windows.Forms")
 
-import System.Windows.Forms as WinForms
-from System import Decimal as ClrDecimal
-from System import Convert
-from System import Threading
-from System import Uri
-from System.Drawing import Size, Point, Color, ContentAlignment, Bitmap
-from System.Drawing import Icon as WinIcon
-from System.Drawing import Image as WinImage
+import System.Windows.Forms as WinForms  # noqa: E402
+from System import Decimal as ClrDecimal  # noqa: E402, F401
+from System import Convert  # noqa: E402, F401
+from System import DateTime as WinDateTime  # noqa: E402, F401
+from System import Threading  # noqa: E402, F401
+from System import Uri  # noqa: E402, F401
+from System.Drawing import Size, Point, Color, ContentAlignment, Bitmap  # noqa: E402, F401
+from System.Drawing import Icon as WinIcon  # noqa: E402, F401
+from System.Drawing import Image as WinImage  # noqa: E402, F401
+from toga.constants import LEFT, RIGHT, CENTER, JUSTIFY  # noqa: E402
 
-from toga.constants import LEFT, RIGHT, CENTER, JUSTIFY
 
 def TextAlignment(value):
     return {

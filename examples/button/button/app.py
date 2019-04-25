@@ -1,6 +1,6 @@
 import toga
 from toga.style import Pack
-from toga.color import RED, BLUE
+from toga.colors import RED, BLUE
 from toga.constants import COLUMN, ROW
 
 

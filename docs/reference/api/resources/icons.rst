@@ -1,10 +1,10 @@
-Image
-=====
+Icon
+====
 
 ======= ====== ========= ===== ========= ========
  macOS   GTK+   Windows   iOS   Android   Django
 ======= ====== ========= ===== ========= ========
- |y|     |y|    |y|       |y|
+ |y|     |y|       |y|
 ======= ====== ========= ===== ========= ========
 
 .. |y| image:: /_static/yes.png
@@ -17,7 +17,7 @@ Usage
 Reference
 ---------
 
-.. autoclass:: toga.widgets.image.Image
+.. autoclass:: toga.icons.Icon
    :members:
    :undoc-members:
    :inherited-members:

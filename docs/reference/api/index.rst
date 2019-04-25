@@ -58,11 +58,11 @@ Resources
 =================================================== =================================
  Component                                           Description
 =================================================== =================================
- :doc:`Font </reference/api/resources/font>`         Fonts
+ :doc:`Font </reference/api/resources/fonts>`        Fonts
  :doc:`Command </reference/api/resources/command>`   Command
  :doc:`Group </reference/api/resources/group>`       Command group
- :doc:`Icon </reference/api/resources/icon>`         An icon for buttons, menus, etc
- :doc:`Image </reference/api/resources/image>`       An image
+ :doc:`Icon </reference/api/resources/icons>`        An icon for buttons, menus, etc
+ :doc:`Image </reference/api/resources/images>`      An image
 =================================================== =================================
 
 .. |y| image:: /_static/yes.png

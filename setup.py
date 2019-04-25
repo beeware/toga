@@ -23,7 +23,7 @@ setup(
     long_description=long_description,
     author='Russell Keith-Magee',
     author_email='russell@keith-magee.com',
-    url='http://pybee.org/toga',
+    url='https://beeware.org/project/projects/libraries/toga/',
     extras_require={
         # Automatically installed platform backends
         ':sys_platform=="win32"': ['toga-winforms==%s' % version],
@@ -46,7 +46,7 @@ setup(
         'Topic :: Software Development :: Widget Sets',
     ],
     package_urls={
-        'Funding': 'https://pybee.org/contributing/membership/',
+        'Funding': 'https://beeware.org/contributing/membership/',
         'Documentation': 'https://toga.readthedocs.io/',
         'Tracker': 'https://github.com/pybee/toga/issues',
         'Source': 'https://github.com/pybee/toga',
