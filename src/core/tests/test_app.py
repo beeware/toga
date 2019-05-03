@@ -48,6 +48,61 @@ class AppTests(TestCase):
         self.app.icon = "other.icns"
         self.assertEqual(self.app.icon.path, "other.icns")
 
+    def test_current_window(self):
+        impl = MagicMock()
+        self.app._impl = impl
+
+        self.assertEqual(
+            self.app.current_window, impl.current_window().interface
+        )
+
+    def test_is_full_screen_false(self):
+        self.assertFalse(self.app.is_full_screen)
+
+    def test_is_full_screen_true(self):
+        self.app._full_screen_windows = "not None"
+
+        self.assertTrue(self.app.is_full_screen)
+
+    @patch("toga.app.App.exit_full_screen")
+    def test_app_set_full_screen_if_not(self, mock_function):
+        self.app.set_full_screen()
+
+        mock_function.assert_called_once_with()
+        self.assertActionNotPerformed(self.app, "enter_full_screen")
+
+    @patch("toga.app.App.exit_full_screen")
+    def test_app_set_full_screen_if(self, mock_function):
+        windows = MagicMock()
+        self.app.set_full_screen(windows)
+
+        mock_function.asser_not_called()
+        self.assertActionPerformed(self.app, "enter_full_screen")
+        self.assertEqual(self.app._full_screen_windows, (windows,))
+
+    def test_app_exit_full_screen_if(self):
+        self.app._full_screen_windows = "not None"
+        self.app.exit_full_screen()
+
+        self.assertActionPerformed(self.app, "exit_full_screen")
+        self.assertIsNone(self.app._full_screen_windows)
+
+    def test_app_exit_full_screen_if_not(self):
+        self.app.exit_full_screen()
+
+        self.assertActionNotPerformed(self.app, "exit_full_screen")
+        self.assertIsNone(self.app._full_screen_windows)
+
+    def test_app_show_cursor(self):
+        self.app.show_cursor()
+
+        self.assertActionPerformed(self.app, 'show_cursor')
+
+    def test_app_hide_cursor(self):
+        self.app.hide_cursor()
+
+        self.assertActionPerformed(self.app, 'hide_cursor')
+
     def test_app_startup(self):
         self.app.startup()
 
@@ -64,6 +119,9 @@ class AppTests(TestCase):
         self.app.exit()
 
         self.assertActionPerformed(self.app, 'exit')
+
+    def test_on_exit(self):
+        self.assertIsNone(self.app.on_exit)
 
 
 class DocumentAppTests(TestCase):
