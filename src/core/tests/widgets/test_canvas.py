@@ -217,7 +217,7 @@ class CanvasTests(TestCase):
         self.assertNotIn(new_path, self.testing_canvas.drawing_objects)
 
     def test_canvas_context_clear(self):
-        # Create canvas objects 
+        # Create canvas objects
         new_path = self.testing_canvas.new_path()
         rect = self.testing_canvas.rect(x=1000.2, y=2000, width=3000, height=-4000.0)
 
