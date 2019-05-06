@@ -284,6 +284,6 @@ class Window:
             multiselect (bool): Value showing whether a user can select multiple files.
 
         Returns:
-            The absolute path(str) to the selected file or None
+            The absolute path(str) to the selected file or None.
         """
         return self._impl.select_folder_dialog(title, initial_directory, multiselect)
