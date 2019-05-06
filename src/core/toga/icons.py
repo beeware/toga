@@ -39,7 +39,7 @@ class Icon:
             return os.path.join(toga_dir, 'resources', self.path)
         else:
             # no resource dir so default to the file path
-            return os.path.join('', self.path)
+            return self.path
 
     def bind(self, factory):
         if self._impl is None:
