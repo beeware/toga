@@ -112,8 +112,8 @@ def open_file(window, title, file_types, multiselect):
         title: Title of the modal.
         file_types: Ignored for now.
         multiselect: Flag to allow multiple file selection.
-    Returns: The file path on success, None otherwise
-
+    Returns:
+        The file path on success, None otherwise.
     """
 
     # Initialize and configure the panel.
