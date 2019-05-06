@@ -65,6 +65,18 @@ class AppTests(TestCase):
 
         self.assertActionPerformed(self.app, 'exit')
 
+    def test_full_screen(self):
+        # set full screen and exit full screen
+        self.app.set_full_screen(self.app.main_window)
+        self.assertTrue(self.app.is_full_screen)
+        self.app.exit_full_screen()
+        self.assertFalse(self.app.is_full_screen)
+        # set full screen and set full with no args
+        self.app.set_full_screen(self.app.main_window)
+        self.assertTrue(self.app.is_full_screen)
+        self.app.set_full_screen()
+        self.assertFalse(self.app.is_full_screen)
+
 
 class DocumentAppTests(TestCase):
     def setUp(self):
