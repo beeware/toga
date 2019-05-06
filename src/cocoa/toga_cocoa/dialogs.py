@@ -122,7 +122,7 @@ def open_file(window, title, file_types, multiselect):
     panel.allowedFileTypes = file_types
     panel.allowsMultipleSelection = multiselect
     panel.canChooseDirectories = False
-    panel.canCreateDirectories = True
+    panel.canCreateDirectories = False
     panel.canChooseFiles = True
 
     # Show modal and return file path on success.
