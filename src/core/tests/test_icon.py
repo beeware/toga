@@ -22,11 +22,8 @@ class TestIcon(unittest.TestCase):
         self.assertEqual(self.icon.path, self.test_path)
 
     def test_icon_file(self):
-        """
-        Validate filename property
+        """Validate filename property."""
 
-        :return: None
-        """
         # Validate file name/path for non-system icon
         self.assertEqual(self.icon.filename, self.test_path)
 
