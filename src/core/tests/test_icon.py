@@ -37,9 +37,9 @@ class TestIcon(unittest.TestCase):
         """Validate TIBERIUS_ICON"""
         # Get Tiberius object
         self.tiberius = toga.Icon.TIBERIUS_ICON
-        
+
         # Test file name/path for tiberius icon
         tiberius_dir = os.path.dirname(toga.__file__)
         icon_tiberius = os.path.join(tiberius_dir, "resources", "tiberius")
-        
+
         self.assertEqual(self.tiberius.filename, icon_tiberius)
