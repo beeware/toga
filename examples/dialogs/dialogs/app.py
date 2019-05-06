@@ -26,7 +26,10 @@ class ExampledialogsApp(toga.App):
                 title="Open file with Toga",
                 multiselect=False
             )
-            self.label.text = "File to open:" + fname
+            if fname is not None:
+                self.label.text = "File to open:" + fname
+            else:
+                self.label.text = "No file selected!"
         except ValueError:
             self.label.text = "Open file dialog was canceled"
 
@@ -36,7 +39,12 @@ class ExampledialogsApp(toga.App):
                 title="Open file with Toga",
                 multiselect=True
             )
-            self.label.text = "Files to open: {}".format(', '.join(filenames))
+            if filenames is not None:
+                msg = "Files to open: {}".format(', '.join(filenames))
+                self.label.text = msg
+            else:
+                self.label.text = "No files selected!"
+
         except ValueError:
             self.label.text = "Open file dialog was canceled"
 

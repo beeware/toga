@@ -2,17 +2,18 @@
 #
 
 # You can set these variables from the command line.
+SHELL         = /bin/bash
 SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
 PAPER         =
 BUILDDIR      = _build
-SOURCEDIR     = .
+SOURCEDIR    := .
 
 # Internal variables.
 PAPEROPT_a4     = -D latex_paper_size=a4
 PAPEROPT_letter = -D latex_paper_size=letter
 ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) .
-VENV = ../env/bin/activate
+VENV = $(VIRTUAL_ENV)/bin/activate
 PORT = 8001
 
 # the i18n builder cannot share the environment and doctrees with the others
@@ -22,7 +23,7 @@ I18NSPHINXOPTS  = $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) .
 
 help:
 	@echo "Please use \`make <target>' where <target> is one of"
-	@echo "  instal     to create a virtualenv called 'env' in the docs directory"
+	@echo "  install     to create a virtualenv called 'env' in the docs directory"
 	@echo "  html       to make standalone HTML files"
 	@echo "  dirhtml    to make HTML files named index.html in directories"
 	@echo "  singlehtml to make a single large HTML file"
@@ -165,9 +166,8 @@ spelling:
 		"build/spelling/output.txt."
 
 install:
-	@echo "... setting up virtualenv"
-	virtualenv env
-	. $(VENV); pip install -r requirements_docs.txt
+	@echo "installing dependencies"
+	pip install -r $(SOURCEDIR)/requirements.txt
 	@echo "\n" \
 	      "-------------------------------------------------------------------------------------------------- \n" \
 		    "* watch, build and serve the documentation: make run \n" \

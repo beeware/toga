@@ -112,8 +112,8 @@ def open_file(window, title, file_types, multiselect):
         title: Title of the modal.
         file_types: Ignored for now.
         multiselect: Flag to allow multiple file selection.
-    Returns: The file path on success, None otherwise
-
+    Returns:
+        The file path on success, None otherwise.
     """
 
     # Initialize and configure the panel.
@@ -122,12 +122,12 @@ def open_file(window, title, file_types, multiselect):
     panel.allowedFileTypes = file_types
     panel.allowsMultipleSelection = multiselect
     panel.canChooseDirectories = False
-    panel.canCreateDirectories = True
+    panel.canCreateDirectories = False
     panel.canChooseFiles = True
 
     # Show modal and return file path on success.
     result = panel.runModal()
-    if NSFileHandlingPanelOKButton == result:
+    if result == NSFileHandlingPanelOKButton:
         paths = [str(url.path) for url in panel.URLs]
         filename_or_filenames = (paths if multiselect else
                                  panel.URL.path)
