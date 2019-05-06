@@ -135,8 +135,6 @@ def open_file(window, title, file_types, multiselect):
 
 
 def select_folder(window, title):
-    filename = None
-
     dialog = NSOpenPanel.alloc().init()
     dialog.title = title
 
