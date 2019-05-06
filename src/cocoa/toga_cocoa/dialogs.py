@@ -99,3 +99,37 @@ def save_file(window, title, suggested_filename, file_types=None):
     if result == NSFileHandlingPanelOKButton:
         return panel.URL.path
     return None
+
+
+def open_file(window, title, file_types, multiselect):
+    """Cocoa open file dialog implementation.
+
+    We restrict the panel invocation to only choose files. We also allow
+    creating directories but not selecting directories.
+
+    Args:
+        window: The window this dialog belongs to.
+        title: Title of the modal.
+        file_types: Ignored for now.
+        multiselect: Flag to allow multiple file selection.
+    Returns: The file path on success, None otherwise
+
+    """
+
+    # Initialize and configure the panel.
+    panel = NSOpenPanel.alloc().init()
+    panel.title = title
+    panel.allowedFileTypes = file_types
+    panel.allowsMultipleSelection = multiselect
+    panel.canChooseDirectories = False
+    panel.canCreateDirectories = True
+    panel.canChooseFiles = True
+
+    # Show modal and return file path on success.
+    result = panel.runModal()
+    if NSFileHandlingPanelOKButton == result:
+        paths = [str(url.path) for url in panel.URLs]
+        filename_or_filenames = (paths if multiselect else
+                                 panel.URL.path)
+        return filename_or_filenames
+    return None

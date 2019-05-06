@@ -242,3 +242,8 @@ class Window:
 
     def save_file_dialog(self, title, suggested_filename, file_types):
         return dialogs.save_file(self.interface, title, suggested_filename, file_types)
+
+    def open_file_dialog(self, title, initial_directory, file_types, multiselect):
+        # TODO: if the cocoa open file supports initial_directory,
+        #  we should pass it in
+        return dialogs.open_file(self.interface, title, file_types, multiselect)
