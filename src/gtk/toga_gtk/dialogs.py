@@ -105,7 +105,7 @@ def open_file(window, title, file_types, multiselect):
     return filename_or_filenames
 
 
-def select_folder(window, title):
+def select_folder(window, title, multiselect):
     '''This function is very similar to the open_file function but more limited
     in scope. If broadening scope here, or aligning features with the other
     dialogs, consider refactoring around a common base function or set of
@@ -122,4 +122,4 @@ def select_folder(window, title):
     dialog.destroy()
     if filename is None:
         raise ValueError("No folder provided in the select folder dialog")
-    return filename
+    return [filename]
