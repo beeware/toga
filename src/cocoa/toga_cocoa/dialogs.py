@@ -142,7 +142,7 @@ def select_folder(window, title, multiselect):
         title: Title of the dialog.
         multiselect: Flag to allow multiple folder selection.
     Returns:
-        (list) Paths of folders
+        (list) A list of folder paths.
     """
     dialog = NSOpenPanel.alloc().init()
     dialog.title = title
