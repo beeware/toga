@@ -50,10 +50,10 @@ class ExampledialogsApp(toga.App):
 
     def action_select_folder_dialog(self, widget):
         try:
-            path_name = self.main_window.select_folder_dialog(
+            path_names = self.main_window.select_folder_dialog(
                 title="Select folder with Toga",
             )
-            self.label.text = "Folder selected:" + path_name
+            self.label.text = "Folder selected:" + ','.join([path for path in path_names])
         except ValueError:
             self.label.text = "Folder select dialog was canceled"
 
