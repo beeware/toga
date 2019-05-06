@@ -134,17 +134,31 @@ def open_file(window, title, file_types, multiselect):
         return filename_or_filenames
 
 
-def select_folder(window, title):
+def select_folder(window, title, multiselect):
+    """Cocoa select folder dialog implementation.
+
+    Args:
+        window: Window dialog belongs to.
+        title: Title of the dialog.
+        multiselect: Flag to allow multiple folder selection.
+    Returns:
+        (list) Paths of folders
+    """
     dialog = NSOpenPanel.alloc().init()
     dialog.title = title
 
     dialog.canChooseFiles = False
     dialog.canChooseDirectories = True
     dialog.resolvesAliases = True
-    dialog.allowsMultipleSelection = True
+    dialog.allowsMultipleSelection = multiselect
 
     result = dialog.runModal()
 
+    # Ensure regardless of the result, return types remain the same so as to not
+    # require type checking logic in user code.
     if result == NSFileHandlingPanelOKButton:
-        return dialog.URL.path
-    return None
+        if multiselect:
+            return [dialog.URL.path]
+        else:
+            return [str(url.path) for url in dialog.URLs]
+    return []
