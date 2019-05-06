@@ -35,7 +35,7 @@ class TestIcon(unittest.TestCase):
 
     def test_TIBERIUS_ICON(self):
         """Validate TIBERIUS_ICON"""
-        # Get Tiberius object
+        # Get Tiberius object 
         self.tiberius = toga.Icon.TIBERIUS_ICON
 
         # Test file name/path for tiberius icon
