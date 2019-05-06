@@ -127,7 +127,7 @@ def open_file(window, title, file_types, multiselect):
 
     # Show modal and return file path on success.
     result = panel.runModal()
-    if NSFileHandlingPanelOKButton == result:
+    if result == NSFileHandlingPanelOKButton:
         paths = [str(url.path) for url in panel.URLs]
         filename_or_filenames = (paths if multiselect else
                                  panel.URL.path)
