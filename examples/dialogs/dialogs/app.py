@@ -24,8 +24,19 @@ class ExampledialogsApp(toga.App):
         try:
             fname = self.main_window.open_file_dialog(
                 title="Open file with Toga",
+                multiselect=False
             )
             self.label.text = "File to open:" + fname
+        except ValueError:
+            self.label.text = "Open file dialog was canceled"
+
+    def action_open_file_dialog_multi(self, widget):
+        try:
+            filenames = self.main_window.open_file_dialog(
+                title="Open file with Toga",
+                multiselect=True
+            )
+            self.label.text = "Files to open: {}".format(', '.join(filenames))
         except ValueError:
             self.label.text = "Open file dialog was canceled"
 
@@ -63,6 +74,9 @@ class ExampledialogsApp(toga.App):
         btn_info = toga.Button('Info', on_press=self.action_info_dialog, style=btn_style)
         btn_question = toga.Button('Question', on_press=self.action_question_dialog, style=btn_style)
         btn_open = toga.Button('Open File', on_press=self.action_open_file_dialog, style=btn_style)
+        btn_open_multi = toga.Button('Open File (Multiple)',
+                                     on_press=self.action_open_file_dialog_multi,
+                                     style=btn_style)
         btn_save = toga.Button('Save File', on_press=self.action_save_file_dialog, style=btn_style)
         btn_select = toga.Button('Select Folder', on_press=self.action_select_folder_dialog, style=btn_style)
         dialog_btn_box = toga.Box(
@@ -81,8 +95,9 @@ class ExampledialogsApp(toga.App):
         btn_clear = toga.Button('Clear', on_press=self.do_clear, style=btn_style)
         btn_box = toga.Box(
             children=[
+                btn_open_multi,
                 btn_do_stuff,
-                btn_clear
+                btn_clear,
             ],
             style=Pack(direction=ROW)
         )
