@@ -99,3 +99,21 @@ def save_file(window, title, suggested_filename, file_types=None):
     if result == NSFileHandlingPanelOKButton:
         return panel.URL.path
     return None
+
+
+def select_folder(window, title):
+    filename = None
+
+    dialog = NSOpenPanel.alloc().init()
+    dialog.title = title
+
+    dialog.canChooseFiles = False
+    dialog.canChooseDirectories = True
+    dialog.resolvesAliases = True
+    dialog.allowsMultipleSelection = True
+
+    result = dialog.runModal()
+
+    if result == NSFileHandlingPanelOKButton:
+        return dialog.URL.path
+    return None
