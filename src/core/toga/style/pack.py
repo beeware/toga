@@ -8,6 +8,8 @@ from travertino.size import BaseIntrinsicSize
 
 from toga.fonts import Font
 
+import platform
+
 ######################################################################
 # Display
 ######################################################################
