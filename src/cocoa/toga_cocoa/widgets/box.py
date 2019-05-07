@@ -1,3 +1,4 @@
+from travertino.size import at_least
 from rubicon.objc import objc_method
 
 from toga_cocoa.libs import NSColor, NSView
@@ -31,3 +32,8 @@ class Box(Widget):
             self.native.backgroundColor = NSColor.windowBackgroundColor
         else:
             self.native.backgroundColor = native_color(color)
+
+    def rehint(self):
+        content_size = self.native.intrinsicContentSize()
+        self.interface.intrinsic.width = at_least(content_size.width)
+        self.interface.intrinsic.height = at_least(content_size.height)
