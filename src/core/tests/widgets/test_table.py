@@ -77,3 +77,12 @@ class TableTests(TestCase):
         ]
         self.table.scroll_to_bottom()
         self.assertValueSet(self.table, 'scroll to', len(self.table.data) - 1)
+
+    def test_multiple_select(self):
+        self.assertEqual(self.table.multiple_select, False)
+        secondtable = toga.Table(
+            self.headings,
+            multiple_select=True,
+            factory=toga_dummy.factory
+        )
+        self.assertEqual(secondtable.multiple_select, True)
