@@ -23,7 +23,7 @@ setup(
     long_description=long_description,
     author='Russell Keith-Magee',
     author_email='russell@keith-magee.com',
-    url='http://pybee.org/toga-demo',
+    url='http://beeware.org/toga-demo',
     include_package_data=True,
     packages=find_packages(),
     python_requires='>=3.5',
@@ -55,7 +55,7 @@ setup(
     options={
         'app': {
             'formal_name': 'Toga Demo',
-            'bundle': 'org.pybee',
+            'bundle': 'org.beeware',
         },
         'ios': {
             'app_requires': [

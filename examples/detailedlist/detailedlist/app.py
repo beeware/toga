@@ -62,7 +62,7 @@ class ExampleDetailedListApp(toga.App):
         self.main_window.show()
 
 def main():
-    return ExampleDetailedListApp('Detailed List', 'org.pybee.widgets.detailedlist')
+    return ExampleDetailedListApp('Detailed List', 'org.beeware.widgets.detailedlist')
 
 
 if __name__ == '__main__':

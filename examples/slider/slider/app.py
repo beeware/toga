@@ -62,4 +62,4 @@ class SliderApp(toga.App):
 
 def main():
     # App name and namespace
-    return SliderApp('Slider', 'org.pybee.examples.slider')
+    return SliderApp('Slider', 'org.beeware.examples.slider')

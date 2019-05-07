@@ -110,7 +110,7 @@ def build(app):
 
 
 def main():
-    return toga.App('First App', 'org.pybee.helloworld', startup=build)
+    return toga.App('First App', 'org.beeware.helloworld', startup=build)
 
 
 if __name__ == '__main__':

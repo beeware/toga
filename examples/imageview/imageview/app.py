@@ -23,7 +23,7 @@ class ImageViewApp(toga.App):
         # image from remote URL
         # no style parameters - we let Pack determine how to allocate
         # the space
-        image_from_url = toga.Image('https://pybee.org/project/projects/libraries/toga/toga.png')
+        image_from_url = toga.Image('https://beeware.org/project/projects/libraries/toga/toga.png')
         imageview_from_url = toga.ImageView(image_from_url)
         box.add(imageview_from_url)
         
@@ -31,7 +31,7 @@ class ImageViewApp(toga.App):
         self.main_window.show()
 
 def main():
-    return ImageViewApp('ImageView', 'org.pybee.widgets.imageview')
+    return ImageViewApp('ImageView', 'org.beeware.widgets.imageview')
 
 
 if __name__ == '__main__':

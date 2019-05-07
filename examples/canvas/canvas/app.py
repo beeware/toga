@@ -22,7 +22,7 @@ class ExampleCanvasApp(toga.App):
 
 
 def main():
-    return ExampleCanvasApp('Canvas', 'org.pybee.widgets.canvas')
+    return ExampleCanvasApp('Canvas', 'org.beeware.widgets.canvas')
 
 
 if __name__ == '__main__':

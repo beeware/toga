@@ -19,7 +19,7 @@ class ScrollContainerApp(toga.App):
         self.main_window.show()
 
 def main():
-    return ScrollContainerApp('ScrollContainer', 'org.pybee.widgets.scrollcontainer')
+    return ScrollContainerApp('ScrollContainer', 'org.beeware.widgets.scrollcontainer')
 
 
 if __name__ == '__main__':

@@ -7,7 +7,7 @@ class WebViewTests(TestCase):
     def setUp(self):
         super().setUp()
 
-        self.url = 'https://pybee.org/'
+        self.url = 'https://beeware.org/'
 
         def callback(widget):
             pass

@@ -85,4 +85,4 @@ class ProgressBarApp(toga.App):
 
 def main():
     # App name and namespace
-    return ProgressBarApp('ProgressBar', 'org.pybee.examples.progressbar')
+    return ProgressBarApp('ProgressBar', 'org.beeware.examples.progressbar')

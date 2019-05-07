@@ -22,8 +22,8 @@ report ``sys.platform == 'darwin'``), or can be manually installed by invoking::
 The macOS backend has seen the most development to date. It uses `Rubicon`_ to
 provide a bridge to native macOS libraries.
 
-.. _toga-cocoa: https://github.com/pybee/toga/tree/master/src/cocoa
-.. _Rubicon: https://github.com/pybee/rubicon-objc
+.. _toga-cocoa: https://github.com/beeware/toga/tree/master/src/cocoa
+.. _Rubicon: https://github.com/beeware/rubicon-objc
 
 Linux
 ~~~~~
@@ -40,7 +40,7 @@ invoking::
 The GTK+ backend is reasonably well developed, but currently has some known issues
 with widget layout. It uses the native GObject Python bindings.
 
-.. _toga-gtk: https://github.com/pybee/toga/tree/master/src/gtk
+.. _toga-gtk: https://github.com/beeware/toga/tree/master/src/gtk
 
 Winforms
 ~~~~~~~~
@@ -55,7 +55,7 @@ installed by invoking::
 The Windows backend is currently proof-of-concept only. Most widgets have not been
 implemented. It uses `Python.net`_
 
-.. _toga-winforms: https://github.com/pybee/toga/tree/master/src/winforms
+.. _toga-winforms: https://github.com/beeware/toga/tree/master/src/winforms
 .. _Python.net: https://pythonnet.github.io
 
 Mobile platforms
@@ -74,8 +74,8 @@ manually installed by invoking::
 The iOS backend is currently proof-of-concept only. Most widgets have not been
 implemented. It uses `Rubicon`_ to provide a bridge to native macOS libraries.
 
-.. _Python-iOS-template cookiecutter: http://github.com/pybee/Python-iOS-template
-.. _toga-iOS: http://github.com/pybee/toga/tree/master/src/iOS
+.. _Python-iOS-template cookiecutter: http://github.com/beeware/Python-iOS-template
+.. _toga-iOS: http://github.com/beeware/toga/tree/master/src/iOS
 
 Android
 ~~~~~~~
@@ -89,8 +89,8 @@ The android backend is currently proof-of-concept only. Most widgets have not
 been implemented. It uses `VOC`_ to compile Python code to Java class files
 for execution on Android devices.
 
-.. _toga-android: http://github.com/pybee/toga/tree/master/src/android
-.. _VOC: http://github.com/pybee/voc
+.. _toga-android: http://github.com/beeware/toga/tree/master/src/android
+.. _VOC: http://github.com/beeware/voc
 
 Web platforms
 -------------
@@ -106,8 +106,8 @@ by invoking::
 The Django backend is currently proof-of-concept only. Most widgets have not been
 implemented. It uses `Batavia`_ to run Python code in the browser.
 
-.. _toga-django: http://github.com/pybee/toga/tree/master/src/django
-.. _Batavia: https://github.com/pybee/batavia
+.. _toga-django: http://github.com/beeware/toga/tree/master/src/django
+.. _Batavia: https://github.com/beeware/batavia
 
 The Dummy platform
 ------------------
@@ -133,7 +133,7 @@ If you are interested in these platforms and would like to contribute, please
 get in touch on Twitter_ or Gitter_.
 
 .. _Twitter: https://twitter.com/pybeeware
-.. _Gitter: https://gitter.im/pybee/general
+.. _Gitter: https://gitter.im/beeware/general
 
 Unofficial platform support
 ===========================
