@@ -97,7 +97,11 @@ class ExampledialogsApp(toga.App):
                                      style=btn_style)
         btn_save = toga.Button('Save File', on_press=self.action_save_file_dialog, style=btn_style)
         btn_select = toga.Button('Select Folder', on_press=self.action_select_folder_dialog, style=btn_style)
-        btn_select_multi = toga.Button('Select Folders', on_press=self.action_select_folder_dialog_multi, style=btn_style)
+        btn_select_multi = toga.Button(
+            'Select Folders',
+            on_press=self.action_select_folder_dialog_multi,
+            style=btn_style
+        )
         dialog_btn_box = toga.Box(
             children=[
                 btn_info,
