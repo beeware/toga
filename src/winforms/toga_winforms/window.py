@@ -114,14 +114,13 @@ class Window:
         if self.interface is not self.interface.app._main_window:
             self.native.Show()
 
-            
     def winforms_FormClosing(self, event, handler):
         if self.interface.app.on_exit:
             self.interface.app.on_exit(self.interface.app)
-          
+
     def set_full_screen(self, is_full_screen):
         self.interface.factory.not_implemented('Window.set_full_screen()')
-        
+
     def on_close(self):
         pass
 
@@ -179,13 +178,13 @@ class Window:
         else:
             raise ValueError("No filename provided in the open file dialog")
 
-    def select_folder_dialog(self, title, initial_directory):
+    def select_folder_dialog(self, title, initial_directory, multiselect):
         dialog = WinForms.FolderBrowserDialog()
         dialog.Title = title
         if initial_directory is not None:
             dialog.InitialDirectory = initial_directory
 
         if dialog.ShowDialog() == WinForms.DialogResult.OK:
-            return dialog.SelectedPath
+            return [dialog.SelectedPath]
         else:
             raise ValueError("No folder provided in the select folder dialog")

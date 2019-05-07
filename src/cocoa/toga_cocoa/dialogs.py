@@ -1,4 +1,18 @@
-from .libs import *
+from .libs import (
+    NSAlert,
+    NSInformationalAlertStyle,
+    NSAlertFirstButtonReturn,
+    NSWarningAlertStyle,
+    NSCriticalAlertStyle,
+    NSScrollView,
+    NSMakeRect,
+    NSBezelBorder,
+    NSTextView,
+    NSSavePanel,
+    NSArray,
+    NSFileHandlingPanelOKButton,
+    NSOpenPanel
+)
 
 
 def info(window, title, message):
@@ -132,4 +146,34 @@ def open_file(window, title, file_types, multiselect):
         filename_or_filenames = (paths if multiselect else
                                  panel.URL.path)
         return filename_or_filenames
-    return None
+
+
+def select_folder(window, title, multiselect):
+    """Cocoa select folder dialog implementation.
+
+    Args:
+        window: Window dialog belongs to.
+        title: Title of the dialog.
+        multiselect: Flag to allow multiple folder selection.
+    Returns:
+        (list) A list of folder paths.
+    """
+    dialog = NSOpenPanel.alloc().init()
+    dialog.title = title
+
+    dialog.canChooseFiles = False
+    dialog.canChooseDirectories = True
+    dialog.resolvesAliases = True
+    dialog.allowsMultipleSelection = multiselect
+
+    result = dialog.runModal()
+
+    # Ensure regardless of the result, return types remain the same so as to not
+    # require type checking logic in user code.
+    # Convert types from 'ObjCStrInstance' to 'str'.
+    if result == NSFileHandlingPanelOKButton:
+        if multiselect:
+            return [str(url.path) for url in dialog.URLs]
+        else:
+            return [str(dialog.URL.path)]
+    return []
