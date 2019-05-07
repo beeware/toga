@@ -156,9 +156,10 @@ def select_folder(window, title, multiselect):
 
     # Ensure regardless of the result, return types remain the same so as to not
     # require type checking logic in user code.
+    # Convert types from 'ObjCStrInstance' to 'str'.
     if result == NSFileHandlingPanelOKButton:
         if multiselect:
-            return [dialog.URL.path]
-        else:
             return [str(url.path) for url in dialog.URLs]
+        else:
+            return [str(dialog.URL.path)]
     return []
