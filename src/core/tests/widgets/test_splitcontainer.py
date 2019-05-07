@@ -51,7 +51,7 @@ class SplitContainerTests(TestCase):
         self.assertValueSet(self.split, 'direction', new_value)
 
     def test_setting_content_valid_input_with_tuple(self):
-        
+
         new_content = [
             (toga.Box(style=TestStyle(), factory=toga_dummy.factory), 1.2),
             (toga.Box(style=TestStyle(), factory=toga_dummy.factory), 2.5)
