@@ -1,4 +1,18 @@
-from .libs import *
+from .libs import (
+    NSAlert,
+    NSInformationalAlertStyle,
+    NSAlertFirstButtonReturn,
+    NSWarningAlertStyle,
+    NSCriticalAlertStyle,
+    NSScrollView,
+    NSMakeRect,
+    NSBezelBorder,
+    NSTextView,
+    NSSavePanel,
+    NSArray,
+    NSFileHandlingPanelOKButton,
+    NSOpenPanel
+)
 
 
 def info(window, title, message):
