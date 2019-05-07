@@ -51,11 +51,21 @@ class ExampledialogsApp(toga.App):
     def action_select_folder_dialog(self, widget):
         try:
             path_names = self.main_window.select_folder_dialog(
-                title="Select folder with Toga",
+                title="Select folder with Toga"
             )
             self.label.text = "Folder selected:" + ','.join([path for path in path_names])
         except ValueError:
             self.label.text = "Folder select dialog was canceled"
+
+    def action_select_folder_dialog_multi(self, widget):
+        try:
+            path_names = self.main_window.select_folder_dialog(
+                title="Select multiple folders with Toga",
+                multiselect=True
+            )
+            self.label.text = "Folders selected:" + ','.join([path for path in path_names])
+        except ValueError:
+            self.label.text = "Folders select dialog was canceled"
 
     def action_save_file_dialog(self, widget):
         fname = 'Toga_file.txt'
@@ -87,13 +97,15 @@ class ExampledialogsApp(toga.App):
                                      style=btn_style)
         btn_save = toga.Button('Save File', on_press=self.action_save_file_dialog, style=btn_style)
         btn_select = toga.Button('Select Folder', on_press=self.action_select_folder_dialog, style=btn_style)
+        btn_select_multi = toga.Button('Select Folders', on_press=self.action_select_folder_dialog_multi, style=btn_style)
         dialog_btn_box = toga.Box(
             children=[
                 btn_info,
                 btn_question,
                 btn_open,
                 btn_save,
-                btn_select
+                btn_select,
+                btn_select_multi
             ],
             style=Pack(direction=ROW)
         )
