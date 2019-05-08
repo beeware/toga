@@ -31,6 +31,7 @@ class ImageViewApp(toga.App):
         self.main_window.content = box
         self.main_window.show()
 
+
 def main():
     return ImageViewApp('ImageView', 'org.beeware.widgets.imageview')
 
