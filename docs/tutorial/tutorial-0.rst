@@ -45,11 +45,9 @@ Your prompt should now have a ``(venv)`` prefix in front of it.
 
 If you are using Python 3.7 on Windows, you might get an error in the next step. Before proceeding, download unofficial pythonnet wheel file from `<https://www.lfd.uci.edu/~gohlke/pythonlibs/#pythonnet>` to your current directory, rename it to ``pythonnet.whl`` and run:
 
-  .. group-tab:: Windows
-    
-    .. code-block:: doscon
-    
-      C:\..> pip install pythonnet.whl
+.. code-block:: doscon
+
+  C:\..> pip install pythonnet.whl
 
 Next, install Toga into your virtual environment:
 
