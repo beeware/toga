@@ -95,13 +95,8 @@ class TableTests(TestCase):
         self.assertValueSet(self.table, "on_select", self.table.on_select)
 
         on_sele = self.table.on_select
-
         self.assertEqual(on_sele._raw, self.on_select)
 
         self.table.on_select = dummy_handler
-
         on_sele = self.table.on_select
-
         self.assertEqual(on_sele._raw, dummy_handler)
-
-
