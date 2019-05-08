@@ -241,6 +241,7 @@ class DocumentApp(App):
             fileURL (str): The URL/path to the file to add as a document.
         """
         # Convert a cocoa fileURL to a file path.
+        fileURL = fileURL.strip('/')
         path = unquote(urlparse(fileURL).path)
         extension = os.path.splitext(path)[1][1:]
 
