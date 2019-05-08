@@ -61,6 +61,7 @@ class ExampleDetailedListApp(toga.App):
         # Show the main window
         self.main_window.show()
 
+
 def main():
     return ExampleDetailedListApp('Detailed List', 'org.beeware.widgets.detailedlist')
 
