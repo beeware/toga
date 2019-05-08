@@ -43,11 +43,15 @@ start coding. To set up a virtual environment, run:
 
 Your prompt should now have a ``(venv)`` prefix in front of it.
 
-If you are using Python 3.7 on Windows, you might get an error in the next step. Before proceeding, download unofficial pythonnet wheel file from `<https://www.lfd.uci.edu/~gohlke/pythonlibs/#pythonnet>` to your current directory, rename it to ``pythonnet.whl`` and run:
+If you are using Python 3.7 on Windows, you might get an error in the next step. Before proceeding, download unofficial pythonnet wheel file from `<https://www.lfd.uci.edu/~gohlke/pythonlibs/#pythonnet>`_ to your current directory, rename it to ``pythonnet.whl`` and run:
 
-.. code-block:: doscon
+.. tabs::
 
-  C:\..> pip install pythonnet.whl
+  .. group-tab:: Windows
+
+    .. code-block:: doscon
+
+      C:\..> pip install pythonnet.whl
 
 Next, install Toga into your virtual environment:
 
@@ -88,7 +92,7 @@ The code starts with imports. First, we import toga::
 
     import toga
 
-Then, we set up a handler - a wrapper around behavior that we want to activate
+Then we set up a handler, which is a wrapper around behavior that we want to activate
 when the button is pressed. A handler is just a function. The function takes
 the widget that was activated as the first argument; depending on the type of
 event that is being handled, other arguments may also be provided. In the case
@@ -97,10 +101,7 @@ of a simple button press, however, there are no extra arguments::
     def button_handler(widget):
         print("hello")
 
-By creating an app, we're declaring that we want to have a main window, with a
-main menu. However, Toga doesn't know what content we want in that main
-window. The next step is to define a method that describes the UI that we want
-our app to have. This method is a callable that accepts an app instance::
+When the app gets instantiated (in `main()`, discussed below), Toga will create a window with a menu. We need to provide a method that tells Toga what content to display in the window. The method can be named anything, it just needs to accept an app instance::
 
     def build(app):
 
@@ -134,7 +135,7 @@ Now we will make the button take up all the available width::
 
        button.style.flex = 1
 
-``flex`` attribute specifies how an element is sized with respect to other
+The ``flex`` attribute specifies how an element is sized with respect to other
 elements along its direction. The default direction is row (horizontal) and
 since the button is the only element here, it will take up the whole width.
 Check out `style docs <https://toga.readthedocs.io/en/latest/reference/style/pack.html#flex>`_
@@ -155,16 +156,16 @@ the UI content. This box will be the content of the app's main window::
         return box
 
 Lastly, we instantiate the app itself. The app is a high level container
-representing the executable. The app has a name, and a unique identifier. The
+representing the executable. The app has a name and a unique identifier. The
 identifier is used when registering any app-specific system resources. By
 convention, the identifier is a "reversed domain name". The app also accepts
-our callable defining the main window contents. We wrap this creation process
-into a method called `main`, which returns a new instance of our application::
+our method defining the main window contents. We wrap this creation process
+into a method called `main()`, which returns a new instance of our application::
 
     def main():
         return toga.App('First App', 'org.pybee.helloworld', startup=build)
 
-The entry point for the project then needs to instantiate this entry point,
+The entry point for the project then needs to instantiate this entry point
 and start the main app loop. The call to `main_loop()` is a blocking call;
 it won't return until you quit the main app::
 
@@ -176,7 +177,9 @@ And that's it! Save this script as ``helloworld.py``, and you're ready to go.
 Running the app
 ---------------
 
-To run the app you'll need to execute the correct command for your platform from your working directory:
+The app acts as a Python module, which means you need to run it in a different manner than running a regular Python script: You need to specify the :code:`-m` flag and *not* include the :code:`.py` extension for the script name. 
+
+Here is the command to run for your platform from your working directory:
 
 .. tabs::
 
