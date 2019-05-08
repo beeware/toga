@@ -86,3 +86,22 @@ class TableTests(TestCase):
             factory=toga_dummy.factory
         )
         self.assertEqual(secondtable.multiple_select, True)
+
+    def test_on_select(self):
+
+        def dummy_handler(widget, row):
+            pass
+
+        self.assertValueSet(self.table, "on_select", self.table.on_select)
+
+        on_sele = self.table.on_select
+
+        self.assertEqual(on_sele._raw, self.on_select)
+
+        self.table.on_select = dummy_handler
+
+        on_sele = self.table.on_select
+
+        self.assertEqual(on_sele._raw, dummy_handler)
+
+
