@@ -10,8 +10,8 @@ def build(app):
     c_input = toga.TextInput(readonly=True)
     f_input = toga.TextInput()
 
-    c_label = toga.Label('Celsius', style=Pack(text_align=LEFT, font_family='wrong family'))
-    f_label = toga.Label('Fahrenheit', style=Pack(text_align=LEFT, font_weight=BOLD, font_style=OBLIQUE, font_size=16))
+    c_label = toga.Label('Celsius', style=Pack(text_align=LEFT))
+    f_label = toga.Label('Fahrenheit', style=Pack(text_align=LEFT))
     join_label = toga.Label('is equivalent to', style=Pack(text_align=RIGHT))
 
     def calculate(widget):
