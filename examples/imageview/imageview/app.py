@@ -1,6 +1,6 @@
 import os
 import toga
-from toga.style.pack import *
+from toga.style.pack import CENTER, COLUMN
 
 
 class ImageViewApp(toga.App):

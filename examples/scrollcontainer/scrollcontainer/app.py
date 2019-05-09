@@ -1,6 +1,6 @@
 import os
 import toga
-from toga.style.pack import *
+from toga.style.pack import COLUMN, LEFT
 
 class ScrollContainerApp(toga.App):
     def startup(self):
