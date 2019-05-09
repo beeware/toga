@@ -18,7 +18,7 @@ from toga.fonts import (
     CURSIVE,
     FANTASY,
     MONOSPACE,
-)
+)  # noqa: E402
 
 
 def TextAlignment(value):
