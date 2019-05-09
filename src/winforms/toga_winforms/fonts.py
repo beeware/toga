@@ -1,4 +1,4 @@
-from .libs import Font as WinFont
+from .libs import WinFont
 from .libs import FontFamily, FontStyle, Single, win_font_family
 
 _FONT_CACHE = {}
