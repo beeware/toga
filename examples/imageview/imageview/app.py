@@ -1,4 +1,3 @@
-import os
 import toga
 from toga.style.pack import CENTER, COLUMN
 
