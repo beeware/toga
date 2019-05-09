@@ -104,7 +104,7 @@ Toga is part of the `BeeWare suite`_. You can talk to the community through:
 Contributing
 ------------
 
-If you experience problems with this backend, `log them on GitHub`_. If you
+If you experience problems with Toga, `log them on GitHub`_. If you
 want to contribute code, please `fork the code`_ and `submit a pull request`_.
 
 .. _Toga widget toolkit: http://beeware.org/toga
