@@ -13,17 +13,9 @@ from System import Uri  # noqa: E402, F401
 from System.Drawing import Icon as WinIcon  # noqa: E402, F401
 from System.Drawing import Image as WinImage  # noqa: E402, F401
 from System.Drawing import Font as WinFont  # noqa: E402, F401
-from System.Drawing import (
-    ContentAlignment,
-    SystemFonts,
-    FontFamily,
-    FontStyle,
-    Text,
-    Size,
-    Point,
-    Color,
-    Bitmap,
-)  # noqa: E402, F401
+from System.Drawing import ContentAlignment, Size, Point  # noqa: E402, F401
+from System.Drawing import FontFamily, FontStyle, SystemFonts  # noqa: E402, F401
+from System.Drawing import Text, Color, Bitmap  # noqa: E402, F401
 from toga.constants import LEFT, RIGHT, CENTER, JUSTIFY  # noqa: E402
 from toga.fonts import (
     MESSAGE,
