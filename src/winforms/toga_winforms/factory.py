@@ -1,7 +1,7 @@
 from .app import App, MainWindow
 from .command import Command
 
-# from .fonts import Font
+from .fonts import Font
 from .icons import Icon
 from .images import Image
 
@@ -40,7 +40,7 @@ __all__ = [
     'Command',
 
     # Resources
-    # 'Font',
+    'Font',
     'Icon',
     'Image',
 
