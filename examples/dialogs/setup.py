@@ -20,7 +20,7 @@ setup(
     description='Test app for the Dialogs widget.',
     long_description=long_description,
     author='BeeWare Project',
-    author_email='contact@pybee.org',
+    author_email='contact@beeware.org',
     license='BSD license',
     packages=find_packages(
         exclude=[
@@ -44,7 +44,7 @@ setup(
     options={
         'app': {
             'formal_name': 'Dialogs',
-            'bundle': 'org.pybee.widgets'
+            'bundle': 'org.beeware.widgets'
         },
 
         # Desktop/laptop deployments

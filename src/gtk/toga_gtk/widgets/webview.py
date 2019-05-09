@@ -4,7 +4,7 @@ from gi.repository import Gtk
 
 # The following import will fail if WebKit or it's API wrappers aren't
 # installed; handle failure gracefully
-# (see https://github.com/pybee/toga/issues/26)
+# (see https://github.com/beeware/toga/issues/26)
 # Accept any API version greater than 3.0
 WebKit2 = None
 for version in ['4.0', '3.0']:

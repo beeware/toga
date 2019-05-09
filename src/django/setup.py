@@ -23,7 +23,7 @@ setup(
     long_description=long_description,
     author='Russell Keith-Magee',
     author_email='russell@keith-magee.com',
-    url='http://pybee.org/toga',
+    url='http://beeware.org/toga',
     packages=find_packages(exclude='tests'),
     python_requires='>=3.5',
     include_package_data=True,

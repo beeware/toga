@@ -43,7 +43,7 @@ setup(
     options={
         'app': {
             'formal_name': 'Button',
-            'bundle': 'org.pybee'
+            'bundle': 'org.beeware'
         },
         'macos': {
             'app_requires': [

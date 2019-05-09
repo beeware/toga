@@ -2,6 +2,7 @@
 App
 apps
 backends
+beeware
 ButtonsType
 checkbox
 CheckButton
@@ -35,7 +36,6 @@ pre
 prepurposed
 ProgressBar
 Progressbar
-pybee
 Quickstart
 Refactored
 Ren

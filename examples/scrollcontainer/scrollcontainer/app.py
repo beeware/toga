@@ -1,10 +1,10 @@
-import os
 import toga
-from toga.style.pack import *
+from toga.style.pack import COLUMN, LEFT
+
 
 class ScrollContainerApp(toga.App):
     def startup(self):
-        self.main_window = toga.MainWindow(self.name)        
+        self.main_window = toga.MainWindow(self.name)
         box = toga.Box()
         box.style.direction = COLUMN
 
@@ -14,12 +14,13 @@ class ScrollContainerApp(toga.App):
 
         scroller = toga.ScrollContainer()
         scroller.content = box
-        
+
         self.main_window.content = scroller
         self.main_window.show()
 
+
 def main():
-    return ScrollContainerApp('ScrollContainer', 'org.pybee.widgets.scrollcontainer')
+    return ScrollContainerApp('ScrollContainer', 'org.beeware.widgets.scrollcontainer')
 
 
 if __name__ == '__main__':

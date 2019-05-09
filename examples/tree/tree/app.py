@@ -87,7 +87,7 @@ class ExampleTreeApp(toga.App):
 
 
 def main():
-    return ExampleTreeApp('Tree', 'org.pybee.widgets.tree')
+    return ExampleTreeApp('Tree', 'org.beeware.widgets.tree')
 
 
 if __name__ == '__main__':
