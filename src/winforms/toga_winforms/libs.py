@@ -22,7 +22,7 @@ from System.Drawing import (
     Size,
     Point,
     Color,
-    Bitmap
+    Bitmap,
 )  # noqa: E402, F401
 from toga.constants import LEFT, RIGHT, CENTER, JUSTIFY  # noqa: E402
 from toga.fonts import (
