@@ -25,7 +25,8 @@ class TextInput(Widget):
         self.native.TextAlign = HorizontalTextAlignment(value)
 
     def set_font(self, value):
-        self.interface.factory.not_implemented('TextInput.set_font()')
+        if value:
+            self.native.Font = value._impl.native
 
     def rehint(self):
         # Height of a text input is known and fixed.
