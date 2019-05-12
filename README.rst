@@ -17,8 +17,8 @@ Toga
 .. image:: https://img.shields.io/pypi/l/toga.svg
     :target: https://github.com/beeware/toga/blob/master/LICENSE
 
-.. image:: https://beekeeper.beeware.org/projects/beeware/batavia/shield
-    :target: https://beekeeper.beeware.org/projects/beeware/batavia
+.. image:: https://beekeeper.beeware.org/projects/beeware/toga/shield
+    :target: https://beekeeper.beeware.org/projects/beeware/toga
 
 .. image:: https://badges.gitter.im/beeware/general.svg
     :target: https://gitter.im/beeware/general
