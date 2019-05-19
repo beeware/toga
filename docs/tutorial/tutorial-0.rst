@@ -11,7 +11,7 @@ button, that prints to the console when you press the button.
 Set up your development environment
 ===================================
 
-Make sure you installed `Toga prerequisites <https://github.com/beeware/toga#prerequisites>`_, such as Python3 and other librariesn the create a working directory for your code and change to it.
+Make sure you installed the `Toga prerequisites <https://github.com/beeware/toga#prerequisites>`_, such as Python 3 and the other libraries. Then create a working directory for your code and change to it.
 
 If Python 3 is *not* installed, you can do so via `the official installer <https://www.python.org/downloads>`_, or via `pyenv <https://github.com/pyenv/pyenv#simple-python-version-management-pyenv>`_, as described in the `environment page <https://beeware.org/contributing/how/first-time/setup>`_.
 
@@ -76,7 +76,7 @@ Next, install Toga into your virtual environment:
 
       (venv) C:\...>pip install --pre toga
 
-If you get other errors, please check that you followed [prerequisites](https://github.com/beeware/toga#prerequisites) instructions.
+If you get other errors, please check that you followed `prerequisites <https://github.com/beeware/toga#prerequisites>`_ instructions.
 
 After a successful installation of Toga you are ready to get coding.
 
