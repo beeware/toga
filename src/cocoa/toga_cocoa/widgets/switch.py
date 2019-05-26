@@ -27,7 +27,7 @@ class Switch(Widget):
         self.add_constraints()
 
     def set_label(self, label):
-        self.native.title = label
+        self.native.title = self.interface.label
 
     def set_is_on(self, value):
         if value is True:

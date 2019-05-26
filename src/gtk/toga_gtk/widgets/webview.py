@@ -44,7 +44,7 @@ class WebView(Widget):
 
     def set_url(self, value):
         if value:
-            self.webview.load_uri(value)
+            self.webview.load_uri(self.interface.url)
 
     def set_user_agent(self, value):
         self.interface.factory.not_implemented('Window.info_dialog()')
