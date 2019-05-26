@@ -20,7 +20,7 @@ class Switch(Widget):
         self.native = TogaSwitch(self.interface)
 
     def set_label(self, label):
-        self.native.Text = label
+        self.native.Text = self.interface.label
 
     def set_is_on(self, value):
         if value is True:
