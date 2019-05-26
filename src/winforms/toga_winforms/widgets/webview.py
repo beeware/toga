@@ -20,7 +20,7 @@ class WebView(Widget):
             self.native.Navigate(Uri(self.interface.url), "_self", None, "User-Agent: %s" % self.interface.user_agent)
 
     def set_content(self, root_url, content):
-        self.native.Navigate(Uri(root_url), "_self" , None, self.interface.user_agent)
+        self.native.Navigate(Uri(root_url), "_self", None, self.interface.user_agent)
 
     def get_dom(self):
         self.interface.factory.not_implemented('WebView.get_dom()')
