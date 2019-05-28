@@ -89,4 +89,4 @@ class TogaDemo(toga.App):
 
 
 def main():
-    return TogaDemo('Toga Demo', 'org.pybee.toga-demo')
+    return TogaDemo('Toga Demo', 'org.beeware.toga-demo')

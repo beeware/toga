@@ -119,7 +119,7 @@ def toga_key(event):
     modifiers = set()
 
     if event.modifierFlags & NSEventModifierFlagCapsLock:
-        modifiers.add(Key.CAPS_LOCK)
+        modifiers.add(Key.CAPSLOCK)
     if event.modifierFlags & NSEventModifierFlagShift:
         modifiers.add(Key.SHIFT)
     if event.modifierFlags & NSEventModifierFlagControl:

@@ -30,7 +30,7 @@ To start a UI loop, call `app.main_loop()`
 
 
     if __name__ == '__main__':
-        app = toga.App('First App', 'org.pybee.helloworld', startup=build)
+        app = toga.App('First App', 'org.beeware.helloworld', startup=build)
         app.main_loop()
 
 Alternatively, you can subclass App and implement the startup method
@@ -47,7 +47,7 @@ Alternatively, you can subclass App and implement the startup method
 
 
     if __name__ == '__main__':
-        app = MyApp('First App', 'org.pybee.helloworld')
+        app = MyApp('First App', 'org.beeware.helloworld')
         app.main_loop()
 
 Reference

@@ -60,6 +60,7 @@ class SliderApp(toga.App):
         # get the current value of the slider with `slider.value`
         self.sliderValueLabel.text = "The slider value changed to {0}".format(int(slider.value))
 
+
 def main():
     # App name and namespace
-    return SliderApp('Slider', 'org.pybee.examples.slider')
+    return SliderApp('Slider', 'org.beeware.examples.slider')

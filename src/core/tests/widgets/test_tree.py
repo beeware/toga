@@ -49,3 +49,22 @@ class TreeTests(TestCase):
 
     def test_data_setter_creates_tree_with_data_none(self):
         pass
+
+    def test_multiselect_getter(self):
+        super().setUp()
+        self.headings = ['Heading {}'.format(x) for x in range(3)]
+
+        self.data = None
+        self.tree = toga.Tree(headings=self.headings,
+                              data=self.data,
+                              multiple_select=True,
+                              factory=toga_dummy.factory)
+
+        self.assertEqual(self.tree.multiple_select, True)
+
+        self.tree = toga.Tree(headings=self.headings,
+                              data=self.data,
+                              multiple_select=False,
+                              factory=toga_dummy.factory)
+
+        self.assertEqual(self.tree.multiple_select, False)

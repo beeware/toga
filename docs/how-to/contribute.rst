@@ -6,9 +6,9 @@ How to contribute to Toga
 
 If you experience problems with Toga, `log them on GitHub`_. If you want to contribute code, please `fork the code`_ and `submit a pull request`_.
 
-.. _log them on Github: https://github.com/pybee/toga/issues
-.. _fork the code: https://github.com/pybee/toga
-.. _submit a pull request: https://github.com/pybee/toga/pulls
+.. _log them on Github: https://github.com/beeware/toga/issues
+.. _fork the code: https://github.com/beeware/toga
+.. _submit a pull request: https://github.com/beeware/toga/pulls
 
 
 Set up your development environment
@@ -87,7 +87,7 @@ start coding. To set up a virtual environment, run:
 
 Your prompt should now have a ``(venv)`` prefix in front of it.
 
-Next, go to `the Toga page on Github <https://github.com/pybee/toga>`__, and
+Next, go to `the Toga page on Github <https://github.com/beeware/toga>`__, and
 fork the repository into your own account, and then clone a copy of that
 repository onto your computer by clicking on "Clone or Download". If you
 have the Github desktop application installed on your computer, you can
@@ -463,7 +463,7 @@ raising a ticket. Or, if you're confident that you know what needs to be done,
 create a pull request that fixes the problem you've found.
 
 One example of the type of consistency we're looking for is described in
-`this ticket <https://github.com/pybee/toga/issues/299>`__.
+`this ticket <https://github.com/beeware/toga/issues/299>`__.
 
 What next?
 ==========

@@ -144,7 +144,7 @@ class ExampledialogsApp(toga.App):
 
 
 def main():
-    return ExampledialogsApp('Dialogs', 'org.pybee.widgets.dialogs')
+    return ExampledialogsApp('Dialogs', 'org.beeware.widgets.dialogs')
 
 
 if __name__ == '__main__':

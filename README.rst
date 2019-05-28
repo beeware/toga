@@ -15,13 +15,13 @@ Toga
     :target: https://pypi.python.org/pypi/toga
 
 .. image:: https://img.shields.io/pypi/l/toga.svg
-    :target: https://github.com/pybee/toga/blob/master/LICENSE
+    :target: https://github.com/beeware/toga/blob/master/LICENSE
 
-.. image:: https://beekeeper.beeware.org/projects/beeware/batavia/shield
-    :target: https://beekeeper.beeware.org/projects/beeware/batavia
+.. image:: https://beekeeper.beeware.org/projects/beeware/toga/shield
+    :target: https://beekeeper.beeware.org/projects/beeware/toga
 
-.. image:: https://badges.gitter.im/pybee/general.svg
-    :target: https://gitter.im/pybee/general
+.. image:: https://badges.gitter.im/beeware/general.svg
+    :target: https://gitter.im/beeware/general
 
 
 A Python native, OS native GUI toolkit.
@@ -88,7 +88,7 @@ Toga is part of the `BeeWare suite`_. You can talk to the community through:
 
 * `@pybeeware on Twitter`_
 
-* The `pybee/general`_ channel on Gitter.
+* The `beeware/general`_ channel on Gitter.
 
 Contributing
 ~~~~~~~~~~~~
@@ -102,9 +102,9 @@ contribute code, please `fork the code`_ and `submit a pull request`_.
 .. _BeeWare suite: https://beeware.org/
 .. _Read The Docs: https://toga.readthedocs.io
 .. _@pybeeware on Twitter: https://twitter.com/pybeeware
-.. _pybee/general: https://gitter.im/pybee/general
+.. _beeware/general: https://gitter.im/beeware/general
 .. _guide for first time contributors: https://toga.readthedocs.io/en/latest/how-to/contribute.html 
-.. _log them on Github: https://github.com/pybee/toga/issues
-.. _fork the code: https://github.com/pybee/toga
-.. _submit a pull request: https://github.com/pybee/toga/pulls
+.. _log them on Github: https://github.com/beeware/toga/issues
+.. _fork the code: https://github.com/beeware/toga
+.. _submit a pull request: https://github.com/beeware/toga/pulls
 .. _Virtual Environment: https://www.virtualenv.org

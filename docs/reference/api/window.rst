@@ -36,7 +36,7 @@ instantiation and support displaying multiple widgets, toolbars and resizing.
 
 
     def main():
-        return ExampleWindow('Window', 'org.pybee.window')
+        return ExampleWindow('Window', 'org.beeware.window')
 
 
     if __name__ == '__main__':

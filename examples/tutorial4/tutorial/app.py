@@ -103,7 +103,7 @@ class StartApp(toga.App):
 
 
 def main():
-    return StartApp('Tutorial 4', 'org.pybee.helloworld')
+    return StartApp('Tutorial 4', 'org.beeware.helloworld')
 
 
 if __name__ == '__main__':

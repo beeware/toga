@@ -43,7 +43,7 @@ setup(
     options={
         'app': {
             'formal_name': 'Tutorial 1',
-            'bundle': 'org.pybee'
+            'bundle': 'org.beeware'
         },
 
         # Desktop/laptop deployments

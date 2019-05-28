@@ -30,7 +30,7 @@ Toga Demo is part of the `BeeWare suite`_. You can talk to the community through
 
 * `@pybeeware on Twitter`_
 
-* The `pybee/general`_ channel on Gitter.
+* The `beeware/general`_ channel on Gitter.
 
 Contributing
 ------------
@@ -38,12 +38,12 @@ Contributing
 If you experience problems with Toga Demo, `log them on GitHub`_. If you
 want to contribute code, please `fork the code`_ and `submit a pull request`_.
 
-.. _BeeWare suite: http://pybee.org
+.. _BeeWare suite: http://beeware.org
 .. _Read The Docs: http://toga-demo.readthedocs.org
-.. _Toga widget toolkit: http://pybee.org/toga
-.. _toga repository on GitHub: https://github.com/pybee/toga
+.. _Toga widget toolkit: http://beeware.org/toga
+.. _toga repository on GitHub: https://github.com/beeware/toga
 .. _@pybeeware on Twitter: https://twitter.com/pybeeware
-.. _pybee/general: https://gitter.im/pybee/general
-.. _log them on Github: https://github.com/pybee/toga-demo/issues
-.. _fork the code: https://github.com/pybee/toga-demo
-.. _submit a pull request: https://github.com/pybee/toga-demo/pulls
+.. _beeware/general: https://gitter.im/beeware/general
+.. _log them on Github: https://github.com/beeware/toga-demo/issues
+.. _fork the code: https://github.com/beeware/toga-demo
+.. _submit a pull request: https://github.com/beeware/toga-demo/pulls

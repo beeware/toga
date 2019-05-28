@@ -21,4 +21,9 @@ Create a new virtualenv. In your virtualenv, install Toga, and then run it::
 This will pop up a GUI window showing the full range of widgets available
 to an application using Toga.
 
+There is a known issue with the current build on some Mac OS distributions. If you are
+running Mac OS Sierra or higher, use the following installation command instead:
+
+    $ pip install toga-demo --pre
+
 Have fun, and see the :ref:`reference` to learn more about what's going on.

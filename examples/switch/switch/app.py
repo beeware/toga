@@ -38,5 +38,5 @@ class SwitchApp(toga.App):
 def main():
     # Application class
     #   App name and namespace
-    app = SwitchApp('Switches', 'org.pybee.helloworld')
+    app = SwitchApp('Switches', 'org.beeware.helloworld')
     return app

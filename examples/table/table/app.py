@@ -86,7 +86,7 @@ class ExampleTableApp(toga.App):
 
 
 def main():
-    return ExampleTableApp('Table', 'org.pybee.widgets.table')
+    return ExampleTableApp('Table', 'org.beeware.widgets.table')
 
 
 if __name__ == '__main__':

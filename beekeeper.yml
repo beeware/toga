@@ -40,7 +40,7 @@ pull_request:
             - winforms:
                 name: Winforms implementation compliance check
                 environment:
-                    EXTRA_REQUIRES: https://github.com/pybee/legless-lizard/archive/master.zip
+                    EXTRA_REQUIRES: https://github.com/beeware/legless-lizard/archive/master.zip
                     TEST_DIR: src/winforms
                     SRC_DEPENDANTS: src/core src/dummy
             - cocoa:

@@ -40,7 +40,8 @@ class NumberInput(Widget):
         self.native.TextAlign = HorizontalTextAlignment(value)
 
     def set_font(self, value):
-        self.interface.factory.not_implemented('NumberInput.set_font()')
+        if value:
+            self.native.Font = value._impl.native
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
