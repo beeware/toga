@@ -29,7 +29,7 @@ class Switch(Widget):
         self._on_toggle_handler = handler
 
     def set_label(self, label):
-        self.label.set_text(label)
+        self.label.set_text(self.interface.label)
 
     def get_is_on(self):
         return self.switch.get_active()

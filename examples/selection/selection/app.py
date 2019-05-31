@@ -70,4 +70,4 @@ class SelectionApp(toga.App):
 
 def main():
     # App name and namespace
-    return SelectionApp('Selection', 'org.pybee.selection')
+    return SelectionApp('Selection', 'org.beeware.selection')

@@ -15,9 +15,6 @@ class Button(Widget):
         self.native.set_label(self.interface.label)
         self.rehint()
 
-    def set_enabled(self, value=True):
-        super(Button, self).set_enabled(value)
-
     def set_background_color(self, value):
         if value:
             gtk_apply_css(self.native, {"background-color": value})

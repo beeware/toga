@@ -38,8 +38,8 @@ class Icon:
             toga_dir = os.path.dirname(__file__)
             return os.path.join(toga_dir, 'resources', self.path)
         else:
-            from toga.app import App
-            return os.path.join(App.app_dir, self.path)
+            # no resource dir so default to the file path
+            return self.path
 
     def bind(self, factory):
         if self._impl is None:

@@ -4,7 +4,7 @@ from gi.repository import Gtk
 
 # The following import will fail if WebKit or it's API wrappers aren't
 # installed; handle failure gracefully
-# (see https://github.com/pybee/toga/issues/26)
+# (see https://github.com/beeware/toga/issues/26)
 # Accept any API version greater than 3.0
 WebKit2 = None
 for version in ['4.0', '3.0']:
@@ -44,7 +44,7 @@ class WebView(Widget):
 
     def set_url(self, value):
         if value:
-            self.webview.load_uri(value)
+            self.webview.load_uri(self.interface.url)
 
     def set_user_agent(self, value):
         self.interface.factory.not_implemented('Window.info_dialog()')

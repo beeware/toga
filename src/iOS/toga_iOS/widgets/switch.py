@@ -38,7 +38,7 @@ class Switch(Widget):
         self.add_constraints()
 
     def set_label(self, label):
-        self.native_label.text = str(label)
+        self.native_label.text = str(self.interface.label)
         self.rehint()
 
     def set_is_on(self, value):

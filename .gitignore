@@ -12,6 +12,7 @@ docs/env
 local
 venv
 .idea
+Pipfile*
 .tox
 node_modules
 README.md

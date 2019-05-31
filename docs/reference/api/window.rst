@@ -22,8 +22,26 @@ instantiation and support displaying multiple widgets, toolbars and resizing.
 
     import toga
 
-    window = toga.Window('my window', title='This is a window!')
-    window.show()
+
+    class ExampleWindow(toga.App):
+        def startup(self):
+            self.label = toga.Label('Hello World')
+            outer_box = toga.Box(
+                children=[self.label]
+            )
+            self.window = toga.Window()
+            self.window.content = outer_box
+
+            self.window.show()
+
+
+    def main():
+        return ExampleWindow('Window', 'org.beeware.window')
+
+
+    if __name__ == '__main__':
+        app = main()
+        app.main_loop()
 
 Reference
 ---------

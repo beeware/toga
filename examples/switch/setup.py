@@ -22,7 +22,7 @@ setup(
     description='A demonstration of all features of a toga.Switch example for the native GUI toolkit, Toga.',
     long_description=long_description,
     author='BeeWare',
-    author_email='contact@pybee.org',
+    author_email='contact@beeware.org',
     license='New BSD',
     packages=find_packages(exclude=['docs', 'tests']),
     python_requires='>=3.5',
@@ -43,7 +43,7 @@ setup(
     options={
         'app': {
             'formal_name': 'Switch',
-            'bundle': 'org.pybee'
+            'bundle': 'org.beeware'
         },
         'macos': {
             'app_requires': [

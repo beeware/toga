@@ -40,4 +40,4 @@ with various widget toolkits for over 20 years, so the metaphor seemed
 appropriate.
 
 .. _yak shaving: http://en.wiktionary.org/wiki/yak_shaving
-.. _BeeWare: http://pybee.org
+.. _BeeWare: http://beeware.org

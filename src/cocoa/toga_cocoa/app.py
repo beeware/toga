@@ -208,7 +208,7 @@ class DocumentApp(App):
     def _create_app_commands(self):
         self.interface.commands.add(
             toga.Command(
-                lambda w: self.open_file,
+                lambda _: self.select_file(),
                 label='Open...',
                 shortcut='o',
                 group=toga.Group.FILE,
@@ -241,6 +241,7 @@ class DocumentApp(App):
             fileURL (str): The URL/path to the file to add as a document.
         """
         # Convert a cocoa fileURL to a file path.
+        fileURL = fileURL.strip('/')
         path = unquote(urlparse(fileURL).path)
         extension = os.path.splitext(path)[1][1:]
 

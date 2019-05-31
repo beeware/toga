@@ -49,7 +49,7 @@ def build(app):
 
 
 def main():
-    return toga.App('Temperature Converter', 'org.pybee.f_to_c', startup=build)
+    return toga.App('Temperature Converter', 'org.beeware.f_to_c', startup=build)
 
 
 if __name__ == '__main__':

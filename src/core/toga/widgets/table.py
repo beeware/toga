@@ -6,7 +6,7 @@ from .base import Widget
 
 
 class Table(Widget):
-    """ A Table Widget allows the display of data in the from of columns and rows.
+    """ A Table Widget allows the display of data in the form of columns and rows.
 
     Args:
         headings (``list`` of ``str``): The list of headings for the table.

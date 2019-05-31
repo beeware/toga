@@ -48,7 +48,7 @@ setup(
     package_urls={
         'Funding': 'https://beeware.org/contributing/membership/',
         'Documentation': 'https://toga.readthedocs.io/',
-        'Tracker': 'https://github.com/pybee/toga/issues',
-        'Source': 'https://github.com/pybee/toga',
+        'Tracker': 'https://github.com/beeware/toga/issues',
+        'Source': 'https://github.com/beeware/toga',
     },
 )

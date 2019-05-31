@@ -33,7 +33,7 @@ class App:
 
     Args:
         name (str): Is the name of the application.
-        app_id (str): The unique application identifier, the reversed domain name, e.g. 'org.pybee.me'
+        app_id (str): The unique application identifier, the reversed domain name, e.g. 'org.beeware.me'
         icon (str): Path to the icon for the application.
         id (str): The DOM identifier for the app (optional)
         startup(``callable``): The callback method before starting the app, typically to add the components.
@@ -43,7 +43,7 @@ class App:
 
     Examples:
         >>> # Here is the absolute minimum App::
-        >>> app = toga.App('Empty App', 'org.pybee.empty')
+        >>> app = toga.App('Empty App', 'org.beeware.empty')
         >>> app.main_loop()
     """
     app = None
