@@ -29,7 +29,7 @@ class Window:
 
     def create(self):
         self.native = WinForms.Form(self)
-        self.native.ClientSize = Size(self.interface._size[0], self.interface._size[1])
+        self.native.ClientSize = Size(*self.interface._size)
         self.native.interface = self.interface
         self.native.Resize += self.winforms_Resize
         self.toolbar_native = None
@@ -57,7 +57,7 @@ class Window:
         pass
 
     def set_size(self, size):
-        self.native.ClientSize = Size(self.interface._size[0], self.interface._size[1])
+        self.native.ClientSize = Size(*self.interface._size)
 
     def set_app(self, app):
         pass

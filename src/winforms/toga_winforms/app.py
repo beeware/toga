@@ -2,7 +2,7 @@ import sys
 
 import toga
 
-from .libs import Threading, WinForms, add_handler
+from .libs import Threading, WinForms, add_handler, user32, win_version
 from .window import Window
 
 
@@ -20,6 +20,11 @@ class App:
 
     def create(self):
         self.native = WinForms.Application
+
+        if win_version >= 6:
+            user32.SetProcessDPIAware(True)
+        self.native.EnableVisualStyles()
+        self.native.SetCompatibleTextRenderingDefault(False)
 
         self.interface.commands.add(
             toga.Command(None, 'About ' + self.interface.name, group=toga.Group.HELP),
