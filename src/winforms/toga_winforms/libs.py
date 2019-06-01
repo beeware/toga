@@ -1,3 +1,5 @@
+import ctypes
+
 import clr
 
 clr.AddReference("System.Windows.Forms")
@@ -9,6 +11,7 @@ from System import Convert  # noqa: E402, F401
 from System import DateTime as WinDateTime  # noqa: E402, F401
 from System import Threading  # noqa: E402, F401
 from System import Uri  # noqa: E402, F401
+from System import Environment  # noqa: E402, F401
 
 from System.Drawing import Icon as WinIcon  # noqa: E402, F401
 from System.Drawing import Image as WinImage  # noqa: E402, F401
@@ -26,6 +29,9 @@ from toga.fonts import (
     FANTASY,
     MONOSPACE,
 )  # noqa: E402
+
+user32 = ctypes.windll.user32
+win_version = Environment.OSVersion.Version.Major
 
 
 def TextAlignment(value):
