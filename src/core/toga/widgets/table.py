@@ -92,6 +92,15 @@ class Table(Widget):
         """
         return self._selection
 
+    def set_headings(self, headings, accessors=None):
+        """Set the headings of a existing table.
+        It resets the data in the table.
+        """
+        self.headings = headings
+        self._accessors = build_accessors(headings, accessors)
+        self._data = None
+        self._impl = self.factory.Table(interface=self)
+
     def scroll_to_top(self):
         """Scroll the view so that the top of the list (first row) is visible
         """
