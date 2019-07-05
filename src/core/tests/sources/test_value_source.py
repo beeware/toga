@@ -19,7 +19,7 @@ class ValueTests(TestCase):
         self.assertEqual(str(self.example), 'label')
 
     def test_set_value(self):
-        "If the value is modified, internal representation is updated, and notifications are propegated"
+        "If the value is modified, internal representation is updated, and notifications are propagated"
         self.example.value = 42
 
         self.assertEqual(self.example.value, 42)
@@ -27,7 +27,7 @@ class ValueTests(TestCase):
         self.source._notify.assert_called_once_with('change', item=self.example)
 
     def test_clear_value(self):
-        "If the value is cleared, internal representation is updated, and notifications are propegated"
+        "If the value is cleared, internal representation is updated, and notifications are propagated"
         self.example.value = None
 
         self.assertIsNone(self.example.value)

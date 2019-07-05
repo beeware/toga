@@ -8,7 +8,7 @@ class Win32Container(object):
 class Container(CassowaryContainer):
 
     def _create_container(self):
-        # No impl is requried for a container, but we need a placeholder
+        # No impl is required for a container, but we need a placeholder
         # to keep the cross-platform logic happy.
         return Win32Container()
 

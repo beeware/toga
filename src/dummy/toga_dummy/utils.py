@@ -282,7 +282,7 @@ class TestCase(unittest.TestCase):
 #####
 
     def assertValueSet(self, _widget, attr, value):
-        """Assert that the widget implmentation has set an attribute to a value.
+        """Assert that the widget implementation has set an attribute to a value.
 
         Args:
             _widget: The interface of the widget to check
@@ -310,7 +310,7 @@ class TestCase(unittest.TestCase):
             self.fail('Widget {} is not a logged object'.format(_widget))
 
     def assertValuesSet(self, _widget, attr, values):
-        """Assert that the widget implmentation has been set to multiple values.
+        """Assert that the widget implementation has been set to multiple values.
 
         Args:
             _widget: The interface of the widget to check
