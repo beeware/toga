@@ -21,7 +21,7 @@ Release History
 0.2.13
 ------
 
-* Various fixes in peparation for PyCon AU demo
+* Various fixes in preparation for PyCon AU demo
 
 0.2.12
 ------

@@ -397,7 +397,7 @@ doesn’t actually display a button).
 In this way, it's possible to for the Toga Core tests to exercise every API
 entry point in the Toga Core package, verify that data is stored correctly on
 the interface layer, and sent through to the right endpoints in the Dummy
-backend. If the *dummy* backend is invoked correcty, then any other backend
+backend. If the *dummy* backend is invoked correctly, then any other backend
 will be handled correctly, too.
 
 One error you might see...
