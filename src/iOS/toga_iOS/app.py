@@ -3,7 +3,8 @@ import asyncio
 from rubicon.objc import objc_method
 from rubicon.objc.eventloop import EventLoopPolicy, iOSLifecycle
 
-from .libs import (NSNotificationCenter,
+from .libs import (
+    NSNotificationCenter,
     SEL,
     UIKeyboardFrameEndUserInfoKey,
     UIKeyboardWillHideNotification,

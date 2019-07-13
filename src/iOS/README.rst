@@ -16,7 +16,7 @@ Toga is part of the `BeeWare suite`_. You can talk to the community through:
 
 * `@pybeeware on Twitter`_
 
-* The `pybee/general`_ channel on Gitter.
+* The `beeware/general`_ channel on Gitter.
 
 Contributing
 ------------

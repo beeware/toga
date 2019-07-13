@@ -84,13 +84,12 @@ Related projects
 This package is a top level package. It depends on the use of platform-specific
 backends to provide real functionality:
 
-* `toga-cocoa`_: for OS/X
-* `toga-gtk`_: GTK+ backend for Linux desktops
-* `toga-iOS`_: for iOS devices (iPhone, iPad, iPod)
-* `toga-android`_: for Android devices (limited support)
-* `toga-win32`_: for old Windows desktops (limited support)
-* `toga-winforms`_: for recent Window devices (limited support)
-* `toga-uwp`_: for Windows 10 and Windows Mobile devices (limited support)
+* ``toga-cocoa``: for macOS
+* ``toga-gtk``: GTK+ backend for Linux desktops
+* ``toga-iOS``: for iOS devices (iPhone, iPad, iPod)
+* ``toga-android``: for Android devices (limited support)
+* ``toga-winforms``: for recent Window devices (limited support)
+* ``toga-django``: for web deployment (limited support)
 
 Community
 ---------
@@ -107,7 +106,8 @@ Contributing
 If you experience problems with Toga, `log them on GitHub`_. If you
 want to contribute code, please `fork the code`_ and `submit a pull request`_.
 
-.. _Toga widget toolkit: http://beeware.org/toga
+.. _Toga widget toolkit: https://beeware.org/toga
+.. _Read The Docs: https://toga.readthedocs.io
 .. _the core Toga library: https://pypi.python.org/pypi/toga-core
 .. _Toga project on Github: https://github.com/beeware/toga
 .. _BeeWare suite: http://beeware.org
