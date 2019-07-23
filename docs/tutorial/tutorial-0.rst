@@ -146,7 +146,7 @@ The next step is to add the button to the box::
         box.add(button)
 
 The button has a default height, defined by
-the way that the underlying platform draws buttons). As a result, this means
+the way that the underlying platform draws buttons. As a result, this means
 we'll see a single button in the app window that stretches to the width of the
 screen, but has a 50 pixel space surrounding it.
 
