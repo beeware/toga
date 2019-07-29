@@ -29,4 +29,4 @@ class OptionContainer(Widget):
         if handler is None:
             pass
         else:
-            self.native.Selected += handler
+            self.native.Selected += self.interface.on_select
