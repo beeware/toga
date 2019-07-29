@@ -14,8 +14,7 @@ class MultilineTextInput(Widget):
         self.native.ReadOnly = self.interface.readonly
 
     def set_placeholder(self, value):
-        # self.native.cell.placeholderString = self._placeholder
-        self.interface.factory.not_implemented('MultilineTextInput.set_placeholder()')
+        self.native.Text = value
 
     def set_value(self, value):
         self.native.Text = value
