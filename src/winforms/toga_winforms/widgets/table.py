@@ -43,7 +43,8 @@ class Table(Widget):
         self.native.Items.Insert(index, item._impl)
 
     def change(self, item):
-        self.interface.factory.not_implemented('Table.change()')
+        #This event doesnt exist for a listview item
+        pass
 
     def remove(self, item):
         self.update_data()
@@ -52,11 +53,10 @@ class Table(Widget):
         self.native.Items.Clear()
 
     def set_on_select(self, handler):
-        self.interface.factory.not_implemented('Table.set_on_select()')
+        self.native.SelectedIndexChanged += self.interface.on_select
 
     def scroll_to_row(self, row):
         self.native.EnsureVisible(row)
-        self.interface.factory.not_implemented('Table.scroll_to_row()')
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
