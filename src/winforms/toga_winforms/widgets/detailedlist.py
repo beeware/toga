@@ -37,7 +37,7 @@ class DetailedList(Widget):
         if handler is None:
             pass
         else:
-            self.native.SelectedIndexChanged += handler
+            self.native.SelectedIndexChanged += self.interface._on_select
 
     def scroll_to_row(self, row):
         self.native.SelectedItem = self.native.Items[row]
