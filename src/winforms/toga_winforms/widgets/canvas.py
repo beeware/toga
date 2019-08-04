@@ -1,6 +1,6 @@
 from .base import Widget
 from travertino.size import at_least
-from toga_winforms.libs import WinForms, Pen, Color, Int32, SolidBrush, Brush, Bitmap, WinFont, Point
+from toga_winforms.libs import WinForms, Pen, Color, SolidBrush, Brush, Bitmap, WinFont, Point
 from toga_winforms.colors import native_color
 from toga_winforms.window import WinFormsViewport
 import math
@@ -8,7 +8,7 @@ import math
 
 #function to turn radians into degrees
 def get_degrees(radians):
-    return radians * (180 / math.pi)
+    return int(radians * (180 / math.pi))
 
 class Canvas(Widget):
 
@@ -86,6 +86,7 @@ class Canvas(Widget):
             graphics.Dispose()
         else:
             graphics = self.native.CreateGraphics().FromImage(self.bmp)
+            print(get_degrees(startangle))
             graphics.DrawArc(self.pen, x, y, radius, radius, get_degrees(startangle), get_degrees(endangle))
             graphics.Dispose()
 
