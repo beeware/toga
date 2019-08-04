@@ -27,6 +27,7 @@ from .widgets.textinput import TextInput
 from .widgets.tree import Tree
 from .widgets.webview import WebView
 from .widgets.detailedlist import DetailedList
+from .widgets.canvas import Canvas
 from .window import Window
 
 
@@ -48,7 +49,7 @@ __all__ = [
     # Widgets
     'Box',
     'Button',
-    # 'Canvas',
+    'Canvas',
     'DetailedList',
     'ImageView',
     'DatePicker',
