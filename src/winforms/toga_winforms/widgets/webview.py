@@ -26,7 +26,9 @@ class WebView(Widget):
         return str(self.native.Document)
 
     def set_user_agent(self, value):
-        self.native.customUserAgent = value if value else "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.10240"
+        self.native.customUserAgent = value if value else "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"\
+                                                        " AppleWebKit/537.36 (KHTML, like Gecko)"\
+                                                        " Chrome/42.0.2311.135 Safari/537.36 Edge/12.10240"
 
     def evaluate(self, javascript):
         self.native.InvokeScript("eval", javascript)
