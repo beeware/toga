@@ -10,7 +10,6 @@ class DetailedList(Widget):
 
         self.native.SelectionMode = WinForms.SelectionMode.MultiExtended
 
-
     # Change the source of the Widget
     def change_source(self, source):
         self.native.Items.Clear()
@@ -19,18 +18,17 @@ class DetailedList(Widget):
                 getattr(row, attr) for attr in row._attrs
             ])
             self.native.Items.Insert(i, item[0])
-            
 
     def set_on_refresh(self, handler):
-        #doesnt exist for a listbox
+        # doesnt exist for a listbox
         pass
 
     def after_on_refresh(self):
-        #refresh doesnt exist for a listbox
+        # refresh doesnt exist for a listbox
         pass
 
     def set_on_delete(self, handler):
-        #doesnt exist for a listbox
+        # doesnt exist for a listbox
         pass
 
     def set_on_select(self, handler):

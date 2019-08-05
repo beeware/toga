@@ -43,7 +43,7 @@ class Table(Widget):
         self.native.Items.Insert(index, item._impl)
 
     def change(self, item):
-        #This event doesnt exist for a listview item
+        # This event doesnt exist for a listview item
         pass
 
     def remove(self, item):

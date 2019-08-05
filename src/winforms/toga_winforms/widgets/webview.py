@@ -31,7 +31,6 @@ class WebView(Widget):
     def evaluate(self, javascript):
         self.native.InvokeScript("eval", javascript)
 
-
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
         self.interface.intrinsic.height = at_least(self.interface.MIN_HEIGHT)
