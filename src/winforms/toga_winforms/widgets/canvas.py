@@ -5,7 +5,7 @@ from toga_winforms.colors import native_color
 import math
 
 
-#function to turn radians into degrees
+# function to turn radians into degrees
 def get_degrees(radians):
     return int(radians * (180 / math.pi))
 
@@ -34,7 +34,6 @@ class Canvas(Widget):
 
         self.interface.drawing_objects[-1]._draw(self.interface._impl)
 
-
         self.native.Image = self.bmp
 
     # Basic paths
@@ -56,10 +55,10 @@ class Canvas(Widget):
 
     # Basic shapes
 
-    def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y, *args, **kwargs):\
+    def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y, *args, **kwargs):
         graphics = self.native.CreateGraphics().FromImage(self.bmp)
         graphics.DrawBezier(self.pen, float(self.curX), float(self.curY), float(cp1x), float(cp1y), 
-        float(cp2x), float(cp2y), float(x), float(y))
+            float(cp2x), float(cp2y), float(x), float(y))
         graphics.Dispose()
 
     def quadratic_curve_to(self, cpx, cpy, x, y, *args, **kwargs):
