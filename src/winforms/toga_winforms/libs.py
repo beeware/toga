@@ -19,7 +19,7 @@ from System.Drawing import Font as WinFont  # noqa: E402, F401
 from System.Drawing import ContentAlignment, Size, Point  # noqa: E402, F401
 from System.Drawing import FontFamily, FontStyle, SystemFonts  # noqa: E402, F401
 from System.Drawing import Text, Color, Bitmap  # noqa: E402, F401
-from System.Drawing import Pen, Graphics, SolidBrush, Brush
+from System.Drawing import Pen, Graphics, SolidBrush, Brush # noqa: E402, F401
 
 from toga.constants import LEFT, RIGHT, CENTER, JUSTIFY  # noqa: E402
 from toga.fonts import (
