@@ -187,6 +187,9 @@ class TestCase(unittest.TestCase):
     def setUp(self):
         EventLog.reset()
 
+    def reset_event_log(self):
+        EventLog.reset()
+
     def assertFunctionNotPerformed(self, _module, action):
         """Assert that the action function from module was *not* performed.
 

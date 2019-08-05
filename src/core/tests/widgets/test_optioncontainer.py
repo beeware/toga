@@ -21,3 +21,17 @@ class OptionContainerTests(TestCase):
         self.assertActionPerformedWith(self.op_container, 'add content', label=label, widget=widget._impl)
 
         self.assertActionPerformedWith(widget, 'set bounds', x=0, y=0, width=0, height=0)
+
+    def test_widget_refresh_sublayouts(self):
+        widget = toga.Box(style=TestStyle(), factory=toga_dummy.factory)
+        label = 'New Container'
+
+        self.op_container.add(label, widget)
+        self.assertActionPerformedWith(self.op_container, 'add content', label=label, widget=widget._impl)
+        self.assertActionPerformedWith(widget, 'set bounds', x=0, y=0, width=0, height=0)
+
+        # Clear event log to verify new set bounds for refresh
+        self.reset_event_log()
+
+        self.op_container.refresh_sublayouts()
+        self.assertActionPerformedWith(widget, 'set bounds', x=0, y=0, width=0, height=0)
