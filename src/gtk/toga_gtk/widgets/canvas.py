@@ -1,23 +1,7 @@
-import gi
-from gi.repository import Gtk
-
 from toga_gtk.colors import native_color
+from toga_gtk.libs import Gtk, cairo
 
 from .base import Widget
-
-gi.require_version("Gtk", "3.0")
-
-try:
-    import cairo
-except ImportError:
-    cairo = None
-try:
-    gi.require_version("Pango", "1.0")
-    from gi.repository import Pango
-
-    SCALE = Pango.SCALE
-except ImportError:
-    SCALE = 1024
 
 
 class Canvas(Widget):
@@ -141,7 +125,7 @@ class Canvas(Widget):
         elif self.native.font:
             write_font = self.native.font
             write_font.family = self.native.font.get_family()
-            write_font.size = self.native.font.get_size() / SCALE
+            write_font.size = self.native.font.get_size() / Pango.SCALE
         draw_context.select_font_face(write_font.family)
         draw_context.set_font_size(write_font.size)
 
@@ -159,7 +143,7 @@ class Canvas(Widget):
             draw_context.set_font_size(font.size)
         elif self.native.font:
             draw_context.select_font_face(self.native.font.get_family())
-            draw_context.set_font_size(self.native.font.get_size() / SCALE)
+            draw_context.set_font_size(self.native.font.get_size() / Pango.SCALE)
 
         x_bearing, y_bearing, width, height, x_advance, y_advance = draw_context.text_extents(
             text

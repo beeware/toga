@@ -38,6 +38,7 @@ __all__ = [
 
     'App', 'DocumentApp', 'MainWindow',
     'Command',
+    'Document',
 
     # Resources
     'Font',

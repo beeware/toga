@@ -4,20 +4,16 @@ import sys
 import os
 import os.path
 
-import gi
+import gbulb
 
-gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gio, GLib
-
-
-from toga.command import GROUP_BREAK, SECTION_BREAK, Command
 import toga
-from .window import Window
-from .dialogs import open_file
 from toga import Icon
+from toga.command import GROUP_BREAK, SECTION_BREAK, Command
 from toga.handlers import wrapped_handler
 
-import gbulb
+from toga_gtk.libs import Gtk, Gio, GLib
+
+from .window import Window
 
 
 class MainWindow(Window):
