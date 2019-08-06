@@ -7,5 +7,6 @@ _KEY_MAP = {
     0xFF54: Key.DOWN,
 }
 
+
 def gtk_to_key(key):
     return _KEY_MAP.get(key)
