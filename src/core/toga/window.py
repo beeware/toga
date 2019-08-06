@@ -174,6 +174,9 @@ class Window:
         self._is_full_screen = is_full_screen
         self._impl.set_full_screen(is_full_screen)
 
+    def close(self):
+        self._impl.close()
+
     def on_close(self):
         self._impl.on_close()
 

@@ -155,4 +155,4 @@ class Window:
         directory. This function explicitly chooses not to pass it along:
         https://developer.gnome.org/gtk3/stable/GtkFileChooser.html#gtk-file-chooser-set-current-folder
         '''
-        return dialogs.select_folder(self.interface, title)
+        return dialogs.select_folder(self.interface, title, multiselect)

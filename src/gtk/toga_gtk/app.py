@@ -1,6 +1,8 @@
 import asyncio
 import signal
 import sys
+import os
+import os.path
 
 import gi
 
@@ -11,6 +13,7 @@ from gi.repository import Gtk, Gio, GLib
 from toga.command import GROUP_BREAK, SECTION_BREAK, Command
 import toga
 from .window import Window
+from .dialogs import open_file
 from toga import Icon
 from toga.handlers import wrapped_handler
 
@@ -189,10 +192,29 @@ class DocumentApp(App):
             ),
         )
 
+    def startup(self, data=None):
+        super().startup(data=data)
+
+        # XXX: This causes a blank window to be shown. This might be able to be
+        # made better.
+        m = toga.Window()
+        m.content = toga.Box()
+        m.show()
+        m._impl.native.set_keep_above(True)
+        file_name = m.select_folder_dialog(self.interface.name, None, False)
+        m.close()
+
+        self.open_document(file_name[0])
+
     def open_document(self, fileURL):
         """Open a new document in this app.
 
         Args:
             fileURL (str): The URL/path to the file to add as a document.
         """
-        self.interface.factory.not_implemented('DocumentApp.open_document()')
+        file_type = os.path.splitext(os.path.split(fileURL.rstrip(os.sep))[1])[1][1:]
+        file_reader = self.interface.document_types.get(file_type)
+
+        f = file_reader(fileURL, self.interface)
+        f.read()
+        f.show()

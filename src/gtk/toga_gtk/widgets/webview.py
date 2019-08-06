@@ -17,6 +17,7 @@ for version in ['4.0', '3.0']:
         pass
 
 from .base import Widget
+from ..keys import gtk_to_key
 
 
 class WebView(Widget):
@@ -40,6 +41,13 @@ class WebView(Widget):
         self.native.add(self.webview)
         self.native.set_min_content_width(200)
         self.native.set_min_content_height(200)
+
+        def on_key(widget, event, *args):
+            keyval = gtk_to_key(event.keyval)
+            if keyval:
+                self.interface.on_key_down(keyval, event.state)
+        self.webview.connect('key-press-event', on_key)
+
         # self.native.connect('show', lambda event: self.rehint())
 
     def set_url(self, value):

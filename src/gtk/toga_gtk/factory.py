@@ -1,6 +1,7 @@
 from .app import App, DocumentApp, MainWindow
 from .command import Command
 
+from .document import Document
 from .fonts import Font
 from .icons import Icon
 from .images import Image
