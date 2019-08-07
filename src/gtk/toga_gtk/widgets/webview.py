@@ -26,13 +26,14 @@ class WebView(Widget):
         self.native.set_min_content_width(200)
         self.native.set_min_content_height(200)
 
-        def on_key(widget, event, *args):
-            keyval = gtk_to_key(event.keyval)
-            if keyval:
-                self.interface.on_key_down(keyval, event.state)
-        self.webview.connect('key-press-event', on_key)
+        self.webview.connect('key-press-event', self.on_key)
 
         # self.native.connect('show', lambda event: self.rehint())
+
+    def on_key(self, widget, event, *args):
+        keyval = gtk_to_key(event.keyval)
+        if keyval:
+            self.interface.on_key_down(keyval, event.state)
 
     def set_url(self, value):
         if value:
