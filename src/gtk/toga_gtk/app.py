@@ -3,6 +3,7 @@ import signal
 import sys
 import os
 import os.path
+from urllib.parse import unquote, urlparse
 
 import gbulb
 
@@ -208,9 +209,15 @@ class DocumentApp(App):
         Args:
             fileURL (str): The URL/path to the file to add as a document.
         """
-        file_type = os.path.splitext(os.path.split(fileURL.rstrip(os.sep))[1])[1][1:]
-        file_reader = self.interface.document_types.get(file_type)
+        # Convert the fileURL to a file path.
+        fileURL = fileURL.rstrip('/')
+        path = unquote(urlparse(fileURL).path)
+        extension = os.path.splitext(path)[1][1:]
 
-        f = file_reader(fileURL, self.interface)
-        f.read()
-        f.show()
+        # Create the document instance
+        DocType = self.interface.document_types.get(extension)
+        document = DocType(fileURL, self.interface)
+        self.interface._documents.append(document)
+
+        # Show the document.
+        document.show()
