@@ -3,7 +3,7 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gio, GLib
 
-# The following import will fail if WebKit or it's API wrappers aren't
+# The following import will fail if WebKit or its API wrappers aren't
 # installed; handle failure gracefully
 # (see https://github.com/beeware/toga/issues/26)
 # Accept any API version greater than 3.0
