@@ -46,7 +46,7 @@ class Key(Enum):
     DOLLAR = '$'
     PERCENT = '%'
     CARET = '^'
-    AND = '&'
+    AMPERSAND = '&'
     ASTERISK = '*'
     OPEN_PARENTHESIS = '('
     CLOSE_PARENTHESIS = ')'

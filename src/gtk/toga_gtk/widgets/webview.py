@@ -1,7 +1,7 @@
 from toga_gtk.libs import Gtk, WebKit2
 
 from .base import Widget
-from ..keys import gtk_to_key
+from ..keys import gdk_key
 
 
 class WebView(Widget):
@@ -31,9 +31,10 @@ class WebView(Widget):
         # self.native.connect('show', lambda event: self.rehint())
 
     def on_key(self, widget, event, *args):
-        keyval = gtk_to_key(event.keyval)
-        if keyval:
-            self.interface.on_key_down(keyval, event.state)
+        if self.interface.on_key_down:
+            toga_event = gdk_key(event)
+            if toga_event:
+                self.interface.on_key_down(**toga_event)
 
     def set_url(self, value):
         if value:
