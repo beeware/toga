@@ -107,7 +107,8 @@ class Window:
         self.interface.content._impl.min_height = self.interface.content.layout.height
 
     def on_close(self, widget, data):
-        pass
+        if self.interface.on_close:
+            self.interface.on_close()
 
     def on_size_allocate(self, widget, allocation):
         # print("ON WINDOW SIZE ALLOCATION", allocation.width, allocation.height)
