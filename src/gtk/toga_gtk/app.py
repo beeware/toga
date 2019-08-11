@@ -192,16 +192,17 @@ class DocumentApp(App):
     def startup(self, data=None):
         super().startup(data=data)
 
-        # XXX: This causes a blank window to be shown. This might be able to be
-        # made better.
-        m = toga.Window()
-        m.content = toga.Box()
-        m.show()
-        m._impl.native.set_keep_above(True)
-        file_name = m.select_folder_dialog(self.interface.name, None, False)
-        m.close()
+        try:
+            # Look for a filename specified on the command line
+            file_name = os.path.abspath(sys.argv[1])
+        except IndexError:
+            # Nothing on the command line; open a file dialog instead.
+            # TODO: This causes a blank window to be shown.
+            # Is there a way to open a file dialog without having a window?
+            m = toga.Window()
+            file_name = m.select_folder_dialog(self.interface.name, None, False)[0]
 
-        self.open_document(file_name[0])
+        self.open_document(file_name)
 
     def open_document(self, fileURL):
         """Open a new document in this app.
@@ -215,7 +216,7 @@ class DocumentApp(App):
         extension = os.path.splitext(path)[1][1:]
 
         # Create the document instance
-        DocType = self.interface.document_types.get(extension)
+        DocType = self.interface.document_types[extension]
         document = DocType(fileURL, self.interface)
         self.interface._documents.append(document)
 
