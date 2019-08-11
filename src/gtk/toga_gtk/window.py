@@ -34,6 +34,9 @@ class Window:
         self.native.connect("delete-event", self.on_close)
         self.native.set_default_size(self.interface.size[0], self.interface.size[1])
 
+        # Set the window deletable/closeable.
+        self.native.set_deletable(self.interface.closeable)
+
         self.toolbar_native = None
         self.toolbar_items = None
 
