@@ -51,8 +51,12 @@ Next install any additional dependencies for your operating system:
 
     .. code-block:: bash
 
+      # Ubuntu/Debian
       $ sudo apt-get update
       $ sudo apt-get install python3-dev libgirepository1.0-dev libcairo2-dev
+
+      # Fedora
+      $ sudo dnf install pkg-config python3-devel cairo-devel cairo-gobject-devel pango-devel gobject-introspection-devel
 
   .. group-tab:: Windows
 
