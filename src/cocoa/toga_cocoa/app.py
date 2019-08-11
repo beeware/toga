@@ -199,7 +199,7 @@ class App:
 
     def hide_cursor(self):
         if self._cursor_visible:
-            NSCursor.show()
+            NSCursor.hide()
 
         self._cursor_visible = False
 
