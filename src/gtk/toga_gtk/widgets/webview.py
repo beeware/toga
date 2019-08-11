@@ -1,22 +1,7 @@
-import gi
-
-from gi.repository import Gtk
-
-# The following import will fail if WebKit or it's API wrappers aren't
-# installed; handle failure gracefully
-# (see https://github.com/beeware/toga/issues/26)
-# Accept any API version greater than 3.0
-WebKit2 = None
-for version in ['4.0', '3.0']:
-    try:
-        gi.require_version('WebKit2', version)
-        from gi.repository import WebKit2
-
-        break
-    except (ImportError, ValueError):
-        pass
+from toga_gtk.libs import Gtk, WebKit2
 
 from .base import Widget
+from ..keys import gdk_key
 
 
 class WebView(Widget):
@@ -40,7 +25,16 @@ class WebView(Widget):
         self.native.add(self.webview)
         self.native.set_min_content_width(200)
         self.native.set_min_content_height(200)
+
+        self.webview.connect('key-press-event', self.on_key)
+
         # self.native.connect('show', lambda event: self.rehint())
+
+    def on_key(self, widget, event, *args):
+        if self.interface.on_key_down:
+            toga_event = gdk_key(event)
+            if toga_event:
+                self.interface.on_key_down(**toga_event)
 
     def set_url(self, value):
         if value:

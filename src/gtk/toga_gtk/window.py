@@ -34,6 +34,9 @@ class Window:
         self.native.connect("delete-event", self.on_close)
         self.native.set_default_size(self.interface.size[0], self.interface.size[1])
 
+        # Set the window deletable/closeable.
+        self.native.set_deletable(self.interface.closeable)
+
         self.toolbar_native = None
         self.toolbar_items = None
 
@@ -104,7 +107,8 @@ class Window:
         self.interface.content._impl.min_height = self.interface.content.layout.height
 
     def on_close(self, widget, data):
-        pass
+        if self.interface.on_close:
+            self.interface.on_close()
 
     def on_size_allocate(self, widget, allocation):
         # print("ON WINDOW SIZE ALLOCATION", allocation.width, allocation.height)
@@ -155,4 +159,4 @@ class Window:
         directory. This function explicitly chooses not to pass it along:
         https://developer.gnome.org/gtk3/stable/GtkFileChooser.html#gtk-file-chooser-set-current-folder
         '''
-        return dialogs.select_folder(self.interface, title)
+        return dialogs.select_folder(self.interface, title, multiselect)

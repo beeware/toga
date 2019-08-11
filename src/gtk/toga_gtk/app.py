@@ -1,20 +1,20 @@
 import asyncio
 import signal
 import sys
-
-import gi
-
-gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gio, GLib
-
-
-from toga.command import GROUP_BREAK, SECTION_BREAK, Command
-import toga
-from .window import Window
-from toga import Icon
-from toga.handlers import wrapped_handler
+import os
+import os.path
+from urllib.parse import unquote, urlparse
 
 import gbulb
+
+import toga
+from toga import Icon
+from toga.command import GROUP_BREAK, SECTION_BREAK, Command
+from toga.handlers import wrapped_handler
+
+from toga_gtk.libs import Gtk, Gio, GLib
+
+from .window import Window
 
 
 class MainWindow(Window):
@@ -189,10 +189,36 @@ class DocumentApp(App):
             ),
         )
 
+    def startup(self, data=None):
+        super().startup(data=data)
+
+        try:
+            # Look for a filename specified on the command line
+            file_name = os.path.abspath(sys.argv[1])
+        except IndexError:
+            # Nothing on the command line; open a file dialog instead.
+            # TODO: This causes a blank window to be shown.
+            # Is there a way to open a file dialog without having a window?
+            m = toga.Window()
+            file_name = m.select_folder_dialog(self.interface.name, None, False)[0]
+
+        self.open_document(file_name)
+
     def open_document(self, fileURL):
         """Open a new document in this app.
 
         Args:
             fileURL (str): The URL/path to the file to add as a document.
         """
-        self.interface.factory.not_implemented('DocumentApp.open_document()')
+        # Convert the fileURL to a file path.
+        fileURL = fileURL.rstrip('/')
+        path = unquote(urlparse(fileURL).path)
+        extension = os.path.splitext(path)[1][1:]
+
+        # Create the document instance
+        DocType = self.interface.document_types[extension]
+        document = DocType(fileURL, self.interface)
+        self.interface._documents.append(document)
+
+        # Show the document.
+        document.show()

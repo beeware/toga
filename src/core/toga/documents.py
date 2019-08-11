@@ -1,5 +1,4 @@
 
-
 class Document:
     def __init__(self, filename, document_type, app=None):
         self.filename = filename

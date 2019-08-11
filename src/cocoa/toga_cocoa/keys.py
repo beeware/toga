@@ -8,6 +8,7 @@ from toga_cocoa.libs import (
     NSEventModifierFlagCommand,
 )
 
+
 ######################################################################
 # Utilities to convert Cocoa constants to Toga ones
 ######################################################################
@@ -48,7 +49,7 @@ def toga_key(event):
         23: modified_key(Key._5, shift=Key.PERCENT)(event.modifierFlags),
         24: modified_key(Key.PLUS, shift=Key.EQUAL)(event.modifierFlags),
         25: modified_key(Key._9, shift=Key.OPEN_PARENTHESIS)(event.modifierFlags),
-        26: modified_key(Key._7, shift=Key.AND)(event.modifierFlags),
+        26: modified_key(Key._7, shift=Key.AMPERSAND)(event.modifierFlags),
         27: modified_key(Key.MINUS, shift=Key.UNDERSCORE)(event.modifierFlags),
         28: modified_key(Key._8, shift=Key.ASTERISK)(event.modifierFlags),
         29: modified_key(Key._0, shift=Key.CLOSE_PARENTHESIS)(event.modifierFlags),
@@ -113,7 +114,6 @@ def toga_key(event):
         124: Key.RIGHT,
         125: Key.DOWN,
         126: Key.UP,
-
     }.get(event.keyCode, None)
 
     modifiers = set()

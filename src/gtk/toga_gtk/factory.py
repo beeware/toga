@@ -1,6 +1,7 @@
 from .app import App, DocumentApp, MainWindow
 from .command import Command
 
+from .documents import Document
 from .fonts import Font
 from .icons import Icon
 from .images import Image
@@ -37,6 +38,7 @@ __all__ = [
 
     'App', 'DocumentApp', 'MainWindow',
     'Command',
+    'Document',
 
     # Resources
     'Font',
