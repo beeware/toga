@@ -80,9 +80,33 @@ class App:
         '''Add a new document to this app.'''
         print("STUB: If you want to handle opening documents, implement App.open_document(fileURL)")
 
+    def app_exception_handler(self, sender, winforms_exc):
+        # The PythonException returned by Winforms doesn't give us
+        # easy access to the underlying Python stacktrace; so we
+        # reconstruct it from the string message.
+        # The Python message is helpfully included in square brackets,
+        # as the context for the first line in the .net stack trace.
+        # So, look for the closing bracket and the start of the Python.net
+        # stack trace. Then, reconstruct the line breaks internal to the
+        # remaining string.
+        print("Traceback (most recent call last):")
+        py_exc = winforms_exc.get_Exception()
+        tb_end_pos = py_exc.StackTrace.index("\\n']   at Python")
+        tb_str = py_exc.StackTrace[2:tb_end_pos]
+        for level in tb_str.split("', '"):
+            for line in level.split("\\n"):
+                if line:
+                    print(line)
+        print(py_exc.Message)
+
     def run_app(self):
-        self.create()
-        self.native.Run(self.interface.main_window._impl.native)
+        try:
+            self.create()
+            self.native.ThreadException += self.app_exception_handler
+            self.native.Run(self.interface.main_window._impl.native)
+        except:  # NOQA
+            import traceback
+            traceback.print_exc()
 
     def main_loop(self):
         thread = Threading.Thread(Threading.ThreadStart(self.run_app))
