@@ -27,7 +27,7 @@ class App:
             shcore.SetProcessDpiAwareness(True)
         elif win_version >= 10 and win_build >= 15063:
             user32.SetProcessDpiAwarenessContext(True)
-            
+
         self.native.EnableVisualStyles()
         self.native.SetCompatibleTextRenderingDefault(False)
 
