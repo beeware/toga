@@ -2,7 +2,7 @@ import sys
 
 import toga
 
-from .libs import Threading, WinForms, add_handler, user32, win_version
+from .libs import Threading, WinForms, add_handler, user32, win_version, shcore, win_build
 from .window import Window
 
 
@@ -21,8 +21,13 @@ class App:
     def create(self):
         self.native = WinForms.Application
 
-        if win_version >= 6:
+        if win_version >= 6 and win_version < 8:
             user32.SetProcessDPIAware(True)
+        elif win_version >= 8 and win_build < 15063:
+            shcore.SetProcessDpiAwareness(True)
+        elif win_version >= 10 and win_build >= 15063:
+            user32.SetProcessDpiAwarenessContext(True)
+            
         self.native.EnableVisualStyles()
         self.native.SetCompatibleTextRenderingDefault(False)
 
