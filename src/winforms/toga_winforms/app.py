@@ -21,16 +21,17 @@ class App:
     def create(self):
         self.native = WinForms.Application
 
-        # Check the version of windows and make sure we are setting the DPI mode 
+        # Check the version of windows and make sure we are setting the DPI mode
         # with the most up to date API
         # Windows Versioning Check Sources : https://www.lifewire.com/windows-version-numbers-2625171
         # and https://docs.microsoft.com/en-us/windows/release-information/
         if win_version.Major >= 6:  # Checks for Windows Vista or later
-            # Represents Windows 8.1 up to Windows 10 before Build 1703 which should use 
+            # Represents Windows 8.1 up to Windows 10 before Build 1703 which should use
             # SetProcessDpiAwareness(True)
-            if (win_version.Major == 6 and win_version.Minor == 3) or (win_version.Major == 10 and win_version.Build < 15063): 
+            if ((win_version.Major == 6 and win_version.Minor == 3) or 
+                (win_version.Major == 10 and win_version.Build < 15063)): 
                 shcore.SetProcessDpiAwareness(True)
-            # Represents Windows 10 Build 1703 and beyond which should use 
+            # Represents Windows 10 Build 1703 and beyond which should use
             # SetProcessDpiAwarenessContext(-2)
             elif win_version.Major == 10 and win_version.Build >= 15063:
                 user32.SetProcessDpiAwarenessContext(-2)
