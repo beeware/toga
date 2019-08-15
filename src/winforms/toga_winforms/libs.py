@@ -31,7 +31,8 @@ from toga.fonts import (
 )  # noqa: E402
 
 user32 = ctypes.windll.user32
-win_version = Environment.OSVersion.Version.Major
+shcore = ctypes.windll.shcore
+win_version = Environment.OSVersion.Version
 
 
 def TextAlignment(value):
