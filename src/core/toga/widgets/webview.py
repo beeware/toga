@@ -79,10 +79,11 @@ class WebView(Widget):
         self._url = root_url
         self._impl.set_content(root_url, content)
 
-    def evaluate(self, javascript):
+    def evaluate(self, javascript, callback=None):
         """ Evaluate a JavaScript expression
 
         Args:
             javascript (str): The javascript expression to evaluate.
+            callback (function): The function to call with the result.
         """
-        return self._impl.evaluate(javascript)
+        return self._impl.evaluate(javascript, callback)

@@ -165,10 +165,12 @@ class App:
         self.interface.factory.not_implemented('App.current_window()')
 
     def enter_full_screen(self, windows):
-        self.interface.factory.not_implemented('App.enter_full_screen()')
+        for window in windows:
+            window._impl.set_full_screen(True)
 
     def exit_full_screen(self, windows):
-        self.interface.factory.not_implemented('App.exit_full_screen()')
+        for window in windows:
+            window._impl.set_full_screen(False)
 
     def show_cursor(self):
         self.interface.factory.not_implemented('App.show_cursor()')
@@ -221,4 +223,7 @@ class DocumentApp(App):
         self.interface._documents.append(document)
 
         # Show the document.
-        document.show()
+        self._current_window = document.show()
+
+    def current_window(self):
+        return self._current_window._impl

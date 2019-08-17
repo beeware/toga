@@ -1,4 +1,6 @@
-from toga_gtk.libs import Gtk, WebKit2
+import time
+
+from toga_gtk.libs import Gtk, WebKit2, Gdk
 
 from .base import Widget
 from ..keys import gdk_key
@@ -27,11 +29,13 @@ class WebView(Widget):
         self.native.set_min_content_height(200)
 
         self.webview.connect('key-press-event', self.on_key)
+        self._last_key_time = 0
 
         # self.native.connect('show', lambda event: self.rehint())
 
     def on_key(self, widget, event, *args):
-        if self.interface.on_key_down:
+        if event.time > self._last_key_time and self.interface.on_key_down:
+            self._last_key_time = event.time
             toga_event = gdk_key(event)
             if toga_event:
                 self.interface.on_key_down(**toga_event)
@@ -50,5 +54,17 @@ class WebView(Widget):
     def get_dom(self):
         self.interface.factory.not_implemented('WebView.get_dom()')
 
-    def evaluate(self, javascript):
-        return self.webview.run_javascript(javascript, None, None, None)
+    def evaluate(self, javascript, callback):
+
+        def _cb(webview, task, *user_data):
+            finish = self.webview.run_javascript_finish(task)
+            print(finish)
+            if finish:
+                finish = finish.get_js_value().to_string()
+            print(finish)
+            callback(finish)
+
+        if callback:
+            self.webview.run_javascript(javascript, None, _cb)
+        else:
+            self.webview.run_javascript(javascript, None, None)
