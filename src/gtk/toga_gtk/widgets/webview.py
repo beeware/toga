@@ -1,4 +1,4 @@
-from toga_gtk.libs import Gtk, WebKit2, Gdk
+from toga_gtk.libs import Gtk, WebKit2
 
 from .base import Widget
 from ..keys import gdk_key
@@ -32,6 +32,9 @@ class WebView(Widget):
         # self.native.connect('show', lambda event: self.rehint())
 
     def on_key(self, widget, event, *args):
+
+        # key-press-event on WebKit on GTK double-sends events, but they have
+        # the same time key. Check for it before we register the press.
         if event.time > self._last_key_time and self.interface.on_key_down:
             self._last_key_time = event.time
             toga_event = gdk_key(event)
