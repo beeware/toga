@@ -1,5 +1,3 @@
-import time
-
 from toga_gtk.libs import Gtk, WebKit2, Gdk
 
 from .base import Widget
@@ -57,13 +55,16 @@ class WebView(Widget):
     def evaluate(self, javascript, callback):
 
         def _cb(webview, task, *user_data):
+            """
+            If `run_javascript_finish` from GTK returns a result, unmarshal it,
+            and call back with the result.
+            """
             finish = self.webview.run_javascript_finish(task)
-            print(finish)
             if finish:
                 finish = finish.get_js_value().to_string()
-            print(finish)
             callback(finish)
 
+        # We only need to register the callback if it's given to us.
         if callback:
             self.webview.run_javascript(javascript, None, _cb)
         else:
