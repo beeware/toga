@@ -18,32 +18,10 @@ and then run it::
 
 This will pop up a GUI window.
 
-If you have cloned the toga-demo repository, you can run the demo like this::
+If you have cloned the toga repository, navigate to the demo directory and run it like this::
 
     $ pip install toga
     $ python -m toga_demo
 
-Community
----------
-
-Toga Demo is part of the `BeeWare suite`_. You can talk to the community through:
-
-* `@pybeeware on Twitter`_
-
-* The `beeware/general`_ channel on Gitter.
-
-Contributing
-------------
-
-If you experience problems with Toga Demo, `log them on GitHub`_. If you
-want to contribute code, please `fork the code`_ and `submit a pull request`_.
-
-.. _BeeWare suite: http://beeware.org
-.. _Read The Docs: http://toga-demo.readthedocs.org
 .. _Toga widget toolkit: http://beeware.org/toga
 .. _toga repository on GitHub: https://github.com/beeware/toga
-.. _@pybeeware on Twitter: https://twitter.com/pybeeware
-.. _beeware/general: https://gitter.im/beeware/general
-.. _log them on Github: https://github.com/beeware/toga-demo/issues
-.. _fork the code: https://github.com/beeware/toga-demo
-.. _submit a pull request: https://github.com/beeware/toga-demo/pulls
