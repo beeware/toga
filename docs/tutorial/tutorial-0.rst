@@ -62,11 +62,11 @@ Next, install Toga into your virtual environment:
     .. code-block:: bash
 
       # Ubuntu/Debian
-      $ sudo apt-get update
-      $ sudo apt-get install python3-dev libgirepository1.0-dev libcairo2-dev
+      (venv) $ sudo apt-get update
+      (venv) $ sudo apt-get install python3-dev libgirepository1.0-dev libcairo2-dev libpango1.0-dev libwebkitgtk-3.0-0 gir1.2-webkit-3.0
 
       # Fedora
-      $ sudo dnf install pkg-config python3-devel cairo-devel cairo-gobject-devel pango-devel gobject-introspection-devel
+      (venv) $ sudo dnf install pkg-config python3-devel gobject-introspection-devel cairo-devel cairo-gobject-devel pango-devel webkitgtk3
 
     If you're not using one of these, you'll need to work out how to install
     the developer libraries for python3, cairo, pango, and
@@ -244,14 +244,6 @@ environment`_ first, and installing toga in that virtual environment as directed
 
     * If you're on Linux, you need to have GTK+ 3.4 or later. This is the
       version that ships starting with Ubuntu 12.04 and Fedora 17.
-
-    * If you want to use the WebView widget, you'll also need to
-      have WebKit, plus the GI bindings to WebKit installed.
-
-        * For Ubuntu that's provided by the ``libwebkitgtk-3.0-0`` and
-          ``gir1.2-webkit-3.0`` packages.
-
-        * For Fedora it's all provided in the ``webkitgtk3`` package.
 
     If these requirements aren't met, Toga either won't work at all, or won't
     have full functionality.
