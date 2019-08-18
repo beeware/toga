@@ -57,7 +57,10 @@ class App:
         Icon.app_icon.bind(self.interface.factory)
 
         # Stimulate the build of the app
-        self.native = Gtk.Application(application_id=self.interface.app_id, flags=Gio.ApplicationFlags.FLAGS_NONE)
+        self.native = Gtk.Application(
+            application_id=self.interface.app_id,
+            flags=Gio.ApplicationFlags.FLAGS_NONE
+        )
 
         # Connect the GTK signal that will cause app startup to occur
         self.native.connect('startup', self.startup)
@@ -176,7 +179,7 @@ class App:
         pass
 
     def current_window(self):
-        self.interface.factory.not_implemented('App.current_window()')
+        return self.native.get_active_window()._impl
 
     def enter_full_screen(self, windows):
         for window in windows:
@@ -236,8 +239,4 @@ class DocumentApp(App):
         document = DocType(fileURL, self.interface)
         self.interface._documents.append(document)
 
-        # Show the document.
-        self._current_window = document.show()
-
-    def current_window(self):
-        return self._current_window._impl
+        document.show()
