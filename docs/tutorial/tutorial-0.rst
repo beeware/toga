@@ -43,16 +43,6 @@ start coding. To set up a virtual environment, run:
 
 Your prompt should now have a ``(venv)`` prefix in front of it.
 
-If you are using Python 3.7 on Windows, you might get an error in the next step. Before proceeding, download unofficial pythonnet wheel file from `<https://www.lfd.uci.edu/~gohlke/pythonlibs/#pythonnet>`_ to your current directory, rename it to ``pythonnet.whl`` and run:
-
-.. tabs::
-
-  .. group-tab:: Windows
-
-    .. code-block:: doscon
-
-      C:\..> pip install pythonnet.whl
-
 Next, install Toga into your virtual environment:
 
 .. tabs::
@@ -64,6 +54,26 @@ Next, install Toga into your virtual environment:
       (venv) $ pip install --pre toga
 
   .. group-tab:: Linux
+
+    Before you install toga, you'll need to install some system packages.
+    These instructions are different on almost every version of Linux; here are
+    some of the common alternatives:
+
+    .. code-block:: bash
+
+      # Ubuntu/Debian
+      $ sudo apt-get update
+      $ sudo apt-get install python3-dev libgirepository1.0-dev libcairo2-dev
+
+      # Fedora
+      $ sudo dnf install pkg-config python3-devel cairo-devel cairo-gobject-devel pango-devel gobject-introspection-devel
+
+    If you're not using one of these, you'll need to work out how to install
+    the developer libraries for python3, cairo, pango, and
+    gobject-introspection (and please let us know so we can improve this
+    documentation!)
+
+    Then, install toga:
 
     .. code-block:: bash
 
@@ -177,7 +187,7 @@ And that's it! Save this script as ``helloworld.py``, and you're ready to go.
 Running the app
 ---------------
 
-The app acts as a Python module, which means you need to run it in a different manner than running a regular Python script: You need to specify the :code:`-m` flag and *not* include the :code:`.py` extension for the script name. 
+The app acts as a Python module, which means you need to run it in a different manner than running a regular Python script: You need to specify the :code:`-m` flag and *not* include the :code:`.py` extension for the script name.
 
 Here is the command to run for your platform from your working directory:
 

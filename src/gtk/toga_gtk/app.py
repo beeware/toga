@@ -20,6 +20,18 @@ from .window import Window
 class MainWindow(Window):
     _IMPL_CLASS = Gtk.ApplicationWindow
 
+    def create(self):
+        super().create()
+        self.native.set_role("MainWindow")
+        self.native.set_icon(Icon.app_icon._impl.native_72.get_pixbuf())
+
+    def set_app(self, app):
+        super().set_app(app)
+        # The GTK docs list set_wmclass() as deprecated (and "pointless")
+        # but it's the only way I've found that actually sets the
+        # Application name to something other than '__main__.py'.
+        self.native.set_wmclass(app.interface.name, app.interface.name)
+
     def on_close(self, widget, data):
         pass
 
@@ -42,6 +54,8 @@ class App:
 
     def create(self):
         Icon.app_icon = Icon.load(self.interface.icon, default=Icon.TIBERIUS_ICON)
+        Icon.app_icon.bind(self.interface.factory)
+
         # Stimulate the build of the app
         self.native = Gtk.Application(application_id=self.interface.app_id, flags=Gio.ApplicationFlags.FLAGS_NONE)
 
