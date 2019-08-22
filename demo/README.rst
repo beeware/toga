@@ -18,9 +18,21 @@ and then run it::
 
 This will pop up a GUI window.
 
-If you have cloned the toga repository, navigate to the demo directory and run it like this::
+If you have cloned the toga repository, install the dependent packages in your virtualenv::
 
-    $ pip install toga
+    $ cd toga
+    $ pip install -e src/core
+    $ pip install -e src/dummy
+
+Then install the platform specific code::
+
+    $ pip install -e src/cocoa      # macOS
+    $ pip install -e src/gtk        # Linux
+    $ pip install -e src/winforms   # Windows
+
+Finally navigate to the demo directory and run the application::
+
+    $ cd demo
     $ python -m toga_demo
 
 Community
