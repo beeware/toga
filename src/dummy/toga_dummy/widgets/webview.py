@@ -18,5 +18,8 @@ class WebView(Widget):
     def set_url(self, value):
         self._set_value('url', value)
 
-    def evaluate(self, javascript):
-        self._action('evaluate', javascript=javascript)
+    async def evaluate_javascript(self, javascript):
+        self._action('evaluate_javascript', javascript=javascript)
+
+    def invoke_javascript(self, javascript):
+        self._action('invoke_javascript', javascript=javascript)

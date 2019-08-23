@@ -28,8 +28,11 @@ class WebView(Widget):
     def set_user_agent(self, value):
         self.native.customUserAgent = value if value else "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.10240"
 
-    def evaluate(self, javascript):
-        self.interface.factory.not_implemented('WebView.evaluate()')
+    async def evaluate_javascript(self, javascript):
+        self.interface.factory.not_implemented('WebView.evaluate_javascript()')
+
+    def invoke_javascript(self, javascript):
+        self.interface.factory.not_implemented('WebView.invoke_javascript()')
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
