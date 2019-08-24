@@ -206,7 +206,7 @@ class DocumentApp(App):
     def _create_app_commands(self):
         self.interface.commands.add(
             toga.Command(
-                lambda w: self.open_file,
+                self.open_file,
                 label='Open...',
                 shortcut='o',
                 group=toga.Group.FILE,
@@ -226,6 +226,14 @@ class DocumentApp(App):
             # Is there a way to open a file dialog without having a window?
             m = toga.Window()
             file_name = m.select_folder_dialog(self.interface.name, None, False)[0]
+
+        self.open_document(file_name)
+
+    def open_file(self, widget, **kwargs):
+        # TODO: This causes a blank window to be shown.
+        # Is there a way to open a file dialog without having a window?
+        m = toga.Window()
+        file_name = m.select_folder_dialog(self.interface.name, None, False)[0]
 
         self.open_document(file_name)
 
