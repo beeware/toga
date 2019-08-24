@@ -1,7 +1,6 @@
-from toga_gtk.libs import Gtk, WebKit2
-
-from .base import Widget
 from ..keys import gdk_key
+from ..libs import Gtk, WebKit2
+from .base import Widget
 
 
 class WebView(Widget):

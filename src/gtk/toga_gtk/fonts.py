@@ -1,6 +1,6 @@
 from toga.constants import ITALIC, OBLIQUE, SMALL_CAPS, BOLD, SYSTEM
 
-from toga_gtk.libs import Gtk, Pango
+from .libs import Gtk, Pango
 
 
 _FONT_CACHE = {}

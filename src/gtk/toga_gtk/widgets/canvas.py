@@ -1,6 +1,5 @@
-from toga_gtk.colors import native_color
-from toga_gtk.libs import Gtk, Pango, cairo
-
+from ..colors import native_color
+from ..libs import Gtk, Pango, cairo
 from .base import Widget
 
 

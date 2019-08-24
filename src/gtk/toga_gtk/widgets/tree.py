@@ -1,5 +1,4 @@
-from gi.repository import Gtk
-
+from ..libs import Gtk
 from .base import Widget
 
 
@@ -12,7 +11,7 @@ class Tree(Widget):
         self.treeview = Gtk.TreeView(model=self.store)
         self.selection = self.treeview.get_selection()
         self.selection.set_mode(Gtk.SelectionMode.SINGLE)
-        self.selection.connect("changed", self.on_select)
+        self.selection.connect("changed", self.gtk_on_select)
 
         for i, heading in enumerate(self.interface.headings):
             renderer = Gtk.CellRendererText()
@@ -32,7 +31,7 @@ class Tree(Widget):
             for attr in self.interface._accessors
         ]
 
-    def on_select(self, selection):
+    def gtk_on_select(self, selection):
         if self.interface.on_select:
             tree_model, tree_iter = selection.get_selected()
             if tree_iter:

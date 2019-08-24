@@ -1,6 +1,6 @@
 import os
 
-from gi.repository import Gtk, GdkPixbuf
+from .libs import Gtk, GdkPixbuf
 
 
 class Icon:

@@ -12,8 +12,7 @@ from toga import Icon
 from toga.command import GROUP_BREAK, SECTION_BREAK, Command
 from toga.handlers import wrapped_handler
 
-from toga_gtk.libs import Gtk, Gio, GLib
-
+from .libs import Gtk, Gio, GLib
 from .window import Window
 
 
@@ -31,9 +30,6 @@ class MainWindow(Window):
         # but it's the only way I've found that actually sets the
         # Application name to something other than '__main__.py'.
         self.native.set_wmclass(app.interface.name, app.interface.name)
-
-    def on_close(self, widget, data):
-        pass
 
 
 class App:
@@ -63,13 +59,13 @@ class App:
         )
 
         # Connect the GTK signal that will cause app startup to occur
-        self.native.connect('startup', self.startup)
-        self.native.connect('activate', self.activate)
+        self.native.connect('startup', self.gtk_startup)
+        self.native.connect('activate', self.gtk_activate)
         # self.native.connect('shutdown', self.shutdown)
 
         self.actions = None
 
-    def startup(self, data=None):
+    def gtk_startup(self, data=None):
         self.interface.commands.add(
             Command(None, 'About ' + self.interface.name, group=toga.Group.APP),
             Command(None, 'Preferences', group=toga.Group.APP),
@@ -97,7 +93,7 @@ class App:
         # No extra menus
         pass
 
-    def activate(self, data=None):
+    def gtk_activate(self, data=None):
         pass
 
     def create_menus(self):
