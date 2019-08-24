@@ -15,6 +15,12 @@ class WebView(Widget):
     def create(self):
         self.native = TogaWebBrowser(self)
 
+    def set_on_key_down(self, handler):
+        pass
+
+    def set_on_webview_load(self, handler):
+        pass
+
     def set_url(self, value):
         if value:
             self.native.Navigate(Uri(self.interface.url), "_self", None, "User-Agent: %s" % self.interface.user_agent)

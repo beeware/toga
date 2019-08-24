@@ -29,6 +29,12 @@ class WebView(Widget):
         # Add the layout constraints
         self.add_constraints()
 
+    def set_on_key_down(self, handler):
+        pass
+
+    def set_on_webview_load(self, handler):
+        pass
+
     def get_dom(self):
         html = self.native.DOMDocument.documentElement.outerHTML
         return html

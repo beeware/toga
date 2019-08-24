@@ -31,6 +31,9 @@ class MainWindow(Window):
         # Application name to something other than '__main__.py'.
         self.native.set_wmclass(app.interface.name, app.interface.name)
 
+    def on_close(self, *args):
+        pass
+
 
 class App:
     """
