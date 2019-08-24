@@ -16,6 +16,13 @@ from .libs import Gtk, Gio, GLib
 from .window import Window
 
 
+def gtk_menu_item_activate(cmd):
+    """Convert a GTK menu item activation into a command invocation"""
+    def _handler(action, data):
+        cmd.action(cmd)
+    return _handler
+
+
 class MainWindow(Window):
     _IMPL_CLASS = Gtk.ApplicationWindow
 
@@ -138,7 +145,7 @@ class App:
                         cmd_id = "command-%s" % id(cmd)
                         action = Gio.SimpleAction.new(cmd_id, None)
                         if cmd.action:
-                            action.connect("activate", wrapped_handler(cmd, cmd.action))
+                            action.connect("activate", gtk_menu_item_activate(cmd))
                         cmd._widgets.append(action)
                         self._actions[cmd] = action
                         self.native.add_action(action)
