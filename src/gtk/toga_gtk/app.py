@@ -10,7 +10,6 @@ import gbulb
 import toga
 from toga import Icon
 from toga.command import GROUP_BREAK, SECTION_BREAK, Command
-from toga.handlers import wrapped_handler
 
 from .libs import Gtk, Gio, GLib
 from .window import Window
