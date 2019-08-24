@@ -50,7 +50,8 @@ class WebView(Widget):
 
     def set_user_agent(self, value):
         self.interface.factory.not_implemented('Window.info_dialog()')
-        # self.native.user_agent = value if value else "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.101 Safari/537.36"
+        # user_agent = value if value else "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.101 Safari/537.36"  # NOQA
+        # self.native.user_agent = user_agent
 
     def set_content(self, root_url, content):
         self.webview.load_html(content, root_url)

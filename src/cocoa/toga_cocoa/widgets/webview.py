@@ -64,7 +64,8 @@ class WebView(Widget):
         self.native.mainFrame.loadHTMLString(content, baseURL=NSURL.URLWithString(root_url))
 
     def set_user_agent(self, value):
-        self.native.customUserAgent = value if value else "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/603.3.8 (KHTML, like Gecko) Version/10.1.2 Safari/603.3.8"  # NOQA
+        user_agent = value if value else "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/603.3.8 (KHTML, like Gecko) Version/10.1.2 Safari/603.3.8"  # NOQA
+        self.native.customUserAgent = user_agent
 
     async def evaluate_javascript(self, javascript):
         """
