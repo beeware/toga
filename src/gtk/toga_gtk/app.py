@@ -207,8 +207,8 @@ class DocumentApp(App):
             ),
         )
 
-    def startup(self, data=None):
-        super().startup(data=data)
+    def gtk_startup(self, data=None):
+        super().gtk_startup(data=data)
 
         try:
             # Look for a filename specified on the command line
