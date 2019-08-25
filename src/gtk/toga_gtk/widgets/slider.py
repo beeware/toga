@@ -1,6 +1,6 @@
-from gi.repository import Gtk
 from travertino.size import at_least
 
+from ..libs import Gtk
 from .base import Widget
 
 
@@ -10,11 +10,11 @@ class Slider(Widget):
 
         self.native = Gtk.Scale.new(Gtk.Orientation.HORIZONTAL, self.adj)
         self.native.interface = self.interface
-        self.native.connect("value-changed", self._on_slide)
+        self.native.connect("value-changed", self.gtk_on_slide)
 
         self.rehint()
 
-    def _on_slide(self, widget):
+    def gtk_on_slide(self, widget):
         if self.interface.on_slide:
             self.interface.on_slide(widget)
 

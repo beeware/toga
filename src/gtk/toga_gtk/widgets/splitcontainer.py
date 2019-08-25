@@ -1,7 +1,5 @@
-from gi.repository import Gtk
-
-from toga_gtk.window import GtkViewport
-
+from ..window import GtkViewport
+from ..libs import Gtk
 from .base import Widget
 
 

@@ -1,4 +1,3 @@
-from gi.repository import Gtk
 from travertino.size import at_least
 
 
@@ -35,7 +34,7 @@ class Widget:
     def set_enabled(self, value):
         self.native.set_sensitive(self.interface.enabled)
 
-    ### APPLICATOR
+    # APPLICATOR
 
     def set_bounds(self, x, y, width, height):
         # No implementation required here; the new sizing will be picked up

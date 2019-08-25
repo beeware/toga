@@ -7,6 +7,7 @@ import toga
 from rubicon.objc import objc_method, NSMutableArray, NSMutableDictionary, NSObject, SEL
 from rubicon.objc.eventloop import EventLoopPolicy, CocoaLifecycle
 
+from .keys import cocoa_key
 from .libs import (
     NSURL, NSBundle, NSOpenPanel, NSDocumentController, NSString, NSApplication,
     NSApplicationActivationPolicyRegular, NSNumber, NSMenu, NSMenuItem, NSScreen,
@@ -101,7 +102,12 @@ class App:
             toga.Command(None, 'About ' + app_name, group=toga.Group.APP),
             toga.Command(None, 'Preferences', group=toga.Group.APP),
             # Quit should always be the last item, in a section on it's own
-            toga.Command(lambda s: self.exit(), 'Quit ' + app_name, shortcut='q', group=toga.Group.APP, section=sys.maxsize),
+            toga.Command(
+                lambda s: self.exit(), 'Quit ' + app_name,
+                shortcut=toga.Key.MOD_1 + 'q',
+                group=toga.Group.APP,
+                section=sys.maxsize
+            ),
 
             toga.Command(None, 'Visit homepage', group=toga.Group.HELP)
         )
@@ -125,6 +131,7 @@ class App:
             self._menu_items = {}
             menubar = NSMenu.alloc().initWithTitle('MainMenu')
             submenu = None
+            menuItem = None
             for cmd in self.interface.commands:
                 if cmd == toga.GROUP_BREAK:
                     menubar.setSubmenu(submenu, forItem=menuItem)
@@ -137,11 +144,19 @@ class App:
                         submenu = NSMenu.alloc().initWithTitle(cmd.group.label)
                         submenu.setAutoenablesItems(False)
 
+                    if cmd.shortcut:
+                        key, modifier = cocoa_key(cmd.shortcut)
+                    else:
+                        key = ''
+                        modifier = None
+
                     item = NSMenuItem.alloc().initWithTitle(
                         cmd.label,
                         action=SEL('selectMenuItem:'),
-                        keyEquivalent=cmd.shortcut if cmd.shortcut else ''
+                        keyEquivalent=key,
                     )
+                    if modifier is not None:
+                        item.keyEquivalentModifierMask = modifier
 
                     cmd._widgets.append(item)
                     self._menu_items[item] = cmd
@@ -210,7 +225,7 @@ class DocumentApp(App):
             toga.Command(
                 lambda _: self.select_file(),
                 label='Open...',
-                shortcut='o',
+                shortcut=toga.Key.MOD_1 + 'o',
                 group=toga.Group.FILE,
                 section=0
             ),

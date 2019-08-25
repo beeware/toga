@@ -1,10 +1,10 @@
-from gi.repository import Gtk
 from travertino.layout import Viewport
 
 from toga.command import GROUP_BREAK, SECTION_BREAK
 from toga.handlers import wrapped_handler
 
 from . import dialogs
+from .libs import Gtk
 
 
 class GtkViewport:
@@ -31,7 +31,9 @@ class Window:
 
     def create(self):
         self.native = self._IMPL_CLASS()
-        self.native.connect("delete-event", self.on_close)
+        self.native._impl = self
+
+        self.native.connect("delete-event", self.gtk_on_close)
         self.native.set_default_size(self.interface.size[0], self.interface.size[1])
 
         # Set the window deletable/closeable.
@@ -106,9 +108,12 @@ class Window:
         self.interface.content._impl.min_width = self.interface.content.layout.width
         self.interface.content._impl.min_height = self.interface.content.layout.height
 
-    def on_close(self, widget, data):
+    def gtk_on_close(self, widget, data):
         if self.interface.on_close:
             self.interface.on_close()
+
+    def on_close(self, *args):
+        pass
 
     def on_size_allocate(self, widget, allocation):
         # print("ON WINDOW SIZE ALLOCATION", allocation.width, allocation.height)

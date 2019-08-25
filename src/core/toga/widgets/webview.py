@@ -1,3 +1,5 @@
+from toga.handlers import wrapped_handler
+
 from .base import Widget
 
 
@@ -53,6 +55,44 @@ class WebView(Widget):
         self._impl.set_url(value)
 
     @property
+    def on_key_down(self):
+        """The handler to invoke when the button is pressed.
+
+        Returns:
+            The function ``callable`` that is called on button press.
+        """
+        return self._on_key_down
+
+    @on_key_down.setter
+    def on_key_down(self, handler):
+        """Set the handler to invoke when a key is pressed.
+
+        Args:
+            handler (:obj:`callable`): The handler to invoke when a key is pressed.
+        """
+        self._on_key_down = wrapped_handler(self, handler)
+        self._impl.set_on_key_down(self._on_key_down)
+
+    @property
+    def on_webview_load(self):
+        """The handler to invoke when the webview finishes loading pressed.
+
+        Returns:
+            The function ``callable`` that is called when the webview finished loading.
+        """
+        return self._on_webview_load
+
+    @on_webview_load.setter
+    def on_webview_load(self, handler):
+        """Set the handler to invoke when the button is pressed.
+
+        Args:
+            handler (:obj:`callable`): The handler to invoke when the button is pressed.
+        """
+        self._on_webview_load = wrapped_handler(self, handler)
+        self._impl.set_on_webview_load(self._on_webview_load)
+
+    @property
     def user_agent(self):
         """ The user agent for the web view as a ``str``.
 
@@ -79,10 +119,26 @@ class WebView(Widget):
         self._url = root_url
         self._impl.set_content(root_url, content)
 
-    def evaluate(self, javascript):
-        """ Evaluate a JavaScript expression
+    async def evaluate_javascript(self, javascript):
+        """Evaluate a JavaScript expression, returning the result.
+
+        **This is an asynchronous operation**. The method will complete
+        when the return value is available.
 
         Args:
             javascript (str): The javascript expression to evaluate.
         """
-        return self._impl.evaluate(javascript)
+        return await self._impl.evaluate_javascript(javascript)
+
+    def invoke_javascript(self, javascript):
+        """Invoke a JavaScript expression.
+
+        The result (if any) of the javascript is ignored.
+
+        **No guarantee is provided that the javascript has completed
+        execution when `invoke()` returns**
+
+        Args:
+            javascript (str): The javascript expression to evaluate.
+        """
+        self._impl.invoke_javascript(javascript)

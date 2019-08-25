@@ -1,6 +1,6 @@
 from travertino.size import at_least
 
-from gi.repository import Gtk
+from ..libs import Gtk
 from .base import Widget
 
 
@@ -12,8 +12,8 @@ class MultilineTextInput(Widget):
         self.native.set_buffer(self.buffer)
 
         self._placeholder = ''
-        self.native.connect("focus-in-event", self.on_focus_in)
-        self.native.connect("focus-out-event", self.on_focus_out)
+        self.native.connect("focus-in-event", self.gtk_on_focus_in)
+        self.native.connect("focus-out-event", self.gtk_on_focus_out)
         self.tag_placholder = self.buffer.create_tag("placeholder", foreground="gray")
 
     def set_value(self, value):
@@ -40,12 +40,12 @@ class MultilineTextInput(Widget):
         else:
             self._placeholder = value
 
-    def on_focus_in(self, *args):
+    def gtk_on_focus_in(self, *args):
         if self.get_value() == self._placeholder:
             self.buffer.set_text("")
         return False
 
-    def on_focus_out(self, *args):
+    def gtk_on_focus_out(self, *args):
         if self.get_value() == "":
             self.buffer.set_text(self.interface.placeholder)
             self.buffer.apply_tag(self.tag_placholder,

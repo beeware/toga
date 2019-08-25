@@ -84,9 +84,13 @@ class Key(Enum):
 
     CAPSLOCK = '<caps lock>'
     SHIFT = '<shift>'
-    CONTROL = '<control>'
-    OPTION = '<option>'
-    COMMAND = '<command>'
+
+    # Modifiers keys are handled slightly different on every platform
+    # However, there is a broad platform-specific precedence for them.
+    # Preserve the platform precedence behind generic naming.
+    MOD_1 = '<mod 1>'  # CMD on macOS, CTRL on Linux/Windows
+    MOD_2 = '<mod 2>'  # OPT on macOS, ALT on Linux/Windows
+    MOD_3 = '<mod 3>'  # CTRL on macOs, Flag on Windows, Tux on Linux
 
     F1 = '<F1>'
     F2 = '<F2>'
@@ -142,3 +146,19 @@ class Key(Enum):
 
     def is_printable(self):
         return not (self.value.startswith('<') and self.value.endswith('>'))
+
+    def __add__(self, other):
+        """Allow two Keys to be concatenated, or a string to be concatenated
+        to a Key.
+
+        Produces a single string definition.
+
+        e.g.,
+        ``Toga.Key.MOD_1 + 'a'`` -> ``"<mod 1>a"``
+        ``Toga.Key.MOD_1 + Toga.Key.SHIFT + 'a'`` -> ``"<mod 1><shift>a"``
+        """
+        try:
+            # Try Key + Key
+            return self.value + other.value
+        except AttributeError:
+            return self.value + other

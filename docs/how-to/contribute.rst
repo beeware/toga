@@ -39,29 +39,6 @@ First thing is to ensure that you have Python 3 and pip installed. To do this ru
       C:\...>python3 --version
       C:\...>pip3 --version
 
-Next install any additional dependencies for your operating system:
-
-.. tabs::
-
-  .. group-tab:: macOS
-
-    No additional dependencies
-
-  .. group-tab:: Linux
-
-    .. code-block:: bash
-
-      # Ubuntu/Debian
-      $ sudo apt-get update
-      $ sudo apt-get install python3-dev libgirepository1.0-dev libcairo2-dev
-
-      # Fedora
-      $ sudo dnf install pkg-config python3-devel cairo-devel cairo-gobject-devel pango-devel gobject-introspection-devel
-
-  .. group-tab:: Windows
-
-    No additional dependencies
-
 The recommended way of setting up your development environment for Toga
 is to install a virtual environment, install the required dependencies and
 start coding. To set up a virtual environment, run:
@@ -90,6 +67,29 @@ start coding. To set up a virtual environment, run:
       C:\...>venv/Scripts/activate
 
 Your prompt should now have a ``(venv)`` prefix in front of it.
+
+Next, install any additional dependencies for your operating system:
+
+.. tabs::
+
+  .. group-tab:: macOS
+
+    No additional dependencies
+
+  .. group-tab:: Linux
+
+    .. code-block:: bash
+
+      # Ubuntu/Debian
+      (venv) $ sudo apt-get update
+      (venv) $ sudo apt-get install python3-dev libgirepository1.0-dev libcairo2-dev libpango1.0-dev libwebkitgtk-3.0-0 gir1.2-webkit-3.0
+
+      # Fedora
+      (venv) $ sudo dnf install pkg-config python3-devel gobject-introspection-devel cairo-devel cairo-gobject-devel pango-devel webkitgtk3
+
+  .. group-tab:: Windows
+
+    No additional dependencies
 
 Next, go to `the Toga page on Github <https://github.com/beeware/toga>`__, and
 fork the repository into your own account, and then clone a copy of that

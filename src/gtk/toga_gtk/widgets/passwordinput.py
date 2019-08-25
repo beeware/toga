@@ -1,5 +1,3 @@
-from gi.repository import Gtk
-
 from .textinput import TextInput
 
 

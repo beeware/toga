@@ -1,4 +1,4 @@
-from gi.repository import Gtk
+from .libs import Gtk
 
 
 def _set_filetype_filter(dialog, file_type):

@@ -1,10 +1,9 @@
 import os
 from urllib.request import Request, urlopen
 
-from gi.repository import GdkPixbuf, Gio, Gtk
-
 import toga
 
+from ..libs import GdkPixbuf, Gio, Gtk
 from .base import Widget
 
 

@@ -1,6 +1,6 @@
-from gi.repository import Gtk
 from travertino.size import at_least
 
+from ..libs import Gtk
 from .base import Widget
 
 
@@ -9,9 +9,9 @@ class TextInput(Widget):
         self.native = Gtk.Entry()
         self.native.interface = self.interface
         self.native.connect('show', lambda event: self.rehint())
-        self.native.connect('changed', self._on_change)
+        self.native.connect('changed', self.gtk_on_change)
 
-    def _on_change(self, entry):
+    def gtk_on_change(self, entry):
         if self.interface.on_change:
             self.interface.on_change(self.interface)
 

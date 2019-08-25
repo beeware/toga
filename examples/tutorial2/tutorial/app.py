@@ -88,7 +88,7 @@ def build(app):
         action3,
         label='Action 3',
         tooltip='Perform action 3',
-        shortcut='k',
+        shortcut=toga.Key.MOD_1 + 'k',
         icon=cricket_icon
     )
 

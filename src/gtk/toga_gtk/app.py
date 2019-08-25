@@ -10,11 +10,17 @@ import gbulb
 import toga
 from toga import Icon
 from toga.command import GROUP_BREAK, SECTION_BREAK, Command
-from toga.handlers import wrapped_handler
 
-from toga_gtk.libs import Gtk, Gio, GLib
-
+from .keys import gtk_accel
+from .libs import Gtk, Gio, GLib
 from .window import Window
+
+
+def gtk_menu_item_activate(cmd):
+    """Convert a GTK menu item activation into a command invocation"""
+    def _handler(action, data):
+        cmd.action(cmd)
+    return _handler
 
 
 class MainWindow(Window):
@@ -32,7 +38,7 @@ class MainWindow(Window):
         # Application name to something other than '__main__.py'.
         self.native.set_wmclass(app.interface.name, app.interface.name)
 
-    def on_close(self, widget, data):
+    def on_close(self, *args):
         pass
 
 
@@ -57,16 +63,19 @@ class App:
         Icon.app_icon.bind(self.interface.factory)
 
         # Stimulate the build of the app
-        self.native = Gtk.Application(application_id=self.interface.app_id, flags=Gio.ApplicationFlags.FLAGS_NONE)
+        self.native = Gtk.Application(
+            application_id=self.interface.app_id,
+            flags=Gio.ApplicationFlags.FLAGS_NONE
+        )
 
         # Connect the GTK signal that will cause app startup to occur
-        self.native.connect('startup', self.startup)
-        self.native.connect('activate', self.activate)
+        self.native.connect('startup', self.gtk_startup)
+        self.native.connect('activate', self.gtk_activate)
         # self.native.connect('shutdown', self.shutdown)
 
         self.actions = None
 
-    def startup(self, data=None):
+    def gtk_startup(self, data=None):
         self.interface.commands.add(
             Command(None, 'About ' + self.interface.name, group=toga.Group.APP),
             Command(None, 'Preferences', group=toga.Group.APP),
@@ -74,7 +83,7 @@ class App:
             Command(
                 lambda widget, data: self.exit(),
                 'Quit ' + self.interface.name,
-                shortcut='q',
+                shortcut=toga.Key.MOD_1 + 'q',
                 group=toga.Group.APP,
                 section=sys.maxsize
             ),
@@ -94,7 +103,7 @@ class App:
         # No extra menus
         pass
 
-    def activate(self, data=None):
+    def gtk_activate(self, data=None):
         pass
 
     def create_menus(self):
@@ -136,7 +145,7 @@ class App:
                         cmd_id = "command-%s" % id(cmd)
                         action = Gio.SimpleAction.new(cmd_id, None)
                         if cmd.action:
-                            action.connect("activate", wrapped_handler(cmd, cmd.action))
+                            action.connect("activate", gtk_menu_item_activate(cmd))
                         cmd._widgets.append(action)
                         self._actions[cmd] = action
                         self.native.add_action(action)
@@ -145,9 +154,7 @@ class App:
 
                     item = Gio.MenuItem.new(cmd.label, 'app.' + cmd_id)
                     if cmd.shortcut:
-                        item.set_attribute_value('accel', GLib.Variant('s', '<Primary>%s' % cmd.shortcut.upper()))
-
-                        # item.set_attribute_value('accel', GLib.Variant(cmd.shortcut, '<Primary>%s' % cmd.shortcut.upper()))
+                        item.set_attribute_value('accel', GLib.Variant('s', gtk_accel(cmd.shortcut)))
 
                     section.append_item(item)
 
@@ -176,13 +183,15 @@ class App:
         pass
 
     def current_window(self):
-        self.interface.factory.not_implemented('App.current_window()')
+        return self.native.get_active_window()._impl
 
     def enter_full_screen(self, windows):
-        self.interface.factory.not_implemented('App.enter_full_screen()')
+        for window in windows:
+            window._impl.set_full_screen(True)
 
     def exit_full_screen(self, windows):
-        self.interface.factory.not_implemented('App.exit_full_screen()')
+        for window in windows:
+            window._impl.set_full_screen(False)
 
     def show_cursor(self):
         self.interface.factory.not_implemented('App.show_cursor()')
@@ -195,16 +204,16 @@ class DocumentApp(App):
     def _create_app_commands(self):
         self.interface.commands.add(
             toga.Command(
-                lambda w: self.open_file,
+                self.open_file,
                 label='Open...',
-                shortcut='o',
+                shortcut=toga.Key.MOD_1 + 'o',
                 group=toga.Group.FILE,
                 section=0
             ),
         )
 
-    def startup(self, data=None):
-        super().startup(data=data)
+    def gtk_startup(self, data=None):
+        super().gtk_startup(data=data)
 
         try:
             # Look for a filename specified on the command line
@@ -215,6 +224,14 @@ class DocumentApp(App):
             # Is there a way to open a file dialog without having a window?
             m = toga.Window()
             file_name = m.select_folder_dialog(self.interface.name, None, False)[0]
+
+        self.open_document(file_name)
+
+    def open_file(self, widget, **kwargs):
+        # TODO: This causes a blank window to be shown.
+        # Is there a way to open a file dialog without having a window?
+        m = toga.Window()
+        file_name = m.select_folder_dialog(self.interface.name, None, False)[0]
 
         self.open_document(file_name)
 
@@ -234,5 +251,4 @@ class DocumentApp(App):
         document = DocType(fileURL, self.interface)
         self.interface._documents.append(document)
 
-        # Show the document.
         document.show()
