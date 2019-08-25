@@ -1,4 +1,4 @@
-from ..keys import gdk_key
+from ..keys import toga_key
 from ..libs import Gtk, WebKit2
 from .base import Widget
 
@@ -40,7 +40,7 @@ class WebView(Widget):
         # the same time key. Check for it before we register the press.
         if event.time > self._last_key_time and self.interface.on_key_down:
             self._last_key_time = event.time
-            toga_event = gdk_key(event)
+            toga_event = toga_key(event)
             if toga_event:
                 self.interface.on_key_down(self.interface, **toga_event)
 

@@ -11,6 +11,7 @@ import toga
 from toga import Icon
 from toga.command import GROUP_BREAK, SECTION_BREAK, Command
 
+from .keys import gtk_accel
 from .libs import Gtk, Gio, GLib
 from .window import Window
 
@@ -82,7 +83,7 @@ class App:
             Command(
                 lambda widget, data: self.exit(),
                 'Quit ' + self.interface.name,
-                shortcut='q',
+                shortcut=toga.Key.MOD_1 + 'q',
                 group=toga.Group.APP,
                 section=sys.maxsize
             ),
@@ -153,9 +154,7 @@ class App:
 
                     item = Gio.MenuItem.new(cmd.label, 'app.' + cmd_id)
                     if cmd.shortcut:
-                        item.set_attribute_value('accel', GLib.Variant('s', '<Primary>%s' % cmd.shortcut.upper()))
-
-                        # item.set_attribute_value('accel', GLib.Variant(cmd.shortcut, '<Primary>%s' % cmd.shortcut.upper()))
+                        item.set_attribute_value('accel', GLib.Variant('s', gtk_accel(cmd.shortcut)))
 
                     section.append_item(item)
 
@@ -207,7 +206,7 @@ class DocumentApp(App):
             toga.Command(
                 self.open_file,
                 label='Open...',
-                shortcut='o',
+                shortcut=toga.Key.MOD_1 + 'o',
                 group=toga.Group.FILE,
                 section=0
             ),
