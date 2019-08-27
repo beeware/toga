@@ -49,8 +49,8 @@ class Window:
                     item = WinForms.ToolStripMenuItem(cmd.label, native_icon.ToBitmap())
                 else:
                     item = WinForms.ToolStripMenuItem(cmd.label)
-
                 item.Click += add_handler(cmd)
+                cmd._widgets.append(item)
             self.toolbar_native.Items.Add(item)
 
     def set_position(self, position):
