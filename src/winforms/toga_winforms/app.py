@@ -72,6 +72,7 @@ class App:
                 elif cmd == toga.SECTION_BREAK:
                     submenu.DropDownItems.Add('-')
                 else:
+                    cmd_impl = cmd.bind(self.interface.factory)
                     if submenu is None:
                         submenu = WinForms.ToolStripMenuItem(cmd.group.label)
                     item = WinForms.ToolStripMenuItem(cmd.label)
@@ -79,7 +80,7 @@ class App:
                         item.Click += add_handler(cmd)
                     else:
                         item.Enabled = False
-                    cmd._widgets.append(item)
+                    cmd_impl.native.append(item)
                     self._menu_items[item] = cmd
                     submenu.DropDownItems.Add(item)
             if submenu:

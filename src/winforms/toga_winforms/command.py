@@ -4,7 +4,7 @@ from toga.icons import Icon as CoreIcon
 class Command:
     def __init__(self, interface):
         self.interface = interface
-        self.native = None
+        self.native = []
         if self.interface.icon_id:
             # If icon_id is an icon, not a filepath
             if type(self.interface.icon_id) is not str:
@@ -20,5 +20,6 @@ class Command:
 
     @enabled.setter
     def enabled(self, value):
-        for widget in self.interface._widgets:
-            widget.Enabled = self.interface.enabled
+        if self.native:
+            for widget in self.native:
+                widget.Enabled = self.interface.enabled

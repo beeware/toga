@@ -43,14 +43,15 @@ class Window:
             elif cmd == SECTION_BREAK:
                 item = WinForms.ToolStripSeparator()
             else:
-                cmd.bind(self.interface.factory)
+                cmd_impl = cmd.bind(self.interface.factory)
+                print("Cmd impl is ", cmd_impl)
                 if cmd.icon is not None:
                     native_icon = cmd.icon.bind(self.interface.factory).native
                     item = WinForms.ToolStripMenuItem(cmd.label, native_icon.ToBitmap())
                 else:
                     item = WinForms.ToolStripMenuItem(cmd.label)
                 item.Click += add_handler(cmd)
-                cmd._widgets.append(item)
+                cmd_impl.native.append(item)
             self.toolbar_native.Items.Add(item)
 
     def set_position(self, position):

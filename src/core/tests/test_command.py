@@ -39,7 +39,6 @@ class TestCommand(unittest.TestCase):
         self.assertEqual(cmd.section, 0)
         self.assertEqual(cmd.order, 0)
         self.assertTrue(cmd._enabled)
-        self.assertEqual(cmd._widgets, [])
 
     def test_command_init_kargs(self):
         grp = toga.Group('Test group', order=10)
@@ -62,7 +61,6 @@ class TestCommand(unittest.TestCase):
         self.assertEqual(cmd.section, 1)
         self.assertEqual(cmd.order, 1)
         self.assertTrue(cmd._enabled)
-        self.assertEqual(cmd._widgets, [])
         self.assertTrue(cmd.enabled)
         cmd.enabled = False
         self.assertFalse(cmd._enabled)
@@ -85,7 +83,6 @@ class TestCommand(unittest.TestCase):
         self.assertEqual(retur_val, cmd._impl)
 
     def test_command_enabler(self):
-        test_widget = toga.Widget(factory=toga_dummy.factory)
         grp = toga.Group('Test group', order=10)
         cmd = toga.Command(
             lambda x: print('Hello World'),
@@ -98,13 +95,11 @@ class TestCommand(unittest.TestCase):
             order=1,
             factory=toga_dummy.factory,
         )
-        cmd._widgets.append(test_widget)
-        cmd._widgets[0]._impl = Mock()
+        cmd.bind(toga_dummy.factory)
         cmd.enabled = False
-        self.assertEqual(cmd._enabled, False)
-
-        for widget in cmd._widgets:
-            self.assertEqual(widget.enabled, False)
+        self.assertFalse(cmd._impl.enabled)
+        cmd.enabled = True
+        self.assertTrue(cmd._impl.enabled)
 
     def test_cmd_sort_key(self):
         grp = toga.Group('Test group', order=10)
