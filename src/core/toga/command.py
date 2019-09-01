@@ -74,7 +74,7 @@ class Command:
     def enabled(self, value):
         self._enabled = value
         if self._impl is not None:
-            self._impl.enabled = value
+            self._impl.set_enabled(value)
 
 
 GROUP_BREAK = object()

@@ -14,12 +14,7 @@ class Command:
         else:
             self.interface.icon = None
 
-    @property
-    def enabled(self):
-        return self.interface.enabled
-
-    @enabled.setter
-    def enabled(self, value):
+    def set_enabled(self, value):
         if self.native:
             for widget in self.native:
                 widget.Enabled = self.interface.enabled

@@ -1,12 +1,12 @@
 import unittest
-from unittest.mock import Mock
 
 import toga
 import toga_dummy
+from toga_dummy.utils import TestCase
 from toga.command import cmd_sort_key
 
 
-class TestCommand(unittest.TestCase):
+class TestCommand(TestCase):
     def test_group_init_no_order(self):
         grp = toga.Group('label')
         self.assertEqual(grp.label, 'label')
@@ -97,9 +97,9 @@ class TestCommand(unittest.TestCase):
         )
         cmd.bind(toga_dummy.factory)
         cmd.enabled = False
-        self.assertFalse(cmd._impl.enabled)
+        self.assertActionPerformedWith(cmd, 'set enabled', value=False)
         cmd.enabled = True
-        self.assertTrue(cmd._impl.enabled)
+        self.assertActionPerformedWith(cmd, 'set enabled', value=True)
 
     def test_cmd_sort_key(self):
         grp = toga.Group('Test group', order=10)
