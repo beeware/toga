@@ -67,13 +67,12 @@ class Window:
                 item_impl.set_draw(False)
             else:
                 item_impl = Gtk.ToolButton()
-                cmd_impl = cmd.bind(self.interface.factory)
-                icon_impl = cmd_impl.icon.bind(self.interface.factory)
+                icon_impl = cmd._impl.icon.bind(self.interface.factory)
                 item_impl.set_icon_widget(icon_impl.native_32)
                 item_impl.set_label(cmd.label)
                 item_impl.set_tooltip_text(cmd.tooltip)
                 item_impl.connect("clicked", wrapped_handler(cmd, cmd.action))
-                cmd_impl.native.append(item_impl)
+                cmd._impl.native.append(item_impl)
             self.toolbar_items[cmd] = item_impl
             self.toolbar_native.insert(item_impl, -1)
 
@@ -116,7 +115,7 @@ class Window:
         pass
 
     def on_size_allocate(self, widget, allocation):
-        # print("ON WINDOW SIZE ALLOCATION", allocation.width, allocation.height)
+        #  ("ON WINDOW SIZE ALLOCATION", allocation.width, allocation.height)
         pass
 
     def close(self):

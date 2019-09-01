@@ -146,9 +146,9 @@ class App:
                         action = Gio.SimpleAction.new(cmd_id, None)
                         if cmd.action:
                             action.connect("activate", gtk_menu_item_activate(cmd))
-                        cmd_impl = cmd.bind(self.interface.factory)
-                        cmd_impl.native.append(action)
-                        cmd_impl.set_enabled(cmd.enabled)
+
+                        cmd._impl.native.append(action)
+                        cmd._impl.set_enabled(cmd.enabled)
                         self._actions[cmd] = action
                         self.native.add_action(action)
 
