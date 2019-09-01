@@ -158,7 +158,7 @@ class App:
                     if modifier is not None:
                         item.keyEquivalentModifierMask = modifier
 
-                    cmd._widgets.append(item)
+                    cmd._impl.native.append(item)
                     self._menu_items[item] = cmd
 
                     # This line may appear redundant, but it triggers the logic
