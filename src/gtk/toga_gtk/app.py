@@ -146,11 +146,11 @@ class App:
                         action = Gio.SimpleAction.new(cmd_id, None)
                         if cmd.action:
                             action.connect("activate", gtk_menu_item_activate(cmd))
-                        cmd._widgets.append(action)
+                        cmd_impl = cmd.bind(self.interface.factory)
+                        cmd_impl.native.append(action)
+                        cmd_impl.set_enabled(cmd.enabled)
                         self._actions[cmd] = action
                         self.native.add_action(action)
-
-                    # cmd.bind(self.interface.factory).set_enabled(cmd.enabled)
 
                     item = Gio.MenuItem.new(cmd.label, 'app.' + cmd_id)
                     if cmd.shortcut:

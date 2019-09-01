@@ -55,7 +55,7 @@ class Window:
         else:
             for cmd, item_impl in self.toolbar_items.items():
                 self.toolbar_native.remove(item_impl)
-                cmd._impl._widgets.remove(item_impl)
+                cmd._impl.native.remove(item_impl)
 
         self.toolbar_native.set_style(Gtk.ToolbarStyle.BOTH)
         for cmd in self.interface.toolbar:
@@ -73,7 +73,7 @@ class Window:
                 item_impl.set_label(cmd.label)
                 item_impl.set_tooltip_text(cmd.tooltip)
                 item_impl.connect("clicked", wrapped_handler(cmd, cmd.action))
-                cmd._widgets.append(item_impl)
+                cmd_impl.native.append(item_impl)
             self.toolbar_items[cmd] = item_impl
             self.toolbar_native.insert(item_impl, -1)
 
