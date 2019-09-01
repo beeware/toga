@@ -126,14 +126,17 @@ class TestCommandSet(unittest.TestCase):
     def test_cmdset_init(self):
         test_widget = toga.Widget(factory=toga_dummy.factory)
         cs = toga.CommandSet(test_widget)
-        self.assertEqual(cs.widget, test_widget)
-        self.assertEqual(cs._values, set())
+        self.assertEqual(cs._commands, set())
         self.assertEqual(cs.on_change, None)
 
     def test_cmdset_add(self):
         self.changed = False
         test_widget = toga.Widget(factory=toga_dummy.factory)
-        cs = toga.CommandSet(test_widget, on_change=self._changed)
+        cs = toga.CommandSet(
+            factory=toga_dummy.factory,
+            widget=test_widget,
+            on_change=self._changed
+        )
         grp = toga.Group('Test group', order=10)
         cmd = toga.Command(
             lambda x: print('Hello World'),
@@ -147,11 +150,16 @@ class TestCommandSet(unittest.TestCase):
             factory=toga_dummy.factory
         )
         cs.add(cmd)
+
         self.assertTrue(self.changed)
+        self.assertIsNotNone(cmd._impl)
 
     def test_cmdset_iter(self):
         test_widget = toga.Widget(factory=toga_dummy.factory)
-        cs = toga.CommandSet(test_widget)
+        cs = toga.CommandSet(
+            factory=toga_dummy.factory,
+            widget=test_widget
+        )
         grp = toga.Group('Test group', order=10)
         cmd = toga.Command(
             lambda x: print('Hello World'),
