@@ -61,7 +61,7 @@ class App:
         self._app_id = app_id
         self._id = id if id else identifier(self)
 
-        self.commands = CommandSet(None)
+        self.commands = CommandSet(factory=self.factory)
 
         self._startup_method = startup
 

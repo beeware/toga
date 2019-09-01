@@ -79,7 +79,7 @@ class App:
                         item.Click += add_handler(cmd)
                     else:
                         item.Enabled = False
-                    cmd._widgets.append(item)
+                    cmd._impl.native.append(item)
                     self._menu_items[item] = cmd
                     submenu.DropDownItems.Add(item)
             if submenu:

@@ -41,7 +41,11 @@ class Window:
         self.factory = get_platform_factory(factory)
         self._impl = getattr(self.factory, self._WINDOW_CLASS)(interface=self)
 
-        self._toolbar = CommandSet(self, self._impl.create_toolbar)
+        self._toolbar = CommandSet(
+            factory=self.factory,
+            widget=self,
+            on_change=self._impl.create_toolbar
+        )
 
         self.position = position
         self.size = size
