@@ -2,7 +2,7 @@ import sys
 
 import toga
 
-from .libs import Threading, WinForms, add_handler, user32, win_version, ctypes
+from .libs import Threading, WinForms, add_handler, user32, win_version, shcore
 from .window import Window
 
 
@@ -30,7 +30,7 @@ class App:
             # SetProcessDpiAwareness(True)
             if ((win_version.Major == 6 and win_version.Minor == 3) or
                     (win_version.Major == 10 and win_version.Build < 15063)):
-                ctypes.windll.shcore.SetProcessDpiAwareness(True)
+                shcore.SetProcessDpiAwareness(True)
             # Represents Windows 10 Build 1703 and beyond which should use
             # SetProcessDpiAwarenessContext(-2)
             elif win_version.Major == 10 and win_version.Build >= 15063:
