@@ -31,7 +31,12 @@ from toga.fonts import (
 )  # noqa: E402
 
 user32 = ctypes.windll.user32
-shcore = ctypes.windll.shcore
+# shcore dll not exist on some Windows versions
+# win_version should be checked to ensure proper usage
+try:
+    shcore = ctypes.windll.shcore
+except OSError:
+    shcore = None
 win_version = Environment.OSVersion.Version
 
 

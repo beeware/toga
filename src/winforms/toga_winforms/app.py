@@ -35,9 +35,9 @@ class App:
             # SetProcessDpiAwarenessContext(-2)
             elif win_version.Major == 10 and win_version.Build >= 15063:
                 user32.SetProcessDpiAwarenessContext(-2)
-            # Any other version of windows should use SetProcessDPIAware(True)
+            # Any other version of windows should use SetProcessDPIAware()
             else:
-                user32.SetProcessDPIAware(True)
+                user32.SetProcessDPIAware()
 
         self.native.EnableVisualStyles()
         self.native.SetCompatibleTextRenderingDefault(False)
