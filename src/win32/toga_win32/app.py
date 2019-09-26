@@ -46,3 +46,6 @@ class App(object):
     def on_activate(self, msg, state, lParam):
         if state == WA_INACTIVE:
             self.last_focus = user32.GetFocus()
+
+    def add_background_task(self, handler):
+        self.interface.factory.not_implemented('App.add_background_task()')

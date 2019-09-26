@@ -211,6 +211,9 @@ class App:
         self._on_exit = wrapped_handler(self, handler)
         self._impl.set_on_exit(self._on_exit)
 
+    def add_background_task(self, handler):
+        self._impl.add_background_task(handler)
+
 
 class DocumentApp(App):
     """
@@ -222,6 +225,7 @@ class DocumentApp(App):
         document_types (:obj:`list` of :obj:`str`): Document types.
 
     """
+
     def __init__(self, name, app_id,
                  id=None, icon=None, startup=None, document_types=None, on_exit=None, factory=None):
 

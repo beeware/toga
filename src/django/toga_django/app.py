@@ -22,7 +22,6 @@ class MainWindow(Window):
 class App(AppInterface):
     _MAIN_WINDOW_CLASS = MainWindow
 
-
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
@@ -138,3 +137,6 @@ class App(AppInterface):
             }
         }
         return render(request, 'toga/app.html', context)
+
+    def add_background_task(self, handler):
+        self.interface.factory.not_implemented('App.add_background_task()')

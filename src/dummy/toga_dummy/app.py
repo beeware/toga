@@ -1,4 +1,4 @@
-from .utils import not_required_on, LoggedObject
+from .utils import LoggedObject, not_required_on
 from .window import Window
 
 
@@ -48,6 +48,9 @@ class App(LoggedObject):
     @not_required_on('mobile')
     def hide_cursor(self):
         self._action('hide_cursor')
+
+    def add_background_task(self, handler):
+        self.interface.factory.not_implemented('App.add_background_task()')
 
 
 @not_required_on('mobile', 'web')
