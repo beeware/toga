@@ -1,18 +1,17 @@
 import asyncio
-import signal
-import sys
 import os
 import os.path
+import signal
+import sys
 from urllib.parse import unquote, urlparse
 
 import gbulb
-
 import toga
 from toga import Icon
 from toga.command import GROUP_BREAK, SECTION_BREAK, Command
 
 from .keys import gtk_accel
-from .libs import Gtk, Gio, GLib
+from .libs import Gio, GLib, Gtk
 from .window import Window
 
 
@@ -198,6 +197,9 @@ class App:
 
     def hide_cursor(self):
         self.interface.factory.not_implemented('App.hide_cursor()')
+
+    def add_background_task(self, handler):
+        self.interface.factory.not_implemented('App.add_background_task()')
 
 
 class DocumentApp(App):

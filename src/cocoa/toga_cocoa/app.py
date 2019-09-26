@@ -4,15 +4,15 @@ import sys
 from urllib.parse import unquote, urlparse
 
 import toga
-from rubicon.objc import objc_method, NSMutableArray, NSMutableDictionary, NSObject, SEL
-from rubicon.objc.eventloop import EventLoopPolicy, CocoaLifecycle
+from rubicon.objc import (SEL, NSMutableArray, NSMutableDictionary, NSObject,
+                          objc_method)
+from rubicon.objc.eventloop import CocoaLifecycle, EventLoopPolicy
+from toga.handlers import wrapped_handler
 
 from .keys import cocoa_key
-from .libs import (
-    NSURL, NSBundle, NSOpenPanel, NSDocumentController, NSString, NSApplication,
-    NSApplicationActivationPolicyRegular, NSNumber, NSMenu, NSMenuItem, NSScreen,
-    NSCursor
-)
+from .libs import (NSURL, NSApplication, NSApplicationActivationPolicyRegular,
+                   NSBundle, NSCursor, NSDocumentController, NSMenu,
+                   NSMenuItem, NSNumber, NSOpenPanel, NSScreen, NSString)
 from .window import Window
 
 
@@ -222,6 +222,9 @@ class App:
             NSCursor.hide()
 
         self._cursor_visible = False
+
+    def add_background_task(self, handler):
+        self.loop.call_soon(wrapped_handler(self, handler), self)
 
 
 class DocumentApp(App):

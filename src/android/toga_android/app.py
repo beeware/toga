@@ -62,3 +62,6 @@ class App:
 
     def set_on_exit(self, value):
         pass
+
+    def add_background_task(self, handler):
+        self.interface.factory.not_implemented('App.add_background_task()')

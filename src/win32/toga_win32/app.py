@@ -1,4 +1,5 @@
-from .libs import *
+from .libs import (MSG, NULL, WA_INACTIVE, WM_ACTIVATE, WM_SETFOCUS, ctypes,
+                   user32)
 from .window import Window
 
 
@@ -46,3 +47,6 @@ class App(object):
     def on_activate(self, msg, state, lParam):
         if state == WA_INACTIVE:
             self.last_focus = user32.GetFocus()
+
+    def add_background_task(self, handler):
+        self.interface.factory.not_implemented('App.add_background_task()')
