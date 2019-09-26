@@ -1,4 +1,7 @@
-from .libs import *
+import ctypes.byref
+
+from .libs import *  # noqa
+from .libs import WA_INACTIVE, WM_ACTIVATE, WM_SETFOCUS, user32
 from .window import Window
 
 
@@ -32,8 +35,8 @@ class App(object):
     def main_loop(self):
 
         # Main message handling loop.
-        msg = MSG()
-        while user32.GetMessageW(ctypes.byref(msg), NULL, 0, 0):
+        msg = MSG()  # noqa
+        while user32.GetMessageW(ctypes.byref(msg), NULL, 0, 0):  # noqa
             if user32.IsDialogMessage(self.main_window._impl, ctypes.byref(msg)):
                 continue
             user32.TranslateMessage(ctypes.byref(msg))
