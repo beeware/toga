@@ -1,6 +1,6 @@
-from travertino.size import at_least
-
+from toga_cocoa.colors import native_color
 from toga_cocoa.libs import *
+from travertino.size import at_least
 
 from .base import Widget
 
@@ -51,6 +51,14 @@ class MultilineTextInput(Widget):
 
     def set_value(self, value):
         self.text.string = self.interface._value
+
+    def set_color(self, value):
+        if value:
+            self.text.textColor = native_color(value)
+
+    def set_font(self, value):
+        if value:
+            self.text.font = value._impl.native
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
