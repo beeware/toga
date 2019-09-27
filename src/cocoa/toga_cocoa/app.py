@@ -1,4 +1,5 @@
 import asyncio
+import inspect
 import os
 import sys
 from urllib.parse import unquote, urlparse
@@ -49,6 +50,13 @@ class AppDelegate(NSObject):
     def application_openFiles_(self, app, filenames) -> None:
         for i in range(0, len(filenames)):
             filename = filenames[i]
+            # If you start your Toga application as `python myapp.py` or
+            # `myapp.py`, the name of the Python script is included as a
+            # filename to be processed. Inspect the stack, and ignore any
+            # "document" that matches the file doing the executing
+            if filename == inspect.stack(-1)[-1].filename:
+                continue
+
             if isinstance(filename, NSString):
                 fileURL = NSURL.fileURLWithPath(filename)
 
