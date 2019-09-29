@@ -5,7 +5,7 @@ import traceback
 import toga
 from toga.handlers import wrapped_handler
 
-from .libs import WinForms, user32, win_version, shcore
+from .libs import Threading, WinForms, user32, win_version, shcore
 from .libs.proactor import WinformsProactorEventLoop
 from .window import Window
 
@@ -13,6 +13,18 @@ from .window import Window
 class MainWindow(Window):
     def on_close(self):
         pass
+
+
+class MessageFilter(WinForms.IMessageFilter):
+    __namespace__ = 'System.Windows.Forms'
+
+    # def __init__(self, app):
+    #     self.app = app
+
+    def PreFilterMessage(self, message):
+        print('ping', message)
+        # print(self.app, "Filter message", message)
+        return False
 
 
 class App:
@@ -27,6 +39,7 @@ class App:
 
     def create(self):
         self.native = WinForms.Application
+        self.app_context = WinForms.ApplicationContext()
 
         # Check the version of windows and make sure we are setting the DPI mode
         # with the most up to date API
@@ -122,25 +135,38 @@ class App:
                     print(line)
         print(py_exc.Message)
 
-    def main_loop(self):
+    def run_app(self):
         try:
             self.create()
 
             self.native.ThreadException += self.app_exception_handler
             self.native.ApplicationExit += self.app_exit_handler
 
-            self.loop._form = self.interface.main_window._impl.native
-            self.loop.setup_run_forever()
+            # self.filter = MessageFilter()
+            # self.native.AddMessageFilter(self.filter)
 
-            self.native.Run(self.interface.main_window._impl.native)
+            # self.filter.PreFilterMessage('MSG IS DUMMY')
+
+            self.loop.setup_run_forever(self.app_context)
+
+            self.native.Run(self.app_context)
         except:  # NOQA
             traceback.print_exc()
+
+    def main_loop(self):
+        thread = Threading.Thread(Threading.ThreadStart(self.run_app))
+        thread.SetApartmentState(Threading.ApartmentState.STA)
+        thread.Start()
+        thread.Join()
 
     def app_exit_handler(self, sender, *args, **kwargs):
         pass
 
     def exit(self):
         self.native.Exit()
+
+    def set_main_window(self, window):
+        self.app_context.MainForm = window._impl.native
 
     def set_on_exit(self, value):
         pass

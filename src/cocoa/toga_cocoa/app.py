@@ -186,6 +186,9 @@ class App:
 
         self.loop.run_forever(lifecycle=CocoaLifecycle(self.native))
 
+    def set_main_window(self, window):
+        pass
+
     def exit(self):
         self.native.terminate(None)
 

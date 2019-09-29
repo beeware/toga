@@ -57,6 +57,9 @@ class App:
         # main Android event loop.
         pass
 
+    def set_main_window(self, window):
+        pass
+
     def exit(self):
         pass
 

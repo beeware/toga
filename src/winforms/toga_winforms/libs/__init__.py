@@ -7,6 +7,7 @@ from .winforms import (  # noqa: F401
     Point,
     Single,
     Size,
+    Threading,
     Uri,
     WinDateTime,
     WinFont,

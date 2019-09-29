@@ -107,8 +107,6 @@ class Window:
             int(self.interface.content.layout.height) + TITLEBAR_HEIGHT
         )
         self.interface.content.refresh()
-        if self.interface is self.interface.app._main_window:
-            self.native.FormClosing += self.winforms_FormClosing
 
         self.native.Show()
 

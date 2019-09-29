@@ -7,12 +7,14 @@ from .winforms import Action, Task
 
 
 class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
-    def setup_run_forever(self):
+    def setup_run_forever(self, app_context):
         """Set up the asyncio event loop.
 
         This largely duplicates the setup behavior of the default Proactor
         run_forever implementation.
         """
+        self.app_context = app_context
+
         self._check_closed()
         if self.is_running():
             raise RuntimeError('This event loop is already running')
@@ -37,7 +39,7 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
         self.queue_tick()
 
     def queue_tick(self):
-        Task.Delay(5).ContinueWith(Action[Task](self.tick))
+        Task.Delay(500).ContinueWith(Action[Task](self.tick))
 
     def tick(self, *args, **kwargs):
         """
@@ -48,7 +50,8 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
         run_forever implementation.
         """
         # Run one iteration of the event loop on the main GUI thread
-        self._form.Invoke(Action(self._run_once))
+        if self.app_context.MainForm:
+            self.app_context.MainForm.Invoke(Action(self._run_once))
 
         if self._stopping:
             # If we're stopping, close down the event loop
@@ -70,6 +73,6 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
 
 
 # Python 3.7 changed the name of an internal wrapper function.
-# Install an alias for the old name at the new name if
+# Install an alias for the old name at the new name.
 if sys.version_info < (3, 7):
     WinformsProactorEventLoop._set_coroutine_origin_tracking = WinformsProactorEventLoop._set_coroutine_wrapper

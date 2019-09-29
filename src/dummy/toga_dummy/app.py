@@ -23,6 +23,9 @@ class App(LoggedObject):
     def main_loop(self):
         self._action('main loop')
 
+    def set_main_window(self, window):
+        self._set_value('main_window', window)
+
     def exit(self):
         self._action('exit')
 
