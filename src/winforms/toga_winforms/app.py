@@ -5,7 +5,7 @@ import traceback
 import toga
 from toga.handlers import wrapped_handler
 
-from .libs import WinForms, add_handler, user32, win_version, shcore
+from .libs import WinForms, user32, win_version, shcore
 from .libs.proactor import WinformsProactorEventLoop
 from .window import Window
 
@@ -83,7 +83,7 @@ class App:
                         submenu = WinForms.ToolStripMenuItem(cmd.group.label)
                     item = WinForms.ToolStripMenuItem(cmd.label)
                     if cmd.action:
-                        item.Click += add_handler(cmd)
+                        item.Click += cmd._impl.as_handler()
                     else:
                         item.Enabled = False
                     cmd._impl.native.append(item)
@@ -137,7 +137,7 @@ class App:
             traceback.print_exc()
 
     def app_exit_handler(self, sender, *args, **kwargs):
-        print("APP EXIT")
+        pass
 
     def exit(self):
         self.native.Exit()

@@ -1,7 +1,7 @@
 from toga import GROUP_BREAK, SECTION_BREAK
 from travertino.layout import Viewport
 
-from .libs import WinForms, Size, add_handler
+from .libs import WinForms, Size
 
 
 class WinFormsViewport:
@@ -48,7 +48,7 @@ class Window:
                     item = WinForms.ToolStripMenuItem(cmd.label, native_icon.ToBitmap())
                 else:
                     item = WinForms.ToolStripMenuItem(cmd.label)
-                item.Click += add_handler(cmd)
+                item.Click += cmd._impl.as_handler()
                 cmd._impl.native.append(item)
             self.toolbar_native.Items.Add(item)
 

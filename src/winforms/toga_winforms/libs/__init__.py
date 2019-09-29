@@ -1,10 +1,24 @@
 from .winforms import (  # noqa: F401
-    WinForms, Single,
-    Convert, WinDateTime, Uri,
-    WinIcon, WinImage, WinFont,
-    ContentAlignment, Size, Point,
-    TextAlignment, HorizontalTextAlignment,
-    FontFamily, FontStyle, win_font_family,
-    Text, Color, Bitmap,
-    add_handler, user32, win_version, shcore
+    Bitmap,
+    Color,
+    Convert,
+    FontFamily,
+    FontStyle,
+    Point,
+    Single,
+    Size,
+    Uri,
+    WinDateTime,
+    WinFont,
+    WinForms,
+    WinIcon,
+    WinImage,
+    shcore,
+    user32,
+    win_version
+)
+from .fonts import (
+    HorizontalTextAlignment,
+    TextAlignment,
+    win_font_family
 )
