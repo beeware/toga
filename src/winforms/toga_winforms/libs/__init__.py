@@ -1,4 +1,4 @@
-from .winforms import (   # noqa: E401
+from .winforms import (  # noqa: F401
     WinForms, Single,
     Convert, WinDateTime, Uri,
     WinIcon, WinImage, WinFont,

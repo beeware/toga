@@ -1,4 +1,4 @@
-from toga_winforms.libs import WinForms, Size, Point
+from toga_winforms.libs import WinForms
 from toga_winforms.window import WinFormsViewport
 
 from .base import Widget

@@ -1,6 +1,5 @@
 import sys
 
-from toga.constants import LEFT, RIGHT, CENTER
 from travertino.size import at_least
 
 from toga_winforms.libs import WinForms, Convert, HorizontalTextAlignment
@@ -33,7 +32,7 @@ class NumberInput(Widget):
             self.native.Maximum = Convert.ToDecimal(self.interface.max_value)
 
     def set_value(self, value):
-        if value is None or value is '':
+        if value is None or value == '':
             self.native.Value = Convert.ToDecimal(0.0)
         else:
             self.native.Value = Convert.ToDecimal(float(self.interface.value))

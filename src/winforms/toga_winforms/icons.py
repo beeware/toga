@@ -34,9 +34,12 @@ class Icon:
             self.native = create_icon_from_file(file_path + '.bmp')
 
         else:
-            print("[Winforms] No valid icon format available for {}; "
-                  "fall back on Tiberius instead".format(
-                self.interface.filename))
+            print(
+                "[Winforms] No valid icon format available for {}; "
+                "fall back on Tiberius instead".format(
+                    self.interface.filename
+                )
+            )
             tiberius_file = toga_Icon.TIBERIUS_ICON.filename + '.ico'
             self.interface.icon = toga_Icon.TIBERIUS_ICON
             self.native = WinIcon(tiberius_file)
