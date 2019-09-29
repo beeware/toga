@@ -1,7 +1,9 @@
 import sys
-from toga_winforms.libs import LEFT, RIGHT, CENTER
-from toga_winforms.libs import WinForms, Convert, HorizontalTextAlignment
+
+from toga.constants import LEFT, RIGHT, CENTER
 from travertino.size import at_least
+
+from toga_winforms.libs import WinForms, Convert, HorizontalTextAlignment
 
 from .base import Widget
 

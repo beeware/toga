@@ -110,8 +110,7 @@ class Window:
         if self.interface is self.interface.app._main_window:
             self.native.FormClosing += self.winforms_FormClosing
 
-        if self.interface is not self.interface.app._main_window:
-            self.native.Show()
+        self.native.Show()
 
     def winforms_FormClosing(self, event, handler):
         if self.interface.app.on_exit:

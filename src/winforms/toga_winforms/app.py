@@ -1,8 +1,12 @@
+import asyncio
 import sys
+import traceback
 
 import toga
+from toga.handlers import wrapped_handler
 
-from .libs import Threading, WinForms, add_handler, user32, win_version, shcore
+from .libs import WinForms, add_handler, user32, win_version, shcore
+from .libs.proactor import WinformsProactorEventLoop
 from .window import Window
 
 
@@ -17,6 +21,9 @@ class App:
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
+
+        self.loop = WinformsProactorEventLoop()
+        asyncio.set_event_loop(self.loop)
 
     def create(self):
         self.native = WinForms.Application
@@ -115,20 +122,22 @@ class App:
                     print(line)
         print(py_exc.Message)
 
-    def run_app(self):
+    def main_loop(self):
         try:
             self.create()
+
             self.native.ThreadException += self.app_exception_handler
+            self.native.ApplicationExit += self.app_exit_handler
+
+            self.loop._form = self.interface.main_window._impl.native
+            self.loop.setup_run_forever()
+
             self.native.Run(self.interface.main_window._impl.native)
         except:  # NOQA
-            import traceback
             traceback.print_exc()
 
-    def main_loop(self):
-        thread = Threading.Thread(Threading.ThreadStart(self.run_app))
-        thread.SetApartmentState(Threading.ApartmentState.STA)
-        thread.Start()
-        thread.Join()
+    def app_exit_handler(self, sender, *args, **kwargs):
+        print("APP EXIT")
 
     def exit(self):
         self.native.Exit()
@@ -155,7 +164,7 @@ class App:
         self.interface.factory.not_implemented('App.hide_cursor()')
 
     def add_background_task(self, handler):
-        self.interface.factory.not_implemented('App.add_background_task()')
+        self.loop.call_soon(wrapped_handler(self, handler), self)
 
 
 class DocumentApp(App):
