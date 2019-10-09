@@ -5,7 +5,7 @@ from toga.style.pack import Pack, COLUMN, CENTER
 HEADS = toga.Image('https://beeware.org/static/images/brutus-270.png')
 TAILS = toga.Image('https://beeware.org/project/projects/libraries/toga/toga.png')
 TOSS = toga.Image('https://beeware.org/project/projects/tools/cricket/cricket.png')
-IMG_SIZE = toga.style.Pack(height=75, width=75) # TODO be nice if didn't have to specify size
+IMG_SIZE = toga.style.Pack(height=75, width=75)  # TODO be nice if didn't have to specify size
 
 
 def build(_):
