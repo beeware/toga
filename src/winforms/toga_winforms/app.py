@@ -15,7 +15,6 @@ class MainWindow(Window):
         pass
 
 
-
 class App:
     _MAIN_WINDOW_CLASS = MainWindow
 
