@@ -7,22 +7,27 @@ Toga
 
 .. image:: https://img.shields.io/badge/python-3.5%2C%203.6%2C%203.7-blue.svg
     :target: https://pypi.python.org/pypi/toga
+    :alt: Python Versions
 
 .. image:: https://img.shields.io/pypi/v/toga.svg
     :target: https://pypi.python.org/pypi/toga
+    :alt: Project version
 
 .. image:: https://img.shields.io/pypi/status/toga.svg
     :target: https://pypi.python.org/pypi/toga
+    :alt: Project status
 
 .. image:: https://img.shields.io/pypi/l/toga.svg
     :target: https://github.com/beeware/toga/blob/master/LICENSE
+    :alt: License
 
-.. image:: https://beekeeper.beeware.org/projects/beeware/toga/shield
-    :target: https://beekeeper.beeware.org/projects/beeware/toga
+.. image:: https://github.com/beeware/beefore/workflows/Build%20status/badge.svg
+   :target: https://github.com/beeware/beefore/actions
+   :alt: Build Status
 
 .. image:: https://badges.gitter.im/beeware/general.svg
-    :target: https://gitter.im/beeware/general
-
+   :target: https://gitter.im/beeware/general
+   :alt: Gitter chat room
 
 A Python native, OS native GUI toolkit.
 
