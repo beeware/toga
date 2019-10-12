@@ -18,3 +18,9 @@ class Command:
         if self.native:
             for widget in self.native:
                 widget.Enabled = self.interface.enabled
+
+    def as_handler(self):
+        def handler(sender, event):
+            return self.interface.action(None)
+
+        return handler

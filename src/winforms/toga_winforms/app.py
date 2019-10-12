@@ -1,8 +1,12 @@
+import asyncio
 import sys
+import traceback
 
 import toga
+from toga.handlers import wrapped_handler
 
-from .libs import Threading, WinForms, add_handler, user32, win_version, shcore
+from .libs import Threading, WinForms, user32, win_version, shcore
+from .libs.proactor import WinformsProactorEventLoop
 from .window import Window
 
 
@@ -18,8 +22,12 @@ class App:
         self.interface = interface
         self.interface._impl = self
 
+        self.loop = WinformsProactorEventLoop()
+        asyncio.set_event_loop(self.loop)
+
     def create(self):
         self.native = WinForms.Application
+        self.app_context = WinForms.ApplicationContext()
 
         # Check the version of windows and make sure we are setting the DPI mode
         # with the most up to date API
@@ -76,7 +84,7 @@ class App:
                         submenu = WinForms.ToolStripMenuItem(cmd.group.label)
                     item = WinForms.ToolStripMenuItem(cmd.label)
                     if cmd.action:
-                        item.Click += add_handler(cmd)
+                        item.Click += cmd._impl.as_handler()
                     else:
                         item.Enabled = False
                     cmd._impl.native.append(item)
@@ -118,10 +126,12 @@ class App:
     def run_app(self):
         try:
             self.create()
+
             self.native.ThreadException += self.app_exception_handler
-            self.native.Run(self.interface.main_window._impl.native)
+            self.native.ApplicationExit += self.app_exit_handler
+
+            self.loop.run_forever(self.app_context)
         except:  # NOQA
-            import traceback
             traceback.print_exc()
 
     def main_loop(self):
@@ -130,8 +140,14 @@ class App:
         thread.Start()
         thread.Join()
 
+    def app_exit_handler(self, sender, *args, **kwargs):
+        pass
+
     def exit(self):
         self.native.Exit()
+
+    def set_main_window(self, window):
+        self.app_context.MainForm = window._impl.native
 
     def set_on_exit(self, value):
         pass
@@ -155,7 +171,7 @@ class App:
         self.interface.factory.not_implemented('App.hide_cursor()')
 
     def add_background_task(self, handler):
-        self.interface.factory.not_implemented('App.add_background_task()')
+        self.loop.call_soon(wrapped_handler(self, handler), self)
 
 
 class DocumentApp(App):

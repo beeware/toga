@@ -110,6 +110,9 @@ class App:
 
         self.loop.run_forever(lifecycle=iOSLifecycle())
 
+    def set_main_window(self, window):
+        pass
+
     def exit(self):
         pass
 

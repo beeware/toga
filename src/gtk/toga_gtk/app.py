@@ -175,6 +175,9 @@ class App:
 
         self.loop.run_forever(application=self.native)
 
+    def set_main_window(self, window):
+        pass
+
     def exit(self):
         self.native.quit()
 

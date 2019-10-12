@@ -1,6 +1,7 @@
 from toga_winforms.libs import WinImage
 import os
 
+
 class Image(object):
     def __init__(self, interface):
         self.interface = interface

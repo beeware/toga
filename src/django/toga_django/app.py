@@ -40,6 +40,9 @@ class App(AppInterface):
     def create_menus(self):
         self.interface.factory.not_implemented('App.create_menus()')
 
+    def set_main_window(self, window):
+        pass
+
     def exit(self):
         pass
 

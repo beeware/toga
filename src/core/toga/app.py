@@ -123,6 +123,7 @@ class App:
     def main_window(self, window):
         self._main_window = window
         window.app = self
+        self._impl.set_main_window(window)
 
     @property
     def current_window(self):
