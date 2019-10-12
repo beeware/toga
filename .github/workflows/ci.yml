@@ -82,6 +82,7 @@ jobs:
       run: |
         pip install --upgrade pip setuptools pytest-tldr
         pip install -e src/core
+        pip install -e src/dummy
         pip install -e src/winforms
     - name: Test
       run: |
@@ -102,6 +103,7 @@ jobs:
       run: |
         pip install --upgrade pip setuptools pytest-tldr
         pip install -e src/core
+        pip install -e src/dummy
         pip install -e src/cocoa
     - name: Test
       run: |
@@ -122,6 +124,7 @@ jobs:
       run: |
         pip install --upgrade pip setuptools pytest-tldr
         pip install -e src/core
+        pip install -e src/dummy
         pip install -e src/iOS
     - name: Test
       run: |
@@ -143,6 +146,7 @@ jobs:
         pip install --upgrade pip setuptools pytest-tldr
         pip install -e src/core
         pip install -e src/dummy
+        pip install -e src/gtk
     - name: Test
       run: |
         cd src/gtk
@@ -162,6 +166,7 @@ jobs:
       run: |
         pip install --upgrade pip setuptools pytest-tldr
         pip install -e src/core
+        pip install -e src/dummy
         pip install -e src/android
     - name: Test
       run: |
@@ -182,6 +187,7 @@ jobs:
       run: |
         pip install --upgrade pip setuptools pytest-tldr
         pip install -e src/core
+        pip install -e src/dummy
         pip install -e src/django
     - name: Test
       run: |
