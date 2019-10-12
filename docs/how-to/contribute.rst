@@ -136,7 +136,7 @@ Now that you have the source code, you can install Toga into your development
 environment. The Toga source repository contains multiple packages. Since
 we're installing from source, we can't rely on pip to install the packages in
 dependency order. Therefore, we have to manually install each package in a
-specific order. We start with the core packages:
+specific order:
 
 .. tabs::
 
@@ -147,6 +147,7 @@ specific order. We start with the core packages:
       (venv) $ cd toga
       (venv) $ pip install -e src/core
       (venv) $ pip install -e src/dummy
+      (venv) $ pip install -e src/cocoa
 
   .. group-tab:: Linux
 
@@ -155,6 +156,7 @@ specific order. We start with the core packages:
       (venv) $ cd toga
       (venv) $ pip install -e src/core
       (venv) $ pip install -e src/dummy
+      (venv) $ pip install -e src/gtk
 
   .. group-tab:: Windows
 
@@ -163,27 +165,6 @@ specific order. We start with the core packages:
       (venv) C:\...>cd toga
       (venv) C:\...>pip install -e src/core
       (venv) C:\...>pip install -e src/dummy
-
-Then, we can install the code for the specific platform we want to use:
-
-.. tabs::
-
-  .. group-tab:: macOS
-
-    .. code-block:: bash
-
-      (venv) $ pip install -e src/cocoa
-
-  .. group-tab:: Linux
-
-    .. code-block:: bash
-
-      (venv) $ pip install -e src/gtk
-
-  .. group-tab:: Windows
-
-    .. code-block:: doscon
-
       (venv) C:\...>pip install -e src/winforms
 
 You can then run the core test suite:
