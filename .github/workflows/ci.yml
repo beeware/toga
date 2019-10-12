@@ -151,7 +151,7 @@ jobs:
     - name: Test
       run: |
         cd src/gtk
-        python setup.py test
+        xvfb-run -a -s '-screen 0 2048x1536x24' python setup.py test
 
   android:
     name: Android backend tests
