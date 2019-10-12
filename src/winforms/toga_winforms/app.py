@@ -15,17 +15,6 @@ class MainWindow(Window):
         pass
 
 
-class MessageFilter(WinForms.IMessageFilter):
-    __namespace__ = 'System.Windows.Forms'
-
-    # def __init__(self, app):
-    #     self.app = app
-
-    def PreFilterMessage(self, message):
-        print('ping', message)
-        # print(self.app, "Filter message", message)
-        return False
-
 
 class App:
     _MAIN_WINDOW_CLASS = MainWindow
@@ -142,14 +131,7 @@ class App:
             self.native.ThreadException += self.app_exception_handler
             self.native.ApplicationExit += self.app_exit_handler
 
-            # self.filter = MessageFilter()
-            # self.native.AddMessageFilter(self.filter)
-
-            # self.filter.PreFilterMessage('MSG IS DUMMY')
-
-            self.loop.setup_run_forever(self.app_context)
-
-            self.native.Run(self.app_context)
+            self.loop.run_forever(self.app_context)
         except:  # NOQA
             traceback.print_exc()
 
