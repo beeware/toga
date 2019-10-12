@@ -44,8 +44,8 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
         # Register a custom user window message.
         self.msg_id = user32.RegisterWindowMessageA("Python asyncio tick")
         # Add a message filter to listen for the asyncio tick message
-        msg_filter = AsyncIOTickMessageFilter(self, self.msg_id)
         # FIXME: Actually install the message filter.
+        # msg_filter = AsyncIOTickMessageFilter(self, self.msg_id)
         # WinForms.Application.AddMessageFilter(msg_filter)
 
         # Setup the Proactor.
