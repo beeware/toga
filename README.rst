@@ -71,7 +71,7 @@ Quickstart
 
 To get a demonstration of the capabilities of Toga, run the following::
 
-    $ pip install toga-demo
+    $ pip install --pre toga-demo
     $ toga-demo
 
 This will pop up a GUI window with some sample widgets.
@@ -103,7 +103,7 @@ contribute code, please `fork the code`_ and `submit a pull request`_.
 .. _Read The Docs: https://toga.readthedocs.io
 .. _@pybeeware on Twitter: https://twitter.com/pybeeware
 .. _beeware/general: https://gitter.im/beeware/general
-.. _guide for first time contributors: https://toga.readthedocs.io/en/latest/how-to/contribute.html 
+.. _guide for first time contributors: https://toga.readthedocs.io/en/latest/how-to/contribute.html
 .. _log them on Github: https://github.com/beeware/toga/issues
 .. _fork the code: https://github.com/beeware/toga
 .. _submit a pull request: https://github.com/beeware/toga/pulls
