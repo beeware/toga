@@ -58,3 +58,4 @@ class TextInput(Widget):
     def winforms_onFocusLost(self, sender, event):
         if not self.native.Text and self.interface.placeholder:
             self.set_placeholder(None)
+
