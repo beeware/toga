@@ -1,4 +1,7 @@
-from toga_winforms.libs import WinForms, HorizontalTextAlignment, Color
+from ctypes import c_uint
+from ctypes.wintypes import HWND, WPARAM
+
+from toga_winforms.libs import WinForms, HorizontalTextAlignment, user32
 from travertino.size import at_least
 
 from .base import Widget
@@ -8,24 +11,28 @@ class TextInput(Widget):
     def create(self):
         self.native = WinForms.TextBox()
         self.native.Multiline = False
+        self.native.Click += self.winforms_Click
         self.native.TextChanged += self.winforms_onTextChanged
-        self.native.Leave += self.winforms_onFocusLost
 
     def set_readonly(self, value):
         self.native.ReadOnly = value
 
     def set_placeholder(self, value):
-        if self.interface.placeholder and not self.interface.value:
-            self.native.Click += self.winforms_Click
-            self.native.Text = self.interface.placeholder
-            self.native.ForeColor = Color.FromName('GRAY')
+        # This solution is based on https://stackoverflow.com/questions/4902565/watermark-textbox-in-winforms
+        if self.interface.placeholder:
+            # Message Code for setting Cue Banner (Placeholder)
+            EM_SETCUEBANNER = c_uint(0x1501)
+            # value 0 means placeholder is hidden as soon the input gets focus
+            # value 1 means placeholder is hidden only after something is typed into input
+            show_placeholder_on_focus = WPARAM(1)
+            window_handle = HWND(self.native.Handle.ToInt32())
+            user32.SendMessageW(window_handle, EM_SETCUEBANNER, show_placeholder_on_focus, self.interface.placeholder)
 
     def get_value(self):
         return self.native.Text
 
     def set_value(self, value):
         if value:
-            self.native.ForeColor = Color.FromName('BLACK')
             self.native.Text = value
 
     def set_alignment(self, value):
@@ -51,10 +58,3 @@ class TextInput(Widget):
 
     def winforms_Click(self, sender, event):
         self.native.SelectAll()
-        if self.interface.placeholder and self.get_value() == self.interface.placeholder:
-            self.native.Clear()
-            self.native.ForeColor = Color.FromName('BLACK')
-
-    def winforms_onFocusLost(self, sender, event):
-        if not self.native.Text and self.interface.placeholder:
-            self.set_placeholder(None)
