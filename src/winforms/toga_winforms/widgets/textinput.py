@@ -32,8 +32,7 @@ class TextInput(Widget):
         return self.native.Text
 
     def set_value(self, value):
-        if value:
-            self.native.Text = value
+        self.native.Text = value
 
     def set_alignment(self, value):
         self.native.TextAlign = HorizontalTextAlignment(value)
