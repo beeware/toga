@@ -64,3 +64,8 @@ class TestWindow(TestCase):
         with patch.object(self.window, '_impl'):
             self.window.on_close()
             self.window._impl.on_close.assert_called_once_with()
+
+    def test_close(self):
+        with patch.object(self.window, "_impl"):
+            self.window.close()
+            self.window._impl.close.assert_called_once_with()
