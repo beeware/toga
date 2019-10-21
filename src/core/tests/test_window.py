@@ -85,3 +85,11 @@ class TestWindow(TestCase):
             self.window.confirm_dialog(title, message)
             self.window._impl.confirm_dialog.assert_called_once_with(
                 title, message)
+
+    def test_error_dialog(self):
+        title = "error_dialog_test"
+        message = "sample_text"
+        with patch.object(self.window, "_impl"):
+            self.window.error_dialog(title, message)
+            self.window._impl.error_dialog.assert_called_once_with(
+                title, message)
