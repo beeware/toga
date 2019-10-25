@@ -64,3 +64,32 @@ class TestWindow(TestCase):
         with patch.object(self.window, '_impl'):
             self.window.on_close()
             self.window._impl.on_close.assert_called_once_with()
+
+    def test_close(self):
+        with patch.object(self.window, "_impl"):
+            self.window.close()
+            self.window._impl.close.assert_called_once_with()
+
+    def test_question_dialog(self):
+        title = "question_dialog_test"
+        message = "sample_text"
+        with patch.object(self.window, "_impl"):
+            self.window.question_dialog(title, message)
+            self.window._impl.question_dialog.assert_called_once_with(
+                title, message)
+
+    def test_confirm_dialog(self):
+        title = "confirm_dialog_test"
+        message = "sample_text"
+        with patch.object(self.window, "_impl"):
+            self.window.confirm_dialog(title, message)
+            self.window._impl.confirm_dialog.assert_called_once_with(
+                title, message)
+
+    def test_error_dialog(self):
+        title = "error_dialog_test"
+        message = "sample_text"
+        with patch.object(self.window, "_impl"):
+            self.window.error_dialog(title, message)
+            self.window._impl.error_dialog.assert_called_once_with(
+                title, message)
