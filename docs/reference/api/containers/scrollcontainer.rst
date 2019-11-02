@@ -1,11 +1,12 @@
 Scroll Container
 ================
 
-======= ====== ========= ===== ========= ========
- macOS   GTK+   Windows   iOS   Android   Django
-======= ====== ========= ===== ========= ========
- |y|     |y|    |y|      |y|
-======= ====== ========= ===== ========= ========
+.. rst-class:: widget-support
+.. csv-filter::
+   :header-rows: 1
+   :file: ../../data/widgets_by_platform.csv
+   :included_cols: 4,5,6,7,8,9
+   :exclude: {0: '(?!(ScrollContainer|Component))'}
 
 .. |y| image:: /_static/yes.png
     :width: 16
