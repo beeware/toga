@@ -25,8 +25,7 @@ sys.path.insert(0, os.path.abspath('../src/core/'))
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.napoleon', 'sphinx.ext.todo', 'sphinx_tabs.tabs']
-
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.napoleon', 'sphinx.ext.todo', 'sphinx_tabs.tabs', 'crate.sphinx.csv']
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
@@ -193,6 +192,10 @@ try:
 except ImportError:
     # The sphinx-rtd-theme package is not installed, so to the default
     pass
+
+html_css_files = [
+    'custom.css',
+]
 
 # -- Options for LaTeX output --------------------------------------------------
 
