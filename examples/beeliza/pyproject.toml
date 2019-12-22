@@ -1,0 +1,44 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name = "Beeliza"
+bundle = "org.beeware"
+version = "0.0.1"
+url = "https://beeware.org"
+license = "BSD license"
+author = 'Tiberius Yak'
+author_email = "tiberius@beeware.org"
+
+[tool.briefcase.app.beeliza]
+formal_name = "Beeliza"
+description = "A testing app"
+sources = ['beeliza']
+requires = []
+
+
+[tool.briefcase.app.beeliza.macOS]
+requires = [
+    'toga-cocoa',
+]
+
+[tool.briefcase.app.beeliza.linux]
+requires = [
+    'toga-gtk',
+]
+
+[tool.briefcase.app.beeliza.windows]
+requires = [
+    'toga-winforms',
+]
+
+# Mobile deployments
+[tool.briefcase.app.beeliza.iOS]
+requires = [
+    'toga-iOS',
+]
+
+[tool.briefcase.app.beeliza.android]
+requires = [
+    'toga-android',
+]

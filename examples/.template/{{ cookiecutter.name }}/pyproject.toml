@@ -1,0 +1,44 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name = "{{ cookiecutter.formal_name }}"
+bundle = "org.beeware"
+version = "0.0.1"
+url = "https://beeware.org"
+license = "BSD license"
+author = 'Tiberius Yak'
+author_email = "tiberius@beeware.org"
+
+[tool.briefcase.app.{{ cookiecutter.name }}]
+formal_name = "{{ cookiecutter.formal_name }}"
+description = "A testing app"
+sources = ['{{ cookiecutter.name }}']
+requires = []
+
+
+[tool.briefcase.app.{{ cookiecutter.name }}.macOS]
+requires = [
+    'toga-cocoa',
+]
+
+[tool.briefcase.app.{{ cookiecutter.name }}.linux]
+requires = [
+    'toga-gtk',
+]
+
+[tool.briefcase.app.{{ cookiecutter.name }}.windows]
+requires = [
+    'toga-winforms',
+]
+
+# Mobile deployments
+[tool.briefcase.app.{{ cookiecutter.name }}.iOS]
+requires = [
+    'toga-iOS',
+]
+
+[tool.briefcase.app.{{ cookiecutter.name }}.android]
+requires = [
+    'toga-android',
+]

@@ -1,0 +1,44 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name = "Button Demo"
+bundle = "org.beeware"
+version = "0.0.1"
+url = "https://beeware.org"
+license = "BSD license"
+author = 'Tiberius Yak'
+author_email = "tiberius@beeware.org"
+
+[tool.briefcase.app.button]
+formal_name = "Button Demo"
+description = "A testing app"
+sources = ['button']
+requires = []
+
+
+[tool.briefcase.app.button.macOS]
+requires = [
+    'toga-cocoa',
+]
+
+[tool.briefcase.app.button.linux]
+requires = [
+    'toga-gtk',
+]
+
+[tool.briefcase.app.button.windows]
+requires = [
+    'toga-winforms',
+]
+
+# Mobile deployments
+[tool.briefcase.app.button.iOS]
+requires = [
+    'toga-iOS',
+]
+
+[tool.briefcase.app.button.android]
+requires = [
+    'toga-android',
+]
