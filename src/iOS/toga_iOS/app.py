@@ -1,13 +1,18 @@
 import asyncio
 
-from rubicon.objc import objc_method
+from rubicon.objc import SEL, objc_method
 from rubicon.objc.eventloop import EventLoopPolicy, iOSLifecycle
+
 from toga.handlers import wrapped_handler
 
-from .libs import (SEL, NSNotificationCenter, UIKeyboardFrameEndUserInfoKey,
-                   UIKeyboardWillHideNotification,
-                   UIKeyboardWillShowNotification, UIResponder)
-from .window import Window
+from toga_iOS.libs import (
+    NSNotificationCenter,
+    UIKeyboardFrameEndUserInfoKey,
+    UIKeyboardWillHideNotification,
+    UIKeyboardWillShowNotification,
+    UIResponder
+)
+from toga_iOS.window import Window
 
 
 class MainWindow(Window):

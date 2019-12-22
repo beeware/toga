@@ -14,8 +14,8 @@ from toga_iOS.libs import (
     UILabel,
     UITextView,
 )
+from toga_iOS.widgets.base import Widget
 
-from .base import Widget
 
 class TogaMultilineTextView(UITextView):
     @objc_method

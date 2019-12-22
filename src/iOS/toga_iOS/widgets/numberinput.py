@@ -1,18 +1,24 @@
 from ctypes import c_int
 from decimal import Decimal
 
-from rubicon.objc import objc_method, CGSize, NSObject, SEL, NSRange, send_message
+from rubicon.objc import (
+    CGSize,
+    NSObject,
+    SEL,
+    NSRange,
+    objc_method,
+    send_message
+)
 from travertino.size import at_least
 
-from toga_iOS.libs import(
+from toga_iOS.libs import (
     NSTextAlignment,
     UIControlEventEditingChanged,
     UIKeyboardType,
     UITextBorderStyle,
     UITextField
 )
-
-from .base import Widget
+from toga_iOS.widgets.base import Widget
 
 
 class TogaNumericTextField(UITextField):

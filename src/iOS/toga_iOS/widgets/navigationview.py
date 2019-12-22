@@ -1,8 +1,12 @@
-from rubicon.objc import *
-from toga.interface import NavigationView as NavigationViewInterface
-from toga_iOS.libs import UINavigationController, UIBarButtonItem
+from rubicon.objc import objc_method
 
-from .base import WidgetMixin
+from toga.interface import NavigationView as NavigationViewInterface
+from toga_iOS.libs import (
+    UINavigationController,
+    UIBarButtonItem,
+    UIBarButtonSystemItemAdd,
+)
+from toga_iOS.widgets.base import Widget, WidgetMixin
 
 
 def button_for_action(callback):

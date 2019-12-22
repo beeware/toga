@@ -1,4 +1,5 @@
 from rubicon.objc import CGSizeMake
+
 from toga_iOS.libs import (
     NSLayoutAttributeBottom,
     NSLayoutAttributeLeading,
@@ -10,8 +11,7 @@ from toga_iOS.libs import (
     UIScrollView
 )
 from toga_iOS.window import iOSViewport
-
-from .base import Widget
+from toga_iOS.widgets.base import Widget
 
 
 class ScrollContainer(Widget):
@@ -19,18 +19,18 @@ class ScrollContainer(Widget):
         # We need a layout pass to figure out how big the scrollable area should be
         scrollable_content = self.interface.content._impl
         scrollable_content.interface.refresh()
-        
+
         content_width = 0
         padding_horizontal = 0
         content_height = 0
         padding_vertical = 0
-        
+
         if self.interface.horizontal:
             content_width = scrollable_content.interface.layout.width
             padding_horizontal = scrollable_content.interface.style.padding_left + scrollable_content.interface.style.padding_right
         else:
             content_width = self.native.frame.size.width
-        
+
         if self.interface.vertical:
             content_height = scrollable_content.interface.layout.height
             padding_vertical = scrollable_content.interface.style.padding_top + scrollable_content.interface.style.padding_bottom
@@ -97,7 +97,7 @@ class ScrollContainer(Widget):
         self.add_constraints()
 
     def set_content(self, widget):
-        if self.interface.content != None:
+        if self.interface.content is not None:
             self.interface.content._impl.native.removeFromSuperview()
         self.native.addSubview(widget.native)
         widget.viewport = iOSViewport(self.native)

@@ -1,9 +1,5 @@
-from .libs import (
-    UIFont,
-    NSAttributedString,
-    NSFontAttributeName,
-    NSMutableDictionary
-)
+from rubicon.objc import NSMutableDictionary
+
 from toga.fonts import (
     MESSAGE,
     NORMAL,
@@ -13,6 +9,11 @@ from toga.fonts import (
     CURSIVE,
     FANTASY,
     MONOSPACE
+)
+from toga_iOS.libs import (
+    UIFont,
+    NSAttributedString,
+    NSFontAttributeName,
 )
 
 _FONT_CACHE = {}
