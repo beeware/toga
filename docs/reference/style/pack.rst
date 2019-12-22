@@ -8,7 +8,7 @@ children, and each child specifies how it will consume the available space -
 either as a specific width, or as a proportion of the available width. Other
 properties exist to control color, text alignment and so on.
 
-It is simliar in some ways to the CSS Flexbox algorithm; but dramatically
+It is similar in some ways to the CSS Flexbox algorithm; but dramatically
 simplified, as there is no allowance for overflowing boxes.
 
 Pack style properties
