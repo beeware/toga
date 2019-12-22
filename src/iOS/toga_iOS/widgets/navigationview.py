@@ -1,4 +1,4 @@
-from rubicon.objc import objc_method
+from rubicon.objc import SEL, objc_method
 
 from toga.interface import NavigationView as NavigationViewInterface
 from toga_iOS.libs import (
@@ -6,7 +6,7 @@ from toga_iOS.libs import (
     UIBarButtonItem,
     UIBarButtonSystemItemAdd,
 )
-from toga_iOS.widgets.base import Widget, WidgetMixin
+from toga_iOS.widgets.base import WidgetMixin
 
 
 def button_for_action(callback):
@@ -32,7 +32,9 @@ class NavigationView(NavigationViewInterface, WidgetMixin):
         self._create()
 
     def create(self):
-        self._controller = TogaNavigationController.alloc().initWithRootViewController_(self._config['content']._controller)
+        self._controller = TogaNavigationController.alloc().initWithRootViewController_(
+            self._config['content']._controller
+        )
         self._controller.interface = self
         self._controller.navigationBar.topItem.title = self._config['title']
 

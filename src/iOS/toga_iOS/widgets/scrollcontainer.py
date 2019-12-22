@@ -27,62 +27,76 @@ class ScrollContainer(Widget):
 
         if self.interface.horizontal:
             content_width = scrollable_content.interface.layout.width
-            padding_horizontal = scrollable_content.interface.style.padding_left + scrollable_content.interface.style.padding_right
+            padding_horizontal = (
+                scrollable_content.interface.style.padding_left
+                + scrollable_content.interface.style.padding_right
+            )
         else:
             content_width = self.native.frame.size.width
 
         if self.interface.vertical:
             content_height = scrollable_content.interface.layout.height
-            padding_vertical = scrollable_content.interface.style.padding_top + scrollable_content.interface.style.padding_bottom
+            padding_vertical = (
+                scrollable_content.interface.style.padding_top
+                + scrollable_content.interface.style.padding_bottom
+            )
             # pad the scrollview for the statusbar offset
             padding_vertical = padding_vertical + scrollable_content.viewport.statusbar_height
         else:
             content_height = self.native.frame.size.height
 
-        self.native.setContentSize_(CGSizeMake(content_width + padding_horizontal,
-                                               content_height + padding_vertical))
+        self.native.setContentSize_(
+            CGSizeMake(
+                content_width + padding_horizontal,
+                content_height + padding_vertical,
+            )
+        )
 
     def constrain_to_scrollview(self, widget):
         # The scrollview should know the content size as long as the
         # view contained has an intrinsic size and the constraints are
         # not ambiguous in any axis.
         view = widget.native
-        leading_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
-            view,
-            NSLayoutAttributeLeading,
-            NSLayoutRelationEqual,
-            self.native,
-            NSLayoutAttributeLeading,
-            1.0,
-            0
-        )
-        trailing_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
-            self.native,
-            NSLayoutAttributeTrailing,
-            NSLayoutRelationEqual,
-            view,
-            NSLayoutAttributeTrailing,
-            1.0,
-            0
-        )
-        top_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
-            view,
-            NSLayoutAttributeTop,
-            NSLayoutRelationEqual,
-            self.native,
-            NSLayoutAttributeTop,
-            1.0,
-            0
-        )
-        bottom_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
-            self.native,
-            NSLayoutAttributeBottom,
-            NSLayoutRelationEqual,
-            view,
-            NSLayoutAttributeBottom,
-            1.0,
-            0
-        )
+        leading_constraint = \
+            NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
+                view,
+                NSLayoutAttributeLeading,
+                NSLayoutRelationEqual,
+                self.native,
+                NSLayoutAttributeLeading,
+                1.0,
+                0
+            )
+        trailing_constraint = \
+            NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
+                self.native,
+                NSLayoutAttributeTrailing,
+                NSLayoutRelationEqual,
+                view,
+                NSLayoutAttributeTrailing,
+                1.0,
+                0
+            )
+        top_constraint = \
+            NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
+                view,
+                NSLayoutAttributeTop,
+                NSLayoutRelationEqual,
+                self.native,
+                NSLayoutAttributeTop,
+                1.0,
+                0
+            )
+        bottom_constraint = \
+            NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
+                self.native,
+                NSLayoutAttributeBottom,
+                NSLayoutRelationEqual,
+                view,
+                NSLayoutAttributeBottom,
+                1.0,
+                0
+            )
         self.native.addConstraints_([
             leading_constraint,
             trailing_constraint,

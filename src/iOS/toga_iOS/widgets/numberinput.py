@@ -3,7 +3,6 @@ from decimal import Decimal
 
 from rubicon.objc import (
     CGSize,
-    NSObject,
     SEL,
     NSRange,
     objc_method,
@@ -35,10 +34,11 @@ class TogaNumericTextField(UITextField):
     def textField_shouldChangeCharactersInRange_replacementString_(self, textField, textRange: NSRange, chars) -> bool:
         # chars will be zero length in the case of a deletion
         # otherwise, accept any number, or '.' (as long as this is the first one)
-        if (len(chars) == 0
-                    or chars.isdigit()
-                    or (chars == '.' and '.' not in self.text)
-                ):
+        if (
+            len(chars) == 0
+            or chars.isdigit()
+            or (chars == '.' and '.' not in self.text)
+        ):
             return True
         return False
 

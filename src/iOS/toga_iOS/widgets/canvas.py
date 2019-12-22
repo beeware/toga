@@ -132,7 +132,7 @@ class Canvas(Widget):
     # Drawing Paths
 
     def fill(self, color, fill_rule, preserve, draw_context, *args, **kwargs):
-        if fill_rule is "evenodd":
+        if fill_rule == "evenodd":
             mode = CGPathDrawingMode(kCGPathEOFill)
         else:
             mode = CGPathDrawingMode(kCGPathFill)

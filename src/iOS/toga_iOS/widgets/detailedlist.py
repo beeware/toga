@@ -1,6 +1,7 @@
-from rubicon.objc import objc_method
+from rubicon.objc import SEL, objc_method
 
 from toga_iOS.libs import (
+    NSIndexPath,
     UIControlEventValueChanged,
     UIRefreshControl,
     UITableViewCell,

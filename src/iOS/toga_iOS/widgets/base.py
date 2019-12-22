@@ -35,7 +35,7 @@ class Widget:
     def set_enabled(self, value):
         self.native.enabled = self.interface.enabled
 
-    ### APPLICATOR
+    # APPLICATOR
 
     def set_bounds(self, x, y, width, height):
         if self.container:
@@ -54,7 +54,7 @@ class Widget:
     def set_hidden(self, hidden):
         if self._container:
             for view in self._container._impl.subviews:
-                if child._impl == view:
+                if view._impl:
                     view.setHidden(hidden)
 
     def set_font(self, font):
@@ -69,7 +69,7 @@ class Widget:
         # By default, background color can't be changed
         pass
 
-    ### INTERFACE
+    # INTERFACE
 
     def add_child(self, child):
         if self.container:

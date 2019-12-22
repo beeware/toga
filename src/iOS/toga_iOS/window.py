@@ -87,4 +87,3 @@ class Window:
 
     def stack_trace_dialog(self, title, message, content, retry=False):
         self.interface.factory.not_implemented('Window.stack_trace_dialog()')
-
