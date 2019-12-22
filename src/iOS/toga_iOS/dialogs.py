@@ -1,4 +1,18 @@
-from .libs import *
+from rubicon.objc import Block, SEL, objc_method
+from rubicon.objc.runtime import objc_id
+
+from toga_iOS.libs import (
+    NSDate,
+    NSRunLoop,
+    UIAlertAction,
+    UIAlertActionStyle,
+    UIAlertController,
+    UIAlertControllerStyle,
+    UIBarButtonItem,
+    UIBarButtonSystemItem,
+    UIScreen,
+    UIViewController
+)
 
 
 class TogaDialog(UIViewController):
@@ -7,15 +21,14 @@ class TogaDialog(UIViewController):
         self.title = self.interface.title
 
         self.cancelButton = UIBarButtonItem.alloc().initWithBarButtonSystemItem_target_action_(
-            UIBarButtonSystemItemCancel,
+            UIBarButtonSystemItem.Cancel,
             self,
             SEL('cancelClicked')
         )
         self.navigationController.navigationBar.topItem.leftBarButtonItem = self.cancelButton
 
         self.doneButton = UIBarButtonItem.alloc().initWithBarButtonSystemItem_target_action_(
-            UIBarButtonSystemItemDone,
-            self,
+            UIBarButtonSystemItem.Done,
             SEL('doneClicked')
         )
         self.navigationController.navigationBar.topItem.rightBarButtonItem = self.doneButton
@@ -55,3 +68,76 @@ class Dialog:
         self.content.startup()
         self._native = TogaDialog.alloc().init()
         self._native.interface = self
+
+
+class TogaModalDialog:
+    def __init__(self, title, message):
+        self.native = UIAlertController.alertControllerWithTitle(
+            title,
+            message=message,
+            preferredStyle=UIAlertControllerStyle.Alert
+        )
+
+        self.response = None
+
+    def true_response(self, action: objc_id) -> None:
+        self.response = True
+
+    def false_response(self, action: objc_id) -> None:
+        self.response = False
+
+    def add_ok_button(self):
+        self.native.addAction(
+            UIAlertAction.actionWithTitle(
+                "OK",
+                style=UIAlertActionStyle.Default,
+                handler=Block(self.true_response, None, objc_id)
+            )
+        )
+
+    def add_cancel_button(self):
+        self.native.addAction(
+            UIAlertAction.actionWithTitle(
+                "Cancel",
+                style=UIAlertActionStyle.Cancel,
+                handler=Block(self.false_response, None, objc_id)
+            )
+        )
+
+    def runModal(self, window):
+        window._impl.controller.presentViewController(
+            self.native,
+            animated=False,
+            completion=None,
+        )
+
+        while self.response is None:
+            NSRunLoop.currentRunLoop().runUntilDate(NSDate.alloc().init())
+
+        return self.response
+
+
+def info_dialog(window, title, message):
+    dialog = TogaModalDialog(title=title, message=message)
+    dialog.add_ok_button()
+    return dialog.runModal(window)
+
+
+def question_dialog(window, title, message):
+    dialog = TogaModalDialog(title=title, message=message)
+    dialog.add_yes_button()
+    dialog.add_no_button()
+    return dialog.runModal(window)
+
+
+def confirm_dialog(window, title, message):
+    dialog = TogaModalDialog(title=title, message=message)
+    dialog.add_ok_button()
+    dialog.add_cancel_button()
+    return dialog.runModal(window)
+
+
+def error_dialog(window, title, message):
+    dialog = TogaModalDialog(title=title, message=message)
+    dialog.add_ok_button()
+    return dialog.runModal(window)

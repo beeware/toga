@@ -1,4 +1,5 @@
-from .libs import UIApplication, UIScreen, UIViewController, UIWindow
+from toga_iOS import dialogs
+from toga_iOS.libs import UIApplication, UIScreen, UIViewController, UIWindow
 
 
 class iOSViewport:
@@ -72,23 +73,18 @@ class Window:
         # Refresh with the actual viewport to do the proper rendering.
         self.interface.content.refresh()
 
-    def set_full_screen(self, is_full_screen):
-        self.interface.factory.not_implemented('Window.set_full_screen()')
-
     def info_dialog(self, title, message):
-        self.interface.factory.not_implemented('Window.info_dialog()')
+        return dialogs.info_dialog(self.interface, title, message)
 
     def question_dialog(self, title, message):
-        self.interface.factory.not_implemented('Window.question_dialog()')
+        return dialogs.question_dialog(self.interface, title, message)
 
     def confirm_dialog(self, title, message):
-        self.interface.factory.not_implemented('Window.confirm_dialog()')
+        return dialogs.confirm_dialog(self.interface, title, message)
 
     def error_dialog(self, title, message):
-        self.interface.factory.not_implemented('Window.error_dialog()')
+        return dialogs.error_dialog(self.interface, title, message)
 
     def stack_trace_dialog(self, title, message, content, retry=False):
         self.interface.factory.not_implemented('Window.stack_trace_dialog()')
 
-    def save_file_dialog(self, title, suggested_filename, file_types):
-        self.interface.factory.not_implemented('Window.save_file_dialog()')
