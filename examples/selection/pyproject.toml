@@ -1,0 +1,44 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name = "Selection Demo"
+bundle = "org.beeware"
+version = "0.0.1"
+url = "https://beeware.org"
+license = "BSD license"
+author = 'Tiberius Yak'
+author_email = "tiberius@beeware.org"
+
+[tool.briefcase.app.selection]
+formal_name = "Selection Demo"
+description = "A testing app"
+sources = ['selection']
+requires = []
+
+
+[tool.briefcase.app.selection.macOS]
+requires = [
+    'toga-cocoa',
+]
+
+[tool.briefcase.app.selection.linux]
+requires = [
+    'toga-gtk',
+]
+
+[tool.briefcase.app.selection.windows]
+requires = [
+    'toga-winforms',
+]
+
+# Mobile deployments
+[tool.briefcase.app.selection.iOS]
+requires = [
+    'toga-iOS',
+]
+
+[tool.briefcase.app.selection.android]
+requires = [
+    'toga-android',
+]

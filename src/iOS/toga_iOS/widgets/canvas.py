@@ -1,4 +1,12 @@
-from rubicon.objc import CGFloat, CGSize, CGRect
+from rubicon.objc import (
+    CGFloat,
+    CGSize,
+    CGRect,
+    NSMutableDictionary,
+    NSPoint,
+    objc_method,
+)
+
 from travertino.size import at_least
 
 from toga_iOS.libs import (
@@ -11,18 +19,14 @@ from toga_iOS.libs import (
     NSAttributedString,
     NSFontAttributeName,
     NSForegroundColorAttributeName,
-    NSMutableDictionary,
-    NSPoint,
     NSStrokeColorAttributeName,
     NSStrokeWidthAttributeName,
     uikit,
     UIColor,
     UIView,
-    objc_method,
 )
 from toga_iOS.colors import native_color
-
-from .base import Widget
+from toga_iOS.widgets.base import Widget
 
 
 class TogaCanvas(UIView):
@@ -128,7 +132,7 @@ class Canvas(Widget):
     # Drawing Paths
 
     def fill(self, color, fill_rule, preserve, draw_context, *args, **kwargs):
-        if fill_rule is "evenodd":
+        if fill_rule == "evenodd":
             mode = CGPathDrawingMode(kCGPathEOFill)
         else:
             mode = CGPathDrawingMode(kCGPathFill)

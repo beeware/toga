@@ -1,9 +1,9 @@
 from rubicon.objc import (
     CGPoint,
-    NSObject,
     objc_method
 )
 from travertino.size import at_least
+
 from toga_iOS.libs import (
     NSLayoutAttributeBottom,
     NSLayoutAttributeLeading,
@@ -14,8 +14,8 @@ from toga_iOS.libs import (
     UILabel,
     UITextView,
 )
+from toga_iOS.widgets.base import Widget
 
-from .base import Widget
 
 class TogaMultilineTextView(UITextView):
     @objc_method
@@ -42,6 +42,7 @@ class TogaMultilineTextView(UITextView):
     def textViewDidEndEditing_(self, text_view):
         self.placeholder_label.setHidden_(len(text_view.text) > 0)
 
+
 class MultilineTextInput(Widget):
     def create(self):
         self.native = TogaMultilineTextView.alloc().init()
@@ -63,42 +64,46 @@ class MultilineTextInput(Widget):
         self.add_constraints()
 
     def constrain_placeholder_label(self):
-        leading_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
-            self.placeholder_label,
-            NSLayoutAttributeLeading,
-            NSLayoutRelationEqual,
-            self.native,
-            NSLayoutAttributeLeading,
-            1.0,
-            4.0
-        )
-        trailing_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
-            self.placeholder_label,
-            NSLayoutAttributeTrailing,
-            NSLayoutRelationEqual,
-            self.native,
-            NSLayoutAttributeTrailing,
-            1.0,
-            0
-        )
-        top_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
-            self.placeholder_label,
-            NSLayoutAttributeTop,
-            NSLayoutRelationEqual,
-            self.native,
-            NSLayoutAttributeTop,
-            1.0,
-            8.0
-        )
-        bottom_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
-            self.placeholder_label,
-            NSLayoutAttributeBottom,
-            NSLayoutRelationEqual,
-            self.native,
-            NSLayoutAttributeBottom,
-            1.0,
-            0
-        )
+        leading_constraint = \
+            NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
+                self.placeholder_label,
+                NSLayoutAttributeLeading,
+                NSLayoutRelationEqual,
+                self.native,
+                NSLayoutAttributeLeading,
+                1.0,
+                4.0
+            )
+        trailing_constraint = \
+            NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
+                self.placeholder_label,
+                NSLayoutAttributeTrailing,
+                NSLayoutRelationEqual,
+                self.native,
+                NSLayoutAttributeTrailing,
+                1.0,
+                0
+            )
+        top_constraint = \
+            NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
+                self.placeholder_label,
+                NSLayoutAttributeTop,
+                NSLayoutRelationEqual,
+                self.native,
+                NSLayoutAttributeTop,
+                1.0,
+                8.0
+            )
+        bottom_constraint = \
+            NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
+                self.placeholder_label,
+                NSLayoutAttributeBottom,
+                NSLayoutRelationEqual,
+                self.native,
+                NSLayoutAttributeBottom,
+                1.0,
+                0
+            )
         self.native.addConstraints_([
             leading_constraint,
             trailing_constraint,

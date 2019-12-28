@@ -1,0 +1,44 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name = "TableSource Demo"
+bundle = "org.beeware"
+version = "0.0.1"
+url = "https://beeware.org"
+license = "BSD license"
+author = 'Tiberius Yak'
+author_email = "tiberius@beeware.org"
+
+[tool.briefcase.app.table_source]
+formal_name = "TableSource Demo"
+description = "A testing app"
+sources = ['table_source']
+requires = []
+
+
+[tool.briefcase.app.table_source.macOS]
+requires = [
+    'toga-cocoa',
+]
+
+[tool.briefcase.app.table_source.linux]
+requires = [
+    'toga-gtk',
+]
+
+[tool.briefcase.app.table_source.windows]
+requires = [
+    'toga-winforms',
+]
+
+# Mobile deployments
+[tool.briefcase.app.table_source.iOS]
+requires = [
+    'toga-iOS',
+]
+
+[tool.briefcase.app.table_source.android]
+requires = [
+    'toga-android',
+]

@@ -1,7 +1,7 @@
 from rubicon.objc import objc_method
-from toga_iOS.libs import WKWebView, NSURL, NSURLRequest
 
-from .base import Widget
+from toga_iOS.libs import WKWebView, NSURL, NSURLRequest
+from toga_iOS.widgets.base import Widget
 
 
 class TogaWebView(WKWebView):

@@ -1,9 +1,8 @@
-from toga.constants import *
 from toga_iOS.libs import (
     UIImageView,
     UIViewContentMode
 )
-from .base import Widget
+from toga_iOS.widgets.base import Widget
 
 
 class ImageView(Widget):

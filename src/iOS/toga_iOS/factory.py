@@ -1,6 +1,7 @@
 from .app import App, MainWindow
 # from .command import Command
 
+from .colors import native_color
 from .fonts import Font
 from .icons import Icon
 from .images import Image

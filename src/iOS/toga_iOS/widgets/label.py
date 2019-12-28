@@ -3,8 +3,7 @@ from travertino.size import at_least
 
 from toga_iOS.colors import native_color
 from toga_iOS.libs import UILabel, NSTextAlignment, NSLineBreakByWordWrapping
-
-from .base import Widget
+from toga_iOS.widgets.base import Widget
 
 
 class Label(Widget):
