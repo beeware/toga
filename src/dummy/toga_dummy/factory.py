@@ -5,6 +5,7 @@ from .documents import Document
 from .fonts import Font
 from .icons import Icon
 from .images import Image
+from .paths import Paths
 
 from .widgets.box import Box
 from .widgets.button import Button
@@ -45,6 +46,7 @@ __all__ = [
     'Font',
     'Icon',
     'Image',
+    'Paths',
 
     'Box',
     'Button',
