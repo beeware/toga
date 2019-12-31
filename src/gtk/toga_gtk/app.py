@@ -7,7 +7,7 @@ from urllib.parse import unquote, urlparse
 
 import gbulb
 import toga
-from toga import Icon
+from toga import Icon, App as toga_App
 from toga.command import GROUP_BREAK, SECTION_BREAK, Command
 
 from .keys import gtk_accel
@@ -28,10 +28,11 @@ class MainWindow(Window):
     def create(self):
         super().create()
         self.native.set_role("MainWindow")
-        self.native.set_icon(Icon.app_icon._impl.native_72.get_pixbuf())
+        self.native.set_icon(toga_App.app.icon._impl.native_72.get_pixbuf())
 
     def set_app(self, app):
         super().set_app(app)
+
         # The GTK docs list set_wmclass() as deprecated (and "pointless")
         # but it's the only way I've found that actually sets the
         # Application name to something other than '__main__.py'.
@@ -58,9 +59,6 @@ class App:
         self.create()
 
     def create(self):
-        Icon.app_icon = Icon.load(self.interface.icon, default=Icon.TIBERIUS_ICON)
-        Icon.app_icon.bind(self.interface.factory)
-
         # Stimulate the build of the app
         self.native = Gtk.Application(
             application_id=self.interface.app_id,

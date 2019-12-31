@@ -79,8 +79,8 @@ class WindowDelegate(NSObject):
                 native.setPaletteLabel(item.label)
             if item.tooltip:
                 native.setToolTip(item.tooltip)
-            if item._impl.icon:
-                native.setImage(item._impl.icon.bind(self.interface.factory).native)
+            if item.icon:
+                native.setImage(item.icon._impl.native)
 
             item._impl.native.append(native)
 

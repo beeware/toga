@@ -65,7 +65,7 @@ class App:
         self._menu_items = {}
         self.create_menus()
         self.interface.main_window._impl.native.Icon = \
-            self.interface.icon.bind(self.interface.factory).native
+            self.interface.icon._impl.native
 
     def create_menus(self):
         toga.Group.FILE.order = 0

@@ -1,45 +1,48 @@
 import os
 
-from toga import Icon as toga_Icon
+from toga import App as toga_App, Icon as toga_Icon
 
 from .libs import Bitmap, WinIcon
 
 
 class Icon:
     def __init__(self, interface):
-
-        def create_icon_from_file(filename):
-            icon_bitmap = Bitmap(self.interface.filename)
-            icon_handle = icon_bitmap.GetHicon()
-            return WinIcon.FromHandle(icon_handle)
-
         self.interface = interface
         self.interface._impl = self
-        valid_icon_extensions = ('.png', '.bmp', '.ico')
-        file_path, file_extension = os.path.splitext(self.interface.filename)
+        basename, file_extension = os.path.splitext(self.interface.filename)
 
-        if file_extension == '.ico':
-            self.native = WinIcon(self.interface.filename)
+        # The final icon path is relative to the app.
+        app_path = toga_App.app.paths.app
 
-        elif os.path.isfile(file_path + '.ico'):
-            self.native = WinIcon(file_path + '.ico')
-
-        elif file_extension in valid_icon_extensions:
-            self.native = create_icon_from_file(self.interface.filename)
-
-        elif os.path.isfile(file_path + '.png'):
-            self.native = create_icon_from_file(file_path + '.png')
-
-        elif os.path.isfile(file_path + '.bmp'):
-            self.native = create_icon_from_file(file_path + '.bmp')
-
+        if not file_extension:
+            # If no extension is provided, look for one of the allowed
+            # icon types, in preferred format order.
+            for extension in ['.ico', '.png', '.bmp']:
+                file_path = app_path / (basename + extension)
+                if file_path.exists():
+                    break
+        elif file_extension.lower() in {'.png', '.bmp', '.ico'}:
+            # If an icon *is* provided, it must be one of the acceptable types
+            file_path = app_path / self.interface.filename
         else:
-            print(
-                "[Winforms] No valid icon format available for {}; "
-                "fall back on Tiberius instead".format(
-                    self.interface.filename
+            # An icon has been specified, but it's not a valid format.
+            raise FileNotFoundError(
+                "[Winforms] {filename} is not a valid icon".format(
+                    filename=self.interface.filename
                 )
             )
-            tiberius_file = toga_Icon.TIBERIUS_ICON.filename + '.ico'
-            self.interface.icon = toga_Icon.TIBERIUS_ICON
-            self.native = WinIcon(tiberius_file)
+
+        # If a file exists, use it.
+        if file_path.exists():
+            if file_path.suffix == '.ico':
+                self.native = WinIcon(str(file_path))
+            else:
+                icon_bitmap = Bitmap(str(file_path))
+                icon_handle = icon_bitmap.GetHicon()
+                self.native = WinIcon.FromHandle(icon_handle)
+        else:
+            raise FileNotFoundError(
+                "[Winforms] Can't find icon {filename}".format(
+                    filename=self.interface.filename
+                )
+            )

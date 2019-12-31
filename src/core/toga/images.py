@@ -1,7 +1,7 @@
 from toga.platform import get_platform_factory
 
 
-class Image(object):
+class Image:
     """
 
     Args:

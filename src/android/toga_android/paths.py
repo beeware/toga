@@ -7,7 +7,7 @@ from toga import App
 class Paths:
     @property
     def app(self):
-        return Path(sys.modules[App.app.app_module].__file__).parent
+        return Path(sys.modules[App.app.module_name].__file__).parent
 
     @property
     def data(self):

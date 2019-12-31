@@ -1,28 +1,18 @@
 import os
 
 
-class ClassProperty(property):
-    """ This class makes it possible to use a classmethod like a property.
-
-    Warnings:
-        Only works for getting not for setting.
-    """
-
-    def __get__(self, cls, owner):
-        return self.fget.__get__(None, owner)()
-
-
 class Icon:
-    """ Icon widget.
+    """
+    Icon widget.
 
-    Icon is a deferred resource; it's impl isn't available until it is
-    requested; the factory is provided at the time the implementation is
-    requested.
+    Icon is a deferred resource - it's impl isn't available until it the icon
+    is assigned to perform a role in an app. At the point at which the Icon is
+    used, the Icon is bound to a factory, and the implementation is created.
 
-    Args:
-        path(str): Path to the icon file.
-        system(bool): Set to `True` if the icon is located in the 'resource' folder
-            of the Toga package. Default is False.
+    :param path: The path to the icon file, relative to the application's
+        module directory.
+    :param system: Is this a system resource? Set to ``True`` if the icon is
+        one of the Toga-provided icons. Default is False.
     """
 
     def __init__(self, path, system=False):
@@ -36,35 +26,22 @@ class Icon:
     def filename(self):
         if self.system:
             toga_dir = os.path.dirname(__file__)
-            return os.path.join(toga_dir, 'resources', self.path)
+            return os.path.join(toga_dir, self.path)
         else:
             # no resource dir so default to the file path
             return self.path
 
     def bind(self, factory):
         if self._impl is None:
-            self._impl = factory.Icon(interface=self)
+            try:
+                self._impl = factory.Icon(interface=self)
+            except FileNotFoundError:
+                print("WARNING: Can't find icon {self.path}; falling back to default icon".format(
+                    self=self
+                ))
+                self._impl = self.TOGA_ICON.bind(factory)
+
         return self._impl
 
-    @classmethod
-    def load(cls, path_or_icon, default=None):
-        if path_or_icon:
-            if isinstance(path_or_icon, Icon):
-                obj = path_or_icon
-            else:
-                obj = cls(path_or_icon)
-        elif default:
-            obj = default
 
-        return obj
-
-    @ClassProperty
-    @classmethod
-    def TIBERIUS_ICON(cls):
-        """ Tiberius it the mascot of the Toga Project and is therefore
-        shipped with Toga.
-
-        Returns:
-            Returns the Tiberius icon `toga.Icon`.
-       """
-        return cls('tiberius', system=True)
+Icon.TOGA_ICON = Icon('resources/toga', system=True)

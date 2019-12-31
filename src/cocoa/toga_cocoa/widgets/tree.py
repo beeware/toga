@@ -1,11 +1,17 @@
-from rubicon.objc import *
+from rubicon.objc import objc_method, at
 from travertino.size import at_least
-from toga.sources import to_accessor
-from toga_cocoa.libs import *
 
-from .base import Widget
-from .internal.cells import TogaIconCell
-from .internal.data import TogaData
+from toga_cocoa.libs import (
+    NSBezelBorder,
+    NSOutlineView,
+    NSScrollView,
+    NSTableColumn,
+    NSTableViewUniformColumnAutoresizingStyle
+)
+
+from toga_cocoa.widgets.base import Widget
+from toga_cocoa.widgets.internal.cells import TogaIconCell
+from toga_cocoa.widgets.internal.data import TogaData
 
 
 class TogaTree(NSOutlineView):
