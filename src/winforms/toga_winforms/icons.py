@@ -1,6 +1,6 @@
 import os
 
-from toga import App as toga_App, Icon as toga_Icon
+from toga import App
 
 from .libs import Bitmap, WinIcon
 
@@ -12,7 +12,7 @@ class Icon:
         basename, file_extension = os.path.splitext(self.interface.filename)
 
         # The final icon path is relative to the app.
-        app_path = toga_App.app.paths.app
+        app_path = App.app.paths.app
 
         if not file_extension:
             # If no extension is provided, look for one of the allowed
