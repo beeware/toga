@@ -97,11 +97,15 @@ class App:
         # We need a module name to load app metadata. If an app_name has been
         # provided, we can set the app name now, and derive the module name
         # from there.
-        # module that was executed to start the app.
         if app_name:
             self._app_name = app_name
         else:
             self._app_name = sys.modules['__main__'].__package__
+            # During tests, and when running from a prompt, there won't be
+            # a __main__ module. Fall back to a module that we know *does*
+            # exist.
+            if self._app_name is None:
+                self._app_name = 'toga'
 
         # Load the app metdata (if it is available)
         # Apps packaged with Briefcase will have this metadata.
@@ -170,7 +174,7 @@ class App:
 
         # Get a platform factory, and a paths instance from the factory.
         self.factory = get_platform_factory(factory)
-        self.paths = self.factory.Paths()
+        self.paths = self.factory.paths
 
         # If an icon (or icon name) has been explicitly provided, use it;
         # otherwise, the icon will be based on the app name.
@@ -430,17 +434,38 @@ class DocumentApp(App):
     """
 
     def __init__(
-        self, name, app_id,
-        id=None, icon=None, startup=None, document_types=None,
-        on_exit=None, factory=None,
+        self,
+        formal_name=None,
+        app_id=None,
+        app_name=None,
+        id=None,
+        icon=None,
+        author=None,
+        version=None,
+        home_page=None,
+        description=None,
+        startup=None,
+        document_types=None,
+        on_exit=None,
+        factory=None,
     ):
 
         self.document_types = document_types
         self._documents = []
 
         super().__init__(
-            name, app_id,
-            id=id, icon=icon, startup=startup, on_exit=on_exit, factory=factory
+            formal_name=formal_name,
+            app_id=app_id,
+            app_name=app_name,
+            id=id,
+            icon=icon,
+            author=author,
+            version=version,
+            home_page=home_page,
+            description=description,
+            startup=startup,
+            on_exit=on_exit,
+            factory=factory,
         )
 
     def _create_impl(self):
