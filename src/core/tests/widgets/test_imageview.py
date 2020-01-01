@@ -6,6 +6,12 @@ from toga_dummy.utils import TestCase
 class ImageViewTests(TestCase):
     def setUp(self):
         super().setUp()
+        # We need a test app to trigger app module discovery
+        self.app = toga.App(
+            formal_name="Test App",
+            app_id="org.beeware.test-app",
+            factory=toga_dummy.factory,
+        )
 
         self.image_view = toga.ImageView(factory=toga_dummy.factory)
 
