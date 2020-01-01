@@ -7,6 +7,13 @@ from toga.command import cmd_sort_key
 
 
 class TestCommand(TestCase):
+    def setUp(self):
+        # We need to define a test app to instantiate paths.
+        self.app = toga.App(
+            formal_name='Test App',
+            app_id='org.beeware.test-app'
+        )
+
     def test_group_init_no_order(self):
         grp = toga.Group('label')
         self.assertEqual(grp.label, 'label')
@@ -34,7 +41,7 @@ class TestCommand(TestCase):
         self.assertEqual(cmd.label, 'test')
         self.assertEqual(cmd.shortcut, None)
         self.assertEqual(cmd.tooltip, None)
-        self.assertEqual(cmd.icon_id, None)
+        self.assertEqual(cmd.icon, None)
         self.assertEqual(cmd.group, toga.Group.COMMANDS)
         self.assertEqual(cmd.section, 0)
         self.assertEqual(cmd.order, 0)
@@ -56,7 +63,7 @@ class TestCommand(TestCase):
         self.assertEqual(cmd.label, 'test')
         self.assertEqual(cmd.shortcut, 't')
         self.assertEqual(cmd.tooltip, 'test command')
-        self.assertEqual(cmd.icon_id, 'icons/none.png')
+        self.assertEqual(cmd.icon.path, 'icons/none.png')
         self.assertEqual(cmd.group, grp)
         self.assertEqual(cmd.section, 1)
         self.assertEqual(cmd.order, 1)
