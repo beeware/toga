@@ -2,6 +2,8 @@ from .app import App, MainWindow
 # from .color import color
 # from .command import Command
 # from .font import font
+from .paths import paths
+
 from .widgets.box import Box
 from .widgets.button import Button
 # from .widgets.canvas import Canvas
@@ -38,6 +40,8 @@ __all__ = [
     # 'color',
     # 'Command',
     # 'font',
+    'paths',
+
     'Box',
     'Button',
     # 'Canvas',

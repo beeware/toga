@@ -22,3 +22,7 @@ class Font:
             _FONT_CACHE[self.interface] = font
 
         self.native = font
+
+    def measure(self, text, tight=False):
+        raise NotImplementedError('measure() not implemented on winforms.Font')
+        # return width, height

@@ -1,4 +1,5 @@
-from .base import Widget
+from toga.images import Image
+from toga.widgets.base import Widget
 
 
 class ImageView(Widget):
@@ -15,8 +16,10 @@ class ImageView(Widget):
         * Finish implementation.
     """
 
-    def __init__(self, image=None,
-                 id=None, style=None, factory=None, ):
+    def __init__(
+        self, image=None,
+        id=None, style=None, factory=None,
+    ):
         super().__init__(id=id, style=style, factory=factory)
 
         self._impl = self.factory.ImageView(interface=self)
@@ -24,14 +27,22 @@ class ImageView(Widget):
 
     @property
     def image(self):
-        self._impl.get_image()
         return self._image
 
     @image.setter
     def image(self, image):
-        self._image = image
-        self._impl.set_image(self._image)
-        self._impl.rehint()
+
+        if isinstance(image, str):
+            self._image = Image(image)
+        else:
+            self._image = image
+
+        if self._image is not None:
+            # Bind the image to the widget's factory.
+            self._image.bind(self.factory)
+
+            self._impl.set_image(image)
+            self._impl.rehint()
 
         # @property
         # def alignment(self):

@@ -13,7 +13,7 @@ author_email = "tiberius@beeware.org"
 [tool.briefcase.app.tree_source]
 formal_name = "TreeSource Demo"
 description = "A testing app"
-sources = ['src/tree_source']
+sources = ['tree_source']
 requires = []
 
 

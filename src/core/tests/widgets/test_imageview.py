@@ -6,6 +6,12 @@ from toga_dummy.utils import TestCase
 class ImageViewTests(TestCase):
     def setUp(self):
         super().setUp()
+        # We need a test app to trigger app module discovery
+        self.app = toga.App(
+            formal_name="Test App",
+            app_id="org.beeware.test-app",
+            factory=toga_dummy.factory,
+        )
 
         self.image_view = toga.ImageView(factory=toga_dummy.factory)
 
@@ -15,10 +21,13 @@ class ImageViewTests(TestCase):
 
     def test_setting_image_invokes_impl_method(self):
         new_image = 'not a image'
-        self.image_view.image = new_image
-        self.assertEqual(self.image_view._image, new_image)
-        self.assertValueSet(self.image_view, 'image', new_image)
 
-    def test_getting_image_invokes_impl_method(self):
-        image = self.image_view.image
-        self.assertValueGet(self.image_view, 'image')
+        # Binding a non-existent image raises an exception
+        try:
+            self.image_view.image = new_image
+            self.fail("Image should not bind")
+        except FileNotFoundError:
+            pass
+
+        # self.assertEqual(self.image_view._image, new_image)
+        # self.assertValueSet(self.image_view, 'image', new_image)

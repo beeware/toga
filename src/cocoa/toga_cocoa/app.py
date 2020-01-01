@@ -94,7 +94,7 @@ class App:
         self.native = NSApplication.sharedApplication
         self.native.setActivationPolicy(NSApplicationActivationPolicyRegular)
 
-        self.native.setApplicationIconImage_(self.interface.icon.bind(self.interface.factory).native)
+        self.native.setApplicationIconImage_(self.interface.icon._impl.native)
 
         self.resource_path = os.path.dirname(os.path.dirname(NSBundle.mainBundle.bundlePath))
 
@@ -104,14 +104,14 @@ class App:
         self.appDelegate.native = self.native
         self.native.setDelegate_(self.appDelegate)
 
-        app_name = self.interface.name
+        formal_name = self.interface.formal_name
 
         self.interface.commands.add(
-            toga.Command(None, 'About ' + app_name, group=toga.Group.APP),
+            toga.Command(None, 'About ' + formal_name, group=toga.Group.APP),
             toga.Command(None, 'Preferences', group=toga.Group.APP),
             # Quit should always be the last item, in a section on it's own
             toga.Command(
-                lambda s: self.exit(), 'Quit ' + app_name,
+                lambda s: self.exit(), 'Quit ' + formal_name,
                 shortcut=toga.Key.MOD_1 + 'q',
                 group=toga.Group.APP,
                 section=sys.maxsize

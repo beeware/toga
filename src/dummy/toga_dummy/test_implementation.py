@@ -189,11 +189,11 @@ def get_platform_category(path_to_backend):
         return {'mobile', name.split('_')[-1]}
     elif name in ['toga_django', 'toga_flask', 'toga_pyramid']:
         return {'web', name.split('_')[-1]}
-    elif name in ['toga_curses',]:
+    elif name in ['toga_curses', ]:
         return {'console', name.split('_')[-1]}
-    elif name in ['toga_tvOS',]:
+    elif name in ['toga_tvOS', ]:
         return {'settop', name.split('_')[-1]}
-    elif name in ['toga_watchOS',]:
+    elif name in ['toga_watchOS', ]:
         return {'watch', name.split('_')[-1]}
     else:
         raise RuntimeError('Couldn\'t identify a supported host platform: "{}"'.format(name))
@@ -207,11 +207,11 @@ def get_required_files(path_to_backend):
         return TOGA_BASE_FILES + TOGA_MOBILE_FILES
     elif name in ['toga_django', 'toga_flask', 'toga_pyramid']:
         return TOGA_BASE_FILES + TOGA_WEB_FILES
-    elif name in ['toga_curses',]:
+    elif name in ['toga_curses', ]:
         return TOGA_BASE_FILES + TOGA_CONSOLE_FILES
-    elif name in ['toga_tvOS',]:
+    elif name in ['toga_tvOS', ]:
         return TOGA_BASE_FILES + TOGA_SETTOP_FILES
-    elif name in ['toga_watchOS',]:
+    elif name in ['toga_watchOS', ]:
         return TOGA_BASE_FILES + TOGA_WATCH_FILES
     else:
         raise RuntimeError('Couldn\'t identify a supported host platform: "{}"'.format(name))
@@ -300,7 +300,7 @@ def make_test_class(path, cls, expected, actual, skip):
             # ARGS
             for arg in method_def.args:
                 fn = make_test_function(arg, actual_method_def.args)
-                fn.__doc__= "The argument {}.{}(..., {}={}, ...) exists".format(cls, method, *arg)
+                fn.__doc__ = "The argument {}.{}(..., {}={}, ...) exists".format(cls, method, *arg)
                 setattr(
                     test_class,
                     'test_{}_arg_{}_default_{}'.format(method, *arg),
@@ -370,19 +370,22 @@ def make_toga_impl_check_class(path, dummy_path, platform):
 # valid Toga backend implementation.
 TOGA_BASE_FILES = [
     'app.py',
+    'colors.py',
     'command.py',
     'container.py',
     'dialogs.py',
+    'documents.py',
     'factory.py',
-    'font.py',
+    'fonts.py',
+    'icons.py',
+    'images.py',
+    'paths.py',
     'window.py',
 
     # Widgets
     'widgets/base.py',
     'widgets/box.py',
     'widgets/button.py',
-    'widgets/icon.py',
-    'widgets/image.py',
     'widgets/imageview.py',
     'widgets/label.py',
     'widgets/multilinetextinput.py',

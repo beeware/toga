@@ -19,9 +19,6 @@ class ImageView(Widget):
 
         self.add_constraints()
 
-    def get_image(self):
-        return self.native.image
-
     def set_image(self, image):
         if image:
             self.native.image = image._impl.native

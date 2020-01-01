@@ -67,7 +67,7 @@ class Window:
                 item_impl.set_draw(False)
             else:
                 item_impl = Gtk.ToolButton()
-                icon_impl = cmd._impl.icon.bind(self.interface.factory)
+                icon_impl = cmd.icon.bind(self.interface.factory)
                 item_impl.set_icon_widget(icon_impl.native_32)
                 item_impl.set_label(cmd.label)
                 item_impl.set_tooltip_text(cmd.tooltip)

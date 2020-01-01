@@ -44,7 +44,7 @@ class Window:
                 item = WinForms.ToolStripSeparator()
             else:
                 if cmd.icon is not None:
-                    native_icon = cmd.icon.bind(self.interface.factory).native
+                    native_icon = cmd.icon._impl.native
                     item = WinForms.ToolStripMenuItem(cmd.label, native_icon.ToBitmap())
                 else:
                     item = WinForms.ToolStripMenuItem(cmd.label)

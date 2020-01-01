@@ -31,7 +31,8 @@ setup(
     },
     include_package_data=True,
     install_requires=[
-        'travertino>=0.1.0'
+        'travertino>=0.1.0',
+        'importlib_metadata;python_version<"3.8"',
     ],
     tests_require=[
         'toga-dummy==%s' % version
@@ -46,6 +47,7 @@ setup(
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3 :: Only',
         'Topic :: Software Development',
         'Topic :: Software Development :: User Interfaces',

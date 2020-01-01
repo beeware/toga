@@ -4,6 +4,7 @@ from .command import Command
 from .fonts import Font
 from .icons import Icon
 from .images import Image
+from .paths import paths
 
 from .widgets.box import Box
 from .widgets.button import Button
@@ -43,6 +44,7 @@ __all__ = [
     'Font',
     'Icon',
     'Image',
+    'paths',
 
     # Widgets
     'Box',

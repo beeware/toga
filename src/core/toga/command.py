@@ -1,4 +1,5 @@
 from toga.handlers import wrapped_handler
+from toga.icons import Icon
 
 
 class Group:
@@ -46,12 +47,14 @@ class Command:
     def __init__(self, action, label,
                  shortcut=None, tooltip=None, icon=None,
                  group=None, section=None, order=None, factory=None):
+        self.factory = factory
+
         self.action = wrapped_handler(self, action)
         self.label = label
 
         self.shortcut = shortcut
         self.tooltip = tooltip
-        self.icon_id = icon
+        self.icon = icon
 
         self.group = group if group else Group.COMMANDS
         self.section = section if section else 0
@@ -62,8 +65,14 @@ class Command:
         self._impl = None
 
     def bind(self, factory):
+        self.factory = factory
+
         if self._impl is None:
-            self._impl = factory.Command(interface=self)
+            self._impl = self.factory.Command(interface=self)
+
+        if self._icon:
+            self._icon.bind(self.factory)
+
         return self._impl
 
     @property
@@ -75,6 +84,25 @@ class Command:
         self._enabled = value
         if self._impl is not None:
             self._impl.set_enabled(value)
+
+    @property
+    def icon(self):
+        """
+        The Icon for the app.
+
+        :returns: A ``toga.Icon`` instance for the app's icon.
+        """
+        return self._icon
+
+    @icon.setter
+    def icon(self, icon_or_name):
+        if isinstance(icon_or_name, Icon) or icon_or_name is None:
+            self._icon = icon_or_name
+        else:
+            self._icon = Icon(icon_or_name)
+
+        if self._icon and self.factory:
+            self._icon.bind(self.factory)
 
 
 GROUP_BREAK = object()
