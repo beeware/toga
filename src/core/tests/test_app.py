@@ -44,8 +44,8 @@ class AppTests(TestCase):
         self.app.icon = "other.icns"
         self.assertEqual(self.app.icon.path, "other.icns")
 
-        # This icon name will *not* exist. The Impl will be the TOGA_ICON's impl
-        self.assertEqual(self.app.icon._impl, toga.Icon.TOGA_ICON._impl)
+        # This icon name will *not* exist. The Impl will be the DEFAULT_ICON's impl
+        self.assertEqual(self.app.icon._impl, toga.Icon.DEFAULT_ICON._impl)
 
     def test_app_app_id(self):
         self.assertEqual(self.app.app_id, self.app_id)
