@@ -20,3 +20,6 @@ class Paths:
     @property
     def logs(self):
         return Path.home() / '.cache' / App.app.name / 'log'
+
+
+paths = Paths()

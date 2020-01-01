@@ -2,7 +2,7 @@ from .app import App, MainWindow
 # from .color import color
 # from .command import Command
 # from .font import font
-from .paths import Paths
+from .paths import paths
 
 from .widgets.box import Box
 from .widgets.button import Button
@@ -40,7 +40,7 @@ __all__ = [
     # 'color',
     # 'Command',
     # 'font',
-    'Paths',
+    'paths',
 
     'Box',
     'Button',

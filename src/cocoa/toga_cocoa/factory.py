@@ -6,7 +6,7 @@ from .documents import Document
 from .fonts import Font
 from .icons import Icon
 from .images import Image
-from .paths import Paths
+from .paths import paths
 
 # Widgets
 from .widgets.box import Box
@@ -47,7 +47,7 @@ __all__ = [
     'Font',
     'Icon',
     'Image',
-    'Paths',
+    'paths',
 
     # Widgets
     'Box',

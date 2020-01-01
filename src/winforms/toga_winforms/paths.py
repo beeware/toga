@@ -26,3 +26,6 @@ class Paths:
     @property
     def logs(self):
         return Path.home() / 'Library' / 'Local' / self.author / App.app.formal_name / 'Logs'
+
+
+paths = Paths()
