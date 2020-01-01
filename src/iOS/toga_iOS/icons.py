@@ -2,8 +2,7 @@ from toga_iOS.libs import UIImage
 
 
 class Icon:
-    def __init__(self, interface, file_path):
+    def __init__(self, interface, path):
         self.interface = interface
-        self.interface._impl = self
 
-        self.native = UIImage.alloc().initWithContentsOfFile(str(file_path))
+        self.native = UIImage.alloc().initWithContentsOfFile(str(path))

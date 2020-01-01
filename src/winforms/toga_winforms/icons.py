@@ -5,13 +5,13 @@ class Icon:
     EXTENSIONS = ['.ico', '.png', '.bmp']
     SIZES = None
 
-    def __init__(self, interface, file_path):
+    def __init__(self, interface, path):
         self.interface = interface
-        self.interface._impl = self
+        self.path = path
 
-        if file_path.suffix == '.ico':
-            self.native = WinIcon(str(file_path))
+        if path.suffix == '.ico':
+            self.native = WinIcon(str(path))
         else:
-            icon_bitmap = Bitmap(str(file_path))
+            icon_bitmap = Bitmap(str(path))
             icon_handle = icon_bitmap.GetHicon()
             self.native = WinIcon.FromHandle(icon_handle)

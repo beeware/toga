@@ -4,7 +4,7 @@ from pathlib import Path
 
 class Icon:
     """
-    Icon widget.
+    A representation of an Icon image.
 
     Icon is a deferred resource - it's impl isn't available until it the icon
     is assigned to perform a role in an app. At the point at which the Icon is
@@ -41,8 +41,8 @@ class Icon:
                     resource_path = factory.paths.app
 
                 if factory.Icon.SIZES:
-                    file_path = {
-                        size: self._icon_file_path(
+                    full_path = {
+                        size: self._full_path(
                             size=size,
                             extensions=factory.Icon.EXTENSIONS,
                             resource_path=resource_path,
@@ -50,13 +50,13 @@ class Icon:
                         for size in factory.Icon.SIZES
                     }
                 else:
-                    file_path = self._icon_file_path(
+                    full_path = self._full_path(
                         size=None,
                         extensions=factory.Icon.EXTENSIONS,
                         resource_path=resource_path,
                     )
 
-                self._impl = factory.Icon(interface=self, file_path=file_path)
+                self._impl = factory.Icon(interface=self, path=full_path)
             except FileNotFoundError:
                 print("WARNING: Can't find icon {self.path}; falling back to default icon".format(
                     self=self
@@ -65,7 +65,7 @@ class Icon:
 
         return self._impl
 
-    def _icon_file_path(self, size, extensions, resource_path):
+    def _full_path(self, size, extensions, resource_path):
         basename, file_extension = os.path.splitext(self.path)
 
         if not file_extension:

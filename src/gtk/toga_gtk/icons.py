@@ -5,12 +5,12 @@ class Icon:
     EXTENSIONS = ['.png', '.ico', '.icns']
     SIZES = [32, 72]
 
-    def __init__(self, interface, file_path):
+    def __init__(self, interface, path):
         self.interface = interface
-        self.interface._impl = self
+        self.paths = path
 
         # Preload all the required icon sizes
-        for size, path in file_path.items():
+        for size, path in self.paths.items():
             native = Gtk.Image.new_from_pixbuf(
                 GdkPixbuf.Pixbuf.new_from_file(
                     str(path)

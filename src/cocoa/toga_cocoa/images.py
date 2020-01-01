@@ -1,23 +1,15 @@
-import os
-
-import toga
 from toga_cocoa.libs import NSImage, NSURL
 
 
 class Image:
-    def __init__(self, interface):
+    def __init__(self, interface, path=None, url=None):
         self.interface = interface
-        self.interface.impl = self
+        self.path = path
+        self.url = url
 
-    def load_image(self, path):
-        if path.startswith(('http://', 'https://')):
+        if path:
+            self.native = NSImage.alloc().initWithContentsOfFile(str(path))
+        elif url:
             self.native = NSImage.alloc().initByReferencingURL(
-                NSURL.URLWithString_(path)
+                NSURL.URLWithString_(url)
             )
-        else:
-            if os.path.isabs(path):
-                filename = str(path)
-            else:
-                filename = str(self._get_full_path(path))
-
-            self.native = NSImage.alloc().initWithContentsOfFile(filename)

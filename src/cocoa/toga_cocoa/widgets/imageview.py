@@ -1,4 +1,11 @@
-from toga_cocoa.libs import *
+from toga_cocoa.libs import (
+    NSImage,
+    NSImageAlignCenter,
+    NSImageFrameNone,
+    NSImageScaleProportionallyUpOrDown,
+    NSImageView,
+    NSSize
+)
 
 from .base import Widget
 
@@ -17,12 +24,9 @@ class ImageView(Widget):
         # Add the layout constraints
         self.add_constraints()
 
-    def get_image(self):
-        return self.native.image
-
     def set_image(self, image):
         if image:
-            self.native.image = image._impl.native
+            self.native.image = self.interface._image._impl.native
         else:
             width = 0
             height = 0

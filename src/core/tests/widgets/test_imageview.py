@@ -15,10 +15,13 @@ class ImageViewTests(TestCase):
 
     def test_setting_image_invokes_impl_method(self):
         new_image = 'not a image'
-        self.image_view.image = new_image
-        self.assertEqual(self.image_view._image, new_image)
-        self.assertValueSet(self.image_view, 'image', new_image)
 
-    def test_getting_image_invokes_impl_method(self):
-        image = self.image_view.image
-        self.assertValueGet(self.image_view, 'image')
+        # Binding a non-existent image raises an exception
+        try:
+            self.image_view.image = new_image
+            self.fail("Image should not bind")
+        except FileNotFoundError:
+            pass
+
+        # self.assertEqual(self.image_view._image, new_image)
+        # self.assertValueSet(self.image_view, 'image', new_image)
