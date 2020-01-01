@@ -27,6 +27,3 @@ class Document:
             ofType=interface.document_type,
             error=None
         )
-
-    def read(self):
-        pass

@@ -10,7 +10,7 @@ class Paths:
         return Path(sys.modules[App.app.module_name].__file__).parent
 
     @property
-    def user(self):
+    def data(self):
         return Path.home() / '.local' / 'share' / App.app.name
 
     @property
