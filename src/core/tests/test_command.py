@@ -11,7 +11,8 @@ class TestCommand(TestCase):
         # We need to define a test app to instantiate paths.
         self.app = toga.App(
             formal_name='Test App',
-            app_id='org.beeware.test-app'
+            app_id='org.beeware.test-app',
+            factory=toga_dummy.factory,
         )
 
     def test_group_init_no_order(self):
