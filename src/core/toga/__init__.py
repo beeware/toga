@@ -35,6 +35,10 @@ from .widgets.tree import Tree
 from .widgets.webview import WebView
 from .window import Window
 
+# Sound
+from .sound.midiplayer import MIDIPlayer
+
+
 __all__ = [
     # Applications
     'App', 'DocumentApp', 'MainWindow',
@@ -77,7 +81,10 @@ __all__ = [
     'Table',
     'TextInput',
     'Tree',
-    'WebView'
+    'WebView',
+
+    # Sound
+    'MIDIPlayer'
 ]
 
 # Examples of valid version strings

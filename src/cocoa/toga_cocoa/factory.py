@@ -31,6 +31,9 @@ from .widgets.tree import Tree
 from .widgets.webview import WebView
 from .window import Window
 
+# Sound
+from .sound.midiplayer import MIDIPlayer
+
 
 def not_implemented(feature):
     print('[Cocoa] Not implemented: {}'.format(feature))
@@ -73,4 +76,7 @@ __all__ = [
     'Tree',
     'WebView',
     'Window',
+
+    # Sound
+    'MIDIPlayer'
 ]

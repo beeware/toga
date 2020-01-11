@@ -26,6 +26,9 @@ from .widgets.textinput import TextInput
 from .widgets.webview import WebView
 from .window import Window
 
+# Sound
+from .sound.midiplayer import MIDIPlayer
+
 # from .command import Command
 
 
@@ -68,4 +71,7 @@ __all__ = [
     # 'Tree',
     'WebView',
     'Window',
+
+    # Sound
+    'MIDIPlayer'
 ]
