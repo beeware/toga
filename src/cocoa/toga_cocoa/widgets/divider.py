@@ -1,5 +1,4 @@
 from travertino.size import at_least
-from rubicon.objc import objc_method, SEL
 
 from toga_cocoa.libs import NSBox, NSBoxSeparator
 
