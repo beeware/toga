@@ -8,6 +8,13 @@ import toga_dummy
 
 class TestIcon(unittest.TestCase):
     def setUp(self):
+        # We need a test app to for icon loading to work
+        self.app = toga.App(
+            formal_name="Test App",
+            app_id="org.beeware.test-app",
+            factory=toga_dummy.factory,
+        )
+
         self.factory = MagicMock()
         self.factory.Icon = MagicMock(return_value=MagicMock(spec=toga_dummy.factory.Icon))
 
