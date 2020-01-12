@@ -2,6 +2,7 @@ import toga
 from toga.style import Pack
 from toga.constants import COLUMN, ROW
 
+
 class DividerApp(toga.App):
 
     def startup(self):
