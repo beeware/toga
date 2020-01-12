@@ -96,7 +96,13 @@ NSBezierPath = ObjCClass('NSBezierPath')
 ######################################################################
 # NSBox.h
 NSBox = ObjCClass('NSBox')
-NSBoxSeparator = 2
+
+
+class NSBoxType(Enum):
+    NSBoxPrimary = 0
+    NSBoxSeparator = 2
+    NSBoxCustom = 4
+
 
 ######################################################################
 # NSBrowserCell.h
