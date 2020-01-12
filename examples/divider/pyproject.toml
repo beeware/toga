@@ -1,0 +1,44 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name = "Divider Demo"
+bundle = "org.beeware"
+version = "0.0.1"
+url = "https://beeware.org"
+license = "BSD license"
+author = 'Tiberius Yak'
+author_email = "tiberius@beeware.org"
+
+[tool.briefcase.app.dialogs]
+formal_name = "Dialog Demo"
+description = "A testing app"
+sources = ['dialogs']
+requires = []
+
+
+[tool.briefcase.app.dialogs.macOS]
+requires = [
+    'toga-cocoa',
+]
+
+[tool.briefcase.app.dialogs.linux]
+requires = [
+    'toga-gtk',
+]
+
+[tool.briefcase.app.dialogs.windows]
+requires = [
+    'toga-winforms',
+]
+
+# Mobile deployments
+[tool.briefcase.app.dialogs.iOS]
+requires = [
+    'toga-iOS',
+]
+
+[tool.briefcase.app.dialogs.android]
+requires = [
+    'toga-android',
+]
