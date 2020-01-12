@@ -5,13 +5,9 @@ from toga_cocoa.libs import NSBox, NSBoxType
 from .base import Widget
 
 
-class TogaDivider(NSBox):
-    pass
-
-
 class Divider(Widget):
     def create(self):
-        self.native = TogaDivider.alloc().init()
+        self.native = NSBox.alloc().init()
         self.native.interface = self.interface
 
         self.native.boxType = NSBoxType.NSBoxSeparator.value
