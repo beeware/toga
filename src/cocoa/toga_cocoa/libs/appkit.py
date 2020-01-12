@@ -304,14 +304,14 @@ NSImageInterpolationHigh = 3
 NSImage = ObjCClass('NSImage')
 
 NSImageAlignCenter = 0
-NSImageAlignTop = 2
-NSImageAlignTopLeft = 3
-NSImageAlignTopRight = 4
-NSImageAlignLeft = 5
-NSImageAlignBottom = 6
-NSImageAlignBottomLeft = 7
-NSImageAlignBottomRight = 8
-NSImageAlignRight = 9
+NSImageAlignTop = 1
+NSImageAlignTopLeft = 2
+NSImageAlignTopRight = 3
+NSImageAlignLeft = 4
+NSImageAlignBottom = 5
+NSImageAlignBottomLeft = 6
+NSImageAlignBottomRight = 7
+NSImageAlignRight = 8
 
 NSImageScaleProportionallyDown = 0
 NSImageScaleAxesIndependently = 1
