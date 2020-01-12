@@ -24,6 +24,7 @@ General widgets
  :doc:`Button </reference/api/widgets/button>`                           Basic clickable Button
  :doc:`Canvas </reference/api/widgets/canvas>`                           Area you can draw on
  :doc:`DetailedList </reference/api/widgets/detailedlist>`               A list of complex content
+ :doc:`Divider </reference/api/widgets/divider>`                         A horizontal or vertical line
  :doc:`ImageView </reference/api/widgets/imageview>`                     Image Viewer
  :doc:`Label </reference/api/widgets/label>`                             Text label
  :doc:`MultilineTextInput </reference/api/widgets/multilinetextinput>`   Multi-line Text Input field
