@@ -3,6 +3,7 @@ from math import pi
 
 from toga.colors import color as parse_color, BLACK
 from toga.fonts import Font, SYSTEM
+from toga.handlers import wrapped_handler
 
 from .base import Widget
 
