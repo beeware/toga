@@ -34,8 +34,7 @@ class Canvas(Widget):
         new_width = self.native.get_allocated_width()
         new_height = self.native.get_allocated_height()
         if (
-            new_width != self.__old_width \
-            or new_height != self.__old_height
+            new_width != self.__old_width or new_height != self.__old_height
         ):
             if self.interface.on_resize:
                 # we intentionally want to call the event handlers before
