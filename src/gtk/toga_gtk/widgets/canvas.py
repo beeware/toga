@@ -26,7 +26,7 @@ class Canvas(Widget):
         self.interface._draw(self, draw_context=gtk_context)
 
     def redraw(self):
-        pass
+        self.native.queue_draw()
 
     # Basic paths
 
