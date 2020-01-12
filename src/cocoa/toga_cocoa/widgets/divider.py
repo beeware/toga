@@ -1,6 +1,6 @@
 from travertino.size import at_least
 
-from toga_cocoa.libs import NSBox, NSBoxSeparator
+from toga_cocoa.libs import NSBox, NSBoxType
 
 from .base import Widget
 
@@ -14,7 +14,7 @@ class Divider(Widget):
         self.native = TogaDivider.alloc().init()
         self.native.interface = self.interface
 
-        self.native.boxType = NSBoxSeparator
+        self.native.boxType = NSBoxType.NSBoxSeparator.value
 
         # Add the layout constraints
         self.add_constraints()
