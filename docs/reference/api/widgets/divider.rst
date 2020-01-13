@@ -30,7 +30,7 @@ Simple usage to separate two labels in a column:
             label0,
             divider,
             label1,
-            ],
+        ],
         style=Pack(direction=COLUMN)
     )
 
@@ -41,7 +41,7 @@ parent (i.e., horizontal dividers in a column and vertical dividers in a row).
 Reference
 ---------
 
-.. autoclass:: toga.widgets.canvas.Divider
+.. autoclass:: toga.widgets.divider.Divider
    :members:
    :undoc-members:
    :inherited-members:
