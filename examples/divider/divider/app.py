@@ -24,7 +24,7 @@ class DividerApp(toga.App):
                 toga.Box(
                     children=[
                         toga.DetailedList(['List 1'], style=substyle),
-                        toga.Divider(style=substyle),
+                        toga.Divider(direction=toga.Divider.VERTICAL, style=substyle),
                         toga.DetailedList(['List 2'], style=substyle),
                     ],
                     style=Pack(direction=ROW, padding=24, flex=1),
@@ -35,11 +35,6 @@ class DividerApp(toga.App):
 
         # Show the main window
         self.main_window.show()
-
-    def callbackLabel(self, switch):
-        # Some action when you hit the switch
-        #   In this case the label will change
-        switch.label = "switch is %s" % {0: "off", 1: "on"}[switch.is_on]
 
 
 def main():

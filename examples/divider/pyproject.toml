@@ -10,35 +10,35 @@ license = "BSD license"
 author = 'Tiberius Yak'
 author_email = "tiberius@beeware.org"
 
-[tool.briefcase.app.dialogs]
-formal_name = "Dialog Demo"
+[tool.briefcase.app.divider]
+formal_name = "Divider Demo"
 description = "A testing app"
-sources = ['dialogs']
+sources = ['divider']
 requires = []
 
 
-[tool.briefcase.app.dialogs.macOS]
+[tool.briefcase.app.divider.macOS]
 requires = [
     'toga-cocoa',
 ]
 
-[tool.briefcase.app.dialogs.linux]
+[tool.briefcase.app.divider.linux]
 requires = [
     'toga-gtk',
 ]
 
-[tool.briefcase.app.dialogs.windows]
+[tool.briefcase.app.divider.windows]
 requires = [
     'toga-winforms',
 ]
 
 # Mobile deployments
-[tool.briefcase.app.dialogs.iOS]
+[tool.briefcase.app.divider.iOS]
 requires = [
     'toga-iOS',
 ]
 
-[tool.briefcase.app.dialogs.android]
+[tool.briefcase.app.divider.android]
 requires = [
     'toga-android',
 ]
