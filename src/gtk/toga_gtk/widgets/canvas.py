@@ -13,6 +13,7 @@ class Canvas(Widget):
         self.native = Gtk.DrawingArea()
         self.native.interface = self.interface
         self.native.connect("draw", self.gtk_draw_callback)
+        self.native.connect('size-allocate', self.on_size_allocate)
 
         # Storing widget width and height so we can detect when it is resized
         self.__old_width = None
@@ -25,26 +26,15 @@ class Canvas(Widget):
         callback function creates a Gtk+ canvas and Gtk+ context automatically
         using the canvas and gtk_context function arguments. This method calls
         the draw method on the interface Canvas to draw the objects.
-
-        Sine Gtk+ does not include a dedicate event for `resize` the way to
-        emulate it is by checking if the widget size was changed while
-        redrawing it. This works because resizing a widget in GTK also results
-        in a draw event.
         """
-        new_width = self.native.get_allocated_width()
-        new_height = self.native.get_allocated_height()
-        if (
-            new_width != self.__old_width or new_height != self.__old_height
-        ):
-            if self.interface.on_resize:
-                # we intentionally want to call the event handlers before
-                # calling _draw so that any changes they introduce will show up
-                # on screen immediately
-                self.interface.on_resize(self.interface)
-            self.__old_width = new_width
-            self.__old_height = new_height
-
         self.interface._draw(self, draw_context=gtk_context)
+
+    def on_size_allocate(self, widget, allocation):
+        """Called on widget resize, and calls the handler set on the interface,
+        if any.
+        """
+        if self.interface.on_resize:
+            self.interface.on_resize(self.interface)
 
     def set_on_resize(self, handler):
         pass
