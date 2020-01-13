@@ -15,10 +15,6 @@ class Canvas(Widget):
         self.native.connect("draw", self.gtk_draw_callback)
         self.native.connect('size-allocate', self.on_size_allocate)
 
-        # Storing widget width and height so we can detect when it is resized
-        self.__old_width = None
-        self.__old_height = None
-
     def gtk_draw_callback(self, canvas, gtk_context):
         """Creates a draw callback
 
