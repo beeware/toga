@@ -303,15 +303,18 @@ NSImageInterpolationHigh = 3
 # NSImage.h
 NSImage = ObjCClass('NSImage')
 
-NSImageAlignCenter = 0
-NSImageAlignTop = 2
-NSImageAlignTopLeft = 3
-NSImageAlignTopRight = 4
-NSImageAlignLeft = 5
-NSImageAlignBottom = 6
-NSImageAlignBottomLeft = 7
-NSImageAlignBottomRight = 8
-NSImageAlignRight = 9
+
+class NSImageAlignment(Enum):
+    Center = 0
+    Top = 1
+    TopLeft = 2
+    TopRight = 3
+    Left = 4
+    Bottom = 5
+    BottomLeft = 6
+    BottomRight = 7
+    Right = 8
+
 
 NSImageScaleProportionallyDown = 0
 NSImageScaleAxesIndependently = 1
