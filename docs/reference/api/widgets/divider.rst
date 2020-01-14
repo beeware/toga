@@ -22,21 +22,18 @@ Simple usage to separate two labels in a column:
 
     import toga
     from toga.style import Pack, COLUMN
-    divider = toga.Divider()
-    label0 = toga.Label("First section")
-    label1 = toga.Label("Second section")
+
     box = toga.Box(
         children=[
-            label0,
-            divider,
-            label1,
+            toga.Label("First section"),
+            toga.Divider(),
+            toga.Label("Second section"),
         ],
-        style=Pack(direction=COLUMN)
+        style=Pack(direction=COLUMN, flex=1, padding=10)
     )
 
 The direction (horizontal or vertical) can be given as an argument. If not specified, it
-will default to ``Divider.AUTO``. In this case, it will be inferred from the divider's
-parent (i.e., horizontal dividers in a column and vertical dividers in a row).
+will default to horizontal.
 
 Reference
 ---------

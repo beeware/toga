@@ -18,17 +18,12 @@ class Divider(Widget):
     def rehint(self):
         content_size = self.native.intrinsicContentSize()
 
-        if self.interface.direction == self.interface.AUTO:
-            direction = self.interface._get_direction_from_layout()
-        else:
-            direction = self.interface.direction
-
-        if direction == self.interface.HORIZONTAL:
-            self.interface.intrinsic.width = at_least(content_size.width)
-            self.interface.intrinsic.height = content_size.height
-        else:
+        if self.interface.direction == self.interface.VERTICAL:
             self.interface.intrinsic.width = content_size.width
             self.interface.intrinsic.height = at_least(content_size.height)
+        else:
+            self.interface.intrinsic.width = at_least(content_size.width)
+            self.interface.intrinsic.height = content_size.height
 
     def set_direction(self, value):
         # other implementations might need to change
