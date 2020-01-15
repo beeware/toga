@@ -6,6 +6,7 @@ Widgets
    button
    canvas
    detailedlist
+   divider
    imageview
    label
    multilinetextinput

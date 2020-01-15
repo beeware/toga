@@ -94,6 +94,17 @@ NSViewBoundsDidChangeNotification = objc_const(appkit, 'NSViewBoundsDidChangeNot
 NSBezierPath = ObjCClass('NSBezierPath')
 
 ######################################################################
+# NSBox.h
+NSBox = ObjCClass('NSBox')
+
+
+class NSBoxType(Enum):
+    NSBoxPrimary = 0
+    NSBoxSeparator = 2
+    NSBoxCustom = 4
+
+
+######################################################################
 # NSBrowserCell.h
 NSBrowserCell = ObjCClass('NSBrowserCell')
 
