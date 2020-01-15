@@ -3,6 +3,7 @@ from math import pi
 
 from toga.colors import color as parse_color, BLACK
 from toga.fonts import Font, SYSTEM
+from toga.handlers import wrapped_handler
 
 from .base import Widget
 
@@ -502,17 +503,40 @@ class Canvas(Context, Widget):
         id (str):  An identifier for this widget.
         style (:obj:`Style`): An optional style object. If no
             style is provided then a new one will be created for the widget.
+        on_resize (:obj:`callable`): Function to call when resized.
         factory (:obj:`module`): A python module that is capable to return a
             implementation of this class with the same name. (optional &
             normally not needed)
     """
 
-    def __init__(self, id=None, style=None, factory=None):
+    def __init__(self, id=None, style=None, on_resize=None, factory=None):
         super().__init__(id=id, style=style, factory=factory)
         self._canvas = self
 
         # Create a platform specific implementation of Canvas
         self._impl = self.factory.Canvas(interface=self)
+
+        # Set all the properties
+        self.on_resize = on_resize
+
+    @property
+    def on_resize(self):
+        """The handler to invoke when the canvas is resized.
+
+        Returns:
+            The function ``callable`` that is called on canvas resize.
+        """
+        return self._on_resize
+
+    @on_resize.setter
+    def on_resize(self, handler):
+        """Set the handler to invoke when the canvas is resized.
+
+        Args:
+            handler (:obj:`callable`): The handler to invoke when the canvas is resized.
+        """
+        self._on_resize = wrapped_handler(self, handler)
+        self._impl.set_on_resize(self._on_resize)
 
     ###########################################################################
     # Transformations of a canvas

@@ -224,3 +224,6 @@ class Canvas(Widget):
         fitting_size = self.native.systemLayoutSizeFittingSize(CGSize(0, 0))
         self.interface.intrinsic.width = at_least(fitting_size.width)
         self.interface.intrinsic.height = at_least(fitting_size.height)
+
+    def set_on_resize(self, handler):
+        self.interface.factory.not_implemented('Canvas.on_resize')

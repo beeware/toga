@@ -598,3 +598,20 @@ class CanvasTests(TestCase):
             repr(write_text),
             "WriteText(text=hello, x=10, y=-4.2, font=<Font: 4pt serif>)",
         )
+
+    def test_on_resize(self):
+        self.assertIsNone(self.testing_canvas._on_resize)
+
+        # set a new callback
+        def callback(widget, **extra):
+            return 'called {} with {}'.format(type(widget), extra)
+
+        self.testing_canvas.on_resize = callback
+        self.assertEqual(self.testing_canvas.on_resize._raw, callback)
+        self.assertEqual(
+            self.testing_canvas.on_resize('widget', a=1),
+            "called <class 'toga.widgets.canvas.Canvas'> with {'a': 1}"
+        )
+        self.assertValueSet(
+            self.testing_canvas, 'on_resize', self.testing_canvas.on_resize
+        )

@@ -93,3 +93,6 @@ class Canvas(Widget):
 
     def rehint(self):
         self._action('rehint Canvas')
+
+    def set_on_resize(self, handler):
+        self._set_value('on_resize', handler)
