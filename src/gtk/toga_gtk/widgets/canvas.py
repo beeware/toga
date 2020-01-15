@@ -13,7 +13,7 @@ class Canvas(Widget):
         self.native = Gtk.DrawingArea()
         self.native.interface = self.interface
         self.native.connect("draw", self.gtk_draw_callback)
-        self.native.connect('size-allocate', self.on_size_allocate)
+        self.native.connect('size-allocate', self.gtk_on_size_allocate)
 
     def gtk_draw_callback(self, canvas, gtk_context):
         """Creates a draw callback
@@ -25,7 +25,7 @@ class Canvas(Widget):
         """
         self.interface._draw(self, draw_context=gtk_context)
 
-    def on_size_allocate(self, widget, allocation):
+    def gtk_on_size_allocate(self, widget, allocation):
         """Called on widget resize, and calls the handler set on the interface,
         if any.
         """
