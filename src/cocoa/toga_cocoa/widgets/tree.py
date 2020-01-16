@@ -75,10 +75,8 @@ class TogaTree(NSOutlineView):
             if isinstance(value, tuple):
                 icon_iface, value = value
             else:
-                # If the value has an icon attribute, get the _impl.
-                # Icons are deferred resources, so we bind to the factory.
                 try:
-                    icon = value.icon.bind(self.interface.factory)
+                    icon_iface = value.icon
                 except AttributeError:
                     icon_iface = None
         except AttributeError:
