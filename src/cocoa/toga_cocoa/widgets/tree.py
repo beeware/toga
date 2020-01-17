@@ -7,11 +7,12 @@ from toga_cocoa.libs import (
     NSScrollView,
     NSTableColumn,
     NSTableViewUniformColumnAutoresizingStyle
+    NSMakeSize,
 )
 
 from toga_cocoa.widgets.base import Widget
-from toga_cocoa.widgets.internal.cells import TogaIconCell
 from toga_cocoa.widgets.internal.data import TogaData
+from toga_cocoa.widgets.internal.cells import TogaIconView
 
 
 class TogaTree(NSOutlineView):
@@ -31,13 +32,7 @@ class TogaTree(NSOutlineView):
             node_impl = node._impl
         except AttributeError:
             node_impl = TogaData.alloc().init()
-            node_impl.attrs = {
-                'node': node,
-                'values': {
-                    attr: None
-                    for attr in self.interface._accessors
-                }
-            }
+            node_impl.attrs = {'node': node}
             node._impl = node_impl
 
         return node_impl
@@ -63,7 +58,7 @@ class TogaTree(NSOutlineView):
             return len(item.attrs['node'])
 
     @objc_method
-    def outlineView_objectValueForTableColumn_byItem_(self, tree, column, item):
+    def outlineView_viewForTableColumn_item_(self, tree, column, item):
         col_identifier = self._impl.column_identifiers[id(column.identifier)]
 
         try:
@@ -71,7 +66,7 @@ class TogaTree(NSOutlineView):
 
             # Allow for an (icon, value) tuple as the simple case
             # for encoding an icon in a table cell. Otherwise, look
-            # for an icon attribute.
+            # for an ico attribute.
             if isinstance(value, tuple):
                 icon_iface, value = value
             else:
@@ -92,38 +87,25 @@ class TogaTree(NSOutlineView):
         else:
             icon = None
 
-        # Now construct the data object for the cell.
-        # If the datum already exists, reuse and update it.
-        # If an icon is present, create a TogaData object.
-        # Otherwise, just use the string (because a Python string)
-        # is transparently an ObjC object, so it works as a value.
-        obj = item.attrs['values'][col_identifier]
-        if obj is None or isinstance(obj, str):
-            if icon:
-                # Create a TogaData value
-                obj = TogaData.alloc().init()
-                obj.attrs = {
-                    'label': str(value),
-                    'icon': icon,
-                }
-            else:
-                # Create/Update the string value
-                obj = str(value)
-            item.attrs['values'][col_identifier] = obj
-        else:
-            # Datum exists, and is currently an icon.
-            if icon:
-                # Update TogaData values
-                obj.attrs = {
-                    'label': str(value),
-                    'icon': icon,
-                }
-            else:
-                # Convert to a simple string.
-                obj = str(value)
-                item.attrs['values'][col_identifier] = obj
+        # creates a NSTableCellView from interface-builder template (does not exist)
+        # or reuses an existing view which is currently not needed for paining
+        # returns None (nil) if both fails
+        tcv = self.makeViewWithIdentifier_owner_(at('DataCell'), self)
 
-        return obj
+        if not tcv:  # there is no existing cell to reuse so create a new one
+            tcv = TogaIconView.alloc().initWithFrame_(CGRectMake(0, 0, column.width, 17))
+            tcv.identifier = at('DataCell')
+
+        tcv.setText(str(value))
+        if icon:
+            icon.native.setSize_(NSMakeSize(16, 16))
+            tcv.setImage(icon.native)
+        else:
+            tcv.setImage(None)
+
+        return tcv
+            else:
+
 
     # OutlineViewDelegate methods
     @objc_method
@@ -186,9 +168,6 @@ class Tree(Widget):
             self.tree.addTableColumn(column)
             self.columns.append(column)
 
-            cell = TogaIconCell.alloc().init()
-            column.dataCell = cell
-
             column.headerCell.stringValue = heading
 
         # Put the tree arrows in the first column.
@@ -209,6 +188,9 @@ class Tree(Widget):
     #             self.tree.expandItem(node._impl)
     #         else:
     #             self.tree.collapseItem(node._impl)
+
+    # TODO: don't reload the entire view if not necessary
+    #  reloadData is slow and invalidates any current selections
 
     def change_source(self, source):
         self.tree.reloadData()

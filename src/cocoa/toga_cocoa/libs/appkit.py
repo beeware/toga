@@ -544,6 +544,10 @@ NSStringDrawingOneShot = 1 << 4  # DEPRECATED
 NSStringDrawingTruncatesLastVisibleLine = 1 << 5
 
 ######################################################################
+# NSTableCellView.h
+NSTableCellView = ObjCClass('NSTableCellView')
+
+######################################################################
 # NSTableView.h
 NSTableColumn = ObjCClass('NSTableColumn')
 NSTableView = ObjCClass('NSTableView')
