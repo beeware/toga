@@ -160,6 +160,7 @@ class Tree(Widget):
         self.tree.interface = self.interface
         self.tree._impl = self
         self.tree.columnAutoresizingStyle = NSTableViewUniformColumnAutoresizingStyle
+        self.tree.usesAlternatingRowBackgroundColors = True
 
         self.tree.allowsMultipleSelection = self.interface.multiple_select
 
