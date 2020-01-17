@@ -6,9 +6,11 @@ from toga_cocoa.libs import (
     NSOutlineView,
     NSScrollView,
     NSTableColumn,
-    NSTableViewUniformColumnAutoresizingStyle
+    NSTableViewUniformColumnAutoresizingStyle,
     NSMakeSize,
     NSCommandKeyMask,
+    CGRectMake,
+    NSSortDescriptor,
 )
 
 from toga_cocoa.widgets.base import Widget
@@ -105,7 +107,20 @@ class TogaTree(NSOutlineView):
             tcv.setImage(None)
 
         return tcv
+
+    @objc_method
+    def outlineView_sortDescriptorsDidChange_(self, tableView, oldDescriptors) -> None:
+
+        for descriptor in self.sortDescriptors:
+            accessor = descriptor.key
+            reverse = descriptor.ascending == 1
+            key = self.interface._sort_keys[str(accessor)]
+            try:
+                self.interface.data.sort(str(accessor), reverse=reverse, key=key)
+            except AttributeError:
+                pass
             else:
+                self.reloadData()
 
     @objc_method
     def keyDown_(self, event) -> None:
@@ -170,14 +185,14 @@ class Tree(Widget):
         # conversion from ObjC string to Python String, create the
         # ObjC string once and cache it.
         self.column_identifiers = {}
-        for i, (heading, accessor) in enumerate(zip(
-                    self.interface.headings,
-                    self.interface._accessors
-                )):
+        for i, (heading, accessor) in enumerate(zip(self.interface.headings, self.interface._accessors)):
 
             column_identifier = at(accessor)
             self.column_identifiers[id(column_identifier)] = accessor
             column = NSTableColumn.alloc().initWithIdentifier(column_identifier)
+            if self.interface.sorting:
+                sort_descriptor = NSSortDescriptor.sortDescriptorWithKey_ascending_(column_identifier, True)
+                column.setSortDescriptorPrototype(sort_descriptor)
             self.tree.addTableColumn(column)
             self.columns.append(column)
 

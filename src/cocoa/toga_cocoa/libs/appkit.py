@@ -525,6 +525,10 @@ NSSlider = ObjCClass('NSSlider')
 NSSliderCell = ObjCClass('NSSliderCell')
 
 ######################################################################
+# NSSortDescriptor.h
+NSSortDescriptor = ObjCClass('NSSortDescriptor')
+
+######################################################################
 # NSSplitView.h
 NSSplitView = ObjCClass('NSSplitView')
 
