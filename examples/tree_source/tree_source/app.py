@@ -124,7 +124,7 @@ class Node:
 
 class FileSystemSource(Source, Node):
 
-    def __init__(self, path='/'):
+    def __init__(self, path):
         Source.__init__(self)
         Node.__init__(self, path, parent=self)
         self.path = path
@@ -142,7 +142,8 @@ class ExampleTreeSourceApp(toga.App):
         # Set up main window
         self.main_window = toga.MainWindow(title=self.name)
 
-        self.fs_source = FileSystemSource()
+        root = os.path.abspath(os.sep)
+        self.fs_source = FileSystemSource(root)
 
         self.tree = toga.Tree(
             headings=['Name', 'Date Modified'],
