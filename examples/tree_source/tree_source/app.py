@@ -1,119 +1,165 @@
-from random import choice
+import os
 
 import toga
 from toga.style import Pack
-from toga.constants import ROW, COLUMN
+from toga.constants import COLUMN
 from toga.sources import Source
-
-bee_movies = [
-    {'year': 2008, 'title': 'The Secret Life of Bees', 'rating': '7.3', 'genre': 'Drama'},
-    {'year': 2007, 'title': 'Bee Movie', 'rating': '6.1', 'genre': 'Animation, Adventure, Comedy'},
-    {'year': 1998, 'title': 'Bees', 'rating': '6.3', 'genre': 'Horror'},
-    {'year': 2007, 'title': 'The Girl Who Swallowed Bees', 'rating': '7.5', 'genre': 'Short'},
-    {'year': 1974, 'title': 'Birds Do It, Bees Do It', 'rating': '7.3', 'genre': 'Documentary'},
-    {'year': 1998, 'title': 'Bees: A Life for the Queen', 'rating': '8.0', 'genre': 'TV Movie'},
-    {'year': 1994, 'title': 'Bees in Paradise', 'rating': '5.4', 'genre': 'Comedy, Musical'},
-    {'year': 1947, 'title': 'Keeper of the Bees', 'rating': '6.3', 'genre': 'Drama'}
-]
-
-class Movie:
-    # A class to wrap individual
-    def __init__(self, year, title, rating, genre):
-        self.year = year
-        self.title = title
-        self.rating = rating
-        self.genre = genre
+from datetime import datetime
 
 
-class Decade:
-    # A class to wrap
-    def __init__(self, decade):
-        self.decade = decade
-        self._data = []
+class LoadingFailedNode:
+    """A node to represent failed loading of children"""
 
-    # Display values for the decade in the tree.
-    @property
-    def year(self):
-        return "{}0's".format(self.decade)
+    def __init__(self, parent):
+        self.parent = parent
+        self.children = []
+        self.name = 'loading failed'
+        self.date_modified = ''
+
+    def __len__(self):
+        return 0
+
+    def __getitem__(self, index):
+        pass
+
+    @staticmethod
+    def can_have_children():
+        return False
+
+    def __str__(self):
+        return self.name
+
+
+class Node:
+    """A node which loads its children on-demand."""
+
+    def __init__(self, path, parent):
+
+        self.parent = parent
+        self._children = []
+
+        self.path = path
+        self._mtime = os.stat(self.path).st_mtime
+        self._icon = toga.Icon('resources/folder.icns')
+
+        self._did_start_loading = False
 
     # Methods required for the data source interface
     def __len__(self):
-        return len(self._data)
+        return len(self.children)
 
     def __getitem__(self, index):
-        return self._data[index]
+        return self.children[index]
 
     def can_have_children(self):
-        return True
+        # this will trigger loading of children, if not yet done
+        return len(self.children) > 0
 
+    # Property that returns the first column value as (icon, label)
+    @property
+    def name(self):
+        return self._icon, os.path.basename(self.path)
 
-class DecadeSource(Source):
-    def __init__(self):
-        super().__init__()
-        self._decades = []
+    # Property that returns modified date as str
+    @property
+    def date_modified(self):
+        return datetime.fromtimestamp(self._mtime).strftime("%d %b %Y at %H:%M")
 
-    def __len__(self):
-        return len(self._decades)
+    # on-demand loading of children
+    @property
+    def children(self):
+        if not self._did_start_loading:
+            self._did_start_loading = True
+            self.load_children()
+        return self._children
 
-    def __getitem__(self, index):
-        return self._decades[index]
-
-    def add(self, entry):
-        decade = entry['year'] // 10
+    def load_children(self):
         try:
-            decade_root = {
-                root.decade: root
-                for root in self._decades
-            }[decade]
-        except KeyError:
-            decade_root = Decade(decade)
-            self._decades.append(decade_root)
-            self._decades.sort(key=lambda v: v.decade)
-        movie = Movie(**entry)
-        decade_root._data.append(movie)
-        self._notify('insert', parent=decade_root, index=len(decade_root._data) - 1, item=movie)
+            names = os.scandir(self.path)
+            sub_paths = [os.path.join(self.path, p) for p in names if os.path.isdir(os.path.join(self.path, p))]
+            self._children = [Node(p, self) for p in sub_paths]
+        except OSError:
+            self._children = [LoadingFailedNode(self)]
+
+        for i, child in enumerate(self._children):
+            self._notify('insert', parent=self, index=i, item=child)
+
+    def _notify(self, notification, **kwargs):
+        # pass notifications to parent
+        self.parent._notify(notification, **kwargs)
+
+    def __str__(self):
+        return os.path.basename(self.path)
+
+    def sort(self, accessor, key=None, reverse=False):
+
+        if accessor == "date_modified":  # use our own sort function
+            def sort_func(child):
+                return child._mtime
+        elif accessor == "name":
+            def sort_func(child):
+                return child.name[1].lower()
+        else:  # use the function provided by the user / default
+            def sort_func(child):
+                # sort according to value of accessor, using the provided sort key
+                try:
+                    attr = getattr(child, accessor)
+                    if isinstance(attr, tuple):
+                        icon, value = attr
+                    else:
+                        value = attr
+                    return key(value) if key else value
+                except AttributeError:
+                    return ''
+
+        # sort all children in hirarchy
+        self._children.sort(key=sort_func, reverse=reverse)
+
+        for c in self._children:
+            try:
+                c.sort(accessor, key, reverse)
+            except AttributeError:
+                pass
+
+
+class FileSystemSource(Source, Node):
+
+    def __init__(self, path='/'):
+        Source.__init__(self)
+        Node.__init__(self, path, parent=self)
+        self.path = path
+        self._parent = None
+        self._children = []
+
+    def _notify(self, notification, **kwargs):
+        # send actual notification
+        Source._notify(self, notification, **kwargs)
 
 
 class ExampleTreeSourceApp(toga.App):
-    # Table callback functions
-    def on_select_handler(self, widget, node):
-        if node and hasattr(node, 'title'):
-            self.label.text = 'You selected node: {}'.format(node.title)
-        else:
-            self.label.text = 'No row selected'
-
-    # Button callback functions
-    def insert_handler(self, widget, **kwargs):
-        entry = choice(bee_movies)
-        self.tree.data.add(entry)
 
     def startup(self):
         # Set up main window
         self.main_window = toga.MainWindow(title=self.name)
 
-        # Label to show responses.
-        self.label = toga.Label('Ready.')
+        self.fs_source = FileSystemSource()
 
         self.tree = toga.Tree(
-            headings=['Year', 'Title', 'Rating', 'Genre'],
-            data=DecadeSource(),
-            on_select=self.on_select_handler,
-            style=Pack(flex=1)
+            headings=['Name', 'Date Modified'],
+            data=self.fs_source,
+            style=Pack(flex=1),
+            multiple_select=True,
+            sorting=True,
+            sort_keys=None,
         )
-
-        # Buttons
-        btn_style = Pack(flex=1)
-        btn_insert = toga.Button('Insert Row', on_press=self.insert_handler, style=btn_style)
-        btn_box = toga.Box(children=[btn_insert], style=Pack(direction=ROW))
 
         # Outermost box
         outer_box = toga.Box(
-            children=[btn_box, self.tree, self.label],
-            style=Pack(
-                flex=1,
-                direction=COLUMN,
-                padding=10,
-            )
+            children=[
+                toga.Label('A list of all your folders!', style=Pack(padding=10)),
+                self.tree,
+            ],
+            style=Pack(flex=1, direction=COLUMN)
         )
 
         # Add the content on the main window
