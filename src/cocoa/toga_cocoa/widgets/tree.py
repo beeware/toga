@@ -111,7 +111,7 @@ class TogaTree(NSOutlineView):
     @objc_method
     def outlineView_sortDescriptorsDidChange_(self, tableView, oldDescriptors) -> None:
 
-        for descriptor in self.sortDescriptors:
+        for descriptor in self.sortDescriptors[::-1]:
             accessor = descriptor.key
             reverse = descriptor.ascending == 1
             key = self.interface._sort_keys[str(accessor)]
