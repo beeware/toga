@@ -9,6 +9,8 @@ from toga_cocoa.libs import (
     NSTableViewUniformColumnAutoresizingStyle,
     NSMakeSize,
     NSCommandKeyMask,
+    NSIndexSet,
+    NSTableViewAnimation,
     CGRectMake,
     NSSortDescriptor,
 )
@@ -224,7 +226,12 @@ class Tree(Widget):
         self.tree.reloadData()
 
     def insert(self, parent, index, item):
-        self.tree.reloadData()
+        index_set = NSIndexSet.indexSetWithIndex(index)
+        if parent == self.interface.data:
+            self.tree.reloadData()
+        else:
+            parent = id(parent._impl)
+            self.tree.insertItemsAtIndexes_inParent_withAnimation_(index_set, parent, NSTableViewAnimation.SlideDown.value)
 
     def change(self, item):
         self.tree.reloadData()

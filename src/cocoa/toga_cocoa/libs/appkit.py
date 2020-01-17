@@ -346,6 +346,10 @@ NSImageFrameButton = 4
 NSImageView = ObjCClass('NSImageView')
 
 ######################################################################
+# NSIndexSet.h
+NSIndexSet = ObjCClass('NSIndexSet')
+
+######################################################################
 # NSLayoutConstraint.h
 NSLayoutConstraint = ObjCClass('NSLayoutConstraint')
 
@@ -562,6 +566,16 @@ NSTableViewSequentialColumnAutoresizingStyle = 2
 NSTableViewReverseSequentialColumnAutoresizingStyle = 3
 NSTableViewLastColumnOnlyAutoresizingStyle = 4
 NSTableViewFirstColumnOnlyAutoresizingStyle = 5
+
+
+class NSTableViewAnimation(Enum):
+    EffectNone = 0x0
+    EffectFade = 0x1
+    EffectGap = 0x2
+    SlideUp = 0x10
+    SlideDown = 0x20
+    SlideLeft = 0x30
+    SlideRight = 0x40
 
 
 ######################################################################
