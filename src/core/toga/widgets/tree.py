@@ -13,6 +13,21 @@ class Tree(Widget):
         id (str):  An identifier for this widget.
         style (:obj:`Style`): An optional style object. If no style is provided then
             a new one will be created for the widget.
+    Kwargs:
+        data: The data to display in the widget. Can be an instance of
+            :class:`toga.sources.TreeSource`, a list, dict or tuple with data to display
+            in the tree widget, or a class instance which implements the interface of
+            :class:`toga.sources.TreeSource`. Entries can be given as follows:
+
+            - Any Python object ``value`` with a string represntation. This string will be
+              shown in the widget. If ``value`` has an attribute ``icon``, instance of
+              (:class:`toga.Icon`), the icon will be shown in front of the text.
+            - A tuple ``(icon, value)`` where again the string represnation of ``value``
+              will be used as text.
+        accessors (``list`` of ``str``): Optional: a list of attributes to access the
+            value in the columns. If not given, the headings will be taken.
+        multiple_select (``bool``): If ``True``, allows for the selection of multiple rows.
+            Defaults to ``False``.
         factory (:obj:`module`): A python module that is capable to return a
             implementation of this class with the same name. (optional & normally not needed)
     """
