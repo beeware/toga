@@ -28,6 +28,14 @@ class Tree(Widget):
             value in the columns. If not given, the headings will be taken.
         multiple_select (``bool``): If ``True``, allows for the selection of multiple rows.
             Defaults to ``False``.
+        sorting (``bool``):  If ``True``, allows for sorting of the tree by column value.
+            For this to work, the data source must implement a ``sort`` method which takes
+            the column header / accessor as an argument, ``reverse`` as a keyword
+            argument for sorting in decending order and ``key`` as a optional sort
+            function.
+        sort_keys (``bool``): A list of sort functions for each column. If ``None``,
+            case-insensitive alphabetic sorting will be used.
+        on_select: A function to be called when the user selects one or multiple rows.
         factory (:obj:`module`): A python module that is capable to return a
             implementation of this class with the same name. (optional & normally not needed)
     """
@@ -35,11 +43,16 @@ class Tree(Widget):
     MIN_HEIGHT = 100
 
     def __init__(self, headings, id=None, style=None, data=None, accessors=None,
-                 multiple_select=False, on_select=None, factory=None):
+                 multiple_select=False, sorting=False, sort_keys=None, on_select=None, factory=None):
         super().__init__(id=id, style=style, factory=factory)
         self.headings = headings
         self._accessors = build_accessors(headings, accessors)
         self._multiple_select = multiple_select
+        self._sorting = sorting
+        if sort_keys:
+            self._sort_keys = {acc: key for acc, key in zip(self._accessors, sort_keys)}
+        else:
+            self._sort_keys = {acc: self._default_sort for acc in self._accessors}
         self._selection = None
         self._data = None
         self._on_select = None
@@ -48,6 +61,10 @@ class Tree(Widget):
         self.data = data
 
         self.on_select = on_select
+
+    @staticmethod
+    def _default_sort(x):
+        return str.lower(str(x))
 
     @property
     def data(self):
@@ -79,6 +96,11 @@ class Tree(Widget):
     def multiple_select(self):
         """Does the table allow multiple rows to be selected?"""
         return self._multiple_select
+
+    @property
+    def sorting(self):
+        """Does the table allow rows to be sorted by values?"""
+        return self._sorting
 
     @property
     def selection(self):
