@@ -1,4 +1,4 @@
-from rubicon.objc import objc_method, at
+from rubicon.objc import objc_method, at, send_super
 from travertino.size import at_least
 
 from toga_cocoa.libs import (
@@ -8,6 +8,7 @@ from toga_cocoa.libs import (
     NSTableColumn,
     NSTableViewUniformColumnAutoresizingStyle
     NSMakeSize,
+    NSCommandKeyMask,
 )
 
 from toga_cocoa.widgets.base import Widget
@@ -106,6 +107,17 @@ class TogaTree(NSOutlineView):
         return tcv
             else:
 
+    @objc_method
+    def keyDown_(self, event) -> None:
+        # any time this table is in focus and a key is pressed, this method will be called
+        characters = event.characters
+        character = characters.characterAtIndex_(0)  # let's get the first key that was pressed
+        if character == 97 and (event.modifierFlags & NSCommandKeyMask) == NSCommandKeyMask:
+            # 97 is the "A" key, while the CMD key is a modifier key. check to see if both were pressed
+            if self.interface.multiple_select:
+                self.selectAll_(self)
+        else:
+            send_super(__class__, self, 'keyDown:', event)  # why does this not work?
 
     # OutlineViewDelegate methods
     @objc_method
