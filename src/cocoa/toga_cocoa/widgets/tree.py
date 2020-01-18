@@ -8,13 +8,14 @@ from toga_cocoa.libs import (
     NSTableColumn,
     NSTableViewUniformColumnAutoresizingStyle,
     NSMakeSize,
-    NSCommandKeyMask,
     NSIndexSet,
     NSTableViewAnimation,
     CGRectMake,
     NSSortDescriptor,
 )
 import toga
+from toga.keys import Key
+from toga_cocoa.keys import toga_key
 from toga_cocoa.widgets.base import Widget
 from toga_cocoa.widgets.internal.data import TogaData
 from toga_cocoa.widgets.internal.cells import TogaIconView
@@ -131,13 +132,11 @@ class TogaTree(NSOutlineView):
     @objc_method
     def keyDown_(self, event) -> None:
         # any time this table is in focus and a key is pressed, this method will be called
-        characters = event.characters
-        character = characters.characterAtIndex(0)  # let's get the first key that was pressed
-        if character == 97 and (event.modifierFlags & NSCommandKeyMask) == NSCommandKeyMask:
-            # 97 is the "A" key, while the CMD key is a modifier key. check to see if both were pressed
+        if toga_key(event) == {'key': Key.A, 'modifiers': {Key.MOD_1}}:
             if self.interface.multiple_select:
                 self.selectAll(self)
         else:
+            # forawrd call to super
             send_super(__class__, self, 'keyDown:', event)
 
     # OutlineViewDelegate methods
