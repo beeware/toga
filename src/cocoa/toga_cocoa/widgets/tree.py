@@ -7,7 +7,6 @@ from toga_cocoa.libs import (
     NSScrollView,
     NSTableColumn,
     NSTableViewUniformColumnAutoresizingStyle,
-    NSMakeSize,
     NSIndexSet,
     NSTableViewAnimation,
     CGRectMake,
@@ -230,12 +229,22 @@ class Tree(Widget):
         self.tree.reloadData()
 
     def insert(self, parent, index, item):
-        index_set = NSIndexSet.indexSetWithIndex(index)
-        if parent == self.interface.data:
+
+        # if now rows have been loaded yet, reload all data
+        # this works around an issue when inserting items before the view has loaded
+        if self.tree.numberOfRows == 0:
             self.tree.reloadData()
+            return
+
+        # otherwise, procees with normal insert
+        # set parent = None if inserting to the root item
+        index_set = NSIndexSet.indexSetWithIndex(index)
+        if parent is self.interface.data:
+            parent = None
         else:
-            parent = id(parent._impl)
-            self.tree.insertItemsAtIndexes(index_set, inParent=parent, withAnimation=NSTableViewAnimation.SlideDown.value)
+            parent = getattr(parent, '_impl', None)
+
+        self.tree.insertItemsAtIndexes(index_set, inParent=parent, withAnimation=NSTableViewAnimation.SlideDown.value)
 
     def change(self, item):
         self.tree.reloadData()
