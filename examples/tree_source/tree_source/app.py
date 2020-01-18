@@ -26,9 +26,6 @@ class LoadingFailedNode:
     def can_have_children():
         return False
 
-    def __str__(self):
-        return self.name
-
 
 class Node:
     """A node which loads its children on-demand."""
@@ -88,9 +85,6 @@ class Node:
     def notify(self, notification, **kwargs):
         # pass notifications to parent
         self.parent.notify(notification, **kwargs)
-
-    def __str__(self):
-        return os.path.basename(self.path)
 
     def sort(self, accessor, key=None, reverse=False):
 
