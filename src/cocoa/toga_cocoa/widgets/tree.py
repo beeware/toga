@@ -99,7 +99,7 @@ class TogaTree(NSOutlineView):
         # creates a NSTableCellView from interface-builder template (does not exist)
         # or reuses an existing view which is currently not needed for paining
         # returns None (nil) if both fails
-        tcv = self.makeViewWithIdentifier_owner_(at('DataCell'), self)
+        tcv = self.makeViewWithIdentifier(at('DataCell'), owner=self)
 
         if not tcv:  # there is no existing cell to reuse so create a new one
             tcv = TogaIconView.alloc().initWithFrame_(CGRectMake(0, 0, column.width, 17))
@@ -107,7 +107,7 @@ class TogaTree(NSOutlineView):
 
         tcv.setText(str(value))
         if icon:
-            icon.native.setSize_(NSMakeSize(16, 16))
+            icon.native.setSize(NSMakeSize(16, 16))
             tcv.setImage(icon.native)
         else:
             tcv.setImage(None)
@@ -132,13 +132,13 @@ class TogaTree(NSOutlineView):
     def keyDown_(self, event) -> None:
         # any time this table is in focus and a key is pressed, this method will be called
         characters = event.characters
-        character = characters.characterAtIndex_(0)  # let's get the first key that was pressed
+        character = characters.characterAtIndex(0)  # let's get the first key that was pressed
         if character == 97 and (event.modifierFlags & NSCommandKeyMask) == NSCommandKeyMask:
             # 97 is the "A" key, while the CMD key is a modifier key. check to see if both were pressed
             if self.interface.multiple_select:
-                self.selectAll_(self)
+                self.selectAll(self)
         else:
-            send_super(__class__, self, 'keyDown:', event)  # why does this not work?
+            send_super(__class__, self, 'keyDown:', event)
 
     # OutlineViewDelegate methods
     @objc_method
@@ -199,7 +199,7 @@ class Tree(Widget):
             # column.setEditable_(False)
             column.setMinWidth_(100)
             if self.interface.sorting:
-                sort_descriptor = NSSortDescriptor.sortDescriptorWithKey_ascending_(column_identifier, True)
+                sort_descriptor = NSSortDescriptor.sortDescriptorWithKey(column_identifier, ascending=True)
                 column.setSortDescriptorPrototype(sort_descriptor)
             self.tree.addTableColumn(column)
             self.columns.append(column)
@@ -237,7 +237,7 @@ class Tree(Widget):
             self.tree.reloadData()
         else:
             parent = id(parent._impl)
-            self.tree.insertItemsAtIndexes_inParent_withAnimation_(index_set, parent, NSTableViewAnimation.SlideDown.value)
+            self.tree.insertItemsAtIndexes(index_set, inParent=parent, withAnimation=NSTableViewAnimation.SlideDown.value)
 
     def change(self, item):
         self.tree.reloadData()
