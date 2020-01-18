@@ -108,7 +108,6 @@ class TogaTree(NSOutlineView):
 
         tcv.setText(str(value))
         if icon:
-            icon.native.setSize(NSMakeSize(16, 16))
             tcv.setImage(icon.native)
         else:
             tcv.setImage(None)
