@@ -222,21 +222,12 @@ class Tree(Widget):
     #         else:
     #             self.tree.collapseItem(node._impl)
 
-    # TODO: don't reload the entire view if not necessary
-    #  reloadData is slow and invalidates any current selections
 
     def change_source(self, source):
         self.tree.reloadData()
 
     def insert(self, parent, index, item):
 
-        # if now rows have been loaded yet, reload all data
-        # this works around an issue when inserting items before the view has loaded
-        if self.tree.numberOfRows == 0:
-            self.tree.reloadData()
-            return
-
-        # otherwise, procees with normal insert
         # set parent = None if inserting to the root item
         index_set = NSIndexSet.indexSetWithIndex(index)
         if parent is self.interface.data:
