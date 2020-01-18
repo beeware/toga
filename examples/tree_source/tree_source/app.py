@@ -16,6 +16,7 @@ class LoadingFailedNode:
         self.name = 'loading failed'
         self.date_modified = ''
 
+    # Methods required for the data source interface
     def __len__(self):
         return 0
 
@@ -83,7 +84,7 @@ class Node:
             self.notify('insert', parent=self, index=i, item=child)
 
     def notify(self, notification, **kwargs):
-        # pass notifications to parent
+        # pass notifications to parent (which is the actual 'data source')
         self.parent.notify(notification, **kwargs)
 
     def sort(self, accessor, key=None, reverse=False):
@@ -127,7 +128,7 @@ class FileSystemSource(Node, Source):
 
     def notify(self, notification, **kwargs):
         # send actual notification
-        super()._notify(notification, **kwargs)
+        self._notify(notification, **kwargs)
 
 
 class ExampleTreeSourceApp(toga.App):
