@@ -247,10 +247,16 @@ class Tree(Widget):
         self.tree.insertItemsAtIndexes(index_set, inParent=parent, withAnimation=NSTableViewAnimation.SlideDown.value)
 
     def change(self, item):
-        self.tree.reloadData()
+        if hasattr(item, '_impl'):  # item is or was visible -> NSOutlineView knows it
+            self.tree.reloadItem(item._impl)
 
     def remove(self, item):
-        self.tree.reloadData()
+        if hasattr(item, '_impl'):  # item is or was visible -> NSOutlineView knows it
+            index = self.tree.childIndexForItem(item._impl)
+            index_set = NSIndexSet.indexSetWithIndex(index)
+            parent = self.tree.parentForItem(item._impl)
+
+            self.tree.removeItemsAtIndexes(index_set, inParent=parent, withAnimation=NSTableViewAnimation.SlideUp.value)
 
     def clear(self):
         self.tree.reloadData()
