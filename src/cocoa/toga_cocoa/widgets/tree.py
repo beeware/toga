@@ -14,7 +14,7 @@ from toga_cocoa.libs import (
     CGRectMake,
     NSSortDescriptor,
 )
-
+import toga
 from toga_cocoa.widgets.base import Widget
 from toga_cocoa.widgets.internal.data import TogaData
 from toga_cocoa.widgets.internal.cells import TogaIconView
@@ -69,10 +69,14 @@ class TogaTree(NSOutlineView):
         try:
             value = getattr(item.attrs['node'], col_identifier)
 
+            # if the value is it a widget itself, just draw the widget!
+            if isinstance(value, toga.Widget):
+                return value._impl.native
+
             # Allow for an (icon, value) tuple as the simple case
             # for encoding an icon in a table cell. Otherwise, look
             # for an ico attribute.
-            if isinstance(value, tuple):
+            elif isinstance(value, tuple):
                 icon_iface, value = value
             else:
                 try:
@@ -192,6 +196,8 @@ class Tree(Widget):
             column_identifier = at(accessor)
             self.column_identifiers[id(column_identifier)] = accessor
             column = NSTableColumn.alloc().initWithIdentifier(column_identifier)
+            # column.setEditable_(False)
+            column.setMinWidth_(100)
             if self.interface.sorting:
                 sort_descriptor = NSSortDescriptor.sortDescriptorWithKey_ascending_(column_identifier, True)
                 column.setSortDescriptorPrototype(sort_descriptor)
