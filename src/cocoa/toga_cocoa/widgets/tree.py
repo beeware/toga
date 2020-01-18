@@ -76,7 +76,7 @@ class TogaTree(NSOutlineView):
 
             # Allow for an (icon, value) tuple as the simple case
             # for encoding an icon in a table cell. Otherwise, look
-            # for an ico attribute.
+            # for an icon attribute.
             elif isinstance(value, tuple):
                 icon_iface, value = value
             else:
@@ -98,7 +98,7 @@ class TogaTree(NSOutlineView):
             icon = None
 
         # creates a NSTableCellView from interface-builder template (does not exist)
-        # or reuses an existing view which is currently not needed for paining
+        # or reuses an existing view which is currently not needed for painting
         # returns None (nil) if both fails
         tcv = self.makeViewWithIdentifier(at('DataCell'), owner=self)
 
