@@ -34,6 +34,7 @@ class Node:
     """A node which loads its children on-demand."""
 
     def __init__(self, path, parent):
+        super().__init__()
 
         self.parent = parent
         self._children = []
@@ -82,11 +83,11 @@ class Node:
             self._children = [LoadingFailedNode(self)]
 
         for i, child in enumerate(self._children):
-            self._notify('insert', parent=self, index=i, item=child)
+            self.notify('insert', parent=self, index=i, item=child)
 
-    def _notify(self, notification, **kwargs):
+    def notify(self, notification, **kwargs):
         # pass notifications to parent
-        self.parent._notify(notification, **kwargs)
+        self.parent.notify(notification, **kwargs)
 
     def __str__(self):
         return os.path.basename(self.path)
@@ -122,18 +123,17 @@ class Node:
                 pass
 
 
-class FileSystemSource(Source, Node):
+class FileSystemSource(Node, Source):
 
     def __init__(self, path):
-        Source.__init__(self)
-        Node.__init__(self, path, parent=self)
+        super().__init__(path, parent=self)
         self.path = path
         self._parent = None
         self._children = []
 
-    def _notify(self, notification, **kwargs):
+    def notify(self, notification, **kwargs):
         # send actual notification
-        Source._notify(self, notification, **kwargs)
+        super()._notify(notification, **kwargs)
 
 
 class ExampleTreeSourceApp(toga.App):
