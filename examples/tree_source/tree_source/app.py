@@ -80,13 +80,6 @@ class Node:
         except OSError:
             self._children = [LoadingFailedNode(self)]
 
-        for i, child in enumerate(self._children):
-            self.notify('insert', parent=self, index=i, item=child)
-
-    def notify(self, notification, **kwargs):
-        # pass notifications to parent (which is the actual 'data source')
-        self.parent.notify(notification, **kwargs)
-
     def sort(self, accessor, key=None, reverse=False):
 
         if accessor == "date_modified":  # use our own sort function
@@ -125,10 +118,6 @@ class FileSystemSource(Node, Source):
         self.path = path
         self._parent = None
         self._children = []
-
-    def notify(self, notification, **kwargs):
-        # send actual notification
-        self._notify(notification, **kwargs)
 
 
 class ExampleTreeSourceApp(toga.App):
