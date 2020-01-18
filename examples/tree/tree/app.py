@@ -43,17 +43,23 @@ class ExampleTreeApp(toga.App):
 
         self.tree.data.append(root, **item)
 
+    def remove_handler(self, widget, **kwargs):
+        movies = list(movie for decade in self.tree.data for movie in decade)
+        if movies:
+            movie = choice(movies)
+            self.tree.data.remove(movie)
+
     def startup(self):
         # Set up main window
         self.main_window = toga.MainWindow(title=self.name)
 
         # Label to show responses.
-        self.label = toga.Label('Ready.')
+        self.label = toga.Label('Ready.', style=Pack(padding=10))
 
         self.tree = toga.Tree(
             headings=['Year', 'Title', 'Rating', 'Genre'],
             on_select=self.on_select_handler,
-            style=Pack(flex=1)
+            style=Pack(flex=1, padding=10)
         )
 
         self.decade_1940s = self.tree.data.append(None, year='1940s', title='', rating='', genre='')
@@ -65,9 +71,10 @@ class ExampleTreeApp(toga.App):
         self.decade_2000s = self.tree.data.append(None, year='2000s', title='', rating='', genre='')
 
         # Buttons
-        btn_style = Pack(flex=1)
+        btn_style = Pack(flex=1, padding=10)
         btn_insert = toga.Button('Insert Row', on_press=self.insert_handler, style=btn_style)
-        btn_box = toga.Box(children=[btn_insert], style=Pack(direction=ROW))
+        btn_remove = toga.Button('Remove Row', on_press=self.remove_handler, style=btn_style)
+        btn_box = toga.Box(children=[btn_insert, btn_remove], style=Pack(direction=ROW))
 
         # Outermost box
         outer_box = toga.Box(
@@ -75,7 +82,6 @@ class ExampleTreeApp(toga.App):
             style=Pack(
                 flex=1,
                 direction=COLUMN,
-                padding=10,
             )
         )
 
