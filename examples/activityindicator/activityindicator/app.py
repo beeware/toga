@@ -1,6 +1,6 @@
 import toga
 from toga.style import Pack
-from toga.constants import COLUMN, ROW, CENTER
+from toga.constants import ROW, CENTER
 
 
 class ExampleActivityIndicatorApp(toga.App):

@@ -27,4 +27,3 @@ class ActivityIndicator(Widget):
 
     def stop(self):
         self.native.stopAnimation(self.native)
-

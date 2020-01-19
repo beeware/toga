@@ -55,10 +55,10 @@ __all__ = [
     'Image',
 
     # Widgets
+    'ActivityIndicator',
     'Box',
     'Button',
     'Canvas',
-    'ActivityIndicator',
     'DetailedList',
     'Divider',
     'Window',
@@ -91,4 +91,3 @@ __all__ = [
 # __version__ = '1.2.3.post1' # Post Release 1
 
 __version__ = '0.3.0.dev18'
-
