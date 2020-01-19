@@ -2,7 +2,7 @@ Widgets
 =======
 
 .. toctree::
-
+   activityindicator
    button
    canvas
    detailedlist
