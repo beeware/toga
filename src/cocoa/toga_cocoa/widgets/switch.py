@@ -29,6 +29,10 @@ class Switch(Widget):
     def set_label(self, label):
         self.native.title = self.interface.label
 
+    def set_font(self, value):
+        if value:
+            self.native.font = value._impl.native
+
     def set_is_on(self, value):
         if value is True:
             self.native.state = NSOnState
