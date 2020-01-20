@@ -64,7 +64,7 @@ def error(window, title, message):
 def stack_trace(window, title, message, content, retry=False):
     alert = NSAlert.alloc().init()
     alert.icon = window.app.icon._impl.native
-    alert.setAlertStyle_(NSAlertStyle.Critical)
+    alert.setAlertStyle_(NSAlertStyle.Critical.value)
     alert.setMessageText_(title)
     alert.setInformativeText_(message)
 
