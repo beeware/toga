@@ -1,7 +1,13 @@
 from rubicon.objc import objc_method, SEL
 from travertino.size import at_least
 
-from toga_cocoa.libs import *
+from toga_cocoa.libs import (
+    NSButton,
+    NSOnState,
+    NSOffState,
+    NSRoundedBezelStyle,
+    NSSwitchButton,
+)
 
 from .base import Widget
 
