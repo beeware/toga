@@ -1,14 +1,14 @@
 from travertino.size import at_least
 
 from toga_cocoa.keys import toga_key
-from toga_cocoa.libs import NSURL, NSURLRequest, WebView, objc_method
+from toga_cocoa.libs import NSURL, NSURLRequest, WKWebView
 
 from .base import Widget
 
 
-class TogaWebView(WebView):
+class TogaWebView(WKWebView):
     @objc_method
-    def webView_didFinishLoadForFrame_(self, sender, frame) -> None:
+    def webView_didFinish_navigation_(self, sender, wkNavigation) -> None:
         if self.interface.on_webview_load:
             self.interface.on_webview_load(self.interface)
 
@@ -57,14 +57,14 @@ class WebView(Widget):
     def set_url(self, value):
         if value:
             request = NSURLRequest.requestWithURL(NSURL.URLWithString(self.interface.url))
-            self.native.mainFrame.loadRequest(request)
+            self.native.loadRequest(request)
 
     def set_content(self, root_url, content):
-        self.native.mainFrame.loadHTMLString(content, baseURL=NSURL.URLWithString(root_url))
+        self.native.loadHTMLString(content, baseURL=NSURL.URLWithString(root_url))
 
     def set_user_agent(self, value):
         user_agent = value if value else "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/603.3.8 (KHTML, like Gecko) Version/10.1.2 Safari/603.3.8"  # NOQA
-        self.native.customUserAgent = user_agent
+        # self.native.customUserAgent = user_agent
 
     async def evaluate_javascript(self, javascript):
         """
@@ -75,7 +75,7 @@ class WebView(Widget):
         :param javascript: The javascript expression to evaluate
         :type  javascript: ``str``
         """
-        return self.native.stringByEvaluatingJavaScriptFromString(javascript)
+        return self.native.evaluateJavaScript(javascript, completionHandler=None)
 
     def invoke_javascript(self, javascript):
         """
@@ -83,7 +83,7 @@ class WebView(Widget):
 
         :param javascript: The javascript e
         """
-        self.native.stringByEvaluatingJavaScriptFromString(javascript)
+        self.native.evaluateJavaScript(javascript, completionHandler=None)
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
