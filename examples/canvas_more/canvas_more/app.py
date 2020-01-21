@@ -6,11 +6,12 @@ from toga.style import Pack
 from toga.style.pack import COLUMN
 from travertino.size import at_least
 
+
 class ExampleCanvasApp(toga.App):
     def startup(self):
         # Initial width and height for the Canvas
-        iwidth=600
-        iheight=400
+        iwidth = 600
+        iheight = 400
 
         # Set up main window
         self.main_window = toga.MainWindow(title=self.name)
@@ -83,13 +84,13 @@ class ExampleCanvasApp(toga.App):
         def draw_ellipse():
             for ctx_idx in range(5):
                 f = (5-ctx_idx)/5.
-                lt, rt, tp, bm = -f, f, .9-1.8*f, .9+ctx_idx/8.
+                tp, bm = .9-1.8*f, .9+ctx_idx/8.
                 if bm > .9:
                     ang = atan((bm-.9)/(bm-tp))
                 else:
                     ang = 0
                 with self.draw_context(ctx_idx, 0, .9) as ctx:
-                    ctx.ellipse(0, bm, rt, bm-tp, 0.,ang-pi, -ang)
+                    ctx.ellipse(0, bm, f, bm-tp, 0., ang-pi, -ang)
 
         def draw_quadratic():
             for ctx_idx in range(5):
@@ -118,7 +119,7 @@ class ExampleCanvasApp(toga.App):
         This function returns a context manager that is meant to be used for
         calling the various drawing functions.
         """
-        strokes=[
+        strokes = [
             {'line_width': 0.025, 'line_dash': (0.01, 0.05)},
             {'line_width': 0.025, 'line_dash': (0.1,)},
             {'line_width': 0.025, 'line_dash': None},
@@ -205,6 +206,7 @@ class ExampleCanvasApp(toga.App):
         self._canvas_scale.sy = factor
         self._canvas_translate.tx = canvas.layout.content_width/2
         self._canvas_translate.ty = canvas.layout.content_height/2
+
 
 def main():
     return ExampleCanvasApp('Canvas More', 'org.beeware.widgets.canvas')
