@@ -16,7 +16,7 @@ from .libs import (
 def info(window, title, message):
     alert = NSAlert.alloc().init()
     alert.icon = window.app.icon._impl.native
-    alert.setAlertStyle_(NSAlertStyle.Informational.value)
+    alert.setAlertStyle_(NSAlertStyle.Informational)
     alert.setMessageText_(title)
     alert.setInformativeText_(message)
 
@@ -26,7 +26,7 @@ def info(window, title, message):
 def question(window, title, message):
     alert = NSAlert.alloc().init()
     alert.icon = window.app.icon._impl.native
-    alert.setAlertStyle_(NSAlertStyle.Informational.value)
+    alert.setAlertStyle_(NSAlertStyle.Informational)
     alert.setMessageText_(title)
     alert.setInformativeText_(message)
 
@@ -40,7 +40,7 @@ def question(window, title, message):
 def confirm(window, title, message):
     alert = NSAlert.alloc().init()
     alert.icon = window.app.icon._impl.native
-    alert.setAlertStyle_(NSAlertStyle.Warning.value)
+    alert.setAlertStyle_(NSAlertStyle.Warning)
     alert.setMessageText_(title)
     alert.setInformativeText_(message)
 
@@ -54,7 +54,7 @@ def confirm(window, title, message):
 def error(window, title, message):
     alert = NSAlert.alloc().init()
     alert.icon = window.app.icon._impl.native
-    alert.setAlertStyle_(NSAlertStyle.Critical.value)
+    alert.setAlertStyle_(NSAlertStyle.Critical)
     alert.setMessageText_(title)
     alert.setInformativeText_(message)
 
@@ -64,7 +64,7 @@ def error(window, title, message):
 def stack_trace(window, title, message, content, retry=False):
     alert = NSAlert.alloc().init()
     alert.icon = window.app.icon._impl.native
-    alert.setAlertStyle_(NSAlertStyle.Critical.value)
+    alert.setAlertStyle_(NSAlertStyle.Critical)
     alert.setMessageText_(title)
     alert.setInformativeText_(message)
 
