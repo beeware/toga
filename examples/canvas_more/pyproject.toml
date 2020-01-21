@@ -1,0 +1,44 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name = "Canvas Demo 2"
+bundle = "org.beeware"
+version = "0.0.1"
+url = "https://beeware.org"
+license = "BSD license"
+author = 'Barak Korren'
+author_email = "bkorren@redhat.com"
+
+[tool.briefcase.app.canvas]
+formal_name = "Canvas Demo 2"
+description = "A testing app"
+sources = ['canvas']
+requires = []
+
+
+[tool.briefcase.app.canvas.macOS]
+requires = [
+    'toga-cocoa',
+]
+
+[tool.briefcase.app.canvas.linux]
+requires = [
+    'toga-gtk',
+]
+
+[tool.briefcase.app.canvas.windows]
+requires = [
+    'toga-winforms',
+]
+
+# Mobile deployments
+[tool.briefcase.app.canvas.iOS]
+requires = [
+    'toga-iOS',
+]
+
+[tool.briefcase.app.canvas.android]
+requires = [
+    'toga-android',
+]
