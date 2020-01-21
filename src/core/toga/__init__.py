@@ -12,7 +12,7 @@ from .images import Image
 # Widgets
 from .widgets.base import Widget
 
-from .widgets.acitivityindicator import ActivityIndicator
+from .widgets.activityindicator import ActivityIndicator
 from .widgets.box import Box
 from .widgets.button import Button
 from .widgets.canvas import Canvas
