@@ -16,9 +16,11 @@ jobs:
         python-version: 3.7
     - name: Install dependencies
       run: |
-        pip install --upgrade pip setuptools pytest-tldr
-        pip install -e src/core
-        pip install -e src/dummy
+        python -m pip install --upgrade pip
+        python -m pip install --upgrade setuptools
+        python -m pip install pytest-tldr
+        python -m pip install -e src/core
+        python -m pip install -e src/dummy
     - name: Test
       run: |
         cd src/core
