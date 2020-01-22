@@ -27,6 +27,9 @@ class ActivityIndicatorTests(TestCase):
             self.assertActionPerformed(self.activityindicator, 'start')
 
     def test_stop(self):
+        # Start spinning
+        self.activityindicator.start()
+
         # Stop spinning
         self.activityindicator.stop()
         self.assertEqual(self.activityindicator.is_running, False)
@@ -46,9 +49,6 @@ class ActivityIndicatorTests(TestCase):
 
         # Asserting that start() function is invoked on the underlying widget
         self.assertActionPerformed(self.activityindicator, 'start')
-
-        # The constructor which is __init__ function will call the function start if running=True
-        # which will make enabled=True
 
         # Asserting is_running to be True
         self.assertTrue(self.activityindicator.is_running)
