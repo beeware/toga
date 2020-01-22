@@ -6,40 +6,50 @@ from toga_dummy.utils import TestCase
 class ActivityIndicatorTests(TestCase):
     def setUp(self):
         super().setUp()
-        self.acivityindicator = toga.ActivityIndicator(factory=toga_dummy.factory)
+        self.activityindicator = toga.ActivityIndicator(factory=toga_dummy.factory)
 
     def test_widget_created(self):
-        self.assertEqual(self.acivityindicator._impl.interface, self.acivityindicator)
-        self.assertActionPerformed(self.acivityindicator, 'create ActivityIndicator')
+        self.assertEqual(self.activityindicator._impl.interface, self.activityindicator)
+        self.assertActionPerformed(self.activityindicator, 'create ActivityIndicator')
 
     def test_start(self):
         # Start spinning
-        self.acivityindicator.start()
-        self.assertEqual(self.acivityindicator.is_running, True)
-        self.assertActionPerformed(self.acivityindicator, 'start')
+        self.activityindicator.start()
+        self.assertEqual(self.activityindicator.is_running, True)
+        self.assertActionPerformed(self.activityindicator, 'start')
 
         # Forget that `start` was performed so it can be checked again
-        del self.acivityindicator._impl._actions['start']
+        del self.activityindicator._impl._actions['start']
 
         # Already started, no action performed
         with self.assertRaises(AssertionError):
-            self.acivityindicator.start()
-            self.assertActionPerformed(self.acivityindicator, 'start')
+            self.activityindicator.start()
+            self.assertActionPerformed(self.activityindicator, 'start')
 
     def test_stop(self):
         # Stop spinning
-        self.acivityindicator.start()
-        self.assertEqual(self.acivityindicator.is_running, True)
-        self.assertActionPerformed(self.acivityindicator, 'start')
-
-        self.acivityindicator.stop()
-        self.assertEqual(self.acivityindicator.is_running, False)
-        self.assertActionPerformed(self.acivityindicator, 'stop')
+        self.activityindicator.stop()
+        self.assertEqual(self.activityindicator.is_running, False)
+        self.assertActionPerformed(self.activityindicator, 'stop')
 
         # Forget that `stop` was performed so it can be checked again
-        del self.acivityindicator._impl._actions['stop']
+        del self.activityindicator._impl._actions['stop']
 
         # Already started, no action performed
         with self.assertRaises(AssertionError):
-            self.acivityindicator.stop()
-            self.assertActionPerformed(self.acivityindicator, 'stop')
+            self.activityindicator.stop()
+            self.assertActionPerformed(self.activityindicator, 'stop')
+
+    def test_already_running(self):
+        # Creating a new progress bar with running=True so it is already running
+        self.activityindicator = toga.ActivityIndicator(factory=toga_dummy.factory, running=True)
+
+        # Asserting that start() function is invoked on the underlying widget
+        self.assertActionPerformed(self.activityindicator, 'start')
+
+        # The constructor which is __init__ function will call the function start if running=True
+        # which will make enabled=True
+
+        # Asserting is_running to be True
+        self.assertTrue(self.activityindicator.is_running)
+
