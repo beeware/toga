@@ -10,7 +10,7 @@ class ActivityIndicatorTests(TestCase):
 
     def test_widget_created(self):
         self.assertEqual(self.acivityindicator._impl.interface, self.acivityindicator)
-        self.assertActionPerformed(self.acivityindicator, 'create AcivityIndicator')
+        self.assertActionPerformed(self.acivityindicator, 'create ActivityIndicator')
 
     def test_start(self):
         # Start spinning
