@@ -23,9 +23,12 @@ NSAffineTransform = ObjCClass('NSAffineTransform')
 # NSAlert.h
 NSAlert = ObjCClass('NSAlert')
 
-NSWarningAlertStyle = 0
-NSInformationalAlertStyle = 1
-NSCriticalAlertStyle = 2
+
+class NSAlertStyle(Enum):
+    Warning = 0  # NSAlertStyleWarning
+    Informational = 1  # NSAlertStyleInformational
+    Critical = 2  # NSAlertStyleCritical
+
 
 NSAlertFirstButtonReturn = 1000
 NSAlertSecondButtonReturn = 1001
