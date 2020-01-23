@@ -66,6 +66,8 @@ class Widget(Node):
             super().add(child)
 
             child.app = self.app
+            child.window = self.window
+
             if self._impl:
                 self._impl.add_child(child._impl)
 
