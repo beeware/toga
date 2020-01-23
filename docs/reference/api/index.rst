@@ -21,6 +21,7 @@ General widgets
 ======================================================================= ====================================
  Component                                                               Description
 ======================================================================= ====================================
+ :doc:`ActivityIndicator </reference/api/widgets/activityindicator>`     A (spinning) activity indicator
  :doc:`Button </reference/api/widgets/button>`                           Basic clickable Button
  :doc:`Canvas </reference/api/widgets/canvas>`                           Area you can draw on
  :doc:`DetailedList </reference/api/widgets/detailedlist>`               A list of complex content

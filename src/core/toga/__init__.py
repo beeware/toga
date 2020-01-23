@@ -12,6 +12,7 @@ from .images import Image
 # Widgets
 from .widgets.base import Widget
 
+from .widgets.activityindicator import ActivityIndicator
 from .widgets.box import Box
 from .widgets.button import Button
 from .widgets.canvas import Canvas
@@ -54,13 +55,14 @@ __all__ = [
     'Image',
 
     # Widgets
+    'ActivityIndicator',
+    'Box',
+    'Button',
+    'Canvas',
     'DetailedList',
     'Divider',
     'Window',
     'Widget',
-    'Box',
-    'Button',
-    'Canvas',
     'ImageView',
     'Label',
     'DatePicker',
@@ -89,4 +91,3 @@ __all__ = [
 # __version__ = '1.2.3.post1' # Post Release 1
 
 __version__ = '0.3.0.dev18'
-
