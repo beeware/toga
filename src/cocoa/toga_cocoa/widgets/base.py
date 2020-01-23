@@ -46,10 +46,8 @@ class Widget:
         pass
 
     def set_hidden(self, hidden):
-        if self._container:
-            for view in self._container._impl.subviews:
-                if child._impl == view:
-                    view.setHidden(hidden)
+        if self.native:
+            self.native.setHidden(hidden)
 
     def set_font(self, font):
         pass
