@@ -102,7 +102,7 @@ class TogaTree(NSOutlineView):
         tcv = self.makeViewWithIdentifier(at('DataCell'), owner=self)
 
         if not tcv:  # there is no existing cell to reuse so create a new one
-            tcv = TogaIconView.alloc().initWithFrame_(CGRectMake(0, 0, column.width, 17))
+            tcv = TogaIconView.alloc().initWithFrame_(CGRectMake(0, 0, column.width, 16))
             tcv.identifier = at('DataCell')
 
         tcv.setText(str(value))
@@ -112,6 +112,26 @@ class TogaTree(NSOutlineView):
             tcv.setImage(None)
 
         return tcv
+
+    @objc_method
+    def outlineView_heightOfRowByItem_(self, tree, item) -> float:
+
+        min_row_size = 18
+
+        if item is self:
+            return min_row_size
+
+        # find all colmns that contain a toga.Widget:
+        values = [getattr(item.attrs['node'], col_id) for col_id in self._impl.column_identifiers.values()]
+        widgets = [v for v in values if isinstance(v, toga.Widget)]
+
+        if not widgets:
+            # return height of default TogaIconView
+            return min_row_size
+        else:
+            # return the largest widget height
+            max_widget_size = max(w._impl.native.intrinsicContentSize().height for w in widgets)
+            return max(max_widget_size + 2, min_row_size)
 
     @objc_method
     def outlineView_sortDescriptorsDidChange_(self, tableView, oldDescriptors) -> None:
@@ -214,14 +234,6 @@ class Tree(Widget):
 
         # Add the layout constraints
         self.add_constraints()
-
-    # def data_changed(self, node=None):
-    #     if node:
-    #         if node._expanded:
-    #             self.tree.expandItem(node._impl)
-    #         else:
-    #             self.tree.collapseItem(node._impl)
-
 
     def change_source(self, source):
         self.tree.reloadData()
