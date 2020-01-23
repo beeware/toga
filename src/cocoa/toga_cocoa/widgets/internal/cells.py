@@ -1,4 +1,3 @@
-from rubicon.objc import *
 
 from toga_cocoa.libs import *
 
@@ -8,39 +7,28 @@ class TogaIconView(NSTableCellView):
     @objc_method
     def initWithFrame_(self, frame: CGRect):
         self = ObjCInstance(send_super(__class__, self, 'initWithFrame:', frame))
-        self.setAutoresizingMask_(NSViewWidthSizable)
-
-        iv = NSImageView.alloc().initWithFrame(NSMakeRect(0, 0, 17, 20))
-        tf = NSTextField.alloc().initWithFrame(NSMakeRect(0, 0, 2000, 17))
-
-        iv.setImageScaling_(NSImageScaleProportionallyUpOrDown)
-        iv.setImageAlignment_(NSImageAlignment.Center.value)
-
-        tf.setBordered(False)
-        tf.setDrawsBackground(False)
-
-        self.setImageView(iv)
-        self.setTextField(tf)
-        self.addSubview(iv)
-        self.addSubview(tf)
-        return self
+        return self.setup()
 
     @objc_method
     def init(self):
         self = ObjCInstance(send_super(__class__, self, 'init'))
-        self.setAutoresizingMask_(NSViewWidthSizable)
+        return self.setup()
 
+    @objc_method
+    def setup(self):
         iv = NSImageView.alloc().initWithFrame(NSMakeRect(0, 0, 16, 16))
         tf = NSTextField.alloc().initWithFrame(NSMakeRect(0, 0, 2000, 16))
 
-        iv.setImageScaling_(NSImageScaleProportionallyDown)
-        iv.setImageAlignment_(NSImageAlignment.Center.value)
+        iv.autoresizingMask = NSViewMinYMargin | NSViewMaxYMargin
+        iv.imageScaling = NSImageScaleProportionallyDown
+        iv.imageAlignment = NSImageAlignment.Center
 
-        tf.setBordered(False)
-        tf.setDrawsBackground(False)
+        tf.autoresizingMask = NSViewMinYMargin | NSViewMaxYMargin
+        tf.bordered = False
+        tf.drawsBackground = False
 
-        self.setImageView(iv)
-        self.setTextField(tf)
+        self.imageView = iv
+        self.textField = tf
         self.addSubview(iv)
         self.addSubview(tf)
         return self
