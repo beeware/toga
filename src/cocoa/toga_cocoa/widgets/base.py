@@ -32,6 +32,9 @@ class Widget:
             child._impl.container = container
 
         self.rehint()
+        if self.interface.window and self.interface.window._impl.native.isVisible:
+            # refresh window content to reflect added subview
+            self.interface.window.content.refresh()
 
     @property
     def viewport(self):
@@ -72,9 +75,8 @@ class Widget:
     ### INTERFACE
 
     def add_child(self, child):
-        if self.container:
-            child.container = self.container
         child.viewport = self.viewport or self.interface.window.content._impl.viewport
+        child.container = self.container or self.interface.window.content._impl
 
     def add_constraints(self):
         self.native.translatesAutoresizingMaskIntoConstraints = False
