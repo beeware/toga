@@ -102,8 +102,19 @@ class App:
         else:
             self._app_name = sys.modules['__main__'].__package__
             # During tests, and when running from a prompt, there won't be
-            # a __main__ module. Fall back to a module that we know *does*
-            # exist.
+            # a __main__ module.
+
+            # Try deconstructing the app name from the app ID
+            if self._app_name is None and app_id:
+                try:
+                    self._app_name = app_id.split('.')[-1]
+                    # Make sure that the module name actually exists.
+                    sys.modules[self.module_name]
+                except KeyError:
+                    # Well that didn't work...
+                    self._app_name = None
+
+            # Fall back to a module that we *know* exists
             if self._app_name is None:
                 self._app_name = 'toga'
 
