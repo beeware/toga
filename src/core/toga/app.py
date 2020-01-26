@@ -102,10 +102,14 @@ class App:
         else:
             self._app_name = sys.modules['__main__'].__package__
             # During tests, and when running from a prompt, there won't be
-            # a __main__ module. Fall back to a module that we know *does*
-            # exist.
+            # a __main__ module.
             if self._app_name is None:
-                self._app_name = 'toga'
+                if app_id:
+                    # Try deconstructing the app name from the app ID
+                    self._app_name = app_id.split('.')[-1]
+                else:
+                    # Fall back to a module that we *know* exists
+                    self._app_name = 'toga'
 
         # Load the app metdata (if it is available)
         # Apps packaged with Briefcase will have this metadata.

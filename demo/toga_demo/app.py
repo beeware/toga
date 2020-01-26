@@ -1,7 +1,3 @@
-#!/usr/bin/env python
-
-import os
-
 import toga
 from toga.style import Pack
 from toga.constants import COLUMN
@@ -62,8 +58,18 @@ class TogaDemo(toga.App):
 
         split.content = [left_container, right_container]
 
-        cmd1 = toga.Command(self.action1, 'Action 1', tooltip='Perform action 1', icon=os.path.join(os.path.dirname(__file__), 'icons/brutus-32.png'))
-        cmd2 = toga.Command(self.action2, 'Action 2', tooltip='Perform action 2', icon=toga.Icon.TIBERIUS_ICON)
+        cmd1 = toga.Command(
+            self.action1,
+            'Action 1',
+            tooltip='Perform action 1',
+            icon='resources/brutus',
+        )
+        cmd2 = toga.Command(
+            self.action2,
+            'Action 2',
+            tooltip='Perform action 2',
+            icon=toga.Icon.TOGA_ICON
+        )
 
         self.main_window.toolbar.add(cmd1, cmd2)
 
@@ -76,7 +82,7 @@ class TogaDemo(toga.App):
         print("button press")
         for i in range(0, 10):
             yield 1
-            print ('still running... (iteration %s)' % i)
+            print('still running... (iteration %s)' % i)
 
     def action1(self, widget):
         self.main_window.info_dialog('Toga', 'THIS! IS! TOGA!!')

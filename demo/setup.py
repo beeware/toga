@@ -28,7 +28,7 @@ setup(
     packages=find_packages(),
     python_requires='>=3.5',
     package_data={
-        'toga_demo': ['icons/*.icns', 'icons/*.png'],
+        'toga_demo': ['resources/*.icns', 'resources/*.png'],
     },
     install_requires=[
         'toga==%s' % version
