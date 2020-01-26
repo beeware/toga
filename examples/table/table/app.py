@@ -35,6 +35,9 @@ class ExampleTableApp(toga.App):
     def clear_handler(self, widget, **kwargs):
         self.table1.data.clear()
 
+    def reset_handler(self, widget, **kwargs):
+        self.table1.data = bee_movies[3:]
+
     def startup(self):
         self.main_window = toga.MainWindow(title=self.name)
 
@@ -66,7 +69,11 @@ class ExampleTableApp(toga.App):
         btn_insert = toga.Button('Insert Row', on_press=self.insert_handler, style=btn_style)
         btn_delete = toga.Button('Delete Row', on_press=self.delete_handler, style=btn_style)
         btn_clear = toga.Button('Clear Table', on_press=self.clear_handler, style=btn_style)
-        btn_box = toga.Box(children=[btn_insert, btn_delete, btn_clear], style=Pack(direction=ROW))
+        btn_reset = toga.Button('Reset Table', on_press=self.reset_handler, style=btn_style)
+        btn_box = toga.Box(
+            children=[btn_insert, btn_delete, btn_clear, btn_reset],
+            style=Pack(direction=ROW)
+        )
 
         # Most outer box
         outer_box = toga.Box(
