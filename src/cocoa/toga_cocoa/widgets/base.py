@@ -1,3 +1,5 @@
+from travertino.layout import Viewport
+
 from toga_cocoa.constraints import Constraints
 
 
