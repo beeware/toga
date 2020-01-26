@@ -22,6 +22,7 @@ class Table(Widget):
         self.native.Columns.AddRange(dataColumn)
 
     def change_source(self, source):
+        self.native.Items.Clear()
         for index, row in enumerate(self.interface.data):
             row._impl = WinForms.ListViewItem([
                 getattr(row, attr) for attr in self.interface._accessors
