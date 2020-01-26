@@ -1,5 +1,3 @@
-from travertino.layout import Viewport
-
 from toga_cocoa.constraints import Constraints
 
 
@@ -34,9 +32,6 @@ class Widget:
             child._impl.container = container
 
         self.rehint()
-        if self.interface.window and self.interface.window._impl.native.isVisible:
-            # refresh window content to reflect added subview
-            self.interface.window.content.refresh()
 
     def set_enabled(self, value):
         self.native.enabled = self.interface.enabled
