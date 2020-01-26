@@ -75,8 +75,10 @@ class Widget:
     # INTERFACE
 
     def add_child(self, child):
-        child.viewport = self.viewport or self.interface.window.content._impl.viewport
-        child.container = self.container or self.interface.window.content._impl
+        # if we don't have a window, we won't have a container of viewport
+        if self.interface.window:
+            child.viewport = self.viewport or self.interface.window.content._impl.viewport
+            child.container = self.container or self.interface.window.content._impl
 
     def add_constraints(self):
         self.native.translatesAutoresizingMaskIntoConstraints = False
