@@ -3,7 +3,6 @@ from rubicon.objc import objc_method
 
 from toga_cocoa.libs import NSColor, NSView
 from toga_cocoa.colors import native_color
-from toga_cocoa.window import CocoaViewport
 
 from .base import Widget
 
@@ -24,10 +23,6 @@ class Box(Widget):
     def create(self):
         self.native = TogaView.alloc().init()
         self.native.wantsLayer = True
-
-        # allow adding subviews
-        self._container = self
-        self.viewport = CocoaViewport(self.native)
 
         # Add the layout constraints
         self.add_constraints()
