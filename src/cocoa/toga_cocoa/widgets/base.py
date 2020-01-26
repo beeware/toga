@@ -50,7 +50,7 @@ class Widget:
     def set_enabled(self, value):
         self.native.enabled = self.interface.enabled
 
-    ### APPLICATOR
+    # APPLICATOR
 
     def set_bounds(self, x, y, width, height):
         # print("SET BOUNDS ON", self.interface, x, y, width, height)
@@ -72,7 +72,7 @@ class Widget:
     def set_background_color(self, color):
         pass
 
-    ### INTERFACE
+    # INTERFACE
 
     def add_child(self, child):
         child.viewport = self.viewport or self.interface.window.content._impl.viewport
