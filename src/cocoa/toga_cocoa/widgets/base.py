@@ -6,8 +6,8 @@ class Widget:
         self.interface = interface
         self.interface._impl = self
         self._container = None
+        self._viewport = None
         self.constraints = None
-        self.viewport = None
         self.native = None
         self.create()
         self.interface.style.reapply()
@@ -32,6 +32,17 @@ class Widget:
             child._impl.container = container
 
         self.rehint()
+
+    @property
+    def viewport(self):
+        return self._viewport
+
+    @viewport.setter
+    def viewport(self, viewport):
+        self._viewport = viewport
+
+        for child in self.interface.children:
+            child._impl.viewport = viewport
 
     def set_enabled(self, value):
         self.native.enabled = self.interface.enabled
@@ -63,6 +74,7 @@ class Widget:
     def add_child(self, child):
         if self.container:
             child.container = self.container
+        child.viewport = self.viewport or self.interface.window.content._impl.viewport
 
     def add_constraints(self):
         self.native.translatesAutoresizingMaskIntoConstraints = False
