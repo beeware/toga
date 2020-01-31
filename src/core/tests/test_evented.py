@@ -2,6 +2,7 @@ import unittest
 from unittest.mock import create_autospec, call, patch, PropertyMock, Mock
 from toga.evented import Evented, Event, UndefinedEventRaised
 
+
 class EventedTests(unittest.TestCase):
     class ABaseWidget(Evented):
         on_simple_event1 = Event('Simple Event 1')
@@ -105,7 +106,7 @@ class EventedTests(unittest.TestCase):
             on_simple_event3 = Event('Event on subclass')
 
         sw = ASubWidget(
-            factory = self,
+            factory=self,
             on_simple_event1=self.callback1,
             on_simple_event3=self.callback2,
         )
@@ -132,6 +133,7 @@ class EventedTests(unittest.TestCase):
         EventMock = PropertyMock(
             spec_set=['raise_event', '__class__'], __class__=Event
         )
+
         class AWidget(Evented):
             on_event = EventMock
 

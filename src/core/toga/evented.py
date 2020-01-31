@@ -117,7 +117,7 @@ class Event:
         self.__doc__ = doc
 
     def __repr__(self):
-        return f'{self._name or "Unnamed"} Event'
+        return '{} Event'.format(self._name or "Unnamed")
 
     def __set_name__(self, owner, name):
         self._name = name
