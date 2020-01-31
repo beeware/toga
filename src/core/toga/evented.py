@@ -121,7 +121,7 @@ class Event:
 
     def __set_name__(self, owner, name):
         self._name = name
-        self._attr_name = f'_{name}'
+        self._attr_name = '_{}'.format(name)
 
     def __get__(self, instance, owner):
         if instance is None:
