@@ -50,10 +50,6 @@ class Tree(Widget):
 
         self.on_select = on_select
 
-    @staticmethod
-    def _default_sort(x):
-        return str.lower(str(x))
-
     @property
     def data(self):
         '''
