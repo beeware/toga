@@ -10,7 +10,7 @@ from toga_cocoa.libs import (
     NSIndexSet,
     NSTableViewAnimation,
     CGRectMake,
-    NSSortDescriptor,
+    # NSSortDescriptor,
 )
 import toga
 from toga.keys import Key
@@ -133,19 +133,19 @@ class TogaTree(NSOutlineView):
             max_widget_size = max(w._impl.native.intrinsicContentSize().height for w in widgets)
             return max(max_widget_size + 2, min_row_size)
 
-    @objc_method
-    def outlineView_sortDescriptorsDidChange_(self, tableView, oldDescriptors) -> None:
-
-        for descriptor in self.sortDescriptors[::-1]:
-            accessor = descriptor.key
-            reverse = descriptor.ascending == 1
-            key = self.interface._sort_keys[str(accessor)]
-            try:
-                self.interface.data.sort(str(accessor), reverse=reverse, key=key)
-            except AttributeError:
-                pass
-            else:
-                self.reloadData()
+    # @objc_method
+    # def outlineView_sortDescriptorsDidChange_(self, tableView, oldDescriptors) -> None:
+    #
+    #     for descriptor in self.sortDescriptors[::-1]:
+    #         accessor = descriptor.key
+    #         reverse = descriptor.ascending == 1
+    #         key = self.interface._sort_keys[str(accessor)]
+    #         try:
+    #             self.interface.data.sort(str(accessor), reverse=reverse, key=key)
+    #         except AttributeError:
+    #             pass
+    #         else:
+    #             self.reloadData()
 
     @objc_method
     def keyDown_(self, event) -> None:
@@ -213,11 +213,11 @@ class Tree(Widget):
             column_identifier = at(accessor)
             self.column_identifiers[id(column_identifier)] = accessor
             column = NSTableColumn.alloc().initWithIdentifier(column_identifier)
-            # column.setEditable_(False)
-            column.setMinWidth_(100)
-            if self.interface.sorting:
-                sort_descriptor = NSSortDescriptor.sortDescriptorWithKey(column_identifier, ascending=True)
-                column.setSortDescriptorPrototype(sort_descriptor)
+            # column.editable = False
+            column.midWidth = 100
+            # if self.interface.sorting:
+            #     sort_descriptor = NSSortDescriptor.sortDescriptorWithKey(column_identifier, ascending=True)
+            #     column.sortDescriptorPrototype = sort_descriptor
             self.tree.addTableColumn(column)
             self.columns.append(column)
 
