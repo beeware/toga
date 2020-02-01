@@ -2,7 +2,7 @@ from toga_cocoa.libs import NSImage
 
 
 class Icon:
-    EXTENSIONS = ['.icns', '.png', '.bmp', '.ico']
+    EXTENSIONS = ['.icns', '.tiff', '.png', '.jpeg', '.bmp', '.ico', '.pdf', '.eps', '.psd']
     SIZES = None
 
     def __init__(self, interface, path):
