@@ -69,7 +69,7 @@ class TogaTree(NSOutlineView):
         try:
             value = getattr(item.attrs['node'], col_identifier)
 
-            # if the value is it a widget itself, just draw the widget!
+            # if the value is a widget itself, just draw the widget!
             if isinstance(value, toga.Widget):
                 return value._impl.native
 
