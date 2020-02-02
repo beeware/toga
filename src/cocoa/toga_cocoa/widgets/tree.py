@@ -122,7 +122,7 @@ class TogaTree(NSOutlineView):
         if item is self:
             return min_row_size
 
-        # find all colmns that contain a toga.Widget:
+        # find all columns that contain a toga.Widget:
         values = [getattr(item.attrs['node'], col_id) for col_id in self._impl.column_identifiers.values()]
         widgets = [v for v in values if isinstance(v, toga.Widget)]
 
