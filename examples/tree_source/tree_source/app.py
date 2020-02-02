@@ -6,6 +6,16 @@ from toga.constants import COLUMN
 from toga.sources import Source
 from datetime import datetime
 
+# This is a slightly less toy example of a tree view to display
+# folders in your home directory. To avoid loading everything
+# in advance, the subfolders are loaded dynamically, on access.
+# This typically happens when the tree view asks for the number
+# of children to decide if it should display an expandable row.
+#
+# In practice, one can use a similar concept of on-access
+# loading to fetch data from an API or online resource but
+# perform the loading asynchronously.
+
 
 class LoadingFailedNode:
     """A node to represent failed loading of children"""
