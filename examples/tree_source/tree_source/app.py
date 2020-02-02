@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 
 import toga
 from toga.style import Pack
@@ -38,8 +38,8 @@ class Node:
         self._children = []
 
         self.path = path
-        self._mtime = os.stat(self.path).st_mtime
-        self._icon = toga.Icon('resources/folder.icns')
+        self._mtime = self.path.stat().st_mtime
+        self._icon = toga.Icon('resources/folder')
 
         self._did_start_loading = False
 
@@ -57,12 +57,12 @@ class Node:
     # Property that returns the first column value as (icon, label)
     @property
     def name(self):
-        return self._icon, os.path.basename(self.path)
+        return self._icon, self.path.name
 
     # Property that returns modified date as str
     @property
     def date_modified(self):
-        return datetime.fromtimestamp(self._mtime).strftime("%d %b %Y at %H:%M")
+        return datetime.fromtimestamp(self._mtime).strftime('%d %b %Y at %H:%M')
 
     # on-demand loading of children
     @property
@@ -74,18 +74,17 @@ class Node:
 
     def load_children(self):
         try:
-            names = os.scandir(self.path)
-            sub_paths = [os.path.join(self.path, p) for p in names if os.path.isdir(os.path.join(self.path, p))]
+            sub_paths = [p for p in self.path.iterdir() if p.is_dir()]
             self._children = [Node(p, self) for p in sub_paths]
         except OSError:
             self._children = [LoadingFailedNode(self)]
 
     def sort(self, accessor, key=None, reverse=False):
 
-        if accessor == "date_modified":  # use our own sort function
+        if accessor == 'date_modified':  # use our own sort function
             def sort_func(child):
                 return child._mtime
-        elif accessor == "name":
+        elif accessor == 'name':
             def sort_func(child):
                 return child.name[1].lower()
         else:  # use the function provided by the user / default
@@ -101,7 +100,7 @@ class Node:
                 except AttributeError:
                     return ''
 
-        # sort all children in hirarchy
+        # sort all children in hierarchy
         self._children.sort(key=sort_func, reverse=reverse)
 
         for c in self._children:
@@ -126,7 +125,7 @@ class ExampleTreeSourceApp(toga.App):
         # Set up main window
         self.main_window = toga.MainWindow(title=self.name)
 
-        root = os.path.abspath(os.sep)
+        root = Path.home()
         self.fs_source = FileSystemSource(root)
 
         self.tree = toga.Tree(
@@ -134,8 +133,6 @@ class ExampleTreeSourceApp(toga.App):
             data=self.fs_source,
             style=Pack(flex=1),
             multiple_select=True,
-            sorting=True,
-            sort_keys=None,
         )
 
         # Outermost box
