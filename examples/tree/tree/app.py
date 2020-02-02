@@ -15,13 +15,18 @@ bee_movies = [
     {'year': 1947, 'title': 'Keeper of the Bees', 'rating': '6.3', 'genre': 'Drama'}
 ]
 
+
 class ExampleTreeApp(toga.App):
+
+
     # Table callback functions
     def on_select_handler(self, widget, node):
         if node is not None and node.title:
             self.label.text = 'You selected node: {}'.format(node.title)
+            self.btn_remove.enabled = True
         else:
             self.label.text = 'No node selected'
+            self.btn_remove.enabled = False
 
     # Button callback functions
     def insert_handler(self, widget, **kwargs):
@@ -44,10 +49,9 @@ class ExampleTreeApp(toga.App):
         self.tree.data.append(root, **item)
 
     def remove_handler(self, widget, **kwargs):
-        movies = list(movie for decade in self.tree.data for movie in decade)
-        if movies:
-            movie = choice(movies)
-            self.tree.data.remove(movie)
+        selection = self.tree.selection
+        if selection.title:
+            self.tree.data.remove(selection)
 
     def startup(self):
         # Set up main window
@@ -59,7 +63,7 @@ class ExampleTreeApp(toga.App):
         self.tree = toga.Tree(
             headings=['Year', 'Title', 'Rating', 'Genre'],
             on_select=self.on_select_handler,
-            style=Pack(flex=1, padding=10)
+            style=Pack(flex=1)
         )
 
         self.decade_1940s = self.tree.data.append(None, year='1940s', title='', rating='', genre='')
@@ -72,13 +76,13 @@ class ExampleTreeApp(toga.App):
 
         # Buttons
         btn_style = Pack(flex=1, padding=10)
-        btn_insert = toga.Button('Insert Row', on_press=self.insert_handler, style=btn_style)
-        btn_remove = toga.Button('Remove Row', on_press=self.remove_handler, style=btn_style)
-        btn_box = toga.Box(children=[btn_insert, btn_remove], style=Pack(direction=ROW))
+        self.btn_insert = toga.Button('Insert Row', on_press=self.insert_handler, style=btn_style)
+        self.btn_remove = toga.Button('Remove Row', enabled=False, on_press=self.remove_handler, style=btn_style)
+        self.btn_box = toga.Box(children=[self.btn_insert, self.btn_remove], style=Pack(direction=ROW))
 
         # Outermost box
         outer_box = toga.Box(
-            children=[btn_box, self.tree, self.label],
+            children=[self.btn_box, self.tree, self.label],
             style=Pack(
                 flex=1,
                 direction=COLUMN,
