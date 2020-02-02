@@ -1,5 +1,13 @@
 
-from toga_cocoa.libs import *
+from toga_cocoa.libs import (
+    ObjCInstance, objc_method, send_super,
+    NSTableCellView, NSImageView, NSTextField, NSTextFieldCell,
+    NSViewMaxYMargin, NSViewMinYMargin,
+    NSGraphicsContext, NSAffineTransform, NSImageInterpolationHigh,
+    NSCompositingOperationSourceOver, NSColor, NSBezierPath,
+    NSImageScaleProportionallyDown, NSImageAlignment,
+    NSSize, NSPoint, NSRect, NSMakePoint, NSMakeRect, CGRect,
+)
 
 
 class TogaIconView(NSTableCellView):
