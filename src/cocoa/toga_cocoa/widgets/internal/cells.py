@@ -17,7 +17,7 @@ class TogaIconView(NSTableCellView):
     @objc_method
     def setup(self):
         iv = NSImageView.alloc().initWithFrame(NSMakeRect(0, 0, 16, 16))
-        tf = NSTextField.alloc().initWithFrame(NSMakeRect(0, 0, 2000, 16))
+        tf = NSTextField.alloc().init()
 
         iv.autoresizingMask = NSViewMinYMargin | NSViewMaxYMargin
         iv.imageScaling = NSImageScaleProportionallyDown
@@ -42,16 +42,17 @@ class TogaIconView(NSTableCellView):
         if image:
             self.imageView.image = image
             self.imageView.frame = NSMakeRect(5, 0, 16, 16)
-            self.textField.frame = NSMakeRect(25, 0, 2000, 16)
+            self.textField.frameOrigin = NSMakePoint(25, 0)
         else:
             self.imageView.image = None
             self.imageView.frame = NSMakeRect(0, 0, 0, 0)
-            self.textField.frame = NSMakeRect(0, 0, 2000, 16)
+            self.textField.frameOrigin = NSMakePoint(0, 0)
 
     @objc_method
     def setText(self, text):
         if text != self.textField.stringValue:
             self.textField.stringValue = text
+            self.textField.sizeToFit()
 
 
 class TogaIconCell(NSTextFieldCell):

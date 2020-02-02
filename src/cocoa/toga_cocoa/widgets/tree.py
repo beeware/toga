@@ -102,7 +102,7 @@ class TogaTree(NSOutlineView):
         identifier = at(f'CellView_{self.interface.id}')
         tcv = self.makeViewWithIdentifier(identifier, owner=self)
 
-        if not tcv:  # there is no existing cell to reuse so create a new one
+        if not tcv:  # there is no existing view to reuse so create a new one
             tcv = TogaIconView.alloc().initWithFrame_(CGRectMake(0, 0, column.width, 16))
             tcv.identifier = identifier
 
