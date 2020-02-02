@@ -122,17 +122,11 @@ class TogaTree(NSOutlineView):
         if item is self:
             return min_row_size
 
-        # find all columns that contain a toga.Widget:
-        values = [getattr(item.attrs['node'], col_id) for col_id in self._impl.column_identifiers.values()]
-        widgets = [v for v in values if isinstance(v, toga.Widget)]
+        # get all views in column
+        views = [self.outlineView_viewForTableColumn_item_(tree, col, item) for col in self.tableColumns]
 
-        if not widgets:
-            # return height of default TogaIconView
-            return min_row_size
-        else:
-            # return the largest widget height
-            max_widget_size = max(w._impl.native.intrinsicContentSize().height for w in widgets)
-            return max(max_widget_size + 2, min_row_size)
+        max_widget_size = max(view.intrinsicContentSize().height for view in views)
+        return max(min_row_size, max_widget_size)
 
     # @objc_method
     # def outlineView_sortDescriptorsDidChange_(self, tableView, oldDescriptors) -> None:
