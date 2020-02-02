@@ -36,17 +36,6 @@ class Widget:
             # refresh window content to reflect added subview
             self.interface.window.content.refresh()
 
-    @property
-    def viewport(self):
-        return self._viewport
-
-    @viewport.setter
-    def viewport(self, viewport):
-        self._viewport = viewport
-
-        for child in self.interface.children:
-            child._impl.viewport = viewport
-
     def set_enabled(self, value):
         self.native.enabled = self.interface.enabled
 
@@ -75,9 +64,8 @@ class Widget:
     # INTERFACE
 
     def add_child(self, child):
-        # if we don't have a window, we won't have a container of viewport
+        # if we don't have a window, we won't have a container
         if self.interface.window:
-            child.viewport = self.viewport or self.interface.window.content._impl.viewport
             child.container = self.container or self.interface.window.content._impl
 
     def add_constraints(self):
