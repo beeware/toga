@@ -38,9 +38,9 @@ Split direction is set on instantiation using the `direction` keyword argument. 
 
     import toga
 
-    split = toga.SplitContainer()
+    split = toga.SplitContainer(direction=toga.SplitContainer.HORIZONTAL)
     left_container = toga.Box()
-    right_container = toga.ScrollContainer(direction=toga.ScrollContainer.HORIZONTAL)
+    right_container = toga.ScrollContainer()
 
     split.content = [left_container, right_container]
 
