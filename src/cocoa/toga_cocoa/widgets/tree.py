@@ -99,7 +99,7 @@ class TogaTree(NSOutlineView):
         # creates a NSTableCellView from interface-builder template (does not exist)
         # or reuses an existing view which is currently not needed for painting
         # returns None (nil) if both fails
-        identifier = at(f'CellView_{self.interface.id}')
+        identifier = at('CellView_{}'.format(self.interface.id))
         tcv = self.makeViewWithIdentifier(identifier, owner=self)
 
         if not tcv:  # there is no existing view to reuse so create a new one
@@ -242,7 +242,11 @@ class Tree(Widget):
         else:
             parent = getattr(parent, '_impl', None)
 
-        self.tree.insertItemsAtIndexes(index_set, inParent=parent, withAnimation=NSTableViewAnimation.SlideDown.value)
+        self.tree.insertItemsAtIndexes(
+            index_set,
+            inParent=parent,
+            withAnimation=NSTableViewAnimation.SlideDown.value
+        )
 
     def change(self, item):
         try:
@@ -258,7 +262,11 @@ class Tree(Widget):
         else:
             index_set = NSIndexSet.indexSetWithIndex(index)
             parent = self.tree.parentForItem(item._impl)
-            self.tree.removeItemsAtIndexes(index_set, inParent=parent, withAnimation=NSTableViewAnimation.SlideUp.value)
+            self.tree.removeItemsAtIndexes(
+                index_set,
+                inParent=parent,
+                withAnimation=NSTableViewAnimation.SlideUp.value
+            )
 
     def clear(self):
         self.tree.reloadData()
