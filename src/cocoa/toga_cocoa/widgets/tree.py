@@ -99,11 +99,12 @@ class TogaTree(NSOutlineView):
         # creates a NSTableCellView from interface-builder template (does not exist)
         # or reuses an existing view which is currently not needed for painting
         # returns None (nil) if both fails
-        tcv = self.makeViewWithIdentifier(at('DataCell'), owner=self)
+        identifier = at(f'CellView_{self.interface.id}')
+        tcv = self.makeViewWithIdentifier(identifier, owner=self)
 
         if not tcv:  # there is no existing cell to reuse so create a new one
             tcv = TogaIconView.alloc().initWithFrame_(CGRectMake(0, 0, column.width, 16))
-            tcv.identifier = at('DataCell')
+            tcv.identifier = identifier
 
         tcv.setText(str(value))
         if icon:
