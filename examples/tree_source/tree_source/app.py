@@ -7,10 +7,11 @@ from toga.sources import Source
 from datetime import datetime
 
 # This is a slightly less toy example of a tree view to display
-# folders in your home directory. To avoid loading everything
-# in advance, the subfolders are loaded dynamically, on access.
-# This typically happens when the tree view asks for the number
-# of children to decide if it should display an expandable row.
+# items in your home directory. To avoid loading everything
+# in advance, the content of a folder is loaded dynamically,
+# on access. This typically happens when the tree view asks for
+# the number of children to decide if it should display an
+# expandable row.
 #
 # In practice, one can use a similar concept of on-access
 # loading to fetch data from an API or online resource but
@@ -49,8 +50,10 @@ class Node:
 
         self.path = path
         self._mtime = self.path.stat().st_mtime
-        self._icon = toga.Icon('resources/folder')
-
+        if self.path.is_file():
+            self._icon = toga.Icon('resources/file')
+        else:
+            self._icon = toga.Icon('resources/folder')
         self._did_start_loading = False
 
     # Methods required for the data source interface
@@ -84,8 +87,10 @@ class Node:
 
     def load_children(self):
         try:
-            sub_paths = [p for p in self.path.iterdir() if p.is_dir()]
+            sub_paths = [p for p in self.path.iterdir()]
             self._children = [Node(p, self) for p in sub_paths]
+        except NotADirectoryError:
+            self._children = []
         except OSError:
             self._children = [LoadingFailedNode(self)]
 
@@ -148,7 +153,7 @@ class ExampleTreeSourceApp(toga.App):
         # Outermost box
         outer_box = toga.Box(
             children=[
-                toga.Label('A list of all your folders!', style=Pack(padding=10)),
+                toga.Label('A view of your home directory!', style=Pack(padding=10)),
                 self.tree,
             ],
             style=Pack(flex=1, direction=COLUMN)
