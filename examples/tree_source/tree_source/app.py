@@ -31,7 +31,7 @@ class LoadingFailedNode:
         return 0
 
     def __getitem__(self, index):
-        pass
+        raise StopIteration
 
     @staticmethod
     def can_have_children():
