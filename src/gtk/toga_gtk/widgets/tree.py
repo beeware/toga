@@ -38,6 +38,7 @@ class Tree(Widget):
                 node = tree_model.get(tree_iter, 0)[0]
             else:
                 node = None
+            self.interface._selection = node
             self.interface.on_select(None, node=node)
 
     def change_source(self, source):

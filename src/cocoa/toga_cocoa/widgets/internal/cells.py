@@ -1,9 +1,70 @@
-from rubicon.objc import *
 
-from toga_cocoa.libs import *
+from toga_cocoa.libs import (
+    ObjCInstance, objc_method, send_super,
+    NSTableCellView, NSImageView, NSTextField, NSTextFieldCell,
+    NSViewMaxYMargin, NSViewMinYMargin,
+    NSGraphicsContext, NSAffineTransform, NSImageInterpolationHigh,
+    NSCompositingOperationSourceOver, NSColor, NSBezierPath,
+    NSImageScaleProportionallyDown, NSImageAlignment,
+    NSSize, NSPoint, NSRect, NSMakePoint, NSMakeRect, CGRect,
+)
+
+
+class TogaIconView(NSTableCellView):
+
+    @objc_method
+    def initWithFrame_(self, frame: CGRect):
+        self = ObjCInstance(send_super(__class__, self, 'initWithFrame:', frame))
+        return self.setup()
+
+    @objc_method
+    def init(self):
+        self = ObjCInstance(send_super(__class__, self, 'init'))
+        return self.setup()
+
+    @objc_method
+    def setup(self):
+        iv = NSImageView.alloc().initWithFrame(NSMakeRect(0, 0, 16, 16))
+        tf = NSTextField.alloc().init()
+
+        iv.autoresizingMask = NSViewMinYMargin | NSViewMaxYMargin
+        iv.imageScaling = NSImageScaleProportionallyDown
+        iv.imageAlignment = NSImageAlignment.Center
+
+        tf.autoresizingMask = NSViewMinYMargin | NSViewMaxYMargin
+        tf.bordered = False
+        tf.drawsBackground = False
+
+        self.imageView = iv
+        self.textField = tf
+        self.addSubview(iv)
+        self.addSubview(tf)
+        return self
+
+    @objc_method
+    def setImage(self, image):
+        if image is self.imageView.image:
+            # don't do anything if image did not change
+            return
+
+        if image:
+            self.imageView.image = image
+            self.imageView.frame = NSMakeRect(5, 0, 16, 16)
+            self.textField.frameOrigin = NSMakePoint(25, 0)
+        else:
+            self.imageView.image = None
+            self.imageView.frame = NSMakeRect(0, 0, 0, 0)
+            self.textField.frameOrigin = NSMakePoint(0, 0)
+
+    @objc_method
+    def setText(self, text):
+        if text != self.textField.stringValue:
+            self.textField.stringValue = text
+            self.textField.sizeToFit()
 
 
 class TogaIconCell(NSTextFieldCell):
+
     @objc_method
     def drawWithFrame_inView_(self, cellFrame: NSRect, view) -> None:
         # The data to display.
