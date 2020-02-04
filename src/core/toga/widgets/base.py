@@ -116,9 +116,10 @@ class Widget(Node):
             for child in self._children:
                 child.window = window
 
-        content = getattr(self, '_content', None)
-        if content is not None:
-            content.window = window
+        self._set_window(window)
+
+    def _set_window(self, window):
+        pass
 
     @property
     def enabled(self):
