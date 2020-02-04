@@ -106,7 +106,7 @@ class Evented(metaclass=EventedMeta):
         """
         descr = self._get_event_descriptor(event)
         if descr is None:
-            raise UndefinedEventRaised
+            raise UndefinedEventRaised(event)
         descr.raise_event(self, *args, **kwargs)
 
     @classmethod
