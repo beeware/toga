@@ -1,11 +1,11 @@
 import sys
 import unittest
 from unittest.mock import create_autospec, call, patch, PropertyMock, Mock
-from toga.evented import EventedMeta, Evented, Event, UndefinedEventRaised
+from toga.events import EventSourceMeta, EventSource, Event, UndefinedEventRaised
 
 
-class EventedTests(unittest.TestCase):
-    class ABaseWidget(Evented):
+class EventSourceTests(unittest.TestCase):
+    class ABaseWidget(EventSource):
         on_simple_event1 = Event('Simple Event 1')
         on_simple_event2 = Event('Simple Event 2')
 
@@ -59,7 +59,7 @@ class EventedTests(unittest.TestCase):
             call('on_simple_event2', self.callback1),
         ])
 
-    @patch('toga.evented.wrapped_handler')
+    @patch('toga.events.wrapped_handler')
     def test_callback_call(self, wrapped_handler):
         bw = self.ABaseWidget(
             factory=self,
@@ -77,7 +77,7 @@ class EventedTests(unittest.TestCase):
         bw.raise_event('on_simple_event2')
         self.assertListEqual(wrapped_handler.mock_calls, [])
 
-    @patch('toga.evented.wrapped_handler')
+    @patch('toga.events.wrapped_handler')
     def test_callback_call_w_args(self, wrapped_handler):
         bw = self.ABaseWidget(
             factory=self,
@@ -90,7 +90,7 @@ class EventedTests(unittest.TestCase):
             call(bw, self.callback1)(bw, 'arg1', kwarg1='val1')
         ])
 
-    @patch('toga.evented.wrapped_handler')
+    @patch('toga.events.wrapped_handler')
     def test_raise_missing_event(self, wrapped_handler):
         bw = self.ABaseWidget(
             factory=self,
@@ -100,7 +100,7 @@ class EventedTests(unittest.TestCase):
         with self.assertRaises(UndefinedEventRaised):
             bw.raise_event('on_simple_event3')
 
-    @patch('toga.evented.wrapped_handler')
+    @patch('toga.events.wrapped_handler')
     def test_event_inheritance(self, wrapped_handler):
 
         class ASubWidget(self.ABaseWidget):
@@ -135,7 +135,7 @@ class EventedTests(unittest.TestCase):
             spec_set=['raise_event', '__class__'], __class__=Event
         )
 
-        class AWidget(Evented):
+        class AWidget(EventSource):
             on_event = EventMock
 
         widg = AWidget(on_event=self.callback1)
@@ -149,12 +149,12 @@ class EventedTests(unittest.TestCase):
         ])
 
 
-class EventedMetaTests(unittest.TestCase):
+class EventSourceMetaTests(unittest.TestCase):
     def test_metaclass(self):
-        self.assertIsInstance(Evented, EventedMeta)
-        # Make sure that EventedMeta is simply an alias to `type` in Python>3.5
+        self.assertIsInstance(EventSource, EventSourceMeta)
+        # Make sure that EventSourceMeta is simply an alias to `type` in Python>3.5
         if sys.version_info.major == 3 and sys.version_info.minor <= 5:
-            self.assertTrue(issubclass(EventedMeta, type))
-            self.assertNotEqual(EventedMeta, type)
+            self.assertTrue(issubclass(EventSourceMeta, type))
+            self.assertNotEqual(EventSourceMeta, type)
         else:
-            self.assertEqual(EventedMeta, type)
+            self.assertEqual(EventSourceMeta, type)

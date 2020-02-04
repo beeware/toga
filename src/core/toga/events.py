@@ -1,4 +1,4 @@
-"""toga.evented - Base classes for objects that expose events
+"""toga.events - Base classes for objects that expose events
 
 This module defines classes to be used for creating objects that need to expose
 events in a way that allows other objects to set callback to be called when
@@ -7,8 +7,8 @@ interact with them.
 
 Here is an example of how to use the classes that can be found here.
 
-    >>> class AClickableWidget(Evented):
-    ...     on_click = Event('Called when wodget is clicked')
+    >>> class AClickableWidget(EventSource):
+    ...     on_click = Event('Called when widget is clicked')
     ...
     ...     def __init__(self, **kwargs):
     ...         super().__init__(**kwargs)
@@ -32,7 +32,7 @@ Here is an example of how to use the classes that can be found here.
     I was clicked with Right mouse button!
 
 Note: Typically only top-level classes such as `Widget` or `Window` should
-inherit directly from `Evented`, others should inherit from those classes
+inherit directly from `EventSource`, others should inherit from those classes
 instead.
 """
 import sys
@@ -43,7 +43,7 @@ from toga.handlers import wrapped_handler
 if sys.version_info.major == 3 and sys.version_info.minor <= 5:
     # Polyfill the calling to __set_name__ for Python<=3.5
 
-    class EventedMeta(type):
+    class EventSourceMeta(type):
         def __new__(mcs, name, bases, attrs, **kwargs):
             cls = super().__new__(mcs, name, bases, attrs, **kwargs)
             # Call __set_name__ like Python>3.5 does (almost)
@@ -55,10 +55,10 @@ if sys.version_info.major == 3 and sys.version_info.minor <= 5:
             return cls
 
 else:
-    EventedMeta = type
+    EventSourceMeta = type
 
 
-class Evented(metaclass=EventedMeta):
+class EventSource(metaclass=EventSourceMeta):
     """Base class for classes that can have event callbacks
 
     All keyword arguments passed to this class become attempts at setting event
@@ -168,7 +168,7 @@ class Event:
         """Call the callback associated with the event, if any
 
         Args:
-            instance (:obj:`Evented`): A widget to call the event for
+            instance (:obj:`EventSource`): A widget to call the event for
 
         All other arguments are passed on the the callback
         """
