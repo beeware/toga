@@ -31,6 +31,10 @@ class ScrollContainer(Widget):
         self.vertical = vertical
         self.content = content
 
+    def _set_window(self, window):
+        if self._content:
+            self._content.window = window
+
     @property
     def content(self):
         """ Content of the scroll container.

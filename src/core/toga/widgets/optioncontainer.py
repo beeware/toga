@@ -41,6 +41,11 @@ class OptionContainer(Widget):
         """
         return self._content
 
+    def _set_window(self, window):
+        if self._content:
+            for content in self._content:
+                content.window = window
+
     def add(self, label, widget):
         """ Add a new option to the option container.
 
