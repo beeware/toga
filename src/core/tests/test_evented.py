@@ -1,6 +1,7 @@
+import sys
 import unittest
 from unittest.mock import create_autospec, call, patch, PropertyMock, Mock
-from toga.evented import Evented, Event, UndefinedEventRaised
+from toga.evented import EventedMeta, Evented, Event, UndefinedEventRaised
 
 
 class EventedTests(unittest.TestCase):
@@ -53,7 +54,7 @@ class EventedTests(unittest.TestCase):
         self.assertEqual(bw.on_simple_event1, self.callback2)
         self.assertEqual(bw.on_simple_event2, self.callback1)
 
-        self.assertListEqual(bw._impl.set_event_handler.mock_calls, [
+        self.assertListEqual(sorted(bw._impl.set_event_handler.mock_calls), [
             call('on_simple_event1', self.callback2),
             call('on_simple_event2', self.callback1),
         ])
@@ -146,3 +147,14 @@ class EventedTests(unittest.TestCase):
             call.raise_event(widg),
             call.raise_event(widg, 'arg1', 'arg2'),
         ])
+
+
+class EventedMetaTests(unittest.TestCase):
+    def test_metaclass(self):
+        self.assertIsInstance(Evented, EventedMeta)
+        # Make sure that EventedMeta is simply an alias to `type` in Python>3.5
+        if sys.version_info.major == 3 and sys.version_info.minor <= 5:
+            self.assertTrue(issubclass(EventedMeta, type))
+            self.assertNotEqual(EventedMeta, type)
+        else:
+            self.assertEqual(EventedMeta, type)

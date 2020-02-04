@@ -35,10 +35,30 @@ Note: Typically only top-level classes such as `Widget` or `Window` should
 inherit directly from `Evented`, others should inherit from those classes
 instead.
 """
+import sys
+
 from toga.handlers import wrapped_handler
 
 
-class Evented:
+if sys.version_info.major == 3 and sys.version_info.minor <= 5:
+    # Polyfill the calling to __set_name__ for Python<=3.5
+
+    class EventedMeta(type):
+        def __new__(mcs, name, bases, attrs, **kwargs):
+            cls = super().__new__(mcs, name, bases, attrs, **kwargs)
+            # Call __set_name__ like Python>3.5 does (almost)
+            for aname, avalue in attrs.items():
+                set_name = getattr(avalue, '__set_name__', None)
+                if set_name is None:
+                    continue
+                set_name(cls, aname)
+            return cls
+
+else:
+    EventedMeta = type
+
+
+class Evented(metaclass=EventedMeta):
     """Base class for classes that can have event callbacks
 
     All keyword arguments passed to this class become attempts at setting event
