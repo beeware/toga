@@ -26,8 +26,16 @@ class Tree(Widget):
         self.native.set_min_content_height(200)
 
     def row_data(self, item):
+        # TODO: GTK can't support icons in tree cells; so, if the data source
+        # specifies an icon, strip it when converting to row data.
+        def strip_icon(item, attr):
+            val = getattr(item, attr)
+            if isinstance(val, tuple):
+                return str(val[1])
+            return str(val)
+
         return [item] + [
-            str(getattr(item, attr))
+            strip_icon(item, attr)
             for attr in self.interface._accessors
         ]
 
