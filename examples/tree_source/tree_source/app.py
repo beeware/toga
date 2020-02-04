@@ -140,8 +140,7 @@ class ExampleTreeSourceApp(toga.App):
         # Set up main window
         self.main_window = toga.MainWindow(title=self.name)
 
-        root = Path.home()
-        self.fs_source = FileSystemSource(root)
+        self.fs_source = FileSystemSource(Path.cwd())
 
         self.tree = toga.Tree(
             headings=['Name', 'Date Modified'],
@@ -153,7 +152,7 @@ class ExampleTreeSourceApp(toga.App):
         # Outermost box
         outer_box = toga.Box(
             children=[
-                toga.Label('A view of your home directory!', style=Pack(padding=10)),
+                toga.Label('A view of the current directory!', style=Pack(padding=10)),
                 self.tree,
             ],
             style=Pack(flex=1, direction=COLUMN)
