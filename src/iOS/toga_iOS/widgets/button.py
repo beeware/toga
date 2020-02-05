@@ -14,8 +14,7 @@ from toga_iOS.widgets.base import Widget
 class TogaButton(UIButton):
     @objc_method
     def onPress_(self, obj) -> None:
-        if self.interface.on_press:
-            self.interface.on_press(self.interface)
+        self.interface.raise_event('on_press')
 
 
 class Button(Widget):
@@ -32,10 +31,6 @@ class Button(Widget):
 
     def set_label(self, label):
         self.native.setTitle(self.interface.label, forState=UIControlStateNormal)
-
-    def set_on_press(self, handler):
-        # No special handling required.
-        pass
 
     def rehint(self):
         fitting_size = self.native.systemLayoutSizeFittingSize(CGSize(0, 0))

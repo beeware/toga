@@ -11,8 +11,7 @@ class TogaButton(WinForms.Button):
         self.Click += self.on_click
 
     def on_click(self, sender, event):
-        if self.interface.on_press:
-            self.interface.on_press(self.interface)
+        self.interface.raise_event('on_press')
 
 
 class Button(Widget):
@@ -26,10 +25,6 @@ class Button(Widget):
 
     def set_enabled(self, value):
         self.native.Enabled = self.interface._enabled
-
-    def set_on_press(self, handler):
-        # No special handling required
-        pass
 
     def set_background_color(self, value):
         if value is not None:

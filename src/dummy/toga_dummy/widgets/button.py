@@ -8,8 +8,5 @@ class Button(Widget):
     def set_label(self, label):
         self._set_value('label', self.interface.label)
 
-    def set_on_press(self, handler):
-        self._set_value('on_press', handler)
-
     def rehint(self):
         self._action('rehint Button')

@@ -5,9 +5,10 @@ from travertino.node import Node
 
 from toga.style import Pack, TogaApplicator
 from toga.platform import get_platform_factory
+from toga.events import EventSource
 
 
-class Widget(Node):
+class Widget(EventSource, Node):
     """ This is the base widget implementation that all widgets in Toga
     derive from.
 
@@ -27,10 +28,14 @@ class Widget(Node):
             implementation of this class with the same name (optional & normally not needed).
     """
 
-    def __init__(self, id=None, enabled=True, style=None, factory=None):
+    def __init__(
+        self, id=None, enabled=True, style=None, factory=None, *args, **kwargs
+    ):
         super().__init__(
+            *args,
             style=style if style else Pack(),
-            applicator=TogaApplicator(self)
+            applicator=TogaApplicator(self),
+            **kwargs
         )
 
         self._id = id if id else identifier(self)

@@ -1,6 +1,7 @@
 from toga.handlers import wrapped_handler
 
 from .base import Widget
+from toga.events import Event
 
 
 class Button(Widget):
@@ -11,21 +12,21 @@ class Button(Widget):
         id (str): An identifier for this widget.
         style (:obj:`Style`): An optional style object. If no style is provided then
             a new one will be created for the widget.
-        on_press (:obj:`callable`): Function to execute when pressed.
         enabled (bool): Whether or not interaction with the button is possible, defaults to `True`.
         factory (:obj:`module`): A python module that is capable to return a
             implementation of this class with the same name. (optional & normally not needed)
     """
 
-    def __init__(self, label, id=None, style=None, on_press=None, enabled=True, factory=None):
-        super().__init__(id=id, enabled=enabled, style=style, factory=factory)
+    def __init__(self, label, id=None, style=None, enabled=True, factory=None, **kwargs):
+        super().__init__(id=id, enabled=enabled, style=style, factory=factory, **kwargs)
 
         # Create a platform specific implementation of a Button
         self._impl = self.factory.Button(interface=self)
 
         # Set all the properties
         self.label = label
-        self.on_press = on_press
+
+    on_press=Event('Called when the button is pressed')
 
     @property
     def label(self):
@@ -43,22 +44,3 @@ class Button(Widget):
             self._label = str(value)
         self._impl.set_label(value)
         self._impl.rehint()
-
-    @property
-    def on_press(self):
-        """The handler to invoke when the button is pressed.
-
-        Returns:
-            The function ``callable`` that is called on button press.
-        """
-        return self._on_press
-
-    @on_press.setter
-    def on_press(self, handler):
-        """Set the handler to invoke when the button is pressed.
-
-        Args:
-            handler (:obj:`callable`): The handler to invoke when the button is pressed.
-        """
-        self._on_press = wrapped_handler(self, handler)
-        self._impl.set_on_press(self._on_press)

@@ -15,7 +15,7 @@ class TogaButtonListener(implements=android.view.View[OnClickListener]):
         self._interface = interface
 
     def onClick(self, v: android.view.View) -> None:
-        self._interface.on_press(self._interface)
+        self.interface.raise_event('on_press')
 
 
 class Button(Widget):
@@ -34,10 +34,6 @@ class Button(Widget):
 
     def set_background_color(self, value):
         self.interface.factory.not_implemented('Button.set_background_color()')
-
-    def set_on_press(self, handler):
-        # No special handling required
-        pass
 
     def rehint(self):
         if self.native.getMeasuredWidth():

@@ -9,8 +9,7 @@ from .base import Widget
 class TogaButton(NSButton):
     @objc_method
     def onPress_(self, obj) -> None:
-        if self.interface.on_press:
-            self.interface.on_press(self.interface)
+        self.interface.raise_event('on_press')
 
 
 class Button(Widget):
@@ -32,10 +31,6 @@ class Button(Widget):
 
     def set_label(self, label):
         self.native.title = self.interface.label
-
-    def set_on_press(self, handler):
-        # No special handling required
-        pass
 
     def rehint(self):
         content_size = self.native.intrinsicContentSize()
