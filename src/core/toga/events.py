@@ -10,8 +10,8 @@ Here is an example of how to use the classes that can be found here.
     >>> class AClickableWidget(EventSource):
     ...     on_click = Event('Called when widget is clicked')
     ...
-    ...     def __init__(self, **kwargs):
-    ...         super().__init__(**kwargs)
+    ...     def __init__(self, *args, **kwargs):
+    ...         super().__init__(*args, **kwargs)
     ...         # This is typically done via the `factory` argument
     ...         self._impl = AClickableWidgetBackend(interface=self)
     ...
@@ -68,11 +68,17 @@ class EventSource(metaclass=EventSourceMeta):
     classes that wish to be able to call event callbacks should inherit from it
     and then define some events using the Event descriptor class.
     """
-    def __init__(self, **kwargs):
+    def __init__(self, *args, **kwargs):
+        event_attrs = []
+        non_event_kwargs = {}
         for arg, callback in kwargs.items():
             attr = self._get_event_descriptor(arg)
             if attr is None or not isinstance(attr, Event):
+                non_event_kwargs[arg] = callback
                 continue
+            event_attrs.append((attr, callback))
+        super().__init__(*args, **non_event_kwargs)
+        for attr, callback in event_attrs:
             attr.__set__(self, callback)
 
     @property

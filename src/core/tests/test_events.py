@@ -28,7 +28,7 @@ class EventSourceTests(unittest.TestCase):
         self.callback2 = callback2
 
     def test_event_attrs(self):
-        bw = self.ABaseWidget(factory=self)
+        bw = self.ABaseWidget()
         self.assertIsNone(bw.on_simple_event1)
         self.assertIsNone(bw.on_simple_event2)
 
@@ -47,7 +47,6 @@ class EventSourceTests(unittest.TestCase):
 
     def test_event_init_args(self):
         bw = self.ABaseWidget(
-            factory=self,
             on_simple_event1=self.callback2,
             on_simple_event2=self.callback1,
         )
@@ -62,7 +61,6 @@ class EventSourceTests(unittest.TestCase):
     @patch('toga.events.wrapped_handler')
     def test_callback_call(self, wrapped_handler):
         bw = self.ABaseWidget(
-            factory=self,
             on_simple_event1=self.callback1
         )
         self.assertEqual(bw.on_simple_event1, self.callback1)
@@ -80,7 +78,6 @@ class EventSourceTests(unittest.TestCase):
     @patch('toga.events.wrapped_handler')
     def test_callback_call_w_args(self, wrapped_handler):
         bw = self.ABaseWidget(
-            factory=self,
             on_simple_event1=self.callback1
         )
 
@@ -93,7 +90,6 @@ class EventSourceTests(unittest.TestCase):
     @patch('toga.events.wrapped_handler')
     def test_raise_missing_event(self, wrapped_handler):
         bw = self.ABaseWidget(
-            factory=self,
             on_simple_event1=self.callback1
         )
 
@@ -107,7 +103,6 @@ class EventSourceTests(unittest.TestCase):
             on_simple_event3 = Event('Event on subclass')
 
         sw = ASubWidget(
-            factory=self,
             on_simple_event1=self.callback1,
             on_simple_event3=self.callback2,
         )
