@@ -1,5 +1,3 @@
-from toga.handlers import wrapped_handler
-
 from .base import Widget
 from toga.events import Event
 
@@ -26,7 +24,7 @@ class Button(Widget):
         # Set all the properties
         self.label = label
 
-    on_press=Event('Called when the button is pressed')
+    on_press = Event('Called when the button is pressed')
 
     @property
     def label(self):
