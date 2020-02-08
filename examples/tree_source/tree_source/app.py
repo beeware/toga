@@ -135,6 +135,9 @@ class FileSystemSource(Node, Source):
 
 
 class ExampleTreeSourceApp(toga.App):
+    def selection_handler(self, widget, node):
+        for file_index, n in enumerate(widget.selection, 1):
+            print('Selected[{0}] {1}'.format(file_index, n.path))
 
     def startup(self):
         # Set up main window
@@ -147,6 +150,7 @@ class ExampleTreeSourceApp(toga.App):
             data=self.fs_source,
             style=Pack(flex=1),
             multiple_select=True,
+            on_select=self.selection_handler,
         )
 
         # Outermost box
