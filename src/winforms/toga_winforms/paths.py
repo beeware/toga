@@ -36,5 +36,15 @@ class Paths:
         """
         return Path(next_to).parent
 
+    def arbitrary(self, path):
+        """Return an arbitrary path representing object
+
+        Args:
+            path (str): A string with the path to wrap. If a relative path is
+                        given, it will be interpreted to be relative to the
+                        application module directory.
+        """
+        return self.app / Path(path)
+
 
 paths = Paths()
