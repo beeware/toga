@@ -21,5 +21,14 @@ class Paths:
     def logs(self):
         return Path.home() / 'Library' / 'Logs' / App.app.app_id
 
+    def sys_resource(self, next_to):
+        """Return a path to a Toga system resource that resides next to the
+        given Python source file
+
+        Args:
+            next_to (str): A Python source file the resource is next to
+        """
+        return Path(next_to).parent
+
 
 paths = Paths()
