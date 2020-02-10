@@ -100,7 +100,7 @@ class HandlerApp(toga.App):
 
 
 def main():
-    return HandlerApp('Dialogs', 'org.beeware.handlers')
+    return HandlerApp('Handlers', 'org.beeware.handlers')
 
 
 if __name__ == '__main__':
