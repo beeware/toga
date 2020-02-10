@@ -139,17 +139,17 @@ class ExampleTreeSourceApp(toga.App):
         # A node is a dictionary of the last item that was clicked in the tree.
         # node['node'].path would get you the file path to only that one item.
         # self.label.text = f'Selected {node["node"].path}'
-        
-        # If you iterate over widget.selection, you can get the names and the 
+
+        # If you iterate over widget.selection, you can get the names and the
         # paths of everything selected (if multiple_select is enabled.)
         # filepaths = [node.path for node in widget.selection]
         files = len(widget.selection)
         if files == 0:
             self.label.text = 'A view of the current directory!'
         elif files == 1:
-            self.label.text = f'You selected {files} item'
+            self.label.text = 'You selected {0} item'.format(files)
         else:
-            self.label.text = f'You selected {files} items'
+            self.label.text = 'You selected {0} items'.format(files)
 
     def startup(self):
         # Set up main window
