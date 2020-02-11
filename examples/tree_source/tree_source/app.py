@@ -135,6 +135,21 @@ class FileSystemSource(Node, Source):
 
 
 class ExampleTreeSourceApp(toga.App):
+    def selection_handler(self, widget, node):
+        # A node is a dictionary of the last item that was clicked in the tree.
+        # node['node'].path would get you the file path to only that one item.
+        # self.label.text = f'Selected {node["node"].path}'
+
+        # If you iterate over widget.selection, you can get the names and the
+        # paths of everything selected (if multiple_select is enabled.)
+        # filepaths = [node.path for node in widget.selection]
+        files = len(widget.selection)
+        if files == 0:
+            self.label.text = 'A view of the current directory!'
+        elif files == 1:
+            self.label.text = 'You selected {0} item'.format(files)
+        else:
+            self.label.text = 'You selected {0} items'.format(files)
 
     def startup(self):
         # Set up main window
@@ -147,12 +162,14 @@ class ExampleTreeSourceApp(toga.App):
             data=self.fs_source,
             style=Pack(flex=1),
             multiple_select=True,
+            on_select=self.selection_handler,
         )
+        self.label = toga.Label('A view of the current directory!', style=Pack(padding=10))
 
         # Outermost box
         outer_box = toga.Box(
             children=[
-                toga.Label('A view of the current directory!', style=Pack(padding=10)),
+                self.label,
                 self.tree,
             ],
             style=Pack(flex=1, direction=COLUMN)
