@@ -26,8 +26,6 @@ class OptionContainer(Widget):
             for label, widget in content:
                 self.add(label, widget)
 
-        self.on_select = on_select
-
     @property
     def content(self):
         """ The sub layouts of the `SplitContainer`.

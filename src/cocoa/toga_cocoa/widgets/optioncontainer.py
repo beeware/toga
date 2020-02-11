@@ -1,17 +1,33 @@
-from rubicon.objc import at
+from rubicon.objc import (
+    at,
+    objc_method,
+    NSObject,
+)
 
-from toga_cocoa.libs import *
+# from toga_cocoa.libs import *
+from toga_cocoa.libs import (
+    NSTabView,
+    NSTabViewItem,
+)
+
 from toga_cocoa.window import CocoaViewport
 
 from .base import Widget
 
 
+
 class TogaTabViewDelegate(NSObject):
     @objc_method
     def tabView_didSelectTabViewItem_(self, view, item) -> None:
-        index = at(item.identifier).longValue
         if self.interface.on_select:
-            self.interface.on_select(self.interface, option=self.interface.content[index])
+            index = at(item.identifier).longValue
+            option = self.interface.content[index]
+            self.interface.on_select(self.interface, option=option, index=index)
+
+        # required to redraw new tabs correctly (possible Toga bug?)
+        # NOTE: does not work as `viewport` not set in cocoa `widget` impl.
+        # self.interface.refresh()
+
 
 
 class OptionContainer(Widget):

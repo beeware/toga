@@ -1,0 +1,44 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name    = "OptionContainer Examnple"
+bundle          = "org.beeware"
+version         = "0.0.1"
+url             = "https://beeware.org"
+license         = "BSD license"
+author          = 'Tiberius Yak'
+author_email    = "tiberius@beeware.org"
+
+[tool.briefcase.app.optioncontainer]
+formal_name     = "OptionContainer Example"
+description     = "An example app for the OptionContainer widget"
+sources         = ['optioncontainer']
+requires        = []
+
+
+
+[tool.briefcase.app.optioncontainer.macOS]
+requires = [
+    'toga-cocoa',
+]
+
+[tool.briefcase.app.optioncontainer.linux]
+requires = [
+    'toga-gtk',
+]
+
+[tool.briefcase.app.optioncontainer.windows]
+requires = [
+    'toga-winforms',
+]
+
+[tool.briefcase.app.optioncontainer.iOS]
+requires = [
+    'toga-iOS',
+]
+
+[tool.briefcase.app.optioncontainer.android]
+requires = [
+    'toga-android',
+]
