@@ -35,7 +35,7 @@ class Icon:
         if self._impl is None:
             try:
                 if self.system:
-                    resource_path = factory.paths.sys_resource(__file__)
+                    resource_path = factory.paths.sys_resources
                 else:
                     resource_path = factory.paths.app
 
