@@ -6,6 +6,9 @@ from toga import App
 
 
 class Paths:
+    # Allow instantiating Path object via the factory
+    Path = Path
+
     @property
     def app(self):
         return Path(sys.modules[App.app.module_name].__file__).parent
@@ -33,16 +36,6 @@ class Paths:
         """Return a path to a Toga system resources
         """
         return Path(toga.__file__).parent
-
-    def arbitrary(self, path):
-        """Return an arbitrary path representing object
-
-        Args:
-            path (str): A string with the path to wrap. If a relative path is
-                        given, it will be interpreted to be relative to the
-                        application module directory.
-        """
-        return self.app / Path(path)
 
 
 paths = Paths()
