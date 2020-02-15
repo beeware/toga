@@ -63,13 +63,50 @@ class Widget(Node):
             ValueError: If this node is a leaf, and cannot have children.
         """
         for child in children:
-            super().add(child)
+            if child not in self.children:
+                super().add(child)
+
+                child.app = self.app
+                child.window = self.window
+
+                if self._impl:
+                    self._impl.add_child(child._impl)
+
+    def insert(self, index, child):
+        """Insert a node as a child of this one.
+        Args:
+            index: Position of child node.
+            child: A node to add as a child to this node.
+
+        Raises:
+            ValueError: If this node is a leaf, and cannot have children.
+        """
+        if child not in self.children:
+            super().insert(index, child)
 
             child.app = self.app
             child.window = self.window
 
             if self._impl:
-                self._impl.add_child(child._impl)
+                self._impl.insert_child(index, child._impl)
+
+    def remove(self, *children):
+        """Remove a node as a child of this one.
+        Args:
+            child: A node to add as a child to this node.
+
+        Raises:
+            ValueError: If this node is a leaf, and cannot have children.
+        """
+        for child in children:
+            if child in self.children:
+                super().remove(child)
+
+                child.app = None
+                child.window = None
+
+                if self._impl:
+                    self._impl.remove_child(child._impl)
 
     @property
     def app(self):
@@ -86,10 +123,10 @@ class Widget(Node):
 
     @app.setter
     def app(self, app):
-        if self._app is not None:
+        if not (self._app is None or app is None):
             if self._app != app:
                 raise ValueError("Widget %s is already associated with an App" % self)
-        elif app is not None:
+        else:
             self._app = app
             self._impl.set_app(app)
             if self._children is not None:
