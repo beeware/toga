@@ -84,6 +84,8 @@ class Widget:
         # if we don't have a window, we won't have a container
         if self.interface.window:
             child.container = None
+            # fresh manually here because child has window == None
+            self.interface.window.content.refresh()
 
     def add_constraints(self):
         self.native.translatesAutoresizingMaskIntoConstraints = False
