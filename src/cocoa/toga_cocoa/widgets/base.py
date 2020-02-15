@@ -11,6 +11,10 @@ class Widget:
         self.native = None
         self.create()
         self.interface.style.reapply()
+        self.set_enabled(self.interface.enabled)
+
+    def create(self):
+        raise NotImplementedError()
 
     def set_app(self, app):
         pass
@@ -24,16 +28,20 @@ class Widget:
 
     @container.setter
     def container(self, container):
+        if container is None:
+            self.native.removeFromSuperview()
+            self.constraints = Constraints(self)
+        else:
+            container.native.addSubview(self.native)
+            self.constraints.container = container
+
         self._container = container
-        self._container.native.addSubview(self.native)
-        self.constraints.container = container
 
         for child in self.interface.children:
             child._impl.container = container
 
         self.rehint()
         if self.interface.window and self.interface.window._impl.native.isVisible:
-            # refresh window content to reflect added subview
             self.interface.window.content.refresh()
 
     def set_enabled(self, value):
@@ -67,6 +75,14 @@ class Widget:
         # if we don't have a window, we won't have a container
         if self.interface.window:
             child.container = self.container or self.interface.window.content._impl
+
+    def insert_child(self, index, child):
+        self.add_child(child)
+
+    def remove_child(self, child):
+        # if we don't have a window, we won't have a container
+        if self.interface.window:
+            child.container = None
 
     def add_constraints(self):
         self.native.translatesAutoresizingMaskIntoConstraints = False
