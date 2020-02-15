@@ -28,14 +28,15 @@ class Widget:
 
     @container.setter
     def container(self, container):
+
         if container is None:
+            self.constraints.container = container
+            self._container = container
             self.native.removeFromSuperview()
-            self.constraints = Constraints(self)
         else:
             container.native.addSubview(self.native)
             self.constraints.container = container
-
-        self._container = container
+            self._container = container
 
         for child in self.interface.children:
             child._impl.container = container
