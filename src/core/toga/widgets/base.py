@@ -126,12 +126,11 @@ class Widget(Node):
         if not (self._app is None or app is None):
             if self._app != app:
                 raise ValueError("Widget %s is already associated with an App" % self)
-        else:
+        elif self._impl:
             self._app = app
             self._impl.set_app(app)
-            if self._children is not None:
-                for child in self._children:
-                    child.app = app
+            for child in self.children:
+                child.app = app
 
     @property
     def window(self):
