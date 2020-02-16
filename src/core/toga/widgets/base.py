@@ -176,6 +176,5 @@ class Widget(Node):
             self.refresh_sublayouts()
 
     def refresh_sublayouts(self):
-        if self._children is not None:
-            for child in self._children:
-                child.refresh_sublayouts()
+        for child in self.children:
+            child.refresh_sublayouts()
