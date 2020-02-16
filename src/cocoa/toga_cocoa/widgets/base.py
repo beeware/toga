@@ -30,13 +30,13 @@ class Widget:
     def container(self, container):
 
         if container is None:
-            self.constraints.container = container
-            self._container = container
+            self.constraints.container = None
+            self._container = None
             self.native.removeFromSuperview()
         else:
-            container.native.addSubview(self.native)
-            self.constraints.container = container
             self._container = container
+            self._container.native.addSubview(self.native)
+            self.constraints.container = container
 
         for child in self.interface.children:
             child._impl.container = container
