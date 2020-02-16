@@ -68,7 +68,7 @@ class ExampleBoxApp(toga.App):
     def add_label(self, sender):
         new_label = toga.Label(
             f'Label {len(self.scroll_box.children)}',
-            style=Pack(padding=1, width= 70)
+            style=Pack(padding=1, width=70)
         )
         self.scroll_box.add(new_label)
 
