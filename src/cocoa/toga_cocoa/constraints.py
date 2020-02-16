@@ -44,7 +44,7 @@ class Constraints:
         else:
             self._container = value
             # print("Add constraints for", self.widget, 'in', self.container, self.widget.interface.layout)
-            self.left_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
+            self.left_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # NOQA:E501
                 self.widget.native, NSLayoutAttributeLeft,
                 NSLayoutRelationEqual,
                 self.container.native, NSLayoutAttributeLeft,
@@ -52,7 +52,7 @@ class Constraints:
             )
             self.container.native.addConstraint(self.left_constraint)
 
-            self.top_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
+            self.top_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # NOQA:E501
                 self.widget.native, NSLayoutAttributeTop,
                 NSLayoutRelationEqual,
                 self.container.native, NSLayoutAttributeTop,
@@ -60,7 +60,7 @@ class Constraints:
             )
             self.container.native.addConstraint(self.top_constraint)
 
-            self.width_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
+            self.width_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # NOQA:E501
                 self.widget.native, NSLayoutAttributeRight,
                 NSLayoutRelationEqual,
                 self.widget.native, NSLayoutAttributeLeft,
@@ -68,7 +68,7 @@ class Constraints:
             )
             self.container.native.addConstraint(self.width_constraint)
 
-            self.height_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
+            self.height_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # NOQA:E501
                 self.widget.native, NSLayoutAttributeBottom,
                 NSLayoutRelationEqual,
                 self.widget.native, NSLayoutAttributeTop,
