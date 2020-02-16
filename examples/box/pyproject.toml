@@ -1,0 +1,44 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name = "Box Demo"
+bundle = "org.beeware"
+version = "0.0.1"
+url = "https://beeware.org"
+license = "BSD license"
+author = 'Tiberius Yak'
+author_email = "tiberius@beeware.org"
+
+[tool.briefcase.app.box]
+formal_name = "Box Demo"
+description = "A testing app"
+sources = ['box']
+requires = []
+
+
+[tool.briefcase.app.box.macOS]
+requires = [
+    'toga-cocoa',
+]
+
+[tool.briefcase.app.box.linux]
+requires = [
+    'toga-gtk',
+]
+
+[tool.briefcase.app.box.windows]
+requires = [
+    'toga-winforms',
+]
+
+# Mobile deployments
+[tool.briefcase.app.box.iOS]
+requires = [
+    'toga-iOS',
+]
+
+[tool.briefcase.app.box.android]
+requires = [
+    'toga-android',
+]
