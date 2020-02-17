@@ -3,18 +3,18 @@ from travertino.size import at_least
 from .base import Widget
 
 
-class TogaButton(extends=android.widget.Button):
-    @super({context: android.content.Context})
+class TogaButton(extends=android.widget.Button):  # noqa
+    @super({context: android.content.Context})  # noqa
     def __init__(self, context, interface):
         self._interface = interface
 
 
-class TogaButtonListener(implements=android.view.View[OnClickListener]):
+class TogaButtonListener(implements=android.view.View[OnClickListener]):  # noqa
     @super({})
     def __init__(self, interface):
         self._interface = interface
 
-    def onClick(self, v: android.view.View) -> None:
+    def onClick(self, v: android.view.View) -> None:  # noqa
         self.interface.raise_event('on_press')
 
 
