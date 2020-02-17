@@ -174,7 +174,7 @@ class Window:
         # Enforce a minimum size based on the content
         self._min_width_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
             widget.native, NSLayoutAttributeRight,
-            NSLayoutRelationGreaterThanOrEqual if self.interface.resizeable else NSLayoutRelationEqual,
+            NSLayoutRelationGreaterThanOrEqual,
             widget.native, NSLayoutAttributeLeft,
             1.0, 100
         )
@@ -182,7 +182,7 @@ class Window:
 
         self._min_height_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
             widget.native, NSLayoutAttributeBottom,
-            NSLayoutRelationGreaterThanOrEqual if self.interface.resizeable else NSLayoutRelationEqual,
+            NSLayoutRelationGreaterThanOrEqual,
             widget.native, NSLayoutAttributeTop,
             1.0, 100
         )
