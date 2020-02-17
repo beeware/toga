@@ -32,7 +32,7 @@ class Paths:
         return Path.home() / 'Library' / 'Local' / self.author / App.app.formal_name / 'Logs'
 
     @property
-    def sys_resources(self):
+    def toga(self):
         """Return a path to a Toga system resources
         """
         return Path(toga.__file__).parent

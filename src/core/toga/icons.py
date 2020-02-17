@@ -35,7 +35,7 @@ class Icon:
         if self._impl is None:
             try:
                 if self.system:
-                    resource_path = factory.paths.sys_resources
+                    resource_path = factory.paths.toga
                 else:
                     resource_path = factory.paths.app
 
