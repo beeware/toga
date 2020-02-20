@@ -27,7 +27,10 @@ from .base import Widget
 class TogaCanvas(NSView):
     @objc_method
     def drawRect_(self, rect: NSRect) -> None:
-        context = NSGraphicsContext.currentContext.graphicsPort()
+        try:
+            context = NSGraphicsContext.currentContext.graphicsPort()
+        except TypeError:
+            context = NSGraphicsContext.currentContext.CGContext
 
         if self.interface.redraw:
             self.interface._draw(self._impl, draw_context=context)
