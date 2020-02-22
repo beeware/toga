@@ -3,7 +3,7 @@
 ##########################################################################
 from ctypes import cdll, c_bool, util
 
-from rubicon.objc import objc_const, NSPoint, NSRect, ObjCClass
+from rubicon.objc import NSPoint, NSRect, ObjCClass
 
 ######################################################################
 foundation = cdll.LoadLibrary(util.find_library('Foundation'))
