@@ -19,8 +19,14 @@ from toga.window import Window
 class MainWindow(Window):
     _WINDOW_CLASS = 'MainWindow'
 
-    def __init__(self, id=None, title=None, position=(100, 100), size=(640, 480), factory=None):
-        super().__init__(id=id, title=title, position=position, size=size, factory=factory)
+    def __init__(self, id=None, title=None, position=(100, 100), size=(640, 480),
+                 toolbar=None, resizeable=True, minimizable=True,
+                 factory=None):
+        super().__init__(
+            id=id, title=title, position=position, size=size, toolbar=toolbar,
+            resizeable=resizeable, closeable=True, minimizable=minimizable,
+            factory=factory
+        )
 
 
 class App:
