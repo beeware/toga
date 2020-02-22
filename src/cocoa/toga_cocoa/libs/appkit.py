@@ -91,6 +91,7 @@ NSSuperscriptAttributeName = objc_const(appkit, "NSSuperscriptAttributeName")
 NSGlyphInfoAttributeName = objc_const(appkit, "NSGlyphInfoAttributeName")
 
 NSViewBoundsDidChangeNotification = objc_const(appkit, 'NSViewBoundsDidChangeNotification')
+NSViewFrameDidChangeNotification = objc_const(appkit, 'NSViewFrameDidChangeNotification')
 
 ######################################################################
 # NSBezierPath.h
