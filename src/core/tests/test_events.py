@@ -104,8 +104,10 @@ class EventSourceTests(unittest.TestCase):
         sw.raise_event('on_simple_event2')
         sw.raise_event('on_simple_event3')
         self.assertListEqual(wrapped_handler.mock_calls, [
-            call(sw, self.callback1), call(sw, self.callback1)(sw),
-            call(sw, self.callback2), call(sw, self.callback2)(sw),
+            call(sw, self.callback1),
+            call(sw, self.callback2),
+            call(sw, self.callback1)(sw),
+            call(sw, self.callback2)(sw),
         ])
         with self.assertRaises(UndefinedEventRaised):
             sw.raise_event('on_simple_event4')

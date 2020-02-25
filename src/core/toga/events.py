@@ -36,6 +36,7 @@ inherit directly from `EventSource`, others should inherit from those classes
 instead.
 """
 import sys
+from functools import lru_cache
 
 from toga.handlers import wrapped_handler
 
@@ -97,6 +98,7 @@ class EventSource(metaclass=EventSourceMeta):
         descr.raise_event(self, *args, **kwargs)
 
     @classmethod
+    @lru_cache(maxsize=None)
     def _get_event_descriptor(cls, event):
         # Its unfortunate, but it seems there is no method or function that is
         # internal to the interpreter and that we could use to scan the MRO
@@ -129,6 +131,7 @@ class Event:
     def __set_name__(self, owner, name):
         self._name = name
         self._attr_name = '_{}'.format(name)
+        self._wrapped_attr_name = '_wrapped_{}'.format(name)
 
     def __get__(self, instance, owner):
         if instance is None:
@@ -137,6 +140,8 @@ class Event:
 
     def __set__(self, instance, callback):
         setattr(instance, self._attr_name, callback)
+        wrapped_cb = wrapped_handler(instance, callback) if callback else None
+        setattr(instance, self._wrapped_attr_name, wrapped_cb)
 
     def raise_event(self, instance, *args, **kwargs):
         """Call the callback associated with the event, if any
@@ -146,10 +151,10 @@ class Event:
 
         All other arguments are passed on the the callback
         """
-        callback = self.__get__(instance, type(instance))
-        if callback is None:
+        wrapped_cb = getattr(instance, self._wrapped_attr_name, None)
+        if wrapped_cb is None:
             return
-        wrapped_handler(instance, callback)(instance, *args, **kwargs)
+        wrapped_cb(instance, *args, **kwargs)
 
 
 class UndefinedEventRaised(AttributeError):
