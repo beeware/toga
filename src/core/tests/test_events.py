@@ -1,6 +1,6 @@
 import sys
 import unittest
-from unittest.mock import create_autospec, call, patch, PropertyMock, Mock
+from unittest.mock import create_autospec, call, patch, PropertyMock
 from toga.events import EventSourceMeta, EventSource, Event, UndefinedEventRaised
 
 
