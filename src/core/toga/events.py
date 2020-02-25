@@ -81,25 +81,6 @@ class EventSource(metaclass=EventSourceMeta):
         for attr, callback in event_attrs:
             attr.__set__(self, callback)
 
-    @property
-    def _impl(self):
-        return self.__impl
-
-    @_impl.setter
-    def _impl(self, impl):
-        """We intercept the setting of the _impl attribute so we could notify
-        the implementation object about callbacks that had been set before
-        that object was created (E.g. via the constructor).
-        """
-        self.__impl = impl
-        # When we get a new implementation backend, let it know about all the
-        # callbacks we have
-        for klass in type(self).mro():
-            for attr in klass.__dict__.values():
-                if not isinstance(attr, Event):
-                    continue
-                attr._notify_impl(self)
-
     def raise_event(self, event, *args, **kwargs):
         """Call the callback associated with an event, if any
 
@@ -156,19 +137,6 @@ class Event:
 
     def __set__(self, instance, callback):
         setattr(instance, self._attr_name, callback)
-        self._notify_impl(instance, when_none=True)
-
-    def _notify_impl(self, instance, when_none=False):
-        """Notifies the instance backend implementation object when a new
-        callback is set if that object implements the `set_event_handler`
-        method
-        """
-        callback = self.__get__(instance, type(instance))
-        if callback is None and not when_none:
-            return
-        impl = getattr(instance, '_impl', None)
-        if impl is not None and hasattr(impl, 'set_event_handler'):
-            impl.set_event_handler(self._name, callback)
 
     def raise_event(self, instance, *args, **kwargs):
         """Call the callback associated with the event, if any

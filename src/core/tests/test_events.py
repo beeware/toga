@@ -11,7 +11,6 @@ class EventSourceTests(unittest.TestCase):
 
         def __init__(self, **kwargs):
             super().__init__(**kwargs)
-            self._impl = Mock(spec_set=['set_event_handler'])
 
     def setUp(self):
         super().setUp()
@@ -40,11 +39,6 @@ class EventSourceTests(unittest.TestCase):
         self.assertEqual(bw.on_simple_event1, self.callback1)
         self.assertEqual(bw.on_simple_event2, self.callback2)
 
-        self.assertListEqual(bw._impl.set_event_handler.mock_calls, [
-            call('on_simple_event1', self.callback1),
-            call('on_simple_event2', self.callback2),
-        ])
-
     def test_event_init_args(self):
         bw = self.ABaseWidget(
             on_simple_event1=self.callback2,
@@ -52,11 +46,6 @@ class EventSourceTests(unittest.TestCase):
         )
         self.assertEqual(bw.on_simple_event1, self.callback2)
         self.assertEqual(bw.on_simple_event2, self.callback1)
-
-        self.assertListEqual(sorted(bw._impl.set_event_handler.mock_calls), [
-            call('on_simple_event1', self.callback2),
-            call('on_simple_event2', self.callback1),
-        ])
 
     @patch('toga.events.wrapped_handler')
     def test_callback_call(self, wrapped_handler):
