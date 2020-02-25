@@ -4,18 +4,25 @@ from toga.events import Event
 
 class Button(Widget):
     """A clickable button widget.
-
-    Args:
-        label (str): Text to be shown on the button.
-        id (str): An identifier for this widget.
-        style (:obj:`Style`): An optional style object. If no style is provided then
-            a new one will be created for the widget.
-        enabled (bool): Whether or not interaction with the button is possible, defaults to `True`.
-        factory (:obj:`module`): A python module that is capable to return a
-            implementation of this class with the same name. (optional & normally not needed)
     """
+    on_press = Event('Called when the button is pressed')
 
     def __init__(self, label, id=None, style=None, enabled=True, factory=None, **kwargs):
+        """Initialize the button widget
+
+        Args:
+            label   (str):           Text to be shown on the button.
+            id      (str):           An identifier for this widget.
+            style   (:obj:`Style`):  An optional style object. If no style is
+                                     provided then a new one will be created
+                                     for the widget.
+            enabled (bool):          Whether or not interaction with the button
+                                     is possible, defaults to `True`.
+            factory (:obj:`module`): A python module that is capable to return
+                                     an implementation of this class with the
+                                     same name. (optional & normally not
+                                     needed)
+        """
         super().__init__(id=id, enabled=enabled, style=style, factory=factory, **kwargs)
 
         # Create a platform specific implementation of a Button
@@ -23,8 +30,6 @@ class Button(Widget):
 
         # Set all the properties
         self.label = label
-
-    on_press = Event('Called when the button is pressed')
 
     @property
     def label(self):
