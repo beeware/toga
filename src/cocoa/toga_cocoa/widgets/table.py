@@ -109,7 +109,7 @@ class Table(Widget):
                     self.interface.headings,
                     self.interface._accessors
                 )):
-            self.add_column(heading, accessor)
+            self._add_column(heading, accessor)
 
         self.table.delegate = self.table
         self.table.dataSource = self.table
