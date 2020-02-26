@@ -4,10 +4,7 @@ from toga.style import Pack
 
 from toga.style.pack import (
     COLUMN,
-    ROW,
     CENTER,
-    LEFT,
-    RIGHT,
 )
 
 PADDING = 5
