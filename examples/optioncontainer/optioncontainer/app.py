@@ -76,7 +76,7 @@ class TogaDemo(toga.App):
             box.add(toga.Box(style=Pack(flex=1)))
 
             for num in range(1, 10):
-                sw_label = f'{opt_label}: {num}'
+                sw_label = '{}: {}'.format(opt_label, num)
                 box.add(
                     toga.Switch(
                         sw_label,
