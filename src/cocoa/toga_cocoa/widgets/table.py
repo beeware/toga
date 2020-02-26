@@ -158,12 +158,11 @@ class Table(Widget):
         column.headerCell.stringValue = heading
 
     def add_column(self, heading, accessor):
-        
+
         self._add_column(heading, accessor)
-        
+
         if self.interface.data:
             for row in self.interface.data:
                 row._impls[accessor] = TogaData.alloc().init()
 
         self.table.sizeToFit()
-

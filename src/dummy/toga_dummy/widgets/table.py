@@ -26,5 +26,5 @@ class Table(Widget):
     def scroll_to_row(self, row):
         self._set_value('scroll to', row)
 
-    def add_column(self, heading, fillvalue = ''):
+    def add_column(self, heading, fillvalue=''):
         self._action('add column', heading=heading, fillvalue=fillvalue)

@@ -103,18 +103,19 @@ class TableTests(TestCase):
 
     def test_add_column(self):
         new_heading = 'Heading 4'
-        dummy_data = [ 
+        dummy_data = [
             ['a1', 'b1', 'c1'],
             ['a2', 'b2', 'c2'],
             ['a3', 'b3', 'c3'],
-            ['a4', 'b3', 'c4'] ]
+            ['a4', 'b3', 'c4']
+        ]
         self.table.data = dummy_data
 
         expecting_headings = self.headings + [new_heading]
         expecting_value = 'FillValue'
 
         self.table.add_column(new_heading, expecting_value)
-        
+
         self.assertEqual(self.headings, expecting_headings)
         self.assertEqual(self.table.data[0].heading_4, expecting_value)
 
