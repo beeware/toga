@@ -11,8 +11,6 @@ from toga_iOS.window import iOSViewport
 # from .base import Widget
 from toga_iOS.widgets.base import Widget
 
-
-
 class TogaTabBarController(UITabBarController):
     """
     Custom implememtation of the nativie IOS UITabBarController.
@@ -33,10 +31,10 @@ class TogaTabBarController(UITabBarController):
     """
 
     # @objc_method
-    # def tabBarController_shouldSelectViewController_(   self,
-    #                                                     tbc,        # type: UITabBarController
-    #                                                     vc,         # type: UIViewController
-    #                                                     ) -> bool:
+    # def tabBarController_shouldSelectViewController_( self,
+    #                                                   tbc,          # type: UITabBarController
+    #                                                   vc,           # type: UIViewController
+    #                                                   ) -> bool:
     #     """
     #     Event callback before tab has transitioned to new tab.
     #     """
@@ -47,10 +45,10 @@ class TogaTabBarController(UITabBarController):
     #     return result
 
     @objc_method
-    def tabBarController_didSelectViewController_(  self,
-                                                    tbc,            # type: UITabBarController
-                                                    vc,             # type: UIViewController
-                                                    ) -> None:
+    def tabBarController_didSelectViewController_( self,
+                                                   tbc,             # type: UITabBarController
+                                                   vc,              # type: UIViewController
+                                                   ) -> None:
         """
         Event callback after tab has finished transitioning to new tab.
         """
@@ -63,8 +61,6 @@ class TogaTabBarController(UITabBarController):
 
         # required to redraw new tabs correctly (possible Toga bug?)
         self.interface.refresh()
-
-
 
 class OptionContainer(Widget):
     """
@@ -80,7 +76,6 @@ class OptionContainer(Widget):
         self.controller.interface = self.interface
 
         self.native = self.controller.view
-        #self.native.interface = self.interface
 
         self.controller.delegate = self.controller
         self.native.delegate = self.controller
@@ -88,7 +83,7 @@ class OptionContainer(Widget):
         # a list of view controllers for each tab (see `add_content()`)
         self.view_controllers = []
 
-        #self.native.translatesAutoresizingMaskIntoConstraints = False
+        # self.native.translatesAutoresizingMaskIntoConstraints = False
 
         # Add the layout constraints
         self.add_constraints()
@@ -121,9 +116,6 @@ class OptionContainer(Widget):
         vc.tabBarItem = tab_bar_item
         vc.delegate = self.controller
         widget.native.delegate = self.controller
-
-        # vc.title = 'UIVC'
-
 
         # append new view controller to exisiting list of view controllers
         self.view_controllers.append(vc)

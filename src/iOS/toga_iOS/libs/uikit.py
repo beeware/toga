@@ -326,29 +326,25 @@ UIStackView = ObjCClass('UIStackView')
 # UISwitch.h
 UISwitch = ObjCClass('UISwitch')
 
-
-
 ######################################################################
 # UITabBar.h
 
 UITabBar = ObjCClass('UITabBar')
 
-# NOTE: could/should this be an Enum or IntEnum ??
-UITabBarItemPositioningAutomatic    = 0
-UITabBarItemPositioningFill         = 1
-UITabBarItemPositioningCenterd      = 2
+UITabBarItemPositioningAutomatic = 0
+UITabBarItemPositioningFill = 1
+UITabBarItemPositioningCenterd = 2
 
 ######################################################################
 # UITabBarAppearance.h
 
 UITabBarItemStateAppearance = ObjCClass('UITabBarItemStateAppearance')
-UITabBarItemAppearance      = ObjCClass('UITabBarItemAppearance')
-UITabBarAppearance          = ObjCClass('UITabBarAppearance')
+UITabBarItemAppearance = ObjCClass('UITabBarItemAppearance')
+UITabBarAppearance = ObjCClass('UITabBarAppearance')
 
-# NOTE: could/should this be an Enum or IntEnum ??
-UITabBarItemAppearanceStyleStacked          = 0
-UITabBarItemAppearanceStyleInline           = 1
-UITabBarItemAppearanceStyleCompactInline    = 2
+UITabBarItemAppearanceStyleStacked = 0
+UITabBarItemAppearanceStyleInline = 1
+UITabBarItemAppearanceStyleCompactInline = 2
 
 ######################################################################
 # UITabBarController.h
@@ -360,21 +356,18 @@ UITabBarController = ObjCClass('UITabBarController')
 
 UITabBarItem = ObjCClass('UITabBarItem')
 
-# NOTE: could/should this be an Enum or IntEnum ??
-UITabBarSystemItemMore          = 0
-UITabBarSystemItemFavorites     = 1
-UITabBarSystemItemFeatured      = 2
-UITabBarSystemItemTopRated      = 3
-UITabBarSystemItemRecents       = 4
-UITabBarSystemItemContacts      = 5
-UITabBarSystemItemHistory       = 6
-UITabBarSystemItemBookmarks     = 7
-UITabBarSystemItemSearch        = 8
-UITabBarSystemItemDownloads     = 9
-UITabBarSystemItemMostRecent    = 10
-UITabBarSystemItemMostViewed    = 11
-
-
+UITabBarSystemItemMore = 0
+UITabBarSystemItemFavorites = 1
+UITabBarSystemItemFeatured = 2
+UITabBarSystemItemTopRated = 3
+UITabBarSystemItemRecents = 4
+UITabBarSystemItemContacts = 5
+UITabBarSystemItemHistory = 6
+UITabBarSystemItemBookmarks = 7
+UITabBarSystemItemSearch = 8
+UITabBarSystemItemDownloads = 9
+UITabBarSystemItemMostRecent = 10
+UITabBarSystemItemMostViewed = 11
 
 ######################################################################
 # UITableView.h
