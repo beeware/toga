@@ -11,6 +11,7 @@ from toga_iOS.window import iOSViewport
 # from .base import Widget
 from toga_iOS.widgets.base import Widget
 
+
 class TogaTabBarController(UITabBarController):
     """
     Custom implememtation of the nativie IOS UITabBarController.
@@ -31,10 +32,10 @@ class TogaTabBarController(UITabBarController):
     """
 
     # @objc_method
-    # def tabBarController_shouldSelectViewController_( self,
-    #                                                   tbc,          # type: UITabBarController
-    #                                                   vc,           # type: UIViewController
-    #                                                   ) -> bool:
+    # def tabBarController_shouldSelectViewController_(self,
+    #                                                  tbc,           # type: UITabBarController
+    #                                                  vc,            # type: UIViewController
+    #                                                  ) -> bool:
     #     """
     #     Event callback before tab has transitioned to new tab.
     #     """
@@ -45,10 +46,10 @@ class TogaTabBarController(UITabBarController):
     #     return result
 
     @objc_method
-    def tabBarController_didSelectViewController_( self,
-                                                   tbc,             # type: UITabBarController
-                                                   vc,              # type: UIViewController
-                                                   ) -> None:
+    def tabBarController_didSelectViewController_(self,
+                                                  tbc,              # type: UITabBarController
+                                                  vc,               # type: UIViewController
+                                                  ) -> None:
         """
         Event callback after tab has finished transitioning to new tab.
         """
@@ -61,6 +62,7 @@ class TogaTabBarController(UITabBarController):
 
         # required to redraw new tabs correctly (possible Toga bug?)
         self.interface.refresh()
+
 
 class OptionContainer(Widget):
     """

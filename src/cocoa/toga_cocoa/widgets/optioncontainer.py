@@ -13,6 +13,7 @@ from toga_cocoa.window import CocoaViewport
 
 from .base import Widget
 
+
 class TogaTabViewDelegate(NSObject):
     @objc_method
     def tabView_didSelectTabViewItem_(self, view, item) -> None:
@@ -24,6 +25,7 @@ class TogaTabViewDelegate(NSObject):
         # required to redraw new tabs correctly (possible Toga bug?)
         # NOTE: does not work as `viewport` not set in cocoa `widget` impl.
         # self.interface.refresh()
+
 
 class OptionContainer(Widget):
     def create(self):
