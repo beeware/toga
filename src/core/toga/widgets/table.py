@@ -137,11 +137,13 @@ class Table(Widget):
         self._on_select = wrapped_handler(self, handler)
         self._impl.set_on_select(self._on_select)
 
-    def add_column(self, heading, filldata = ''):
+    def add_column(self, heading, fillvalue = ''):
         """
         Add a new column to the table
 
         :param heading:     title of the column
+        :type heading:      ``string``
+        :param fillvalue:   fill new column with this value
         :type heading:      ``string``
         """
         
@@ -154,6 +156,6 @@ class Table(Widget):
         self._accessors.append(accessor)
         
         for row in self._data:
-            row.extend(accessor, filldata)
+            row.extend(accessor, fillvalue)
 
         self._impl.add_column(heading, accessor)

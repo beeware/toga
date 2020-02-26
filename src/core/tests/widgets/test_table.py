@@ -100,3 +100,27 @@ class TableTests(TestCase):
         self.table.on_select = dummy_handler
         on_sele = self.table.on_select
         self.assertEqual(on_sele._raw, dummy_handler)
+
+    def test_add_column(self):
+        new_heading = 'Heading 4'
+        dummy_data = [ 
+            ['a1', 'b1', 'c1'],
+            ['a2', 'b2', 'c2'],
+            ['a3', 'b3', 'c3'],
+            ['a4', 'b3', 'c4'] ]
+        self.table.data = dummy_data
+
+        expecting_headings = self.headings + [new_heading]
+        expecting_value = 'FillValue'
+
+        self.table.add_column(new_heading, expecting_value)
+        
+        self.assertEqual(self.headings, expecting_headings)
+        self.assertEqual(self.table.data[0].heading_4, expecting_value)
+
+    '''
+    def test_add_existing_column(self):
+        new_heading = 'Heading 3'
+        # self.table.add_column(new_heading)
+        # TODO: Assert ValueError?
+    '''
