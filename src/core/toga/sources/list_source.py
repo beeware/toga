@@ -18,6 +18,11 @@ class Row:
             if self._source is not None:
                 self._source._notify('change', item=self)
 
+    def extend(self, newattr, value):
+        """ Add new attr to Row 
+        """
+        self._attrs.append(newattr)
+        setattr(self, newattr, value)
 
 class ListSource(Source):
     """A data source to store a list of multiple data values, in a row-like fashion.

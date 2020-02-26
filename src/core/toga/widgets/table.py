@@ -1,6 +1,6 @@
 from toga.handlers import wrapped_handler
 from toga.sources import ListSource
-from toga.sources.accessors import build_accessors
+from toga.sources.accessors import build_accessors, to_accessor
 
 from .base import Widget
 
@@ -136,3 +136,24 @@ class Table(Widget):
         """
         self._on_select = wrapped_handler(self, handler)
         self._impl.set_on_select(self._on_select)
+
+    def add_column(self, heading, filldata = ''):
+        """
+        Add a new column to the table
+
+        :param heading:     title of the column
+        :type heading:      ``string``
+        """
+        
+        accessor = to_accessor(heading)
+
+        if accessor in self._accessors:
+            raise ValueError('Column name "{}" already exits'.format(accessor))
+
+        self.headings.append(heading)
+        self._accessors.append(accessor)
+        
+        for row in self._data:
+            row.extend(accessor, filldata)
+
+        self._impl.add_column(heading, accessor)

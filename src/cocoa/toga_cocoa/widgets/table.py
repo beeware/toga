@@ -109,17 +109,7 @@ class Table(Widget):
                     self.interface.headings,
                     self.interface._accessors
                 )):
-
-            column_identifier = at(accessor)
-            self.column_identifiers[id(column_identifier)] = accessor
-            column = NSTableColumn.alloc().initWithIdentifier(column_identifier)
-            self.table.addTableColumn(column)
-            self.columns.append(column)
-
-            cell = TogaIconCell.alloc().init()
-            column.dataCell = cell
-
-            column.headerCell.stringValue = heading
+            self.add_column(heading, accessor)
 
         self.table.delegate = self.table
         self.table.dataSource = self.table
@@ -154,3 +144,26 @@ class Table(Widget):
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
         self.interface.intrinsic.height = at_least(self.interface.MIN_HEIGHT)
+
+    def _add_column(self, heading, accessor):
+        column_identifier = at(accessor)
+        self.column_identifiers[id(column_identifier)] = accessor
+        column = NSTableColumn.alloc().initWithIdentifier(column_identifier)
+        self.table.addTableColumn(column)
+        self.columns.append(column)
+
+        cell = TogaIconCell.alloc().init()
+        column.dataCell = cell
+
+        column.headerCell.stringValue = heading
+
+    def add_column(self, heading, accessor):
+        
+        self._add_column(heading, accessor)
+        
+        if self.interface.data:
+            for row in self.interface.data:
+                row._impls[accessor] = TogaData.alloc().init()
+
+        self.table.sizeToFit()
+
