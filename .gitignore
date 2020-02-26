@@ -39,3 +39,4 @@ examples/*/android/
 examples/*/django/
 examples/*/windows/
 
+**/.mypy_cache/
