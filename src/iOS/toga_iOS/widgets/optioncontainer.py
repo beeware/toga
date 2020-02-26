@@ -57,8 +57,8 @@ class TogaTabBarController(UITabBarController):
         # call the user on_select callback method (if provided)
         if self.interface.on_select:
             index = tbc.selectedIndex
-            widget = tbc.interface.content[index]
-            self.interface.on_select(self.interface, option=widget, index=index)
+            option = tbc.interface.content[index]
+            self.interface.on_select(self.interface, option=option, index=index)
 
         # required to redraw new tabs correctly (possible Toga bug?)
         self.interface.refresh()
