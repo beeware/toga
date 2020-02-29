@@ -119,10 +119,7 @@ class TogaIconCell(NSTextFieldCell):
             textAttributes[NSForegroundColorAttributeName] = primaryColor
             textAttributes[NSFontAttributeName] = NSFont.systemFontOfSize(13)
 
-            at(label).drawAtPoint(
-                NSPoint(cellFrame.origin.x + offset, cellFrame.origin.y),
-                withAttributes=textAttributes
-            )
+            at(label).drawInRect(cellFrame, withAttributes=textAttributes)
 
 
 # A TogaDetailedCell contains:
