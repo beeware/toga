@@ -1,6 +1,3 @@
-import asyncio
-import random
-
 import toga
 from toga.constants import COLUMN
 from toga.style import Pack
