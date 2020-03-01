@@ -19,9 +19,11 @@ class Table(Widget):
 
         self.native.FullRowSelect = True
         self.native.Multiselect = self.interface.multiple_select
+        self.native.DoubleBuffered = True
         self.native.Columns.AddRange(dataColumn)
 
     def change_source(self, source):
+        self.native.BeginUpdate()
         self.native.Items.Clear()
         items = []
         for row in self.interface.data:
@@ -31,8 +33,10 @@ class Table(Widget):
             row._impl = _impl
             items.append(_impl)
         self.native.Items.AddRange(items)
+        self.native.EndUpdate()
 
     def update_data(self):
+        self.native.BeginUpdate()
         self.native.Items.Clear()
         items = []
         for row in self.interface.data:
@@ -42,12 +46,15 @@ class Table(Widget):
             row._impl = _impl
             items.append(_impl)
         self.native.Items.AddRange(items)
+        self.native.EndUpdate()
 
     def insert(self, index, item):
+        self.native.BeginUpdate()
         item._impl = WinForms.ListViewItem([
             getattr(item, attr) for attr in self.interface._accessors
         ])
         self.native.Items.Insert(index, item._impl)
+        self.native.EndUpdate()
 
     def change(self, item):
         self.interface.factory.not_implemented('Table.change()')
