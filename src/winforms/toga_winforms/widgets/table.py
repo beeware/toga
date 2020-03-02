@@ -23,35 +23,24 @@ class Table(Widget):
         self.native.Columns.AddRange(dataColumn)
 
     def change_source(self, source):
-        self.native.BeginUpdate()
-        self.native.Items.Clear()
-        items = []
-        for row in self.interface.data:
-            _impl = WinForms.ListViewItem([
-                getattr(row, attr) for attr in self.interface._accessors
-            ])
-            row._impl = _impl
-            items.append(_impl)
-        self.native.Items.AddRange(items)
-        self.native.EndUpdate()
+        self.update_data()
 
     def update_data(self):
         self.native.BeginUpdate()
         self.native.Items.Clear()
         items = []
         for row in self.interface.data:
-            _impl = WinForms.ListViewItem([
-                getattr(row, attr) for attr in self.interface._accessors
+            row._impl = WinForms.ListViewItem([
+                str(getattr(row, attr)) for attr in self.interface._accessors
             ])
-            row._impl = _impl
-            items.append(_impl)
+            items.append(row._impl)
         self.native.Items.AddRange(items)
         self.native.EndUpdate()
 
     def insert(self, index, item):
         self.native.BeginUpdate()
         item._impl = WinForms.ListViewItem([
-            getattr(item, attr) for attr in self.interface._accessors
+            str(getattr(item, attr)) for attr in self.interface._accessors
         ])
         self.native.Items.Insert(index, item._impl)
         self.native.EndUpdate()

@@ -17,14 +17,17 @@ class TogaTable(NSTableView):
     @objc_method
     def tableView_objectValueForTableColumn_row_(self, table, column, row: int):
         data_row = self.interface.data[row]
+
+        # Obtain (constructing, if it doesn't already exist) the
+        # impl for the data row.
         try:
-            data = data_row._impls
+            data = data_row._impl
         except AttributeError:
             data = {
                 attr: TogaData.alloc().init()
                 for attr in self.interface._accessors
             }
-            data_row._impls = data
+            data_row._impl = data
 
         col_identifier = str(column.identifier)
 
