@@ -1,6 +1,3 @@
-from pathlib import Path
-
-
 class Image:
     """
     A representation of graphical content.
@@ -29,7 +26,7 @@ class Image:
             if self.path.startswith('http://') or self.path.startswith('https://'):
                 self._impl = factory.Image(interface=self, url=self.path)
             else:
-                full_path = factory.paths.app / Path(self.path)
+                full_path = factory.paths.app / factory.paths.Path(self.path)
                 if not full_path.exists():
                     raise FileNotFoundError(
                         'Image file {full_path!r} does not exist'.format(
