@@ -23,35 +23,36 @@ class Table(Widget):
         self.native.Columns.AddRange(dataColumn)
 
     def change_source(self, source):
-        self.native.BeginUpdate()
-        self.native.Items.Clear()
-        items = []
-        for row in self.interface.data:
-            _impl = WinForms.ListViewItem([
-                getattr(row, attr) for attr in self.interface._accessors
-            ])
-            row._impl = _impl
-            items.append(_impl)
-        self.native.Items.AddRange(items)
-        self.native.EndUpdate()
+        self.update_data()
+
+    def row_data(self, item):
+        # TODO: Winforms can't support icons in tree cells; so, if the data source
+        # specifies an icon, strip it when converting to row data.
+        def strip_icon(item, attr):
+            val = getattr(item, attr)
+            if isinstance(val, tuple):
+                return str(val[1])
+            return str(val)
+
+        return [item] + [
+            strip_icon(item, attr)
+            for attr in self.interface._accessors
+        ]
 
     def update_data(self):
         self.native.BeginUpdate()
         self.native.Items.Clear()
         items = []
-        for row in self.interface.data:
-            _impl = WinForms.ListViewItem([
-                getattr(row, attr) for attr in self.interface._accessors
-            ])
-            row._impl = _impl
-            items.append(_impl)
+        for item in self.interface.data:
+            item._impl = WinForms.ListViewItem(self.row_data(item))
+            items.append(item._impl)
         self.native.Items.AddRange(items)
         self.native.EndUpdate()
 
     def insert(self, index, item):
         self.native.BeginUpdate()
         item._impl = WinForms.ListViewItem([
-            getattr(item, attr) for attr in self.interface._accessors
+            str(getattr(item, attr)) for attr in self.interface._accessors
         ])
         self.native.Items.Insert(index, item._impl)
         self.native.EndUpdate()

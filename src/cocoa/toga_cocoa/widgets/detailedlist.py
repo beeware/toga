@@ -4,7 +4,7 @@ from travertino.size import at_least
 from toga_cocoa.libs import (
     NSBezelBorder,
     NSMenu,
-    NSTableViewUniformColumnAutoresizingStyle,
+    NSTableViewColumnAutoresizingStyle,
     NSTableColumn,
     NSTableView,
 )
@@ -101,7 +101,7 @@ class DetailedList(Widget):
         self.detailedlist = TogaList.alloc().init()
         self.detailedlist.interface = self.interface
         self.detailedlist._impl = self
-        self.detailedlist.columnAutoresizingStyle = NSTableViewUniformColumnAutoresizingStyle
+        self.detailedlist.columnAutoresizingStyle = NSTableViewColumnAutoresizingStyle.Uniform
 
         # TODO: Optionally enable multiple selection
         self.detailedlist.allowsMultipleSelection = False
