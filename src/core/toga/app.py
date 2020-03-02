@@ -19,8 +19,14 @@ from toga.window import Window
 class MainWindow(Window):
     _WINDOW_CLASS = 'MainWindow'
 
-    def __init__(self, id=None, title=None, position=(100, 100), size=(640, 480), factory=None):
-        super().__init__(id=id, title=title, position=position, size=size, factory=factory)
+    def __init__(self, id=None, title=None, position=(100, 100), size=(640, 480),
+                 toolbar=None, resizeable=True, minimizable=True,
+                 factory=None):
+        super().__init__(
+            id=id, title=title, position=position, size=size, toolbar=toolbar,
+            resizeable=resizeable, closeable=True, minimizable=minimizable,
+            factory=factory
+        )
 
 
 class App:
@@ -100,23 +106,26 @@ class App:
         if app_name:
             self._app_name = app_name
         else:
-            self._app_name = sys.modules['__main__'].__package__
+            # If the code is contained in appname.py, and you start the app
+            # using `python -m appname`, the main module package will report
+            # as ''. Set the initial app name as None.
+            # If the code is contained in appname.py, and you start the app
+            # using `python appname.py`, the main module will report as None.
+            # If the code is contained in a folder, and you start the app
+            # using `python -m appname`, the main module will report as the
+            # name of the folder.
+            main_module_pkg = sys.modules['__main__'].__package__
+            if main_module_pkg == '':
+                self._app_name = None
+            else:
+                self._app_name = main_module_pkg
+
             # During tests, and when running from a prompt, there won't be
             # a __main__ module.
 
             # Try deconstructing the app name from the app ID
             if self._app_name is None and app_id:
-                try:
-                    self._app_name = app_id.split('.')[-1]
-                    # Make sure that the module name actually exists.
-                    sys.modules[self.module_name]
-                except KeyError:
-                    # Well that didn't work...
-                    self._app_name = None
-
-            # Fall back to a module that we *know* exists
-            if self._app_name is None:
-                self._app_name = 'toga'
+                self._app_name = app_id.split('.')[-1]
 
         # Load the app metdata (if it is available)
         # Apps packaged with Briefcase will have this metadata.
@@ -127,10 +136,22 @@ class App:
 
         # Now that we have metadata, we can fix the app name (in the case
         # where the app name and the module name differ - e.g., an app name
-        # of `hello-world` will have a module name of `hello_world`).
-        # We use the PEP566 key "Name", rather than "App-Name".
-        if app_name is None and self.metadata['Name'] is not None:
+        # of ``hello-world`` will have a module name of ``hello_world``).
+        # We use the PEP566-compliant key ``Name```, rather than the internally
+        # consistent key ``App-Name```.
+        if self.metadata['Name'] is not None:
             self._app_name = self.metadata['Name']
+
+        # Whatever app name has been given, speculatively attempt to import
+        # the app module. Single-file apps won't have an app folder; apps with
+        # misleading or misconfigured app names haven't given us enough
+        # metadata to determine the app folder. In those cases, fall back to
+        # an app name that *will* exist (``toga```)
+        try:
+            sys.modules[self.module_name]
+        except KeyError:
+            # Well that didn't work...
+            self._app_name = 'toga'
 
         # If a name has been provided, use it; otherwise, look to
         # the module metadata. However, a name *must* be provided.

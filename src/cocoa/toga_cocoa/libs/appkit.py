@@ -91,6 +91,7 @@ NSSuperscriptAttributeName = objc_const(appkit, "NSSuperscriptAttributeName")
 NSGlyphInfoAttributeName = objc_const(appkit, "NSGlyphInfoAttributeName")
 
 NSViewBoundsDidChangeNotification = objc_const(appkit, 'NSViewBoundsDidChangeNotification')
+NSViewFrameDidChangeNotification = objc_const(appkit, 'NSViewFrameDidChangeNotification')
 
 ######################################################################
 # NSBezierPath.h
@@ -349,6 +350,10 @@ NSImageFrameButton = 4
 NSImageView = ObjCClass('NSImageView')
 
 ######################################################################
+# NSIndexSet.h
+NSIndexSet = ObjCClass('NSIndexSet')
+
+######################################################################
 # NSLayoutConstraint.h
 NSLayoutConstraint = ObjCClass('NSLayoutConstraint')
 
@@ -528,6 +533,10 @@ NSSlider = ObjCClass('NSSlider')
 NSSliderCell = ObjCClass('NSSliderCell')
 
 ######################################################################
+# NSSortDescriptor.h
+NSSortDescriptor = ObjCClass('NSSortDescriptor')
+
+######################################################################
 # NSSplitView.h
 NSSplitView = ObjCClass('NSSplitView')
 
@@ -547,16 +556,32 @@ NSStringDrawingOneShot = 1 << 4  # DEPRECATED
 NSStringDrawingTruncatesLastVisibleLine = 1 << 5
 
 ######################################################################
+# NSTableCellView.h
+NSTableCellView = ObjCClass('NSTableCellView')
+
+######################################################################
 # NSTableView.h
 NSTableColumn = ObjCClass('NSTableColumn')
 NSTableView = ObjCClass('NSTableView')
 
-NSTableViewNoColumnAutoresizing = 0
-NSTableViewUniformColumnAutoresizingStyle = 1
-NSTableViewSequentialColumnAutoresizingStyle = 2
-NSTableViewReverseSequentialColumnAutoresizingStyle = 3
-NSTableViewLastColumnOnlyAutoresizingStyle = 4
-NSTableViewFirstColumnOnlyAutoresizingStyle = 5
+
+class NSTableViewColumnAutoresizingStyle(Enum):
+    NoAutoresizing = 0
+    Uniform = 1
+    Sequential = 2
+    ReverseSequential = 3
+    LastColumnOnly = 4
+    FirstColumnOnly = 5
+
+
+class NSTableViewAnimation(Enum):
+    EffectNone = 0x0
+    EffectFade = 0x1
+    EffectGap = 0x2
+    SlideUp = 0x10
+    SlideDown = 0x20
+    SlideLeft = 0x30
+    SlideRight = 0x40
 
 
 ######################################################################

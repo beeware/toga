@@ -19,29 +19,43 @@ class Table(Widget):
 
         self.native.FullRowSelect = True
         self.native.Multiselect = self.interface.multiple_select
+        self.native.DoubleBuffered = True
         self.native.Columns.AddRange(dataColumn)
 
     def change_source(self, source):
-        self.native.Items.Clear()
-        for index, row in enumerate(self.interface.data):
-            row._impl = WinForms.ListViewItem([
-                getattr(row, attr) for attr in self.interface._accessors
-            ])
-            self.native.Items.Insert(index, row._impl)
+        self.update_data()
+
+    def row_data(self, item):
+        # TODO: Winforms can't support icons in tree cells; so, if the data source
+        # specifies an icon, strip it when converting to row data.
+        def strip_icon(item, attr):
+            val = getattr(item, attr)
+            if isinstance(val, tuple):
+                return str(val[1])
+            return str(val)
+
+        return [item] + [
+            strip_icon(item, attr)
+            for attr in self.interface._accessors
+        ]
 
     def update_data(self):
+        self.native.BeginUpdate()
         self.native.Items.Clear()
-        for index, row in enumerate(self.interface.data):
-            row._impl = WinForms.ListViewItem([
-                getattr(row, attr) for attr in self.interface._accessors
-            ])
-            self.native.Items.Insert(index, row._impl)
+        items = []
+        for item in self.interface.data:
+            item._impl = WinForms.ListViewItem(self.row_data(item))
+            items.append(item._impl)
+        self.native.Items.AddRange(items)
+        self.native.EndUpdate()
 
     def insert(self, index, item):
+        self.native.BeginUpdate()
         item._impl = WinForms.ListViewItem([
-            getattr(item, attr) for attr in self.interface._accessors
+            str(getattr(item, attr)) for attr in self.interface._accessors
         ])
         self.native.Items.Insert(index, item._impl)
+        self.native.EndUpdate()
 
     def change(self, item):
         self.interface.factory.not_implemented('Table.change()')

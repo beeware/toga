@@ -1,0 +1,44 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name = "Handler Demo"
+bundle = "org.beeware"
+version = "0.0.1"
+url = "https://beeware.org"
+license = "BSD license"
+author = 'Tiberius Yak'
+author_email = "tiberius@beeware.org"
+
+[tool.briefcase.app.handlers]
+formal_name = "Handler Demo"
+description = "A testing app"
+sources = ['handlers']
+requires = []
+
+
+[tool.briefcase.app.handlers.macOS]
+requires = [
+    'toga-cocoa',
+]
+
+[tool.briefcase.app.handlers.linux]
+requires = [
+    'toga-gtk',
+]
+
+[tool.briefcase.app.handlers.windows]
+requires = [
+    'toga-winforms',
+]
+
+# Mobile deployments
+[tool.briefcase.app.handlers.iOS]
+requires = [
+    'toga-iOS',
+]
+
+[tool.briefcase.app.handlers.android]
+requires = [
+    'toga-android',
+]

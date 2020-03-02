@@ -9,8 +9,7 @@ from toga_cocoa.libs import (
     NSClosableWindowMask, NSResizableWindowMask, NSMiniaturizableWindowMask,
     NSWindow, NSBackingStoreBuffered, NSLayoutConstraint,
     NSLayoutAttributeBottom, NSLayoutAttributeLeft, NSLayoutAttributeRight,
-    NSLayoutAttributeTop, NSLayoutRelationGreaterThanOrEqual,
-    NSLayoutRelationEqual, NSSize
+    NSLayoutAttributeTop, NSLayoutRelationGreaterThanOrEqual, NSSize
 )
 
 
@@ -41,8 +40,14 @@ class WindowDelegate(NSObject):
     def windowDidResize_(self, notification) -> None:
         if self.interface.content:
             # print()
-            # print("Window resize", (notification.object.contentView.frame.size.width, notification.object.contentView.frame.size.height))
-            if notification.object.contentView.frame.size.width > 0.0 and notification.object.contentView.frame.size.height > 0.0:
+            # print("Window resize", (
+            #   notification.object.contentView.frame.size.width,
+            #   notification.object.contentView.frame.size.height
+            # ))
+            if (
+                notification.object.contentView.frame.size.width > 0.0
+                and notification.object.contentView.frame.size.height > 0.0
+            ):
                 # Set the window to the new size
                 self.interface.content.refresh()
 
@@ -171,18 +176,22 @@ class Window:
         for child in widget.interface.children:
             child._impl.container = widget
 
-        # Enforce a minimum size based on the content
-        self._min_width_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
+        # Enforce a minimum size based on the content size.
+        # This is enforcing the *minimum* size; the window might actually be
+        # bigger. If the window is resizable, using >= allows the window to
+        # be dragged larged; if not resizable, it enforces the smallest
+        # size that can be programmattically set on the window.
+        self._min_width_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # NOQA: E501
             widget.native, NSLayoutAttributeRight,
-            NSLayoutRelationGreaterThanOrEqual if self.interface.resizeable else NSLayoutRelationEqual,
+            NSLayoutRelationGreaterThanOrEqual,
             widget.native, NSLayoutAttributeLeft,
             1.0, 100
         )
         widget.native.addConstraint(self._min_width_constraint)
 
-        self._min_height_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
+        self._min_height_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # NOQA: E501
             widget.native, NSLayoutAttributeBottom,
-            NSLayoutRelationGreaterThanOrEqual if self.interface.resizeable else NSLayoutRelationEqual,
+            NSLayoutRelationGreaterThanOrEqual,
             widget.native, NSLayoutAttributeTop,
             1.0, 100
         )
@@ -197,7 +206,7 @@ class Window:
     def set_size(self, size):
         frame = self.native.frame
         frame.size = NSSize(self.interface._size[0], self.interface._size[1])
-        self.native.setFrame(frame, display=True, animate=False)
+        self.native.setFrame(frame, display=True, animate=True)
 
     def set_app(self, app):
         pass

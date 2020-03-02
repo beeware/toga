@@ -8,7 +8,11 @@ class ExampleButtonApp(toga.App):
     def startup(self):
         # Window class
         #   Main window of the application with title and size
-        self.main_window = toga.MainWindow(title=self.name, size=(200, 200))
+        #   Also make the window non-resizable and non-minimizable.
+        self.main_window = toga.MainWindow(
+            title=self.name, size=(800, 500),
+            resizeable=False, minimizable=False
+        )
 
         # Common style of the inner boxes
         style_inner_box = Pack(direction=ROW)
@@ -16,17 +20,21 @@ class ExampleButtonApp(toga.App):
         # Button class
         #   Simple button with label and callback function called when
         #   hit the button
-        button1 = toga.Button('Change Label', on_press=self.callbackLabel)
+        button1 = toga.Button(
+            'Change Label',
+            on_press=self.callbackLabel,
+            style=Pack(flex=1),
+        )
 
         # Button with label and enable option
-        button2 = toga.Button('Disabled', enabled=False)
+        button2 = toga.Button('Disabled', enabled=False, style=Pack(flex=1))
 
         # Button with label and style option
         button3 = toga.Button('Bigger', style=Pack(width=200))
 
-        # Button with label and callback function called when
-        #   hit the button
-        button4 = toga.Button('Resize Window', on_press=self.callbackResize)
+        # Button with label and callback function called
+        button4a = toga.Button('Make window larger', on_press=self.callbackLarger)
+        button4b = toga.Button('Make window smaller', on_press=self.callbackSmaller)
 
         # Box class
         # Container of components
@@ -37,7 +45,8 @@ class ExampleButtonApp(toga.App):
                 button1,
                 button2,
                 button3,
-                button4
+                button4a,
+                button4b,
             ]
         )
 
@@ -77,10 +86,15 @@ class ExampleButtonApp(toga.App):
         #   In this case the label will change
         button.label = 'Magic!!'
 
-    def callbackResize(self, button):
+    def callbackLarger(self, button):
         # Some action when you hit the button
         #   In this case the window size will change
-        self.main_window.size = (100, 100)
+        self.main_window.size = (1000, 600)
+
+    def callbackSmaller(self, button):
+        # Some action when you hit the button
+        #   In this case the window size will change
+        self.main_window.size = (200, 200)
 
 
 def main():

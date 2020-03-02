@@ -1,119 +1,147 @@
-from random import choice
+from pathlib import Path
 
 import toga
 from toga.style import Pack
-from toga.constants import ROW, COLUMN
+from toga.constants import COLUMN
 from toga.sources import Source
+from datetime import datetime
 
-bee_movies = [
-    {'year': 2008, 'title': 'The Secret Life of Bees', 'rating': '7.3', 'genre': 'Drama'},
-    {'year': 2007, 'title': 'Bee Movie', 'rating': '6.1', 'genre': 'Animation, Adventure, Comedy'},
-    {'year': 1998, 'title': 'Bees', 'rating': '6.3', 'genre': 'Horror'},
-    {'year': 2007, 'title': 'The Girl Who Swallowed Bees', 'rating': '7.5', 'genre': 'Short'},
-    {'year': 1974, 'title': 'Birds Do It, Bees Do It', 'rating': '7.3', 'genre': 'Documentary'},
-    {'year': 1998, 'title': 'Bees: A Life for the Queen', 'rating': '8.0', 'genre': 'TV Movie'},
-    {'year': 1994, 'title': 'Bees in Paradise', 'rating': '5.4', 'genre': 'Comedy, Musical'},
-    {'year': 1947, 'title': 'Keeper of the Bees', 'rating': '6.3', 'genre': 'Drama'}
-]
-
-class Movie:
-    # A class to wrap individual
-    def __init__(self, year, title, rating, genre):
-        self.year = year
-        self.title = title
-        self.rating = rating
-        self.genre = genre
+# This is a slightly less toy example of a tree view to display
+# items in your home directory. To avoid loading everything
+# in advance, the content of a folder is loaded dynamically,
+# on access. This typically happens when the tree view asks for
+# the number of children to decide if it should display an
+# expandable row.
+#
+# In practice, one can use a similar concept of on-access
+# loading to fetch data from an API or online resource but
+# perform the loading asynchronously.
 
 
-class Decade:
-    # A class to wrap
-    def __init__(self, decade):
-        self.decade = decade
-        self._data = []
+class LoadingFailedNode:
+    """A node to represent failed loading of children"""
 
-    # Display values for the decade in the tree.
-    @property
-    def year(self):
-        return "{}0's".format(self.decade)
+    def __init__(self, parent):
+        self.parent = parent
+        self.children = []
+        self.name = 'loading failed'
+        self.date_modified = ''
 
     # Methods required for the data source interface
     def __len__(self):
-        return len(self._data)
+        return 0
 
     def __getitem__(self, index):
-        return self._data[index]
+        raise StopIteration
+
+    @staticmethod
+    def can_have_children():
+        return False
+
+
+class Node:
+    """A node which loads its children on-demand."""
+
+    def __init__(self, path, parent):
+        super().__init__()
+
+        self.parent = parent
+        self._children = []
+
+        self.path = path
+        self._mtime = self.path.stat().st_mtime
+        if self.path.is_file():
+            self._icon = toga.Icon('resources/file')
+        else:
+            self._icon = toga.Icon('resources/folder')
+        self._did_start_loading = False
+
+    # Methods required for the data source interface
+    def __len__(self):
+        return len(self.children)
+
+    def __getitem__(self, index):
+        return self.children[index]
 
     def can_have_children(self):
-        return True
+        # this will trigger loading of children, if not yet done
+        return len(self.children) > 0
 
+    # Property that returns the first column value as (icon, label)
+    @property
+    def name(self):
+        return self._icon, self.path.name
 
-class DecadeSource(Source):
-    def __init__(self):
-        super().__init__()
-        self._decades = []
+    # Property that returns modified date as str
+    @property
+    def date_modified(self):
+        return datetime.fromtimestamp(self._mtime).strftime('%d %b %Y at %H:%M')
 
-    def __len__(self):
-        return len(self._decades)
+    # on-demand loading of children
+    @property
+    def children(self):
+        if not self._did_start_loading:
+            self._did_start_loading = True
+            self.load_children()
+        return self._children
 
-    def __getitem__(self, index):
-        return self._decades[index]
-
-    def add(self, entry):
-        decade = entry['year'] // 10
+    def load_children(self):
         try:
-            decade_root = {
-                root.decade: root
-                for root in self._decades
-            }[decade]
-        except KeyError:
-            decade_root = Decade(decade)
-            self._decades.append(decade_root)
-            self._decades.sort(key=lambda v: v.decade)
-        movie = Movie(**entry)
-        decade_root._data.append(movie)
-        self._notify('insert', parent=decade_root, index=len(decade_root._data) - 1, item=movie)
+            sub_paths = [p for p in self.path.iterdir()]
+            self._children = [Node(p, self) for p in sub_paths]
+        except NotADirectoryError:
+            self._children = []
+        except OSError:
+            self._children = [LoadingFailedNode(self)]
+
+
+class FileSystemSource(Node, Source):
+    def __init__(self, path):
+        super().__init__(path, parent=self)
+        self.path = path
+        self._parent = None
+        self._children = []
 
 
 class ExampleTreeSourceApp(toga.App):
-    # Table callback functions
-    def on_select_handler(self, widget, node):
-        if node and hasattr(node, 'title'):
-            self.label.text = 'You selected node: {}'.format(node.title)
-        else:
-            self.label.text = 'No row selected'
+    def selection_handler(self, widget, node):
+        # A node is a dictionary of the last item that was clicked in the tree.
+        # node['node'].path would get you the file path to only that one item.
+        # self.label.text = f'Selected {node["node"].path}'
 
-    # Button callback functions
-    def insert_handler(self, widget, **kwargs):
-        entry = choice(bee_movies)
-        self.tree.data.add(entry)
+        # If you iterate over widget.selection, you can get the names and the
+        # paths of everything selected (if multiple_select is enabled.)
+        # filepaths = [node.path for node in widget.selection]
+        files = len(widget.selection)
+        if files == 0:
+            self.label.text = 'A view of the current directory!'
+        elif files == 1:
+            self.label.text = 'You selected {0} item'.format(files)
+        else:
+            self.label.text = 'You selected {0} items'.format(files)
 
     def startup(self):
         # Set up main window
         self.main_window = toga.MainWindow(title=self.name)
 
-        # Label to show responses.
-        self.label = toga.Label('Ready.')
+        self.fs_source = FileSystemSource(Path.cwd())
 
         self.tree = toga.Tree(
-            headings=['Year', 'Title', 'Rating', 'Genre'],
-            data=DecadeSource(),
-            on_select=self.on_select_handler,
-            style=Pack(flex=1)
+            headings=['Name', 'Date Modified'],
+            data=self.fs_source,
+            style=Pack(flex=1),
+            multiple_select=True,
+            on_select=self.selection_handler,
         )
-
-        # Buttons
-        btn_style = Pack(flex=1)
-        btn_insert = toga.Button('Insert Row', on_press=self.insert_handler, style=btn_style)
-        btn_box = toga.Box(children=[btn_insert], style=Pack(direction=ROW))
+        self.label = toga.Label('A view of the current directory!', style=Pack(padding=10))
 
         # Outermost box
         outer_box = toga.Box(
-            children=[btn_box, self.tree, self.label],
-            style=Pack(
-                flex=1,
-                direction=COLUMN,
-                padding=10,
-            )
+            children=[
+                self.label,
+                self.tree,
+            ],
+            style=Pack(flex=1, direction=COLUMN)
         )
 
         # Add the content on the main window

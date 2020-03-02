@@ -68,15 +68,10 @@ class SplitContainer(Widget):
             self._impl.add_content(position, widget._impl)
             widget.refresh()
 
-    def set_app(self, app):
+    def _set_window(self, window):
         if self._content:
             for content in self._content:
-                content.app = self.app
-
-    def set_window(self, window):
-        if self._content:
-            for content in self._content:
-                content.window = self.window
+                content.window = window
 
     def refresh_sublayouts(self):
         """Refresh the layout and appearance of this widget."""

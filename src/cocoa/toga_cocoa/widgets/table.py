@@ -1,8 +1,14 @@
+from rubicon.objc import at
 from travertino.size import at_least
 
-from toga.sources import to_accessor
-from toga_cocoa.libs import *
-
+from toga_cocoa.libs import (
+    objc_method,
+    NSBezelBorder,
+    NSScrollView,
+    NSTableColumn,
+    NSTableView,
+    NSTableViewColumnAutoresizingStyle
+)
 from .base import Widget
 from .internal.cells import TogaIconCell
 from .internal.data import TogaData
@@ -17,14 +23,17 @@ class TogaTable(NSTableView):
     @objc_method
     def tableView_objectValueForTableColumn_row_(self, table, column, row: int):
         data_row = self.interface.data[row]
+
+        # Obtain (constructing, if it doesn't already exist) the
+        # impl for the data row.
         try:
-            data = data_row._impls
+            data = data_row._impl
         except AttributeError:
             data = {
                 attr: TogaData.alloc().init()
                 for attr in self.interface._accessors
             }
-            data_row._impls = data
+            data_row._impl = data
 
         col_identifier = str(column.identifier)
 
@@ -95,7 +104,7 @@ class Table(Widget):
         self.table = TogaTable.alloc().init()
         self.table.interface = self.interface
         self.table._impl = self
-        self.table.columnAutoresizingStyle = NSTableViewUniformColumnAutoresizingStyle
+        self.table.columnAutoresizingStyle = NSTableViewColumnAutoresizingStyle.Uniform
 
         self.table.allowsMultipleSelection = self.interface.multiple_select
 
