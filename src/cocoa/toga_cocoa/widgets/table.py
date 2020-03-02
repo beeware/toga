@@ -1,8 +1,14 @@
+from rubicon.objc import at
 from travertino.size import at_least
 
-from toga.sources import to_accessor
-from toga_cocoa.libs import *
-
+from toga_cocoa.libs import (
+    objc_method,
+    NSBezelBorder,
+    NSScrollView,
+    NSTableColumn,
+    NSTableView,
+    NSTableViewColumnAutoresizingStyle
+)
 from .base import Widget
 from .internal.cells import TogaIconCell
 from .internal.data import TogaData
@@ -98,7 +104,7 @@ class Table(Widget):
         self.table = TogaTable.alloc().init()
         self.table.interface = self.interface
         self.table._impl = self
-        self.table.columnAutoresizingStyle = NSTableViewUniformColumnAutoresizingStyle
+        self.table.columnAutoresizingStyle = NSTableViewColumnAutoresizingStyle.Uniform
 
         self.table.allowsMultipleSelection = self.interface.multiple_select
 
