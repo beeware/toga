@@ -19,29 +19,42 @@ class Table(Widget):
 
         self.native.FullRowSelect = True
         self.native.Multiselect = self.interface.multiple_select
+        self.native.DoubleBuffered = True
         self.native.Columns.AddRange(dataColumn)
 
     def change_source(self, source):
+        self.native.BeginUpdate()
         self.native.Items.Clear()
-        for index, row in enumerate(self.interface.data):
-            row._impl = WinForms.ListViewItem([
+        items = []
+        for row in self.interface.data:
+            _impl = WinForms.ListViewItem([
                 getattr(row, attr) for attr in self.interface._accessors
             ])
-            self.native.Items.Insert(index, row._impl)
+            row._impl = _impl
+            items.append(_impl)
+        self.native.Items.AddRange(items)
+        self.native.EndUpdate()
 
     def update_data(self):
+        self.native.BeginUpdate()
         self.native.Items.Clear()
-        for index, row in enumerate(self.interface.data):
-            row._impl = WinForms.ListViewItem([
+        items = []
+        for row in self.interface.data:
+            _impl = WinForms.ListViewItem([
                 getattr(row, attr) for attr in self.interface._accessors
             ])
-            self.native.Items.Insert(index, row._impl)
+            row._impl = _impl
+            items.append(_impl)
+        self.native.Items.AddRange(items)
+        self.native.EndUpdate()
 
     def insert(self, index, item):
+        self.native.BeginUpdate()
         item._impl = WinForms.ListViewItem([
             getattr(item, attr) for attr in self.interface._accessors
         ])
         self.native.Items.Insert(index, item._impl)
+        self.native.EndUpdate()
 
     def change(self, item):
         self.interface.factory.not_implemented('Table.change()')
