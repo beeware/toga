@@ -137,17 +137,18 @@ class Table(Widget):
         self._on_select = wrapped_handler(self, handler)
         self._impl.set_on_select(self._on_select)
 
-    def add_column(self, heading, fillvalue=''):
+    def add_column(self, heading, accessor=None):
         """
         Add a new column to the table
 
         :param heading:     title of the column
         :type heading:      ``string``
-        :param fillvalue:   fill new column with this value
+        :param accessor:    accessor of this new column
         :type heading:      ``string``
         """
 
-        accessor = to_accessor(heading)
+        if not accessor:
+            accessor = to_accessor(heading)
 
         if accessor in self._accessors:
             raise ValueError('Column name "{}" already exits'.format(accessor))
@@ -155,7 +156,7 @@ class Table(Widget):
         self.headings.append(heading)
         self._accessors.append(accessor)
 
-        for row in self._data:
-            row.extend(accessor, fillvalue)
+        #for row in self._data:
+        #    row.extend(accessor, fillvalue)
 
         self._impl.add_column(heading, accessor)
