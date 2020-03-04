@@ -94,39 +94,8 @@ class Node:
         except OSError:
             self._children = [LoadingFailedNode(self)]
 
-    def sort(self, accessor, key=None, reverse=False):
-
-        if accessor == 'date_modified':  # use our own sort function
-            def sort_func(child):
-                return child._mtime
-        elif accessor == 'name':
-            def sort_func(child):
-                return child.name[1].lower()
-        else:  # use the function provided by the user / default
-            def sort_func(child):
-                # sort according to value of accessor, using the provided sort key
-                try:
-                    attr = getattr(child, accessor)
-                    if isinstance(attr, tuple):
-                        icon, value = attr
-                    else:
-                        value = attr
-                    return key(value) if key else value
-                except AttributeError:
-                    return ''
-
-        # sort all children in hierarchy
-        self._children.sort(key=sort_func, reverse=reverse)
-
-        for c in self._children:
-            try:
-                c.sort(accessor, key, reverse)
-            except AttributeError:
-                pass
-
 
 class FileSystemSource(Node, Source):
-
     def __init__(self, path):
         super().__init__(path, parent=self)
         self.path = path
