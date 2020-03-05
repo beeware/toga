@@ -26,6 +26,7 @@ class Button(Widget):
         # Set all the properties
         self.label = label
         self.on_press = on_press
+        self.enabled = enabled
 
     @property
     def label(self):
