@@ -36,9 +36,18 @@ class TogaTable(NSTableView):
             data_row._impl = data
 
         col_identifier = str(column.identifier)
+        
+        # obtain data from 'col_identifier'
+        # and constructing if doesn't exists
+        try:
+            datum = data[col_identifier]
+        except KeyError:
+            data[col_identifier] = TogaData.alloc().init()
+            data_row._impl[col_identifier] = data[col_identifier]
+            datum = data[col_identifier]
 
-        datum = data[col_identifier]
-        value = getattr(data_row, col_identifier)
+        # empty default value to avoid crash when a column is added
+        value = getattr(data_row, col_identifier, '')
 
         # Allow for an (icon, value) tuple as the simple case
         # for encoding an icon in a table cell.
@@ -167,11 +176,10 @@ class Table(Widget):
         column.headerCell.stringValue = heading
 
     def add_column(self, heading, accessor):
-
         self._add_column(heading, accessor)
+        self.table.sizeToFit()
 
-        if self.interface.data:
-            for row in self.interface.data:
-                row._impls[accessor] = TogaData.alloc().init()
-
+    def remove_column(self, accessor):
+        column = self.table.tableColumnWithIdentifier(accessor)
+        self.table.removeTableColumn(column)
         self.table.sizeToFit()
