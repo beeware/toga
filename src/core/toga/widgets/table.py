@@ -160,16 +160,16 @@ class Table(Widget):
 
     def remove_column(self, heading, accessor=None):
         """
-        Remove a table column 
+        Remove a table column
 
         :param heading:     title of the column to remove
         :type heading:      ``string``
         :param accessor:    accessor of the column to remove
         :type heading:      ``string``
 
-        If no accessor is passed, it will try to build one from 
-        header. If it is a custom accesor setted in __init__ it is 
-        neccesary to pass both heading and accesor in order to 
+        If no accessor is passed, it will try to build one from
+        header. If it is a custom accesor setted in __init__ it is
+        neccesary to pass both heading and accesor in order to
         delete correctly.
         """
 

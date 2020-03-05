@@ -185,9 +185,9 @@ class Table(Widget):
 
         # delete column and identifier
         self.columns.remove(column)
-        for k,v in self.column_identifiers.items():
+        for k, v in self.column_identifiers.items():
             if v == accessor:
                 del self.column_identifiers[k]
                 break
-     
+
         self.table.sizeToFit()
