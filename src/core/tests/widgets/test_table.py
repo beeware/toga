@@ -117,7 +117,7 @@ class TableTests(TestCase):
         self.assertEqual(self.headings, expecting_headings)
 
     def test_remove_column(self):
-        
+
         dummy_data = [
             ['a1', 'b1', 'c1'],
         ]
@@ -128,4 +128,3 @@ class TableTests(TestCase):
         self.table.remove_column(remove_last_header)
 
         self.assertEqual(self.headings, expecting_headings)
-
