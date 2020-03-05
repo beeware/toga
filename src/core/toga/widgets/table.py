@@ -156,7 +156,14 @@ class Table(Widget):
         self.headings.append(heading)
         self._accessors.append(accessor)
 
-        #for row in self._data:
-        #    row.extend(accessor, fillvalue)
-
         self._impl.add_column(heading, accessor)
+    
+    def remove_column(self, heading, accessor=None):
+
+        if not accessor:
+            accessor = to_accessor(heading)
+
+        self.headings.remove(heading)
+        self._accessors.remove(accessor)
+
+        self._impl.remove_column(accessor)
