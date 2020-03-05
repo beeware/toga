@@ -157,13 +157,32 @@ class Table(Widget):
         self._accessors.append(accessor)
 
         self._impl.add_column(heading, accessor)
-    
+
     def remove_column(self, heading, accessor=None):
+        """
+        Remove a table column 
+
+        :param heading:     title of the column to remove
+        :type heading:      ``string``
+        :param accessor:    accessor of the column to remove
+        :type heading:      ``string``
+
+        If no accessor is passed, it will try to build one from 
+        header. If it is a custom accesor setted in __init__ it is 
+        neccesary to pass both heading and accesor in order to 
+        delete correctly.
+        """
 
         if not accessor:
             accessor = to_accessor(heading)
 
-        self.headings.remove(heading)
-        self._accessors.remove(accessor)
+        if accessor not in self._accessors:
+            raise ValueError('Column name "{}" does not exits'.format(accessor))
 
-        self._impl.remove_column(accessor)
+        try:
+            self._impl.remove_column(accessor)
+        except Exception as exception:
+            raise exception
+        finally:
+            self.headings.remove(heading)
+            self._accessors.remove(accessor)

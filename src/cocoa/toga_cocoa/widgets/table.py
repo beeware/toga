@@ -36,7 +36,7 @@ class TogaTable(NSTableView):
             data_row._impl = data
 
         col_identifier = str(column.identifier)
-        
+
         # obtain data from 'col_identifier'
         # and constructing if doesn't exists
         try:
@@ -182,4 +182,12 @@ class Table(Widget):
     def remove_column(self, accessor):
         column = self.table.tableColumnWithIdentifier(accessor)
         self.table.removeTableColumn(column)
+
+        # delete column and identifier
+        self.columns.remove(column)
+        for k,v in self.column_identifiers.items():
+            if v == accessor:
+                del self.column_identifiers[k]
+                break
+     
         self.table.sizeToFit()
