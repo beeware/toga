@@ -112,16 +112,20 @@ class TableTests(TestCase):
         self.table.data = dummy_data
 
         expecting_headings = self.headings + [new_heading]
-        expecting_value = 'FillValue'
-
-        self.table.add_column(new_heading, expecting_value)
+        self.table.add_column(new_heading)
 
         self.assertEqual(self.headings, expecting_headings)
-        self.assertEqual(self.table.data[0].heading_4, expecting_value)
 
-    '''
-    def test_add_existing_column(self):
-        new_heading = 'Heading 3'
-        # self.table.add_column(new_heading)
-        # TODO: Assert ValueError?
-    '''
+    def test_remove_column(self):
+        
+        dummy_data = [
+            ['a1', 'b1', 'c1'],
+        ]
+        self.table.data = dummy_data
+
+        remove_last_header = self.headings[-1]
+        expecting_headings = self.headings[:-1]
+        self.table.remove_column(remove_last_header)
+
+        self.assertEqual(self.headings, expecting_headings)
+
