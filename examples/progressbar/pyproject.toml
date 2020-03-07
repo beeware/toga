@@ -4,7 +4,7 @@ requires = ["briefcase"]
 [tool.briefcase]
 project_name = "ProgressBar demo"
 bundle = "org.beeware"
-version = "0.0.1"
+version = "0.3.0.dev19"
 url = "https://beeware.org"
 license = "BSD license"
 author = 'Tiberius Yak'
