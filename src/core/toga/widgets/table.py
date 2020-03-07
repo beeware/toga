@@ -158,7 +158,7 @@ class Table(Widget):
 
         self._impl.add_column(heading, accessor)
 
-    def remove_column(self, heading, accessor=None):
+    def remove_column(self, heading=None, accessor=None, position=None):
         """
         Remove a table column
 
@@ -166,23 +166,47 @@ class Table(Widget):
         :type heading:      ``string``
         :param accessor:    accessor of the column to remove
         :type heading:      ``string``
+        :param position:    index of the column to remove, 
+                            starting at 1
+        :type heading:      ``int`` 
 
-        If no accessor is passed, it will try to build one from
-        header. If it is a custom accesor setted in __init__ it is
-        neccesary to pass both heading and accesor in order to
-        delete correctly.
+        If all parameters are sent, the priority is:
+        1) accessor
+        2) heading
+        3) position
         """
 
-        if not accessor:
-            accessor = to_accessor(heading)
+        # validation and setup heading
+        if accessor:
+            if accessor not in self._accessors:
+                raise ValueError(f'Column name "{accessor}" does not exits')
+            pos = self._accessors.index(accessor)
+            heading = self.headings[pos]
 
-        if accessor not in self._accessors:
-            raise ValueError('Column name "{}" does not exits'.format(accessor))
+        elif heading:
+            if heading not in self.headings:
+                raise ValueError(f'Column name "{heading}" does not exits')
+            pos = self.headings.index(heading)
+            accessor = self._accessors[pos]
 
+        elif position:
+            last_col_pos = len(self._accessors)
+            if not position > 0 or not position <= last_col_pos:
+                msg = f'Column position "{position}" ' \
+                       'is not in the range [1-{last_col_pos}]'
+                raise ValueError(msg)
+            heading = self.headings[position-1]
+            accessor = self._accessors[position-1]
+
+        else:
+            msg = 'heading, accessor or position must to passed by parameter'
+            raise ValueError(msg)
+
+        # remove column
         try:
             self._impl.remove_column(accessor)
         except Exception as exception:
             raise exception
-        finally:
+        else:
             self.headings.remove(heading)
             self._accessors.remove(accessor)

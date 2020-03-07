@@ -116,15 +116,36 @@ class TableTests(TestCase):
 
         self.assertEqual(self.headings, expecting_headings)
 
-    def test_remove_column(self):
-
+    def test_remove_column_by_heading(self):
+        remove = 'Heading 2'
         dummy_data = [
             ['a1', 'b1', 'c1'],
         ]
         self.table.data = dummy_data
 
-        remove_last_header = self.headings[-1]
-        expecting_headings = self.headings[:-1]
-        self.table.remove_column(remove_last_header)
+        expecting_headings = [h for h in self.table.headings if h != remove]
+        self.table.remove_column(heading=remove)
+        self.assertEqual(self.table.headings, expecting_headings)
 
-        self.assertEqual(self.headings, expecting_headings)
+    def test_remove_column_by_accessor(self):
+        remove = 'heading_2'
+        dummy_data = [
+            ['a1', 'b1', 'c1'],
+        ]
+        self.table.data = dummy_data
+
+        expecting_accessors = [h for h in self.table._accessors if h != remove]
+        self.table.remove_column(accessor=remove)
+        self.assertEqual(self.table._accessors, expecting_accessors)
+
+    def test_remove_column_by_position(self):
+        remove = 2
+        dummy_data = [
+            ['a1', 'b1', 'c1'],
+        ]
+        self.table.data = dummy_data
+
+        heading = self.table.headings[remove-1]
+        expecting_headings = [h for h in self.table.headings if h != heading]
+        self.table.remove_column(position=remove)
+        self.assertEqual(self.table.headings, expecting_headings)
