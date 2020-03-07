@@ -166,9 +166,9 @@ class Table(Widget):
         :type heading:      ``string``
         :param accessor:    accessor of the column to remove
         :type heading:      ``string``
-        :param position:    index of the column to remove, 
+        :param position:    index of the column to remove,
                             starting at 1
-        :type heading:      ``int`` 
+        :type heading:      ``int``
 
         If all parameters are sent, the priority is:
         1) accessor
@@ -179,13 +179,13 @@ class Table(Widget):
         # validation and setup heading
         if accessor:
             if accessor not in self._accessors:
-                raise ValueError(f'Column name "{accessor}" does not exits')
+                raise ValueError(f'Column accesor: "{accessor}" does not exists')
             pos = self._accessors.index(accessor)
             heading = self.headings[pos]
 
         elif heading:
             if heading not in self.headings:
-                raise ValueError(f'Column name "{heading}" does not exits')
+                raise ValueError(f'Column heading: "{heading}" does not exists')
             pos = self.headings.index(heading)
             accessor = self._accessors[pos]
 
