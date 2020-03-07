@@ -179,21 +179,23 @@ class Table(Widget):
         # validation and setup heading
         if accessor:
             if accessor not in self._accessors:
-                raise ValueError(f'Column accesor: "{accessor}" does not exists')
+                msg = 'Column accesor: "{}" does not exists'.format(accessor)
+                raise ValueError(msg)
             pos = self._accessors.index(accessor)
             heading = self.headings[pos]
 
         elif heading:
             if heading not in self.headings:
-                raise ValueError(f'Column heading: "{heading}" does not exists')
+                msg = 'Column heading: "{}" does not exists'.format(heading)
+                raise ValueError(msg)
             pos = self.headings.index(heading)
             accessor = self._accessors[pos]
 
         elif position:
             last_col_pos = len(self._accessors)
             if not position > 0 or not position <= last_col_pos:
-                msg = f'Column position "{position}" ' \
-                       'is not in the range [1-{last_col_pos}]'
+                msg = 'Column position: "{}" is not ' \
+                      'in the range [1-{}]'.format(position, last_col_pos)
                 raise ValueError(msg)
             heading = self.headings[position-1]
             accessor = self._accessors[position-1]
