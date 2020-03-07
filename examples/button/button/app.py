@@ -1,3 +1,5 @@
+import random
+
 import toga
 from toga.style import Pack
 from toga.colors import RED, BLUE
@@ -27,7 +29,13 @@ class ExampleButtonApp(toga.App):
         )
 
         # Button with label and enable option
-        button2 = toga.Button('Disabled', enabled=False, style=Pack(flex=1))
+        # Keep a reference to it so it can be enabled by another button.
+        self.button2 = toga.Button(
+            'Button is disabled!',
+            enabled=False,
+            style=Pack(flex=1),
+            on_press=self.callbackDisable,
+        )
 
         # Button with label and style option
         button3 = toga.Button('Bigger', style=Pack(width=200))
@@ -43,7 +51,7 @@ class ExampleButtonApp(toga.App):
             style=style_inner_box,
             children=[
                 button1,
-                button2,
+                self.button2,
                 button3,
                 button4a,
                 button4b,
@@ -84,7 +92,16 @@ class ExampleButtonApp(toga.App):
     def callbackLabel(self, button):
         # Some action when you hit the button
         #   In this case the label will change
-        button.label = 'Magic!!'
+        button.label = 'Magic {val}!!'.format(val=random.randint(0, 100))
+
+        # If the disabled button isn't enabled, enable it.
+        if not self.button2.enabled:
+            self.button2.enabled = True
+            self.button2.label = 'Disable button'
+
+    def callbackDisable(self, button):
+        button.enabled = False
+        button.label = 'Button is disabled!'
 
     def callbackLarger(self, button):
         # Some action when you hit the button
