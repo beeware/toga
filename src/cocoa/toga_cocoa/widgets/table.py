@@ -24,24 +24,21 @@ class TogaTable(NSTableView):
     def tableView_objectValueForTableColumn_row_(self, table, column, row: int):
         data_row = self.interface.data[row]
 
-        # Obtain (constructing, if it doesn't already exist) the
-        # impl for the data row.
         try:
+            # Obtain the _impl for the data row
             data = data_row._impl
         except AttributeError:
-            data = {
-                attr: TogaData.alloc().init()
-                for attr in self.interface._accessors
-            }
+            # or constructing, if it doesn't already exist
+            data = {}
             data_row._impl = data
 
         col_identifier = str(column.identifier)
 
-        # obtain data from 'col_identifier'
-        # and constructing if doesn't exists
         try:
+            # obtain TogaData
             datum = data[col_identifier]
         except KeyError:
+            # or creating a new one
             data[col_identifier] = TogaData.alloc().init()
             data_row._impl[col_identifier] = data[col_identifier]
             datum = data[col_identifier]
@@ -165,7 +162,7 @@ class Table(Widget):
 
     def _add_column(self, heading, accessor):
         column_identifier = at(accessor)
-        self.column_identifiers[id(column_identifier)] = accessor
+        self.column_identifiers[accessor] = column_identifier
         column = NSTableColumn.alloc().initWithIdentifier(column_identifier)
         self.table.addTableColumn(column)
         self.columns.append(column)
@@ -180,14 +177,12 @@ class Table(Widget):
         self.table.sizeToFit()
 
     def remove_column(self, accessor):
-        column = self.table.tableColumnWithIdentifier(accessor)
+        column_identifier = self.column_identifiers[accessor]
+        column = self.table.tableColumnWithIdentifier(column_identifier)
         self.table.removeTableColumn(column)
 
         # delete column and identifier
         self.columns.remove(column)
-        for k, v in self.column_identifiers.items():
-            if v == accessor:
-                del self.column_identifiers[k]
-                break
+        del self.column_identifiers[accessor]
 
         self.table.sizeToFit()

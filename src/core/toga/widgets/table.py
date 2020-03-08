@@ -151,58 +151,31 @@ class Table(Widget):
             accessor = to_accessor(heading)
 
         if accessor in self._accessors:
-            raise ValueError('Column name "{}" already exits'.format(accessor))
+            raise ValueError('Accesor "{}" is already in use'.format(accessor))
 
         self.headings.append(heading)
         self._accessors.append(accessor)
 
         self._impl.add_column(heading, accessor)
 
-    def remove_column(self, heading=None, accessor=None, position=None):
+    def remove_column(self, column):
         """
         Remove a table column
 
-        :param heading:     title of the column to remove
-        :type heading:      ``string``
-        :param accessor:    accessor of the column to remove
-        :type heading:      ``string``
-        :param position:    index of the column to remove,
-                            starting at 1
-        :type heading:      ``int``
-
-        If all parameters are sent, the priority is:
-        1) accessor
-        2) heading
-        3) position
+        :param column:     accessor or position (>0)
+        :type column:      ``string``
+        :type column:      ``int``
         """
 
-        # validation and setup heading
-        if accessor:
-            if accessor not in self._accessors:
-                msg = 'Column accesor: "{}" does not exists'.format(accessor)
-                raise ValueError(msg)
-            pos = self._accessors.index(accessor)
-            heading = self.headings[pos]
-
-        elif heading:
-            if heading not in self.headings:
-                msg = 'Column heading: "{}" does not exists'.format(heading)
-                raise ValueError(msg)
-            pos = self.headings.index(heading)
-            accessor = self._accessors[pos]
-
-        elif position:
-            last_col_pos = len(self._accessors)
-            if not position > 0 or not position <= last_col_pos:
-                msg = 'Column position: "{}" is not ' \
-                      'in the range [1-{}]'.format(position, last_col_pos)
-                raise ValueError(msg)
-            heading = self.headings[position-1]
-            accessor = self._accessors[position-1]
-
+        if type(column) == str and column in self._accessors:
+            # delete by accessor
+            accessor = column
+        elif type(column) == int and \
+                column >= 0 and column <= len(self._accessors)-1:
+            # delete by position
+            accessor = self._accessors[column]
         else:
-            msg = 'heading, accessor or position must to passed by parameter'
-            raise ValueError(msg)
+            raise ValueError('Invalid column: "{}"'.format(column))
 
         # remove column
         try:
@@ -210,5 +183,5 @@ class Table(Widget):
         except Exception as exception:
             raise exception
         else:
-            self.headings.remove(heading)
+            del self.headings[self._accessors.index(accessor)]
             self._accessors.remove(accessor)
