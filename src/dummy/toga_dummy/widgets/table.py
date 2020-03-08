@@ -29,5 +29,5 @@ class Table(Widget):
     def add_column(self, heading, accessor):
         self._action('add column', heading=heading, accessor=accessor)
 
-    def remove_column(self, column):
-        self._action('remove column', column=column)
+    def remove_column(self, accessor):
+        self._action('remove column', accessor=accessor)
