@@ -33,7 +33,7 @@ class Table(Tree):
     def add_column(self, heading, accessor):
         return NotImplementedError
 
-    def remove_column(self, column):
+    def remove_column(self, accessor):
         return NotImplementedError
 
     # =================================
