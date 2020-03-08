@@ -134,7 +134,7 @@ class TableTests(TestCase):
         ]
         self.table.data = dummy_data
 
-        heading = self.table.headings[remove-1]
+        heading = self.table.headings[remove]
         expecting_headings = [h for h in self.table.headings if h != heading]
         self.table.remove_column(remove)
         self.assertEqual(self.table.headings, expecting_headings)

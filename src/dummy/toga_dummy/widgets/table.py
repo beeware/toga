@@ -30,4 +30,4 @@ class Table(Widget):
         self._action('add column', heading=heading, accessor=accessor)
 
     def remove_column(self, column):
-        self._action('remove column', column)
+        self._action('remove column', column=column)
