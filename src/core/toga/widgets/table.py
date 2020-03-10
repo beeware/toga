@@ -17,8 +17,8 @@ class Table(Widget):
         style (:obj:`Style`): An optional style object.
             If no style is provided` then a new one will be created for the widget.
         on_select (``callable``): A function to be invoked on selecting a row of the table.
-        missing_value (``str`` or ``None``): value for replacing a missing value 
-ault: None). When 'None', a warning message will be showed
+        missing_value (``str`` or ``None``): value for replacing a missing value
+            in the data source. (Default: None). When 'None', a warning message will be showed
         factory (:obj:`module`): A python module that is capable to return a
             implementation of this class with the same name. (optional & normally not needed)
 
@@ -189,12 +189,12 @@ ault: None). When 'None', a warning message will be showed
         else:
             del self.headings[self._accessors.index(accessor)]
             self._accessors.remove(accessor)
-        
+
     def get_missing_value(self, numrow, accessor):
         if self._missing_value == None:
-            print("WARNING: Row '{}' of table data doesn't support" \
-                  " accessor '{}'. Using empty string; define " \
-                  " a 'missing_value' on the table to silence " \
+            print("WARNING: Row '{}' of table data doesn't support "
+                  "accessor '{}'. Using empty string; define "
+                  "a 'missing_value' on the table to silence "
                   "this message".format(numrow, accessor))
             return ''
         else:

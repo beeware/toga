@@ -47,7 +47,7 @@ class TogaTable(NSTableView):
         try:
             value = getattr(data_row, col_identifier)
         except AttributeError:
-            value = self.interface.get_missing_value(row, col_identifier) 
+            value = self.interface.get_missing_value(row, col_identifier)
 
         # Allow for an (icon, value) tuple as the simple case
         # for encoding an icon in a table cell.
