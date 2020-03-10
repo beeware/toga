@@ -191,7 +191,7 @@ class Table(Widget):
             self._accessors.remove(accessor)
 
     def get_missing_value(self, numrow, accessor):
-        if self._missing_value == None:
+        if self._missing_value is None:
             print("WARNING: Row '{}' of table data doesn't support "
                   "accessor '{}'. Using empty string; define "
                   "a 'missing_value' on the table to silence "
