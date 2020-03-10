@@ -43,8 +43,11 @@ class TogaTable(NSTableView):
             data_row._impl[col_identifier] = data[col_identifier]
             datum = data[col_identifier]
 
-        # empty default value to avoid crash when a column is added
-        value = getattr(data_row, col_identifier, '')
+        # get value or return default missing_value
+        try:
+            value = getattr(data_row, col_identifier)
+        except AttributeError:
+            value = self.interface.get_missing_value(row, col_identifier) 
 
         # Allow for an (icon, value) tuple as the simple case
         # for encoding an icon in a table cell.
