@@ -115,7 +115,10 @@ class App:
         # remaining string.
         print("Traceback (most recent call last):")
         py_exc = winforms_exc.get_Exception()
-        tb_end_pos = py_exc.StackTrace.index("\\n']   at Python")
+        try:
+            tb_end_pos = py_exc.StackTrace.index("\\n']   at Python")
+        except ValueError:
+            tb_end_pos = -1
         tb_str = py_exc.StackTrace[2:tb_end_pos]
         for level in tb_str.split("', '"):
             for line in level.split("\\n"):
