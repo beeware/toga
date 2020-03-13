@@ -1,4 +1,5 @@
 import asyncio
+import re
 import sys
 import traceback
 
@@ -115,16 +116,25 @@ class App:
         # remaining string.
         print("Traceback (most recent call last):")
         py_exc = winforms_exc.get_Exception()
-        try:
-            tb_end_pos = py_exc.StackTrace.index("\\n']   at Python")
-        except ValueError:
-            tb_end_pos = -1
-        tb_str = py_exc.StackTrace[2:tb_end_pos]
-        for level in tb_str.split("', '"):
+        full_stack_trace = py_exc.StackTrace
+        regex = re.compile(r"^\[(?:'(.*?)\n', )*'(.*?)\n'\]   (?:.*?) Python\.Runtime",
+                           re.DOTALL | re.UNICODE)
+
+        stacktrace_relevant_lines = regex.findall(full_stack_trace)
+        if len(stacktrace_relevant_lines) == 0:
+            self.print_stack_trace(full_stack_trace)
+        else:
+            for lines in stacktrace_relevant_lines:
+                for line in lines:
+                    self.print_stack_trace(line)
+        print(py_exc.Message)
+
+    @classmethod
+    def print_stack_trace(cls, stack_trace_line):
+        for level in stack_trace_line.split("', '"):
             for line in level.split("\\n"):
                 if line:
                     print(line)
-        print(py_exc.Message)
 
     def run_app(self):
         try:
