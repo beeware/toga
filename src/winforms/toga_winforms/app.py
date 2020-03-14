@@ -117,8 +117,10 @@ class App:
         print("Traceback (most recent call last):")
         py_exc = winforms_exc.get_Exception()
         full_stack_trace = py_exc.StackTrace
-        regex = re.compile(r"^\[(?:'(.*?)\n', )*'(.*?)\n'\]   (?:.*?) Python\.Runtime",
-                           re.DOTALL | re.UNICODE)
+        regex = re.compile(
+            r"^\[(?:'(.*?)', )*(?:'(.*?)')\]   (?:.*?) Python\.Runtime",
+            re.DOTALL | re.UNICODE
+        )
 
         stacktrace_relevant_lines = regex.findall(full_stack_trace)
         if len(stacktrace_relevant_lines) == 0:
