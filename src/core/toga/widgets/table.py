@@ -171,31 +171,26 @@ class Table(Widget):
         :type column:      ``int``
         """
 
-        if type(column) == str and column in self._accessors:
-            # delete by accessor
-            accessor = column
-        elif type(column) == int and \
-                column >= 0 and column <= len(self._accessors)-1:
-            # delete by position
-            accessor = self._accessors[column]
-        else:
-            raise ValueError('Invalid column: "{}"'.format(column))
-
-        # remove column
         try:
+            accessor = self._accessors[column]
+        except IndexError:
+            raise ValueError('Invalid column: "{}"'.format(column))
+        except TypeError:
+            accessor = column
+
+        try:
+            # remove column
             self._impl.remove_column(accessor)
-        except Exception as exception:
-            raise exception
-        else:
             del self.headings[self._accessors.index(accessor)]
             self._accessors.remove(accessor)
+        except KeyError:
+            raise ValueError('Invalid column: "{}"'.format(column))
 
-    def get_missing_value(self, numrow, accessor):
+    @property
+    def missing_value(self):
         if self._missing_value is None:
-            print("WARNING: Row '{}' of table data doesn't support "
-                  "accessor '{}'. Using empty string; define "
-                  "a 'missing_value' on the table to silence "
-                  "this message".format(numrow, accessor))
-            return ''
-        else:
-            return self._missing_value
+            raise ValueError("WARNING: Row '{}' of table data doesn't support "
+                             "accessor '{}'. Using empty string; define "
+                             "a 'missing_value' on the table to silence "
+                             "this message", '')
+        return self._missing_value
