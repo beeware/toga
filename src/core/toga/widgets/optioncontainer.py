@@ -84,3 +84,6 @@ class OptionContainer(Widget):
         """
         self._on_select = wrapped_handler(self, handler)
         self._impl.set_on_select(self._on_select)
+
+    def set_option_enabled(self, index, enabled=True):
+        self._impl.set_option_enabled(index, enabled)

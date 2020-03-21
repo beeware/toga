@@ -50,3 +50,7 @@ class OptionContainer(Widget):
 
     def set_on_select(self, handler):
         pass
+
+    def set_option_enabled(self, index, enabled):
+        tabview = self.native.tabViewItemAtIndex(index)
+        tabview._setTabEnabled(enabled)
