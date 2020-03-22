@@ -1,6 +1,6 @@
 from toga.handlers import wrapped_handler
 from toga.sources import ListSource
-from toga.sources.accessors import build_accessors
+from toga.sources.accessors import build_accessors, to_accessor
 
 from .base import Widget
 
@@ -17,6 +17,9 @@ class Table(Widget):
         style (:obj:`Style`): An optional style object.
             If no style is provided` then a new one will be created for the widget.
         on_select (``callable``): A function to be invoked on selecting a row of the table.
+        missing_value (``str`` or ``None``): value for replacing a missing value
+            in the data source. (Default: None). When 'None', a warning message
+            will be shown.
         factory (:obj:`module`): A python module that is capable to return a
             implementation of this class with the same name. (optional & normally not needed)
 
@@ -41,7 +44,8 @@ class Table(Widget):
     MIN_HEIGHT = 100
 
     def __init__(self, headings, id=None, style=None, data=None, accessors=None,
-                 multiple_select=False, on_select=None, factory=None):
+                 multiple_select=False, on_select=None, missing_value=None,
+                 factory=None):
         super().__init__(id=id, style=style, factory=factory)
         self.headings = headings
         self._accessors = build_accessors(headings, accessors)
@@ -49,6 +53,7 @@ class Table(Widget):
         self._on_select = None
         self._selection = None
         self._data = None
+        self._missing_value = missing_value
 
         self._impl = self.factory.Table(interface=self)
         self.data = data
@@ -131,8 +136,69 @@ class Table(Widget):
         """
         Set the function to be executed on node selection
 
-        :param handler:     callback function
-        :type handler:      ``callable``
+        :param handler: callback function
+        :type handler: ``callable``
         """
         self._on_select = wrapped_handler(self, handler)
         self._impl.set_on_select(self._on_select)
+
+    def add_column(self, heading, accessor=None):
+        """
+        Add a new column to the table
+
+        :param heading: title of the column
+        :type heading: ``string``
+        :param accessor: accessor of this new column
+        :type heading: ``string``
+        """
+
+        if not accessor:
+            accessor = to_accessor(heading)
+
+        if accessor in self._accessors:
+            raise ValueError('Accessor "{}" is already in use'.format(accessor))
+
+        self.headings.append(heading)
+        self._accessors.append(accessor)
+
+        self._impl.add_column(heading, accessor)
+
+    def remove_column(self, column):
+        """
+        Remove a table column.
+
+        :param column: accessor or position (>0)
+        :type column: ``string``
+        :type column: ``int``
+        """
+
+        if isinstance(column, str):
+            # Column is a string; use as-is
+            accessor = column
+        else:
+            try:
+                accessor = self._accessors[column]
+            except IndexError:
+                # Column specified as an integer, but the integer is out of range.
+                raise ValueError("Column {} does not exist".format(column))
+            except TypeError:
+                # Column specified as something other than int or str
+                raise ValueError("Column must be an integer or string")
+
+        try:
+            # Remove column
+            self._impl.remove_column(accessor)
+            del self.headings[self._accessors.index(accessor)]
+            self._accessors.remove(accessor)
+        except KeyError:
+            raise ValueError('Invalid column: "{}"'.format(column))
+
+    @property
+    def missing_value(self):
+        if self._missing_value is None:
+            raise ValueError(
+                "WARNING: Row '{}' of table data doesn't support accessor '{}'. "
+                "Using empty string; define a 'missing_value' on the table "
+                "to silence this message", ''
+            )
+        return self._missing_value

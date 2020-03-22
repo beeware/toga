@@ -30,6 +30,12 @@ class Table(Tree):
     def scroll_to_row(self, row):
         return NotImplementedError
 
+    def add_column(self, heading, accessor):
+        return NotImplementedError
+
+    def remove_column(self, accessor):
+        return NotImplementedError
+
     # =================================
     # UNCHANGED METHODS (inherited from Tree)
     # They are included here only to satisfy the implementation tests, which
