@@ -138,3 +138,33 @@ class TableTests(TestCase):
         expecting_headings = [h for h in self.table.headings if h != heading]
         self.table.remove_column(remove)
         self.assertEqual(self.table.headings, expecting_headings)
+
+    def test_remove_column_invalid_name(self):
+        dummy_data = [
+            ['a1', 'b1', 'c1'],
+        ]
+        self.table.data = dummy_data
+
+        # Remove a column that doesn't exist
+        with self.assertRaises(ValueError):
+            self.table.remove_column("Not a column")
+
+    def test_remove_column_invalid_index(self):
+        dummy_data = [
+            ['a1', 'b1', 'c1'],
+        ]
+        self.table.data = dummy_data
+
+        # Remove a column using an index that doesn't exist
+        with self.assertRaises(ValueError):
+            self.table.remove_column(42)
+
+    def test_remove_column_invalid_type(self):
+        dummy_data = [
+            ['a1', 'b1', 'c1'],
+        ]
+        self.table.data = dummy_data
+
+        # Remove a column using a data type that isn't valid
+        with self.assertRaises(ValueError):
+            self.table.remove_column(3.14159)

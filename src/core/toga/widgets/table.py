@@ -175,14 +175,15 @@ class Table(Widget):
         if isinstance(column, str):
             # Column is a string; use as-is
             accessor = column
-        try:
-            accessor = self._accessors[column]
-        except IndexError:
-            # Column specified as an integer, but the integer is out of range.
-            raise ValueError("Column {} does not exist".format(column))
-        except TypeError:
-            # Column specified as something other than int or str
-            raise ValueError("Column must be an integer or string")
+        else:
+            try:
+                accessor = self._accessors[column]
+            except IndexError:
+                # Column specified as an integer, but the integer is out of range.
+                raise ValueError("Column {} does not exist".format(column))
+            except TypeError:
+                # Column specified as something other than int or str
+                raise ValueError("Column must be an integer or string")
 
         try:
             # Remove column
