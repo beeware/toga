@@ -18,7 +18,8 @@ class Table(Widget):
             If no style is provided` then a new one will be created for the widget.
         on_select (``callable``): A function to be invoked on selecting a row of the table.
         missing_value (``str`` or ``None``): value for replacing a missing value
-            in the data source. (Default: None). When 'None', a warning message will be showed
+            in the data source. (Default: None). When 'None', a warning message
+            will be shown.
         factory (:obj:`module`): A python module that is capable to return a
             implementation of this class with the same name. (optional & normally not needed)
 
@@ -135,8 +136,8 @@ class Table(Widget):
         """
         Set the function to be executed on node selection
 
-        :param handler:     callback function
-        :type handler:      ``callable``
+        :param handler: callback function
+        :type handler: ``callable``
         """
         self._on_select = wrapped_handler(self, handler)
         self._impl.set_on_select(self._on_select)
@@ -145,17 +146,17 @@ class Table(Widget):
         """
         Add a new column to the table
 
-        :param heading:     title of the column
-        :type heading:      ``string``
-        :param accessor:    accessor of this new column
-        :type heading:      ``string``
+        :param heading: title of the column
+        :type heading: ``string``
+        :param accessor: accessor of this new column
+        :type heading: ``string``
         """
 
         if not accessor:
             accessor = to_accessor(heading)
 
         if accessor in self._accessors:
-            raise ValueError('Accesor "{}" is already in use'.format(accessor))
+            raise ValueError('Accessor "{}" is already in use'.format(accessor))
 
         self.headings.append(heading)
         self._accessors.append(accessor)
@@ -164,22 +165,27 @@ class Table(Widget):
 
     def remove_column(self, column):
         """
-        Remove a table column
+        Remove a table column.
 
-        :param column:     accessor or position (>0)
-        :type column:      ``string``
-        :type column:      ``int``
+        :param column: accessor or position (>0)
+        :type column: ``string``
+        :type column: ``int``
         """
 
+        if isinstance(column, str):
+            # Column is a string; use as-is
+            accessor = column
         try:
             accessor = self._accessors[column]
         except IndexError:
-            raise ValueError('Invalid column: "{}"'.format(column))
+            # Column specified as an integer, but the integer is out of range.
+            raise ValueError("Column {} does not exist".format(column))
         except TypeError:
-            accessor = column
+            # Column specified as something other than int or str
+            raise ValueError("Column must be an integer or string")
 
         try:
-            # remove column
+            # Remove column
             self._impl.remove_column(accessor)
             del self.headings[self._accessors.index(accessor)]
             self._accessors.remove(accessor)
@@ -189,8 +195,9 @@ class Table(Widget):
     @property
     def missing_value(self):
         if self._missing_value is None:
-            raise ValueError("WARNING: Row '{}' of table data doesn't support "
-                             "accessor '{}'. Using empty string; define "
-                             "a 'missing_value' on the table to silence "
-                             "this message", '')
+            raise ValueError(
+                "WARNING: Row '{}' of table data doesn't support accessor '{}'. "
+                "Using empty string; define a 'missing_value' on the table "
+                "to silence this message", ''
+            )
         return self._missing_value

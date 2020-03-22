@@ -40,8 +40,15 @@ class ExampleTableApp(toga.App):
 
     def toggle_handler(self, widget, **kwargs):
         try:
+            # Try to delete the "genre" column by accessor.
+            # If the column doesn't exist, this will raise a ValueError,
+            # which means we need to add it.
             self.table1.remove_column('genre')
         except ValueError:
+            # Add the genre column. We provide the column *title*,
+            # which is automatically converted into the data accessor `genre`.
+            # If the data accessor can't be determined from the column title,
+            # you could manually specify the accessor here, too.
             self.table1.add_column('Genre')
 
     def startup(self):

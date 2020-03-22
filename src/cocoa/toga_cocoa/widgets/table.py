@@ -25,31 +25,33 @@ class TogaTable(NSTableView):
         data_row = self.interface.data[row]
 
         try:
-            # Obtain the _impl for the data row
+            # Obtain the _impl for the data row...
             data = data_row._impl
         except AttributeError:
-            # or constructing, if it doesn't already exist
+            # or if it doesn't already exist, create it.
             data = {}
             data_row._impl = data
 
         col_identifier = str(column.identifier)
 
         try:
-            # obtain TogaData
+            # Get the TogaData
             datum = data[col_identifier]
         except KeyError:
-            # or creating a new one
+            # or create it, if it doesn't exist
             data[col_identifier] = TogaData.alloc().init()
             data_row._impl[col_identifier] = data[col_identifier]
             datum = data[col_identifier]
 
-        # get value or return default missing_value
+        # Get value for the column
         try:
             value = getattr(data_row, col_identifier)
         except AttributeError:
+            # The accessor doesn't exist in the data. Use the missing value.
             try:
                 value = self.interface.missing_value
             except ValueError as e:
+                # There is no explicit missing value. Warn the user.
                 message, value = e.args
                 print(message.format(row, col_identifier))
 
