@@ -15,6 +15,7 @@ class DocumentTests(TestCase):
 
     def test_app(self):
         self.assertEqual(self.filename, self.document.filename)
+        self.assertEqual(self.document.app, toga_dummy)
 
     def test_read(self):
         with self.assertRaises(NotImplementedError):
