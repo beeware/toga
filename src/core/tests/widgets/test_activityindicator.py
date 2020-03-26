@@ -7,6 +7,7 @@ class ActivityIndicatorTests(TestCase):
     def setUp(self):
         super().setUp()
         self.activityindicator = toga.ActivityIndicator(factory=toga_dummy.factory)
+        self.activityindicator.hide_when_stopped = True
 
     def test_widget_created(self):
         self.assertEqual(self.activityindicator._impl.interface, self.activityindicator)
@@ -52,3 +53,6 @@ class ActivityIndicatorTests(TestCase):
 
         # Asserting is_running to be True
         self.assertTrue(self.activityindicator.is_running)
+
+    def test_hide_when_stopped(self):
+        self.assertEqual(self.activityindicator.hide_when_stopped, True)
