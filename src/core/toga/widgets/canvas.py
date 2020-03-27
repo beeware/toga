@@ -546,55 +546,127 @@ class Canvas(Context, Widget):
 
     @property
     def on_mouse_down(self):
+        """The handler to invoke when the left mouse button is pressed.
+
+        Returns:
+            The function ``callable`` that is called on left mouse button pressed.
+        """
         return self._on_mouse_down
 
     @on_mouse_down.setter
     def on_mouse_down(self, handler):
+        """Set the handler to invoke when the left mouse button is pressed.
+
+        Args:
+            handler (:obj:`callable`): The handler to invoke when the 
+            left mouse button is pressed.
+        """
         self._on_mouse_down = wrapped_handler(self, handler)
         self._impl.set_on_mouse_down(self._on_mouse_down)
 
     @property
     def on_mouse_up(self):
+        """The handler to invoke when the left mouse button is released.
+
+        Returns:
+            The function ``callable`` that is called on left mouse button released.
+        """
         return self._on_mouse_up
 
     @on_mouse_up.setter
     def on_mouse_up(self, handler):
+        """Set the handler to invoke when the left mouse button is released.
+
+        Args:
+            handler (:obj:`callable`): The handler to invoke when the 
+            left mouse button is released.
+        """
         self._on_mouse_up = wrapped_handler(self, handler)
         self._impl.set_on_mouse_up(self._on_mouse_up)
 
     @property
     def on_mouse_dragged(self):
+        """The handler to invoke when the mouse is moved while the
+           left mouse button is pressed.
+
+        Returns:
+            The function ``callable`` that is called on mouse moved with
+            the left button pressed.
+        """
         return self._on_mouse_dragged
 
     @on_mouse_dragged.setter
     def on_mouse_dragged(self, handler):
+        """Set the handler to invoke when the mouse button is moved with
+            the left button pressed
+
+        Args:
+            handler (:obj:`callable`): The handler to invoke when the 
+            mouse is moved with the left button pressed.
+        """
         self._on_mouse_dragged = wrapped_handler(self, handler)
         self._impl.set_on_mouse_dragged(self._on_mouse_dragged)
 
     @property
     def on_right_mouse_down(self):
+        """The handler to invoke when the right mouse button is pressed.
+
+        Returns:
+            The function ``callable`` that is called on right mouse button pressed.
+        """
         return self._on_right_mouse_down
 
     @on_right_mouse_down.setter
     def on_right_mouse_down(self, handler):
+        """Set the handler to invoke when the right mouse button is pressed.
+
+        Args:
+            handler (:obj:`callable`): The handler to invoke when the 
+            right mouse button is pressed.
+         """
         self._on_right_mouse_down = wrapped_handler(self, handler)
         self._impl.set_on_right_mouse_down(self._on_right_mouse_down)
 
     @property
     def on_right_mouse_up(self):
+        """The handler to invoke when the right mouse button is released.
+
+        Returns:
+            The function ``callable`` that is called on right mouse button released.
+        """
         return self._on_right_mouse_up
 
     @on_right_mouse_up.setter
     def on_right_mouse_up(self, handler):
+        """Set the handler to invoke when the right mouse button is released.
+
+        Args:
+            handler (:obj:`callable`): The handler to invoke when the 
+            right mouse button is released.
+         """
         self._on_right_mouse_up = wrapped_handler(self, handler)
         self._impl.set_on_right_mouse_up(self._on_right_mouse_up)
 
     @property
     def on_right_mouse_dragged(self):
+        """The handler to invoke when the mouse is moved while the
+           right mouse button is pressed.
+
+        Returns:
+            The function ``callable`` that is called on mouse moved with
+            the right button pressed.
+        """
         return self._on_right_mouse_dragged
 
     @on_right_mouse_dragged.setter
     def on_right_mouse_dragged(self, handler):
+        """Set the handler to invoke when the mouse button is moved with
+            the right button pressed
+
+        Args:
+            handler (:obj:`callable`): The handler to invoke when the 
+            mouse is moved with the right button pressed.
+        """
         self._on_right_mouse_dragged = wrapped_handler(self, handler)
         self._impl.set_on_right_mouse_dragged(self._on_right_mouse_dragged)
 
