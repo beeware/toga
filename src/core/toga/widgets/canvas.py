@@ -518,6 +518,12 @@ class Canvas(Context, Widget):
 
         # Set all the properties
         self.on_resize = on_resize
+        self.on_mouse_down = None
+        self.on_mouse_up = None
+        self.on_mouse_dragged = None
+        self.on_right_mouse_down = None
+        self.on_right_mouse_up = None
+        self.on_right_mouse_dragged = None
 
     @property
     def on_resize(self):
@@ -537,6 +543,60 @@ class Canvas(Context, Widget):
         """
         self._on_resize = wrapped_handler(self, handler)
         self._impl.set_on_resize(self._on_resize)
+
+    @property
+    def on_mouse_down(self):
+        return self._on_mouse_down
+
+    @on_mouse_down.setter
+    def on_mouse_down(self, handler):
+        self._on_mouse_down = wrapped_handler(self, handler)
+        self._impl.set_on_mouse_down(self._on_mouse_down)
+
+    @property
+    def on_mouse_up(self):
+        return self._on_mouse_up
+
+    @on_mouse_up.setter
+    def on_mouse_up(self, handler):
+        self._on_mouse_up = wrapped_handler(self, handler)
+        self._impl.set_on_mouse_up(self._on_mouse_up)
+
+    @property
+    def on_mouse_dragged(self):
+        return self._on_mouse_dragged
+
+    @on_mouse_dragged.setter
+    def on_mouse_dragged(self, handler):
+        self._on_mouse_dragged = wrapped_handler(self, handler)
+        self._impl.set_on_mouse_dragged(self._on_mouse_dragged)
+
+    @property
+    def on_right_mouse_down(self):
+        return self._on_right_mouse_down
+
+    @on_right_mouse_down.setter
+    def on_right_mouse_down(self, handler):
+        self._on_right_mouse_down = wrapped_handler(self, handler)
+        self._impl.set_on_right_mouse_down(self._on_right_mouse_down)
+
+    @property
+    def on_right_mouse_up(self):
+        return self._on_right_mouse_up
+
+    @on_right_mouse_up.setter
+    def on_right_mouse_up(self, handler):
+        self._on_right_mouse_up = wrapped_handler(self, handler)
+        self._impl.set_on_right_mouse_up(self._on_right_mouse_up)
+
+    @property
+    def on_right_mouse_dragged(self):
+        return self._on_right_mouse_dragged
+
+    @on_right_mouse_dragged.setter
+    def on_right_mouse_dragged(self, handler):
+        self._on_right_mouse_dragged = wrapped_handler(self, handler)
+        self._impl.set_on_right_mouse_dragged(self._on_right_mouse_dragged)
 
     ###########################################################################
     # Transformations of a canvas

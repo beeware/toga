@@ -7,7 +7,6 @@ from toga.fonts import SANS_SERIF, SERIF
 import toga_dummy
 from toga_dummy.utils import TestCase
 
-
 class CanvasTests(TestCase):
     def setUp(self):
         super().setUp()
@@ -615,3 +614,93 @@ class CanvasTests(TestCase):
         self.assertValueSet(
             self.testing_canvas, 'on_resize', self.testing_canvas.on_resize
         )
+
+    def test_on_mouse_down(self):
+        self.assertIsNone(self.testing_canvas._on_mouse_down)
+
+        # set a new callback
+        def callback(widget, **extra):
+            return 'called {} with {}'.format(type(widget), extra)
+
+        self.testing_canvas.on_mouse_down = callback
+        self.assertEqual(self.testing_canvas.on_mouse_down._raw, callback)
+        self.assertEqual(
+            self.testing_canvas.on_mouse_down('widget', a=1),
+            "called <class 'toga.widgets.canvas.Canvas'> with {'a': 1}"
+        )
+        self.assertValueSet(self.testing_canvas, 'on_mouse_down', self.testing_canvas.on_mouse_down)
+
+    def test_on_mouse_up(self):
+        self.assertIsNone(self.testing_canvas._on_mouse_up)
+
+        # set a new callback
+        def callback(widget, **extra):
+            return 'called {} with {}'.format(type(widget), extra)
+
+        self.testing_canvas.on_mouse_up = callback
+        self.assertEqual(self.testing_canvas.on_mouse_up._raw, callback)
+        self.assertEqual(
+            self.testing_canvas.on_mouse_up('widget', a=1),
+            "called <class 'toga.widgets.canvas.Canvas'> with {'a': 1}"
+        )
+        self.assertValueSet(self.testing_canvas, 'on_mouse_up', self.testing_canvas.on_mouse_up)
+
+    def test_on_mouse_dragged(self):
+        self.assertIsNone(self.testing_canvas._on_mouse_dragged)
+
+        # set a new callback
+        def callback(widget, **extra):
+            return 'called {} with {}'.format(type(widget), extra)
+
+        self.testing_canvas.on_mouse_dragged = callback
+        self.assertEqual(self.testing_canvas.on_mouse_dragged._raw, callback)
+        self.assertEqual(
+            self.testing_canvas.on_mouse_dragged('widget', a=1),
+            "called <class 'toga.widgets.canvas.Canvas'> with {'a': 1}"
+        )
+        self.assertValueSet(self.testing_canvas, 'on_mouse_dragged', self.testing_canvas.on_mouse_dragged)
+
+    def test_on_right_mouse_down(self):
+        self.assertIsNone(self.testing_canvas._on_right_mouse_down)
+
+        # set a new callback
+        def callback(widget, **extra):
+            return 'called {} with {}'.format(type(widget), extra)
+
+        self.testing_canvas.on_right_mouse_down = callback
+        self.assertEqual(self.testing_canvas.on_right_mouse_down._raw, callback)
+        self.assertEqual(
+            self.testing_canvas.on_right_mouse_down('widget', a=1),
+            "called <class 'toga.widgets.canvas.Canvas'> with {'a': 1}"
+        )
+        self.assertValueSet(self.testing_canvas, 'on_right_mouse_down', self.testing_canvas.on_right_mouse_down)
+
+    def test_on_right_mouse_up(self):
+        self.assertIsNone(self.testing_canvas._on_right_mouse_up)
+
+        # set a new callback
+        def callback(widget, **extra):
+            return 'called {} with {}'.format(type(widget), extra)
+
+        self.testing_canvas.on_right_mouse_up = callback
+        self.assertEqual(self.testing_canvas.on_right_mouse_up._raw, callback)
+        self.assertEqual(
+            self.testing_canvas.on_right_mouse_up('widget', a=1),
+            "called <class 'toga.widgets.canvas.Canvas'> with {'a': 1}"
+        )
+        self.assertValueSet(self.testing_canvas, 'on_right_mouse_up', self.testing_canvas.on_right_mouse_up)
+
+    def test_on_right_mouse_dragged(self):
+        self.assertIsNone(self.testing_canvas._on_right_mouse_dragged)
+
+        # set a new callback
+        def callback(widget, **extra):
+            return 'called {} with {}'.format(type(widget), extra)
+
+        self.testing_canvas.on_right_mouse_dragged = callback
+        self.assertEqual(self.testing_canvas.on_right_mouse_dragged._raw, callback)
+        self.assertEqual(
+            self.testing_canvas.on_right_mouse_dragged('widget', a=1),
+            "called <class 'toga.widgets.canvas.Canvas'> with {'a': 1}"
+        )
+        self.assertValueSet(self.testing_canvas, 'on_right_mouse_dragged', self.testing_canvas.on_right_mouse_dragged)
