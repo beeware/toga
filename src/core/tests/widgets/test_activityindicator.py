@@ -55,6 +55,6 @@ class ActivityIndicatorTests(TestCase):
 
     def test_hide_when_stopped(self):
         self.activityindicator.hide_when_stopped = True
-        self.assertEqual(self.activityindicator.hide_when_stopped, True)        
+        self.assertEqual(self.activityindicator.hide_when_stopped, True)
         self.activityindicator.hide_when_stopped = False
         self.assertEqual(self.activityindicator.hide_when_stopped, False)
