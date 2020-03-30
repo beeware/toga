@@ -70,6 +70,6 @@ class TreeTests(TestCase):
         self.assertEqual(self.tree.multiple_select, False)
 
     def test_setter_creates_tree_with_str_data(self):
-        self.data = set('test')
+        self.data = 'test'
         self.tree.data = self.data
         self.assertEqual(self.tree.data, self.data)
