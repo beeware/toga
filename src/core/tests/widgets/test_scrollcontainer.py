@@ -46,6 +46,10 @@ class ScrollContainerTests(TestCase):
         self.assertEqual(self.sc.horizontal, new_value)
         self.assertValueSet(self.sc, 'horizontal', new_value)
 
+    def test__set_window(self):
+        self.sc.window = toga.window
+        self.assertEqual(self.sc.window, toga.window)
+
     def test_refresh(self):
         new_content = toga.Box(style=TestStyle(), factory=toga_dummy.factory)
         self.sc.content = new_content
