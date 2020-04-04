@@ -48,9 +48,17 @@ class OptionContainer(Widget):
         item.view = widget.native
         self.native.addTabViewItem(item)
 
+    def remove_content(self, index):
+        tabview = self.native.tabViewItemAtIndex(index)
+        self.native.removeTabViewItem(tabview)
+
     def set_on_select(self, handler):
         pass
 
     def set_option_enabled(self, index, enabled):
         tabview = self.native.tabViewItemAtIndex(index)
         tabview._setTabEnabled(enabled)
+
+    def set_label(self, index, value):
+        tabview = self.native.tabViewItemAtIndex(index)
+        tabview.label = value
