@@ -50,12 +50,4 @@ class ScrollContainerTests(TestCase):
         self.sc.window = toga.window
         self.assertEqual(self.sc.window, toga.window)
 
-    def test_refresh(self):
-        new_content = toga.Box(style=TestStyle(), factory=toga_dummy.factory)
-        self.sc.content = new_content
-        self.sc.refresh()
-
-    def test_refresh_sublayouts(self):
-        new_content = toga.Box(style=TestStyle(), factory=toga_dummy.factory)
-        self.sc.content = new_content
-        self.sc.refresh_sublayouts()
+        self.assertValueSet(self.sc, 'window', toga.window)
