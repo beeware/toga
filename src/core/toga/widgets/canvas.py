@@ -546,7 +546,7 @@ class Canvas(Context, Widget):
 
     @property
     def on_mouse_down(self):
-        """The handler to invoke when the left mouse button is pressed.
+        """Return the handler invoked when the left mouse button is pressed.
 
         Returns:
             The function ``callable`` that is called on left mouse button pressed.
@@ -558,7 +558,7 @@ class Canvas(Context, Widget):
         """Set the handler to invoke when the left mouse button is pressed.
 
         Args:
-            handler (:obj:`callable`): The handler to invoke when the 
+            handler (:obj:`callable`): The handler to invoke when the
             left mouse button is pressed.
         """
         self._on_mouse_down = wrapped_handler(self, handler)
@@ -566,7 +566,7 @@ class Canvas(Context, Widget):
 
     @property
     def on_mouse_up(self):
-        """The handler to invoke when the left mouse button is released.
+        """Return the handler invoked when the left mouse button is released.
 
         Returns:
             The function ``callable`` that is called on left mouse button released.
@@ -586,8 +586,7 @@ class Canvas(Context, Widget):
 
     @property
     def on_mouse_dragged(self):
-        """The handler to invoke when the mouse is moved while the
-           left mouse button is pressed.
+        """Return the handler invoked when the mouse is moved while the left mouse button is pressed.
 
         Returns:
             The function ``callable`` that is called on mouse moved with
@@ -597,8 +596,7 @@ class Canvas(Context, Widget):
 
     @on_mouse_dragged.setter
     def on_mouse_dragged(self, handler):
-        """Set the handler to invoke when the mouse button is moved with
-            the left button pressed
+        """Set the handler to invoke when the mouse button is moved with the left button pressed.
 
         Args:
             handler (:obj:`callable`): The handler to invoke when the 
@@ -609,7 +607,7 @@ class Canvas(Context, Widget):
 
     @property
     def on_right_mouse_down(self):
-        """The handler to invoke when the right mouse button is pressed.
+        """Return the handler to invoke when the right mouse button is pressed.
 
         Returns:
             The function ``callable`` that is called on right mouse button pressed.
@@ -623,13 +621,13 @@ class Canvas(Context, Widget):
         Args:
             handler (:obj:`callable`): The handler to invoke when the 
             right mouse button is pressed.
-         """
+        """
         self._on_right_mouse_down = wrapped_handler(self, handler)
         self._impl.set_on_right_mouse_down(self._on_right_mouse_down)
 
     @property
     def on_right_mouse_up(self):
-        """The handler to invoke when the right mouse button is released.
+        """Return the handler to invoke when the right mouse button is released.
 
         Returns:
             The function ``callable`` that is called on right mouse button released.
@@ -643,14 +641,13 @@ class Canvas(Context, Widget):
         Args:
             handler (:obj:`callable`): The handler to invoke when the 
             right mouse button is released.
-         """
+        """
         self._on_right_mouse_up = wrapped_handler(self, handler)
         self._impl.set_on_right_mouse_up(self._on_right_mouse_up)
 
     @property
     def on_right_mouse_dragged(self):
-        """The handler to invoke when the mouse is moved while the
-           right mouse button is pressed.
+        """Return the handler to invoke when the mouse is moved while the right mouse button is pressed.
 
         Returns:
             The function ``callable`` that is called on mouse moved with
@@ -660,8 +657,7 @@ class Canvas(Context, Widget):
 
     @on_right_mouse_dragged.setter
     def on_right_mouse_dragged(self, handler):
-        """Set the handler to invoke when the mouse button is moved with
-            the right button pressed
+        """Set the handler to invoke when the mouse button is moved with the right button pressed.
 
         Args:
             handler (:obj:`callable`): The handler to invoke when the 

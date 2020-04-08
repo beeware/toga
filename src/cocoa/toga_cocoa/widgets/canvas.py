@@ -281,22 +281,29 @@ class Canvas(Widget):
         self.interface.intrinsic.width = fitting_size.width
 
     def set_on_resize(self, handler):
+        """No special handling required."""
         pass
 
     def set_on_mouse_down(self, handler):
+        """No special handling required."""
         pass
 
     def set_on_mouse_up(self, handler):
+        """No special handling required."""
         pass
 
     def set_on_mouse_dragged(self, handler):
+        """No special handling required."""
         pass
 
     def set_on_right_mouse_down(self, handler):
+        """No special handling required."""
         pass
 
     def set_on_right_mouse_up(self, handler):
+        """No special handling required."""
         pass
 
     def set_on_right_mouse_dragged(self, handler):
+        """No special handling required."""
         pass
