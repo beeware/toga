@@ -578,7 +578,7 @@ class Canvas(Context, Widget):
         """Set the handler to invoke when the left mouse button is released.
 
         Args:
-            handler (:obj:`callable`): The handler to invoke when the 
+            handler (:obj:`callable`): The handler to invoke when the
             left mouse button is released.
         """
         self._on_mouse_up = wrapped_handler(self, handler)
@@ -599,7 +599,7 @@ class Canvas(Context, Widget):
         """Set the handler to invoke when the mouse button is moved with the left button pressed.
 
         Args:
-            handler (:obj:`callable`): The handler to invoke when the 
+            handler (:obj:`callable`): The handler to invoke when the
             mouse is moved with the left button pressed.
         """
         self._on_mouse_dragged = wrapped_handler(self, handler)
@@ -619,7 +619,7 @@ class Canvas(Context, Widget):
         """Set the handler to invoke when the right mouse button is pressed.
 
         Args:
-            handler (:obj:`callable`): The handler to invoke when the 
+            handler (:obj:`callable`): The handler to invoke when the
             right mouse button is pressed.
         """
         self._on_right_mouse_down = wrapped_handler(self, handler)
@@ -639,7 +639,7 @@ class Canvas(Context, Widget):
         """Set the handler to invoke when the right mouse button is released.
 
         Args:
-            handler (:obj:`callable`): The handler to invoke when the 
+            handler (:obj:`callable`): The handler to invoke when the
             right mouse button is released.
         """
         self._on_right_mouse_up = wrapped_handler(self, handler)
@@ -660,7 +660,7 @@ class Canvas(Context, Widget):
         """Set the handler to invoke when the mouse button is moved with the right button pressed.
 
         Args:
-            handler (:obj:`callable`): The handler to invoke when the 
+            handler (:obj:`callable`): The handler to invoke when the
             mouse is moved with the right button pressed.
         """
         self._on_right_mouse_dragged = wrapped_handler(self, handler)

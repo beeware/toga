@@ -64,7 +64,7 @@ class TogaCanvas(NSView):
         if self.interface.on_release:
             position = self.convertPoint(event.locationInWindow, fromView=None)
             self.interface.on_release(self.interface, position.x, position.y, event.clickCount)
- 
+
     @objc_method
     def rightMouseUp_(self, event) -> None:
         """Invoke the on_right_release handler if configured."""
