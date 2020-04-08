@@ -7,6 +7,7 @@ from toga.fonts import SANS_SERIF, SERIF
 import toga_dummy
 from toga_dummy.utils import TestCase
 
+
 class CanvasTests(TestCase):
     def setUp(self):
         super().setUp()
@@ -615,92 +616,98 @@ class CanvasTests(TestCase):
             self.testing_canvas, 'on_resize', self.testing_canvas.on_resize
         )
 
-    def test_on_mouse_down(self):
-        self.assertIsNone(self.testing_canvas._on_mouse_down)
+    def test_on_press(self):
+        """Check on_press handler being invoked."""
+        self.assertIsNone(self.testing_canvas._on_press)
 
         # set a new callback
         def callback(widget, **extra):
             return 'called {} with {}'.format(type(widget), extra)
 
-        self.testing_canvas.on_mouse_down = callback
-        self.assertEqual(self.testing_canvas.on_mouse_down._raw, callback)
+        self.testing_canvas.on_press = callback
+        self.assertEqual(self.testing_canvas.on_press._raw, callback)
         self.assertEqual(
-            self.testing_canvas.on_mouse_down('widget', a=1),
+            self.testing_canvas.on_press('widget', a=1),
             "called <class 'toga.widgets.canvas.Canvas'> with {'a': 1}"
         )
-        self.assertValueSet(self.testing_canvas, 'on_mouse_down', self.testing_canvas.on_mouse_down)
+        self.assertValueSet(self.testing_canvas, 'on_press', self.testing_canvas.on_press)
 
-    def test_on_mouse_up(self):
-        self.assertIsNone(self.testing_canvas._on_mouse_up)
+    def test_on_release(self):
+        """Check on_release handler being invoked."""
+        self.assertIsNone(self.testing_canvas._on_release)
 
         # set a new callback
         def callback(widget, **extra):
             return 'called {} with {}'.format(type(widget), extra)
 
-        self.testing_canvas.on_mouse_up = callback
-        self.assertEqual(self.testing_canvas.on_mouse_up._raw, callback)
+        self.testing_canvas.on_release = callback
+        self.assertEqual(self.testing_canvas.on_release._raw, callback)
         self.assertEqual(
-            self.testing_canvas.on_mouse_up('widget', a=1),
+            self.testing_canvas.on_release('widget', a=1),
             "called <class 'toga.widgets.canvas.Canvas'> with {'a': 1}"
         )
-        self.assertValueSet(self.testing_canvas, 'on_mouse_up', self.testing_canvas.on_mouse_up)
+        self.assertValueSet(self.testing_canvas, 'on_release', self.testing_canvas.on_release)
 
-    def test_on_mouse_dragged(self):
-        self.assertIsNone(self.testing_canvas._on_mouse_dragged)
+    def test_on_dragged(self):
+        """Check on_dragged handler being invoked."""
+        self.assertIsNone(self.testing_canvas._on_dragged)
 
         # set a new callback
         def callback(widget, **extra):
             return 'called {} with {}'.format(type(widget), extra)
 
-        self.testing_canvas.on_mouse_dragged = callback
-        self.assertEqual(self.testing_canvas.on_mouse_dragged._raw, callback)
+        self.testing_canvas.on_dragged = callback
+        self.assertEqual(self.testing_canvas.on_dragged._raw, callback)
         self.assertEqual(
-            self.testing_canvas.on_mouse_dragged('widget', a=1),
+            self.testing_canvas.on_dragged('widget', a=1),
             "called <class 'toga.widgets.canvas.Canvas'> with {'a': 1}"
         )
-        self.assertValueSet(self.testing_canvas, 'on_mouse_dragged', self.testing_canvas.on_mouse_dragged)
+        self.assertValueSet(self.testing_canvas, 'on_dragged', self.testing_canvas.on_dragged)
 
-    def test_on_right_mouse_down(self):
-        self.assertIsNone(self.testing_canvas._on_right_mouse_down)
+    def test_on_right_press(self):
+        """Check on_right_press handler being invoked."""
+        self.assertIsNone(self.testing_canvas._on_right_press)
 
         # set a new callback
         def callback(widget, **extra):
             return 'called {} with {}'.format(type(widget), extra)
 
-        self.testing_canvas.on_right_mouse_down = callback
-        self.assertEqual(self.testing_canvas.on_right_mouse_down._raw, callback)
+        self.testing_canvas.on_right_press = callback
+        self.assertEqual(self.testing_canvas.on_right_press._raw, callback)
         self.assertEqual(
-            self.testing_canvas.on_right_mouse_down('widget', a=1),
+            self.testing_canvas.on_right_press('widget', a=1),
             "called <class 'toga.widgets.canvas.Canvas'> with {'a': 1}"
         )
-        self.assertValueSet(self.testing_canvas, 'on_right_mouse_down', self.testing_canvas.on_right_mouse_down)
+        self.assertValueSet(self.testing_canvas, 'on_right_press', self.testing_canvas.on_right_press)
 
-    def test_on_right_mouse_up(self):
-        self.assertIsNone(self.testing_canvas._on_right_mouse_up)
+    def test_on_right_release(self):
+        """Check on_right_release handler being invoked."""
+        self.assertIsNone(self.testing_canvas._on_right_release)
 
         # set a new callback
         def callback(widget, **extra):
             return 'called {} with {}'.format(type(widget), extra)
 
-        self.testing_canvas.on_right_mouse_up = callback
-        self.assertEqual(self.testing_canvas.on_right_mouse_up._raw, callback)
+        self.testing_canvas.on_right_release = callback
+        self.assertEqual(self.testing_canvas.on_right_release._raw, callback)
         self.assertEqual(
-            self.testing_canvas.on_right_mouse_up('widget', a=1),
+            self.testing_canvas.on_right_release('widget', a=1),
             "called <class 'toga.widgets.canvas.Canvas'> with {'a': 1}"
         )
-        self.assertValueSet(self.testing_canvas, 'on_right_mouse_up', self.testing_canvas.on_right_mouse_up)
+        self.assertValueSet(self.testing_canvas, 'on_right_release', self.testing_canvas.on_right_release)
 
-    def test_on_right_mouse_dragged(self):
-        self.assertIsNone(self.testing_canvas._on_right_mouse_dragged)
+    def test_on_right_dragged(self):
+        """Check on_right_dragged handler being invoked."""
+        self.assertIsNone(self.testing_canvas._on_right_dragged)
 
         # set a new callback
         def callback(widget, **extra):
             return 'called {} with {}'.format(type(widget), extra)
 
-        self.testing_canvas.on_right_mouse_dragged = callback
-        self.assertEqual(self.testing_canvas.on_right_mouse_dragged._raw, callback)
+        self.testing_canvas.on_right_dragged = callback
+        self.assertEqual(self.testing_canvas.on_right_dragged._raw, callback)
         self.assertEqual(
-            self.testing_canvas.on_right_mouse_dragged('widget', a=1),
+            self.testing_canvas.on_right_dragged('widget', a=1),
             "called <class 'toga.widgets.canvas.Canvas'> with {'a': 1}"
         )
-        self.assertValueSet(self.testing_canvas, 'on_right_mouse_dragged', self.testing_canvas.on_right_mouse_dragged)
+        self.assertValueSet(self.testing_canvas, 'on_right_dragged', self.testing_canvas.on_right_dragged)
