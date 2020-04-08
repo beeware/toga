@@ -97,22 +97,28 @@ class Canvas(Widget):
     def set_on_resize(self, handler):
         self._set_value('on_resize', handler)
 
-    # Mouse button handlers
+    # 'Mouse' button handlers
 
-    def set_on_mouse_down(self, handler):
-        self._set_value("on_mouse_down", handler)
+    def set_on_press(self, handler):
+        """Ensure the correct handler is invoked."""
+        self._set_value("on_press", handler)
 
-    def set_on_right_mouse_down(self, handler):
-        self._set_value("on_right_mouse_down", handler)
+    def set_on_right_press(self, handler):
+        """Ensure the correct handler is invoked."""
+        self._set_value("on_right_press", handler)
 
-    def set_on_mouse_up(self, handler):
-        self._set_value("on_mouse_up", handler)
+    def set_on_release(self, handler):
+        """Ensure the correct handler is invoked."""
+        self._set_value("on_release", handler)
 
-    def set_on_right_mouse_up(self, handler):
-        self._set_value("on_right_mouse_up", handler)
+    def set_on_right_release(self, handler):
+        """Ensure the correct handler is invoked."""
+        self._set_value("on_right_release", handler)
 
-    def set_on_mouse_dragged(self, handler):
-        self._set_value("on_mouse_dragged", handler)
+    def set_on_dragged(self, handler):
+        """Ensure the correct handler is invoked."""
+        self._set_value("on_dragged", handler)
 
-    def set_on_right_mouse_dragged(self, handler):
-        self._set_value("on_right_mouse_dragged", handler)
+    def set_on_right_dragged(self, handler):
+        """Ensure the correct handler is invoked."""
+        self._set_value("on_right_dragged", handler)

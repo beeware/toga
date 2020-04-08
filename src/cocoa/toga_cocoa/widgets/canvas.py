@@ -46,39 +46,45 @@ class TogaCanvas(NSView):
 
     @objc_method
     def mouseDown_(self, event) -> None:
-        if self.interface.on_mouse_down:
+        """Invoke the on_press handler if configured."""
+        if self.interface.on_press:
             position = self.convertPoint(event.locationInWindow, fromView=None)
-            self.interface.on_mouse_down(self.interface, position.x, position.y, event.clickCount)
+            self.interface.on_press(self.interface, position.x, position.y, event.clickCount)
 
     @objc_method
     def rightMouseDown_(self, event) -> None:
-        if self.interface.on_right_mouse_down:
+        """Invoke the on_right_press handler if configured."""
+        if self.interface.on_right_press:
             position = self.convertPoint(event.locationInWindow, fromView=None)
-            self.interface.on_right_mouse_down(self.interface, position.x, position.y, event.clickCount)
+            self.interface.on_right_press(self.interface, position.x, position.y, event.clickCount)
 
     @objc_method
     def mouseUp_(self, event) -> None:
-        if self.interface.on_mouse_up:
+        """Invoke the on_release handler if configured."""
+        if self.interface.on_release:
             position = self.convertPoint(event.locationInWindow, fromView=None)
-            self.interface.on_mouse_up(self.interface, position.x, position.y, event.clickCount)
+            self.interface.on_release(self.interface, position.x, position.y, event.clickCount)
  
     @objc_method
     def rightMouseUp_(self, event) -> None:
-        if self.interface.on_right_mouse_up:
+        """Invoke the on_right_release handler if configured."""
+        if self.interface.on_right_release:
             position = self.convertPoint(event.locationInWindow, fromView=None)
-            self.interface.on_right_mouse_up(self.interface, position.x, position.y, event.clickCount)
+            self.interface.on_right_release(self.interface, position.x, position.y, event.clickCount)
 
     @objc_method
     def mouseDragged_(self, event) -> None:
-        if self.interface.on_mouse_dragged:
+        """Invoke the on_dragged handler if configured."""
+        if self.interface.on_dragged:
             position = self.convertPoint(event.locationInWindow, fromView=None)
-            self.interface.on_mouse_dragged(self.interface, position.x, position.y, event.clickCount)
+            self.interface.on_dragged(self.interface, position.x, position.y, event.clickCount)
 
     @objc_method
     def rightMouseDragged_(self, event) -> None:
-        if self.interface.on_right_mouse_dragged:
+        """Invoke the on_right_dragged handler if configured."""
+        if self.interface.on_right_dragged:
             position = self.convertPoint(event.locationInWindow, fromView=None)
-            self.interface.on_right_mouse_dragged(self.interface, position.x, position.y, event.clickCount)
+            self.interface.on_right_dragged(self.interface, position.x, position.y, event.clickCount)
 
 
 class Canvas(Widget):
