@@ -12,15 +12,22 @@ class Table(Widget):
         self.native.View = WinForms.View.Details
 
         dataColumn = []
-        for heading in self.interface.headings:
-            col = WinForms.ColumnHeader()
-            col.Text = heading
-            dataColumn.append(col)
+        for i, (heading, accessor) in enumerate(zip(
+                    self.interface.headings,
+                    self.interface._accessors
+                )):
+            dataColumn.append(self._create_column(heading, accessor))
 
         self.native.FullRowSelect = True
         self.native.Multiselect = self.interface.multiple_select
         self.native.DoubleBuffered = True
         self.native.Columns.AddRange(dataColumn)
+
+    def _create_column(self, heading, accessor):
+        col = WinForms.ColumnHeader()
+        col.Text = heading
+        col.Name = accessor
+        return col
 
     def change_source(self, source):
         self.update_data()
@@ -76,3 +83,9 @@ class Table(Widget):
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
         self.interface.intrinsic.height = at_least(self.interface.MIN_HEIGHT)
+
+    def remove_column(self, accessor):
+        self.native.Columns.RemoveByKey(accessor)
+
+    def add_column(self, heading, accessor):
+        self.native.Columns.Add(self._create_column(heading, accessor))
