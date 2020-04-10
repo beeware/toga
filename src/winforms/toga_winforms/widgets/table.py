@@ -19,13 +19,21 @@ class Table(Widget):
             dataColumn.append(self._create_column(heading, accessor))
 
         self.native.FullRowSelect = True
-        self.native.Multiselect = self.interface.multiple_select
+        self.native.MultiSelect = self.interface.multiple_select
         self.native.DoubleBuffered = True
         self.native.Columns.AddRange(dataColumn)
         self.native.ItemSelectionChanged += self._handle_native_on_select
 
     def _handle_native_on_select(self, source, e):
-        if self.interface.on_select:
+        
+        if not self.interface.on_select:
+            return
+        
+        if self.interface.multiple_select:
+            selected_indexes = [index for index in self.native.SelectedIndices]
+            selected = [row for i, row in enumerate(self.interface.data) if i in selected_indexes]
+            self.interface.on_select(self.interface, row=selected)
+        else:
             self.interface.on_select(self.interface, row=self.interface.data[e.get_ItemIndex()])
 
     def _create_column(self, heading, accessor):
@@ -91,7 +99,6 @@ class Table(Widget):
 
     def scroll_to_row(self, row):
         self.native.EnsureVisible(row)
-        self.interface.factory.not_implemented('Table.scroll_to_row()')
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
