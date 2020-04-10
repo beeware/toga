@@ -22,6 +22,11 @@ class Table(Widget):
         self.native.Multiselect = self.interface.multiple_select
         self.native.DoubleBuffered = True
         self.native.Columns.AddRange(dataColumn)
+        self.native.ItemSelectionChanged += self._handle_native_on_select
+
+    def _handle_native_on_select(self, source, e):
+        if self.interface.on_select:
+            self.interface.on_select(self.interface, row=self.interface.data[e.get_ItemIndex()])
 
     def _create_column(self, heading, accessor):
         col = WinForms.ColumnHeader()
@@ -82,7 +87,7 @@ class Table(Widget):
         self.native.Items.Clear()
 
     def set_on_select(self, handler):
-        self.interface.factory.not_implemented('Table.set_on_select()')
+        pass
 
     def scroll_to_row(self, row):
         self.native.EnsureVisible(row)
