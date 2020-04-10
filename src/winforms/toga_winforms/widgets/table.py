@@ -36,12 +36,21 @@ class Table(Widget):
         # TODO: Winforms can't support icons in tree cells; so, if the data source
         # specifies an icon, strip it when converting to row data.
         def strip_icon(item, attr):
-            val = getattr(item, attr)
+            try:
+                val = getattr(item, attr)
+            except AttributeError:
+                try:
+                    val = self.interface.missing_value
+                except ValueError as e:
+                    # There is no explicit missing value. Warn the user.
+                    message, val = e.args
+                    print(message.format('?', attr))
+
             if isinstance(val, tuple):
                 return str(val[1])
             return str(val)
 
-        return [item] + [
+        return [
             strip_icon(item, attr)
             for attr in self.interface._accessors
         ]
@@ -53,14 +62,13 @@ class Table(Widget):
         for item in self.interface.data:
             item._impl = WinForms.ListViewItem(self.row_data(item))
             items.append(item._impl)
+            
         self.native.Items.AddRange(items)
         self.native.EndUpdate()
 
     def insert(self, index, item):
         self.native.BeginUpdate()
-        item._impl = WinForms.ListViewItem([
-            str(getattr(item, attr)) for attr in self.interface._accessors
-        ])
+        item._impl = WinForms.ListViewItem(self.row_data(item))
         self.native.Items.Insert(index, item._impl)
         self.native.EndUpdate()
 
@@ -89,3 +97,4 @@ class Table(Widget):
 
     def add_column(self, heading, accessor):
         self.native.Columns.Add(self._create_column(heading, accessor))
+        self.update_data()
