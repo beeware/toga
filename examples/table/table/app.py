@@ -19,8 +19,11 @@ bee_movies = [
 
 class ExampleTableApp(toga.App):
     # Table callback functions
-    def on_select_handler(self, widget, row, **kwargs):
-        self.label.text = 'You selected row: {}'.format(row.title) if row is not None else 'No row selected'
+    def on_select_handler1(self, widget, row, **kwargs):
+        self.label_table1.text = 'You selected row: {}'.format(row.title) if row is not None else 'No row selected'
+
+    def on_select_handler2(self, widget, row, **kwargs):
+        self.label_table2.text = 'You selected rows: {}'.format(','.join([r.title for r in row])) if row is not None else 'No row selected'
 
     # Button callback functions
     def insert_handler(self, widget, **kwargs):
@@ -55,7 +58,9 @@ class ExampleTableApp(toga.App):
         self.main_window = toga.MainWindow(title=self.name)
 
         # Label to show which row is currently selected.
-        self.label = toga.Label('Ready.')
+        self.label_table1 = toga.Label('Ready.', style=Pack(flex=1, padding_right=5))
+        self.label_table2 = toga.Label('Try multiple row selection.',style=Pack(flex=1, padding_left=5))
+        labelbox = toga.Box(children=[self.label_table1, self.label_table2], style=Pack(flex=1, padding_top=5))
 
         # Data to populate the table.
         data = []
@@ -65,14 +70,17 @@ class ExampleTableApp(toga.App):
         self.table1 = toga.Table(
             headings=headings,
             data=bee_movies[:4],
-            style=Pack(flex=1),
-            on_select=self.on_select_handler
+            style=Pack(flex=1, padding_right=5, height=350),
+            multiple_select=False,
+            on_select=self.on_select_handler1
         )
 
         self.table2 = toga.Table(
             headings=headings,
             data=self.table1.data,
-            style=Pack(flex=1)
+            multiple_select=True,
+            style=Pack(flex=1, padding_left=5, height=350),
+            on_select=self.on_select_handler2
         )
 
         tablebox = toga.Box(children=[self.table1, self.table2], style=Pack(flex=1))
@@ -86,12 +94,12 @@ class ExampleTableApp(toga.App):
         btn_toggle = toga.Button('Toggle Column', on_press=self.toggle_handler, style=btn_style)
         btn_box = toga.Box(
             children=[btn_insert, btn_delete, btn_clear, btn_reset, btn_toggle],
-            style=Pack(direction=ROW)
+            style=Pack(direction=ROW, padding_bottom=5)
         )
 
         # Most outer box
         outer_box = toga.Box(
-            children=[btn_box, tablebox, self.label],
+            children=[btn_box, tablebox, labelbox],
             style=Pack(
                 flex=1,
                 direction=COLUMN,

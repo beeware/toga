@@ -21,18 +21,38 @@ class Table(Widget):
         self.native.FullRowSelect = True
         self.native.MultiSelect = self.interface.multiple_select
         self.native.DoubleBuffered = True
+        self.native.VirtualMode = True
         self.native.Columns.AddRange(dataColumn)
-        self.native.ItemSelectionChanged += self._handle_native_on_select
 
-    def _handle_native_on_select(self, source, e):
-        
+        self.native.ItemSelectionChanged += self._handle_native_on_select
+        self.native.RetrieveVirtualItem += self._handle_native_retrieve_virtual_item
+        self.native.VirtualItemsSelectionRangeChanged += self._handle_virtual_range_selection
+
+    def _handle_virtual_range_selection(self, sender, e):
+        # `Shift` key or Range selection handler
+        if self.interface.multiple_select and self.interface.on_select:
+            selected = None
+            if e.IsSelected:
+                selected = self.interface.data[e.StartIndex:e.EndIndex+1]
+            self.interface.on_select(self.interface, row=selected)
+
+    def _handle_native_retrieve_virtual_item(self, sender, e):
+        # Because ListView is in VirtualMode, it's necessary implement
+        # VirtualItemsSelectionRangeChanged event to create ListViewItem when it's needed
+        e.Item = WinForms.ListViewItem(self.row_data(self.interface.data[e.ItemIndex]))
+
+    def _handle_native_on_select(self, sender, e):
+        # Normal selection, can be one item or multiple items with `Ctrl` Key
         if not self.interface.on_select:
             return
-        
+
+        if not e.IsSelected:
+            self.interface.on_select(self.interface, row=None)
+
         if self.interface.multiple_select:
             selected_indexes = [index for index in self.native.SelectedIndices]
             selected = [row for i, row in enumerate(self.interface.data) if i in selected_indexes]
-            self.interface.on_select(self.interface, row=selected)
+            self.interface.on_select(self.interface, row=selected) 
         else:
             self.interface.on_select(self.interface, row=self.interface.data[e.get_ItemIndex()])
 
@@ -69,6 +89,8 @@ class Table(Widget):
         ]
 
     def update_data(self):
+        self.native.VirtualListSize = len(self.interface.data)
+        """
         self.native.BeginUpdate()
         self.native.Items.Clear()
         items = []
@@ -78,12 +100,16 @@ class Table(Widget):
             
         self.native.Items.AddRange(items)
         self.native.EndUpdate()
+        """
 
     def insert(self, index, item):
+        self.update_data()
+        """
         self.native.BeginUpdate()
         item._impl = WinForms.ListViewItem(self.row_data(item))
         self.native.Items.Insert(index, item._impl)
         self.native.EndUpdate()
+        """
 
     def change(self, item):
         self.interface.factory.not_implemented('Table.change()')
