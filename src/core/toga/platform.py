@@ -15,7 +15,7 @@ def get_platform_factory(factory=None):
         or the factory that was given as a argument.
 
     Raises:
-        RuntimeError: If no supported hots platform can be identified.
+        RuntimeError: If no supported host platform can be identified.
     """
     if factory is not None:
         return factory
