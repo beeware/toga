@@ -1,4 +1,4 @@
-from android import PythonActivity
+from rubicon.java import JavaClass, JavaInterface
 
 from .window import Window
 
@@ -7,9 +7,21 @@ class MainWindow(Window):
     pass
 
 
-class TogaApp:
+# The `IPythonApp` interface in Java allows Python code to
+# run on Android activity lifecycle hooks such as `onCreate()`.
+IPythonApp = JavaInterface('org/beeware/android/IPythonApp')
+
+
+class TogaApp(IPythonApp):
     def __init__(self, app):
+        super().__init__()
         self._interface = app
+        activity_class = JavaClass('org/beeware/android/MainActivity')
+        activity_class.setPythonApp(self)
+        print('Python app launched & stored in Android Activity class')
+
+    def onCreate(self):
+        print("Toga app: onCreate")
 
     def onStart(self):
         print("Toga app: onStart")
@@ -41,21 +53,16 @@ class App:
         self.interface._impl = self
 
     def create(self):
-        # Connect this app to the PythonActivity
         self._listener = TogaApp(self)
-
-        # Set the Python activity listener to be this app.
-        self.native = PythonActivity.setListener(self._listener)
-
-        self.startup()
 
     def open_document(self, fileURL):
         print("Can't open document %s (yet)" % fileURL)
 
     def main_loop(self):
-        # Main loop is a no-op on Android; the app loop is integrated with the
-        # main Android event loop.
-        pass
+        # Connect the Python code to the Java Activity.
+        self.create()
+        # The app loop is integrated with the main Android event loop,
+        # so there is no further work to do.
 
     def set_main_window(self, window):
         pass
