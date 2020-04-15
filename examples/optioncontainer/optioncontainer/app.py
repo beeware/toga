@@ -5,17 +5,14 @@ from toga.constants import COLUMN
 
 class ExampleOptionContainerApp(toga.App):
 
-    def on_enable1(self, button):
+    def on_enable(self, button):
         self.optioncontainer.content[0].enabled = not self.optioncontainer.content[0].enabled
 
-    def on_enable2(self, button):
-        self.optioncontainer.content[1].enabled = not self.optioncontainer.content[1].enabled
-
     def on_change_label(self, button):
-        self.optioncontainer.content[1].label = 'Now I have another label!'
+        self.optioncontainer.content[0].label = 'Now I have another label!'
 
     def on_remove(self, button):
-        self.optioncontainer.remove(2)
+        self.optioncontainer.remove(0)
 
     def startup(self):
         # Set up main window
@@ -23,14 +20,14 @@ class ExampleOptionContainerApp(toga.App):
 
         self.optioncontainer = toga.OptionContainer()
 
-        btn_toggle_1 = toga.Button('Toggle Enabled Option 1', on_press=self.on_enable1)
-        btn_toggle_2 = toga.Button('Toggle Enabled Option 2', on_press=self.on_enable2)
-        btn_change_label = toga.Button('Change Label in Option 2', on_press=self.on_change_label)
-        btn_remove_option = toga.Button('Remove Tab', on_press=self.on_remove)
+        style_btn = Pack(padding_bottom=2)
+        btn_toggle_1 = toga.Button('Toggle enabled first option', on_press=self.on_enable, style=style_btn)
+        btn_change_label = toga.Button('Change label in first option', on_press=self.on_change_label, style=style_btn)
+        btn_remove_option = toga.Button('Remove first tab', on_press=self.on_remove, style=style_btn)
 
-        label_box1 = toga.Label('This is Box 1 ')
-        label_box2 = toga.Label('This is Box 2 ')
-        label_box3 = toga.Label('This is Box 3 ')
+        label_box1 = toga.Label('This is Box 1 ', style=Pack(padding=10))
+        label_box2 = toga.Label('This is Box 2 ', style=Pack(padding=10))
+        label_box3 = toga.Label('This is Box 3 ', style=Pack(padding=10))
 
         box1 = toga.Box(children=[label_box1])
         box2 = toga.Box(children=[label_box2])
@@ -43,7 +40,7 @@ class ExampleOptionContainerApp(toga.App):
         # Outermost box
         outer_box = toga.Box(
             children=[
-                btn_toggle_1, btn_toggle_2,
+                btn_toggle_1,
                 btn_change_label, btn_remove_option,
                 self.optioncontainer
             ],

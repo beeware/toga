@@ -4,12 +4,28 @@ from .base import Widget
 
 
 class OptionItem:
-    def __init__(self, container, label, widget, enabled):
-        self._container = container
-        self._index = len(container)
+    def __init__(self, label, widget, enabled):
+        self._interface = None
+        self._index = None
         self._label = label
         self._widget = widget
         self._enabled = enabled
+
+    @property
+    def interface(self):
+        return self._interface
+
+    @interface.setter
+    def interface(self, interface):
+        self._interface = interface
+
+    @property
+    def index(self):
+        return self._index
+
+    @index.setter
+    def index(self, index):
+        self._index = index
 
     @property
     def enabled(self):
@@ -18,7 +34,7 @@ class OptionItem:
     @enabled.setter
     def enabled(self, value):
         self._enabled = value
-        self._container.interface._impl.set_option_enabled(self._index, value)
+        self._interface._impl.set_option_enabled(self._index, value)
 
     @property
     def label(self):
@@ -27,7 +43,7 @@ class OptionItem:
     @label.setter
     def label(self, value):
         self._label = value
-        self._container.interface._impl.set_label(self._index, value)
+        self._interface._impl.set_label(self._index, value)
 
     def refresh(self):
         self._widget.refresh()
@@ -39,15 +55,26 @@ class OptionList:
         self.interface = interface
         self._options = []
 
+    def __repr__(self):
+        repr_list = ', '.join([
+            '{}(title={})'.format(
+                option.__class__.__name__,
+                option.label)
+            for option in self
+        ])
+        return '[{}]'.format(repr_list)
+
     def __setitem__(self, index, option):
         option.index = index
+        option.interface = self.inteface
         self._options[index] = option
 
     def __getitem__(self, index):
         return self._options[index]
 
-    def __delitem__(self, key):
-        del self._options[key]
+    def __delitem__(self, index):
+        del self._options[index]
+        self._update_indices()
 
     def __iter__(self):
         return iter(self._options)
@@ -56,8 +83,21 @@ class OptionList:
         return len(self._options)
 
     def append(self, label, widget, enabled=True):
-        option = OptionItem(self, label, widget, enabled)
-        self._options.append(option)
+        self._insert(len(self), label, widget, enabled)
+
+    def insert(self, index, label, widget, enabled=True):
+        self._insert(index, label, widget, enabled)
+
+    def _insert(self, index, label, widget, enabled=True):
+        option = OptionItem(label, widget, enabled)
+        option.interface = self.interface
+        self._options.insert(index, option)
+        self._update_indices()
+
+    def _update_indices(self):
+        # ensure that all option have a corrrect index
+        for i, option in enumerate(self._options):
+            option.index = i
 
 
 class OptionContainer(Widget):
@@ -118,7 +158,6 @@ class OptionContainer(Widget):
         widget.refresh()
 
     def remove(self, index):
-
         disabled_siblings = not any(
             [
                 opt.enabled for opt in self._content
@@ -127,6 +166,9 @@ class OptionContainer(Widget):
         )
 
         if len(self._content) == 1 or disabled_siblings:
+            # if sibling options are disabled or there is
+            # only one tab in the option container, don't allow
+            # remove tab.
             return
         else:
             self._impl.remove_content(index)
