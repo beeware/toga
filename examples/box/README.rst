@@ -13,4 +13,4 @@ Quickstart
 
 To run this example:
 
-    $ python -m button
+    $ python -m box
