@@ -34,7 +34,7 @@ class Table(Widget):
                 return str(val[1])
             return str(val)
 
-        return [item] + [
+        return [
             strip_icon(item, attr)
             for attr in self.interface._accessors
         ]
@@ -51,9 +51,7 @@ class Table(Widget):
 
     def insert(self, index, item):
         self.native.BeginUpdate()
-        item._impl = WinForms.ListViewItem([
-            str(getattr(item, attr)) for attr in self.interface._accessors
-        ])
+        item._impl = WinForms.ListViewItem(self.row_data(item))
         self.native.Items.Insert(index, item._impl)
         self.native.EndUpdate()
 
