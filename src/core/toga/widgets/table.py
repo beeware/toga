@@ -195,10 +195,4 @@ class Table(Widget):
 
     @property
     def missing_value(self):
-        if self._missing_value is None:
-            raise ValueError(
-                "WARNING: Row '{}' of table data doesn't support accessor '{}'. "
-                "Using empty string; define a 'missing_value' on the table "
-                "to silence this message", ''
-            )
-        return self._missing_value
+        return self._missing_value or ''
