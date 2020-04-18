@@ -73,4 +73,5 @@ class ScrollContainerTests(TestCase):
 
             self.sc.window = toga.window
             self.assertEqual(self.sc.window, toga.window)
+            
             self.assertValueSet(self.sc, 'window', toga.window)
