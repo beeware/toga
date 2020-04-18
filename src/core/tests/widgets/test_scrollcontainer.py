@@ -50,7 +50,7 @@ class ScrollContainerTests(TestCase):
         # sc and window default value is None
         self.assertIsNotNone(self.sc)
         self.assertIsNone(self.sc.window)
-            
+
         self.sc.window = toga.window
         self.assertEqual(self.sc.window, toga.window)
 
