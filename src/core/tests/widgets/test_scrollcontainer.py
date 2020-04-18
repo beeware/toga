@@ -46,8 +46,31 @@ class ScrollContainerTests(TestCase):
         self.assertEqual(self.sc.horizontal, new_value)
         self.assertValueSet(self.sc, 'horizontal', new_value)
 
-    def test__set_window(self):
-        self.sc.window = toga.window
-        self.assertEqual(self.sc.window, toga.window)
+    def test__set_window_without_content(self):
+            # sc and window default value is None
+            self.assertIsNotNone(self.sc)
+            self.assertIsNone(self.sc.window)
+            
+            self.sc.window = toga.window
+            self.assertEqual(self.sc.window, toga.window)
+            
+            # children remains None when window is set
+            self.assertIsNone(self.sc._children)
+            self.assertValueSet(self.sc, 'window', toga.window)
 
-        self.assertValueSet(self.sc, 'window', toga.window)
+            # test that error is raised when setting a window to empty ScrollContainer
+            self.sc = None
+            with self.assertRaises(AttributeError):
+                self.sc.window = toga.window
+
+    def test__set_window_with_Content(self):
+            # window default value is None
+            self.assertIsNone(self.sc.window)
+            
+            new_content = toga.Box(style=TestStyle(), factory=toga_dummy.factory)
+            self.sc.content = new_content
+            self.assertActionPerformed(self.sc, 'set content')
+
+            self.sc.window = toga.window
+            self.assertEqual(self.sc.window, toga.window)
+            self.assertValueSet(self.sc, 'window', toga.window)
