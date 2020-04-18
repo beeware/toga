@@ -23,7 +23,8 @@ class ExampleTableApp(toga.App):
         self.label_table1.text = 'You selected row: {}'.format(row.title) if row is not None else 'No row selected'
 
     def on_select_handler2(self, widget, row, **kwargs):
-        self.label_table2.text = 'You selected rows: {}'.format(','.join([r.title for r in row])) if row is not None else 'No row selected'
+        self.label_table2.text = 'You selected rows: {}'.format(','.join([r.title for r in row])) \
+                                 if row is not None else 'No row selected'
 
     # Button callback functions
     def insert_handler(self, widget, **kwargs):
@@ -59,7 +60,7 @@ class ExampleTableApp(toga.App):
 
         # Label to show which row is currently selected.
         self.label_table1 = toga.Label('Ready.', style=Pack(flex=1, padding_right=5))
-        self.label_table2 = toga.Label('Try multiple row selection.',style=Pack(flex=1, padding_left=5))
+        self.label_table2 = toga.Label('Try multiple row selection.', style=Pack(flex=1, padding_left=5))
         labelbox = toga.Box(children=[self.label_table1, self.label_table2], style=Pack(flex=1, padding_top=5))
 
         # Data to populate the table.
