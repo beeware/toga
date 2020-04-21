@@ -2,7 +2,13 @@ import toga
 from toga.style import Pack
 from toga.constants import COLUMN, ROW
 
+
 class SelectionApp(toga.App):
+    CARBON = "Carbon"
+    YTTERBIUM = "Ytterbium"
+    THULIUM = "Thulium"
+    OPTIONS = [CARBON, YTTERBIUM, THULIUM]
+    selection: toga.Selection
 
     def startup(self):
         # Main window of the application with title and size
@@ -13,13 +19,23 @@ class SelectionApp(toga.App):
         box_style = Pack(direction=ROW, padding=10)
 
         # Add the content on the main window
+        self.selection = toga.Selection(items=self.OPTIONS)
+
         self.main_window.content = toga.Box(
             children=[
                 toga.Box(style=box_style, children=[
                     toga.Label("Select an element",
                         style=label_style),
 
-                    toga.Selection(items=["Carbon", "Ytterbium", "Thulium"])
+                    self.selection
+                ]),
+                toga.Box(style=box_style, children=[
+                    toga.Label("Selection value can be set by property setter",
+                               style=label_style),
+
+                    toga.Button(label="Set Carbon", on_press=self.set_carbon),
+                    toga.Button(label="Set Ytterbium", on_press=self.set_ytterbium),
+                    toga.Button(label="Set THULIUM", on_press=self.set_thulium),
                 ]),
 
                 toga.Box(style=box_style, children=[
@@ -60,6 +76,15 @@ class SelectionApp(toga.App):
         )
 
         self.main_window.show()
+
+    def set_carbon(self, widget):
+        self.selection.value = self.CARBON
+
+    def set_ytterbium(self, widget):
+        self.selection.value = self.YTTERBIUM
+
+    def set_thulium(self, widget):
+        self.selection.value = self.THULIUM
 
     def my_on_select(self, selection):
 
