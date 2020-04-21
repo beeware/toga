@@ -1,3 +1,4 @@
+import os
 import sys
 from functools import lru_cache
 
@@ -36,6 +37,11 @@ def get_platform_factory(factory=None):
         from toga_cocoa import factory
         return factory
     elif sys.platform == 'linux':
+        # In the future, we will use a different way to detect Android.
+        # See https://github.com/beeware/Python-Android-support/issues/8
+        if os.environ.get('ANDROID_ROOT'):
+            from toga_android import factory
+            return factory
         from toga_gtk import factory
         return factory
     elif sys.platform == 'win32':
