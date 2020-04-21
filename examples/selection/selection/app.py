@@ -8,7 +8,6 @@ class SelectionApp(toga.App):
     YTTERBIUM = "Ytterbium"
     THULIUM = "Thulium"
     OPTIONS = [CARBON, YTTERBIUM, THULIUM]
-    selection: toga.Selection
 
     def startup(self):
         # Main window of the application with title and size
