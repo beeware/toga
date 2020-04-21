@@ -5,6 +5,7 @@ from .widgets.box import Box
 from .icons import Icon
 from .window import Window
 
+
 def not_implemented(feature):
     print('[Android] Not implemented: {}'.format(feature))
 
@@ -15,7 +16,6 @@ __all__ = [
     'MainWindow',
     'paths',
     'Box',
-    'DetailedList',
     'Icon',
     'Window',
 ]

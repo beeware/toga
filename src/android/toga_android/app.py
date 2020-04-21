@@ -1,5 +1,4 @@
-from rubicon.java import JavaClass, JavaInterface
-
+from .libs import IPythonApp, MainActivity
 from .window import Window
 
 
@@ -7,17 +6,11 @@ class MainWindow(Window):
     pass
 
 
-# The `IPythonApp` interface in Java allows Python code to
-# run on Android activity lifecycle hooks such as `onCreate()`.
-IPythonApp = JavaInterface('org/beeware/android/IPythonApp')
-
-
 class TogaApp(IPythonApp):
     def __init__(self, app):
         super().__init__()
         self._interface = app
-        activity_class = JavaClass('org/beeware/android/MainActivity')
-        activity_class.setPythonApp(self)
+        MainActivity.setPythonApp(self)
         print('Python app launched & stored in Android Activity class')
 
     def onCreate(self):

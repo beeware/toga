@@ -3,5 +3,5 @@ class Icon:
     EXTENSIONS = ['.png']
     path = ''
 
-    def __init__(self, *args, **kwargs):
-        print('[Android] Not implemented: Icon')
+    def __init__(self, interface, **kwargs):
+        interface.factory.not_implemented('Icon')
