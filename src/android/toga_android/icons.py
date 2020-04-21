@@ -1,7 +1,9 @@
 class Icon:
-    SIZES = None
     EXTENSIONS = ['.png']
-    path = ''
+    SIZES = None
 
-    def __init__(self, interface, **kwargs):
+    def __init__(self, interface, path):
+        self.interface = interface
+        self.interface._impl = self
+        self.path = path
         interface.factory.not_implemented('Icon')
