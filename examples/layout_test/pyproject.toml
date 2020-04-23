@@ -2,7 +2,7 @@
 requires = ["briefcase"]
 
 [tool.briefcase]
-project_name = "Box Demo"
+project_name = "Layout Test"
 bundle = "org.beeware"
 version = "0.0.1"
 url = "https://beeware.org"
@@ -10,35 +10,35 @@ license = "BSD license"
 author = 'Tiberius Yak'
 author_email = "tiberius@beeware.org"
 
-[tool.briefcase.app.box]
-formal_name = "Box Demo"
+[tool.briefcase.app.tayout_test]
+formal_name = "Layout Test"
 description = "A testing app"
-sources = ['box']
+sources = ['tayout_test']
 requires = []
 
 
-[tool.briefcase.app.box.macOS]
+[tool.briefcase.app.tayout_test.macOS]
 requires = [
     'toga-cocoa',
 ]
 
-[tool.briefcase.app.box.linux]
+[tool.briefcase.app.tayout_test.linux]
 requires = [
     'toga-gtk',
 ]
 
-[tool.briefcase.app.box.windows]
+[tool.briefcase.app.tayout_test.windows]
 requires = [
     'toga-winforms',
 ]
 
 # Mobile deployments
-[tool.briefcase.app.box.iOS]
+[tool.briefcase.app.tayout_test.iOS]
 requires = [
     'toga-iOS',
 ]
 
-[tool.briefcase.app.box.android]
+[tool.briefcase.app.tayout_test.android]
 requires = [
     'toga-android',
 ]

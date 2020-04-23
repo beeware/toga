@@ -1,6 +1,6 @@
 import toga
 from toga.style import Pack
-from toga.constants import ROW, COLUMN, CENTER
+from toga.constants import ROW, COLUMN, CENTER, BLUE
 
 
 class ExampleBoxApp(toga.App):
@@ -31,7 +31,7 @@ class ExampleBoxApp(toga.App):
             on_press=self.add_label,
         )
 
-        self.scroll_box = toga.Box(style=Pack(direction=COLUMN, padding=10, flex=1))
+        self.scroll_box = toga.Box(style=Pack(direction=COLUMN, padding=10, flex=1, color=BLUE))
         self.scroll_view = toga.ScrollContainer(content=self.scroll_box, style=Pack(width=120))
 
         icon = toga.Icon('')
@@ -68,13 +68,13 @@ class ExampleBoxApp(toga.App):
     def add_label(self, sender):
         new_label = toga.Label(
             'Label {}'.format(len(self.scroll_box.children)),
-            style=Pack(padding=1, width=70)
+            style=Pack(padding=2, width=70)
         )
         self.scroll_box.add(new_label)
 
 
 def main():
-    return ExampleBoxApp('Box Demo', 'org.beeware.widgets.box')
+    return ExampleBoxApp('Layout Test', 'org.beeware.widgets.layout_test')
 
 
 if __name__ == '__main__':
