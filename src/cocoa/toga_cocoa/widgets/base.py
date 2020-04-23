@@ -75,7 +75,6 @@ class Widget:
         if self.interface.window:
             # if we don't have a container, we *are* the container
             child.container = self.container or self
-            self.interface.refresh()
 
     def insert_child(self, index, child):
         self.add_child(child)
@@ -84,7 +83,6 @@ class Widget:
         # if we don't have a window, we won't have a container
         if self.interface.window:
             child.container = None
-            self.interface.refresh()
 
     def add_constraints(self):
         self.native.translatesAutoresizingMaskIntoConstraints = False

@@ -72,6 +72,9 @@ class Widget(Node):
                 if self._impl:
                     self._impl.add_child(child._impl)
 
+        if self.window:
+            self.window.content.refresh()
+
     def insert(self, index, child):
         """Insert a node as a child of this one.
         Args:
@@ -90,6 +93,9 @@ class Widget(Node):
             if self._impl:
                 self._impl.insert_child(index, child._impl)
 
+        if self.window:
+            self.window.content.refresh()
+
     def remove(self, *children):
         """Remove a node as a child of this one.
         Args:
@@ -107,6 +113,9 @@ class Widget(Node):
 
                 if self._impl:
                     self._impl.remove_child(child._impl)
+
+        if self.window:
+            self.window.content.refresh()
 
     @property
     def app(self):
