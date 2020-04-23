@@ -10,7 +10,7 @@ with io.open('README.rst', encoding='utf8') as readme:
 
 setup(
     name='toga-demo',
-    version='0.3.0.dev18',
+    version='0.3.0.dev20',
     description='A demonstration of the capabilities of the Toga widget toolkit.',
     long_description=long_description,
     author='Russell Keith-Magee',
@@ -51,32 +51,32 @@ setup(
         },
         'ios': {
             'app_requires': [
-                'toga-ios==0.3.0.dev18',
+                'toga-ios==0.3.0.dev20',
             ]
         },
         'django': {
             'app_requires': [
-                'toga-django==0.3.0.dev18',
+                'toga-django==0.3.0.dev20',
             ]
         },
         'macos': {
             'app_requires': [
-                'toga-cocoa==0.3.0.dev18',
+                'toga-cocoa==0.3.0.dev20',
             ]
         },
         'linux': {
             'app_requires': [
-                'toga-gtk==0.3.0.dev18',
+                'toga-gtk==0.3.0.dev20',
             ]
         },
         'windows': {
             'app_requires': [
-                'toga-winform==0.3.0.dev18',
+                'toga-winform==0.3.0.dev20',
             ]
         },
         'android': {
             'app_requires': [
-                'toga-android==0.3.0.dev18',
+                'toga-android==0.3.0.dev20',
             ]
         }
     }

@@ -91,6 +91,7 @@ NSSuperscriptAttributeName = objc_const(appkit, "NSSuperscriptAttributeName")
 NSGlyphInfoAttributeName = objc_const(appkit, "NSGlyphInfoAttributeName")
 
 NSViewBoundsDidChangeNotification = objc_const(appkit, 'NSViewBoundsDidChangeNotification')
+NSViewFrameDidChangeNotification = objc_const(appkit, 'NSViewFrameDidChangeNotification')
 
 ######################################################################
 # NSBezierPath.h
@@ -563,12 +564,14 @@ NSTableCellView = ObjCClass('NSTableCellView')
 NSTableColumn = ObjCClass('NSTableColumn')
 NSTableView = ObjCClass('NSTableView')
 
-NSTableViewNoColumnAutoresizing = 0
-NSTableViewUniformColumnAutoresizingStyle = 1
-NSTableViewSequentialColumnAutoresizingStyle = 2
-NSTableViewReverseSequentialColumnAutoresizingStyle = 3
-NSTableViewLastColumnOnlyAutoresizingStyle = 4
-NSTableViewFirstColumnOnlyAutoresizingStyle = 5
+
+class NSTableViewColumnAutoresizingStyle(Enum):
+    NoAutoresizing = 0
+    Uniform = 1
+    Sequential = 2
+    ReverseSequential = 3
+    LastColumnOnly = 4
+    FirstColumnOnly = 5
 
 
 class NSTableViewAnimation(Enum):

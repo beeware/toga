@@ -100,3 +100,71 @@ class TableTests(TestCase):
         self.table.on_select = dummy_handler
         on_sele = self.table.on_select
         self.assertEqual(on_sele._raw, dummy_handler)
+
+    def test_add_column(self):
+        new_heading = 'Heading 4'
+        dummy_data = [
+            ['a1', 'b1', 'c1'],
+            ['a2', 'b2', 'c2'],
+            ['a3', 'b3', 'c3'],
+            ['a4', 'b3', 'c4']
+        ]
+        self.table.data = dummy_data
+
+        expecting_headings = self.headings + [new_heading]
+        self.table.add_column(new_heading)
+
+        self.assertEqual(self.headings, expecting_headings)
+
+    def test_remove_column_by_accessor(self):
+        remove = 'heading_2'
+        dummy_data = [
+            ['a1', 'b1', 'c1'],
+        ]
+        self.table.data = dummy_data
+
+        expecting_accessors = [h for h in self.table._accessors if h != remove]
+        self.table.remove_column(remove)
+        self.assertEqual(self.table._accessors, expecting_accessors)
+
+    def test_remove_column_by_position(self):
+        remove = 2
+        dummy_data = [
+            ['a1', 'b1', 'c1'],
+        ]
+        self.table.data = dummy_data
+
+        heading = self.table.headings[remove]
+        expecting_headings = [h for h in self.table.headings if h != heading]
+        self.table.remove_column(remove)
+        self.assertEqual(self.table.headings, expecting_headings)
+
+    def test_remove_column_invalid_name(self):
+        dummy_data = [
+            ['a1', 'b1', 'c1'],
+        ]
+        self.table.data = dummy_data
+
+        # Remove a column that doesn't exist
+        with self.assertRaises(ValueError):
+            self.table.remove_column("Not a column")
+
+    def test_remove_column_invalid_index(self):
+        dummy_data = [
+            ['a1', 'b1', 'c1'],
+        ]
+        self.table.data = dummy_data
+
+        # Remove a column using an index that doesn't exist
+        with self.assertRaises(ValueError):
+            self.table.remove_column(42)
+
+    def test_remove_column_invalid_type(self):
+        dummy_data = [
+            ['a1', 'b1', 'c1'],
+        ]
+        self.table.data = dummy_data
+
+        # Remove a column using a data type that isn't valid
+        with self.assertRaises(ValueError):
+            self.table.remove_column(3.14159)

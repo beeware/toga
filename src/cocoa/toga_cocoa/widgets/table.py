@@ -1,8 +1,14 @@
+from rubicon.objc import at
 from travertino.size import at_least
 
-from toga.sources import to_accessor
-from toga_cocoa.libs import *
-
+from toga_cocoa.libs import (
+    objc_method,
+    NSBezelBorder,
+    NSScrollView,
+    NSTableColumn,
+    NSTableView,
+    NSTableViewColumnAutoresizingStyle
+)
 from .base import Widget
 from .internal.cells import TogaIconCell
 from .internal.data import TogaData
@@ -17,19 +23,37 @@ class TogaTable(NSTableView):
     @objc_method
     def tableView_objectValueForTableColumn_row_(self, table, column, row: int):
         data_row = self.interface.data[row]
+
         try:
-            data = data_row._impls
+            # Obtain the _impl for the data row...
+            data = data_row._impl
         except AttributeError:
-            data = {
-                attr: TogaData.alloc().init()
-                for attr in self.interface._accessors
-            }
-            data_row._impls = data
+            # or if it doesn't already exist, create it.
+            data = {}
+            data_row._impl = data
 
         col_identifier = str(column.identifier)
 
-        datum = data[col_identifier]
-        value = getattr(data_row, col_identifier)
+        try:
+            # Get the TogaData
+            datum = data[col_identifier]
+        except KeyError:
+            # or create it, if it doesn't exist
+            data[col_identifier] = TogaData.alloc().init()
+            data_row._impl[col_identifier] = data[col_identifier]
+            datum = data[col_identifier]
+
+        # Get value for the column
+        try:
+            value = getattr(data_row, col_identifier)
+        except AttributeError:
+            # The accessor doesn't exist in the data. Use the missing value.
+            try:
+                value = self.interface.missing_value
+            except ValueError as e:
+                # There is no explicit missing value. Warn the user.
+                message, value = e.args
+                print(message.format(row, col_identifier))
 
         # Allow for an (icon, value) tuple as the simple case
         # for encoding an icon in a table cell.
@@ -95,7 +119,7 @@ class Table(Widget):
         self.table = TogaTable.alloc().init()
         self.table.interface = self.interface
         self.table._impl = self
-        self.table.columnAutoresizingStyle = NSTableViewUniformColumnAutoresizingStyle
+        self.table.columnAutoresizingStyle = NSTableViewColumnAutoresizingStyle.Uniform
 
         self.table.allowsMultipleSelection = self.interface.multiple_select
 
@@ -109,17 +133,7 @@ class Table(Widget):
                     self.interface.headings,
                     self.interface._accessors
                 )):
-
-            column_identifier = at(accessor)
-            self.column_identifiers[id(column_identifier)] = accessor
-            column = NSTableColumn.alloc().initWithIdentifier(column_identifier)
-            self.table.addTableColumn(column)
-            self.columns.append(column)
-
-            cell = TogaIconCell.alloc().init()
-            column.dataCell = cell
-
-            column.headerCell.stringValue = heading
+            self._add_column(heading, accessor)
 
         self.table.delegate = self.table
         self.table.dataSource = self.table
@@ -154,3 +168,30 @@ class Table(Widget):
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
         self.interface.intrinsic.height = at_least(self.interface.MIN_HEIGHT)
+
+    def _add_column(self, heading, accessor):
+        column_identifier = at(accessor)
+        self.column_identifiers[accessor] = column_identifier
+        column = NSTableColumn.alloc().initWithIdentifier(column_identifier)
+        self.table.addTableColumn(column)
+        self.columns.append(column)
+
+        cell = TogaIconCell.alloc().init()
+        column.dataCell = cell
+
+        column.headerCell.stringValue = heading
+
+    def add_column(self, heading, accessor):
+        self._add_column(heading, accessor)
+        self.table.sizeToFit()
+
+    def remove_column(self, accessor):
+        column_identifier = self.column_identifiers[accessor]
+        column = self.table.tableColumnWithIdentifier(column_identifier)
+        self.table.removeTableColumn(column)
+
+        # delete column and identifier
+        self.columns.remove(column)
+        del self.column_identifiers[accessor]
+
+        self.table.sizeToFit()

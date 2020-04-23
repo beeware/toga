@@ -41,10 +41,11 @@ class MovieSource(Source):
         movie = Movie(*entry)
         self._movies.append(movie)
         self._movies.sort(key=lambda m: m.year)
-        self._notify('insert', index=len(self._movies) - 1, item=movie)
+        self._notify('insert', index=self._movies.index(movie), item=movie)
 
     def remove(self, index):
         item = self._movies[index]
+        self._notify('pre_remove', item=item)
         del self._movies[index]
         self._notify('remove', item=item)
 
@@ -55,29 +56,59 @@ class MovieSource(Source):
 
 class GoodMovieSource(Source):
     # A data source that piggy-backs on a MovieSource, but only
-    # exposes *good* movies (rating > 7.5)
+    # exposes *good* movies (rating > 7.0)
     def __init__(self, source):
         super().__init__()
         self._source = source
         self._source.add_listener(self)
+        self._removals = set()
 
     # Implement the filtering of the underlying data source
     def _filtered(self):
-        return (m for m in self._source._movies if m.rating > 7.0)
+        return sorted(
+            (
+                m
+                for m in self._source._movies
+                if m.rating > 7.0
+            ),
+            key=lambda m: -m.rating
+        )
 
     # Methods required by the ListSource interface
     def __len__(self):
         return len(list(self._filtered()))
 
     def __getitem__(self, index):
-        return sorted(self._filtered(), key=lambda m: -m.rating)[index]
+        return self._filtered()[index]
 
-    # A listener that passes on all notifications
+    # A listener that passes on all notifications, but only if the apply
+    # to the filtered data source
     def insert(self, index, item):
-        self._notify('insert', index=index, item=item)
+        # If the item exists in the filtered list, propegate the notification
+        for i, filtered_item in enumerate(self._filtered()):
+            if filtered_item == item:
+                # Propegate the insertion, with the position in the
+                # *filtered* list.
+                self._notify('insert', index=i, item=item)
+
+    def pre_remove(self, item):
+        # If the item exists in the filtered list, track that it is being
+        # removed; but don't propegate the removal notification until it has
+        # been removed from the base data source
+        for i, filtered_item in enumerate(self._filtered()):
+            if filtered_item == item:
+                # Track that the object *was* in the data source
+                self._removals.add(item)
 
     def remove(self, item):
-        self._notify('remove', item=item)
+        # If the removed item previously existed in the filtered data source,
+        # propegate the removal notification.
+        try:
+            self._removals.remove(item)
+            self._notify('remove', item=item)
+        except KeyError:
+            # object wasn't previously in the data source
+            pass
 
     def clear(self):
         self._notify('clear')

@@ -38,6 +38,19 @@ class ExampleTableApp(toga.App):
     def reset_handler(self, widget, **kwargs):
         self.table1.data = bee_movies[3:]
 
+    def toggle_handler(self, widget, **kwargs):
+        try:
+            # Try to delete the "genre" column by accessor.
+            # If the column doesn't exist, this will raise a ValueError,
+            # which means we need to add it.
+            self.table1.remove_column('genre')
+        except ValueError:
+            # Add the genre column. We provide the column *title*,
+            # which is automatically converted into the data accessor `genre`.
+            # If the data accessor can't be determined from the column title,
+            # you could manually specify the accessor here, too.
+            self.table1.add_column('Genre')
+
     def startup(self):
         self.main_window = toga.MainWindow(title=self.name)
 
@@ -70,8 +83,9 @@ class ExampleTableApp(toga.App):
         btn_delete = toga.Button('Delete Row', on_press=self.delete_handler, style=btn_style)
         btn_clear = toga.Button('Clear Table', on_press=self.clear_handler, style=btn_style)
         btn_reset = toga.Button('Reset Table', on_press=self.reset_handler, style=btn_style)
+        btn_toggle = toga.Button('Toggle Column', on_press=self.toggle_handler, style=btn_style)
         btn_box = toga.Box(
-            children=[btn_insert, btn_delete, btn_clear, btn_reset],
+            children=[btn_insert, btn_delete, btn_clear, btn_reset, btn_toggle],
             style=Pack(direction=ROW)
         )
 

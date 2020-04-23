@@ -6,7 +6,7 @@ from toga_cocoa.libs import (
     NSOutlineView,
     NSScrollView,
     NSTableColumn,
-    NSTableViewUniformColumnAutoresizingStyle,
+    NSTableViewColumnAutoresizingStyle,
     NSIndexSet,
     NSTableViewAnimation,
     CGRectMake,
@@ -192,7 +192,7 @@ class Tree(Widget):
         self.tree = TogaTree.alloc().init()
         self.tree.interface = self.interface
         self.tree._impl = self
-        self.tree.columnAutoresizingStyle = NSTableViewUniformColumnAutoresizingStyle
+        self.tree.columnAutoresizingStyle = NSTableViewColumnAutoresizingStyle.Uniform
         self.tree.usesAlternatingRowBackgroundColors = True
 
         self.tree.allowsMultipleSelection = self.interface.multiple_select

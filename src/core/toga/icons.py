@@ -1,5 +1,4 @@
 import os
-from pathlib import Path
 
 
 class Icon:
@@ -33,10 +32,12 @@ class Icon:
         :param factory: The platform factory to bind to.
         :returns: The platform implementation
         """
+        # `factory` is now available; store it so the `_impl` can access it.
+        self.factory = factory
         if self._impl is None:
             try:
                 if self.system:
-                    resource_path = Path(__file__).parent
+                    resource_path = factory.paths.toga
                 else:
                     resource_path = factory.paths.app
 
