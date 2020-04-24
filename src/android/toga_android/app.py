@@ -47,6 +47,8 @@ class App:
 
     def create(self):
         self._listener = TogaApp(self)
+        # Call user code to populate the main window
+        self.interface.startup()
 
     def open_document(self, fileURL):
         print("Can't open document %s (yet)" % fileURL)
