@@ -4,12 +4,10 @@ from .base import Widget
 
 
 class OptionItem:
-    def __init__(self, label, widget, enabled):
+    def __init__(self, widget):
         self._interface = None
         self._index = None
-        self._label = label
         self._widget = widget
-        self._enabled = enabled
 
     @property
     def interface(self):
@@ -18,6 +16,7 @@ class OptionItem:
     @interface.setter
     def interface(self, interface):
         self._interface = interface
+        self.refresh()
 
     @property
     def index(self):
@@ -29,54 +28,55 @@ class OptionItem:
 
     @property
     def enabled(self):
-        return self._enabled
+        return self._interface._impl.is_enabled(self.index)
 
     @enabled.setter
-    def enabled(self, value):
-        self._enabled = value
-        self._interface._impl.set_option_enabled(self._index, value)
+    def enabled(self, enabled):
+        self._interface._impl.set_option_enabled(self.index, enabled)
 
     @property
     def label(self):
-        return self._label
+        return self._interface._impl.get_label(self.index)
 
     @label.setter
     def label(self, value):
-        self._label = value
-        self._interface._impl.set_label(self._index, value)
+        self._interface._impl.set_label(self.index, value)
 
     def refresh(self):
         self._widget.refresh()
 
 
 class OptionList:
-
     def __init__(self, interface):
         self.interface = interface
         self._options = []
 
     def __repr__(self):
-        repr_list = ', '.join([
+        repr_optionlist = '{}([{}])'
+        repr_items = ', '.join([
             '{}(title={})'.format(
                 option.__class__.__name__,
                 option.label)
             for option in self
         ])
-        return '[{}]'.format(repr_list)
+        return repr_optionlist.format(self.__class__.__name__, repr_items)
 
     def __setitem__(self, index, option):
-        option.index = index
-        option.interface = self.inteface
         self._options[index] = option
 
     def __getitem__(self, index):
+        # sync options index attr
+        self._options[index].index = index
         return self._options[index]
 
     def __delitem__(self, index):
+        self.interface._impl.remove_content(index)
         del self._options[index]
-        self._update_indices()
 
     def __iter__(self):
+        for i, option in enumerate(self._options):
+            # sync options index attr
+            option.index = i
         return iter(self._options)
 
     def __len__(self):
@@ -89,15 +89,12 @@ class OptionList:
         self._insert(index, label, widget, enabled)
 
     def _insert(self, index, label, widget, enabled=True):
-        option = OptionItem(label, widget, enabled)
-        option.interface = self.interface
+        self.interface._impl.add_content(label, widget._impl)
+        option = OptionItem(widget)
         self._options.insert(index, option)
-        self._update_indices()
-
-    def _update_indices(self):
-        # ensure that all option have a corrrect index
-        for i, option in enumerate(self._options):
-            option.index = i
+        self[index].interface = self.interface
+        self[index].label = label
+        self[index].enabled = enabled
 
 
 class OptionContainer(Widget):
@@ -130,7 +127,7 @@ class OptionContainer(Widget):
         """ The sub layouts of the `SplitContainer`.
 
         Returns:
-            A ``list`` of :class:`toga.Widget`. Each element of the list
+            A OptionList ``list`` of :class:`toga.OptionItem`. Each element of the list
             is a sub layout of the `SplitContainer`
 
         Raises:
@@ -154,25 +151,9 @@ class OptionContainer(Widget):
         widget.window = self.window
 
         self._content.append(label, widget)
-        self._impl.add_content(label, widget._impl)
-        widget.refresh()
 
     def remove(self, index):
-        disabled_siblings = not any(
-            [
-                opt.enabled for opt in self._content
-                if opt != self._content[index]
-            ]
-        )
-
-        if len(self._content) == 1 or disabled_siblings:
-            # if sibling options are disabled or there is
-            # only one tab in the option container, don't allow
-            # remove tab.
-            return
-        else:
-            self._impl.remove_content(index)
-            del self._content[index]
+        del self._content[index]
 
     def refresh_sublayouts(self):
         """Refresh the layout and appearance of this widget."""
