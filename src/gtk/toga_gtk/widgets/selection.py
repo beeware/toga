@@ -1,7 +1,6 @@
 from travertino.size import at_least
 
-from gi.repository import Gtk
-
+from ..libs import Gtk
 from .base import Widget
 
 
@@ -9,11 +8,11 @@ class Selection(Widget):
     def create(self):
         self.native = Gtk.ComboBoxText.new()
         self.native.interface = self.interface
-        self.native.connect("changed", self._on_select)
+        self.native.connect("changed", self.gtk_on_select)
 
         self.rehint()
 
-    def _on_select(self, widget):
+    def gtk_on_select(self, widget):
         if self.interface.on_select:
             self.interface.on_select(widget)
 
@@ -36,7 +35,7 @@ class Selection(Widget):
         return self.native.get_active_text()
 
     def rehint(self):
-        width = self.native.get_preferred_width()
+        # width = self.native.get_preferred_width()
         height = self.native.get_preferred_height()
 
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)

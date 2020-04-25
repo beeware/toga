@@ -1,6 +1,7 @@
-sphinx_tabs
 sphinx
 sphinxcontrib-spelling
 pyenchant
 sphinx-autobuild
 sphinx_rtd_theme
+sphinx-csv-filter
+sphinx_tabs==1.1.8

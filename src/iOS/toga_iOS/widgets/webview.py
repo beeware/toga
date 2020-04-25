@@ -1,7 +1,7 @@
 from rubicon.objc import objc_method
-from toga_iOS.libs import WKWebView, NSURL, NSURLRequest
 
-from .base import Widget
+from toga_iOS.libs import WKWebView, NSURL, NSURLRequest
+from toga_iOS.widgets.base import Widget
 
 
 class TogaWebView(WKWebView):
@@ -29,6 +29,12 @@ class WebView(Widget):
         # Add the layout constraints
         self.add_constraints()
 
+    def set_on_key_down(self, handler):
+        pass
+
+    def set_on_webview_load(self, handler):
+        pass
+
     def get_dom(self):
         html = self.native.DOMDocument.documentElement.outerHTML
         return html
@@ -47,8 +53,12 @@ class WebView(Widget):
         self.native.loadHTMLString_baseURL_(content, NSURL.URLWithString_(root_url))
 
     def set_user_agent(self, value):
-        # self.native.customUserAgent = value if value else "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/603.3.8 (KHTML, like Gecko) Version/10.1.2 Safari/603.3.8"
+        # user_agent = value if value else "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/603.3.8 (KHTML, like Gecko) Version/10.1.2 Safari/603.3.8"  # NOQA
+        # self.native.customUserAgent = user_agent
         self.interface.factory.not_implemented('WebView.set_user_agent()')
 
-    def evaluate(self, javascript):
+    async def evaluate_javascript(self, javascript):
+        return self.native.stringByEvaluatingJavaScriptFromString_(javascript)
+
+    def invoke_javascript(self, javascript):
         return self.native.stringByEvaluatingJavaScriptFromString_(javascript)

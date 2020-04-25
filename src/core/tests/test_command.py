@@ -1,12 +1,20 @@
 import unittest
-from unittest.mock import Mock
 
 import toga
 import toga_dummy
+from toga_dummy.utils import TestCase
 from toga.command import cmd_sort_key
 
 
-class TestCommand(unittest.TestCase):
+class TestCommand(TestCase):
+    def setUp(self):
+        # We need to define a test app to instantiate paths.
+        self.app = toga.App(
+            formal_name='Test App',
+            app_id='org.beeware.test-app',
+            factory=toga_dummy.factory,
+        )
+
     def test_group_init_no_order(self):
         grp = toga.Group('label')
         self.assertEqual(grp.label, 'label')
@@ -34,12 +42,11 @@ class TestCommand(unittest.TestCase):
         self.assertEqual(cmd.label, 'test')
         self.assertEqual(cmd.shortcut, None)
         self.assertEqual(cmd.tooltip, None)
-        self.assertEqual(cmd.icon_id, None)
+        self.assertEqual(cmd.icon, None)
         self.assertEqual(cmd.group, toga.Group.COMMANDS)
         self.assertEqual(cmd.section, 0)
         self.assertEqual(cmd.order, 0)
         self.assertTrue(cmd._enabled)
-        self.assertEqual(cmd._widgets, [])
 
     def test_command_init_kargs(self):
         grp = toga.Group('Test group', order=10)
@@ -57,12 +64,11 @@ class TestCommand(unittest.TestCase):
         self.assertEqual(cmd.label, 'test')
         self.assertEqual(cmd.shortcut, 't')
         self.assertEqual(cmd.tooltip, 'test command')
-        self.assertEqual(cmd.icon_id, 'icons/none.png')
+        self.assertEqual(cmd.icon.path, 'icons/none.png')
         self.assertEqual(cmd.group, grp)
         self.assertEqual(cmd.section, 1)
         self.assertEqual(cmd.order, 1)
         self.assertTrue(cmd._enabled)
-        self.assertEqual(cmd._widgets, [])
         self.assertTrue(cmd.enabled)
         cmd.enabled = False
         self.assertFalse(cmd._enabled)
@@ -85,7 +91,6 @@ class TestCommand(unittest.TestCase):
         self.assertEqual(retur_val, cmd._impl)
 
     def test_command_enabler(self):
-        test_widget = toga.Widget(factory=toga_dummy.factory)
         grp = toga.Group('Test group', order=10)
         cmd = toga.Command(
             lambda x: print('Hello World'),
@@ -98,13 +103,11 @@ class TestCommand(unittest.TestCase):
             order=1,
             factory=toga_dummy.factory,
         )
-        cmd._widgets.append(test_widget)
-        cmd._widgets[0]._impl = Mock()
+        cmd.bind(toga_dummy.factory)
         cmd.enabled = False
-        self.assertEqual(cmd._enabled, False)
-
-        for widget in cmd._widgets:
-            self.assertEqual(widget.enabled, False)
+        self.assertActionPerformedWith(cmd, 'set enabled', value=False)
+        cmd.enabled = True
+        self.assertActionPerformedWith(cmd, 'set enabled', value=True)
 
     def test_cmd_sort_key(self):
         grp = toga.Group('Test group', order=10)
@@ -131,14 +134,17 @@ class TestCommandSet(unittest.TestCase):
     def test_cmdset_init(self):
         test_widget = toga.Widget(factory=toga_dummy.factory)
         cs = toga.CommandSet(test_widget)
-        self.assertEqual(cs.widget, test_widget)
-        self.assertEqual(cs._values, set())
+        self.assertEqual(cs._commands, set())
         self.assertEqual(cs.on_change, None)
 
     def test_cmdset_add(self):
         self.changed = False
         test_widget = toga.Widget(factory=toga_dummy.factory)
-        cs = toga.CommandSet(test_widget, on_change=self._changed)
+        cs = toga.CommandSet(
+            factory=toga_dummy.factory,
+            widget=test_widget,
+            on_change=self._changed
+        )
         grp = toga.Group('Test group', order=10)
         cmd = toga.Command(
             lambda x: print('Hello World'),
@@ -152,11 +158,16 @@ class TestCommandSet(unittest.TestCase):
             factory=toga_dummy.factory
         )
         cs.add(cmd)
+
         self.assertTrue(self.changed)
+        self.assertIsNotNone(cmd._impl)
 
     def test_cmdset_iter(self):
         test_widget = toga.Widget(factory=toga_dummy.factory)
-        cs = toga.CommandSet(test_widget)
+        cs = toga.CommandSet(
+            factory=toga_dummy.factory,
+            widget=test_widget
+        )
         grp = toga.Group('Test group', order=10)
         cmd = toga.Command(
             lambda x: print('Hello World'),

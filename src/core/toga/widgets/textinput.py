@@ -26,10 +26,12 @@ class TextInput(Widget):
         # Create a platform specific implementation of a TextInput
         self._impl = self.factory.TextInput(interface=self)
 
-        self.value = initial
+        self.on_change = on_change
         self.placeholder = placeholder
         self.readonly = readonly
-        self.on_change = on_change
+
+        # Set the actual value last, as it may trigger change events, etc.
+        self.value = initial
 
     @property
     def readonly(self):

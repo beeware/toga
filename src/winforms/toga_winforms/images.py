@@ -1,16 +1,15 @@
 from toga_winforms.libs import WinImage
-import os
+
 
 class Image(object):
-    def __init__(self, interface):
+    def __init__(self, interface, path=None, url=None):
         self.interface = interface
-        self.interface.impl = self
+        self.path = path
+        self.url = url
 
-    def load_image(self, path):
-        if path.startswith('http://') or path.startswith('https://'):
-            self.native = path
-        else:
-            if os.path.isfile(path):
-                self.native = WinImage.FromFile(path)
-            else:
-                raise ValueError("No image file available at ", path)
+        if path:
+            self.native = WinImage.FromFile(str(path))
+        elif url:
+            # Windows loads URL images in the view,
+            # not as standalone resources
+            self.native = None

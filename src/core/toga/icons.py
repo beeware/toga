@@ -1,70 +1,113 @@
 import os
 
 
-class ClassProperty(property):
-    """ This class makes it possible to use a classmethod like a property.
-
-    Warnings:
-        Only works for getting not for setting.
-    """
-
-    def __get__(self, cls, owner):
-        return self.fget.__get__(None, owner)()
-
-
 class Icon:
-    """ Icon widget.
+    """
+    A representation of an Icon image.
 
-    Icon is a deferred resource; it's impl isn't available until it is
-    requested; the factory is provided at the time the implementation is
-    requested.
+    Icon is a deferred resource - it's impl isn't available until it the icon
+    is assigned to perform a role in an app. At the point at which the Icon is
+    used, the Icon is bound to a factory, and the implementation is created.
 
-    Args:
-        path(str): Path to the icon file.
-        system(bool): Set to `True` if the icon is located in the 'resource' folder
-            of the Toga package. Default is False.
+    :param path: The path to the icon file, relative to the application's
+        module directory.
+    :param system: Is this a system resource? Set to ``True`` if the icon is
+        one of the Toga-provided icons. Default is False.
     """
 
     def __init__(self, path, system=False):
         self.path = path
-
         self.system = system
 
+        # Resource is late bound.
         self._impl = None
 
-    @property
-    def filename(self):
-        if self.system:
-            toga_dir = os.path.dirname(os.path.dirname(__file__))
-            return os.path.join(toga_dir, 'resources', self.path)
-        else:
-            from toga.app import App
-            return os.path.join(App.app_dir, self.path)
-
     def bind(self, factory):
+        """
+        Bind the Icon to a factory.
+
+        Creates the underlying platform implemenation of the Icon. If the
+        image cannot be found, it will fall back to the default icon.
+
+        :param factory: The platform factory to bind to.
+        :returns: The platform implementation
+        """
+        # `factory` is now available; store it so the `_impl` can access it.
+        self.factory = factory
         if self._impl is None:
-            self._impl = factory.Icon(interface=self)
+            try:
+                if self.system:
+                    resource_path = factory.paths.toga
+                else:
+                    resource_path = factory.paths.app
+
+                if factory.Icon.SIZES:
+                    full_path = {
+                        size: self._full_path(
+                            size=size,
+                            extensions=factory.Icon.EXTENSIONS,
+                            resource_path=resource_path,
+                        )
+                        for size in factory.Icon.SIZES
+                    }
+                else:
+                    full_path = self._full_path(
+                        size=None,
+                        extensions=factory.Icon.EXTENSIONS,
+                        resource_path=resource_path,
+                    )
+
+                self._impl = factory.Icon(interface=self, path=full_path)
+            except FileNotFoundError:
+                print("WARNING: Can't find icon {self.path}; falling back to default icon".format(
+                    self=self
+                ))
+                self._impl = self.DEFAULT_ICON.bind(factory)
+
         return self._impl
 
-    @classmethod
-    def load(cls, path_or_icon, default=None):
-        if path_or_icon:
-            if isinstance(path_or_icon, Icon):
-                obj = path_or_icon
-            else:
-                obj = cls(path_or_icon)
-        elif default:
-            obj = default
+    def _full_path(self, size, extensions, resource_path):
+        basename, file_extension = os.path.splitext(self.path)
 
-        return obj
+        if not file_extension:
+            # If no extension is provided, look for one of the allowed
+            # icon types, in preferred format order.
+            for extension in extensions:
+                # look for an icon file with a size in the filename
+                icon_path = resource_path / (
+                    '{basename}-{size}{extension}'.format(
+                        basename=basename,
+                        size=size,
+                        extension=extension
+                    )
+                )
+                if icon_path.exists():
+                    return icon_path
 
-    @ClassProperty
-    @classmethod
-    def TIBERIUS_ICON(cls):
-        """ Tiberius it the mascot of the Toga Project and is therefore
-        shipped with Toga.
+                # look for a icon file without a size in the filename
+                icon_path = resource_path / (basename + extension)
+                if icon_path.exists():
+                    return icon_path
 
-        Returns:
-            Returns the Tiberius icon `toga.Icon`.
-       """
-        return cls('tiberius', system=True)
+        elif file_extension.lower() in extensions:
+            # If an icon *is* provided, it must be one of the acceptable types
+            icon_path = resource_path / self.path
+            if icon_path.exists():
+                return icon_path
+        else:
+            # An icon has been specified, but it's not a valid format.
+            raise FileNotFoundError(
+                "{self.path} is not a valid icon".format(
+                    self=self
+                )
+            )
+
+        raise FileNotFoundError(
+            "Can't find icon {self.path}".format(
+                self=self
+            )
+        )
+
+
+Icon.TOGA_ICON = Icon('resources/toga', system=True)
+Icon.DEFAULT_ICON = Icon('resources/toga', system=True)

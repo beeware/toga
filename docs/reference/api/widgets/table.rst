@@ -1,11 +1,12 @@
 Table
 =====
 
-======= ====== ========= ===== ========= ========
- macOS   GTK+   Windows   iOS   Android   Django
-======= ====== ========= ===== ========= ========
- |y|     |y|    |y|
-======= ====== ========= ===== ========= ========
+.. rst-class:: widget-support
+.. csv-filter::
+   :header-rows: 1
+   :file: ../../data/widgets_by_platform.csv
+   :included_cols: 4,5,6,7,8,9
+   :exclude: {0: '(?!^(Table|Component)$)'}
 
 .. |y| image:: /_static/yes.png
     :width: 16
@@ -26,10 +27,10 @@ Usage
     table = toga.Table(['Heading 1', 'Heading 2'])
 
     # Append to end of table
-    table.insert(None, 'Value 1', 'Value 2')
+    table.data.append('Value 1', 'Value 2')
 
     # Insert to row 2
-    table.insert(2, 'Value 1', 'Value 2')
+    table.data.insert(2, 'Value 1', 'Value 2')
 
 Reference
 ---------

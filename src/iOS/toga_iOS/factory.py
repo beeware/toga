@@ -1,13 +1,15 @@
 from .app import App, MainWindow
 # from .command import Command
 
+from .colors import native_color
 from .fonts import Font
 from .icons import Icon
 from .images import Image
+from .paths import paths
 
 from .widgets.box import Box
 from .widgets.button import Button
-# from .widgets.canvas import Canvas
+from .widgets.canvas import Canvas
 from .widgets.detailedlist import DetailedList
 from .widgets.imageview import ImageView
 from .widgets.label import Label
@@ -43,11 +45,12 @@ __all__ = [
     'Font',
     'Icon',
     'Image',
+    'paths',
 
     # Widgets
     'Box',
     'Button',
-    # 'Canvas',
+    'Canvas',
     'DetailedList',
     'ImageView',
     'Label',

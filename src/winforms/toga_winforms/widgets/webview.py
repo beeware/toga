@@ -15,21 +15,31 @@ class WebView(Widget):
     def create(self):
         self.native = TogaWebBrowser(self)
 
+    def set_on_key_down(self, handler):
+        pass
+
+    def set_on_webview_load(self, handler):
+        pass
+
     def set_url(self, value):
         if value:
-            self.native.Navigate(Uri(value), "_self", None, "User-Agent: %s" % self.interface.user_agent)
+            self.native.Navigate(Uri(self.interface.url), "_self", None, "User-Agent: %s" % self.interface.user_agent)
 
     def set_content(self, root_url, content):
-        self.native.Navigate(Uri(root_url), "_self" , None, self.interface.user_agent)
+        self.native.Navigate(Uri(root_url), "_self", None, self.interface.user_agent)
 
     def get_dom(self):
         self.interface.factory.not_implemented('WebView.get_dom()')
 
     def set_user_agent(self, value):
-        self.native.customUserAgent = value if value else "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.10240"
+        user_agent = value if value else "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.10240"  # NOQA
+        self.native.customUserAgent = user_agent
 
-    def evaluate(self, javascript):
-        self.interface.factory.not_implemented('WebView.evaluate()')
+    async def evaluate_javascript(self, javascript):
+        self.interface.factory.not_implemented('WebView.evaluate_javascript()')
+
+    def invoke_javascript(self, javascript):
+        self.interface.factory.not_implemented('WebView.invoke_javascript()')
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)

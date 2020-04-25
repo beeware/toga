@@ -66,6 +66,8 @@ class Widget(Node):
             super().add(child)
 
             child.app = self.app
+            child.window = self.window
+
             if self._impl:
                 self._impl.add_child(child._impl)
 
@@ -113,6 +115,11 @@ class Widget(Node):
         if self._children is not None:
             for child in self._children:
                 child.window = window
+
+        self._set_window(window)
+
+    def _set_window(self, window):
+        pass
 
     @property
     def enabled(self):

@@ -1,6 +1,6 @@
 from toga.fonts import (
     MESSAGE,
-    NORMAL,
+    NORMAL, BOLD,
     SYSTEM,
     SERIF,
     SANS_SERIF,
@@ -21,7 +21,10 @@ class Font:
             font = _FONT_CACHE[self.interface]
         except KeyError:
             if self.interface.family == SYSTEM:
-                font = NSFont.systemFontOfSize(self.interface.size)
+                if self.interface.weight == BOLD:
+                    font = NSFont.boldSystemFontOfSize(self.interface.size)
+                else:
+                    font = NSFont.systemFontOfSize(self.interface.size)
             elif self.interface.family == MESSAGE:
                 font = NSFont.messageFontOfSize(self.interface.size)
             else:

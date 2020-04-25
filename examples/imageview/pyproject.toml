@@ -1,0 +1,44 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name = "ImageView Demo"
+bundle = "org.beeware"
+version = "0.3.0.dev20"
+url = "https://beeware.org"
+license = "BSD license"
+author = 'Tiberius Yak'
+author_email = "tiberius@beeware.org"
+
+[tool.briefcase.app.imageview]
+formal_name = "ImageView Demo"
+description = "A testing app"
+sources = ['imageview']
+requires = []
+
+
+[tool.briefcase.app.imageview.macOS]
+requires = [
+    'toga-cocoa',
+]
+
+[tool.briefcase.app.imageview.linux]
+requires = [
+    'toga-gtk',
+]
+
+[tool.briefcase.app.imageview.windows]
+requires = [
+    'toga-winforms',
+]
+
+# Mobile deployments
+[tool.briefcase.app.imageview.iOS]
+requires = [
+    'toga-iOS',
+]
+
+[tool.briefcase.app.imageview.android]
+requires = [
+    'toga-android',
+]

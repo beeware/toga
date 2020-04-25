@@ -1,0 +1,44 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name = "Activity Indicator"
+bundle = "org.beeware"
+version = "0.3.0.dev20"
+url = "https://beeware.org"
+license = "BSD license"
+author = 'Tiberius Yak'
+author_email = "tiberius@beeware.org"
+
+[tool.briefcase.app.activityindicator]
+formal_name = "Activity Indicator"
+description = "A testing app"
+sources = ['activityindicator']
+requires = []
+
+
+[tool.briefcase.app.activityindicator.macOS]
+requires = [
+    'toga-cocoa',
+]
+
+[tool.briefcase.app.activityindicator.linux]
+requires = [
+    'toga-gtk',
+]
+
+[tool.briefcase.app.activityindicator.windows]
+requires = [
+    'toga-winforms',
+]
+
+# Mobile deployments
+[tool.briefcase.app.activityindicator.iOS]
+requires = [
+    'toga-iOS',
+]
+
+[tool.briefcase.app.activityindicator.android]
+requires = [
+    'toga-android',
+]

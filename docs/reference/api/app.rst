@@ -1,11 +1,12 @@
 Application
 ===========
 
-======= ====== ========= ===== ========= ========
- macOS   GTK+   Windows   iOS   Android   Django
-======= ====== ========= ===== ========= ========
- |y|     |y|    |y|       |y|   |y|       |y|
-======= ====== ========= ===== ========= ========
+.. rst-class:: widget-support
+.. csv-filter::
+   :header-rows: 1
+   :file: ../data/widgets_by_platform.csv
+   :included_cols: 4,5,6,7,8,9
+   :exclude: {0: '(?!(App|Component))'}
 
 .. |y| image:: /_static/yes.png
     :width: 16
@@ -30,7 +31,7 @@ To start a UI loop, call `app.main_loop()`
 
 
     if __name__ == '__main__':
-        app = toga.App('First App', 'org.pybee.helloworld', startup=build)
+        app = toga.App('First App', 'org.beeware.helloworld', startup=build)
         app.main_loop()
 
 Alternatively, you can subclass App and implement the startup method
@@ -47,7 +48,7 @@ Alternatively, you can subclass App and implement the startup method
 
 
     if __name__ == '__main__':
-        app = MyApp('First App', 'org.pybee.helloworld')
+        app = MyApp('First App', 'org.beeware.helloworld')
         app.main_loop()
 
 Reference

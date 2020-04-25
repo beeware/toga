@@ -9,6 +9,12 @@ class WebView(Widget):
         self._action('get DOM')
         return 'DUMMY DOM'
 
+    def set_on_key_down(self, handler):
+        self._action('set on_key_down', handler=handler)
+
+    def set_on_webview_load(self, handler):
+        self._action('set on_webview_load', handler=handler)
+
     def set_content(self, root_url, content):
         self._action('set content', root_url=root_url, content=content)
 
@@ -18,5 +24,9 @@ class WebView(Widget):
     def set_url(self, value):
         self._set_value('url', value)
 
-    def evaluate(self, javascript):
-        self._action('evaluate', javascript=javascript)
+    async def evaluate_javascript(self, javascript):
+        self._action('evaluate_javascript', javascript=javascript)
+        return 'JS RESULT'
+
+    def invoke_javascript(self, javascript):
+        self._action('invoke_javascript', javascript=javascript)

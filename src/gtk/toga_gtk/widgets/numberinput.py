@@ -3,8 +3,7 @@ from decimal import Decimal
 
 from travertino.size import at_least
 
-from gi.repository import Gtk
-
+from ..libs import Gtk
 from .base import Widget
 
 
@@ -17,11 +16,11 @@ class NumberInput(Widget):
         self.native.set_adjustment(self.adjustment)
         self.native.set_numeric(True)
 
-        self.native.connect("value-changed", self._on_change)
+        self.native.connect("value-changed", self.gtk_on_change)
 
         self.rehint()
 
-    def _on_change(self, widget):
+    def gtk_on_change(self, widget):
         self.interface._value = Decimal(self.native.get_value()).quantize(self.interface.step)
         if self.interface.on_change:
             self.interface.on_change(widget)

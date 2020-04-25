@@ -8,8 +8,7 @@ from toga_iOS.libs import (
     UIControlStateDisabled,
     UIControlStateNormal
 )
-
-from .base import Widget
+from toga_iOS.widgets.base import Widget
 
 
 class TogaButton(UIButton):

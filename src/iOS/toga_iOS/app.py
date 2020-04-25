@@ -1,17 +1,18 @@
 import asyncio
 
-from rubicon.objc import objc_method
+from rubicon.objc import SEL, objc_method
 from rubicon.objc.eventloop import EventLoopPolicy, iOSLifecycle
 
-from .libs import (NSNotificationCenter,
-    SEL,
+from toga.handlers import wrapped_handler
+
+from toga_iOS.libs import (
+    NSNotificationCenter,
     UIKeyboardFrameEndUserInfoKey,
     UIKeyboardWillHideNotification,
     UIKeyboardWillShowNotification,
     UIResponder
 )
-
-from .window import Window
+from toga_iOS.window import Window
 
 
 class MainWindow(Window):
@@ -114,8 +115,14 @@ class App:
 
         self.loop.run_forever(lifecycle=iOSLifecycle())
 
+    def set_main_window(self, window):
+        pass
+
     def exit(self):
         pass
 
     def set_on_exit(self, value):
         pass
+
+    def add_background_task(self, handler):
+        self.loop.call_soon(wrapped_handler(self, handler), self)

@@ -1,4 +1,5 @@
 from toga.handlers import wrapped_handler
+from toga.icons import Icon
 
 
 class Group:
@@ -46,12 +47,14 @@ class Command:
     def __init__(self, action, label,
                  shortcut=None, tooltip=None, icon=None,
                  group=None, section=None, order=None, factory=None):
+        self.factory = factory
+
         self.action = wrapped_handler(self, action)
         self.label = label
 
         self.shortcut = shortcut
         self.tooltip = tooltip
-        self.icon_id = icon
+        self.icon = icon
 
         self.group = group if group else Group.COMMANDS
         self.section = section if section else 0
@@ -59,12 +62,17 @@ class Command:
 
         self._enabled = self.action is not None
 
-        self._widgets = []
         self._impl = None
 
     def bind(self, factory):
+        self.factory = factory
+
         if self._impl is None:
-            self._impl = factory.Command(interface=self)
+            self._impl = self.factory.Command(interface=self)
+
+        if self._icon:
+            self._icon.bind(self.factory)
+
         return self._impl
 
     @property
@@ -74,10 +82,27 @@ class Command:
     @enabled.setter
     def enabled(self, value):
         self._enabled = value
-        for widget in self._widgets:
-            widget.enabled = value
         if self._impl is not None:
-            self._impl.enabled = value
+            self._impl.set_enabled(value)
+
+    @property
+    def icon(self):
+        """
+        The Icon for the app.
+
+        :returns: A ``toga.Icon`` instance for the app's icon.
+        """
+        return self._icon
+
+    @icon.setter
+    def icon(self, icon_or_name):
+        if isinstance(icon_or_name, Icon) or icon_or_name is None:
+            self._icon = icon_or_name
+        else:
+            self._icon = Icon(icon_or_name)
+
+        if self._icon and self.factory:
+            self._icon.bind(self.factory)
 
 
 GROUP_BREAK = object()
@@ -92,28 +117,31 @@ class CommandSet:
     """
 
     Args:
+        factory:
         widget:
         on_change:
 
     Todo:
         * Add missing Docstrings.
     """
-    def __init__(self, widget, on_change=None):
-
+    def __init__(self, factory, widget=None, on_change=None):
+        self.factory = factory
         self.widget = widget
-        self._values = set()
+        self._commands = set()
         self.on_change = on_change
 
-    def add(self, *values):
-        if self.widget and self.widget.app != None:
-            self.widget.app.commands.add(*values)
-        self._values.update(values)
+    def add(self, *commands):
+        for cmd in commands:
+            cmd.bind(self.factory)
+        if self.widget and self.widget.app is not None:
+            self.widget.app.commands.add(*commands)
+        self._commands.update(commands)
         if self.on_change:
             self.on_change()
 
     def __iter__(self):
         prev_cmd = None
-        for cmd in sorted(self._values, key=cmd_sort_key):
+        for cmd in sorted(self._commands, key=cmd_sort_key):
             if prev_cmd:
                 if cmd.group != prev_cmd.group:
                     yield GROUP_BREAK

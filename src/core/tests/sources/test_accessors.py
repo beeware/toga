@@ -58,7 +58,7 @@ class BuildAccessorsTests(TestCase):
             )
 
     def test_manual_accessor_list(self):
-        "Accessors can be compltely manually specified"
+        "Accessors can be completely manually specified"
         self.assertEqual(
             build_accessors(
                 headings=['First Col', 'Second Col', 'Third Col'],

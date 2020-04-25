@@ -1,0 +1,44 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name = "Slider Demo"
+bundle = "org.beeware"
+version = "0.3.0.dev20"
+url = "https://beeware.org"
+license = "BSD license"
+author = 'Tiberius Yak'
+author_email = "tiberius@beeware.org"
+
+[tool.briefcase.app.slider]
+formal_name = "Slider Demo"
+description = "A testing app"
+sources = ['slider']
+requires = []
+
+
+[tool.briefcase.app.slider.macOS]
+requires = [
+    'toga-cocoa',
+]
+
+[tool.briefcase.app.slider.linux]
+requires = [
+    'toga-gtk',
+]
+
+[tool.briefcase.app.slider.windows]
+requires = [
+    'toga-winforms',
+]
+
+# Mobile deployments
+[tool.briefcase.app.slider.iOS]
+requires = [
+    'toga-iOS',
+]
+
+[tool.briefcase.app.slider.android]
+requires = [
+    'toga-android',
+]

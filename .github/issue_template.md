@@ -22,20 +22,22 @@
 
 * Operating System and Version (select from the following and list the specific version number; if your OS is not listed, list that as well)
 
-  - [ ] macOS - version: 
+  - [ ] macOS - version:
   - [ ] Linux - distro:   - version:
   - [ ] Windows - version:
   - [ ] Other - name:  - version:
 
+* Toga Version (list the specific version number or git hash)
+
 * Toga Target (the type of app you are trying to generate)
- 
+
   - [ ] android
   - [ ] cocoa
-  - [ ] django 
+  - [ ] django
   - [ ] gtk
   - [ ] iOS
   - [ ] tvOS
   - [ ] watchOS
-  - [ ] winforms 
+  - [ ] winforms
   - [ ] win32
   - [ ] Other (please specify)

@@ -10,5 +10,9 @@ webkit = cdll.LoadLibrary(util.find_library('WebKit'))
 ######################################################################
 
 ######################################################################
+# WebView.h
+WebView = ObjCClass('WebView')
+
+######################################################################
 # WKWebView.h
 WKWebView = ObjCClass('WKWebView')

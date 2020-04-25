@@ -1,4 +1,4 @@
-from rubicon.objc import CGFloat
+from rubicon.objc import CGFloat, SEL
 
 from toga_cocoa.libs import (
     core_graphics,
@@ -12,11 +12,13 @@ from toga_cocoa.libs import (
     NSForegroundColorAttributeName,
     NSGraphicsContext,
     NSMutableDictionary,
+    NSNotificationCenter,
     NSPoint,
     NSStrokeColorAttributeName,
     NSStrokeWidthAttributeName,
     NSRect,
     NSView,
+    NSViewFrameDidChangeNotification,
     objc_method,
 )
 from toga_cocoa.colors import native_color
@@ -27,7 +29,7 @@ from .base import Widget
 class TogaCanvas(NSView):
     @objc_method
     def drawRect_(self, rect: NSRect) -> None:
-        context = NSGraphicsContext.currentContext.graphicsPort()
+        context = NSGraphicsContext.currentContext.CGContext
 
         if self.interface.redraw:
             self.interface._draw(self._impl, draw_context=context)
@@ -37,6 +39,11 @@ class TogaCanvas(NSView):
         # Default Cocoa coordinate frame is around the wrong way.
         return True
 
+    @objc_method
+    def frameChanged_(self, notification) -> None:
+        if self.interface.on_resize:
+            self.interface.on_resize(self.interface)
+
 
 class Canvas(Widget):
     def create(self):
@@ -44,11 +51,18 @@ class Canvas(Widget):
         self.native.interface = self.interface
         self.native._impl = self
 
+        NSNotificationCenter.defaultCenter.addObserver(
+            self.native,
+            selector=SEL("frameChanged:"),
+            name=NSViewFrameDidChangeNotification,
+            object=self.native
+        )
+
         # Add the layout constraints
         self.add_constraints()
 
     def redraw(self):
-        pass
+        self.native.needsDisplay = True
 
     # Basic paths
 
@@ -223,3 +237,6 @@ class Canvas(Widget):
         fitting_size = self.native.fittingSize()
         self.interface.intrinsic.height = fitting_size.height
         self.interface.intrinsic.width = fitting_size.width
+
+    def set_on_resize(self, handler):
+        pass

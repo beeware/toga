@@ -1,4 +1,4 @@
-from .textinput import TextInput
+from toga_iOS.widgets.textinput import TextInput
 
 
 class PasswordInput(TextInput):

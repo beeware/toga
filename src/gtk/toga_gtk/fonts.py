@@ -1,14 +1,7 @@
 from toga.constants import ITALIC, OBLIQUE, SMALL_CAPS, BOLD, SYSTEM
-import gi
 
-gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk
+from .libs import Gtk, Pango
 
-try:
-    gi.require_version("Pango", "1.0")
-    from gi.repository import Pango
-except ImportError:
-    Pango = None
 
 _FONT_CACHE = {}
 
@@ -27,7 +20,7 @@ class Font:
 
         if Pango is None:
             raise RuntimeError(
-                "'from gi.repository import Pango' failed; may need to install gir1.2-pango-1.0."
+                "'from gi.repository import Pango' failed; you may need to install gir1.2-pango-1.0."
             )
 
         try:

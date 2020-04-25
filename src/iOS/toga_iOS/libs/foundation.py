@@ -1,10 +1,10 @@
 ##########################################################################
 # System/Library/Frameworks/Foundation.framework
 ##########################################################################
-from ctypes import *
-from ctypes import util
+from ctypes import c_bool, cdll, util
 
-from rubicon.objc import *
+from rubicon.objc import ObjCClass, NSPoint, NSRect
+
 
 ######################################################################
 foundation = cdll.LoadLibrary(util.find_library('Foundation'))
@@ -13,29 +13,46 @@ foundation = cdll.LoadLibrary(util.find_library('Foundation'))
 foundation.NSMouseInRect.restype = c_bool
 foundation.NSMouseInRect.argtypes = [NSPoint, NSRect, c_bool]
 
+
 ######################################################################
 # NSArray.h
 NSMutableArray = ObjCClass('NSMutableArray')
+
 
 ######################################################################
 # NSBundle.h
 NSBundle = ObjCClass('NSBundle')
 
+
 ######################################################################
 # NSData.h
 NSData = ObjCClass('NSData')
+
+
+######################################################################
+# NSDate.h
+NSDate = ObjCClass('NSDate')
+
 
 ######################################################################
 # NSIndexPath.h
 NSIndexPath = ObjCClass('NSIndexPath')
 
+
 ######################################################################
-# NSNSNotification.h
+# NSNotification.h
 NSNotificationCenter = ObjCClass('NSNotificationCenter')
+
+
+######################################################################
+# NSRunLoop.h
+NSRunLoop = ObjCClass('NSRunLoop')
+
 
 ######################################################################
 # NSURL.h
 NSURL = ObjCClass('NSURL')
+
 
 ######################################################################
 # NSURLRequest.h

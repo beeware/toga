@@ -8,6 +8,7 @@ from toga_cocoa.libs import (
     NSEventModifierFlagCommand,
 )
 
+
 ######################################################################
 # Utilities to convert Cocoa constants to Toga ones
 ######################################################################
@@ -48,7 +49,7 @@ def toga_key(event):
         23: modified_key(Key._5, shift=Key.PERCENT)(event.modifierFlags),
         24: modified_key(Key.PLUS, shift=Key.EQUAL)(event.modifierFlags),
         25: modified_key(Key._9, shift=Key.OPEN_PARENTHESIS)(event.modifierFlags),
-        26: modified_key(Key._7, shift=Key.AND)(event.modifierFlags),
+        26: modified_key(Key._7, shift=Key.AMPERSAND)(event.modifierFlags),
         27: modified_key(Key.MINUS, shift=Key.UNDERSCORE)(event.modifierFlags),
         28: modified_key(Key._8, shift=Key.ASTERISK)(event.modifierFlags),
         29: modified_key(Key._0, shift=Key.CLOSE_PARENTHESIS)(event.modifierFlags),
@@ -113,23 +114,117 @@ def toga_key(event):
         124: Key.RIGHT,
         125: Key.DOWN,
         126: Key.UP,
-
     }.get(event.keyCode, None)
 
     modifiers = set()
 
     if event.modifierFlags & NSEventModifierFlagCapsLock:
-        modifiers.add(Key.CAPS_LOCK)
+        modifiers.add(Key.CAPSLOCK)
     if event.modifierFlags & NSEventModifierFlagShift:
         modifiers.add(Key.SHIFT)
-    if event.modifierFlags & NSEventModifierFlagControl:
-        modifiers.add(Key.CONTROL)
-    if event.modifierFlags & NSEventModifierFlagOption:
-        modifiers.add(Key.OPTION)
     if event.modifierFlags & NSEventModifierFlagCommand:
-        modifiers.add(Key.COMMAND)
+        modifiers.add(Key.MOD_1)
+    if event.modifierFlags & NSEventModifierFlagOption:
+        modifiers.add(Key.MOD_2)
+    if event.modifierFlags & NSEventModifierFlagControl:
+        modifiers.add(Key.MOD_3)
 
     return {
         'key': key,
         'modifiers': modifiers
     }
+
+
+COCOA_KEY_CODES = {
+    Key.ESCAPE: "%c" % 0x001b,
+    Key.TAB: "%c" % 0x0009,
+
+    Key.BACKSPACE: "%c" % 0x0008,
+    Key.ENTER: "%c" % 0x000d,
+
+    Key.F1: "",  # TODO
+    Key.F2: "",  # TODO
+    Key.F3: "",  # TODO
+    Key.F4: "",  # TODO
+    Key.F5: "",  # TODO
+    Key.F6: "",  # TODO
+    Key.F7: "",  # TODO
+    Key.F8: "",  # TODO
+    Key.F9: "",  # TODO
+    Key.F10: "",  # TODO
+    Key.F11: "",  # TODO
+    Key.F12: "",  # TODO
+    Key.F13: "",  # TODO
+    Key.F14: "",  # TODO
+    Key.F15: "",  # TODO
+    Key.F16: "",  # TODO
+    Key.F17: "",  # TODO
+    Key.F18: "",  # TODO
+    Key.F19: "",  # TODO
+
+    Key.EJECT: "",  # TODO
+
+    Key.HOME: "%c" % 0x2196,
+    Key.END: "%c" % 0x2198,
+    Key.DELETE: "%c" % 0x007f,
+    Key.PAGE_UP: "%c" % 0x21de,
+    Key.PAGE_DOWN: "%c" % 0x21df,
+
+    Key.UP: "%c" % 0x001e,
+    Key.DOWN: "%c" % 0x001f,
+    Key.LEFT: "%c" % 0x001c,
+    Key.RIGHT: "%c" % 0x001d,
+
+    Key.NUMPAD_0: "0",
+    Key.NUMPAD_1: "1",
+    Key.NUMPAD_2: "2",
+    Key.NUMPAD_3: "3",
+    Key.NUMPAD_4: "4",
+    Key.NUMPAD_5: "5",
+    Key.NUMPAD_6: "6",
+    Key.NUMPAD_7: "7",
+    Key.NUMPAD_8: "8",
+    Key.NUMPAD_9: "9",
+
+    Key.NUMPAD_CLEAR: "",  # TODO
+    Key.NUMPAD_DECIMAL_POINT: "",  # TODO
+    Key.NUMPAD_DIVIDE: "",  # TODO
+    Key.NUMPAD_ENTER: "",  # TODO
+    Key.NUMPAD_EQUAL: "",  # TODO
+    Key.NUMPAD_MINUS: "",  # TODO
+    Key.NUMPAD_MULTIPLY: "",  # TODO
+    Key.NUMPAD_PLUS: "",  # TODO
+}
+
+COCOA_MODIFIERS = {
+    Key.SHIFT: NSEventModifierFlagShift,
+    Key.CAPSLOCK: NSEventModifierFlagCapsLock,
+
+    Key.MOD_1: NSEventModifierFlagCommand,
+    Key.MOD_2: NSEventModifierFlagOption,
+    Key.MOD_3: NSEventModifierFlagControl,
+}
+
+
+def cocoa_key(shortcut):
+    """Convert a Toga shortcut definition into Cocoa key equivalents"""
+    modifiers = 0
+    # Convert the shortcut into string form.
+    try:
+        key = shortcut.value
+    except AttributeError:
+        key = shortcut
+
+    # Replace any <> special keys with the character equivalents
+    # understood by Cocoa
+    for code, equiv in COCOA_KEY_CODES.items():
+        key = key.replace(code.value, equiv)
+
+    # Remove any modifier definitions mentions, and
+    # add them to the modifier mask.
+    for mod, mask in COCOA_MODIFIERS.items():
+        if mod.value in key:
+            key = key.replace(mod.value, '')
+            modifiers |= mask
+
+    return (key, modifiers)

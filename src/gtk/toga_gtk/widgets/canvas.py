@@ -1,23 +1,6 @@
-import gi
-from gi.repository import Gtk
-
-from toga_gtk.colors import native_color
-
+from ..colors import native_color
+from ..libs import Gtk, Pango, cairo
 from .base import Widget
-
-gi.require_version("Gtk", "3.0")
-
-try:
-    import cairo
-except ImportError:
-    cairo = None
-try:
-    gi.require_version("Pango", "1.0")
-    from gi.repository import Pango
-
-    SCALE = Pango.SCALE
-except ImportError:
-    SCALE = 1024
 
 
 class Canvas(Widget):
@@ -30,6 +13,7 @@ class Canvas(Widget):
         self.native = Gtk.DrawingArea()
         self.native.interface = self.interface
         self.native.connect("draw", self.gtk_draw_callback)
+        self.native.connect('size-allocate', self.gtk_on_size_allocate)
 
     def gtk_draw_callback(self, canvas, gtk_context):
         """Creates a draw callback
@@ -38,12 +22,21 @@ class Canvas(Widget):
         callback function creates a Gtk+ canvas and Gtk+ context automatically
         using the canvas and gtk_context function arguments. This method calls
         the draw method on the interface Canvas to draw the objects.
-
         """
         self.interface._draw(self, draw_context=gtk_context)
 
-    def redraw(self):
+    def gtk_on_size_allocate(self, widget, allocation):
+        """Called on widget resize, and calls the handler set on the interface,
+        if any.
+        """
+        if self.interface.on_resize:
+            self.interface.on_resize(self.interface)
+
+    def set_on_resize(self, handler):
         pass
+
+    def redraw(self):
+        self.native.queue_draw()
 
     # Basic paths
 
@@ -141,7 +134,7 @@ class Canvas(Widget):
         elif self.native.font:
             write_font = self.native.font
             write_font.family = self.native.font.get_family()
-            write_font.size = self.native.font.get_size() / SCALE
+            write_font.size = self.native.font.get_size() / Pango.SCALE
         draw_context.select_font_face(write_font.family)
         draw_context.set_font_size(write_font.size)
 
@@ -159,7 +152,7 @@ class Canvas(Widget):
             draw_context.set_font_size(font.size)
         elif self.native.font:
             draw_context.select_font_face(self.native.font.get_family())
-            draw_context.set_font_size(self.native.font.get_size() / SCALE)
+            draw_context.set_font_size(self.native.font.get_size() / Pango.SCALE)
 
         x_bearing, y_bearing, width, height, x_advance, y_advance = draw_context.text_extents(
             text

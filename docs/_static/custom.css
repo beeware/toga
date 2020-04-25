@@ -1,0 +1,14 @@
+div.body table.widget-descriptions td p
+{
+    text-align: center;
+}
+div.body table.widget-support th p,
+div.body table.widget-support td p {
+    text-align: center;
+}
+
+div.body table.widget-descriptions td:first-of-type p,
+div.body table.widget-descriptions th:first-of-type p
+{
+    text-align: left;
+}

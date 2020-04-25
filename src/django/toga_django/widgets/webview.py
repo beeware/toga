@@ -17,6 +17,12 @@ class WebView(WebViewInterface, WidgetMixin):
             style=self.style,
         )
 
+    def set_on_key_down(self, handler):
+        pass
+
+    def set_on_webview_load(self, handler):
+        pass
+
     def set_url(self, value):
         self._impl.url = value
 
@@ -26,25 +32,28 @@ class WebView(WebViewInterface, WidgetMixin):
     #         self.window.callbacks[(self.id, 'on_press')] = self.on_press
 
     def get_dom(self):
-        raise NotImplementeException()
+        self.interface.factory.not_implemented('WebView.get_dom()')
 
     def set_user_agent(self, value):
-        raise NotImplementeException()
+        self.interface.factory.not_implemented('WebView.set_user_agent()')
 
     def set_placeholder(self, value):
-        raise NotImplementeException()
+        self.interface.factory.not_implemented('WebView.set_placeholder()')
 
     def set_readonly(self, value):
-        raise NotImplementeException()
+        self.interface.factory.not_implemented('WebView.set_readonly()')
 
     def get_value(self):
         return self._impl.value
 
     def set_value(self, value):
-        raise NotImplementeException()
+        self.interface.factory.not_implemented('WebView.set_value()')
 
     def set_content(self, root_url, content):
-        raise NotImplementeException()
+        self.interface.factory.not_implemented('WebView.set_content()')
 
-    def evaluate(self, javascript):
-        raise NotImplementeException()
+    async def evaluate_javascript(self, javascript):
+        self.interface.factory.not_implemented('WebView.evaluate_javascript()')
+
+    def invoke_javascript(self, javascript):
+        self.interface.factory.not_implemented('WebView.invoke_javascript()')

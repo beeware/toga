@@ -1,0 +1,44 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name = "Tutorial 3"
+bundle = "org.beeware"
+version = "0.3.0.dev20"
+url = "https://beeware.org"
+license = "BSD license"
+author = 'Tiberius Yak'
+author_email = "tiberius@beeware.org"
+
+[tool.briefcase.app.tutorial]
+formal_name = "Tutorial 3"
+description = "A testing app"
+sources = ['tutorial']
+requires = []
+
+
+[tool.briefcase.app.tutorial.macOS]
+requires = [
+    'toga-cocoa',
+]
+
+[tool.briefcase.app.tutorial.linux]
+requires = [
+    'toga-gtk',
+]
+
+[tool.briefcase.app.tutorial.windows]
+requires = [
+    'toga-winforms',
+]
+
+# Mobile deployments
+[tool.briefcase.app.tutorial.iOS]
+requires = [
+    'toga-iOS',
+]
+
+[tool.briefcase.app.tutorial.android]
+requires = [
+    'toga-android',
+]

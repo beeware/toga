@@ -37,7 +37,7 @@ class Widget:
         if self.native:
             self.native.Enabled = self.interface.enabled
 
-    ### APPLICATOR
+    # APPLICATOR
 
     @property
     def vertical_shift(self):
@@ -75,7 +75,7 @@ class Widget:
         # By default, background color can't be changed.
         pass
 
-    ### INTERFACE
+    # INTERFACE
 
     def add_child(self, child):
         if self.container:

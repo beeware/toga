@@ -1,5 +1,4 @@
-from android import PythonActivity
-
+from .libs import IPythonApp, MainActivity
 from .window import Window
 
 
@@ -7,9 +6,15 @@ class MainWindow(Window):
     pass
 
 
-class TogaApp:
+class TogaApp(IPythonApp):
     def __init__(self, app):
+        super().__init__()
         self._interface = app
+        MainActivity.setPythonApp(self)
+        print('Python app launched & stored in Android Activity class')
+
+    def onCreate(self):
+        print("Toga app: onCreate")
 
     def onStart(self):
         print("Toga app: onStart")
@@ -41,20 +46,18 @@ class App:
         self.interface._impl = self
 
     def create(self):
-        # Connect this app to the PythonActivity
         self._listener = TogaApp(self)
-
-        # Set the Python activity listener to be this app.
-        self.native = PythonActivity.setListener(self._listener)
-
-        self.startup()
 
     def open_document(self, fileURL):
         print("Can't open document %s (yet)" % fileURL)
 
     def main_loop(self):
-        # Main loop is a no-op on Android; the app loop is integrated with the
-        # main Android event loop.
+        # Connect the Python code to the Java Activity.
+        self.create()
+        # The app loop is integrated with the main Android event loop,
+        # so there is no further work to do.
+
+    def set_main_window(self, window):
         pass
 
     def exit(self):
@@ -62,3 +65,6 @@ class App:
 
     def set_on_exit(self, value):
         pass
+
+    def add_background_task(self, handler):
+        self.interface.factory.not_implemented('App.add_background_task()')

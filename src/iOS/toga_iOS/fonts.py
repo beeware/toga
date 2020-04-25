@@ -1,5 +1,20 @@
-from .libs import UIFont
-from toga.fonts import MESSAGE, NORMAL, SYSTEM, SERIF, SANS_SERIF, CURSIVE, FANTASY, MONOSPACE
+from rubicon.objc import NSMutableDictionary
+
+from toga.fonts import (
+    MESSAGE,
+    NORMAL,
+    SYSTEM,
+    SERIF,
+    SANS_SERIF,
+    CURSIVE,
+    FANTASY,
+    MONOSPACE
+)
+from toga_iOS.libs import (
+    UIFont,
+    NSAttributedString,
+    NSFontAttributeName,
+)
 
 _FONT_CACHE = {}
 
@@ -43,5 +58,9 @@ class Font:
         self.native = font
 
     def measure(self, text, tight=False):
-        # TODO
-        pass
+        textAttributes = NSMutableDictionary.alloc().init()
+        textAttributes[NSFontAttributeName] = self.native
+        text_string = NSAttributedString.alloc().initWithString_attributes_(text, textAttributes)
+        size = text_string.size()
+        size.width += 3
+        return size.width, size.height

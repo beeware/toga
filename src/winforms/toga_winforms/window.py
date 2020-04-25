@@ -1,7 +1,7 @@
 from toga import GROUP_BREAK, SECTION_BREAK
 from travertino.layout import Viewport
 
-from .libs import WinForms, Size, add_handler
+from .libs import WinForms, Size
 
 
 class WinFormsViewport:
@@ -29,7 +29,7 @@ class Window:
 
     def create(self):
         self.native = WinForms.Form(self)
-        self.native.ClientSize = Size(self.interface._size[0], self.interface._size[1])
+        self.native.ClientSize = Size(*self.interface._size)
         self.native.interface = self.interface
         self.native.Resize += self.winforms_Resize
         self.toolbar_native = None
@@ -43,21 +43,20 @@ class Window:
             elif cmd == SECTION_BREAK:
                 item = WinForms.ToolStripSeparator()
             else:
-                cmd.bind(self.interface.factory)
                 if cmd.icon is not None:
-                    native_icon = cmd.icon.bind(self.interface.factory).native
+                    native_icon = cmd.icon._impl.native
                     item = WinForms.ToolStripMenuItem(cmd.label, native_icon.ToBitmap())
                 else:
                     item = WinForms.ToolStripMenuItem(cmd.label)
-
-                item.Click += add_handler(cmd)
+                item.Click += cmd._impl.as_handler()
+                cmd._impl.native.append(item)
             self.toolbar_native.Items.Add(item)
 
     def set_position(self, position):
         pass
 
     def set_size(self, size):
-        self.native.ClientSize = Size(self.interface._size[0], self.interface._size[1])
+        self.native.ClientSize = Size(*self.interface._size)
 
     def set_app(self, app):
         pass
@@ -108,20 +107,16 @@ class Window:
             int(self.interface.content.layout.height) + TITLEBAR_HEIGHT
         )
         self.interface.content.refresh()
-        if self.interface is self.interface.app._main_window:
-            self.native.FormClosing += self.winforms_FormClosing
 
-        if self.interface is not self.interface.app._main_window:
-            self.native.Show()
+        self.native.Show()
 
-            
     def winforms_FormClosing(self, event, handler):
         if self.interface.app.on_exit:
             self.interface.app.on_exit(self.interface.app)
-          
+
     def set_full_screen(self, is_full_screen):
         self.interface.factory.not_implemented('Window.set_full_screen()')
-        
+
     def on_close(self):
         pass
 
@@ -179,13 +174,13 @@ class Window:
         else:
             raise ValueError("No filename provided in the open file dialog")
 
-    def select_folder_dialog(self, title, initial_directory):
+    def select_folder_dialog(self, title, initial_directory, multiselect):
         dialog = WinForms.FolderBrowserDialog()
         dialog.Title = title
         if initial_directory is not None:
             dialog.InitialDirectory = initial_directory
 
         if dialog.ShowDialog() == WinForms.DialogResult.OK:
-            return dialog.SelectedPath
+            return [dialog.SelectedPath]
         else:
             raise ValueError("No folder provided in the select folder dialog")

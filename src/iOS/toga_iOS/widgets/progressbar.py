@@ -1,11 +1,11 @@
-from toga.constants import *
+from travertino.size import at_least
+
 from toga_iOS.libs import (
     CGSize,
     UIProgressView,
     UIProgressViewStyle
 )
-from travertino.size import at_least
-from .base import Widget
+from toga_iOS.widgets.base import Widget
 
 
 class ProgressBar(Widget):
@@ -22,7 +22,7 @@ class ProgressBar(Widget):
         pass
 
     def set_value(self, value):
-        if self.interface.max != None:
+        if self.interface.max is not None:
             self.native.setProgress_animated_(
                 self.interface.value / self.interface.max,
                 True

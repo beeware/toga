@@ -63,7 +63,7 @@ class ExampleMultilineTextInputApp(toga.App):
 
 
 def main():
-    return ExampleMultilineTextInputApp('Multiline Text Input', 'org.pybee.widgets.multilinetextinput')
+    return ExampleMultilineTextInputApp('Multiline Text Input', 'org.beeware.widgets.multilinetextinput')
 
 
 if __name__ == '__main__':

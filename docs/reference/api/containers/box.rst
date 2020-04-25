@@ -1,11 +1,12 @@
 Box
 ===
 
-======= ====== ========= ===== ========= ========
- macOS   GTK+   Windows   iOS   Android   Django
-======= ====== ========= ===== ========= ========
- |y|     |y|    |y|       |y|   |y|       |y|
-======= ====== ========= ===== ========= ========
+.. rst-class:: widget-support
+.. csv-filter::
+   :header-rows: 1
+   :file: ../../data/widgets_by_platform.csv
+   :included_cols: 4,5,6,7,8,9
+   :exclude: {0: '(?!(Box|Component))'}
 
 .. |y| image:: /_static/yes.png
     :width: 16
@@ -15,7 +16,7 @@ The box is a generic container for widgets, allowing you to construct layouts.
 Usage
 -----
 
-A box can be instantiated with no children and then the children added later
+A box can be instantiated with no children and the children added later:
 
 .. code-block:: Python
 
@@ -26,7 +27,7 @@ A box can be instantiated with no children and then the children added later
     button = toga.Button('Hello world', on_press=button_handler)
     box.add(button)
 
-To create boxes within boxes, use the children argument.
+To create boxes within boxes, use the children argument:
 
 .. code-block:: Python
 
@@ -40,23 +41,27 @@ To create boxes within boxes, use the children argument.
 Box Styling
 -----------
 
-Styling of boxes through colosseum can be done pre instantiation or post,
+Styling of boxes can be done during instantiation of the Box:
 
 .. code-block:: Python
 
     import toga
+    from toga.style import Pack
+    from toga.style.pack import COLUMN
 
-    box = toga.Box('box1')
+    box = toga.Box(id='box', style=Pack(direction=COLUMN, padding_top=10))
 
-    box.style.set(flex_direction='column', padding_top=10)
+Styles can be also be updated on an existing instance:
 
 .. code-block:: Python
 
     import toga
-    from colosseum import CSS
+    from toga.style import Pack
+    from toga.style.pack import COLUMN
 
-    style = CSS(padding_top=10)
-    box = toga.Box('box', style=style)
+    box = toga.Box(id='box', style=Pack(direction=COLUMN))
+
+    box.style.update(padding_top=10)
 
 Reference
 ---------

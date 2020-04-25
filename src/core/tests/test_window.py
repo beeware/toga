@@ -64,3 +64,78 @@ class TestWindow(TestCase):
         with patch.object(self.window, '_impl'):
             self.window.on_close()
             self.window._impl.on_close.assert_called_once_with()
+
+    def test_close(self):
+        with patch.object(self.window, "_impl"):
+            self.window.close()
+            self.window._impl.close.assert_called_once_with()
+
+    def test_question_dialog(self):
+        title = "question_dialog_test"
+        message = "sample_text"
+        with patch.object(self.window, "_impl"):
+            self.window.question_dialog(title, message)
+            self.window._impl.question_dialog.assert_called_once_with(
+                title, message)
+
+    def test_confirm_dialog(self):
+        title = "confirm_dialog_test"
+        message = "sample_text"
+        with patch.object(self.window, "_impl"):
+            self.window.confirm_dialog(title, message)
+            self.window._impl.confirm_dialog.assert_called_once_with(
+                title, message)
+
+    def test_error_dialog(self):
+        title = "error_dialog_test"
+        message = "sample_text"
+        with patch.object(self.window, "_impl"):
+            self.window.error_dialog(title, message)
+            self.window._impl.error_dialog.assert_called_once_with(
+                title, message)
+
+    def test_info_dialog(self):
+        title = "info_dialog_test"
+        message = "sample_text"
+        with patch.object(self.window, "_impl"):
+            self.window.info_dialog(title, message)
+            self.window._impl.info_dialog.assert_called_once_with(
+                title, message)
+
+    def test_stack_trace_dialog(self):
+        title = "stack_trace_dialog_test"
+        message = "sample_text"
+        content = "sample_content"
+        retry = True
+        with patch.object(self.window, "_impl"):
+            self.window.stack_trace_dialog(title, message, content, retry)
+            self.window._impl.stack_trace_dialog.assert_called_once_with(
+                title, message, content, retry)
+
+    def test_save_file_dialog(self):
+        title = "save_file_dialog_test"
+        suggested_filename = "sample_filename_test"
+        file_types = ['test']
+        with patch.object(self.window, "_impl"):
+            self.window.save_file_dialog(title, suggested_filename, file_types)
+            self.window._impl.save_file_dialog.assert_called_once_with(
+                title, suggested_filename, file_types)
+
+    def test_open_file_dialog(self):
+        title = "title_test"
+        initial_directory = "initial_directory_test"
+        file_types = ["test"]
+        multiselect = True
+        with patch.object(self.window, "_impl"):
+            self.window.open_file_dialog(title, initial_directory, file_types, multiselect)
+            self.window._impl.open_file_dialog.assert_called_once_with(
+                title, initial_directory, file_types, multiselect)
+
+    def test_select_folder_dialog(self):
+        title = ""
+        initial_directory = ""
+        multiselect = True
+        with patch.object(self.window, "_impl"):
+            self.window.select_folder_dialog(title, initial_directory, multiselect)
+            self.window._impl.select_folder_dialog.assert_called_once_with(
+                title, initial_directory, multiselect)

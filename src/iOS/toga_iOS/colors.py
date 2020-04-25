@@ -1,4 +1,4 @@
-from .libs import UIColor
+from toga_iOS.libs import UIColor
 
 
 CACHE = {}

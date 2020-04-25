@@ -22,7 +22,7 @@ programming. The story originally comes from MIT, and is related to a
 Ren and Stimpy episode; over the years, the story has evolved, and now goes
 something like this:
 
-    You want to borrow your neighbors hose so you can wash your car. But you
+    You want to borrow your neighbor's hose so you can wash your car. But you
     remember that last week, you broke their rake, so you need to go to the
     hardware store to buy a new one. But that means driving to the hardware
     store, so you have to look for your keys. You eventually find your keys
@@ -40,4 +40,4 @@ with various widget toolkits for over 20 years, so the metaphor seemed
 appropriate.
 
 .. _yak shaving: http://en.wiktionary.org/wiki/yak_shaving
-.. _BeeWare: http://pybee.org
+.. _BeeWare: http://beeware.org

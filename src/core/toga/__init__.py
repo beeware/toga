@@ -12,11 +12,14 @@ from .images import Image
 # Widgets
 from .widgets.base import Widget
 
+from .widgets.activityindicator import ActivityIndicator
 from .widgets.box import Box
 from .widgets.button import Button
 from .widgets.canvas import Canvas
 from .widgets.detailedlist import DetailedList
+from .widgets.divider import Divider
 from .widgets.imageview import ImageView
+from .widgets.datepicker import DatePicker
 from .widgets.label import Label
 from .widgets.multilinetextinput import MultilineTextInput
 from .widgets.numberinput import NumberInput
@@ -52,14 +55,17 @@ __all__ = [
     'Image',
 
     # Widgets
-    'DetailedList',
-    'Window',
-    'Widget',
+    'ActivityIndicator',
     'Box',
     'Button',
     'Canvas',
+    'DetailedList',
+    'Divider',
+    'Window',
+    'Widget',
     'ImageView',
     'Label',
+    'DatePicker',
     'MultilineTextInput',
     'NumberInput',
     'OptionContainer',
@@ -84,5 +90,4 @@ __all__ = [
 # __version__ = '1.2.3'       # Final Release
 # __version__ = '1.2.3.post1' # Post Release 1
 
-__version__ = '0.3.0.dev10'
-
+__version__ = '0.3.0.dev20'

@@ -8,7 +8,7 @@ children, and each child specifies how it will consume the available space -
 either as a specific width, or as a proportion of the available width. Other
 properties exist to control color, text alignment and so on.
 
-It is simliar in some ways to the CSS Flexbox algorithm; but dramatically
+It is similar in some ways to the CSS Flexbox algorithm; but dramatically
 simplified, as there is no allowance for overflowing boxes.
 
 Pack style properties
@@ -128,7 +128,7 @@ The amount of space to allocate between the edge of the box, and the edge of con
 ``padding``
 -----------
 
-**Values:** ``<integer>`` {1,4}
+**Values:** ``<integer>`` or ``<tuple>`` of length 1-4
 
 A shorthand for setting the top, right, bottom and left padding with a single declaration.
 

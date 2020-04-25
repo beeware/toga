@@ -1,11 +1,9 @@
-from gi.repository import Gtk
-
 from .tree import Tree
 
 
 class Table(Tree):
 
-    def on_select(self, selection):
+    def gtk_on_select(self, selection):
         if self.interface.on_select:
             tree_model, tree_iter = selection.get_selected()
             if tree_iter:
@@ -30,6 +28,12 @@ class Table(Tree):
         super().insert(None, index, item, **kwargs)
 
     def scroll_to_row(self, row):
+        return NotImplementedError
+
+    def add_column(self, heading, accessor):
+        return NotImplementedError
+
+    def remove_column(self, accessor):
         return NotImplementedError
 
     # =================================

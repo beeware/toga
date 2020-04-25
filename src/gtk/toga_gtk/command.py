@@ -1,21 +1,18 @@
 from toga import Icon
 
 
-class Command():
+class Command:
+    """ Command `native` property is a list of native widgets associated with the command.
+    Native widgets can be both Gtk.ToolButton and Gio.SimpleAction.
+    """
     def __init__(self, interface):
         self.interface = interface
+        self.native = []
 
-
-        if self.interface.icon_id:
-            self.icon = Icon.load(self.interface.icon_id)
-        else:
-            self.icon = None
-
-        self._widgets = []
-
-    def _set_enabled(self, value):
-        for widget in self.interface._widgets:
+    def set_enabled(self, value):
+        enabled = self.interface.enabled
+        for widget in self.native:
             try:
-                widget.set_sensitive(value)
+                widget.set_sensitive(enabled)
             except AttributeError:
-                widget.set_enabled(value)
+                widget.set_enabled(enabled)

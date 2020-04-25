@@ -5,12 +5,16 @@ from .documents import Document
 from .fonts import Font
 from .icons import Icon
 from .images import Image
+from .paths import paths
 
+from .widgets.activityindicator import ActivityIndicator
 from .widgets.box import Box
 from .widgets.button import Button
 from .widgets.canvas import Canvas
 from .widgets.detailedlist import DetailedList
+from .widgets.divider import Divider
 from .widgets.imageview import ImageView
+from .widgets.datepicker import DatePicker
 from .widgets.label import Label
 from .widgets.multilinetextinput import MultilineTextInput
 from .widgets.navigationview import NavigationView
@@ -44,12 +48,16 @@ __all__ = [
     'Font',
     'Icon',
     'Image',
+    'paths',
 
+    'ActivityIndicator',
     'Box',
     'Button',
     'Canvas',
     'DetailedList',
+    'Divider',
     'ImageView',
+    'DatePicker',
     'Label',
     'MultilineTextInput',
     'NavigationView',

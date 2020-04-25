@@ -1,0 +1,44 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name = "ProgressBar demo"
+bundle = "org.beeware"
+version = "0.3.0.dev20"
+url = "https://beeware.org"
+license = "BSD license"
+author = 'Tiberius Yak'
+author_email = "tiberius@beeware.org"
+
+[tool.briefcase.app.progressbar]
+formal_name = "ProgressBar demo"
+description = "A testing app"
+sources = ['progressbar']
+requires = []
+
+
+[tool.briefcase.app.progressbar.macOS]
+requires = [
+    'toga-cocoa',
+]
+
+[tool.briefcase.app.progressbar.linux]
+requires = [
+    'toga-gtk',
+]
+
+[tool.briefcase.app.progressbar.windows]
+requires = [
+    'toga-winforms',
+]
+
+# Mobile deployments
+[tool.briefcase.app.progressbar.iOS]
+requires = [
+    'toga-iOS',
+]
+
+[tool.briefcase.app.progressbar.android]
+requires = [
+    'toga-android',
+]

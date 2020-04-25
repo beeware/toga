@@ -1,9 +1,11 @@
 from .app import App, DocumentApp, MainWindow
 from .command import Command
 
+from .documents import Document
 from .fonts import Font
 from .icons import Icon
 from .images import Image
+from .paths import paths
 
 from .widgets.box import Box
 from .widgets.button import Button
@@ -18,7 +20,7 @@ from .widgets.passwordinput import PasswordInput
 from .widgets.progressbar import ProgressBar
 from .widgets.scrollcontainer import ScrollContainer
 from .widgets.selection import Selection
-from .widgets.slider import *
+from .widgets.slider import Slider
 from .widgets.splitcontainer import SplitContainer
 from .widgets.switch import Switch
 from .widgets.table import Table
@@ -37,11 +39,13 @@ __all__ = [
 
     'App', 'DocumentApp', 'MainWindow',
     'Command',
+    'Document',
 
     # Resources
     'Font',
     'Icon',
     'Image',
+    'paths',
 
     # Widgets
     'Box',

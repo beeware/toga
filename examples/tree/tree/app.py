@@ -15,13 +15,17 @@ bee_movies = [
     {'year': 1947, 'title': 'Keeper of the Bees', 'rating': '6.3', 'genre': 'Drama'}
 ]
 
+
 class ExampleTreeApp(toga.App):
+
     # Table callback functions
     def on_select_handler(self, widget, node):
         if node is not None and node.title:
             self.label.text = 'You selected node: {}'.format(node.title)
+            self.btn_remove.enabled = True
         else:
             self.label.text = 'No node selected'
+            self.btn_remove.enabled = False
 
     # Button callback functions
     def insert_handler(self, widget, **kwargs):
@@ -43,12 +47,17 @@ class ExampleTreeApp(toga.App):
 
         self.tree.data.append(root, **item)
 
+    def remove_handler(self, widget, **kwargs):
+        selection = self.tree.selection
+        if selection.title:
+            self.tree.data.remove(selection)
+
     def startup(self):
         # Set up main window
         self.main_window = toga.MainWindow(title=self.name)
 
         # Label to show responses.
-        self.label = toga.Label('Ready.')
+        self.label = toga.Label('Ready.', style=Pack(padding=10))
 
         self.tree = toga.Tree(
             headings=['Year', 'Title', 'Rating', 'Genre'],
@@ -65,17 +74,17 @@ class ExampleTreeApp(toga.App):
         self.decade_2000s = self.tree.data.append(None, year='2000s', title='', rating='', genre='')
 
         # Buttons
-        btn_style = Pack(flex=1)
-        btn_insert = toga.Button('Insert Row', on_press=self.insert_handler, style=btn_style)
-        btn_box = toga.Box(children=[btn_insert], style=Pack(direction=ROW))
+        btn_style = Pack(flex=1, padding=10)
+        self.btn_insert = toga.Button('Insert Row', on_press=self.insert_handler, style=btn_style)
+        self.btn_remove = toga.Button('Remove Row', enabled=False, on_press=self.remove_handler, style=btn_style)
+        self.btn_box = toga.Box(children=[self.btn_insert, self.btn_remove], style=Pack(direction=ROW))
 
         # Outermost box
         outer_box = toga.Box(
-            children=[btn_box, self.tree, self.label],
+            children=[self.btn_box, self.tree, self.label],
             style=Pack(
                 flex=1,
                 direction=COLUMN,
-                padding=10,
             )
         )
 
@@ -87,7 +96,7 @@ class ExampleTreeApp(toga.App):
 
 
 def main():
-    return ExampleTreeApp('Tree', 'org.pybee.widgets.tree')
+    return ExampleTreeApp('Tree', 'org.beeware.widgets.tree')
 
 
 if __name__ == '__main__':

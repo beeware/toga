@@ -1,17 +1,19 @@
 import asyncio
+import inspect
 import os
 import sys
 from urllib.parse import unquote, urlparse
 
 import toga
-from rubicon.objc import objc_method, NSMutableArray, NSMutableDictionary, NSObject, SEL
-from rubicon.objc.eventloop import EventLoopPolicy, CocoaLifecycle
+from rubicon.objc import (SEL, NSMutableArray, NSMutableDictionary, NSObject,
+                          objc_method)
+from rubicon.objc.eventloop import CocoaLifecycle, EventLoopPolicy
+from toga.handlers import wrapped_handler
 
-from .libs import (
-    NSURL, NSBundle, NSOpenPanel, NSDocumentController, NSString, NSApplication,
-    NSApplicationActivationPolicyRegular, NSNumber, NSMenu, NSMenuItem, NSScreen,
-    NSCursor
-)
+from .keys import cocoa_key
+from .libs import (NSURL, NSApplication, NSApplicationActivationPolicyRegular,
+                   NSBundle, NSCursor, NSDocumentController, NSMenu,
+                   NSMenuItem, NSNumber, NSOpenPanel, NSScreen, NSString)
 from .window import Window
 
 
@@ -48,6 +50,13 @@ class AppDelegate(NSObject):
     def application_openFiles_(self, app, filenames) -> None:
         for i in range(0, len(filenames)):
             filename = filenames[i]
+            # If you start your Toga application as `python myapp.py` or
+            # `myapp.py`, the name of the Python script is included as a
+            # filename to be processed. Inspect the stack, and ignore any
+            # "document" that matches the file doing the executing
+            if filename == inspect.stack(-1)[-1].filename:
+                continue
+
             if isinstance(filename, NSString):
                 fileURL = NSURL.fileURLWithPath(filename)
 
@@ -85,7 +94,7 @@ class App:
         self.native = NSApplication.sharedApplication
         self.native.setActivationPolicy(NSApplicationActivationPolicyRegular)
 
-        self.native.setApplicationIconImage_(self.interface.icon.bind(self.interface.factory).native)
+        self.native.setApplicationIconImage_(self.interface.icon._impl.native)
 
         self.resource_path = os.path.dirname(os.path.dirname(NSBundle.mainBundle.bundlePath))
 
@@ -95,13 +104,18 @@ class App:
         self.appDelegate.native = self.native
         self.native.setDelegate_(self.appDelegate)
 
-        app_name = self.interface.name
+        formal_name = self.interface.formal_name
 
         self.interface.commands.add(
-            toga.Command(None, 'About ' + app_name, group=toga.Group.APP),
+            toga.Command(None, 'About ' + formal_name, group=toga.Group.APP),
             toga.Command(None, 'Preferences', group=toga.Group.APP),
             # Quit should always be the last item, in a section on it's own
-            toga.Command(lambda s: self.exit(), 'Quit ' + app_name, shortcut='q', group=toga.Group.APP, section=sys.maxsize),
+            toga.Command(
+                lambda s: self.exit(), 'Quit ' + formal_name,
+                shortcut=toga.Key.MOD_1 + 'q',
+                group=toga.Group.APP,
+                section=sys.maxsize
+            ),
 
             toga.Command(None, 'Visit homepage', group=toga.Group.HELP)
         )
@@ -125,6 +139,7 @@ class App:
             self._menu_items = {}
             menubar = NSMenu.alloc().initWithTitle('MainMenu')
             submenu = None
+            menuItem = None
             for cmd in self.interface.commands:
                 if cmd == toga.GROUP_BREAK:
                     menubar.setSubmenu(submenu, forItem=menuItem)
@@ -137,13 +152,21 @@ class App:
                         submenu = NSMenu.alloc().initWithTitle(cmd.group.label)
                         submenu.setAutoenablesItems(False)
 
+                    if cmd.shortcut:
+                        key, modifier = cocoa_key(cmd.shortcut)
+                    else:
+                        key = ''
+                        modifier = None
+
                     item = NSMenuItem.alloc().initWithTitle(
                         cmd.label,
                         action=SEL('selectMenuItem:'),
-                        keyEquivalent=cmd.shortcut if cmd.shortcut else ''
+                        keyEquivalent=key,
                     )
+                    if modifier is not None:
+                        item.keyEquivalentModifierMask = modifier
 
-                    cmd._widgets.append(item)
+                    cmd._impl.native.append(item)
                     self._menu_items[item] = cmd
 
                     # This line may appear redundant, but it triggers the logic
@@ -162,6 +185,9 @@ class App:
         self.create()
 
         self.loop.run_forever(lifecycle=CocoaLifecycle(self.native))
+
+    def set_main_window(self, window):
+        pass
 
     def exit(self):
         self.native.terminate(None)
@@ -183,6 +209,11 @@ class App:
 
         for window, screen in zip(windows, NSScreen.screens):
             window.content._impl.native.enterFullScreenMode(screen, withOptions=opts)
+            # Going full screen causes the window content to be re-homed
+            # in a NSFullScreenWindow; teach the new parent window
+            # about it's Toga representations.
+            window.content._impl.native.window._impl = window._impl
+            window.content._impl.native.window.interface = window
 
     def exit_full_screen(self, windows):
         opts = NSMutableDictionary.alloc().init()
@@ -199,18 +230,21 @@ class App:
 
     def hide_cursor(self):
         if self._cursor_visible:
-            NSCursor.show()
+            NSCursor.hide()
 
         self._cursor_visible = False
+
+    def add_background_task(self, handler):
+        self.loop.call_soon(wrapped_handler(self, handler), self)
 
 
 class DocumentApp(App):
     def _create_app_commands(self):
         self.interface.commands.add(
             toga.Command(
-                lambda w: self.open_file,
+                lambda _: self.select_file(),
                 label='Open...',
-                shortcut='o',
+                shortcut=toga.Key.MOD_1 + 'o',
                 group=toga.Group.FILE,
                 section=0
             ),
@@ -241,6 +275,7 @@ class DocumentApp(App):
             fileURL (str): The URL/path to the file to add as a document.
         """
         # Convert a cocoa fileURL to a file path.
+        fileURL = fileURL.rstrip('/')
         path = unquote(urlparse(fileURL).path)
         extension = os.path.splitext(path)[1][1:]
 

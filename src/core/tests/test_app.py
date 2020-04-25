@@ -10,32 +10,42 @@ class AppTests(TestCase):
         super().setUp()
 
         self.name = 'Test App'
-        self.app_id = 'beeware.org'
-        self.id = 'id'
+        self.app_id = 'org.beeware.test-app'
+        self.id = 'dom-id'
 
         self.content = MagicMock()
 
         self.started = False
+
         def test_startup_function(app):
             self.started = True
             return self.content
 
-        self.app = toga.App(self.name,
-                            self.app_id,
-                            startup=test_startup_function,
-                            factory=toga_dummy.factory,
-                            id=self.id)
+        self.app = toga.App(
+            formal_name=self.name,
+            app_id=self.app_id,
+            startup=test_startup_function,
+            factory=toga_dummy.factory,
+            id=self.id
+        )
 
     def test_app_name(self):
         self.assertEqual(self.app.name, self.name)
 
     def test_app_icon(self):
-        # App icon will be the default icon if you don't specify one
-        self.assertEqual(self.app.icon, self.app.default_icon)
+        # App icon will default to a name autodetected from the running module
+        self.assertEqual(self.app.icon.path, 'resources/toga')
+
+        # This icon name *will* exist (since it overlaps with the default
+        # icon name)
+        self.assertIsNotNone(self.app.icon._impl)
 
         # Set the icon to a different resource
         self.app.icon = "other.icns"
         self.assertEqual(self.app.icon.path, "other.icns")
+
+        # This icon name will *not* exist. The Impl will be the DEFAULT_ICON's impl
+        self.assertEqual(self.app.icon._impl, toga.Icon.DEFAULT_ICON._impl)
 
     def test_app_app_id(self):
         self.assertEqual(self.app.app_id, self.app_id)
@@ -64,6 +74,18 @@ class AppTests(TestCase):
         self.app.exit()
 
         self.assertActionPerformed(self.app, 'exit')
+
+    def test_full_screen(self):
+        # set full screen and exit full screen
+        self.app.set_full_screen(self.app.main_window)
+        self.assertTrue(self.app.is_full_screen)
+        self.app.exit_full_screen()
+        self.assertFalse(self.app.is_full_screen)
+        # set full screen and set full with no args
+        self.app.set_full_screen(self.app.main_window)
+        self.assertTrue(self.app.is_full_screen)
+        self.app.set_full_screen()
+        self.assertFalse(self.app.is_full_screen)
 
 
 class DocumentAppTests(TestCase):

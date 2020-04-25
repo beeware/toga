@@ -41,7 +41,11 @@ class Window:
         self.factory = get_platform_factory(factory)
         self._impl = getattr(self.factory, self._WINDOW_CLASS)(interface=self)
 
-        self._toolbar = CommandSet(self, self._impl.create_toolbar)
+        self._toolbar = CommandSet(
+            factory=self.factory,
+            widget=self,
+            on_change=self._impl.create_toolbar
+        )
 
         self.position = position
         self.size = size
@@ -174,6 +178,9 @@ class Window:
         self._is_full_screen = is_full_screen
         self._impl.set_full_screen(is_full_screen)
 
+    def close(self):
+        self._impl.close()
+
     def on_close(self):
         self._impl.on_close()
 
@@ -274,15 +281,16 @@ class Window:
         """
         return self._impl.open_file_dialog(title, initial_directory, file_types, multiselect)
 
-    def select_folder_dialog(self, title, initial_directory=None):
+    def select_folder_dialog(self, title, initial_directory=None, multiselect=False):
         """ This opens a native dialog where the user can select a folder.
         It is possible to set the initial folder.
         If no path is returned (eg. dialog is canceled), a ValueError is raised.
         Args:
             title (str): The title of the dialog window.
             initial_directory(str): Initial folder displayed in the dialog.
+            multiselect (bool): Value showing whether a user can select multiple files.
 
         Returns:
-            The absolute path(str) to the selected file or None
+            The absolute path(str) to the selected file or None.
         """
-        return self._impl.select_folder_dialog(title, initial_directory)
+        return self._impl.select_folder_dialog(title, initial_directory, multiselect)
