@@ -64,8 +64,15 @@ class Widget(Node):
         """
         for child in children:
             if child not in self.children:
+
+                # remove from old parent
+                if child.parent:
+                    child.parent.remove(child)
+
+                # add to new parent
                 super().add(child)
 
+                # set app and window
                 child.app = self.app
                 child.window = self.window
 
@@ -85,8 +92,15 @@ class Widget(Node):
             ValueError: If this node is a leaf, and cannot have children.
         """
         if child not in self.children:
+
+            # remove from old parent
+            if child.parent:
+                child.parent.remove(child)
+
+            # add to new parent
             super().insert(index, child)
 
+            # set app and window
             child.app = self.app
             child.window = self.window
 
@@ -132,9 +146,11 @@ class Widget(Node):
 
     @app.setter
     def app(self, app):
-        if not (self._app is None or app is None):
-            if self._app != app:
-                raise ValueError("Widget %s is already associated with an App" % self)
+        # raise an error when we already have an app and attempt to override it
+        # with a different app
+        if self._app and app and self._app != app:
+            raise ValueError("Widget %s is already associated with an App" % self)
+
         elif self._impl:
             self._app = app
             self._impl.set_app(app)
