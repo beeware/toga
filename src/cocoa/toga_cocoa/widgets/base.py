@@ -71,18 +71,13 @@ class Widget:
     # INTERFACE
 
     def add_child(self, child):
-        # if we don't have a window, we won't have a container
-        if self.interface.window:
-            # if we don't have a container, we *are* the container
-            child.container = self.container or self
+        child.container = self.container or self
 
     def insert_child(self, index, child):
         self.add_child(child)
 
     def remove_child(self, child):
-        # if we don't have a window, we won't have a container
-        if self.interface.window:
-            child.container = None
+        child.container = None
 
     def add_constraints(self):
         self.native.translatesAutoresizingMaskIntoConstraints = False
