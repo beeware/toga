@@ -55,9 +55,11 @@ class Widget(Node):
         return self._id
 
     def add(self, *children):
-        """Add a node as a child of this one.
+        """Add nodes as children of this one. If a node already has a different parent,
+        it will be moved over. This does nothing if a node already is a child of this node.
+
         Args:
-            child: A node to add as a child to this node.
+            children: Nodes to add as children of this node.
 
         Raises:
             ValueError: If this node is a leaf, and cannot have children.
@@ -83,10 +85,13 @@ class Widget(Node):
             self.window.content.refresh()
 
     def insert(self, index, child):
-        """Insert a node as a child of this one.
+        """Insert a node as a child of this one. If the node already has a different
+        parent, it will be moved over. This does nothing if the node already is a child of
+        this node.
+
         Args:
             index: Position of child node.
-            child: A node to add as a child to this node.
+            child: A node to insert as a child of this node.
 
         Raises:
             ValueError: If this node is a leaf, and cannot have children.
@@ -111,9 +116,11 @@ class Widget(Node):
             self.window.content.refresh()
 
     def remove(self, *children):
-        """Remove a node as a child of this one.
+        """Remove child nodes of this node. This does nothing if a given node is not a
+        child of this node.
+
         Args:
-            child: A node to add as a child to this node.
+            children: Child nodes to remove.
 
         Raises:
             ValueError: If this node is a leaf, and cannot have children.
