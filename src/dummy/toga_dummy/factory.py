@@ -15,6 +15,7 @@ from .widgets.detailedlist import DetailedList
 from .widgets.divider import Divider
 from .widgets.imageview import ImageView
 from .widgets.datepicker import DatePicker
+from .widgets.timepicker import TimePicker
 from .widgets.label import Label
 from .widgets.multilinetextinput import MultilineTextInput
 from .widgets.navigationview import NavigationView
@@ -58,6 +59,7 @@ __all__ = [
     'Divider',
     'ImageView',
     'DatePicker',
+    'TimePicker',
     'Label',
     'MultilineTextInput',
     'NavigationView',
