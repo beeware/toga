@@ -3,7 +3,7 @@ from travertino.colors import WHITE
 from toga.widgets.canvas import Context
 from .box import Box
 from toga_winforms.colors import native_color
-from toga_winforms.libs import Pen, Graphics
+from toga_winforms.libs import Pen
 
 
 class WinformContext(Context):
