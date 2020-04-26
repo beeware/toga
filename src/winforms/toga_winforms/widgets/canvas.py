@@ -1,20 +1,18 @@
-from dataclasses import dataclass
-from typing import Tuple
-
 from travertino.colors import WHITE
 
 from toga.widgets.canvas import Context
 from .box import Box
 from toga_winforms.colors import native_color
-from toga_winforms.libs import Pen, DashStyle, Graphics
+from toga_winforms.libs import Pen, Graphics
 
 
-@dataclass
 class WinformContext(Context):
 
-    graphics: Graphics = None
-    start_point: Tuple[int, int] = None
-    last_point: Tuple[int, int] = None
+    def __init__(self):
+        super(WinformContext, self).__init__()
+        self.graphics = None
+        self.start_point = None
+        self.last_point = None
 
 
 class Canvas(Box):
