@@ -45,6 +45,7 @@ class ExampleBoxApp(toga.App):
         icon = toga.Icon('')
         self.image_view = toga.ImageView(icon, style=Pack(padding=10, width=60, height=60))
 
+        # this tests addind children during init, before we have an implementaiton
         self.button_box = toga.Box(
             children=[
                 self.button_add,
@@ -62,6 +63,7 @@ class ExampleBoxApp(toga.App):
         )
 
         # add a couple of labels to get us started
+        # this tests adding children when we already have an impl but no window or app
         for i in range(3):
             self.add_label()
 
@@ -100,6 +102,7 @@ class ExampleBoxApp(toga.App):
             self.button_box.add(self.image_view)
 
     def add_label(self, sender=None):
+        # this tests adding children when we already have an impl, window and app
         new_label = toga.Label(
             'Label {}'.format(len(self.scroll_box.children)),
             style=Pack(padding=2, width=70)
