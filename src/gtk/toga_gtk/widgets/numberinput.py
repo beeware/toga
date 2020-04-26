@@ -16,12 +16,13 @@ class NumberInput(Widget):
         self.native.set_adjustment(self.adjustment)
         self.native.set_numeric(True)
 
-        self.native.connect("value-changed", self.gtk_on_change)
+        self.native.connect("changed", self.gtk_on_change)
 
         self.rehint()
 
     def gtk_on_change(self, widget):
-        self.interface._value = Decimal(self.native.get_value()).quantize(self.interface.step)
+        value = widget.get_text().replace(",", ".") or 0
+        self.interface._value = Decimal(value).quantize(self.interface.step)
         if self.interface.on_change:
             self.interface.on_change(widget)
 
