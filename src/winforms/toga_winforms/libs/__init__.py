@@ -2,7 +2,6 @@ from .winforms import (  # noqa: F401
     Bitmap,
     Color,
     Convert,
-    DashStyle,
     FontFamily,
     FontStyle,
     Graphics,
