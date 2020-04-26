@@ -38,7 +38,6 @@ class Canvas(Box):
         if self.interface.on_resize:
             self.interface.on_resize(self.interface)
 
-
     def redraw(self):
         self.native.Invalidate()
 
