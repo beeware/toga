@@ -42,6 +42,10 @@ class DetailedList(Widget):
     ):
         super().__init__(id=id, style=style, factory=factory)
         self._data = None
+        self._on_delete = None
+        self._on_refresh = None
+        # at least _on_select must be defined before setting data for the Gtk impl
+        self._on_select = None
         self._impl = self.factory.DetailedList(interface=self)
 
         self.data = data
