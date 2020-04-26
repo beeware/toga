@@ -65,7 +65,7 @@ class Widget(Node):
             ValueError: If this node is a leaf, and cannot have children.
         """
         for child in children:
-            if child not in self.children:
+            if child.parent is not self:
 
                 # remove from old parent
                 if child.parent:
@@ -96,7 +96,7 @@ class Widget(Node):
         Raises:
             ValueError: If this node is a leaf, and cannot have children.
         """
-        if child not in self.children:
+        if child.parent is not self:
 
             # remove from old parent
             if child.parent:
@@ -126,7 +126,7 @@ class Widget(Node):
             ValueError: If this node is a leaf, and cannot have children.
         """
         for child in children:
-            if child in self.children:
+            if child.parent is self:
                 super().remove(child)
 
                 child.app = None
