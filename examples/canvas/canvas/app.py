@@ -1,3 +1,5 @@
+import math
+
 import toga
 from toga.style import Pack
 from toga.style.pack import ROW, COLUMN
@@ -7,6 +9,7 @@ FILL = "Fill"
 
 TRIANGLE = "triangle"
 ELLIPSE = "ellipse"
+ICE_CREAM = "ice cream"
 
 
 class ExampleCanvasApp(toga.App):
@@ -16,7 +19,15 @@ class ExampleCanvasApp(toga.App):
 
         self.canvas = toga.Canvas(style=Pack(flex=1), on_resize=self.refresh_canvas)
         self.context_selection = toga.Selection(items=[STROKE, FILL], on_select=self.refresh_canvas)
-        self.shape_selection = toga.Selection(items=[TRIANGLE, ELLIPSE], on_select=self.refresh_canvas)
+        self.drawing_shape_instructions = {
+            TRIANGLE: self.draw_triangle,
+            ELLIPSE: self.draw_ellipse,
+            ICE_CREAM: self.draw_ice_cream,
+        }
+        self.shape_selection = toga.Selection(
+            items=[TRIANGLE, ELLIPSE, ICE_CREAM],
+            on_select=self.refresh_canvas
+        )
         box = toga.Box(
             style=Pack(direction=COLUMN),
             children=[
@@ -37,20 +48,20 @@ class ExampleCanvasApp(toga.App):
         self.main_window.show()
 
     def render_drawing(self, canvas, w, h):
-
         canvas.clear()
         with self.get_context(canvas) as context:
             self.draw_shape(context, h, w)
 
     def draw_shape(self, context, h, w):
-        if self.shape_selection.value == TRIANGLE:
-            self.draw_triangle(context, h, w)
-        else:
-            self.draw_ellipse(context, h, w)
-
-    def draw_triangle(self, context, h, w):
         # Scale to the smallest axis to maintain aspect ratio
         factor = min(w, h)
+        drawing_instructions = self.drawing_shape_instructions.get(
+            str(self.shape_selection.value), None
+        )
+        if drawing_instructions is not None:
+            drawing_instructions(context, h, w, factor)
+
+    def draw_triangle(self, context, h, w, factor):
         # calculate offsets to centralize drawing in the bigger axis
         dx = (w - factor) / 2
         dy = (h - factor) / 2
@@ -58,14 +69,19 @@ class ExampleCanvasApp(toga.App):
             closer.line_to(dx + 2 * factor / 3, dy + 2 * factor / 3)
             closer.line_to(dx + 2 * factor / 3, dy + factor / 3)
 
-    def draw_ellipse(self, context, h, w):
-        # Scale to the smallest axis to maintain aspect ratio
-        factor = min(w, h)
-
+    def draw_ellipse(self, context, h, w, factor):
         rx = factor / 3
         ry = factor / 4
 
         context.ellipse(w / 2, h / 2, rx, ry)
+
+    def draw_ice_cream(self, context, h, w, factor):
+        # calculate offsets to centralize drawing in the bigger axis
+        dx = w / 2
+        dy = h / 2 - factor / 6
+        with context.closed_path(dx - factor / 5, dy) as closer:
+            closer.arc(dx, dy, factor / 5, math.pi, 2 * math.pi)
+            closer.line_to(dx, dy + 2 * factor / 5)
 
     def get_context(self, canvas):
         if self.context_selection.value == STROKE:
