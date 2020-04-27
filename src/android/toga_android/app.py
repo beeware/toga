@@ -1,4 +1,4 @@
-from .libs import IPythonApp, MainActivity
+from .libs.activity import IPythonApp, MainActivity
 from .window import Window
 
 
@@ -18,9 +18,6 @@ class TogaApp(IPythonApp):
 
     def onStart(self):
         print("Toga app: onStart")
-
-    def onResume(self):
-        print("Toga app: onResume")
 
     def onResume(self):
         print("Toga app: onResume")

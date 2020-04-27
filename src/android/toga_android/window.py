@@ -1,3 +1,5 @@
+from .layout import TogaLayout
+
 
 class AndroidViewport:
     def __init__(self, native):
@@ -43,9 +45,6 @@ class Window:
         pass
 
     def set_size(self, size):
-        pass
-
-    def set_app(self, app):
         pass
 
     def create_toolbar(self):

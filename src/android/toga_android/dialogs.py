@@ -1,7 +1,7 @@
 
 
-class TogaAlertDialogBuilder(extends=android.app.AlertDialog[Builder]):
-    @super({context: android.content.Context})
+class TogaAlertDialogBuilder:
+    # TODO: Extend `android.app.AlertDialog[Builder]`. Provide app as `context`.
     def __init__(self, context, message):
         self.setMessage(message)
 
@@ -31,4 +31,3 @@ def stack_trace(window, title, message, content, retry=False):
 
 def save_file(window, title, suggested_filename, file_types):
     window.platform.not_implemented('dialogs.save_file()')
-

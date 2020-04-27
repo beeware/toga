@@ -3,8 +3,8 @@ from travertino.size import at_least
 from .base import Widget
 
 
-class TogaTextInput(extends=android.widget.EditText):
-    @super({context: android.content.Context})
+class TogaTextInput:
+    # TODO: Extend `android.widget.EditText`. Provide app as `context`.
     def __init__(self, context, interface):
         self.interface = interface
 
