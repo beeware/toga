@@ -97,7 +97,7 @@ class App:
 
         settings = Gtk.Settings.get_default()
         settings.set_property("gtk-shell-shows-menubar", False)
-        #settings.set_property("gtk-shell-shows-app-menu", False)
+        # settings.set_property("gtk-shell-shows-app-menu", False)
 
         # self.interface.main_window._impl.create_toolbar()
 
