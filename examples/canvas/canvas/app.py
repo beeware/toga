@@ -10,6 +10,7 @@ FILL = "Fill"
 TRIANGLE = "triangle"
 ELLIPSE = "ellipse"
 ICE_CREAM = "ice cream"
+SMILE = "smile"
 
 
 class ExampleCanvasApp(toga.App):
@@ -23,9 +24,10 @@ class ExampleCanvasApp(toga.App):
             TRIANGLE: self.draw_triangle,
             ELLIPSE: self.draw_ellipse,
             ICE_CREAM: self.draw_ice_cream,
+            SMILE: self.draw_smile
         }
         self.shape_selection = toga.Selection(
-            items=[TRIANGLE, ELLIPSE, ICE_CREAM],
+            items=list(self.drawing_shape_instructions.keys()),
             on_select=self.refresh_canvas
         )
         box = toga.Box(
@@ -76,12 +78,18 @@ class ExampleCanvasApp(toga.App):
         context.ellipse(w / 2, h / 2, rx, ry)
 
     def draw_ice_cream(self, context, h, w, factor):
-        # calculate offsets to centralize drawing in the bigger axis
         dx = w / 2
         dy = h / 2 - factor / 6
         with context.closed_path(dx - factor / 5, dy) as closer:
             closer.arc(dx, dy, factor / 5, math.pi, 2 * math.pi)
             closer.line_to(dx, dy + 2 * factor / 5)
+
+    def draw_smile(self, context, h, w, factor):
+        dx = w / 2
+        dy = h / 2 - factor / 5
+        with context.closed_path(dx - factor / 5, dy) as closer:
+            closer.quadratic_curve_to(dx, dy + 3 * factor / 5, dx + factor / 5, dy)
+            closer.quadratic_curve_to(dx, dy + factor / 5, dx - factor / 5, dy)
 
     def get_context(self, canvas):
         if self.context_selection.value == STROKE:
