@@ -12,9 +12,11 @@ RECTANGLE = "rectangle"
 ELLIPSE = "ellipse"
 ICE_CREAM = "ice cream"
 SMILE = "smile"
+SEA = "sea"
 
 
 class ExampleCanvasApp(toga.App):
+
     def startup(self):
         # Set up main window
         self.main_window = toga.MainWindow(title=self.name, size=(148, 200))
@@ -26,7 +28,8 @@ class ExampleCanvasApp(toga.App):
             RECTANGLE: self.draw_rectangle,
             ELLIPSE: self.draw_ellipse,
             ICE_CREAM: self.draw_ice_cream,
-            SMILE: self.draw_smile
+            SMILE: self.draw_smile,
+            SEA: self.draw_sea
         }
         self.shape_selection = toga.Selection(
             items=list(self.drawing_shape_instructions.keys()),
@@ -97,6 +100,20 @@ class ExampleCanvasApp(toga.App):
         with context.closed_path(dx - factor / 5, dy) as closer:
             closer.quadratic_curve_to(dx, dy + 3 * factor / 5, dx + factor / 5, dy)
             closer.quadratic_curve_to(dx, dy + factor / 5, dx - factor / 5, dy)
+
+    def draw_sea(self, context, h, w, factor):
+        dx = w / 2
+        dy = h / 2
+        with context.closed_path(dx - 1 * factor / 5, dy - 1 * factor / 5) as closer:
+            closer.bezier_curve_to(
+                dx - 1 * factor / 10,
+                dy,
+                dx + 1 * factor / 10,
+                dy - 2 * factor / 5,
+                dx + 1 * factor / 5,
+                dy - 1 * factor / 5)
+            closer.line_to(dx + 1 * factor / 5, dy + 1 * factor / 5)
+            closer.line_to(dx - 1 * factor / 5, dy + 1 * factor / 5)
 
     def get_context(self, canvas):
         if self.context_selection.value == STROKE:
