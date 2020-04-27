@@ -73,6 +73,7 @@ class App:
         self.actions = None
 
     def gtk_startup(self, data=None):
+        # Set up the default commands for the interface.
         self.interface.commands.add(
             Command(None, 'About ' + self.interface.name, group=toga.Group.HELP),
             Command(None, 'Preferences', group=toga.Group.APP),
@@ -95,11 +96,13 @@ class App:
         self._actions = {}
         self.create_menus()
 
+        # Now that we have menus, make the app take responsibility for
+        # showing the menubar.
+        # This is required because of inconsistencies in how the Gnome
+        # shell operates on different windowing environments;
+        # see #872 for details.
         settings = Gtk.Settings.get_default()
         settings.set_property("gtk-shell-shows-menubar", False)
-        # settings.set_property("gtk-shell-shows-app-menu", False)
-
-        # self.interface.main_window._impl.create_toolbar()
 
     def _create_app_commands(self):
         # No extra menus
@@ -122,7 +125,7 @@ class App:
                         submenu.append_section(None, section)
 
                     if label == '*':
-                        label = self.interface.name.replace(' ', '')
+                        label = self.interface.name
                     menubar.append_submenu(label, submenu)
 
                     label = None
@@ -164,7 +167,7 @@ class App:
 
             if submenu:
                 if label == '*':
-                    label = self.interface.name.replace(' ', '')
+                    label = self.interface.name
                 menubar.append_submenu(label, submenu)
 
             # Set the menu for the app.
