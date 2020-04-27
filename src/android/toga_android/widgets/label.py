@@ -2,16 +2,22 @@ from android.view import Gravity
 
 from travertino.size import at_least
 
-from toga.constants import *
+from toga.constants import (
+    LEFT_ALIGNED,
+    RIGHT_ALIGNED,
+    CENTER_ALIGNED,
+    JUSTIFIED_ALIGNED,
+    NATURAL_ALIGNED,
+)
 
 
-class TogaLabel(extends=android.widget.TextView):
-    @super({context: android.content.Context})
+class TogaLabel:
+    # TODO: Extend `android.widget.TextView`. Provide app as `context`.
     def __init__(self, context, interface):
         self.interface = interface
 
 
-class Label(Widget):
+class Label:
     def create(self):
         self.native = TogaLabel(self.app.native, self.interface)
         self.native.setSingleLine()
