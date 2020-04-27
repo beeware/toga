@@ -13,7 +13,7 @@ class TogaLayout:
         self.interface.rehint()
         self.setMeasuredDimension(width, height)
 
-    def onLayout(self, changed: bool, left: int, top: int, right: int, bottom: int):
+    def onLayout(self, changed: bool, left: int, top: int, right: int, bottom: int) -> None:
         # print("ON LAYOUT %s %sx%s -> %sx%s" % (changed, left, top, right, bottom))
         device_scale = self.interface.app._impl.device_scale
 
@@ -27,9 +27,8 @@ class TogaLayout:
         # print("LAYOUT: There are %d children" % count)
         for i in range(0, count):
             child = self.getChildAt(i)
-            # print("    child: %s" % child, child.getMeasuredHeight(), child.getMeasuredWidth(),
-            #       child.getWidth(), child.getHeight())
-            # print("    layout: ", child.interface.layout)
+            # See "Size, padding and margins" at https://developer.android.com/reference/android/view/View
+            # for reference information on `height`, `getMeasuredHeight()`, etc.
             child.layout(
                 child.interface.layout.absolute.left * device_scale,
                 child.interface.layout.absolute.top * device_scale,
