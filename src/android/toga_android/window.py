@@ -1,4 +1,4 @@
-from .layout import TogaLayout
+from .libs.activity import MainActivity
 
 
 class AndroidViewport:
@@ -26,17 +26,10 @@ class Window:
         pass
 
     def set_app(self, app):
-        self._create()
+        pass
 
     def set_content(self, widget):
-        if self.native is None:
-            widget.native = TogaLayout(self.app.native, widget)
-
-        # Add all children to the content widget.
-        for child in widget.interface.children:
-            child._impl.container = widget
-
-        self.app._impl.setContentView(self._container._impl)
+        MainActivity.singletonThis.setContentView(widget.native)
 
     def set_title(self, title):
         pass
@@ -73,3 +66,7 @@ class Window:
 
     def save_file_dialog(self, title, suggested_filename, file_types):
         self.interface.factory.not_implemented('Window.save_file_dialog()')
+
+
+class MainWindow(Window):
+    pass

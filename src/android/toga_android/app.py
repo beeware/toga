@@ -1,9 +1,4 @@
 from .libs.activity import IPythonApp, MainActivity
-from .window import Window
-
-
-class MainWindow(Window):
-    pass
 
 
 class TogaApp(IPythonApp):
@@ -36,8 +31,6 @@ class TogaApp(IPythonApp):
 
 
 class App:
-    _MAIN_WINDOW_CLASS = MainWindow
-
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self

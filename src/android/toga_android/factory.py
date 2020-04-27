@@ -1,9 +1,10 @@
-from .app import App, MainWindow
+from .app import App
 from .paths import paths
 
 from .widgets.box import Box
+from .widgets.button import Button
 from .icons import Icon
-from .window import Window
+from .window import MainWindow, Window
 
 
 def not_implemented(feature):
@@ -16,6 +17,7 @@ __all__ = [
     'MainWindow',
     'paths',
     'Box',
+    'Button',
     'Icon',
     'Window',
 ]

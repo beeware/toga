@@ -1,30 +1,22 @@
 from travertino.size import at_least
 
 from .base import Widget
+from ..libs import android_widgets
 
 
-class TogaButton:
-    # TODO: Extend `android.widget.Button`. Provide app as `context`.
-    def __init__(self, context, interface):
-        self._interface = interface
+class TogaOnClickListener(android_widgets.OnClickListener):
+    def __init__(self, button_impl):
+        super().__init__()
+        self.button_impl = button_impl
 
-
-class TogaButtonListener:
-    # TODO: Extend `android.view.View[OnClickListener]`.
-    def __init__(self, interface):
-        self._interface = interface
-
-    def onClick(self, v) -> None:
-        self._interface.on_press(self._interface)
+    def onClick(self, _view):
+        self.button_impl.interface.on_press(widget=self.button_impl.interface)
 
 
 class Button(Widget):
     def create(self):
-        self.native = TogaButton(self.app._impl, self.interface)
-
-        self._listener = TogaButtonListener(self)
-
-        self.native.setOnClickListener(self._listener)
+        self.native = android_widgets.Button(self._native_activity)
+        self.native.setOnClickListener(TogaOnClickListener(button_impl=self))
 
     def set_label(self, label):
         self.native.setText(self.interface.label)
