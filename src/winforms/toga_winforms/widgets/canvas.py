@@ -3,7 +3,7 @@ from travertino.colors import WHITE
 from toga.widgets.canvas import Context
 from .box import Box
 from toga_winforms.colors import native_color
-from toga_winforms.libs import Pen
+from toga_winforms.libs import Pen, SolidBrush, GraphicsPath
 
 
 class WinformContext(Context):
@@ -11,6 +11,7 @@ class WinformContext(Context):
     def __init__(self):
         super(WinformContext, self).__init__()
         self.graphics = None
+        self.path = None
         self.start_point = None
         self.last_point = None
 
@@ -44,7 +45,7 @@ class Canvas(Box):
     # Basic paths
 
     def new_path(self, draw_context, *args, **kwargs):
-        self.interface.factory.not_implemented('Canvas.new_path()')
+        draw_context.path = GraphicsPath()
 
     def closed_path(self, x, y, draw_context, *args, **kwargs):
         self.line_to(x, y, draw_context, *args, **kwargs)
@@ -53,9 +54,12 @@ class Canvas(Box):
         draw_context.last_point = (x, y)
 
     def line_to(self, x, y, draw_context, *args, **kwargs):
-        color = native_color(kwargs.get("stroke_color", None))
-        pen = Pen(color)
-        draw_context.graphics.DrawLine(pen, *draw_context.last_point, x, y)
+        if draw_context.path is not None:
+            draw_context.path.AddLine(*draw_context.last_point, x, y)
+        else:
+            color = native_color(kwargs.get("stroke_color", None))
+            pen = Pen(color)
+            draw_context.graphics.DrawLine(pen, *draw_context.last_point, x, y)
         draw_context.last_point = (x, y)
 
     # Basic shapes
@@ -82,7 +86,8 @@ class Canvas(Box):
         self.interface.factory.not_implemented('Canvas.apply_color()')
 
     def fill(self, color, fill_rule, preserve, draw_context, *args, **kwargs):
-        self.interface.factory.not_implemented('Canvas.fill()')
+        brush = SolidBrush(native_color(color))
+        draw_context.graphics.FillPath(brush, draw_context.path)
 
     def stroke(self, color, line_width, line_dash, draw_context, *args, **kwargs):
         pass

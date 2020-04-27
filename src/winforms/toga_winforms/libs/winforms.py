@@ -21,7 +21,8 @@ from System.Drawing import ContentAlignment, Size, Point  # noqa: E402, F401
 from System.Drawing import FontFamily, FontStyle, SystemFonts  # noqa: E402, F401
 from System.Drawing import Text, Color, Bitmap  # noqa: E402, F401
 from System.Drawing import Graphics  # noqa: E402, F401
-from System.Drawing import Pen  # noqa: E402, F401
+from System.Drawing import Pen, SolidBrush  # noqa: E402, F401
+from System.Drawing.Drawing2D import GraphicsPath  # noqa: E402, F401
 
 from System.Threading.Tasks import Task  # noqa: E402, F401
 
