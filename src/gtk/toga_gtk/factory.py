@@ -29,9 +29,13 @@ from .widgets.tree import Tree
 from .widgets.webview import WebView
 from .window import Window
 
+feature_seen = set()
+
 
 def not_implemented(feature):
-    print('[GTK+] Not implemented: {}'.format(feature))
+    if not feature in feature_seen:
+        print('[GTK+] Not implemented: {}'.format(feature))
+        feature_seen.add(feature)
 
 
 __all__ = [
