@@ -51,7 +51,7 @@ class App:
 
     The absolute minimum App would be::
 
-        >>> app = toga.App(name='Empty App', app_id='org.beeware.empty')
+        >>> app = toga.App(formal_name='Empty App', app_id='org.beeware.empty')
         >>> app.main_loop()
 
     :param formal_name: The formal name of the application. Will be derived from

@@ -42,16 +42,16 @@ class MultilineTextInput(Widget):
         self.add_constraints()
 
     def set_placeholder(self, value):
-        self.text.placeholderString = self.interface._value
+        self.text.placeholderString = self.interface.value
 
     def set_readonly(self, value):
-        self.text.editable = not self.interface._readonly
+        self.text.editable = not self.interface.readonly
 
     def get_value(self):
         return self.text.string
 
     def set_value(self, value):
-        self.text.string = self.interface._value
+        self.text.string = self.interface.value
 
     def set_color(self, value):
         if value:

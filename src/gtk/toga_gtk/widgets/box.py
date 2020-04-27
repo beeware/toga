@@ -53,8 +53,8 @@ class TogaBox(Gtk.Fixed):
                     # print("update ", widget.interface, widget.interface.layout)
                     widget.interface._impl.rehint()
                     widget_allocation = Gdk.Rectangle()
-                    widget_allocation.x = widget.interface.layout.absolute_content_left
-                    widget_allocation.y = widget.interface.layout.absolute_content_top
+                    widget_allocation.x = widget.interface.layout.absolute_content_left + allocation.x
+                    widget_allocation.y = widget.interface.layout.absolute_content_top + allocation.y
                     widget_allocation.width = widget.interface.layout.content_width
                     widget_allocation.height = widget.interface.layout.content_height
 
