@@ -4,6 +4,8 @@ from .winforms import (  # noqa: F401
     Convert,
     FontFamily,
     FontStyle,
+    Graphics,
+    Pen,
     Point,
     Single,
     Size,
