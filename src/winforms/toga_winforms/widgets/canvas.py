@@ -75,7 +75,16 @@ class Canvas(Box):
 
     def ellipse(self, x, y, radiusx, radiusy, rotation, startangle, endangle, anticlockwise,
                 draw_context, *args, **kwargs):
-        self.interface.factory.not_implemented('Canvas.ellipse()')
+        if draw_context.path is not None:
+            draw_context.path.AddEllipse(
+                x - radiusx, y - radiusy, 2 * radiusx, 2 * radiusy
+            )
+        else:
+            color = native_color(kwargs.get("stroke_color", None))
+            pen = Pen(color)
+            draw_context.graphics.DrawEllipse(
+                pen, x - radiusx, y - radiusy, 2 * radiusx, 2 * radiusy
+            )
 
     def rect(self, x, y, width, height, draw_context, *args, **kwargs):
         self.interface.factory.not_implemented('Canvas.rect()')
