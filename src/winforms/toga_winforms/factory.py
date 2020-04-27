@@ -8,7 +8,7 @@ from .paths import paths
 
 from .widgets.box import Box
 from .widgets.button import Button
-# from .widgets.canvas import Canvas
+from .widgets.canvas import Canvas
 # from .widgets.detailedlist import DetailedList
 from .widgets.imageview import ImageView
 from .widgets.datepicker import DatePicker
@@ -50,7 +50,7 @@ __all__ = [
     # Widgets
     'Box',
     'Button',
-    # 'Canvas',
+    'Canvas',
     # 'DetailedList',
     'ImageView',
     'DatePicker',

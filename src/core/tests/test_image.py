@@ -8,6 +8,11 @@ class ImageTests(TestCase):
     def setUp(self):
         super().setUp()
 
+        # an App must have been created before calling image.bind
+        # because it tries to resolve the image path against the app path.
+        toga.App(formal_name='Image Test App',
+                 app_id='org.beeware.test_image',
+                 factory=toga_dummy.factory)
         self.path = 'path/to/image.jpg'
         self.image = toga.Image(path=self.path)
 

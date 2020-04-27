@@ -73,12 +73,13 @@ class App:
         self.actions = None
 
     def gtk_startup(self, data=None):
+        # Set up the default commands for the interface.
         self.interface.commands.add(
-            Command(None, 'About ' + self.interface.name, group=toga.Group.APP),
+            Command(None, 'About ' + self.interface.name, group=toga.Group.HELP),
             Command(None, 'Preferences', group=toga.Group.APP),
             # Quit should always be the last item, in a section on it's own
             Command(
-                lambda widget, data: self.exit(),
+                lambda widget: self.exit(),
                 'Quit ' + self.interface.name,
                 shortcut=toga.Key.MOD_1 + 'q',
                 group=toga.Group.APP,
@@ -94,7 +95,14 @@ class App:
         # then force the creation of the menus.
         self._actions = {}
         self.create_menus()
-        # self.interface.main_window._impl.create_toolbar()
+
+        # Now that we have menus, make the app take responsibility for
+        # showing the menubar.
+        # This is required because of inconsistencies in how the Gnome
+        # shell operates on different windowing environments;
+        # see #872 for details.
+        settings = Gtk.Settings.get_default()
+        settings.set_property("gtk-shell-shows-menubar", False)
 
     def _create_app_commands(self):
         # No extra menus
@@ -117,9 +125,8 @@ class App:
                         submenu.append_section(None, section)
 
                     if label == '*':
-                        self.native.set_app_menu(submenu)
-                    else:
-                        menubar.append_submenu(label, submenu)
+                        label = self.interface.name
+                    menubar.append_submenu(label, submenu)
 
                     label = None
                     submenu = None
@@ -160,9 +167,8 @@ class App:
 
             if submenu:
                 if label == '*':
-                    self.native.set_app_menu(submenu)
-                else:
-                    menubar.append_submenu(label, submenu)
+                    label = self.interface.name
+                menubar.append_submenu(label, submenu)
 
             # Set the menu for the app.
             self.native.set_menubar(menubar)
