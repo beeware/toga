@@ -8,6 +8,7 @@ STROKE = "Stroke"
 FILL = "Fill"
 
 TRIANGLE = "triangle"
+RECTANGLE = "rectangle"
 ELLIPSE = "ellipse"
 ICE_CREAM = "ice cream"
 SMILE = "smile"
@@ -22,6 +23,7 @@ class ExampleCanvasApp(toga.App):
         self.context_selection = toga.Selection(items=[STROKE, FILL], on_select=self.refresh_canvas)
         self.drawing_shape_instructions = {
             TRIANGLE: self.draw_triangle,
+            RECTANGLE: self.draw_rectangle,
             ELLIPSE: self.draw_ellipse,
             ICE_CREAM: self.draw_ice_cream,
             SMILE: self.draw_smile
@@ -70,6 +72,11 @@ class ExampleCanvasApp(toga.App):
         with context.closed_path(dx + factor / 3, dy + factor / 3) as closer:
             closer.line_to(dx + 2 * factor / 3, dy + 2 * factor / 3)
             closer.line_to(dx + 2 * factor / 3, dy + factor / 3)
+
+    def draw_rectangle(self, context, h, w, factor):
+        dx = w / 2
+        dy = h / 2
+        context.rect(dx - factor / 3, dy - factor / 6, 2 * factor / 3, factor / 3)
 
     def draw_ellipse(self, context, h, w, factor):
         rx = factor / 3
