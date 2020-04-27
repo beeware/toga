@@ -33,7 +33,7 @@ feature_seen = set()
 
 
 def not_implemented(feature):
-    if not feature in feature_seen:
+    if feature not in feature_seen:
         print('[GTK+] Not implemented: {}'.format(feature))
         feature_seen.add(feature)
 
