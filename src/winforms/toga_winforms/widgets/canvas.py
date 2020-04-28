@@ -1,9 +1,11 @@
+import math
+
 from travertino.colors import WHITE
 
 from toga.widgets.canvas import Context
 from .box import Box
 from toga_winforms.colors import native_color
-from toga_winforms.libs import Pen
+from toga_winforms.libs import Pen, SolidBrush, GraphicsPath, Rectangle, PointF
 
 
 class WinformContext(Context):
@@ -11,6 +13,7 @@ class WinformContext(Context):
     def __init__(self):
         super(WinformContext, self).__init__()
         self.graphics = None
+        self.path = None
         self.start_point = None
         self.last_point = None
 
@@ -41,40 +44,80 @@ class Canvas(Box):
     def redraw(self):
         self.native.Invalidate()
 
+    def create_pen(self, color=None, line_width=None):
+        pen = Pen(native_color(color))
+        if line_width is not None:
+            pen.Width = line_width
+        return pen
+
     # Basic paths
 
     def new_path(self, draw_context, *args, **kwargs):
-        self.interface.factory.not_implemented('Canvas.new_path()')
+        draw_context.path = GraphicsPath()
 
     def closed_path(self, x, y, draw_context, *args, **kwargs):
         self.line_to(x, y, draw_context, *args, **kwargs)
 
     def move_to(self, x, y, draw_context, *args, **kwargs):
+        draw_context.path = GraphicsPath()
         draw_context.last_point = (x, y)
 
     def line_to(self, x, y, draw_context, *args, **kwargs):
-        color = native_color(kwargs.get("stroke_color", None))
-        pen = Pen(color)
-        draw_context.graphics.DrawLine(pen, *draw_context.last_point, x, y)
+        draw_context.path.AddLine(*draw_context.last_point, x, y)
         draw_context.last_point = (x, y)
 
     # Basic shapes
 
     def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y, draw_context, *args, **kwargs):
-        self.interface.factory.not_implemented('Canvas.bezier_curve_to()')
+        point1, point2, point3, point4 = (
+            PointF(*draw_context.last_point),
+            PointF(cp1x, cp1y),
+            PointF(cp2x, cp2y),
+            PointF(x, y)
+        )
+        draw_context.path.AddBezier(point1, point2, point3, point4)
+        draw_context.last_point = (x, y)
 
     def quadratic_curve_to(self, cpx, cpy, x, y, draw_context, *args, **kwargs):
-        self.interface.factory.not_implemented('Canvas.quadratic_curve_to()')
+        point1, point2, point3 = PointF(*draw_context.last_point), PointF(cpx, cpy), PointF(x, y)
+        draw_context.path.AddCurve([point1, point2, point3])
+        draw_context.last_point = (x, y)
 
     def arc(self, x, y, radius, startangle, endangle, anticlockwise, draw_context, *args, **kwargs):
-        self.interface.factory.not_implemented('Canvas.arc()')
+        x_min, y_min = x - radius, y - radius
+        draw_context.path.AddArc(
+            x_min, y_min, 2 * radius, 2 * radius, math.degrees(startangle), math.degrees(endangle - startangle)
+        )
+        draw_context.last_point = (
+            x + radius * math.cos(endangle),
+            y + radius * math.sin(endangle)
+        )
 
     def ellipse(self, x, y, radiusx, radiusy, rotation, startangle, endangle, anticlockwise,
                 draw_context, *args, **kwargs):
-        self.interface.factory.not_implemented('Canvas.ellipse()')
+        if draw_context.path is not None:
+            draw_context.path.AddEllipse(
+                x - radiusx, y - radiusy, 2 * radiusx, 2 * radiusy
+            )
+        else:
+            pen = self.create_pen(
+                color=kwargs.get("stroke_color", None),
+                line_width=kwargs.get("text_line_width", None)
+            )
+            draw_context.graphics.DrawEllipse(
+                pen, x - radiusx, y - radiusy, 2 * radiusx, 2 * radiusy
+            )
 
     def rect(self, x, y, width, height, draw_context, *args, **kwargs):
-        self.interface.factory.not_implemented('Canvas.rect()')
+        rect = Rectangle(int(x), int(y), int(width), int(height))
+        if draw_context.path is not None:
+            draw_context.path.AddRectangle(rect)
+        else:
+            pen = self.create_pen(
+                color=kwargs.get("stroke_color", None),
+                line_width=kwargs.get("text_line_width", None)
+            )
+            draw_context.graphics.DrawRectangle(pen, rect)
 
     # Drawing Paths
 
@@ -82,10 +125,13 @@ class Canvas(Box):
         self.interface.factory.not_implemented('Canvas.apply_color()')
 
     def fill(self, color, fill_rule, preserve, draw_context, *args, **kwargs):
-        self.interface.factory.not_implemented('Canvas.fill()')
+        brush = SolidBrush(native_color(color))
+        draw_context.graphics.FillPath(brush, draw_context.path)
 
     def stroke(self, color, line_width, line_dash, draw_context, *args, **kwargs):
-        pass
+        if draw_context.path is not None:
+            pen = self.create_pen(color=color, line_width=line_width)
+            draw_context.graphics.DrawPath(pen, draw_context.path)
 
     # Transformations
 

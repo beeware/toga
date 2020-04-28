@@ -1,5 +1,7 @@
 import math
 
+from travertino.constants import BLACK, BLUE, GREEN, RED, YELLOW
+
 import toga
 from toga.style import Pack
 from toga.style.pack import ROW, COLUMN
@@ -19,7 +21,7 @@ class ExampleCanvasApp(toga.App):
 
     def startup(self):
         # Set up main window
-        self.main_window = toga.MainWindow(title=self.name, size=(148, 200))
+        self.main_window = toga.MainWindow(title=self.name, size=(250, 250))
 
         self.canvas = toga.Canvas(style=Pack(flex=1), on_resize=self.refresh_canvas)
         self.context_selection = toga.Selection(items=[STROKE, FILL], on_select=self.refresh_canvas)
@@ -35,12 +37,31 @@ class ExampleCanvasApp(toga.App):
             items=list(self.drawing_shape_instructions.keys()),
             on_select=self.refresh_canvas
         )
+        self.color_selection = toga.Selection(
+            items=[BLACK, BLUE, GREEN, RED, YELLOW],
+            on_select=self.refresh_canvas
+        )
+        self.line_width_slider = toga.Slider(
+            range=(1, 10),
+            default=1,
+            on_slide=self.refresh_canvas
+        )
         box = toga.Box(
             style=Pack(direction=COLUMN),
             children=[
                 toga.Box(
                     style=Pack(direction=ROW),
-                    children=[self.context_selection, self.shape_selection]
+                    children=[
+                        self.context_selection,
+                        self.shape_selection,
+                        self.color_selection
+                    ]
+                ),
+                toga.Box(
+                    style=Pack(direction=ROW),
+                    children=[
+                        self.line_width_slider
+                    ]
                 ),
                 self.canvas
             ]
@@ -117,8 +138,11 @@ class ExampleCanvasApp(toga.App):
 
     def get_context(self, canvas):
         if self.context_selection.value == STROKE:
-            return canvas.stroke()
-        return canvas.fill()
+            return canvas.stroke(
+                color=str(self.color_selection.value),
+                line_width=self.line_width_slider.value
+            )
+        return canvas.fill(color=str(self.color_selection.value))
 
     def refresh_canvas(self, widget):
         self.render_drawing(
