@@ -71,7 +71,18 @@ class Canvas(Box):
     # Basic shapes
 
     def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y, draw_context, *args, **kwargs):
-        self.interface.factory.not_implemented('Canvas.bezier_curve_to()')
+        point1, point2, point3, point4 = (
+            PointF(*draw_context.last_point),
+            PointF(cp1x, cp1y),
+            PointF(cp2x, cp2y),
+            PointF(x, y)
+        )
+        if draw_context.path is not None:
+            draw_context.path.AddBezier(point1, point2, point3, point4)
+        else:
+            pen = self.create_pen(kwargs)
+            draw_context.graphics.DrawBezier(pen, point1, point2, point3, point4)
+        draw_context.last_point = (x, y)
 
     def quadratic_curve_to(self, cpx, cpy, x, y, draw_context, *args, **kwargs):
         point1, point2, point3 = PointF(*draw_context.last_point), PointF(cpx, cpy), PointF(x, y)
