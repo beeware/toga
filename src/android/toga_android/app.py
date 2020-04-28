@@ -1,4 +1,10 @@
 from .libs.activity import IPythonApp, MainActivity
+from .libs.window import Window
+
+
+# `MainWindow` is defined here in `app.py`, not `window.py`, to mollify the test suite.
+class MainWindow(Window):
+    pass
 
 
 class TogaApp(IPythonApp):

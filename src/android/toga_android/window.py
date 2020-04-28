@@ -66,7 +66,3 @@ class Window:
 
     def save_file_dialog(self, title, suggested_filename, file_types):
         self.interface.factory.not_implemented('Window.save_file_dialog()')
-
-
-class MainWindow(Window):
-    pass
