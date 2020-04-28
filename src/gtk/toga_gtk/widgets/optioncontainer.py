@@ -21,3 +21,18 @@ class OptionContainer(Widget):
     def set_on_select(self, handler):
         # No special handling required
         pass
+
+    def remove_content(self, index):
+        return NotImplementedError
+
+    def set_option_enabled(self, index, enabled):
+        return NotImplementedError
+
+    def is_option_enabled(self, index):
+        return NotImplementedError
+
+    def set_option_label(self, index, value):
+        return NotImplementedError
+
+    def get_option_label(self, index):
+        return NotImplementedError
