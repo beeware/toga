@@ -1,3 +1,5 @@
+import math
+
 from travertino.colors import WHITE
 
 from toga.widgets.canvas import Context
@@ -42,6 +44,11 @@ class Canvas(Box):
     def redraw(self):
         self.native.Invalidate()
 
+    def create_pen(self, kwargs):
+        color = native_color(kwargs.get("stroke_color", None))
+        pen = Pen(color)
+        return pen
+
     # Basic paths
 
     def new_path(self, draw_context, *args, **kwargs):
@@ -57,8 +64,7 @@ class Canvas(Box):
         if draw_context.path is not None:
             draw_context.path.AddLine(*draw_context.last_point, x, y)
         else:
-            color = native_color(kwargs.get("stroke_color", None))
-            pen = Pen(color)
+            pen = self.create_pen(kwargs)
             draw_context.graphics.DrawLine(pen, *draw_context.last_point, x, y)
         draw_context.last_point = (x, y)
 
@@ -71,7 +77,20 @@ class Canvas(Box):
         self.interface.factory.not_implemented('Canvas.quadratic_curve_to()')
 
     def arc(self, x, y, radius, startangle, endangle, anticlockwise, draw_context, *args, **kwargs):
-        self.interface.factory.not_implemented('Canvas.arc()')
+        x_min, y_min = x - radius, y - radius
+        if draw_context.path is not None:
+            draw_context.path.AddArc(
+                x_min, y_min, 2 * radius, 2 * radius, math.degrees(startangle), math.degrees(endangle - startangle)
+            )
+        else:
+            pen = self.create_pen(kwargs)
+            draw_context.graphics.DrawArc(
+                pen, x_min, y_min, 2 * radius, 2 * radius, math.degrees(startangle), math.degrees(endangle - startangle)
+            )
+        draw_context.last_point = (
+            x + radius * math.cos(endangle),
+            y + radius * math.sin(endangle)
+        )
 
     def ellipse(self, x, y, radiusx, radiusy, rotation, startangle, endangle, anticlockwise,
                 draw_context, *args, **kwargs):
@@ -80,8 +99,7 @@ class Canvas(Box):
                 x - radiusx, y - radiusy, 2 * radiusx, 2 * radiusy
             )
         else:
-            color = native_color(kwargs.get("stroke_color", None))
-            pen = Pen(color)
+            pen = self.create_pen(kwargs)
             draw_context.graphics.DrawEllipse(
                 pen, x - radiusx, y - radiusy, 2 * radiusx, 2 * radiusy
             )
