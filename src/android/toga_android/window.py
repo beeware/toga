@@ -1,6 +1,3 @@
-from .libs.activity import MainActivity
-
-
 class AndroidViewport:
     def __init__(self, native):
         self.native = native
@@ -26,10 +23,10 @@ class Window:
         pass
 
     def set_app(self, app):
-        pass
+        self.app = app
 
     def set_content(self, widget):
-        MainActivity.singletonThis.setContentView(widget.native)
+        self.app.native.setContentView(widget.native)
 
     def set_title(self, title):
         pass
