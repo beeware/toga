@@ -1,10 +1,10 @@
-from .app import App
+from .app import App, MainWindow
 from .paths import paths
 
 from .widgets.box import Box
 from .widgets.button import Button
 from .icons import Icon
-from .window import MainWindow, Window
+from .window import Window
 
 
 def not_implemented(feature):
