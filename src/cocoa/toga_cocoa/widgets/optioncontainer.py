@@ -11,6 +11,10 @@ from toga_cocoa.window import CocoaViewport
 from .base import Widget
 
 
+class OptionException(ValueError):
+    pass
+
+
 class TogaTabViewDelegate(NSObject):
     @objc_method
     def tabView_didSelectTabViewItem_(self, view, item) -> None:
@@ -54,11 +58,12 @@ class OptionContainer(Widget):
         self.native.addTabViewItem(item)
 
     def remove_content(self, index):
-        try:
-            tabview = self.native.tabViewItemAtIndex(index)
-            self.native.removeTabViewItem(tabview)
-        except Exception as e:
-            print(e)
+        if self.native.numberOfTabViewItem == 1:
+            # don't allow remove if there is one tab left
+            raise OptionException('Option cannot be deleted because there is only one left')
+
+        tabview = self.native.tabViewItemAtIndex(index)
+        self.native.removeTabViewItem(tabview)
 
     def set_on_select(self, handler):
         pass
@@ -67,17 +72,22 @@ class OptionContainer(Widget):
         tabview = self.native.tabViewItemAtIndex(index)
         if not enabled and tabview == self.native.selectedTabViewItem:
             # Don't allow to disable selected tab
-            raise Exception('Disable selected Option is not allowed')
+            raise OptionException('Selected Option cannot be disabled')
+
+        if self.native.numberOfTabViewItem == 1:
+            # don't allow disable if there is one tab left
+            raise OptionException('Option cannot be disabled because there is only one left')
+
         tabview._setTabEnabled(enabled)
 
-    def is_enabled(self, index):
+    def is_option_enabled(self, index):
         tabview = self.native.tabViewItemAtIndex(index)
         return tabview._isTabEnabled()
 
-    def set_label(self, index, value):
+    def set_option_label(self, index, value):
         tabview = self.native.tabViewItemAtIndex(index)
         tabview.label = value
 
-    def get_label(self, index):
+    def get_option_label(self, index):
         tabview = self.native.tabViewItemAtIndex(index)
         return tabview.label

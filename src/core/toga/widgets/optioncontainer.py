@@ -28,7 +28,7 @@ class OptionItem:
 
     @property
     def enabled(self):
-        return self._interface._impl.is_enabled(self.index)
+        return self._interface._impl.is_option_enabled(self.index)
 
     @enabled.setter
     def enabled(self, enabled):
@@ -36,11 +36,11 @@ class OptionItem:
 
     @property
     def label(self):
-        return self._interface._impl.get_label(self.index)
+        return self._interface._impl.get_option_label(self.index)
 
     @label.setter
     def label(self, value):
-        self._interface._impl.set_label(self.index, value)
+        self._interface._impl.set_option_label(self.index, value)
 
     def refresh(self):
         self._widget.refresh()
