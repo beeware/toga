@@ -5,7 +5,7 @@ from travertino.colors import WHITE
 from toga.widgets.canvas import Context
 from .box import Box
 from toga_winforms.colors import native_color
-from toga_winforms.libs import Pen, SolidBrush, GraphicsPath, Rectangle
+from toga_winforms.libs import Pen, SolidBrush, GraphicsPath, Rectangle, PointF
 
 
 class WinformContext(Context):
@@ -74,7 +74,13 @@ class Canvas(Box):
         self.interface.factory.not_implemented('Canvas.bezier_curve_to()')
 
     def quadratic_curve_to(self, cpx, cpy, x, y, draw_context, *args, **kwargs):
-        self.interface.factory.not_implemented('Canvas.quadratic_curve_to()')
+        point1, point2, point3 = PointF(*draw_context.last_point), PointF(cpx, cpy), PointF(x, y)
+        if draw_context.path is not None:
+            draw_context.path.AddCurve([point1, point2, point3])
+        else:
+            pen = self.create_pen(kwargs)
+            draw_context.graphics.DrawCurve(pen, [point1, point2, point3])
+        draw_context.last_point = (x, y)
 
     def arc(self, x, y, radius, startangle, endangle, anticlockwise, draw_context, *args, **kwargs):
         x_min, y_min = x - radius, y - radius

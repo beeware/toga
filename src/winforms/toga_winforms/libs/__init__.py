@@ -8,6 +8,7 @@ from .winforms import (  # noqa: F401
     GraphicsPath,
     Pen,
     Point,
+    PointF,
     Rectangle,
     Single,
     Size,
