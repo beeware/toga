@@ -5,7 +5,7 @@ from travertino.colors import WHITE
 from toga.widgets.canvas import Context
 from .box import Box
 from toga_winforms.colors import native_color
-from toga_winforms.libs import Pen, SolidBrush, GraphicsPath
+from toga_winforms.libs import Pen, SolidBrush, GraphicsPath, Rectangle
 
 
 class WinformContext(Context):
@@ -105,7 +105,12 @@ class Canvas(Box):
             )
 
     def rect(self, x, y, width, height, draw_context, *args, **kwargs):
-        self.interface.factory.not_implemented('Canvas.rect()')
+        rect = Rectangle(int(x), int(y), int(width), int(height))
+        if draw_context.path is not None:
+            draw_context.path.AddRectangle(rect)
+        else:
+            pen = self.create_pen(kwargs)
+            draw_context.graphics.DrawRectangle(pen, rect)
 
     # Drawing Paths
 
