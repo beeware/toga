@@ -46,7 +46,10 @@ class Canvas(Box):
 
     def create_pen(self, kwargs):
         color = native_color(kwargs.get("stroke_color", None))
+        line_width = kwargs.get("text_line_width", None)
         pen = Pen(color)
+        if line_width is not None:
+            pen.Width = line_width
         return pen
 
     # Basic paths

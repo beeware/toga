@@ -41,6 +41,11 @@ class ExampleCanvasApp(toga.App):
             items=[BLACK, BLUE, GREEN, RED, YELLOW],
             on_select=self.refresh_canvas
         )
+        self.line_width_slider = toga.Slider(
+            range=(1, 10),
+            default=1,
+            on_slide=self.refresh_canvas
+        )
         box = toga.Box(
             style=Pack(direction=COLUMN),
             children=[
@@ -50,6 +55,12 @@ class ExampleCanvasApp(toga.App):
                         self.context_selection,
                         self.shape_selection,
                         self.color_selection
+                    ]
+                ),
+                toga.Box(
+                    style=Pack(direction=ROW),
+                    children=[
+                        self.line_width_slider
                     ]
                 ),
                 self.canvas
@@ -127,7 +138,10 @@ class ExampleCanvasApp(toga.App):
 
     def get_context(self, canvas):
         if self.context_selection.value == STROKE:
-            return canvas.stroke(color=str(self.color_selection.value))
+            return canvas.stroke(
+                color=str(self.color_selection.value),
+                line_width=self.line_width_slider.value
+            )
         return canvas.fill(color=str(self.color_selection.value))
 
     def refresh_canvas(self, widget):
