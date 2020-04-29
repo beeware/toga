@@ -63,7 +63,9 @@ class Canvas(Box):
         draw_context.last_point = (x, y)
 
     def line_to(self, x, y, draw_context, *args, **kwargs):
-        draw_context.path.AddLine(*draw_context.last_point, x, y)
+        ox, oy = int(draw_context.last_point[0]), int(draw_context.last_point[1])
+        x, y = int(x), int(y)
+        draw_context.path.AddLine(ox, oy, x, y)
         draw_context.last_point = (x, y)
 
     # Basic shapes
@@ -83,30 +85,72 @@ class Canvas(Box):
         draw_context.path.AddCurve([point1, point2, point3])
         draw_context.last_point = (x, y)
 
-    def arc(self, x, y, radius, startangle, endangle, anticlockwise, draw_context, *args, **kwargs):
-        x_min, y_min = x - radius, y - radius
-        draw_context.path.AddArc(
-            x_min, y_min, 2 * radius, 2 * radius, math.degrees(startangle), math.degrees(endangle - startangle)
-        )
-        draw_context.last_point = (
-            x + radius * math.cos(endangle),
-            y + radius * math.sin(endangle)
+    def arc(
+            self,
+            x,
+            y,
+            radius,
+            startangle,
+            endangle,
+            anticlockwise,
+            draw_context,
+            *args,
+            **kwargs
+    ):
+        self.ellipse(
+            x,
+            y,
+            radius,
+            radius,
+            0,
+            startangle,
+            endangle,
+            anticlockwise,
+            draw_context,
+            *args,
+            **kwargs
         )
 
-    def ellipse(self, x, y, radiusx, radiusy, rotation, startangle, endangle, anticlockwise,
-                draw_context, *args, **kwargs):
+    def ellipse(
+            self,
+            x,
+            y,
+            radiusx,
+            radiusy,
+            rotation,
+            startangle,
+            endangle,
+            anticlockwise,
+            draw_context,
+            *args,
+            **kwargs):
         if draw_context.path is not None:
-            draw_context.path.AddEllipse(
-                x - radiusx, y - radiusy, 2 * radiusx, 2 * radiusy
+            draw_context.path.AddArc(
+                x - radiusx,
+                y - radiusy,
+                2 * radiusx,
+                2 * radiusy,
+                math.degrees(startangle),
+                math.degrees(endangle - startangle)
             )
         else:
             pen = self.create_pen(
                 color=kwargs.get("stroke_color", None),
                 line_width=kwargs.get("text_line_width", None)
             )
-            draw_context.graphics.DrawEllipse(
-                pen, x - radiusx, y - radiusy, 2 * radiusx, 2 * radiusy
+            draw_context.graphics.DrawArc(
+                pen,
+                x - radiusx,
+                y - radiusy,
+                2 * radiusx,
+                2 * radiusy,
+                math.degrees(startangle),
+                math.degrees(endangle - startangle)
             )
+        draw_context.last_point = (
+            x + radiusx * math.cos(endangle),
+            y + radiusy * math.sin(endangle)
+        )
 
     def rect(self, x, y, width, height, draw_context, *args, **kwargs):
         rect = Rectangle(int(x), int(y), int(width), int(height))

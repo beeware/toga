@@ -12,6 +12,7 @@ FILL = "Fill"
 TRIANGLE = "triangle"
 RECTANGLE = "rectangle"
 ELLIPSE = "ellipse"
+HALF_ELLIPSE = "half ellipse"
 ICE_CREAM = "ice cream"
 SMILE = "smile"
 SEA = "sea"
@@ -29,6 +30,7 @@ class ExampleCanvasApp(toga.App):
             TRIANGLE: self.draw_triangle,
             RECTANGLE: self.draw_rectangle,
             ELLIPSE: self.draw_ellipse,
+            HALF_ELLIPSE: self.draw_half_ellipse,
             ICE_CREAM: self.draw_ice_cream,
             SMILE: self.draw_smile,
             SEA: self.draw_sea
@@ -107,6 +109,15 @@ class ExampleCanvasApp(toga.App):
         ry = factor / 4
 
         context.ellipse(w / 2, h / 2, rx, ry)
+
+    def draw_half_ellipse(self, context, h, w, factor):
+        x_center = w / 2
+        y_center = h/ 2
+        rx = factor / 3
+        ry = factor / 4
+
+        with context.closed_path(x_center + rx, y_center) as closer:
+            closer.ellipse(x_center, y_center, rx, ry, 0, 0, math.pi)
 
     def draw_ice_cream(self, context, h, w, factor):
         dx = w / 2
