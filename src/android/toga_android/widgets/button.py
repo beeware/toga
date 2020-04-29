@@ -10,7 +10,8 @@ class TogaOnClickListener(android_widgets.OnClickListener):
         self.button_impl = button_impl
 
     def onClick(self, _view):
-        self.button_impl.interface.on_press(widget=self.button_impl.interface)
+        if self.button_impl.interface.on_press:
+            self.button_impl.interface.on_press(widget=self.button_impl.interface)
 
 
 class Button(Widget):
