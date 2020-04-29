@@ -1,6 +1,6 @@
 import math
 
-from travertino.constants import BLACK, BLUE, GREEN, RED, YELLOW
+from travertino.constants import BLACK, BLUE, GREEN, RED, YELLOW, SANS_SERIF
 
 import toga
 from toga.style import Pack
@@ -16,6 +16,7 @@ HALF_ELLIPSE = "half ellipse"
 ICE_CREAM = "ice cream"
 SMILE = "smile"
 SEA = "sea"
+TEXT = "text"
 
 
 class ExampleCanvasApp(toga.App):
@@ -33,7 +34,8 @@ class ExampleCanvasApp(toga.App):
             HALF_ELLIPSE: self.draw_half_ellipse,
             ICE_CREAM: self.draw_ice_cream,
             SMILE: self.draw_smile,
-            SEA: self.draw_sea
+            SEA: self.draw_sea,
+            TEXT: self.draw_text
         }
         self.shape_selection = toga.Selection(
             items=list(self.drawing_shape_instructions.keys()),
@@ -146,6 +148,14 @@ class ExampleCanvasApp(toga.App):
                 dy - 1 * factor / 5)
             closer.line_to(dx + 1 * factor / 5, dy + 1 * factor / 5)
             closer.line_to(dx - 1 * factor / 5, dy + 1 * factor / 5)
+
+    def draw_text(self, context, h, w, factor):
+        text = 'This is a text'
+        dx = w / 2
+        dy = h / 2
+        font = toga.Font(family=SANS_SERIF, size=20)
+        width, height = font.measure(text, tight=True)
+        context.write_text(text, dx - width / 2, dy, font)
 
     def get_context(self, canvas):
         if self.context_selection.value == STROKE:

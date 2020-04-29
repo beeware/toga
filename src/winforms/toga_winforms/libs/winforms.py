@@ -19,6 +19,7 @@ from System.Drawing import Icon as WinIcon  # noqa: E402, F401
 from System.Drawing import Image as WinImage  # noqa: E402, F401
 from System.Drawing import ContentAlignment, Size, Point, PointF  # noqa: E402, F401
 from System.Drawing import FontFamily, FontStyle, SystemFonts  # noqa: E402, F401
+from System.Drawing import StringFormat  # noqa: E402, F401
 from System.Drawing import Text, Color, Bitmap  # noqa: E402, F401
 from System.Drawing import Graphics  # noqa: E402, F401
 from System.Drawing import Pen, SolidBrush  # noqa: E402, F401

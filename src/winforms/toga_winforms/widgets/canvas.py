@@ -5,7 +5,16 @@ from travertino.colors import WHITE
 from toga.widgets.canvas import Context
 from .box import Box
 from toga_winforms.colors import native_color
-from toga_winforms.libs import Pen, SolidBrush, GraphicsPath, Rectangle, PointF
+from toga_winforms.libs import (
+    Pen,
+    SolidBrush,
+    GraphicsPath,
+    Rectangle,
+    PointF,
+    StringFormat,
+    win_font_family
+)
+from ..libs.fonts import win_font_style
 
 
 class WinformContext(Context):
@@ -49,6 +58,9 @@ class Canvas(Box):
         if line_width is not None:
             pen.Width = line_width
         return pen
+
+    def create_brush(self, color):
+        return SolidBrush(native_color(color))
 
     # Basic paths
 
@@ -169,7 +181,7 @@ class Canvas(Box):
         self.interface.factory.not_implemented('Canvas.apply_color()')
 
     def fill(self, color, fill_rule, preserve, draw_context, *args, **kwargs):
-        brush = SolidBrush(native_color(color))
+        brush = self.create_brush(color)
         draw_context.graphics.FillPath(brush, draw_context.path)
 
     def stroke(self, color, line_width, line_dash, draw_context, *args, **kwargs):
@@ -194,7 +206,21 @@ class Canvas(Box):
     # Text
 
     def write_text(self, text, x, y, font, draw_context, *args, **kwargs):
-        self.interface.factory.not_implemented('Canvas.write_text()')
+        width, height = font.measure(text)
+        origin = PointF(x, y - height)
+        if draw_context.path is not None:
+            font_family = win_font_family(font.family)
+            font_style = win_font_style(font.weight, font.style, font_family)
+            draw_context.path.AddString(
+                text, font_family, font_style, float(height), origin, StringFormat()
+            )
+        else:
+            brush = self.create_brush(
+                color=kwargs.get("stroke_color", None),
+            )
+            draw_context.graphics.DrawString(
+                text, font._impl.native, brush, origin
+            )
 
     def measure_text(self, text, font, draw_context, *args, **kwargs):
         self.interface.factory.not_implemented('Canvas.measure_text()')

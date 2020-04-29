@@ -13,6 +13,7 @@ from .winforms import (  # noqa: F401
     Single,
     Size,
     SolidBrush,
+    StringFormat,
     Threading,
     Uri,
     WinDateTime,
