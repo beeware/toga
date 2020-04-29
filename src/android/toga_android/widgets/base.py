@@ -1,3 +1,5 @@
+from ..libs.activity import MainActivity
+
 
 class Widget:
     def __init__(self, interface):
@@ -5,6 +7,9 @@ class Widget:
         self.interface._impl = self
         self._container = None
         self.native = None
+        # Capture a reference to the Java `MainActivity` instance, so that subclasses
+        # can pass it as `context` when creating native Android widgets.
+        self._native_activity = MainActivity.singletonThis
         self.create()
 
     def set_app(self, app):

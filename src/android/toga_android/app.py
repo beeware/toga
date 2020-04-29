@@ -2,6 +2,7 @@ from .libs.activity import IPythonApp, MainActivity
 from .window import Window
 
 
+# `MainWindow` is defined here in `app.py`, not `window.py`, to mollify the test suite.
 class MainWindow(Window):
     pass
 
@@ -11,6 +12,7 @@ class TogaApp(IPythonApp):
         super().__init__()
         self._interface = app
         MainActivity.setPythonApp(self)
+        self.native = MainActivity.singletonThis
         print('Python app launched & stored in Android Activity class')
 
     def onCreate(self):
@@ -36,14 +38,17 @@ class TogaApp(IPythonApp):
 
 
 class App:
-    _MAIN_WINDOW_CLASS = MainWindow
-
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
+        self._listener = None
+        self.native = None
 
     def create(self):
+        # The `_listener` listens for activity event callbacks. For simplicity,
+        # the app's `.native` is the listener's native Java class.
         self._listener = TogaApp(self)
+        self.native = self._listener.native
         # Call user code to populate the main window
         self.interface.startup()
 

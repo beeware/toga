@@ -1,6 +1,3 @@
-from .layout import TogaLayout
-
-
 class AndroidViewport:
     def __init__(self, native):
         self.native = native
@@ -26,17 +23,10 @@ class Window:
         pass
 
     def set_app(self, app):
-        self._create()
+        self.app = app
 
     def set_content(self, widget):
-        if self.native is None:
-            widget.native = TogaLayout(self.app.native, widget)
-
-        # Add all children to the content widget.
-        for child in widget.interface.children:
-            child._impl.container = widget
-
-        self.app._impl.setContentView(self._container._impl)
+        self.app.native.setContentView(widget.native)
 
     def set_title(self, title):
         pass

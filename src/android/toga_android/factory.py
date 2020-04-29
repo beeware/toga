@@ -2,6 +2,7 @@ from .app import App, MainWindow
 from .paths import paths
 
 from .widgets.box import Box
+from .widgets.button import Button
 from .icons import Icon
 from .window import Window
 
@@ -16,6 +17,7 @@ __all__ = [
     'MainWindow',
     'paths',
     'Box',
+    'Button',
     'Icon',
     'Window',
 ]
