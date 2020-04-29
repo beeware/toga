@@ -15,7 +15,8 @@ class Font:
             font_style = win_font_style(
                 self.interface.weight,
                 self.interface.style,
-                font_family)
+                font_family
+            )
             font = WinFont.Overloads[FontFamily, Single, FontStyle](
                 font_family, self.interface.size, font_style
             )
