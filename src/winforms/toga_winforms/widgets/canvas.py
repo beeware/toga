@@ -9,7 +9,7 @@ from toga_winforms.libs import (
     Pen,
     SolidBrush,
     GraphicsPath,
-    Rectangle,
+    RectangleF,
     PointF,
     StringFormat,
     win_font_family
@@ -138,12 +138,10 @@ class Canvas(Box):
             draw_context,
             *args,
             **kwargs):
+        rect = RectangleF(float(x - radiusx), float(y - radiusy), float(2 * radiusx), float(2 * radiusy))
         if draw_context.path is not None:
             draw_context.path.AddArc(
-                x - radiusx,
-                y - radiusy,
-                2 * radiusx,
-                2 * radiusy,
+                rect,
                 math.degrees(startangle),
                 math.degrees(endangle - startangle)
             )
@@ -155,10 +153,7 @@ class Canvas(Box):
             )
             draw_context.graphics.DrawArc(
                 pen,
-                x - radiusx,
-                y - radiusy,
-                2 * radiusx,
-                2 * radiusy,
+                rect,
                 math.degrees(startangle),
                 math.degrees(endangle - startangle)
             )
@@ -168,7 +163,7 @@ class Canvas(Box):
         )
 
     def rect(self, x, y, width, height, draw_context, *args, **kwargs):
-        rect = Rectangle(int(x), int(y), int(width), int(height))
+        rect = RectangleF(x, y, width, height)
         if draw_context.path is not None:
             draw_context.path.AddRectangle(rect)
         else:
@@ -177,7 +172,7 @@ class Canvas(Box):
                 line_width=kwargs.get("text_line_width", None),
                 line_dash=kwargs.get("text_line_dash", None)
             )
-            draw_context.graphics.DrawRectangle(pen, rect)
+            draw_context.graphics.DrawRectangles(pen, [rect])
 
     # Drawing Paths
 

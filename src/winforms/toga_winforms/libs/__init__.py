@@ -10,6 +10,7 @@ from .winforms import (  # noqa: F401
     Point,
     PointF,
     Rectangle,
+    RectangleF,
     Single,
     Size,
     SolidBrush,
