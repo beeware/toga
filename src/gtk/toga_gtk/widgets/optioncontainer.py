@@ -23,16 +23,16 @@ class OptionContainer(Widget):
         pass
 
     def remove_content(self, index):
-        return NotImplementedError
+        self.interface.factory.not_implemented('OptionContainer.remove_content()')
 
     def set_option_enabled(self, index, enabled):
-        return NotImplementedError
+        self.interface.factory.not_implemented('OptionContainer.set_option_enabled()')
 
     def is_option_enabled(self, index):
-        return NotImplementedError
+        self.interface.factory.not_implemented('OptionContainer.is_option_enabled()')
 
     def set_option_label(self, index, value):
-        return NotImplementedError
+        self.interface.factory.not_implemented('OptionContainer.set_option_label()')
 
     def get_option_label(self, index):
-        return NotImplementedError
+        self.interface.factory.not_implemented('OptionContainer.get_option_label()')
