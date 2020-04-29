@@ -37,7 +37,7 @@ class TogaApp(IPythonApp):
         print("Toga app: onRestart")
 
 
-class App(IPythonApp):
+class App:
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
