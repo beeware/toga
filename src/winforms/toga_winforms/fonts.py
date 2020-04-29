@@ -1,5 +1,6 @@
-from .libs import WinFont
+from .libs import WinFont, WinForms
 from .libs import FontFamily, FontStyle, Single, win_font_family
+from .libs.fonts import win_font_style
 
 _FONT_CACHE = {}
 
@@ -11,11 +12,11 @@ class Font:
             font = _FONT_CACHE[self.interface]
         except KeyError:
             font_family = win_font_family(self.interface.family)
-            font_style = FontStyle.Regular
-            if self.interface.weight.lower() == "bold" and font_family.IsStyleAvailable(FontStyle.Bold):
-                font_style += FontStyle.Bold
-            if self.interface.style.lower() == "italic" and font_family.IsStyleAvailable(FontStyle.Italic):
-                font_style += FontStyle.Italic
+            font_style = win_font_style(
+                self.interface.weight,
+                self.interface.style,
+                font_family
+            )
             font = WinFont.Overloads[FontFamily, Single, FontStyle](
                 font_family, self.interface.size, font_style
             )
@@ -24,5 +25,5 @@ class Font:
         self.native = font
 
     def measure(self, text, tight=False):
-        raise NotImplementedError('measure() not implemented on winforms.Font')
-        # return width, height
+        size = WinForms.TextRenderer.MeasureText(text, self.native)
+        return size.Width, size.Height

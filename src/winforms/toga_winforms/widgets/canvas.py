@@ -5,7 +5,16 @@ from travertino.colors import WHITE
 from toga.widgets.canvas import Context
 from .box import Box
 from toga_winforms.colors import native_color
-from toga_winforms.libs import Pen, SolidBrush, GraphicsPath, Rectangle, PointF
+from toga_winforms.libs import (
+    Pen,
+    SolidBrush,
+    GraphicsPath,
+    RectangleF,
+    PointF,
+    StringFormat,
+    win_font_family
+)
+from ..libs.fonts import win_font_style
 
 
 class WinformContext(Context):
@@ -44,11 +53,16 @@ class Canvas(Box):
     def redraw(self):
         self.native.Invalidate()
 
-    def create_pen(self, color=None, line_width=None):
+    def create_pen(self, color=None, line_width=None, line_dash=None):
         pen = Pen(native_color(color))
         if line_width is not None:
             pen.Width = line_width
+        if line_dash is not None:
+            pen.DashPattern = line_dash
         return pen
+
+    def create_brush(self, color):
+        return SolidBrush(native_color(color))
 
     # Basic paths
 
@@ -63,7 +77,9 @@ class Canvas(Box):
         draw_context.last_point = (x, y)
 
     def line_to(self, x, y, draw_context, *args, **kwargs):
-        draw_context.path.AddLine(*draw_context.last_point, x, y)
+        ox, oy = int(draw_context.last_point[0]), int(draw_context.last_point[1])
+        x, y = int(x), int(y)
+        draw_context.path.AddLine(ox, oy, x, y)
         draw_context.last_point = (x, y)
 
     # Basic shapes
@@ -83,41 +99,80 @@ class Canvas(Box):
         draw_context.path.AddCurve([point1, point2, point3])
         draw_context.last_point = (x, y)
 
-    def arc(self, x, y, radius, startangle, endangle, anticlockwise, draw_context, *args, **kwargs):
-        x_min, y_min = x - radius, y - radius
-        draw_context.path.AddArc(
-            x_min, y_min, 2 * radius, 2 * radius, math.degrees(startangle), math.degrees(endangle - startangle)
-        )
-        draw_context.last_point = (
-            x + radius * math.cos(endangle),
-            y + radius * math.sin(endangle)
+    def arc(
+            self,
+            x,
+            y,
+            radius,
+            startangle,
+            endangle,
+            anticlockwise,
+            draw_context,
+            *args,
+            **kwargs
+    ):
+        self.ellipse(
+            x,
+            y,
+            radius,
+            radius,
+            0,
+            startangle,
+            endangle,
+            anticlockwise,
+            draw_context,
+            *args,
+            **kwargs
         )
 
-    def ellipse(self, x, y, radiusx, radiusy, rotation, startangle, endangle, anticlockwise,
-                draw_context, *args, **kwargs):
+    def ellipse(
+            self,
+            x,
+            y,
+            radiusx,
+            radiusy,
+            rotation,
+            startangle,
+            endangle,
+            anticlockwise,
+            draw_context,
+            *args,
+            **kwargs):
+        rect = RectangleF(float(x - radiusx), float(y - radiusy), float(2 * radiusx), float(2 * radiusy))
         if draw_context.path is not None:
-            draw_context.path.AddEllipse(
-                x - radiusx, y - radiusy, 2 * radiusx, 2 * radiusy
+            draw_context.path.AddArc(
+                rect,
+                math.degrees(startangle),
+                math.degrees(endangle - startangle)
             )
         else:
             pen = self.create_pen(
                 color=kwargs.get("stroke_color", None),
-                line_width=kwargs.get("text_line_width", None)
+                line_width=kwargs.get("text_line_width", None),
+                line_dash=kwargs.get("text_line_dash", None)
             )
-            draw_context.graphics.DrawEllipse(
-                pen, x - radiusx, y - radiusy, 2 * radiusx, 2 * radiusy
+            draw_context.graphics.DrawArc(
+                pen,
+                rect,
+                math.degrees(startangle),
+                math.degrees(endangle - startangle)
             )
+        draw_context.last_point = (
+            x + radiusx * math.cos(endangle),
+            y + radiusy * math.sin(endangle)
+        )
 
     def rect(self, x, y, width, height, draw_context, *args, **kwargs):
-        rect = Rectangle(int(x), int(y), int(width), int(height))
+        rect = RectangleF(float(x), float(y), float(width), float(height))
         if draw_context.path is not None:
             draw_context.path.AddRectangle(rect)
         else:
             pen = self.create_pen(
                 color=kwargs.get("stroke_color", None),
-                line_width=kwargs.get("text_line_width", None)
+                line_width=kwargs.get("text_line_width", None),
+                line_dash=kwargs.get("text_line_dash", None)
             )
-            draw_context.graphics.DrawRectangle(pen, rect)
+            draw_context.graphics.DrawRectangles(pen, [rect])
 
     # Drawing Paths
 
@@ -125,12 +180,12 @@ class Canvas(Box):
         self.interface.factory.not_implemented('Canvas.apply_color()')
 
     def fill(self, color, fill_rule, preserve, draw_context, *args, **kwargs):
-        brush = SolidBrush(native_color(color))
+        brush = self.create_brush(color)
         draw_context.graphics.FillPath(brush, draw_context.path)
 
     def stroke(self, color, line_width, line_dash, draw_context, *args, **kwargs):
         if draw_context.path is not None:
-            pen = self.create_pen(color=color, line_width=line_width)
+            pen = self.create_pen(color=color, line_width=line_width, line_dash=line_dash)
             draw_context.graphics.DrawPath(pen, draw_context.path)
 
     # Transformations
@@ -150,7 +205,21 @@ class Canvas(Box):
     # Text
 
     def write_text(self, text, x, y, font, draw_context, *args, **kwargs):
-        self.interface.factory.not_implemented('Canvas.write_text()')
+        width, height = font.measure(text)
+        origin = PointF(x, y - height)
+        if draw_context.path is not None:
+            font_family = win_font_family(font.family)
+            font_style = win_font_style(font.weight, font.style, font_family)
+            draw_context.path.AddString(
+                text, font_family, font_style, float(height), origin, StringFormat()
+            )
+        else:
+            brush = self.create_brush(
+                color=kwargs.get("stroke_color", None),
+            )
+            draw_context.graphics.DrawString(
+                text, font._impl.native, brush, origin
+            )
 
     def measure_text(self, text, font, draw_context, *args, **kwargs):
         self.interface.factory.not_implemented('Canvas.measure_text()')

@@ -1,6 +1,6 @@
 import math
 
-from travertino.constants import BLACK, BLUE, GREEN, RED, YELLOW
+from travertino.constants import BLACK, BLUE, GREEN, RED, YELLOW, SANS_SERIF
 
 import toga
 from toga.style import Pack
@@ -12,9 +12,16 @@ FILL = "Fill"
 TRIANGLE = "triangle"
 RECTANGLE = "rectangle"
 ELLIPSE = "ellipse"
+HALF_ELLIPSE = "half ellipse"
 ICE_CREAM = "ice cream"
 SMILE = "smile"
 SEA = "sea"
+TEXT = "text"
+
+CONTINUOUS = "continuous"
+DASH_1_1 = "dash 1-1"
+DASH_1_2 = "dash 1-2"
+DASH_2_3_1 = "dash 2-3-1"
 
 
 class ExampleCanvasApp(toga.App):
@@ -29,9 +36,17 @@ class ExampleCanvasApp(toga.App):
             TRIANGLE: self.draw_triangle,
             RECTANGLE: self.draw_rectangle,
             ELLIPSE: self.draw_ellipse,
+            HALF_ELLIPSE: self.draw_half_ellipse,
             ICE_CREAM: self.draw_ice_cream,
             SMILE: self.draw_smile,
-            SEA: self.draw_sea
+            SEA: self.draw_sea,
+            TEXT: self.draw_text
+        }
+        self.dash_patterns = {
+            CONTINUOUS: None,
+            DASH_1_1: [1, 1],
+            DASH_1_2: [1, 2],
+            DASH_2_3_1: [2, 3, 1]
         }
         self.shape_selection = toga.Selection(
             items=list(self.drawing_shape_instructions.keys()),
@@ -45,6 +60,10 @@ class ExampleCanvasApp(toga.App):
             range=(1, 10),
             default=1,
             on_slide=self.refresh_canvas
+        )
+        self.dash_pattern_selection = toga.Selection(
+            items=list(self.dash_patterns.keys()),
+            on_select=self.refresh_canvas
         )
         box = toga.Box(
             style=Pack(direction=COLUMN),
@@ -60,7 +79,9 @@ class ExampleCanvasApp(toga.App):
                 toga.Box(
                     style=Pack(direction=ROW),
                     children=[
-                        self.line_width_slider
+                        toga.Label("Line Width:"),
+                        self.line_width_slider,
+                        self.dash_pattern_selection
                     ]
                 ),
                 self.canvas
@@ -108,6 +129,15 @@ class ExampleCanvasApp(toga.App):
 
         context.ellipse(w / 2, h / 2, rx, ry)
 
+    def draw_half_ellipse(self, context, h, w, factor):
+        x_center = w / 2
+        y_center = h / 2
+        rx = factor / 3
+        ry = factor / 4
+
+        with context.closed_path(x_center + rx, y_center) as closer:
+            closer.ellipse(x_center, y_center, rx, ry, 0, 0, math.pi)
+
     def draw_ice_cream(self, context, h, w, factor):
         dx = w / 2
         dy = h / 2 - factor / 6
@@ -136,11 +166,20 @@ class ExampleCanvasApp(toga.App):
             closer.line_to(dx + 1 * factor / 5, dy + 1 * factor / 5)
             closer.line_to(dx - 1 * factor / 5, dy + 1 * factor / 5)
 
+    def draw_text(self, context, h, w, factor):
+        text = 'This is a text'
+        dx = w / 2
+        dy = h / 2
+        font = toga.Font(family=SANS_SERIF, size=20)
+        width, height = font.measure(text, tight=True)
+        context.write_text(text, dx - width / 2, dy, font)
+
     def get_context(self, canvas):
         if self.context_selection.value == STROKE:
             return canvas.stroke(
                 color=str(self.color_selection.value),
-                line_width=self.line_width_slider.value
+                line_width=self.line_width_slider.value,
+                line_dash=self.dash_patterns[self.dash_pattern_selection.value]
             )
         return canvas.fill(color=str(self.color_selection.value))
 

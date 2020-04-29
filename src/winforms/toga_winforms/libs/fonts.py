@@ -1,4 +1,4 @@
-from .winforms import ContentAlignment, FontFamily, WinForms, SystemFonts, Text
+from .winforms import ContentAlignment, FontFamily, WinForms, SystemFonts, Text, FontStyle
 
 from toga.constants import LEFT, RIGHT, CENTER, JUSTIFY
 from toga.fonts import (
@@ -52,3 +52,14 @@ def win_font_family(value):
                 value, SystemFonts.DefaultFont.FontFamily)
         )
         return SystemFonts.DefaultFont.FontFamily
+
+
+def win_font_style(weight, style, font_family):
+    font_style = FontStyle.Regular
+    if weight.lower() == "bold" and font_family.IsStyleAvailable(
+            FontStyle.Bold):
+        font_style += FontStyle.Bold
+    if style.lower() == "italic" and font_family.IsStyleAvailable(
+            FontStyle.Italic):
+        font_style += FontStyle.Italic
+    return font_style
