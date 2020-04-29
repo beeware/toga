@@ -163,7 +163,7 @@ class Canvas(Box):
         )
 
     def rect(self, x, y, width, height, draw_context, *args, **kwargs):
-        rect = RectangleF(x, y, width, height)
+        rect = RectangleF(float(x), float(y), float(width), float(height))
         if draw_context.path is not None:
             draw_context.path.AddRectangle(rect)
         else:
