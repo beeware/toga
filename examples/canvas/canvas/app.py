@@ -131,7 +131,7 @@ class ExampleCanvasApp(toga.App):
 
     def draw_half_ellipse(self, context, h, w, factor):
         x_center = w / 2
-        y_center = h/ 2
+        y_center = h / 2
         rx = factor / 3
         ry = factor / 4
 
