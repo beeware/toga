@@ -1,4 +1,4 @@
-from .libs import WinFont
+from .libs import WinFont, WinForms
 from .libs import FontFamily, FontStyle, Single, win_font_family
 
 _FONT_CACHE = {}
@@ -24,5 +24,5 @@ class Font:
         self.native = font
 
     def measure(self, text, tight=False):
-        raise NotImplementedError('measure() not implemented on winforms.Font')
-        # return width, height
+        size = WinForms.TextRenderer.MeasureText(text, self.native)
+        return size.Width, size.Height
