@@ -53,10 +53,12 @@ class Canvas(Box):
     def redraw(self):
         self.native.Invalidate()
 
-    def create_pen(self, color=None, line_width=None):
+    def create_pen(self, color=None, line_width=None, line_dash=None):
         pen = Pen(native_color(color))
         if line_width is not None:
             pen.Width = line_width
+        if line_dash is not None:
+            pen.DashPattern = line_dash
         return pen
 
     def create_brush(self, color):
@@ -148,7 +150,8 @@ class Canvas(Box):
         else:
             pen = self.create_pen(
                 color=kwargs.get("stroke_color", None),
-                line_width=kwargs.get("text_line_width", None)
+                line_width=kwargs.get("text_line_width", None),
+                line_dash=kwargs.get("text_line_dash", None)
             )
             draw_context.graphics.DrawArc(
                 pen,
@@ -171,7 +174,8 @@ class Canvas(Box):
         else:
             pen = self.create_pen(
                 color=kwargs.get("stroke_color", None),
-                line_width=kwargs.get("text_line_width", None)
+                line_width=kwargs.get("text_line_width", None),
+                line_dash=kwargs.get("text_line_dash", None)
             )
             draw_context.graphics.DrawRectangle(pen, rect)
 
@@ -186,7 +190,7 @@ class Canvas(Box):
 
     def stroke(self, color, line_width, line_dash, draw_context, *args, **kwargs):
         if draw_context.path is not None:
-            pen = self.create_pen(color=color, line_width=line_width)
+            pen = self.create_pen(color=color, line_width=line_width, line_dash=line_dash)
             draw_context.graphics.DrawPath(pen, draw_context.path)
 
     # Transformations

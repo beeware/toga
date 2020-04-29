@@ -18,6 +18,11 @@ SMILE = "smile"
 SEA = "sea"
 TEXT = "text"
 
+CONTINUOUS = "continuous"
+DASH_1_1 = "dash 1-1"
+DASH_1_2 = "dash 1-2"
+DASH_2_3_1 = "dash 2-3-1"
+
 
 class ExampleCanvasApp(toga.App):
 
@@ -37,6 +42,12 @@ class ExampleCanvasApp(toga.App):
             SEA: self.draw_sea,
             TEXT: self.draw_text
         }
+        self.dash_patterns = {
+            CONTINUOUS: None,
+            DASH_1_1: [1, 1],
+            DASH_1_2: [1, 2],
+            DASH_2_3_1: [2, 3, 1]
+        }
         self.shape_selection = toga.Selection(
             items=list(self.drawing_shape_instructions.keys()),
             on_select=self.refresh_canvas
@@ -49,6 +60,10 @@ class ExampleCanvasApp(toga.App):
             range=(1, 10),
             default=1,
             on_slide=self.refresh_canvas
+        )
+        self.dash_pattern_selection = toga.Selection(
+            items=list(self.dash_patterns.keys()),
+            on_select=self.refresh_canvas
         )
         box = toga.Box(
             style=Pack(direction=COLUMN),
@@ -64,7 +79,9 @@ class ExampleCanvasApp(toga.App):
                 toga.Box(
                     style=Pack(direction=ROW),
                     children=[
-                        self.line_width_slider
+                        toga.Label("Line Width:"),
+                        self.line_width_slider,
+                        self.dash_pattern_selection
                     ]
                 ),
                 self.canvas
@@ -161,7 +178,8 @@ class ExampleCanvasApp(toga.App):
         if self.context_selection.value == STROKE:
             return canvas.stroke(
                 color=str(self.color_selection.value),
-                line_width=self.line_width_slider.value
+                line_width=self.line_width_slider.value,
+                line_dash=self.dash_patterns[self.dash_pattern_selection.value]
             )
         return canvas.fill(color=str(self.color_selection.value))
 
