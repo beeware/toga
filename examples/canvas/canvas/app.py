@@ -10,6 +10,7 @@ STROKE = "Stroke"
 FILL = "Fill"
 
 TRIANGLE = "triangle"
+TRIANGLES = "triangles"
 RECTANGLE = "rectangle"
 ELLIPSE = "ellipse"
 HALF_ELLIPSE = "half ellipse"
@@ -34,6 +35,7 @@ class ExampleCanvasApp(toga.App):
         self.context_selection = toga.Selection(items=[STROKE, FILL], on_select=self.refresh_canvas)
         self.drawing_shape_instructions = {
             TRIANGLE: self.draw_triangle,
+            TRIANGLES: self.draw_triangles,
             RECTANGLE: self.draw_rectangle,
             ELLIPSE: self.draw_ellipse,
             HALF_ELLIPSE: self.draw_half_ellipse,
@@ -117,6 +119,25 @@ class ExampleCanvasApp(toga.App):
         with context.closed_path(dx + factor / 3, dy + factor / 3) as closer:
             closer.line_to(dx + 2 * factor / 3, dy + 2 * factor / 3)
             closer.line_to(dx + 2 * factor / 3, dy + factor / 3)
+
+    def draw_triangles(self, context, h, w, factor):
+        # calculate offsets to centralize drawing in the bigger axis
+        dx = w / 2
+        dy = h / 2
+        triangle_size = factor / 5
+        gap = factor / 12
+        context.move_to(dx - 2 * triangle_size - gap, dy - 2 * triangle_size)
+        context.line_to(dx - gap, dy - 2 * triangle_size)
+        context.line_to(dx - triangle_size - gap, dy - triangle_size)
+        context.line_to(dx - 2 * triangle_size - gap, dy - 2 * triangle_size)
+        context.move_to(dx + gap, dy - 2 * triangle_size)
+        context.line_to(dx + 2 * triangle_size + gap, dy - 2 * triangle_size)
+        context.line_to(dx + triangle_size + gap, dy - triangle_size)
+        context.line_to(dx + gap, dy - 2 * triangle_size)
+        context.move_to(dx - triangle_size, dy - triangle_size + gap)
+        context.line_to(dx + triangle_size, dy - triangle_size + gap)
+        context.line_to(dx, dy + gap)
+        context.line_to(dx - triangle_size, dy - triangle_size + gap)
 
     def draw_rectangle(self, context, h, w, factor):
         dx = w / 2
