@@ -76,7 +76,7 @@ Next, install Toga into your virtual environment:
 
       (venv) C:\...>pip install --pre toga
 
-If you get other errors, please check that you followed `prerequisites <https://github.com/beeware/toga#prerequisites>`_ instructions.
+If you get other errors, please check that you followed `the prerequisite <https://github.com/beeware/toga#prerequisites>`_ instructions.
 
 After a successful installation of Toga you are ready to get coding.
 
