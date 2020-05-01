@@ -1,8 +1,109 @@
 import html
 
 from ..icons import Icon
-from ..libs import Gdk, GdkPixbuf, Gtk, Pango
+from ..libs import GdkPixbuf, Gtk, Pango
 from .base import Widget
+
+
+class DetailedListRenderer:
+    """ Implement this in layout variations, since they are related """
+
+    def __init__(self, interface):
+        self.interface = interface
+
+    def row_field_types(self):
+        """ return column type tuple """
+
+    def create_columns(self, treeview):
+        """ to create column(s) """
+        raise NotImplementedError("implement create_columns")
+
+    def row_data(self, item):
+        """ to return appropriate data for rendering """
+        raise NotImplementedError("implement row_data")
+
+    @staticmethod
+    def icon_size():
+        return Icon.SIZES[0]
+
+    @classmethod
+    def pixbuf(clazz, interface, icon):
+        pixbuf = None
+        # TODO: see get_scale_factor() to choose 72 px on hidpi
+        if icon and icon.bind(interface.factory):
+            pixbuf = getattr(icon.bind(interface.factory), 'native_%i' % clazz.icon_size()).get_pixbuf()
+        return pixbuf
+
+
+class IconTextRenderer(DetailedListRenderer):
+    """ DetailedList customization (choose to render icon/title/subtitle) """
+    ICON, TITLE, TITLE_SUBTITLE = range(3)
+    """ """
+    STYLES = {
+        'default': [ICON, TITLE_SUBTITLE],
+        'icon-title-subtitle': [ICON, TITLE_SUBTITLE],
+        'icon-title': [ICON, TITLE],
+        'title-icon': [TITLE, ICON],
+        'title-subtitle-icon': [TITLE_SUBTITLE, ICON],
+        'title-subtitle': [TITLE_SUBTITLE],
+        'title': [TITLE],
+        'icon': [ICON],
+    }
+
+    def __init__(self, interface, fields=None):
+        super().__init__(interface)
+        if fields is None:
+            fields = self.STYLES['default']
+        self.fields = fields
+
+    def row_field_types(self):
+        ret = [object]
+        for f in self.fields:
+            if f == self.ICON:
+                ret.append(GdkPixbuf.Pixbuf)
+            elif f in (self.TITLE, self.TITLE_SUBTITLE):
+                ret.append(str)
+        return ret
+
+    def create_columns(self, treeview):
+        # single column with icon + markup (dep. on init options)
+        column = Gtk.TreeViewColumn('')
+        row_data_index = 1  # first element in the row is always the item itself
+
+        for f in self.fields:
+            if f == self.ICON:
+                iconcell = Gtk.CellRendererPixbuf()
+                iconcell.set_property('width', self.icon_size() + 10)
+                column.pack_start(iconcell, False)
+                column.add_attribute(iconcell, 'pixbuf', row_data_index)
+            elif f in (self.TITLE, self.TITLE_SUBTITLE):
+                namecell = Gtk.CellRendererText()
+                namecell.set_property('ellipsize', Pango.EllipsizeMode.END)
+                column.pack_start(namecell, True)
+                column.add_attribute(namecell, 'markup', row_data_index)
+            row_data_index += 1
+
+        treeview.append_column(column)
+
+    def row_data(self, item):
+        ret = [item]
+        for f in self.fields:
+            if f == self.ICON:
+                ret.append(self.pixbuf(self.interface, item.icon))
+            elif f == self.TITLE:
+                ret.append(html.escape(item.title or ''))
+            elif f == self.TITLE_SUBTITLE:
+                markup = [
+                    html.escape(item.title or ''),
+                    '\n',
+                    '<small>', html.escape(item.subtitle or ''), '</small>',
+                ]
+                ret.append(''.join(markup))
+        return ret
+
+    @classmethod
+    def from_style(clazz, interface, style='default'):
+        return clazz(interface, fields=clazz.STYLES.get(style))
 
 
 class DetailedList(Widget):
@@ -14,11 +115,11 @@ class DetailedList(Widget):
     Also the model is a Gtk.ListStore. It may be more efficient to implement GtkTreeModel
     on top of the source directly instead of copying the data.
     """
-    C_ITEM, C_PIXBUF, C_MARKUP = range(3)
-    """ what is in the ListStore """
 
     def create(self):
-        self.store = Gtk.ListStore(object, GdkPixbuf.Pixbuf, str)
+        self.renderer = IconTextRenderer.from_style(self.interface)
+
+        self.store = Gtk.ListStore(*self.renderer.row_field_types())
 
         self.treeview = Gtk.TreeView(model=self.store)
         self.treeview.set_headers_visible(False)
@@ -26,21 +127,7 @@ class DetailedList(Widget):
         self.selection.set_mode(Gtk.SelectionMode.SINGLE)
         self.selection.connect("changed", self.gtk_on_select)
 
-        # single column with icon + markup
-        column = Gtk.TreeViewColumn('')
-
-        size = Icon.SIZES[0]
-        iconcell = Gtk.CellRendererPixbuf()
-        iconcell.set_property('width', size + 10)
-        column.pack_start(iconcell, False)
-        column.add_attribute(iconcell, 'pixbuf', self.C_PIXBUF)
-
-        namecell = Gtk.CellRendererText()
-        namecell.set_property('ellipsize', Pango.EllipsizeMode.END)
-        column.pack_start(namecell, True)
-        column.add_attribute(namecell, 'markup', self.C_MARKUP)
-
-        self.treeview.append_column(column)
+        self.renderer.create_columns(self.treeview)
 
         self.native = Gtk.ScrolledWindow()
         self.native.interface = self.interface
@@ -101,14 +188,7 @@ class DetailedList(Widget):
         self.treeview.scroll_to_cell(path)
 
     def row_data(self, item):
-        pixbuf = None
-        if item.icon and item.icon.bind(self.interface.factory):
-            pixbuf = getattr(item.icon.bind(self.interface.factory), 'native_%i' % Icon.SIZES[0]).get_pixbuf()
-        markup = ''.join([
-            html.escape(item.title or ''), '\n',
-            '<small>', html.escape(item.subtitle or ''), '</small>'
-        ])
-        return [item, pixbuf, markup]
+        return self.renderer.row_data(item)
 
     def gtk_on_select(self, selection):
         if self.interface.on_select:
