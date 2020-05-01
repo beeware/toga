@@ -8,6 +8,11 @@ from toga.handlers import wrapped_handler
 from .base import Widget
 
 
+EVENODD = "evenodd"
+NONZERO = "nonzero"
+FILLRULES = [NONZERO, EVENODD]
+
+
 class Context:
     """The user-created :class:`Context <Context>` drawing object to populate a
     drawing with visual context.
@@ -129,7 +134,7 @@ class Context:
         self.redraw()
 
     @contextmanager
-    def fill(self, color=BLACK, fill_rule="nonzero", preserve=False):
+    def fill(self, color=BLACK, fill_rule=NONZERO, preserve=False):
         """Constructs and yields a :class:`Fill <Fill>`.
 
         A drawing operator that fills the current path according to the current
@@ -146,10 +151,13 @@ class Context:
             :class:`Fill <Fill>` object.
 
         """
-        if fill_rule is "evenodd":
-            fill = Fill(color, fill_rule, preserve)
-        else:
-            fill = Fill(color, "nonzero", preserve)
+        if fill_rule not in FILLRULES:
+            raise ValueError(
+                "fillrule should be one of the followings: {}".format(
+                    ", ".join(FILLRULES)
+                )
+            )
+        fill = Fill(color, fill_rule, preserve)
         fill.canvas = self.canvas
         yield self.add_draw_obj(fill)
         self.redraw()
@@ -384,7 +392,7 @@ class Fill(Context):
 
     """
 
-    def __init__(self, color=BLACK, fill_rule="nonzero", preserve=False):
+    def __init__(self, color=BLACK, fill_rule=NONZERO, preserve=False):
         super().__init__()
         self.color = color
         self.fill_rule = fill_rule
