@@ -25,9 +25,10 @@ class Widget:
     @container.setter
     def container(self, container):
         self._container = container
+        self.viewport = container.viewport
 
         if self.native:
-            self._container.native.addSubview_(self.native)
+            self._container.native.addView(self.native)
 
         for child in self.interface.children:
             child._impl.container = container
