@@ -16,7 +16,6 @@ class Window:
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
-        self.widget = None
         self.create()
 
     def create(self):
