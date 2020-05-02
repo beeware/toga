@@ -153,7 +153,7 @@ class Context:
         """
         if fill_rule not in FILLRULES:
             raise ValueError(
-                "fillrule should be one of the followings: {}".format(
+                "fill rule should be one of the followings: {}".format(
                     ", ".join(FILLRULES)
                 )
             )

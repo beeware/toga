@@ -125,6 +125,19 @@ class CanvasTests(TestCase):
                         )
         self.assertActionPerformedWith(self.testing_canvas, "fill")
 
+    def test_fill_raises_error_on_invalid_fill_rule(self):
+
+        def fill_context():
+            with self.testing_canvas.fill(fill_rule="unknown"):
+                pass
+
+        self.assertRaisesRegex(
+            ValueError,
+            "^fill rule should be one of the followings: nonzero, evenodd$",
+            fill_context
+        )
+        self.assertActionNotPerformed(self.testing_canvas, "fill")
+
     def test_draw_3circles(self):
         xc = 100
         yc = 150
