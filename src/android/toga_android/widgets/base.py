@@ -1,4 +1,11 @@
+from toga.constants import LEFT, RIGHT, CENTER, JUSTIFY
+from travertino.size import at_least
+
 from ..libs.activity import MainActivity
+from ..libs.android_widgets import (
+    Gravity,
+    View__MeasureSpec,
+)
 
 
 class Widget:
@@ -18,6 +25,16 @@ class Widget:
     def set_window(self, window):
         pass
 
+    def set_alignment(self, value):
+        self.native.setGravity(
+            {
+                LEFT: Gravity.CENTER_VERTICAL | Gravity.LEFT,
+                RIGHT: Gravity.CENTER_VERTICAL | Gravity.RIGHT,
+                CENTER: Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL,
+                JUSTIFY: Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL,
+            }[value]
+        )
+
     @property
     def container(self):
         return self._container
@@ -28,6 +45,9 @@ class Widget:
         self.viewport = container.viewport
 
         if self.native:
+            # When initially setting the container and adding widgets to the container,
+            # we provide no `LayoutParams`. Those are promptly added when Toga
+            # calls `widget.rehint()` and `widget.set_bounds()`.
             self._container.native.addView(self.native)
 
         for child in self.interface.children:
@@ -41,12 +61,12 @@ class Widget:
     # APPLICATOR
 
     def set_bounds(self, x, y, width, height):
-        # No implementation required here; the new sizing will be picked up
-        # by the container layout.
-        pass
+        if self.container:
+            # Ask the container widget to set our bounds.
+            self.container.set_child_bounds(self, x, y, width, height)
 
     def set_hidden(self, hidden):
-        self.interface.factory.not_implemented('Widget.set_hidden()')
+        self.interface.factory.not_implemented("Widget.set_hidden()")
 
     def set_font(self, font):
         # By default, font can't be changed
@@ -64,4 +84,17 @@ class Widget:
             child.container = self.container
 
     def rehint(self):
+        # An Android `View` subclass (of which all widgets are subclasses) can
+        # be measured against a measurement specification called a MeasureSpec.
+        # Note that this mutates the widget's `getMeasuredWidth()` and
+        # `getMeasuredHeight()`.
+        self.native.measure(
+            View__MeasureSpec.UNSPECIFIED, View__MeasureSpec.UNSPECIFIED
+        )
+        # We use `at_least()` below because without it, Travertino seems to
+        # decide to use a width of zero.
+        self.interface.intrinsic.width = at_least(self.native.getMeasuredWidth())
+        self.interface.intrinsic.height = self.native.getMeasuredHeight()
+
+    def set_size(self, size):
         pass
