@@ -2,10 +2,11 @@ import math
 
 from travertino.colors import WHITE
 
-from toga.widgets.canvas import Context
+from toga.widgets.canvas import Context, FillRule
 from .box import Box
 from toga_winforms.colors import native_color
 from toga_winforms.libs import (
+    FillMode,
     Pen,
     SolidBrush,
     GraphicsPath,
@@ -181,7 +182,17 @@ class Canvas(Box):
 
     def fill(self, color, fill_rule, preserve, draw_context, *args, **kwargs):
         brush = self.create_brush(color)
+        fill_mode = self.native_fill_rule(fill_rule)
+        if fill_mode is not None:
+            draw_context.path.FillMode = fill_mode
         draw_context.graphics.FillPath(brush, draw_context.path)
+
+    def native_fill_rule(self, fill_rule):
+        if fill_rule == FillRule.EVENODD:
+            return FillMode.Alternate
+        if fill_rule == FillRule.NONZERO:
+            return FillMode.Winding
+        return None
 
     def stroke(self, color, line_width, line_dash, draw_context, *args, **kwargs):
         if draw_context.path is not None:
