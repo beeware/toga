@@ -14,10 +14,6 @@ class FillRule(Enum):
     NONZERO = 1
 
 
-EVENODD = "evenodd"
-NONZERO = "nonzero"
-
-
 class Context:
     """The user-created :class:`Context <Context>` drawing object to populate a
     drawing with visual context.
