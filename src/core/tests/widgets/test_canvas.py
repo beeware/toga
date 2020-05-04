@@ -5,6 +5,7 @@ from toga.colors import REBECCAPURPLE, BLANCHEDALMOND, CRIMSON, rgb
 from toga.fonts import SANS_SERIF, SERIF
 
 import toga_dummy
+from toga.widgets.canvas import FillRule
 from toga_dummy.utils import TestCase
 
 
@@ -467,7 +468,7 @@ class CanvasTests(TestCase):
             self.testing_canvas,
             "fill",
             color=rgb(102, 51, 153),
-            fill_rule="evenodd",
+            fill_rule=FillRule.EVENODD,
             preserve=True,
         )
 

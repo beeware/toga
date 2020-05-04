@@ -152,16 +152,6 @@ class Context:
             :class:`Fill <Fill>` object.
 
         """
-        if isinstance(fill_rule, str):
-
-            try:
-                fill_rule = FillRule[fill_rule.upper()]
-            except KeyError:
-                raise ValueError(
-                    "fill rule should be one of the followings: {}".format(
-                        ", ".join([value.name.lower() for value in FillRule])
-                    )
-                )
         fill = Fill(color, fill_rule, preserve)
         fill.canvas = self.canvas
         yield self.add_draw_obj(fill)
@@ -417,6 +407,23 @@ class Fill(Context):
             kwargs["fill_color"] = self.color
             obj._draw(impl, *args, **kwargs)
         impl.fill(self.color, self.fill_rule, self.preserve, *args, **kwargs)
+
+    @property
+    def fill_rule(self):
+        return self._fill_rule
+
+    @fill_rule.setter
+    def fill_rule(self, fill_rule):
+        if isinstance(fill_rule, str):
+            try:
+                fill_rule = FillRule[fill_rule.upper()]
+            except KeyError:
+                raise ValueError(
+                    "fill rule should be one of the followings: {}".format(
+                        ", ".join([value.name.lower() for value in FillRule])
+                    )
+                )
+        self._fill_rule = fill_rule
 
     @property
     def color(self):
