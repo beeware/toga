@@ -1,5 +1,6 @@
 from contextlib import contextmanager
 from math import pi
+from enum import Enum
 
 from toga.colors import color as parse_color, BLACK
 from toga.fonts import Font, SYSTEM
@@ -8,9 +9,13 @@ from toga.handlers import wrapped_handler
 from .base import Widget
 
 
+class FillRule(Enum):
+    EVENODD = 0
+    NONZERO = 1
+
+
 EVENODD = "evenodd"
 NONZERO = "nonzero"
-FILLRULES = [NONZERO, EVENODD]
 
 
 class Context:
@@ -134,7 +139,7 @@ class Context:
         self.redraw()
 
     @contextmanager
-    def fill(self, color=BLACK, fill_rule=NONZERO, preserve=False):
+    def fill(self, color=BLACK, fill_rule=FillRule.NONZERO, preserve=False):
         """Constructs and yields a :class:`Fill <Fill>`.
 
         A drawing operator that fills the current path according to the current
@@ -151,12 +156,16 @@ class Context:
             :class:`Fill <Fill>` object.
 
         """
-        if fill_rule not in FILLRULES:
-            raise ValueError(
-                "fill rule should be one of the followings: {}".format(
-                    ", ".join(FILLRULES)
+        if isinstance(fill_rule, str):
+
+            try:
+                fill_rule = FillRule[fill_rule.upper()]
+            except KeyError:
+                raise ValueError(
+                    "fill rule should be one of the followings: {}".format(
+                        ", ".join([value.name.lower() for value in FillRule])
+                    )
                 )
-            )
         fill = Fill(color, fill_rule, preserve)
         fill.canvas = self.canvas
         yield self.add_draw_obj(fill)
@@ -392,7 +401,7 @@ class Fill(Context):
 
     """
 
-    def __init__(self, color=BLACK, fill_rule=NONZERO, preserve=False):
+    def __init__(self, color=BLACK, fill_rule=FillRule.NONZERO, preserve=False):
         super().__init__()
         self.color = color
         self.fill_rule = fill_rule

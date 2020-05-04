@@ -133,7 +133,7 @@ class CanvasTests(TestCase):
 
         self.assertRaisesRegex(
             ValueError,
-            "^fill rule should be one of the followings: nonzero, evenodd$",
+            "^fill rule should be one of the followings: evenodd, nonzero$",
             fill_context
         )
         self.assertActionNotPerformed(self.testing_canvas, "fill")
@@ -477,7 +477,7 @@ class CanvasTests(TestCase):
         ) as filler:
             self.assertEqual(
                 repr(filler),
-                "Fill(color=rgb(220, 20, 60), fill_rule=evenodd, preserve=True)",
+                "Fill(color=rgb(220, 20, 60), fill_rule=FillRule.EVENODD, preserve=True)",
             )
 
     def test_stroke_modify(self):

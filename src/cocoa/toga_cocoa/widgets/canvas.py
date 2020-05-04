@@ -1,6 +1,6 @@
 from rubicon.objc import CGFloat, SEL
 
-from toga.widgets.canvas import EVENODD
+from toga.widgets.canvas import FillRule
 from toga_cocoa.libs import (
     core_graphics,
     CGPathDrawingMode,
@@ -146,7 +146,7 @@ class Canvas(Widget):
     # Drawing Paths
 
     def fill(self, color, fill_rule, preserve, draw_context, *args, **kwargs):
-        if fill_rule == EVENODD:
+        if fill_rule == FillRule.EVENODD:
             mode = CGPathDrawingMode(kCGPathEOFill)
         else:
             mode = CGPathDrawingMode(kCGPathFill)

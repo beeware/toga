@@ -5,6 +5,7 @@ from travertino.constants import BLACK, BLUE, GREEN, RED, YELLOW, SANS_SERIF
 import toga
 from toga.style import Pack
 from toga.style.pack import ROW, COLUMN
+from toga.widgets.canvas import FillRule
 
 STROKE = "Stroke"
 FILL = "Fill"
@@ -61,7 +62,7 @@ class ExampleCanvasApp(toga.App):
             on_select=self.refresh_canvas
         )
         self.fill_rule_selection = toga.Selection(
-            items=["nonzero", "evenodd"],
+            items=[value.name.lower() for value in FillRule],
             on_select=self.refresh_canvas
         )
         self.line_width_slider = toga.Slider(
