@@ -30,12 +30,11 @@ class WinformContext(Context):
     @property
     def current_path(self):
         if len(self.paths) == 0:
-            return None
+            self.add_path()
         return self.paths[-1]
 
-    @current_path.setter
-    def current_path(self, current_path):
-        self.paths.append(current_path)
+    def add_path(self):
+        self.paths.append(GraphicsPath())
 
 
 class Canvas(Box):
@@ -78,13 +77,13 @@ class Canvas(Box):
     # Basic paths
 
     def new_path(self, draw_context, *args, **kwargs):
-        draw_context.current_path = GraphicsPath()
+        draw_context.add_path()
 
     def closed_path(self, x, y, draw_context, *args, **kwargs):
         self.line_to(x, y, draw_context, *args, **kwargs)
 
     def move_to(self, x, y, draw_context, *args, **kwargs):
-        draw_context.current_path = GraphicsPath()
+        draw_context.add_path()
         draw_context.last_point = (x, y)
 
     def line_to(self, x, y, draw_context, *args, **kwargs):
@@ -150,24 +149,11 @@ class Canvas(Box):
             *args,
             **kwargs):
         rect = RectangleF(float(x - radiusx), float(y - radiusy), float(2 * radiusx), float(2 * radiusy))
-        if draw_context.current_path is not None:
-            draw_context.current_path.AddArc(
-                rect,
-                math.degrees(startangle),
-                math.degrees(endangle - startangle)
-            )
-        else:
-            pen = self.create_pen(
-                color=kwargs.get("stroke_color", None),
-                line_width=kwargs.get("text_line_width", None),
-                line_dash=kwargs.get("text_line_dash", None)
-            )
-            draw_context.graphics.DrawArc(
-                pen,
-                rect,
-                math.degrees(startangle),
-                math.degrees(endangle - startangle)
-            )
+        draw_context.current_path.AddArc(
+            rect,
+            math.degrees(startangle),
+            math.degrees(endangle - startangle)
+        )
         draw_context.last_point = (
             x + radiusx * math.cos(endangle),
             y + radiusy * math.sin(endangle)
@@ -175,15 +161,7 @@ class Canvas(Box):
 
     def rect(self, x, y, width, height, draw_context, *args, **kwargs):
         rect = RectangleF(float(x), float(y), float(width), float(height))
-        if draw_context.current_path is not None:
-            draw_context.current_path.AddRectangle(rect)
-        else:
-            pen = self.create_pen(
-                color=kwargs.get("stroke_color", None),
-                line_width=kwargs.get("text_line_width", None),
-                line_dash=kwargs.get("text_line_dash", None)
-            )
-            draw_context.graphics.DrawRectangles(pen, [rect])
+        draw_context.current_path.AddRectangle(rect)
 
     # Drawing Paths
 
@@ -231,19 +209,11 @@ class Canvas(Box):
     def write_text(self, text, x, y, font, draw_context, *args, **kwargs):
         width, height = font.measure(text)
         origin = PointF(x, y - height)
-        if draw_context.current_path is not None:
-            font_family = win_font_family(font.family)
-            font_style = win_font_style(font.weight, font.style, font_family)
-            draw_context.current_path.AddString(
-                text, font_family, font_style, float(height), origin, StringFormat()
-            )
-        else:
-            brush = self.create_brush(
-                color=kwargs.get("stroke_color", None),
-            )
-            draw_context.graphics.DrawString(
-                text, font._impl.native, brush, origin
-            )
+        font_family = win_font_family(font.family)
+        font_style = win_font_style(font.weight, font.style, font_family)
+        draw_context.current_path.AddString(
+            text, font_family, font_style, float(height), origin, StringFormat()
+        )
 
     def measure_text(self, text, font, draw_context, *args, **kwargs):
         self.interface.factory.not_implemented('Canvas.measure_text()')
