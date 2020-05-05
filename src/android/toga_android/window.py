@@ -1,16 +1,15 @@
 class AndroidViewport:
     def __init__(self, native):
         self.native = native
-        self.dpi = 96  # FIXME This is almost certainly wrong...
-        # self.dpi = ... self.interface.app._impl.device_scale
+        self.dpi = self.native.getContext().getResources().getDisplayMetrics().densityDpi
 
     @property
     def width(self):
-        return self.native.ClientSize.Width
+        return self.native.getMeasuredWidth()
 
     @property
     def height(self):
-        return self.native.ClientSize.Height
+        return self.native.getMeasuredHeight()
 
 
 class Window:
@@ -26,7 +25,17 @@ class Window:
         self.app = app
 
     def set_content(self, widget):
+        # Set the widget's viewport to be based on the window's content.
+        widget.viewport = AndroidViewport(widget.native)
+        # Set the app's entire contentView to this window. This means that calling
+        # Window.set_content() on any Window object automatically updates the app,
+        # meaning that every Window object acts as the MainWindow.
         self.app.native.setContentView(widget.native)
+
+        # Attach child widgets to the this window as their container.
+        for child in widget.interface.children:
+            child._impl.container = widget
+            child._impl.viewport = widget.viewport
 
     def set_title(self, title):
         pass
