@@ -5,6 +5,7 @@ from travertino.constants import BLACK, BLUE, GREEN, RED, YELLOW, SANS_SERIF
 import toga
 from toga.style import Pack
 from toga.style.pack import ROW, COLUMN
+from toga.widgets.canvas import FillRule
 
 STROKE = "Stroke"
 FILL = "Fill"
@@ -17,6 +18,7 @@ HALF_ELLIPSE = "half ellipse"
 ICE_CREAM = "ice cream"
 SMILE = "smile"
 SEA = "sea"
+STAR = "star"
 TEXT = "text"
 
 CONTINUOUS = "continuous"
@@ -42,6 +44,7 @@ class ExampleCanvasApp(toga.App):
             ICE_CREAM: self.draw_ice_cream,
             SMILE: self.draw_smile,
             SEA: self.draw_sea,
+            STAR: self.draw_star,
             TEXT: self.draw_text
         }
         self.dash_patterns = {
@@ -56,6 +59,10 @@ class ExampleCanvasApp(toga.App):
         )
         self.color_selection = toga.Selection(
             items=[BLACK, BLUE, GREEN, RED, YELLOW],
+            on_select=self.refresh_canvas
+        )
+        self.fill_rule_selection = toga.Selection(
+            items=[value.name.lower() for value in FillRule],
             on_select=self.refresh_canvas
         )
         self.line_width_slider = toga.Slider(
@@ -75,7 +82,8 @@ class ExampleCanvasApp(toga.App):
                     children=[
                         self.context_selection,
                         self.shape_selection,
-                        self.color_selection
+                        self.color_selection,
+                        self.fill_rule_selection
                     ]
                 ),
                 toga.Box(
@@ -187,6 +195,17 @@ class ExampleCanvasApp(toga.App):
             closer.line_to(dx + 1 * factor / 5, dy + 1 * factor / 5)
             closer.line_to(dx - 1 * factor / 5, dy + 1 * factor / 5)
 
+    def draw_star(self, context, h, w, factor):
+        sides = 5
+        dx = w / 2
+        dy = h / 2
+        radius = factor / 5
+        rotation_angle = 4 * math.pi / sides
+        with context.closed_path(dx, dy - radius) as closer:
+            for i in range(1, sides):
+                closer.line_to(dx + radius * math.sin(i * rotation_angle),
+                               dy - radius * math.cos(i * rotation_angle))
+
     def draw_text(self, context, h, w, factor):
         text = 'This is a text'
         dx = w / 2
@@ -202,7 +221,10 @@ class ExampleCanvasApp(toga.App):
                 line_width=self.line_width_slider.value,
                 line_dash=self.dash_patterns[self.dash_pattern_selection.value]
             )
-        return canvas.fill(color=str(self.color_selection.value))
+        return canvas.fill(
+            color=self.color_selection.value,
+            fill_rule=self.fill_rule_selection.value
+        )
 
     def refresh_canvas(self, widget):
         self.render_drawing(
