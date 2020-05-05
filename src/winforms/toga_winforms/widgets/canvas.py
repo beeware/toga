@@ -28,14 +28,14 @@ class WinformContext(Context):
         self.last_point = None
 
     @property
-    def last_path(self):
+    def current_path(self):
         if len(self.paths) == 0:
             return None
         return self.paths[-1]
 
-    @last_path.setter
-    def last_path(self, last_path):
-        self.paths.append(last_path)
+    @current_path.setter
+    def current_path(self, current_path):
+        self.paths.append(current_path)
 
 
 class Canvas(Box):
@@ -78,19 +78,19 @@ class Canvas(Box):
     # Basic paths
 
     def new_path(self, draw_context, *args, **kwargs):
-        draw_context.last_path = GraphicsPath()
+        draw_context.current_path = GraphicsPath()
 
     def closed_path(self, x, y, draw_context, *args, **kwargs):
         self.line_to(x, y, draw_context, *args, **kwargs)
 
     def move_to(self, x, y, draw_context, *args, **kwargs):
-        draw_context.last_path = GraphicsPath()
+        draw_context.current_path = GraphicsPath()
         draw_context.last_point = (x, y)
 
     def line_to(self, x, y, draw_context, *args, **kwargs):
         ox, oy = int(draw_context.last_point[0]), int(draw_context.last_point[1])
         x, y = int(x), int(y)
-        draw_context.last_path.AddLine(ox, oy, x, y)
+        draw_context.current_path.AddLine(ox, oy, x, y)
         draw_context.last_point = (x, y)
 
     # Basic shapes
@@ -102,12 +102,12 @@ class Canvas(Box):
             PointF(cp2x, cp2y),
             PointF(x, y)
         )
-        draw_context.last_path.AddBezier(point1, point2, point3, point4)
+        draw_context.current_path.AddBezier(point1, point2, point3, point4)
         draw_context.last_point = (x, y)
 
     def quadratic_curve_to(self, cpx, cpy, x, y, draw_context, *args, **kwargs):
         point1, point2, point3 = PointF(*draw_context.last_point), PointF(cpx, cpy), PointF(x, y)
-        draw_context.last_path.AddCurve([point1, point2, point3])
+        draw_context.current_path.AddCurve([point1, point2, point3])
         draw_context.last_point = (x, y)
 
     def arc(
@@ -150,8 +150,8 @@ class Canvas(Box):
             *args,
             **kwargs):
         rect = RectangleF(float(x - radiusx), float(y - radiusy), float(2 * radiusx), float(2 * radiusy))
-        if draw_context.last_path is not None:
-            draw_context.last_path.AddArc(
+        if draw_context.current_path is not None:
+            draw_context.current_path.AddArc(
                 rect,
                 math.degrees(startangle),
                 math.degrees(endangle - startangle)
@@ -175,8 +175,8 @@ class Canvas(Box):
 
     def rect(self, x, y, width, height, draw_context, *args, **kwargs):
         rect = RectangleF(float(x), float(y), float(width), float(height))
-        if draw_context.last_path is not None:
-            draw_context.last_path.AddRectangle(rect)
+        if draw_context.current_path is not None:
+            draw_context.current_path.AddRectangle(rect)
         else:
             pen = self.create_pen(
                 color=kwargs.get("stroke_color", None),
@@ -231,10 +231,10 @@ class Canvas(Box):
     def write_text(self, text, x, y, font, draw_context, *args, **kwargs):
         width, height = font.measure(text)
         origin = PointF(x, y - height)
-        if draw_context.last_path is not None:
+        if draw_context.current_path is not None:
             font_family = win_font_family(font.family)
             font_style = win_font_style(font.weight, font.style, font_family)
-            draw_context.last_path.AddString(
+            draw_context.current_path.AddString(
                 text, font_family, font_style, float(height), origin, StringFormat()
             )
         else:
