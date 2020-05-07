@@ -1,11 +1,7 @@
 from toga.constants import LEFT, RIGHT, CENTER, JUSTIFY
-from travertino.size import at_least
 
 from ..libs.activity import MainActivity
-from ..libs.android_widgets import (
-    Gravity,
-    View__MeasureSpec,
-)
+from ..libs.android_widgets import Gravity
 
 
 class Widget:

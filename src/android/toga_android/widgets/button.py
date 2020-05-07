@@ -1,3 +1,5 @@
+from travertino.size import at_least
+
 from .base import Widget
 from ..libs import android_widgets
 
@@ -24,7 +26,7 @@ class Button(Widget):
         self.native.setEnabled(value)
 
     def set_background_color(self, value):
-        self.interface.factory.not_implemented('Button.set_background_color()')
+        self.interface.factory.not_implemented("Button.set_background_color()")
 
     def set_on_press(self, handler):
         # No special handling required
@@ -32,7 +34,8 @@ class Button(Widget):
 
     def rehint(self):
         self.native.measure(
-            View__MeasureSpec.UNSPECIFIED, View__MeasureSpec.UNSPECIFIED
+            android_widgets.View__MeasureSpec.UNSPECIFIED,
+            android_widgets.View__MeasureSpec.UNSPECIFIED,
         )
         self.interface.intrinsic.width = at_least(self.native.getMeasuredWidth())
         self.interface.intrinsic.height = self.native.getMeasuredHeight()
