@@ -95,6 +95,3 @@ class Widget:
         # decide to use a width of zero.
         self.interface.intrinsic.width = at_least(self.native.getMeasuredWidth())
         self.interface.intrinsic.height = self.native.getMeasuredHeight()
-
-    def set_size(self, size):
-        pass
