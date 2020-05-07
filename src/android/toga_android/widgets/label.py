@@ -1,7 +1,9 @@
+from toga.constants import LEFT, RIGHT, CENTER, JUSTIFY
 from travertino.size import at_least
 
 from .base import Widget
 from ..libs.android_widgets import (
+    Gravity,
     TextView,
     View__MeasureSpec,
 )
@@ -23,4 +25,11 @@ class Label(Widget):
         self.interface.intrinsic.height = self.native.getMeasuredHeight()
 
     def set_alignment(self, value):
-        return super().set_alignment(value)
+        self.native.setGravity(
+            {
+                LEFT: Gravity.CENTER_VERTICAL | Gravity.LEFT,
+                RIGHT: Gravity.CENTER_VERTICAL | Gravity.RIGHT,
+                CENTER: Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL,
+                JUSTIFY: Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL,
+            }[value]
+        )
