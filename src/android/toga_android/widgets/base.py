@@ -84,14 +84,4 @@ class Widget:
             child.container = self.container
 
     def rehint(self):
-        # An Android `View` subclass (of which all widgets are subclasses) can
-        # be measured against a measurement specification called a MeasureSpec.
-        # Note that this mutates the widget's `getMeasuredWidth()` and
-        # `getMeasuredHeight()`.
-        self.native.measure(
-            View__MeasureSpec.UNSPECIFIED, View__MeasureSpec.UNSPECIFIED
-        )
-        # We use `at_least()` below because without it, Travertino seems to
-        # decide to use a width of zero.
-        self.interface.intrinsic.width = at_least(self.native.getMeasuredWidth())
-        self.interface.intrinsic.height = self.native.getMeasuredHeight()
+        pass

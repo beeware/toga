@@ -11,7 +11,11 @@ class Label(Widget):
         self.native.setText(value)
 
     def rehint(self):
-        return super().rehint()
+        self.native.measure(
+            View__MeasureSpec.UNSPECIFIED, View__MeasureSpec.UNSPECIFIED
+        )
+        self.interface.intrinsic.width = at_least(self.native.getMeasuredWidth())
+        self.interface.intrinsic.height = self.native.getMeasuredHeight()
 
     def set_alignment(self, value):
         return super().set_alignment(value)
