@@ -1,7 +1,3 @@
-from .libs.activity import MainActivity
-from .libs.android_widgets import ScrollView
-
-
 class AndroidViewport:
     def __init__(self, native):
         self.native = native
@@ -31,13 +27,10 @@ class Window:
     def set_content(self, widget):
         # Set the widget's viewport to be based on the window's content.
         widget.viewport = AndroidViewport(widget.native)
-        # Set the app's entire contentView to a scrollable view over the desired
-        # widget. This means that calling Window.set_content() on any Window
-        # object automatically updates the app, meaning that every Window
-        # object acts as the MainWindow.
-        scroll_view = ScrollView(MainActivity.singletonThis)
-        scroll_view.addView(widget.native)
-        self.app.native.setContentView(scroll_view)
+        # Set the app's entire contentView to the desired widget. This means that
+        # calling Window.set_content() on any Window object automatically updates
+        # the app, meaning that every Window object acts as the MainWindow.
+        self.app.native.setContentView(widget.native)
 
         # Attach child widgets to widget as their container.
         for child in widget.interface.children:
