@@ -23,17 +23,19 @@ class Button(Widget):
         self.native.setText(self.interface.label)
 
     def set_enabled(self, value):
-        self.interface.factory.not_implemented('Button.set_enabled()')
+        self.native.setEnabled(value)
 
     def set_background_color(self, value):
-        self.interface.factory.not_implemented('Button.set_background_color()')
+        self.interface.factory.not_implemented("Button.set_background_color()")
 
     def set_on_press(self, handler):
         # No special handling required
         pass
 
     def rehint(self):
-        if self.native.getMeasuredWidth():
-            # print("REHINT button", self, self.native.getMeasuredWidth(), self.native.getMeasuredHeight())
-            self.interface.intrinsic.width = at_least(self.native.getMeasuredWidth() / self.app._impl.device_scale)
-            self.interface.intrinsic.height = self.native.getMeasuredHeight() / self.app._impl.device_scale
+        self.native.measure(
+            android_widgets.View__MeasureSpec.UNSPECIFIED,
+            android_widgets.View__MeasureSpec.UNSPECIFIED,
+        )
+        self.interface.intrinsic.width = at_least(self.native.getMeasuredWidth())
+        self.interface.intrinsic.height = self.native.getMeasuredHeight()

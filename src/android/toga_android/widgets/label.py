@@ -1,40 +1,35 @@
-from android.view import Gravity
-
+from toga.constants import LEFT, RIGHT, CENTER, JUSTIFY
 from travertino.size import at_least
 
-from toga.constants import (
-    LEFT_ALIGNED,
-    RIGHT_ALIGNED,
-    CENTER_ALIGNED,
-    JUSTIFIED_ALIGNED,
-    NATURAL_ALIGNED,
+from .base import Widget
+from ..libs.android_widgets import (
+    Gravity,
+    TextView,
+    View__MeasureSpec,
 )
 
 
-class TogaLabel:
-    # TODO: Extend `android.widget.TextView`. Provide app as `context`.
-    def __init__(self, context, interface):
-        self.interface = interface
-
-
-class Label:
+class Label(Widget):
     def create(self):
-        self.native = TogaLabel(self.app.native, self.interface)
+        self.native = TextView(self._native_activity)
         self.native.setSingleLine()
 
-    def set_alignment(self, value):
-        self.native.setGravity({
-                LEFT_ALIGNED: Gravity.CENTER_VERTICAL | Gravity.LEFT,
-                RIGHT_ALIGNED: Gravity.CENTER_VERTICAL | Gravity.RIGHT,
-                CENTER_ALIGNED: Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL,
-                JUSTIFIED_ALIGNED: Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL,
-                NATURAL_ALIGNED: Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL,
-            }[value])
-
     def set_text(self, value):
-        self.native.setText(self.interface._text)
+        self.native.setText(value)
 
     def rehint(self):
-        # print("REHINT label", self, self.native.getMeasuredWidth(), self.native.getMeasuredHeight())
-        self.interface.intrinsic.width = at_least(self.native.getMeasuredWidth() / self.app.device_scale)
-        self.interface.intrinsic.height = self.native.getMeasuredHeight() / self.app.device_scale
+        self.native.measure(
+            View__MeasureSpec.UNSPECIFIED, View__MeasureSpec.UNSPECIFIED
+        )
+        self.interface.intrinsic.width = at_least(self.native.getMeasuredWidth())
+        self.interface.intrinsic.height = self.native.getMeasuredHeight()
+
+    def set_alignment(self, value):
+        self.native.setGravity(
+            {
+                LEFT: Gravity.CENTER_VERTICAL | Gravity.LEFT,
+                RIGHT: Gravity.CENTER_VERTICAL | Gravity.RIGHT,
+                CENTER: Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL,
+                JUSTIFY: Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL,
+            }[value]
+        )

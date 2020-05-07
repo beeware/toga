@@ -28,6 +28,9 @@ class Widget:
         self.viewport = container.viewport
 
         if self.native:
+            # When initially setting the container and adding widgets to the container,
+            # we provide no `LayoutParams`. Those are promptly added when Toga
+            # calls `widget.rehint()` and `widget.set_bounds()`.
             self._container.native.addView(self.native)
 
         for child in self.interface.children:
@@ -41,12 +44,12 @@ class Widget:
     # APPLICATOR
 
     def set_bounds(self, x, y, width, height):
-        # No implementation required here; the new sizing will be picked up
-        # by the container layout.
-        pass
+        if self.container:
+            # Ask the container widget to set our bounds.
+            self.container.set_child_bounds(self, x, y, width, height)
 
     def set_hidden(self, hidden):
-        self.interface.factory.not_implemented('Widget.set_hidden()')
+        self.interface.factory.not_implemented("Widget.set_hidden()")
 
     def set_font(self, font):
         # By default, font can't be changed
