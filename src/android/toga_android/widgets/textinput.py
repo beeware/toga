@@ -29,3 +29,6 @@ class TextInput(Widget):
     def set_on_change(self, handler):
         # No special handling required.
         pass
+
+    def rehint(self):
+        return super().rehint()

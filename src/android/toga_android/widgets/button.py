@@ -29,3 +29,6 @@ class Button(Widget):
     def set_on_press(self, handler):
         # No special handling required
         pass
+
+    def rehint(self):
+        return super().rehint()

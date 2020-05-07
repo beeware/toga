@@ -9,3 +9,9 @@ class Label(Widget):
 
     def set_text(self, value):
         self.native.setText(value)
+
+    def rehint(self):
+        return super().rehint()
+
+    def set_alignment(self, value):
+        return super().set_alignment(value)
