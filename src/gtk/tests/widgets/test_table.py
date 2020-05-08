@@ -14,6 +14,7 @@ except ImportError:
         Gtk = None
 
 import toga
+from .utils import TreeModelListener
 
 
 def handle_events():
@@ -38,8 +39,8 @@ class TestGtkTable(unittest.TestCase):
         self.assertEqual(tuple(row)[1:], data)
 
     def test_change_source(self):
-        # Clear the table directly
-        self.gtk_table.clear()
+        # Clear the table directly: can't do!
+        # self.gtk_table.clear()
 
         # Assign pre-constructed data
         self.table.data = [
@@ -66,16 +67,18 @@ class TestGtkTable(unittest.TestCase):
         self.assertEqual(len(store), 0)
 
     def test_insert(self):
+        listener = TreeModelListener(self.gtk_table.store)
+
         # Insert a row
         row_data = ("1", "2")
         INSERTED_AT = 0
         row = self.table.data.insert(INSERTED_AT, *row_data)
 
         # Make sure it's in there
-        self.assertIsNotNone(row._impl[self.gtk_table])
+        self.assertIsNotNone(listener.inserted_it)
 
         # Get the Gtk.TreeIter
-        tree_iter = row._impl[self.gtk_table]
+        tree_iter = listener.inserted_it
 
         # Make sure it's a Gtk.TreeIter
         self.assertTrue(isinstance(tree_iter, Gtk.TreeIter))
@@ -91,30 +94,34 @@ class TestGtkTable(unittest.TestCase):
         self.assertEqual(str(path), str(INSERTED_AT))
         self.assertEqual(tuple(path), (INSERTED_AT,))
         self.assertEqual(path, Gtk.TreePath(INSERTED_AT))
+        self.assertEqual(path, listener.inserted_path)
 
         # Make sure the row got stored correctly
         result_row = self.gtk_table.store[path]
         self.assertRowEqual(result_row, row_data)
 
     def test_remove(self):
+        listener = TreeModelListener(self.gtk_table.store)
         # Insert a row
         row = self.table.data.insert(0, "1", "2")
 
         # Make sure it's in there
-        self.assertIsNotNone(row._impl[self.gtk_table])
+        self.assertIsNotNone(listener.inserted_it)
 
         # Then remove it
-        self.gtk_table.remove(row, 0)
+        self.gtk_table.remove(row, index=0)
 
         # Make sure its gone
-        self.assertIsNone(row._impl.get(self.gtk_table, None))
+        self.assertIsNotNone(listener.deleted_path)
 
     def test_change(self):
+        listener = TreeModelListener(self.gtk_table.store)
+
         # Insert a row
         row = self.table.data.insert(0, "1", "2")
 
         # Make sure it's in there
-        self.assertIsNotNone(row._impl[self.gtk_table])
+        self.assertIsNotNone(listener.inserted_it)
 
         # Change a column
         row.one = "something_changed"
@@ -122,7 +129,7 @@ class TestGtkTable(unittest.TestCase):
         # unit tests should ensure this already.)
 
         # Get the Gtk.TreeIter
-        tree_iter = row._impl[self.gtk_table]
+        tree_iter = listener.changed_it
 
         # Make sure it's a Gtk.TreeIter
         self.assertTrue(isinstance(tree_iter, Gtk.TreeIter))
@@ -174,6 +181,9 @@ class TestGtkTable(unittest.TestCase):
     def test_on_select_child_row(self):
         # Insert two nodes
         self.table.data = []
+
+        listener = TreeModelListener(self.gtk_table.store)
+
         a = self.table.data.append(None, one="A1", two="A2")
         b = self.table.data.append(a, one="B1", two="B2")
 
@@ -190,7 +200,7 @@ class TestGtkTable(unittest.TestCase):
         self.table.on_select = on_select
 
         # Select node B
-        self.gtk_table.selection.select_iter(b._impl[self.gtk_table])
+        self.gtk_table.selection.select_iter(listener.inserted_it)
 
         # Allow on_select to call
         handle_events()
@@ -200,8 +210,13 @@ class TestGtkTable(unittest.TestCase):
     def test_on_select_deleted_node(self):
         # Insert two nodes
         self.table.data = []
+
+        listener = TreeModelListener(self.gtk_table.store)
+
         a = self.table.data.append(None, one="A1", two="A2")
+        listener.clear()
         b = self.table.data.append(None, one="B1", two="B2")
+
 
         # Create a flag
         succeed = False
@@ -221,7 +236,7 @@ class TestGtkTable(unittest.TestCase):
         self.table.on_select = on_select
 
         # Select row B
-        self.gtk_table.selection.select_iter(b._impl[self.gtk_table])
+        self.gtk_table.selection.select_iter(listener.inserted_it)
 
         # Allow on_select to call
         handle_events()

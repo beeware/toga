@@ -3,6 +3,7 @@ import html
 from ..icons import Icon
 from ..libs import GdkPixbuf, Gtk, Pango
 from .base import Widget
+from .sourcetreemodel import SourceTreeModel
 
 
 class DetailedListRenderer:
@@ -17,10 +18,6 @@ class DetailedListRenderer:
     def create_columns(self, treeview):
         """ to create column(s) """
         raise NotImplementedError("implement create_columns")
-
-    def row_data(self, item):
-        """ to return appropriate data for rendering """
-        raise NotImplementedError("implement row_data")
 
     @staticmethod
     def icon_size():
@@ -65,41 +62,60 @@ class IconTextRenderer(DetailedListRenderer):
                 ret.append(str)
         return ret
 
+    def row_columns(self):
+        ret = []
+        for f in self.fields:
+            if f == self.ICON:
+                ret.append({
+                    'type': GdkPixbuf.Pixbuf,
+                    'attr': 'icon',
+                })
+            elif f in (self.TITLE, self.TITLE_SUBTITLE):
+                ret.append({
+                    'type': str,
+                    'attr': 'title',
+                })
+                ret.append(str)
+        return ret
+
     def create_columns(self, treeview):
         # single column with icon + markup (dep. on init options)
         column = Gtk.TreeViewColumn('')
         row_data_index = 1  # first element in the row is always the item itself
 
-        for f in self.fields:
+        for i, f in enumerate(self.fields):
             if f == self.ICON:
                 iconcell = Gtk.CellRendererPixbuf()
                 iconcell.set_property('width', self.icon_size() + 10)
+                column.set_cell_data_func(iconcell, self.icon, i)
                 column.pack_start(iconcell, False)
-                column.add_attribute(iconcell, 'pixbuf', row_data_index)
-            elif f in (self.TITLE, self.TITLE_SUBTITLE):
+            elif f == self.TITLE:
                 namecell = Gtk.CellRendererText()
                 namecell.set_property('ellipsize', Pango.EllipsizeMode.END)
                 column.pack_start(namecell, True)
-                column.add_attribute(namecell, 'markup', row_data_index)
+                column.add_attribute(namecell, 'text', row_data_index)
+            elif f == self.TITLE_SUBTITLE:
+                namecell = Gtk.CellRendererText()
+                namecell.set_property('ellipsize', Pango.EllipsizeMode.END)
+                column.set_cell_data_func(namecell, self.markup, i)
+                column.pack_start(namecell, True)
             row_data_index += 1
 
         treeview.append_column(column)
 
-    def row_data(self, item):
-        ret = [item]
-        for f in self.fields:
-            if f == self.ICON:
-                ret.append(self.pixbuf(self.interface, item.icon))
-            elif f == self.TITLE:
-                ret.append(html.escape(item.title or ''))
-            elif f == self.TITLE_SUBTITLE:
-                markup = [
-                    html.escape(item.title or ''),
-                    '\n',
-                    '<small>', html.escape(item.subtitle or ''), '</small>',
-                ]
-                ret.append(''.join(markup))
-        return ret
+    @staticmethod
+    def markup(tree_column, cell, tree_model, iter_, index):
+        item = tree_model.do_get_value(iter_, 0)
+        markup = [
+            html.escape(item.title or ''),
+            '\n',
+            '<small>', html.escape(item.subtitle or ''), '</small>',
+        ]
+        cell.set_property('markup', ''.join(markup))
+
+    def icon(self, tree_column, cell, tree_model, iter_, index):
+        item = tree_model.do_get_value(iter_, 0)
+        cell.set_property('pixbuf', self.pixbuf(self.interface, item.icon))
 
     @classmethod
     def from_style(clazz, interface, style='default'):
@@ -119,7 +135,7 @@ class DetailedList(Widget):
     def create(self):
         self.renderer = IconTextRenderer.from_style(self.interface)
 
-        self.store = Gtk.ListStore(*self.renderer.row_field_types())
+        self.store = SourceTreeModel(self.renderer.row_columns(), is_tree=False)
 
         self.treeview = Gtk.TreeView(model=self.store)
         self.treeview.set_headers_visible(False)
@@ -139,29 +155,20 @@ class DetailedList(Widget):
 
     def change_source(self, source):
         self.treeview.set_model(None)
-
-        self.store.clear()
-        for i, node in enumerate(self.interface.data):
+        self.store.change_source(source)
+        for i, node in enumerate(source):
             self.insert(i, node)
 
         self.treeview.set_model(self.store)
 
     def insert(self, index, item):
-        impl = self.store.insert(
-            index,
-            self.row_data(item)
-        )
-        try:
-            item._impl[self] = impl
-        except AttributeError:
-            item._impl = {self: impl}
+        self.store.insert(item)
 
     def change(self, item):
-        self.store[item._impl[self]] = self.row_data(item)
+        self.store.change(item)
 
     def remove(self, item, index):
-        del self.store[item._impl[self]]
-        del item._impl[self]
+        self.store.remove(item, index)
 
     def clear(self):
         self.store.clear()
@@ -186,9 +193,6 @@ class DetailedList(Widget):
         # to verify actual effect, set row_align=0 to let it move to top
         # self.treeview.scroll_to_cell(path, None, use_align=True, row_align=0., col_align=0.)
         self.treeview.scroll_to_cell(path)
-
-    def row_data(self, item):
-        return self.renderer.row_data(item)
 
     def gtk_on_select(self, selection):
         if self.interface.on_select:

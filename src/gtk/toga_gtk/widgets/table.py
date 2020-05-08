@@ -17,7 +17,7 @@ class Table(Tree):
         # updates by deferring row rendering until the update is complete.
         self.treeview.set_model(None)
 
-        self.store.clear()
+        self.store.change_source(source)
 
         for i, row in enumerate(self.interface.data):
             self.insert(i, row)

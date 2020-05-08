@@ -1,7 +1,7 @@
 import gi
 
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gdk, GdkPixbuf, Gio, GLib
+from gi.repository import Gtk, Gdk, GdkPixbuf, Gio, GLib, GObject
 
 # The following import will fail if WebKit or its API wrappers aren't
 # installed; handle failure gracefully

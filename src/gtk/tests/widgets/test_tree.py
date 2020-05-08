@@ -15,6 +15,8 @@ except ImportError:
 
 import toga
 
+from .utils import TreeModelListener
+
 
 def handle_events():
     while Gtk.events_pending():
@@ -38,8 +40,8 @@ class TestGtkTree(unittest.TestCase):
         self.assertEqual(tuple(node)[1:], data)
 
     def test_change_source(self):
-        # Clear the table directly
-        self.gtk_tree.clear()
+        # Clear the tree directly: can't do!
+        # self.gtk_tree.clear()
 
         # Assign pre-constructed data
         self.tree.data = {
@@ -69,15 +71,17 @@ class TestGtkTree(unittest.TestCase):
         self.assertEqual(len(store), 0)
 
     def test_insert_root_node(self):
+        listener = TreeModelListener(self.gtk_tree.store)
+
         # Insert a node
         node_data = ("1", "2")
         node = self.tree.data.insert(None, 0, *node_data)
 
         # Make sure it's in there
-        self.assertIsNotNone(node._impl[self.gtk_tree])
+        self.assertIsNotNone(listener.inserted_it)
 
         # Get the Gtk.TreeIter
-        tree_iter = node._impl[self.gtk_tree]
+        tree_iter = listener.inserted_it
 
         # Make sure it's a Gtk.TreeIter
         self.assertTrue(isinstance(tree_iter, Gtk.TreeIter))
@@ -91,6 +95,7 @@ class TestGtkTree(unittest.TestCase):
         # Make sure it's the correct Gtk.TreePath
         self.assertTrue(isinstance(path, Gtk.TreePath))
         self.assertEqual(path, Gtk.TreePath(0))
+        self.assertEqual(listener.inserted_path, Gtk.TreePath(0))
         # self.assertEqual(str(path), "0")
         # self.assertNodeEqual(path), (0,))
 
@@ -98,20 +103,24 @@ class TestGtkTree(unittest.TestCase):
         self.assertNodeEqual(self.gtk_tree.store[path], node_data)
 
     def test_insert_child_node(self):
+        listener = TreeModelListener(self.gtk_tree.store)
+
         self.tree.data = []
 
         # Insert blank node as parent
         parent = self.tree.data.insert(None, 0, *(None, None))
+
+        listener.clear()
 
         # Insert a child node
         node_data = ("1", "2")
         node = self.tree.data.insert(parent, 0, *node_data)
 
         # Make sure it's in there
-        self.assertIsNotNone(node._impl[self.gtk_tree])
+        self.assertIsNotNone(listener.inserted_path)
 
         # Get the Gtk.TreeIter
-        tree_iter = node._impl[self.gtk_tree]
+        tree_iter = listener.inserted_it
 
         # Make sure it's a Gtk.TreeIter
         self.assertTrue(isinstance(tree_iter, Gtk.TreeIter))
@@ -127,37 +136,44 @@ class TestGtkTree(unittest.TestCase):
         self.assertEqual(str(path), "0:0")
         self.assertEqual(tuple(path), (0, 0))
         self.assertEqual(path, Gtk.TreePath((0, 0)))
+        self.assertEqual(listener.inserted_path, Gtk.TreePath((0, 0)))
 
         # Make sure the node got stored correctly
         self.assertNodeEqual(self.gtk_tree.store[path], node_data)
 
     def test_remove(self):
+        listener = TreeModelListener(self.gtk_tree.store)
+
         # Insert a node
         node = self.tree.data.insert(None, 0, "1", "2")
 
         # Make sure it's in there
-        self.assertIsNotNone(node._impl[self.gtk_tree])
+        self.assertIsNotNone(listener.inserted_it)
 
         # Then remove it
-        self.gtk_tree.remove(node, 0, None)
+        self.gtk_tree.remove(node, index=0, parent=None)
 
         # Make sure its gone
-        self.assertIsNone(node._impl.get(self.gtk_tree, None))
+        self.assertIsNone(self.gtk_tree.store.do_get_value(listener.inserted_it, 0))
 
     def test_change(self):
+        listener = TreeModelListener(self.gtk_tree.store)
+
         # Insert a node
         node = self.tree.data.insert(None, 0, "1", "2")
 
         # Make sure it's in there
-        self.assertIsNotNone(node._impl[self.gtk_tree])
+        self.assertIsNotNone(listener.inserted_path)
+        self.assertEqual([0], listener.inserted_path.get_indices())
 
         # Change a column
         node.one = "something_changed"
-        # (not testing that self.gtk_tree.change is called. The Core API
-        # unit tests should ensure this already.)
+        
+        self.assertIsNotNone(listener.changed_path)
+        self.assertIsNotNone(listener.changed_it)
 
         # Get the Gtk.TreeIter
-        tree_iter = node._impl[self.gtk_tree]
+        tree_iter = listener.changed_it
 
         # Make sure it's a Gtk.TreeIter
         self.assertTrue(isinstance(tree_iter, Gtk.TreeIter))
@@ -191,9 +207,12 @@ class TestGtkTree(unittest.TestCase):
         self.assertNodeEqual(self.gtk_tree.store[0], ("B1", "B2"))
 
     def test_on_select_root_node(self):
+        listener = TreeModelListener(self.gtk_tree.store)
+
         # Insert dummy nodes
         self.tree.data = []
         a = self.tree.data.append(None, one="A1", two="A2")
+        listener.clear()
         b = self.tree.data.append(None, one="B1", two="B2")
 
         # Create a flag
@@ -209,7 +228,7 @@ class TestGtkTree(unittest.TestCase):
         self.tree.on_select = on_select
 
         # Select node B
-        self.gtk_tree.selection.select_iter(b._impl[self.gtk_tree])
+        self.gtk_tree.selection.select_iter(listener.inserted_it)
 
         # Allow on_select to call
         handle_events()
@@ -217,9 +236,13 @@ class TestGtkTree(unittest.TestCase):
         self.assertTrue(succeed)
 
     def test_on_select_child_node(self):
+        listener = TreeModelListener(self.gtk_tree.store)
+
         # Insert two nodes
         self.tree.data = []
         a = self.tree.data.append(None, one="A1", two="A2")
+        a_iter = listener.inserted_it
+        listener.clear()
         b = self.tree.data.append(a, one="B1", two="B2")
 
         # Create a flag
@@ -235,17 +258,19 @@ class TestGtkTree(unittest.TestCase):
         self.tree.on_select = on_select
 
         # Expand parent node (a) on Gtk.TreeView to allow selection
-        path = self.gtk_tree.store.get_path(a._impl[self.gtk_tree])
+        path = self.gtk_tree.store.get_path(a_iter)
         self.gtk_tree.treeview.expand_row(path, True)
 
         # Select node B
-        self.gtk_tree.selection.select_iter(b._impl[self.gtk_tree])
+        self.gtk_tree.selection.select_iter(listener.inserted_it)
         # Allow on_select to call
         handle_events()
 
         self.assertTrue(succeed)
 
     def test_on_select_deleted_node(self):
+        listener = TreeModelListener(self.gtk_tree.store)
+
         # Insert two nodes
         self.tree.data = []
         a = self.tree.data.append(None, one="A1", two="A2")
@@ -269,7 +294,7 @@ class TestGtkTree(unittest.TestCase):
         self.tree.on_select = on_select
 
         # Select node B
-        self.gtk_tree.selection.select_iter(b._impl[self.gtk_tree])
+        self.gtk_tree.selection.select_iter(listener.inserted_it)
 
         # Allow on_select to call
         handle_events()
