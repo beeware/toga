@@ -6,22 +6,18 @@ from toga.constants import COLUMN, ROW
 class ExampleOptionContainerApp(toga.App):
 
     def _create_options(self):
+        label_box0 = toga.Label('This is Box 0 ', style=Pack(padding=10))
         label_box1 = toga.Label('This is Box 1 ', style=Pack(padding=10))
         label_box2 = toga.Label('This is Box 2 ', style=Pack(padding=10))
-        label_box3 = toga.Label('This is Box 3 ', style=Pack(padding=10))
 
+        box0 = toga.Box(children=[label_box0])
         box1 = toga.Box(children=[label_box1])
         box2 = toga.Box(children=[label_box2])
-        box3 = toga.Box(children=[label_box3])
 
-        self.optioncontainer.add('Option1', box1)
-        self.optioncontainer.add('Option2', box2)
-        self.optioncontainer.add('Option3', box3)
+        self.optioncontainer.add('Option 0', box0)
+        self.optioncontainer.add('Option 1', box1)
+        self.optioncontainer.add('Option 2', box2)
         self._refresh_select()
-
-    def _remove_all(self):
-        while len(self.optioncontainer.content) > 0:
-            self.optioncontainer.remove(0)
 
     def _refresh_select(self):
         items = []
@@ -30,7 +26,7 @@ class ExampleOptionContainerApp(toga.App):
         self.select_option.items = items
 
     def on_add_option(self, button):
-        self.optioncontainer.add('Option', toga.Box())
+        self.optioncontainer.add('New Option', toga.Box())
         self._refresh_select()
 
     def on_enable(self, button):
@@ -45,10 +41,6 @@ class ExampleOptionContainerApp(toga.App):
         index = int(self.select_option.value)
         del self.optioncontainer.content[index]
         self._refresh_select()
-
-    def on_reset_optioncontainer(self, button):
-        self._remove_all()
-        self._create_options()
 
     def startup(self):
         # Set up main window
@@ -80,9 +72,8 @@ class ExampleOptionContainerApp(toga.App):
         self.optioncontainer = toga.OptionContainer(style=Pack(padding_bottom=20))
         self._create_options()
 
-        btn_reset = toga.Button('Reset demo', on_press=self.on_reset_optioncontainer)
         btn_add = toga.Button('Add Option', on_press=self.on_add_option)
-        box_general_actions = toga.Box(style=Pack(padding_bottom=10), children=[btn_reset, btn_add])
+        box_general_actions = toga.Box(style=Pack(padding_bottom=10), children=[btn_add])
 
         # Outermost box
         outer_box = toga.Box(

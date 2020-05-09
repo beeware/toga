@@ -58,11 +58,27 @@ class OptionContainer(Widget):
         self.native.addTabViewItem(item)
 
     def remove_content(self, index):
-        if self.native.numberOfTabViewItem == 1:
+        if self.native.numberOfTabViewItems == 1:
             # don't allow remove if there is one tab left
             raise OptionException('Cannot remove last remaining option')
 
+        # check if option siblings are all disabled, then raise error
+        is_only_enabled = True
+        indexes_to_check = [*range(self.native.numberOfTabViewItems)]
+        indexes_to_check.remove(index)
+        for siblingindex in indexes_to_check:
+            if self.is_option_enabled(siblingindex):
+                is_only_enabled = False
+                continue
+        if is_only_enabled:
+            raise OptionException('Cannot remove last remaining option enabled')
+
         tabview = self.native.tabViewItemAtIndex(index)
+
+        if tabview == self.native.selectedTabViewItem:
+            # Don't allow remove a selected tab
+            raise OptionException('Currently selected option cannot be removed')
+
         self.native.removeTabViewItem(tabview)
 
     def set_on_select(self, handler):
@@ -71,7 +87,7 @@ class OptionContainer(Widget):
     def set_option_enabled(self, index, enabled):
         tabview = self.native.tabViewItemAtIndex(index)
         if not enabled and tabview == self.native.selectedTabViewItem:
-            # Don't allow to disable selected tab
+            # Don't allow disable a selected tab
             raise OptionException('Currently selected option cannot be disabled')
 
         if not enabled and self.native.numberOfTabViewItems == 1:
