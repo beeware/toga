@@ -113,6 +113,11 @@ class TreeSource(Source):
     def __iter__(self):
         return iter(self._roots)
 
+    def clear(self):
+        old_data = self._roots
+        self._roots = []
+        self._notify('clear', old_data=old_data)
+
     def insert(self, parent, index, *values, **named):
         node = self._create_node(dict(zip(self._accessors, values), **named))
 
@@ -135,12 +140,14 @@ class TreeSource(Source):
 
     def remove(self, node):
         i = self.index(node)
+        parent = node._parent
         if node._parent is None:
             del self._roots[i]
         else:
             del node._parent._children[i]
+            del node._parent
 
-        self._notify('remove', item=node, index=i, parent=node._parent)
+        self._notify('remove', item=node, index=i, parent=parent)
         return node
 
     def index(self, node):

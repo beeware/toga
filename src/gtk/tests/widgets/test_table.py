@@ -39,8 +39,8 @@ class TestGtkTable(unittest.TestCase):
         self.assertEqual(tuple(row)[1:], data)
 
     def test_change_source(self):
-        # Clear the table directly: can't do!
-        # self.gtk_table.clear()
+        # Clear the table directly
+        self.gtk_table.clear(old_data=[])
 
         # Assign pre-constructed data
         self.table.data = [

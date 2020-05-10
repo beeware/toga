@@ -36,24 +36,21 @@ class SourceTreeModel(GObject.Object, Gtk.TreeModel):
         # It's purged on data source change and on remove
         self.pool = {}
 
-    def clear(self):
+    def clear(self, old_data):
         """
             Called from toga impl widget
-            clear() shall emit row-deleted for all the tree's contents.
-            But it doesn't keep the contents, which is not in the source by this time...
         """
-        raise Exception("clear() is not implementable as-is")
+        if self.is_tree:
+            self._remove_children_rec([], old_data)
+        else:
+            for i, node in reversed(list(enumerate(old_data))):
+                self.row_deleted(Gtk.TreePath.new_from_indices([i]))
+                self._clear_user_data(node)
 
     def change_source(self, source):
         """ Called from toga impl widget """
-        # clear
         if self.source:
-            if self.is_tree:
-                self._remove_children_rec([], self.source)
-            else:
-                for i, node in reversed(list(enumerate(self.source))):
-                    self.row_deleted(Gtk.TreePath.new_from_indices([i]))
-                    self._clear_user_data(node)
+            self.clear(self.source)
         self.source = source
         self.stamp += 1
 

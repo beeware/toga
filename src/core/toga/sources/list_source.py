@@ -80,8 +80,9 @@ class ListSource(Source):
         return iter(self._data)
 
     def clear(self):
+        old_data = self._data
         self._data = []
-        self._notify('clear')
+        self._notify('clear', old_data=old_data)
 
     def insert(self, index, *values, **named):
         # Coalesce values and data into a single data dictionary,

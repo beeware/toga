@@ -40,8 +40,8 @@ class TestGtkTree(unittest.TestCase):
         self.assertEqual(tuple(node)[1:], data)
 
     def test_change_source(self):
-        # Clear the tree directly: can't do!
-        # self.gtk_tree.clear()
+        # Clear the tree directly
+        self.gtk_tree.clear(old_data=[])
 
         # Assign pre-constructed data
         self.tree.data = {
