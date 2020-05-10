@@ -153,7 +153,7 @@ class Table(Widget):
     def change(self, item):
         self.table.reloadData()
 
-    def remove(self, item):
+    def remove(self, item, index):
         self.table.reloadData()
 
     def clear(self):

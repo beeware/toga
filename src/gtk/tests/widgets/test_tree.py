@@ -139,7 +139,7 @@ class TestGtkTree(unittest.TestCase):
         self.assertIsNotNone(node._impl[self.gtk_tree])
 
         # Then remove it
-        self.gtk_tree.remove(node)
+        self.gtk_tree.remove(node, 0, None)
 
         # Make sure its gone
         self.assertIsNone(node._impl.get(self.gtk_tree, None))

@@ -47,8 +47,8 @@ class Table(Tree):
     def change(self, item):
         super().change(item)
 
-    def remove(self, item):
-        super().remove(item)
+    def remove(self, item, index):
+        super().remove(item, index=index, parent=None)
 
     def clear(self):
         super().clear()

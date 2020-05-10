@@ -134,12 +134,13 @@ class TreeSource(Source):
         return self.insert(parent, len(parent or self), *values, **named)
 
     def remove(self, node):
+        i = self.index(node)
         if node._parent is None:
-            self._roots.remove(node)
+            del self._roots[i]
         else:
-            node._parent._children.remove(node)
+            del node._parent._children[i]
 
-        self._notify('remove', item=node)
+        self._notify('remove', item=node, index=i, parent=node._parent)
         return node
 
     def index(self, node):

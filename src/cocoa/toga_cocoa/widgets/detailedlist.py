@@ -137,7 +137,7 @@ class DetailedList(Widget):
     def change(self, item):
         self.detailedlist.reloadData()
 
-    def remove(self, item):
+    def remove(self, item, index):
         self.detailedlist.reloadData()
 
     def clear(self):

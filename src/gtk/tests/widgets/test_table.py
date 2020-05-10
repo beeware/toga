@@ -104,7 +104,7 @@ class TestGtkTable(unittest.TestCase):
         self.assertIsNotNone(row._impl[self.gtk_table])
 
         # Then remove it
-        self.gtk_table.remove(row)
+        self.gtk_table.remove(row, 0)
 
         # Make sure its gone
         self.assertIsNone(row._impl.get(self.gtk_table, None))

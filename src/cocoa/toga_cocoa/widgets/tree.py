@@ -254,7 +254,8 @@ class Tree(Widget):
         except AttributeError:
             pass
 
-    def remove(self, item):
+    def remove(self, item, index, parent):
+        # todo: index and parent seem useful here...
         try:
             index = self.tree.childIndexForItem(item._impl)
         except AttributeError:

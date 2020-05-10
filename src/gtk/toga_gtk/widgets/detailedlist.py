@@ -159,7 +159,7 @@ class DetailedList(Widget):
     def change(self, item):
         self.store[item._impl[self]] = self.row_data(item)
 
-    def remove(self, item):
+    def remove(self, item, index):
         del self.store[item._impl[self]]
         del item._impl[self]
 
