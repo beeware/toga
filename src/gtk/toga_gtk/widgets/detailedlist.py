@@ -128,8 +128,6 @@ class DetailedList(Widget):
     This is based on a Gtk.TreeView because the contents is still basic.
     Should the need arise for more complex contents (buttons on each row, etc.),
     we should use a Gtk.ListBox (see gtk3-demo).
-    Also the model is a Gtk.ListStore. It may be more efficient to implement GtkTreeModel
-    on top of the source directly instead of copying the data.
     """
 
     def create(self):
