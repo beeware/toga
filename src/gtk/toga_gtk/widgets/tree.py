@@ -35,6 +35,7 @@ class Tree(Widget):
 
     @staticmethod
     def strip_icon(tree_colum, cell, tree_model, iter_, attr):
+        # FIXME: I can do icons
         item = tree_model.do_get_value(iter_, 0)
         val = getattr(item, attr)
         if isinstance(val, tuple):

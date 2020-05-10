@@ -1,6 +1,5 @@
 import copy
 
-from toga.sources import TreeSource
 from ..libs import GObject, Gtk
 
 

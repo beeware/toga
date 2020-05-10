@@ -168,7 +168,7 @@ class TestGtkTree(unittest.TestCase):
 
         # Change a column
         node.one = "something_changed"
-        
+
         self.assertIsNotNone(listener.changed_path)
         self.assertIsNotNone(listener.changed_it)
 
@@ -211,7 +211,7 @@ class TestGtkTree(unittest.TestCase):
 
         # Insert dummy nodes
         self.tree.data = []
-        a = self.tree.data.append(None, one="A1", two="A2")
+        self.tree.data.append(None, one="A1", two="A2")
         listener.clear()
         b = self.tree.data.append(None, one="B1", two="B2")
 
@@ -273,7 +273,7 @@ class TestGtkTree(unittest.TestCase):
 
         # Insert two nodes
         self.tree.data = []
-        a = self.tree.data.append(None, one="A1", two="A2")
+        self.tree.data.append(None, one="A1", two="A2")
         b = self.tree.data.append(None, one="B1", two="B2")
 
         # Create a flag

@@ -213,10 +213,9 @@ class TestGtkTable(unittest.TestCase):
 
         listener = TreeModelListener(self.gtk_table.store)
 
-        a = self.table.data.append(None, one="A1", two="A2")
+        self.table.data.append(None, one="A1", two="A2")
         listener.clear()
         b = self.table.data.append(None, one="B1", two="B2")
-
 
         # Create a flag
         succeed = False
