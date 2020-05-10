@@ -269,7 +269,7 @@ class Tree(Widget):
                 withAnimation=NSTableViewAnimation.SlideUp.value
             )
 
-    def clear(self):
+    def clear(self, old_data):
         self.tree.reloadData()
 
     def set_on_select(self, handler):

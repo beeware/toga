@@ -113,10 +113,10 @@ class DetailedList(Widget):
     def change(self, item):
         self.native.reloadData()
 
-    def remove(self, item):
+    def remove(self, item, index):
         self.native.reloadData()
 
-    def clear(self):
+    def clear(self, old_data):
         self.native.reloadData()
 
     def set_on_select(self, handler):

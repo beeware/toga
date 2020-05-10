@@ -58,10 +58,10 @@ class Table(Widget):
     def change(self, item):
         self.interface.factory.not_implemented('Table.change()')
 
-    def remove(self, item):
+    def remove(self, item, index):
         self.update_data()
 
-    def clear(self):
+    def clear(self, old_data):
         self.native.Items.Clear()
 
     def set_on_select(self, handler):

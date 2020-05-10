@@ -156,7 +156,7 @@ class Table(Widget):
     def remove(self, item, index):
         self.table.reloadData()
 
-    def clear(self):
+    def clear(self, old_data):
         self.table.reloadData()
 
     def set_on_select(self, handler):
