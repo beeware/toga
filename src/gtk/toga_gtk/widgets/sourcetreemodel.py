@@ -61,7 +61,7 @@ class SourceTreeModel(GObject.Object, Gtk.TreeModel):
         if self.is_tree and row._parent and len(row._parent) == 1:
             parent_it = self._create_iter(user_data=row._parent)
             parent_indices = copy.copy(indices[:-1])
-            parent_p = Gtk.TreePath.new_from_indices(indices)
+            parent_p = Gtk.TreePath.new_from_indices(parent_indices)
             self.row_has_child_toggled(parent_p, parent_it)
         p = Gtk.TreePath.new_from_indices(indices)
         self.row_inserted(p, it)
@@ -86,7 +86,7 @@ class SourceTreeModel(GObject.Object, Gtk.TreeModel):
         if self.is_tree and parent and len(parent) == 0:
             parent_it = self._create_iter(user_data=parent)
             parent_indices = copy.copy(indices[:-1])
-            parent_p = Gtk.TreePath.new_from_indices(indices)
+            parent_p = Gtk.TreePath.new_from_indices(parent_indices)
             self.row_has_child_toggled(parent_p, parent_it)
 
     def _remove_children_rec(self, indices, parent):
