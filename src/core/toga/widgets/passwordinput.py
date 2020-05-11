@@ -16,8 +16,16 @@ class PasswordInput(TextInput):
     """
     MIN_WIDTH = 100
 
-    def __init__(self, id=None, style=None, factory=None,
-                initial=None, placeholder=None, readonly=False, on_change=None):
+    def __init__(
+            self,
+            id=None,
+            style=None,
+            factory=None,
+            initial=None,
+            placeholder=None,
+            readonly=False,
+            on_change=None
+    ):
         super(PasswordInput, self).__init__(
             id=id,
             style=style,
