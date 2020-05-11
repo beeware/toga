@@ -23,15 +23,18 @@ class SliderApp(toga.App):
             children=[
 
                 toga.Box(style=box_style, children=[
-                    toga.Label("Default Slider is a continuous range between 0 to 1",
-                        style=label_style),
-
+                    toga.Label(
+                        "Default Slider is a continuous range between 0 to 1",
+                        style=label_style
+                    ),
                     toga.Slider(style=slider_style),
                 ]),
 
                 toga.Box(style=box_style, children=[
-                    toga.Label("On a scale of 1 to 10, how easy is GUI with Toga?",
-                        style=label_style),
+                    toga.Label(
+                        "On a scale of 1 to 10, how easy is GUI with Toga?",
+                        style=label_style
+                    ),
 
                     toga.Slider(
                         range=(1, 10),
