@@ -81,16 +81,16 @@ class TextInputApp(toga.App):
         # Outermost box
         box = toga.Box(
             children=[
-                    self.label,
-                    self.text_input,
-                    self.password_input,
-                    self.password_content_label,
-                    self.number_input,
-                    self.text_label,
-                    self.password_label,
-                    self.number_label,
-                    btn_extract,
-                ],
+                self.label,
+                self.text_input,
+                self.password_input,
+                self.password_content_label,
+                self.number_input,
+                self.text_label,
+                self.password_label,
+                self.number_label,
+                btn_extract,
+            ],
             style=Pack(
                 flex=1,
                 direction=COLUMN,
