@@ -1,7 +1,9 @@
+from toga.constants import LEFT, RIGHT, CENTER, JUSTIFY
 from travertino.size import at_least
 
 from ..libs.android_widgets import (
     EditText,
+    Gravity,
     View__MeasureSpec,
 )
 from .base import Widget
@@ -12,15 +14,21 @@ class TextInput(Widget):
         self.native = EditText(self._native_activity)
 
     def set_readonly(self, value):
-        # self.native.editable = not value
-        self.interface.factory.not_implemented("TextInput.set_readonly()")
+        self.native.setEnabled(not value)
 
     def set_placeholder(self, value):
-        # self.native.cell.placeholderString = self._placeholder
-        self.interface.factory.not_implemented("TextInput.set_placeholder()")
+        # Android EditText's setHint() requires a Python string.
+        self.native.setHint(value if value is not None else "")
 
     def set_alignment(self, value):
-        self.interface.factory.not_implemented("TextInput.set_alignment()")
+        self.native.setGravity(
+            {
+                LEFT: Gravity.CENTER_VERTICAL | Gravity.LEFT,
+                RIGHT: Gravity.CENTER_VERTICAL | Gravity.RIGHT,
+                CENTER: Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL,
+                JUSTIFY: Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL,
+            }[value]
+        )
 
     def set_font(self, value):
         self.interface.factory.not_implemented("TextInput.set_font()")
