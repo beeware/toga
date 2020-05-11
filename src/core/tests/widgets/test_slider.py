@@ -9,6 +9,7 @@ class SliderTests(TestCase):
 
         self.default = 50
         self.range = (0, 100)
+        self.number_of_ticks = 10
 
         def callback(widget):
             pass
@@ -20,7 +21,8 @@ class SliderTests(TestCase):
                                   range=self.range,
                                   on_slide=self.on_slide,
                                   enabled=self.enabled,
-                                  factory=toga_dummy.factory)
+                                  factory=toga_dummy.factory,
+                                  number_of_ticks=self.number_of_ticks)
 
     def test_widget_created(self):
         self.assertEqual(self.slider._impl.interface, self.slider)
@@ -77,3 +79,12 @@ class SliderTests(TestCase):
         self.assertEqual(self.slider.enabled, self.enabled)
         self.slider.enabled = False
         self.assertEqual(self.slider.enabled, False)
+
+    def test_get_number_of_ticks(self):
+        number_of_ticks = self.slider.number_of_ticks
+        self.assertEqual(self.number_of_ticks, number_of_ticks)
+
+    def test_set_number_of_ticks(self):
+        new_number_of_ticks = 5
+        self.slider.number_of_ticks = new_number_of_ticks
+        self.assertValueSet(self.slider, 'number_of_ticks', new_number_of_ticks)
