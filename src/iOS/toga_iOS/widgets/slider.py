@@ -33,6 +33,9 @@ class Slider(Widget):
         self.native.minimumValue = range[0]
         self.native.maximumValue = range[1]
 
+    def set_number_of_ticks(self):
+        self.interface.factory.not_implemented('Slider.number_of_ticks()')
+
     def rehint(self):
         fitting_size = self.native.systemLayoutSizeFittingSize_(CGSize(0, 0))
         self.interface.intrinsic.width = at_least(fitting_size.width)
