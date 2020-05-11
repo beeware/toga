@@ -74,6 +74,16 @@ class ExampleCanvasApp(toga.App):
             items=list(self.dash_patterns.keys()),
             on_select=self.refresh_canvas
         )
+        self.sx_slider = toga.Slider(
+            range=(-1, 1),
+            default=0,
+            on_slide=self.refresh_canvas
+        )
+        self.sy_slider = toga.Slider(
+            range=(-1, 1),
+            default=0,
+            on_slide=self.refresh_canvas
+        )
         box = toga.Box(
             style=Pack(direction=COLUMN),
             children=[
@@ -94,6 +104,16 @@ class ExampleCanvasApp(toga.App):
                         self.dash_pattern_selection
                     ]
                 ),
+                toga.Box(
+                    style=Pack(direction=ROW),
+                    children=[
+                        toga.Label("X Translate:"),
+                        self.sx_slider,
+                        toga.Label("Y Translate:"),
+                        self.sy_slider,
+                        toga.Button(label="Reset translate", on_press=self.reset_translate)
+                    ]
+                ),
                 self.canvas
             ]
         )
@@ -106,10 +126,19 @@ class ExampleCanvasApp(toga.App):
         # Show the main window
         self.main_window.show()
 
+    def reset_translate(self, widget):
+        self.sx_slider.value = 0
+        self.sy_slider.value = 0
+        self.refresh_canvas(widget)
+
     def render_drawing(self, canvas, w, h):
         canvas.clear()
+        sx = w / 2 * self.sx_slider.value
+        sy = h / 2 * self.sy_slider.value
+        canvas.translate(sx, sy)
         with self.get_context(canvas) as context:
             self.draw_shape(context, h, w)
+        canvas.reset_transform()
 
     def draw_shape(self, context, h, w):
         # Scale to the smallest axis to maintain aspect ratio

@@ -38,19 +38,18 @@ class Slider(Widget):
         Raises:
             ValueError: If the new value is not in the range of min and max.
         """
-        self._value = self._impl.get_value()
-        return self._value
+        return self._impl.get_value()
 
     @value.setter
     def value(self, value):
         _min, _max = self.range
         if value is None:
-            self._value = 0.5
+            final = 0.5
         elif _min <= value <= _max:
-            self._value = value
+            final = value
         else:
             raise ValueError('Slider value ({}) is not in range ({}-{})'.format(value, _min, _max))
-        self._impl.set_value(self._value)
+        self._impl.set_value(final)
 
     @property
     def range(self):

@@ -25,7 +25,7 @@ class Slider(Widget):
         return self.native.Value
 
     def set_value(self, value):
-        self.native.Value = self.interface.value
+        self.native.Value = value
 
     def set_range(self, range):
         self.native.Minimum = self.interface.range[0]

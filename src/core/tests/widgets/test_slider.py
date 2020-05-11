@@ -27,7 +27,7 @@ class SliderTests(TestCase):
         self.assertActionPerformed(self.slider, 'create Slider')
 
     def test_parameter_are_all_set_correctly(self):
-        self.assertEqual(self.slider._value, self.default)
+        self.assertEqual(self.slider.value, self.default)
         self.assertEqual(self.slider.range, self.range)
         self.assertEqual(self.slider._range, self.range)
         self.assertEqual(self.slider.on_slide._raw, self.on_slide)
@@ -63,7 +63,7 @@ class SliderTests(TestCase):
 
     def test_new_value_is_None(self):
         self.slider.value = None
-        self.assertEqual(self.slider._value, 0.5)
+        self.assertEqual(self.slider.value, 0.5)
 
     def test_working_range_values(self):
         self.slider.range = (0, 100)
