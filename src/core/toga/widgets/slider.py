@@ -11,22 +11,38 @@ class Slider(Widget):
         style (:obj:`Style`):
         default (float): Default value of the slider
         range (``tuple``): Min and max values of the slider in this form (min, max).
+        number_of_ticks (``int``): How many ticks in range. if None, slider is continuous.
         on_slide (``callable``): The function that is executed on_slide.
         enabled (bool): Whether user interaction is possible or not.
         factory (:obj:`module`): A python module that is capable to return a
             implementation of this class with the same name. (optional & normally not needed)
     """
-    MIN_WIDTH = 100
-
-    def __init__(self, id=None, style=None, default=None, range=None, on_slide=None, enabled=True, factory=None):
+    def __init__(
+            self,
+            id=None,
+            style=None,
+            default=None,
+            range=None,
+            number_of_ticks=None,
+            on_slide=None,
+            enabled=True,
+            factory=None
+    ):
         super().__init__(id=id, style=style, factory=factory)
-        self._on_slide = None # needed for _impl initialization
+
+        # Needed for _impl initialization
+        self._number_of_ticks = None
+        self._on_slide = None
+
         self._impl = self.factory.Slider(interface=self)
 
         self.range = range
+        self.number_of_ticks = number_of_ticks
         self.value = default
         self.on_slide = on_slide
         self.enabled = enabled
+
+    MIN_WIDTH = 100
 
     @property
     def value(self):
@@ -68,6 +84,15 @@ class Slider(Widget):
             raise ValueError('Range min value has to be smaller than max value.')
         self._range = (_min, _max)
         self._impl.set_range((_min, _max))
+
+    @property
+    def number_of_ticks(self):
+        return self._number_of_ticks
+
+    @number_of_ticks.setter
+    def number_of_ticks(self, number_of_ticks):
+        self._number_of_ticks = number_of_ticks
+        self._impl.set_number_of_ticks(number_of_ticks)
 
     @property
     def on_slide(self):
