@@ -12,7 +12,6 @@ class TogaApp(IPythonApp):
         super().__init__()
         self._interface = app
         MainActivity.setPythonApp(self)
-        self.native = MainActivity.singletonThis
         print('Python app launched & stored in Android Activity class')
 
     def onCreate(self):
@@ -36,19 +35,29 @@ class TogaApp(IPythonApp):
     def onRestart(self):
         print("Toga app: onRestart")
 
+    @property
+    def native(self):
+        # We access `MainActivity.singletonThis` freshly each time, rather than
+        # storing a reference in `__init__()`, because it's not safe to use the
+        # same reference over time because `rubicon-java` creates a JNI local
+        # reference.
+        return MainActivity.singletonThis
+
 
 class App:
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
         self._listener = None
-        self.native = None
+
+    @property
+    def native(self):
+        return self._listener.native if self._listener else None
 
     def create(self):
         # The `_listener` listens for activity event callbacks. For simplicity,
         # the app's `.native` is the listener's native Java class.
         self._listener = TogaApp(self)
-        self.native = self._listener.native
         # Call user code to populate the main window
         self.interface.startup()
 
