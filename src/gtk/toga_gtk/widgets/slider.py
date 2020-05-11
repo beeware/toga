@@ -23,7 +23,7 @@ class Slider(Widget):
         pass
 
     def set_value(self, value):
-        self.adj.set_value(self.interface.value)
+        self.adj.set_value(value)
 
     def get_value(self):
         return self.native.get_value()
