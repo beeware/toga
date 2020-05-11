@@ -1,7 +1,7 @@
-from .base import Widget
+from .textinput import TextInput
 
 
-class PasswordInput(Widget):
+class PasswordInput(TextInput):
     """ This widgets behaves like a TextInput but does not reveal what text is entered.
 
     Args:
@@ -17,68 +17,16 @@ class PasswordInput(Widget):
     MIN_WIDTH = 100
 
     def __init__(self, id=None, style=None, factory=None,
-                initial=None, placeholder=None, readonly=False):
-        super().__init__(id=id, style=style, factory=factory)
+                initial=None, placeholder=None, readonly=False, on_change=None):
+        super(PasswordInput, self).__init__(
+            id=id,
+            style=style,
+            factory=factory,
+            initial=initial,
+            placeholder=placeholder,
+            readonly=readonly,
+            on_change=on_change
+        )
 
-        # Create a platform specific implementation of a PasswordInput
+    def _initiate_implementation(self):
         self._impl = self.factory.PasswordInput(interface=self)
-
-        self.value = initial
-        self.placeholder = placeholder
-        self.readonly = readonly
-
-    @property
-    def readonly(self):
-        """ Whether a user can write into the password input
-
-        Returns:
-            ``True`` if the user can only read,
-            ``False`` if the user can read and write into the input.
-        """
-        return self._readonly
-
-    @readonly.setter
-    def readonly(self, value):
-        self._readonly = value
-        self._impl.set_readonly(value)
-
-    @property
-    def placeholder(self):
-        """ The placeholder text is the displayed before the user input something.
-
-        Returns:
-            The placeholder text (str) of the widget.
-        """
-        return self._placeholder
-
-    @placeholder.setter
-    def placeholder(self, value):
-        if value is None:
-            self._placeholder = ''
-        else:
-            self._placeholder = str(value)
-        self._impl.set_placeholder(self._placeholder)
-        self._impl.rehint()
-
-    @property
-    def value(self):
-        """ The value of the text input field.
-
-        Returns:
-            The text as a ``str`` of the password input widget.
-        """
-        return self._impl.get_value()
-
-    @value.setter
-    def value(self, value):
-        if value is None:
-            v = ''
-        else:
-            v = str(value)
-        self._impl.set_value(v)
-        self._impl.rehint()
-
-    def clear(self):
-        """ Clears the input field of the widget.
-        """
-        self.value = ''

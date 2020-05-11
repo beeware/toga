@@ -24,7 +24,7 @@ class TextInput(Widget):
         super().__init__(id=id, style=style, factory=factory)
 
         # Create a platform specific implementation of a TextInput
-        self._impl = self.factory.TextInput(interface=self)
+        self._initiate_implementation()
 
         self.on_change = on_change
         self.placeholder = placeholder
@@ -32,6 +32,9 @@ class TextInput(Widget):
 
         # Set the actual value last, as it may trigger change events, etc.
         self.value = initial
+
+    def _initiate_implementation(self):
+        self._impl = self.factory.TextInput(interface=self)
 
     @property
     def readonly(self):
