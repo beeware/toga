@@ -1,6 +1,8 @@
 from rubicon.java import JavaClass, JavaInterface
 
 Button = JavaClass("android/widget/Button")
+AlertDialog__Builder = JavaClass("android/app/AlertDialog$Builder")
+DialogInterface__OnClickListener = JavaInterface("android/content/DialogInterface$OnClickListener")
 EditText = JavaClass("android/widget/EditText")
 Gravity = JavaClass("android/view/Gravity")
 OnClickListener = JavaInterface("android/view/View$OnClickListener")

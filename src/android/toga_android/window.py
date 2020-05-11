@@ -1,3 +1,6 @@
+from . import dialogs
+
+
 class AndroidViewport:
     def __init__(self, native):
         self.native = native
@@ -56,7 +59,7 @@ class Window:
         self.interface.factory.not_implemented('Window.set_full_screen()')
 
     def info_dialog(self, title, message):
-        self.interface.factory.not_implemented('Window.info_dialog()')
+        dialogs.info(self, title, message)
 
     def question_dialog(self, title, message):
         self.interface.factory.not_implemented('Window.question_dialog()')
