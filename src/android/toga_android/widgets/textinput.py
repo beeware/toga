@@ -26,7 +26,7 @@ class TextInput(Widget):
         self.interface.factory.not_implemented("TextInput.set_font()")
 
     def get_value(self):
-        return self.native.getText()
+        return self.native.getText().toString()
 
     def set_value(self, value):
         self.native.setText(value)
