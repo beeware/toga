@@ -1,5 +1,5 @@
 class Icon:
-    EXTENSIONS = [".png"]
+    EXTENSIONS = [".png", "-32.png"]
     SIZES = None
 
     def __init__(self, interface, path):
