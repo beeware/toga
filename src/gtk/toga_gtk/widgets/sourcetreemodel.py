@@ -34,15 +34,19 @@ class SourceTreeModel(GObject.Object, Gtk.TreeModel):
         # the pool maps integer (the only thing we can store in Gtk.TreeIter) to row object.
         # It's purged on data source change and on remove
         self.pool = {}
+        # roots is an array of root elements in the data source.
+        # they are kept here to support the clear() notification without parameters
+        self.roots = []  # maybe a deque would be more efficient. This can be changed later
 
     def clear(self, old_data):
         """
             Called from toga impl widget
         """
+        del old_data  # see: no need for that!
         if self.is_tree:
-            self._remove_children_rec([], old_data)
+            self._remove_children_rec([], self.roots)
         else:
-            for i, node in reversed(list(enumerate(old_data))):
+            for i, node in reversed(list(enumerate(self.roots))):
                 self.row_deleted(Gtk.TreePath.new_from_indices([i]))
                 self._clear_user_data(node)
 
@@ -57,6 +61,8 @@ class SourceTreeModel(GObject.Object, Gtk.TreeModel):
         """ Called from toga impl widget """
         it = self._create_iter(user_data=row)
         indices = self._get_indices(row)
+        if not self.is_tree or row._parent is None:
+            self.roots.insert(indices[-1], row)
         if self.is_tree and row._parent and len(row._parent) == 1:
             parent_it = self._create_iter(user_data=row._parent)
             parent_indices = copy.copy(indices[:-1])
@@ -75,6 +81,7 @@ class SourceTreeModel(GObject.Object, Gtk.TreeModel):
         """ Called from toga impl widget """
         if parent is None:
             indices = []
+            del self.roots[index]
         else:
             indices = self._get_indices(parent)
         indices.append(index)
