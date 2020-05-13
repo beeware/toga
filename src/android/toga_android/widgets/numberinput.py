@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from toga.constants import LEFT, RIGHT, CENTER, JUSTIFY
 from travertino.size import at_least
 
@@ -59,7 +61,7 @@ class NumberInput(Widget):
         self.interface.factory.not_implemented("NumberInput.set_font()")
 
     def get_value(self):
-        return float(self.native.getText())
+        return Decimal(self.native.getText())
 
     def set_value(self, value):
         # Toga's `value` is a `Decimal`, but Android needs a string.

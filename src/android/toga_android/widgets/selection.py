@@ -29,9 +29,8 @@ class Selection(Widget):
             impl=self
         ))
         # On Android, the list of options is provided to the `Spinner` wrapped in
-        # an `ArrayAdapter`. For simplicity of references, we don't store the
-        # reference as a property of this widget; instead, we rely on
-        # self.native.getAdapter() if we need it.
+        # an `ArrayAdapter`. We store `self.adapter` to avoid having to typecast it
+        # in `add_item()`. 
         self.adapter = ArrayAdapter(
             self._native_activity,
             R__layout.simple_spinner_item
