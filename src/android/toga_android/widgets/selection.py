@@ -30,7 +30,7 @@ class Selection(Widget):
         ))
         # On Android, the list of options is provided to the `Spinner` wrapped in
         # an `ArrayAdapter`. We store `self.adapter` to avoid having to typecast it
-        # in `add_item()`. 
+        # in `add_item()`.
         self.adapter = ArrayAdapter(
             self._native_activity,
             R__layout.simple_spinner_item
