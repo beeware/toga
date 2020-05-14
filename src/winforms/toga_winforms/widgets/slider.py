@@ -26,6 +26,17 @@ class TogaSlider(WinForms.TrackBar):
 
 
 class Slider(Widget):
+    """
+    Implementation details:
+
+    The slider widget is using .Net "TrackBar" class. Since TrackBar can only be
+    discrete (ie. have integer values), we implement our slider as a TrackBar
+    between 0 and ticks_count. In order to have value between the desired minimum
+    and maximum, we trnaslate the value linearly to the desired interval.
+
+    When ticks_count is not defined, we use 100 as the default number of ticks since
+    it is big enough to make the TrackBar feel continous.
+    """
     def create(self):
         self.native = TogaSlider(self.interface)
         self.set_enabled(self.interface._enabled)
