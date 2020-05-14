@@ -40,7 +40,7 @@ class SliderApp(toga.App):
                         range=(1, 10),
                         default=10,
                         style=Pack(width=150),
-                        number_of_ticks=10
+                        ticks_count=10
                     ),
                 ]),
 
@@ -61,7 +61,7 @@ class SliderApp(toga.App):
                     toga.Slider(
                         on_slide=self.my_on_slide,
                         range=(MIN_VAL, MAX_VAL),
-                        number_of_ticks=MAX_VAL - MIN_VAL + 1, style=slider_style
+                        ticks_count=MAX_VAL - MIN_VAL + 1, style=slider_style
                     ),
                 ]),
             ],
