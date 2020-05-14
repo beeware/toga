@@ -32,8 +32,8 @@ class Slider(Widget):
         self.adj.set_lower(self.interface.range[0])
         self.adj.set_upper(self.interface.range[1])
 
-    def set_number_of_ticks(self, number_of_ticks):
-        self.interface.factory.not_implemented('Slider.number_of_ticks()')
+    def set_ticks_count(self, ticks_count):
+        self.interface.factory.not_implemented('Slider.ticks_count()')
 
     def rehint(self):
         # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height())

@@ -30,21 +30,21 @@ class Slider(Widget):
         self.native = TogaSlider(self.interface)
         self.set_enabled(self.interface._enabled)
         self.native.Minimum = 0
-        self.set_number_of_ticks(self.interface.number_of_ticks)
+        self.set_ticks_count(self.interface.ticks_count)
 
     def get_value(self):
         actual_value = self.native.Value
-        actual_number_of_ticks = self.native.Maximum
+        actual_ticks_count = self.native.Maximum
         minimum, maximum = self.interface.range
         span = maximum - minimum
-        value = actual_value / actual_number_of_ticks * span + minimum
+        value = actual_value / actual_ticks_count * span + minimum
         return value
 
     def set_value(self, value):
         minimum, maximum = self.interface.range
         span = maximum - minimum
-        actual_number_of_ticks = self.native.Maximum
-        self.native.Value = (value - minimum) / span * actual_number_of_ticks
+        actual_ticks_count = self.native.Maximum
+        self.native.Value = (value - minimum) / span * actual_ticks_count
 
     def set_range(self, range):
         pass
@@ -53,13 +53,13 @@ class Slider(Widget):
         self.interface.intrinsic.width = at_least(self.native.PreferredSize.Width)
         self.interface.intrinsic.height = self.native.PreferredSize.Height
 
-    def set_number_of_ticks(self, number_of_ticks):
-        if number_of_ticks is None:
+    def set_ticks_count(self, ticks_count):
+        if ticks_count is None:
             self.native.TickStyle = NONE_TICK_STYLE
             self.native.Maximum = DEFAULT_NUMBER_OF_TICKS
         else:
             self.native.TickStyle = BOTTOM_RIGHT_TICK_STYLE
-            self.native.Maximum = number_of_ticks - 1
+            self.native.Maximum = ticks_count - 1
 
     def set_on_slide(self, handler):
         pass

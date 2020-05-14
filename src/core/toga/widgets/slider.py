@@ -11,7 +11,7 @@ class Slider(Widget):
         style (:obj:`Style`):
         default (float): Default value of the slider
         range (``tuple``): Min and max values of the slider in this form (min, max).
-        number_of_ticks (``int``): How many ticks in range. if None, slider is continuous.
+        ticks_count (``int``): How many ticks in range. if None, slider is continuous.
         on_slide (``callable``): The function that is executed on_slide.
         enabled (bool): Whether user interaction is possible or not.
         factory (:obj:`module`): A python module that is capable to return a
@@ -23,7 +23,7 @@ class Slider(Widget):
             style=None,
             default=None,
             range=None,
-            number_of_ticks=None,
+            ticks_count=None,
             on_slide=None,
             enabled=True,
             factory=None
@@ -31,13 +31,13 @@ class Slider(Widget):
         super().__init__(id=id, style=style, factory=factory)
 
         # Needed for _impl initialization
-        self._number_of_ticks = None
+        self._ticks_count = None
         self._on_slide = None
 
         self._impl = self.factory.Slider(interface=self)
 
         self.range = range
-        self.number_of_ticks = number_of_ticks
+        self.ticks_count = ticks_count
         self.value = default
         self.on_slide = on_slide
         self.enabled = enabled
@@ -86,13 +86,13 @@ class Slider(Widget):
         self._impl.set_range((_min, _max))
 
     @property
-    def number_of_ticks(self):
-        return self._number_of_ticks
+    def ticks_count(self):
+        return self._ticks_count
 
-    @number_of_ticks.setter
-    def number_of_ticks(self, number_of_ticks):
-        self._number_of_ticks = number_of_ticks
-        self._impl.set_number_of_ticks(number_of_ticks)
+    @ticks_count.setter
+    def ticks_count(self, ticks_count):
+        self._ticks_count = ticks_count
+        self._impl.set_ticks_count(ticks_count)
 
     @property
     def on_slide(self):
