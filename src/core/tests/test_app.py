@@ -36,13 +36,18 @@ class AppTests(TestCase):
         # App icon will default to a name autodetected from the running module
         self.assertEqual(self.app.icon.path, 'resources/toga')
 
-        # This icon name *will* exist (since it overlaps with the default
-        # icon name)
+        # This icon will not be bound, since app icons are bound by the
+        # platform layer.
+        self.assertIsNone(self.app.icon._impl)
+
+        # Bind it explicitly to validate binding can succeed.
+        self.app.icon.bind(self.app.factory)
         self.assertIsNotNone(self.app.icon._impl)
 
         # Set the icon to a different resource
         self.app.icon = "other.icns"
         self.assertEqual(self.app.icon.path, "other.icns")
+        self.app.icon.bind(self.app.factory)
 
         # This icon name will *not* exist. The Impl will be the DEFAULT_ICON's impl
         self.assertEqual(self.app.icon._impl, toga.Icon.DEFAULT_ICON._impl)
