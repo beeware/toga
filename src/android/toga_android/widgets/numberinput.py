@@ -32,7 +32,7 @@ class TogaNumberInputWatcher(TextWatcher):
 
         # Toga `NumberInput` stores the value as a property on the `interface`.
         self.interface.value = new_value
-        
+
         # Call user on_change function, if needed.
         if self.interface.on_change:
             self.interface.on_change(widget=self.interface)
