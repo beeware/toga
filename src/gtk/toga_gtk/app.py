@@ -28,6 +28,7 @@ class MainWindow(Window):
     def create(self):
         super().create()
         self.native.set_role("MainWindow")
+        toga_App.app.icon.bind(self.interface.factory)
         self.native.set_icon(toga_App.app.icon._impl.native_72.get_pixbuf())
 
     def set_app(self, app):

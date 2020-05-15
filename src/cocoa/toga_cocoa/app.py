@@ -94,6 +94,7 @@ class App:
         self.native = NSApplication.sharedApplication
         self.native.setActivationPolicy(NSApplicationActivationPolicyRegular)
 
+        self.interface.icon.bind(self.interface.factory)
         self.native.setApplicationIconImage_(self.interface.icon._impl.native)
 
         self.resource_path = os.path.dirname(os.path.dirname(NSBundle.mainBundle.bundlePath))
