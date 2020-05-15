@@ -65,6 +65,7 @@ class App:
         self.interface.startup()
         self._menu_items = {}
         self.create_menus()
+        self.interface.icon.bind(self.interface.factory)
         self.interface.main_window._impl.native.Icon = \
             self.interface.icon._impl.native
 

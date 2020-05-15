@@ -346,8 +346,6 @@ class App:
         else:
             self._icon = Icon(icon_or_name)
 
-        self._icon.bind(self.factory)
-
     @property
     def main_window(self):
         """
