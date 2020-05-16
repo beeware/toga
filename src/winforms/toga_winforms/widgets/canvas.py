@@ -209,7 +209,7 @@ class Canvas(Box):
     # Transformations
 
     def rotate(self, radians, draw_context, *args, **kwargs):
-        self.interface.factory.not_implemented('Canvas.rotate()')
+        draw_context.matrix.Rotate(math.degrees(radians))
 
     def scale(self, sx, sy, draw_context, *args, **kwargs):
         self.interface.factory.not_implemented('Canvas.scale()')
