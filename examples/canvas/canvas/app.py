@@ -31,7 +31,7 @@ class ExampleCanvasApp(toga.App):
 
     def startup(self):
         # Set up main window
-        self.main_window = toga.MainWindow(title=self.name, size=(250, 250))
+        self.main_window = toga.MainWindow(title=self.name, size=(750, 500))
 
         self.canvas = toga.Canvas(style=Pack(flex=1), on_resize=self.refresh_canvas)
         self.context_selection = toga.Selection(items=[STROKE, FILL], on_select=self.refresh_canvas)
@@ -89,6 +89,7 @@ class ExampleCanvasApp(toga.App):
             default=0,
             on_slide=self.refresh_canvas
         )
+        label_style = Pack(font_size=10)
         box = toga.Box(
             style=Pack(direction=COLUMN),
             children=[
@@ -104,7 +105,7 @@ class ExampleCanvasApp(toga.App):
                 toga.Box(
                     style=Pack(direction=ROW),
                     children=[
-                        toga.Label("Line Width:"),
+                        toga.Label("Line Width:", style=label_style),
                         self.line_width_slider,
                         self.dash_pattern_selection
                     ]
@@ -112,19 +113,14 @@ class ExampleCanvasApp(toga.App):
                 toga.Box(
                     style=Pack(direction=ROW),
                     children=[
-                        toga.Label("X Translate:"),
+                        toga.Label("X Translate:", style=label_style),
                         self.sx_slider,
-                        toga.Label("Y Translate:"),
-                        self.sy_slider
-                    ]
-                ),
-                toga.Box(
-                    style=Pack(direction=ROW),
-                    children=[
-                        toga.Label("Rotation:"),
+                        toga.Label("Y Translate:", style=label_style),
+                        self.sy_slider,
+                        toga.Label("Rotation:", style=label_style),
                         self.rotation_slider,
-                        toga.Button(label="Reset translate",
-                                    on_press=self.reset_translate)
+                        toga.Button(label="Reset transform",
+                                    on_press=self.reset_transform)
                     ]
                 ),
                 self.canvas
@@ -139,7 +135,7 @@ class ExampleCanvasApp(toga.App):
         # Show the main window
         self.main_window.show()
 
-    def reset_translate(self, widget):
+    def reset_transform(self, widget):
         self.sx_slider.value = 0
         self.sy_slider.value = 0
         self.rotation_slider.value = 0
@@ -160,7 +156,7 @@ class ExampleCanvasApp(toga.App):
         # Scale to the smallest axis to maintain aspect ratio
         factor = min(w, h)
         drawing_instructions = self.drawing_shape_instructions.get(
-            str(self.shape_selection.value), None
+            self.shape_selection.value, None
         )
         if drawing_instructions is not None:
             drawing_instructions(context, h, w, factor)
