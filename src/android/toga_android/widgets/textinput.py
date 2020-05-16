@@ -11,28 +11,29 @@ from .base import Widget
 
 
 class TogaTextWatcher(TextWatcher):
-    def __init__(self, text_input_interface):
+    def __init__(self, impl):
         super().__init__()
-        self.interface = text_input_interface
+        self.impl = impl
+        self.interface = impl.interface
 
-    def beforeTextChanged(self, _charSequence, _i, _i1, _i2):
+    def beforeTextChanged(self, _charSequence, _start, _count, _after):
         pass
 
     def afterTextChanged(self, _editable):
         if self.interface.on_change:
             self.interface.on_change(widget=self.interface)
 
-    def onTextChanged(self, _charSequence, _i, _i1, _i2):
+    def onTextChanged(self, _charSequence, _start, _before, _count):
         pass
 
 
 class TextInput(Widget):
     def create(self):
         self.native = EditText(self._native_activity)
-        self.native.addTextChangedListener(TogaTextWatcher(self.interface))
+        self.native.addTextChangedListener(TogaTextWatcher(self))
 
     def get_value(self):
-        return self.interface._impl.native.getText().toString()
+        return self.native.getText().toString()
 
     def set_readonly(self, value):
         self.native.setFocusable(not value)
