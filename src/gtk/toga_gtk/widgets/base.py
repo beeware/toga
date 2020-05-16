@@ -46,7 +46,11 @@ class Widget:
         pass
 
     def set_hidden(self, hidden):
-        self.interface.factory.not_implemented('Widget.set_hidden()')
+        if self.native:
+            if hidden:
+                self.native.hide()
+            else:
+                self.native.show()
 
     def set_font(self, font):
         # By default, fon't can't be changed
