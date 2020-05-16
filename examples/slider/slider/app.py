@@ -32,7 +32,7 @@ class SliderApp(toga.App):
 
                 toga.Box(style=box_style, children=[
                     toga.Label(
-                        "On a scale of 1 to 10, how easy is GUI with Toga?",
+                        "On a scale of 1 to 10, how easy is building a Toga GUI?",
                         style=label_style
                     ),
 
@@ -40,7 +40,7 @@ class SliderApp(toga.App):
                         range=(1, 10),
                         default=10,
                         style=Pack(width=150),
-                        ticks_count=10
+                        tick_count=10
                     ),
                 ]),
 
@@ -61,7 +61,7 @@ class SliderApp(toga.App):
                     toga.Slider(
                         on_slide=self.my_on_slide,
                         range=(MIN_VAL, MAX_VAL),
-                        ticks_count=MAX_VAL - MIN_VAL + 1, style=slider_style
+                        tick_count=MAX_VAL - MIN_VAL + 1, style=slider_style
                     ),
                 ]),
             ],

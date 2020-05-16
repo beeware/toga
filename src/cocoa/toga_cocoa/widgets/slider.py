@@ -21,16 +21,16 @@ class Slider(Widget):
         self.native.target = self.native
         self.native.action = SEL('onSlide:')
 
-        self.set_ticks_count(self.interface.ticks_count)
+        self.set_tick_count(self.interface.tick_count)
 
         self.add_constraints()
 
-    def set_ticks_count(self, ticks_count):
-        if ticks_count is None:
+    def set_tick_count(self, tick_count):
+        if tick_count is None:
             self.native.allowsTickMarkValuesOnly = False
         else:
             self.native.allowsTickMarkValuesOnly = True
-            self.native.numberOfTickMarks = ticks_count
+            self.native.numberOfTickMarks = tick_count
 
     def get_value(self):
         return self.native.floatValue

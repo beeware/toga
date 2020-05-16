@@ -31,31 +31,31 @@ class Slider(Widget):
 
     The slider widget is using .Net "TrackBar" class. Since TrackBar can only be
     discrete (ie. have integer values), we implement our slider as a TrackBar
-    between 0 and ticks_count. In order to have value between the desired minimum
+    between 0 and tick_count. In order to have value between the desired minimum
     and maximum, we trnaslate the value linearly to the desired interval.
 
-    When ticks_count is not defined, we use 100 as the default number of ticks since
+    When tick_count is not defined, we use 100 as the default number of ticks since
     it is big enough to make the TrackBar feel continous.
     """
     def create(self):
         self.native = TogaSlider(self.interface)
         self.set_enabled(self.interface._enabled)
         self.native.Minimum = 0
-        self.set_ticks_count(self.interface.ticks_count)
+        self.set_tick_count(self.interface.tick_count)
 
     def get_value(self):
         actual_value = self.native.Value
-        actual_ticks_count = self.native.Maximum
+        actual_tick_count = self.native.Maximum
         minimum, maximum = self.interface.range
         span = maximum - minimum
-        value = actual_value / actual_ticks_count * span + minimum
+        value = actual_value / actual_tick_count * span + minimum
         return value
 
     def set_value(self, value):
         minimum, maximum = self.interface.range
         span = maximum - minimum
-        actual_ticks_count = self.native.Maximum
-        self.native.Value = (value - minimum) / span * actual_ticks_count
+        actual_tick_count = self.native.Maximum
+        self.native.Value = (value - minimum) / span * actual_tick_count
 
     def set_range(self, range):
         pass
@@ -64,13 +64,13 @@ class Slider(Widget):
         self.interface.intrinsic.width = at_least(self.native.PreferredSize.Width)
         self.interface.intrinsic.height = self.native.PreferredSize.Height
 
-    def set_ticks_count(self, ticks_count):
-        if ticks_count is None:
+    def set_tick_count(self, tick_count):
+        if tick_count is None:
             self.native.TickStyle = NONE_TICK_STYLE
             self.native.Maximum = DEFAULT_NUMBER_OF_TICKS
         else:
             self.native.TickStyle = BOTTOM_RIGHT_TICK_STYLE
-            self.native.Maximum = ticks_count - 1
+            self.native.Maximum = tick_count - 1
 
     def set_on_slide(self, handler):
         pass
