@@ -74,14 +74,26 @@ class ExampleCanvasApp(toga.App):
             items=list(self.dash_patterns.keys()),
             on_select=self.refresh_canvas
         )
-        self.sx_slider = toga.Slider(
+        self.tx_slider = toga.Slider(
             range=(-1, 1),
             default=0,
             on_slide=self.refresh_canvas
         )
-        self.sy_slider = toga.Slider(
+        self.ty_slider = toga.Slider(
             range=(-1, 1),
             default=0,
+            on_slide=self.refresh_canvas
+        )
+        self.sx_slider = toga.Slider(
+            range=(0, 2),
+            default=1,
+            tick_count=10,
+            on_slide=self.refresh_canvas
+        )
+        self.sy_slider = toga.Slider(
+            range=(0, 2),
+            default=1,
+            tick_count=10,
             on_slide=self.refresh_canvas
         )
         self.rotation_slider = toga.Slider(
@@ -114,11 +126,20 @@ class ExampleCanvasApp(toga.App):
                     style=Pack(direction=ROW),
                     children=[
                         toga.Label("X Translate:", style=label_style),
-                        self.sx_slider,
+                        self.tx_slider,
                         toga.Label("Y Translate:", style=label_style),
-                        self.sy_slider,
+                        self.ty_slider,
                         toga.Label("Rotation:", style=label_style),
                         self.rotation_slider,
+                    ]
+                ),
+                toga.Box(
+                    style=Pack(direction=ROW),
+                    children=[
+                        toga.Label("X Scale:", style=label_style),
+                        self.sx_slider,
+                        toga.Label("Y Scale:", style=label_style),
+                        self.sy_slider,
                         toga.Button(label="Reset transform",
                                     on_press=self.reset_transform)
                     ]
@@ -136,17 +157,20 @@ class ExampleCanvasApp(toga.App):
         self.main_window.show()
 
     def reset_transform(self, widget):
-        self.sx_slider.value = 0
-        self.sy_slider.value = 0
+        self.tx_slider.value = 0
+        self.ty_slider.value = 0
+        self.sx_slider.value = 1
+        self.sy_slider.value = 1
         self.rotation_slider.value = 0
         self.refresh_canvas(widget)
 
     def render_drawing(self, canvas, w, h):
         canvas.clear()
-        sx = w / 2 * self.sx_slider.value
-        sy = h / 2 * self.sy_slider.value
+        sx = w / 2 * self.tx_slider.value
+        sy = h / 2 * self.ty_slider.value
         canvas.translate(w / 2 + sx, h / 2 + sy)
         canvas.rotate(self.rotation_slider.value)
+        canvas.scale(self.sx_slider.value, self.sy_slider.value)
         canvas.translate(-w / 2, -h / 2)
         with self.get_context(canvas) as context:
             self.draw_shape(context, h, w)

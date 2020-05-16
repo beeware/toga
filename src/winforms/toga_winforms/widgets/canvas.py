@@ -212,7 +212,7 @@ class Canvas(Box):
         draw_context.matrix.Rotate(math.degrees(radians))
 
     def scale(self, sx, sy, draw_context, *args, **kwargs):
-        self.interface.factory.not_implemented('Canvas.scale()')
+        draw_context.matrix.Scale(sx, sy)
 
     def translate(self, tx, ty, draw_context, *args, **kwargs):
         draw_context.matrix.Translate(tx, ty)
