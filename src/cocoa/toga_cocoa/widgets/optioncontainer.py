@@ -68,7 +68,7 @@ class OptionContainer(Widget):
 
     def set_option_enabled(self, index, enabled):
         tabview = self.native.tabViewItemAtIndex(index)
-        if tabview == self.native.selectedTabViewItem:
+        if not enabled and tabview == self.native.selectedTabViewItem:
             # Don't allow disable a selected tab
             raise self.interface.OptionException(
                 'Currently selected option cannot be disabled'
