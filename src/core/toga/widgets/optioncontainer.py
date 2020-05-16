@@ -108,6 +108,8 @@ class OptionContainer(Widget):
             Each tuple in the list is composed of a title for the option and
             the widget tree that is displayed in the option.
     """
+    class OptionException(ValueError):
+        pass
 
     def __init__(self, id=None, style=None, content=None, on_select=None, factory=None):
         super().__init__(id=id, style=style, factory=factory)
