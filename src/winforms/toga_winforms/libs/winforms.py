@@ -24,7 +24,7 @@ from System.Drawing import Text, Color, Bitmap  # noqa: E402, F401
 from System.Drawing import Graphics  # noqa: E402, F401
 from System.Drawing import Pen, SolidBrush  # noqa: E402, F401
 from System.Drawing import Rectangle, RectangleF  # noqa: E402, F401
-from System.Drawing.Drawing2D import GraphicsPath, FillMode  # noqa: E402, F401
+from System.Drawing.Drawing2D import GraphicsPath, FillMode, Matrix  # noqa: E402, F401
 
 from System.Threading.Tasks import Task  # noqa: E402, F401
 

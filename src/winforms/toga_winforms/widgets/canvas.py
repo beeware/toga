@@ -10,6 +10,7 @@ from toga_winforms.libs import (
     Pen,
     SolidBrush,
     GraphicsPath,
+    Matrix,
     RectangleF,
     PointF,
     StringFormat,
@@ -26,6 +27,7 @@ class WinformContext(Context):
         self.paths = []
         self.start_point = None
         self.last_point = None
+        self.matrix = None
 
     @property
     def current_path(self):
@@ -35,6 +37,16 @@ class WinformContext(Context):
 
     def add_path(self):
         self.paths.append(GraphicsPath())
+
+    @property
+    def matrix(self):
+        if self._matrix is None:
+            self._matrix = Matrix()
+        return self._matrix
+
+    @matrix.setter
+    def matrix(self, matrix):
+        self._matrix = matrix
 
 
 class Canvas(Box):
@@ -174,6 +186,8 @@ class Canvas(Box):
         for path in draw_context.paths:
             if fill_mode is not None:
                 path.FillMode = fill_mode
+            if draw_context.matrix is not None:
+                path.Transform(draw_context.matrix)
             draw_context.graphics.FillPath(brush, path)
         draw_context.paths.clear()
 
@@ -187,6 +201,8 @@ class Canvas(Box):
     def stroke(self, color, line_width, line_dash, draw_context, *args, **kwargs):
         pen = self.create_pen(color=color, line_width=line_width, line_dash=line_dash)
         for path in draw_context.paths:
+            if draw_context.matrix is not None:
+                path.Transform(draw_context.matrix)
             draw_context.graphics.DrawPath(pen, path)
         draw_context.paths.clear()
 
@@ -199,10 +215,10 @@ class Canvas(Box):
         self.interface.factory.not_implemented('Canvas.scale()')
 
     def translate(self, tx, ty, draw_context, *args, **kwargs):
-        self.interface.factory.not_implemented('Canvas.translate()')
+        draw_context.matrix.Translate(tx, ty)
 
     def reset_transform(self, draw_context, *args, **kwargs):
-        self.interface.factory.not_implemented('Canvas.reset_transform()')
+        draw_context.matrix = None
 
     # Text
 
