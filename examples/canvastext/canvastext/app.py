@@ -1,4 +1,4 @@
-from travertino.constants import BLACK, BLUE, GREEN, RED, YELLOW
+from travertino.constants import BLACK, BLUE, GREEN, RED, YELLOW, BOLD, NORMAL, ITALIC
 from toga.fonts import SYSTEM, MESSAGE, SERIF, SANS_SERIF, CURSIVE, FANTASY, MONOSPACE
 
 import toga
@@ -38,6 +38,14 @@ class ExampleCanvasTextApp(toga.App):
         self.line_width_slider = toga.Slider(
             range=(1, 10), default=1, on_slide=self.refresh_canvas
         )
+        self.italic_switch = toga.Switch(
+            label="Italic",
+            on_toggle=self.refresh_canvas
+        )
+        self.bold_switch = toga.Switch(
+            label="Bold",
+            on_toggle=self.refresh_canvas
+        )
         label_style = Pack(font_size=10)
         box = toga.Box(
             style=Pack(direction=COLUMN),
@@ -57,6 +65,8 @@ class ExampleCanvasTextApp(toga.App):
                         self.font_size_input,
                         toga.Label("Line Width:", style=label_style),
                         self.line_width_slider,
+                        self.italic_switch,
+                        self.bold_switch
                     ],
                 ),
                 self.canvas,
@@ -81,7 +91,10 @@ class ExampleCanvasTextApp(toga.App):
         dx = w / 2
         dy = h / 2
         font = toga.Font(
-            family=self.font_selection.value, size=self.get_font_size()
+            family=self.font_selection.value,
+            size=self.get_font_size(),
+            weight=self.get_weight(),
+            style=self.get_style(),
         )
         width, height = font.measure(text, tight=True)
         context.write_text(text, dx - width / 2, dy, font)
@@ -91,6 +104,16 @@ class ExampleCanvasTextApp(toga.App):
         if font_size is None:
             font_size = MINIMUM_FONT_SIZE
         return font_size
+
+    def get_weight(self):
+        if self.bold_switch.is_on:
+            return BOLD
+        return NORMAL
+
+    def get_style(self):
+        if self.italic_switch.is_on:
+            return ITALIC
+        return NORMAL
 
     def get_context(self, canvas):
         if self.context_selection.value == STROKE:
