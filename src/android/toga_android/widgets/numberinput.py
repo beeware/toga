@@ -13,27 +13,35 @@ from ..libs.android_widgets import (
 from .base import Widget
 
 
+def decimal_from_string(s):
+    """If s is the empty string, return `None`. Otherwise, convert to a `Decimal`,
+    allowing any exceptions to bubble up."""
+    if not s:
+        return None
+    return Decimal(s)
+
+
+def string_from_decimal(d):
+    '''Implement the inverse of `decimal_from_string()`. This way, Toga's
+    `NumericInput` can pass us a `None` or `Decimal`, and we can always place
+    a String in the Android `EditText`.'''
+    if d is None:
+        return ""
+    return str(d)
+
+
 class TogaNumberInputWatcher(TextWatcher):
     def __init__(self, impl):
         super().__init__()
-        self.impl = impl
         self.interface = impl.interface
 
     def beforeTextChanged(self, _charSequence, _start, _count, _after):
         pass
 
-    def afterTextChanged(self, _editable):
-        new_value = self.impl.get_value()
-        old_value = self.interface.value
-
-        # In case we get fired twice with the same value, succeed vacuously.
-        if new_value == old_value:
-            return
-
+    def afterTextChanged(self, editable):
         # Toga `NumberInput` stores the value as a property on the `interface`.
-        self.interface.value = new_value
-
-        # Call user on_change function, if needed.
+        self.interface._value = decimal_from_string(editable.toString())
+        # Call the user on_change callback, if it exists.
         if self.interface.on_change:
             self.interface.on_change(widget=self.interface)
 
@@ -73,18 +81,10 @@ class NumberInput(Widget):
     def set_font(self, value):
         self.interface.factory.not_implemented("NumberInput.set_font()")
 
-    def get_value(self):
-        current_string = self.native.getText().toString()
-        if not current_string:
-            return None
-        return Decimal(current_string)
-
     def set_value(self, value):
-        # Toga's `value` is a `Decimal` or `None`, but Android needs a string.
-        str_value = str(value) if value is not None else ""
-        if str_value == self.native.getText().toString():
-            return
-        self.native.setText(str_value)
+        # Store a string in the Android widget. The `afterTextChanged` method
+        # will call the user on_change handler.
+        self.native.setText(string_from_decimal(value))
 
     def set_step(self, step):
         self.interface.factory.not_implemented("NumberInput.set_step()")
