@@ -29,7 +29,7 @@ class NumberInput(Widget):
     MIN_WIDTH = 100
 
     def __init__(self, id=None, style=None, factory=None, step=1,
-                 min_value=None, max_value=None, readonly=False, on_change=None):
+                 min_value=None, max_value=None, default=None, readonly=False, on_change=None):
         super().__init__(id=id, style=style, factory=factory)
         self._value = None
         self._on_change = None
@@ -40,6 +40,9 @@ class NumberInput(Widget):
         self.min_value = min_value
         self.max_value = max_value
         self.on_change = on_change
+
+        if default is not None:
+            self.value = default
 
     @property
     def readonly(self):
