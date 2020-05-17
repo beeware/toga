@@ -37,11 +37,10 @@ class Slider(Widget):
 
     def rehint(self):
         # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height())
-        width = self.native.get_preferred_width()
         height = self.native.get_preferred_height()
 
         # Set intrinsic width to at least the minimum width
-        self.interface.intrinsic.width = at_least(width[0])
+        self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
         # Set intrinsic height to the natural height
         self.interface.intrinsic.height = height[1]
 
