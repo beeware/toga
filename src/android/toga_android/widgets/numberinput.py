@@ -13,26 +13,47 @@ from ..libs.android_widgets import (
 from .base import Widget
 
 
-class TogaTextWatcher(TextWatcher):
+def decimal_from_string(s):
+    """If s is the empty string, return `None`. Otherwise, convert to a `Decimal`,
+    allowing any exceptions to bubble up."""
+    if not s:
+        return None
+    return Decimal(s)
+
+
+def string_from_decimal(d):
+    '''Implement the inverse of `decimal_from_string()`. This way, Toga's
+    `NumericInput` can pass us a `None` or `Decimal`, and we can always place
+    a String in the Android `EditText`.'''
+    if d is None:
+        return ""
+    return str(d)
+
+
+class TogaNumberInputWatcher(TextWatcher):
     def __init__(self, impl):
         super().__init__()
-        self._impl = impl
+        self.interface = impl.interface
 
-    def beforeTextChanged(self, _charSequence, _i, _i1, _i2):
+    def beforeTextChanged(self, _charSequence, _start, _count, _after):
         pass
 
-    def afterTextChanged(self, _editable):
-        if self._impl.interface.on_change:
-            self._impl.interface.on_change(widget=self._impl.interface)
+    def afterTextChanged(self, editable):
+        # Toga `NumberInput` stores the value as a property on the `interface`.
+        self.interface._value = decimal_from_string(editable.toString())
+        # Call the user on_change callback, if it exists.
+        if self.interface.on_change:
+            self.interface.on_change(widget=self.interface)
 
-    def onTextChanged(self, _charSequence, _i, _i1, _i2):
+    def onTextChanged(self, _charSequence, _start, _before, _count):
         pass
 
 
 class NumberInput(Widget):
     def create(self):
         self.native = EditText(self._native_activity)
-        self.native.addTextChangedListener(TogaTextWatcher(self))
+        self.native.addTextChangedListener(TogaNumberInputWatcher(self))
+
         # A `NumberInput` in Toga supports signed decimal numbers.
         self.native.setInputType(
             InputType.TYPE_CLASS_NUMBER
@@ -41,7 +62,7 @@ class NumberInput(Widget):
         )
 
     def set_readonly(self, value):
-        self.native.setEnabled(not value)
+        self.native.setFocusable(not value)
 
     def set_placeholder(self, value):
         # Android EditText's setHint() requires a Python string.
@@ -60,12 +81,10 @@ class NumberInput(Widget):
     def set_font(self, value):
         self.interface.factory.not_implemented("NumberInput.set_font()")
 
-    def get_value(self):
-        return Decimal(self.native.getText())
-
     def set_value(self, value):
-        # Toga's `value` is a `Decimal`, but Android needs a string.
-        self.native.setText(str(value))
+        # Store a string in the Android widget. The `afterTextChanged` method
+        # will call the user on_change handler.
+        self.native.setText(string_from_decimal(value))
 
     def set_step(self, step):
         self.interface.factory.not_implemented("NumberInput.set_step()")

@@ -5,16 +5,38 @@ from ..libs.android_widgets import (
     EditText,
     Gravity,
     View__MeasureSpec,
+    TextWatcher,
 )
 from .base import Widget
+
+
+class TogaTextWatcher(TextWatcher):
+    def __init__(self, impl):
+        super().__init__()
+        self.impl = impl
+        self.interface = impl.interface
+
+    def beforeTextChanged(self, _charSequence, _start, _count, _after):
+        pass
+
+    def afterTextChanged(self, _editable):
+        if self.interface.on_change:
+            self.interface.on_change(widget=self.interface)
+
+    def onTextChanged(self, _charSequence, _start, _before, _count):
+        pass
 
 
 class TextInput(Widget):
     def create(self):
         self.native = EditText(self._native_activity)
+        self.native.addTextChangedListener(TogaTextWatcher(self))
+
+    def get_value(self):
+        return self.native.getText().toString()
 
     def set_readonly(self, value):
-        self.native.setEnabled(not value)
+        self.native.setFocusable(not value)
 
     def set_placeholder(self, value):
         # Android EditText's setHint() requires a Python string.
@@ -32,9 +54,6 @@ class TextInput(Widget):
 
     def set_font(self, value):
         self.interface.factory.not_implemented("TextInput.set_font()")
-
-    def get_value(self):
-        return self.native.getText().toString()
 
     def set_value(self, value):
         self.native.setText(value)
