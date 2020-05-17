@@ -115,10 +115,10 @@ class Canvas(Widget):
         """Ensure the correct handler is invoked."""
         self._set_value("on_right_release", handler)
 
-    def set_on_dragged(self, handler):
+    def set_on_drag(self, handler):
         """Ensure the correct handler is invoked."""
-        self._set_value("on_dragged", handler)
+        self._set_value("on_drag", handler)
 
-    def set_on_right_dragged(self, handler):
+    def set_on_right_drag(self, handler):
         """Ensure the correct handler is invoked."""
-        self._set_value("on_right_dragged", handler)
+        self._set_value("on_right_drag", handler)

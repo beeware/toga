@@ -74,17 +74,17 @@ class TogaCanvas(NSView):
 
     @objc_method
     def mouseDragged_(self, event) -> None:
-        """Invoke the on_dragged handler if configured."""
-        if self.interface.on_dragged:
+        """Invoke the on_drag handler if configured."""
+        if self.interface.on_drag:
             position = self.convertPoint(event.locationInWindow, fromView=None)
-            self.interface.on_dragged(self.interface, position.x, position.y, event.clickCount)
+            self.interface.on_drag(self.interface, position.x, position.y, event.clickCount)
 
     @objc_method
     def rightMouseDragged_(self, event) -> None:
-        """Invoke the on_right_dragged handler if configured."""
-        if self.interface.on_right_dragged:
+        """Invoke the on_right_drag handler if configured."""
+        if self.interface.on_right_drag:
             position = self.convertPoint(event.locationInWindow, fromView=None)
-            self.interface.on_right_dragged(self.interface, position.x, position.y, event.clickCount)
+            self.interface.on_right_drag(self.interface, position.x, position.y, event.clickCount)
 
 
 class Canvas(Widget):

@@ -9,8 +9,7 @@ from .base import Widget
 
 
 class Context:
-    """The user-created :class:`Context <Context>` drawing object to populate a
-    drawing with visual context.
+    """The user-created :class:`Context <Context>` drawing object to populate a drawing with visual context.
 
     The top left corner of the canvas must be painted at the origin of the
     context and is sized using the rehint() method.
@@ -27,7 +26,6 @@ class Context:
 
     def _draw(self, impl, *args, **kwargs):
         """Draw all drawing objects that are on the context or canvas.
-
 
         This method is used by the implementation to tell the interface canvas
         to draw all objects on it, and used by a context to draw all the
@@ -504,12 +502,21 @@ class Canvas(Context, Widget):
         style (:obj:`Style`): An optional style object. If no
             style is provided then a new one will be created for the widget.
         on_resize (:obj:`callable`): Function to call when resized.
+        on_press (:obj:`callable`): Function to call when left button pressed.
+        on_release (:obj:`callable`): Function to call when left button released.
+        on_drag (:obj:`callable`): Function to call when cursor moved with left button pressed.
+        on_right_press (:obj:`callable`): Function to call when right button pressed.
+        on_right_release (:obj:`callable`): Function to call when right button released
+        on_right_drag (:obj:`callable`): Function to call when cursor moved with right button pressed.
         factory (:obj:`module`): A python module that is capable to return a
             implementation of this class with the same name. (optional &
             normally not needed)
     """
 
-    def __init__(self, id=None, style=None, on_resize=None, factory=None):
+    def __init__(self, id=None, style=None, on_resize=None, on_press=None, 
+                on_release=None, on_drag=None, on_right_press=None,
+                on_right_release=None, on_right_drag=None, factory=None
+            ):
         super().__init__(id=id, style=style, factory=factory)
         self._canvas = self
 
@@ -518,12 +525,12 @@ class Canvas(Context, Widget):
 
         # Set all the properties
         self.on_resize = on_resize
-        self.on_press = None
-        self.on_release = None
-        self.on_dragged = None
-        self.on_right_press = None
-        self.on_right_release = None
-        self.on_right_dragged = None
+        self.on_press = on_press
+        self.on_release = on_release
+        self.on_drag = on_drag
+        self.on_right_press = on_right_press
+        self.on_right_release = on_right_release
+        self.on_right_drag = on_right_drag
 
     @property
     def on_resize(self):
@@ -585,25 +592,25 @@ class Canvas(Context, Widget):
         self._impl.set_on_release(self._on_release)
 
     @property
-    def on_dragged(self):
+    def on_drag(self):
         """Return the handler invoked when the mouse is moved while the left mouse button is pressed.
 
         Returns:
             The function ``callable`` that is called on mouse moved with
             the left button pressed.
         """
-        return self._on_dragged
+        return self._on_drag
 
-    @on_dragged.setter
-    def on_dragged(self, handler):
+    @on_drag.setter
+    def on_drag(self, handler):
         """Set the handler to invoke when the mouse button is moved with the left button pressed.
 
         Args:
             handler (:obj:`callable`): The handler to invoke when the
             mouse is moved with the left button pressed.
         """
-        self._on_dragged = wrapped_handler(self, handler)
-        self._impl.set_on_dragged(self._on_dragged)
+        self._on_drag = wrapped_handler(self, handler)
+        self._impl.set_on_drag(self._on_drag)
 
     @property
     def on_right_press(self):
@@ -646,25 +653,25 @@ class Canvas(Context, Widget):
         self._impl.set_on_right_release(self._on_right_release)
 
     @property
-    def on_right_dragged(self):
+    def on_right_drag(self):
         """Return the handler to invoke when the mouse is moved while the right mouse button is pressed.
 
         Returns:
             The function ``callable`` that is called on mouse moved with
             the right button pressed.
         """
-        return self._on_right_dragged
+        return self._on_right_drag
 
-    @on_right_dragged.setter
-    def on_right_dragged(self, handler):
+    @on_right_drag.setter
+    def on_right_drag(self, handler):
         """Set the handler to invoke when the mouse button is moved with the right button pressed.
 
         Args:
             handler (:obj:`callable`): The handler to invoke when the
             mouse is moved with the right button pressed.
         """
-        self._on_right_dragged = wrapped_handler(self, handler)
-        self._impl.set_on_right_dragged(self._on_right_dragged)
+        self._on_right_drag = wrapped_handler(self, handler)
+        self._impl.set_on_right_drag(self._on_right_drag)
 
     ###########################################################################
     # Transformations of a canvas
