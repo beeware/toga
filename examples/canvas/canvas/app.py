@@ -1,6 +1,6 @@
 import math
 
-from travertino.constants import BLACK, BLUE, GREEN, RED, YELLOW, SANS_SERIF
+from travertino.constants import BLACK, BLUE, GREEN, RED, YELLOW
 
 import toga
 from toga.style import Pack
@@ -19,7 +19,6 @@ ICE_CREAM = "ice cream"
 SMILE = "smile"
 SEA = "sea"
 STAR = "star"
-TEXT = "text"
 
 CONTINUOUS = "continuous"
 DASH_1_1 = "dash 1-1"
@@ -45,7 +44,6 @@ class ExampleCanvasApp(toga.App):
             SMILE: self.draw_smile,
             SEA: self.draw_sea,
             STAR: self.draw_star,
-            TEXT: self.draw_text
         }
         self.dash_patterns = {
             CONTINUOUS: None,
@@ -272,14 +270,6 @@ class ExampleCanvasApp(toga.App):
             for i in range(1, sides):
                 closer.line_to(dx + radius * math.sin(i * rotation_angle),
                                dy - radius * math.cos(i * rotation_angle))
-
-    def draw_text(self, context, h, w, factor):
-        text = 'This is a text'
-        dx = w / 2
-        dy = h / 2
-        font = toga.Font(family=SANS_SERIF, size=20)
-        width, height = font.measure(text, tight=True)
-        context.write_text(text, dx - width / 2, dy, font)
 
     def get_context(self, canvas):
         if self.context_selection.value == STROKE:
