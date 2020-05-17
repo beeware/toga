@@ -31,7 +31,7 @@ class ExampleCanvasApp(toga.App):
 
     def startup(self):
         # Set up main window
-        self.main_window = toga.MainWindow(title=self.name, size=(250, 250))
+        self.main_window = toga.MainWindow(title=self.name, size=(750, 500))
 
         self.canvas = toga.Canvas(style=Pack(flex=1), on_resize=self.refresh_canvas)
         self.context_selection = toga.Selection(items=[STROKE, FILL], on_select=self.refresh_canvas)
@@ -74,14 +74,26 @@ class ExampleCanvasApp(toga.App):
             items=list(self.dash_patterns.keys()),
             on_select=self.refresh_canvas
         )
-        self.sx_slider = toga.Slider(
+        self.translation_x_slider = toga.Slider(
             range=(-1, 1),
             default=0,
             on_slide=self.refresh_canvas
         )
-        self.sy_slider = toga.Slider(
+        self.translation_y_slider = toga.Slider(
             range=(-1, 1),
             default=0,
+            on_slide=self.refresh_canvas
+        )
+        self.scale_x_slider = toga.Slider(
+            range=(0, 2),
+            default=1,
+            tick_count=10,
+            on_slide=self.refresh_canvas
+        )
+        self.scale_y_slider = toga.Slider(
+            range=(0, 2),
+            default=1,
+            tick_count=10,
             on_slide=self.refresh_canvas
         )
         self.rotation_slider = toga.Slider(
@@ -89,6 +101,7 @@ class ExampleCanvasApp(toga.App):
             default=0,
             on_slide=self.refresh_canvas
         )
+        label_style = Pack(font_size=10)
         box = toga.Box(
             style=Pack(direction=COLUMN),
             children=[
@@ -104,7 +117,7 @@ class ExampleCanvasApp(toga.App):
                 toga.Box(
                     style=Pack(direction=ROW),
                     children=[
-                        toga.Label("Line Width:"),
+                        toga.Label("Line Width:", style=label_style),
                         self.line_width_slider,
                         self.dash_pattern_selection
                     ]
@@ -112,19 +125,25 @@ class ExampleCanvasApp(toga.App):
                 toga.Box(
                     style=Pack(direction=ROW),
                     children=[
-                        toga.Label("X Translate:"),
-                        self.sx_slider,
-                        toga.Label("Y Translate:"),
-                        self.sy_slider
+                        toga.Label("X Translate:", style=label_style),
+                        self.translation_x_slider,
+                        toga.Label("Y Translate:", style=label_style),
+                        self.translation_y_slider,
+                        toga.Label("Rotation:", style=label_style),
+                        self.rotation_slider,
                     ]
                 ),
                 toga.Box(
                     style=Pack(direction=ROW),
                     children=[
-                        toga.Label("Rotation:"),
-                        self.rotation_slider,
-                        toga.Button(label="Reset translate",
-                                    on_press=self.reset_translate)
+                        toga.Label("X Scale:", style=label_style),
+                        self.scale_x_slider,
+                        toga.Label("Y Scale:", style=label_style),
+                        self.scale_y_slider,
+                        toga.Button(
+                            label="Reset transform",
+                            on_press=self.reset_transform
+                        )
                     ]
                 ),
                 self.canvas
@@ -139,18 +158,21 @@ class ExampleCanvasApp(toga.App):
         # Show the main window
         self.main_window.show()
 
-    def reset_translate(self, widget):
-        self.sx_slider.value = 0
-        self.sy_slider.value = 0
+    def reset_transform(self, widget):
+        self.translation_x_slider.value = 0
+        self.translation_y_slider.value = 0
+        self.scale_x_slider.value = 1
+        self.scale_y_slider.value = 1
         self.rotation_slider.value = 0
         self.refresh_canvas(widget)
 
     def render_drawing(self, canvas, w, h):
         canvas.clear()
-        sx = w / 2 * self.sx_slider.value
-        sy = h / 2 * self.sy_slider.value
+        sx = w / 2 * self.translation_x_slider.value
+        sy = h / 2 * self.translation_y_slider.value
         canvas.translate(w / 2 + sx, h / 2 + sy)
         canvas.rotate(self.rotation_slider.value)
+        canvas.scale(self.scale_x_slider.value, self.scale_y_slider.value)
         canvas.translate(-w / 2, -h / 2)
         with self.get_context(canvas) as context:
             self.draw_shape(context, h, w)
@@ -160,7 +182,7 @@ class ExampleCanvasApp(toga.App):
         # Scale to the smallest axis to maintain aspect ratio
         factor = min(w, h)
         drawing_instructions = self.drawing_shape_instructions.get(
-            str(self.shape_selection.value), None
+            self.shape_selection.value, None
         )
         if drawing_instructions is not None:
             drawing_instructions(context, h, w, factor)

@@ -7,6 +7,7 @@ from .winforms import (  # noqa: F401
     FontStyle,
     Graphics,
     GraphicsPath,
+    Matrix,
     Pen,
     Point,
     PointF,
