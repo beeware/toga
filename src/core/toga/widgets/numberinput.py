@@ -22,6 +22,7 @@ class NumberInput(Widget):
         step (number): Step size of the adjustment buttons.
         min_value (number): The minimum bound for the widget's value.
         max_value (number): The maximum bound for the widget's value.
+        default (number): Default value for the widget
         readonly (bool):  Whether a user can write/change the number input, defaults to `False`.
         on_change (``callable``): The handler to invoke when the value changes.
         **ex:
