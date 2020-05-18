@@ -18,10 +18,16 @@ class Label(Widget):
         self.native.setText(value)
 
     def rehint(self):
+        # With the Android TextView, we use `measureText()` to compute the width
+        # of the text -- calling `measure()` seems to ignore the text, perhaps
+        # because the TextView is willing to truncate the text. We do use
+        # height information from `measure()`, which seems fine.
+        text = self.native.getText().toString()
+        width = self.native.getPaint().measureText(text)
+        self.interface.intrinsic.width = at_least(width)
         self.native.measure(
             View__MeasureSpec.UNSPECIFIED, View__MeasureSpec.UNSPECIFIED
         )
-        self.interface.intrinsic.width = at_least(self.native.getMeasuredWidth())
         self.interface.intrinsic.height = self.native.getMeasuredHeight()
 
     def set_alignment(self, value):

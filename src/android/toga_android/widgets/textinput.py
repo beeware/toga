@@ -66,5 +66,7 @@ class TextInput(Widget):
         self.native.measure(
             View__MeasureSpec.UNSPECIFIED, View__MeasureSpec.UNSPECIFIED
         )
-        self.interface.intrinsic.width = at_least(self.native.getMeasuredWidth())
+        # Use arbitrary minimum 100px width for TextInput.
+        self.interface.intrinsic.width = at_least(100)
+        # Use the widget's desired height to avoid adding white vertical space.
         self.interface.intrinsic.height = self.native.getMeasuredHeight()
