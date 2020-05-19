@@ -53,7 +53,10 @@ class Table(Widget):
         self._on_select = None
         self._selection = None
         self._data = None
-        self._missing_value = missing_value
+        if not missing_value:
+            print("WARNING: Using empty string for missing value in data. "
+                  "Define a 'missing_value' on the table to silence this message")
+        self._missing_value = missing_value or ''
 
         self._impl = self.factory.Table(interface=self)
         self.data = data
@@ -195,4 +198,4 @@ class Table(Widget):
 
     @property
     def missing_value(self):
-        return self._missing_value or ''
+        return self._missing_value
