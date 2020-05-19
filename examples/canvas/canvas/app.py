@@ -128,12 +128,12 @@ class ExampleCanvasApp(toga.App):
             label="bold",
             on_toggle=self.refresh_canvas
         )
-        label_style = Pack(font_size=10)
+        label_style = Pack(font_size=10, padding_left=5)
         box = toga.Box(
             style=Pack(direction=COLUMN),
             children=[
                 toga.Box(
-                    style=Pack(direction=ROW),
+                    style=Pack(direction=ROW, padding=5),
                     children=[
                         self.context_selection,
                         self.shape_selection,
@@ -142,7 +142,7 @@ class ExampleCanvasApp(toga.App):
                     ]
                 ),
                 toga.Box(
-                    style=Pack(direction=ROW),
+                    style=Pack(direction=ROW, padding=5),
                     children=[
                         toga.Label("Line Width:", style=label_style),
                         self.line_width_slider,
@@ -150,7 +150,7 @@ class ExampleCanvasApp(toga.App):
                     ]
                 ),
                 toga.Box(
-                    style=Pack(direction=ROW),
+                    style=Pack(direction=ROW, padding=5),
                     children=[
                         toga.Label("X Translate:", style=label_style),
                         self.translation_x_slider,
@@ -161,7 +161,7 @@ class ExampleCanvasApp(toga.App):
                     ]
                 ),
                 toga.Box(
-                    style=Pack(direction=ROW),
+                    style=Pack(direction=ROW, padding=5),
                     children=[
                         toga.Label("X Scale:", style=label_style),
                         self.scale_x_slider,
@@ -174,7 +174,7 @@ class ExampleCanvasApp(toga.App):
                     ]
                 ),
                 toga.Box(
-                    style=Pack(direction=ROW),
+                    style=Pack(direction=ROW, padding=5),
                     children=[
                         toga.Label("Font Family:", style=label_style),
                         self.font_selection,
