@@ -31,7 +31,7 @@ class Window:
         self.native = WinForms.Form(self)
         self.native.ClientSize = Size(*self.interface._size)
         self.native.interface = self.interface
-        self.native.Resize += self.winforms_Resize
+        self.native.Resize += self.winforms_resize
         self.toolbar_native = None
         self.toolbar_items = None
 
@@ -123,7 +123,7 @@ class Window:
     def close(self):
         self.native.Close()
 
-    def winforms_Resize(self, sender, args):
+    def winforms_resize(self, sender, args):
         if self.interface.content:
             # Re-layout the content
             self.interface.content.refresh()
