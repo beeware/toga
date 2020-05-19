@@ -34,7 +34,7 @@ class ExampleCanvasTextApp(toga.App):
             max_value=MAXIMUM_FONT_SIZE,
             on_change=self.refresh_canvas
         )
-        # self.font_size_input.value = 20  # BUG HERE
+        self.font_size_input.value = 20
         self.line_width_slider = toga.Slider(
             range=(1, 10), default=1, on_slide=self.refresh_canvas
         )
