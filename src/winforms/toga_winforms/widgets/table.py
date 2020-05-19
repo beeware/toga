@@ -32,11 +32,13 @@ class Table(Widget):
         self.native.VirtualItemsSelectionRangeChanged += self._native_virtual_item_selection_range_changed
 
     def _native_virtual_item_selection_range_changed(self, sender, e):
+        # update selection interface property
+        self.interface._selection = self._selected_rows()
+
         # `Shift` key or Range selection handler
-        if self.interface.multiple_select and self.interface.on_select:
-            selected = None
-            if e.IsSelected:
-                selected = self.interface.data[e.StartIndex:e.EndIndex+1]
+        if e.IsSelected and self.interface.multiple_select and self.interface.on_select:
+            # call on select with the last row of the multi selection
+            selected = self.interface.data[e.EndIndex]
             self.interface.on_select(self.interface, row=selected)
 
     def _native_retrieve_virtual_item(self, sender, e):
@@ -65,19 +67,21 @@ class Table(Widget):
             self._cache.append(WinForms.ListViewItem(self.row_data(self.interface.data[i])))
 
     def _native_item_selection_changed(self, sender, e):
-        # Normal selection, can be one item or multiple items with `Ctrl` Key
-        if not self.interface.on_select:
-            return
+        # update selection interface property
+        self.interface._selection = self._selected_rows()
 
-        if not e.IsSelected:
-            self.interface.on_select(self.interface, row=None)
+        if e.IsSelected:
+            self.interface.on_select(self.interface, row=self.interface.data[e.ItemIndex])
+
+    def _selected_rows(self):
+        if not self.native.SelectedIndices.Count:
+            return None
 
         if self.interface.multiple_select:
-            selected_indexes = [index for index in self.native.SelectedIndices]
-            selected = [row for i, row in enumerate(self.interface.data) if i in selected_indexes]
-            self.interface.on_select(self.interface, row=selected)
+            selected = [row for i, row in enumerate(self.interface.data) if i in self.native.SelectedIndices]
+            return selected
         else:
-            self.interface.on_select(self.interface, row=self.interface.data[e.get_ItemIndex()])
+            return self.interface.data[self.native.SelectedIndices[0]]
 
     def _create_column(self, heading, accessor):
         col = WinForms.ColumnHeader()
