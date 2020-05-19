@@ -120,7 +120,7 @@ class ExampleCanvasApp(toga.App):
             default=20,
             on_change=self.refresh_canvas
         )
-        self.italic_switch= toga.Switch(
+        self.italic_switch = toga.Switch(
             label="italic",
             on_toggle=self.refresh_canvas
         )
