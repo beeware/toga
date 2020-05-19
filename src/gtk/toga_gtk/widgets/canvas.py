@@ -35,6 +35,24 @@ class Canvas(Widget):
     def set_on_resize(self, handler):
         pass
 
+    def set_on_press(self, handler):
+        self.interface.factory.not_implemented('App.show_cursor()')
+
+    def set_on_release(self, handler):
+        self.interface.factory.not_implemented('App.show_cursor()')
+
+    def set_on_drag(self, handler):
+        self.interface.factory.not_implemented('App.show_cursor()')
+
+    def set_on_right_press(self, handler):
+        self.interface.factory.not_implemented('App.show_cursor()')
+
+    def set_on_right_release(self, handler):
+        self.interface.factory.not_implemented('App.show_cursor()')
+
+    def set_on_right_drag(self, handler):
+        self.interface.factory.not_implemented('App.show_cursor()')
+
     def redraw(self):
         self.native.queue_draw()
 
