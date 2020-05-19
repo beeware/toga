@@ -59,6 +59,24 @@ class Canvas(Box):
     def set_on_resize(self, handler):
         pass
 
+    def set_on_press(self, handler):
+        self.interface.factory.not_implemented('Canvas.set_on_press()')
+
+    def set_on_release(self, handler):
+        self.interface.factory.not_implemented('Canvas.set_on_release()')
+
+    def set_on_drag(self, handler):
+        self.interface.factory.not_implemented('Canvas.set_on_drag()')
+
+    def set_on_right_press(self, handler):
+        self.interface.factory.not_implemented('Canvas.set_on_right_press()')
+
+    def set_on_right_release(self, handler):
+        self.interface.factory.not_implemented('Canvas.set_on_right_release()')
+
+    def set_on_right_drag(self, handler):
+        self.interface.factory.not_implemented('Canvas.set_on_right_drag()')
+
     def winforms_paint(self, panel, event, *args):
         context = WinformContext()
         context.graphics = event.Graphics
