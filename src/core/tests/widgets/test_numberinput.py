@@ -72,3 +72,8 @@ class NumberInputTests(TestCase):
         self.nr_input.on_change = dummy_function
         self.nr_input.value = 2
         self.assertValueSet(self.nr_input, 'on_change', self.nr_input.on_change)
+
+    def test_default(self):
+        value = 5
+        nr_input = toga.NumberInput(default=value, factory=toga_dummy.factory)
+        self.assertEqual(nr_input.value, value)

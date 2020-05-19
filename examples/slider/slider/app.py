@@ -2,11 +2,14 @@ import toga
 from toga.style import Pack
 from toga.constants import COLUMN, ROW
 
+MIN_VAL = -5
+MAX_VAL = 15
+
 
 class SliderApp(toga.App):
     def startup(self):
         # Main window of the application with title and size
-        self.main_window = toga.MainWindow(title=self.name, size=(700, 500))
+        self.main_window = toga.MainWindow(title=self.name, size=(1000, 500))
 
         # set up common styls
         label_style = Pack(flex=1, padding_right=24)
@@ -20,17 +23,25 @@ class SliderApp(toga.App):
             children=[
 
                 toga.Box(style=box_style, children=[
-                    toga.Label("default Slider -- range is 0 to 1",
-                        style=label_style),
-
+                    toga.Label(
+                        "Default Slider is a continuous range between 0 to 1",
+                        style=label_style
+                    ),
                     toga.Slider(style=slider_style),
                 ]),
 
                 toga.Box(style=box_style, children=[
-                    toga.Label("on a scale of 1 to 10, how easy is GUI with Toga?",
-                        style=label_style),
+                    toga.Label(
+                        "On a scale of 1 to 10, how easy is building a Toga GUI?",
+                        style=label_style
+                    ),
 
-                    toga.Slider(range=(1, 10), default=10, style=Pack(width=150)),
+                    toga.Slider(
+                        range=(1, 10),
+                        default=10,
+                        style=Pack(width=150),
+                        tick_count=10
+                    ),
                 ]),
 
                 toga.Box(style=box_style, children=[
@@ -40,15 +51,18 @@ class SliderApp(toga.App):
                 ]),
 
                 toga.Box(style=box_style, children=[
-                    toga.Label("give a Slider some style!", style=label_style),
+                    toga.Label("Give a Slider some style!", style=label_style),
 
                     toga.Slider(style=slider_style)
                 ]),
 
                 toga.Box(style=box_style, children=[
                     self.sliderValueLabel,
-
-                    toga.Slider(on_slide=self.my_on_slide, range=(-40, 58), style=slider_style),
+                    toga.Slider(
+                        on_slide=self.my_on_slide,
+                        range=(MIN_VAL, MAX_VAL),
+                        tick_count=MAX_VAL - MIN_VAL + 1, style=slider_style
+                    ),
                 ]),
             ],
             style=Pack(direction=COLUMN, padding=24)
@@ -58,7 +72,7 @@ class SliderApp(toga.App):
 
     def my_on_slide(self, slider):
         # get the current value of the slider with `slider.value`
-        self.sliderValueLabel.text = "The slider value changed to {0}".format(int(slider.value))
+        self.sliderValueLabel.text = "The slider value changed to {0}".format(slider.value)
 
 
 def main():

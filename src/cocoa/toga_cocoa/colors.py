@@ -8,7 +8,13 @@ def native_color(c):
     try:
         color = CACHE[c]
     except KeyError:
-        color = NSColor.colorWithRed(c.rgba.r / 255, green=c.rgba.g / 255, blue=c.rgba.b / 255, alpha=c.rgba.a)
+        # Color needs to be retained to be kept in cache.
+        color = NSColor.colorWithRed(
+            c.rgba.r / 255,
+            green=c.rgba.g / 255,
+            blue=c.rgba.b / 255,
+            alpha=c.rgba.a
+        ).retain()
         CACHE[c] = color
 
     return color

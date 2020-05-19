@@ -1,19 +1,19 @@
 
-class TogaLayout(extends=android.view.ViewGroup):
-    @super({context: android.content.Context})
+class TogaLayout:
+    # TODO: Extend `android.view.ViewGroup`. Provide app as `context`.
     def __init__(self, context, interface):
         self.interface = interface
 
     def shouldDelayChildPressedState(self) -> bool:
         return False
 
-    def onMeasure(self, width: int, height: int) -> void:
+    def onMeasure(self, width: int, height: int):
         # print("ON MEASURE %sx%s" % (width, height))
         self.measureChildren(width, height)
         self.interface.rehint()
         self.setMeasuredDimension(width, height)
 
-    def onLayout(self, changed: bool, left: int, top: int, right: int, bottom: int) -> void:
+    def onLayout(self, changed: bool, left: int, top: int, right: int, bottom: int) -> None:
         # print("ON LAYOUT %s %sx%s -> %sx%s" % (changed, left, top, right, bottom))
         device_scale = self.interface.app._impl.device_scale
 
@@ -27,8 +27,8 @@ class TogaLayout(extends=android.view.ViewGroup):
         # print("LAYOUT: There are %d children" % count)
         for i in range(0, count):
             child = self.getChildAt(i)
-            # print("    child: %s" % child, child.getMeasuredHeight(), child.getMeasuredWidth(), child.getWidth(), child.getHeight())
-            # print("    layout: ", child.interface.layout)
+            # See "Size, padding and margins" at https://developer.android.com/reference/android/view/View
+            # for reference information on `height`, `getMeasuredHeight()`, etc.
             child.layout(
                 child.interface.layout.absolute.left * device_scale,
                 child.interface.layout.absolute.top * device_scale,
