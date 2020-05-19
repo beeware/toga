@@ -284,26 +284,26 @@ class Canvas(Widget):
         """No special handling required."""
         pass
 
-    def set_on_mouse_down(self, handler):
+    def set_on_press(self, handler):
         """No special handling required."""
         pass
 
-    def set_on_mouse_up(self, handler):
+    def set_on_release(self, handler):
         """No special handling required."""
         pass
 
-    def set_on_mouse_dragged(self, handler):
+    def set_on_drag(self, handler):
         """No special handling required."""
         pass
 
-    def set_on_right_mouse_down(self, handler):
+    def set_on_right_press(self, handler):
         """No special handling required."""
         pass
 
-    def set_on_right_mouse_up(self, handler):
+    def set_on_right_release(self, handler):
         """No special handling required."""
         pass
 
-    def set_on_right_mouse_dragged(self, handler):
+    def set_on_right_drag(self, handler):
         """No special handling required."""
         pass
