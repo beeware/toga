@@ -513,7 +513,7 @@ class Canvas(Context, Widget):
             normally not needed)
     """
 
-    def __init__(self, id=None, style=None, on_resize=None, on_press=None, 
+    def __init__(self, id=None, style=None, on_resize=None, on_press=None,
                 on_release=None, on_drag=None, on_right_press=None,
                 on_right_release=None, on_right_drag=None, factory=None
             ):
