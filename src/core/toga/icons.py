@@ -32,6 +32,8 @@ class Icon:
         :param factory: The platform factory to bind to.
         :returns: The platform implementation
         """
+        # `factory` is now available; store it so the `_impl` can access it.
+        self.factory = factory
         if self._impl is None:
             try:
                 if self.system:

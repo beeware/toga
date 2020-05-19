@@ -5,6 +5,7 @@ from toga.colors import REBECCAPURPLE, BLANCHEDALMOND, CRIMSON, rgb
 from toga.fonts import SANS_SERIF, SERIF
 
 import toga_dummy
+from toga.widgets.canvas import FillRule
 from toga_dummy.utils import TestCase
 
 
@@ -124,6 +125,19 @@ class CanvasTests(TestCase):
                             height=check_size,
                         )
         self.assertActionPerformedWith(self.testing_canvas, "fill")
+
+    def test_fill_raises_error_on_invalid_fill_rule(self):
+
+        def fill_context():
+            with self.testing_canvas.fill(fill_rule="unknown"):
+                pass
+
+        self.assertRaisesRegex(
+            ValueError,
+            "^fill rule should be one of the followings: evenodd, nonzero$",
+            fill_context
+        )
+        self.assertActionNotPerformed(self.testing_canvas, "fill")
 
     def test_draw_3circles(self):
         xc = 100
@@ -454,7 +468,7 @@ class CanvasTests(TestCase):
             self.testing_canvas,
             "fill",
             color=rgb(102, 51, 153),
-            fill_rule="evenodd",
+            fill_rule=FillRule.EVENODD,
             preserve=True,
         )
 
@@ -464,7 +478,7 @@ class CanvasTests(TestCase):
         ) as filler:
             self.assertEqual(
                 repr(filler),
-                "Fill(color=rgb(220, 20, 60), fill_rule=evenodd, preserve=True)",
+                "Fill(color=rgb(220, 20, 60), fill_rule=FillRule.EVENODD, preserve=True)",
             )
 
     def test_stroke_modify(self):

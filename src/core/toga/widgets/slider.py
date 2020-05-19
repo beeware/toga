@@ -11,22 +11,38 @@ class Slider(Widget):
         style (:obj:`Style`):
         default (float): Default value of the slider
         range (``tuple``): Min and max values of the slider in this form (min, max).
+        tick_count (``int``): How many ticks in range. if None, slider is continuous.
         on_slide (``callable``): The function that is executed on_slide.
         enabled (bool): Whether user interaction is possible or not.
         factory (:obj:`module`): A python module that is capable to return a
             implementation of this class with the same name. (optional & normally not needed)
     """
-    MIN_WIDTH = 100
-
-    def __init__(self, id=None, style=None, default=None, range=None, on_slide=None, enabled=True, factory=None):
+    def __init__(
+            self,
+            id=None,
+            style=None,
+            default=None,
+            range=None,
+            tick_count=None,
+            on_slide=None,
+            enabled=True,
+            factory=None
+    ):
         super().__init__(id=id, style=style, factory=factory)
-        self._on_slide = None # needed for _impl initialization
+
+        # Needed for _impl initialization
+        self._tick_count = None
+        self._on_slide = None
+
         self._impl = self.factory.Slider(interface=self)
 
         self.range = range
+        self.tick_count = tick_count
         self.value = default
         self.on_slide = on_slide
         self.enabled = enabled
+
+    MIN_WIDTH = 100
 
     @property
     def value(self):
@@ -38,19 +54,18 @@ class Slider(Widget):
         Raises:
             ValueError: If the new value is not in the range of min and max.
         """
-        self._value = self._impl.get_value()
-        return self._value
+        return self._impl.get_value()
 
     @value.setter
     def value(self, value):
         _min, _max = self.range
         if value is None:
-            self._value = 0.5
+            final = 0.5
         elif _min <= value <= _max:
-            self._value = value
+            final = value
         else:
             raise ValueError('Slider value ({}) is not in range ({}-{})'.format(value, _min, _max))
-        self._impl.set_value(self._value)
+        self._impl.set_value(final)
 
     @property
     def range(self):
@@ -69,6 +84,15 @@ class Slider(Widget):
             raise ValueError('Range min value has to be smaller than max value.')
         self._range = (_min, _max)
         self._impl.set_range((_min, _max))
+
+    @property
+    def tick_count(self):
+        return self._tick_count
+
+    @tick_count.setter
+    def tick_count(self, tick_count):
+        self._tick_count = tick_count
+        self._impl.set_tick_count(tick_count)
 
     @property
     def on_slide(self):

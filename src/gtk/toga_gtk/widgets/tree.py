@@ -57,9 +57,10 @@ class Tree(Widget):
         self.store.clear()
 
         def append_children(data, parent=None):
-            for i, node in enumerate(data):
-                self.insert(parent, i, node)
-                append_children(node, parent=node)
+            if data.can_have_children():
+                for i, node in enumerate(data):
+                    self.insert(parent, i, node)
+                    append_children(node, parent=node)
 
         append_children(self.interface.data, parent=None)
 

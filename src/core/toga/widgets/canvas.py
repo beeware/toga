@@ -1,11 +1,17 @@
 from contextlib import contextmanager
 from math import pi
+from enum import Enum
 
 from toga.colors import color as parse_color, BLACK
 from toga.fonts import Font, SYSTEM
 from toga.handlers import wrapped_handler
 
 from .base import Widget
+
+
+class FillRule(Enum):
+    EVENODD = 0
+    NONZERO = 1
 
 
 class Context:
@@ -127,7 +133,7 @@ class Context:
         self.redraw()
 
     @contextmanager
-    def fill(self, color=BLACK, fill_rule="nonzero", preserve=False):
+    def fill(self, color=BLACK, fill_rule=FillRule.NONZERO, preserve=False):
         """Constructs and yields a :class:`Fill <Fill>`.
 
         A drawing operator that fills the current path according to the current
@@ -144,10 +150,7 @@ class Context:
             :class:`Fill <Fill>` object.
 
         """
-        if fill_rule is "evenodd":
-            fill = Fill(color, fill_rule, preserve)
-        else:
-            fill = Fill(color, "nonzero", preserve)
+        fill = Fill(color, fill_rule, preserve)
         fill.canvas = self.canvas
         yield self.add_draw_obj(fill)
         self.redraw()
@@ -382,7 +385,7 @@ class Fill(Context):
 
     """
 
-    def __init__(self, color=BLACK, fill_rule="nonzero", preserve=False):
+    def __init__(self, color=BLACK, fill_rule=FillRule.NONZERO, preserve=False):
         super().__init__()
         self.color = color
         self.fill_rule = fill_rule
@@ -402,6 +405,23 @@ class Fill(Context):
             kwargs["fill_color"] = self.color
             obj._draw(impl, *args, **kwargs)
         impl.fill(self.color, self.fill_rule, self.preserve, *args, **kwargs)
+
+    @property
+    def fill_rule(self):
+        return self._fill_rule
+
+    @fill_rule.setter
+    def fill_rule(self, fill_rule):
+        if isinstance(fill_rule, str):
+            try:
+                fill_rule = FillRule[fill_rule.upper()]
+            except KeyError:
+                raise ValueError(
+                    "fill rule should be one of the followings: {}".format(
+                        ", ".join([value.name.lower() for value in FillRule])
+                    )
+                )
+        self._fill_rule = fill_rule
 
     @property
     def color(self):

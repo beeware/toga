@@ -1,21 +1,24 @@
-from android import PythonActivity
-
+from .libs.activity import IPythonApp, MainActivity
 from .window import Window
 
 
+# `MainWindow` is defined here in `app.py`, not `window.py`, to mollify the test suite.
 class MainWindow(Window):
     pass
 
 
-class TogaApp:
+class TogaApp(IPythonApp):
     def __init__(self, app):
+        super().__init__()
         self._interface = app
+        MainActivity.setPythonApp(self)
+        print('Python app launched & stored in Android Activity class')
+
+    def onCreate(self):
+        print("Toga app: onCreate")
 
     def onStart(self):
         print("Toga app: onStart")
-
-    def onResume(self):
-        print("Toga app: onResume")
 
     def onResume(self):
         print("Toga app: onResume")
@@ -32,30 +35,40 @@ class TogaApp:
     def onRestart(self):
         print("Toga app: onRestart")
 
+    @property
+    def native(self):
+        # We access `MainActivity.singletonThis` freshly each time, rather than
+        # storing a reference in `__init__()`, because it's not safe to use the
+        # same reference over time because `rubicon-java` creates a JNI local
+        # reference.
+        return MainActivity.singletonThis
+
 
 class App:
-    _MAIN_WINDOW_CLASS = MainWindow
-
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
+        self._listener = None
+
+    @property
+    def native(self):
+        return self._listener.native if self._listener else None
 
     def create(self):
-        # Connect this app to the PythonActivity
+        # The `_listener` listens for activity event callbacks. For simplicity,
+        # the app's `.native` is the listener's native Java class.
         self._listener = TogaApp(self)
-
-        # Set the Python activity listener to be this app.
-        self.native = PythonActivity.setListener(self._listener)
-
-        self.startup()
+        # Call user code to populate the main window
+        self.interface.startup()
 
     def open_document(self, fileURL):
         print("Can't open document %s (yet)" % fileURL)
 
     def main_loop(self):
-        # Main loop is a no-op on Android; the app loop is integrated with the
-        # main Android event loop.
-        pass
+        # Connect the Python code to the Java Activity.
+        self.create()
+        # The app loop is integrated with the main Android event loop,
+        # so there is no further work to do.
 
     def set_main_window(self, window):
         pass

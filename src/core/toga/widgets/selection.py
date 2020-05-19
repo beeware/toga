@@ -43,11 +43,10 @@ class Selection(Widget):
     @items.setter
     def items(self, items):
         self._impl.remove_all_items()
+        self._items = items
 
         for i in items:
             self._impl.add_item(i)
-
-        self._items = items
 
     @property
     def value(self):
