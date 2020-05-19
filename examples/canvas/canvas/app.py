@@ -1,6 +1,7 @@
 import math
 
-from travertino.constants import BLACK, BLUE, GREEN, RED, YELLOW
+from travertino.constants import BLACK, BLUE, GREEN, RED, YELLOW, BOLD, NORMAL, ITALIC
+from toga.fonts import SYSTEM, MESSAGE, SERIF, SANS_SERIF, CURSIVE, FANTASY, MONOSPACE
 
 import toga
 from toga.style import Pack
@@ -19,6 +20,7 @@ ICE_CREAM = "ice cream"
 SMILE = "smile"
 SEA = "sea"
 STAR = "star"
+TEXT = "text"
 
 CONTINUOUS = "continuous"
 DASH_1_1 = "dash 1-1"
@@ -44,6 +46,7 @@ class ExampleCanvasApp(toga.App):
             SMILE: self.draw_smile,
             SEA: self.draw_sea,
             STAR: self.draw_star,
+            TEXT: self.draw_text
         }
         self.dash_patterns = {
             CONTINUOUS: None,
@@ -53,7 +56,7 @@ class ExampleCanvasApp(toga.App):
         }
         self.shape_selection = toga.Selection(
             items=list(self.drawing_shape_instructions.keys()),
-            on_select=self.refresh_canvas
+            on_select=self.on_shape_change
         )
         self.color_selection = toga.Selection(
             items=[BLACK, BLUE, GREEN, RED, YELLOW],
@@ -98,6 +101,32 @@ class ExampleCanvasApp(toga.App):
             range=(-math.pi, math.pi),
             default=0,
             on_slide=self.refresh_canvas
+        )
+        self.font_selection = toga.Selection(
+            items=[
+                SYSTEM,
+                MESSAGE,
+                SERIF,
+                SANS_SERIF,
+                CURSIVE,
+                FANTASY,
+                MONOSPACE
+            ],
+            on_select=self.refresh_canvas
+        )
+        self.font_size = toga.NumberInput(
+            min_value=10,
+            max_value=72,
+            default=20,
+            on_change=self.refresh_canvas
+        )
+        self.italic_switch= toga.Switch(
+            label="italic",
+            on_toggle=self.refresh_canvas
+        )
+        self.bold_switch = toga.Switch(
+            label="bold",
+            on_toggle=self.refresh_canvas
         )
         label_style = Pack(font_size=10)
         box = toga.Box(
@@ -144,6 +173,17 @@ class ExampleCanvasApp(toga.App):
                         )
                     ]
                 ),
+                toga.Box(
+                    style=Pack(direction=ROW),
+                    children=[
+                        toga.Label("Font Family:", style=label_style),
+                        self.font_selection,
+                        toga.Label("Font Size:", style=label_style),
+                        self.font_size,
+                        self.bold_switch,
+                        self.italic_switch
+                    ]
+                ),
                 self.canvas
             ]
         )
@@ -151,6 +191,7 @@ class ExampleCanvasApp(toga.App):
         # Add the content on the main window
         self.main_window.content = box
 
+        self.change_shape()
         self.render_drawing(self.canvas, *self.main_window.size)
 
         # Show the main window
@@ -163,6 +204,24 @@ class ExampleCanvasApp(toga.App):
         self.scale_y_slider.value = 1
         self.rotation_slider.value = 0
         self.refresh_canvas(widget)
+
+    def on_shape_change(self, widget):
+        self.change_shape()
+        self.refresh_canvas(widget)
+
+    def change_shape(self):
+        is_text = self.shape_selection.value == TEXT
+        self.font_selection.enabled = is_text
+        self.font_size.enabled = is_text
+        self.italic_switch.enabled = is_text
+        self.bold_switch.enabled = is_text
+
+    def refresh_canvas(self, widget):
+        self.render_drawing(
+            self.canvas,
+            self.canvas.layout.content_width,
+            self.canvas.layout.content_height
+        )
 
     def render_drawing(self, canvas, w, h):
         canvas.clear()
@@ -271,6 +330,29 @@ class ExampleCanvasApp(toga.App):
                 closer.line_to(dx + radius * math.sin(i * rotation_angle),
                                dy - radius * math.cos(i * rotation_angle))
 
+    def draw_text(self, context, h, w, factor):
+        text = "This is a text"
+        dx = w / 2
+        dy = h / 2
+        font = toga.Font(
+            family=self.font_selection.value,
+            size=self.font_size.value,
+            weight=self.get_weight(),
+            style=self.get_style(),
+        )
+        width, height = font.measure(text, tight=True)
+        context.write_text(text, dx - width / 2, dy, font)
+
+    def get_weight(self):
+        if self.bold_switch.is_on:
+            return BOLD
+        return NORMAL
+
+    def get_style(self):
+        if self.italic_switch.is_on:
+            return ITALIC
+        return NORMAL
+
     def get_context(self, canvas):
         if self.context_selection.value == STROKE:
             return canvas.stroke(
@@ -281,13 +363,6 @@ class ExampleCanvasApp(toga.App):
         return canvas.fill(
             color=self.color_selection.value,
             fill_rule=self.fill_rule_selection.value
-        )
-
-    def refresh_canvas(self, widget):
-        self.render_drawing(
-            self.canvas,
-            self.canvas.layout.content_width,
-            self.canvas.layout.content_height
         )
 
 
