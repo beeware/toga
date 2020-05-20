@@ -8,11 +8,11 @@ class AndroidViewport:
 
     @property
     def width(self):
-        return self.native.getMeasuredWidth()
+        return self.native.getContext().getResources().getDisplayMetrics().widthPixels
 
     @property
     def height(self):
-        return self.native.getMeasuredHeight()
+        return self.native.getContext().getResources().getDisplayMetrics().heightPixels
 
 
 class Window:

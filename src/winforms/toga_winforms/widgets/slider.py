@@ -14,17 +14,6 @@ BOTTOM_RIGHT_TICK_STYLE = WinForms.TickStyle.BottomRight
 DEFAULT_NUMBER_OF_TICKS = 100
 
 
-class TogaSlider(WinForms.TrackBar):
-    def __init__(self, interface):
-        super().__init__()
-        self.interface = interface
-        self.Scroll += self.on_slide
-
-    def on_slide(self, sender, event):
-        if self.interface.on_slide:
-            self.interface.on_slide(self.interface)
-
-
 class Slider(Widget):
     """
     Implementation details:
@@ -38,10 +27,16 @@ class Slider(Widget):
     it is big enough to make the TrackBar feel continous.
     """
     def create(self):
-        self.native = TogaSlider(self.interface)
+        self.native = WinForms.TrackBar()
+        self.native.Scroll += self.winforms_scroll
         self.set_enabled(self.interface._enabled)
         self.native.Minimum = 0
         self.set_tick_count(self.interface.tick_count)
+
+    def winforms_scroll(self, sender, event):
+        if self.container:
+            if self.interface.on_slide:
+                self.interface.on_slide(self.interface)
 
     def get_value(self):
         actual_value = self.native.Value
