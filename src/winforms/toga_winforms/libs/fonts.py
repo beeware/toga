@@ -1,6 +1,6 @@
 from .winforms import ContentAlignment, FontFamily, WinForms, SystemFonts, Text, FontStyle
 
-from toga.constants import LEFT, RIGHT, CENTER, JUSTIFY, SYSTEM
+from toga.constants import LEFT, RIGHT, CENTER, JUSTIFY
 from toga.fonts import (
     MESSAGE,
     SYSTEM,
