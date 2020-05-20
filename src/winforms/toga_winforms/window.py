@@ -8,7 +8,7 @@ class WinFormsViewport:
     def __init__(self, native, frame):
         self.native = native
         self.frame = frame
-        self.dpi = 96  # FIXME This is almost certainly wrong...
+        self.dpi = self.native.CreateGraphics().DpiX
 
     @property
     def width(self):
@@ -101,7 +101,10 @@ class Window:
         # Now that the content is visible, we can do our initial hinting,
         # and use that as the basis for setting the minimum window size.
         self.interface.content._impl.rehint()
-        self.interface.content.style.layout(self.interface.content, Viewport(0, 0))
+        self.interface.content.style.layout(
+            self.interface.content,
+            Viewport(width=0, height=0, dpi=self.native.CreateGraphics().DpiX)
+        )
         self.native.MinimumSize = Size(
             int(self.interface.content.layout.width),
             int(self.interface.content.layout.height) + TITLEBAR_HEIGHT

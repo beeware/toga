@@ -1,6 +1,6 @@
 from .libs import WinFont, WinForms
 from .libs import FontFamily, FontStyle, Single, win_font_family
-from .libs.fonts import win_font_style
+from .libs.fonts import win_font_style, win_font_size
 
 _FONT_CACHE = {}
 
@@ -17,8 +17,9 @@ class Font:
                 self.interface.style,
                 font_family
             )
+            font_size = win_font_size(self.interface.size)
             font = WinFont.Overloads[FontFamily, Single, FontStyle](
-                font_family, self.interface.size, font_style
+                font_family, font_size, font_style
             )
             _FONT_CACHE[self.interface] = font
 

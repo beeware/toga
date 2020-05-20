@@ -1,6 +1,6 @@
 from .winforms import ContentAlignment, FontFamily, WinForms, SystemFonts, Text, FontStyle
 
-from toga.constants import LEFT, RIGHT, CENTER, JUSTIFY
+from toga.constants import LEFT, RIGHT, CENTER, JUSTIFY, SYSTEM
 from toga.fonts import (
     MESSAGE,
     SYSTEM,
@@ -32,20 +32,19 @@ def HorizontalTextAlignment(value):
 
 
 def win_font_family(value):
-    win_families = {
-        SYSTEM: SystemFonts.DefaultFont.FontFamily,
-        MESSAGE: SystemFonts.MenuFont.FontFamily,
-        SERIF: FontFamily.GenericSerif,
-        SANS_SERIF: FontFamily.GenericSansSerif,
-        CURSIVE: FontFamily("Comic Sans MS"),
-        FANTASY: FontFamily("Impact"),
-        MONOSPACE: FontFamily.GenericMonospace,
-    }
-    for key in win_families:
-        if value in key:
-            return win_families[key]
-    if value in Text.InstalledFontCollection().Families:
-        return FontFamily(value)
+    try:
+        return {
+            SYSTEM: SystemFonts.DefaultFont.FontFamily,
+            MESSAGE: SystemFonts.MenuFont.FontFamily,
+            SERIF: FontFamily.GenericSerif,
+            SANS_SERIF: FontFamily.GenericSansSerif,
+            CURSIVE: FontFamily("Comic Sans MS"),
+            FANTASY: FontFamily("Impact"),
+            MONOSPACE: FontFamily.GenericMonospace,
+        }[value]
+    except KeyError:
+        if value in Text.InstalledFontCollection().Families:
+            return FontFamily(value)
     else:
         print(
             "Unable to load font-family '{}', loading {} instead".format(
@@ -63,3 +62,9 @@ def win_font_style(weight, style, font_family):
             FontStyle.Italic):
         font_style += FontStyle.Italic
     return font_style
+
+
+def win_font_size(size):
+    if size == -1:
+        return SystemFonts.DefaultFont.Size
+    return size

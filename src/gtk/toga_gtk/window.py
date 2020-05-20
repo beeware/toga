@@ -10,7 +10,8 @@ from .libs import Gtk
 class GtkViewport:
     def __init__(self, native):
         self.native = native
-        self.dpi = 96  # FIXME This is almost certainly wrong...
+        # GTK renders everything at 96dpi (I think?)
+        self.dpi = 96
 
     @property
     def width(self):
@@ -103,7 +104,10 @@ class Window:
         # Now that the content is visible, we can do our initial hinting,
         # and use that as the basis for setting the minimum window size.
         self.interface.content._impl.rehint()
-        self.interface.content.style.layout(self.interface.content, Viewport(0, 0))
+        self.interface.content.style.layout(
+            self.interface.content,
+            Viewport(0, 0, dpi=96)
+        )
         self.interface.content._impl.min_width = self.interface.content.layout.width
         self.interface.content._impl.min_height = self.interface.content.layout.height
 
