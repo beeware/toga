@@ -30,5 +30,5 @@ class Font(BaseFont):
         self.__impl = factory.Font(self)
         return self.__impl
 
-    def measure(self, text, tight=False):
-        return self._impl.measure(text, tight=tight)
+    def measure(self, text, dpi, tight=False):
+        return self._impl.measure(text, dpi=dpi, tight=tight)

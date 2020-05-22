@@ -206,7 +206,7 @@ class Canvas(Widget):
         else:
             raise ValueError("No font to write with")
 
-        width, height = write_font.measure(text)
+        width, height = write_font.measure(text, dpi=96)
         textAttributes = NSMutableDictionary.alloc().init()
         textAttributes[NSFontAttributeName] = write_font._impl.native
 

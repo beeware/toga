@@ -8,7 +8,7 @@ class WinFormsViewport:
     def __init__(self, native, frame):
         self.native = native
         self.frame = frame
-        self.dpi = self.native.CreateGraphics().DpiX
+        self.dpi = self.native.DeviceDpi
 
     @property
     def width(self):

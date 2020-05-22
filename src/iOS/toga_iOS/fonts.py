@@ -65,7 +65,7 @@ class Font:
 
         self.native = font
 
-    def measure(self, text, tight=False):
+    def measure(self, text, dpi, tight=False):
         textAttributes = NSMutableDictionary.alloc().init()
         textAttributes[NSFontAttributeName] = self.native
         text_string = NSAttributedString.alloc().initWithString_attributes_(text, textAttributes)

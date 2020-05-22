@@ -41,5 +41,11 @@ class FontTests(TestCase):
         self.assertEqual(self.font.weight, self.weight)
 
     def test_measure(self):
-        self.font.measure('measured text', tight=True)
-        self.assertActionPerformedWith(self.font, 'measure', text='measured text', tight=True)
+        self.font.measure('measured text', dpi=96, tight=True)
+        self.assertActionPerformedWith(
+            self.font,
+            'measure',
+            dpi=96,
+            text='measured text',
+            tight=True
+        )

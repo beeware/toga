@@ -58,7 +58,7 @@ class Font:
 
         self.native = font
 
-    def measure(self, text, tight=False):
+    def measure(self, text, dpi, tight=False):
         measure_widget = Measure()
         layout = measure_widget.create_pango_layout(text)
         layout.set_font_description(self.native)

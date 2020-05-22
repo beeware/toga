@@ -140,7 +140,7 @@ class Canvas(Widget):
 
         # Support writing multiline text
         for line in text.splitlines():
-            width, height = write_font.measure(line)
+            width, height = write_font.measure(line, dpi=96)
             draw_context.move_to(x, y)
             draw_context.text_path(line)
             y += height

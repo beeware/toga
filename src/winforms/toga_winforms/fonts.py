@@ -5,6 +5,10 @@ from .libs.fonts import win_font_style, win_font_size
 _FONT_CACHE = {}
 
 
+def points_to_pixels(points, dpi):
+    return points * 72 / dpi
+
+
 class Font:
     def __init__(self, interface):
         self.interface = interface
@@ -25,6 +29,9 @@ class Font:
 
         self.native = font
 
-    def measure(self, text, tight=False):
+    def measure(self, text, dpi, tight=False):
         size = WinForms.TextRenderer.MeasureText(text, self.native)
-        return size.Width, size.Height
+        return (
+            points_to_pixels(size.Width, dpi),
+            points_to_pixels(size.Height, dpi),
+        )
