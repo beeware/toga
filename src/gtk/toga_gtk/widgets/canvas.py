@@ -1,5 +1,5 @@
 from ..colors import native_color
-from ..libs import Gtk, Pango, cairo
+from ..libs import DISPLAY_DPI, Gtk, Pango, cairo
 from .base import Widget
 
 
@@ -141,7 +141,7 @@ class Canvas(Widget):
 
         # Support writing multiline text
         for line in text.splitlines():
-            width, height = write_font.measure(line, dpi=96)
+            width, height = write_font.measure(line, dpi=DISPLAY_DPI)
             draw_context.move_to(x, y)
             draw_context.text_path(line)
             y += height

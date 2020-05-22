@@ -4,14 +4,13 @@ from toga.command import GROUP_BREAK, SECTION_BREAK
 from toga.handlers import wrapped_handler
 
 from . import dialogs
-from .libs import Gtk
+from .libs import DISPLAY_DPI, Gtk
 
 
 class GtkViewport:
     def __init__(self, native):
         self.native = native
-        # GTK renders everything at 96dpi (I think?)
-        self.dpi = 96
+        self.dpi = DISPLAY_DPI
 
     @property
     def width(self):
@@ -106,7 +105,7 @@ class Window:
         self.interface.content._impl.rehint()
         self.interface.content.style.layout(
             self.interface.content,
-            Viewport(0, 0, dpi=96)
+            Viewport(0, 0, dpi=DISPLAY_DPI)
         )
         self.interface.content._impl.min_width = self.interface.content.layout.width
         self.interface.content._impl.min_height = self.interface.content.layout.height
