@@ -46,11 +46,48 @@ class Widget:
         pass
 
     def set_hidden(self, hidden):
+        # Rules: any given widget must be invisible if...
+        # 1. it's visibility style property equals "hidden"
+        # 2. it has an invisible anscestor
+        #
+        # set_hidden calls are expected from two sources:
+        # 1. the style engine, when self.interface.style.visibility is changed
+        # 2. this widget's parent, when it's style.visibility is changed
+        # Therefore, if the provided argument of set_hidden does not match this
+        # widget's current state, the call is assumed to have originated from the parent
+        #
+        # Note on iterating childring:
+        # Container widgets store children in their `content` property and their `children` property
+        # will always return []. Iterating a container's `children` property is a do-nothing, but
+        # that is acceptible in this case because hiding a container will in turn hide the native
+        # container, which will cause all native children to be hidden. 
+        #
+        # In GTK, all widgets are initially hidden
+        
+
+        my_interface_hidden = (self.interface.style.visibility == "hidden")
+
         if self.native:
-            if hidden:
+            if my_interface_hidden or hidden:
+                # if self.native is a container widget, each native child will be hidden too
                 self.native.hide()
+                
+                if self.interface.can_have_children:
+                    for child in self.interface.children:
+                        child._impl.set_hidden(True)
+
             else:
+                # if self.native is a container widget, each native child will be shown (if 
+                # it is not hidden by its own style property)
                 self.native.show()
+
+                if self.interface.can_have_children:
+                    for child in self.interface.children:
+                        child._impl.set_hidden(False)
+
+            print("LOG: {}.set_hidden({}), native visible = {}".format(self.interface, hidden, self.native.get_visible()))
+        else:
+            raise Exception("cannot hide widget: no native widget to hide")
 
     def set_font(self, font):
         # By default, fon't can't be changed

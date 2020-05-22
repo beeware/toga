@@ -100,6 +100,20 @@ class Window:
     def show(self):
         self.native.show_all()
 
+        # Unlike other platforms, Gtk widgets are initially hidden, with the expectation
+        # that the developer will call show_all() on the window when launching the app.
+        # show_all() will undo the effects of Toga's style engine, so elements may need re-hidden
+        def fix_hidden(widget):
+            if widget.style.visibility == "hidden":
+                widget._impl.set_hidden(True)
+            if hasattr(widget, "content"):  # for containers
+                fix_hidden(widget.content)
+            else:
+                for child in widget.children:  # for all other widgets
+                    fix_hidden(child)
+
+        fix_hidden(self.interface.content)
+
         # Now that the content is visible, we can do our initial hinting,
         # and use that as the basis for setting the minimum window size.
         self.interface.content._impl.rehint()
