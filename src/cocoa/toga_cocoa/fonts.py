@@ -4,6 +4,7 @@ from toga.fonts import (
     SYSTEM,
     SERIF,
     SANS_SERIF,
+    SYSTEM_DEFAULT_SIZE,
     CURSIVE,
     FANTASY,
     MONOSPACE,
@@ -21,7 +22,7 @@ class Font:
             font = _FONT_CACHE[self.interface]
         except KeyError:
             # Default system font size on Cocoa is 12pt
-            if self.interface.size == -1:
+            if self.interface.size == SYSTEM_DEFAULT_SIZE:
                 font_size = NSFont.systemFontSize
             else:
                 font_size = self.interface.size

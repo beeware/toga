@@ -6,7 +6,7 @@ from travertino.declaration import BaseStyle, Choices
 from travertino.layout import BaseBox
 from travertino.size import BaseIntrinsicSize
 
-from toga.fonts import Font
+from toga.fonts import Font, SYSTEM_DEFAULT_SIZE
 
 
 ######################################################################
@@ -30,6 +30,9 @@ NONE = 'none'
 ROW = 'row'
 COLUMN = 'column'
 
+######################################################################
+# Declaration choices
+######################################################################
 
 DISPLAY_CHOICES = Choices(PACK, NONE)
 VISIBILITY_CHOICES = Choices(VISIBLE, HIDDEN, NONE)
@@ -495,8 +498,7 @@ Pack.validated_property('font_family', choices=FONT_FAMILY_CHOICES, initial=SYST
 Pack.validated_property('font_style', choices=FONT_STYLE_CHOICES, initial=NORMAL)
 Pack.validated_property('font_variant', choices=FONT_VARIANT_CHOICES, initial=NORMAL)
 Pack.validated_property('font_weight', choices=FONT_WEIGHT_CHOICES, initial=NORMAL)
-# Font size -1 is interpreted as "System default".
-Pack.validated_property('font_size', choices=FONT_SIZE_CHOICES, initial=-1)
+Pack.validated_property('font_size', choices=FONT_SIZE_CHOICES, initial=SYSTEM_DEFAULT_SIZE)
 # Pack.composite_property([
 #     'font_family', 'font_style', 'font_variant', 'font_weight', 'font_size'
 #     FONT_CHOICES

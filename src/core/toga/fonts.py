@@ -11,6 +11,9 @@ from travertino.constants import (
 from toga.platform import get_platform_factory
 
 
+SYSTEM_DEFAULT_SIZE = -1
+
+
 class Font(BaseFont):
     def __init__(self, family, size, style=NORMAL, variant=NORMAL, weight=NORMAL):
         super().__init__(family, size, style, variant, weight)
