@@ -1,5 +1,5 @@
-from .gtk import *  # noqa: E401, F403
-from .utils import *  # noqa: E401, F403
+from .gtk import *  # noqa: F401, F403
+from .utils import *  # noqa: F401, F403
 
 # GDK/GTK always renders at 96dpi. When HiDPI mode is enabled, it is
 # managed at the compositor level. See
