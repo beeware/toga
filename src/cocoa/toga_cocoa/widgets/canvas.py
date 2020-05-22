@@ -31,7 +31,8 @@ class TogaCanvas(NSView):
     @objc_method
     def drawRect_(self, rect: NSRect) -> None:
         context = NSGraphicsContext.currentContext.CGContext
-
+        # Save the "clean" state of the graphics context.
+        core_graphics.CGContextSaveGState(context)
         if self.interface.redraw:
             self.interface._draw(self._impl, draw_context=context)
 
@@ -187,9 +188,12 @@ class Canvas(Widget):
         core_graphics.CGContextTranslateCTM(draw_context, tx, ty)
 
     def reset_transform(self, draw_context, *args, **kwargs):
-        ctm = core_graphics.CGContextGetCTM(draw_context)
-        invert_transform = core_graphics.CGAffineTransformInvert(ctm)
-        core_graphics.CGContextConcatCTM(draw_context, invert_transform)
+        # Restore the "clean" state of the graphics context.
+        core_graphics.CGContextRestoreGState(draw_context)
+        # CoreGraphics has a stack-based state representation,
+        # so ensure that there is a new, clean version of the "clean"
+        # state on the stack.
+        core_graphics.CGContextSaveGState(draw_context)
 
     # Text
 
