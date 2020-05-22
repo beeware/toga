@@ -6,6 +6,7 @@ from toga.widgets.canvas import Context, FillRule
 from .box import Box
 from toga_winforms.colors import native_color
 from toga_winforms.libs import (
+    Drawing2D,
     FillMode,
     Pen,
     SolidBrush,
@@ -63,6 +64,7 @@ class Canvas(Box):
         context = WinformContext()
         context.graphics = event.Graphics
         context.graphics.Clear(native_color(WHITE))
+        context.graphics.SmoothingMode = Drawing2D.SmoothingMode.AntiAlias
         self.interface._draw(self, draw_context=context)
 
     def winforms_resize(self, *args):
