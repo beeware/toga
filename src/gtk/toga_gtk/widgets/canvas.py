@@ -23,6 +23,7 @@ class Canvas(Widget):
         using the canvas and gtk_context function arguments. This method calls
         the draw method on the interface Canvas to draw the objects.
         """
+        self.original_transform_matrix = gtk_context.get_matrix()
         self.interface._draw(self, draw_context=gtk_context)
 
     def gtk_on_size_allocate(self, widget, allocation):
@@ -94,7 +95,7 @@ class Canvas(Widget):
 
     def fill(self, color, fill_rule, preserve, draw_context, *args, **kwargs):
         self.apply_color(color, draw_context)
-        if fill_rule is "evenodd":
+        if fill_rule == "evenodd":
             draw_context.set_fill_rule(cairo.FILL_RULE_EVEN_ODD)
         else:
             draw_context.set_fill_rule(cairo.FILL_RULE_WINDING)
@@ -123,7 +124,7 @@ class Canvas(Widget):
         draw_context.translate(tx, ty)
 
     def reset_transform(self, draw_context, *args, **kwargs):
-        draw_context.identity_matrix()
+        draw_context.set_matrix(self.original_transform_matrix)
 
     # Text
 
