@@ -221,9 +221,8 @@ class Canvas(Box):
         draw_context.matrix = None
 
     # Text
-
     def write_text(self, text, x, y, font, draw_context, *args, **kwargs):
-        width, height = font.measure(text, dpi=self.native.DeviceDpi)
+        width, height = font.measure(text, dpi=self.container.viewport.dpi)
         origin = PointF(x, y - height)
         font_family = win_font_family(font.family)
         font_style = win_font_style(font.weight, font.style, font_family)
@@ -232,4 +231,4 @@ class Canvas(Box):
         )
 
     def measure_text(self, text, font, draw_context, *args, **kwargs):
-        width, height = font.measure(text, dpi=self.native.DeviceDpi)
+        width, height = font.measure(text, dpi=self.container.viewport.dpi)
