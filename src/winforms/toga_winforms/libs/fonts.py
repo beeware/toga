@@ -6,7 +6,7 @@ from toga.fonts import (
     SYSTEM,
     SERIF,
     SANS_SERIF,
-    SYSTEM_DEFAULT_SIZE,
+    SYSTEM_DEFAULT_FONT_SIZE,
     CURSIVE,
     FANTASY,
     MONOSPACE,
@@ -66,6 +66,6 @@ def win_font_style(weight, style, font_family):
 
 
 def win_font_size(size):
-    if size == SYSTEM_DEFAULT_SIZE:
+    if size == SYSTEM_DEFAULT_FONT_SIZE:
         return SystemFonts.DefaultFont.Size
     return size

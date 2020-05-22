@@ -6,7 +6,7 @@ from toga.fonts import (
     SYSTEM,
     SERIF,
     SANS_SERIF,
-    SYSTEM_DEFAULT_SIZE,
+    SYSTEM_DEFAULT_FONT_SIZE,
     CURSIVE,
     FANTASY,
     MONOSPACE
@@ -26,7 +26,7 @@ class Font:
         try:
             font = _FONT_CACHE[self.interface]
         except KeyError:
-            if self.interface.size == SYSTEM_DEFAULT_SIZE:
+            if self.interface.size == SYSTEM_DEFAULT_FONT_SIZE:
                 # iOS default label size is 17pt
                 # FIXME: make this dynamic.
                 size = 17
