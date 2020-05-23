@@ -103,22 +103,22 @@ class Canvas(Widget):
         """Ensure the correct handler is invoked."""
         self._set_value("on_press", handler)
 
-    def set_on_right_press(self, handler):
+    def set_on_alt_press(self, handler):
         """Ensure the correct handler is invoked."""
-        self._set_value("on_right_press", handler)
+        self._set_value("on_alt_press", handler)
 
     def set_on_release(self, handler):
         """Ensure the correct handler is invoked."""
         self._set_value("on_release", handler)
 
-    def set_on_right_release(self, handler):
+    def set_on_alt_release(self, handler):
         """Ensure the correct handler is invoked."""
-        self._set_value("on_right_release", handler)
+        self._set_value("on_alt_release", handler)
 
     def set_on_drag(self, handler):
         """Ensure the correct handler is invoked."""
         self._set_value("on_drag", handler)
 
-    def set_on_right_drag(self, handler):
+    def set_on_alt_drag(self, handler):
         """Ensure the correct handler is invoked."""
-        self._set_value("on_right_drag", handler)
+        self._set_value("on_alt_drag", handler)

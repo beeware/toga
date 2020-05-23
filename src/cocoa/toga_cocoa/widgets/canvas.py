@@ -54,10 +54,10 @@ class TogaCanvas(NSView):
 
     @objc_method
     def rightMouseDown_(self, event) -> None:
-        """Invoke the on_right_press handler if configured."""
-        if self.interface.on_right_press:
+        """Invoke the on_alt_press handler if configured."""
+        if self.interface.on_alt_press:
             position = self.convertPoint(event.locationInWindow, fromView=None)
-            self.interface.on_right_press(self.interface, position.x, position.y, event.clickCount)
+            self.interface.on_alt_press(self.interface, position.x, position.y, event.clickCount)
 
     @objc_method
     def mouseUp_(self, event) -> None:
@@ -68,10 +68,10 @@ class TogaCanvas(NSView):
 
     @objc_method
     def rightMouseUp_(self, event) -> None:
-        """Invoke the on_right_release handler if configured."""
-        if self.interface.on_right_release:
+        """Invoke the on_alt_release handler if configured."""
+        if self.interface.on_alt_release:
             position = self.convertPoint(event.locationInWindow, fromView=None)
-            self.interface.on_right_release(self.interface, position.x, position.y, event.clickCount)
+            self.interface.on_alt_release(self.interface, position.x, position.y, event.clickCount)
 
     @objc_method
     def mouseDragged_(self, event) -> None:
@@ -82,10 +82,10 @@ class TogaCanvas(NSView):
 
     @objc_method
     def rightMouseDragged_(self, event) -> None:
-        """Invoke the on_right_drag handler if configured."""
-        if self.interface.on_right_drag:
+        """Invoke the on_alt_drag handler if configured."""
+        if self.interface.on_alt_drag:
             position = self.convertPoint(event.locationInWindow, fromView=None)
-            self.interface.on_right_drag(self.interface, position.x, position.y, event.clickCount)
+            self.interface.on_alt_drag(self.interface, position.x, position.y, event.clickCount)
 
 
 class Canvas(Widget):
@@ -297,14 +297,14 @@ class Canvas(Widget):
         """No special handling required."""
         pass
 
-    def set_on_right_press(self, handler):
+    def set_on_alt_press(self, handler):
         """No special handling required."""
         pass
 
-    def set_on_right_release(self, handler):
+    def set_on_alt_release(self, handler):
         """No special handling required."""
         pass
 
-    def set_on_right_drag(self, handler):
+    def set_on_alt_drag(self, handler):
         """No special handling required."""
         pass

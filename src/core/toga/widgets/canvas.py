@@ -521,13 +521,19 @@ class Canvas(Context, Widget):
         id (str):  An identifier for this widget.
         style (:obj:`Style`): An optional style object. If no
             style is provided then a new one will be created for the widget.
-        on_resize (:obj:`callable`): Function to call when resized.
-        on_press (:obj:`callable`): Function to call when left button pressed.
-        on_release (:obj:`callable`): Function to call when left button released.
-        on_drag (:obj:`callable`): Function to call when cursor moved with left button pressed.
-        on_right_press (:obj:`callable`): Function to call when right button pressed.
-        on_right_release (:obj:`callable`): Function to call when right button released
-        on_right_drag (:obj:`callable`): Function to call when cursor moved with right button pressed.
+        on_resize (:obj:`callable`): Handler to invoke when the canvas is resized.
+        on_press (:obj:`callable`): Handler to invoke when the primary
+            (usually the left) button is pressed.
+        on_release (:obj:`callable`): Handler to invoke when the primary
+            (usually the left) button is released.
+        on_drag (:obj:`callable`): Handler to invoke when cursor is dragged with
+            the primary (usually the left) button pressed.
+        on_alt_press (:obj:`callable`): Handler to invoke when the alternate
+            (usually the right) button pressed.
+        on_alt_release (:obj:`callable`): Handler to invoke when the alternate
+            (usually the right) button released
+        on_alt_drag (:obj:`callable`): Handler to invoke when the cursor is
+            dragged with the alternate (usually the right) button pressed.
         factory (:obj:`module`): A python module that is capable to return a
             implementation of this class with the same name. (optional &
             normally not needed)
@@ -536,7 +542,7 @@ class Canvas(Context, Widget):
     def __init__(
             self, id=None, style=None, on_resize=None,
             on_press=None, on_release=None, on_drag=None,
-            on_right_press=None, on_right_release=None, on_right_drag=None,
+            on_alt_press=None, on_alt_release=None, on_alt_drag=None,
             factory=None):
 
         super().__init__(id=id, style=style, factory=factory)
@@ -550,16 +556,16 @@ class Canvas(Context, Widget):
         self.on_press = on_press
         self.on_release = on_release
         self.on_drag = on_drag
-        self.on_right_press = on_right_press
-        self.on_right_release = on_right_release
-        self.on_right_drag = on_right_drag
+        self.on_alt_press = on_alt_press
+        self.on_alt_release = on_alt_release
+        self.on_alt_drag = on_alt_drag
 
     @property
     def on_resize(self):
         """The handler to invoke when the canvas is resized.
 
         Returns:
-            The function ``callable`` that is called on canvas resize.
+            The handler that is invoked on canvas resize.
         """
         return self._on_resize
 
@@ -575,125 +581,137 @@ class Canvas(Context, Widget):
 
     @property
     def on_press(self):
-        """Return the handler invoked when the left mouse button is pressed.
+        """Return the handler invoked when the primary (usually the left) mouse
+        button is pressed.
 
         Returns:
-            The function ``callable`` that is called on left mouse button pressed.
+            The handler that is invoked when the primary mouse button is pressed.
         """
         return self._on_press
 
     @on_press.setter
     def on_press(self, handler):
-        """Set the handler to invoke when the left mouse button is pressed.
+        """Set the handler to invoke when the primary (usually the left) mouse
+        button is pressed.
 
         Args:
             handler (:obj:`callable`): The handler to invoke when the
-            left mouse button is pressed.
+            primary mouse button is pressed.
         """
         self._on_press = wrapped_handler(self, handler)
         self._impl.set_on_press(self._on_press)
 
     @property
     def on_release(self):
-        """Return the handler invoked when the left mouse button is released.
+        """Return the handler invoked when the primary (usually the left) mouse
+        button is released.
 
         Returns:
-            The function ``callable`` that is called on left mouse button released.
+            The handler that is invoked when the primary mouse button is released.
         """
         return self._on_release
 
     @on_release.setter
     def on_release(self, handler):
-        """Set the handler to invoke when the left mouse button is released.
+        """Set the handler to invoke when the primary (usually the left) mouse
+        button is released.
 
         Args:
             handler (:obj:`callable`): The handler to invoke when the
-            left mouse button is released.
+            primary mouse button is released.
         """
         self._on_release = wrapped_handler(self, handler)
         self._impl.set_on_release(self._on_release)
 
     @property
     def on_drag(self):
-        """Return the handler invoked when the mouse is moved while the left mouse button is pressed.
+        """Return the handler invoked when the mouse is dragged with the primary
+        (usually the left) mouse button is pressed.
 
         Returns:
-            The function ``callable`` that is called on mouse moved with
-            the left button pressed.
+            The handler that is invoked when the mouse is dragged with
+            the primary button pressed.
         """
         return self._on_drag
 
     @on_drag.setter
     def on_drag(self, handler):
-        """Set the handler to invoke when the mouse button is moved with the left button pressed.
+        """Set the handler to invoke when the mouse button is dragged with the
+        primary (usually the left) button pressed.
 
         Args:
             handler (:obj:`callable`): The handler to invoke when the
-            mouse is moved with the left button pressed.
+            mouse is dragged with the primary button pressed.
         """
         self._on_drag = wrapped_handler(self, handler)
         self._impl.set_on_drag(self._on_drag)
 
     @property
-    def on_right_press(self):
-        """Return the handler to invoke when the right mouse button is pressed.
+    def on_alt_press(self):
+        """Return the handler to invoke when the alternate (usually the right)
+        mouse button is pressed.
 
         Returns:
-            The function ``callable`` that is called on right mouse button pressed.
+            The handler that is invoked when the alternate mouse button is pressed.
         """
-        return self._on_right_press
+        return self._on_alt_press
 
-    @on_right_press.setter
-    def on_right_press(self, handler):
-        """Set the handler to invoke when the right mouse button is pressed.
+    @on_alt_press.setter
+    def on_alt_press(self, handler):
+        """Set the handler to invoke when the alternate (usually the right)
+        mouse button is pressed.
 
         Args:
             handler (:obj:`callable`): The handler to invoke when the
-            right mouse button is pressed.
+            alternate mouse button is pressed.
         """
-        self._on_right_press = wrapped_handler(self, handler)
-        self._impl.set_on_right_press(self._on_right_press)
+        self._on_alt_press = wrapped_handler(self, handler)
+        self._impl.set_on_alt_press(self._on_alt_press)
 
     @property
-    def on_right_release(self):
-        """Return the handler to invoke when the right mouse button is released.
+    def on_alt_release(self):
+        """Return the handler to invoke when the alternate (usually the right)
+        mouse button is released.
 
         Returns:
-            The function ``callable`` that is called on right mouse button released.
+            The handler that is invoked when the alternate mouse button is released.
         """
-        return self._on_right_release
+        return self._on_alt_release
 
-    @on_right_release.setter
-    def on_right_release(self, handler):
-        """Set the handler to invoke when the right mouse button is released.
+    @on_alt_release.setter
+    def on_alt_release(self, handler):
+        """Set the handler to invoke when the alternate (usually the right)
+        mouse button is released.
 
         Args:
             handler (:obj:`callable`): The handler to invoke when the
-            right mouse button is released.
+            alternate mouse button is released.
         """
-        self._on_right_release = wrapped_handler(self, handler)
-        self._impl.set_on_right_release(self._on_right_release)
+        self._on_alt_release = wrapped_handler(self, handler)
+        self._impl.set_on_alt_release(self._on_alt_release)
 
     @property
-    def on_right_drag(self):
-        """Return the handler to invoke when the mouse is moved while the right mouse button is pressed.
+    def on_alt_drag(self):
+        """Return the handler to invoke when the mouse is dragged while the
+        alternate (usually the right) mouse button is pressed.
 
         Returns:
-            The function ``callable`` that is called on mouse moved with
-            the right button pressed.
+            The handler that is invoked when the mouse is dragged with
+            the alternate mouse button pressed.
         """
-        return self._on_right_drag
+        return self._on_alt_drag
 
-    @on_right_drag.setter
-    def on_right_drag(self, handler):
-        """Set the handler to invoke when the mouse button is moved with the right button pressed.
+    @on_alt_drag.setter
+    def on_alt_drag(self, handler):
+        """Set the handler to invoke when the mouse is dragged with the alternate
+        (usually the right) button pressed.
 
         Args:
             handler (:obj:`callable`): The handler to invoke when the
-            mouse is moved with the right button pressed.
+            mouse is dragged with the alternate button pressed.
         """
-        self._on_right_drag = wrapped_handler(self, handler)
-        self._impl.set_on_right_drag(self._on_right_drag)
+        self._on_alt_drag = wrapped_handler(self, handler)
+        self._impl.set_on_alt_drag(self._on_alt_drag)
 
     ###########################################################################
     # Transformations of a canvas

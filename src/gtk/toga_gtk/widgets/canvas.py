@@ -44,14 +44,14 @@ class Canvas(Widget):
     def set_on_drag(self, handler):
         self.interface.factory.not_implemented('Canvas.set_on_drag()')
 
-    def set_on_right_press(self, handler):
-        self.interface.factory.not_implemented('Canvas.set_on_right_press()')
+    def set_on_alt_press(self, handler):
+        self.interface.factory.not_implemented('Canvas.set_on_alt_press()')
 
-    def set_on_right_release(self, handler):
-        self.interface.factory.not_implemented('Canvas.set_on_right_release()')
+    def set_on_alt_release(self, handler):
+        self.interface.factory.not_implemented('Canvas.set_on_alt_release()')
 
-    def set_on_right_drag(self, handler):
-        self.interface.factory.not_implemented('Canvas.set_on_drag()')
+    def set_on_alt_drag(self, handler):
+        self.interface.factory.not_implemented('Canvas.set_on_alt_drag()')
 
     def redraw(self):
         self.native.queue_draw()
