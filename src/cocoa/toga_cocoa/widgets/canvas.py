@@ -109,6 +109,10 @@ class Canvas(Widget):
     def redraw(self):
         self.native.needsDisplay = True
 
+    @property
+    def dpi(self):
+        return DISPLAY_DPI
+
     # Basic paths
 
     def new_path(self, draw_context, *args, **kwargs):
@@ -249,7 +253,7 @@ class Canvas(Widget):
         else:
             raise ValueError("No font to write with")
 
-        width, height = write_font.measure(text, dpi=DISPLAY_DPI)
+        width, height = write_font.measure(text, dpi=self.dpi)
         textAttributes = NSMutableDictionary.alloc().init()
         textAttributes[NSFontAttributeName] = write_font._impl.native
 

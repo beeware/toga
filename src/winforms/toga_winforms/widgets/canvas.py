@@ -57,6 +57,10 @@ class Canvas(Box):
         self.native.Paint += self.winforms_paint
         self.native.Resize += self.winforms_resize
 
+    @property
+    def dpi(self):
+        return self.container.viewport.dpi
+
     def set_on_resize(self, handler):
         pass
 
@@ -242,7 +246,7 @@ class Canvas(Box):
 
     # Text
     def write_text(self, text, x, y, font, draw_context, *args, **kwargs):
-        width, height = font.measure(text, dpi=self.container.viewport.dpi)
+        width, height = font.measure(text, dpi=self.dpi)
         origin = PointF(x, y - height)
         font_family = win_font_family(font.family)
         font_style = win_font_style(font.weight, font.style, font_family)
@@ -251,4 +255,5 @@ class Canvas(Box):
         )
 
     def measure_text(self, text, font, draw_context, *args, **kwargs):
-        width, height = font.measure(text, dpi=self.container.viewport.dpi)
+        width, height = font.measure(text, dpi=self.dpi)
+        return width, height

@@ -340,7 +340,7 @@ class ExampleCanvasApp(toga.App):
             weight=self.get_weight(),
             style=self.get_style(),
         )
-        width, height = font.measure(text, tight=True)
+        width, height = font.measure(text, self.canvas.dpi, tight=True)
         context.write_text(text, dx - width / 2, dy, font)
 
     def get_weight(self):
