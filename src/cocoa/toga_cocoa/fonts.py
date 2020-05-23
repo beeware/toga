@@ -4,6 +4,7 @@ from toga.fonts import (
     SYSTEM,
     SERIF,
     SANS_SERIF,
+    SYSTEM_DEFAULT_FONT_SIZE,
     CURSIVE,
     FANTASY,
     MONOSPACE,
@@ -20,13 +21,19 @@ class Font:
         try:
             font = _FONT_CACHE[self.interface]
         except KeyError:
+            # Default system font size on Cocoa is 12pt
+            if self.interface.size == SYSTEM_DEFAULT_FONT_SIZE:
+                font_size = NSFont.systemFontSize
+            else:
+                font_size = self.interface.size
+
             if self.interface.family == SYSTEM:
                 if self.interface.weight == BOLD:
-                    font = NSFont.boldSystemFontOfSize(self.interface.size)
+                    font = NSFont.boldSystemFontOfSize(font_size)
                 else:
-                    font = NSFont.systemFontOfSize(self.interface.size)
+                    font = NSFont.systemFontOfSize(font_size)
             elif self.interface.family == MESSAGE:
-                font = NSFont.messageFontOfSize(self.interface.size)
+                font = NSFont.messageFontOfSize(font_size)
             else:
                 if self.interface.family is SERIF:
                     family = 'Times-Roman'
@@ -59,7 +66,7 @@ class Font:
 
         self.native = font
 
-    def measure(self, text, tight=False):
+    def measure(self, text, dpi, tight=False):
         textAttributes = NSMutableDictionary.alloc().init()
         textAttributes[NSFontAttributeName] = self.native
         text_string = NSAttributedString.alloc().initWithString_attributes_(text, textAttributes)

@@ -1,8 +1,12 @@
 from .libs import WinFont, WinForms
 from .libs import FontFamily, FontStyle, Single, win_font_family
-from .libs.fonts import win_font_style
+from .libs.fonts import win_font_style, win_font_size
 
 _FONT_CACHE = {}
+
+
+def points_to_pixels(points, dpi):
+    return points * 72 / dpi
 
 
 class Font:
@@ -17,13 +21,17 @@ class Font:
                 self.interface.style,
                 font_family
             )
+            font_size = win_font_size(self.interface.size)
             font = WinFont.Overloads[FontFamily, Single, FontStyle](
-                font_family, self.interface.size, font_style
+                font_family, font_size, font_style
             )
             _FONT_CACHE[self.interface] = font
 
         self.native = font
 
-    def measure(self, text, tight=False):
+    def measure(self, text, dpi, tight=False):
         size = WinForms.TextRenderer.MeasureText(text, self.native)
-        return size.Width, size.Height
+        return (
+            points_to_pixels(size.Width, dpi),
+            points_to_pixels(size.Height, dpi),
+        )

@@ -583,7 +583,7 @@ class CanvasTests(TestCase):
         )
         self.assertEqual(
             repr(write_text),
-            "WriteText(text=test text, x=0, y=0, font=<Font: 12pt system>)",
+            "WriteText(text=test text, x=0, y=0, font=<Font: -1pt system>)",
         )
 
     def test_write_text_modify(self):

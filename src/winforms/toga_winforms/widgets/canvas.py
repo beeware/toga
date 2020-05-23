@@ -6,6 +6,7 @@ from toga.widgets.canvas import Context, FillRule
 from .box import Box
 from toga_winforms.colors import native_color
 from toga_winforms.libs import (
+    Drawing2D,
     FillMode,
     Pen,
     SolidBrush,
@@ -63,6 +64,7 @@ class Canvas(Box):
         context = WinformContext()
         context.graphics = event.Graphics
         context.graphics.Clear(native_color(WHITE))
+        context.graphics.SmoothingMode = Drawing2D.SmoothingMode.AntiAlias
         self.interface._draw(self, draw_context=context)
 
     def winforms_resize(self, *args):
@@ -221,9 +223,8 @@ class Canvas(Box):
         draw_context.matrix = None
 
     # Text
-
     def write_text(self, text, x, y, font, draw_context, *args, **kwargs):
-        width, height = font.measure(text)
+        width, height = font.measure(text, dpi=self.container.viewport.dpi)
         origin = PointF(x, y - height)
         font_family = win_font_family(font.family)
         font_style = win_font_style(font.weight, font.style, font_family)
@@ -232,4 +233,4 @@ class Canvas(Box):
         )
 
     def measure_text(self, text, font, draw_context, *args, **kwargs):
-        self.interface.factory.not_implemented('Canvas.measure_text()')
+        width, height = font.measure(text, dpi=self.container.viewport.dpi)

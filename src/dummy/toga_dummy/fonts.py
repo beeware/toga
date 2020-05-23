@@ -6,5 +6,5 @@ class Font(LoggedObject):
         super().__init__()
         self.interface = interface
 
-    def measure(self, text, tight=False):
-        self._action('measure', text=text, tight=tight)
+    def measure(self, text, dpi, tight=False):
+        self._action('measure', text=text, dpi=dpi, tight=tight)

@@ -14,6 +14,7 @@ from System import Single  # noqa: E402, F401
 from System import Threading  # noqa: E402, F401
 from System import Uri  # noqa: E402, F401
 
+from System.Drawing import Drawing2D  # noqa: E402, F401
 from System.Drawing import Font as WinFont  # noqa: E402, F401
 from System.Drawing import Icon as WinIcon  # noqa: E402, F401
 from System.Drawing import Image as WinImage  # noqa: E402, F401
