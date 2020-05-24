@@ -5,7 +5,6 @@ from toga_cocoa.libs import (
     core_graphics,
     CGPathDrawingMode,
     CGRectMake,
-    DISPLAY_DPI,
     kCGPathStroke,
     kCGPathEOFill,
     kCGPathFill,
@@ -108,10 +107,6 @@ class Canvas(Widget):
 
     def redraw(self):
         self.native.needsDisplay = True
-
-    @property
-    def dpi(self):
-        return DISPLAY_DPI
 
     # Basic paths
 
@@ -264,7 +259,7 @@ class Canvas(Widget):
         else:
             raise ValueError("No font to write with")
 
-        width, height = self.measure_text(write_font, text)
+        width, height = self.measure_text(text, write_font)
         textAttributes = NSMutableDictionary.alloc().init()
         textAttributes[NSFontAttributeName] = write_font._impl.native
 
