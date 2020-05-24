@@ -178,6 +178,10 @@ class Window:
         self._is_full_screen = is_full_screen
         self._impl.set_full_screen(is_full_screen)
 
+    @property
+    def dpi(self):
+        return self._impl.dpi
+
     def close(self):
         self._impl.close()
 
