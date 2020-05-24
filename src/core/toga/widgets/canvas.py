@@ -778,6 +778,13 @@ class Canvas(Context, Widget):
         reset_transform = ResetTransform()
         return self.add_draw_obj(reset_transform)
 
+    ###########################################################################
+    # Text measurement
+    ###########################################################################
+
+    def measure_text(self, text, font, tight=False):
+        return self._impl.measure_text(text, font, tight=tight)
+
 
 class MoveTo:
     """A user-created :class:`MoveTo <MoveTo>` drawing object which moves the

@@ -244,6 +244,17 @@ class Canvas(Widget):
 
     # Text
 
+    def measure_text(self, text, font, tight=False):
+        textAttributes = NSMutableDictionary.alloc().init()
+        textAttributes[NSFontAttributeName] = font._impl.native
+        text_string = NSAttributedString.alloc().initWithString_attributes_(
+            text,
+            textAttributes
+        )
+        size = text_string.size()
+        size.width += 3
+        return size.width, size.height
+
     def write_text(self, text, x, y, font, *args, **kwargs):
         # Set font family and size
         if font:
@@ -253,7 +264,7 @@ class Canvas(Widget):
         else:
             raise ValueError("No font to write with")
 
-        width, height = write_font.measure(text, dpi=self.dpi)
+        width, height = self.measure_text(write_font, text)
         textAttributes = NSMutableDictionary.alloc().init()
         textAttributes[NSFontAttributeName] = write_font._impl.native
 

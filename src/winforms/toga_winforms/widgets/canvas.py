@@ -15,7 +15,8 @@ from toga_winforms.libs import (
     RectangleF,
     PointF,
     StringFormat,
-    win_font_family
+    win_font_family,
+    WinForms
 )
 from ..libs.fonts import win_font_style
 
@@ -56,10 +57,6 @@ class Canvas(Box):
         super(Canvas, self).create()
         self.native.Paint += self.winforms_paint
         self.native.Resize += self.winforms_resize
-
-    @property
-    def dpi(self):
-        return self.container.viewport.dpi
 
     def set_on_resize(self, handler):
         pass
@@ -246,7 +243,7 @@ class Canvas(Box):
 
     # Text
     def write_text(self, text, x, y, font, draw_context, *args, **kwargs):
-        width, height = font.measure(text, dpi=self.dpi)
+        width, height = self.measure_text(text, font)
         origin = PointF(x, y - height)
         font_family = win_font_family(font.family)
         font_style = win_font_style(font.weight, font.style, font_family)
@@ -254,6 +251,12 @@ class Canvas(Box):
             text, font_family, font_style, float(height), origin, StringFormat()
         )
 
-    def measure_text(self, text, font, draw_context, *args, **kwargs):
-        width, height = font.measure(text, dpi=self.dpi)
-        return width, height
+    def measure_text(self, text, font, tight=False):
+        size = WinForms.TextRenderer.MeasureText(text, font._impl.native)
+        return (
+            self.__points_to_pixels(size.Width),
+            self.__points_to_pixels(size.Height),
+        )
+
+    def __points_to_pixels(self, points):
+        return points * 72 / self.container.viewport.dpi
