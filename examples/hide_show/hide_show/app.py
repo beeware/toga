@@ -19,7 +19,7 @@ def build(app):
 
     root.add(Label("This app tests the behavior of the visibility style "
                    "property."))
-    root.add(Label("Instructions: click each button (there are 8) and verify "
+    root.add(Label("Instructions: click each button (there are 9) and verify "
                    "that the indicated label vanishes."))
 
     # CASE 1 - target is a single widget

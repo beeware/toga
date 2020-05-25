@@ -69,26 +69,23 @@ class Widget:
 
         my_interface_hidden = (self.interface.style.visibility == "hidden")
 
-        if self.native:
-            if my_interface_hidden or hidden:
-                # if self.native is a container widget, each native child will
-                # be hidden too
-                self.native.hide()
+        if my_interface_hidden or hidden:
+            # if self.native is a container widget, each native child will
+            # be hidden too
+            self.native.hide()
 
-                if self.interface.can_have_children:
-                    for child in self.interface.children:
-                        child._impl.set_hidden(True)
+            if self.interface.can_have_children:
+                for child in self.interface.children:
+                    child._impl.set_hidden(True)
 
-            else:
-                # if self.native is a container widget, each native child will
-                # be shown (if it is not hidden by its own style property)
-                self.native.show()
-
-                if self.interface.can_have_children:
-                    for child in self.interface.children:
-                        child._impl.set_hidden(False)
         else:
-            raise Exception("cannot hide widget: no native widget to hide")
+            # if self.native is a container widget, each native child will
+            # be shown (if it is not hidden by its own style property)
+            self.native.show()
+
+            if self.interface.can_have_children:
+                for child in self.interface.children:
+                    child._impl.set_hidden(False)
 
     def set_font(self, font):
         # By default, fon't can't be changed
