@@ -5,7 +5,8 @@ from toga_iOS.libs import UIApplication, UIScreen, UIViewController, UIWindow
 class iOSViewport:
     def __init__(self, view):
         self.view = view
-        self.dpi = 96  # FIXME This is almost certainly wrong...
+        # iOS renders everything at 96dpi.
+        self.dpi = 96
 
         self.kb_height = 0.0
 

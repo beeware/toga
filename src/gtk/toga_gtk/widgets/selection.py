@@ -17,11 +17,9 @@ class Selection(Widget):
             self.interface.on_select(widget)
 
     def remove_all_items(self):
-        # self._text.clear()
         self.native.remove_all()
 
     def add_item(self, item):
-        # self._text.append(item)
         self.native.append_text(item)
 
         # Gtk.ComboBox does not select the first item, so it's done here.

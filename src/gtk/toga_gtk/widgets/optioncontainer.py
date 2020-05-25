@@ -21,3 +21,18 @@ class OptionContainer(Widget):
     def set_on_select(self, handler):
         # No special handling required
         pass
+
+    def remove_content(self, index):
+        self.interface.factory.not_implemented('OptionContainer.remove_content()')
+
+    def set_option_enabled(self, index, enabled):
+        self.interface.factory.not_implemented('OptionContainer.set_option_enabled()')
+
+    def is_option_enabled(self, index):
+        self.interface.factory.not_implemented('OptionContainer.is_option_enabled()')
+
+    def set_option_label(self, index, value):
+        self.interface.factory.not_implemented('OptionContainer.set_option_label()')
+
+    def get_option_label(self, index):
+        self.interface.factory.not_implemented('OptionContainer.get_option_label()')

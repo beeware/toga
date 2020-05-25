@@ -14,6 +14,9 @@ class Slider(Widget):
     def set_range(self, range):
         self._set_value('range', range)
 
+    def set_tick_count(self, tick_count):
+        self._set_value('tick_count', tick_count)
+
     def rehint(self):
         self._action('rehint Slider')
 

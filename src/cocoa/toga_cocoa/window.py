@@ -5,7 +5,7 @@ from toga.command import Command as BaseCommand
 
 from toga_cocoa import dialogs
 from toga_cocoa.libs import (
-    NSScreen, NSToolbar, NSToolbarItem, NSTitledWindowMask,
+    DISPLAY_DPI, NSScreen, NSToolbar, NSToolbarItem, NSTitledWindowMask,
     NSClosableWindowMask, NSResizableWindowMask, NSMiniaturizableWindowMask,
     NSWindow, NSBackingStoreBuffered, NSLayoutConstraint,
     NSLayoutAttributeBottom, NSLayoutAttributeLeft, NSLayoutAttributeRight,
@@ -20,7 +20,7 @@ def toolbar_identifier(cmd):
 class CocoaViewport:
     def __init__(self, view):
         self.view = view
-        self.dpi = 96  # FIXME This is almost certainly wrong...
+        self.dpi = DISPLAY_DPI
 
     @property
     def width(self):
@@ -217,7 +217,10 @@ class Window:
         # Render of the content with a 0 sized viewport; this will
         # establish the minimum possible content size. Use that to enforce
         # a minimum window size.
-        self.interface.content.style.layout(self.interface.content, Viewport(0, 0))
+        self.interface.content.style.layout(
+            self.interface.content,
+            Viewport(0, 0, dpi=DISPLAY_DPI)
+        )
         self._min_width_constraint.constant = self.interface.content.layout.width
         self._min_height_constraint.constant = self.interface.content.layout.height
 

@@ -263,7 +263,7 @@ def collect_dummy_files(required_files):
 
 def make_test_function(element, element_list, error_msg=None):
     def fn(self):
-        self.assertIn(element, element_list, msg=error_msg)
+        self.assertIn(element, element_list, msg=error_msg if error_msg else fn.__doc__)
 
     return fn
 
@@ -276,7 +276,9 @@ def make_test_class(path, cls, expected, actual, skip):
         test_class = unittest.skip(skip)(test_class)
 
     fn = make_test_function(cls, actual.class_names)
-    fn.__doc__ = "The class {} is defined in {}".format(cls, path)
+    fn.__doc__ = (
+        "Expect class {} to be defined in {}, to be consistent with dummy implementation"
+    ).format(cls, path)
     test_class.test_class_exists = fn
 
     for method in expected.methods_of_class(cls):

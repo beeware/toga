@@ -1,7 +1,8 @@
-from .libs import IPythonApp, MainActivity
+from .libs.activity import IPythonApp, MainActivity
 from .window import Window
 
 
+# `MainWindow` is defined here in `app.py`, not `window.py`, to mollify the test suite.
 class MainWindow(Window):
     pass
 
@@ -22,9 +23,6 @@ class TogaApp(IPythonApp):
     def onResume(self):
         print("Toga app: onResume")
 
-    def onResume(self):
-        print("Toga app: onResume")
-
     def onPause(self):
         print("Toga app: onPause")
 
@@ -37,16 +35,31 @@ class TogaApp(IPythonApp):
     def onRestart(self):
         print("Toga app: onRestart")
 
+    @property
+    def native(self):
+        # We access `MainActivity.singletonThis` freshly each time, rather than
+        # storing a reference in `__init__()`, because it's not safe to use the
+        # same reference over time because `rubicon-java` creates a JNI local
+        # reference.
+        return MainActivity.singletonThis
+
 
 class App:
-    _MAIN_WINDOW_CLASS = MainWindow
-
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
+        self._listener = None
+
+    @property
+    def native(self):
+        return self._listener.native if self._listener else None
 
     def create(self):
+        # The `_listener` listens for activity event callbacks. For simplicity,
+        # the app's `.native` is the listener's native Java class.
         self._listener = TogaApp(self)
+        # Call user code to populate the main window
+        self.interface.startup()
 
     def open_document(self, fileURL):
         print("Can't open document %s (yet)" % fileURL)

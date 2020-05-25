@@ -65,6 +65,7 @@ class App:
         self.interface.startup()
         self._menu_items = {}
         self.create_menus()
+        self.interface.icon.bind(self.interface.factory)
         self.interface.main_window._impl.native.Icon = \
             self.interface.icon._impl.native
 
@@ -105,7 +106,7 @@ class App:
         '''Add a new document to this app.'''
         print("STUB: If you want to handle opening documents, implement App.open_document(fileURL)")
 
-    def app_exception_handler(self, sender, winforms_exc):
+    def winforms_thread_exception(self, sender, winforms_exc):
         # The PythonException returned by Winforms doesn't give us
         # easy access to the underlying Python stacktrace; so we
         # reconstruct it from the string message.
@@ -142,8 +143,8 @@ class App:
         try:
             self.create()
 
-            self.native.ThreadException += self.app_exception_handler
-            self.native.ApplicationExit += self.app_exit_handler
+            self.native.ThreadException += self.winforms_thread_exception
+            self.native.ApplicationExit += self.winforms_application_exit
 
             self.loop.run_forever(self.app_context)
         except:  # NOQA
@@ -155,7 +156,7 @@ class App:
         thread.Start()
         thread.Join()
 
-    def app_exit_handler(self, sender, *args, **kwargs):
+    def winforms_application_exit(self, sender, *args, **kwargs):
         pass
 
     def exit(self):
