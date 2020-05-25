@@ -254,9 +254,9 @@ class Canvas(Box):
     def measure_text(self, text, font, tight=False):
         size = WinForms.TextRenderer.MeasureText(text, font._impl.native)
         return (
-            self.__points_to_pixels(size.Width),
-            self.__points_to_pixels(size.Height),
+            self._points_to_pixels(size.Width),
+            self._points_to_pixels(size.Height),
         )
 
-    def __points_to_pixels(self, points):
+    def _points_to_pixels(self, points):
         return points * 72 / self.container.viewport.dpi
