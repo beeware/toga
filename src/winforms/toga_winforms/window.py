@@ -5,10 +5,9 @@ from .libs import WinForms, Size
 
 
 class WinFormsViewport:
-    def __init__(self, native, frame, dpi):
+    def __init__(self, native, frame):
         self.native = native
         self.frame = frame
-        self.dpi = dpi
 
     @property
     def width(self):
@@ -19,6 +18,10 @@ class WinFormsViewport:
         # Subtract any vertical shift of the frame. This is to allow
         # for toolbars, or any other viewport-level decoration.
         return self.native.ClientSize.Height - self.frame.vertical_shift
+
+    @property
+    def dpi(self):
+        return self.native.CreateGraphics().DpiX
 
 
 class Window:
@@ -34,7 +37,6 @@ class Window:
         self.native.Resize += self.winforms_resize
         self.toolbar_native = None
         self.toolbar_items = None
-        self._dpi = self.native.CreateGraphics().DpiX
 
     def create_toolbar(self):
         self.toolbar_native = WinForms.ToolStrip()
@@ -52,10 +54,6 @@ class Window:
                 item.Click += cmd._impl.as_handler()
                 cmd._impl.native.append(item)
             self.toolbar_native.Items.Add(item)
-
-    @property
-    def dpi(self):
-        return self._dpi
 
     def set_position(self, position):
         pass
@@ -88,7 +86,7 @@ class Window:
         self.native.Controls.Add(widget.native)
 
         # Set the widget's viewport to be based on the window's content.
-        widget.viewport = WinFormsViewport(native=self.native, frame=self, dpi=self.dpi)
+        widget.viewport = WinFormsViewport(native=self.native, frame=self)
         widget.frame = self
 
         # Add all children to the content widget.

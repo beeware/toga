@@ -561,16 +561,6 @@ class Canvas(Context, Widget):
         self.on_alt_drag = on_alt_drag
 
     @property
-    def dpi(self):
-        """
-        Get the dpi of the underlying implementation.
-
-        Returns:
-             int. dpi of the implementation.
-        """
-        return self._impl.dpi
-
-    @property
     def on_resize(self):
         """The handler to invoke when the canvas is resized.
 
