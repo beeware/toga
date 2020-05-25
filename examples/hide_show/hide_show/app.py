@@ -17,10 +17,10 @@ def build(app):
 
     root = Box(id="root", style=Pack(direction="column"))
 
-    root.add(Label("This app tests the behavior of the visibility style \
-        property."))
-    root.add(Label("Instructions: click each button (there are 8) and verify \
-        that the indicated label vanishes."))
+    root.add(Label("This app tests the behavior of the visibility style "
+                   "property."))
+    root.add(Label("Instructions: click each button (there are 8) and verify "
+                   "that the indicated label vanishes."))
 
     # CASE 1 - target is a single widget
     # ======
@@ -44,24 +44,25 @@ def build(app):
         on_toggle=toggle_visibility_of(case2_target)))
     root.add(case2_target)
 
-    # CASE 8 - target is a box that is a great grandchild of the window
+    # CASE 3 - target is a box that is a great grandchild of the window
     # ======
-    case8_target = Box(children=[
-        Label("Click switch 8 to toggle my visibility")])
+    case3_target = Box(children=[
+        Label("Click switch 3 to toggle my visibility")])
     root.add(Switch(
-        "Case 8: target is a box that is a great grandchild of the window",
+        "Case 3: target is a box that is a great grandchild of the window",
         is_on=True,
         style=Pack(flex=1),
-        on_toggle=toggle_visibility_of(case8_target)))
+        on_toggle=toggle_visibility_of(case3_target)))
     root.add(ScrollContainer(
         content=Box(children=[
             Box(children=[
-                case8_target])])))
+                case3_target])])))
 
     # CASE 4 - target is a scroll container
     # ======
     case4_target = ScrollContainer(
-        content=Label("Click switch 4 to toggle my visibility"))
+        content=Label("Click \nswitch 4 \nto toggle \nmy visibility"),
+        style=Pack())
     root.add(Switch(
         label="Case 4: target is a scroll container",
         is_on=True,
@@ -71,10 +72,10 @@ def build(app):
 
     # CASE 5 - target is a label that is a direct child of a scroll container
     # ======
-    case5_target = Label("Click switch 5 to toggle my visibility")
+    case5_target = Label("Click \nswitch 5 \nto toggle \nmy visibility")
     root.add(Switch(
-        label="Case 5: target is a label that is a direct child of a scroll \
-            container",
+        label="Case 5: target is a label that is a direct child of a scroll "
+              "container",
         is_on=True,
         style=Pack(flex=1),
         on_toggle=toggle_visibility_of(case5_target)))
@@ -83,10 +84,10 @@ def build(app):
     # CASE 6 - target is a box that is a direct child of a scroll container
     # ======
     case6_target = Box(children=[
-        Label("Click switch 6 to toggle my visibility")])
+        Label("Click \nswitch 6 \nto toggle \nmy visibility")])
     root.add(Switch(
-        label="Case 6: target is a box that is a direct child of a scroll \
-            container",
+        label="Case 6: target is a box that is a direct child of a scroll "
+              "container",
         is_on=True,
         style=Pack(flex=1),
         on_toggle=toggle_visibility_of(case6_target)))
@@ -94,51 +95,52 @@ def build(app):
 
     # CASE 7 - target is a box that is a grandchild of scroll container
     case7_target = Box(children=[
-        Label("Click switch 7 to toggle my visibility")])
+        Label("Click \nswitch 7 \nto toggle \nmy visibility")])
     root.add(Switch(
-        label="Case 7: target is a box that is a grandchild of a scroll \
-            container",
+        label="Case 7: target is a box that is a grandchild of a scroll "
+              "container",
         is_on=True,
         style=Pack(flex=1),
         on_toggle=toggle_visibility_of(case7_target)))
     root.add(ScrollContainer(content=Box(children=[case7_target])))
 
-    # CASE 9 - target is a box with a hidden label and a visible label
-    case9_target = Box(
-        id="case9_target",
+    # CASE 8 - target is a box with a hidden label and a visible label
+    case8_target = Box(
+        id="case8_target",
         style=Pack(direction="column"),
         children=[
             Label(
-                id="case9_hidden_label",
-                text="I should always be invisible! If you see me, this test \
-                    failed",
+                id="case8_hidden_label",
+                text="I should always be invisible! If you see me, this test "
+                     "failed",
                 style=Pack(visibility="hidden")),
-            Label("Click switch 9 to toggle my visibility")])
+            Label("Click switch 8 to toggle my visibility")])
     root.add(Switch(
-        label="Case 9: target is a box with a hidden label and visible label",
+        label="Case 8: target is a box with a hidden label and visible label",
+        is_on=True,
+        style=Pack(flex=1),
+        on_toggle=toggle_visibility_of(case8_target)))
+    root.add(case8_target)
+
+    # CASE 9 - target is the direct child of the window
+    # =======
+    case9_target = root
+    root.add(Switch(
+        label="Case 9: target is the direct child of the window",
         is_on=True,
         style=Pack(flex=1),
         on_toggle=toggle_visibility_of(case9_target)))
-    root.add(case9_target)
+    # root.add(case9_target)  # can't add root to itself!
+    root.add(Label("Click switch 9 to hide the root widget. You will have to "
+                   "restart this app"))
 
     # CASE 10 - initially hidden container content
+    # ======
     root.add(ScrollContainer(
         content=Label(
-            text="I should always be invisible! If you see me, this test \
-                failed",
+            text="I should always be invisible! If you see me, this test "
+                 "failed",
             style=Pack(visibility="hidden"))))
-
-    # CASE 3 - target is the direct child of the window
-    # ======
-    case3_target = root
-    root.add(Switch(
-        label="Case 3: target is the direct child of the window",
-        is_on=True,
-        style=Pack(flex=1),
-        on_toggle=toggle_visibility_of(case3_target)))
-    # root.add(case3_target)  # can't add root to itself!
-    root.add(Label("Click switch 3 to hide the root widget. You will have to \
-        restart this app"))
 
     return root
 
