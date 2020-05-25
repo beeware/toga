@@ -3,6 +3,7 @@ import sys
 from flask.globals import request
 from flask.views import View
 
+from toga import platform
 from toga_web import factory
 
 # Examples of valid version strings
@@ -25,6 +26,7 @@ class TogaView(View):
         # Make the Python __main__ context identify as the app being executed.
         sys.modules['__main__'] = self.app_module
 
+        platform.current_platform = 'web'
         app = self.app_module.main(factory=factory)
         return app._impl.render(
             state=state,

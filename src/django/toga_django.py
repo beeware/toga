@@ -3,6 +3,7 @@ import sys
 from django.urls import re_path
 from django.http import HttpResponse
 
+from toga import platform
 from toga_web import factory
 
 # Examples of valid version strings
@@ -24,6 +25,7 @@ class TogaApp:
         # Make the Python __main__ context identify as the app being executed.
         sys.modules['__main__'] = self.app_module
 
+        platform.current_platform = 'web'
         app = self.app_module.main(factory=factory)
         return HttpResponse(
             app._impl.render(
