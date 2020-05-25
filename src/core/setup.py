@@ -31,7 +31,7 @@ setup(
     },
     include_package_data=True,
     install_requires=[
-        'travertino>=0.1.0',
+        'travertino>=0.1.3',
         'importlib_metadata;python_version<"3.8"',
     ],
     tests_require=[
