@@ -2,4 +2,4 @@ include LICENSE
 include README.rst
 include setup.py
 include setup.cfg
-include toga_django.py
+include toga_flask.py

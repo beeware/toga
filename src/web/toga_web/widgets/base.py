@@ -35,13 +35,9 @@ class Widget:
     @container.setter
     def container(self, container):
         self._container = container
-        if self.constraints and self.native:
-            self._container.native.addSubview_(self.native)
-            self.constraints.container = container
 
         for child in self.interface.children:
             child._impl.container = container
-        self.interface.rehint()
 
     def set_enabled(self, value):
         self.native.set_sensitive(self.interface.enabled)

@@ -1,7 +1,7 @@
-toga-django
-===========
+toga-flask
+==========
 
-A Django backend for the `Toga widget toolkit <https://beeware.org/toga>`__.
+A Flask backend for the `Toga widget toolkit <https://beeware.org/toga>`__.
 
 **Toga requires Python 3**
 
@@ -15,37 +15,30 @@ For more details, see the `Toga project on Github
 Prerequisites
 ~~~~~~~~~~~~~
 
-This backend requires Django 3.0 as a minimum requirement.
+This backend requires Flask 1.1 as a minimum requirement.
 
 Usage
 ~~~~~
 
-Toga Django defines a ``TogaApp`` class that can be used to mount a Toga Web
-instance in a Django app. If you have Toga application named `myapp`, Django
-deployment is acheived by putting the following into your project's
-``urls.py``::
+Toga Flask defines a ``TogaApp`` class that can be used to mount a Toga Web
+instance in a Flask app. If you have Toga application named `myapp`, Flask
+deployment is acheived by putting the following into ``flaskapp.py``::
 
-    from django.conf import settings
-    from django.conf.urls.static import static
-    from django.contrib import admin
-    from django.urls import path
+    from flask import Flask
+    flask_app = Flask(__name__)
 
-    from toga_django import TogaApp
+    from toga_flask import TogaApp
 
-    from tutorial import app
+    from myapp import app
 
-    urlpatterns = [
-        path('admin/', admin.site.urls),
-        path('/', TogaApp(app).urls),
-    ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    TogaApp(app).route(flask_app, '/')
 
-This will mount the Toga app at `/`, the Django admin at `/admin`, and serve
-static content in debug mode. You can mount the app at any URL you wish,
+This will mount the Toga app at `/`. You can mount the app at any URL you wish,
 and you can also add other routes for other views.
 
 The app can then be executed with::
 
-    $ ./manage.py runserver
+    $ FLASK_APP=flaskapp.py FLASK_DEBUG=1 flask run
 
 This assumes a standard Toga app layout, where the application `myapp` has a
 submodule `app.py` that defines a `main()` method.
