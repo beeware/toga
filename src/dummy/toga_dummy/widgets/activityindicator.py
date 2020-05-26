@@ -14,6 +14,3 @@ class ActivityIndicator(Widget):
 
     def stop(self):
         self._action('stop ActivityIndicator')
-
-    def rehint(self):
-        self._action('rehint ActivityIndicator')
