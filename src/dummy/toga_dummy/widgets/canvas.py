@@ -67,8 +67,8 @@ class Canvas(Widget):
     def fill(self, color, fill_rule, preserve, *args, **kwargs):
         self._action("fill", color=color, fill_rule=fill_rule, preserve=preserve)
 
-    def stroke(self, color, line_width, *args, **kwargs):
-        self._action("stroke", color=color, line_width=line_width)
+    def stroke(self, color, line_width, line_dash, *args, **kwargs):
+        self._action("stroke", color=color, line_width=line_width, line_dash=line_dash)
 
     # Transformations
 
@@ -89,7 +89,36 @@ class Canvas(Widget):
     def write_text(self, text, x, y, font, *args, **kwargs):
         self._action("write text", text=text, x=x, y=y, font=font)
 
+    def measure_text(self, text, font, tight=False):
+        self._action("measure text", text=text, font=font, tight=tight)
+
     # Rehint
 
-    def rehint(self):
-        self._action('rehint Canvas')
+    def set_on_resize(self, handler):
+        self._set_value('on_resize', handler)
+
+    # 'Mouse' button handlers
+
+    def set_on_press(self, handler):
+        """Ensure the correct handler is invoked."""
+        self._set_value("on_press", handler)
+
+    def set_on_alt_press(self, handler):
+        """Ensure the correct handler is invoked."""
+        self._set_value("on_alt_press", handler)
+
+    def set_on_release(self, handler):
+        """Ensure the correct handler is invoked."""
+        self._set_value("on_release", handler)
+
+    def set_on_alt_release(self, handler):
+        """Ensure the correct handler is invoked."""
+        self._set_value("on_alt_release", handler)
+
+    def set_on_drag(self, handler):
+        """Ensure the correct handler is invoked."""
+        self._set_value("on_drag", handler)
+
+    def set_on_alt_drag(self, handler):
+        """Ensure the correct handler is invoked."""
+        self._set_value("on_alt_drag", handler)

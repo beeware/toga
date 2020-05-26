@@ -2,10 +2,11 @@ Widgets
 =======
 
 .. toctree::
-
+   activityindicator
    button
    canvas
    detailedlist
+   divider
    imageview
    label
    multilinetextinput

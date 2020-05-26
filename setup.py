@@ -1,4 +1,4 @@
-#/usr/bin/env python
+#!/usr/bin/env python
 import io
 import re
 from setuptools import setup
@@ -23,7 +23,7 @@ setup(
     long_description=long_description,
     author='Russell Keith-Magee',
     author_email='russell@keith-magee.com',
-    url='http://pybee.org/toga',
+    url='https://beeware.org/project/projects/libraries/toga/',
     extras_require={
         # Automatically installed platform backends
         ':sys_platform=="win32"': ['toga-winforms==%s' % version],
@@ -40,15 +40,16 @@ setup(
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3 :: Only',
         'Topic :: Software Development',
         'Topic :: Software Development :: User Interfaces',
         'Topic :: Software Development :: Widget Sets',
     ],
     package_urls={
-        'Funding': 'https://pybee.org/contributing/membership/',
+        'Funding': 'https://beeware.org/contributing/membership/',
         'Documentation': 'https://toga.readthedocs.io/',
-        'Tracker': 'https://github.com/pybee/toga/issues',
-        'Source': 'https://github.com/pybee/toga',
+        'Tracker': 'https://github.com/beeware/toga/issues',
+        'Source': 'https://github.com/beeware/toga',
     },
 )

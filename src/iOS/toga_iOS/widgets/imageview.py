@@ -1,9 +1,8 @@
-from toga.constants import *
 from toga_iOS.libs import (
     UIImageView,
     UIViewContentMode
 )
-from .base import Widget
+from toga_iOS.widgets.base import Widget
 
 
 class ImageView(Widget):
@@ -19,9 +18,6 @@ class ImageView(Widget):
         self.native.setAutoresizesSubviews_(False)
 
         self.add_constraints()
-
-    def get_image(self):
-        return self.native.image
 
     def set_image(self, image):
         if image:

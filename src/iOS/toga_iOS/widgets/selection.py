@@ -2,8 +2,7 @@ from rubicon.objc import objc_method, CGSize
 from travertino.size import at_least
 
 from toga_iOS.libs import UIColor, UIPickerView, UITextBorderStyle, UITextField
-
-from .base import Widget
+from toga_iOS.widgets.base import Widget
 
 
 class TogaPickerView(UIPickerView):

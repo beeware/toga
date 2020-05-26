@@ -6,7 +6,7 @@
   "main": "toga/toga.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/pybee/toga.git"
+    "url": "git+https://github.com/beeware/toga.git"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -22,15 +22,15 @@
   ],
   "license": "BSD-3-Clause",
   "bugs": {
-    "url": "https://github.com/pybee/toga/issues"
+    "url": "https://github.com/beeware/toga/issues"
   },
-  "homepage": "https://github.com/pybee/toga#readme",
+  "homepage": "https://github.com/beeware/toga#readme",
   "devDependencies": {
     "babel-core": "6.18.2",
     "babel-loader": "6.2.8",
     "babel-preset-env": "^1.4.0",
     "css-loader": "0.26.1",
-    "eslint": "3.9.1",
+    "eslint": ">=4.18.2",
     "eslint-config-airbnb": "13.0.0",
     "eslint-loader": "1.6.1",
     "eslint-plugin-import": "2.1.0",
@@ -42,13 +42,13 @@
     "sass-loader": "4.1.1",
     "style-loader": "0.13.1",
     "url-loader": "0.5.7",
-    "webpack-dev-server": "2.3.0",
+    "webpack-dev-server": ">=3.1.11",
     "write-file-webpack-plugin": "^3.4.2"
   },
   "dev": "webpack-dev-server",
   "dependencies": {
     "@pybee/batavia": "~3.4.0-dev.12",
-    "bootstrap": "4.0.0-alpha.5",
+    "bootstrap": ">=4.3.1",
     "font-awesome": "4.7.0",
     "jquery": "^3.1.1",
     "webpack": "2.2.1"

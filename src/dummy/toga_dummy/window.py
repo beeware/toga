@@ -30,6 +30,7 @@ class Window(LoggedObject):
     def show(self):
         self._action('show')
 
+    @not_required_on('mobile')
     def set_full_screen(self, is_full_screen):
         self._set_value('is_full_screen', is_full_screen)
 
@@ -52,6 +53,7 @@ class Window(LoggedObject):
     def stack_trace_dialog(self, title, message, content, retry=False):
         self._action('show stack trace dialog', title=title, message=message, content=content, retry=retry)
 
+    @not_required_on('mobile')
     def save_file_dialog(self, title, suggested_filename, file_types):
         self._action(
             'show save file dialog', title=title, suggested_filename=suggested_filename, file_types=file_types

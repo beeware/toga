@@ -55,19 +55,88 @@ class Widget(Node):
         return self._id
 
     def add(self, *children):
-        """Add a node as a child of this one.
+        """Add nodes as children of this one. If a node already has a different parent,
+        it will be moved over. This does nothing if a node already is a child of this node.
+
         Args:
-            child: A node to add as a child to this node.
+            children: Nodes to add as children of this node.
 
         Raises:
             ValueError: If this node is a leaf, and cannot have children.
         """
         for child in children:
-            super().add(child)
+            if child.parent is not self:
 
+                # remove from old parent
+                if child.parent:
+                    child.parent.remove(child)
+
+                # add to new parent
+                super().add(child)
+
+                # set app and window
+                child.app = self.app
+                child.window = self.window
+
+                if self._impl:
+                    self._impl.add_child(child._impl)
+
+        if self.window:
+            self.window.content.refresh()
+
+    def insert(self, index, child):
+        """Insert a node as a child of this one. If the node already has a different
+        parent, it will be moved over. This does nothing if the node already is a child of
+        this node.
+
+        Args:
+            index: Position of child node.
+            child: A node to insert as a child of this node.
+
+        Raises:
+            ValueError: If this node is a leaf, and cannot have children.
+        """
+        if child.parent is not self:
+
+            # remove from old parent
+            if child.parent:
+                child.parent.remove(child)
+
+            # add to new parent
+            super().insert(index, child)
+
+            # set app and window
             child.app = self.app
+            child.window = self.window
+
             if self._impl:
-                self._impl.add_child(child._impl)
+                self._impl.insert_child(index, child._impl)
+
+        if self.window:
+            self.window.content.refresh()
+
+    def remove(self, *children):
+        """Remove child nodes of this node. This does nothing if a given node is not a
+        child of this node.
+
+        Args:
+            children: Child nodes to remove.
+
+        Raises:
+            ValueError: If this node is a leaf, and cannot have children.
+        """
+        for child in children:
+            if child.parent is self:
+                super().remove(child)
+
+                child.app = None
+                child.window = None
+
+                if self._impl:
+                    self._impl.remove_child(child._impl)
+
+        if self.window:
+            self.window.content.refresh()
 
     @property
     def app(self):
@@ -84,15 +153,16 @@ class Widget(Node):
 
     @app.setter
     def app(self, app):
-        if self._app is not None:
-            if self._app != app:
-                raise ValueError("Widget %s is already associated with an App" % self)
-        elif app is not None:
+        # raise an error when we already have an app and attempt to override it
+        # with a different app
+        if self._app and app and self._app != app:
+            raise ValueError("Widget %s is already associated with an App" % self)
+
+        elif self._impl:
             self._app = app
             self._impl.set_app(app)
-            if self._children is not None:
-                for child in self._children:
-                    child.app = app
+            for child in self.children:
+                child.app = app
 
     @property
     def window(self):
@@ -114,6 +184,11 @@ class Widget(Node):
             for child in self._children:
                 child.window = window
 
+        self._set_window(window)
+
+    def _set_window(self, window):
+        pass
+
     @property
     def enabled(self):
         return self._enabled
@@ -128,10 +203,9 @@ class Widget(Node):
         if self._root:
             self._root.refresh()
         else:
-            super().refresh(self._impl.viewport)
             self.refresh_sublayouts()
+            super().refresh(self._impl.viewport)
 
     def refresh_sublayouts(self):
-        if self._children is not None:
-            for child in self._children:
-                child.refresh_sublayouts()
+        for child in self.children:
+            child.refresh_sublayouts()

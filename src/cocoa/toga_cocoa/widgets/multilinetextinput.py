@@ -1,6 +1,7 @@
+from toga_cocoa.colors import native_color
+from toga_cocoa.libs import (NSBezelBorder, NSScrollView, NSTextView,
+                             NSViewWidthSizable, objc_method)
 from travertino.size import at_least
-
-from toga_cocoa.libs import *
 
 from .base import Widget
 
@@ -41,16 +42,24 @@ class MultilineTextInput(Widget):
         self.add_constraints()
 
     def set_placeholder(self, value):
-        self.text.placeholderString = self.interface._value
+        self.text.placeholderString = self.interface.placeholder
 
     def set_readonly(self, value):
-        self.text.editable = not self.interface._readonly
+        self.text.editable = not self.interface.readonly
 
     def get_value(self):
         return self.text.string
 
     def set_value(self, value):
-        self.text.string = self.interface._value
+        self.text.string = value
+
+    def set_color(self, value):
+        if value:
+            self.text.textColor = native_color(value)
+
+    def set_font(self, value):
+        if value:
+            self.text.font = value._impl.native
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)

@@ -1,3 +1,6 @@
+from rubicon.objc import CGFloat, SEL
+
+from toga.widgets.canvas import FillRule
 from toga_cocoa.libs import (
     core_graphics,
     CGPathDrawingMode,
@@ -10,23 +13,26 @@ from toga_cocoa.libs import (
     NSForegroundColorAttributeName,
     NSGraphicsContext,
     NSMutableDictionary,
+    NSNotificationCenter,
     NSPoint,
     NSStrokeColorAttributeName,
     NSStrokeWidthAttributeName,
     NSRect,
     NSView,
+    NSViewFrameDidChangeNotification,
     objc_method,
 )
+from toga_cocoa.colors import native_color
 
 from .base import Widget
-from ..color import native_color
 
 
 class TogaCanvas(NSView):
     @objc_method
     def drawRect_(self, rect: NSRect) -> None:
-        context = NSGraphicsContext.currentContext.graphicsPort()
-
+        context = NSGraphicsContext.currentContext.CGContext
+        # Save the "clean" state of the graphics context.
+        core_graphics.CGContextSaveGState(context)
         if self.interface.redraw:
             self.interface._draw(self._impl, draw_context=context)
 
@@ -35,6 +41,53 @@ class TogaCanvas(NSView):
         # Default Cocoa coordinate frame is around the wrong way.
         return True
 
+    @objc_method
+    def frameChanged_(self, notification) -> None:
+        if self.interface.on_resize:
+            self.interface.on_resize(self.interface)
+
+    @objc_method
+    def mouseDown_(self, event) -> None:
+        """Invoke the on_press handler if configured."""
+        if self.interface.on_press:
+            position = self.convertPoint(event.locationInWindow, fromView=None)
+            self.interface.on_press(self.interface, position.x, position.y, event.clickCount)
+
+    @objc_method
+    def rightMouseDown_(self, event) -> None:
+        """Invoke the on_alt_press handler if configured."""
+        if self.interface.on_alt_press:
+            position = self.convertPoint(event.locationInWindow, fromView=None)
+            self.interface.on_alt_press(self.interface, position.x, position.y, event.clickCount)
+
+    @objc_method
+    def mouseUp_(self, event) -> None:
+        """Invoke the on_release handler if configured."""
+        if self.interface.on_release:
+            position = self.convertPoint(event.locationInWindow, fromView=None)
+            self.interface.on_release(self.interface, position.x, position.y, event.clickCount)
+
+    @objc_method
+    def rightMouseUp_(self, event) -> None:
+        """Invoke the on_alt_release handler if configured."""
+        if self.interface.on_alt_release:
+            position = self.convertPoint(event.locationInWindow, fromView=None)
+            self.interface.on_alt_release(self.interface, position.x, position.y, event.clickCount)
+
+    @objc_method
+    def mouseDragged_(self, event) -> None:
+        """Invoke the on_drag handler if configured."""
+        if self.interface.on_drag:
+            position = self.convertPoint(event.locationInWindow, fromView=None)
+            self.interface.on_drag(self.interface, position.x, position.y, event.clickCount)
+
+    @objc_method
+    def rightMouseDragged_(self, event) -> None:
+        """Invoke the on_alt_drag handler if configured."""
+        if self.interface.on_alt_drag:
+            position = self.convertPoint(event.locationInWindow, fromView=None)
+            self.interface.on_alt_drag(self.interface, position.x, position.y, event.clickCount)
+
 
 class Canvas(Widget):
     def create(self):
@@ -42,11 +95,18 @@ class Canvas(Widget):
         self.native.interface = self.interface
         self.native._impl = self
 
+        NSNotificationCenter.defaultCenter.addObserver(
+            self.native,
+            selector=SEL("frameChanged:"),
+            name=NSViewFrameDidChangeNotification,
+            object=self.native
+        )
+
         # Add the layout constraints
         self.add_constraints()
 
     def redraw(self):
-        pass
+        self.native.needsDisplay = True
 
     # Basic paths
 
@@ -129,7 +189,7 @@ class Canvas(Widget):
     # Drawing Paths
 
     def fill(self, color, fill_rule, preserve, draw_context, *args, **kwargs):
-        if fill_rule is "evenodd":
+        if fill_rule == FillRule.EVENODD:
             mode = CGPathDrawingMode(kCGPathEOFill)
         else:
             mode = CGPathDrawingMode(kCGPathFill)
@@ -142,7 +202,7 @@ class Canvas(Widget):
             core_graphics.CGContextSetRGBFillColor(draw_context, 0, 0, 0, 1)
         core_graphics.CGContextDrawPath(draw_context, mode)
 
-    def stroke(self, color, line_width, draw_context, *args, **kwargs):
+    def stroke(self, color, line_width, line_dash, draw_context, *args, **kwargs):
         core_graphics.CGContextSetLineWidth(draw_context, line_width)
         mode = CGPathDrawingMode(kCGPathStroke)
         if color is not None:
@@ -152,6 +212,10 @@ class Canvas(Widget):
         else:
             # Set color to black
             core_graphics.CGContextSetRGBStrokeColor(draw_context, 0, 0, 0, 1)
+        if line_dash is not None:
+            core_graphics.CGContextSetLineDash(draw_context, 0, (CGFloat*len(line_dash))(*line_dash), len(line_dash))
+        else:
+            core_graphics.CGContextSetLineDash(draw_context, 0, None, 0)
         core_graphics.CGContextDrawPath(draw_context, mode)
 
     # Transformations
@@ -166,11 +230,17 @@ class Canvas(Widget):
         core_graphics.CGContextTranslateCTM(draw_context, tx, ty)
 
     def reset_transform(self, draw_context, *args, **kwargs):
-        ctm = core_graphics.CGContextGetCTM(draw_context)
-        invert_transform = core_graphics.CGAffineTransformInvert(ctm)
-        core_graphics.CGContextConcatCTM(draw_context, invert_transform)
+        # Restore the "clean" state of the graphics context.
+        core_graphics.CGContextRestoreGState(draw_context)
+        # CoreGraphics has a stack-based state representation,
+        # so ensure that there is a new, clean version of the "clean"
+        # state on the stack.
+        core_graphics.CGContextSaveGState(draw_context)
 
     # Text
+
+    def measure_text(self, text, font, tight=False):
+        return font.bind(self.interface.factory).measure(text, tight=tight)
 
     def write_text(self, text, x, y, font, *args, **kwargs):
         # Set font family and size
@@ -181,7 +251,7 @@ class Canvas(Widget):
         else:
             raise ValueError("No font to write with")
 
-        width, height = write_font.measure(text)
+        width, height = self.measure_text(text, write_font)
         textAttributes = NSMutableDictionary.alloc().init()
         textAttributes[NSFontAttributeName] = write_font._impl.native
 
@@ -217,3 +287,31 @@ class Canvas(Widget):
         fitting_size = self.native.fittingSize()
         self.interface.intrinsic.height = fitting_size.height
         self.interface.intrinsic.width = fitting_size.width
+
+    def set_on_resize(self, handler):
+        """No special handling required."""
+        pass
+
+    def set_on_press(self, handler):
+        """No special handling required."""
+        pass
+
+    def set_on_release(self, handler):
+        """No special handling required."""
+        pass
+
+    def set_on_drag(self, handler):
+        """No special handling required."""
+        pass
+
+    def set_on_alt_press(self, handler):
+        """No special handling required."""
+        pass
+
+    def set_on_alt_release(self, handler):
+        """No special handling required."""
+        pass
+
+    def set_on_alt_drag(self, handler):
+        """No special handling required."""
+        pass

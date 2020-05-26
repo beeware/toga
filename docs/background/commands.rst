@@ -40,10 +40,10 @@ classify and organize the commands in your application:
 
 * A **section** - (optional) an integer providing a sub-grouping. If no section is specified, the command will be allocated to section 0 within the group.
 
-* An **order** - (optional) an integer indicating where a command falls within a section. If a ``Command`` doesn't have an order, it will be sorted alphabetically by label within it's section.
+* An **order** - (optional) an integer indicating where a command falls within a section. If a ``Command`` doesn't have an order, it will be sorted alphabetically by label within its section.
 
 Commands may not use all the metadata - for example, on some platforms, menus
-will contain icons; on other platforms, they won't. Toga will use the metadata
+will contain icons; on other platforms they won't. Toga will use the metadata
 if it is provided, but ignore it (or substitute an appropriate default) if it
 isn't.
 
@@ -96,7 +96,7 @@ The following is an example of using menus and commands::
         app.commands.add(cmd1, cmd4, cmd3)
         app.main_window.toolbar.add(cmd2, cmd3)
 
-This code defines a command ``cmd1`` that will be placed in first section of
+This code defines a command ``cmd1`` that will be placed in the first section of
 the "Stuff" group. It can be activated by pressing CTRL-k (or CMD-K on a Mac).
 
 The definitions for ``cmd2``, ``cmd3``, and ``cmd4`` have been omitted, but would

@@ -10,16 +10,13 @@ class ImageView(Widget):
         self.native.interface = self.interface
         self.native.SizeMode = WinForms.PictureBoxSizeMode.StretchImage
 
-    def get_image(self):
-        return self.native.Image
-
     def set_image(self, image):
-        if image and image.path is not None:
+        if image:
             # Workaround for loading image from url
-            if isinstance(image._impl.native, str):
-                self.native.Load(image._impl.native)
+            if self.interface._image._impl.url:
+                self.native.Load(self.interface._image._impl.url)
             else:
-                self.native.Image = image._impl.native
+                self.native.Image = self.interface._image._impl.native
         else:
             width = 0
             height = 0

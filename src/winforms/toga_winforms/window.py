@@ -1,14 +1,13 @@
 from toga import GROUP_BREAK, SECTION_BREAK
 from travertino.layout import Viewport
 
-from .libs import WinForms, Size, add_handler
+from .libs import WinForms, Size
 
 
 class WinFormsViewport:
     def __init__(self, native, frame):
         self.native = native
         self.frame = frame
-        self.dpi = 96  # FIXME This is almost certainly wrong...
 
     @property
     def width(self):
@@ -20,6 +19,10 @@ class WinFormsViewport:
         # for toolbars, or any other viewport-level decoration.
         return self.native.ClientSize.Height - self.frame.vertical_shift
 
+    @property
+    def dpi(self):
+        return self.native.CreateGraphics().DpiX
+
 
 class Window:
     def __init__(self, interface):
@@ -29,9 +32,9 @@ class Window:
 
     def create(self):
         self.native = WinForms.Form(self)
-        self.native.ClientSize = Size(self.interface._size[0], self.interface._size[1])
+        self.native.ClientSize = Size(*self.interface._size)
         self.native.interface = self.interface
-        self.native.Resize += self.winforms_Resize
+        self.native.Resize += self.winforms_resize
         self.toolbar_native = None
         self.toolbar_items = None
 
@@ -43,21 +46,20 @@ class Window:
             elif cmd == SECTION_BREAK:
                 item = WinForms.ToolStripSeparator()
             else:
-                cmd.bind(self.interface.factory)
                 if cmd.icon is not None:
-                    native_icon = cmd.icon.bind(self.interface.factory).native
+                    native_icon = cmd.icon._impl.native
                     item = WinForms.ToolStripMenuItem(cmd.label, native_icon.ToBitmap())
                 else:
                     item = WinForms.ToolStripMenuItem(cmd.label)
-
-                item.Click += add_handler(cmd)
+                item.Click += cmd._impl.as_handler()
+                cmd._impl.native.append(item)
             self.toolbar_native.Items.Add(item)
 
     def set_position(self, position):
         pass
 
     def set_size(self, size):
-        self.native.ClientSize = Size(self.interface._size[0], self.interface._size[1])
+        self.native.ClientSize = Size(*self.interface._size)
 
     def set_app(self, app):
         pass
@@ -84,7 +86,7 @@ class Window:
         self.native.Controls.Add(widget.native)
 
         # Set the widget's viewport to be based on the window's content.
-        widget.viewport = WinFormsViewport(self.native, self)
+        widget.viewport = WinFormsViewport(native=self.native, frame=self)
         widget.frame = self
 
         # Add all children to the content widget.
@@ -102,33 +104,32 @@ class Window:
         # Now that the content is visible, we can do our initial hinting,
         # and use that as the basis for setting the minimum window size.
         self.interface.content._impl.rehint()
-        self.interface.content.style.layout(self.interface.content, Viewport(0, 0))
+        self.interface.content.style.layout(
+            self.interface.content,
+            Viewport(width=0, height=0, dpi=self.native.CreateGraphics().DpiX)
+        )
         self.native.MinimumSize = Size(
             int(self.interface.content.layout.width),
             int(self.interface.content.layout.height) + TITLEBAR_HEIGHT
         )
         self.interface.content.refresh()
-        if self.interface is self.interface.app._main_window:
-            self.native.FormClosing += self.winforms_FormClosing
 
-        if self.interface is not self.interface.app._main_window:
-            self.native.Show()
+        self.native.Show()
 
-            
     def winforms_FormClosing(self, event, handler):
         if self.interface.app.on_exit:
             self.interface.app.on_exit(self.interface.app)
-          
+
     def set_full_screen(self, is_full_screen):
         self.interface.factory.not_implemented('Window.set_full_screen()')
-        
+
     def on_close(self):
         pass
 
     def close(self):
         self.native.Close()
 
-    def winforms_Resize(self, sender, args):
+    def winforms_resize(self, sender, args):
         if self.interface.content:
             # Re-layout the content
             self.interface.content.refresh()
@@ -179,13 +180,13 @@ class Window:
         else:
             raise ValueError("No filename provided in the open file dialog")
 
-    def select_folder_dialog(self, title, initial_directory):
+    def select_folder_dialog(self, title, initial_directory, multiselect):
         dialog = WinForms.FolderBrowserDialog()
         dialog.Title = title
         if initial_directory is not None:
             dialog.InitialDirectory = initial_directory
 
         if dialog.ShowDialog() == WinForms.DialogResult.OK:
-            return dialog.SelectedPath
+            return [dialog.SelectedPath]
         else:
             raise ValueError("No folder provided in the select folder dialog")

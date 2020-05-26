@@ -8,14 +8,29 @@ function bump {
         mv setup.py temp
         sed "s/version='.*',/version='$2',/g" temp > setup.py
         git add setup.py
+
+        find . -name pyproject.toml | while read f; do
+            mv "$f" temp
+            sed "s/==.*\"/==$2\"/g" temp > "$f"
+            mv "$f" temp
+            sed "s/^version = \".*\"/version = \"$2\"/g" temp > "$f"
+            git add "$f"
+        done
+
+    elif [ "$1" = "demo" ]; then
+        pushd demo
+        mv setup.py temp
+        sed "s/version='.*',/version='$2',/g" temp > setup.py
+        mv setup.py temp
+        sed "s/==.*',/==$2',/g" temp > setup.py
+        git add setup.py
     else
         if [ "$1" = "core" ]; then
             pushd src/$1/toga
-        elif [ "$1" = "demo" ]; then
-            pushd demo/toga_demo
         else
             pushd src/$1/toga_$1
         fi
+
         mv __init__.py temp
         sed "s/^__version__ = '.*'/__version__ = '$2'/g" temp > __init__.py
         git add __init__.py
@@ -94,7 +109,7 @@ if [ "$action" = "" ]; then
     echo "    ./release.sh build"
     echo
     echo "  Release the build products and tag the repo."
-    echo "    ./release.sh release 1.2.3"
+    echo "    ./release.sh release"
     echo
     echo "  Bump version number for next development version (dev3)"
     echo "    ./release.sh dev 1.2.4 3"
@@ -105,7 +120,7 @@ elif [ "$action" = "build" ]; then
     done
 
 elif [ "$action" = "release" ]; then
-    version=$1
+    version=$(grep "^__version__ = '.*'$" src/core/toga/__init__.py | cut -f 2 -d \')
     shift
 
     for module in $MODULES; do

@@ -2,6 +2,8 @@ import toga
 from toga.style import Pack
 from toga.constants import ROW, COLUMN
 
+MAX_PROGRESSBAR_VALUE = 100
+
 
 class ProgressBarApp(toga.App):
 
@@ -10,10 +12,7 @@ class ProgressBarApp(toga.App):
         self.main_window = toga.MainWindow(title=self.name, size=(500, 500))
 
         # the user may change the value with +/- buttons
-        self.progress_adder = toga.ProgressBar()
-
-        # the user may switch between "running" mode and a set value
-        self.progress_runner = toga.ProgressBar(max=None)
+        self.progress_adder = toga.ProgressBar(max=MAX_PROGRESSBAR_VALUE)
 
         # set up common styles
         label_style = Pack(flex=1, padding_right=24)
@@ -55,12 +54,18 @@ class ProgressBarApp(toga.App):
 
             toga.Box(style=row_box_style, children=[
                 toga.Label("determinate ProgressBar", style=label_style),
-                toga.ProgressBar(max=1, running=False, value=0.5),
+                toga.ProgressBar(
+                    max=MAX_PROGRESSBAR_VALUE,
+                    running=False,
+                    value=0.5 * MAX_PROGRESSBAR_VALUE),
             ]),
 
             toga.Box(style=row_box_style, children=[
                 toga.Label("running determinate ProgressBar", style=label_style),
-                toga.ProgressBar(max=1, running=True, value=0.5),
+                toga.ProgressBar(
+                    max=MAX_PROGRESSBAR_VALUE,
+                    running=True,
+                    value=0.5 * MAX_PROGRESSBAR_VALUE),
             ]),
         ])
 
@@ -79,10 +84,10 @@ class ProgressBarApp(toga.App):
             self.progress_adder.max = None
             self.progress_adder.start()
         else:
-            self.progress_adder.max = 1
+            self.progress_adder.max = MAX_PROGRESSBAR_VALUE
             self.progress_adder.stop()
 
 
 def main():
     # App name and namespace
-    return ProgressBarApp('ProgressBar', 'org.pybee.examples.progressbar')
+    return ProgressBarApp('ProgressBar', 'org.beeware.examples.progressbar')

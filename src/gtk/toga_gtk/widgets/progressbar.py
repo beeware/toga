@@ -1,9 +1,9 @@
-from gi.repository import Gtk, GObject
-
+from ..libs import Gtk, GLib
 from .base import Widget
 
 
-PROGRESSBAR_TICK_INTERVAL = 100 # ms per tick
+PROGRESSBAR_TICK_INTERVAL = 100  # ms per tick
+
 
 class ProgressBar(Widget):
     def create(self):
@@ -26,7 +26,7 @@ class ProgressBar(Widget):
             return not self.interface.is_determinate
 
         if not self.interface.is_determinate:
-            GObject.timeout_add(PROGRESSBAR_TICK_INTERVAL, tick, None)
+            GLib.timeout_add(PROGRESSBAR_TICK_INTERVAL, tick, None)
 
     def stop(self):
         def restore_fraction():
@@ -44,4 +44,4 @@ class ProgressBar(Widget):
         # future to guarantee that it will execute after the last tick,
         # otherwise the last tick will put the native progress bar back in pulsing
         # mode.
-        GObject.timeout_add(PROGRESSBAR_TICK_INTERVAL * 2, restore_fraction)
+        GLib.timeout_add(PROGRESSBAR_TICK_INTERVAL * 2, restore_fraction)

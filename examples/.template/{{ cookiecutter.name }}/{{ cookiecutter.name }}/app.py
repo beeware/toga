@@ -52,7 +52,7 @@ class Example{{ cookiecutter.widget_name }}App(toga.App):
 
 
 def main():
-    return Example{{ cookiecutter.widget_name }}App('{{ cookiecutter.formal_name }}', 'org.pybee.widgets.{{ cookiecutter.name }}')
+    return Example{{ cookiecutter.widget_name }}App('{{ cookiecutter.formal_name }}', 'org.beeware.widgets.{{ cookiecutter.name }}')
 
 
 if __name__ == '__main__':

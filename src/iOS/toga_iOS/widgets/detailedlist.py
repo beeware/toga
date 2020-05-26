@@ -1,5 +1,7 @@
-from rubicon.objc import objc_method
+from rubicon.objc import SEL, objc_method
+
 from toga_iOS.libs import (
+    NSIndexPath,
     UIControlEventValueChanged,
     UIRefreshControl,
     UITableViewCell,
@@ -12,8 +14,7 @@ from toga_iOS.libs import (
     UITableViewRowAnimationLeft,
     UITableViewScrollPositionNone
 )
-
-from .base import Widget
+from toga_iOS.widgets.base import Widget
 
 
 class TogaTableViewController(UITableViewController):

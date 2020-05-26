@@ -41,7 +41,7 @@ def build_accessors(headings, accessors):
            a string providing the override name for the accessor,
            or None, indicating the default accessor should be used.
          - A dictionary from the heading names to the accessor. If
-           a heading name isn't present in the dictonary, the default
+           a heading name isn't present in the dictionary, the default
            accessor will be used
          - Otherwise, a final list of ready-to-use accessors.
 

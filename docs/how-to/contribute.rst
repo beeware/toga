@@ -6,9 +6,9 @@ How to contribute to Toga
 
 If you experience problems with Toga, `log them on GitHub`_. If you want to contribute code, please `fork the code`_ and `submit a pull request`_.
 
-.. _log them on Github: https://github.com/pybee/toga/issues
-.. _fork the code: https://github.com/pybee/toga
-.. _submit a pull request: https://github.com/pybee/toga/pulls
+.. _log them on Github: https://github.com/beeware/toga/issues
+.. _fork the code: https://github.com/beeware/toga
+.. _submit a pull request: https://github.com/beeware/toga/pulls
 
 
 Set up your development environment
@@ -39,25 +39,6 @@ First thing is to ensure that you have Python 3 and pip installed. To do this ru
       C:\...>python3 --version
       C:\...>pip3 --version
 
-Next install any additional dependencies for your operating system:
-
-.. tabs::
-
-  .. group-tab:: macOS
-
-    No additional dependencies
-
-  .. group-tab:: Linux
-
-    .. code-block:: bash
-
-      $ sudo apt-get update
-      $ sudo apt-get install python3-dev libgirepository1.0-dev libcairo2-dev
-
-  .. group-tab:: Windows
-
-    No additional dependencies
-
 The recommended way of setting up your development environment for Toga
 is to install a virtual environment, install the required dependencies and
 start coding. To set up a virtual environment, run:
@@ -87,7 +68,36 @@ start coding. To set up a virtual environment, run:
 
 Your prompt should now have a ``(venv)`` prefix in front of it.
 
-Next, go to `the Toga page on Github <https://github.com/pybee/toga>`__, and
+Next, install any additional dependencies for your operating system:
+
+.. tabs::
+
+  .. group-tab:: macOS
+
+    No additional dependencies
+
+  .. group-tab:: Linux
+
+    .. code-block:: bash
+
+      # Ubuntu, Debian 9
+      (venv) $ sudo apt-get update
+      (venv) $ sudo apt-get install python3-dev libgirepository1.0-dev libcairo2-dev libpango1.0-dev libwebkitgtk-3.0-0 gir1.2-webkit-3.0
+
+      # Debian 10
+      # has webkit2-4.0
+      # libwebkitgtk version seems very specific, but that is what it currently is @ 20190825
+      (venv) $ sudo apt-get update
+      (venv) $ sudo apt-get install python3-dev libgirepository1.0-dev libcairo2-dev libpango1.0-dev libwebkit2gtk-4.0-37 gir1.2-webkit2-4.0
+
+      # Fedora
+      (venv) $ sudo dnf install pkg-config python3-devel gobject-introspection-devel cairo-devel cairo-gobject-devel pango-devel webkitgtk3
+
+  .. group-tab:: Windows
+
+    No additional dependencies
+
+Next, go to `the Toga page on Github <https://github.com/beeware/toga>`__, and
 fork the repository into your own account, and then clone a copy of that
 repository onto your computer by clicking on "Clone or Download". If you
 have the Github desktop application installed on your computer, you can
@@ -126,7 +136,7 @@ Now that you have the source code, you can install Toga into your development
 environment. The Toga source repository contains multiple packages. Since
 we're installing from source, we can't rely on pip to install the packages in
 dependency order. Therefore, we have to manually install each package in a
-specific order. We start with the core packages:
+specific order:
 
 .. tabs::
 
@@ -137,6 +147,7 @@ specific order. We start with the core packages:
       (venv) $ cd toga
       (venv) $ pip install -e src/core
       (venv) $ pip install -e src/dummy
+      (venv) $ pip install -e src/cocoa
 
   .. group-tab:: Linux
 
@@ -145,6 +156,7 @@ specific order. We start with the core packages:
       (venv) $ cd toga
       (venv) $ pip install -e src/core
       (venv) $ pip install -e src/dummy
+      (venv) $ pip install -e src/gtk
 
   .. group-tab:: Windows
 
@@ -153,27 +165,6 @@ specific order. We start with the core packages:
       (venv) C:\...>cd toga
       (venv) C:\...>pip install -e src/core
       (venv) C:\...>pip install -e src/dummy
-
-Then, we can install the code for the specific platform we want to use:
-
-.. tabs::
-
-  .. group-tab:: macOS
-
-    .. code-block:: bash
-
-      (venv) $ pip install -e src/cocoa
-
-  .. group-tab:: Linux
-
-    .. code-block:: bash
-
-      (venv) $ pip install -e src/gtk
-
-  .. group-tab:: Windows
-
-    .. code-block:: doscon
-
       (venv) C:\...>pip install -e src/winforms
 
 You can then run the core test suite:
@@ -397,7 +388,7 @@ doesn’t actually display a button).
 In this way, it's possible to for the Toga Core tests to exercise every API
 entry point in the Toga Core package, verify that data is stored correctly on
 the interface layer, and sent through to the right endpoints in the Dummy
-backend. If the *dummy* backend is invoked correcty, then any other backend
+backend. If the *dummy* backend is invoked correctly, then any other backend
 will be handled correctly, too.
 
 One error you might see...
@@ -463,7 +454,7 @@ raising a ticket. Or, if you're confident that you know what needs to be done,
 create a pull request that fixes the problem you've found.
 
 One example of the type of consistency we're looking for is described in
-`this ticket <https://github.com/pybee/toga/issues/299>`__.
+`this ticket <https://github.com/beeware/toga/issues/299>`__.
 
 What next?
 ==========

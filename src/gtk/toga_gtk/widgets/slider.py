@@ -1,6 +1,6 @@
-from gi.repository import Gtk
 from travertino.size import at_least
 
+from ..libs import Gtk
 from .base import Widget
 
 
@@ -10,11 +10,11 @@ class Slider(Widget):
 
         self.native = Gtk.Scale.new(Gtk.Orientation.HORIZONTAL, self.adj)
         self.native.interface = self.interface
-        self.native.connect("value-changed", self._on_slide)
+        self.native.connect("value-changed", self.gtk_on_slide)
 
         self.rehint()
 
-    def _on_slide(self, widget):
+    def gtk_on_slide(self, widget):
         if self.interface.on_slide:
             self.interface.on_slide(widget)
 
@@ -23,7 +23,7 @@ class Slider(Widget):
         pass
 
     def set_value(self, value):
-        self.adj.set_value(self.interface.value)
+        self.adj.set_value(value)
 
     def get_value(self):
         return self.native.get_value()
@@ -32,13 +32,14 @@ class Slider(Widget):
         self.adj.set_lower(self.interface.range[0])
         self.adj.set_upper(self.interface.range[1])
 
+    def set_tick_count(self, tick_count):
+        self.interface.factory.not_implemented('Slider.tick_count()')
+
     def rehint(self):
         # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height())
-        width = self.native.get_preferred_width()
         height = self.native.get_preferred_height()
 
         # Set intrinsic width to at least the minimum width
-        self.interface.intrinsic.width = at_least(width[0])
+        self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
         # Set intrinsic height to the natural height
         self.interface.intrinsic.height = height[1]
-

@@ -1,64 +1,31 @@
 from .app import App, MainWindow
-# from .color import color
-# from .command import Command
-# from .font import font
+from .paths import paths
+
 from .widgets.box import Box
 from .widgets.button import Button
-# from .widgets.canvas import Canvas
-# from .widgets.detailedlist import DetailedList
-# from .widgets.icon import Icon
-# from .widgets.image import *
-# from .widgets.imageview import *
 from .widgets.label import Label
-# from .widgets.multilinetextinput import *
-# from .widgets.numberinput import NumberInput
-# from .widgets.optioncontainer import *
-# from .widgets.passwordinput import *
-# from .widgets.progressbar import *
-# from .widgets.scrollcontainer import *
-# from .widgets.selection import Selection
-# from .widgets.slider import *
-# from .widgets.splitcontainer import *
-# from .widgets.switch import *
-# from .widgets.table import *
+from .widgets.numberinput import NumberInput
+from .widgets.selection import Selection
 from .widgets.textinput import TextInput
-# from .widgets.tree import *
-# from .widgets.webview import *
+from .icons import Icon
 from .window import Window
 
 
 def not_implemented(feature):
-    print('[Android] Not implemented: {}'.format(feature))
+    print("[Android] Not implemented: {}".format(feature))
 
 
 __all__ = [
-    'not_implemented',
-
-    'App', 'MainWindow',
-    # 'color',
-    # 'Command',
-    # 'font',
-    'Box',
-    'Button',
-    # 'Canvas',
-    'DetailedList',
-    # 'Icon',
-    # 'Image',
-    # 'ImageView',
-    'Label',
-    # 'MultilineTextInput',
-    # 'NumberInput',
-    # 'OptionContainer',
-    # 'PasswordInput',
-    # 'ProgressBar',
-    # 'ScrollContainer',
-    # 'Selection',
-    # 'Slider',
-    # 'SplitContainer',
-    # 'Switch',
-    # 'Table',
-    'TextInput',
-    # 'Tree',
-    # 'WebView',
-    'Window',
+    "App",
+    "Box",
+    "Button",
+    "Icon",
+    "Label",
+    "MainWindow",
+    "NumberInput",
+    "Selection",
+    "TextInput",
+    "Window",
+    "not_implemented",
+    "paths",
 ]

@@ -1,5 +1,4 @@
-from gi.repository import Gtk
-
+from ..libs import Gtk
 from .base import Widget
 
 
@@ -12,7 +11,7 @@ class Tree(Widget):
         self.treeview = Gtk.TreeView(model=self.store)
         self.selection = self.treeview.get_selection()
         self.selection.set_mode(Gtk.SelectionMode.SINGLE)
-        self.selection.connect("changed", self.on_select)
+        self.selection.connect("changed", self.gtk_on_select)
 
         for i, heading in enumerate(self.interface.headings):
             renderer = Gtk.CellRendererText()
@@ -27,18 +26,27 @@ class Tree(Widget):
         self.native.set_min_content_height(200)
 
     def row_data(self, item):
+        # TODO: GTK can't support icons in tree cells; so, if the data source
+        # specifies an icon, strip it when converting to row data.
+        def strip_icon(item, attr):
+            val = getattr(item, attr)
+            if isinstance(val, tuple):
+                return str(val[1])
+            return str(val)
+
         return [item] + [
-            str(getattr(item, attr))
+            strip_icon(item, attr)
             for attr in self.interface._accessors
         ]
 
-    def on_select(self, selection):
+    def gtk_on_select(self, selection):
         if self.interface.on_select:
             tree_model, tree_iter = selection.get_selected()
             if tree_iter:
                 node = tree_model.get(tree_iter, 0)[0]
             else:
                 node = None
+            self.interface._selection = node
             self.interface.on_select(None, node=node)
 
     def change_source(self, source):
@@ -49,9 +57,10 @@ class Tree(Widget):
         self.store.clear()
 
         def append_children(data, parent=None):
-            for i, node in enumerate(data):
-                self.insert(parent, i, node)
-                append_children(node, parent=node)
+            if data.can_have_children():
+                for i, node in enumerate(data):
+                    self.insert(parent, i, node)
+                    append_children(node, parent=node)
 
         append_children(self.interface.data, parent=None)
 

@@ -22,7 +22,6 @@ class MainWindow(Window):
 class App(AppInterface):
     _MAIN_WINDOW_CLASS = MainWindow
 
-
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
@@ -41,11 +40,29 @@ class App(AppInterface):
     def create_menus(self):
         self.interface.factory.not_implemented('App.create_menus()')
 
+    def set_main_window(self, window):
+        pass
+
     def exit(self):
         pass
 
     def set_on_exit(self, value):
         pass
+
+    def current_window(self):
+        self.interface.factory.not_implemented('App.current_window()')
+
+    def enter_full_screen(self, windows):
+        self.interface.factory.not_implemented('App.enter_full_screen()')
+
+    def exit_full_screen(self, windows):
+        self.interface.factory.not_implemented('App.exit_full_screen()')
+
+    def show_cursor(self):
+        self.interface.factory.not_implemented('App.show_cursor()')
+
+    def hide_cursor(self):
+        self.interface.factory.not_implemented('App.hide_cursor()')
 
     # ====
 
@@ -123,3 +140,6 @@ class App(AppInterface):
             }
         }
         return render(request, 'toga/app.html', context)
+
+    def add_background_task(self, handler):
+        self.interface.factory.not_implemented('App.add_background_task()')

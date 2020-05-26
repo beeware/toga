@@ -65,6 +65,9 @@ class TreeSource(Source):
     def __getitem__(self, index):
         return self._roots[index]
 
+    def can_have_children(self):
+        return True
+
     ######################################################################
     # Factory methods for new nodes
     ######################################################################

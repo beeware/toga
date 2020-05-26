@@ -1,3 +1,5 @@
+from ..libs.activity import MainActivity
+
 
 class Widget:
     def __init__(self, interface):
@@ -5,6 +7,9 @@ class Widget:
         self.interface._impl = self
         self._container = None
         self.native = None
+        # Capture a reference to the Java `MainActivity` instance, so that subclasses
+        # can pass it as `context` when creating native Android widgets.
+        self._native_activity = MainActivity.singletonThis
         self.create()
 
     def set_app(self, app):
@@ -20,9 +25,13 @@ class Widget:
     @container.setter
     def container(self, container):
         self._container = container
+        self.viewport = container.viewport
 
         if self.native:
-            self._container.native.addSubview_(self.native)
+            # When initially setting the container and adding widgets to the container,
+            # we provide no `LayoutParams`. Those are promptly added when Toga
+            # calls `widget.rehint()` and `widget.set_bounds()`.
+            self._container.native.addView(self.native)
 
         for child in self.interface.children:
             child._impl.container = container
@@ -30,17 +39,17 @@ class Widget:
         self.rehint()
 
     def set_enabled(self, value):
-        self.native.enabled = self.interface.enabled
+        self.native.setEnabled(value)
 
-    ### APPLICATOR
+    # APPLICATOR
 
     def set_bounds(self, x, y, width, height):
-        # No implementation required here; the new sizing will be picked up
-        # by the container layout.
-        pass
+        if self.container:
+            # Ask the container widget to set our bounds.
+            self.container.set_child_bounds(self, x, y, width, height)
 
     def set_hidden(self, hidden):
-        self.interface.factory.not_implemented('Widget.set_hidden()')
+        self.interface.factory.not_implemented("Widget.set_hidden()")
 
     def set_font(self, font):
         # By default, font can't be changed
@@ -50,7 +59,7 @@ class Widget:
         # By default, background color can't be changed.
         pass
 
-    ### INTERFACE
+    # INTERFACE
 
     def add_child(self, child):
         if self.container:

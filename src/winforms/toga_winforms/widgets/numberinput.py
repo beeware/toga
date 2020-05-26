@@ -1,7 +1,8 @@
 import sys
-from toga_winforms.libs import LEFT, RIGHT, CENTER
-from toga_winforms.libs import WinForms, Convert, HorizontalTextAlignment
+
 from travertino.size import at_least
+
+from toga_winforms.libs import WinForms, Convert, HorizontalTextAlignment
 
 from .base import Widget
 
@@ -10,6 +11,13 @@ class NumberInput(Widget):
     def create(self):
         self.native = WinForms.NumericUpDown()
         self.native.Value = Convert.ToDecimal(0.0)
+        self.native.ValueChanged += self.winforms_number_change
+
+    def winforms_number_change(self, sender, event):
+        if self.container:
+            self.interface.value = Convert.ToString(sender.Value)
+            if self.interface.on_change:
+                self.interface.on_change(self.interface)
 
     def set_readonly(self, value):
         self.native.ReadOnly = self.interface.readonly
@@ -31,7 +39,7 @@ class NumberInput(Widget):
             self.native.Maximum = Convert.ToDecimal(self.interface.max_value)
 
     def set_value(self, value):
-        if value is None or value is '':
+        if value is None or value == '':
             self.native.Value = Convert.ToDecimal(0.0)
         else:
             self.native.Value = Convert.ToDecimal(float(self.interface.value))
@@ -40,16 +48,12 @@ class NumberInput(Widget):
         self.native.TextAlign = HorizontalTextAlignment(value)
 
     def set_font(self, value):
-        self.interface.factory.not_implemented('NumberInput.set_font()')
+        if value:
+            self.native.Font = value._impl.native
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
         self.interface.intrinsic.height = self.native.PreferredSize.Height
 
     def set_on_change(self, handler):
-        self.native.ValueChanged += self.on_number_change
-
-    def on_number_change(self, sender, event):
-        self.interface.value = Convert.ToString(sender.Value)
-        if self.interface.on_change:
-            self.interface.on_change(self.interface)
+        pass

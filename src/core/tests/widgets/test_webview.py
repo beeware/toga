@@ -2,12 +2,14 @@ import toga
 import toga_dummy
 from toga_dummy.utils import TestCase
 
+from ..utils import async_test
+
 
 class WebViewTests(TestCase):
     def setUp(self):
         super().setUp()
 
-        self.url = 'https://pybee.org/'
+        self.url = 'https://beeware.org/'
 
         def callback(widget):
             pass
@@ -56,6 +58,12 @@ class WebViewTests(TestCase):
         self.assertEqual(self.web_view.user_agent, new_user_agent)
         self.assertValueSet(self.web_view, 'user_agent', new_user_agent)
 
-    def test_evaluate(self):
-        self.web_view.evaluate('test(1);')
-        self.assertActionPerformed(self.web_view, 'evaluate')
+    @async_test
+    async def test_evaluate_javascript(self):
+        result = await self.web_view.evaluate_javascript('test(1);')
+        self.assertActionPerformed(self.web_view, 'evaluate_javascript')
+        self.assertEqual(result, 'JS RESULT')
+
+    def test_invoke_javascript(self):
+        self.web_view.invoke_javascript('test(1);')
+        self.assertActionPerformed(self.web_view, 'invoke_javascript')

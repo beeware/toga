@@ -1,12 +1,18 @@
-from rubicon.objc import *
+from rubicon.objc import objc_method, SEL
 from travertino.size import at_least
 
-from toga_cocoa.libs import *
+from toga_cocoa.libs import (
+    NSBezelBorder,
+    NSMenu,
+    NSTableViewColumnAutoresizingStyle,
+    NSTableColumn,
+    NSTableView,
+)
 
-from .base import Widget
-from .internal.cells import TogaDetailedCell
-from .internal.data import TogaData
-from .internal.refresh import RefreshableScrollView
+from toga_cocoa.widgets.base import Widget
+from toga_cocoa.widgets.internal.cells import TogaDetailedCell
+from toga_cocoa.widgets.internal.data import TogaData
+from toga_cocoa.widgets.internal.refresh import RefreshableScrollView
 
 
 def attr_impl(value, attr, factory):
@@ -95,7 +101,7 @@ class DetailedList(Widget):
         self.detailedlist = TogaList.alloc().init()
         self.detailedlist.interface = self.interface
         self.detailedlist._impl = self
-        self.detailedlist.columnAutoresizingStyle = NSTableViewUniformColumnAutoresizingStyle
+        self.detailedlist.columnAutoresizingStyle = NSTableViewColumnAutoresizingStyle.Uniform
 
         # TODO: Optionally enable multiple selection
         self.detailedlist.allowsMultipleSelection = False

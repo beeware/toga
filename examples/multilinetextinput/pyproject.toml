@@ -1,0 +1,44 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name = "MultilineTextInput Demo"
+bundle = "org.beeware"
+version = "0.3.0.dev20"
+url = "https://beeware.org"
+license = "BSD license"
+author = 'Tiberius Yak'
+author_email = "tiberius@beeware.org"
+
+[tool.briefcase.app.multilinetextinput]
+formal_name = "MultilineTextInput Demo"
+description = "A testing app"
+sources = ['multilinetextinput']
+requires = []
+
+
+[tool.briefcase.app.multilinetextinput.macOS]
+requires = [
+    'toga-cocoa',
+]
+
+[tool.briefcase.app.multilinetextinput.linux]
+requires = [
+    'toga-gtk',
+]
+
+[tool.briefcase.app.multilinetextinput.windows]
+requires = [
+    'toga-winforms',
+]
+
+# Mobile deployments
+[tool.briefcase.app.multilinetextinput.iOS]
+requires = [
+    'toga-iOS',
+]
+
+[tool.briefcase.app.multilinetextinput.android]
+requires = [
+    'toga-android',
+]

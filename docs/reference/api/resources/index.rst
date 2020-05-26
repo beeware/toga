@@ -3,8 +3,8 @@ Resources
 
 .. toctree::
 
-   font
+   fonts
    command
    group
-   icon
-   image
+   icons
+   images

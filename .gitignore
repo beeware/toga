@@ -2,6 +2,7 @@
 *~
 .*.sw[op]
 *.egg-info
+*.dist-info
 .eggs
 .coverage
 dist
@@ -12,6 +13,7 @@ docs/env
 local
 venv
 .idea
+Pipfile*
 .tox
 node_modules
 README.md

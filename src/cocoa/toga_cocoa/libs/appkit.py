@@ -1,13 +1,15 @@
 ##########################################################################
 # System/Library/Frameworks/AppKit.framework
 ##########################################################################
-from ctypes import *
-from ctypes import util
+from ctypes import cdll, c_void_p, util, Structure
 from enum import Enum
 
-from rubicon.objc import *
-from toga.constants import *
-from toga.color import *
+from rubicon.objc import objc_const, CGFloat, ObjCClass
+from toga.constants import LEFT, RIGHT, CENTER, JUSTIFY
+from travertino.colors import (
+    BLACK, BLUE, BROWN, CYAN, DARKGRAY, GRAY, GREEN, LIGHTGRAY,
+    MAGENTA, ORANGE, PURPLE, RED, WHITE, YELLOW
+)
 
 ######################################################################
 appkit = cdll.LoadLibrary(util.find_library('AppKit'))
@@ -21,9 +23,12 @@ NSAffineTransform = ObjCClass('NSAffineTransform')
 # NSAlert.h
 NSAlert = ObjCClass('NSAlert')
 
-NSWarningAlertStyle = 0
-NSInformationalAlertStyle = 1
-NSCriticalAlertStyle = 2
+
+class NSAlertStyle(Enum):
+    Warning = 0  # NSAlertStyleWarning
+    Informational = 1  # NSAlertStyleInformational
+    Critical = 2  # NSAlertStyleCritical
+
 
 NSAlertFirstButtonReturn = 1000
 NSAlertSecondButtonReturn = 1001
@@ -86,10 +91,22 @@ NSSuperscriptAttributeName = objc_const(appkit, "NSSuperscriptAttributeName")
 NSGlyphInfoAttributeName = objc_const(appkit, "NSGlyphInfoAttributeName")
 
 NSViewBoundsDidChangeNotification = objc_const(appkit, 'NSViewBoundsDidChangeNotification')
+NSViewFrameDidChangeNotification = objc_const(appkit, 'NSViewFrameDidChangeNotification')
 
 ######################################################################
 # NSBezierPath.h
 NSBezierPath = ObjCClass('NSBezierPath')
+
+######################################################################
+# NSBox.h
+NSBox = ObjCClass('NSBox')
+
+
+class NSBoxType(Enum):
+    NSBoxPrimary = 0
+    NSBoxSeparator = 2
+    NSBoxCustom = 4
+
 
 ######################################################################
 # NSBrowserCell.h
@@ -200,23 +217,23 @@ NSColor.declare_class_property('redColor')
 NSColor.declare_class_property('whiteColor')
 NSColor.declare_class_property('yellowColor')
 
+
 def NSColorUsingColorName(background_color):
     return {
-        Black: NSColor.blackColor,
-        Blue: NSColor.blueColor,
-        Brown: NSColor.brownColor,
-        Clear : NSColor.clearColor,
-        Cyan: NSColor.cyanColor,
-        DarkGray: NSColor.darkGrayColor,
-        Gray: NSColor.grayColor,
-        Green: NSColor.greenColor,
-        LightGray: NSColor.lightGrayColor,
-        Magenta: NSColor.magentaColor,
-        Orange: NSColor.orangeColor,
-        Purple: NSColor.purpleColor,
-        Red: NSColor.redColor,
-        White: NSColor.whiteColor,
-        Yellow: NSColor.yellowColor,
+        BLACK: NSColor.blackColor,
+        BLUE: NSColor.blueColor,
+        BROWN: NSColor.brownColor,
+        CYAN: NSColor.cyanColor,
+        DARKGRAY: NSColor.darkGrayColor,
+        GRAY: NSColor.grayColor,
+        GREEN: NSColor.greenColor,
+        LIGHTGRAY: NSColor.lightGrayColor,
+        MAGENTA: NSColor.magentaColor,
+        ORANGE: NSColor.orangeColor,
+        PURPLE: NSColor.purpleColor,
+        RED: NSColor.redColor,
+        WHITE: NSColor.whiteColor,
+        YELLOW: NSColor.yellowColor,
     }[background_color]
 
 ######################################################################
@@ -301,15 +318,18 @@ NSImageInterpolationHigh = 3
 # NSImage.h
 NSImage = ObjCClass('NSImage')
 
-NSImageAlignCenter = 0
-NSImageAlignTop = 2
-NSImageAlignTopLeft = 3
-NSImageAlignTopRight = 4
-NSImageAlignLeft = 5
-NSImageAlignBottom = 6
-NSImageAlignBottomLeft = 7
-NSImageAlignBottomRight = 8
-NSImageAlignRight = 9
+
+class NSImageAlignment(Enum):
+    Center = 0
+    Top = 1
+    TopLeft = 2
+    TopRight = 3
+    Left = 4
+    Bottom = 5
+    BottomLeft = 6
+    BottomRight = 7
+    Right = 8
+
 
 NSImageScaleProportionallyDown = 0
 NSImageScaleAxesIndependently = 1
@@ -328,6 +348,10 @@ NSImageFrameButton = 4
 ######################################################################
 # NSImageView.h
 NSImageView = ObjCClass('NSImageView')
+
+######################################################################
+# NSIndexSet.h
+NSIndexSet = ObjCClass('NSIndexSet')
 
 ######################################################################
 # NSLayoutConstraint.h
@@ -372,7 +396,7 @@ NSLayoutAttributeNotAnAttribute = 0
 # NSLayoutConstraintOrientationVertical = 1
 
 
-class NSEdgetInsets(Structure):
+class NSEdgeInsets(Structure):
     _fields_ = [
         ("top", CGFloat),
         ("left", CGFloat),
@@ -509,6 +533,10 @@ NSSlider = ObjCClass('NSSlider')
 NSSliderCell = ObjCClass('NSSliderCell')
 
 ######################################################################
+# NSSortDescriptor.h
+NSSortDescriptor = ObjCClass('NSSortDescriptor')
+
+######################################################################
 # NSSplitView.h
 NSSplitView = ObjCClass('NSSplitView')
 
@@ -528,16 +556,32 @@ NSStringDrawingOneShot = 1 << 4  # DEPRECATED
 NSStringDrawingTruncatesLastVisibleLine = 1 << 5
 
 ######################################################################
+# NSTableCellView.h
+NSTableCellView = ObjCClass('NSTableCellView')
+
+######################################################################
 # NSTableView.h
 NSTableColumn = ObjCClass('NSTableColumn')
 NSTableView = ObjCClass('NSTableView')
 
-NSTableViewNoColumnAutoresizing = 0
-NSTableViewUniformColumnAutoresizingStyle = 1
-NSTableViewSequentialColumnAutoresizingStyle = 2
-NSTableViewReverseSequentialColumnAutoresizingStyle = 3
-NSTableViewLastColumnOnlyAutoresizingStyle = 4
-NSTableViewFirstColumnOnlyAutoresizingStyle = 5
+
+class NSTableViewColumnAutoresizingStyle(Enum):
+    NoAutoresizing = 0
+    Uniform = 1
+    Sequential = 2
+    ReverseSequential = 3
+    LastColumnOnly = 4
+    FirstColumnOnly = 5
+
+
+class NSTableViewAnimation(Enum):
+    EffectNone = 0x0
+    EffectFade = 0x1
+    EffectGap = 0x2
+    SlideUp = 0x10
+    SlideDown = 0x20
+    SlideLeft = 0x30
+    SlideRight = 0x40
 
 
 ######################################################################
@@ -618,7 +662,6 @@ NSGrooveBorder = 3
 NSWindow = ObjCClass('NSWindow')
 NSWindow.declare_property('frame')
 
-
 NSBorderlessWindowMask = 0
 NSTitledWindowMask = 1 << 0
 NSClosableWindowMask = 1 << 1
@@ -657,4 +700,3 @@ NSCompositingOperationHue = 25
 NSCompositingOperationSaturation = 26
 NSCompositingOperationColor = 27
 NSCompositingOperationLuminosity = 28
-

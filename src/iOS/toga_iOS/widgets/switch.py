@@ -1,14 +1,14 @@
 from rubicon.objc import objc_method, CGSize, SEL
-from toga_iOS.libs import(
+from travertino.size import at_least
+
+from toga_iOS.libs import (
     UIControlEventValueChanged,
     UILabel,
     UILayoutConstraintAxis,
     UIStackView,
     UISwitch,
 )
-from travertino.size import at_least
-
-from .base import Widget
+from toga_iOS.widgets.base import Widget
 
 
 class TogaSwitch(UISwitch):
@@ -33,12 +33,12 @@ class Switch(Widget):
         # Add switch and label to UIStackView
         self.native.addArrangedSubview_(self.native_label)
         self.native.addArrangedSubview_(self.native_switch)
-        
+
         # Add the layout constraints
         self.add_constraints()
 
     def set_label(self, label):
-        self.native_label.text = str(label)
+        self.native_label.text = str(self.interface.label)
         self.rehint()
 
     def set_is_on(self, value):

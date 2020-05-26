@@ -29,5 +29,8 @@ class WebView:
     def set_content(self, root_url, content):
         pass
 
-    # def evaluate(self, javascript):
-    #     raise NotImplementedError('Webview widget must define evaluate()')
+    async def evaluate_javascript(self, javascript):
+        self.interface.factory.not_implemented('WebView.evaluate_javascript()')
+
+    def invoke_javascript(self, javascript):
+        self.interface.factory.not_implemented('WebView.invoke_javascript()')

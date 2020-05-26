@@ -23,12 +23,12 @@ setup(
     long_description=long_description,
     author='Russell Keith-Magee',
     author_email='russell@keith-magee.com',
-    url='http://pybee.org/toga',
+    url='http://beeware.org/toga',
     packages=find_packages(exclude='tests'),
     python_requires='>=3.5',
     include_package_data=True,
     install_requires=[
-        'django==1.10.6',
+        'django~=2.2',  # Django LTS
         'django-environ==0.4.1',
         'toga-core==%s' % version,
     ],

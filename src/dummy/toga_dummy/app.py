@@ -1,4 +1,4 @@
-from .utils import not_required_on, LoggedObject
+from .utils import LoggedObject, not_required_on
 from .window import Window
 
 
@@ -16,9 +16,6 @@ class App(LoggedObject):
     def create(self):
         self._action('create')
 
-    def open_document(self, fileURL):
-        self._action('open document', fileURL=fileURL)
-
     @not_required_on('mobile')
     def create_menus(self):
         self._action('create menus')
@@ -26,8 +23,39 @@ class App(LoggedObject):
     def main_loop(self):
         self._action('main loop')
 
+    def set_main_window(self, window):
+        self._set_value('main_window', window)
+
     def exit(self):
         self._action('exit')
 
     def set_on_exit(self, value):
         self._set_value('on_exit', value)
+
+    @not_required_on('mobile')
+    def current_window(self):
+        self._action('current_window')
+
+    @not_required_on('mobile')
+    def enter_full_screen(self, windows):
+        self._action('enter_full_screen', windows=windows)
+
+    @not_required_on('mobile')
+    def exit_full_screen(self, windows):
+        self._action('exit_full_screen', windows=windows)
+
+    @not_required_on('mobile')
+    def show_cursor(self):
+        self._action('show_cursor')
+
+    @not_required_on('mobile')
+    def hide_cursor(self):
+        self._action('hide_cursor')
+
+    def add_background_task(self, handler):
+        self._action('add_background_task', handler=handler)
+
+
+@not_required_on('mobile', 'web')
+class DocumentApp(App):
+    pass

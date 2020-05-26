@@ -1,5 +1,5 @@
 import sys
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 
 from rubicon.objc import objc_method, SEL
 from travertino.size import at_least
@@ -26,14 +26,17 @@ class TogaStepper(NSStepper):
     @objc_method
     def controlTextDidChange_(self, notification) -> None:
         try:
-            value = Decimal(self._impl.input.stringValue)
+            value = str(self._impl.input.stringValue)
+            # Try to convert to a decimal. If the value isn't a number,
+            # this will raise InvalidOperation
+            Decimal(value)
             # We set the input widget's value to the literal text input
             # This preserves the display of "123.", which Decimal will
             # convert to "123"
-            self.interface.value = self._impl.input.stringValue
+            self.interface.value = value
             if self.interface.on_change:
                 self.interface.on_change(self.interface)
-        except ValueError:
+        except InvalidOperation:
             # If the string value isn't valid, reset the widget
             # to the widget's stored value. This will update the
             # display, removing any invalid values from view.

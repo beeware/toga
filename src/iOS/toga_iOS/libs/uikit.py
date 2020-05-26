@@ -1,12 +1,13 @@
 ##########################################################################
 # System/Library/Frameworks/UIKit.framework
 ##########################################################################
-from ctypes import *
-from ctypes import util
+from ctypes import c_char_p, c_int, c_void_p, cdll, util, POINTER, Structure
 from enum import Enum
 
-from rubicon.objc import *
-from toga.constants import *
+from rubicon.objc import objc_const, CGFloat, ObjCClass
+from toga.constants import LEFT, RIGHT, CENTER, JUSTIFY
+
+from toga_iOS.libs.core_graphics import CGContextRef
 
 ######################################################################
 uikit = cdll.LoadLibrary(util.find_library('UIKit'))
@@ -14,6 +15,15 @@ uikit = cdll.LoadLibrary(util.find_library('UIKit'))
 
 uikit.UIApplicationMain.restype = c_int
 uikit.UIApplicationMain.argtypes = [c_int, POINTER(c_char_p), c_void_p, c_void_p]
+
+######################################################################
+# NSAttributedString.h
+NSAttributedString = ObjCClass('NSAttributedString')
+
+NSFontAttributeName = objc_const(uikit, 'NSFontAttributeName')
+NSForegroundColorAttributeName = objc_const(uikit, 'NSForegroundColorAttributeName')
+NSStrokeColorAttributeName = objc_const(uikit, 'NSStrokeColorAttributeName')
+NSStrokeWidthAttributeName = objc_const(uikit, 'NSStrokeWidthAttributeName')
 
 ######################################################################
 # NSLayoutConstraint.h
@@ -58,13 +68,15 @@ NSLayoutFormatDirectionMask = 0x3 << 16
 NSLayoutConstraintOrientationHorizontal = 0,
 NSLayoutConstraintOrientationVertical = 1
 
-class NSEdgetInsets(Structure):
+
+class NSEdgeInsets(Structure):
     _fields_ = [
         ("top", CGFloat),
         ("left", CGFloat),
         ("bottom", CGFloat),
         ("right", CGFloat),
     ]
+
 
 def NSEdgeInsetsMake(top, left, bottom, right):
     return NSEdgeInsets(top, left, bottom, right)
@@ -78,6 +90,7 @@ class NSLayoutPriority(Enum):
     DragThatCannotResizeWindow = 490
     DefaultLow = 250
     FittingSizeCompression = 50
+
 
 ######################################################################
 # NSParagraphStyle.h
@@ -96,6 +109,7 @@ NSRightTextAlignment = 2
 NSJustifiedTextAlignment = 3
 NSNaturalTextAlignment = 4
 
+
 def NSTextAlignment(alignment):
     return {
         LEFT: NSLeftTextAlignment,
@@ -104,9 +118,28 @@ def NSTextAlignment(alignment):
         JUSTIFY: NSJustifiedTextAlignment,
     }[alignment]
 
+
+######################################################################
+# UIAlertController.h
+UIAlertController = ObjCClass('UIAlertController')
+UIAlertAction = ObjCClass('UIAlertAction')
+
+
+class UIAlertControllerStyle(Enum):
+    ActionSheet = 0
+    Alert = 1
+
+
+class UIAlertActionStyle(Enum):
+    Default = 0
+    Cancel = 1
+    Destructive = 2
+
+
 ######################################################################
 # UIApplication.h
 UIApplication = ObjCClass('UIApplication')
+
 
 class UIInterfaceOrientation(Enum):
     Unknown = 0
@@ -115,38 +148,44 @@ class UIInterfaceOrientation(Enum):
     LandscapeLeft = 3
     LandscapeRight = 4
 
+
 ######################################################################
 # UIBarButtonItem.h
 UIBarButtonItem = ObjCClass('UIBarButtonItem')
 
-UIBarButtonSystemItemDone = 0
-UIBarButtonSystemItemCancel = 1
-UIBarButtonSystemItemEdit = 2
-UIBarButtonSystemItemSave = 3
-UIBarButtonSystemItemAdd = 4
-UIBarButtonSystemItemFlexibleSpace = 5
-UIBarButtonSystemItemFixedSpace = 6
-UIBarButtonSystemItemCompose = 7
-UIBarButtonSystemItemReply = 8
-UIBarButtonSystemItemAction = 9
-UIBarButtonSystemItemOrganize = 10
-UIBarButtonSystemItemBookmarks = 11
-UIBarButtonSystemItemSearch = 12
-UIBarButtonSystemItemRefresh = 13
-UIBarButtonSystemItemStop = 14
-UIBarButtonSystemItemCamera = 15
-UIBarButtonSystemItemTrash = 16
-UIBarButtonSystemItemPlay = 17
-UIBarButtonSystemItemPause = 18
-UIBarButtonSystemItemRewind = 19
-UIBarButtonSystemItemFastForward = 20
-UIBarButtonSystemItemUndo = 21
-UIBarButtonSystemItemRedo = 22
-UIBarButtonSystemItemPageCurl = 23
+
+class UIBarButtonSystemItem(Enum):
+    Done = 0
+    Cancel = 1
+    Edit = 2
+    Save = 3
+    Add = 4
+    FlexibleSpace = 5
+    FixedSpace = 6
+    Compose = 7
+    Reply = 8
+    Action = 9
+    Organize = 10
+    Bookmarks = 11
+    Search = 12
+    Refresh = 13
+    Stop = 14
+    Camera = 15
+    Trash = 16
+    Play = 17
+    Pause = 18
+    Rewind = 19
+    FastForward = 20
+    Undo = 21
+    Redo = 22
+    PageCurl = 23
+
 
 ######################################################################
 # UIButton.h
 UIButton = ObjCClass('UIButton')
+
+
 ######################################################################
 # UIColor.h
 UIColor = ObjCClass('UIColor')
@@ -225,6 +264,10 @@ UIControlStateReserved = 0xFF000000
 UIFont = ObjCClass('UIFont')
 
 ######################################################################
+# UIGraphics.h
+uikit.UIGraphicsGetCurrentContext.restype = CGContextRef
+
+######################################################################
 # UIImage.h
 UIImage = ObjCClass('UIImage')
 
@@ -248,9 +291,11 @@ UIPickerView = ObjCClass('UIPickerView')
 # UIProgressView.h
 UIProgressView = ObjCClass('UIProgressView')
 
+
 class UIProgressViewStyle(Enum):
     Default = 0
     Bar = 1
+
 
 ######################################################################
 # UIRefreshControl.h
@@ -320,11 +365,13 @@ UITableViewCellSeparatorStyleSingleLine = 1
 # UITextField.h
 UITextField = ObjCClass('UITextField')
 
+
 class UITextBorderStyle(Enum):
     NoBorder = 0
     Line = 1
     Bezel = 2
     RoundedRect = 3
+
 
 ######################################################################
 # UITextInputTraits.h
@@ -343,6 +390,7 @@ class UIKeyboardType(Enum):
     WebSearch = 10
     ASCIICapableNumberPad = 11
 
+
 ######################################################################
 # UITextView.h
 UITextView = ObjCClass('UITextView')
@@ -351,9 +399,11 @@ UITextView = ObjCClass('UITextView')
 # UIView.h
 UIView = ObjCClass('UIView')
 
+
 class UILayoutConstraintAxis(Enum):
     Horizontal = 0
     Vertical = 1
+
 
 class UIViewContentMode(Enum):
     ScaleToFill = 0
@@ -370,13 +420,10 @@ class UIViewContentMode(Enum):
     BottomLeft = 11
     BottomRight = 12
 
+
 ######################################################################
 # UIViewController.h
 UIViewController = ObjCClass('UIViewController')
-
-######################################################################
-# UIWebView.h
-UIWebView = ObjCClass('UIWebView')
 
 ######################################################################
 # UIWindow.h

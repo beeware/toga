@@ -1,22 +1,6 @@
-import gi
-
-gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk
-
-try:
-    import cairo
-except ImportError:
-    cairo = None
-try:
-    gi.require_version("Pango", "1.0")
-    from gi.repository import Pango
-
-    SCALE = Pango.SCALE
-except ImportError:
-    SCALE = 1024
-
+from ..colors import native_color
+from ..libs import DISPLAY_DPI, Gtk, Pango, cairo
 from .base import Widget
-from ..color import native_color
 
 
 class Canvas(Widget):
@@ -29,6 +13,7 @@ class Canvas(Widget):
         self.native = Gtk.DrawingArea()
         self.native.interface = self.interface
         self.native.connect("draw", self.gtk_draw_callback)
+        self.native.connect('size-allocate', self.gtk_on_size_allocate)
 
     def gtk_draw_callback(self, canvas, gtk_context):
         """Creates a draw callback
@@ -37,12 +22,40 @@ class Canvas(Widget):
         callback function creates a Gtk+ canvas and Gtk+ context automatically
         using the canvas and gtk_context function arguments. This method calls
         the draw method on the interface Canvas to draw the objects.
-
         """
+        self.original_transform_matrix = gtk_context.get_matrix()
         self.interface._draw(self, draw_context=gtk_context)
 
-    def redraw(self):
+    def gtk_on_size_allocate(self, widget, allocation):
+        """Called on widget resize, and calls the handler set on the interface,
+        if any.
+        """
+        if self.interface.on_resize:
+            self.interface.on_resize(self.interface)
+
+    def set_on_resize(self, handler):
         pass
+
+    def set_on_press(self, handler):
+        self.interface.factory.not_implemented('Canvas.set_on_press()')
+
+    def set_on_release(self, handler):
+        self.interface.factory.not_implemented('Canvas.set_on_release()')
+
+    def set_on_drag(self, handler):
+        self.interface.factory.not_implemented('Canvas.set_on_drag()')
+
+    def set_on_alt_press(self, handler):
+        self.interface.factory.not_implemented('Canvas.set_on_alt_press()')
+
+    def set_on_alt_release(self, handler):
+        self.interface.factory.not_implemented('Canvas.set_on_alt_release()')
+
+    def set_on_alt_drag(self, handler):
+        self.interface.factory.not_implemented('Canvas.set_on_alt_drag()')
+
+    def redraw(self):
+        self.native.queue_draw()
 
     # Basic paths
 
@@ -60,45 +73,20 @@ class Canvas(Widget):
 
     # Basic shapes
 
-    def bezier_curve_to(
-        self, cp1x, cp1y, cp2x, cp2y, x, y, draw_context, *args, **kwargs
-    ):
+    def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y, draw_context, *args, **kwargs):
         draw_context.curve_to(cp1x, cp1y, cp2x, cp2y, x, y)
 
     def quadratic_curve_to(self, cpx, cpy, x, y, draw_context, *args, **kwargs):
         draw_context.curve_to(cpx, cpy, cpx, cpy, x, y)
 
-    def arc(
-        self,
-        x,
-        y,
-        radius,
-        startangle,
-        endangle,
-        anticlockwise,
-        draw_context,
-        *args,
-        **kwargs
-    ):
+    def arc(self, x, y, radius, startangle, endangle, anticlockwise, draw_context, *args, **kwargs):
         if anticlockwise:
             draw_context.arc_negative(x, y, radius, startangle, endangle)
         else:
             draw_context.arc(x, y, radius, startangle, endangle)
 
-    def ellipse(
-        self,
-        x,
-        y,
-        radiusx,
-        radiusy,
-        rotation,
-        startangle,
-        endangle,
-        anticlockwise,
-        draw_context,
-        *args,
-        **kwargs
-    ):
+    def ellipse(self, x, y, radiusx, radiusy, rotation, startangle, endangle, anticlockwise,
+                draw_context, *args, **kwargs):
         draw_context.save()
         draw_context.translate(x, y)
         if radiusx >= radiusy:
@@ -125,7 +113,7 @@ class Canvas(Widget):
 
     def fill(self, color, fill_rule, preserve, draw_context, *args, **kwargs):
         self.apply_color(color, draw_context)
-        if fill_rule is "evenodd":
+        if fill_rule == "evenodd":
             draw_context.set_fill_rule(cairo.FILL_RULE_EVEN_ODD)
         else:
             draw_context.set_fill_rule(cairo.FILL_RULE_WINDING)
@@ -134,10 +122,13 @@ class Canvas(Widget):
         else:
             draw_context.fill()
 
-    def stroke(self, color, line_width, draw_context, *args, **kwargs):
+    def stroke(self, color, line_width, line_dash, draw_context, *args, **kwargs):
         self.apply_color(color, draw_context)
         draw_context.set_line_width(line_width)
+        if line_dash is not None:
+            draw_context.set_dash(line_dash)
         draw_context.stroke()
+        draw_context.set_dash([])
 
     # Transformations
 
@@ -151,7 +142,7 @@ class Canvas(Widget):
         draw_context.translate(tx, ty)
 
     def reset_transform(self, draw_context, *args, **kwargs):
-        draw_context.identity_matrix()
+        draw_context.set_matrix(self.original_transform_matrix)
 
     # Text
 
@@ -162,30 +153,19 @@ class Canvas(Widget):
         elif self.native.font:
             write_font = self.native.font
             write_font.family = self.native.font.get_family()
-            write_font.size = self.native.font.get_size() / SCALE
+            write_font.size = self.native.font.get_size() / Pango.SCALE
         draw_context.select_font_face(write_font.family)
         draw_context.set_font_size(write_font.size)
 
         # Support writing multiline text
         for line in text.splitlines():
-            width, height = write_font.measure(line)
+            width, height = self.measure_text(line, write_font)
             draw_context.move_to(x, y)
             draw_context.text_path(line)
             y += height
 
-    def measure_text(self, text, font, draw_context, *args, **kwargs):
-        # Set font family and size
-        if font:
-            draw_context.select_font_face(font.family)
-            draw_context.set_font_size(font.size)
-        elif self.native.font:
-            draw_context.select_font_face(self.native.font.get_family())
-            draw_context.set_font_size(self.native.font.get_size() / SCALE)
-
-        x_bearing, y_bearing, width, height, x_advance, y_advance = draw_context.text_extents(
-            text
-        )
-        return width, height
+    def measure_text(self, text, font, tight=False):
+        return font.bind(self.interface.factory).measure(text, widget=self.native, tight=tight)
 
     # Rehint
 

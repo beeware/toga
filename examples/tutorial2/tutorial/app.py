@@ -1,7 +1,5 @@
-import os
-
 import toga
-from toga.style.pack import *
+from toga.style.pack import Pack, COLUMN
 
 
 def button_handler(widget):
@@ -29,9 +27,8 @@ def action3(widget):
 
 
 def build(app):
-    path = os.path.dirname(os.path.abspath(__file__))
-    brutus_icon = os.path.join(path, "icons", "brutus.icns")
-    cricket_icon = os.path.join(path, "icons", "cricket-72.png")
+    brutus_icon = "icons/brutus"
+    cricket_icon = "icons/cricket-72.png"
 
     data = [
         ('root%s' % i, 'value %s' % i)
@@ -81,14 +78,14 @@ def build(app):
         action2,
         label='Action 2',
         tooltip='Perform action 2',
-        icon=toga.Icon.TIBERIUS_ICON,
+        icon=toga.Icon.TOGA_ICON,
         group=things
     )
     cmd3 = toga.Command(
         action3,
         label='Action 3',
         tooltip='Perform action 3',
-        shortcut='k',
+        shortcut=toga.Key.MOD_1 + 'k',
         icon=cricket_icon
     )
 
@@ -110,7 +107,7 @@ def build(app):
 
 
 def main():
-    return toga.App('First App', 'org.pybee.helloworld', startup=build)
+    return toga.App('First App', 'org.beeware.helloworld', startup=build)
 
 
 if __name__ == '__main__':

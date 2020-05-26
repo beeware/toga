@@ -1,22 +1,21 @@
-from travertino.layout import Viewport
-
-from .libs import *
+from toga_iOS import dialogs
+from toga_iOS.libs import UIApplication, UIScreen, UIViewController, UIWindow
 
 
 class iOSViewport:
     def __init__(self, view):
         self.view = view
-        self.dpi = 96  # FIXME This is almost certainly wrong...
+        # iOS renders everything at 96dpi.
+        self.dpi = 96
 
         self.kb_height = 0.0
 
     @property
     def statusbar_height(self):
-        if UIApplication.sharedApplication.statusBarOrientation == UIInterfaceOrientation.Portrait.value:
-            # This is the height of the status bar.
-            return 16
-        else:
-            return 0
+        # This is the height of the status bar frame.
+        # If the status bar isn't visible (e.g., on iPhones in landscape orientation)
+        # the size will be 0.
+        return UIApplication.sharedApplication.statusBarFrame.size.height
 
     @property
     def width(self):
@@ -75,23 +74,17 @@ class Window:
         # Refresh with the actual viewport to do the proper rendering.
         self.interface.content.refresh()
 
-    def set_full_screen(self, is_full_screen):
-        self.interface.factory.not_implemented('Window.set_full_screen()')
-
     def info_dialog(self, title, message):
-        self.interface.factory.not_implemented('Window.info_dialog()')
+        return dialogs.info_dialog(self.interface, title, message)
 
     def question_dialog(self, title, message):
-        self.interface.factory.not_implemented('Window.question_dialog()')
+        return dialogs.question_dialog(self.interface, title, message)
 
     def confirm_dialog(self, title, message):
-        self.interface.factory.not_implemented('Window.confirm_dialog()')
+        return dialogs.confirm_dialog(self.interface, title, message)
 
     def error_dialog(self, title, message):
-        self.interface.factory.not_implemented('Window.error_dialog()')
+        return dialogs.error_dialog(self.interface, title, message)
 
     def stack_trace_dialog(self, title, message, content, retry=False):
         self.interface.factory.not_implemented('Window.stack_trace_dialog()')
-
-    def save_file_dialog(self, title, suggested_filename, file_types):
-        self.interface.factory.not_implemented('Window.save_file_dialog()')

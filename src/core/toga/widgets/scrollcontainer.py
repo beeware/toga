@@ -31,6 +31,10 @@ class ScrollContainer(Widget):
         self.vertical = vertical
         self.content = content
 
+    def _set_window(self, window):
+        if self._content:
+            self._content.window = window
+
     @property
     def content(self):
         """ Content of the scroll container.
@@ -53,12 +57,10 @@ class ScrollContainer(Widget):
 
             widget.refresh()
 
-    def refresh(self):
+    def refresh_sublayouts(self):
         """Refresh the layout and appearance of this widget."""
-        super().refresh()
-        # If the scroll container has content, refresh that layout too.
-        if self.content:
-            self.content.refresh()
+        if self._content:
+            self._content.refresh()
 
     @property
     def vertical(self):
@@ -87,7 +89,3 @@ class ScrollContainer(Widget):
     def horizontal(self, value):
         self._horizontal = value
         self._impl.set_horizontal(value)
-
-    def refresh_sublayouts(self):
-        """Refresh the layout and appearance of this widget."""
-        self._content.refresh()

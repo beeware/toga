@@ -1,15 +1,21 @@
 from contextlib import contextmanager
 from math import pi
+from enum import Enum
+
+from toga.colors import color as parse_color, BLACK
+from toga.fonts import Font, SYSTEM
+from toga.handlers import wrapped_handler
 
 from .base import Widget
-from ..color import BLACK
-from ..color import color as parse_color
-from ..font import Font, SYSTEM
+
+
+class FillRule(Enum):
+    EVENODD = 0
+    NONZERO = 1
 
 
 class Context:
-    """The user-created :class:`Context <Context>` drawing object to populate a
-    drawing with visual context.
+    """The user-created :class:`Context <Context>` drawing object to populate a drawing with visual context.
 
     The top left corner of the canvas must be painted at the origin of the
     context and is sized using the rehint() method.
@@ -26,7 +32,6 @@ class Context:
 
     def _draw(self, impl, *args, **kwargs):
         """Draw all drawing objects that are on the context or canvas.
-
 
         This method is used by the implementation to tell the interface canvas
         to draw all objects on it, and used by a context to draw all the
@@ -99,6 +104,12 @@ class Context:
         self.drawing_objects.remove(drawing_object)
         self.redraw()
 
+    def clear(self):
+        """Remove all drawing objects
+        """
+        self.drawing_objects.clear()
+        self.redraw()
+
     ###########################################################################
     # Contexts to draw with
     ###########################################################################
@@ -122,7 +133,7 @@ class Context:
         self.redraw()
 
     @contextmanager
-    def fill(self, color=BLACK, fill_rule="nonzero", preserve=False):
+    def fill(self, color=BLACK, fill_rule=FillRule.NONZERO, preserve=False):
         """Constructs and yields a :class:`Fill <Fill>`.
 
         A drawing operator that fills the current path according to the current
@@ -139,28 +150,26 @@ class Context:
             :class:`Fill <Fill>` object.
 
         """
-        if fill_rule is "evenodd":
-            fill = Fill(color, fill_rule, preserve)
-        else:
-            fill = Fill(color, "nonzero", preserve)
+        fill = Fill(color, fill_rule, preserve)
         fill.canvas = self.canvas
         yield self.add_draw_obj(fill)
         self.redraw()
 
     @contextmanager
-    def stroke(self, color=BLACK, line_width=2.0):
+    def stroke(self, color=BLACK, line_width=2.0, line_dash=None):
         """Constructs and yields a :class:`Stroke <Stroke>`.
 
         Args:
             color (str, optional): color value in any valid color format,
                 default to black.
             line_width (float, optional): stroke line width, default is 2.0.
+            line_dash (array of floats, optional): stroke line dash pattern, default is None.
 
         Yields:
             :class:`Stroke <Stroke>` object.
 
         """
-        stroke = Stroke(color, line_width)
+        stroke = Stroke(color, line_width, line_dash)
         stroke.canvas = self.canvas
         yield self.add_draw_obj(stroke)
         self.redraw()
@@ -376,7 +385,7 @@ class Fill(Context):
 
     """
 
-    def __init__(self, color=BLACK, fill_rule="nonzero", preserve=False):
+    def __init__(self, color=BLACK, fill_rule=FillRule.NONZERO, preserve=False):
         super().__init__()
         self.color = color
         self.fill_rule = fill_rule
@@ -396,6 +405,23 @@ class Fill(Context):
             kwargs["fill_color"] = self.color
             obj._draw(impl, *args, **kwargs)
         impl.fill(self.color, self.fill_rule, self.preserve, *args, **kwargs)
+
+    @property
+    def fill_rule(self):
+        return self._fill_rule
+
+    @fill_rule.setter
+    def fill_rule(self, fill_rule):
+        if isinstance(fill_rule, str):
+            try:
+                fill_rule = FillRule[fill_rule.upper()]
+            except KeyError:
+                raise ValueError(
+                    "fill rule should be one of the followings: {}".format(
+                        ", ".join([value.name.lower() for value in FillRule])
+                    )
+                )
+        self._fill_rule = fill_rule
 
     @property
     def color(self):
@@ -419,18 +445,20 @@ class Stroke(Context):
         color (str, optional): Color value in any valid color format,
             default to black.
         line_width (float, optional): Stroke line width, default is 2.0.
+        line_dash (array of floats, optional): Stroke line dash pattern, default is None.
 
     """
 
-    def __init__(self, color=BLACK, line_width=2.0):
+    def __init__(self, color=BLACK, line_width=2.0, line_dash=None):
         super().__init__()
         self._color = None
         self.color = color
         self.line_width = line_width
+        self.line_dash = line_dash
 
     def __repr__(self):
-        return "{}(color={}, line_width={})".format(
-            self.__class__.__name__, self.color, self.line_width
+        return "{}(color={}, line_width={}, line_dash={})".format(
+            self.__class__.__name__, self.color, self.line_width, self.line_dash
         )
 
     def _draw(self, impl, *args, **kwargs):
@@ -440,8 +468,9 @@ class Stroke(Context):
         for obj in self.drawing_objects:
             kwargs["stroke_color"] = self.color
             kwargs["text_line_width"] = self.line_width
+            kwargs["text_line_dash"] = self.line_dash
             obj._draw(impl, *args, **kwargs)
-        impl.stroke(self.color, self.line_width, *args, **kwargs)
+        impl.stroke(self.color, self.line_width, self.line_dash, *args, **kwargs)
 
     @property
     def color(self):
@@ -492,17 +521,197 @@ class Canvas(Context, Widget):
         id (str):  An identifier for this widget.
         style (:obj:`Style`): An optional style object. If no
             style is provided then a new one will be created for the widget.
+        on_resize (:obj:`callable`): Handler to invoke when the canvas is resized.
+        on_press (:obj:`callable`): Handler to invoke when the primary
+            (usually the left) button is pressed.
+        on_release (:obj:`callable`): Handler to invoke when the primary
+            (usually the left) button is released.
+        on_drag (:obj:`callable`): Handler to invoke when cursor is dragged with
+            the primary (usually the left) button pressed.
+        on_alt_press (:obj:`callable`): Handler to invoke when the alternate
+            (usually the right) button pressed.
+        on_alt_release (:obj:`callable`): Handler to invoke when the alternate
+            (usually the right) button released
+        on_alt_drag (:obj:`callable`): Handler to invoke when the cursor is
+            dragged with the alternate (usually the right) button pressed.
         factory (:obj:`module`): A python module that is capable to return a
             implementation of this class with the same name. (optional &
             normally not needed)
     """
 
-    def __init__(self, id=None, style=None, factory=None):
+    def __init__(
+            self, id=None, style=None, on_resize=None,
+            on_press=None, on_release=None, on_drag=None,
+            on_alt_press=None, on_alt_release=None, on_alt_drag=None,
+            factory=None):
+
         super().__init__(id=id, style=style, factory=factory)
         self._canvas = self
 
         # Create a platform specific implementation of Canvas
         self._impl = self.factory.Canvas(interface=self)
+
+        # Set all the properties
+        self.on_resize = on_resize
+        self.on_press = on_press
+        self.on_release = on_release
+        self.on_drag = on_drag
+        self.on_alt_press = on_alt_press
+        self.on_alt_release = on_alt_release
+        self.on_alt_drag = on_alt_drag
+
+    @property
+    def on_resize(self):
+        """The handler to invoke when the canvas is resized.
+
+        Returns:
+            The handler that is invoked on canvas resize.
+        """
+        return self._on_resize
+
+    @on_resize.setter
+    def on_resize(self, handler):
+        """Set the handler to invoke when the canvas is resized.
+
+        Args:
+            handler (:obj:`callable`): The handler to invoke when the canvas is resized.
+        """
+        self._on_resize = wrapped_handler(self, handler)
+        self._impl.set_on_resize(self._on_resize)
+
+    @property
+    def on_press(self):
+        """Return the handler invoked when the primary (usually the left) mouse
+        button is pressed.
+
+        Returns:
+            The handler that is invoked when the primary mouse button is pressed.
+        """
+        return self._on_press
+
+    @on_press.setter
+    def on_press(self, handler):
+        """Set the handler to invoke when the primary (usually the left) mouse
+        button is pressed.
+
+        Args:
+            handler (:obj:`callable`): The handler to invoke when the
+            primary mouse button is pressed.
+        """
+        self._on_press = wrapped_handler(self, handler)
+        self._impl.set_on_press(self._on_press)
+
+    @property
+    def on_release(self):
+        """Return the handler invoked when the primary (usually the left) mouse
+        button is released.
+
+        Returns:
+            The handler that is invoked when the primary mouse button is released.
+        """
+        return self._on_release
+
+    @on_release.setter
+    def on_release(self, handler):
+        """Set the handler to invoke when the primary (usually the left) mouse
+        button is released.
+
+        Args:
+            handler (:obj:`callable`): The handler to invoke when the
+            primary mouse button is released.
+        """
+        self._on_release = wrapped_handler(self, handler)
+        self._impl.set_on_release(self._on_release)
+
+    @property
+    def on_drag(self):
+        """Return the handler invoked when the mouse is dragged with the primary
+        (usually the left) mouse button is pressed.
+
+        Returns:
+            The handler that is invoked when the mouse is dragged with
+            the primary button pressed.
+        """
+        return self._on_drag
+
+    @on_drag.setter
+    def on_drag(self, handler):
+        """Set the handler to invoke when the mouse button is dragged with the
+        primary (usually the left) button pressed.
+
+        Args:
+            handler (:obj:`callable`): The handler to invoke when the
+            mouse is dragged with the primary button pressed.
+        """
+        self._on_drag = wrapped_handler(self, handler)
+        self._impl.set_on_drag(self._on_drag)
+
+    @property
+    def on_alt_press(self):
+        """Return the handler to invoke when the alternate (usually the right)
+        mouse button is pressed.
+
+        Returns:
+            The handler that is invoked when the alternate mouse button is pressed.
+        """
+        return self._on_alt_press
+
+    @on_alt_press.setter
+    def on_alt_press(self, handler):
+        """Set the handler to invoke when the alternate (usually the right)
+        mouse button is pressed.
+
+        Args:
+            handler (:obj:`callable`): The handler to invoke when the
+            alternate mouse button is pressed.
+        """
+        self._on_alt_press = wrapped_handler(self, handler)
+        self._impl.set_on_alt_press(self._on_alt_press)
+
+    @property
+    def on_alt_release(self):
+        """Return the handler to invoke when the alternate (usually the right)
+        mouse button is released.
+
+        Returns:
+            The handler that is invoked when the alternate mouse button is released.
+        """
+        return self._on_alt_release
+
+    @on_alt_release.setter
+    def on_alt_release(self, handler):
+        """Set the handler to invoke when the alternate (usually the right)
+        mouse button is released.
+
+        Args:
+            handler (:obj:`callable`): The handler to invoke when the
+            alternate mouse button is released.
+        """
+        self._on_alt_release = wrapped_handler(self, handler)
+        self._impl.set_on_alt_release(self._on_alt_release)
+
+    @property
+    def on_alt_drag(self):
+        """Return the handler to invoke when the mouse is dragged while the
+        alternate (usually the right) mouse button is pressed.
+
+        Returns:
+            The handler that is invoked when the mouse is dragged with
+            the alternate mouse button pressed.
+        """
+        return self._on_alt_drag
+
+    @on_alt_drag.setter
+    def on_alt_drag(self, handler):
+        """Set the handler to invoke when the mouse is dragged with the alternate
+        (usually the right) button pressed.
+
+        Args:
+            handler (:obj:`callable`): The handler to invoke when the
+            mouse is dragged with the alternate button pressed.
+        """
+        self._on_alt_drag = wrapped_handler(self, handler)
+        self._impl.set_on_alt_drag(self._on_alt_drag)
 
     ###########################################################################
     # Transformations of a canvas
@@ -558,6 +767,13 @@ class Canvas(Context, Widget):
         """
         reset_transform = ResetTransform()
         return self.add_draw_obj(reset_transform)
+
+    ###########################################################################
+    # Text measurement
+    ###########################################################################
+
+    def measure_text(self, text, font, tight=False):
+        return self._impl.measure_text(text, font, tight=tight)
 
 
 class MoveTo:

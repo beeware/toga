@@ -21,9 +21,11 @@ General widgets
 ======================================================================= ====================================
  Component                                                               Description
 ======================================================================= ====================================
+ :doc:`ActivityIndicator </reference/api/widgets/activityindicator>`     A (spinning) activity indicator
  :doc:`Button </reference/api/widgets/button>`                           Basic clickable Button
  :doc:`Canvas </reference/api/widgets/canvas>`                           Area you can draw on
  :doc:`DetailedList </reference/api/widgets/detailedlist>`               A list of complex content
+ :doc:`Divider </reference/api/widgets/divider>`                         A horizontal or vertical line
  :doc:`ImageView </reference/api/widgets/imageview>`                     Image Viewer
  :doc:`Label </reference/api/widgets/label>`                             Text label
  :doc:`MultilineTextInput </reference/api/widgets/multilinetextinput>`   Multi-line Text Input field
@@ -58,11 +60,11 @@ Resources
 =================================================== =================================
  Component                                           Description
 =================================================== =================================
- :doc:`Font </reference/api/resources/font>`         Fonts
+ :doc:`Font </reference/api/resources/fonts>`        Fonts
  :doc:`Command </reference/api/resources/command>`   Command
  :doc:`Group </reference/api/resources/group>`       Command group
- :doc:`Icon </reference/api/resources/icon>`         An icon for buttons, menus, etc
- :doc:`Image </reference/api/resources/image>`       An image
+ :doc:`Icon </reference/api/resources/icons>`        An icon for buttons, menus, etc
+ :doc:`Image </reference/api/resources/images>`      An image
 =================================================== =================================
 
 .. |y| image:: /_static/yes.png

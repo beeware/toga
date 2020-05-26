@@ -1,9 +1,8 @@
-from rubicon.objc import *
+from rubicon.objc import objc_method
 
-from toga_iOS.color import native_color
 from toga_iOS.libs import UIView, UIColor
-
-from .base import Widget
+from toga_iOS.colors import native_color
+from toga_iOS.widgets.base import Widget
 
 
 class TogaView(UIView):
