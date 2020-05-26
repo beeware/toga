@@ -34,7 +34,13 @@ class ExampleCanvasApp(toga.App):
         # Set up main window
         self.main_window = toga.MainWindow(title=self.name, size=(750, 500))
 
-        self.canvas = toga.Canvas(style=Pack(flex=1), on_resize=self.refresh_canvas)
+        self.canvas = toga.Canvas(
+            style=Pack(flex=1),
+            on_resize=self.refresh_canvas,
+            on_press=self.on_press,
+            on_drag=self.on_drag,
+            on_release=self.on_release
+        )
         self.context_selection = toga.Selection(items=[STROKE, FILL], on_select=self.refresh_canvas)
         self.drawing_shape_instructions = {
             INSTRUCTIONS: self.draw_instructions,
@@ -75,16 +81,8 @@ class ExampleCanvasApp(toga.App):
             items=list(self.dash_patterns.keys()),
             on_select=self.refresh_canvas
         )
-        self.translation_x_slider = toga.Slider(
-            range=(-1, 1),
-            default=0,
-            on_slide=self.refresh_canvas
-        )
-        self.translation_y_slider = toga.Slider(
-            range=(-1, 1),
-            default=0,
-            on_slide=self.refresh_canvas
-        )
+        self.clicked_point = None
+        self.translation = None
         self.scale_x_slider = toga.Slider(
             range=(0, 2),
             default=1,
@@ -129,6 +127,8 @@ class ExampleCanvasApp(toga.App):
             on_toggle=self.refresh_canvas
         )
         label_style = Pack(font_size=10, padding_left=5)
+
+        # Add the content on the main window
         box = toga.Box(
             style=Pack(direction=COLUMN),
             children=[
@@ -152,17 +152,8 @@ class ExampleCanvasApp(toga.App):
                 toga.Box(
                     style=Pack(direction=ROW, padding=5),
                     children=[
-                        toga.Label("X Translate:", style=label_style),
-                        self.translation_x_slider,
-                        toga.Label("Y Translate:", style=label_style),
-                        self.translation_y_slider,
                         toga.Label("Rotation:", style=label_style),
                         self.rotation_slider,
-                    ]
-                ),
-                toga.Box(
-                    style=Pack(direction=ROW, padding=5),
-                    children=[
                         toga.Label("X Scale:", style=label_style),
                         self.scale_x_slider,
                         toga.Label("Y Scale:", style=label_style),
@@ -187,8 +178,6 @@ class ExampleCanvasApp(toga.App):
                 self.canvas
             ]
         )
-
-        # Add the content on the main window
         self.main_window.content = box
 
         self.change_shape()
@@ -197,9 +186,35 @@ class ExampleCanvasApp(toga.App):
         # Show the main window
         self.main_window.show()
 
+    @property
+    def translation(self):
+        return self._x_translation, self._y_translation
+
+    @translation.setter
+    def translation(self, xy_tuple):
+        if xy_tuple is None:
+            self.x_translation = self.y_translation = 0
+        else:
+            self.x_translation, self.y_translation = xy_tuple
+
+    @property
+    def x_translation(self):
+        return self._x_translation
+
+    @x_translation.setter
+    def x_translation(self, x_translation):
+        self._x_translation = x_translation
+
+    @property
+    def y_translation(self):
+        return self._y_translation
+
+    @y_translation.setter
+    def y_translation(self, y_translation):
+        self._y_translation = y_translation
+
     def reset_transform(self, widget):
-        self.translation_x_slider.value = 0
-        self.translation_y_slider.value = 0
+        self.translation = None
         self.scale_x_slider.value = 1
         self.scale_y_slider.value = 1
         self.rotation_slider.value = 0
@@ -208,6 +223,19 @@ class ExampleCanvasApp(toga.App):
     def on_shape_change(self, widget):
         self.change_shape()
         self.refresh_canvas(widget)
+
+    def on_press(self, widget, x, y, clicks):
+        self.clicked_point = (x, y)
+
+    def on_drag(self, widget, x, y, clicks):
+        tx = self.x_translation + x - self.clicked_point[0]
+        ty = self.y_translation + y - self.clicked_point[1]
+        self.translation = (tx, ty)
+        self.clicked_point = (x, y)
+        self.refresh_canvas(widget)
+
+    def on_release(self, widget, x, y, clicks):
+        self.clicked_point = None
 
     def change_shape(self):
         is_text = self.shape_selection.value == INSTRUCTIONS
@@ -225,9 +253,7 @@ class ExampleCanvasApp(toga.App):
 
     def render_drawing(self, canvas, w, h):
         canvas.clear()
-        sx = w / 2 * self.translation_x_slider.value
-        sy = h / 2 * self.translation_y_slider.value
-        canvas.translate(w / 2 + sx, h / 2 + sy)
+        canvas.translate(w / 2 + self.x_translation, h / 2 + self.y_translation)
         canvas.rotate(self.rotation_slider.value)
         canvas.scale(self.scale_x_slider.value, self.scale_y_slider.value)
         canvas.translate(-w / 2, -h / 2)
