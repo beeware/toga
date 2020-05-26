@@ -5,7 +5,6 @@ from toga_cocoa.libs import (
     core_graphics,
     CGPathDrawingMode,
     CGRectMake,
-    DISPLAY_DPI,
     kCGPathStroke,
     kCGPathEOFill,
     kCGPathFill,
@@ -240,6 +239,9 @@ class Canvas(Widget):
 
     # Text
 
+    def measure_text(self, text, font, tight=False):
+        return font.bind(self.interface.factory).measure(text, tight=tight)
+
     def write_text(self, text, x, y, font, *args, **kwargs):
         # Set font family and size
         if font:
@@ -249,7 +251,7 @@ class Canvas(Widget):
         else:
             raise ValueError("No font to write with")
 
-        width, height = write_font.measure(text, dpi=DISPLAY_DPI)
+        width, height = self.measure_text(text, write_font)
         textAttributes = NSMutableDictionary.alloc().init()
         textAttributes[NSFontAttributeName] = write_font._impl.native
 

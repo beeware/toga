@@ -65,10 +65,13 @@ class Font:
 
         self.native = font
 
-    def measure(self, text, dpi, tight=False):
+    def measure(self, text, tight=False):
         textAttributes = NSMutableDictionary.alloc().init()
         textAttributes[NSFontAttributeName] = self.native
         text_string = NSAttributedString.alloc().initWithString_attributes_(text, textAttributes)
         size = text_string.size()
+
+        # TODO: This is a magic fudge factor...
+        # Replace the magic with SCIENCE.
         size.width += 3
         return size.width, size.height

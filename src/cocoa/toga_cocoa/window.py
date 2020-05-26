@@ -20,7 +20,6 @@ def toolbar_identifier(cmd):
 class CocoaViewport:
     def __init__(self, view):
         self.view = view
-        self.dpi = DISPLAY_DPI
 
     @property
     def width(self):
@@ -29,6 +28,10 @@ class CocoaViewport:
     @property
     def height(self):
         return self.view.frame.size.height
+
+    @property
+    def dpi(self):
+        return DISPLAY_DPI
 
 
 class WindowDelegate(NSObject):
@@ -170,7 +173,7 @@ class Window:
         self.native.contentView = widget.native
 
         # Set the widget's viewport to be based on the window's content.
-        widget.viewport = CocoaViewport(widget.native)
+        widget.viewport = CocoaViewport(view=widget.native)
 
         # Add all children to the content widget.
         for child in widget.interface.children:

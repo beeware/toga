@@ -159,24 +159,13 @@ class Canvas(Widget):
 
         # Support writing multiline text
         for line in text.splitlines():
-            width, height = write_font.measure(line, dpi=DISPLAY_DPI)
+            width, height = self.measure_text(line, write_font)
             draw_context.move_to(x, y)
             draw_context.text_path(line)
             y += height
 
-    def measure_text(self, text, font, draw_context, *args, **kwargs):
-        # Set font family and size
-        if font:
-            draw_context.select_font_face(font.family)
-            draw_context.set_font_size(font.size)
-        elif self.native.font:
-            draw_context.select_font_face(self.native.font.get_family())
-            draw_context.set_font_size(self.native.font.get_size() / Pango.SCALE)
-
-        x_bearing, y_bearing, width, height, x_advance, y_advance = draw_context.text_extents(
-            text
-        )
-        return width, height
+    def measure_text(self, text, font, tight=False):
+        return font.bind(self.interface.factory).measure(text, widget=self.native, tight=tight)
 
     # Rehint
 

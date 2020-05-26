@@ -14,10 +14,11 @@ class StartApp(toga.App):
         # Create canvas and draw tiberius on it
         self.canvas = toga.Canvas(style=Pack(flex=1))
         box = toga.Box(children=[self.canvas])
-        self.draw_tiberius()
 
         # Add the content on the main window
         self.main_window.content = box
+
+        self.draw_tiberius()
 
         # Show the main window
         self.main_window.show()
@@ -87,7 +88,7 @@ class StartApp(toga.App):
         x = 32
         y = 185
         font = toga.Font(family=SANS_SERIF, size=20)
-        width, height = font.measure('Tiberius', tight=True)
+        width, height = self.canvas.measure_text('Tiberius', font, tight=True)
         with self.canvas.stroke(line_width=4.0) as rect_stroker:
             rect_stroker.rect(x - 2, y - height + 2, width, height + 2)
         with self.canvas.fill(color=rgb(149, 119, 73)) as text_filler:
