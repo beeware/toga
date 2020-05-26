@@ -201,12 +201,14 @@ def get_platform_category(path_to_backend):
 
 
 def get_required_files(path_to_backend):
-    name = os.path.basename(path_to_backend)
+    # Find the list of files in the dummy backend
+    # that aren't *this* file, or an __init__.py.
     files = [
         str(p.relative_to(Path(__file__).parent))
         for p in Path(__file__).parent.rglob('**/*.py')
         if str(p) != __file__ and p.name != '__init__.py'
     ]
+    name = os.path.basename(path_to_backend)
     if name in ['toga_cocoa', 'toga_gtk', 'toga_winforms', 'toga_win32', 'toga_uwp']:
         for f in TOGA_DESKTOP_EXCLUDED_FILES:
             files.remove(f)
