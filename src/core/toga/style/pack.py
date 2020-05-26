@@ -1,6 +1,7 @@
 from travertino.constants import (
-    NORMAL, SERIF, SANS_SERIF, CURSIVE, FANTASY, MONOSPACE, ITALIC, OBLIQUE, SMALL_CAPS, BOLD,
-    LEFT, RIGHT, TOP, BOTTOM, CENTER, JUSTIFY, RTL, LTR, TRANSPARENT, SYSTEM
+    NORMAL, SERIF, SANS_SERIF, CURSIVE, FANTASY, MONOSPACE, ITALIC, OBLIQUE,
+    SMALL_CAPS, BOLD, LEFT, RIGHT, TOP, BOTTOM, CENTER, JUSTIFY, RTL, LTR,
+    TRANSPARENT, SYSTEM, VISIBLE, HIDDEN, NONE, ROW, COLUMN
 )
 from travertino.declaration import BaseStyle, Choices
 from travertino.layout import BaseBox
@@ -14,21 +15,6 @@ from toga.fonts import Font, SYSTEM_DEFAULT_FONT_SIZE
 ######################################################################
 
 PACK = 'pack'
-
-######################################################################
-# Visibility
-######################################################################
-
-VISIBLE = 'visible'
-HIDDEN = 'hidden'
-NONE = 'none'
-
-######################################################################
-# Direction
-######################################################################
-
-ROW = 'row'
-COLUMN = 'column'
 
 ######################################################################
 # Declaration choices
