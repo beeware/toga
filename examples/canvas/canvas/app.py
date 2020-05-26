@@ -39,7 +39,10 @@ class ExampleCanvasApp(toga.App):
             on_resize=self.refresh_canvas,
             on_press=self.on_press,
             on_drag=self.on_drag,
-            on_release=self.on_release
+            on_release=self.on_release,
+            on_alt_press=self.on_alt_press,
+            on_alt_drag=self.on_alt_drag,
+            on_alt_release=self.on_alt_release
         )
         self.context_selection = toga.Selection(items=[STROKE, FILL], on_select=self.refresh_canvas)
         self.drawing_shape_instructions = {
@@ -83,6 +86,7 @@ class ExampleCanvasApp(toga.App):
         )
         self.clicked_point = None
         self.translation = None
+        self.rotation = 0
         self.scale_x_slider = toga.Slider(
             range=(0, 2),
             default=1,
@@ -93,11 +97,6 @@ class ExampleCanvasApp(toga.App):
             range=(0, 2),
             default=1,
             tick_count=10,
-            on_slide=self.refresh_canvas
-        )
-        self.rotation_slider = toga.Slider(
-            range=(-math.pi, math.pi),
-            default=0,
             on_slide=self.refresh_canvas
         )
         self.font_selection = toga.Selection(
@@ -152,8 +151,6 @@ class ExampleCanvasApp(toga.App):
                 toga.Box(
                     style=Pack(direction=ROW, padding=5),
                     children=[
-                        toga.Label("Rotation:", style=label_style),
-                        self.rotation_slider,
                         toga.Label("X Scale:", style=label_style),
                         self.scale_x_slider,
                         toga.Label("Y Scale:", style=label_style),
@@ -233,7 +230,7 @@ class ExampleCanvasApp(toga.App):
         self.translation = None
         self.scale_x_slider.value = 1
         self.scale_y_slider.value = 1
-        self.rotation_slider.value = 0
+        self.rotation = 0
         self.refresh_canvas(widget)
 
     def on_shape_change(self, widget):
@@ -258,6 +255,29 @@ class ExampleCanvasApp(toga.App):
         self.clicked_point = None
         self.render_drawing()
 
+    def on_alt_press(self, widget, x, y, clicks):
+        self.clicked_point = (x, y)
+        self.render_drawing()
+
+    def on_alt_drag(self, widget, x, y, clicks):
+        location_vector1 = self.get_location_vector(x, y)
+        location_vector2 = self.get_location_vector(*self.clicked_point)
+        self.rotation += self.get_rotation_angle(location_vector1, location_vector2)
+        self.clicked_point = (x, y)
+        self.render_drawing()
+
+    def on_alt_release(self, widget, x, y, clicks):
+        self.clicked_point = None
+        self.render_drawing()
+
+    def get_location_vector(self, x, y):
+        return x - self.x_middle, y - self.y_middle
+
+    def get_rotation_angle(self, v1, v2):
+        angle1 = math.atan2(v1[1], v1[0])
+        angle2 = math.atan2(v2[1], v2[0])
+        return angle1 - angle2
+
     def change_shape(self):
         is_text = self.shape_selection.value == INSTRUCTIONS
         self.font_selection.enabled = is_text
@@ -273,7 +293,7 @@ class ExampleCanvasApp(toga.App):
         self.canvas.translate(
             self.width / 2 + self.x_translation, self.height / 2 + self.y_translation
         )
-        self.canvas.rotate(self.rotation_slider.value)
+        self.canvas.rotate(self.rotation)
         self.canvas.scale(self.scale_x_slider.value, self.scale_y_slider.value)
         self.canvas.translate(-self.width / 2, -self.height / 2)
         with self.get_context(self.canvas) as context:
@@ -397,6 +417,7 @@ class ExampleCanvasApp(toga.App):
 1. Use the above settings.
 2. Press once and drag to translate the image.
 3. Press twice on a location to center the image on it.
+4. Use alt-press and drag to rotate the image.
 """
         font = toga.Font(
             family=self.font_selection.value,
