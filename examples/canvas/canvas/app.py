@@ -11,6 +11,7 @@ from toga.widgets.canvas import FillRule
 STROKE = "Stroke"
 FILL = "Fill"
 
+INSTRUCTIONS = "instructions"
 TRIANGLE = "triangle"
 TRIANGLES = "triangles"
 RECTANGLE = "rectangle"
@@ -20,7 +21,6 @@ ICE_CREAM = "ice cream"
 SMILE = "smile"
 SEA = "sea"
 STAR = "star"
-TEXT = "text"
 
 CONTINUOUS = "continuous"
 DASH_1_1 = "dash 1-1"
@@ -37,6 +37,7 @@ class ExampleCanvasApp(toga.App):
         self.canvas = toga.Canvas(style=Pack(flex=1), on_resize=self.refresh_canvas)
         self.context_selection = toga.Selection(items=[STROKE, FILL], on_select=self.refresh_canvas)
         self.drawing_shape_instructions = {
+            INSTRUCTIONS: self.draw_instructions,
             TRIANGLE: self.draw_triangle,
             TRIANGLES: self.draw_triangles,
             RECTANGLE: self.draw_rectangle,
@@ -46,7 +47,6 @@ class ExampleCanvasApp(toga.App):
             SMILE: self.draw_smile,
             SEA: self.draw_sea,
             STAR: self.draw_star,
-            TEXT: self.draw_text
         }
         self.dash_patterns = {
             CONTINUOUS: None,
@@ -210,7 +210,7 @@ class ExampleCanvasApp(toga.App):
         self.refresh_canvas(widget)
 
     def change_shape(self):
-        is_text = self.shape_selection.value == TEXT
+        is_text = self.shape_selection.value == INSTRUCTIONS
         self.font_selection.enabled = is_text
         self.font_size.enabled = is_text
         self.italic_switch.enabled = is_text
@@ -330,8 +330,12 @@ class ExampleCanvasApp(toga.App):
                 closer.line_to(dx + radius * math.sin(i * rotation_angle),
                                dy - radius * math.cos(i * rotation_angle))
 
-    def draw_text(self, context, h, w, factor):
-        text = "This is a text"
+    def draw_instructions(self, context, h, w, factor):
+        text = """To control this example:
+1. Use the above settings.
+2. Press once and drag to translate the image.
+3. Press twice on a location to center the image on it.
+"""
         dx = w / 2
         dy = h / 2
         font = toga.Font(
