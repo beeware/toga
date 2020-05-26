@@ -234,16 +234,21 @@ class ExampleCanvasApp(toga.App):
 
     def on_press(self, widget, x, y, clicks):
         self.clicked_point = (x, y)
+        self.render_drawing()
 
     def on_drag(self, widget, x, y, clicks):
         tx = self.x_translation + x - self.clicked_point[0]
         ty = self.y_translation + y - self.clicked_point[1]
         self.translation = (tx, ty)
         self.clicked_point = (x, y)
-        self.refresh_canvas(widget)
+        self.render_drawing()
 
     def on_release(self, widget, x, y, clicks):
+        if clicks >= 2:
+            self.x_translation = x - self.width / 2
+            self.y_translation = y - self.height / 2
         self.clicked_point = None
+        self.render_drawing()
 
     def change_shape(self):
         is_text = self.shape_selection.value == INSTRUCTIONS
