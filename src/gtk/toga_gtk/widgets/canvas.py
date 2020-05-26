@@ -164,18 +164,17 @@ class Canvas(Widget):
             draw_context.text_path(line)
             y += height
 
-    def measure_text(self, text, font, draw_context, *args, **kwargs):
-        # Set font family and size
-        if font:
-            draw_context.select_font_face(font.family)
-            draw_context.set_font_size(font.size)
-        elif self.native.font:
-            draw_context.select_font_face(self.native.font.get_family())
-            draw_context.set_font_size(self.native.font.get_size() / Pango.SCALE)
+    def measure_text(self, text, font, tight=False):
+        layout = self.native.create_pango_layout(text)
+        layout.set_font_description(font.bind(self.interface.factory).native)
+        ink, logical = layout.get_extents()
+        if tight:
+            width = (ink.width / Pango.SCALE) - (ink.width * 0.2) / Pango.SCALE
+            height = ink.height / Pango.SCALE
+        else:
+            width = (logical.width / Pango.SCALE) - (logical.width * 0.2) / Pango.SCALE
+            height = logical.height / Pango.SCALE
 
-        x_bearing, y_bearing, width, height, x_advance, y_advance = draw_context.text_extents(
-            text
-        )
         return width, height
 
     # Rehint
