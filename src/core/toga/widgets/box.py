@@ -17,8 +17,6 @@ class Box(Widget):
         super().__init__(id=id, style=style, factory=factory)
         self._children = []
         if children:
-            for child in children:
-                self.add(child)
+            self.add(*children)
 
         self._impl = self.factory.Box(interface=self)
-
