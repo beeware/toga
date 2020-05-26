@@ -3,6 +3,7 @@ import os
 import unittest
 from collections import namedtuple, defaultdict
 from itertools import zip_longest
+from pathlib import Path
 
 import toga_dummy
 
@@ -201,20 +202,32 @@ def get_platform_category(path_to_backend):
 
 def get_required_files(path_to_backend):
     name = os.path.basename(path_to_backend)
+    files = [
+        str(p.relative_to(Path(__file__).parent))
+        for p in Path(__file__).parent.rglob('**/*.py')
+        if str(p) != __file__ and p.name != '__init__.py'
+    ]
     if name in ['toga_cocoa', 'toga_gtk', 'toga_winforms', 'toga_win32', 'toga_uwp']:
-        return TOGA_BASE_FILES + TOGA_DESKTOP_FILES
+        for f in TOGA_DESKTOP_EXCLUDED_FILES:
+            files.remove(f)
     elif name in ['toga_iOS', 'toga_android']:
-        return TOGA_BASE_FILES + TOGA_MOBILE_FILES
+        for f in TOGA_MOBILE_EXCLUDED_FILES:
+            files.remove(f)
     elif name in ['toga_django', 'toga_flask', 'toga_pyramid']:
-        return TOGA_BASE_FILES + TOGA_WEB_FILES
+        for f in TOGA_WEB_EXCLUDED_FILES:
+            files.remove(f)
     elif name in ['toga_curses', ]:
-        return TOGA_BASE_FILES + TOGA_CONSOLE_FILES
+        for f in TOGA_CONSOLE_EXCLUDED_FILES:
+            files.remove(f)
     elif name in ['toga_tvOS', ]:
-        return TOGA_BASE_FILES + TOGA_SETTOP_FILES
+        for f in TOGA_SETTOP_EXCLUDED_FILES:
+            files.remove(f)
     elif name in ['toga_watchOS', ]:
-        return TOGA_BASE_FILES + TOGA_WATCH_FILES
+        for f in TOGA_WATCH_EXCLUDED_FILES:
+            files.remove(f)
     else:
         raise RuntimeError('Couldn\'t identify a supported host platform: "{}"'.format(name))
+    return files
 
 
 def create_impl_tests(root):
@@ -368,73 +381,28 @@ def make_toga_impl_check_class(path, dummy_path, platform):
     return test_classes
 
 
-# A list of files that must be present in every
-# valid Toga backend implementation.
-TOGA_BASE_FILES = [
-    'app.py',
-    'colors.py',
-    'command.py',
-    'container.py',
-    'dialogs.py',
-    'documents.py',
-    'factory.py',
-    'fonts.py',
-    'icons.py',
-    'images.py',
-    'paths.py',
-    'window.py',
-
-    # Widgets
-    'widgets/base.py',
-    'widgets/box.py',
-    'widgets/button.py',
-    'widgets/canvas.py',
-    'widgets/imageview.py',
-    'widgets/label.py',
-    'widgets/multilinetextinput.py',
-    'widgets/numberinput.py',
-    'widgets/optioncontainer.py',
-    'widgets/passwordinput.py',
-    'widgets/progressbar.py',
-    'widgets/scrollcontainer.py',
-    'widgets/selection.py',
-    'widgets/slider.py',
-    'widgets/switch.py',
-    'widgets/table.py',
-    'widgets/textinput.py',
-    'widgets/tree.py',
-    'widgets/webview.py'
-]
-
-# Files that must only be present
-# in mobile implementations of Toga.
-TOGA_MOBILE_FILES = [
-    'widgets/navigationview.py',
-    'widgets/detailedlist.py',
-]
-
-# Files that must only be present
-# in desktop implementations of Toga.
-TOGA_DESKTOP_FILES = [
+# Files that do not need to be present in mobile implementations of Toga.
+TOGA_MOBILE_EXCLUDED_FILES = [
     'widgets/splitcontainer.py',
 ]
 
-# Files that must only be present
-# in web implementations of Toga.
-TOGA_WEB_FILES = [
+# Files that do not need to be present in desktop implementations of Toga.
+TOGA_DESKTOP_EXCLUDED_FILES = [
 ]
 
-# Files that must only be present
-# in console implementations of Toga.
-TOGA_CONSOLE_FILES = [
+# Files do not need to be present in web implementations of Toga.
+TOGA_WEB_EXCLUDED_FILES = [
+    'widgets/splitcontainer.py',
 ]
 
-# Files that must only be present
-# in set-top box implementations of Toga.
-TOGA_SETTOP_FILES = [
+# Files that do not need to be present in console implementations of Toga.
+TOGA_CONSOLE_EXCLUDED_FILES = [
 ]
 
-# Files that must only be present
-# in watch implementations of Toga.
-TOGA_WATCH_FILES = [
+# Files that do not need to be present in set-top box implementations of Toga.
+TOGA_SETTOP_EXCLUDED_FILES = [
+]
+
+# Files that do not need to be present in watch implementations of Toga.
+TOGA_WATCH_EXCLUDED_FILES = [
 ]
