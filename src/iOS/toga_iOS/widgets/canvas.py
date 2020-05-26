@@ -179,6 +179,9 @@ class Canvas(Widget):
 
     # Text
 
+    def measure_text(self, text, font, tight=False):
+        return font.bind(self.interface.factory).measure(text, tight=False)
+
     def write_text(self, text, x, y, font, *args, **kwargs):
         # Set font family and size
         if font:

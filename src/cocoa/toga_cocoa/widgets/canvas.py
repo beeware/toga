@@ -240,15 +240,7 @@ class Canvas(Widget):
     # Text
 
     def measure_text(self, text, font, tight=False):
-        textAttributes = NSMutableDictionary.alloc().init()
-        textAttributes[NSFontAttributeName] = font._impl.native
-        text_string = NSAttributedString.alloc().initWithString_attributes_(
-            text,
-            textAttributes
-        )
-        size = text_string.size()
-        size.width += 3
-        return size.width, size.height
+        return font.bind(self.interface.factory).measure(text, tight=False)
 
     def write_text(self, text, x, y, font, *args, **kwargs):
         # Set font family and size
