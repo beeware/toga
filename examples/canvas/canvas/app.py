@@ -181,10 +181,18 @@ class ExampleCanvasApp(toga.App):
         self.main_window.content = box
 
         self.change_shape()
-        self.render_drawing(self.canvas, *self.main_window.size)
+        self.render_drawing()
 
         # Show the main window
         self.main_window.show()
+
+    @property
+    def height(self):
+        return self.canvas.layout.content_height
+
+    @property
+    def width(self):
+        return self.canvas.layout.content_width
 
     @property
     def translation(self):
@@ -245,43 +253,41 @@ class ExampleCanvasApp(toga.App):
         self.bold_switch.enabled = is_text
 
     def refresh_canvas(self, widget):
-        self.render_drawing(
-            self.canvas,
-            self.canvas.layout.content_width,
-            self.canvas.layout.content_height
+        self.render_drawing()
+
+    def render_drawing(self):
+        self.canvas.clear()
+        self.canvas.translate(
+            self.width / 2 + self.x_translation, self.height / 2 + self.y_translation
         )
+        self.canvas.rotate(self.rotation_slider.value)
+        self.canvas.scale(self.scale_x_slider.value, self.scale_y_slider.value)
+        self.canvas.translate(-self.width / 2, -self.height / 2)
+        with self.get_context(self.canvas) as context:
+            self.draw_shape(context)
+        self.canvas.reset_transform()
 
-    def render_drawing(self, canvas, w, h):
-        canvas.clear()
-        canvas.translate(w / 2 + self.x_translation, h / 2 + self.y_translation)
-        canvas.rotate(self.rotation_slider.value)
-        canvas.scale(self.scale_x_slider.value, self.scale_y_slider.value)
-        canvas.translate(-w / 2, -h / 2)
-        with self.get_context(canvas) as context:
-            self.draw_shape(context, h, w)
-        canvas.reset_transform()
-
-    def draw_shape(self, context, h, w):
+    def draw_shape(self, context):
         # Scale to the smallest axis to maintain aspect ratio
-        factor = min(w, h)
+        factor = min(self.width, self.height)
         drawing_instructions = self.drawing_shape_instructions.get(
             self.shape_selection.value, None
         )
         if drawing_instructions is not None:
-            drawing_instructions(context, h, w, factor)
+            drawing_instructions(context, factor)
 
-    def draw_triangle(self, context, h, w, factor):
+    def draw_triangle(self, context, factor):
         # calculate offsets to centralize drawing in the bigger axis
-        dx = (w - factor) / 2
-        dy = (h - factor) / 2
+        dx = (self.width - factor) / 2
+        dy = (self.height - factor) / 2
         with context.closed_path(dx + factor / 3, dy + factor / 3) as closer:
             closer.line_to(dx + 2 * factor / 3, dy + 2 * factor / 3)
             closer.line_to(dx + 2 * factor / 3, dy + factor / 3)
 
-    def draw_triangles(self, context, h, w, factor):
+    def draw_triangles(self, context, factor):
         # calculate offsets to centralize drawing in the bigger axis
-        dx = w / 2
-        dy = h / 2
+        dx = self.width / 2
+        dy = self.height / 2
         triangle_size = factor / 5
         gap = factor / 12
         context.move_to(dx - 2 * triangle_size - gap, dy - 2 * triangle_size)
@@ -297,43 +303,43 @@ class ExampleCanvasApp(toga.App):
         context.line_to(dx, dy + gap)
         context.line_to(dx - triangle_size, dy - triangle_size + gap)
 
-    def draw_rectangle(self, context, h, w, factor):
-        dx = w / 2
-        dy = h / 2
+    def draw_rectangle(self, context, factor):
+        dx = self.width / 2
+        dy = self.height / 2
         context.rect(dx - factor / 3, dy - factor / 6, 2 * factor / 3, factor / 3)
 
-    def draw_ellipse(self, context, h, w, factor):
+    def draw_ellipse(self, context, factor):
         rx = factor / 3
         ry = factor / 4
 
-        context.ellipse(w / 2, h / 2, rx, ry)
+        context.ellipse(self.width / 2, self.height / 2, rx, ry)
 
-    def draw_half_ellipse(self, context, h, w, factor):
-        x_center = w / 2
-        y_center = h / 2
+    def draw_half_ellipse(self, context, factor):
+        x_center = self.width / 2
+        y_center = self.height / 2
         rx = factor / 3
         ry = factor / 4
 
         with context.closed_path(x_center + rx, y_center) as closer:
             closer.ellipse(x_center, y_center, rx, ry, 0, 0, math.pi)
 
-    def draw_ice_cream(self, context, h, w, factor):
-        dx = w / 2
-        dy = h / 2 - factor / 6
+    def draw_ice_cream(self, context, factor):
+        dx = self.width / 2
+        dy = self.height / 2 - factor / 6
         with context.closed_path(dx - factor / 5, dy) as closer:
             closer.arc(dx, dy, factor / 5, math.pi, 2 * math.pi)
             closer.line_to(dx, dy + 2 * factor / 5)
 
-    def draw_smile(self, context, h, w, factor):
-        dx = w / 2
-        dy = h / 2 - factor / 5
+    def draw_smile(self, context, factor):
+        dx = self.width / 2
+        dy = self.height / 2 - factor / 5
         with context.closed_path(dx - factor / 5, dy) as closer:
             closer.quadratic_curve_to(dx, dy + 3 * factor / 5, dx + factor / 5, dy)
             closer.quadratic_curve_to(dx, dy + factor / 5, dx - factor / 5, dy)
 
-    def draw_sea(self, context, h, w, factor):
-        dx = w / 2
-        dy = h / 2
+    def draw_sea(self, context, factor):
+        dx = self.width / 2
+        dy = self.height / 2
         with context.closed_path(dx - 1 * factor / 5, dy - 1 * factor / 5) as closer:
             closer.bezier_curve_to(
                 dx - 1 * factor / 10,
@@ -345,10 +351,10 @@ class ExampleCanvasApp(toga.App):
             closer.line_to(dx + 1 * factor / 5, dy + 1 * factor / 5)
             closer.line_to(dx - 1 * factor / 5, dy + 1 * factor / 5)
 
-    def draw_star(self, context, h, w, factor):
+    def draw_star(self, context, factor):
         sides = 5
-        dx = w / 2
-        dy = h / 2
+        dx = self.width / 2
+        dy = self.height / 2
         radius = factor / 5
         rotation_angle = 4 * math.pi / sides
         with context.closed_path(dx, dy - radius) as closer:
@@ -356,14 +362,14 @@ class ExampleCanvasApp(toga.App):
                 closer.line_to(dx + radius * math.sin(i * rotation_angle),
                                dy - radius * math.cos(i * rotation_angle))
 
-    def draw_instructions(self, context, h, w, factor):
+    def draw_instructions(self, context, factor):
         text = """To control this example:
 1. Use the above settings.
 2. Press once and drag to translate the image.
 3. Press twice on a location to center the image on it.
 """
-        dx = w / 2
-        dy = h / 2
+        dx = self.width / 2
+        dy = self.height / 2
         font = toga.Font(
             family=self.font_selection.value,
             size=self.font_size.value,
