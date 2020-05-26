@@ -89,6 +89,9 @@ class Canvas(Widget):
     def write_text(self, text, x, y, font, *args, **kwargs):
         self._action("write text", text=text, x=x, y=y, font=font)
 
+    def measure_text(self, text, font, tight=False):
+        self._action("measure text", text=text, font=font, tight=tight)
+
     # Rehint
 
     def rehint(self):

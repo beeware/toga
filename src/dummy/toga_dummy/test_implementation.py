@@ -388,6 +388,7 @@ TOGA_BASE_FILES = [
     'widgets/base.py',
     'widgets/box.py',
     'widgets/button.py',
+    'widgets/canvas.py',
     'widgets/imageview.py',
     'widgets/label.py',
     'widgets/multilinetextinput.py',
