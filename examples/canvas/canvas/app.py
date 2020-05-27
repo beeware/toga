@@ -413,11 +413,11 @@ class ExampleCanvasApp(toga.App):
                                self.y_middle - radius * math.cos(i * rotation_angle))
 
     def draw_instructions(self, context, factor):
-        text = """To control this example:
-1. Use the above settings.
-2. Press once and drag to translate the image.
-3. Press twice on a location to center the image on it.
-4. Use alt-press and drag to rotate the image.
+        text = """Instructions:
+1. Use the controls to modify the image
+2. Press and drag to move the image
+3. Double press to center the image at that position
+4. Drag using the alternate (e.g. right) button to rotate the image
 """
         font = toga.Font(
             family=self.font_selection.value,
