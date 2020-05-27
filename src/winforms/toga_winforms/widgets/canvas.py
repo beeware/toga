@@ -99,21 +99,34 @@ class Canvas(Box):
 
     def winforms_mouse_press(self, obj, mouse_event):
         self.clicks = mouse_event.Clicks
-        if self.interface.on_press:
+        if mouse_event.Button == WinForms.MouseButtons.Left and self.interface.on_press:
             self.interface.on_press(
+                self.interface, mouse_event.X, mouse_event.Y, mouse_event.Clicks
+            )
+        if mouse_event.Button == WinForms.MouseButtons.Right and self.interface.on_alt_press:
+            self.interface.on_alt_press(
                 self.interface, mouse_event.X, mouse_event.Y, mouse_event.Clicks
             )
 
     def winforms_mouse_drag(self, obj, mouse_event):
-        if not self.interface.on_drag or self.clicks == 0:
+        if self.clicks == 0:
             return
-        self.interface.on_drag(
-            self.interface, mouse_event.X, mouse_event.Y, self.clicks
-        )
+        if mouse_event.Button == WinForms.MouseButtons.Left and self.interface.on_drag:
+            self.interface.on_drag(
+                self.interface, mouse_event.X, mouse_event.Y, self.clicks
+            )
+        if mouse_event.Button == WinForms.MouseButtons.Right and self.interface.on_alt_drag:
+            self.interface.on_alt_drag(
+                self.interface, mouse_event.X, mouse_event.Y, self.clicks
+            )
 
     def winforms_mouse_release(self, obj, mouse_event):
-        if self.interface.on_release:
+        if mouse_event.Button == WinForms.MouseButtons.Left and self.interface.on_release:
             self.interface.on_release(
+                self.interface, mouse_event.X, mouse_event.Y, self.clicks
+            )
+        if mouse_event.Button == WinForms.MouseButtons.Right and self.interface.on_alt_release:
+            self.interface.on_alt_release(
                 self.interface, mouse_event.X, mouse_event.Y, self.clicks
             )
         self.clicks = 0
