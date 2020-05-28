@@ -243,19 +243,27 @@ class Canvas(Box):
 
     # Text
     def write_text(self, text, x, y, font, draw_context, *args, **kwargs):
-        width, height = self.measure_text(text, font)
-        origin = PointF(x, y - height)
+        full_height = 0
         font_family = win_font_family(font.family)
         font_style = win_font_style(font.weight, font.style, font_family)
-        draw_context.current_path.AddString(
-            text, font_family, font_style, float(height), origin, StringFormat()
-        )
+        for line in text.splitlines():
+            _, height = self.measure_text(line, font)
+            origin = PointF(x, y + full_height - height)
+            draw_context.current_path.AddString(
+                line, font_family, font_style, float(height), origin, StringFormat()
+            )
+            full_height += height
 
     def measure_text(self, text, font, tight=False):
-        size = WinForms.TextRenderer.MeasureText(text, font._impl.native)
+        sizes = [
+            WinForms.TextRenderer.MeasureText(line, font._impl.native)
+            for line in text.splitlines()
+        ]
+        width = max([size.Width for size in sizes])
+        height = sum([size.Height for size in sizes])
         return (
-            self._points_to_pixels(size.Width),
-            self._points_to_pixels(size.Height),
+            self._points_to_pixels(width),
+            self._points_to_pixels(height),
         )
 
     def _points_to_pixels(self, points):
