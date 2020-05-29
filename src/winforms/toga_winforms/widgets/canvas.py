@@ -55,29 +55,34 @@ class Canvas(Box):
 
     def create(self):
         super(Canvas, self).create()
+        self.native.DoubleBuffered = True
         self.native.Paint += self.winforms_paint
         self.native.Resize += self.winforms_resize
+        self.native.MouseDown += self.winforms_mouse_press
+        self.native.MouseMove += self.winforms_mouse_drag
+        self.native.MouseUp += self.winforms_mouse_release
+        self.clicks = 0
 
     def set_on_resize(self, handler):
         pass
 
     def set_on_press(self, handler):
-        self.interface.factory.not_implemented('Canvas.set_on_press()')
+        pass
 
     def set_on_release(self, handler):
-        self.interface.factory.not_implemented('Canvas.set_on_release()')
+        pass
 
     def set_on_drag(self, handler):
-        self.interface.factory.not_implemented('Canvas.set_on_drag()')
+        pass
 
     def set_on_alt_press(self, handler):
-        self.interface.factory.not_implemented('Canvas.set_on_alt_press()')
+        pass
 
     def set_on_alt_release(self, handler):
-        self.interface.factory.not_implemented('Canvas.set_on_alt_release()')
+        pass
 
     def set_on_alt_drag(self, handler):
-        self.interface.factory.not_implemented('Canvas.set_on_alt_drag()')
+        pass
 
     def winforms_paint(self, panel, event, *args):
         context = WinformContext()
@@ -92,6 +97,40 @@ class Canvas(Box):
         """
         if self.interface.on_resize:
             self.interface.on_resize(self.interface)
+
+    def winforms_mouse_press(self, obj, mouse_event):
+        self.clicks = mouse_event.Clicks
+        if mouse_event.Button == WinForms.MouseButtons.Left and self.interface.on_press:
+            self.interface.on_press(
+                self.interface, mouse_event.X, mouse_event.Y, mouse_event.Clicks
+            )
+        if mouse_event.Button == WinForms.MouseButtons.Right and self.interface.on_alt_press:
+            self.interface.on_alt_press(
+                self.interface, mouse_event.X, mouse_event.Y, mouse_event.Clicks
+            )
+
+    def winforms_mouse_drag(self, obj, mouse_event):
+        if self.clicks == 0:
+            return
+        if mouse_event.Button == WinForms.MouseButtons.Left and self.interface.on_drag:
+            self.interface.on_drag(
+                self.interface, mouse_event.X, mouse_event.Y, self.clicks
+            )
+        if mouse_event.Button == WinForms.MouseButtons.Right and self.interface.on_alt_drag:
+            self.interface.on_alt_drag(
+                self.interface, mouse_event.X, mouse_event.Y, self.clicks
+            )
+
+    def winforms_mouse_release(self, obj, mouse_event):
+        if mouse_event.Button == WinForms.MouseButtons.Left and self.interface.on_release:
+            self.interface.on_release(
+                self.interface, mouse_event.X, mouse_event.Y, self.clicks
+            )
+        if mouse_event.Button == WinForms.MouseButtons.Right and self.interface.on_alt_release:
+            self.interface.on_alt_release(
+                self.interface, mouse_event.X, mouse_event.Y, self.clicks
+            )
+        self.clicks = 0
 
     def redraw(self):
         self.native.Invalidate()
