@@ -1,5 +1,3 @@
-[build-system]
-requires = ["briefcase"]
 
 [tool.briefcase]
 project_name = "Toga Demo"

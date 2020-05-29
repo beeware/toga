@@ -23,7 +23,7 @@ setup(
         'toga_demo': ['resources/*.icns', 'resources/*.png'],
     },
     install_requires=[
-        'toga==0.3.0.dev18'
+        'toga==0.3.0.dev20'
     ],
     entry_points={
         'console_scripts': [
