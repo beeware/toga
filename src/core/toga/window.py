@@ -10,7 +10,7 @@ class Window:
     Args:
         id (str): The ID of the window (optional).
         title (str): Title for the window (optional).
-        position (``tuple`` of (int, int)): Position of the window, as x,y coordinates.
+        position (``tuple`` of (int, int)): Position of the window, as x, y coordinates.
         size (``tuple`` of (int, int)):  Size of the window, as (width, height) sizes, in pixels.
         toolbar (``list`` of :class:`toga.Widget`): A list of widgets to add to a toolbar
         resizeable (bool): Toggle if the window is resizable by the user, defaults to `True`.
@@ -183,6 +183,26 @@ class Window:
 
     def on_close(self):
         self._impl.on_close()
+
+    def _get_widget_by_id(self, widget, widget_id):
+        if widget.id == widget_id:
+            return widget
+        for child_widget in widget.children:
+            if self._get_widget_by_id(child_widget, widget_id) is not None:
+                return child_widget
+        return None
+
+    def get_widget_by_id(self, widget_id):
+        """ Get a reference to a widget using it's id attribute.
+
+        Args:
+            The id of the widget being searched for.
+
+        Returns:
+            The first widget in the widget tree with the given id
+            starting the descent from this window's content node.
+        """
+        return self._get_widget_by_id(self._content, widget_id)
 
     ############################################################
     # Dialogs
