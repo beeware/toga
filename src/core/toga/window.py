@@ -10,7 +10,7 @@ class Window:
     Args:
         id (str): The ID of the window (optional).
         title (str): Title for the window (optional).
-        position (``tuple`` of (int, int)): Position of the window, as x, y coordinates.
+        position (``tuple`` of (int, int)): Position of the window, as x,y coordinates.
         size (``tuple`` of (int, int)):  Size of the window, as (width, height) sizes, in pixels.
         toolbar (``list`` of :class:`toga.Widget`): A list of widgets to add to a toolbar
         resizeable (bool): Toggle if the window is resizable by the user, defaults to `True`.
