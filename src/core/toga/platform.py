@@ -30,16 +30,13 @@ def get_platform_factory(factory=None):
     elif sys.platform == 'watchos':
         from toga_watchOS import factory
         return factory
-    elif sys.platform == 'android':
-        from toga_android import factory
-        return factory
     elif sys.platform == 'darwin':
         from toga_cocoa import factory
         return factory
     elif sys.platform == 'linux':
-        # In the future, we will use a different way to detect Android.
-        # See https://github.com/beeware/Python-Android-support/issues/8
-        if os.environ.get('ANDROID_ROOT'):
+        # Rely on `sys.getandroidapilevel`, which only exists on Android; see
+        # https://github.com/beeware/Python-Android-support/issues/8
+        if hasattr(sys, 'getandroidapilevel'):
             from toga_android import factory
             return factory
         from toga_gtk import factory
