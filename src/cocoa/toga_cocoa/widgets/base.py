@@ -43,6 +43,15 @@ class Widget:
 
         self.rehint()
 
+
+    @property
+    def viewport(self):
+        return self._viewport
+
+    @viewport.setter
+    def viewport(self, viewport):
+        self._viewport = viewport
+
     def set_enabled(self, value):
         self.native.enabled = self.interface.enabled
 
