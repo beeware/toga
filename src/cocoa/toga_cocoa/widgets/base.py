@@ -84,7 +84,7 @@ class Widget:
     # INTERFACE
 
     def add_child(self, child):
-        child.container = self.container or self
+        child.container = self.container
 
     def insert_child(self, index, child):
         self.add_child(child)
