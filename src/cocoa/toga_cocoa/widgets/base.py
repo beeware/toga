@@ -47,7 +47,6 @@ class Widget:
 
         self.rehint()
 
-
     @property
     def viewport(self):
         return self._viewport
