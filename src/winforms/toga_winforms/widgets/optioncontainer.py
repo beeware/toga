@@ -7,6 +7,7 @@ from .base import Widget
 class OptionContainer(Widget):
     def create(self):
         self.native = WinForms.TabControl()
+        self.native.Selected += self.winforms_Selected
 
     def add_content(self, label, widget):
         widget.viewport = WinFormsViewport(self.native, self)
@@ -23,22 +24,32 @@ class OptionContainer(Widget):
         widget.AutoSize = True
 
         item.Controls.Add(widget.native)
-        self.native.Controls.Add(item)
+        self.native.TabPages.Add(item)
 
     def remove_content(self, index):
-        self.interface.factory.not_implemented('OptionContainer.remove_content()')
+        tab_page = self.native.TabPages[index]
+        self.native.TabPages.Remove(self.native.TabPages[index])
+        tab_page.Dispose()
 
     def set_on_select(self, handler):
-        self.interface.factory.not_implemented('OptionContainer.set_on_select()')
+        pass
 
     def set_option_enabled(self, index, enabled):
-        self.interface.factory.not_implemented('OptionContainer.is_option_enabled()')
+        """
+        Winforms documentation states that Enabled is not meaningful for this control.
+        Disabling option only disables the content of the tab, not the tab itself.
+        """
+        self.native.TabPages[index].Enabled = enabled
 
     def is_option_enabled(self, index):
-        self.interface.factory.not_implemented('OptionContainer.is_option_enabled()')
+        return self.native.TabPages[index].Enabled
 
     def set_option_label(self, index, value):
-        self.interface.factory.not_implemented('OptionContainer.set_option_label()')
+        self.native.TabPages[index].Text = value
 
     def get_option_label(self, index):
-        self.interface.factory.not_implemented('OptionContainer.get_option_label()')
+        return self.native.TabPages[index].Text
+
+    def winforms_Selected(self, sender, event):
+        if self.interface.on_select:
+            self.interface.on_press(self.interface)
