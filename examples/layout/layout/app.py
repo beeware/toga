@@ -70,7 +70,6 @@ class ExampleLayoutApp(toga.App):
         for i in range(3):
             self.add_label()
 
-
         self.main_window = toga.MainWindow()
         self.main_window.content = self.box
         self.main_window.show()
