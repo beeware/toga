@@ -84,7 +84,12 @@ class Widget:
     # INTERFACE
 
     def add_child(self, child):
-        child.container = self.container
+
+        if self.viewport:
+            # we are the the top level NSView
+            child.container = self
+        else:
+            child.container = self.container
 
     def insert_child(self, index, child):
         self.add_child(child)
