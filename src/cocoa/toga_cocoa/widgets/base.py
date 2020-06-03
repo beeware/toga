@@ -29,11 +29,15 @@ class Widget:
     @container.setter
     def container(self, container):
 
-        if container is None:
+        if self.container and not container:
+            # existing container should be removed
             self.constraints.container = None
             self._container = None
             self.native.removeFromSuperview()
-        else:
+        elif self.container:
+            raise RuntimeError('Already have a container')
+        elif container:
+            # setting container
             self._container = container
             self._container.native.addSubview(self.native)
             self.constraints.container = container
