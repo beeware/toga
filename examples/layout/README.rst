@@ -9,4 +9,4 @@ Quickstart
 To run this example:
 
     $ pip install toga
-    $ python -m layout_test
+    $ python -m layout

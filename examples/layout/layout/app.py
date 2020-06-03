@@ -3,7 +3,7 @@ from toga.style import Pack
 from toga.constants import ROW, COLUMN, CENTER
 
 
-class ExampleBoxApp(toga.App):
+class ExampleLayoutApp(toga.App):
 
     def startup(self):
 
@@ -45,7 +45,7 @@ class ExampleBoxApp(toga.App):
         icon = toga.Icon('')
         self.image_view = toga.ImageView(icon, style=Pack(padding=10, width=60, height=60))
 
-        # this tests addind children during init, before we have an implementaiton
+        # this tests adding children during init, before we have an implementation
         self.button_box = toga.Box(
             children=[
                 self.button_add,
@@ -58,14 +58,18 @@ class ExampleBoxApp(toga.App):
         )
 
         self.box = toga.Box(
-            children=[self.button_box, self.scroll_view],
+            children=[],
             style=Pack(direction=ROW, padding=10, alignment=CENTER, flex=1)
         )
 
-        # add a couple of labels to get us started
         # this tests adding children when we already have an impl but no window or app
+        self.box.add(self.button_box)
+        self.box.add(self.scroll_view)
+
+        # add a couple of labels to get us started
         for i in range(3):
             self.add_label()
+
 
         self.main_window = toga.MainWindow()
         self.main_window.content = self.box
@@ -111,7 +115,7 @@ class ExampleBoxApp(toga.App):
 
 
 def main():
-    return ExampleBoxApp('Layout Test', 'org.beeware.widgets.layout_test')
+    return ExampleLayoutApp('Layout', 'org.beeware.widgets.layout')
 
 
 if __name__ == '__main__':
