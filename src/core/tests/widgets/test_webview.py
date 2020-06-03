@@ -67,3 +67,8 @@ class WebViewTests(TestCase):
     def test_invoke_javascript(self):
         self.web_view.invoke_javascript('test(1);')
         self.assertActionPerformed(self.web_view, 'invoke_javascript')
+
+    def test_get_on_key_down(self):
+        key_down = self.web_view.on_key_down
+        self.assertEqual(key_down, self.web_view.on_key_down) 
+
