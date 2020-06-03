@@ -28,12 +28,16 @@ class Widget:
 
     @container.setter
     def container(self, container):
-
-        if container is None:
-            self.constraints.container = None
-            self._container = None
-            self.native.removeFromSuperview()
-        else:
+        if self.container:
+            if container:
+                raise RuntimeError('Already have a container')
+            else:
+                # existing container should be removed
+                self.constraints.container = None
+                self._container = None
+                self.native.removeFromSuperview()
+        elif container:
+            # setting container
             self._container = container
             self._container.native.addSubview(self.native)
             self.constraints.container = container
@@ -42,6 +46,14 @@ class Widget:
             child._impl.container = container
 
         self.rehint()
+
+    @property
+    def viewport(self):
+        return self._viewport
+
+    @viewport.setter
+    def viewport(self, viewport):
+        self._viewport = viewport
 
     def set_enabled(self, value):
         self.native.enabled = self.interface.enabled
@@ -71,7 +83,12 @@ class Widget:
     # INTERFACE
 
     def add_child(self, child):
-        child.container = self.container or self
+
+        if self.viewport:
+            # we are the the top level NSView
+            child.container = self
+        else:
+            child.container = self.container
 
     def insert_child(self, index, child):
         self.add_child(child)
