@@ -107,6 +107,18 @@ class TogaTable(NSTableView):
         if self.interface.on_select:
             self.interface.on_select(self.interface, row=selected)
 
+    @objc_method
+    def tableView_heightOfRow_(self, table, row: int) -> float:
+
+        min_row_height = 18
+        margin = 2
+
+        # get all views in column
+        views = [self.tableView_viewForTableColumn_row_(table, col, row) for col in self.tableColumns]
+
+        max_widget_size = max(view.intrinsicContentSize().height + margin for view in views)
+        return max(min_row_height, max_widget_size)
+
 
 class Table(Widget):
     def create(self):
