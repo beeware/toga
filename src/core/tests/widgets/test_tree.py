@@ -1,8 +1,7 @@
 import toga
 import toga_dummy
 from toga_dummy.utils import TestCase
-from toga.sources import TreeSource
-
+from toga.sources import TreeSource, Source
 
 class TreeTests(TestCase):
     def setUp(self):
@@ -31,9 +30,9 @@ class TreeTests(TestCase):
             ('two', 2): None
         }
 
-        acessors = [f'heading{i}' for i in range(3)]
+        accessors = [f'heading{i}' for i in range(3)]
 
-        self.tree.data = TreeSource(data=data, accessors=acessors)
+        self.tree.data = TreeSource(data=data, accessors=accessors)
 
         self.assertIsInstance(self.tree.data, TreeSource)
         self.assertEqual(self.tree.data[0].heading0, 'one')
