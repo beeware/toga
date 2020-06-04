@@ -13,7 +13,6 @@ from toga_cocoa.libs import (
 )
 from .base import Widget
 from .internal.cells import TogaIconView
-from .internal.data import TogaData
 
 
 class TogaTable(NSTableView):
