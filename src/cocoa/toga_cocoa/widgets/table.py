@@ -1,16 +1,18 @@
 from rubicon.objc import at
 from travertino.size import at_least
 
+import toga
 from toga_cocoa.libs import (
     objc_method,
     NSBezelBorder,
     NSScrollView,
     NSTableColumn,
     NSTableView,
-    NSTableViewColumnAutoresizingStyle
+    NSTableViewColumnAutoresizingStyle,
+    CGRectMake
 )
 from .base import Widget
-from .internal.cells import TogaIconCell
+from .internal.cells import TogaIconView
 from .internal.data import TogaData
 
 
@@ -21,58 +23,58 @@ class TogaTable(NSTableView):
         return len(self.interface.data) if self.interface.data else 0
 
     @objc_method
-    def tableView_objectValueForTableColumn_row_(self, table, column, row: int):
+    def tableView_viewForTableColumn_row_(self, table, column, row: int):
+
         data_row = self.interface.data[row]
-
-        try:
-            # Obtain the _impl for the data row...
-            data = data_row._impl
-        except AttributeError:
-            # or if it doesn't already exist, create it.
-            data = {}
-            data_row._impl = data
-
         col_identifier = str(column.identifier)
 
         try:
-            # Get the TogaData
-            datum = data[col_identifier]
-        except KeyError:
-            # or create it, if it doesn't exist
-            data[col_identifier] = TogaData.alloc().init()
-            data_row._impl[col_identifier] = data[col_identifier]
-            datum = data[col_identifier]
-
-        # Get value for the column
-        try:
             value = getattr(data_row, col_identifier)
+
+            # if the value is a widget itself, just draw the widget!
+            if isinstance(value, toga.Widget):
+                return value._impl.native
+
+            # Allow for an (icon, value) tuple as the simple case
+            # for encoding an icon in a table cell. Otherwise, look
+            # for an icon attribute.
+            elif isinstance(value, tuple):
+                icon_iface, value = value
+            else:
+                try:
+                    icon_iface = value.icon
+                except AttributeError:
+                    icon_iface = None
         except AttributeError:
-            # The accessor doesn't exist in the data. Use the missing value.
-            try:
-                value = self.interface.missing_value
-            except ValueError as e:
-                # There is no explicit missing value. Warn the user.
-                message, value = e.args
-                print(message.format(row, col_identifier))
+            # If the node doesn't have a property with the
+            # accessor name, assume an empty string value.
+            value = ''
+            icon_iface = None
 
-        # Allow for an (icon, value) tuple as the simple case
-        # for encoding an icon in a table cell.
-        if isinstance(value, tuple):
-            icon, value = value
+        # If the value has an icon, get the _impl.
+        # Icons are deferred resources, so we provide the factory.
+        if icon_iface:
+            icon = icon_iface.bind(self.interface.factory)
         else:
-            # If the value has an icon attribute, get the _impl.
-            # Icons are deferred resources, so we bind to the factory.
-            try:
-                icon = value.icon.bind(self.interface.factory)
-            except AttributeError:
-                icon = None
+            icon = None
 
-        datum.attrs = {
-            'label': str(value),
-            'icon': icon,
-        }
+        # creates a NSTableCellView from interface-builder template (does not exist)
+        # or reuses an existing view which is currently not needed for painting
+        # returns None (nil) if both fails
+        identifier = at('CellView_{}'.format(self.interface.id))
+        tcv = self.makeViewWithIdentifier(identifier, owner=self)
 
-        return datum
+        if not tcv:  # there is no existing view to reuse so create a new one
+            tcv = TogaIconView.alloc().initWithFrame_(CGRectMake(0, 0, column.width, 16))
+            tcv.identifier = identifier
+
+        tcv.setText(str(value))
+        if icon:
+            tcv.setImage(icon.native)
+        else:
+            tcv.setImage(None)
+
+        return tcv
 
     # TableDelegate methods
     @objc_method
@@ -175,9 +177,6 @@ class Table(Widget):
         column = NSTableColumn.alloc().initWithIdentifier(column_identifier)
         self.table.addTableColumn(column)
         self.columns.append(column)
-
-        cell = TogaIconCell.alloc().init()
-        column.dataCell = cell
 
         column.headerCell.stringValue = heading
 
