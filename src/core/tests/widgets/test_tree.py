@@ -30,7 +30,7 @@ class TreeTests(TestCase):
             ('two', 2): None
         }
 
-        accessors = [f'heading{i}' for i in range(3)]
+        accessors = ['heading{}'.format(i) for i in range(3)]
 
         self.tree.data = TreeSource(data=data, accessors=accessors)
 
