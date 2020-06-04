@@ -21,6 +21,24 @@ class TreeTests(TestCase):
 
         self.assertEqual(self.tree.headings, self.headings)
 
+    def test_setter_creates_tree_with_TreeSource_data(self):
+        data = {
+            ('one', 1): [
+                ('one.one', 1.1),
+                ('one.two', 2.1)
+            ],
+            ('two', 2): None
+        }
+
+        accessors = ['heading{}'.format(i) for i in range(3)]
+
+        self.tree.data = TreeSource(data=data, accessors=accessors)
+
+        self.assertIsInstance(self.tree.data, TreeSource)
+        self.assertEqual(self.tree.data[0].heading0, 'one')
+        self.assertEqual(self.tree.data[0][0].heading1, 1.1)
+        self.assertEqual(self.tree.data[1].heading1, 2)
+
     def test_setter_creates_tree_with_dict_data(self):
         self.data = {
             ('first', 111): None,
