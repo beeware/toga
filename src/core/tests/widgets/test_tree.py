@@ -1,7 +1,8 @@
 import toga
 import toga_dummy
 from toga_dummy.utils import TestCase
-from toga.sources import TreeSource, Source
+from toga.sources import TreeSource
+
 
 class TreeTests(TestCase):
     def setUp(self):
@@ -22,14 +23,22 @@ class TreeTests(TestCase):
         self.assertEqual(self.tree.headings, self.headings)
 
     def test_setter_creates_tree_with_TreeSource_data(self):
-        self.tree.data = TreeSource(data={}, accessors='')
+        data = {
+            ('one', 1): [
+                ('one.one', 1.1),
+                ('one.two', 2.1)
+            ],
+            ('two', 2): None
+        }
+
+        acessors = [f'heading{i}' for i in range(3)]
+
+        self.tree.data = TreeSource(data=data, accessors=acessors)
 
         self.assertIsInstance(self.tree.data, TreeSource)
-        self.assertFalse(self.tree.data)
-
-        self.tree.data = TreeSource(data={('one', 'two')}, accessors='')
-        self.assertIsInstance(self.tree.data, TreeSource)
-        self.assertTrue(self.tree.data)
+        self.assertEqual(self.tree.data[0].heading0, 'one')
+        self.assertEqual(self.tree.data[0][0].heading1, 1.1)
+        self.assertEqual(self.tree.data[1].heading1, 2)
 
     def test_setter_creates_tree_with_dict_data(self):
         self.data = {
