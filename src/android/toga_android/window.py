@@ -5,6 +5,9 @@ class AndroidViewport:
     def __init__(self, native):
         self.native = native
         self.dpi = self.native.getContext().getResources().getDisplayMetrics().densityDpi
+        # Toga needs to know how the current DPI compares to the platform default,
+        # which is 160: https://developer.android.com/training/multiscreen/screendensities
+        self.baseline_dpi = 160
 
     @property
     def width(self):

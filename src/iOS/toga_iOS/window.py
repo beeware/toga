@@ -7,6 +7,7 @@ class iOSViewport:
         self.view = view
         # iOS renders everything at 96dpi.
         self.dpi = 96
+        self.baseline_dpi = self.dpi
 
         self.kb_height = 0.0
 

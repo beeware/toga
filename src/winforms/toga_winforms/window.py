@@ -1,5 +1,4 @@
 from toga import GROUP_BREAK, SECTION_BREAK
-from travertino.layout import Viewport
 
 from .libs import WinForms, Size
 
@@ -8,19 +7,27 @@ class WinFormsViewport:
     def __init__(self, native, frame):
         self.native = native
         self.frame = frame
+        self.baseline_dpi = 96
 
     @property
     def width(self):
+        # Treat `native=None` as a 0x0 viewport
+        if self.native is None:
+            return 0
         return self.native.ClientSize.Width
 
     @property
     def height(self):
+        if self.native is None:
+            return 0
         # Subtract any vertical shift of the frame. This is to allow
         # for toolbars, or any other viewport-level decoration.
         return self.native.ClientSize.Height - self.frame.vertical_shift
 
     @property
     def dpi(self):
+        if self.native is None:
+            return self.baseline_dpi
         return self.native.CreateGraphics().DpiX
 
 
@@ -106,7 +113,7 @@ class Window:
         self.interface.content._impl.rehint()
         self.interface.content.style.layout(
             self.interface.content,
-            Viewport(width=0, height=0, dpi=self.native.CreateGraphics().DpiX)
+            WinFormsViewport(native=None, frame=None),
         )
         self.native.MinimumSize = Size(
             int(self.interface.content.layout.width),
