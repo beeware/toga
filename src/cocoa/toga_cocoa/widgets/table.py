@@ -47,7 +47,7 @@ class TogaTable(NSTableView):
         except AttributeError:
             # If the node doesn't have a property with the
             # accessor name, assume an empty string value.
-            value = ''
+            value = self.interface.missing_value
             icon_iface = None
 
         # If the value has an icon, get the _impl.
