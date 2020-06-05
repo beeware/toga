@@ -174,6 +174,7 @@ class PackLayoutTests(TestCase):
                 {'origin': (50, 50), 'content': (120, 30)}
             ]}
         )
+        
         # Normal size with high DPI equal to high baseline DPI
         root.style.layout(root, TestViewport(640, 480, dpi=160, baseline_dpi=160))
         self.assertLayout(
