@@ -8,7 +8,10 @@ from toga_cocoa.libs import (
     NSScrollView,
     NSTableColumn,
     NSTableView,
+    NSIndexSet,
     NSTableViewColumnAutoresizingStyle,
+    NSTableViewAnimation,
+    NSRange,
     CGRectMake
 )
 from .base import Widget
@@ -73,6 +76,9 @@ class TogaTable(NSTableView):
         else:
             tcv.setImage(None)
 
+        # Keep track of last visible view for row
+        self._impl._view_for_row[data_row] = tcv
+
         return tcv
 
     # TableDelegate methods
@@ -121,6 +127,9 @@ class TogaTable(NSTableView):
 
 class Table(Widget):
     def create(self):
+
+        self._view_for_row = dict()
+
         # Create a table view, and put it in a scroll view.
         # The scroll view is the native, because it's the outer container.
         self.native = NSScrollView.alloc().init()
@@ -161,13 +170,35 @@ class Table(Widget):
         self.table.reloadData()
 
     def insert(self, index, item):
-        self.table.reloadData()
+
+        # set parent = None if inserting to the root item
+        index_set = NSIndexSet.indexSetWithIndex(index)
+
+        self.table.insertRowsAtIndexes(
+            index_set,
+            withAnimation=NSTableViewAnimation.SlideDown
+        )
 
     def change(self, item):
-        self.table.reloadData()
+        row_index = self.interface.data.index(item)
+        row_indexes = NSIndexSet.indexSetWithIndex(row_index)
+        column_indexes = NSIndexSet.indexSetWithIndexesInRange(NSRange(0, len(self.columns)))
+        self.table.reloadDataForRowIndexes(
+            row_indexes,
+            columnIndexes=column_indexes
+        )
 
     def remove(self, item):
-        self.table.reloadData()
+        try:
+            index = self.table.rowForView(self._view_for_row[item])
+        except KeyError:
+            pass
+        else:
+            indexes = NSIndexSet.indexSetWithIndex(index)
+            self.table.removeRowsAtIndexes(
+                indexes,
+                withAnimation=NSTableViewAnimation.SlideUp
+            )
 
     def clear(self):
         self.table.reloadData()
