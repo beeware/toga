@@ -22,4 +22,7 @@ setup(
     install_requires=[
         'toga-core==%s' % version,
     ],
+    test_require=[
+        'toga-dummy==%s' % version,
+    ]
 )

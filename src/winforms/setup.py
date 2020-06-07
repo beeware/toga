@@ -23,4 +23,7 @@ setup(
         'pythonnet',
         'toga-core==%s' % version,
     ],
+    test_require=[
+        'toga-dummy==%s' % version,
+    ]
 )

@@ -25,4 +25,7 @@ setup(
         'django-environ==0.4.1',
         'toga-core==%s' % version,
     ],
+    test_require=[
+        'toga-dummy==%s' % version,
+    ]
 )
