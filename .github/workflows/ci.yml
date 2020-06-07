@@ -1,5 +1,9 @@
 name: CI
-on: [pull_request]
+on:
+  pull_request:
+  push:
+    branches:
+      - master
 
 jobs:
   beefore:
@@ -49,6 +53,9 @@ jobs:
         python setup.py test
 
   python-versions:
+    # Only run this and subsequent steps on branches.
+    # `github.head_ref` only exists on pull requests.
+    if: github.head_ref
     name: Python compatibility test
     needs: smoke
     runs-on: ubuntu-latest
