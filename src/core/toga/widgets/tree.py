@@ -6,31 +6,33 @@ from .base import Widget
 
 
 class Tree(Widget):
-    """ Tree Widget
+    """Tree Widget
 
-    Args:
-        headings (``list`` of ``str``): The list of headings for the interface.
-        id (str):  An identifier for this widget.
-        style (:obj:`Style`): An optional style object. If no style is provided then
-            a new one will be created for the widget.
-    Kwargs:
-        data: The data to display in the widget. Can be an instance of
-            :class:`toga.sources.TreeSource`, a list, dict or tuple with data to display
-            in the tree widget, or a class instance which implements the interface of
-            :class:`toga.sources.TreeSource`. Entries can be given as follows:
+    :param headings: The list of headings for the interface.
+    :param id:  An identifier for this widget.
+    :param style: An optional style object. If no style is provided then a new
+        one will be created for the widget.
+    :param data: The data to display in the widget. Can be an instance of
+        :class:`toga.sources.TreeSource`, a list, dict or tuple with data to
+        display in the tree widget, or a class instance which implements the
+        interface of :class:`toga.sources.TreeSource`. Entries can be:
 
-            - Any Python object ``value`` with a string represntation. This string will be
-              shown in the widget. If ``value`` has an attribute ``icon``, instance of
-              (:class:`toga.Icon`), the icon will be shown in front of the text.
-            - A tuple ``(icon, value)`` where again the string represnation of ``value``
-              will be used as text.
-        accessors (``list`` of ``str``): Optional: a list of attributes to access the
-            value in the columns. If not given, the headings will be taken.
-        multiple_select (``bool``): If ``True``, allows for the selection of multiple rows.
-            Defaults to ``False``.
-        on_select: A function to be called when the user selects one or multiple rows.
-        factory (:obj:`module`): A python module that is capable to return a
-            implementation of this class with the same name. (optional & normally not needed)
+          - any Python object ``value`` with a string representation. This
+            string will be shown in the widget. If ``value`` has an attribute
+            ``icon``, instance of (:class:`toga.Icon`), the icon will be shown
+            in front of the text.
+
+          - a tuple ``(icon, value)`` where again the string representation of
+            ``value`` will be used as text.
+
+    :param accessors: Optional; a list of attributes to access the value in the
+        columns. If not given, the headings will be taken.
+    :param multiple_select: Boolean; if ``True``, allows for the selection of
+        multiple rows. Defaults to ``False``.
+    :param on_select: A handler to be invoked when the user selects one or
+        multiple rows.
+    :param factory:: A python module that is capable to return a implementation
+        of this class with the same name. (optional; used only for testing)
     """
     MIN_WIDTH = 100
     MIN_HEIGHT = 100
