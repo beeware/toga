@@ -193,7 +193,8 @@ class Table(Widget):
             # We can't get the index from self.interface.data because the
             # row has already been removed. Instead we look up the index
             # from an associated view.
-            index = self.table.rowForView(self._view_for_row[item])
+            view = self._view_for_row.pop(item)
+            index = self.table.rowForView(view)
         except KeyError:
             pass
         else:
@@ -204,6 +205,7 @@ class Table(Widget):
             )
 
     def clear(self):
+        self._view_for_row.clear()
         self.table.reloadData()
 
     def set_on_select(self, handler):
