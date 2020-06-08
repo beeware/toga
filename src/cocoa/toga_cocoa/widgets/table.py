@@ -180,7 +180,7 @@ class Table(Widget):
         )
 
     def change(self, item):
-        row_index = self.interface.data.index(item)
+        row_index = self.table.rowForView(self._view_for_row[item])
         row_indexes = NSIndexSet.indexSetWithIndex(row_index)
         column_indexes = NSIndexSet.indexSetWithIndexesInRange(NSRange(0, len(self.columns)))
         self.table.reloadDataForRowIndexes(
