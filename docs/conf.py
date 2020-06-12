@@ -11,11 +11,13 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
+import os
+import re
+import sys
+
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-import sys
-import os
 sys.path.insert(0, os.path.abspath('../src/core/'))
 
 # -- General configuration -----------------------------------------------------
@@ -47,8 +49,7 @@ copyright = u'2013, Russell Keith-Magee'
 # built documents.
 #
 # The full version, including alpha/beta/rc tags.
-import io, re
-with io.open('../src/core/toga/__init__.py', encoding='utf8') as version_file:
+with open('../src/core/toga/__init__.py', encoding='utf8') as version_file:
     version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]", version_file.read(), re.M)
     if version_match:
         release = version_match.group(1)
