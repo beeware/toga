@@ -26,7 +26,6 @@ class TogaTable(NSTableView):
 
     @objc_method
     def tableView_viewForTableColumn_row_(self, table, column, row: int):
-
         data_row = self.interface.data[row]
         col_identifier = str(column.identifier)
 
@@ -48,9 +47,13 @@ class TogaTable(NSTableView):
                 except AttributeError:
                     icon_iface = None
         except AttributeError:
-            # If the node doesn't have a property with the
-            # accessor name, assume an empty string value.
-            value = self.interface.missing_value
+            # The accessor doesn't exist in the data. Use the missing value.
+            try:
+                value = self.interface.missing_value
+            except ValueError as e:
+                # There is no explicit missing value. Warn the user.
+                message, value = e.args
+                print(message.format(row, col_identifier))
             icon_iface = None
 
         # If the value has an icon, get the _impl.
@@ -176,7 +179,7 @@ class Table(Widget):
 
         self.table.insertRowsAtIndexes(
             index_set,
-            withAnimation=NSTableViewAnimation.SlideDown
+            withAnimation=NSTableViewAnimation.EffectNone
         )
 
     def change(self, item):
@@ -201,7 +204,7 @@ class Table(Widget):
             indexes = NSIndexSet.indexSetWithIndex(index)
             self.table.removeRowsAtIndexes(
                 indexes,
-                withAnimation=NSTableViewAnimation.SlideUp
+                withAnimation=NSTableViewAnimation.EffectNone
             )
 
     def clear(self):
