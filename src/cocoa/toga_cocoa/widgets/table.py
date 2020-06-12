@@ -154,10 +154,7 @@ class Table(Widget):
         # conversion from ObjC string to Python String, create the
         # ObjC string once and cache it.
         self.column_identifiers = {}
-        for i, (heading, accessor) in enumerate(zip(
-                    self.interface.headings,
-                    self.interface._accessors
-                )):
+        for heading, accessor in zip(self.interface.headings, self.interface._accessors):
             self._add_column(heading, accessor)
 
         self.table.delegate = self.table
