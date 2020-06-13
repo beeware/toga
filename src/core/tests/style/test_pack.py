@@ -1,7 +1,6 @@
 from unittest import TestCase
 from unittest.mock import Mock
 
-from travertino.layout import Viewport
 from travertino.node import Node
 from travertino.size import at_least
 
@@ -23,6 +22,14 @@ class TestNode(Node):
 
     def __repr__(self):
         return '<{} at {}>'.format(self.name, id(self))
+
+
+class TestViewport:
+    def __init__(self, width, height, dpi=96, baseline_dpi=96):
+        self.height = height
+        self.width = width
+        self.dpi = dpi
+        self.baseline_dpi = baseline_dpi
 
 
 class TestPackStyleApply(TestCase):
@@ -122,7 +129,7 @@ class PackLayoutTests(TestCase):
         )
 
         # Minimum size
-        root.style.layout(root, Viewport(0, 0, dpi=96))
+        root.style.layout(root, TestViewport(0, 0, dpi=96))
         self.assertLayout(
             root,
             (220, 130),
@@ -132,7 +139,7 @@ class PackLayoutTests(TestCase):
         )
 
         # Normal size
-        root.style.layout(root, Viewport(640, 480, dpi=96))
+        root.style.layout(root, TestViewport(640, 480, dpi=96))
         self.assertLayout(
             root,
             (640, 130),
@@ -142,7 +149,44 @@ class PackLayoutTests(TestCase):
         )
 
         # HiDPI normal size
-        root.style.layout(root, Viewport(640, 480, dpi=144))
+        root.style.layout(root, TestViewport(640, 480, dpi=144))
+        self.assertLayout(
+            root,
+            (640, 180),
+            {'origin': (0, 0), 'content': (640, 180), 'children': [
+                {'origin': (75, 75), 'content': (490, 30)}
+            ]}
+        )
+
+    def test_tutorial_0_high_baseline_dpi(self):
+        root = TestNode(
+            'app', style=Pack(), children=[
+                TestNode('button', style=Pack(flex=1, padding=50), size=(at_least(120), 30)),
+            ]
+        )
+
+        # Minimum size with high baseline DPI
+        root.style.layout(root, TestViewport(0, 0, dpi=160, baseline_dpi=160))
+        self.assertLayout(
+            root,
+            (220, 130),
+            {'origin': (0, 0), 'content': (220, 130), 'children': [
+                {'origin': (50, 50), 'content': (120, 30)}
+            ]}
+        )
+
+        # Normal size with high DPI equal to high baseline DPI
+        root.style.layout(root, TestViewport(640, 480, dpi=160, baseline_dpi=160))
+        self.assertLayout(
+            root,
+            (640, 130),
+            {'origin': (0, 0), 'content': (640, 130), 'children': [
+                {'origin': (50, 50), 'content': (540, 30)}
+            ]}
+        )
+
+        # HiDPI -- 1.5x baseline -- with higher baseline DPI
+        root.style.layout(root, TestViewport(640, 480, dpi=240, baseline_dpi=160))
         self.assertLayout(
             root,
             (640, 180),
@@ -168,7 +212,7 @@ class PackLayoutTests(TestCase):
         )
 
         # Minimum size
-        root.style.layout(root, Viewport(0, 0, dpi=96))
+        root.style.layout(root, TestViewport(0, 0, dpi=96))
         self.assertLayout(
             root,
             (380, 120),
@@ -187,7 +231,7 @@ class PackLayoutTests(TestCase):
         )
 
         # Normal size
-        root.style.layout(root, Viewport(640, 480, dpi=96))
+        root.style.layout(root, TestViewport(640, 480, dpi=96))
         self.assertLayout(
             root,
             (640, 120),
@@ -206,7 +250,7 @@ class PackLayoutTests(TestCase):
         )
 
         # HiDPI Normal size
-        root.style.layout(root, Viewport(640, 480, dpi=144))
+        root.style.layout(root, TestViewport(640, 480, dpi=144))
         self.assertLayout(
             root,
             (640, 142),
@@ -236,7 +280,7 @@ class PackLayoutTests(TestCase):
         )
 
         # Minimum size
-        root.style.layout(root, Viewport(0, 0, dpi=96))
+        root.style.layout(root, TestViewport(0, 0, dpi=96))
         self.assertLayout(
             root,
             (170, 125),
@@ -250,7 +294,7 @@ class PackLayoutTests(TestCase):
         )
 
         # Normal size
-        root.style.layout(root, Viewport(640, 480, dpi=96))
+        root.style.layout(root, TestViewport(640, 480, dpi=96))
         self.assertLayout(
             root,
             (640, 480),
@@ -264,7 +308,7 @@ class PackLayoutTests(TestCase):
         )
 
         # HiDPI Normal size
-        root.style.layout(root, Viewport(640, 480, dpi=144))
+        root.style.layout(root, TestViewport(640, 480, dpi=144))
         self.assertLayout(
             root,
             (640, 480),
@@ -289,7 +333,7 @@ class PackLayoutTests(TestCase):
         )
 
         # Minimum size
-        root.style.layout(root, Viewport(0, 0, dpi=96))
+        root.style.layout(root, TestViewport(0, 0, dpi=96))
         self.assertLayout(
             root,
             (160, 125),
@@ -303,7 +347,7 @@ class PackLayoutTests(TestCase):
         )
 
         # Normal size
-        root.style.layout(root, Viewport(640, 480, dpi=96))
+        root.style.layout(root, TestViewport(640, 480, dpi=96))
         self.assertLayout(
             root,
             (640, 480),
@@ -317,7 +361,7 @@ class PackLayoutTests(TestCase):
         )
 
         # HiDPI Normal size
-        root.style.layout(root, Viewport(640, 480, dpi=144))
+        root.style.layout(root, TestViewport(640, 480, dpi=144))
         self.assertLayout(
             root,
             (640, 480),

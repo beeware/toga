@@ -170,7 +170,6 @@ class Table(Widget):
         self.table.reloadData()
 
     def insert(self, index, item):
-
         # set parent = None if inserting to the root item
         index_set = NSIndexSet.indexSetWithIndex(index)
 
