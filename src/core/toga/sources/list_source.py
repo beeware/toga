@@ -30,7 +30,7 @@ class ListSource(Source):
     """
     def __init__(self, data, accessors):
         super().__init__()
-        self._accessors = accessors
+        self._accessors = accessors.copy()
         self._data = []
         for value in data:
             self._data.append(self._create_row(value))

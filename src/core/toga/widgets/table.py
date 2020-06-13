@@ -47,8 +47,8 @@ class Table(Widget):
                  multiple_select=False, on_select=None, missing_value=None,
                  factory=None):
         super().__init__(id=id, style=style, factory=factory)
-        self.headings = headings
-        self._accessors = build_accessors(headings, accessors)
+        self.headings = headings[:]
+        self._accessors = build_accessors(self.headings, accessors)
         self._multiple_select = multiple_select
         self._on_select = None
         self._selection = None
