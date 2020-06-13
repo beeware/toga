@@ -4,7 +4,7 @@ requires = ["briefcase"]
 [tool.briefcase]
 project_name = "Handler Demo"
 bundle = "org.beeware"
-version = "0.3.0.dev20"
+version = "0.3.0.dev21"
 url = "https://beeware.org"
 license = "BSD license"
 author = 'Tiberius Yak'
