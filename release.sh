@@ -173,7 +173,6 @@ elif [ "$action" = "test" ]; then
     done
 
 elif [ "$action" = "release" ]; then
-    shift
 
     for module in $MODULES; do
         $action $module $VERSION
