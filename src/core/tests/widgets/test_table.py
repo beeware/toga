@@ -114,7 +114,7 @@ class TableTests(TestCase):
         expecting_headings = self.headings + [new_heading]
         self.table.add_column(new_heading)
 
-        self.assertEqual(self.headings, expecting_headings)
+        self.assertEqual(self.table.headings, expecting_headings)
 
     def test_remove_column_by_accessor(self):
         remove = 'heading_2'
