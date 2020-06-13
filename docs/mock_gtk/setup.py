@@ -2,7 +2,7 @@
 import io
 import re
 
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 # This is a mock version of the GTK+ backend. It is required because RTD
 # will try to `pip install toga`, which will in turn try to

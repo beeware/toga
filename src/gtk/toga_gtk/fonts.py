@@ -1,17 +1,9 @@
 from toga.constants import ITALIC, OBLIQUE, SMALL_CAPS, BOLD, SYSTEM
 
-from .libs import Gtk, Pango
+from .libs import Pango
 
 
 _FONT_CACHE = {}
-
-
-class Measure(Gtk.Widget):
-    """Gtk.Widget for Font.measure in order to create a Pango Layout
-    """
-
-    def create(self):
-        pass
 
 
 class Font:
@@ -58,9 +50,9 @@ class Font:
 
         self.native = font
 
-    def measure(self, text, dpi, tight=False):
-        measure_widget = Measure()
-        layout = measure_widget.create_pango_layout(text)
+    def measure(self, text, widget, tight=False):
+        layout = widget.create_pango_layout(text)
+
         layout.set_font_description(self.native)
         ink, logical = layout.get_extents()
         if tight:

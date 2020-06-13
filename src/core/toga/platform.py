@@ -24,12 +24,6 @@ def get_platform_factory(factory=None):
     if sys.platform == 'ios':
         from toga_iOS import factory
         return factory
-    elif sys.platform == 'tvos':
-        from toga_tvOS import factory
-        return factory
-    elif sys.platform == 'watchos':
-        from toga_watchOS import factory
-        return factory
     elif sys.platform == 'android':
         from toga_android import factory
         return factory
@@ -37,15 +31,21 @@ def get_platform_factory(factory=None):
         from toga_cocoa import factory
         return factory
     elif sys.platform == 'linux':
-        # In the future, we will use a different way to detect Android.
-        # See https://github.com/beeware/Python-Android-support/issues/8
-        if os.environ.get('ANDROID_ROOT'):
+        # Rely on `sys.getandroidapilevel`, which only exists on Android; see
+        # https://github.com/beeware/Python-Android-support/issues/8
+        if hasattr(sys, 'getandroidapilevel'):
             from toga_android import factory
             return factory
         from toga_gtk import factory
         return factory
     elif sys.platform == 'win32':
         from toga_winforms import factory
+        return factory
+    elif sys.platform == 'tvos':
+        from toga_tvOS import factory
+        return factory
+    elif sys.platform == 'watchos':
+        from toga_watchOS import factory
         return factory
     else:
         raise RuntimeError("Couldn't identify a supported host platform.")

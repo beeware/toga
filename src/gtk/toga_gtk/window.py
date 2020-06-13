@@ -1,23 +1,30 @@
-from travertino.layout import Viewport
-
 from toga.command import GROUP_BREAK, SECTION_BREAK
 from toga.handlers import wrapped_handler
 
 from . import dialogs
-from .libs import DISPLAY_DPI, Gtk
+from .libs import Gtk
 
 
 class GtkViewport:
     def __init__(self, native):
         self.native = native
-        self.dpi = DISPLAY_DPI
+        # GDK/GTK always renders at 96dpi. When HiDPI mode is enabled, it is
+        # managed at the compositor level. See
+        # https://wiki.archlinux.org/index.php/HiDPI#GDK_3_(GTK_3) for details
+        self.dpi = 96
+        self.baseline_dpi = self.dpi
 
     @property
     def width(self):
+        # Treat `native=None` as a 0x0 viewport.
+        if self.native is None:
+            return 0
         return self.native.get_allocated_width()
 
     @property
     def height(self):
+        if self.native is None:
+            return 0
         return self.native.get_allocated_height()
 
 
@@ -105,7 +112,7 @@ class Window:
         self.interface.content._impl.rehint()
         self.interface.content.style.layout(
             self.interface.content,
-            Viewport(0, 0, dpi=DISPLAY_DPI)
+            GtkViewport(native=None)
         )
         self.interface.content._impl.min_width = self.interface.content.layout.width
         self.interface.content._impl.min_height = self.interface.content.layout.height

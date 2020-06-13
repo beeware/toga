@@ -1,5 +1,9 @@
 name: CI
-on: [pull_request]
+on:
+  pull_request:
+  push:
+    branches:
+      - master
 
 jobs:
   beefore:
@@ -8,7 +12,33 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        task: ['pycodestyle', 'eslint']
+        task:
+        # - flake8
+        # - towncrier-check
+        - docs
+        - package
+    steps:
+    - uses: actions/checkout@v1
+    - name: Set up Python 3.5
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.5
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install --upgrade setuptools
+        python -m pip install tox
+    - name: Run pre-test checks
+      run: |
+        tox -e ${{ matrix.task }}
+
+  beefore-legacy:
+    name: Pre-test checks
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+      matrix:
+        task: ['pycodestyle']
     steps:
     - uses: actions/checkout@v1
     - name: Set up Python 3.5
@@ -28,7 +58,9 @@ jobs:
 
   smoke:
     name: Smoke test
-    needs: beefore
+    needs:
+    - beefore
+    - beefore-legacy
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
@@ -49,6 +81,9 @@ jobs:
         python setup.py test
 
   python-versions:
+    # Only run this and subsequent steps on branches.
+    # `github.head_ref` only exists on pull requests.
+    if: github.head_ref
     name: Python compatibility test
     needs: smoke
     runs-on: ubuntu-latest

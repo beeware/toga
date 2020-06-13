@@ -21,7 +21,7 @@ Toga
     :target: https://github.com/beeware/toga/blob/master/LICENSE
     :alt: License
 
-.. image:: https://github.com/beeware/toga/workflows/Build%20status/badge.svg
+.. image:: https://github.com/beeware/toga/workflows/CI/badge.svg?branch=master
    :target: https://github.com/beeware/toga/actions
    :alt: Build Status
 

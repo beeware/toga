@@ -15,7 +15,8 @@ from toga_winforms.libs import (
     RectangleF,
     PointF,
     StringFormat,
-    win_font_family
+    win_font_family,
+    WinForms
 )
 from ..libs.fonts import win_font_style
 
@@ -54,29 +55,34 @@ class Canvas(Box):
 
     def create(self):
         super(Canvas, self).create()
+        self.native.DoubleBuffered = True
         self.native.Paint += self.winforms_paint
         self.native.Resize += self.winforms_resize
+        self.native.MouseDown += self.winforms_mouse_press
+        self.native.MouseMove += self.winforms_mouse_drag
+        self.native.MouseUp += self.winforms_mouse_release
+        self.clicks = 0
 
     def set_on_resize(self, handler):
         pass
 
     def set_on_press(self, handler):
-        self.interface.factory.not_implemented('Canvas.set_on_press()')
+        pass
 
     def set_on_release(self, handler):
-        self.interface.factory.not_implemented('Canvas.set_on_release()')
+        pass
 
     def set_on_drag(self, handler):
-        self.interface.factory.not_implemented('Canvas.set_on_drag()')
+        pass
 
     def set_on_alt_press(self, handler):
-        self.interface.factory.not_implemented('Canvas.set_on_alt_press()')
+        pass
 
     def set_on_alt_release(self, handler):
-        self.interface.factory.not_implemented('Canvas.set_on_alt_release()')
+        pass
 
     def set_on_alt_drag(self, handler):
-        self.interface.factory.not_implemented('Canvas.set_on_alt_drag()')
+        pass
 
     def winforms_paint(self, panel, event, *args):
         context = WinformContext()
@@ -91,6 +97,40 @@ class Canvas(Box):
         """
         if self.interface.on_resize:
             self.interface.on_resize(self.interface)
+
+    def winforms_mouse_press(self, obj, mouse_event):
+        self.clicks = mouse_event.Clicks
+        if mouse_event.Button == WinForms.MouseButtons.Left and self.interface.on_press:
+            self.interface.on_press(
+                self.interface, mouse_event.X, mouse_event.Y, mouse_event.Clicks
+            )
+        if mouse_event.Button == WinForms.MouseButtons.Right and self.interface.on_alt_press:
+            self.interface.on_alt_press(
+                self.interface, mouse_event.X, mouse_event.Y, mouse_event.Clicks
+            )
+
+    def winforms_mouse_drag(self, obj, mouse_event):
+        if self.clicks == 0:
+            return
+        if mouse_event.Button == WinForms.MouseButtons.Left and self.interface.on_drag:
+            self.interface.on_drag(
+                self.interface, mouse_event.X, mouse_event.Y, self.clicks
+            )
+        if mouse_event.Button == WinForms.MouseButtons.Right and self.interface.on_alt_drag:
+            self.interface.on_alt_drag(
+                self.interface, mouse_event.X, mouse_event.Y, self.clicks
+            )
+
+    def winforms_mouse_release(self, obj, mouse_event):
+        if mouse_event.Button == WinForms.MouseButtons.Left and self.interface.on_release:
+            self.interface.on_release(
+                self.interface, mouse_event.X, mouse_event.Y, self.clicks
+            )
+        if mouse_event.Button == WinForms.MouseButtons.Right and self.interface.on_alt_release:
+            self.interface.on_alt_release(
+                self.interface, mouse_event.X, mouse_event.Y, self.clicks
+            )
+        self.clicks = 0
 
     def redraw(self):
         self.native.Invalidate()
@@ -242,13 +282,28 @@ class Canvas(Box):
 
     # Text
     def write_text(self, text, x, y, font, draw_context, *args, **kwargs):
-        width, height = font.measure(text, dpi=self.container.viewport.dpi)
-        origin = PointF(x, y - height)
+        full_height = 0
         font_family = win_font_family(font.family)
         font_style = win_font_style(font.weight, font.style, font_family)
-        draw_context.current_path.AddString(
-            text, font_family, font_style, float(height), origin, StringFormat()
+        for line in text.splitlines():
+            _, height = self.measure_text(line, font)
+            origin = PointF(x, y + full_height - height)
+            draw_context.current_path.AddString(
+                line, font_family, font_style, float(height), origin, StringFormat()
+            )
+            full_height += height
+
+    def measure_text(self, text, font, tight=False):
+        sizes = [
+            WinForms.TextRenderer.MeasureText(line, font._impl.native)
+            for line in text.splitlines()
+        ]
+        width = max([size.Width for size in sizes])
+        height = sum([size.Height for size in sizes])
+        return (
+            self._points_to_pixels(width),
+            self._points_to_pixels(height),
         )
 
-    def measure_text(self, text, font, draw_context, *args, **kwargs):
-        width, height = font.measure(text, dpi=self.container.viewport.dpi)
+    def _points_to_pixels(self, points):
+        return points * 72 / self.container.viewport.dpi
