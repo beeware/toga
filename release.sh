@@ -10,13 +10,9 @@ function bump {
     echo
     if [ "$1" = "toga" ]; then
         pushd .
-        mv setup.py temp
-        sed "s/version = '.*'/version = '$2'/g" temp > setup.cfg
-        git add setup.cfg
-
         # Find all the pyproject.toml examples,
         # and update the version of toga required.
-        find . -name pyproject.toml | while read f; do
+        find examples -name pyproject.toml | while read f; do
             mv "$f" temp
             sed "s/==.*\"/==$2\"/g" temp > "$f"
             mv "$f" temp
@@ -108,32 +104,6 @@ function release {
     fi
 }
 
-function dev {
-    echo
-    echo "************************************************************"
-    echo "DEV-BUMP $1 version $2"
-    echo "************************************************************"
-    echo
-    if [ "$1" = "toga" ]; then
-        pushd .
-        mv setup.py temp
-        sed "s/version='.*',/version='$2.dev1',/g" temp > setup.py
-        git add setup.py
-    else
-        if [ "$1" = "core" ]; then
-            pushd src/$1/toga
-        elif [ "$1" = "demo" ]; then
-            pushd demo
-        else
-            pushd src/$1/toga_$1
-        fi
-        mv __init__.py temp
-        sed "s/^__version__ = '.*'/__version__ = '$2.dev1'/g" temp > __init__.py
-        git add __init__.py
-    fi
-    rm temp
-    popd
-}
 
 MODULES="core dummy cocoa iOS gtk django android winforms toga demo"
 
