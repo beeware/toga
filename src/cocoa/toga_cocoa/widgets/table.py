@@ -175,7 +175,7 @@ class Table(Widget):
 
         self.table.insertRowsAtIndexes(
             index_set,
-            withAnimation=NSTableViewAnimation.EffectNone
+            withAnimation=NSTableViewAnimation.SlideDown
         )
 
     def change(self, item):
@@ -200,7 +200,7 @@ class Table(Widget):
             indexes = NSIndexSet.indexSetWithIndex(index)
             self.table.removeRowsAtIndexes(
                 indexes,
-                withAnimation=NSTableViewAnimation.EffectNone
+                withAnimation=NSTableViewAnimation.SlideUp
             )
 
     def clear(self):
