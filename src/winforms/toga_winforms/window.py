@@ -176,9 +176,8 @@ class Window:
         if initial_directory is not None:
             dialog.InitialDirectory = initial_directory
         if file_types is not None:
-            # FIXME This is the example of Filter string: Text files (*.txt)|*.txt|All files (*.*)|*.*
-
-            dialog.Filter = ';'.join(["*." + ext for ext in file_types]) + \
+            file_string = "{0} files (*.{0})|*.{0}"
+            dialog.Filter = '|'.join([file_string.format(ext) for ext in file_types]) + \
                             "|All files (*.*)|*.*"
         if multiselect:
             dialog.Multiselect = True
