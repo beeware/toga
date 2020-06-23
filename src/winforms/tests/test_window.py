@@ -2,6 +2,7 @@ from toga_dummy.utils import TestCase
 import toga_dummy
 import toga
 
+
 class TestWindow(TestCase):
     def setUp(self):
         super().setUp()
