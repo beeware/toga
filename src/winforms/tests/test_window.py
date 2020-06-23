@@ -1,6 +1,6 @@
-from unittest.mock import patch, MagicMock
 from toga_dummy.utils import TestCase
 import toga_dummy
+import toga
 
 class TestWindow(TestCase):
     def setUp(self):
@@ -10,4 +10,3 @@ class TestWindow(TestCase):
     def test_build_filter(self):
         test_filter = self.window.build_filter(["txt"])
         self.assertEqual(test_filter, "txt files (*.txt)|*.txt|All files (*.*)|*.*")
-
