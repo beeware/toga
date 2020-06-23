@@ -9,5 +9,5 @@ class TestWindow(TestCase):
         self.window = toga.Window(factory=toga_dummy.factory)
 
     def test_build_filter(self):
-        test_filter = self.window.build_filter(["txt"])
+        test_filter = self.window._impl.build_filter(["txt"])
         self.assertEqual(test_filter, "txt files (*.txt)|*.txt|All files (*.*)|*.*")
