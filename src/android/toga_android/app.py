@@ -1,3 +1,5 @@
+from rubicon.java import android_events
+
 from .libs.activity import IPythonApp, MainActivity
 from .window import Window
 
@@ -65,10 +67,13 @@ class App:
         print("Can't open document %s (yet)" % fileURL)
 
     def main_loop(self):
-        # Connect the Python code to the Java Activity.
+        # In order to support user asyncio code, start the Python/Android cooperative event loop.
+        loop = android_events.AndroidEventLoop()
+        loop.run_forever_cooperatively()
+
+        # On Android, Toga UI integrates automatically into the main Android event loop by virtue
+        # of the Android Activity system.
         self.create()
-        # The app loop is integrated with the main Android event loop,
-        # so there is no further work to do.
 
     def set_main_window(self, window):
         pass
