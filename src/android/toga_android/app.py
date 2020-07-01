@@ -1,5 +1,7 @@
 from rubicon.java import android_events
 
+from toga.handlers import wrapped_handler
+
 from .libs.activity import IPythonApp, MainActivity
 from .window import Window
 
@@ -52,6 +54,8 @@ class App:
         self.interface._impl = self
         self._listener = None
 
+        self.loop = android_events.AndroidEventLoop()
+
     @property
     def native(self):
         return self._listener.native if self._listener else None
@@ -68,8 +72,7 @@ class App:
 
     def main_loop(self):
         # In order to support user asyncio code, start the Python/Android cooperative event loop.
-        loop = android_events.AndroidEventLoop()
-        loop.run_forever_cooperatively()
+        self.loop.run_forever_cooperatively()
 
         # On Android, Toga UI integrates automatically into the main Android event loop by virtue
         # of the Android Activity system.
@@ -85,4 +88,4 @@ class App:
         pass
 
     def add_background_task(self, handler):
-        self.interface.factory.not_implemented('App.add_background_task()')
+        self.loop.call_soon(wrapped_handler(self, handler), self)
