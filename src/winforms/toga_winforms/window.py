@@ -176,10 +176,7 @@ class Window:
         if initial_directory is not None:
             dialog.InitialDirectory = initial_directory
         if file_types is not None:
-            # FIXME This is the example of Filter string: Text files (*.txt)|*.txt|All files (*.*)|*.*
-
-            dialog.Filter = ';'.join(["*." + ext for ext in file_types]) + \
-                            "|All files (*.*)|*.*"
+            dialog.Filter = self.build_filter(file_types)
         if multiselect:
             dialog.Multiselect = True
         if dialog.ShowDialog() == WinForms.DialogResult.OK:
@@ -197,3 +194,8 @@ class Window:
             return [dialog.SelectedPath]
         else:
             raise ValueError("No folder provided in the select folder dialog")
+
+    def build_filter(self, file_types):
+        file_string = "{0} files (*.{0})|*.{0}"
+        return '|'.join([file_string.format(ext) for ext in file_types]) + \
+            "|All files (*.*)|*.*"
