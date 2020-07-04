@@ -7,14 +7,15 @@ class WebView:
         self.style = style
 
     def __html__(self):
-        return """
-            <iframe id="toga:%s" class="toga WebView" style="%s" src="%s" data-toga-class="toga.WebView" data-toga-ports="%s">
-            </iframe>""" % (
+        return (
+            '<iframe id="toga:%s" class="toga WebView" style="%s" src="%s" '
+            'data-toga-class="toga.WebView" data-toga-ports="%s"></iframe>' % (
                 self.id,
                 self.style,
                 self.url if self.url else '',
-                '',  #  self.ports,
+                '',  # self.ports,
             )
+        )
 
     @property
     def url(self):

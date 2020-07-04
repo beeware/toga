@@ -1,9 +1,9 @@
-# try:
-#     import dom
-# except ImportError:
-#     # The dom module doesn't actually exist; it's a proxy for the browser DOM.
-#     # However, if we don't try to import it.
-#     pass
+try:
+    import dom
+except ImportError:
+    # The dom module doesn't actually exist; it's a proxy for the browser DOM.
+    # However, if we don't try to import it.
+    pass
 
 from .app import App
 from .box import Box
@@ -13,7 +13,6 @@ from .textinput import TextInput
 from .webview import WebView
 from .window import Window
 
-
 # _counter = 1000
 
 
@@ -21,7 +20,6 @@ from .window import Window
 #     global _counter
 #     _counter += 1
 #     return 'NEW%s' % _counter
-
 
 
 def bootstrap_App(element):

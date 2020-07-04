@@ -9,12 +9,15 @@ class Label:
         self.style = style
 
     def __html__(self):
-        return '<span id="toga:%s" class="toga Label" style="%s" data-toga-class="toga.Label" data-toga-parent="%s" data-toga-ports="%s">%s</span>' % (
-            self.id,
-            self.style,
-            self.parent.id,
-            '',  #  self.ports,
-            self.text,
+        return (
+            '<span id="toga:%s" class="toga Label" style="%s" '
+            'data-toga-class="toga.Label" data-toga-parent="%s" data-toga-ports="%s">%s</span>' % (
+                self.id,
+                self.style,
+                self.parent.id,
+                '',  # self.ports,
+                self.text,
+            )
         )
 
     @property

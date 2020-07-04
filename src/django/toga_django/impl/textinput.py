@@ -10,14 +10,18 @@ class TextInput:
         self.style = style
 
     def __html__(self):
-        return '<input id="toga:%s" class="toga TextInput" style="%s" data-toga-class="toga.TextInput" data-toga-parent="%s" data-toga-ports="%s" type="text" value="%s"%s%s>' % (
-            self.id,
-            self.style,
-            self.parent.id,
-            '',  #  self.ports,
-            self.initial,
-            ' placeholder="%s"' % self.placeholder if self.placeholder else '',
-            ' disabled' if self.readonly else '',
+        return (
+            '<input id="toga:%s" class="toga TextInput" style="%s" '
+            'data-toga-class="toga.TextInput" data-toga-parent="%s" '
+            'data-toga-ports="%s" type="text" value="%s"%s%s>' % (
+                self.id,
+                self.style,
+                self.parent.id,
+                '',  # self.ports,
+                self.initial,
+                ' placeholder="%s"' % self.placeholder if self.placeholder else '',
+                ' disabled' if self.readonly else '',
+            )
         )
 
     @property

@@ -1,7 +1,7 @@
 from toga.interface import WebView as WebViewInterface
 
-from .base import WidgetMixin
 from .. import impl
+from .base import WidgetMixin
 
 
 class WebView(WebViewInterface, WidgetMixin):
@@ -13,7 +13,9 @@ class WebView(WebViewInterface, WidgetMixin):
         self._impl = impl.WebView(
             id=self.id,
             url=self._config['url'],
-            on_key_down=self.handler(self._config['on_key_down'], 'on_key_down') if self._config['on_key_down'] else None,
+            on_key_down=self.handler(
+                self._config['on_key_down'], 'on_key_down'
+            ) if self._config['on_key_down'] else None,
             style=self.style,
         )
 
