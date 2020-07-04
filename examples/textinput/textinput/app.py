@@ -1,7 +1,8 @@
+from string import ascii_lowercase, ascii_uppercase, digits
+
 import toga
 from toga.constants import COLUMN
 from toga.style import Pack
-from string import ascii_uppercase, ascii_lowercase, digits
 
 EMPTY_PASSWORD = 'Empty password'
 

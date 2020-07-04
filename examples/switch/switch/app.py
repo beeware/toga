@@ -1,6 +1,7 @@
 import toga
+from toga.constants import COLUMN
 from toga.style import Pack
-from toga.constants import COLUMN, ROW
+
 
 class SwitchApp(toga.App):
 

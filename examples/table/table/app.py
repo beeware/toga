@@ -1,8 +1,8 @@
 from random import choice
 
 import toga
-from toga.style import Pack
 from toga.constants import COLUMN, ROW
+from toga.style import Pack
 
 headings = ['Title', 'Year', 'Rating', 'Genre']
 bee_movies = [

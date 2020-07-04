@@ -1,6 +1,6 @@
 import toga
-from toga.style import Pack
 from toga.constants import COLUMN, ROW
+from toga.style import Pack
 
 
 class DividerApp(toga.App):

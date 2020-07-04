@@ -1,5 +1,5 @@
 import toga
-from toga.style.pack import Pack, COLUMN
+from toga.style.pack import COLUMN, Pack
 
 
 def button_handler(widget):

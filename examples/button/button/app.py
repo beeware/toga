@@ -1,9 +1,9 @@
 import random
 
 import toga
-from toga.style import Pack
-from toga.colors import RED, BLUE
+from toga.colors import BLUE, RED
 from toga.constants import COLUMN, ROW
+from toga.style import Pack
 
 
 class ExampleButtonApp(toga.App):
