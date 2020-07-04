@@ -3,8 +3,8 @@ from builtins import id as identifier
 
 from travertino.node import Node
 
-from toga.style import Pack, TogaApplicator
 from toga.platform import get_platform_factory
+from toga.style import Pack, TogaApplicator
 
 
 class Widget(Node):

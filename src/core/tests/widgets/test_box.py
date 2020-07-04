@@ -17,7 +17,7 @@ class BoxTests(TestCase):
 
     @patch('toga.widgets.base.get_platform_factory')
     def test_box_with_without_factory(self, mock_function):
-        btn = toga.Box()
+        toga.Box()
         mock_function.assert_called_once_with(None)
 
     def test_children_added(self):

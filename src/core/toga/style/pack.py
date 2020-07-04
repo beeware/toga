@@ -1,14 +1,35 @@
 from travertino.constants import (
-    NORMAL, SERIF, SANS_SERIF, CURSIVE, FANTASY, MONOSPACE, ITALIC, OBLIQUE,
-    SMALL_CAPS, BOLD, LEFT, RIGHT, TOP, BOTTOM, CENTER, JUSTIFY, RTL, LTR,
-    TRANSPARENT, SYSTEM, VISIBLE, HIDDEN, NONE, ROW, COLUMN
+    BOLD,
+    BOTTOM,
+    CENTER,
+    COLUMN,
+    CURSIVE,
+    FANTASY,
+    HIDDEN,
+    ITALIC,
+    JUSTIFY,
+    LEFT,
+    LTR,
+    MONOSPACE,
+    NONE,
+    NORMAL,
+    OBLIQUE,
+    RIGHT,
+    ROW,
+    RTL,
+    SANS_SERIF,
+    SERIF,
+    SMALL_CAPS,
+    SYSTEM,
+    TOP,
+    TRANSPARENT,
+    VISIBLE
 )
 from travertino.declaration import BaseStyle, Choices
 from travertino.layout import BaseBox
 from travertino.size import BaseIntrinsicSize
 
-from toga.fonts import Font, SYSTEM_DEFAULT_FONT_SIZE
-
+from toga.fonts import SYSTEM_DEFAULT_FONT_SIZE, Font
 
 ######################################################################
 # Display

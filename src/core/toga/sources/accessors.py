@@ -1,8 +1,8 @@
 import re
 
+NON_ACCESSOR_CHARS = re.compile(r'[^\w ]')
+WHITESPACE = re.compile(r'\s+')
 
-NON_ACCESSOR_CHARS = re.compile('[^\w ]')
-WHITESPACE = re.compile('\s+')
 
 def to_accessor(heading):
     """Convert a human-readable heading into a data attribute accessor
@@ -30,6 +30,7 @@ def to_accessor(heading):
         raise ValueError("Unable to automatically generate accessor from heading '{}'.".format(heading))
 
     return value
+
 
 def build_accessors(headings, accessors):
     """Convert a list of headings (with accessor overrides) to a finalised list of accessors.

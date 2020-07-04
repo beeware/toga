@@ -1,7 +1,8 @@
 import toga
 import toga_dummy
+from toga.sources import TreeSource
 from toga_dummy.utils import TestCase
-from toga.sources import TreeSource, Source
+
 
 class TreeTests(TestCase):
     def setUp(self):
@@ -10,9 +11,11 @@ class TreeTests(TestCase):
         self.headings = ['Heading {}'.format(x) for x in range(3)]
 
         self.data = None
-        self.tree = toga.Tree(headings=self.headings,
-                              data=self.data,
-                              factory=toga_dummy.factory)
+        self.tree = toga.Tree(
+            headings=self.headings,
+            data=self.data,
+            factory=toga_dummy.factory
+        )
 
     def test_widget_created(self):
         self.assertEqual(self.tree._impl.interface, self.tree)

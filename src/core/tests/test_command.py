@@ -2,8 +2,8 @@ import unittest
 
 import toga
 import toga_dummy
-from toga_dummy.utils import TestCase
 from toga.command import cmd_sort_key
+from toga_dummy.utils import TestCase
 
 
 class TestCommand(TestCase):
@@ -26,7 +26,8 @@ class TestCommand(TestCase):
         self.assertEqual(grp.order, 2)
 
     def test_group_lt(self):
-        grp1, grp2 = toga.Group('A'), toga.Group('B')
+        toga.Group('A'),
+        toga.Group('B')
         self.assertTrue(toga.Group('A', 1) < toga.Group('A', 2))
         self.assertTrue(toga.Group('A') < toga.Group('B'))
 

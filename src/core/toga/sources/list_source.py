@@ -24,7 +24,7 @@ class ListSource(Source):
 
     Args:
         data (`list`): The data in the list. Each entry in the list should have the
-            same number of entries as there are accessors. 
+            same number of entries as there are accessors.
         accessors (`list`): A list of attribute names for accessing the value
             in each column of the row.
     """

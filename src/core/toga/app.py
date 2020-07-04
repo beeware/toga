@@ -3,17 +3,18 @@ import sys
 from builtins import id as identifier
 from email.message import Message
 
+from toga.command import CommandSet
+from toga.handlers import wrapped_handler
+from toga.icons import Icon
+from toga.platform import get_platform_factory
+from toga.window import Window
+
 try:
     from importlib import metadata as importlib_metadata
 except ImportError:
     # Backwards compatibility - imporlib.metadata was added in Python 3.8
     import importlib_metadata
 
-from toga.command import CommandSet
-from toga.handlers import wrapped_handler
-from toga.icons import Icon
-from toga.platform import get_platform_factory
-from toga.window import Window
 
 
 class MainWindow(Window):
