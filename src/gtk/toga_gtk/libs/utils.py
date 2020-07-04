@@ -1,4 +1,4 @@
-from toga.constants import LEFT, RIGHT, CENTER, JUSTIFY
+from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT
 
 
 def gtk_alignment(alignment):

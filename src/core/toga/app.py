@@ -16,7 +16,6 @@ except ImportError:
     import importlib_metadata
 
 
-
 class MainWindow(Window):
     _WINDOW_CLASS = 'MainWindow'
 

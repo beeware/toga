@@ -1,4 +1,4 @@
-from ..libs import Gtk, Gdk
+from ..libs import Gdk, Gtk
 from .base import Widget
 
 

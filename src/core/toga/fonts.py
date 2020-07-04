@@ -14,7 +14,7 @@ from travertino.constants import (  # noqa: F401
     SYSTEM
 )
 from travertino.fonts import Font as BaseFont  # noqa: F401
-from travertino.fonts import font
+from travertino.fonts import font  # noqa: F401
 
 from toga.platform import get_platform_factory
 

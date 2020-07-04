@@ -1,7 +1,7 @@
 import unittest
 
 import toga
-from toga.constants import ITALIC, OBLIQUE, SMALL_CAPS, BOLD, SYSTEM, CURSIVE
+from toga.constants import BOLD, CURSIVE, ITALIC, OBLIQUE, SMALL_CAPS, SYSTEM
 from toga_gtk import fonts as gtk_fonts
 
 try:

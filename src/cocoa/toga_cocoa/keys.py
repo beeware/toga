@@ -7,6 +7,7 @@ from toga_cocoa.libs import (
     NSEventModifierFlagShift
 )
 
+
 ######################################################################
 # Utilities to convert Cocoa constants to Toga ones
 ######################################################################

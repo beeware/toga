@@ -1,7 +1,6 @@
-from toga.constants import ITALIC, OBLIQUE, SMALL_CAPS, BOLD, SYSTEM
+from toga.constants import BOLD, ITALIC, OBLIQUE, SMALL_CAPS, SYSTEM
 
 from .libs import Pango
-
 
 _FONT_CACHE = {}
 

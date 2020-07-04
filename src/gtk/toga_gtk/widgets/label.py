@@ -1,8 +1,6 @@
 from travertino.size import at_least
 
 from ..libs import Gtk, gtk_alignment
-# from toga_gtk.colors import native_color
-
 from .base import Widget
 
 
