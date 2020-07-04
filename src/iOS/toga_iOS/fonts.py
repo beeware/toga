@@ -1,21 +1,17 @@
 from rubicon.objc import NSMutableDictionary
 
 from toga.fonts import (
-    MESSAGE,
-    NORMAL,
-    SYSTEM,
-    SERIF,
-    SANS_SERIF,
-    SYSTEM_DEFAULT_FONT_SIZE,
     CURSIVE,
     FANTASY,
-    MONOSPACE
+    MESSAGE,
+    MONOSPACE,
+    NORMAL,
+    SANS_SERIF,
+    SERIF,
+    SYSTEM,
+    SYSTEM_DEFAULT_FONT_SIZE
 )
-from toga_iOS.libs import (
-    UIFont,
-    NSAttributedString,
-    NSFontAttributeName,
-)
+from toga_iOS.libs import NSAttributedString, NSFontAttributeName, UIFont
 
 _FONT_CACHE = {}
 

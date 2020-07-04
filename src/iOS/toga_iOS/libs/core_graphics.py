@@ -2,25 +2,19 @@
 # System/Library/Frameworks/CoreGraphics.framework
 ##########################################################################
 from ctypes import (
-    cdll,
+    POINTER,
+    Structure,
     c_int,
     c_int32,
     c_size_t,
     c_void_p,
     c_wchar_p,
-    POINTER,
-    Structure,
+    cdll,
     util
 )
 
+from rubicon.objc import CGFloat, CGPoint, CGRect, CGSize
 from rubicon.objc.types import register_preferred_encoding
-from rubicon.objc import (
-    CGFloat,
-    CGPoint,
-    CGRect,
-    CGSize
-)
-
 
 ######################################################################
 core_graphics = cdll.LoadLibrary(util.find_library('CoreGraphics'))

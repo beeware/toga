@@ -1,31 +1,30 @@
 from rubicon.objc import (
     CGFloat,
-    CGSize,
     CGRect,
+    CGSize,
     NSMutableDictionary,
     NSPoint,
-    objc_method,
+    objc_method
 )
-
 from travertino.size import at_least
 
+from toga_iOS.colors import native_color
 from toga_iOS.libs import (
-    core_graphics,
     CGPathDrawingMode,
     CGRectMake,
-    kCGPathStroke,
-    kCGPathEOFill,
-    kCGPathFill,
     NSAttributedString,
     NSFontAttributeName,
     NSForegroundColorAttributeName,
     NSStrokeColorAttributeName,
     NSStrokeWidthAttributeName,
-    uikit,
     UIColor,
     UIView,
+    core_graphics,
+    kCGPathEOFill,
+    kCGPathFill,
+    kCGPathStroke,
+    uikit
 )
-from toga_iOS.colors import native_color
 from toga_iOS.widgets.base import Widget
 
 
