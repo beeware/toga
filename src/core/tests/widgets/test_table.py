@@ -116,6 +116,14 @@ class TableTests(TestCase):
 
         self.assertEqual(self.table.headings, expecting_headings)
 
+    def test_add_columns_accessor_in_use(self):
+
+        new_heading = 'Heading 4'
+        accessor = 'heading_2'
+
+        with self.assertRaises(ValueError):
+            self.table.add_column(new_heading, accessor)
+
     def test_remove_column_by_accessor(self):
         remove = 'heading_2'
         dummy_data = [
