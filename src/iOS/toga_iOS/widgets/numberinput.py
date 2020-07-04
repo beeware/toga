@@ -1,13 +1,7 @@
 from ctypes import c_int
 from decimal import Decimal
 
-from rubicon.objc import (
-    CGSize,
-    SEL,
-    NSRange,
-    objc_method,
-    send_message
-)
+from rubicon.objc import SEL, CGSize, NSRange, objc_method, send_message
 from travertino.size import at_least
 
 from toga_iOS.libs import (

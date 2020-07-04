@@ -1,9 +1,10 @@
 from contextlib import contextmanager
-from math import pi
 from enum import Enum
+from math import pi
 
-from toga.colors import color as parse_color, BLACK
-from toga.fonts import Font, SYSTEM
+from toga.colors import BLACK
+from toga.colors import color as parse_color
+from toga.fonts import SYSTEM, Font
 from toga.handlers import wrapped_handler
 
 from .base import Widget
@@ -955,16 +956,19 @@ class Ellipse:
         self.anticlockwise = anticlockwise
 
     def __repr__(self):
-        return "{}(x={}, y={}, radiusx={}, radiusy={}, rotation={}, startangle={}, endangle={}, anticlockwise={})".format(
-            self.__class__.__name__,
-            self.x,
-            self.y,
-            self.radiusx,
-            self.radiusy,
-            self.rotation,
-            self.startangle,
-            self.endangle,
-            self.anticlockwise,
+        return (
+            "{}(x={}, y={}, radiusx={}, radiusy={}, "
+            "rotation={}, startangle={}, endangle={}, anticlockwise={})".format(
+                self.__class__.__name__,
+                self.x,
+                self.y,
+                self.radiusx,
+                self.radiusy,
+                self.rotation,
+                self.startangle,
+                self.endangle,
+                self.anticlockwise,
+            )
         )
 
     def _draw(self, impl, *args, **kwargs):

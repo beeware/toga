@@ -1,5 +1,5 @@
-from .base import Widget
 from .. import impl
+from .base import Widget
 
 
 class Label(Widget):
@@ -19,4 +19,3 @@ class Label(Widget):
 
     def rehint(self):
         pass
-

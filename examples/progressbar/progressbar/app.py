@@ -1,6 +1,6 @@
 import toga
+from toga.constants import COLUMN, ROW
 from toga.style import Pack
-from toga.constants import ROW, COLUMN
 
 MAX_PROGRESSBAR_VALUE = 100
 

@@ -1,11 +1,4 @@
-from rubicon.objc import at
-
-from toga_cocoa.libs import (
-    NSObject,
-    objc_method,
-    NSTabView,
-    NSTabViewItem
-)
+from toga_cocoa.libs import NSObject, NSTabView, NSTabViewItem, at, objc_method
 from toga_cocoa.window import CocoaViewport
 
 from .base import Widget

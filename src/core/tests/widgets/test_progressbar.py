@@ -2,7 +2,6 @@ import toga
 import toga_dummy
 from toga_dummy.utils import TestCase
 
-
 # ### ProgressBar truth table
 #
 # | max     | running   | Behavior                |

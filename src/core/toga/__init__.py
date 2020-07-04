@@ -1,26 +1,22 @@
 from .app import App, DocumentApp, MainWindow
-from .command import Command, CommandSet, Group, GROUP_BREAK, SECTION_BREAK
-from .documents import Document
-from .keys import Key
-
 # Resources
 from .colors import hsl, hsla, rgb, rgba
+from .command import GROUP_BREAK, SECTION_BREAK, Command, CommandSet, Group
+from .documents import Document
 from .fonts import Font
 from .icons import Icon
 from .images import Image
-
+from .keys import Key
+from .widgets.activityindicator import ActivityIndicator
 # Widgets
 from .widgets.base import Widget
-
-from .widgets.activityindicator import ActivityIndicator
 from .widgets.box import Box
 from .widgets.button import Button
 from .widgets.canvas import Canvas
+from .widgets.datepicker import DatePicker
 from .widgets.detailedlist import DetailedList
 from .widgets.divider import Divider
 from .widgets.imageview import ImageView
-from .widgets.datepicker import DatePicker
-from .widgets.timepicker import TimePicker
 from .widgets.label import Label
 from .widgets.multilinetextinput import MultilineTextInput
 from .widgets.numberinput import NumberInput
@@ -34,10 +30,10 @@ from .widgets.splitcontainer import SplitContainer
 from .widgets.switch import Switch
 from .widgets.table import Table
 from .widgets.textinput import TextInput
+from .widgets.timepicker import TimePicker
 from .widgets.tree import Tree
 from .widgets.webview import WebView
 from .window import Window
-
 
 __all__ = [
     # Applications

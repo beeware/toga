@@ -1,15 +1,16 @@
-from toga.constants import LEFT, RIGHT, CENTER, JUSTIFY
 from travertino.size import at_least
 
-from .base import Widget
+from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT
+
 from ..libs.android_widgets import (
     ArrayAdapter,
     Gravity,
     OnItemSelectedListener,
     R__layout,
     Spinner,
-    View__MeasureSpec,
+    View__MeasureSpec
 )
+from .base import Widget
 
 
 class TogaOnItemSelectedListener(OnItemSelectedListener):

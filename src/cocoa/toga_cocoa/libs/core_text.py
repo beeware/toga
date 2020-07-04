@@ -1,10 +1,9 @@
 ##########################################################################
 # System/Library/Frameworks/CoreText.framework
 ##########################################################################
-from ctypes import *
-from ctypes import util
+from ctypes import POINTER, c_bool, c_double, c_uint32, c_void_p, cdll, util
 
-from rubicon.objc import *
+from rubicon.objc import CFIndex, CGFloat, CGGlyph, CGRect, CGSize, UniChar
 
 ######################################################################
 core_text = cdll.LoadLibrary(util.find_library('CoreText'))
@@ -23,10 +22,14 @@ CTFontSymbolicTraits = c_uint32
 ######################################################################
 # CTFont.h
 core_text.CTFontGetBoundingRectsForGlyphs.restype = CGRect
-core_text.CTFontGetBoundingRectsForGlyphs.argtypes = [c_void_p, CTFontOrientation, POINTER(CGGlyph), POINTER(CGRect), CFIndex]
+core_text.CTFontGetBoundingRectsForGlyphs.argtypes = [
+    c_void_p, CTFontOrientation, POINTER(CGGlyph), POINTER(CGRect), CFIndex
+]
 
 core_text.CTFontGetAdvancesForGlyphs.restype = c_double
-core_text.CTFontGetAdvancesForGlyphs.argtypes = [c_void_p, CTFontOrientation, POINTER(CGGlyph), POINTER(CGSize), CFIndex]
+core_text.CTFontGetAdvancesForGlyphs.argtypes = [
+    c_void_p, CTFontOrientation, POINTER(CGGlyph), POINTER(CGSize), CFIndex
+]
 
 core_text.CTFontGetAscent.restype = CGFloat
 core_text.CTFontGetAscent.argtypes = [c_void_p]

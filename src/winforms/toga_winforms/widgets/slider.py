@@ -4,7 +4,6 @@ from toga_winforms.libs import WinForms
 
 from .base import Widget
 
-
 # This is a patch related to python: "None" is a saved word in python,
 # which means we cannot use WinForms.TickStyle.None directly. Therefore, we use getattr
 NONE_TICK_STYLE = getattr(WinForms.TickStyle, "None")

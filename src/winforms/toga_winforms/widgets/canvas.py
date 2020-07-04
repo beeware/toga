@@ -3,22 +3,23 @@ import math
 from travertino.colors import WHITE
 
 from toga.widgets.canvas import Context, FillRule
-from .box import Box
 from toga_winforms.colors import native_color
 from toga_winforms.libs import (
     Drawing2D,
     FillMode,
-    Pen,
-    SolidBrush,
     GraphicsPath,
     Matrix,
-    RectangleF,
+    Pen,
     PointF,
+    RectangleF,
+    SolidBrush,
     StringFormat,
-    win_font_family,
-    WinForms
+    WinForms,
+    win_font_family
 )
+
 from ..libs.fonts import win_font_style
+from .box import Box
 
 
 class WinformContext(Context):

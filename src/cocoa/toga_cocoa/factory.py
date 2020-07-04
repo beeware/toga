@@ -1,13 +1,11 @@
 from .app import App, DocumentApp, MainWindow
 from .command import Command
 from .documents import Document
-
 # Resources
 from .fonts import Font
 from .icons import Icon
 from .images import Image
 from .paths import paths
-
 # Widgets
 from .widgets.activityindicator import ActivityIndicator
 from .widgets.box import Box

@@ -1,7 +1,7 @@
-from rubicon.objc import objc_method, SEL, CGSize
+from rubicon.objc import SEL, CGSize, objc_method
 from travertino.size import at_least
 
-from toga_iOS.libs import UISlider, UIControlEventValueChanged
+from toga_iOS.libs import UIControlEventValueChanged, UISlider
 from toga_iOS.widgets.base import Widget
 
 

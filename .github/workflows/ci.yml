@@ -13,7 +13,7 @@ jobs:
       max-parallel: 4
       matrix:
         task:
-        # - flake8
+        - flake8
         # - towncrier-check
         - docs
         - package
@@ -32,35 +32,10 @@ jobs:
       run: |
         tox -e ${{ matrix.task }}
 
-  beefore-legacy:
-    name: Pre-test checks
-    runs-on: ubuntu-latest
-    strategy:
-      max-parallel: 4
-      matrix:
-        task: ['pycodestyle']
-    steps:
-    - uses: actions/checkout@v1
-    - name: Set up Python 3.5
-      uses: actions/setup-python@v1
-      with:
-        python-version: 3.5
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install --upgrade setuptools
-        python -m pip install beefore
-    - name: Run Beefore checks
-      env:
-        GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        beefore --username github-actions --repository ${{ github.repository }} --pull-request ${{ github.event.number }} --commit ${{ github.event.pull_request.head.sha }} ${{ matrix.task }} .
-
   smoke:
     name: Smoke test
     needs:
     - beefore
-    - beefore-legacy
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1

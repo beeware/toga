@@ -1,12 +1,9 @@
 from .app import App, MainWindow
-# from .command import Command
-
 from .colors import native_color
 from .fonts import Font
 from .icons import Icon
 from .images import Image
 from .paths import paths
-
 from .widgets.box import Box
 from .widgets.button import Button
 from .widgets.canvas import Canvas
@@ -28,6 +25,8 @@ from .widgets.textinput import TextInput
 # from .widgets.tree import Tree
 from .widgets.webview import WebView
 from .window import Window
+
+# from .command import Command
 
 
 def not_implemented(feature):

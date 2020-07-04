@@ -1,5 +1,3 @@
-from toga import Icon
-
 
 class Command:
     """ Command `native` property is a list of native widgets associated with the command.

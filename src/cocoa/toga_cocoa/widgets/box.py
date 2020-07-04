@@ -1,8 +1,7 @@
 from travertino.size import at_least
-from rubicon.objc import objc_method
 
-from toga_cocoa.libs import NSColor, NSView
 from toga_cocoa.colors import native_color
+from toga_cocoa.libs import NSColor, NSView, objc_method
 
 from .base import Widget
 

@@ -1,23 +1,24 @@
-from rubicon.objc import objc_method, at, send_super
 from travertino.size import at_least
 
-from toga_cocoa.libs import (
-    NSBezelBorder,
-    NSOutlineView,
-    NSScrollView,
-    NSTableColumn,
-    NSTableViewColumnAutoresizingStyle,
-    NSIndexSet,
-    NSTableViewAnimation,
-    CGRectMake,
-    # NSSortDescriptor,
-)
 import toga
 from toga.keys import Key
 from toga_cocoa.keys import toga_key
+from toga_cocoa.libs import (  # NSSortDescriptor,
+    CGRectMake,
+    NSBezelBorder,
+    NSIndexSet,
+    NSOutlineView,
+    NSScrollView,
+    NSTableColumn,
+    NSTableViewAnimation,
+    NSTableViewColumnAutoresizingStyle,
+    at,
+    objc_method,
+    send_super
+)
 from toga_cocoa.widgets.base import Widget
-from toga_cocoa.widgets.internal.data import TogaData
 from toga_cocoa.widgets.internal.cells import TogaIconView
+from toga_cocoa.widgets.internal.data import TogaData
 
 
 class TogaTree(NSOutlineView):

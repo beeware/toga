@@ -1,14 +1,14 @@
-from rubicon.objc import objc_method, SEL
 from travertino.size import at_least
 
 from toga_cocoa.libs import (
+    SEL,
     NSBezelBorder,
     NSMenu,
-    NSTableViewColumnAutoresizingStyle,
     NSTableColumn,
     NSTableView,
+    NSTableViewColumnAutoresizingStyle,
+    objc_method
 )
-
 from toga_cocoa.widgets.base import Widget
 from toga_cocoa.widgets.internal.cells import TogaDetailedCell
 from toga_cocoa.widgets.internal.data import TogaData

@@ -36,7 +36,7 @@ class SliderTests(TestCase):
         self.assertEqual(self.slider.enabled, self.enabled)
 
     def test_get_value_invokes_impl_method(self):
-        slider_value = self.slider.value
+        self.slider.value
         self.assertValueGet(self.slider, 'value')
 
     def test_set_value_invokes_impl_method(self):

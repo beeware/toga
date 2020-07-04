@@ -4,16 +4,31 @@ import os
 import sys
 from urllib.parse import unquote, urlparse
 
-import toga
-from rubicon.objc import (SEL, NSMutableArray, NSMutableDictionary, NSObject,
-                          objc_method)
 from rubicon.objc.eventloop import CocoaLifecycle, EventLoopPolicy
+
+import toga
 from toga.handlers import wrapped_handler
 
 from .keys import cocoa_key
-from .libs import (NSURL, NSApplication, NSApplicationActivationPolicyRegular,
-                   NSBundle, NSCursor, NSDocumentController, NSMenu,
-                   NSMenuItem, NSNumber, NSOpenPanel, NSScreen, NSString)
+from .libs import (
+    NSURL,
+    SEL,
+    NSApplication,
+    NSApplicationActivationPolicyRegular,
+    NSBundle,
+    NSCursor,
+    NSDocumentController,
+    NSMenu,
+    NSMenuItem,
+    NSMutableArray,
+    NSMutableDictionary,
+    NSNumber,
+    NSObject,
+    NSOpenPanel,
+    NSScreen,
+    NSString,
+    objc_method
+)
 from .window import Window
 
 

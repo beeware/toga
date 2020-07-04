@@ -1,6 +1,5 @@
-from ..libs import Gtk, GLib
+from ..libs import GLib, Gtk
 from .base import Widget
-
 
 PROGRESSBAR_TICK_INTERVAL = 100  # ms per tick
 

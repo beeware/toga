@@ -1,7 +1,7 @@
 ##########################################################################
 # System/Library/Frameworks/Foundation.framework
 ##########################################################################
-from ctypes import cdll, c_bool, util
+from ctypes import c_bool, cdll, util
 
 from rubicon.objc import NSPoint, NSRect, ObjCClass
 

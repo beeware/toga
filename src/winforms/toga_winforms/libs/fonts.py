@@ -1,15 +1,22 @@
-from .winforms import ContentAlignment, FontFamily, WinForms, SystemFonts, Text, FontStyle
-
-from toga.constants import LEFT, RIGHT, CENTER, JUSTIFY
+from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT
 from toga.fonts import (
-    MESSAGE,
-    SYSTEM,
-    SERIF,
-    SANS_SERIF,
-    SYSTEM_DEFAULT_FONT_SIZE,
     CURSIVE,
     FANTASY,
+    MESSAGE,
     MONOSPACE,
+    SANS_SERIF,
+    SERIF,
+    SYSTEM,
+    SYSTEM_DEFAULT_FONT_SIZE
+)
+
+from .winforms import (
+    ContentAlignment,
+    FontFamily,
+    FontStyle,
+    SystemFonts,
+    Text,
+    WinForms
 )
 
 

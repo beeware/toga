@@ -1,19 +1,20 @@
-from rubicon.objc import at
 from travertino.size import at_least
 
 import toga
 from toga_cocoa.libs import (
-    objc_method,
+    CGRectMake,
     NSBezelBorder,
+    NSIndexSet,
+    NSRange,
     NSScrollView,
     NSTableColumn,
     NSTableView,
-    NSIndexSet,
-    NSTableViewColumnAutoresizingStyle,
     NSTableViewAnimation,
-    NSRange,
-    CGRectMake
+    NSTableViewColumnAutoresizingStyle,
+    at,
+    objc_method
 )
+
 from .base import Widget
 from .internal.cells import TogaIconView
 

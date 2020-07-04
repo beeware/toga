@@ -1,12 +1,9 @@
-from toga.constants import LEFT, RIGHT, CENTER, JUSTIFY
 from travertino.size import at_least
 
+from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT
+
+from ..libs.android_widgets import Gravity, TextView, View__MeasureSpec
 from .base import Widget
-from ..libs.android_widgets import (
-    Gravity,
-    TextView,
-    View__MeasureSpec,
-)
 
 
 class Label(Widget):

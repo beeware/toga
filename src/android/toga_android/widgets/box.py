@@ -1,6 +1,6 @@
-from .base import Widget
 from ..libs.activity import MainActivity
 from ..libs.android_widgets import RelativeLayout, RelativeLayout__LayoutParams
+from .base import Widget
 
 
 class Box(Widget):

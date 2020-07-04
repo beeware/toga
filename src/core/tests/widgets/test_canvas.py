@@ -1,10 +1,9 @@
-from math import pi, cos, sin
+from math import cos, pi, sin
 
 import toga
-from toga.colors import REBECCAPURPLE, BLANCHEDALMOND, CRIMSON, rgb
-from toga.fonts import SANS_SERIF, SERIF
-
 import toga_dummy
+from toga.colors import BLANCHEDALMOND, CRIMSON, REBECCAPURPLE, rgb
+from toga.fonts import SANS_SERIF, SERIF
 from toga.widgets.canvas import FillRule
 from toga_dummy.utils import TestCase
 

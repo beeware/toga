@@ -1,4 +1,4 @@
-from ..utils import not_required_on, LoggedObject
+from ..utils import LoggedObject, not_required_on
 
 
 class Widget(LoggedObject):
@@ -26,7 +26,9 @@ class Widget(LoggedObject):
     def set_enabled(self, value):
         self._action('set enabled', value=value)
 
-    ### APPLICATOR
+    ######################################################################
+    # APPLICATOR
+    ######################################################################
 
     def set_bounds(self, x, y, width, height):
         self._action('set bounds', x=x, y=y, width=width, height=height)
@@ -40,7 +42,9 @@ class Widget(LoggedObject):
     def set_background_color(self, color):
         self._action('set background color', color=color)
 
-    ### INTERFACE
+    ######################################################################
+    # INTERFACE
+    ######################################################################
 
     def add_child(self, child):
         self._action('add child', child=child)

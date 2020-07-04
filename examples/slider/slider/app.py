@@ -1,6 +1,6 @@
 import toga
-from toga.style import Pack
 from toga.constants import COLUMN, ROW
+from toga.style import Pack
 
 MIN_VAL = -5
 MAX_VAL = 15

@@ -1,15 +1,22 @@
 import sys
 from decimal import Decimal, InvalidOperation
 
-from rubicon.objc import objc_method, SEL
 from travertino.size import at_least
 
-import toga
 from toga_cocoa.libs import (
-    NSTextAlignment, NSTextFieldSquareBezel, NSTextField, NSStepper,
-    NSLayoutAttributeTop, NSLayoutAttributeBottom,
-    NSLayoutAttributeLeft, NSLayoutAttributeRight,
-    NSLayoutAttributeCenterY, NSLayoutRelationEqual, NSLayoutConstraint
+    SEL,
+    NSLayoutAttributeBottom,
+    NSLayoutAttributeCenterY,
+    NSLayoutAttributeLeft,
+    NSLayoutAttributeRight,
+    NSLayoutAttributeTop,
+    NSLayoutConstraint,
+    NSLayoutRelationEqual,
+    NSStepper,
+    NSTextAlignment,
+    NSTextField,
+    NSTextFieldSquareBezel,
+    objc_method
 )
 
 from .base import Widget

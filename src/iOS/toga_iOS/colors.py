@@ -1,6 +1,5 @@
 from toga_iOS.libs import UIColor
 
-
 CACHE = {}
 
 

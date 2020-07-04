@@ -1,7 +1,7 @@
 from travertino.size import at_least
 
-from .base import Widget
 from ..libs import android_widgets
+from .base import Widget
 
 
 class TogaOnClickListener(android_widgets.OnClickListener):

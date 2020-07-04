@@ -1,7 +1,12 @@
-from rubicon.objc import objc_method, CGSize, SEL
+from rubicon.objc import SEL, CGSize, objc_method
 from travertino.size import at_least
 
-from toga_iOS.libs import NSTextAlignment, UITextField, UITextBorderStyle, UIControlEventEditingChanged
+from toga_iOS.libs import (
+    NSTextAlignment,
+    UIControlEventEditingChanged,
+    UITextBorderStyle,
+    UITextField
+)
 from toga_iOS.widgets.base import Widget
 
 

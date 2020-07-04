@@ -1,4 +1,4 @@
-from rubicon.objc import Block, SEL, objc_method
+from rubicon.objc import SEL, Block, objc_method
 from rubicon.objc.runtime import objc_id
 
 from toga_iOS.libs import (

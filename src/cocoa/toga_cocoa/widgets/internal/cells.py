@@ -1,13 +1,32 @@
-
 from toga_cocoa.libs import (
-    ObjCInstance, objc_method, send_super,
-    NSTableCellView, NSImageView, NSTextField, NSTextFieldCell,
-    NSViewMaxYMargin, NSViewMinYMargin, NSMutableDictionary,
-    NSGraphicsContext, NSAffineTransform, NSImageInterpolationHigh,
-    NSCompositingOperationSourceOver, NSColor, NSBezierPath,
-    NSForegroundColorAttributeName, NSFontAttributeName, NSFont,
-    NSImageScaleProportionallyDown, NSImageAlignment,
-    NSSize, NSPoint, NSRect, NSMakePoint, NSMakeRect, CGRect, at
+    CGRect,
+    NSAffineTransform,
+    NSBezierPath,
+    NSColor,
+    NSCompositingOperationSourceOver,
+    NSFont,
+    NSFontAttributeName,
+    NSForegroundColorAttributeName,
+    NSGraphicsContext,
+    NSImageAlignment,
+    NSImageInterpolationHigh,
+    NSImageScaleProportionallyDown,
+    NSImageView,
+    NSMakePoint,
+    NSMakeRect,
+    NSMutableDictionary,
+    NSPoint,
+    NSRect,
+    NSSize,
+    NSTableCellView,
+    NSTextField,
+    NSTextFieldCell,
+    NSViewMaxYMargin,
+    NSViewMinYMargin,
+    ObjCInstance,
+    at,
+    objc_method,
+    send_super
 )
 
 
