@@ -28,6 +28,12 @@ function bump {
         sed "s/toga==.*/toga==$2/g" temp > setup.cfg
         git add setup.cfg
 
+        mv pyproject.toml temp
+        sed "s/==.*\"/==$2\"/g" temp > pyproject.toml
+        mv pyproject.toml temp
+        sed "s/^version = \".*\"/version = \"$2\"/g" temp > pyproject.toml
+        git add pyproject.toml
+
     else
         if [ "$1" = "core" ]; then
             pushd src/$1/toga
