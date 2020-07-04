@@ -35,7 +35,10 @@ class TogaBox(Gtk.Fixed):
         return min_height, height
 
     def do_size_allocate(self, allocation):
-        # print(self._impl, "Container layout", allocation.width, 'x', allocation.height, ' @ ', allocation.x, 'x', allocation.y)
+        # print(self._impl, "Container layout",
+        #     allocation.width, 'x', allocation.height,
+        #     ' @ ', allocation.x, 'x', allocation.y
+        # )
         if self._impl.viewport is not None:
             self.set_allocation(allocation)
             self.interface.refresh()

@@ -171,8 +171,8 @@ class TestGtkTree(unittest.TestCase):
 
     def test_node_persistence_for_replacement(self):
         self.tree.data = []
-        a = self.tree.data.insert(None, 0, one="A1", two="A2")
-        b = self.tree.data.insert(None, 0, one="B1", two="B2")
+        self.tree.data.insert(None, 0, one="A1", two="A2")
+        self.tree.data.insert(None, 0, one="B1", two="B2")
 
         # B should now precede A
         # test passes if A "knows" it has moved to index 1
@@ -183,7 +183,7 @@ class TestGtkTree(unittest.TestCase):
     def test_node_persistence_for_deletion(self):
         self.tree.data = []
         a = self.tree.data.append(None, one="A1", two="A2")
-        b = self.tree.data.append(None, one="B1", two="B2")
+        self.tree.data.append(None, one="B1", two="B2")
 
         self.tree.data.remove(a)
 
@@ -193,7 +193,7 @@ class TestGtkTree(unittest.TestCase):
     def test_on_select_root_node(self):
         # Insert dummy nodes
         self.tree.data = []
-        a = self.tree.data.append(None, one="A1", two="A2")
+        self.tree.data.append(None, one="A1", two="A2")
         b = self.tree.data.append(None, one="B1", two="B2")
 
         # Create a flag
@@ -248,7 +248,7 @@ class TestGtkTree(unittest.TestCase):
     def test_on_select_deleted_node(self):
         # Insert two nodes
         self.tree.data = []
-        a = self.tree.data.append(None, one="A1", two="A2")
+        self.tree.data.append(None, one="A1", two="A2")
         b = self.tree.data.append(None, one="B1", two="B2")
 
         # Create a flag

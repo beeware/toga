@@ -1,10 +1,4 @@
-from toga.constants import *
-
-
-try:
-    text = unicode
-except NameError:
-    text = str
+from toga.constants import LEFT, RIGHT, CENTER, JUSTIFY
 
 
 def gtk_alignment(alignment):
