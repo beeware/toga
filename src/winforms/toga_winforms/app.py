@@ -6,7 +6,7 @@ import traceback
 import toga
 from toga.handlers import wrapped_handler
 
-from .libs import Threading, WinForms, user32, win_version, shcore
+from .libs import Threading, WinForms, shcore, user32, win_version
 from .libs.proactor import WinformsProactorEventLoop
 from .window import Window
 

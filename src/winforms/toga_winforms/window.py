@@ -1,6 +1,6 @@
 from toga import GROUP_BREAK, SECTION_BREAK
 
-from .libs import WinForms, Size
+from .libs import Size, WinForms
 
 
 class WinFormsViewport:

@@ -1,8 +1,9 @@
 from ctypes import c_uint
 from ctypes.wintypes import HWND, WPARAM
 
-from toga_winforms.libs import WinForms, HorizontalTextAlignment, user32
 from travertino.size import at_least
+
+from toga_winforms.libs import HorizontalTextAlignment, WinForms, user32
 
 from .base import Widget
 

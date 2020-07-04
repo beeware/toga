@@ -129,12 +129,6 @@ class Table(Widget):
     def scroll_to_row(self, row):
         self.native.EnsureVisible(row)
 
-    def add_column(self, heading, accessor):
-        self.interface.factory.not_implemented('Table.add_column()')
-
-    def remove_column(self, accessor):
-        self.interface.factory.not_implemented('Table.remove_column()')
-
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
         self.interface.intrinsic.height = at_least(self.interface.MIN_HEIGHT)

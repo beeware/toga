@@ -1,6 +1,6 @@
 from travertino.size import at_least
 
-from toga_winforms.libs import WinForms, TextAlignment
+from toga_winforms.libs import TextAlignment, WinForms
 
 from .base import Widget
 

@@ -1,6 +1,12 @@
-from .libs import WinFont, WinForms
-from .libs import FontFamily, FontStyle, Single, win_font_family
-from .libs.fonts import win_font_style, win_font_size
+from .libs import (
+    FontFamily,
+    FontStyle,
+    Single,
+    WinFont,
+    WinForms,
+    win_font_family
+)
+from .libs.fonts import win_font_size, win_font_style
 
 _FONT_CACHE = {}
 

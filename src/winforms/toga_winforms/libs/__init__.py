@@ -1,3 +1,8 @@
+from .fonts import (  # noqa: F401
+    HorizontalTextAlignment,
+    TextAlignment,
+    win_font_family
+)
 from .winforms import (  # noqa: F401
     Bitmap,
     Color,
@@ -28,9 +33,4 @@ from .winforms import (  # noqa: F401
     shcore,
     user32,
     win_version
-)
-from .fonts import (
-    HorizontalTextAlignment,
-    TextAlignment,
-    win_font_family
 )
