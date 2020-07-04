@@ -1,6 +1,5 @@
 from toga_cocoa.libs import NSColor
 
-
 CACHE = {}
 
 

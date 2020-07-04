@@ -1,8 +1,7 @@
 from travertino.size import at_least
-from rubicon.objc import objc_method
 
 from toga_cocoa.keys import toga_key
-from toga_cocoa.libs import NSURL, NSURLRequest, WebView
+from toga_cocoa.libs import NSURL, NSURLRequest, WebView, objc_method
 
 from .base import Widget
 

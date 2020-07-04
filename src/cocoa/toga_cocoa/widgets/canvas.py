@@ -1,13 +1,10 @@
-from rubicon.objc import CGFloat, SEL
-
 from toga.widgets.canvas import FillRule
+from toga_cocoa.colors import native_color
 from toga_cocoa.libs import (
-    core_graphics,
+    SEL,
+    CGFloat,
     CGPathDrawingMode,
     CGRectMake,
-    kCGPathStroke,
-    kCGPathEOFill,
-    kCGPathFill,
     NSAttributedString,
     NSFontAttributeName,
     NSForegroundColorAttributeName,
@@ -15,14 +12,17 @@ from toga_cocoa.libs import (
     NSMutableDictionary,
     NSNotificationCenter,
     NSPoint,
+    NSRect,
     NSStrokeColorAttributeName,
     NSStrokeWidthAttributeName,
-    NSRect,
     NSView,
     NSViewFrameDidChangeNotification,
-    objc_method,
+    core_graphics,
+    kCGPathEOFill,
+    kCGPathFill,
+    kCGPathStroke,
+    objc_method
 )
-from toga_cocoa.colors import native_color
 
 from .base import Widget
 

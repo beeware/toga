@@ -1,15 +1,15 @@
 from .libs import (
     NSAlert,
-    NSAlertStyle,
     NSAlertFirstButtonReturn,
-    NSScrollView,
-    NSMakeRect,
-    NSBezelBorder,
-    NSTextView,
-    NSSavePanel,
+    NSAlertStyle,
     NSArray,
+    NSBezelBorder,
     NSFileHandlingPanelOKButton,
-    NSOpenPanel
+    NSMakeRect,
+    NSOpenPanel,
+    NSSavePanel,
+    NSScrollView,
+    NSTextView
 )
 
 

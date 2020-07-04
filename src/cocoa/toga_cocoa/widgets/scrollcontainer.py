@@ -1,6 +1,6 @@
 from travertino.size import at_least
 
-from toga_cocoa.libs import *
+from toga_cocoa.libs import NSColor, NSMakeRect, NSNoBorder, NSScrollView
 from toga_cocoa.window import CocoaViewport
 
 from .base import Widget

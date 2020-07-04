@@ -1,7 +1,6 @@
-from rubicon.objc import objc_method, SEL
 from travertino.size import at_least
 
-from toga_cocoa.libs import NSPopUpButton
+from toga_cocoa.libs import SEL, NSPopUpButton, objc_method
 
 from .base import Widget
 

@@ -1,7 +1,10 @@
 from .libs import (
-    NSLayoutAttributeTop, NSLayoutAttributeLeft,
-    NSLayoutAttributeRight, NSLayoutAttributeBottom,
-    NSLayoutRelationEqual, NSLayoutConstraint
+    NSLayoutAttributeBottom,
+    NSLayoutAttributeLeft,
+    NSLayoutAttributeRight,
+    NSLayoutAttributeTop,
+    NSLayoutConstraint,
+    NSLayoutRelationEqual
 )
 
 

@@ -1,16 +1,21 @@
 from toga.fonts import (
-    MESSAGE,
-    NORMAL, BOLD,
-    SYSTEM,
-    SERIF,
-    SANS_SERIF,
-    SYSTEM_DEFAULT_FONT_SIZE,
+    BOLD,
     CURSIVE,
     FANTASY,
+    MESSAGE,
     MONOSPACE,
+    NORMAL,
+    SANS_SERIF,
+    SERIF,
+    SYSTEM,
+    SYSTEM_DEFAULT_FONT_SIZE
 )
-
-from toga_cocoa.libs import NSAttributedString, NSFont, NSFontAttributeName, NSMutableDictionary
+from toga_cocoa.libs import (
+    NSAttributedString,
+    NSFont,
+    NSFontAttributeName,
+    NSMutableDictionary
+)
 
 _FONT_CACHE = {}
 

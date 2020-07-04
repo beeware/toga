@@ -1,13 +1,11 @@
 from toga import Key
-
 from toga_cocoa.libs import (
     NSEventModifierFlagCapsLock,
-    NSEventModifierFlagShift,
+    NSEventModifierFlagCommand,
     NSEventModifierFlagControl,
     NSEventModifierFlagOption,
-    NSEventModifierFlagCommand,
+    NSEventModifierFlagShift
 )
-
 
 ######################################################################
 # Utilities to convert Cocoa constants to Toga ones

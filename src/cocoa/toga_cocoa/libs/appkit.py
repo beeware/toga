@@ -1,15 +1,28 @@
 ##########################################################################
 # System/Library/Frameworks/AppKit.framework
 ##########################################################################
-from ctypes import cdll, c_void_p, util, Structure
+from ctypes import Structure, c_void_p, cdll, util
 from enum import Enum
 
-from rubicon.objc import objc_const, CGFloat, ObjCClass
-from toga.constants import LEFT, RIGHT, CENTER, JUSTIFY
+from rubicon.objc import CGFloat, ObjCClass, objc_const
 from travertino.colors import (
-    BLACK, BLUE, BROWN, CYAN, DARKGRAY, GRAY, GREEN, LIGHTGRAY,
-    MAGENTA, ORANGE, PURPLE, RED, WHITE, YELLOW
+    BLACK,
+    BLUE,
+    BROWN,
+    CYAN,
+    DARKGRAY,
+    GRAY,
+    GREEN,
+    LIGHTGRAY,
+    MAGENTA,
+    ORANGE,
+    PURPLE,
+    RED,
+    WHITE,
+    YELLOW
 )
+
+from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT
 
 ######################################################################
 appkit = cdll.LoadLibrary(util.find_library('AppKit'))
@@ -235,6 +248,7 @@ def NSColorUsingColorName(background_color):
         WHITE: NSColor.whiteColor,
         YELLOW: NSColor.yellowColor,
     }[background_color]
+
 
 ######################################################################
 # NSCursor.h
@@ -597,6 +611,7 @@ NSCenterTextAlignment = 2
 NSJustifiedTextAlignment = 3
 NSNaturalTextAlignment = 4
 
+
 def NSTextAlignment(alignment):
     return {
         LEFT: NSLeftTextAlignment,
@@ -604,6 +619,7 @@ def NSTextAlignment(alignment):
         CENTER: NSCenterTextAlignment,
         JUSTIFY: NSJustifiedTextAlignment,
     }[alignment]
+
 
 ######################################################################
 # NSTextField.h
