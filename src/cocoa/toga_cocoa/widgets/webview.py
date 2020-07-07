@@ -2,6 +2,7 @@ from travertino.size import at_least
 
 from toga_cocoa.keys import toga_key
 from toga_cocoa.libs import NSURL, NSURLRequest, WKWebView
+from rubicon.objc import objc_method
 
 from .base import Widget
 
