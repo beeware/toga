@@ -1,3 +1,6 @@
+from asyncio import Semaphore
+from ctypes import c_void_p
+
 from travertino.size import at_least
 
 from toga_cocoa.keys import toga_key
@@ -71,18 +74,32 @@ class WebView(Widget):
         """
         Evaluate a JavaScript expression.
 
-        **This method is asynchronous**. It will return when the expression
+        **This method is asynchronous**. It will return when the expression has been
+        evaluated and a result is available.
 
         :param javascript: The javascript expression to evaluate
         :type  javascript: ``str``
         """
-        return self.native.evaluateJavaScript(javascript, completionHandler=None)
+
+        class JSResult:
+            result = None
+            result_semaphore = Semaphore(0)
+
+        def completion_handler(res: int, error: c_void_p) -> None:
+            if not error:
+                JSResult.result = res
+            JSResult.result_semaphore.release()
+
+        self.native.evaluateJavaScript(javascript, completionHandler=completion_handler)
+
+        async with JSResult.result_semaphore:
+            return JSResult.result
 
     def invoke_javascript(self, javascript):
         """
         Invoke a block of javascript.
 
-        :param javascript: The javascript e
+        :param javascript: The javascript expression to evoke
         """
         self.native.evaluateJavaScript(javascript, completionHandler=None)
 
