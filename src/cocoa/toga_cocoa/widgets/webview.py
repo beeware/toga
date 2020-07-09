@@ -1,4 +1,4 @@
-from asyncio import Semaphore
+from asyncio import get_event_loop
 from ctypes import c_void_p
 
 from travertino.size import at_least
@@ -81,19 +81,20 @@ class WebView(Widget):
         :type  javascript: ``str``
         """
 
-        class JSResult:
-            result = None
-            result_semaphore = Semaphore(0)
+        loop = get_event_loop()
+        future = loop.create_future()
 
         def completion_handler(res: int, error: c_void_p) -> None:
-            if not error:
-                JSResult.result = res
-            JSResult.result_semaphore.release()
+
+            if error:
+                exc = RuntimeError('Error evaluating JavaScript: {}'.format(error))
+                future.set_exception(exc)
+            else:
+                future.set_result(res)
 
         self.native.evaluateJavaScript(javascript, completionHandler=completion_handler)
 
-        async with JSResult.result_semaphore:
-            return JSResult.result
+        return await future
 
     def invoke_javascript(self, javascript):
         """
