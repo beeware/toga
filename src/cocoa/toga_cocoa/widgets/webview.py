@@ -1,11 +1,11 @@
 from asyncio import get_event_loop
-from ctypes import c_void_p
 
 from travertino.size import at_least
 
 from toga_cocoa.keys import toga_key
 from toga_cocoa.libs import NSURL, NSURLRequest, WKWebView
-from rubicon.objc import objc_method
+from rubicon.objc import objc_method, py_from_ns
+from rubicon.objc.runtime import objc_id
 
 from .base import Widget
 
@@ -84,13 +84,14 @@ class WebView(Widget):
         loop = get_event_loop()
         future = loop.create_future()
 
-        def completion_handler(res: int, error: c_void_p) -> None:
+        def completion_handler(res: objc_id, error: objc_id) -> None:
 
             if error:
-                exc = RuntimeError('Error evaluating JavaScript: {}'.format(error))
+                error = py_from_ns(error)
+                exc = RuntimeError(str(error))
                 future.set_exception(exc)
             else:
-                future.set_result(res)
+                future.set_result(py_from_ns(res))
 
         self.native.evaluateJavaScript(javascript, completionHandler=completion_handler)
 
