@@ -204,7 +204,7 @@ class Table(Widget):
                 withAnimation=NSTableViewAnimation.SlideUp
             )
 
-    def clear(self, old_data):
+    def clear(self):
         self._view_for_row.clear()
         self.table.reloadData()
 

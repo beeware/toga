@@ -39,11 +39,10 @@ class SourceTreeModel(GObject.Object, Gtk.TreeModel):
         self.roots = []  # maybe a deque would be more efficient. This can be changed later
         self.index_in_parent = {}
 
-    def clear(self, old_data):
+    def clear(self):
         """
             Called from toga impl widget
         """
-        del old_data  # see: no need for that!
         if self.is_tree:
             self._remove_children_rec([], self.roots)
         else:
@@ -54,7 +53,7 @@ class SourceTreeModel(GObject.Object, Gtk.TreeModel):
     def change_source(self, source):
         """ Called from toga impl widget """
         if self.source:
-            self.clear(self.source)
+            self.clear()
         self.source = source
         self.stamp += 1
 

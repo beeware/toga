@@ -168,8 +168,8 @@ class DetailedList(Widget):
     def remove(self, item, index):
         self.store.remove(item, index)
 
-    def clear(self, old_data):
-        self.store.clear(old_data=old_data)
+    def clear(self):
+        self.store.clear()
 
     def set_on_refresh(self, handler):
         pass

@@ -79,8 +79,8 @@ class Tree(Widget):
     def remove(self, item, index, parent):
         self.store.remove(item, index=index, parent=parent)
 
-    def clear(self, old_data):
-        self.store.clear(old_data=old_data)
+    def clear(self):
+        self.store.clear()
 
     def set_on_select(self, handler):
         # No special handling required

@@ -120,7 +120,7 @@ class Table(Widget):
     def remove(self, item, index):
         self.update_data()
 
-    def clear(self, old_data):
+    def clear(self):
         self.native.Items.Clear()
 
     def set_on_select(self, handler):

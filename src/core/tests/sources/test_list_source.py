@@ -211,7 +211,6 @@ class ListSourceTests(TestCase):
         )
 
         self.assertEqual(len(source), 3)
-        old_data = list(source)
 
         listener = Mock()
         source.add_listener(listener)
@@ -220,7 +219,7 @@ class ListSourceTests(TestCase):
         source.clear()
         self.assertEqual(len(source), 0)
 
-        listener.clear.assert_called_once_with(old_data=old_data)
+        listener.clear.assert_called_once_with()
 
     def test_insert_kwarg(self):
         "You can insert into a list source using kwargs"

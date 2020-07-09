@@ -17,8 +17,8 @@ class Tree(Widget):
     def remove(self, item, index, parent):
         self._action('remove node', item=item, index=index, parent=parent)
 
-    def clear(self, old_data):
-        self._action('clear', old_data=old_data)
+    def clear(self):
+        self._action('clear')
 
     def set_on_select(self, handler):
         self._set_value('on_select', handler)

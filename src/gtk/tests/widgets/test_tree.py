@@ -41,7 +41,7 @@ class TestGtkTree(unittest.TestCase):
 
     def test_change_source(self):
         # Clear the tree directly
-        self.gtk_tree.clear(old_data=[])
+        self.gtk_tree.clear()
 
         # Assign pre-constructed data
         self.tree.data = {

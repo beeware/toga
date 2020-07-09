@@ -114,9 +114,8 @@ class TreeSource(Source):
         return iter(self._roots)
 
     def clear(self):
-        old_data = self._roots
         self._roots = []
-        self._notify('clear', old_data=old_data)
+        self._notify('clear')
 
     def insert(self, parent, index, *values, **named):
         node = self._create_node(dict(zip(self._accessors, values), **named))

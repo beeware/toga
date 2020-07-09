@@ -50,8 +50,8 @@ class Table(Tree):
     def remove(self, item, index):
         super().remove(item, index=index, parent=None)
 
-    def clear(self, old_data):
-        super().clear(old_data=old_data)
+    def clear(self):
+        super().clear()
 
     def set_on_select(self, handler):
         super().set_on_select(handler)

@@ -40,7 +40,7 @@ class TestGtkTable(unittest.TestCase):
 
     def test_change_source(self):
         # Clear the table directly
-        self.gtk_table.clear(old_data=[])
+        self.gtk_table.clear()
 
         # Assign pre-constructed data
         self.table.data = [

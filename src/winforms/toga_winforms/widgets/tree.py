@@ -25,7 +25,7 @@ class Tree(Widget):
     def remove(self, item, index, parent):
         self.interface.factory.not_implemented('Tree.remove()')
 
-    def clear(self, old_data):
+    def clear(self):
         self.interface.factory.not_implemented('Tree.clear()')
 
     def set_on_select(self, handler):

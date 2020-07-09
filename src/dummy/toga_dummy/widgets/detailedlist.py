@@ -17,8 +17,8 @@ class DetailedList(Widget):
     def remove(self, item, index):
         self._action('remove', item=item, index=index)
 
-    def clear(self, old_data):
-        self._action('clear', old_data=old_data)
+    def clear(self):
+        self._action('clear')
 
     def set_on_refresh(self, handler):
         self._set_value('on_refresh', handler)
