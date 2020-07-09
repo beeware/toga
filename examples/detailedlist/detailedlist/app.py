@@ -10,7 +10,8 @@ from .translations import bee_translations
 class ExampleDetailedListApp(toga.App):
     # Detailed list callback functions
     def on_select_handler(self, widget, row, **kwargs):
-        self.label.text = 'You selected row: {} ({})'.format(row.title, row.subtitle) if row is not None else 'No row selected'
+        self.label.text = 'Bee is {} in {}'.format(row.title, row.subtitle) \
+            if row is not None else 'No row selected'
         # work around no selection property in DetailedList as in Tree by keeping the last selected row
         self.selected_row = row
 
