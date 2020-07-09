@@ -50,7 +50,7 @@ class Tree(Widget):
             else:
                 node = None
             self.interface._selection = node
-            self.interface.on_select(None, node=node)
+            self.interface.on_select(self.interface, node=node)
 
     def change_source(self, source):
         # Temporarily disconnecting the TreeStore improves performance for large
