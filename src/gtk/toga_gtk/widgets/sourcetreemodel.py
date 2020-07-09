@@ -37,6 +37,7 @@ class SourceTreeModel(GObject.Object, Gtk.TreeModel):
         # roots is an array of root elements in the data source.
         # they are kept here to support the clear() notification without parameters
         self.roots = []  # maybe a deque would be more efficient. This can be changed later
+        self.index_in_parent = {}
 
     def clear(self, old_data):
         """
@@ -60,15 +61,19 @@ class SourceTreeModel(GObject.Object, Gtk.TreeModel):
     def insert(self, row):
         """ Called from toga impl widget """
         it = self._create_iter(user_data=row)
-        indices = self._get_indices(row)
+        index = self.source.index(row)
         if not self.is_tree or row._parent is None:
-            self.roots.insert(indices[-1], row)
+            self.roots.insert(index, row)
+            parent = self.source
+        else:
+            parent = row._parent
+        self._update_index_in_parent(parent, index)
+        parent_indices = self._get_indices(parent) if parent is not self.source else []
         if self.is_tree and row._parent and len(row._parent) == 1:
             parent_it = self._create_iter(user_data=row._parent)
-            parent_indices = copy.copy(indices[:-1])
             parent_p = Gtk.TreePath.new_from_indices(parent_indices)
             self.row_has_child_toggled(parent_p, parent_it)
-        p = Gtk.TreePath.new_from_indices(indices)
+        p = Gtk.TreePath.new_from_indices(parent_indices + [index])
         self.row_inserted(p, it)
 
     def change(self, row):
@@ -79,9 +84,11 @@ class SourceTreeModel(GObject.Object, Gtk.TreeModel):
 
     def remove(self, row, index,  parent=None):
         """ Called from toga impl widget """
+        # todo: could get index from index_in_parent
         if parent is None:
             indices = []
             del self.roots[index]
+            parent = self.source
         else:
             indices = self._get_indices(parent)
         indices.append(index)
@@ -89,6 +96,7 @@ class SourceTreeModel(GObject.Object, Gtk.TreeModel):
             self._remove_children_rec(indices, row)
         self.row_deleted(Gtk.TreePath.new_from_indices(indices))
         self._clear_user_data(row)
+        self._update_index_in_parent(parent, index)
         if self.is_tree and parent and len(parent) == 0:
             parent_it = self._create_iter(user_data=parent)
             parent_indices = copy.copy(indices[:-1])
@@ -197,7 +205,7 @@ class SourceTreeModel(GObject.Object, Gtk.TreeModel):
                     parent = self.source
                 if len(parent) and r is not parent[-1]:
                     try:
-                        index = self.source.index(r)
+                        index = self.index_in_parent[r]
                         self._set_user_data(iter_, parent[index + 1])
                         return True
                     except ValueError:
@@ -217,7 +225,7 @@ class SourceTreeModel(GObject.Object, Gtk.TreeModel):
                     parent = self.source
                 if len(parent) and r is not parent[0]:
                     try:
-                        index = self.source.index(r)
+                        index = self.index_in_parent[r]
                         self._set_user_data(iter_, parent[index - 1])
                         return True
                     except ValueError:
@@ -285,7 +293,7 @@ class SourceTreeModel(GObject.Object, Gtk.TreeModel):
         if self.is_tree:
             indices = []
             while row is not None:
-                indices.insert(0, self.source.index(row))
+                indices.insert(0, self.index_in_parent[row])
                 row = row._parent
             return indices
         else:
@@ -308,9 +316,15 @@ class SourceTreeModel(GObject.Object, Gtk.TreeModel):
         data_id = id(user_data)
         if data_id in self.pool:
             del self.pool[data_id]
+        if user_data in self.index_in_parent:
+            del self.index_in_parent[user_data]
 
     def _create_iter(self, user_data):
         it = Gtk.TreeIter()
         it.stamp = self.stamp
         self._set_user_data(it, user_data)
         return it
+
+    def _update_index_in_parent(self, parent, index):
+        for i in range(index, len(parent)):
+            self.index_in_parent[parent[i]] = i
