@@ -1,7 +1,7 @@
 import asyncio
 
 import toga
-from toga.constants import COLUMN
+from toga.constants import COLUMN, ROW
 from toga.style import Pack
 
 from .translations import bee_translations
@@ -10,7 +10,9 @@ from .translations import bee_translations
 class ExampleDetailedListApp(toga.App):
     # Detailed list callback functions
     def on_select_handler(self, widget, row, **kwargs):
-        self.label.text = 'You selected row: {}'.format(row) if row is not None else 'No row selected'
+        self.label.text = 'You selected row: {} ({})'.format(row.title, row.subtitle) if row is not None else 'No row selected'
+        # work around no selection property in DetailedList as in Tree by keeping the last selected row
+        self.selected_row = row
 
     async def on_refresh_handler(self, widget, **kwargs):
         self.label.text = 'Refreshing list...'
@@ -22,15 +24,32 @@ class ExampleDetailedListApp(toga.App):
 
     def on_delete_handler(self, widget, row, **kwargs):
         self.label.text = 'Row {} is going to be deleted.'.format(row.subtitle)
+        # self.selected_row = None
+
+    # Button callback functions
+    def insert_handler(self, widget, **kwargs):
+        item = {"icon": None, "subtitle": "SOMEWHERE", "title": "Bzzz!"}
+        self.dl.data.append(**item)
+
+    def remove_handler(self, widget, **kwargs):
+        selection = self.selected_row
+        if selection:
+            self.dl.data.remove(selection)
 
     def startup(self):
         # Set up main window
         self.main_window = toga.MainWindow(title=self.name)
 
+        # Buttons
+        btn_style = Pack(flex=1, padding=10)
+        self.btn_insert = toga.Button('Insert Row', on_press=self.insert_handler, style=btn_style)
+        self.btn_remove = toga.Button('Remove Row', on_press=self.remove_handler, style=btn_style)
+        self.btn_box = toga.Box(children=[self.btn_insert, self.btn_remove], style=Pack(direction=ROW))
+
         # Label to show responses.
         self.label = toga.Label('Ready.')
 
-        widget = toga.DetailedList(
+        self.dl = toga.DetailedList(
             data=[
                 {
                     'icon': toga.Icon('resources/brutus.png'),
@@ -40,14 +59,14 @@ class ExampleDetailedListApp(toga.App):
                 for translation in bee_translations
             ],
             on_select=self.on_select_handler,
-            # on_delete=self.on_delete_handler,
+            on_delete=self.on_delete_handler,
             on_refresh=self.on_refresh_handler,
             style=Pack(flex=1)
         )
 
         # Outermost box
         outer_box = toga.Box(
-            children=[widget, self.label],
+            children=[self.btn_box, self.dl, self.label],
             style=Pack(
                 flex=1,
                 direction=COLUMN,
