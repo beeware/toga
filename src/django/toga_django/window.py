@@ -2,13 +2,13 @@ import base64
 import marshal
 import os
 import py_compile
+import tempfile
 
 from django.shortcuts import render
 from django.utils.safestring import mark_safe
 from toga.interface.window import Window as WindowInterface
 
-from . import dialogs
-from . import impl
+from . import dialogs, impl
 from .bootstrap import bootstrap
 from .container import Container
 
@@ -76,7 +76,6 @@ class Window(WindowInterface):
     def set_full_screen(self, is_full_screen):
         self.interface.factory.not_implemented('Window.set_full_screen()')
 
-
     def home(self, request):
         # app = self.app.materialize()
         # if app.main_window.id == self.id:
@@ -96,11 +95,17 @@ class Window(WindowInterface):
 
         return render(request, 'toga/app.html', {
             'toga': toga,
-            'bootstrap': base64.encodebytes(b'\xee\x0c\r\n00000000' + marshal.dumps(bootstrap.__code__)).strip(),
+            'bootstrap': base64.encodebytes(
+                b'\xee\x0c\r\n00000000' + marshal.dumps(bootstrap.__code__)
+            ).strip(),
             'window': self._impl,
             'callbacks': {
-                # 'sample': base64.encodebytes(b'\x08\x1c\xe8VU\x00\x00\x00' + marshal.dumps(sample.__code__)).strip()
-                '%s-%s' % (widget, message): base64.encodebytes(b'\xee\x0c\r\n00000000' + marshal.dumps(callback.__code__)).strip()
+                # 'sample': base64.encodebytes(
+                #     b'\x08\x1c\xe8VU\x00\x00\x00' + marshal.dumps(sample.__code__)
+                # ).strip()
+                '%s-%s' % (widget, message): base64.encodebytes(
+                    b'\xee\x0c\r\n00000000' + marshal.dumps(callback.__code__)
+                ).strip()
                 for (widget, message), callback in self.callbacks.items()
             }
         })

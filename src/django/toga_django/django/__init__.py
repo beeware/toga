@@ -17,4 +17,3 @@ def TogaApp(module_name):
     app = module.main()
     app._module = module
     return app
-

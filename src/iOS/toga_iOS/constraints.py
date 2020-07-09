@@ -1,10 +1,10 @@
 from toga_iOS.libs import (
-    NSLayoutAttributeTop,
+    NSLayoutAttributeBottom,
     NSLayoutAttributeLeft,
     NSLayoutAttributeRight,
-    NSLayoutAttributeBottom,
-    NSLayoutRelationEqual,
-    NSLayoutConstraint
+    NSLayoutAttributeTop,
+    NSLayoutConstraint,
+    NSLayoutRelationEqual
 )
 
 

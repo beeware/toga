@@ -1,6 +1,10 @@
+from string import ascii_lowercase, ascii_uppercase, digits
+
 import toga
 from toga.constants import COLUMN
 from toga.style import Pack
+
+EMPTY_PASSWORD = 'Empty password'
 
 
 class TextInputApp(toga.App):
@@ -49,14 +53,25 @@ class TextInputApp(toga.App):
         self.main_window = toga.MainWindow(title=self.name)
 
         # Labels to show responses.
-        self.label = toga.Label('Enter some values and press extract.', style=Pack(padding=10))
+        self.label = toga.Label(
+            'Enter some values and press extract.', style=Pack(padding=10)
+        )
         self.text_label = toga.Label('Ready.', style=Pack(padding=10))
         self.password_label = toga.Label('Ready.', style=Pack(padding=10))
+        self.password_content_label = toga.Label(
+            EMPTY_PASSWORD, style=Pack(padding_bottom=10, font_size=9)
+        )
         self.number_label = toga.Label('Ready.', style=Pack(padding=10))
 
         # Text inputs and a button
-        self.text_input = toga.TextInput(placeholder='Type something...', style=Pack(padding=10))
-        self.password_input = toga.PasswordInput(placeholder='Password...', style=Pack(padding=10))
+        self.text_input = toga.TextInput(
+            placeholder='Type something...', style=Pack(padding=10)
+        )
+        self.password_input = toga.PasswordInput(
+            placeholder='Password...',
+            style=Pack(padding=10),
+            on_change=self.on_password_change
+        )
         self.number_input = toga.NumberInput(style=Pack(padding=10))
         btn_extract = toga.Button(
             'Extract values',
@@ -70,6 +85,7 @@ class TextInputApp(toga.App):
                 self.label,
                 self.text_input,
                 self.password_input,
+                self.password_content_label,
                 self.number_input,
                 self.text_label,
                 self.password_label,
@@ -79,7 +95,7 @@ class TextInputApp(toga.App):
             style=Pack(
                 flex=1,
                 direction=COLUMN,
-                padding=10
+                padding=10,
             )
         )
 
@@ -88,6 +104,25 @@ class TextInputApp(toga.App):
 
         # Show the main window
         self.main_window.show()
+
+    def on_password_change(self, widget):
+        content = widget.value
+        self.password_content_label.text = self.get_password_content_label(content)
+
+    def get_password_content_label(self, content):
+        if content.strip() == "":
+            return EMPTY_PASSWORD
+        contains = set()
+        for letter in content:
+            if letter in ascii_uppercase:
+                contains.add("uppercase letters")
+            elif letter in ascii_lowercase:
+                contains.add("lowercase letters")
+            elif letter in digits:
+                contains.add("digits")
+            else:
+                contains.add("special characters")
+        return "Password contains: {}".format(', '.join(contains))
 
 
 def main():

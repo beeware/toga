@@ -1,3 +1,7 @@
+try:
+    import dom
+except ImportError:
+    pass
 
 
 class Window:
@@ -9,7 +13,8 @@ class Window:
 
     def __html__(self):
         return """
-            <nav id="toga:%s" data-toga-class="toga.Window" data-toga-ports="%s" class="navbar navbar-fixed-top navbar-dark bg-inverse">
+            <nav id="toga:%s" data-toga-class="toga.Window" data-toga-ports="%s"
+                 class="navbar navbar-fixed-top navbar-dark bg-inverse">
                 <a class="navbar-brand" href="#">%s</a>
                 <ul class="nav navbar-nav">
                     <!--li class="nav-item active">
@@ -18,7 +23,7 @@ class Window:
                 </ul>
             </nav>""" % (
                 self.id,
-                '',  #  self.ports,
+                '',  # self.ports,
                 self.title
             ) + self.content.__html__()
 
@@ -33,4 +38,4 @@ class Window:
 
     # HTML popups don't allow for titles, so we'll prepend it
     def info_dialog(self, title, message):
-        dom.alert("%s\n\n%s" % (title, message));
+        dom.alert("%s\n\n%s" % (title, message))

@@ -1,14 +1,13 @@
 from unittest import TestCase
 from unittest.mock import Mock
 
-from travertino.layout import Viewport
 from travertino.node import Node
 from travertino.size import at_least
 
 from toga.colors import rgb
 from toga.fonts import Font
-from toga.style.pack import Pack, CENTER, COLUMN, HIDDEN, LEFT, RIGHT, ROW, RTL
 from toga.style.applicator import TogaApplicator
+from toga.style.pack import CENTER, COLUMN, HIDDEN, LEFT, RIGHT, ROW, RTL, Pack
 
 
 class TestNode(Node):
@@ -23,6 +22,14 @@ class TestNode(Node):
 
     def __repr__(self):
         return '<{} at {}>'.format(self.name, id(self))
+
+
+class TestViewport:
+    def __init__(self, width, height, dpi=96, baseline_dpi=96):
+        self.height = height
+        self.width = width
+        self.dpi = dpi
+        self.baseline_dpi = baseline_dpi
 
 
 class TestPackStyleApply(TestCase):
@@ -122,7 +129,7 @@ class PackLayoutTests(TestCase):
         )
 
         # Minimum size
-        root.style.layout(root, Viewport(0, 0))
+        root.style.layout(root, TestViewport(0, 0, dpi=96))
         self.assertLayout(
             root,
             (220, 130),
@@ -132,12 +139,59 @@ class PackLayoutTests(TestCase):
         )
 
         # Normal size
-        root.style.layout(root, Viewport(640, 480))
+        root.style.layout(root, TestViewport(640, 480, dpi=96))
         self.assertLayout(
             root,
             (640, 130),
             {'origin': (0, 0), 'content': (640, 130), 'children': [
                 {'origin': (50, 50), 'content': (540, 30)}
+            ]}
+        )
+
+        # HiDPI normal size
+        root.style.layout(root, TestViewport(640, 480, dpi=144))
+        self.assertLayout(
+            root,
+            (640, 180),
+            {'origin': (0, 0), 'content': (640, 180), 'children': [
+                {'origin': (75, 75), 'content': (490, 30)}
+            ]}
+        )
+
+    def test_tutorial_0_high_baseline_dpi(self):
+        root = TestNode(
+            'app', style=Pack(), children=[
+                TestNode('button', style=Pack(flex=1, padding=50), size=(at_least(120), 30)),
+            ]
+        )
+
+        # Minimum size with high baseline DPI
+        root.style.layout(root, TestViewport(0, 0, dpi=160, baseline_dpi=160))
+        self.assertLayout(
+            root,
+            (220, 130),
+            {'origin': (0, 0), 'content': (220, 130), 'children': [
+                {'origin': (50, 50), 'content': (120, 30)}
+            ]}
+        )
+
+        # Normal size with high DPI equal to high baseline DPI
+        root.style.layout(root, TestViewport(640, 480, dpi=160, baseline_dpi=160))
+        self.assertLayout(
+            root,
+            (640, 130),
+            {'origin': (0, 0), 'content': (640, 130), 'children': [
+                {'origin': (50, 50), 'content': (540, 30)}
+            ]}
+        )
+
+        # HiDPI -- 1.5x baseline -- with higher baseline DPI
+        root.style.layout(root, TestViewport(640, 480, dpi=240, baseline_dpi=160))
+        self.assertLayout(
+            root,
+            (640, 180),
+            {'origin': (0, 0), 'content': (640, 180), 'children': [
+                {'origin': (75, 75), 'content': (490, 30)}
             ]}
         )
 
@@ -158,7 +212,7 @@ class PackLayoutTests(TestCase):
         )
 
         # Minimum size
-        root.style.layout(root, Viewport(0, 0))
+        root.style.layout(root, TestViewport(0, 0, dpi=96))
         self.assertLayout(
             root,
             (380, 120),
@@ -177,7 +231,7 @@ class PackLayoutTests(TestCase):
         )
 
         # Normal size
-        root.style.layout(root, Viewport(640, 480))
+        root.style.layout(root, TestViewport(640, 480, dpi=96))
         self.assertLayout(
             root,
             (640, 120),
@@ -195,6 +249,25 @@ class PackLayoutTests(TestCase):
             ]}
         )
 
+        # HiDPI Normal size
+        root.style.layout(root, TestViewport(640, 480, dpi=144))
+        self.assertLayout(
+            root,
+            (640, 142),
+            {'origin': (0, 10), 'content': (640, 132), 'children': [
+                {'origin': (7, 15), 'content': (626, 15), 'children': [
+                    {'origin': (247, 15), 'content': (221, 15)},
+                    {'origin': (483, 15), 'content': (150, 10)},
+                ]},
+                {'origin': (7, 42), 'content': (626, 15), 'children': [
+                    {'origin': (7, 42), 'content': (225, 10)},
+                    {'origin': (247, 42), 'content': (221, 15)},
+                    {'origin': (483, 42), 'content': (150, 10)},
+                ]},
+                {'origin': (22, 79), 'content': (596, 30)}
+            ]}
+        )
+
     def test_tutorial_3(self):
         root = TestNode(
             'app', style=Pack(direction=COLUMN), children=[
@@ -207,7 +280,7 @@ class PackLayoutTests(TestCase):
         )
 
         # Minimum size
-        root.style.layout(root, Viewport(0, 0))
+        root.style.layout(root, TestViewport(0, 0, dpi=96))
         self.assertLayout(
             root,
             (170, 125),
@@ -221,7 +294,7 @@ class PackLayoutTests(TestCase):
         )
 
         # Normal size
-        root.style.layout(root, Viewport(640, 480))
+        root.style.layout(root, TestViewport(640, 480, dpi=96))
         self.assertLayout(
             root,
             (640, 480),
@@ -231,6 +304,20 @@ class PackLayoutTests(TestCase):
                     {'origin': (585, 5), 'content': (50, 10)},
                 ]},
                 {'origin': (0, 25), 'content': (640, 455)}
+            ]}
+        )
+
+        # HiDPI Normal size
+        root.style.layout(root, TestViewport(640, 480, dpi=144))
+        self.assertLayout(
+            root,
+            (640, 480),
+            {'origin': (0, 0), 'content': (640, 480), 'children': [
+                {'origin': (0, 0), 'content': (640, 29), 'children': [
+                    {'origin': (7, 7), 'content': (537, 15)},
+                    {'origin': (558, 7), 'content': (75, 10)},
+                ]},
+                {'origin': (0, 29), 'content': (640, 451)}
             ]}
         )
 
@@ -246,7 +333,7 @@ class PackLayoutTests(TestCase):
         )
 
         # Minimum size
-        root.style.layout(root, Viewport(0, 0))
+        root.style.layout(root, TestViewport(0, 0, dpi=96))
         self.assertLayout(
             root,
             (160, 125),
@@ -260,7 +347,7 @@ class PackLayoutTests(TestCase):
         )
 
         # Normal size
-        root.style.layout(root, Viewport(640, 480))
+        root.style.layout(root, TestViewport(640, 480, dpi=96))
         self.assertLayout(
             root,
             (640, 480),
@@ -269,6 +356,20 @@ class PackLayoutTests(TestCase):
                 {'origin': (0, 455), 'content': (640, 25), 'children': [
                     {'origin': (5, 460), 'content': (580, 15)},
                     {'origin': (595, 460), 'content': (40, 10)},
+                ]},
+            ]}
+        )
+
+        # HiDPI Normal size
+        root.style.layout(root, TestViewport(640, 480, dpi=144))
+        self.assertLayout(
+            root,
+            (640, 480),
+            {'origin': (0, 0), 'content': (640, 480), 'children': [
+                {'origin': (0, 0), 'content': (640, 451)},
+                {'origin': (0, 451), 'content': (640, 29), 'children': [
+                    {'origin': (7, 458), 'content': (572, 15)},
+                    {'origin': (593, 458), 'content': (40, 10)},
                 ]},
             ]}
         )

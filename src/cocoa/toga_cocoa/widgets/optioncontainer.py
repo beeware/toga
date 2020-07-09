@@ -1,6 +1,4 @@
-from rubicon.objc import at
-
-from toga_cocoa.libs import *
+from toga_cocoa.libs import NSObject, NSTabView, NSTabViewItem, at, objc_method
 from toga_cocoa.window import CocoaViewport
 
 from .base import Widget
@@ -48,5 +46,37 @@ class OptionContainer(Widget):
         item.view = widget.native
         self.native.addTabViewItem(item)
 
+    def remove_content(self, index):
+        tabview = self.native.tabViewItemAtIndex(index)
+        if tabview == self.native.selectedTabViewItem:
+            # Don't allow removal of a selected tab
+            raise self.interface.OptionException(
+                'Currently selected option cannot be removed'
+            )
+
+        self.native.removeTabViewItem(tabview)
+
     def set_on_select(self, handler):
         pass
+
+    def set_option_enabled(self, index, enabled):
+        tabview = self.native.tabViewItemAtIndex(index)
+        if not enabled and tabview == self.native.selectedTabViewItem:
+            # Don't allow disable a selected tab
+            raise self.interface.OptionException(
+                'Currently selected option cannot be disabled'
+            )
+
+        tabview._setTabEnabled(enabled)
+
+    def is_option_enabled(self, index):
+        tabview = self.native.tabViewItemAtIndex(index)
+        return tabview._isTabEnabled()
+
+    def set_option_label(self, index, value):
+        tabview = self.native.tabViewItemAtIndex(index)
+        tabview.label = value
+
+    def get_option_label(self, index):
+        tabview = self.native.tabViewItemAtIndex(index)
+        return tabview.label

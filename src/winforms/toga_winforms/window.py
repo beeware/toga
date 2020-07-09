@@ -1,24 +1,34 @@
 from toga import GROUP_BREAK, SECTION_BREAK
-from travertino.layout import Viewport
 
-from .libs import WinForms, Size
+from .libs import Size, WinForms
 
 
 class WinFormsViewport:
     def __init__(self, native, frame):
         self.native = native
         self.frame = frame
-        self.dpi = 96  # FIXME This is almost certainly wrong...
+        self.baseline_dpi = 96
 
     @property
     def width(self):
+        # Treat `native=None` as a 0x0 viewport
+        if self.native is None:
+            return 0
         return self.native.ClientSize.Width
 
     @property
     def height(self):
+        if self.native is None:
+            return 0
         # Subtract any vertical shift of the frame. This is to allow
         # for toolbars, or any other viewport-level decoration.
         return self.native.ClientSize.Height - self.frame.vertical_shift
+
+    @property
+    def dpi(self):
+        if self.native is None:
+            return self.baseline_dpi
+        return self.native.CreateGraphics().DpiX
 
 
 class Window:
@@ -31,7 +41,7 @@ class Window:
         self.native = WinForms.Form(self)
         self.native.ClientSize = Size(*self.interface._size)
         self.native.interface = self.interface
-        self.native.Resize += self.winforms_Resize
+        self.native.Resize += self.winforms_resize
         self.toolbar_native = None
         self.toolbar_items = None
 
@@ -83,7 +93,7 @@ class Window:
         self.native.Controls.Add(widget.native)
 
         # Set the widget's viewport to be based on the window's content.
-        widget.viewport = WinFormsViewport(self.native, self)
+        widget.viewport = WinFormsViewport(native=self.native, frame=self)
         widget.frame = self
 
         # Add all children to the content widget.
@@ -101,7 +111,10 @@ class Window:
         # Now that the content is visible, we can do our initial hinting,
         # and use that as the basis for setting the minimum window size.
         self.interface.content._impl.rehint()
-        self.interface.content.style.layout(self.interface.content, Viewport(0, 0))
+        self.interface.content.style.layout(
+            self.interface.content,
+            WinFormsViewport(native=None, frame=None),
+        )
         self.native.MinimumSize = Size(
             int(self.interface.content.layout.width),
             int(self.interface.content.layout.height) + TITLEBAR_HEIGHT
@@ -123,7 +136,7 @@ class Window:
     def close(self):
         self.native.Close()
 
-    def winforms_Resize(self, sender, args):
+    def winforms_resize(self, sender, args):
         if self.interface.content:
             # Re-layout the content
             self.interface.content.refresh()
@@ -163,10 +176,7 @@ class Window:
         if initial_directory is not None:
             dialog.InitialDirectory = initial_directory
         if file_types is not None:
-            # FIXME This is the example of Filter string: Text files (*.txt)|*.txt|All files (*.*)|*.*
-
-            dialog.Filter = ';'.join(["*." + ext for ext in file_types]) + \
-                            "|All files (*.*)|*.*"
+            dialog.Filter = self.build_filter(file_types)
         if multiselect:
             dialog.Multiselect = True
         if dialog.ShowDialog() == WinForms.DialogResult.OK:
@@ -184,3 +194,8 @@ class Window:
             return [dialog.SelectedPath]
         else:
             raise ValueError("No folder provided in the select folder dialog")
+
+    def build_filter(self, file_types):
+        file_string = "{0} files (*.{0})|*.{0}"
+        return '|'.join([file_string.format(ext) for ext in file_types]) + \
+            "|All files (*.*)|*.*"

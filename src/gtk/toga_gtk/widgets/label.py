@@ -1,8 +1,6 @@
 from travertino.size import at_least
 
 from ..libs import Gtk, gtk_alignment
-# from toga_gtk.colors import native_color
-
 from .base import Widget
 
 
@@ -38,7 +36,10 @@ class Label(Widget):
         self.native.set_text(self.interface._text)
 
     def rehint(self):
-        # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height(), getattr(self, '_fixed_height', False), getattr(self, '_fixed_width', False))
+        # print("REHINT", self,
+        #     self.native.get_preferred_width(), self.native.get_preferred_height(),
+        #     getattr(self, '_fixed_height', False), getattr(self, '_fixed_width', False)
+        # )
         width = self.native.get_preferred_width()
         height = self.native.get_preferred_height()
 

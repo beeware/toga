@@ -1,24 +1,21 @@
 from travertino.size import at_least
-from toga_winforms.libs import WinForms
+
 from toga_winforms.colors import native_color
+from toga_winforms.libs import WinForms
+
 from .base import Widget
-
-
-class TogaButton(WinForms.Button):
-    def __init__(self, interface):
-        super().__init__()
-        self.interface = interface
-        self.Click += self.on_click
-
-    def on_click(self, sender, event):
-        if self.interface.on_press:
-            self.interface.on_press(self.interface)
 
 
 class Button(Widget):
     def create(self):
-        self.native = TogaButton(self.interface)
+        self.native = WinForms.Button()
+        self.native.Click += self.winforms_click
         self.set_enabled(self.interface._enabled)
+
+    def winforms_click(self, sender, event):
+        if self.container:
+            if self.interface.on_press:
+                self.interface.on_press(self.interface)
 
     def set_label(self, label):
         self.native.Text = self.interface.label

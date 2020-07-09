@@ -46,7 +46,9 @@ class Widget:
     def set_enabled(self, value):
         self.native.set_sensitive(self.interface.enabled)
 
-    ### APPLICATOR
+    ######################################################################
+    # APPLICATOR
+    ######################################################################
 
     def set_bounds(self, x, y, width, height):
         # No implementation required here; the new sizing will be picked up
@@ -54,30 +56,28 @@ class Widget:
         pass
 
     def set_alignment(self, alignment):
-        pass
+        self.interface.factory.not_implemented('Widget.set_alignment()')
 
     def set_hidden(self, hidden):
-        pass
+        self.interface.factory.not_implemented('Widget.set_hidden()')
 
     def set_font(self, font):
-        pass
+        self.interface.factory.not_implemented('Widget.set_font()')
 
     def set_color(self, color):
-        pass
+        self.interface.factory.not_implemented('Widget.set_color()')
 
     def set_background_color(self, color):
-        pass
+        self.interface.factory.not_implemented('Widget.set_background_color()')
 
-
-    ### INTERFACE
+    ######################################################################
+    # INTERFACE
+    ######################################################################
 
     def add_child(self, child):
         pass
         # if self._container:
-            # child._set_container(self._container)
+        #     child._set_container(self._container)
 
     def rehint(self):
         pass
-
-    def set_font(self, font):
-        self.interface.factory.not_implemented('Widget.set_font()')

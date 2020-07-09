@@ -1,17 +1,21 @@
+from . import dialogs
+
 
 class AndroidViewport:
     def __init__(self, native):
         self.native = native
-        self.dpi = 96  # FIXME This is almost certainly wrong...
-        # self.dpi = ... self.interface.app._impl.device_scale
+        self.dpi = self.native.getContext().getResources().getDisplayMetrics().densityDpi
+        # Toga needs to know how the current DPI compares to the platform default,
+        # which is 160: https://developer.android.com/training/multiscreen/screendensities
+        self.baseline_dpi = 160
 
     @property
     def width(self):
-        return self.native.ClientSize.Width
+        return self.native.getContext().getResources().getDisplayMetrics().widthPixels
 
     @property
     def height(self):
-        return self.native.ClientSize.Height
+        return self.native.getContext().getResources().getDisplayMetrics().heightPixels
 
 
 class Window:
@@ -24,17 +28,20 @@ class Window:
         pass
 
     def set_app(self, app):
-        self._create()
+        self.app = app
 
     def set_content(self, widget):
-        if self.native is None:
-            widget.native = TogaLayout(self.app.native, widget)
+        # Set the widget's viewport to be based on the window's content.
+        widget.viewport = AndroidViewport(widget.native)
+        # Set the app's entire contentView to the desired widget. This means that
+        # calling Window.set_content() on any Window object automatically updates
+        # the app, meaning that every Window object acts as the MainWindow.
+        self.app.native.setContentView(widget.native)
 
-        # Add all children to the content widget.
+        # Attach child widgets to widget as their container.
         for child in widget.interface.children:
             child._impl.container = widget
-
-        self.app._impl.setContentView(self._container._impl)
+            child._impl.viewport = widget.viewport
 
     def set_title(self, title):
         pass
@@ -43,9 +50,6 @@ class Window:
         pass
 
     def set_size(self, size):
-        pass
-
-    def set_app(self, app):
         pass
 
     def create_toolbar(self):
@@ -58,7 +62,7 @@ class Window:
         self.interface.factory.not_implemented('Window.set_full_screen()')
 
     def info_dialog(self, title, message):
-        self.interface.factory.not_implemented('Window.info_dialog()')
+        dialogs.info(self, title, message)
 
     def question_dialog(self, title, message):
         self.interface.factory.not_implemented('Window.question_dialog()')

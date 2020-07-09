@@ -1,6 +1,8 @@
-from .base import Widget
-from toga.handlers import wrapped_handler
 import datetime
+
+from toga.handlers import wrapped_handler
+
+from .base import Widget
 
 
 class DatePicker(Widget):

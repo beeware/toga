@@ -1,34 +1,42 @@
-from android.view import Gravity
-
 from travertino.size import at_least
 
-from toga.constants import *
+from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT
 
-
-class TogaLabel(extends=android.widget.TextView):
-    @super({context: android.content.Context})
-    def __init__(self, context, interface):
-        self.interface = interface
+from ..libs.android_widgets import Gravity, TextView, View__MeasureSpec
+from .base import Widget
 
 
 class Label(Widget):
     def create(self):
-        self.native = TogaLabel(self.app.native, self.interface)
+        self.native = TextView(self._native_activity)
         self.native.setSingleLine()
 
-    def set_alignment(self, value):
-        self.native.setGravity({
-                LEFT_ALIGNED: Gravity.CENTER_VERTICAL | Gravity.LEFT,
-                RIGHT_ALIGNED: Gravity.CENTER_VERTICAL | Gravity.RIGHT,
-                CENTER_ALIGNED: Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL,
-                JUSTIFIED_ALIGNED: Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL,
-                NATURAL_ALIGNED: Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL,
-            }[value])
-
     def set_text(self, value):
-        self.native.setText(self.interface._text)
+        self.native.setText(value)
 
     def rehint(self):
-        # print("REHINT label", self, self.native.getMeasuredWidth(), self.native.getMeasuredHeight())
-        self.interface.intrinsic.width = at_least(self.native.getMeasuredWidth() / self.app.device_scale)
-        self.interface.intrinsic.height = self.native.getMeasuredHeight() / self.app.device_scale
+        # Ask the Android TextView first for the height it would use in its
+        # wildest dreams. This is the height of one line of text.
+        self.native.measure(
+            View__MeasureSpec.UNSPECIFIED, View__MeasureSpec.UNSPECIFIED
+        )
+        one_line_height = self.native.getMeasuredHeight()
+        self.interface.intrinsic.height = one_line_height
+        # Ask it how wide it would be if it had to be just one line tall.
+        self.native.measure(
+            View__MeasureSpec.UNSPECIFIED,
+            View__MeasureSpec.makeMeasureSpec(
+                one_line_height, View__MeasureSpec.AT_MOST
+            ),
+        )
+        self.interface.intrinsic.width = at_least(self.native.getMeasuredWidth())
+
+    def set_alignment(self, value):
+        self.native.setGravity(
+            {
+                LEFT: Gravity.CENTER_VERTICAL | Gravity.LEFT,
+                RIGHT: Gravity.CENTER_VERTICAL | Gravity.RIGHT,
+                CENTER: Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL,
+                JUSTIFY: Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL,
+            }[value]
+        )

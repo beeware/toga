@@ -1,7 +1,8 @@
+include CONTRIBUTING.md
 include LICENSE
-include tox.ini
 include README.rst
 recursive-include toga *.py
-recursive-include tests *.py
 recursive-include toga/resources *.png
 recursive-include toga/resources *.icns
+recursive-include toga/resources *.ico
+recursive-include tests *.py

@@ -1,6 +1,8 @@
-from toga_winforms.libs import WinForms, WinDateTime
-from travertino.size import at_least
 import datetime
+
+from travertino.size import at_least
+
+from toga_winforms.libs import WinDateTime, WinForms
 
 from .base import Widget
 

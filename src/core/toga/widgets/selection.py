@@ -18,7 +18,7 @@ class Selection(Widget):
 
     def __init__(self, id=None, style=None, items=None, on_select=None, enabled=True, factory=None):
         super().__init__(id=id, style=style, factory=factory)
-        self._on_select = None # needed for _impl initialization
+        self._on_select = None  # needed for _impl initialization
         self._impl = self.factory.Selection(interface=self)
 
         if items is None:
@@ -43,11 +43,10 @@ class Selection(Widget):
     @items.setter
     def items(self, items):
         self._impl.remove_all_items()
+        self._items = items
 
         for i in items:
             self._impl.add_item(i)
-
-        self._items = items
 
     @property
     def value(self):

@@ -1,6 +1,6 @@
 import toga
-from toga.style import Pack
 import toga_dummy
+from toga.style import Pack
 from toga_dummy.utils import TestCase
 
 

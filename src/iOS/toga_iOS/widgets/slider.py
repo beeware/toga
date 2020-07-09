@@ -1,7 +1,7 @@
-from rubicon.objc import objc_method, SEL, CGSize
+from rubicon.objc import SEL, CGSize, objc_method
 from travertino.size import at_least
 
-from toga_iOS.libs import UISlider, UIControlEventValueChanged
+from toga_iOS.libs import UIControlEventValueChanged, UISlider
 from toga_iOS.widgets.base import Widget
 
 
@@ -32,6 +32,9 @@ class Slider(Widget):
     def set_range(self, range):
         self.native.minimumValue = range[0]
         self.native.maximumValue = range[1]
+
+    def set_tick_count(self, tick_count):
+        self.interface.factory.not_implemented('Slider.tick_count()')
 
     def rehint(self):
         fitting_size = self.native.systemLayoutSizeFittingSize_(CGSize(0, 0))

@@ -1,5 +1,4 @@
 import toga
-
 import toga_dummy
 from toga_dummy.utils import TestCase
 

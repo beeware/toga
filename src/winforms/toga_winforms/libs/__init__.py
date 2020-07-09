@@ -1,14 +1,28 @@
+from .fonts import (  # noqa: F401
+    HorizontalTextAlignment,
+    TextAlignment,
+    win_font_family
+)
 from .winforms import (  # noqa: F401
     Bitmap,
     Color,
     Convert,
+    Drawing2D,
+    FillMode,
     FontFamily,
     FontStyle,
     Graphics,
+    GraphicsPath,
+    Matrix,
     Pen,
     Point,
+    PointF,
+    Rectangle,
+    RectangleF,
     Single,
     Size,
+    SolidBrush,
+    StringFormat,
     Threading,
     Uri,
     WinDateTime,
@@ -19,9 +33,4 @@ from .winforms import (  # noqa: F401
     shcore,
     user32,
     win_version
-)
-from .fonts import (
-    HorizontalTextAlignment,
-    TextAlignment,
-    win_font_family
 )

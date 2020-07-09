@@ -2,7 +2,7 @@ from rubicon.objc import CGSize
 from travertino.size import at_least
 
 from toga_iOS.colors import native_color
-from toga_iOS.libs import UILabel, NSTextAlignment, NSLineBreakByWordWrapping
+from toga_iOS.libs import NSLineBreakByWordWrapping, NSTextAlignment, UILabel
 from toga_iOS.widgets.base import Widget
 
 

@@ -35,14 +35,21 @@ Group.HELP = Group('Help', order=100)
 class Command:
     """
     Args:
-            action: a function to invoke when the command is activated.
-            label: a name for the command.
-            shortcut: (optional) a key combination that can be used to invoke the command.
-            tooltip: (optional) a short description for what the command will do.
-            icon: (optional) a path to an icon resource to decorate the command.
-            group: (optional) a Group object describing a collection of similar commands. If no group is specified, a default "Command" group will be used.
-            section: (optional) an integer providing a sub-grouping. If no section is specified, the command will be allocated to section 0 within the group.
-            order: (optional) an integer indicating where a command falls within a section. If a Command doesn't have an order, it will be sorted alphabetically by label within its section.
+        action: a function to invoke when the command is activated.
+        label: a name for the command.
+        shortcut: (optional) a key combination that can be used to invoke the
+            command.
+        tooltip: (optional) a short description for what the command will do.
+        icon: (optional) a path to an icon resource to decorate the command.
+        group: (optional) a Group object describing a collection of similar
+            commands. If no group is specified, a default "Command" group will
+            be used.
+        section: (optional) an integer providing a sub-grouping. If no section
+            is specified, the command will be allocated to section 0 within the
+            group.
+        order: (optional) an integer indicating where a command falls within a
+            section. If a Command doesn't have an order, it will be sorted
+            alphabetically by label within its section.
     """
     def __init__(self, action, label,
                  shortcut=None, tooltip=None, icon=None,

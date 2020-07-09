@@ -1,9 +1,48 @@
+include check-packaging.sh
+include CONTRIBUTING.md
 include LICENSE
 include README.rst
+include release.sh
 include tox.ini
-recursive-include toga *.py
-recursive-include docs *.bat
+recursive-exclude attic *
+recursive-exclude contrib *
+recursive-exclude demo *
+recursive-exclude nursery *
+
+include docs/make.bat
+include docs/Makefile
+include docs/requirements_rtd.txt
+include docs/requirements.txt
+include docs/spelling_wordlist
+recursive-include docs *.css
+recursive-include docs *.csv
+recursive-include docs *.jpeg
+recursive-include docs *.png
+recursive-include docs *.png
 recursive-include docs *.py
 recursive-include docs *.rst
-recursive-include docs Makefile
-recursive-include tests *.py
+recursive-include docs *.zip
+prune docs/_build
+
+recursive-include examples *.icns
+recursive-include examples *.ico
+recursive-include examples *.json
+recursive-include examples *.png
+recursive-include examples *.py
+recursive-include examples *.rst
+recursive-include examples *.toml
+recursive-include examples README
+prune examples/*/.vscode
+
+recursive-include src *.html
+recursive-include src *.icns
+recursive-include src *.ico
+recursive-include src *.js
+recursive-include src *.png
+recursive-include src *.py
+recursive-include src *.rst
+recursive-include src CONTRIBUTING.md
+recursive-include src LICENSE
+recursive-include src MANIFEST.in
+prune src/*/build
+prune src/*/.eggs

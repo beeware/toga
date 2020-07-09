@@ -1,8 +1,8 @@
 from random import choice
 
 import toga
+from toga.constants import COLUMN, ROW
 from toga.style import Pack
-from toga.constants import ROW, COLUMN
 
 bee_movies = [
     {'year': 2008, 'title': 'The Secret Life of Bees', 'rating': '7.3', 'genre': 'Drama'},

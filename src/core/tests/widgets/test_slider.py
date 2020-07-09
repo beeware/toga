@@ -9,6 +9,7 @@ class SliderTests(TestCase):
 
         self.default = 50
         self.range = (0, 100)
+        self.tick_count = 10
 
         def callback(widget):
             pass
@@ -20,21 +21,22 @@ class SliderTests(TestCase):
                                   range=self.range,
                                   on_slide=self.on_slide,
                                   enabled=self.enabled,
-                                  factory=toga_dummy.factory)
+                                  factory=toga_dummy.factory,
+                                  tick_count=self.tick_count)
 
     def test_widget_created(self):
         self.assertEqual(self.slider._impl.interface, self.slider)
         self.assertActionPerformed(self.slider, 'create Slider')
 
     def test_parameter_are_all_set_correctly(self):
-        self.assertEqual(self.slider._value, self.default)
+        self.assertEqual(self.slider.value, self.default)
         self.assertEqual(self.slider.range, self.range)
         self.assertEqual(self.slider._range, self.range)
         self.assertEqual(self.slider.on_slide._raw, self.on_slide)
         self.assertEqual(self.slider.enabled, self.enabled)
 
     def test_get_value_invokes_impl_method(self):
-        slider_value = self.slider.value
+        self.slider.value
         self.assertValueGet(self.slider, 'value')
 
     def test_set_value_invokes_impl_method(self):
@@ -63,7 +65,7 @@ class SliderTests(TestCase):
 
     def test_new_value_is_None(self):
         self.slider.value = None
-        self.assertEqual(self.slider._value, 0.5)
+        self.assertEqual(self.slider.value, 0.5)
 
     def test_working_range_values(self):
         self.slider.range = (0, 100)
@@ -77,3 +79,12 @@ class SliderTests(TestCase):
         self.assertEqual(self.slider.enabled, self.enabled)
         self.slider.enabled = False
         self.assertEqual(self.slider.enabled, False)
+
+    def test_get_tick_count(self):
+        tick_count = self.slider.tick_count
+        self.assertEqual(self.tick_count, tick_count)
+
+    def test_set_tick_count(self):
+        new_tick_count = 5
+        self.slider.tick_count = new_tick_count
+        self.assertValueSet(self.slider, 'tick_count', new_tick_count)

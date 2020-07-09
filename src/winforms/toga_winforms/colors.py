@@ -11,7 +11,12 @@ def native_color(c):
     except KeyError:
         if isinstance(c, str):
             c = NAMED_COLOR[c]
-        color = Color.FromArgb(int(c.rgba.a * 255), c.rgba.r, c.rgba.g, c.rgba.b)
+        color = Color.FromArgb(
+            int(c.rgba.a * 255),
+            int(c.rgba.r),
+            int(c.rgba.g),
+            int(c.rgba.b)
+        )
         CACHE[c] = color
 
     return color

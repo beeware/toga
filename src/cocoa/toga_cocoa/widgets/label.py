@@ -1,7 +1,7 @@
 from travertino.size import at_least
 
-from toga_cocoa.libs import NSTextField, NSTextAlignment
 from toga_cocoa.colors import native_color
+from toga_cocoa.libs import NSTextAlignment, NSTextField
 
 from .base import Widget
 
@@ -37,5 +37,7 @@ class Label(Widget):
         # Width & height of a label is known and fixed.
         content_size = self.native.intrinsicContentSize()
         # print("REHINT label", self, content_size.width, content_size.height)
-        self.interface.intrinsic.width = at_least(content_size.width)
+        # 2020-05-11 The +1 is a hack; the label "X Translate:" gets truncated
+        # without the extra pixel.
+        self.interface.intrinsic.width = at_least(content_size.width + 1)
         self.interface.intrinsic.height = content_size.height

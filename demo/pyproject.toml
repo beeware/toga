@@ -1,10 +1,8 @@
-[build-system]
-requires = ["briefcase"]
 
 [tool.briefcase]
 project_name = "Toga Demo"
 bundle = "org.beeware"
-version = "0.3.0.dev20"
+version = "0.3.0.dev21"
 url = "https://beeware.org"
 license = "BSD license"
 author = "Tiberius Yak"
@@ -18,26 +16,26 @@ requires = []
 
 [tool.briefcase.app.toga-demo.macOS]
 requires = [
-    "toga-cocoa==0.3.0.dev20",
+    "toga-cocoa==0.3.0.dev21",
 ]
 
 [tool.briefcase.app.toga-demo.linux]
 requires = [
-    "toga-gtk==0.3.0.dev20",
+    "toga-gtk==0.3.0.dev21",
 ]
 
 [tool.briefcase.app.toga-demo.windows]
 requires = [
-    "toga-winforms==0.3.0.dev20",
+    "toga-winforms==0.3.0.dev21",
 ]
 
 # Mobile deployments
 [tool.briefcase.app.toga-demo.iOS]
 requires = [
-    "toga-iOS==0.3.0.dev20",
+    "toga-iOS==0.3.0.dev21",
 ]
 
 [tool.briefcase.app.toga-demo.android]
 requires = [
-    "toga-android==0.3.0.dev20",
+    "toga-android==0.3.0.dev21",
 ]

@@ -1,7 +1,6 @@
 import toga
-from toga.fonts import SANS_SERIF, ITALIC, SMALL_CAPS, BOLD
-
 import toga_dummy
+from toga.fonts import BOLD, ITALIC, SANS_SERIF, SMALL_CAPS
 from toga_dummy.utils import TestCase
 
 
@@ -39,7 +38,3 @@ class FontTests(TestCase):
 
     def test_weight(self):
         self.assertEqual(self.font.weight, self.weight)
-
-    def test_measure(self):
-        self.font.measure('measured text', tight=True)
-        self.assertActionPerformedWith(self.font, 'measure', text='measured text', tight=True)

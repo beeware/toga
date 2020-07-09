@@ -143,8 +143,8 @@ class TestGtkTable(unittest.TestCase):
         self.assertRowEqual(result_row, (row.one, row.two))
 
     def test_row_persistence(self):
-        a = self.table.data.insert(0, one="A1", two="A2")
-        b = self.table.data.insert(0, one="B1", two="B2")
+        self.table.data.insert(0, one="A1", two="A2")
+        self.table.data.insert(0, one="B1", two="B2")
 
         # B should now precede A
         # tests passes if A "knows" it has moved to index 1
@@ -155,7 +155,7 @@ class TestGtkTable(unittest.TestCase):
     def test_on_select_root_row(self):
         # Insert two dummy rows
         self.table.data = []
-        a = self.table.data.append(None, one="A1", two="A2")
+        self.table.data.append(None, one="A1", two="A2")
         b = self.table.data.append(None, one="B1", two="B2")
 
         # Create a flag

@@ -2,7 +2,7 @@ import asyncio
 import random
 
 import toga
-from toga.constants import ROW, COLUMN
+from toga.constants import COLUMN, ROW
 from toga.style import Pack
 
 from .bot import Eliza

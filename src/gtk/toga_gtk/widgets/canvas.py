@@ -23,6 +23,7 @@ class Canvas(Widget):
         using the canvas and gtk_context function arguments. This method calls
         the draw method on the interface Canvas to draw the objects.
         """
+        self.original_transform_matrix = gtk_context.get_matrix()
         self.interface._draw(self, draw_context=gtk_context)
 
     def gtk_on_size_allocate(self, widget, allocation):
@@ -34,6 +35,24 @@ class Canvas(Widget):
 
     def set_on_resize(self, handler):
         pass
+
+    def set_on_press(self, handler):
+        self.interface.factory.not_implemented('Canvas.set_on_press()')
+
+    def set_on_release(self, handler):
+        self.interface.factory.not_implemented('Canvas.set_on_release()')
+
+    def set_on_drag(self, handler):
+        self.interface.factory.not_implemented('Canvas.set_on_drag()')
+
+    def set_on_alt_press(self, handler):
+        self.interface.factory.not_implemented('Canvas.set_on_alt_press()')
+
+    def set_on_alt_release(self, handler):
+        self.interface.factory.not_implemented('Canvas.set_on_alt_release()')
+
+    def set_on_alt_drag(self, handler):
+        self.interface.factory.not_implemented('Canvas.set_on_alt_drag()')
 
     def redraw(self):
         self.native.queue_draw()
@@ -94,7 +113,7 @@ class Canvas(Widget):
 
     def fill(self, color, fill_rule, preserve, draw_context, *args, **kwargs):
         self.apply_color(color, draw_context)
-        if fill_rule is "evenodd":
+        if fill_rule == "evenodd":
             draw_context.set_fill_rule(cairo.FILL_RULE_EVEN_ODD)
         else:
             draw_context.set_fill_rule(cairo.FILL_RULE_WINDING)
@@ -123,7 +142,7 @@ class Canvas(Widget):
         draw_context.translate(tx, ty)
 
     def reset_transform(self, draw_context, *args, **kwargs):
-        draw_context.identity_matrix()
+        draw_context.set_matrix(self.original_transform_matrix)
 
     # Text
 
@@ -140,28 +159,18 @@ class Canvas(Widget):
 
         # Support writing multiline text
         for line in text.splitlines():
-            width, height = write_font.measure(line)
+            width, height = self.measure_text(line, write_font)
             draw_context.move_to(x, y)
             draw_context.text_path(line)
             y += height
 
-    def measure_text(self, text, font, draw_context, *args, **kwargs):
-        # Set font family and size
-        if font:
-            draw_context.select_font_face(font.family)
-            draw_context.set_font_size(font.size)
-        elif self.native.font:
-            draw_context.select_font_face(self.native.font.get_family())
-            draw_context.set_font_size(self.native.font.get_size() / Pango.SCALE)
-
-        x_bearing, y_bearing, width, height, x_advance, y_advance = draw_context.text_extents(
-            text
-        )
-        return width, height
+    def measure_text(self, text, font, tight=False):
+        return font.bind(self.interface.factory).measure(text, widget=self.native, tight=tight)
 
     # Rehint
 
     def rehint(self):
         # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height())
-        width = self.native.get_preferred_width()
-        height = self.native.get_preferred_height()
+        # width = self.native.get_preferred_width()
+        # height = self.native.get_preferred_height()
+        pass

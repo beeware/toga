@@ -1,3 +1,8 @@
+try:
+    import dom
+except ImportError:
+    pass
+
 
 class SimpleListElement:
     def __init__(self, id, content, delete_url=None, on_press=None, style=None):
@@ -9,14 +14,19 @@ class SimpleListElement:
         self.style = style
 
     def __html__(self):
-        return '<tr id="toga:%s" data-toga-class="toga.SimpleListElement" data-toga-parent="%s" data-toga-ports="%s" data-toga-delete-url="%s" data-toga-on-press="%s"><td>%s</td><td style="width:1em;">%s</td></tr>' % (
-            self.id,
-            self.parent.id,
-            '',  #  self.ports,
-            self.delete_url if self.delete_url else '',
-            self.parent.on_item_press if self.parent.on_item_press else '',
-            self.content,
-            '<i class="fa fa-times"></i>' if self.delete_url else ''
+        return (
+            '<tr id="toga:%s" data-toga-class="toga.SimpleListElement" '
+            'data-toga-parent="%s" data-toga-ports="%s" '
+            'data-toga-delete-url="%s" data-toga-on-press="%s"><td>%s</td>'
+            '<td style="width:1em;">%s</td></tr>' % (
+                self.id,
+                self.parent.id,
+                '',  # self.ports,
+                self.delete_url if self.delete_url else '',
+                self.parent.on_item_press if self.parent.on_item_press else '',
+                self.content,
+                '<i class="fa fa-times"></i>' if self.delete_url else ''
+            )
         )
 
     def text(self, value):
@@ -24,7 +34,6 @@ class SimpleListElement:
 
     def remove(self):
         self.impl.parentNode.removeChild(self.impl)
-
 
 
 class List:
@@ -39,7 +48,9 @@ class List:
 
     def __html__(self):
         lines = [
-            '<table id="%s" data-toga-class="toga.List" data-toga-parent="%s" data-toga-ports="%s" data-toga-create-url="%s" data-toga-on-item-press="%s" class="table table-striped">' % (
+            '<table id="%s" data-toga-class="toga.List" data-toga-parent="%s" '
+            'data-toga-ports="%s" data-toga-create-url="%s" '
+            'data-toga-on-item-press="%s" class="table table-striped">' % (
                 self.id,
                 self.parent.id,
                 '',  # ",".join(
@@ -58,7 +69,7 @@ class List:
         return '\n'.join(lines)
 
     def add(self, content):
-        id = next_id()
+        id = None  # next_id()
         child = SimpleListElement(id, content, on_press=self.on_item_press)
 
         child.parent = self

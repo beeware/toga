@@ -128,6 +128,7 @@ class ListSourceTests(TestCase):
         class MyObject:
             def __init__(self, info):
                 self.info = info
+
             def __str__(self):
                 return "string value %s" % self.info
 

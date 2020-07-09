@@ -1,23 +1,19 @@
-from toga_winforms.libs import WinForms
 from travertino.size import at_least
+
+from toga_winforms.libs import WinForms
 
 from .base import Widget
 
 
-class TogaSwitch(WinForms.CheckBox):
-    def __init__(self, interface):
-        super().__init__()
-        self.interface = interface
-        self.CheckedChanged += self.on_toggle
-
-    def on_toggle(self, sender, event):
-        if self.interface.on_toggle:
-            self.interface.on_toggle(self.interface)
-
-
 class Switch(Widget):
     def create(self):
-        self.native = TogaSwitch(self.interface)
+        self.native = WinForms.CheckBox()
+        self.native.CheckedChanged += self.winforms_checked_changed
+
+    def winforms_checked_changed(self, sender, event):
+        if self.container:
+            if self.interface.on_toggle:
+                self.interface.on_toggle(self.interface)
 
     def set_label(self, label):
         self.native.Text = self.interface.label

@@ -10,13 +10,13 @@ class Key(Enum):
     F = 'f'
     G = 'g'
     H = 'h'
-    I = 'i'
+    I = 'i'  # noqa: E741
     J = 'j'
     K = 'k'
     L = 'l'
     M = 'm'
     N = 'n'
-    O = 'o'
+    O = 'o'  # noqa: E741
     P = 'p'
     Q = 'q'
     R = 'r'

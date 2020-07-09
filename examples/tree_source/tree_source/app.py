@@ -1,10 +1,10 @@
+from datetime import datetime
 from pathlib import Path
 
 import toga
-from toga.style import Pack
 from toga.constants import COLUMN
 from toga.sources import Source
-from datetime import datetime
+from toga.style import Pack
 
 # This is a slightly less toy example of a tree view to display
 # items in your home directory. To avoid loading everything

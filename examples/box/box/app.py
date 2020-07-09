@@ -1,7 +1,7 @@
 import toga
+from toga.colors import BLUE, RED
+from toga.constants import CENTER, COLUMN, GREEN, ROW, WHITE
 from toga.style import Pack
-from toga.colors import RED, BLUE
-from toga.constants import COLUMN, ROW, CENTER, GREEN, WHITE
 
 
 class ExampleBoxApp(toga.App):

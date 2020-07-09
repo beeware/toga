@@ -1,31 +1,30 @@
 from rubicon.objc import (
     CGFloat,
-    CGSize,
     CGRect,
+    CGSize,
     NSMutableDictionary,
     NSPoint,
-    objc_method,
+    objc_method
 )
-
 from travertino.size import at_least
 
+from toga_iOS.colors import native_color
 from toga_iOS.libs import (
-    core_graphics,
     CGPathDrawingMode,
     CGRectMake,
-    kCGPathStroke,
-    kCGPathEOFill,
-    kCGPathFill,
     NSAttributedString,
     NSFontAttributeName,
     NSForegroundColorAttributeName,
     NSStrokeColorAttributeName,
     NSStrokeWidthAttributeName,
-    uikit,
     UIColor,
     UIView,
+    core_graphics,
+    kCGPathEOFill,
+    kCGPathFill,
+    kCGPathStroke,
+    uikit
 )
-from toga_iOS.colors import native_color
 from toga_iOS.widgets.base import Widget
 
 
@@ -50,6 +49,24 @@ class Canvas(Widget):
 
     def redraw(self):
         pass
+
+    def set_on_press(self, handler):
+        self.interface.factory.not_implemented('Canvas.set_on_press()')
+
+    def set_on_release(self, handler):
+        self.interface.factory.not_implemented('Canvas.set_on_release()')
+
+    def set_on_drag(self, handler):
+        self.interface.factory.not_implemented('Canvas.set_on_drag()')
+
+    def set_on_alt_press(self, handler):
+        self.interface.factory.not_implemented('Canvas.set_on_alt_press()')
+
+    def set_on_alt_release(self, handler):
+        self.interface.factory.not_implemented('Canvas.set_on_alt_release()')
+
+    def set_on_alt_drag(self, handler):
+        self.interface.factory.not_implemented('Canvas.set_on_alt_drag()')
 
     # Basic paths
 
@@ -178,6 +195,9 @@ class Canvas(Widget):
         core_graphics.CGContextConcatCTM(draw_context, invert_transform)
 
     # Text
+
+    def measure_text(self, text, font, tight=False):
+        return font.bind(self.interface.factory).measure(text, tight=tight)
 
     def write_text(self, text, x, y, font, *args, **kwargs):
         # Set font family and size

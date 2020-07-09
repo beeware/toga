@@ -2,7 +2,7 @@ import sys
 
 from travertino.size import at_least
 
-from toga_winforms.libs import WinForms, Convert, HorizontalTextAlignment
+from toga_winforms.libs import Convert, HorizontalTextAlignment, WinForms
 
 from .base import Widget
 
@@ -11,6 +11,13 @@ class NumberInput(Widget):
     def create(self):
         self.native = WinForms.NumericUpDown()
         self.native.Value = Convert.ToDecimal(0.0)
+        self.native.ValueChanged += self.winforms_number_change
+
+    def winforms_number_change(self, sender, event):
+        if self.container:
+            self.interface.value = Convert.ToString(sender.Value)
+            if self.interface.on_change:
+                self.interface.on_change(self.interface)
 
     def set_readonly(self, value):
         self.native.ReadOnly = self.interface.readonly
@@ -49,9 +56,4 @@ class NumberInput(Widget):
         self.interface.intrinsic.height = self.native.PreferredSize.Height
 
     def set_on_change(self, handler):
-        self.native.ValueChanged += self.on_number_change
-
-    def on_number_change(self, sender, event):
-        self.interface.value = Convert.ToString(sender.Value)
-        if self.interface.on_change:
-            self.interface.on_change(self.interface)
+        pass

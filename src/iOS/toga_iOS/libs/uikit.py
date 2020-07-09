@@ -1,12 +1,12 @@
 ##########################################################################
 # System/Library/Frameworks/UIKit.framework
 ##########################################################################
-from ctypes import c_char_p, c_int, c_void_p, cdll, util, POINTER, Structure
+from ctypes import POINTER, Structure, c_char_p, c_int, c_void_p, cdll, util
 from enum import Enum
 
-from rubicon.objc import objc_const, CGFloat, ObjCClass
-from toga.constants import LEFT, RIGHT, CENTER, JUSTIFY
+from rubicon.objc import CGFloat, ObjCClass, objc_const
 
+from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT
 from toga_iOS.libs.core_graphics import CGContextRef
 
 ######################################################################

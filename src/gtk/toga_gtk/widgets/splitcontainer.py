@@ -1,5 +1,5 @@
-from ..window import GtkViewport
 from ..libs import Gtk
+from ..window import GtkViewport
 from .base import Widget
 
 

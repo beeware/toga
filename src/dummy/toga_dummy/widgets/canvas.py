@@ -89,10 +89,36 @@ class Canvas(Widget):
     def write_text(self, text, x, y, font, *args, **kwargs):
         self._action("write text", text=text, x=x, y=y, font=font)
 
-    # Rehint
+    def measure_text(self, text, font, tight=False):
+        self._action("measure text", text=text, font=font, tight=tight)
 
-    def rehint(self):
-        self._action('rehint Canvas')
+    # Rehint
 
     def set_on_resize(self, handler):
         self._set_value('on_resize', handler)
+
+    # 'Mouse' button handlers
+
+    def set_on_press(self, handler):
+        """Ensure the correct handler is invoked."""
+        self._set_value("on_press", handler)
+
+    def set_on_alt_press(self, handler):
+        """Ensure the correct handler is invoked."""
+        self._set_value("on_alt_press", handler)
+
+    def set_on_release(self, handler):
+        """Ensure the correct handler is invoked."""
+        self._set_value("on_release", handler)
+
+    def set_on_alt_release(self, handler):
+        """Ensure the correct handler is invoked."""
+        self._set_value("on_alt_release", handler)
+
+    def set_on_drag(self, handler):
+        """Ensure the correct handler is invoked."""
+        self._set_value("on_drag", handler)
+
+    def set_on_alt_drag(self, handler):
+        """Ensure the correct handler is invoked."""
+        self._set_value("on_alt_drag", handler)

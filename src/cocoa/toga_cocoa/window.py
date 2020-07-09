@@ -1,15 +1,27 @@
-from travertino.layout import Viewport
-from rubicon.objc import objc_method, NSMakeRect, NSMutableArray, NSObject, SEL
-
 from toga.command import Command as BaseCommand
-
 from toga_cocoa import dialogs
 from toga_cocoa.libs import (
-    NSScreen, NSToolbar, NSToolbarItem, NSTitledWindowMask,
-    NSClosableWindowMask, NSResizableWindowMask, NSMiniaturizableWindowMask,
-    NSWindow, NSBackingStoreBuffered, NSLayoutConstraint,
-    NSLayoutAttributeBottom, NSLayoutAttributeLeft, NSLayoutAttributeRight,
-    NSLayoutAttributeTop, NSLayoutRelationGreaterThanOrEqual, NSSize
+    SEL,
+    NSBackingStoreBuffered,
+    NSClosableWindowMask,
+    NSLayoutAttributeBottom,
+    NSLayoutAttributeLeft,
+    NSLayoutAttributeRight,
+    NSLayoutAttributeTop,
+    NSLayoutConstraint,
+    NSLayoutRelationGreaterThanOrEqual,
+    NSMakeRect,
+    NSMiniaturizableWindowMask,
+    NSMutableArray,
+    NSObject,
+    NSResizableWindowMask,
+    NSScreen,
+    NSSize,
+    NSTitledWindowMask,
+    NSToolbar,
+    NSToolbarItem,
+    NSWindow,
+    objc_method
 )
 
 
@@ -20,15 +32,19 @@ def toolbar_identifier(cmd):
 class CocoaViewport:
     def __init__(self, view):
         self.view = view
-        self.dpi = 96  # FIXME This is almost certainly wrong...
+        # macOS always renders at 96dpi. Scaling is handled
+        # transparently at the level of the screen compositor.
+        self.dpi = 96
+        self.baseline_dpi = self.dpi
 
     @property
     def width(self):
-        return self.view.frame.size.width
+        # If `view` is `None`, we'll treat this a 0x0 viewport.
+        return 0 if self.view is None else self.view.frame.size.width
 
     @property
     def height(self):
-        return self.view.frame.size.height
+        return 0 if self.view is None else self.view.frame.size.height
 
 
 class WindowDelegate(NSObject):
@@ -170,7 +186,7 @@ class Window:
         self.native.contentView = widget.native
 
         # Set the widget's viewport to be based on the window's content.
-        widget.viewport = CocoaViewport(widget.native)
+        widget.viewport = CocoaViewport(view=widget.native)
 
         # Add all children to the content widget.
         for child in widget.interface.children:
@@ -217,7 +233,10 @@ class Window:
         # Render of the content with a 0 sized viewport; this will
         # establish the minimum possible content size. Use that to enforce
         # a minimum window size.
-        self.interface.content.style.layout(self.interface.content, Viewport(0, 0))
+        self.interface.content.style.layout(
+            self.interface.content,
+            CocoaViewport(view=None),
+        )
         self._min_width_constraint.constant = self.interface.content.layout.width
         self._min_height_constraint.constant = self.interface.content.layout.height
 

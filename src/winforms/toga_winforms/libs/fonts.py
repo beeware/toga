@@ -1,14 +1,22 @@
-from .winforms import ContentAlignment, FontFamily, WinForms, SystemFonts, Text
-
-from toga.constants import LEFT, RIGHT, CENTER, JUSTIFY
+from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT
 from toga.fonts import (
-    MESSAGE,
-    SYSTEM,
-    SERIF,
-    SANS_SERIF,
     CURSIVE,
     FANTASY,
+    MESSAGE,
     MONOSPACE,
+    SANS_SERIF,
+    SERIF,
+    SYSTEM,
+    SYSTEM_DEFAULT_FONT_SIZE
+)
+
+from .winforms import (
+    ContentAlignment,
+    FontFamily,
+    FontStyle,
+    SystemFonts,
+    Text,
+    WinForms
 )
 
 
@@ -32,23 +40,39 @@ def HorizontalTextAlignment(value):
 
 
 def win_font_family(value):
-    win_families = {
-        SYSTEM: SystemFonts.DefaultFont.FontFamily,
-        MESSAGE: SystemFonts.MenuFont.FontFamily,
-        SERIF: FontFamily.GenericSerif,
-        SANS_SERIF: FontFamily.GenericSansSerif,
-        CURSIVE: FontFamily("Comic Sans MS"),
-        FANTASY: FontFamily("Impact"),
-        MONOSPACE: FontFamily.GenericMonospace,
-    }
-    for key in win_families:
-        if value in key:
-            return win_families[key]
-    if value in Text.InstalledFontCollection().Families:
-        return FontFamily(value)
+    try:
+        return {
+            SYSTEM: SystemFonts.DefaultFont.FontFamily,
+            MESSAGE: SystemFonts.MenuFont.FontFamily,
+            SERIF: FontFamily.GenericSerif,
+            SANS_SERIF: FontFamily.GenericSansSerif,
+            CURSIVE: FontFamily("Comic Sans MS"),
+            FANTASY: FontFamily("Impact"),
+            MONOSPACE: FontFamily.GenericMonospace,
+        }[value]
+    except KeyError:
+        if value in Text.InstalledFontCollection().Families:
+            return FontFamily(value)
     else:
         print(
             "Unable to load font-family '{}', loading {} instead".format(
                 value, SystemFonts.DefaultFont.FontFamily)
         )
         return SystemFonts.DefaultFont.FontFamily
+
+
+def win_font_style(weight, style, font_family):
+    font_style = FontStyle.Regular
+    if weight.lower() == "bold" and font_family.IsStyleAvailable(
+            FontStyle.Bold):
+        font_style += FontStyle.Bold
+    if style.lower() == "italic" and font_family.IsStyleAvailable(
+            FontStyle.Italic):
+        font_style += FontStyle.Italic
+    return font_style
+
+
+def win_font_size(size):
+    if size == SYSTEM_DEFAULT_FONT_SIZE:
+        return SystemFonts.DefaultFont.Size
+    return size

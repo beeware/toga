@@ -39,4 +39,3 @@ class ImageView(Widget):
 
     def rehint(self):
         pass
-

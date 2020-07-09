@@ -1,7 +1,8 @@
+import datetime
+
 import toga
 import toga_dummy
 from toga_dummy.utils import TestCase
-import datetime
 
 
 class DatePickerTests(TestCase):

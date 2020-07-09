@@ -1,8 +1,9 @@
-from django.core.urlresolvers import reverse, resolve
+from django.core.urlresolvers import resolve, reverse
 from django.utils.html import escape
 
+from ..libs import List as TogaList
+from ..libs import SimpleListElement as TogaSimpleListElement
 from .base import Widget
-from ..libs import List as TogaList, SimpleListElement as TogaSimpleListElement
 
 
 class SimpleListElement(Widget):

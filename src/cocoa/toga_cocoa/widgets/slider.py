@@ -1,7 +1,6 @@
-from rubicon.objc import objc_method, SEL
 from travertino.size import at_least
 
-from toga_cocoa.libs import *
+from toga_cocoa.libs import SEL, NSSlider, objc_method
 
 from .base import Widget
 
@@ -21,13 +20,22 @@ class Slider(Widget):
         self.native.target = self.native
         self.native.action = SEL('onSlide:')
 
+        self.set_tick_count(self.interface.tick_count)
+
         self.add_constraints()
+
+    def set_tick_count(self, tick_count):
+        if tick_count is None:
+            self.native.allowsTickMarkValuesOnly = False
+        else:
+            self.native.allowsTickMarkValuesOnly = True
+            self.native.numberOfTickMarks = tick_count
 
     def get_value(self):
         return self.native.floatValue
 
     def set_value(self, value):
-        self.native.doubleValue = self.interface.value
+        self.native.doubleValue = value
 
     def set_range(self, range):
         self.native.minValue = self.interface.range[0]
