@@ -69,7 +69,7 @@ class SourceTreeModel(GObject.Object, Gtk.TreeModel):
             parent = row._parent
         self._update_index_in_parent(parent, index)
         parent_indices = self._get_indices(parent) if parent is not self.source else []
-        if self.is_tree and row._parent and len(row._parent) == 1:
+        if self.is_tree and row._parent is not None and (len(row._parent) == 1):
             parent_it = self._create_iter(user_data=row._parent)
             parent_p = Gtk.TreePath.new_from_indices(parent_indices)
             self.row_has_child_toggled(parent_p, parent_it)
@@ -97,7 +97,7 @@ class SourceTreeModel(GObject.Object, Gtk.TreeModel):
         self.row_deleted(Gtk.TreePath.new_from_indices(indices))
         self._clear_user_data(row)
         self._update_index_in_parent(parent, index)
-        if self.is_tree and parent and len(parent) == 0:
+        if self.is_tree and parent is not None and (len(parent) == 0):
             parent_it = self._create_iter(user_data=parent)
             parent_indices = copy.copy(indices[:-1])
             parent_p = Gtk.TreePath.new_from_indices(parent_indices)
