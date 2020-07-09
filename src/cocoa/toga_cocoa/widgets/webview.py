@@ -101,7 +101,7 @@ class WebView(Widget):
         """
         Invoke a block of javascript.
 
-        :param javascript: The javascript expression to evoke
+        :param javascript: The javascript expression to invoke
         """
         self.native.evaluateJavaScript(javascript, completionHandler=None)
 
