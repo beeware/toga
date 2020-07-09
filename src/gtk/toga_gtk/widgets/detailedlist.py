@@ -200,5 +200,5 @@ class DetailedList(Widget):
             else:
                 node = None
             # FIXME: shouldn't DetailedList have a _selection attribute like Tree?
-            #self.interface._selection = node
+            # self.interface._selection = node
             self.interface.on_select(self.interface, row=node)
