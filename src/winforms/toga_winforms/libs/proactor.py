@@ -38,6 +38,15 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
         :param app_context: The WinForms.ApplicationContext instance
             controlling the lifecycle of the app.
         """
+        # Python 3.8 added an implementation of run_forever() in
+        # ProactorEventLoop. The only part that actually matters is the
+        # refactoring that moved the initial call to stage _loop_self_reading;
+        # it now needs to be created as part of run_forever; otherwise the
+        # event loop locks up, because there won't be anything for the
+        # select call to process.
+        if sys.version_info > (3, 8):
+            self.call_soon(self._loop_self_reading)
+
         # Remember the application context.
         self.app_context = app_context
 
@@ -149,7 +158,7 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
             # If you don't ensure there is at least one message on the
             # queue, the select() call will block, locking the app.
             self.enqueue_tick()
-            self.call_soon_threadsafe(lambda: 0)
+            self.call_soon(self._loop_self_reading)
 
 
 # Python 3.7 changed the name of an internal wrapper function.
