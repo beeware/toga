@@ -1,3 +1,4 @@
+from enum import Enum, auto
 import html
 
 from toga_gtk.icons import Icon
@@ -30,19 +31,24 @@ class DetailedListRenderer:
         return pixbuf
 
 
+class IconTextRendererColumns(Enum):
+    """ a single column contents"""
+    ICON = auto()
+    TITLE = auto()
+    TITLE_SUBTITLE = auto()
+
+
 class IconTextRenderer(DetailedListRenderer):
     """ DetailedList customization (choose to render icon/title/subtitle) """
-    ICON, TITLE, TITLE_SUBTITLE = range(3)
-    """ """
     STYLES = {
-        'default': [ICON, TITLE_SUBTITLE],
-        'icon-title-subtitle': [ICON, TITLE_SUBTITLE],
-        'icon-title': [ICON, TITLE],
-        'title-icon': [TITLE, ICON],
-        'title-subtitle-icon': [TITLE_SUBTITLE, ICON],
-        'title-subtitle': [TITLE_SUBTITLE],
-        'title': [TITLE],
-        'icon': [ICON],
+        'default': [IconTextRendererColumns.ICON, IconTextRendererColumns.TITLE_SUBTITLE],
+        'icon-title-subtitle': [IconTextRendererColumns.ICON, IconTextRendererColumns.TITLE_SUBTITLE],
+        'icon-title': [IconTextRendererColumns.ICON, IconTextRendererColumns.TITLE],
+        'title-icon': [IconTextRendererColumns.TITLE, IconTextRendererColumns.ICON],
+        'title-subtitle-icon': [IconTextRendererColumns.TITLE_SUBTITLE, IconTextRendererColumns.ICON],
+        'title-subtitle': [IconTextRendererColumns.TITLE_SUBTITLE],
+        'title': [IconTextRendererColumns.TITLE],
+        'icon': [IconTextRendererColumns.ICON],
     }
 
     def __init__(self, interface, fields=None):
@@ -54,21 +60,21 @@ class IconTextRenderer(DetailedListRenderer):
     def row_field_types(self):
         ret = [object]
         for f in self.fields:
-            if f == self.ICON:
+            if f == IconTextRendererColumns.ICON:
                 ret.append(GdkPixbuf.Pixbuf)
-            elif f in (self.TITLE, self.TITLE_SUBTITLE):
+            elif f in (IconTextRendererColumns.TITLE, IconTextRendererColumns.TITLE_SUBTITLE):
                 ret.append(str)
         return ret
 
     def row_columns(self):
         ret = []
         for f in self.fields:
-            if f == self.ICON:
+            if f == IconTextRendererColumns.ICON:
                 ret.append({
                     'type': GdkPixbuf.Pixbuf,
                     'attr': 'icon',
                 })
-            elif f in (self.TITLE, self.TITLE_SUBTITLE):
+            elif f in (IconTextRendererColumns.TITLE, IconTextRendererColumns.TITLE_SUBTITLE):
                 ret.append({
                     'type': str,
                     'attr': 'title',
@@ -82,17 +88,17 @@ class IconTextRenderer(DetailedListRenderer):
         row_data_index = 1  # first element in the row is always the item itself
 
         for i, f in enumerate(self.fields):
-            if f == self.ICON:
+            if f == IconTextRendererColumns.ICON:
                 iconcell = Gtk.CellRendererPixbuf()
                 iconcell.set_property('width', self.icon_size() + 10)
                 column.set_cell_data_func(iconcell, self.icon, i)
                 column.pack_start(iconcell, False)
-            elif f == self.TITLE:
+            elif f == IconTextRendererColumns.TITLE:
                 namecell = Gtk.CellRendererText()
                 namecell.set_property('ellipsize', Pango.EllipsizeMode.END)
                 column.pack_start(namecell, True)
                 column.add_attribute(namecell, 'text', row_data_index)
-            elif f == self.TITLE_SUBTITLE:
+            elif f == IconTextRendererColumns.TITLE_SUBTITLE:
                 namecell = Gtk.CellRendererText()
                 namecell.set_property('ellipsize', Pango.EllipsizeMode.END)
                 column.set_cell_data_func(namecell, self.markup, i)
