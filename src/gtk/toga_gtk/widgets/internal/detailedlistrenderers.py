@@ -1,4 +1,4 @@
-from enum import Enum, auto
+from enum import Enum
 import html
 
 from toga_gtk.icons import Icon
@@ -33,9 +33,9 @@ class DetailedListRenderer:
 
 class IconTextRendererColumns(Enum):
     """ a single column contents"""
-    ICON = auto()
-    TITLE = auto()
-    TITLE_SUBTITLE = auto()
+    ICON = 1
+    TITLE = 2
+    TITLE_SUBTITLE = 3
 
 
 class IconTextRenderer(DetailedListRenderer):
