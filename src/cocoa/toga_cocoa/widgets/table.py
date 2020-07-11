@@ -190,9 +190,7 @@ class Table(Widget):
 
     def remove(self, item, index):
         try:
-            # We can't get the index from self.interface.data because the
-            # row has already been removed. Instead we look up the index
-            # from an associated view.
+            # TODO: use index instead of looking it up from the associated view
             view = self._view_for_row.pop(item)
             index = self.table.rowForView(view)
         except KeyError:
