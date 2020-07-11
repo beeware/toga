@@ -1,7 +1,7 @@
 import toga
 from ..libs import Gtk
 from .base import Widget
-from .sourcetreemodel import SourceTreeModel
+from .internal.sourcetreemodel import SourceTreeModel
 
 
 class Tree(Widget):

@@ -1,6 +1,6 @@
 import copy
 
-from ..libs import GObject, Gtk
+from toga_gtk.libs import GObject, Gtk
 
 
 class SourceTreeModel(GObject.Object, Gtk.TreeModel):

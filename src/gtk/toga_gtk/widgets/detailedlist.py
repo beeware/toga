@@ -3,7 +3,7 @@ import html
 from ..icons import Icon
 from ..libs import GdkPixbuf, Gtk, Pango
 from .base import Widget
-from .sourcetreemodel import SourceTreeModel
+from .internal.sourcetreemodel import SourceTreeModel
 
 
 class DetailedListRenderer:
