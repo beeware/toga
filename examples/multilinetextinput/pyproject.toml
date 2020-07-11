@@ -4,7 +4,7 @@ requires = ["briefcase"]
 [tool.briefcase]
 project_name = "MultilineTextInput Demo"
 bundle = "org.beeware"
-version = "0.3.0.dev22"
+version = "0.3.0.dev23"
 url = "https://beeware.org"
 license = "BSD license"
 author = 'Tiberius Yak'
