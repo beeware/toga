@@ -44,7 +44,7 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
         # it now needs to be created as part of run_forever; otherwise the
         # event loop locks up, because there won't be anything for the
         # select call to process.
-        if sys.version_info > (3, 8):
+        if sys.version_info >= (3, 8):
             self.call_soon(self._loop_self_reading)
 
         # Remember the application context.
