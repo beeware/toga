@@ -144,6 +144,7 @@ class TreeSource(Source):
             del self._roots[i]
         else:
             del node._parent._children[i]
+            # node is not in parent's children so it shouldn't keep a link to parent
             del node._parent
 
         self._notify('remove', item=node, index=i, parent=parent)
