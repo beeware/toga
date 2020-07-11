@@ -187,9 +187,6 @@ class DetailedList(Widget):
 
     def scroll_to_row(self, row):
         path = Gtk.TreePath.new_from_indices([row])
-        print(path)
-        # to verify actual effect, set row_align=0 to let it move to top
-        # self.treeview.scroll_to_cell(path, None, use_align=True, row_align=0., col_align=0.)
         self.treeview.scroll_to_cell(path)
 
     def gtk_on_select(self, selection):
