@@ -29,8 +29,12 @@ class ExampleDetailedListApp(toga.App):
 
     # Button callback functions
     def insert_handler(self, widget, **kwargs):
-        item = {"icon": None, "subtitle": "SOMEWHERE", "title": "Bzzz!"}
-        self.dl.data.append(**item)
+        item = {"icon": None, "subtitle": "The Hive", "title": "Bzzz!"}
+        if self.selected_row:
+            self.dl.data.insert(self.dl.data.index(self.selected_row) + 1, **item)
+        else:
+            self.dl.data.append(**item)
+        self.dl.scroll_to_row(len(self.dl.data) - 1)
 
     def remove_handler(self, widget, **kwargs):
         selection = self.selected_row
@@ -38,6 +42,8 @@ class ExampleDetailedListApp(toga.App):
             self.dl.data.remove(selection)
 
     def startup(self):
+        self.selected_row = None
+
         # Set up main window
         self.main_window = toga.MainWindow(title=self.name)
 
