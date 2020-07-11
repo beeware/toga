@@ -196,6 +196,6 @@ class DetailedList(Widget):
                 node = tree_model.get(tree_iter, 0)[0]
             else:
                 node = None
-            # FIXME: shouldn't DetailedList have a _selection attribute like Tree?
+            # TODO See #682 DetailedList should have a _selection attribute + selection property like Tree
             # self.interface._selection = node
             self.interface.on_select(self.interface, row=node)

@@ -12,7 +12,7 @@ class ExampleDetailedListApp(toga.App):
     def on_select_handler(self, widget, row, **kwargs):
         self.label.text = 'Bee is {} in {}'.format(row.title, row.subtitle) \
             if row is not None else 'No row selected'
-        # work around no selection property in DetailedList as in Tree by keeping the last selected row
+        # TODO: remove self.selected_row when #962 is implemented
         self.selected_row = row
 
     async def on_refresh_handler(self, widget, **kwargs):
@@ -25,7 +25,7 @@ class ExampleDetailedListApp(toga.App):
 
     def on_delete_handler(self, widget, row, **kwargs):
         self.label.text = 'Row {} is going to be deleted.'.format(row.subtitle)
-        # self.selected_row = None
+        self.selected_row = None
 
     # Button callback functions
     def insert_handler(self, widget, **kwargs):
