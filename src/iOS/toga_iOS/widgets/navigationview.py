@@ -2,9 +2,9 @@ from rubicon.objc import SEL, objc_method
 
 from toga.interface import NavigationView as NavigationViewInterface
 from toga_iOS.libs import (
-    UINavigationController,
     UIBarButtonItem,
     UIBarButtonSystemItemAdd,
+    UINavigationController
 )
 from toga_iOS.widgets.base import WidgetMixin
 

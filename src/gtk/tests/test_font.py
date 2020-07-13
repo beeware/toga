@@ -1,13 +1,13 @@
 import unittest
 
 import toga
-from toga.constants import ITALIC, OBLIQUE, SMALL_CAPS, BOLD, SYSTEM, CURSIVE
+from toga.constants import BOLD, CURSIVE, ITALIC, OBLIQUE, SMALL_CAPS, SYSTEM
 from toga_gtk import fonts as gtk_fonts
 
 try:
     import gi
     gi.require_version('Gtk', '3.0')
-    from gi.repository import Gtk, Gdk
+    from gi.repository import Gtk
 except ImportError:
     import sys
     # If we're on Linux, Gtk *should* be available. If it isn't, make

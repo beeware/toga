@@ -1,4 +1,4 @@
-from .app import App, MainWindow  #, DocumentApp
+from .app import App, MainWindow  # DocumentApp
 # from .command import Command
 
 # from .documents import Document
@@ -31,13 +31,13 @@ from .widgets.button import Button
 
 
 def not_implemented(feature):
-    print('[Django] Not implemented: {}'.format(feature))
+    print('[Web] Not implemented: {}'.format(feature))
 
 
 __all__ = [
     'not_implemented',
 
-    'App', 'MainWindow', # 'DocumentApp',
+    'App', 'MainWindow',  # 'DocumentApp',
     # 'Command',
     # 'Document',
 
@@ -49,7 +49,7 @@ __all__ = [
 
     # # Widgets
     'Box',
-    # 'Button',
+    'Button',
     # 'Canvas',
     # 'DetailedList',
     # 'ImageView',

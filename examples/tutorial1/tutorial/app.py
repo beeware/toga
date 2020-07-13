@@ -1,5 +1,5 @@
 import toga
-from toga.style.pack import *
+from toga.style.pack import COLUMN, LEFT, RIGHT, ROW, Pack
 
 
 def build(app):
@@ -17,7 +17,7 @@ def build(app):
     def calculate(widget):
         try:
             c_input.value = (float(f_input.value) - 32.0) * 5.0 / 9.0
-        except:
+        except ValueError:
             c_input.value = '???'
 
     button = toga.Button('Calculate', on_press=calculate)

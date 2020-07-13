@@ -1,4 +1,5 @@
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+
 import toga
 import toga_dummy
 from toga.command import CommandSet
@@ -11,7 +12,6 @@ class TestWindow(TestCase):
         self.window = toga.Window(factory=toga_dummy.factory)
 
     def test_widget_created(self):
-        id = self.window.id
         self.assertIsNotNone(self.window.id)
         app = toga.App('test_name', 'id.app', factory=toga_dummy.factory)
         new_app = toga.App('error_name', 'id.error', factory=toga_dummy.factory)

@@ -24,13 +24,13 @@ class ListSource(Source):
 
     Args:
         data (`list`): The data in the list. Each entry in the list should have the
-            same number of entries as there are accessors. 
+            same number of entries as there are accessors.
         accessors (`list`): A list of attribute names for accessing the value
             in each column of the row.
     """
     def __init__(self, data, accessors):
         super().__init__()
-        self._accessors = accessors
+        self._accessors = accessors.copy()
         self._data = []
         for value in data:
             self._data.append(self._create_row(value))

@@ -1,11 +1,12 @@
-from toga.constants import LEFT, RIGHT, CENTER, JUSTIFY
 from travertino.size import at_least
+
+from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT
 
 from ..libs.android_widgets import (
     EditText,
     Gravity,
-    View__MeasureSpec,
     TextWatcher,
+    View__MeasureSpec
 )
 from .base import Widget
 

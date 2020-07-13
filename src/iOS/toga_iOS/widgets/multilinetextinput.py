@@ -1,7 +1,4 @@
-from rubicon.objc import (
-    CGPoint,
-    objc_method
-)
+from rubicon.objc import CGPoint, objc_method
 from travertino.size import at_least
 
 from toga_iOS.libs import (
@@ -12,7 +9,7 @@ from toga_iOS.libs import (
     NSLayoutConstraint,
     NSLayoutRelationEqual,
     UILabel,
-    UITextView,
+    UITextView
 )
 from toga_iOS.widgets.base import Widget
 

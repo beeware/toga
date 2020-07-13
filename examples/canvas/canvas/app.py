@@ -1,11 +1,28 @@
 import math
 
-from travertino.constants import BLACK, BLUE, GREEN, RED, YELLOW, BOLD, NORMAL, ITALIC
-from toga.fonts import SYSTEM, MESSAGE, SERIF, SANS_SERIF, CURSIVE, FANTASY, MONOSPACE
+from travertino.constants import (
+    BLACK,
+    BLUE,
+    BOLD,
+    GREEN,
+    ITALIC,
+    NORMAL,
+    RED,
+    YELLOW,
+)
 
 import toga
+from toga.fonts import (
+    CURSIVE,
+    FANTASY,
+    MESSAGE,
+    MONOSPACE,
+    SANS_SERIF,
+    SERIF,
+    SYSTEM,
+)
 from toga.style import Pack
-from toga.style.pack import ROW, COLUMN
+from toga.style.pack import COLUMN, ROW
 from toga.widgets.canvas import FillRule
 
 STROKE = "Stroke"

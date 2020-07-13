@@ -1,8 +1,8 @@
 import asyncio
 
 import toga
-from toga.style import Pack
 from toga.constants import COLUMN
+from toga.style import Pack
 
 from .translations import bee_translations
 

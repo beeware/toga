@@ -1,6 +1,6 @@
 import toga
+from toga.constants import CENTER, COLUMN, ROW
 from toga.style import Pack
-from toga.constants import ROW, COLUMN, CENTER
 
 
 class ExampleLayoutApp(toga.App):

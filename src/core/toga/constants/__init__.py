@@ -1,1 +1,1 @@
-from travertino.constants import *
+from travertino.constants import *  # noqa: F401,F403

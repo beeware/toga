@@ -31,7 +31,7 @@ class SelectionTests(TestCase):
         self.assertEqual(self.selection._items, new_items)
 
     def test_get_selected_item_invokes_impl_method(self):
-        value = self.selection.value
+        self.selection.value
         self.assertValueGet(self.selection, 'selected_item')
 
     def test_set_selected_item_invokes_impl_methods(self):

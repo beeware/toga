@@ -2,7 +2,6 @@ from toga.keys import Key
 
 from .libs import Gdk
 
-
 GDK_KEYS = {
     Gdk.KEY_Escape: Key.ESCAPE,
 

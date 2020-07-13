@@ -10,8 +10,8 @@ from toga_iOS.libs import (
     UIColor,
     UIScrollView
 )
-from toga_iOS.window import iOSViewport
 from toga_iOS.widgets.base import Widget
+from toga_iOS.window import iOSViewport
 
 
 class ScrollContainer(Widget):

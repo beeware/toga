@@ -36,7 +36,7 @@ class TextInputTests(TestCase):
         self.assertValueSet(self.text_input, 'value', '')
 
     def test_getting_value_invokes_impl_method(self):
-        value = self.text_input.value
+        self.text_input.value
         self.assertValueGet(self.text_input, 'value')
 
     def test_setting_value_invokes_impl_method(self):

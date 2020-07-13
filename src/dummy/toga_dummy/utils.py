@@ -48,11 +48,9 @@ def not_required_on(*args):
     return _dec
 
 
-
 ###########################################################################
 # The event types that can be logged
 ###########################################################################
-
 
 class EventLog:
     # Event types that can be logged
@@ -354,8 +352,11 @@ class TestCase(unittest.TestCase):
                 'Widget {} did not retrieve the attribute {!r}; retrieved attributes were {}.'.format(
                     _widget,
                     attr,
-                    ','.join('{!r}'.format(a) for a in sorted(_widget._impl._gets))
-            ))
+                    ','.join(
+                        '{!r}'.format(a) for a in sorted(_widget._impl._gets)
+                    )
+                )
+            )
         except AttributeError:
             self.fail('Widget {} is not a logged object'.format(_widget))
 

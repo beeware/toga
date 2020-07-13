@@ -1,4 +1,4 @@
-from toga_cocoa.libs import NSImage, NSURL
+from toga_cocoa.libs import NSURL, NSImage
 
 
 class Image:

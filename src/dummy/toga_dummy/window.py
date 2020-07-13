@@ -1,4 +1,4 @@
-from .utils import not_required_on, LoggedObject
+from .utils import LoggedObject, not_required_on
 
 
 class Window(LoggedObject):

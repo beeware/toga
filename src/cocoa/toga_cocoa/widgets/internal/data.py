@@ -1,4 +1,4 @@
-from rubicon.objc import *
+from toga_cocoa.libs import NSObject, objc_method
 
 
 class TogaData(NSObject):

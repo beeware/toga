@@ -1,13 +1,32 @@
-
 from toga_cocoa.libs import (
-    ObjCInstance, objc_method, send_super,
-    NSTableCellView, NSImageView, NSTextField, NSTextFieldCell,
-    NSViewMaxYMargin, NSViewMinYMargin, NSMutableDictionary,
-    NSGraphicsContext, NSAffineTransform, NSImageInterpolationHigh,
-    NSCompositingOperationSourceOver, NSColor, NSBezierPath,
-    NSForegroundColorAttributeName, NSFontAttributeName, NSFont,
-    NSImageScaleProportionallyDown, NSImageAlignment,
-    NSSize, NSPoint, NSRect, NSMakePoint, NSMakeRect, CGRect, at
+    CGRect,
+    NSAffineTransform,
+    NSBezierPath,
+    NSColor,
+    NSCompositingOperationSourceOver,
+    NSFont,
+    NSFontAttributeName,
+    NSForegroundColorAttributeName,
+    NSGraphicsContext,
+    NSImageAlignment,
+    NSImageInterpolationHigh,
+    NSImageScaleProportionallyDown,
+    NSImageView,
+    NSMakePoint,
+    NSMakeRect,
+    NSMutableDictionary,
+    NSPoint,
+    NSRect,
+    NSSize,
+    NSTableCellView,
+    NSTextField,
+    NSTextFieldCell,
+    NSViewMaxYMargin,
+    NSViewMinYMargin,
+    ObjCInstance,
+    at,
+    objc_method,
+    send_super
 )
 
 
@@ -62,64 +81,6 @@ class TogaIconView(NSTableCellView):
         if text != self.textField.stringValue:
             self.textField.stringValue = text
             self.textField.sizeToFit()
-
-
-class TogaIconCell(NSTextFieldCell):
-
-    @objc_method
-    def drawWithFrame_inView_(self, cellFrame: NSRect, view) -> None:
-        # The data to display.
-        try:
-            label = self.objectValue.attrs['label']
-            icon = self.objectValue.attrs['icon']
-        except AttributeError:
-            # Value is a simple string.
-            label = self.objectValue
-            icon = None
-
-        if icon and icon.native:
-            offset = 28.5
-
-            NSGraphicsContext.currentContext.saveGraphicsState()
-            yOffset = cellFrame.origin.y
-            if view.isFlipped:
-                xform = NSAffineTransform.transform()
-                xform.translateXBy(8, yBy=cellFrame.size.height)
-                xform.scaleXBy(1.0, yBy=-1.0)
-                xform.concat()
-                yOffset = 0.5 - cellFrame.origin.y
-
-            interpolation = NSGraphicsContext.currentContext.imageInterpolation
-            NSGraphicsContext.currentContext.imageInterpolation = NSImageInterpolationHigh
-
-            icon.native.drawInRect(
-                NSRect(NSPoint(cellFrame.origin.x, yOffset), NSSize(16.0, 16.0)),
-                fromRect=NSRect(NSPoint(0, 0), NSSize(icon.native.size.width, icon.native.size.height)),
-                operation=NSCompositingOperationSourceOver,
-                fraction=1.0
-            )
-
-            NSGraphicsContext.currentContext.imageInterpolation = interpolation
-            NSGraphicsContext.currentContext.restoreGraphicsState()
-        else:
-            # No icon; just the text label
-            offset = 5
-
-        if label:
-            # Find the right color for the text
-            if self.isHighlighted():
-                primaryColor = NSColor.alternateSelectedControlTextColor
-            else:
-                if False:
-                    primaryColor = NSColor.disabledControlTextColor
-                else:
-                    primaryColor = NSColor.textColor
-
-            textAttributes = NSMutableDictionary.alloc().init()
-            textAttributes[NSForegroundColorAttributeName] = primaryColor
-            textAttributes[NSFontAttributeName] = NSFont.systemFontOfSize(13)
-
-            at(label).drawInRect(cellFrame, withAttributes=textAttributes)
 
 
 # A TogaDetailedCell contains:

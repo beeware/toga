@@ -1,8 +1,6 @@
 from urllib.parse import quote
 
-from rubicon.objc import objc_method
-
-from toga_cocoa.libs import NSDocument, NSURL
+from toga_cocoa.libs import NSURL, NSDocument, objc_method
 
 
 class TogaDocument(NSDocument):

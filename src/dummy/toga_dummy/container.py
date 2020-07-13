@@ -1,4 +1,4 @@
-from toga_dummy.utils import not_required_on, LoggedObject
+from toga_dummy.utils import not_required_on
 
 
 @not_required_on('gtk', 'winforms', 'android', 'web')

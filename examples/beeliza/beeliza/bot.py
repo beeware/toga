@@ -1,4 +1,4 @@
-#----------------------------------------------------------------------
+###########################################################################
 # eliza.py
 #
 # A cheezy little Eliza knock-off by Joe Strout
@@ -30,16 +30,16 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
-#----------------------------------------------------------------------
+###########################################################################
 import random
 import re
 
 
 class Eliza:
-    #----------------------------------------------------------------------
+    ###########################################################################
     # reflections, a translation table used to convert things you say
     #    into things the computer says back, e.g. "I am" --> "you are"
-    #----------------------------------------------------------------------
+    ###########################################################################
     REFLECTIONS = {
         "am": "are",
         "was": "were",
@@ -57,12 +57,12 @@ class Eliza:
         "me": "you"
     }
 
-    #----------------------------------------------------------------------
+    ###########################################################################
     # RESPONSES, the main response table.  Each element of the list is a
     #  two-element list; the first is a regexp, and the second is a
     #  list of possible responses, with group-macros labelled as
     #  {0}, {1}, etc.
-    #----------------------------------------------------------------------
+    ###########################################################################
     RESPONSES = [
         [
             re.compile(r'I need (.*)', re.IGNORECASE),
@@ -381,21 +381,21 @@ class Eliza:
         ],
     ]
 
-    #----------------------------------------------------------------------
+    ###########################################################################
     # reflect: take an input string, and reflect the direction of any
     # statments (i.e., "I think I'm happy" - > "you think you're happy")
-    #----------------------------------------------------------------------
+    ###########################################################################
     def reflect(self, input):
         return ' '.join(
             self.REFLECTIONS.get(word, word)
             for word in input.lower().split()
         )
 
-    #----------------------------------------------------------------------
+    ###########################################################################
     # respond: take a string, a set of regexps, and a corresponding
     # set of response lists; find a match, and return a randomly
     # chosen response from the corresponding list.
-    #----------------------------------------------------------------------
+    ###########################################################################
     def respond(self, input):
         # find a match among keys
         for pattern, responses in self.RESPONSES:

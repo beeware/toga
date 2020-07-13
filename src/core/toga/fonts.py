@@ -1,13 +1,20 @@
 # Use the Travertino font definitions as-is
-from travertino.fonts import font, Font as BaseFont
-from travertino.constants import (
-    NORMAL,
-    SYSTEM, MESSAGE,
-    SERIF, SANS_SERIF, CURSIVE, FANTASY, MONOSPACE,
-    ITALIC, OBLIQUE,
-    SMALL_CAPS,
+from travertino.constants import (  # noqa: F401
     BOLD,
+    CURSIVE,
+    FANTASY,
+    ITALIC,
+    MESSAGE,
+    MONOSPACE,
+    NORMAL,
+    OBLIQUE,
+    SANS_SERIF,
+    SERIF,
+    SMALL_CAPS,
+    SYSTEM
 )
+from travertino.fonts import Font as BaseFont  # noqa: F401
+from travertino.fonts import font  # noqa: F401
 
 
 SYSTEM_DEFAULT_FONT_SIZE = -1

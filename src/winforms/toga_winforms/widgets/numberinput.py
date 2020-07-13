@@ -2,7 +2,7 @@ import sys
 
 from travertino.size import at_least
 
-from toga_winforms.libs import WinForms, Convert, HorizontalTextAlignment
+from toga_winforms.libs import Convert, HorizontalTextAlignment, WinForms
 
 from .base import Widget
 

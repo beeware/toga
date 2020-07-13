@@ -1,12 +1,21 @@
 ##########################################################################
 # System/Library/Frameworks/CoreGraphics.framework
 ##########################################################################
-from ctypes import *
-from ctypes import util
+from ctypes import (
+    POINTER,
+    Structure,
+    c_int,
+    c_int32,
+    c_size_t,
+    c_uint32,
+    c_void_p,
+    c_wchar_p,
+    cdll,
+    util
+)
 
+from rubicon.objc import CGFloat, CGRect
 from rubicon.objc.types import register_preferred_encoding
-from rubicon.objc import *
-
 
 ######################################################################
 core_graphics = cdll.LoadLibrary(util.find_library('CoreGraphics'))
@@ -125,24 +134,15 @@ register_preferred_encoding(b'^{__CGEventSource=}', CGEventSourceRef)
 
 CGScrollEventUnit = c_uint32
 
-core_graphics.CGEventCreateScrollWheelEvent.argtypes = [CGEventSourceRef, CGScrollEventUnit, c_uint32, c_int32, c_int32]
+core_graphics.CGEventCreateScrollWheelEvent.argtypes = [
+    CGEventSourceRef, CGScrollEventUnit, c_uint32, c_int32, c_int32
+]
 core_graphics.CGEventCreateScrollWheelEvent.restype = CGEventRef
 
 ######################################################################
 # CGEventTypes.h
 kCGScrollEventUnitPixel = 0
 kCGScrollEventUnitLine = 1
-
-######################################################################
-# CGGeometry.h
-
-
-class CGRectMake(Structure):
-    _fields_ = [
-        ("origin", CGPoint),
-        ("size", CGSize),
-    ]
-
 
 ######################################################################
 # CGImage.h

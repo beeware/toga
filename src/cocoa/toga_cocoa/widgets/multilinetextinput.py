@@ -1,7 +1,13 @@
-from toga_cocoa.colors import native_color
-from toga_cocoa.libs import (NSBezelBorder, NSScrollView, NSTextView,
-                             NSViewWidthSizable, objc_method)
 from travertino.size import at_least
+
+from toga_cocoa.colors import native_color
+from toga_cocoa.libs import (
+    NSBezelBorder,
+    NSScrollView,
+    NSTextView,
+    NSViewWidthSizable,
+    objc_method
+)
 
 from .base import Widget
 

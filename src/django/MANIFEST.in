@@ -1,5 +1,6 @@
+include CONTRIBUTING.md
 include LICENSE
 include README.rst
 include setup.py
 include setup.cfg
-include toga_django.py
+recursive-include toga_django *.py

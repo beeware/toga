@@ -1,7 +1,12 @@
 from travertino.size import at_least
-from rubicon.objc import objc_method, SEL
 
-from toga_cocoa.libs import NSButton, NSRoundedBezelStyle, NSMomentaryPushInButton
+from toga_cocoa.libs import (
+    SEL,
+    NSButton,
+    NSMomentaryPushInButton,
+    NSRoundedBezelStyle,
+    objc_method
+)
 
 from .base import Widget
 
@@ -28,7 +33,7 @@ class Button(Widget):
 
     def set_font(self, font):
         if font:
-            self.native.font = font.bind(self.interface.factory).native
+            self.native.font = font._impl.native
 
     def set_label(self, label):
         self.native.title = self.interface.label

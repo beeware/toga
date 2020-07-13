@@ -1,5 +1,5 @@
+include CONTRIBUTING.md
 include LICENSE
-include tox.ini
 include README.rst
-recursive-include toga_android *.py
 recursive-include tests *.py
+recursive-include toga_android *.py

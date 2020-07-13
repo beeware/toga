@@ -12,4 +12,3 @@ class Box(Widget):
 
     def add_child(self, child):
         pass
-

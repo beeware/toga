@@ -1,5 +1,5 @@
-from toga_winforms.libs import WinForms, Size, Point
 from toga_winforms.colors import native_color
+from toga_winforms.libs import Point, Size, WinForms
 
 from .base import Widget
 

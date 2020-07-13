@@ -4,7 +4,6 @@ from rubicon.objc import SEL, objc_method
 from rubicon.objc.eventloop import EventLoopPolicy, iOSLifecycle
 
 from toga.handlers import wrapped_handler
-
 from toga_iOS.libs import (
     NSNotificationCenter,
     UIKeyboardFrameEndUserInfoKey,

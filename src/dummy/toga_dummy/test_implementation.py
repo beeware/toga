@@ -1,7 +1,7 @@
 import ast
 import os
 import unittest
-from collections import namedtuple, defaultdict
+from collections import defaultdict, namedtuple
 from itertools import zip_longest
 from pathlib import Path
 

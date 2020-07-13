@@ -1,4 +1,4 @@
-from rubicon.objc import objc_method, CGSize
+from rubicon.objc import CGSize, objc_method
 from travertino.size import at_least
 
 from toga_iOS.libs import UIColor, UIPickerView, UITextBorderStyle, UITextField

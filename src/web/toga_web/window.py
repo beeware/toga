@@ -1,4 +1,4 @@
-from travertino.layout import Viewport
+# from travertino.layout import Viewport
 
 # from toga.command import GROUP_BREAK, SECTION_BREAK
 # from toga.handlers import wrapped_handler
@@ -9,6 +9,7 @@ from . import dialogs
 class WebViewport:
     def __init__(self):
         self.dpi = 96
+        self.baseline_dpi = 96
 
     @property
     def width(self):

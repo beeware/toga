@@ -1,6 +1,6 @@
 import toga
-from toga.style import Pack
 from toga.constants import COLUMN
+from toga.style import Pack
 
 
 class TogaDemo(toga.App):

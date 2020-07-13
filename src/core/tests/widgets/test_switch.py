@@ -47,5 +47,5 @@ class SwitchTests(TestCase):
         self.assertValueSet(self.switch, 'is_on', False)
 
     def test_getting_is_on_invokes_impl_method(self):
-        value = self.switch.is_on
+        self.switch.is_on
         self.assertValueGet(self.switch, 'is_on')

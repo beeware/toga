@@ -1,14 +1,27 @@
-from rubicon.objc import objc_method, NSMakeRect, NSMutableArray, NSObject, SEL
-
 from toga.command import Command as BaseCommand
-
 from toga_cocoa import dialogs
 from toga_cocoa.libs import (
-    NSScreen, NSToolbar, NSToolbarItem, NSTitledWindowMask,
-    NSClosableWindowMask, NSResizableWindowMask, NSMiniaturizableWindowMask,
-    NSWindow, NSBackingStoreBuffered, NSLayoutConstraint,
-    NSLayoutAttributeBottom, NSLayoutAttributeLeft, NSLayoutAttributeRight,
-    NSLayoutAttributeTop, NSLayoutRelationGreaterThanOrEqual, NSSize
+    SEL,
+    NSBackingStoreBuffered,
+    NSClosableWindowMask,
+    NSLayoutAttributeBottom,
+    NSLayoutAttributeLeft,
+    NSLayoutAttributeRight,
+    NSLayoutAttributeTop,
+    NSLayoutConstraint,
+    NSLayoutRelationGreaterThanOrEqual,
+    NSMakeRect,
+    NSMiniaturizableWindowMask,
+    NSMutableArray,
+    NSObject,
+    NSResizableWindowMask,
+    NSScreen,
+    NSSize,
+    NSTitledWindowMask,
+    NSToolbar,
+    NSToolbarItem,
+    NSWindow,
+    objc_method
 )
 
 
