@@ -1,5 +1,5 @@
 Divider
-======
+=======
 
 .. rst-class:: widget-support
 .. csv-filter::
