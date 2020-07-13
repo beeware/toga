@@ -1,4 +1,4 @@
-Canvas
+Divider
 ======
 
 .. rst-class:: widget-support
