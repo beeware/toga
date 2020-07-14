@@ -1,23 +1,23 @@
 from toga_cocoa.libs import AVMIDIPlayer, NSURL
 
 
-class TogaMIDIPlayer(AVMIDIPlayer):
-    pass
-
-
 class MIDIPlayer:
-    def __init__(self, interface, midi_data, sound_font):
+    def __init__(self, interface, midi_sample, sound_font):
         self.interface = interface
         self.interface._impl = self
         self.native = None
-        self.midi_data = midi_data
-        sound_font_url = None
-        if isinstance(sound_font, NSURL):
-            sound_font_url = sound_font
-        elif sound_font:
-            sound_font_url = NSURL.fileURLWithPath(str(sound_font))
-        self.native = TogaMIDIPlayer.alloc().initWithData(self.midi_data, soundBankURL=sound_font_url, error=None)
+        self.sound_font_url = None
+        self.set_sample(midi_sample, sound_font)
         self.native.interface = self.interface
+
+    def set_sample(self, midi_sample, sound_font=None):
+        if isinstance(sound_font, NSURL):
+            self.sound_font_url = sound_font
+        elif sound_font:
+            self.sound_font_url = NSURL.fileURLWithPath(str(sound_font))
+        if self.native:
+            self.native.autorelease()
+        self.native = AVMIDIPlayer.alloc().initWithData(midi_sample, soundBankURL=self.sound_font_url, error=None)
 
     def play(self):
         callback = None

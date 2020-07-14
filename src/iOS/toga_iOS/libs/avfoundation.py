@@ -13,5 +13,3 @@ avfoundation = cdll.LoadLibrary(util.find_library('AVFoundation'))
 ######################################################################
 # NSBundle.h
 AVMIDIPlayer = ObjCClass('AVMIDIPlayer')
-AVAudioSession = ObjCClass('AVAudioSession')
-AVAudioSessionCategoryPlayback = 'AVAudioSessionCategoryPlayback'
