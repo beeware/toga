@@ -28,9 +28,13 @@ class Button(Widget):
         # No special handling required
         pass
 
+    def set_color(self, value):
+        if value:
+            self.native.ForeColor = native_color(value)
+
     def set_background_color(self, value):
-        new_color = native_color(value)
-        self.native.BackColor = new_color
+        if value:
+            self.native.BackColor = native_color(value)
 
     def rehint(self):
         # self.native.Size = Size(0, 0)
