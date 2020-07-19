@@ -88,10 +88,13 @@ class Widget:
         if self.container:
             child.container = self.container
 
-    def remove_child(self, child):
+    def delete_child(self, child):
         child.winforms_remove_event_handlers()
         self.native.Controls.Remove(child.native)
         child.native.Dispose()
+
+    def remove_child(self, child):
+        child.container = None
 
     def rehint(self):
         pass

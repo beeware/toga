@@ -70,6 +70,9 @@ class Widget:
         if self.container:
             child.container = self.container
 
+    def remove_child(self, child):
+        child.container = None
+
     def rehint(self):
         # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height())
         width = self.native.get_preferred_width()
