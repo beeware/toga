@@ -62,6 +62,28 @@ class Canvas(Box):
         self.native.MouseDown += self.winforms_mouse_press
         self.native.MouseMove += self.winforms_mouse_drag
         self.native.MouseUp += self.winforms_mouse_release
+        self.winforms_event_handlers.append(
+            {
+                'event': self.native.Paint,
+                'handler': self.winforms_paint
+            },
+            {
+                'event': self.native.Resize,
+                'handler': self.winforms_resize
+            },
+            {
+                'event': self.native.MouseDown,
+                'handler': self.winforms_mouse_press
+            },
+            {
+                'event': self.native.MouseMove,
+                'handler': self.winforms_mouse_drag
+            },
+            {
+                'event': self.native.MouseUp,
+                'handler': self.winforms_mouse_release
+            },
+        )
         self.clicks = 0
 
     def set_on_resize(self, handler):

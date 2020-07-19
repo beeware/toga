@@ -9,10 +9,16 @@ from .base import Widget
 class Button(Widget):
     def create(self):
         self.native = WinForms.Button()
-        self.native.Click += self.winforms_click
+        self.native.Click += self.winforms_on_press
+        self.winforms_event_handlers.append(
+            {
+                'event': self.native.Click,
+                'handler': self.winforms_on_press
+            }
+        )
         self.set_enabled(self.interface._enabled)
 
-    def winforms_click(self, sender, event):
+    def winforms_on_press(self, sender, event):
         if self.container:
             if self.interface.on_press:
                 self.interface.on_press(self.interface)

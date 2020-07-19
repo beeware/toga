@@ -16,8 +16,8 @@ class Table(Widget):
         dataColumn = []
         for i, (heading, accessor) in enumerate(zip(
                     self.interface.headings,
-                    self.interface._accessors
-                )):
+                self.interface._accessors
+        )):
             dataColumn.append(self._create_column(heading, accessor))
 
         self.native.FullRowSelect = True
@@ -26,12 +26,30 @@ class Table(Widget):
         self.native.VirtualMode = True
         self.native.Columns.AddRange(dataColumn)
 
-        self.native.ItemSelectionChanged += self._native_item_selection_changed
-        self.native.RetrieveVirtualItem += self._native_retrieve_virtual_item
-        self.native.CacheVirtualItems += self._native_cache_virtual_items
-        self.native.VirtualItemsSelectionRangeChanged += self._native_virtual_item_selection_range_changed
+        self.native.ItemSelectionChanged += self.winforms_item_selection_changed
+        self.native.RetrieveVirtualItem += self.winforms_retrieve_virtual_item
+        self.native.CacheVirtualItems += self.winforms_cache_virtual_items
+        self.native.VirtualItemsSelectionRangeChanged += self.winforms_virtual_item_selection_range_changed
+        self.winforms_event_handlers.append(
+            {
+                'event': self.native.ItemSelectionChanged,
+                'handler': self.winforms_item_selection_changed
+            },
+            {
+                'event': self.native.RetrieveVirtualItem,
+                'handler': self.winforms_retrieve_virtual_item
+            },
+            {
+                'event': self.native.CacheVirtualItems,
+                'handler': self.winforms_cache_virtual_items
+            },
+            {
+                'event': self.native.VirtualItemsSelectionRangeChanged,
+                'handler': self.winforms_virtual_item_selection_range_changed
+            }
+        )
 
-    def _native_virtual_item_selection_range_changed(self, sender, e):
+    def winforms_virtual_item_selection_range_changed(self, sender, e):
         # update selection interface property
         self.interface._selection = self._selected_rows()
 
@@ -41,18 +59,18 @@ class Table(Widget):
             selected = self.interface.data[e.EndIndex]
             self.interface.on_select(self.interface, row=selected)
 
-    def _native_retrieve_virtual_item(self, sender, e):
+    def winforms_retrieve_virtual_item(self, sender, e):
         # Because ListView is in VirtualMode, it's necessary implement
         # VirtualItemsSelectionRangeChanged event to create ListViewItem when it's needed
         if self._cache and e.ItemIndex >= self._first_item and \
-           e.ItemIndex < self._first_item + len(self._cache):
+                e.ItemIndex < self._first_item + len(self._cache):
             e.Item = self._cache[e.ItemIndex - self._first_item]
         else:
             e.Item = WinForms.ListViewItem(self.row_data(self.interface.data[e.ItemIndex]))
 
-    def _native_cache_virtual_items(self, sender, e):
+    def winforms_cache_virtual_items(self, sender, e):
         if self._cache and e.StartIndex >= self._first_item and \
-           e.EndIndex <= self._first_item + len(self._cache):
+                e.EndIndex <= self._first_item + len(self._cache):
             # If the newly requested cache is a subset of the old cache,
             # no need to rebuild everything, so do nothing
             return
@@ -66,7 +84,7 @@ class Table(Widget):
         for i in range(new_length):
             self._cache.append(WinForms.ListViewItem(self.row_data(self.interface.data[i])))
 
-    def _native_item_selection_changed(self, sender, e):
+    def winforms_item_selection_changed(self, sender, e):
         # update selection interface property
         self.interface._selection = self._selected_rows()
 

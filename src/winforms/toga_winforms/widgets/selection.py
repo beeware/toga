@@ -10,9 +10,15 @@ class TogaComboBox(WinForms.ComboBox):
         super().__init__()
         self.interface = interface
         self.DropDownStyle = WinForms.ComboBoxStyle.DropDownList
-        self.SelectedIndexChanged += self.on_select
+        self.SelectedIndexChanged += self.winforms_on_select
+        self.winforms_event_handlers.append(
+            {
+                'event': self.native.SelectedIndexChanged,
+                'handler': self.winforms_on_select
+            }
+        )
 
-    def on_select(self, sender, event):
+    def winforms_on_select(self, sender, event):
         if self.interface.on_select:
             self.interface.on_select(self.interface)
 
