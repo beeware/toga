@@ -1,4 +1,7 @@
 from ..libs.activity import MainActivity
+from ..libs.android_widgets import Gravity
+
+from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT
 
 
 class Widget:
@@ -68,3 +71,13 @@ class Widget:
 
     def rehint(self):
         pass
+
+
+def align(value):
+    """Convert toga alignment values into Android alignment values"""
+    return {
+        LEFT: Gravity.LEFT,
+        RIGHT: Gravity.RIGHT,
+        CENTER: Gravity.CENTER_HORIZONTAL,
+        JUSTIFY: Gravity.CENTER_HORIZONTAL,
+    }[value]
