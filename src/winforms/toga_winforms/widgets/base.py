@@ -27,7 +27,7 @@ class Widget:
     @container.setter
     def container(self, container):
         self._container = container
-        if self.native:
+        if self.native and container is not None:
             self._container.native.Controls.Add(self.native)
             self.native.BringToFront()
 
