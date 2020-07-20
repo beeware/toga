@@ -200,6 +200,7 @@ class Widget(Node):
 
     def refresh(self):
         """Refresh the layout and appearance of the tree this node is contained in."""
+        self._impl.rehint()
         if self._root:
             self._root.refresh()
         else:
