@@ -1,7 +1,5 @@
 from travertino.size import at_least
 
-from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT
-
 from ..libs.android_widgets import (
     ArrayAdapter,
     Gravity,
@@ -10,7 +8,7 @@ from ..libs.android_widgets import (
     Spinner,
     View__MeasureSpec
 )
-from .base import Widget
+from .base import Widget, align
 
 
 class TogaOnItemSelectedListener(OnItemSelectedListener):
@@ -63,14 +61,7 @@ class Selection(Widget):
         self.interface.intrinsic.height = self.native.getMeasuredHeight()
 
     def set_alignment(self, value):
-        self.native.setGravity(
-            {
-                LEFT: Gravity.CENTER_VERTICAL | Gravity.LEFT,
-                RIGHT: Gravity.CENTER_VERTICAL | Gravity.RIGHT,
-                CENTER: Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL,
-                JUSTIFY: Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL,
-            }[value]
-        )
+        self.native.setGravity(Gravity.CENTER_VERTICAL | align(value))
 
     def set_on_select(self, handler):
         # No special handling is required.

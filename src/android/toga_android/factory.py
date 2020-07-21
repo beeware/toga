@@ -5,6 +5,7 @@ from .widgets.box import Box
 from .widgets.button import Button
 from .widgets.label import Label
 from .widgets.numberinput import NumberInput
+from .widgets.multilinetextinput import MultilineTextInput
 from .widgets.passwordinput import PasswordInput
 from .widgets.selection import Selection
 from .widgets.textinput import TextInput
@@ -22,6 +23,7 @@ __all__ = [
     "Icon",
     "Label",
     "MainWindow",
+    "MultilineTextInput",
     "NumberInput",
     "PasswordInput",
     "Selection",
