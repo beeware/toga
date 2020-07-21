@@ -9,7 +9,7 @@ class ActivityIndicator(Widget):
         self.native.interface = self.interface
 
     def set_hide_when_stopped(self, value):
-        pass
+        self.interface.factory.not_implemented('ActivityIndicator.set_hide_when_stopped()')
 
     def start(self):
         self.native.start()
