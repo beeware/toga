@@ -47,6 +47,7 @@ __all__ = [
     'paths',
 
     # Widgets
+    'ActivityIndicator',
     'Box',
     'Button',
     'Canvas',
