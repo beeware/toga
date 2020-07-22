@@ -25,9 +25,6 @@ Usage
     # make widget visible and start animation
     spinner.start()
 
-By default, the activity indicator is hidden when it is not running and will become visible when calling ``start``.
-This can be changed by setting the ``hide_when_stopped`` property to ``False`` on supported platforms.
-
 Reference
 ---------
 
