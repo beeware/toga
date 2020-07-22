@@ -10,11 +10,11 @@ from .base import Widget
 class TimePicker(Widget):
     def create(self):
         self.native = WinForms.DateTimePicker()
-        self.native.ValueChanged += self.winforms_on_change
+        self.native.ValueChanged += self.winforms_value_changed
         self.winforms_event_handlers.append(
             {
                 'event': self.native.ValueChanged,
-                'handler': self.winforms_on_change
+                'handler': self.winforms_value_changed
             }
         )
         self.native.Format = WinForms.DateTimePickerFormat.Time
@@ -51,7 +51,7 @@ class TimePicker(Widget):
     def set_on_change(self, handler):
         pass
 
-    def winforms_on_change(self, sender, event):
+    def winforms_value_changed(self, sender, event):
         # Since there is no native option to set a min or max time, calling min/max to validate on each change.
         self.set_max_time(self.interface.max_time)
         self.set_min_time(self.interface.min_time)

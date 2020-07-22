@@ -59,9 +59,9 @@ class Canvas(Box):
         self.native.DoubleBuffered = True
         self.native.Paint += self.winforms_paint
         self.native.Resize += self.winforms_resize
-        self.native.MouseDown += self.winforms_mouse_press
-        self.native.MouseMove += self.winforms_mouse_drag
-        self.native.MouseUp += self.winforms_mouse_release
+        self.native.MouseDown += self.winforms_mouse_down
+        self.native.MouseMove += self.winforms_mouse_move
+        self.native.MouseUp += self.winforms_mouse_up
         self.winforms_event_handlers.append(
             {
                 'event': self.native.Paint,
@@ -73,15 +73,15 @@ class Canvas(Box):
             },
             {
                 'event': self.native.MouseDown,
-                'handler': self.winforms_mouse_press
+                'handler': self.winforms_mouse_down
             },
             {
                 'event': self.native.MouseMove,
-                'handler': self.winforms_mouse_drag
+                'handler': self.winforms_mouse_move
             },
             {
                 'event': self.native.MouseUp,
-                'handler': self.winforms_mouse_release
+                'handler': self.winforms_mouse_up
             },
         )
         self.clicks = 0
@@ -121,7 +121,7 @@ class Canvas(Box):
         if self.interface.on_resize:
             self.interface.on_resize(self.interface)
 
-    def winforms_mouse_press(self, obj, mouse_event):
+    def winforms_mouse_down(self, obj, mouse_event):
         self.clicks = mouse_event.Clicks
         if mouse_event.Button == WinForms.MouseButtons.Left and self.interface.on_press:
             self.interface.on_press(
@@ -132,7 +132,7 @@ class Canvas(Box):
                 self.interface, mouse_event.X, mouse_event.Y, mouse_event.Clicks
             )
 
-    def winforms_mouse_drag(self, obj, mouse_event):
+    def winforms_mouse_move(self, obj, mouse_event):
         if self.clicks == 0:
             return
         if mouse_event.Button == WinForms.MouseButtons.Left and self.interface.on_drag:
@@ -144,7 +144,7 @@ class Canvas(Box):
                 self.interface, mouse_event.X, mouse_event.Y, self.clicks
             )
 
-    def winforms_mouse_release(self, obj, mouse_event):
+    def winforms_mouse_up(self, obj, mouse_event):
         if mouse_event.Button == WinForms.MouseButtons.Left and self.interface.on_release:
             self.interface.on_release(
                 self.interface, mouse_event.X, mouse_event.Y, self.clicks

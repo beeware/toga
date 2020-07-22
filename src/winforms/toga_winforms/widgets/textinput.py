@@ -13,7 +13,7 @@ class TextInput(Widget):
         self.native = WinForms.TextBox()
         self.native.Multiline = False
         self.native.Click += self.winforms_click
-        self.native.TextChanged += self.winforms_on_change
+        self.native.TextChanged += self.winforms_text_changed
         self.winforms_event_handlers.append(
             {
                 'event': self.native.Click,
@@ -21,7 +21,7 @@ class TextInput(Widget):
             },
             {
                 'event': self.native.TextChanged,
-                'handler': self.winforms_on_change
+                'handler': self.winforms_text_changed
             }
         )
 
@@ -62,7 +62,7 @@ class TextInput(Widget):
     def set_on_change(self, handler):
         pass
 
-    def winforms_on_change(self, sender, event):
+    def winforms_text_changed(self, sender, event):
         if self.interface._on_change:
             self.interface.on_change(self.interface)
 

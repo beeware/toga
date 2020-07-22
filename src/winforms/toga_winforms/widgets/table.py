@@ -15,7 +15,7 @@ class Table(Widget):
 
         dataColumn = []
         for i, (heading, accessor) in enumerate(zip(
-                    self.interface.headings,
+                self.interface.headings,
                 self.interface._accessors
         )):
             dataColumn.append(self._create_column(heading, accessor))

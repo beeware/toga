@@ -7,11 +7,11 @@ from .base import Widget
 class OptionContainer(Widget):
     def create(self):
         self.native = WinForms.TabControl()
-        self.native.Selected += self.winforms_on_select
+        self.native.Selected += self.winforms_selected
         self.winforms_event_handlers.append(
             {
                 'event': self.native.Selected,
-                'handler': self.winforms_on_select
+                'handler': self.winforms_selected
             }
         )
 
@@ -56,6 +56,6 @@ class OptionContainer(Widget):
     def get_option_label(self, index):
         return self.native.TabPages[index].Text
 
-    def winforms_on_select(self, sender, event):
+    def winforms_selected(self, sender, event):
         if self.interface.on_select:
             self.interface.on_select(self.interface)

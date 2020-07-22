@@ -8,15 +8,15 @@ from .base import Widget
 class Switch(Widget):
     def create(self):
         self.native = WinForms.CheckBox()
-        self.native.CheckedChanged += self.winforms_on_toggle
+        self.native.CheckedChanged += self.winforms_checked_changed
         self.winforms_event_handlers.append(
             {
                 'event': self.native.CheckedChanged,
-                'handler': self.winforms_on_toggle
+                'handler': self.winforms_checked_changed
             }
         )
 
-    def winforms_on_toggle(self, sender, event):
+    def winforms_checked_changed(self, sender, event):
         if self.container:
             if self.interface.on_toggle:
                 self.interface.on_toggle(self.interface)
