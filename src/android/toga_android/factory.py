@@ -1,8 +1,10 @@
 from .app import App, MainWindow
 from .icons import Icon
+from .images import Image
 from .paths import paths
 from .widgets.box import Box
 from .widgets.button import Button
+from .widgets.imageview import ImageView
 from .widgets.label import Label
 from .widgets.numberinput import NumberInput
 from .widgets.multilinetextinput import MultilineTextInput
@@ -21,6 +23,8 @@ __all__ = [
     "Box",
     "Button",
     "Icon",
+    "Image",
+    "ImageView",
     "Label",
     "MainWindow",
     "MultilineTextInput",
