@@ -22,7 +22,7 @@ This will pop up a GUI window showing the full range of widgets available
 to an application using Toga.
 
 There is a known issue with the current build on some Mac OS distributions. If you are
-running Mac OS Sierra or higher, use the following installation command instead:
+running Mac OS Sierra or higher, use the following installation command instead::
 
     $ pip install toga-demo --pre
 
