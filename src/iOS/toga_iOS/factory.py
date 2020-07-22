@@ -27,7 +27,7 @@ from .widgets.webview import WebView
 from .window import Window
 
 # Sound
-from .sound.midiplayer import MIDIPlayer
+from .sound.miditrack import MIDITrack
 
 # from .command import Command
 
@@ -73,5 +73,5 @@ __all__ = [
     'Window',
 
     # Sound
-    'MIDIPlayer'
+    'MIDITrack'
 ]

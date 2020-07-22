@@ -1,9 +1,8 @@
 from toga.platform import get_platform_factory
 
 
-class MIDIPlayer:
-    """A player for MIDI file formats.  Although the data it plays is in the MIDI format, the MIDIPlayer itself is not a
-    Musical Instrument Digital Interface (MIDI).
+class MIDITrack:
+    """A player for MIDI file formats.
 
     Args:
         midi_sample (bytes): The MIDI sample to play.
@@ -12,7 +11,7 @@ class MIDIPlayer:
 
     def __init__(self, midi_sample, sound_font=None):
         self.factory = get_platform_factory()
-        self._impl = self.factory.MIDIPlayer(interface=self, midi_sample=midi_sample, sound_font=sound_font)
+        self._impl = self.factory.MIDITrack(interface=self, midi_sample=midi_sample, sound_font=sound_font)
 
     def set_sample(self, midi_sample, sound_font):
         self._impl.set_sample(midi_sample, sound_font)

@@ -36,7 +36,7 @@ from .widgets.webview import WebView
 from .window import Window
 
 # Sound
-from .sound.midiplayer import MIDIPlayer
+from .sound.miditrack import MIDITrack
 
 
 __all__ = [
@@ -84,7 +84,7 @@ __all__ = [
     'WebView',
 
     # Sound
-    'MIDIPlayer'
+    'MIDITrack'
 ]
 
 # Examples of valid version strings

@@ -1,7 +1,7 @@
 from toga_iOS.libs import AVMIDIPlayer, NSURL
 
 
-class MIDIPlayer:
+class MIDITrack:
     def __init__(self, interface, midi_sample, sound_font):
         self.interface = interface
         self.interface._impl = self
