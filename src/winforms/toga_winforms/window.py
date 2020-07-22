@@ -121,9 +121,13 @@ class Window:
         )
         self.interface.content.refresh()
 
-        self.native.Show()
+        if self.interface is self.interface.app._main_window:
+            self.native.FormClosing += self.winforms_form_closing
 
-    def winforms_FormClosing(self, event, handler):
+        if self.interface is not self.interface.app._main_window:
+            self.native.Show()
+
+    def winforms_form_closing(self, event, handler):
         if self.interface.app.on_exit:
             self.interface.app.on_exit(self.interface.app)
 
