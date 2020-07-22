@@ -24,5 +24,5 @@ class Box(Widget):
             self.native.Location = Point(x - horizontal_shift, y + vertical_shift)
 
     def set_background_color(self, value):
-        new_color = native_color(value)
-        self.native.BackColor = new_color
+        if value:
+            self.native.BackColor = native_color(value)
