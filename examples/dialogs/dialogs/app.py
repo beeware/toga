@@ -116,7 +116,6 @@ class ExampledialogsApp(toga.App):
             cancel_exit()
             self.label.text = 'Exit canceled'
 
-
     def startup(self):
         # Set up main window
         self.main_window = toga.MainWindow(title=self.name)
