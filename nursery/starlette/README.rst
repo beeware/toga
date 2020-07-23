@@ -1,7 +1,9 @@
-toga-pyramid
-============
+toga-starlette
+==============
 
-A `Pyramid <https://trypyramid.com>`__ backend for the `Toga widget toolkit`_.
+A `Starlette <https://www.starlette.io>`__ backend for the `Toga widget toolkit`_.
+
+**Toga requires Python 3**
 
 **THIS IS A PLACEHOLDER PROJECT**
 
