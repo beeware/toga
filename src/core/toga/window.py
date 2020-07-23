@@ -52,6 +52,8 @@ class Window:
         self.size = size
         self.title = title
 
+        self._on_close = None
+
     @property
     def id(self):
         """ The DOM identifier for the window.
