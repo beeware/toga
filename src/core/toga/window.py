@@ -1,6 +1,7 @@
 from builtins import id as identifier
 
 from toga.command import CommandSet
+from toga.handlers import wrapped_handler
 from toga.platform import get_platform_factory
 
 
@@ -181,8 +182,24 @@ class Window:
     def close(self):
         self._impl.close()
 
+    @property
     def on_close(self):
-        self._impl.on_close()
+        """The handler to invoke before a secondary window is closed.
+
+        Returns:
+            The function ``callable`` that is called on closing a secondary window.
+        """
+        return self._on_close
+
+    @on_close.setter
+    def on_close(self, handler):
+        """Set the handler to invoke before a secondary window is closed.
+
+        Args:
+            handler (:obj:`callable`): The handler to invoke before a secondary window is closed.
+        """
+        self._on_close = wrapped_handler(self, handler)
+        self._impl.set_on_close(self._on_close)
 
     ############################################################
     # Dialogs

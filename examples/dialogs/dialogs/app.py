@@ -94,7 +94,12 @@ class ExampledialogsApp(toga.App):
         # Problems:
         # - Setting secondary window's `app` manually
         # - Secondary window's `icon` is not set
-        window = toga.Window(title="Second Toga Window!")
+        def close_handler(win):
+            self.window_count -= 1
+            self.set_window_label_text()
+        window = toga.Window(title="New Window {}".format(self.window_count))
+        self.window_count += 1
+        self.set_window_label_text()
         secondary_label = toga.Label(text="You are in secondary window!")
         window.content = toga.Box(
             children=[
@@ -107,6 +112,7 @@ class ExampledialogsApp(toga.App):
             )
         )
         window.app = self
+        window.on_close = close_handler
         window.show()
 
     def exit_handler(self, app, cancel_exit):
@@ -116,14 +122,18 @@ class ExampledialogsApp(toga.App):
             cancel_exit()
             self.label.text = 'Exit canceled'
 
+    def set_window_label_text(self):
+        self.window_label.text = '{} secondary windows open'.format(self.window_count - 1)
+
     def startup(self):
         # Set up main window
         self.main_window = toga.MainWindow(title=self.name)
-
+        self.window_count = 1
         self.on_exit = self.exit_handler
 
         # Label to show responses.
         self.label = toga.Label('Ready.', style=Pack(padding_top=20))
+        self.window_label = toga.Label('{} secondary windows open'.format(self.window_count - 1), style=Pack(padding_top=20))
 
         # Buttons
         btn_style = Pack(flex=1)
@@ -166,7 +176,8 @@ class ExampledialogsApp(toga.App):
                 btn_open_multi,
                 btn_open_secondary_window,
                 btn_clear,
-                self.label
+                self.label,
+                self.window_label
             ],
             style=Pack(
                 flex=1,
