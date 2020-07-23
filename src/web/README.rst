@@ -3,13 +3,11 @@ toga-web
 
 A common backend for the `Toga widget toolkit`_ on web platforms.
 
-**Toga requires Python 3**
+This package isn't much use by itself; it needs to be combined with `the
+core Toga library`_, and a wrapper providing integration with a web framework:
 
-**THIS IS A PLACEHOLDER PROJECT**
-
-At present, it has no functionality - it exists purely to reserve the PyPI namespace.
-
-This package isn't much use by itself; it needs to be combined with `the core Toga library`_.
+* `Django <https://pypi.python.org/pypi/toga-django>`__
+* `Flask <https://pypi.python.org/pypi/toga-flask>`__
 
 For more details, see the `Toga project on Github`_.
 

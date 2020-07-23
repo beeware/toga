@@ -1,9 +1,8 @@
 toga-django
 ===========
 
-A Django backend for the `Toga widget toolkit <https://beeware.org/toga>`__.
-
-**Toga requires Python 3**
+A `Django <https://djangoproject.com>`__ backend for the `Toga widget toolkit
+<https://beeware.org/toga>`__.
 
 This package isn't much use by itself; it needs to be combined with `the core
 Toga library <https://pypi.python.org/pypi/toga-core>`__ and `the Toga Web

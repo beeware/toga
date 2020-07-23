@@ -4,7 +4,6 @@ from flask.globals import request
 from flask.views import View
 
 from toga import platform
-from toga_web import factory
 
 
 class TogaView(View):
@@ -16,8 +15,13 @@ class TogaView(View):
         # Make the Python __main__ context identify as the app being executed.
         sys.modules['__main__'] = self.app_module
 
+        # Set the current platform to be `web`
         platform.current_platform = 'web'
-        app = self.app_module.main(factory=factory)
+
+        # Instantiate the app
+        app = self.app_module.main()
+
+        # Render the app
         return app._impl.render(
             state=state,
             headers=dict(request.headers)
