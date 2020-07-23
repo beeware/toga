@@ -90,16 +90,58 @@ class ExampledialogsApp(toga.App):
         except ValueError:
             self.label.text = "Save file dialog was canceled"
 
+    def action_open_secondary_window(self, widget):
+        # Problems:
+        # - Setting secondary window's `app` manually
+        # - Secondary window's `icon` is not set
+        # - Cannot open secondary window twice, because it is disposed after closing:
+        #         Traceback (most recent call last):
+        #           File "<>\\dev\\beeware\\toga\\src\\core\\toga\\style\\pack.py", line 117, in layout
+        #             def scale(value, scale_factor=viewport.dpi / viewport.baseline_dpi):
+        #           File "<>\\dev\\beeware\\toga\\src\\winforms\\toga_winforms\\window.py", line 31, in dpi
+        #             return self.native.CreateGraphics().DpiX
+        #         ObjectDisposedException : Cannot access a disposed object.
+        #         Object name: 'Form'.
+        #            at System.Windows.Forms.Control.CreateHandle()
+        #            at System.Windows.Forms.Form.CreateHandle()
+        #            at System.Windows.Forms.Control.get_Handle()
+        #            at System.Windows.Forms.Control.CreateGraphicsInternal()
+        #            at System.Windows.Forms.Control.CreateGraphics()
+        window = toga.Window(title="Second Toga Window!")
+        window.content = toga.Box(
+            children=[
+                self.btn_info,
+                self.label
+            ],
+            style=Pack(
+                flex=1,
+                direction=COLUMN,
+                padding=10
+            )
+        )
+        window.app = self
+        window.show()
+
+    def exit_handler(self, app, cancel_exit):
+        if self.main_window.question_dialog('Toga', 'Are you sure you want to quit?'):
+            print("Label text was \'{}\' when you quit the app".format(self.label.text))
+        else:
+            cancel_exit()
+            self.label.text = 'Exit canceled'
+
+
     def startup(self):
         # Set up main window
         self.main_window = toga.MainWindow(title=self.name)
+
+        self.on_exit = self.exit_handler
 
         # Label to show responses.
         self.label = toga.Label('Ready.', style=Pack(padding_top=20))
 
         # Buttons
         btn_style = Pack(flex=1)
-        btn_info = toga.Button('Info', on_press=self.action_info_dialog, style=btn_style)
+        self.btn_info = toga.Button('Info', on_press=self.action_info_dialog, style=btn_style)
         btn_question = toga.Button('Question', on_press=self.action_question_dialog, style=btn_style)
         btn_confirm = toga.Button('Confirm', on_press=self.action_confirm_dialog, style=btn_style)
         btn_error = toga.Button('Error', on_press=self.action_error_dialog, style=btn_style)
@@ -116,13 +158,18 @@ class ExampledialogsApp(toga.App):
             on_press=self.action_select_folder_dialog_multi,
             style=btn_style
         )
+        btn_open_secondary_window = toga.Button(
+            'Open Secondary Window',
+            on_press=self.action_open_secondary_window,
+            style=btn_style
+        )
 
         btn_clear = toga.Button('Clear', on_press=self.do_clear, style=btn_style)
 
         # Outermost box
         box = toga.Box(
             children=[
-                btn_info,
+                self.btn_info,
                 btn_question,
                 btn_confirm,
                 btn_error,
@@ -131,6 +178,7 @@ class ExampledialogsApp(toga.App):
                 btn_select,
                 btn_select_multi,
                 btn_open_multi,
+                btn_open_secondary_window,
                 btn_clear,
                 self.label
             ],
