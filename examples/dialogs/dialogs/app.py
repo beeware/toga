@@ -94,24 +94,11 @@ class ExampledialogsApp(toga.App):
         # Problems:
         # - Setting secondary window's `app` manually
         # - Secondary window's `icon` is not set
-        # - Cannot open secondary window twice, because it is disposed after closing:
-        #         Traceback (most recent call last):
-        #           File "<>\\dev\\beeware\\toga\\src\\core\\toga\\style\\pack.py", line 117, in layout
-        #             def scale(value, scale_factor=viewport.dpi / viewport.baseline_dpi):
-        #           File "<>\\dev\\beeware\\toga\\src\\winforms\\toga_winforms\\window.py", line 31, in dpi
-        #             return self.native.CreateGraphics().DpiX
-        #         ObjectDisposedException : Cannot access a disposed object.
-        #         Object name: 'Form'.
-        #            at System.Windows.Forms.Control.CreateHandle()
-        #            at System.Windows.Forms.Form.CreateHandle()
-        #            at System.Windows.Forms.Control.get_Handle()
-        #            at System.Windows.Forms.Control.CreateGraphicsInternal()
-        #            at System.Windows.Forms.Control.CreateGraphics()
         window = toga.Window(title="Second Toga Window!")
+        secondary_label = toga.Label(text="You are in secondary window!")
         window.content = toga.Box(
             children=[
-                self.btn_info,
-                self.label
+                secondary_label
             ],
             style=Pack(
                 flex=1,
@@ -123,7 +110,7 @@ class ExampledialogsApp(toga.App):
         window.show()
 
     def exit_handler(self, app, cancel_exit):
-        if self.main_window.question_dialog('Toga', 'Are you sure you want to quit?'):
+        if self.main_window.confirm_dialog('Toga', 'Are you sure you want to quit?'):
             print("Label text was \'{}\' when you quit the app".format(self.label.text))
         else:
             cancel_exit()
@@ -141,7 +128,7 @@ class ExampledialogsApp(toga.App):
 
         # Buttons
         btn_style = Pack(flex=1)
-        self.btn_info = toga.Button('Info', on_press=self.action_info_dialog, style=btn_style)
+        btn_info = toga.Button('Info', on_press=self.action_info_dialog, style=btn_style)
         btn_question = toga.Button('Question', on_press=self.action_question_dialog, style=btn_style)
         btn_confirm = toga.Button('Confirm', on_press=self.action_confirm_dialog, style=btn_style)
         btn_error = toga.Button('Error', on_press=self.action_error_dialog, style=btn_style)
@@ -169,7 +156,7 @@ class ExampledialogsApp(toga.App):
         # Outermost box
         box = toga.Box(
             children=[
-                self.btn_info,
+                btn_info,
                 btn_question,
                 btn_confirm,
                 btn_error,
