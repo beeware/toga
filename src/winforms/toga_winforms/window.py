@@ -150,7 +150,7 @@ class Window:
 
     def question_dialog(self, title, message):
         result = WinForms.MessageBox.Show(message, title, WinForms.MessageBoxButtons.YesNo)
-        return result
+        return result == WinForms.DialogResult.Yes
 
     def confirm_dialog(self, title, message):
         result = WinForms.MessageBox.Show(message, title, WinForms.MessageBoxButtons.OKCancel)
