@@ -133,7 +133,10 @@ class ExampledialogsApp(toga.App):
 
         # Label to show responses.
         self.label = toga.Label('Ready.', style=Pack(padding_top=20))
-        self.window_label = toga.Label('{} secondary windows open'.format(self.window_count - 1), style=Pack(padding_top=20))
+        self.window_label = toga.Label(
+            '{} secondary windows open'.format(self.window_count - 1),
+            style=Pack(padding_top=20)
+        )
 
         # Buttons
         btn_style = Pack(flex=1)
