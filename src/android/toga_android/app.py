@@ -89,3 +89,9 @@ class App:
 
     def add_background_task(self, handler):
         self.loop.call_soon(wrapped_handler(self, handler), self)
+
+    def _hide_action_bar(self):
+        self.native.getSupportActionBar().hide()
+
+    def _show_action_bar(self):
+        self.native.getSupportActionBar().show()
