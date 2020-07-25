@@ -36,7 +36,6 @@ class Window:
             </main>
         """.format(
             id=self.interface.id,
-            title=self.interface.title,
             content=self.interface.content._impl.__html__()
         )
 

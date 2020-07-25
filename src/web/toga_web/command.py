@@ -7,7 +7,8 @@ class Command:
         self.native = []
 
     def set_enabled(self, value):
-        enabled = self.interface.enabled
+        pass
+        # enabled = self.interface.enabled
         # for widget in self.native:
         #     try:
         #         widget.set_sensitive(enabled)
