@@ -1,5 +1,4 @@
+include CONTRIBUTING.md
 include LICENSE
 include README.rst
-include setup.py
-include setup.cfg
-include toga_flask.py
+recursive-include toga_flask *.py
