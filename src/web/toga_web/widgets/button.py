@@ -4,8 +4,14 @@ from .base import Widget
 class Button(Widget):
     def __html__(self):
         return """
-        <button>{self.interface.label}</button>
-        """.format(self=self)
+            <button id="toga_{id}" class="toga button btn-block" style="{style}">
+            {label}
+            </button>
+        """.format(
+            id=self.interface.id,
+            label=self.interface.label,
+            style='',
+        )
 
     def create(self):
         pass

@@ -1,9 +1,9 @@
 from .app import App, MainWindow  # DocumentApp
-# from .command import Command
+from .command import Command
 
 # from .documents import Document
 # from .fonts import Font
-# from .icons import Icon
+from .icons import Icon
 # from .images import Image
 from .paths import paths
 
@@ -38,12 +38,12 @@ __all__ = [
     'not_implemented',
 
     'App', 'MainWindow',  # 'DocumentApp',
-    # 'Command',
+    'Command',
     # 'Document',
 
     # # Resources
     # 'Font',
-    # 'Icon',
+    'Icon',
     # 'Image',
     'paths',
 

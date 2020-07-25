@@ -29,6 +29,17 @@ class Window:
     def create(self):
         pass
 
+    def __html__(self):
+        return """
+            <main id="toga_{id}" class="container" role="main">
+            {content}
+            </main>
+        """.format(
+            id=self.interface.id,
+            title=self.interface.title,
+            content=self.interface.content._impl.__html__()
+        )
+
     def set_title(self, title):
         self.interface.factory.not_implemented('Window.set_title()')
 

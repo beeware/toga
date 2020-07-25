@@ -1,31 +1,10 @@
-# import os
-# import os.path
-# import signal
-# import sys
-# from urllib.parse import unquote, urlparse
-
-# import toga
-# from toga import App as toga_App
-# from toga.command import GROUP_BREAK, SECTION_BREAK, Command
+import toga
+from toga.command import Command
 
 from .window import Window
 
 
 class MainWindow(Window):
-    # def create(self):
-    #     super().create()
-    #     self.native.set_role("MainWindow")
-    #     toga_App.app.icon.bind(self.interface.factory)
-    #     self.native.set_icon(toga_App.app.icon._impl.native_72.get_pixbuf())
-
-    # def set_app(self, app):
-    #     super().set_app(app)
-
-    #     # The GTK docs list set_wmclass() as deprecated (and "pointless")
-    #     # but it's the only way I've found that actually sets the
-    #     # Application name to something other than '__main__.py'.
-    #     self.native.set_wmclass(app.interface.name, app.interface.name)
-
     def on_close(self, *args):
         pass
 
@@ -40,33 +19,24 @@ class App:
     def create(self):
         self.interface.startup()
 
-        # self.interface.icon.bind(self.interface.factory)
+        self.interface.icon.bind(self.interface.factory)
         # self.resource_path = os.path.dirname(os.path.dirname(NSBundle.mainBundle.bundlePath))
 
-        # formal_name = self.interface.formal_name
-
-        # self.interface.commands.add(
-        #     toga.Command(None, 'About ' + formal_name, group=toga.Group.APP),
-        #     toga.Command(None, 'Preferences', group=toga.Group.APP),
-        #     toga.Command(None, 'Visit homepage', group=toga.Group.HELP)
-        # )
-        # self._create_app_commands()
-
-        # self._menu_items = {}
-        # self.create_menus()
-
-    def create_menus(self):
-        self.interface.factory.not_implemented('App.create_menus()')
+        formal_name = self.interface.formal_name
+        self.interface.commands.add(
+            toga.Command(None, 'About ' + formal_name, group=toga.Group.APP),
+            toga.Command(None, 'Preferences', group=toga.Group.APP),
+        )
 
     def main_loop(self):
         # Main loop is a no-op
         pass
 
     def set_main_window(self, window):
-        self.interface.factory.not_implemented('App.set_main_window()')
+        pass
 
     def exit(self):
-        self.interface.factory.not_implemented('App.exit()')
+        pass
 
     def set_on_exit(self, value):
         pass
@@ -90,12 +60,6 @@ class App:
         self.interface.factory.not_implemented('App.add_background_task()')
 
     def render(self, state, headers):
-        # content = ''.join(
-        #     child.__html__()
-        #     for child in self.main_window.children
-        # )
-        content = "App content goes here..."
-
         return """<!doctype html>
 <html lang="en">
   <head>
@@ -113,34 +77,63 @@ class App:
     <title>{self.interface.formal_name}</title>
   </head>
   <body>
-    <header>
-        <nav class="navbar fixed-top navbar-dark bg-dark">
+    <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
             <a class="navbar-brand" href="#">
-                <img src="/static/logo-32.png" class="d-inline-block align-top" alt="" loading="lazy">
+                <img src="/static/logo-32.png"
+                     class="d-inline-block align-top"
+                     alt=""
+                     loading="lazy">
                 {self.interface.formal_name}
             </a>
-        </nav>
-    </header>
-    <main class="container" role="main">
-    {content}
-    </main>
+            <button class="navbar-toggler" type="button"
+                    data-toggle="collapse" data-target="#navbarsExample07"
+                    aria-controls="navbarsExample07" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-    <!-- Optional JavaScript -->
+            <div class="collapse navbar-collapse" id="navbarsExample07">
+                <ul class="navbar-nav mr-auto">
+                    <!--li class="nav-item">
+                        <a class="nav-link" href="#">Menu</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link disabled" href="#">Disabled menu</a>
+                    </li-->
+                </ul>
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle"
+                            href="http://example.com" id="dropdown07"
+                            data-toggle="dropdown"
+                            aria-haspopup="true"
+                            aria-expanded="false">Help</a>
+                        <div class="dropdown-menu" aria-labelledby="dropdown07">
+                            <a class="dropdown-item" href="#">About</a>
+                            <a class="dropdown-item" href="#">Preferences</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+{main_window}
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <!--script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
         integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
         crossorigin="anonymous">
-        </script-->
-    <!--script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        </script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
         integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
         crossorigin="anonymous">
-        </script-->
-    <!--script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+        </script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
         integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
         crossorigin="anonymous">
-        </script-->
+        </script>
   </body>
 </html>""".format(
             self=self,
-            content=content,
+            main_window=self.interface.main_window._impl.__html__(),
         )

@@ -4,8 +4,17 @@ from .base import Widget
 class Box(Widget):
     def __html__(self):
         return """
-        <button>{self.interface.label}</button>
-        """.format(self=self)
+            <div id="toga_{id}" class="toga box container" style="{style}">
+            {content}
+            </div>
+        """.format(
+            id=self.interface.id,
+            content="\n".join(
+                child._impl.__html__()
+                for child in self.interface.children
+            ),
+            style=''
+        )
 
     def create(self):
         pass
