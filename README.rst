@@ -45,31 +45,18 @@ Minimum requirements
   that ships starting with Ubuntu 14.04 and Fedora 20. You also need to install
   the Python 3 bindings and development files for GTK+.
 
-  * **Ubuntu / Debian** ``sudo apt-get install python3-dev python3-gi python3-gi-cairo gir1.2-gtk-3.0 libgirepository1.0-dev libcairo2-dev``
+  * **Ubuntu 16.04 / Debian 9** ``sudo apt-get install python3-dev python3-gi python3-gi-cairo libgirepository1.0-dev libcairo2-dev libwebkitgtk-3.0-0 gir1.2-webkit2-3.0``
 
-  * **Fedora** ``sudo dnf install pygobject3 python3-gobject python3-cairo-devel cairo-gobject-devel gobject-introspection-devel``
-    or ``sudo yum install pygobject3 python3-gobject python3-cairo-devel cairo-gobject-devel gobject-introspection-devel``
+  * **Ubuntu 18.04 / Debian 10** ``sudo apt-get install python3-dev python3-gi python3-gi-cairo libgirepository1.0-dev libcairo2-dev libwebkitgtk-4.0-37 gir1.2-webkit2-4.0``
 
-  * **Arch Linux** ``sudo pacman -S gobject-introspection``
+  * **Fedora** ``sudo dnf install pygobject3 python3-gobject python3-cairo-devel cairo-gobject-devel gobject-introspection-devel pywebkitgtk``
+
+  * **Arch / Manjaro** ``sudo pacman -Syu git pkgconf cairo python-cairo pango gobject-introspection gobject-introspection-runtime python-gobject webkit2gtk``
 
 * We're working on Windows support, but not all features and widgets are
   supported. At a minimum, you'll need Python 3 and .NET Framework 4. This has
   been tested on Windows 10, but should work on 7 and 8. Pull requests, help and
   corrections are most welcome.
-
-Optional extras for Linux
-^^^^^^^^^^^^^^^^^^^^^^^^^
-
-In Linux, extra packages are needed if you want to use the WebView widget:
-
-* **Ubuntu / Debian** ``sudo apt-get install gir1.2-webkit2-4.0``
-  Note: for Ubuntu 14.04 install ``gir1.2-webkit-3.0`` instead of ``gir1.2-webkit-4.0``
-
-* **Fedora** ``sudo dnf install pywebkitgtk``
-  or ``sudo yum install pywebkitgtk``
-
-* **Arch Linux** ``sudo pacman -S webkit2gtk``
-
 
 Quickstart
 ~~~~~~~~~~

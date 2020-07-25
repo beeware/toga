@@ -19,6 +19,8 @@ class Divider(Widget):
     def __init__(self, id=None, style=None, direction=HORIZONTAL, factory=None):
         super().__init__(id=id, style=style, factory=factory)
 
+        self._direction = direction
+
         # Create a platform specific implementation of a Divider
         self._impl = self.factory.Divider(interface=self)
         self.direction = direction
