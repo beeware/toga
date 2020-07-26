@@ -1,4 +1,5 @@
 from .app import App, MainWindow
+from .fonts import Font
 from .icons import Icon
 from .images import Image
 from .paths import paths
@@ -24,6 +25,7 @@ __all__ = [
     "App",
     "Box",
     "Button",
+    "Font",
     "Icon",
     "Image",
     "ImageView",

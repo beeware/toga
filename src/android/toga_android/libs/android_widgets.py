@@ -23,6 +23,8 @@ Switch = JavaClass("android/widget/Switch")
 Spinner = JavaClass("android/widget/Spinner")
 TextView = JavaClass("android/widget/TextView")
 TextWatcher = JavaInterface("android/text/TextWatcher")
+TypedValue = JavaClass("android/util/TypedValue")
+Typeface = JavaClass("android/graphics/Typeface")
 ViewGroup__LayoutParams = JavaClass("android/view/ViewGroup$LayoutParams")
 View__MeasureSpec = JavaClass("android/view/View$MeasureSpec")
 
