@@ -70,7 +70,7 @@ class NumberInput(Widget):
     def set_alignment(self, value):
         self.native.setGravity(Gravity.CENTER_VERTICAL | align(value))
 
-    def set_font(self, value):
+    def set_font(self, font):
         self.interface.factory.not_implemented("NumberInput.set_font()")
 
     def set_value(self, value):
