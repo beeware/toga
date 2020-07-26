@@ -21,12 +21,8 @@ setup(
     version=version,
     description='A Django backend for the Toga widget toolkit.',
     install_requires=[
-        'django~=2.2',  # Django LTS
+        'django~=3.0',
         'django-environ==0.4.1',
-        'toga-core==%s' % version,
+        'toga-web==%s' % version,
     ],
-    test_suite='tests',
-    test_require=[
-        'toga-dummy==%s' % version,
-    ]
 )

@@ -63,9 +63,9 @@ class MultilineTextInput(Widget):
         if value:
             self.text.textColor = native_color(value)
 
-    def set_font(self, value):
-        if value:
-            self.text.font = value._impl.native
+    def set_font(self, font):
+        if font:
+            self.text.font = font.bind(self.interface.factory).native
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)

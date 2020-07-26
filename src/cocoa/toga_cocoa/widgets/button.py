@@ -33,7 +33,7 @@ class Button(Widget):
 
     def set_font(self, font):
         if font:
-            self.native.font = font._impl.native
+            self.native.font = font.bind(self.interface.factory).native
 
     def set_label(self, label):
         self.native.title = self.interface.label
