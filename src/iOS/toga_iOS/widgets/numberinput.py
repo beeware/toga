@@ -89,9 +89,9 @@ class NumberInput(Widget):
         if value:
             self.native.textAlignment = NSTextAlignment(value)
 
-    def set_font(self, value):
-        if value:
-            self.native.font = value._impl.native
+    def set_font(self, font):
+        if font:
+            self.native.font = font.bind(self.interface.factory).native
 
     def rehint(self):
         # Height of a text input is known.

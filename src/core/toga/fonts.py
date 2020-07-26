@@ -27,8 +27,9 @@ class Font(BaseFont):
         self._impl = None
 
     def bind(self, factory):
-        self.factory = factory
-        self._impl = factory.Font(self)
+        if self._impl is None:
+            self.factory = factory
+            self._impl = factory.Font(self)
         return self._impl
 
     def measure(self, text, dpi, tight=False):
