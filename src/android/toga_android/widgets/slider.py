@@ -26,40 +26,39 @@ class TogaOnSeekBarChangeListener(SeekBar__OnSeekBarChangeListener):
         pass
 
 
-# Since Android's SeekBar is always discrete, use a high degree of steps for a "continuous" slider.
-_DEFAULT_STEPS = 10000
+# Since Android's SeekBar is always discrete,
+# use a high number of steps for a "continuous" slider.
+DEFAULT_NUMBER_OF_TICKS = 10000
 
 
 class Slider(Widget):
-    _min = 0
-    _max = 1
-    _steps = 100  # current `max` value in Android SeekBar
-
     def create(self):
         self.native = SeekBar(self._native_activity)
-        self._set_steps(_DEFAULT_STEPS)
+        self.native.setMax(DEFAULT_NUMBER_OF_TICKS)
         self.native.setOnSeekBarChangeListener(TogaOnSeekBarChangeListener(self))
 
     def get_value(self):
-        return (self.native.getProgress() * (self._max - self._min) / self._steps) + self._min
+        minimum, maximum = self.interface.range
+        n_steps = self.interface.tick_count
+        if n_steps is None:
+            n_steps = DEFAULT_NUMBER_OF_TICKS
+        return (self.native.getProgress() * (maximum - minimum) / n_steps) + minimum
 
     def set_value(self, value):
-        self.native.setProgress(int((self._max - value - self._min) * self._steps))
+        minimum, maximum = self.interface.range
+        n_steps = self.interface.tick_count
+        if n_steps is None:
+            n_steps = DEFAULT_NUMBER_OF_TICKS
+        self.native.setProgress(int((maximum - value - minimum) * n_steps))
 
     def set_range(self, range):
-        self._min = range[0]
-        self._max = range[1]
-
-        # Ensure current value is within range
-        current_value = self.get_value()
-        if current_value < self._min or current_value > self._max:
-            self.set_value(self._min)
+        pass
 
     def set_tick_count(self, tick_count):
         if tick_count is None:
-            self._set_steps(_DEFAULT_STEPS)
+            self.native.setMax(DEFAULT_NUMBER_OF_TICKS)
         else:
-            self._set_steps(int(tick_count) - 1)
+            self.native.setMax(int(tick_count) - 1)
 
     def rehint(self):
         self.native.measure(
@@ -71,7 +70,3 @@ class Slider(Widget):
     def set_on_slide(self, handler):
         # No special handling required
         pass
-
-    def _set_steps(self, steps):
-        self._steps = steps
-        self.native.setMax(steps)
