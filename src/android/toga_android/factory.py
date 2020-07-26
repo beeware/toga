@@ -8,6 +8,7 @@ from .widgets.numberinput import NumberInput
 from .widgets.multilinetextinput import MultilineTextInput
 from .widgets.passwordinput import PasswordInput
 from .widgets.selection import Selection
+from .widgets.slider import Slider
 from .widgets.textinput import TextInput
 from .window import Window
 
@@ -27,6 +28,7 @@ __all__ = [
     "NumberInput",
     "PasswordInput",
     "Selection",
+    "Slider",
     "TextInput",
     "Window",
     "not_implemented",
