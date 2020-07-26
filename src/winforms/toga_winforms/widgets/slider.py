@@ -10,7 +10,7 @@ NONE_TICK_STYLE = getattr(WinForms.TickStyle, "None")
 
 BOTTOM_RIGHT_TICK_STYLE = WinForms.TickStyle.BottomRight
 
-DEFAULT_NUMBER_OF_TICKS = 100
+DEFAULT_NUMBER_OF_TICKS = 10000
 
 
 class Slider(Widget):

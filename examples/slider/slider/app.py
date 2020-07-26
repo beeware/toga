@@ -16,18 +16,25 @@ class SliderApp(toga.App):
         box_style = Pack(direction=ROW, padding=10)
         slider_style = Pack(flex=1)
 
-        self.sliderValueLabel = toga.Label("slide me", style=label_style)
+        self.discreteSliderValueLabel = toga.Label(
+            "slide me",
+            style=label_style
+        )
+        self.continuousSliderValueLabel = toga.Label(
+            "Default Slider is a continuous range between 0 to 1",
+            style=label_style
+        )
 
         # Add the content on the main window
         self.main_window.content = toga.Box(
             children=[
 
                 toga.Box(style=box_style, children=[
-                    toga.Label(
-                        "Default Slider is a continuous range between 0 to 1",
-                        style=label_style
+                    self.continuousSliderValueLabel,
+                    toga.Slider(
+                        on_slide=self.my_continuous_on_slide,
+                        style=slider_style
                     ),
-                    toga.Slider(style=slider_style),
                 ]),
 
                 toga.Box(style=box_style, children=[
@@ -57,9 +64,9 @@ class SliderApp(toga.App):
                 ]),
 
                 toga.Box(style=box_style, children=[
-                    self.sliderValueLabel,
+                    self.discreteSliderValueLabel,
                     toga.Slider(
-                        on_slide=self.my_on_slide,
+                        on_slide=self.my_discrete_on_slide,
                         range=(MIN_VAL, MAX_VAL),
                         tick_count=MAX_VAL - MIN_VAL + 1, style=slider_style
                     ),
@@ -70,9 +77,13 @@ class SliderApp(toga.App):
 
         self.main_window.show()
 
-    def my_on_slide(self, slider):
+    def my_continuous_on_slide(self, slider):
         # get the current value of the slider with `slider.value`
-        self.sliderValueLabel.text = "The slider value changed to {0}".format(slider.value)
+        self.continuousSliderValueLabel.text = "The slider value changed to {0}".format(slider.value)
+
+    def my_discrete_on_slide(self, slider):
+        # get the current value of the slider with `slider.value`
+        self.discreteSliderValueLabel.text = "The slider value changed to {0}".format(slider.value)
 
 
 def main():
