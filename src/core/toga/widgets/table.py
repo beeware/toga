@@ -53,7 +53,7 @@ class Table(Widget):
         self._on_select = None
         self._selection = None
         self._data = None
-        if not missing_value:
+        if missing_value is None:
             print("WARNING: Using empty string for missing value in data. "
                   "Define a 'missing_value' on the table to silence this message")
         self._missing_value = missing_value or ''
