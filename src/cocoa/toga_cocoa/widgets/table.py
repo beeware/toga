@@ -146,7 +146,7 @@ class Table(Widget):
         self.table.interface = self.interface
         self.table._impl = self
         self.table.columnAutoresizingStyle = NSTableViewColumnAutoresizingStyle.Uniform
-
+        self.table.usesAlternatingRowBackgroundColors = True
         self.table.allowsMultipleSelection = self.interface.multiple_select
 
         # Create columns for the table
