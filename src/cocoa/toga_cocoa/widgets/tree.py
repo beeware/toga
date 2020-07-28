@@ -118,16 +118,16 @@ class TogaTree(NSOutlineView):
     @objc_method
     def outlineView_heightOfRowByItem_(self, tree, item) -> float:
 
-        min_row_size = 18
+        min_row_height = self.rowHeight
 
         if item is self:
-            return min_row_size
+            return min_row_height
 
         # get all views in column
         views = [self.outlineView_viewForTableColumn_item_(tree, col, item) for col in self.tableColumns]
 
-        max_widget_size = max(view.intrinsicContentSize().height for view in views)
-        return max(min_row_size, max_widget_size)
+        max_widget_height = max(view.intrinsicContentSize().height for view in views)
+        return max(min_row_height, max_widget_height)
 
     # @objc_method
     # def outlineView_sortDescriptorsDidChange_(self, tableView, oldDescriptors) -> None:
@@ -195,7 +195,6 @@ class Tree(Widget):
         self.tree._impl = self
         self.tree.columnAutoresizingStyle = NSTableViewColumnAutoresizingStyle.Uniform
         self.tree.usesAlternatingRowBackgroundColors = True
-
         self.tree.allowsMultipleSelection = self.interface.multiple_select
 
         # Create columns for the tree
