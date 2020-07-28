@@ -1,4 +1,8 @@
+from travertino.constants import TRANSPARENT
+
 from toga_cocoa.constraints import Constraints
+from toga_cocoa.libs import NSColor
+from toga_cocoa.colors import native_color
 
 
 class Widget:
@@ -78,7 +82,15 @@ class Widget:
         pass
 
     def set_background_color(self, color):
-        pass
+        if color is None:
+            self.native.backgroundColor = NSColor.windowBackgroundColor
+            self.native.drawsBackground = True
+        elif color is TRANSPARENT:
+            self.native.backgroundColor = NSColor.clearColor
+            self.native.drawsBackground = False
+        else:
+            self.native.backgroundColor = native_color(color)
+            self.native.drawsBackground = True
 
     # INTERFACE
 
