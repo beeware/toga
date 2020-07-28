@@ -8,7 +8,7 @@ class Graze(toga.App):
 
         self.webview = toga.WebView(style=Pack(flex=1))
         self.url_input = toga.TextInput(
-            initial='https://pybee.org/',
+            initial='https://beeware.org/',
             style=Pack(flex=1)
         )
 
