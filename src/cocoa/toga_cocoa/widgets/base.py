@@ -82,10 +82,7 @@ class Widget:
         pass
 
     def set_background_color(self, color):
-        if color is None:
-            self.native.backgroundColor = None
-            self.native.drawsBackground = True
-        elif color is TRANSPARENT:
+        if color is TRANSPARENT:
             self.native.backgroundColor = NSColor.clearColor
             self.native.drawsBackground = False
         else:
