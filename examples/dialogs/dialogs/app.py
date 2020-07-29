@@ -91,14 +91,13 @@ class ExampledialogsApp(toga.App):
             self.label.text = "Save file dialog was canceled"
 
     def action_open_secondary_window(self, widget):
-        # Problems:
-        # - Setting secondary window's `app` manually
-        # - Secondary window's `icon` is not set
         def close_handler(win):
-            self.secondary_window_count -= 1
             self.set_window_label_text()
-        self.secondary_window_count += 1
-        window = toga.Window(title="New Window {}".format(self.secondary_window_count))
+
+        window = toga.Window(title="New Window {}".format(len(self.windows)))
+        # Both self.windows.add() and self.windows += work:
+        # self.windows += window
+        self.windows.add(window)
         self.set_window_label_text()
         secondary_label = toga.Label(text="You are in secondary window!")
         window.content = toga.Box(
@@ -111,32 +110,27 @@ class ExampledialogsApp(toga.App):
                 padding=10
             )
         )
-        window.app = self
         window.on_close = close_handler
         window.show()
 
-    def exit_handler(self, app, cancel_exit):
+    def exit_handler(self, app):
         if self.main_window.confirm_dialog('Toga', 'Are you sure you want to quit?'):
             print("Label text was \'{}\' when you quit the app".format(self.label.text))
         else:
-            cancel_exit()
             self.label.text = 'Exit canceled'
 
     def set_window_label_text(self):
-        self.window_label.text = '{} secondary windows open'.format(self.secondary_window_count)
+        self.window_label.text = '{} secondary windows open'.format(len(self.windows) - 1)
 
     def startup(self):
         # Set up main window
         self.main_window = toga.MainWindow(title=self.name)
-        self.secondary_window_count = 0
         self.on_exit = self.exit_handler
 
         # Label to show responses.
         self.label = toga.Label('Ready.', style=Pack(padding_top=20))
-        self.window_label = toga.Label(
-            '{} secondary windows open'.format(self.secondary_window_count),
-            style=Pack(padding_top=20)
-        )
+        self.window_label = toga.Label('', style=Pack(padding_top=20))
+        self.set_window_label_text()
 
         # Buttons
         btn_style = Pack(flex=1)

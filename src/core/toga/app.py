@@ -2,6 +2,7 @@ import signal
 import sys
 from builtins import id as identifier
 from email.message import Message
+from collections.abc import MutableSet
 
 from toga.command import CommandSet
 from toga.handlers import wrapped_handler
@@ -14,6 +15,49 @@ try:
 except ImportError:
     # Backwards compatibility - imporlib.metadata was added in Python 3.8
     import importlib_metadata
+
+
+class Windows(MutableSet):
+    """
+    This class represents windows of a toga app. A window can be added to app
+    by using `app.windows.add(toga.Window(...))` or `app.windows += toga.Window(...)`
+    notations. Adding a window to app automatically sets `window.app` property to the app.
+    TODO: link window's close hanlder with `windows.discard` method, so that when the window
+    is closed, it is discarded from toga.App.windows set
+    """
+    def __init__(self, app, iterable=None):
+        self.app = app
+        self.elements = set() if iterable is None else set(iterable)
+
+    def add(self, window: Window) -> None:
+        if not isinstance(window, Window):
+            raise TypeError("Toga app windows should be of toga.Window type")
+        self.elements.add(window)
+        window.app = self.app
+
+    def discard(self, window: Window) -> None:
+        if not isinstance(window, Window):
+            # TODO: I guess this error message would be too cryptic when removing
+            # something from app.windows that is not of type toga.Window
+            raise TypeError("Toga app windows should be of toga.Window type")
+        self.elements.remove(window)
+
+    def __iadd__(self, window):
+        self.add(window)
+        return self
+
+    def __isub__(self, other):
+        self.discard(other)
+        return self
+
+    def __iter__(self):
+        return iter(self.elements)
+
+    def __contains__(self, value):
+        return value in self.elements
+
+    def __len__(self):
+        return len(self.elements)
 
 
 class MainWindow(Window):
@@ -77,6 +121,8 @@ class App:
     :param startup: The callback method before starting the app, typically to
         add the components. Must be a ``callable`` that expects a single
         argument of :class:`toga.App`.
+    :param windows: An iterable with objects of :class:`toga.Window` that will
+        be the app's secondary windows.
     :param factory: A python module that is capable to return a implementation
         of this class with the same name. (optional & normally not needed)
     """
@@ -94,6 +140,7 @@ class App:
         home_page=None,
         description=None,
         startup=None,
+        windows=None,
         on_exit=None,
         factory=None,
     ):
@@ -220,6 +267,11 @@ class App:
         self._startup_method = startup
 
         self._main_window = None
+        # In this world, TogaApp.windows would be a set-like object
+        # that has add/remove methods (including support for
+        # the + and += operators); adding a window to TogaApp.windows
+        # would assign the window to the app.
+        self.windows = Windows(self, windows)
         self._on_exit = None
 
         self._full_screen_windows = None
@@ -349,7 +401,7 @@ class App:
     @property
     def main_window(self):
         """
-        The main windows for the app.
+        The main window for the app.
 
         :returns: The main Window of the app.
         """
@@ -358,7 +410,7 @@ class App:
     @main_window.setter
     def main_window(self, window):
         self._main_window = window
-        window.app = self
+        self.windows += window
         self._impl.set_main_window(window)
 
     @property

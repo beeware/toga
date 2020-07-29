@@ -1,7 +1,6 @@
 from builtins import id as identifier
 
 from toga.command import CommandSet
-from toga.handlers import wrapped_handler
 from toga.platform import get_platform_factory
 
 
@@ -51,8 +50,6 @@ class Window:
         self.position = position
         self.size = size
         self.title = title
-
-        self._on_close = None
 
     @property
     def id(self):
@@ -170,6 +167,8 @@ class Window:
 
     def show(self):
         """ Show window, if hidden """
+        if self.app is None:
+            raise AttributeError("Can't show a window that doesn't have an associated app")
         self._impl.show()
 
     @property
@@ -184,24 +183,11 @@ class Window:
     def close(self):
         self._impl.close()
 
-    @property
-    def on_close(self):
-        """The handler to invoke before a secondary window is closed.
+    def on_close(self, widget=None):
+        self._impl.on_close()
 
-        Returns:
-            The function ``callable`` that is called on closing a secondary window.
-        """
-        return self._on_close
-
-    @on_close.setter
-    def on_close(self, handler):
-        """Set the handler to invoke before a secondary window is closed.
-
-        Args:
-            handler (:obj:`callable`): The handler to invoke before a secondary window is closed.
-        """
-        self._on_close = wrapped_handler(self, handler)
-        self._impl.set_on_close(self._on_close)
+        if self.app.main_window is self:
+            self.app.on_exit(self)
 
     ############################################################
     # Dialogs
