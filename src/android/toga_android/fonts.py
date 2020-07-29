@@ -1,5 +1,7 @@
 from toga.fonts import (
     BOLD,
+    CURSIVE,
+    FANTASY,
     ITALIC,
     MONOSPACE,
     SANS_SERIF,
@@ -42,6 +44,13 @@ class Font:
             family = Typeface.SANS_SERIF
         elif self.interface.family is MONOSPACE:
             family = Typeface.MONOSPACE
+        elif self.interface.family is CURSIVE:
+            family = Typeface.create("cursive", Typeface.NORMAL)
+        elif self.interface.family is FANTASY:
+            # Android appears to not have a fantasy font available by default,
+            # but if it ever does, we'll start using it. Android seems to choose
+            # a serif font when asked for a fantasy font.
+            family = Typeface.create("fantasy", Typeface.NORMAL)
         else:
             family = Typeface.DEFAULT
 
