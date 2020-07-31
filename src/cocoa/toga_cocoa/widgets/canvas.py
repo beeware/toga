@@ -243,17 +243,9 @@ class Canvas(Widget):
         return font.bind(self.interface.factory).measure(text, tight=tight)
 
     def write_text(self, text, x, y, font, *args, **kwargs):
-        # Set font family and size
-        if font:
-            write_font = font
-        elif self.native.font:
-            write_font = self.native.font
-        else:
-            raise ValueError("No font to write with")
-
-        width, height = self.measure_text(text, write_font)
+        width, height = self.measure_text(text, font)
         textAttributes = NSMutableDictionary.alloc().init()
-        textAttributes[NSFontAttributeName] = write_font._impl.native
+        textAttributes[NSFontAttributeName] = font.bind(self.interface.factory).native
 
         if "stroke_color" in kwargs and "fill_color" in kwargs:
             textAttributes[NSStrokeColorAttributeName] = native_color(
