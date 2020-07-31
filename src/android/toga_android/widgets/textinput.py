@@ -4,7 +4,8 @@ from ..libs.android_widgets import (
     EditText,
     Gravity,
     TextWatcher,
-    View__MeasureSpec
+    TypedValue,
+    View__MeasureSpec,
 )
 from .base import Widget, align
 
@@ -42,10 +43,18 @@ class TextInput(Widget):
         self.native.setHint(value if value is not None else "")
 
     def set_alignment(self, value):
+        # Refuse to set alignment unless widget has been added to a container.
+        # This is because Android EditText requires LayoutParams before
+        # setGravity() can be called.
+        if self.native.getLayoutParams() is None:
+            return
         self.native.setGravity(Gravity.CENTER_VERTICAL | align(value))
 
     def set_font(self, font):
-        self.interface.factory.not_implemented("TextInput.set_font()")
+        if font:
+            font_impl = font.bind(self.interface.factory)
+            self.native.setTextSize(TypedValue.COMPLEX_UNIT_SP, font_impl.get_size())
+            self.native.setTypeface(font_impl.get_typeface(), font_impl.get_style())
 
     def set_value(self, value):
         self.native.setText(value)
@@ -56,6 +65,11 @@ class TextInput(Widget):
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
+        # Refuse to call measure() if widget has no container, i.e., has no LayoutParams.
+        # On Android, EditText's measure() throws NullPointerException if the widget has no
+        # LayoutParams.
+        if self.native.getLayoutParams() is None:
+            return
         self.native.measure(
             View__MeasureSpec.UNSPECIFIED, View__MeasureSpec.UNSPECIFIED
         )
