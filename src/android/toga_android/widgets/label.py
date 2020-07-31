@@ -12,13 +12,11 @@ class Label(Widget):
     def set_text(self, value):
         self.native.setText(value)
 
-    def set_font(self, value):
-        if not value:
-            return
-
-        value.bind(self.interface.factory)
-        self.native.setTextSize(TypedValue.COMPLEX_UNIT_SP, value._impl.get_size())
-        self.native.setTypeface(value._impl.get_typeface(), value._impl.get_style())
+    def set_font(self, font):
+        if font:
+            font_impl = font.bind(self.interface.factory)
+            self.native.setTextSize(TypedValue.COMPLEX_UNIT_SP, font_impl.get_size())
+            self.native.setTypeface(font_impl.get_typeface(), font_impl.get_style())
 
     def rehint(self):
         # Refuse to rehint an Android TextView if it has no LayoutParams yet.

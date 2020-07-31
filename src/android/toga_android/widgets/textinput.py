@@ -51,9 +51,10 @@ class TextInput(Widget):
         self.native.setGravity(Gravity.CENTER_VERTICAL | align(value))
 
     def set_font(self, font):
-        font.bind(factory=self.interface.factory)
-        self.native.setTextSize(TypedValue.COMPLEX_UNIT_SP, font._impl.get_size())
-        self.native.setTypeface(font._impl.get_typeface(), font._impl.get_style())
+        if font:
+            font_impl = font.bind(self.interface.factory)
+            self.native.setTextSize(TypedValue.COMPLEX_UNIT_SP, font_impl.get_size())
+            self.native.setTypeface(font_impl.get_typeface(), font_impl.get_style())
 
     def set_value(self, value):
         self.native.setText(value)
