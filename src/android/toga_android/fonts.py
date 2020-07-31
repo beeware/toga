@@ -6,6 +6,7 @@ from toga.fonts import (
     MONOSPACE,
     SANS_SERIF,
     SERIF,
+    SYSTEM,
     SYSTEM_DEFAULT_FONT_SIZE,
 )
 
@@ -38,7 +39,9 @@ class Font:
         return Typeface.NORMAL
 
     def get_typeface(self):
-        if self.interface.family is SERIF:
+        if self.interface.family is SYSTEM:
+            family = Typeface.DEFAULT
+        elif self.interface.family is SERIF:
             family = Typeface.SERIF
         elif self.interface.family is SANS_SERIF:
             family = Typeface.SANS_SERIF
@@ -52,6 +55,6 @@ class Font:
             # a serif font when asked for a fantasy font.
             family = Typeface.create("fantasy", Typeface.NORMAL)
         else:
-            family = Typeface.DEFAULT
+            family = Typeface.create(self.interface.family, Typeface.NORMAL)
 
         return family
