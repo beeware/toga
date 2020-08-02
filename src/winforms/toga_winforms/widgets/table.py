@@ -71,7 +71,7 @@ class Table(Widget):
         self.interface._selection = self._selected_rows()
 
         if e.IsSelected and self.interface.on_select:
-                self.interface.on_select(self.interface, row=self.interface.data[e.ItemIndex])
+            self.interface.on_select(self.interface, row=self.interface.data[e.ItemIndex])
 
     def _selected_rows(self):
         if not self.native.SelectedIndices.Count:
