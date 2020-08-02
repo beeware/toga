@@ -49,10 +49,6 @@ class RefreshableClipView(NSClipView):
         return constrained
 
     @objc_method
-    def isFlipped(self):
-        return True
-
-    @objc_method
     def documentRect(self) -> NSRect:
         rect = send_super(__class__, self, 'documentRect', restype=NSRect, argtypes=[])
 
