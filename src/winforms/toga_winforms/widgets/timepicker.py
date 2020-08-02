@@ -11,12 +11,6 @@ class TimePicker(Widget):
     def create(self):
         self.native = WinForms.DateTimePicker()
         self.native.ValueChanged += self.winforms_value_changed
-        self.winforms_event_handlers.append(
-            {
-                'event': self.native.ValueChanged,
-                'handler': self.winforms_value_changed
-            }
-        )
         self.native.Format = WinForms.DateTimePickerFormat.Time
         self.native.ShowUpDown = True
 

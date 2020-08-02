@@ -8,9 +8,6 @@ class Widget:
 
         self._container = None
         self.native = None
-        # `winforms_event_handlers` is used to keep track of added
-        # native event handlers to remove them when a widget is removed
-        self.winforms_event_handlers = []
         self.create()
         self.interface.style.reapply()
 
@@ -86,20 +83,11 @@ class Widget:
         # By default, background color can't be changed.
         pass
 
-    def winforms_remove_event_handlers(self):
-        for handler in self.winforms_event_handlers:
-            handler['event'] -= handler['handler']
-
     # INTERFACE
 
     def add_child(self, child):
         if self.container:
             child.container = self.container
-
-    def delete_child(self, child):
-        child.winforms_remove_event_handlers()
-        self.native.Controls.Remove(child.native)
-        child.native.Dispose()
 
     def remove_child(self, child):
         child.container = None

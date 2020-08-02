@@ -30,24 +30,6 @@ class Table(Widget):
         self.native.RetrieveVirtualItem += self.winforms_retrieve_virtual_item
         self.native.CacheVirtualItems += self.winforms_cache_virtual_items
         self.native.VirtualItemsSelectionRangeChanged += self.winforms_virtual_item_selection_range_changed
-        self.winforms_event_handlers.append(
-            {
-                'event': self.native.ItemSelectionChanged,
-                'handler': self.winforms_item_selection_changed
-            },
-            {
-                'event': self.native.RetrieveVirtualItem,
-                'handler': self.winforms_retrieve_virtual_item
-            },
-            {
-                'event': self.native.CacheVirtualItems,
-                'handler': self.winforms_cache_virtual_items
-            },
-            {
-                'event': self.native.VirtualItemsSelectionRangeChanged,
-                'handler': self.winforms_virtual_item_selection_range_changed
-            }
-        )
 
     def winforms_virtual_item_selection_range_changed(self, sender, e):
         # update selection interface property

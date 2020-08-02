@@ -12,12 +12,6 @@ class NumberInput(Widget):
         self.native = WinForms.NumericUpDown()
         self.native.Value = Convert.ToDecimal(0.0)
         self.native.ValueChanged += self.winforms_value_changed
-        self.winforms_event_handlers.append(
-            {
-                'event': self.native.ValueChanged,
-                'handler': self.winforms_value_changed
-            }
-        )
 
     def winforms_value_changed(self, sender, event):
         if self.container:

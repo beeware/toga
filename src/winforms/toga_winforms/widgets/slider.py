@@ -28,12 +28,6 @@ class Slider(Widget):
     def create(self):
         self.native = WinForms.TrackBar()
         self.native.Scroll += self.winforms_scroll
-        self.winforms_event_handlers.append(
-            {
-                'event': self.native.Scroll,
-                'handler': self.winforms_scroll
-            }
-        )
         self.set_enabled(self.interface._enabled)
         self.native.Minimum = 0
         self.set_tick_count(self.interface.tick_count)

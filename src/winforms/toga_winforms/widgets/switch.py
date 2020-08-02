@@ -9,12 +9,6 @@ class Switch(Widget):
     def create(self):
         self.native = WinForms.CheckBox()
         self.native.CheckedChanged += self.winforms_checked_changed
-        self.winforms_event_handlers.append(
-            {
-                'event': self.native.CheckedChanged,
-                'handler': self.winforms_checked_changed
-            }
-        )
 
     def winforms_checked_changed(self, sender, event):
         if self.container:

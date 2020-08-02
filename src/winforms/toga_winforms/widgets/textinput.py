@@ -14,16 +14,6 @@ class TextInput(Widget):
         self.native.Multiline = False
         self.native.Click += self.winforms_click
         self.native.TextChanged += self.winforms_text_changed
-        self.winforms_event_handlers.append(
-            {
-                'event': self.native.Click,
-                'handler': self.winforms_click
-            },
-            {
-                'event': self.native.TextChanged,
-                'handler': self.winforms_text_changed
-            }
-        )
 
     def set_readonly(self, value):
         self.native.ReadOnly = value

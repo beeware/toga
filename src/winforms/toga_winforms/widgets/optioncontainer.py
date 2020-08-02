@@ -8,12 +8,6 @@ class OptionContainer(Widget):
     def create(self):
         self.native = WinForms.TabControl()
         self.native.Selected += self.winforms_selected
-        self.winforms_event_handlers.append(
-            {
-                'event': self.native.Selected,
-                'handler': self.winforms_selected
-            }
-        )
 
     def add_content(self, label, widget):
         widget.viewport = WinFormsViewport(self.native, self)

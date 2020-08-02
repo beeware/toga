@@ -10,16 +10,6 @@ class SplitContainer(Widget):
         self.native.interface = self.interface
         self.native.Resize += self.winforms_resize
         self.native.SplitterMoved += self.winforms_resize
-        self.winforms_event_handlers.append(
-            {
-                'event': self.native.Resize,
-                'handler': self.winforms_resize
-            },
-            {
-                'event': self.native.SplitterMoved,
-                'handler': self.winforms_resize
-            }
-        )
         self.ratio = None
 
     def add_content(self, position, widget):

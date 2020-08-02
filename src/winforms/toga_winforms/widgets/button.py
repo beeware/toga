@@ -10,12 +10,6 @@ class Button(Widget):
     def create(self):
         self.native = WinForms.Button()
         self.native.Click += self.winforms_click
-        self.winforms_event_handlers.append(
-            {
-                'event': self.native.Click,
-                'handler': self.winforms_click
-            }
-        )
         self.set_enabled(self.interface._enabled)
 
     def winforms_click(self, sender, event):
