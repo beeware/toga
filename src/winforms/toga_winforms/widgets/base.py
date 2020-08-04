@@ -23,8 +23,16 @@ class Widget:
 
     @container.setter
     def container(self, container):
-        self._container = container
-        if self.native:
+        if self.container:
+            if container:
+                raise RuntimeError('Already have a container')
+            else:
+                # container is set to None, removing self from the container.native
+                self._container.native.Controls.Remove(self.native)
+                self._container = None
+        elif container:
+            # setting container, adding self to container.native
+            self._container = container
             self._container.native.Controls.Add(self.native)
             self.native.BringToFront()
 
@@ -80,6 +88,9 @@ class Widget:
     def add_child(self, child):
         if self.container:
             child.container = self.container
+
+    def remove_child(self, child):
+        child.container = None
 
     def rehint(self):
         pass

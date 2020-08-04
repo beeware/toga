@@ -15,9 +15,9 @@ class Table(Widget):
 
         dataColumn = []
         for i, (heading, accessor) in enumerate(zip(
-                    self.interface.headings,
-                    self.interface._accessors
-                )):
+                self.interface.headings,
+                self.interface._accessors
+        )):
             dataColumn.append(self._create_column(heading, accessor))
 
         self.native.FullRowSelect = True
@@ -45,7 +45,7 @@ class Table(Widget):
         # Because ListView is in VirtualMode, it's necessary implement
         # VirtualItemsSelectionRangeChanged event to create ListViewItem when it's needed
         if self._cache and e.ItemIndex >= self._first_item and \
-           e.ItemIndex < self._first_item + len(self._cache):
+                e.ItemIndex < self._first_item + len(self._cache):
             e.Item = self._cache[e.ItemIndex - self._first_item]
         else:
             e.Item = WinForms.ListViewItem(self.row_data(self.interface.data[e.ItemIndex]))

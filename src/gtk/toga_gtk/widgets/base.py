@@ -23,8 +23,22 @@ class Widget:
 
     @container.setter
     def container(self, container):
-        self._container = container
-        self._container.native.add(self.native)
+        if self.container:
+            if container:
+                raise RuntimeError('Already have a container')
+            else:
+                # container is set to None, removing self from the container.native
+                # Note from pygtk documentation: Note that the container will own a
+                # reference to widget, and that this may be the last reference held;
+                # so removing a widget from its container can cause that widget to be
+                # destroyed. If you want to use widget again, you should add a
+                # reference to it.
+                self._container.native.remove(self.native)
+                self._container = None
+        elif container:
+            # setting container, adding self to container.native
+            self._container = container
+            self._container.native.add(self.native)
 
         for child in self.interface.children:
             child._impl.container = container
@@ -69,6 +83,9 @@ class Widget:
     def add_child(self, child):
         if self.container:
             child.container = self.container
+
+    def remove_child(self, child):
+        child.container = None
 
     def rehint(self):
         # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height())
