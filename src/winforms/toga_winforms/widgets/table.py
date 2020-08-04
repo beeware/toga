@@ -70,7 +70,7 @@ class Table(Widget):
         # update selection interface property
         self.interface._selection = self._selected_rows()
 
-        if e.IsSelected:
+        if e.IsSelected and self.interface.on_select:
             self.interface.on_select(self.interface, row=self.interface.data[e.ItemIndex])
 
     def _selected_rows(self):
