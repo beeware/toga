@@ -10,12 +10,12 @@ class TestWindow(TestCase):
     def setUp(self):
         super().setUp()
         self.window = toga.Window(factory=toga_dummy.factory)
+        self.app = toga.App('test_name', 'id.app', factory=toga_dummy.factory)
 
     def test_widget_created(self):
         self.assertIsNotNone(self.window.id)
-        app = toga.App('test_name', 'id.app', factory=toga_dummy.factory)
         new_app = toga.App('error_name', 'id.error', factory=toga_dummy.factory)
-        self.window.app = app
+        self.window.app = self.app
         with self.assertRaises(Exception):
             self.window.app = new_app
 
@@ -62,6 +62,7 @@ class TestWindow(TestCase):
 
     def test_on_close(self):
         with patch.object(self.window, '_impl'):
+            self.app.windows += self.window
             self.window.on_close()
             self.window._impl.on_close.assert_called_once_with()
 
