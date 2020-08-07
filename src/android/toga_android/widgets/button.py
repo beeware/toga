@@ -33,6 +33,10 @@ class Button(Widget):
         pass
 
     def rehint(self):
+        # Like other text-viewing widgets, Android crashes when rendering
+        # `Button` unless it has its layout params set. Guard for that case.
+        if self.native.getLayoutParams() is None:
+            return
         self.native.measure(
             android_widgets.View__MeasureSpec.UNSPECIFIED,
             android_widgets.View__MeasureSpec.UNSPECIFIED,
