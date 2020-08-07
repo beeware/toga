@@ -1,6 +1,7 @@
 from builtins import id as identifier
 
 from toga.command import CommandSet
+from toga.handlers import wrapped_handler
 from toga.platform import get_platform_factory
 
 
@@ -24,7 +25,7 @@ class Window:
     def __init__(self, id=None, title=None,
                  position=(100, 100), size=(640, 480),
                  toolbar=None, resizeable=True,
-                 closeable=True, minimizable=True, factory=None):
+                 closeable=True, minimizable=True, factory=None, on_close=None):
 
         self._id = id if id else identifier(self)
         self._impl = None
@@ -37,6 +38,7 @@ class Window:
         self.resizeable = resizeable
         self.closeable = closeable
         self.minimizable = minimizable
+        self._on_close = None
 
         self.factory = get_platform_factory(factory)
         self._impl = getattr(self.factory, self._WINDOW_CLASS)(interface=self)
@@ -50,6 +52,7 @@ class Window:
         self.position = position
         self.size = size
         self.title = title
+        self.on_close = on_close
 
     @property
     def id(self):
@@ -183,11 +186,18 @@ class Window:
     def close(self):
         self._impl.close()
 
-    def on_close(self, widget=None):
+    def toga_on_close(self):
+        self.app.windows -= self
         self._impl.on_close()
 
-        if self.app.main_window is self:
-            self.app.on_exit(self)
+    @property
+    def on_close(self):
+        return self._on_close
+
+    @on_close.setter
+    def on_close(self, handler):
+        self._on_close = wrapped_handler(self, handler)
+        # self._impl.on_close = self._on_close
 
     ############################################################
     # Dialogs
