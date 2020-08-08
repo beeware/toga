@@ -15,7 +15,10 @@ class ExampleWebView(toga.App):
             + '+ ' + 'navigator.userAgent' ';')
 
     def on_webview_button_press(self, _whatever, key, modifiers):
-        self.top_label.text = "got key={key} mod={modifiers}".format(key=key, modifiers=modifiers)
+        self.top_label.text = "got key={key} mod={modifiers}".format(
+            key=key.value,
+            modifiers=', '.join(m.value for m in modifiers)
+        )
 
     def on_webview_load(self, _interface):
         self.top_label.text = "www loaded!"
@@ -31,25 +34,26 @@ class ExampleWebView(toga.App):
 
     def startup(self):
         self.main_window = toga.MainWindow(title=self.name)
-        self.top_label = toga.Label('www is loading |')
+        self.top_label = toga.Label('www is loading |', style=Pack(flex=1, padding_left=10))
         self.math_button = toga.Button("2 + 2? ", on_press=self.do_math_in_js)
         self.mutate_page_button = toga.Button("mutate page!", on_press=self.mutate_page)
         self.set_content_button = toga.Button("set content!", on_press=self.set_content)
         self.set_agent_button = toga.Button("set agent!", on_press=self.set_agent)
         self.top_box = toga.Box(
             children=[
-                self.top_label,
                 self.math_button,
                 self.mutate_page_button,
                 self.set_content_button,
                 self.set_agent_button,
+                self.top_label,
             ],
-            style=Pack(flex=1, direction=ROW)
+            style=Pack(flex=0, direction=ROW)
         )
         self.webview = toga.WebView(
             url='https://beeware.org/',
             on_key_down=self.on_webview_button_press,
             on_webview_load=self.on_webview_load,
+            style=Pack(flex=1)
         )
 
         box = toga.Box(
@@ -65,7 +69,7 @@ class ExampleWebView(toga.App):
 
 
 def main():
-    return ExampleWebView('Toga WebView Demo', 'org.beeware.widgets.webview_source')
+    return ExampleWebView('Toga WebView Demo', 'org.beeware.widgets.webview')
 
 
 if __name__ == '__main__':
