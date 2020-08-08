@@ -9,4 +9,4 @@ Quickstart
 
 To run this example:
 
-    $ python -m webview_source
+    $ python -m webview
