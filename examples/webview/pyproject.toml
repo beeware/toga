@@ -18,8 +18,7 @@ requires = []
 
 [tool.briefcase.app.webview.macOS]
 requires = [
-'../../src/core',
-'../../src/cocoa',
+    'toga-cocoa',
 ]
 
 [tool.briefcase.app.webview.linux]
@@ -35,8 +34,7 @@ requires = [
 # Mobile deployments
 [tool.briefcase.app.webview.iOS]
 requires = [
-'../../src/core',
-'../../src/ios',
+    'toga-ios',
 ]
 
 [tool.briefcase.app.webview.android]
