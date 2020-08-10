@@ -38,6 +38,11 @@ class Window(LoggedObject):
     def on_close(self):
         self._action('handle Window on_close')
 
+    @not_required_on('mobile')
+    def set_on_close(self, handler):
+        self._set_value('on_press', handler)
+
+
     def info_dialog(self, title, message):
         self._action('show info dialog', title=title, message=message)
 

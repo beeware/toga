@@ -250,6 +250,7 @@ class Window:
         pass
 
     def close(self):
+        self.interface.app.windows -= self.interface
         self.native.close()
 
     def info_dialog(self, title, message):

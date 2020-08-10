@@ -47,6 +47,7 @@ class Windows(MutableSet):
         return self
 
     def __isub__(self, other):
+        print('Trying to discard ', other)
         self.discard(other)
         return self
 

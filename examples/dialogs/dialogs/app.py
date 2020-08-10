@@ -91,10 +91,10 @@ class ExampledialogsApp(toga.App):
             self.label.text = "Save file dialog was canceled"
 
     def action_open_secondary_window(self, widget):
-        def close_handler(app):
+        def close_handler(window):
             # This handler is called before the window is closed, so there is 2 more
             # windows than the number of secondary windows after it is closed
-            self.window_label.text = '{} secondary windows open'.format(len(self.windows) - 2)
+            self.window_label.text = '{} secondary windows open'.format(len(self.windows) - 1)
 
         window = toga.Window(title="New Window {}".format(len(self.windows)))
         # Both self.windows.add() and self.windows += work:

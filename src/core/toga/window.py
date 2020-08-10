@@ -38,7 +38,6 @@ class Window:
         self.resizeable = resizeable
         self.closeable = closeable
         self.minimizable = minimizable
-        self._on_close = None
 
         self.factory = get_platform_factory(factory)
         self._impl = getattr(self.factory, self._WINDOW_CLASS)(interface=self)
@@ -183,21 +182,28 @@ class Window:
         self._is_full_screen = is_full_screen
         self._impl.set_full_screen(is_full_screen)
 
-    def close(self):
-        self._impl.close()
-
-    def toga_on_close(self):
-        self.app.windows -= self
-        self._impl.on_close()
-
     @property
     def on_close(self):
+        """The handler to invoke when the window is closed.
+
+        Returns:
+            The function ``callable`` that is called on window closing event.
+        """
         return self._on_close
 
     @on_close.setter
     def on_close(self, handler):
+        """Set the handler to invoke when the window is closed.
+
+        Args:
+            handler (:obj:`callable`): The handler to invoke when the window is closing.
+        """
         self._on_close = wrapped_handler(self, handler)
-        # self._impl.on_close = self._on_close
+        self._impl.set_on_close(self._on_close)
+
+    def close(self):
+        self._impl.close()
+
 
     ############################################################
     # Dialogs

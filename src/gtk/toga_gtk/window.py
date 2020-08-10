@@ -118,8 +118,9 @@ class Window:
         self.interface.content._impl.min_height = self.interface.content.layout.height
 
     def gtk_on_close(self, widget, data):
+        self.interface.app.windows -= self.interface
         if self.interface.on_close:
-            self.interface.on_close()
+            self.interface.on_close(self.interface.app)
 
     def on_close(self, *args):
         pass
