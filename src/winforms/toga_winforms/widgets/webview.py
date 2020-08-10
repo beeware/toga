@@ -26,7 +26,6 @@ class WebView(Widget):
             self.native.Navigate(Uri(self.interface.url), "_self", None, "User-Agent: %s" % self.interface.user_agent)
 
     def set_content(self, root_url, content):
-        # fix provided by Russell Keith-Magee
         self.native.Url = Uri(root_url)
         self.native.DocumentText = content
 
