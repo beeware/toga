@@ -22,8 +22,6 @@ class Windows(MutableSet):
     This class represents windows of a toga app. A window can be added to app
     by using `app.windows.add(toga.Window(...))` or `app.windows += toga.Window(...)`
     notations. Adding a window to app automatically sets `window.app` property to the app.
-    TODO: link window's close hanlder with `windows.discard` method, so that when the window
-    is closed, it is discarded from toga.App.windows set
     """
     def __init__(self, app, iterable=None):
         self.app = app
@@ -47,7 +45,6 @@ class Windows(MutableSet):
         return self
 
     def __isub__(self, other):
-        print('Trying to discard ', other)
         self.discard(other)
         return self
 
