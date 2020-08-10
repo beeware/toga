@@ -42,7 +42,6 @@ class Window(LoggedObject):
     def set_on_close(self, handler):
         self._set_value('on_press', handler)
 
-
     def info_dialog(self, title, message):
         self._action('show info dialog', title=title, message=message)
 
