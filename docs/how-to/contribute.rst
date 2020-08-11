@@ -80,11 +80,12 @@ Next, install any additional dependencies for your operating system:
 
     .. code-block:: bash
 
-      # Ubuntu, Debian 9
+      # Ubuntu 16.04, Ubuntu 18.04, Debian 9
       (venv) $ sudo apt-get update
       (venv) $ sudo apt-get install python3-dev libgirepository1.0-dev libcairo2-dev libpango1.0-dev libwebkitgtk-3.0-0 gir1.2-webkit-3.0
 
       # Debian 10
+      # Ubuntu 20.04
       # has webkit2-4.0
       # libwebkitgtk version seems very specific, but that is what it currently is @ 20190825
       (venv) $ sudo apt-get update
