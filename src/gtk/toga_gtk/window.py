@@ -131,6 +131,9 @@ class Window:
     def close(self):
         self.native.close()
 
+    def get_position(self):
+        self.interface.factory.not_implemented('Window.get_position()')
+
     def set_position(self, position):
         pass
 

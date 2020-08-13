@@ -1,6 +1,6 @@
 from toga import GROUP_BREAK, SECTION_BREAK
 
-from .libs import Size, WinForms
+from .libs import Size, WinForms, Point
 
 
 class WinFormsViewport:
@@ -44,6 +44,8 @@ class Window:
         self.native.Resize += self.winforms_resize
         self.toolbar_native = None
         self.toolbar_items = None
+        self.native.StartPosition = 0 # FormStartPosition.Manual
+        self.native.Location = Point(*self.interface.position)
 
     def create_toolbar(self):
         self.toolbar_native = WinForms.ToolStrip()
@@ -62,8 +64,11 @@ class Window:
                 cmd._impl.native.append(item)
             self.toolbar_native.Items.Add(item)
 
+    def get_position(self):
+        return (self.native.Location.X, self.native.Location.Y)
+
     def set_position(self, position):
-        pass
+        self.native.Location = Point(position[0], position[1])
 
     def set_size(self, size):
         self.native.ClientSize = Size(*self.interface._size)

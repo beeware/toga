@@ -158,6 +158,7 @@ class Window:
         Returns:
             A ``tuple`` of (``int``, ``int``) int the from (x, y).
         """
+        self._position = self._impl.get_position()
         return self._position
 
     @position.setter

@@ -18,6 +18,9 @@ class Window(LoggedObject):
     def set_title(self, title):
         self._set_value('title', title)
 
+    def get_position(self):
+        self._get_value('position')
+
     def set_position(self, position):
         self._set_value('position', position)
 
