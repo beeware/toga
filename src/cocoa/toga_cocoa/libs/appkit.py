@@ -490,6 +490,18 @@ NSOpenPanel = ObjCClass('NSOpenPanel')
 NSOutlineView = ObjCClass('NSOutlineView')
 
 ######################################################################
+# NSParagraphStyle.h
+
+
+class NSLineBreakMode(Enum):
+    byWordWrapping = 0
+    byCharWrapping = 1
+    byClipping = 2
+    byTruncatingHead = 3
+    byTruncatingTail = 4
+    byTruncatingMiddle = 5
+
+######################################################################
 # NSPanel.h
 
 NSUtilityWindowMask = 1 << 4
