@@ -501,6 +501,7 @@ class NSLineBreakMode(Enum):
     byTruncatingTail = 4
     byTruncatingMiddle = 5
 
+
 ######################################################################
 # NSPanel.h
 
