@@ -1,47 +1,47 @@
 [GSoC]
 color = "fbca04"
 name = "GSoC"
-#description = null  # To use: uncomment and replace null with value
+description = "Tickets describing GSoC projects"
 
 [bug]
 color = "fc2929"
 name = "bug"
-#description = null  # To use: uncomment and replace null with value
+description = "Something isn't working"
+
+[documentation]
+color = "8125dd"
+name = "documentation"
+description = "The issue relates to documentation."
 
 [duplicate]
 color = "cccccc"
 name = "duplicate"
-#description = null  # To use: uncomment and replace null with value
+description = "This issue or pull request already exists"
 
 [enhancement]
 color = "84b6eb"
 name = "enhancement"
-#description = null  # To use: uncomment and replace null with value
+description = "New feature or request"
 
 [first-timers-only]
 color = "f9d0c4"
 name = "first-timers-only"
-#description = null  # To use: uncomment and replace null with value
+description = "Is this your first time contributing? This could be a good place to start!"
 
 [invalid]
 color = "e6e6e6"
 name = "invalid"
-#description = null  # To use: uncomment and replace null with value
+description = "This doesn't seem right"
 
 [not-quite-right]
 color = "d4c5f9"
 name = "not-quite-right"
-#description = null  # To use: uncomment and replace null with value
-
-[on-hold]
-color = "e08fc2"
-name = "on-hold"
-description = ""
+description = "The idea or PR has been reviewed, but more work is needed."
 
 [question]
 color = "cc317c"
 name = "question"
-#description = null  # To use: uncomment and replace null with value
+description = "Further information is requested"
 
 [ready-for-review]
 color = "006b75"
@@ -61,14 +61,44 @@ description = ""
 [up-for-grabs]
 color = "0e8a16"
 name = "up-for-grabs"
-#description = null  # To use: uncomment and replace null with value
+description = "Help wanted!"
 
 [wontfix]
 color = "ffffff"
 name = "wontfix"
-#description = null  # To use: uncomment and replace null with value
+description = "This will not be worked on"
 
 [work-in-progress]
 color = "fef2c0"
 name = "work-in-progress"
-#description = null  # To use: uncomment and replace null with value
+description = "The PR is a work in progress"
+
+[android]
+color = "25d4dd"
+name = "android"
+description = "The issue relates to Android mobile support."
+
+[iOS]
+color = "25d4dd"
+name = "iOS"
+description = "The issue relates to Apple iOS mobile support."
+
+[linux]
+color = "25d4dd"
+name = "linux"
+description = "The issue relates Linux support."
+
+[macOS]
+color = "25d4dd"
+name = "macOS"
+description = "The issue relates to Apple macOS support."
+
+[web]
+color = "25d4dd"
+name = "web"
+description = "The issue relates to supporting the web as a platform."
+
+[windows]
+color = "25d4dd"
+name = "windows"
+description = "The issue relates to Microsoft Windows support."
