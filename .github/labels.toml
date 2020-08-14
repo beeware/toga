@@ -1,0 +1,74 @@
+[GSoC]
+color = "fbca04"
+name = "GSoC"
+#description = null  # To use: uncomment and replace null with value
+
+[bug]
+color = "fc2929"
+name = "bug"
+#description = null  # To use: uncomment and replace null with value
+
+[duplicate]
+color = "cccccc"
+name = "duplicate"
+#description = null  # To use: uncomment and replace null with value
+
+[enhancement]
+color = "84b6eb"
+name = "enhancement"
+#description = null  # To use: uncomment and replace null with value
+
+[first-timers-only]
+color = "f9d0c4"
+name = "first-timers-only"
+#description = null  # To use: uncomment and replace null with value
+
+[invalid]
+color = "e6e6e6"
+name = "invalid"
+#description = null  # To use: uncomment and replace null with value
+
+[not-quite-right]
+color = "d4c5f9"
+name = "not-quite-right"
+#description = null  # To use: uncomment and replace null with value
+
+[on-hold]
+color = "e08fc2"
+name = "on-hold"
+description = ""
+
+[question]
+color = "cc317c"
+name = "question"
+#description = null  # To use: uncomment and replace null with value
+
+[ready-for-review]
+color = "006b75"
+name = "ready-for-review"
+#description = null  # To use: uncomment and replace null with value
+
+[rebase-required]
+color = "888888"
+name = "rebase-required"
+#description = null  # To use: uncomment and replace null with value
+
+[tutorial-bugs]
+color = "bfdadc"
+name = "tutorial-bugs"
+description = ""
+
+[up-for-grabs]
+color = "0e8a16"
+name = "up-for-grabs"
+#description = null  # To use: uncomment and replace null with value
+
+[wontfix]
+color = "ffffff"
+name = "wontfix"
+#description = null  # To use: uncomment and replace null with value
+
+[work-in-progress]
+color = "fef2c0"
+name = "work-in-progress"
+#description = null  # To use: uncomment and replace null with value
