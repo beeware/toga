@@ -71,7 +71,7 @@ class TogaTable(NSTableView):
         tcv = self.makeViewWithIdentifier(identifier, owner=self)
 
         if not tcv:  # there is no existing view to reuse so create a new one
-            tcv = TogaIconView.alloc().initWithFrame_(CGRectMake(0, 0, column.width, 16))
+            tcv = TogaIconView.alloc().init()
             tcv.identifier = identifier
 
         tcv.setText(str(value))
