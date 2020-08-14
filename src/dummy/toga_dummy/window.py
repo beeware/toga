@@ -20,6 +20,7 @@ class Window(LoggedObject):
 
     def get_position(self):
         self._get_value('position')
+        return self.interface._position
 
     def set_position(self, position):
         self._set_value('position', position)
