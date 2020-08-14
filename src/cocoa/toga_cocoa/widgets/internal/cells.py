@@ -8,12 +8,8 @@ from toga_cocoa.libs import (
     NSFontAttributeName,
     NSForegroundColorAttributeName,
     NSGraphicsContext,
-    NSImageAlignment,
     NSImageInterpolationHigh,
-    NSImageScaleProportionallyDown,
     NSImageView,
-    NSMakePoint,
-    NSMakeRect,
     NSMutableDictionary,
     NSPoint,
     NSRect,
@@ -21,8 +17,12 @@ from toga_cocoa.libs import (
     NSTableCellView,
     NSTextField,
     NSTextFieldCell,
-    NSViewMaxYMargin,
-    NSViewMinYMargin,
+    NSLayoutAttributeLeft,
+    NSLayoutAttributeRight,
+    NSLayoutAttributeCenterY,
+    NSLayoutConstraint,
+    NSLayoutRelationEqual,
+    NSLineBreakMode,
     ObjCInstance,
     at,
     objc_method,
@@ -44,43 +44,57 @@ class TogaIconView(NSTableCellView):
 
     @objc_method
     def setup(self):
-        iv = NSImageView.alloc().initWithFrame(NSMakeRect(0, 0, 16, 16))
-        tf = NSTextField.alloc().init()
+        self.imageView = NSImageView.alloc().init()
+        self.textField = NSTextField.alloc().init()
 
-        iv.autoresizingMask = NSViewMinYMargin | NSViewMaxYMargin
-        iv.imageScaling = NSImageScaleProportionallyDown
-        iv.imageAlignment = NSImageAlignment.Center
+        self.textField.cell.lineBreakMode = NSLineBreakMode.byTruncatingTail
+        self.textField.bordered = False
+        self.textField.drawsBackground = False
 
-        tf.autoresizingMask = NSViewMinYMargin | NSViewMaxYMargin
-        tf.bordered = False
-        tf.drawsBackground = False
+        self.imageView.translatesAutoresizingMaskIntoConstraints = False
+        self.textField.translatesAutoresizingMaskIntoConstraints = False
 
-        self.imageView = iv
-        self.textField = tf
-        self.addSubview(iv)
-        self.addSubview(tf)
+        self.addSubview(self.imageView)
+        self.addSubview(self.textField)
+
+        self.iv_vertical_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
+                self.imageView, NSLayoutAttributeCenterY, NSLayoutRelationEqual, self, NSLayoutAttributeCenterY, 1, 0
+            )
+        self.iv_left_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
+                self.imageView, NSLayoutAttributeLeft, NSLayoutRelationEqual, self, NSLayoutAttributeLeft, 1, 0
+        )
+        self.tv_vertical_constraint =NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
+                self.textField, NSLayoutAttributeCenterY, NSLayoutRelationEqual, self, NSLayoutAttributeCenterY, 1, 0
+        )
+        self.tv_left_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
+                self.textField, NSLayoutAttributeLeft, NSLayoutRelationEqual, self.imageView, NSLayoutAttributeRight, 1, 5
+        )
+        self.tv_right_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
+                self.textField, NSLayoutAttributeRight, NSLayoutRelationEqual, self, NSLayoutAttributeRight, 1, -5
+        )
+
+        self.addConstraint(self.iv_vertical_constraint)
+        self.addConstraint(self.iv_left_constraint)
+        self.addConstraint(self.tv_vertical_constraint)
+        self.addConstraint(self.tv_left_constraint)
+        self.addConstraint(self.tv_right_constraint)
+
         return self
 
     @objc_method
     def setImage(self, image):
-        if image is self.imageView.image:
-            # don't do anything if image did not change
-            return
-
         if image:
-            self.imageView.image = image
-            self.imageView.frame = NSMakeRect(5, 0, 16, 16)
-            self.textField.frameOrigin = NSMakePoint(25, 0)
+            self.imageView.image = image.resizeTo(16)
+            # add padding between icon and text
+            self.tv_left_constraint.constant = 5
         else:
             self.imageView.image = None
-            self.imageView.frame = NSMakeRect(0, 0, 0, 0)
-            self.textField.frameOrigin = NSMakePoint(0, 0)
+            # remove padding between icon and text
+            self.tv_left_constraint.constant = 0
 
     @objc_method
     def setText(self, text):
-        if text != self.textField.stringValue:
-            self.textField.stringValue = text
-            self.textField.sizeToFit()
+        self.textField.stringValue = text
 
 
 # A TogaDetailedCell contains:
