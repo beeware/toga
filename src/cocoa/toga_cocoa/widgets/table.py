@@ -2,7 +2,6 @@ from travertino.size import at_least
 
 import toga
 from toga_cocoa.libs import (
-    CGRectMake,
     NSBezelBorder,
     NSIndexSet,
     NSRange,
