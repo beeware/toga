@@ -2,7 +2,6 @@ from travertino.size import at_least
 
 import toga
 from toga_cocoa.libs import (
-    CGRectMake,
     NSBezelBorder,
     NSIndexSet,
     NSRange,
@@ -71,7 +70,7 @@ class TogaTable(NSTableView):
         tcv = self.makeViewWithIdentifier(identifier, owner=self)
 
         if not tcv:  # there is no existing view to reuse so create a new one
-            tcv = TogaIconView.alloc().initWithFrame_(CGRectMake(0, 0, column.width, 16))
+            tcv = TogaIconView.alloc().init()
             tcv.identifier = identifier
 
         tcv.setText(str(value))
@@ -176,7 +175,7 @@ class Table(Widget):
 
         self.table.insertRowsAtIndexes(
             index_set,
-            withAnimation=NSTableViewAnimation.SlideDown
+            withAnimation=NSTableViewAnimation.EffectNone
         )
 
     def change(self, item):
@@ -201,7 +200,7 @@ class Table(Widget):
             indexes = NSIndexSet.indexSetWithIndex(index)
             self.table.removeRowsAtIndexes(
                 indexes,
-                withAnimation=NSTableViewAnimation.SlideUp
+                withAnimation=NSTableViewAnimation.EffectNone
             )
 
     def clear(self):
