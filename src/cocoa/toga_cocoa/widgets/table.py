@@ -11,7 +11,8 @@ from toga_cocoa.libs import (
     NSTableViewAnimation,
     NSTableViewColumnAutoresizingStyle,
     at,
-    objc_method
+    objc_method,
+    SEL
 )
 
 from .base import Widget
@@ -127,6 +128,16 @@ class TogaTable(NSTableView):
         max_widget_height = max(view.intrinsicContentSize().height + margin for view in views)
         return max(min_row_height, max_widget_height)
 
+    @objc_method
+    def onDoubleClick_(self, sender) -> None:
+        if self.clickedRow == -1:
+            clicked = None
+        else:
+            clicked = self.interface.data[self.clickedRow]
+
+        if self.interface.on_double_click:
+            self.interface.on_double_click(self.interface, row=clicked)
+
 
 class Table(Widget):
     def create(self):
@@ -159,6 +170,8 @@ class Table(Widget):
 
         self.table.delegate = self.table
         self.table.dataSource = self.table
+        self.table.target = self.table
+        self.table.doubleAction = SEL('onDoubleClick:')
 
         # Embed the table view in the scroll view
         self.native.documentView = self.table
@@ -208,6 +221,9 @@ class Table(Widget):
         self.table.reloadData()
 
     def set_on_select(self, handler):
+        pass
+
+    def set_on_double_click(self, handler):
         pass
 
     def scroll_to_row(self, row):
