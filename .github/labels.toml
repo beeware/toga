@@ -58,6 +58,11 @@ color = "f975e6"
 name = "not-quite-right"
 description = "The idea or PR has been reviewed, but more work is needed."
 
+[more-details]
+color = "f975e6"
+name = "more-details"
+description = "More details are needed before the question can be answered."
+
 [question]
 color = "cc317c"
 name = "question"
