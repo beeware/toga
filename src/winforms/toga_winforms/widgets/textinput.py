@@ -12,7 +12,7 @@ class TextInput(Widget):
     def create(self):
         self.native = WinForms.TextBox()
         self.native.Multiline = False
-        self.native.Click += self.winforms_click
+        self.native.DoubleClick += self.winforms_double_click
         self.native.TextChanged += self.winforms_text_changed
 
     def set_readonly(self, value):
@@ -56,5 +56,5 @@ class TextInput(Widget):
         if self.interface._on_change:
             self.interface.on_change(self.interface)
 
-    def winforms_click(self, sender, event):
+    def winforms_double_click(self, sender, event):
         self.native.SelectAll()
