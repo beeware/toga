@@ -14,6 +14,7 @@ from .widgets.selection import Selection
 from .widgets.slider import Slider
 from .widgets.switch import Switch
 from .widgets.textinput import TextInput
+from .widgets.webview import WebView
 from .window import Window
 
 
@@ -38,6 +39,7 @@ __all__ = [
     "Slider",
     "Switch",
     "TextInput",
+    "WebView",
     "Window",
     "not_implemented",
     "paths",
