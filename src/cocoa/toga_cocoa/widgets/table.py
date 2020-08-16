@@ -85,6 +85,11 @@ class TogaTable(NSTableView):
 
         return tcv
 
+    @objc_method
+    def tableView_pasteboardWriterForRow_(self, table, row) -> None:
+        # this seems to be required to prevent issue 21562075 in AppKit
+        return None
+
     # TableDelegate methods
     @objc_method
     def selectionShouldChangeInTableView_(self, table) -> bool:
@@ -128,6 +133,7 @@ class TogaTable(NSTableView):
         max_widget_height = max(view.intrinsicContentSize().height + margin for view in views)
         return max(min_row_height, max_widget_height)
 
+    # target methods
     @objc_method
     def onDoubleClick_(self, sender) -> None:
         if self.clickedRow == -1:
