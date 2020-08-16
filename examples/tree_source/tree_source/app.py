@@ -1,3 +1,6 @@
+import os
+import subprocess
+import platform
 from datetime import datetime
 from pathlib import Path
 
@@ -120,6 +123,16 @@ class ExampleTreeSourceApp(toga.App):
         else:
             self.label.text = 'You selected {0} items'.format(files)
 
+    def double_click_handler(self, widget, node):
+        # open the file or folder in the platform's default app
+        print('clicked ', node)
+        if platform.system() == 'Darwin':
+            subprocess.call(('open', node.path))
+        elif platform.system() == 'Windows':
+            os.startfile(node.path)
+        else:
+            subprocess.call(('xdg-open', node.path))
+
     def startup(self):
         # Set up main window
         self.main_window = toga.MainWindow(title=self.name)
@@ -132,6 +145,7 @@ class ExampleTreeSourceApp(toga.App):
             style=Pack(flex=1),
             multiple_select=True,
             on_select=self.selection_handler,
+            on_double_click=self.double_click_handler
         )
         self.label = toga.Label('A view of the current directory!', style=Pack(padding=10))
 
