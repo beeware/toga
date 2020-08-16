@@ -23,6 +23,9 @@ class Table(Widget):
     def set_on_select(self, handler):
         self._set_value('on_select', handler)
 
+    def set_on_double_click(self, handler):
+        self._set_value('on_double_click', handler)
+
     def scroll_to_row(self, row):
         self._set_value('scroll to', row)
 
