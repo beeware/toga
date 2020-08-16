@@ -17,11 +17,16 @@ class TableTests(TestCase):
         def select_handler(widget, row):
             pass
 
+        def double_click_handler(widget, row):
+            pass
+
         self.on_select = select_handler
+        self.on_double_click = double_click_handler
 
         self.table = toga.Table(
             self.headings,
             on_select=self.on_select,
+            on_double_click=self.on_double_click,
             factory=toga_dummy.factory
         )
 
@@ -94,12 +99,26 @@ class TableTests(TestCase):
 
         self.assertValueSet(self.table, "on_select", self.table.on_select)
 
-        on_sele = self.table.on_select
-        self.assertEqual(on_sele._raw, self.on_select)
+        on_select = self.table.on_select
+        self.assertEqual(on_select._raw, self.on_select)
 
         self.table.on_select = dummy_handler
-        on_sele = self.table.on_select
-        self.assertEqual(on_sele._raw, dummy_handler)
+        on_select = self.table.on_select
+        self.assertEqual(on_select._raw, dummy_handler)
+
+    def test_on_double_click(self):
+
+        def dummy_handler(widget, row):
+            pass
+
+        self.assertValueSet(self.table, "on_double_click", self.table.on_double_click)
+
+        on_double_click = self.table.on_double_click
+        self.assertEqual(on_double_click._raw, self.on_double_click)
+
+        self.table.on_double_click = dummy_handler
+        on_double_click = self.table.on_double_click
+        self.assertEqual(on_double_click._raw, dummy_handler)
 
     def test_add_column(self):
         new_heading = 'Heading 4'
