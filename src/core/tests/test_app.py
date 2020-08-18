@@ -5,30 +5,7 @@ import toga_dummy
 from toga_dummy.utils import TestCase
 
 
-class AppTests(TestCase):
-    def setUp(self):
-        super().setUp()
-
-        self.name = 'Test App'
-        self.app_id = 'org.beeware.test-app'
-        self.id = 'dom-id'
-
-        self.content = MagicMock()
-
-        self.started = False
-
-        def test_startup_function(app):
-            self.started = True
-            return self.content
-
-        self.app = toga.App(
-            formal_name=self.name,
-            app_id=self.app_id,
-            startup=test_startup_function,
-            factory=toga_dummy.factory,
-            id=self.id
-        )
-
+class AppTests():
     def test_app_name(self):
         self.assertEqual(self.app.name, self.name)
 
@@ -57,6 +34,21 @@ class AppTests(TestCase):
 
     def test_app_id(self):
         self.assertEqual(self.app.id, self.id)
+
+    def test_app_app_name(self):
+        self.assertEqual(self.app.app_name, self.app_name)
+
+    def test_app_author(self):
+        self.assertEqual(self.app.author, self.author)
+
+    def test_app_version(self):
+        self.assertEqual(self.app.version, self.version)
+
+    def test_app_home_page(self):
+        self.assertEqual(self.app.home_page, self.home_page)
+
+    def test_app_description(self):
+        self.assertEqual(self.app.description, self.description)
 
     @patch('toga.app.get_platform_factory')
     def test_app_init_with_no_factory(self, mock_function):
@@ -103,6 +95,75 @@ class AppTests(TestCase):
         self.assertTrue(self.app.is_full_screen)
         self.app.set_full_screen()
         self.assertFalse(self.app.is_full_screen)
+
+
+class AppTestsExplicit(TestCase, AppTests):
+    def setUp(self):
+        super().setUp()
+
+        self.name = 'Test App'
+        self.app_id = 'org.beeware.toga'
+        self.app_name = 'toga'
+        self.id = 'dom-id'
+        self.author = 'Russell Keith-Magee'
+        self.version = '0.3.0.dev21'
+        self.home_page = 'http://www.beeware.org'
+        self.description = 'Tests for toga app class'
+        self.icon = 'resources/toga'
+
+        self.content = MagicMock()
+
+        self.started = False
+
+        def test_startup_function(app):
+            self.started = True
+            return self.content
+
+        self.app = toga.App(
+            formal_name=self.name,
+            app_id=self.app_id,
+            app_name =self.app_name,
+            icon=self.icon,
+            author=self.author,
+            version=self.version,
+            home_page=self.home_page,
+            description=self.description,
+            startup=test_startup_function,
+            factory=toga_dummy.factory,
+            id=self.id
+        )
+
+
+class AppTestsManifest(TestCase, AppTests):
+    def setUp(self):
+        super().setUp()
+
+        self.name = 'Test App'
+        self.app_id = 'org.beeware.toga'
+        self.app_name = 'toga'
+        self.id = 'dom-id'
+        self.author = 'Russell Keith-Magee'
+        self.version = '0.3.0.dev21'
+        self.home_page = 'http://www.beeware.org'
+        self.description = 'Tests for toga app class'
+
+        self.content = MagicMock()
+
+        self.started = False
+
+        def test_startup_function(app):
+            self.started = True
+            return self.content
+
+        # Fix bug in toga/app.py line 195
+        #self._home_page = self.metadata['Home-page']
+        # Fix bug in toga/app.py line 201
+        #self._description = self.metadata['Summary']
+        self.app = toga.App(
+            startup=test_startup_function,
+            factory=toga_dummy.factory,
+            id=self.id
+        )
 
 
 class DocumentAppTests(TestCase):
