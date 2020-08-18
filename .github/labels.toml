@@ -1,0 +1,94 @@
+[GSoC]
+color = "fef2c0"
+name = "GSoC"
+description = "Tickets describing GSoC projects"
+
+[android]
+color = "25d4dd"
+name = "android"
+description = "The issue relates to Android mobile support."
+
+[bug]
+color = "dd2525"
+name = "bug"
+description = "A confirmed crash or error in behavior."
+
+[documentation]
+color = "8125dd"
+name = "documentation"
+description = "The issue relates to documentation."
+
+[duplicate]
+color = "333333"
+name = "duplicate"
+description = "A duplicate of an existing ticket."
+
+[enhancement]
+color = "2525dd"
+name = "enhancement"
+description = "New features, or improvements on existing features."
+
+[first-timers-only]
+color = "25dd25"
+name = "first-timers-only"
+description = "Is this your first time contributing? This could be a good place to start!"
+
+[iOS]
+color = "25d4dd"
+name = "iOS"
+description = "The issue relates to Apple iOS mobile support."
+
+[invalid]
+color = "333333"
+name = "invalid"
+description = "The issue is mistaken or incorrect in some way."
+
+[linux]
+color = "25d4dd"
+name = "linux"
+description = "The issue relates Linux support."
+
+[macOS]
+color = "25d4dd"
+name = "macOS"
+description = "The issue relates to Apple macOS support."
+
+[not-quite-right]
+color = "f975e6"
+name = "not-quite-right"
+description = "The idea or PR has been reviewed, but more work is needed."
+
+[more-details]
+color = "f975e6"
+name = "more-details"
+description = "More details are needed before the question can be answered."
+
+[question]
+color = "cc317c"
+name = "question"
+description = "Requests for information."
+
+[up-for-grabs]
+color = "25dd25"
+name = "up-for-grabs"
+description = "Help wanted!"
+
+[web]
+color = "25d4dd"
+name = "web"
+description = "The issue relates to supporting the web as a platform."
+
+[windows]
+color = "25d4dd"
+name = "windows"
+description = "The issue relates to Microsoft Windows support."
+
+[wontfix]
+color = "333333"
+name = "wontfix"
+description = "The problem described is real, but we've decided against fixing it."
+
+[work-in-progress]
+color = "f975e6"
+name = "work-in-progress"
+description = "The PR is a work in progress"

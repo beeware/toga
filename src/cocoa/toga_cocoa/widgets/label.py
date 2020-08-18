@@ -26,9 +26,9 @@ class Label(Widget):
         if value:
             self.native.textColor = native_color(value)
 
-    def set_font(self, value):
-        if value:
-            self.native.font = value._impl.native
+    def set_font(self, font):
+        if font:
+            self.native.font = font.bind(self.interface.factory).native
 
     def set_text(self, value):
         self.native.stringValue = self.interface._text

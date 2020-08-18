@@ -23,8 +23,13 @@ Switch = JavaClass("android/widget/Switch")
 Spinner = JavaClass("android/widget/Spinner")
 TextView = JavaClass("android/widget/TextView")
 TextWatcher = JavaInterface("android/text/TextWatcher")
+TypedValue = JavaClass("android/util/TypedValue")
+Typeface = JavaClass("android/graphics/Typeface")
+ValueCallback = JavaInterface("android/webkit/ValueCallback")
 ViewGroup__LayoutParams = JavaClass("android/view/ViewGroup$LayoutParams")
 View__MeasureSpec = JavaClass("android/view/View$MeasureSpec")
+WebView = JavaClass("android/webkit/WebView")
+WebViewClient = JavaClass("android/webkit/WebViewClient")
 
 # Indicate to `rubicon-java` that `ArrayAdapter` can also be typecast into a
 # `SpinnerAdapter`. This is required until `rubicon-java` explores the interfaces

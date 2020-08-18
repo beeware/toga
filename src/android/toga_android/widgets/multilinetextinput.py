@@ -6,6 +6,7 @@ from ..libs.android_widgets import (
     EditText,
     Gravity,
     InputType,
+    TypedValue,
 )
 from .base import Widget, align
 
@@ -32,8 +33,11 @@ class MultilineTextInput(Widget):
     def set_alignment(self, value):
         self.native.setGravity(Gravity.TOP | align(value))
 
-    def set_font(self, value):
-        self.interface.factory.not_implemented("MutlineTextInput.set_font()")
+    def set_font(self, font):
+        if font:
+            font_impl = font.bind(self.interface.factory)
+            self.native.setTextSize(TypedValue.COMPLEX_UNIT_SP, font_impl.get_size())
+            self.native.setTypeface(font_impl.get_typeface(), font_impl.get_style())
 
     def set_value(self, value):
         self.native.setText(value)

@@ -92,10 +92,6 @@ Next, install Toga into your virtual environment:
 
       (venv) C:\...>pip install --pre toga
 
-    .. note:: Python 3.8 Limitations on Windows
-
-        You can use any stable version of Python 3.5, 3.6 or 3.7. We would advise against using Python 3.8 for Windows as some dependencies are not currently available for Python 3.8.
-
 If you get other errors, please check that you followed `the prerequisite <https://github.com/beeware/toga#prerequisites>`_ instructions.
 
 After a successful installation of Toga you are ready to get coding.

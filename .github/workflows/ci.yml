@@ -200,8 +200,8 @@ jobs:
         cd src/android
         python setup.py test
 
-  django:
-    name: Django backend tests
+  web:
+    name: Web backend tests
     needs: python-versions
     runs-on: ubuntu-latest
     steps:
@@ -217,8 +217,8 @@ jobs:
         python -m pip install pytest-tldr
         python -m pip install -e src/core
         python -m pip install -e src/dummy
-        python -m pip install -e src/django
+        python -m pip install -e src/web
     - name: Test
       run: |
-        cd src/django
+        cd src/web
         python setup.py test

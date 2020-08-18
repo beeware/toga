@@ -8,6 +8,9 @@ class Box(Widget):
         self.native = RelativeLayout(MainActivity.singletonThis)
 
     def set_child_bounds(self, widget, x, y, width, height):
+        # Avoid setting child boundaries if `create()` has not been called.
+        if not widget.native:
+            return
         # We assume `widget.native` has already been added to this `RelativeLayout`.
         #
         # We use `topMargin` and `leftMargin` to perform absolute layout. Not very

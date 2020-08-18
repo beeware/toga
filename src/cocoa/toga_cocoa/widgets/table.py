@@ -2,7 +2,6 @@ from travertino.size import at_least
 
 import toga
 from toga_cocoa.libs import (
-    CGRectMake,
     NSBezelBorder,
     NSIndexSet,
     NSRange,
@@ -71,7 +70,7 @@ class TogaTable(NSTableView):
         tcv = self.makeViewWithIdentifier(identifier, owner=self)
 
         if not tcv:  # there is no existing view to reuse so create a new one
-            tcv = TogaIconView.alloc().initWithFrame_(CGRectMake(0, 0, column.width, 16))
+            tcv = TogaIconView.alloc().init()
             tcv.identifier = identifier
 
         tcv.setText(str(value))
@@ -119,14 +118,14 @@ class TogaTable(NSTableView):
     @objc_method
     def tableView_heightOfRow_(self, table, row: int) -> float:
 
-        min_row_height = 18
+        min_row_height = self.rowHeight
         margin = 2
 
         # get all views in column
         views = [self.tableView_viewForTableColumn_row_(table, col, row) for col in self.tableColumns]
 
-        max_widget_size = max(view.intrinsicContentSize().height + margin for view in views)
-        return max(min_row_height, max_widget_size)
+        max_widget_height = max(view.intrinsicContentSize().height + margin for view in views)
+        return max(min_row_height, max_widget_height)
 
 
 class Table(Widget):
@@ -146,7 +145,7 @@ class Table(Widget):
         self.table.interface = self.interface
         self.table._impl = self
         self.table.columnAutoresizingStyle = NSTableViewColumnAutoresizingStyle.Uniform
-
+        self.table.usesAlternatingRowBackgroundColors = True
         self.table.allowsMultipleSelection = self.interface.multiple_select
 
         # Create columns for the table
@@ -176,7 +175,7 @@ class Table(Widget):
 
         self.table.insertRowsAtIndexes(
             index_set,
-            withAnimation=NSTableViewAnimation.SlideDown
+            withAnimation=NSTableViewAnimation.EffectNone
         )
 
     def change(self, item):
@@ -201,7 +200,7 @@ class Table(Widget):
             indexes = NSIndexSet.indexSetWithIndex(index)
             self.table.removeRowsAtIndexes(
                 indexes,
-                withAnimation=NSTableViewAnimation.SlideUp
+                withAnimation=NSTableViewAnimation.EffectNone
             )
 
     def clear(self):
