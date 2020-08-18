@@ -192,13 +192,13 @@ class App:
         if home_page:
             self._home_page = home_page
         elif self.metadata['Home-page']:
-            self._home_page = self.metadata['home_page']
+            self._home_page = self.metadata['Home-page']
 
         # If a description has been provided, use it; otherwise, look to
         # the module metadata.
         if description:
             self._description = description
-        elif self.metadata['description']:
+        elif self.metadata['Summary']:
             self._description = self.metadata['Summary']
 
         # Set the application DOM ID; create an ID if one hasn't been provided.
