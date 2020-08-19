@@ -106,7 +106,7 @@ class AppTestsExplicit(TestCase, AppTests):
         self.app_name = 'toga'
         self.id = 'dom-id'
         self.author = 'Russell Keith-Magee'
-        self.version = '0.3.0.dev21'
+        self.version = '0.3.0.dev23'
         self.home_page = 'http://www.beeware.org'
         self.description = 'Tests for toga app class'
         self.icon = 'resources/toga'
@@ -143,7 +143,7 @@ class AppTestsManifest(TestCase, AppTests):
         self.app_name = 'toga'
         self.id = 'dom-id'
         self.author = 'Russell Keith-Magee'
-        self.version = '0.3.0.dev21'
+        self.version = '0.3.0.dev23'
         self.home_page = 'http://www.beeware.org'
         self.description = 'Tests for toga app class'
 
