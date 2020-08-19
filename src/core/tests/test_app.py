@@ -122,7 +122,7 @@ class AppTestsExplicit(TestCase, AppTests):
         self.app = toga.App(
             formal_name=self.name,
             app_id=self.app_id,
-            app_name =self.app_name,
+            app_name=self.app_name,
             icon=self.icon,
             author=self.author,
             version=self.version,
@@ -155,10 +155,6 @@ class AppTestsManifest(TestCase, AppTests):
             self.started = True
             return self.content
 
-        # Fix bug in toga/app.py line 195
-        #self._home_page = self.metadata['Home-page']
-        # Fix bug in toga/app.py line 201
-        #self._description = self.metadata['Summary']
         self.app = toga.App(
             startup=test_startup_function,
             factory=toga_dummy.factory,
