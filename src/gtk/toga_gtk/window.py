@@ -122,6 +122,9 @@ class Window:
         if self.interface.on_close:
             self.interface.on_close(self.interface.app)
 
+    def set_on_close(self, handler):
+        pass
+
     def on_close(self, *args):
         pass
 

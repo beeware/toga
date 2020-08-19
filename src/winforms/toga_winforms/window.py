@@ -141,6 +141,9 @@ class Window:
     def set_on_close(self, handler):
         pass
 
+    def on_close(self, *args):
+        pass
+
     def close(self):
         self.native.Close()
 
