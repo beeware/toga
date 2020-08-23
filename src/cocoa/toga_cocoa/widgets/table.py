@@ -118,14 +118,25 @@ class TogaTable(NSTableView):
     @objc_method
     def tableView_heightOfRow_(self, table, row: int) -> float:
 
-        min_row_height = self.rowHeight
+        default_row_height = self.rowHeight
         margin = 2
 
         # get all views in column
-        views = [self.tableView_viewForTableColumn_row_(table, col, row) for col in self.tableColumns]
+        data_row = self.interface.data[row]
 
-        max_widget_height = max(view.intrinsicContentSize().height + margin for view in views)
-        return max(min_row_height, max_widget_height)
+        heights = [default_row_height]
+
+        for column in self.tableColumns:
+            col_identifier = str(column.identifier)
+            value = getattr(data_row, col_identifier, None)
+            if isinstance(value, toga.Widget):
+                # if the cell value is a widget, use its height
+                heights.append(value._impl.native.intrinsicContentSize().height + margin)
+            else:
+                # otherwise use default row height
+                heights.append(default_row_height)
+
+        return max(heights)
 
 
 class Table(Widget):
