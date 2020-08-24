@@ -44,7 +44,9 @@ class Window:
         self.native.Resize += self.winforms_resize
         self.toolbar_native = None
         self.toolbar_items = None
-        self.native.StartPosition = 0   # FormStartPosition.Manual
+
+        # Tell Winforms to heed self.native.Location on window creation
+        self.native.StartPosition = WinForms.FormStartPosition.Manual
         self.native.Location = Point(*self.interface.position)
 
     def create_toolbar(self):
