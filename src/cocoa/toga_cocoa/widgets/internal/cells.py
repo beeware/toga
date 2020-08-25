@@ -60,6 +60,13 @@ class TogaIconView(NSTableCellView):
             self, NSLayoutAttributeLeft,
             1, 0
         )
+        # set fixed width of icon
+        self.iv_width_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # NOQA:E501
+            self.imageView, NSLayoutAttributeWidth,
+            NSLayoutRelationEqual,
+            None, NSLayoutAttributeNotAnAttribute,
+            1, 16
+        )
         # align text vertically in cell
         self.tv_vertical_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # NOQA:E501
             self.textField, NSLayoutAttributeCenterY,
@@ -84,6 +91,7 @@ class TogaIconView(NSTableCellView):
 
         self.addConstraint(self.iv_vertical_constraint)
         self.addConstraint(self.iv_left_constraint)
+        self.addConstraint(self.iv_width_constraint)
         self.addConstraint(self.tv_vertical_constraint)
         self.addConstraint(self.tv_left_constraint)
         self.addConstraint(self.tv_right_constraint)
@@ -96,10 +104,14 @@ class TogaIconView(NSTableCellView):
 
         if image:
             self.imageView.image = image.resizeTo(16)
+            # set icon width to 16
+            self.iv_width_constraint.constant = 16
             # add padding between icon and text
             self.tv_left_constraint.constant = 5
         else:
             self.imageView.image = None
+            # set icon width to 0
+            self.iv_width_constraint.constant = 0
             # remove padding between icon and text
             self.tv_left_constraint.constant = 0
 
