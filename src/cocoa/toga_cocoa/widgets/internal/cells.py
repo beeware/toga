@@ -1,5 +1,4 @@
 from toga_cocoa.libs import (
-    CGRect,
     NSAffineTransform,
     NSBezierPath,
     NSColor,
@@ -20,27 +19,17 @@ from toga_cocoa.libs import (
     NSLayoutAttributeLeft,
     NSLayoutAttributeRight,
     NSLayoutAttributeCenterY,
+    NSLayoutAttributeWidth,
+    NSLayoutAttributeNotAnAttribute,
     NSLayoutConstraint,
     NSLayoutRelationEqual,
     NSLineBreakMode,
-    ObjCInstance,
     at,
     objc_method,
-    send_super
 )
 
 
 class TogaIconView(NSTableCellView):
-
-    @objc_method
-    def initWithFrame_(self, frame: CGRect):
-        self = ObjCInstance(send_super(__class__, self, 'initWithFrame:', frame))
-        return self.setup()
-
-    @objc_method
-    def init(self):
-        self = ObjCInstance(send_super(__class__, self, 'init'))
-        return self.setup()
 
     @objc_method
     def setup(self):
@@ -99,10 +88,12 @@ class TogaIconView(NSTableCellView):
         self.addConstraint(self.tv_left_constraint)
         self.addConstraint(self.tv_right_constraint)
 
-        return self
-
     @objc_method
-    def setImage(self, image):
+    def setImage_(self, image):
+
+        if not self.imageView:
+            self.setup()
+
         if image:
             self.imageView.image = image.resizeTo(16)
             # add padding between icon and text
@@ -113,7 +104,11 @@ class TogaIconView(NSTableCellView):
             self.tv_left_constraint.constant = 0
 
     @objc_method
-    def setText(self, text):
+    def setText_(self, text):
+
+        if not self.imageView:
+            self.setup()
+
         self.textField.stringValue = text
 
 
