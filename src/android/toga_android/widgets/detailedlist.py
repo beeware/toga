@@ -19,7 +19,7 @@ class DetailedList(Widget):
         scroll_view_layout_params.gravity = android_widgets.Gravity.TOP
         parent.addView(scroll_view, scroll_view_layout_params)
         dismissable_container = android_widgets.LinearLayout(self._native_activity)
-        dismissable_container.setOrientation(android_widgets.LinearLayout.VERTICAL);
+        dismissable_container.setOrientation(android_widgets.LinearLayout.VERTICAL)
         dismissable_container_params = android_widgets.LinearLayout__LayoutParams(
                 android_widgets.LinearLayout__LayoutParams.MATCH_PARENT,
                 android_widgets.LinearLayout__LayoutParams.MATCH_PARENT
