@@ -91,7 +91,7 @@ class DetailedList(Widget):
         # If the source changes, re-build the widget.
         self.create()
 
-    def set_on_refresh(self, *args, **kwargs):
+    def set_on_refresh(self, handler):
         # This widget does not yet support pull-to-refresh.
         self.interface.factory.not_implemented("DetailedList.set_on_refresh()")
 
