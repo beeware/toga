@@ -6,4 +6,3 @@ class Icon:
         self.interface = interface
         self.interface._impl = self
         self.path = path
-        interface.factory.not_implemented("Icon")
