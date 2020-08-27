@@ -215,7 +215,7 @@ class Tree(Widget):
             self.column_identifiers[id(column_identifier)] = accessor
             column = NSTableColumn.alloc().initWithIdentifier(column_identifier)
             # column.editable = False
-            column.midWidth = 100
+            column.minWidth = 16
             # if self.interface.sorting:
             #     sort_descriptor = NSSortDescriptor.sortDescriptorWithKey(column_identifier, ascending=True)
             #     column.sortDescriptorPrototype = sort_descriptor

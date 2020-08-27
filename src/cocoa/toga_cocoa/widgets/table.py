@@ -229,6 +229,7 @@ class Table(Widget):
         column_identifier = at(accessor)
         self.column_identifiers[accessor] = column_identifier
         column = NSTableColumn.alloc().initWithIdentifier(column_identifier)
+        column.minWidth = 16
         self.table.addTableColumn(column)
         self.columns.append(column)
 
