@@ -5,6 +5,7 @@ from .images import Image
 from .paths import paths
 from .widgets.box import Box
 from .widgets.button import Button
+from .widgets.detailedlist import DetailedList
 from .widgets.imageview import ImageView
 from .widgets.label import Label
 from .widgets.numberinput import NumberInput
@@ -41,6 +42,7 @@ __all__ = [
     "TextInput",
     "WebView",
     "Window",
+    "DetailedList",
     "not_implemented",
     "paths",
 ]
