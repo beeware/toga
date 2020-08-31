@@ -165,6 +165,8 @@ class Window:
         dialog.Title = title
         if suggested_filename is not None:
             dialog.FileName = suggested_filename
+        if file_types is not None:
+            dialog.Filter = self.build_filter(file_types)
         if dialog.ShowDialog() == WinForms.DialogResult.OK:
             return dialog.FileName
         else:
