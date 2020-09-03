@@ -262,7 +262,7 @@ class Window:
             file_types: A list of strings with the allowed file extensions.
 
         Returns:
-            The absolute path(str) to the selected location.
+            The absolute path(str) to the selected location. May be None.
         """
         return self._impl.save_file_dialog(title, suggested_filename, file_types)
 
@@ -277,7 +277,8 @@ class Window:
             multiselect: Value showing whether a user can select multiple files.
 
         Returns:
-            The absolute path(str) to the selected file or a list(str) if multiselect
+            A list of absolute paths(str) if multiselect is True, a single path(str)
+            otherwise. Returns None if no file is selected.
         """
         return self._impl.open_file_dialog(title, initial_directory, file_types, multiselect)
 
@@ -291,6 +292,7 @@ class Window:
             multiselect (bool): Value showing whether a user can select multiple files.
 
         Returns:
-            The absolute path(str) to the selected file or None.
+            A list of absolute paths(str) if multiselect is True, a single path(str)
+            otherwise. Returns None if no folder is selected.
         """
         return self._impl.select_folder_dialog(title, initial_directory, multiselect)
