@@ -172,7 +172,8 @@ async def open_file(window, title, file_types, multiselect):
         file_types: Ignored for now.
         multiselect: Flag to allow multiple file selection.
     Returns:
-        (list) A list of file paths (may be empty).
+        A list of absolute paths(str) if multiselect is True, a single path(str)
+        otherwise. Returns None if no file is selected.
     """
 
     # Initialize and configure the panel.
@@ -191,13 +192,13 @@ async def open_file(window, title, file_types, multiselect):
     def completion_handler(r: int) -> None:
         if r == NSFileHandlingPanelOKButton:
             if multiselect:
-                paths = [str(url.path) for url in panel.URLs]
+                res = [str(url.path) for url in panel.URLs]
             else:
-                paths = [str(panel.URL.path)]
+                res = str(panel.URL.path)
         else:
-            paths = []
+            res = None
 
-        future.set_result(paths)
+        future.set_result(res)
 
     panel.beginSheetModalForWindow(window._impl.native, completionHandler=completion_handler)
 
@@ -212,7 +213,8 @@ async def select_folder(window, title, multiselect):
         title: Title of the dialog.
         multiselect: Flag to allow multiple folder selection.
     Returns:
-        (list) A list of folder paths (may be empty).
+        A list of absolute paths(str) if multiselect is True, a single path(str)
+        otherwise. Returns None if no folder is selected.
     """
     panel = NSOpenPanel.alloc().init()
     panel.title = title
@@ -234,13 +236,13 @@ async def select_folder(window, title, multiselect):
 
         if r == NSFileHandlingPanelOKButton:
             if multiselect:
-                paths = [str(url.path) for url in panel.URLs]
+                res = [str(url.path) for url in panel.URLs]
             else:
-                paths = [str(panel.URL.path)]
+                res = str(panel.URL.path)
         else:
-            paths = []
+            res = None
 
-        future.set_result(paths)
+        future.set_result(res)
 
     panel.beginSheetModalForWindow(window._impl.native, completionHandler=completion_handler)
 
