@@ -4,7 +4,7 @@ from ..libs import android_widgets
 from .base import Widget
 
 
-class _DetailedListOnClickListener(android_widgets.OnClickListener):
+class DetailedListOnClickListener(android_widgets.OnClickListener):
     def __init__(self, impl, row_number):
         super().__init__()
         self._impl = impl
@@ -99,7 +99,7 @@ class DetailedList(Widget):
         text_container.addView(bottom_text, bottom_text_params)
 
         # Apply an onclick listener so that clicking anywhere on the row triggers Toga's on_select(row).
-        row_foreground.setOnClickListener(_DetailedListOnClickListener(self, i))
+        row_foreground.setOnClickListener(DetailedListOnClickListener(self, i))
 
     def change_source(self, source):
         # If the source changes, re-build the widget.
