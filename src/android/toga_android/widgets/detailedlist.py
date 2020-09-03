@@ -4,6 +4,17 @@ from ..libs import android_widgets
 from .base import Widget
 
 
+class _DetailedListOnClickListener(android_widgets.OnClickListener):
+    def __init__(self, impl, row_number):
+        super().__init__()
+        self._impl = impl
+        self._row_number = row_number
+
+    def onClick(self, _view):
+        if self._impl.interface.on_select:
+            self._impl.interface.on_select(widget=self._impl.interface, row=self._row_number)
+
+
 class DetailedList(Widget):
     def create(self):
         # DetailedList is not a specific widget on Android, so we build it out
@@ -87,6 +98,9 @@ class DetailedList(Widget):
         bottom_text_params.gravity = android_widgets.Gravity.TOP
         text_container.addView(bottom_text, bottom_text_params)
 
+        # Apply an onclick listener so that clicking anywhere on the row triggers Toga's on_select(row).
+        row_foreground.setOnClickListener(_DetailedListOnClickListener(self, i))
+
     def change_source(self, source):
         # If the source changes, re-build the widget.
         self.create()
@@ -116,8 +130,8 @@ class DetailedList(Widget):
         self.create()
 
     def set_on_select(self, handler):
-        # This widget currently does not implement any handlers for user touch.
-        self.interface.factory.not_implemented("DetailedList.set_on_select()")
+        # No special handling required.
+        pass
 
     def set_on_delete(self, handler):
         # This widget currently does not implement event handlers for data chance.
