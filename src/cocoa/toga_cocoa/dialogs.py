@@ -1,3 +1,4 @@
+import asyncio
 from .libs import (
     NSAlert,
     NSAlertFirstButtonReturn,
@@ -13,86 +14,125 @@ from .libs import (
 )
 
 
-def info(window, title, message):
+async def info(window, title, message):
     alert = NSAlert.alloc().init()
     alert.icon = window.app.icon._impl.native
-    alert.setAlertStyle_(NSAlertStyle.Informational)
-    alert.setMessageText_(title)
-    alert.setInformativeText_(message)
+    alert.alertStyle = NSAlertStyle.Informational
+    alert.messageText = title
+    alert.informativeText = message
 
-    alert.runModal()
+    loop = asyncio.get_event_loop()
+    future = loop.create_future()
+
+    def completion_handler(r: int) -> None:
+        future.set_result(None)
+
+    alert.beginSheetModalForWindow(window._impl.native, completionHandler=completion_handler)
+
+    return await future
 
 
-def question(window, title, message):
+async def question(window, title, message):
     alert = NSAlert.alloc().init()
     alert.icon = window.app.icon._impl.native
-    alert.setAlertStyle_(NSAlertStyle.Informational)
-    alert.setMessageText_(title)
-    alert.setInformativeText_(message)
+    alert.alertStyle = NSAlertStyle.Informational
+    alert.messageText = title
+    alert.informativeText = message
 
-    alert.addButtonWithTitle_('Yes')
-    alert.addButtonWithTitle_('No')
+    alert.addButtonWithTitle('Yes')
+    alert.addButtonWithTitle('No')
 
-    result = alert.runModal()
-    return result == NSAlertFirstButtonReturn
+    loop = asyncio.get_event_loop()
+    future = loop.create_future()
+
+    def completion_handler(r: int) -> None:
+        future.set_result(r == NSAlertFirstButtonReturn)
+
+    alert.beginSheetModalForWindow(window._impl.native, completionHandler=completion_handler)
+
+    return await future
 
 
-def confirm(window, title, message):
+async def confirm(window, title, message):
     alert = NSAlert.alloc().init()
     alert.icon = window.app.icon._impl.native
-    alert.setAlertStyle_(NSAlertStyle.Warning)
-    alert.setMessageText_(title)
-    alert.setInformativeText_(message)
+    alert.alertStyle = NSAlertStyle.Warning
+    alert.messageText = title
+    alert.informativeText = message
 
-    alert.addButtonWithTitle_('OK')
-    alert.addButtonWithTitle_('Cancel')
+    alert.addButtonWithTitle('OK')
+    alert.addButtonWithTitle('Cancel')
 
-    result = alert.runModal()
-    return result == NSAlertFirstButtonReturn
+    loop = asyncio.get_event_loop()
+    future = loop.create_future()
+
+    def completion_handler(r: int) -> None:
+        future.set_result(r == NSAlertFirstButtonReturn)
+
+    alert.beginSheetModalForWindow(window._impl.native, completionHandler=completion_handler)
+
+    return await future
 
 
-def error(window, title, message):
+async def error(window, title, message):
     alert = NSAlert.alloc().init()
     alert.icon = window.app.icon._impl.native
-    alert.setAlertStyle_(NSAlertStyle.Critical)
-    alert.setMessageText_(title)
-    alert.setInformativeText_(message)
+    alert.alertStyle = NSAlertStyle.Critical
+    alert.messageText = title
+    alert.informativeText = message
 
-    alert.runModal()
+    loop = asyncio.get_event_loop()
+    future = loop.create_future()
+
+    def completion_handler(r: int) -> None:
+        future.set_result(None)
+
+    alert.beginSheetModalForWindow(window._impl.native, completionHandler=completion_handler)
+
+    return await future
 
 
-def stack_trace(window, title, message, content, retry=False):
+async def stack_trace(window, title, message, content, retry=False):
     alert = NSAlert.alloc().init()
     alert.icon = window.app.icon._impl.native
-    alert.setAlertStyle_(NSAlertStyle.Critical)
-    alert.setMessageText_(title)
-    alert.setInformativeText_(message)
+    alert.alertStyle = NSAlertStyle.Critical
+    alert.messageText = title
+    alert.informativeText = message
 
-    scroll = NSScrollView.alloc().initWithFrame_(NSMakeRect(0, 0, 500, 200))
-    scroll.setHasVerticalScroller_(True)
-    scroll.setHasHorizontalScroller_(False)
-    scroll.setAutohidesScrollers_(False)
-    scroll.setBorderType_(NSBezelBorder)
+    scroll = NSScrollView.alloc().initWithFrame(NSMakeRect(0, 0, 500, 200))
+    scroll.hasVerticalScroller = True
+    scroll.hasHorizontalScrolle = False
+    scroll.autohidesScrollers = False
+    scroll.borderType = NSBezelBorder
 
     trace = NSTextView.alloc().init()
-    trace.insertText_(content)
-    trace.setEditable_(False)
-    trace.setVerticallyResizable_(True)
-    trace.setHorizontallyResizable_(True)
+    trace.insertText(content)
+    trace.editable = False
+    trace.werticallyResizable = True
+    trace.horizontallyResizable = True
 
-    scroll.setDocumentView_(trace)
-    alert.setAccessoryView_(scroll)
+    scroll.documentView = trace
+    alert.accessoryView = scroll
+
+    loop = asyncio.get_event_loop()
+    future = loop.create_future()
+
+    def completion_handler(r: int) -> None:
+        if retry:
+            future.set_result(r == NSAlertFirstButtonReturn)
+        else:
+            future.set_result(None)
 
     if retry:
-        alert.addButtonWithTitle_('Retry')
-        alert.addButtonWithTitle_('Quit')
-        result = alert.runModal()
-        return result == NSAlertFirstButtonReturn
-    else:
-        alert.runModal()
+        alert.addButtonWithTitle('Retry')
+        alert.addButtonWithTitle('Quit')
+
+    alert.beginSheetModalForWindow(window._impl.native, completionHandler=completion_handler)
+
+    return await future
 
 
-def save_file(window, title, suggested_filename, file_types=None):
+async def save_file(window, title, suggested_filename, file_types=None):
     panel = NSSavePanel.alloc().init()
     panel.title = title
 
@@ -106,14 +146,21 @@ def save_file(window, title, suggested_filename, file_types=None):
     panel.allowedFileTypes = arr
     panel.nameFieldStringValue = suggested_filename
 
-    result = panel.runModal()
+    loop = asyncio.get_event_loop()
+    future = loop.create_future()
 
-    if result == NSFileHandlingPanelOKButton:
-        return panel.URL.path
-    return None
+    def completion_handler(r: int) -> None:
+        if r == NSFileHandlingPanelOKButton:
+            future.set_result(panel.URL.path)
+        else:
+            future.set_result(None)
+
+    panel.beginSheetModalForWindow(window._impl.native, completionHandler=completion_handler)
+
+    return await future
 
 
-def open_file(window, title, file_types, multiselect):
+async def open_file(window, title, file_types, multiselect):
     """Cocoa open file dialog implementation.
 
     We restrict the panel invocation to only choose files. We also allow
@@ -125,7 +172,7 @@ def open_file(window, title, file_types, multiselect):
         file_types: Ignored for now.
         multiselect: Flag to allow multiple file selection.
     Returns:
-        The file path on success, None otherwise.
+        (list) A list of file paths (may be empty).
     """
 
     # Initialize and configure the panel.
@@ -138,15 +185,26 @@ def open_file(window, title, file_types, multiselect):
     panel.canChooseFiles = True
 
     # Show modal and return file path on success.
-    result = panel.runModal()
-    if result == NSFileHandlingPanelOKButton:
-        paths = [str(url.path) for url in panel.URLs]
-        filename_or_filenames = (paths if multiselect else
-                                 panel.URL.path)
-        return filename_or_filenames
+    loop = asyncio.get_event_loop()
+    future = loop.create_future()
+
+    def completion_handler(r: int) -> None:
+        if r == NSFileHandlingPanelOKButton:
+            if multiselect:
+                paths = [str(url.path) for url in panel.URLs]
+            else:
+                paths = [str(panel.URL.path)]
+        else:
+            paths = []
+
+        future.set_result(paths)
+
+    panel.beginSheetModalForWindow(window._impl.native, completionHandler=completion_handler)
+
+    return await future
 
 
-def select_folder(window, title, multiselect):
+async def select_folder(window, title, multiselect):
     """Cocoa select folder dialog implementation.
 
     Args:
@@ -154,24 +212,36 @@ def select_folder(window, title, multiselect):
         title: Title of the dialog.
         multiselect: Flag to allow multiple folder selection.
     Returns:
-        (list) A list of folder paths.
+        (list) A list of folder paths (may be empty).
     """
-    dialog = NSOpenPanel.alloc().init()
-    dialog.title = title
+    panel = NSOpenPanel.alloc().init()
+    panel.title = title
 
-    dialog.canChooseFiles = False
-    dialog.canChooseDirectories = True
-    dialog.resolvesAliases = True
-    dialog.allowsMultipleSelection = multiselect
+    panel.canChooseFiles = False
+    panel.canChooseDirectories = True
+    panel.resolvesAliases = True
+    panel.allowsMultipleSelection = multiselect
 
-    result = dialog.runModal()
+    # Show modal and return file path on success.
+    loop = asyncio.get_event_loop()
+    future = loop.create_future()
 
-    # Ensure regardless of the result, return types remain the same so as to not
-    # require type checking logic in user code.
-    # Convert types from 'ObjCStrInstance' to 'str'.
-    if result == NSFileHandlingPanelOKButton:
-        if multiselect:
-            return [str(url.path) for url in dialog.URLs]
+    def completion_handler(r: int) -> None:
+
+        # Ensure regardless of the result, return types remain the same so as to not
+        # require type checking logic in user code.
+        # Convert types from 'ObjCStrInstance' to 'str'.
+
+        if r == NSFileHandlingPanelOKButton:
+            if multiselect:
+                paths = [str(url.path) for url in panel.URLs]
+            else:
+                paths = [str(panel.URL.path)]
         else:
-            return [str(dialog.URL.path)]
-    return []
+            paths = []
+
+        future.set_result(paths)
+
+    panel.beginSheetModalForWindow(window._impl.native, completionHandler=completion_handler)
+
+    return await future

@@ -252,26 +252,26 @@ class Window:
     def close(self):
         self.native.close()
 
-    def info_dialog(self, title, message):
-        return dialogs.info(self.interface, title, message)
+    async def info_dialog(self, title, message):
+        return await dialogs.info(self.interface, title, message)
 
-    def question_dialog(self, title, message):
-        return dialogs.question(self.interface, title, message)
+    async def question_dialog(self, title, message):
+        return await dialogs.question(self.interface, title, message)
 
-    def confirm_dialog(self, title, message):
-        return dialogs.confirm(self.interface, title, message)
+    async def confirm_dialog(self, title, message):
+        return await dialogs.confirm(self.interface, title, message)
 
-    def error_dialog(self, title, message):
-        return dialogs.error(self.interface, title, message)
+    async def error_dialog(self, title, message):
+        return await dialogs.error(self.interface, title, message)
 
-    def stack_trace_dialog(self, title, message, content, retry=False):
-        return dialogs.stack_trace(self.interface, title, message, content, retry)
+    async def stack_trace_dialog(self, title, message, content, retry=False):
+        return await dialogs.stack_trace(self.interface, title, message, content, retry)
 
-    def save_file_dialog(self, title, suggested_filename, file_types):
-        return dialogs.save_file(self.interface, title, suggested_filename, file_types)
+    async def save_file_dialog(self, title, suggested_filename, file_types):
+        return await dialogs.save_file(self.interface, title, suggested_filename, file_types)
 
-    def open_file_dialog(self, title, initial_directory, file_types, multiselect):
-        return dialogs.open_file(self.interface, title, file_types, multiselect)
+    async def open_file_dialog(self, title, initial_directory, file_types, multiselect):
+        return await dialogs.open_file(self.interface, title, file_types, multiselect)
 
-    def select_folder_dialog(self, title, initial_directory, multiselect):
-        return dialogs.select_folder(self.interface, title, multiselect)
+    async def select_folder_dialog(self, title, initial_directory, multiselect):
+        return await dialogs.select_folder(self.interface, title, multiselect)
