@@ -30,7 +30,7 @@ class Table(Widget):
 
         Data can be in several forms.
         A list of dictionaries, where the keys match the heading names:
-        
+
         >>> data = [{'head_1': 'value 1', 'head_2': 'value 2', 'head_3': 'value3'}),
         >>>         {'head_1': 'value 1', 'head_2': 'value 2', 'head_3': 'value3'}]
 
