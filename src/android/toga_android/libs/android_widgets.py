@@ -25,6 +25,9 @@ RelativeLayout__LayoutParams = JavaClass("android/widget/RelativeLayout$LayoutPa
 ScrollView = JavaClass("android/widget/ScrollView")
 SeekBar = JavaClass("android/widget/SeekBar")
 SeekBar__OnSeekBarChangeListener = JavaInterface("android/widget/SeekBar$OnSeekBarChangeListener")
+SwipeRefreshLayout = JavaClass("androidx/swiperefreshlayout/widget/SwipeRefreshLayout")
+SwipeRefreshLayout__OnRefreshListener = JavaInterface(
+    "androidx/swiperefreshlayout/widget/SwipeRefreshLayout$OnRefreshListener")
 Switch = JavaClass("android/widget/Switch")
 Spinner = JavaClass("android/widget/Spinner")
 TextView = JavaClass("android/widget/TextView")
