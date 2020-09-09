@@ -1,5 +1,7 @@
 from travertino.size import at_least
 
+from rubicon.java.jni import java
+
 from ..libs import android_widgets
 from .base import Widget
 
@@ -15,7 +17,19 @@ class DetailedListOnClickListener(android_widgets.OnClickListener):
             self._impl.interface.on_select(widget=self._impl.interface, row=self._row_number)
 
 
+class OnRefreshListener(android_widgets.SwipeRefreshLayout__OnRefreshListener):
+    def __init__(self, interface):
+        super().__init__()
+        self._interface = interface
+
+    def onRefresh(self):
+        if self._interface.on_refresh:
+            self._interface.on_refresh(self._interface)
+
+
 class DetailedList(Widget):
+    _android_swipe_refresh_layout = None
+
     def create(self):
         # DetailedList is not a specific widget on Android, so we build it out
         # of a few pieces.
@@ -28,7 +42,12 @@ class DetailedList(Widget):
                 android_widgets.LinearLayout__LayoutParams.MATCH_PARENT
         )
         scroll_view_layout_params.gravity = android_widgets.Gravity.TOP
-        parent.addView(scroll_view, scroll_view_layout_params)
+        swipe_refresh_wrapper = android_widgets.SwipeRefreshLayout(self._native_activity)
+        swipe_refresh_wrapper.setOnRefreshListener(OnRefreshListener(self.interface))
+        self._android_swipe_refresh_layout = android_widgets.SwipeRefreshLayout(
+            __jni__=java.NewGlobalRef(swipe_refresh_wrapper))
+        swipe_refresh_wrapper.addView(scroll_view)
+        parent.addView(swipe_refresh_wrapper, scroll_view_layout_params)
         dismissable_container = android_widgets.LinearLayout(self._native_activity)
         dismissable_container.setOrientation(android_widgets.LinearLayout.VERTICAL)
         dismissable_container_params = android_widgets.LinearLayout__LayoutParams(
@@ -106,12 +125,12 @@ class DetailedList(Widget):
         self.create()
 
     def set_on_refresh(self, handler):
-        # This widget does not yet support pull-to-refresh.
-        self.interface.factory.not_implemented("DetailedList.set_on_refresh()")
+        # No special handling needed.
+        pass
 
     def after_on_refresh(self):
-        # This widget does not yet support pull-to-refresh.
-        self.interface.factory.not_implemented("DetailedList.after_on_refresh()")
+        if self._android_swipe_refresh_layout:
+            self._android_swipe_refresh_layout.setRefreshing(False)
 
     def insert(self, index, item):
         # If the data changes, re-build the widget. Brutally effective.
