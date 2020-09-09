@@ -1,6 +1,6 @@
 import toga
 from toga.colors import BLUE, RED
-from toga.constants import CENTER, COLUMN, GREEN, ROW, WHITE
+from toga.constants import CENTER, COLUMN, GREEN, ROW, WHITE, YELLOW
 from toga.style import Pack
 
 
@@ -13,7 +13,12 @@ class ExampleBoxApp(toga.App):
             title=self.name, size=(800, 500),
             resizeable=False, minimizable=False
         )
-        inner_box = toga.Box(
+        self.yellow_button = toga.Button(
+            label="Set yellow color",
+            on_press=self.set_yellow_color,
+            style=Pack(background_color=YELLOW)
+        )
+        self.inner_box = toga.Box(
             style=Pack(direction=ROW),
             children=[
                 toga.Button(
@@ -21,6 +26,7 @@ class ExampleBoxApp(toga.App):
                     on_press=self.set_red_color,
                     style=Pack(background_color=RED)
                 ),
+                self.yellow_button,
                 toga.Button(
                     label="Set blue color",
                     on_press=self.set_blue_color,
@@ -42,8 +48,9 @@ class ExampleBoxApp(toga.App):
         self.outer_box = toga.Box(
             style=Pack(direction=COLUMN, flex=1),
             children=[
-                inner_box,
-                toga.Label(text="Hello to my world!", style=Pack(text_align=CENTER))
+                self.inner_box,
+                toga.Label(text="Hello to my world!", style=Pack(text_align=CENTER)),
+                toga.Switch("Enable yellow", is_on=True, on_toggle=self.toggle_yellow_button)
             ]
         )
 
@@ -56,6 +63,9 @@ class ExampleBoxApp(toga.App):
     def set_red_color(self, widget):
         self.outer_box.style.background_color = RED
 
+    def set_yellow_color(self, widget):
+        self.outer_box.style.background_color = YELLOW
+
     def set_blue_color(self, widget):
         self.outer_box.style.background_color = BLUE
 
@@ -64,6 +74,12 @@ class ExampleBoxApp(toga.App):
 
     def reset_color(self, widget):
         self.outer_box.style.background_color = None
+
+    def toggle_yellow_button(self, widget):
+        if widget.is_on:
+            self.inner_box.insert(1, self.yellow_button)
+        else:
+            self.inner_box.remove(self.yellow_button)
 
 
 def main():
