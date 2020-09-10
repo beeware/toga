@@ -35,10 +35,12 @@ requires = [
 # Mobile deployments
 [tool.briefcase.app.detailedlist.iOS]
 requires = [
-    'toga-iOS',
+'../../src/core',
+'../../src/ios',
 ]
 
 [tool.briefcase.app.detailedlist.android]
 requires = [
-    'toga-android',
+'../../src/core',
+'../../src/android',
 ]
