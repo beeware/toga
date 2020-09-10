@@ -33,9 +33,14 @@ class DetailedList(Widget):
     def create(self):
         # DetailedList is not a specific widget on Android, so we build it out
         # of a few pieces.
-        parent = android_widgets.LinearLayout(self._native_activity)
-        parent.setOrientation(android_widgets.LinearLayout.VERTICAL)
-        self.native = parent
+
+        if self.native is None:
+            self.native = android_widgets.LinearLayout(self._native_activity)
+            self.native.setOrientation(android_widgets.LinearLayout.VERTICAL)
+        else:
+            # If create() is called a second time, clear the widget and regenerate it.
+            self.native.removeAllViews()
+
         scroll_view = android_widgets.ScrollView(self._native_activity)
         scroll_view_layout_params = android_widgets.LinearLayout__LayoutParams(
                 android_widgets.LinearLayout__LayoutParams.MATCH_PARENT,
@@ -47,7 +52,7 @@ class DetailedList(Widget):
         self._android_swipe_refresh_layout = android_widgets.SwipeRefreshLayout(
             __jni__=java.NewGlobalRef(swipe_refresh_wrapper))
         swipe_refresh_wrapper.addView(scroll_view)
-        parent.addView(swipe_refresh_wrapper, scroll_view_layout_params)
+        self.native.addView(swipe_refresh_wrapper, scroll_view_layout_params)
         dismissable_container = android_widgets.LinearLayout(self._native_activity)
         dismissable_container.setOrientation(android_widgets.LinearLayout.VERTICAL)
         dismissable_container_params = android_widgets.LinearLayout__LayoutParams(
@@ -70,9 +75,9 @@ class DetailedList(Widget):
         # Add user-provided icon to layout.
         icon_image_view = android_widgets.ImageView(self._native_activity)
         icon = self.interface.data[i].icon
-        icon.bind(self.interface.factory)
-        bitmap = android_widgets.BitmapFactory.decodeFile(str(icon._impl.path))
-        if bitmap is not None:
+        if icon is not None:
+            icon.bind(self.interface.factory)
+            bitmap = android_widgets.BitmapFactory.decodeFile(str(icon._impl.path))
             icon_image_view.setImageBitmap(bitmap)
         icon_layout_params = android_widgets.RelativeLayout__LayoutParams(
             android_widgets.RelativeLayout__LayoutParams.WRAP_CONTENT,

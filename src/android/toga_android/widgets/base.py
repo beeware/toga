@@ -1,6 +1,8 @@
 from ..libs.activity import MainActivity
 from ..libs.android_widgets import Gravity
 
+from rubicon.java.jni import java
+
 from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT
 
 
@@ -10,9 +12,11 @@ class Widget:
         self.interface._impl = self
         self._container = None
         self.native = None
-        # Capture a reference to the Java `MainActivity` instance, so that subclasses
-        # can pass it as `context` when creating native Android widgets.
-        self._native_activity = MainActivity.singletonThis
+        # In Android, there is only one `app` (i.e., `Activity)`. Android widgets need a reference to
+        # the current activity to pass it as `context` when creating native Android widgets.
+        #
+        # This may happen at any time, so we need a global JNI ref.
+        self._native_activity = MainActivity(__jni__=java.NewGlobalRef(MainActivity.singletonThis))
         self.create()
         # Immediately re-apply styles. Some widgets may defer style application until
         # they have been added to a container.
