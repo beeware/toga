@@ -4,7 +4,9 @@ import sys
 import traceback
 
 import toga
+from toga import Command
 from toga.handlers import wrapped_handler
+from .keys import winforms_key_to_toga
 
 from .libs import Threading, WinForms, shcore, user32, win_version
 from .libs.proactor import WinformsProactorEventLoop
@@ -144,6 +146,7 @@ class App:
             self.create()
 
             self.native.ThreadException += self.winforms_thread_exception
+            self.interface.main_window._impl.native.KeyUp += self.winforms_key_press
             self.native.ApplicationExit += self.winforms_application_exit
 
             self.loop.run_forever(self.app_context)
@@ -155,6 +158,18 @@ class App:
         thread.SetApartmentState(Threading.ApartmentState.STA)
         thread.Start()
         thread.Join()
+
+    def winforms_key_press(self, sender, event):
+        key = winforms_key_to_toga(key=event.KeyCode, modifier=event.Modifiers)
+        if key is None:
+            return
+        for cmd in self.interface.commands:
+            if (
+                isinstance(cmd, Command)
+                and cmd.shortcut == key
+                and callable(cmd.action)
+            ):
+                cmd.action(None)
 
     def winforms_application_exit(self, sender, *args, **kwargs):
         pass
