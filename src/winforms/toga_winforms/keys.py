@@ -1,5 +1,3 @@
-import re
-
 from toga.keys import Key
 from .libs import WinForms
 
