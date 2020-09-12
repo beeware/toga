@@ -125,7 +125,7 @@ class ExampleTreeSourceApp(toga.App):
 
     def double_click_handler(self, widget, node):
         # open the file or folder in the platform's default app
-        print('clicked ', node)
+        self.label.text = 'You started {0}'.format(node.path)
         if platform.system() == 'Darwin':
             subprocess.call(('open', node.path))
         elif platform.system() == 'Windows':
