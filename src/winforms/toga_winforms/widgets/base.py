@@ -89,6 +89,11 @@ class Widget:
         if self.container:
             child.container = self.container
 
+    def insert_child(self, index, child):
+        if self.container:
+            child.container = self.container
+            self.container.native.Controls.SetChildIndex(child.native, index)
+
     def remove_child(self, child):
         child.container = None
 
