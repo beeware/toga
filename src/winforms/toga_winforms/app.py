@@ -4,9 +4,9 @@ import sys
 import traceback
 
 import toga
-from toga import Command
+from toga import Command, Key
 from toga.handlers import wrapped_handler
-from .keys import winforms_key_to_toga
+from .keys import toga_to_winforms_key
 
 from .libs import Threading, WinForms, shcore, user32, win_version
 from .libs.proactor import WinformsProactorEventLoop
@@ -57,8 +57,13 @@ class App:
             toga.Command(None, 'About ' + self.interface.name, group=toga.Group.HELP),
             toga.Command(None, 'Preferences', group=toga.Group.FILE),
             # Quit should always be the last item, in a section on it's own
-            toga.Command(lambda s: self.exit(), 'Exit ' + self.interface.name, shortcut='q', group=toga.Group.FILE,
-                         section=sys.maxsize),
+            toga.Command(
+                lambda s: self.exit(),
+                'Exit ' + self.interface.name,
+                shortcut=Key.MOD_1 + 'q',
+                group=toga.Group.FILE,
+                section=sys.maxsize
+            ),
             toga.Command(None, 'Visit homepage', group=toga.Group.HELP)
         )
         self._create_app_commands()
@@ -91,6 +96,10 @@ class App:
                         item.Click += cmd._impl.as_handler()
                     else:
                         item.Enabled = False
+                    if cmd.shortcut is not None:
+                        shortcut_keys = toga_to_winforms_key(cmd.shortcut)
+                        item.ShortcutKeys = shortcut_keys
+                        item.ShowShortcutKeys = True
                     cmd._impl.native.append(item)
                     self._menu_items[item] = cmd
                     submenu.DropDownItems.Add(item)
@@ -146,7 +155,6 @@ class App:
             self.create()
 
             self.native.ThreadException += self.winforms_thread_exception
-            self.interface.main_window._impl.native.KeyUp += self.winforms_key_press
             self.native.ApplicationExit += self.winforms_application_exit
 
             self.loop.run_forever(self.app_context)
@@ -158,18 +166,6 @@ class App:
         thread.SetApartmentState(Threading.ApartmentState.STA)
         thread.Start()
         thread.Join()
-
-    def winforms_key_press(self, sender, event):
-        key = winforms_key_to_toga(key=event.KeyCode, modifier=event.Modifiers)
-        if key is None:
-            return
-        for cmd in self.interface.commands:
-            if (
-                isinstance(cmd, Command)
-                and cmd.shortcut == key
-                and callable(cmd.action)
-            ):
-                cmd.action(None)
 
     def winforms_application_exit(self, sender, *args, **kwargs):
         pass
@@ -211,7 +207,7 @@ class DocumentApp(App):
             toga.Command(
                 lambda w: self.open_file,
                 label='Open...',
-                shortcut='o',
+                shortcut=Key.MOD_1 + 'o',
                 group=toga.Group.FILE,
                 section=0
             ),

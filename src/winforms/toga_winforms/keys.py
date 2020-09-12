@@ -1,46 +1,50 @@
+import re
+
 from toga.keys import Key
 from .libs import WinForms
 
 
-def winforms_key_to_toga(key, modifier):
-    key = WINFORMS_KEYS_MAP.get(key, None)
-    modifier = WINFORMS_MODIFIERS_MAP.get(modifier, None)
-    if key is None:
-        return None
-    if modifier is None:
-        return key
-    return modifier + key
+def toga_to_winforms_key(key):
+    code = 0
+    for modifier, modifier_code in WINFORMS_MODIFIERS_MAP.items():
+        if modifier.value in key:
+            code |= modifier_code
+            key = key.replace(modifier.value, "")
+    key_code = WINFORMS_KEYS_MAP.get(key, None)
+    if key_code is not None:
+        code |= key_code
+    return code
 
 
 WINFORMS_MODIFIERS_MAP = {
-    WinForms.Keys.Control: Key.MOD_1,
-    WinForms.Keys.Alt: Key.MOD_2,
+    Key.MOD_1: WinForms.Keys.Control,
+    Key.MOD_2: WinForms.Keys.Alt,
 }
 WINFORMS_KEYS_MAP = {
-    WinForms.Keys.A: "a",
-    WinForms.Keys.B: "b",
-    WinForms.Keys.C: "c",
-    WinForms.Keys.D: "d",
-    WinForms.Keys.E: "e",
-    WinForms.Keys.F: "f",
-    WinForms.Keys.G: "g",
-    WinForms.Keys.H: "h",
-    WinForms.Keys.I: "i",
-    WinForms.Keys.J: "j",
-    WinForms.Keys.K: "k",
-    WinForms.Keys.L: "l",
-    WinForms.Keys.M: "m",
-    WinForms.Keys.N: "n",
-    WinForms.Keys.O: "o",
-    WinForms.Keys.P: "p",
-    WinForms.Keys.Q: "q",
-    WinForms.Keys.R: "r",
-    WinForms.Keys.S: "s",
-    WinForms.Keys.T: "t",
-    WinForms.Keys.U: "u",
-    WinForms.Keys.V: "v",
-    WinForms.Keys.W: "w",
-    WinForms.Keys.X: "x",
-    WinForms.Keys.Y: "y",
-    WinForms.Keys.Z: "z",
+    "a": WinForms.Keys.A,
+    "b": WinForms.Keys.B,
+    "c": WinForms.Keys.C,
+    "d": WinForms.Keys.D,
+    "e": WinForms.Keys.E,
+    "f": WinForms.Keys.F,
+    "g": WinForms.Keys.G,
+    "h": WinForms.Keys.H,
+    "i": WinForms.Keys.I,
+    "j": WinForms.Keys.J,
+    "k": WinForms.Keys.K,
+    "l": WinForms.Keys.L,
+    "m": WinForms.Keys.M,
+    "n": WinForms.Keys.N,
+    "o": WinForms.Keys.O,
+    "p": WinForms.Keys.P,
+    "q": WinForms.Keys.Q,
+    "r": WinForms.Keys.R,
+    "s": WinForms.Keys.S,
+    "t": WinForms.Keys.T,
+    "u": WinForms.Keys.U,
+    "v": WinForms.Keys.V,
+    "w": WinForms.Keys.W,
+    "x": WinForms.Keys.X,
+    "y": WinForms.Keys.Y,
+    "z": WinForms.Keys.Z,
 }
