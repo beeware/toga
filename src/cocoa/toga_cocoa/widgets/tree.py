@@ -65,7 +65,8 @@ class TogaTree(NSOutlineView):
 
     @objc_method
     def outlineView_viewForTableColumn_item_(self, tree, column, item):
-        col_identifier = self._impl.column_identifiers[id(column.identifier)]
+
+        col_identifier = str(column.identifier)
 
         try:
             value = getattr(item.attrs['node'], col_identifier)
@@ -118,16 +119,21 @@ class TogaTree(NSOutlineView):
     @objc_method
     def outlineView_heightOfRowByItem_(self, tree, item) -> float:
 
-        min_row_height = self.rowHeight
+        default_row_height = self.rowHeight
 
         if item is self:
-            return min_row_height
+            return default_row_height
 
-        # get all views in column
-        views = [self.outlineView_viewForTableColumn_item_(tree, col, item) for col in self.tableColumns]
+        heights = [default_row_height]
 
-        max_widget_height = max(view.intrinsicContentSize().height for view in views)
-        return max(min_row_height, max_widget_height)
+        for column in self.tableColumns:
+            value = getattr(item.attrs['node'], str(column.identifier))
+
+            if isinstance(value, toga.Widget):
+                # if the cell value is a widget, use its height
+                heights.append(value._impl.native.intrinsicContentSize().height)
+
+        return max(heights)
 
     # @objc_method
     # def outlineView_sortDescriptorsDidChange_(self, tableView, oldDescriptors) -> None:
@@ -209,7 +215,7 @@ class Tree(Widget):
             self.column_identifiers[id(column_identifier)] = accessor
             column = NSTableColumn.alloc().initWithIdentifier(column_identifier)
             # column.editable = False
-            column.midWidth = 100
+            column.minWidth = 16
             # if self.interface.sorting:
             #     sort_descriptor = NSSortDescriptor.sortDescriptorWithKey(column_identifier, ascending=True)
             #     column.sortDescriptorPrototype = sort_descriptor
