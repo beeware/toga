@@ -7,7 +7,6 @@ from .base import Widget
 
 class Table(Widget):
     def create(self):
-        self._container = self
         self.native = WinForms.ListView()
         self.native.View = WinForms.View.Details
         self._cache = []
