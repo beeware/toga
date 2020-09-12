@@ -4,7 +4,7 @@ import sys
 import traceback
 
 import toga
-from toga import Command, Key
+from toga import Key
 from toga.handlers import wrapped_handler
 from .keys import toga_to_winforms_key
 
