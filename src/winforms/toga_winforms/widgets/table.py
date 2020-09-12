@@ -125,6 +125,9 @@ class Table(Widget):
     def set_on_select(self, handler):
         pass
 
+    def set_on_double_click(self, handler):
+        self.interface.factory.not_implemented('Table.set_on_double_click()')
+
     def scroll_to_row(self, row):
         self.native.EnsureVisible(row)
 

@@ -14,7 +14,8 @@ from toga_cocoa.libs import (  # NSSortDescriptor,
     NSTableViewColumnAutoresizingStyle,
     at,
     objc_method,
-    send_super
+    send_super,
+    SEL
 )
 from toga_cocoa.widgets.base import Widget
 from toga_cocoa.widgets.internal.cells import TogaIconView
@@ -135,6 +136,11 @@ class TogaTree(NSOutlineView):
 
         return max(heights)
 
+    @objc_method
+    def outlineView_pasteboardWriterForItem_(self, tree, item) -> None:
+        # this seems to be required to prevent issue 21562075 in AppKit
+        return None
+
     # @objc_method
     # def outlineView_sortDescriptorsDidChange_(self, tableView, oldDescriptors) -> None:
     #
@@ -156,7 +162,7 @@ class TogaTree(NSOutlineView):
             if self.interface.multiple_select:
                 self.selectAll(self)
         else:
-            # forawrd call to super
+            # forward call to super
             send_super(__class__, self, 'keyDown:', event)
 
     # OutlineViewDelegate methods
@@ -183,6 +189,17 @@ class TogaTree(NSOutlineView):
 
         if self.interface.on_select:
             self.interface.on_select(self.interface, node=selected)
+
+    # target methods
+    @objc_method
+    def onDoubleClick_(self, sender) -> None:
+        if self.clickedRow == -1:
+            node = None
+        else:
+            node = self.itemAtRow(self.clickedRow).attrs['node']
+
+        if self.interface.on_select:
+            self.interface.on_double_click(self.interface, node=node)
 
 
 class Tree(Widget):
@@ -229,6 +246,8 @@ class Tree(Widget):
 
         self.tree.delegate = self.tree
         self.tree.dataSource = self.tree
+        self.tree.target = self.tree
+        self.tree.doubleAction = SEL('onDoubleClick:')
 
         # Embed the tree view in the scroll view
         self.native.documentView = self.tree
@@ -278,6 +297,9 @@ class Tree(Widget):
         self.tree.reloadData()
 
     def set_on_select(self, handler):
+        pass
+
+    def set_on_double_click(self, handler):
         pass
 
     def rehint(self):

@@ -17,6 +17,8 @@ class Table(Widget):
         style (:obj:`Style`): An optional style object.
             If no style is provided` then a new one will be created for the widget.
         on_select (``callable``): A function to be invoked on selecting a row of the table.
+        on_double_click (``callable``): A function to be invoked on double clicking a row of
+            the table.
         missing_value (``str`` or ``None``): value for replacing a missing value
             in the data source. (Default: None). When 'None', a warning message
             will be shown.
@@ -47,13 +49,14 @@ class Table(Widget):
     MIN_HEIGHT = 100
 
     def __init__(self, headings, id=None, style=None, data=None, accessors=None,
-                 multiple_select=False, on_select=None, missing_value=None,
-                 factory=None):
+                 multiple_select=False, on_select=None, on_double_click=None,
+                 missing_value=None, factory=None):
         super().__init__(id=id, style=style, factory=factory)
         self.headings = headings[:]
         self._accessors = build_accessors(self.headings, accessors)
         self._multiple_select = multiple_select
         self._on_select = None
+        self._on_double_click = None
         self._selection = None
         self._data = None
         if missing_value is None:
@@ -65,6 +68,7 @@ class Table(Widget):
         self.data = data
 
         self.on_select = on_select
+        self.on_double_click = on_double_click
 
     @property
     def data(self):
@@ -129,8 +133,8 @@ class Table(Widget):
     @property
     def on_select(self):
         """ The callback function that is invoked when a row of the table is selected.
-        The provided callback function has to accept two arguments table (``:obj:Table`)
-        and row (``int`` or ``None``).
+        The provided callback function has to accept two arguments table (:obj:`Table`)
+        and row (``Row`` or ``None``).
 
         Returns:
             (``callable``) The callback function.
@@ -147,6 +151,28 @@ class Table(Widget):
         """
         self._on_select = wrapped_handler(self, handler)
         self._impl.set_on_select(self._on_select)
+
+    @property
+    def on_double_click(self):
+        """ The callback function that is invoked when a row of the table is double clicked.
+        The provided callback function has to accept two arguments table (:obj:`Table`)
+        and row (``Row`` or ``None``).
+
+        Returns:
+            (``callable``) The callback function.
+        """
+        return self._on_double_click
+
+    @on_double_click.setter
+    def on_double_click(self, handler):
+        """
+        Set the function to be executed on node double click
+
+        :param handler: callback function
+        :type handler: ``callable``
+        """
+        self._on_double_click = wrapped_handler(self, handler)
+        self._impl.set_on_double_click(self._on_double_click)
 
     def add_column(self, heading, accessor=None):
         """
