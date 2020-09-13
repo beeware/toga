@@ -14,7 +14,7 @@ class Table(Widget):
     def change(self, item):
         self._action('change row', item=item)
 
-    def remove(self, item, index):
+    def remove(self, index, item):
         self._action('remove row', item=item, index=index)
 
     def clear(self):

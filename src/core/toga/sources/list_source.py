@@ -100,7 +100,7 @@ class ListSource(Source):
     def remove(self, row):
         i = self._data.index(row)
         del self._data[i]
-        self._notify('remove', item=row, index=i)
+        self._notify('remove', index=i, item=row)
         return row
 
     def index(self, row):
