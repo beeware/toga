@@ -61,14 +61,14 @@ class SourceTreeModel(GObject.Object, Gtk.TreeModel):
         """ Called from toga impl widget """
         it = self._create_iter(user_data=row)
         index = self.source.index(row)
-        if not self.is_tree or row._parent is None:
+        if not self.is_tree or self.is_root(row):
             self.roots.insert(index, row)
             parent = self.source
         else:
             parent = row._parent
         self._update_index_in_parent(parent, index)
         parent_indices = self._get_indices(parent) if parent is not self.source else []
-        if self.is_tree and row._parent is not None and (len(row._parent) == 1):
+        if self.is_tree and not self.is_root(row) and (len(row._parent) == 1):
             parent_it = self._create_iter(user_data=row._parent)
             parent_p = Gtk.TreePath.new_from_indices(parent_indices)
             self.row_has_child_toggled(parent_p, parent_it)
@@ -291,7 +291,7 @@ class SourceTreeModel(GObject.Object, Gtk.TreeModel):
             return None
         if self.is_tree:
             indices = []
-            while row is not None:
+            while row not in (None, self.source):
                 indices.insert(0, self.index_in_parent[row])
                 row = row._parent
             return indices
@@ -327,3 +327,6 @@ class SourceTreeModel(GObject.Object, Gtk.TreeModel):
     def _update_index_in_parent(self, parent, index):
         for i in range(index, len(parent)):
             self.index_in_parent[parent[i]] = i
+
+    def is_root(self, node):
+        return node._parent in (None, self.source)
