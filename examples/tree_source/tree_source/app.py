@@ -25,7 +25,7 @@ class LoadingFailedNode:
     """A node to represent failed loading of children"""
 
     def __init__(self, parent):
-        self.parent = parent
+        self._parent = parent
         self.children = []
         self.name = 'loading failed'
         self.date_modified = ''
@@ -47,8 +47,7 @@ class Node:
 
     def __init__(self, path, parent):
         super().__init__()
-
-        self.parent = parent
+        self._parent = parent
         self._children = []
 
         self.path = path
@@ -58,6 +57,9 @@ class Node:
         else:
             self._icon = toga.Icon('resources/folder')
         self._did_start_loading = False
+
+    def __repr__(self):
+        return "<Node {0}>".format(self.path)
 
     # Methods required for the data source interface
     def __len__(self):
@@ -97,13 +99,16 @@ class Node:
         except OSError:
             self._children = [LoadingFailedNode(self)]
 
+    def index(self, node):
+        if node._parent:
+            return node._parent._children.index(node)
+        else:
+            return self.children.index(node)
+
 
 class FileSystemSource(Node, Source):
     def __init__(self, path):
-        super().__init__(path, parent=self)
-        self.path = path
-        self._parent = None
-        self._children = []
+        super().__init__(path, parent=None)
 
 
 class ExampleTreeSourceApp(toga.App):
