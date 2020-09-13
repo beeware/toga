@@ -69,7 +69,6 @@ class DetailedList(Widget):
 
         return row
 
-
     def set_on_select(self, handler):
         # No special handling required
         pass
