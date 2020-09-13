@@ -109,7 +109,7 @@ class TestGtkTable(unittest.TestCase):
         self.assertIsNotNone(listener.inserted_it)
 
         # Then remove it
-        self.gtk_table.remove(row, index=0)
+        self.gtk_table.remove(index=0, item=row)
 
         # Make sure its gone
         self.assertIsNotNone(listener.deleted_path)
