@@ -148,6 +148,9 @@ class DetailedList(Widget):
         # If the data changes, re-build the widget. Brutally effective.
         self.create()
 
+    def get_selection(self):
+        self.interface.factory.not_implemented("DetailedList.get_selection()")
+
     def set_on_select(self, handler):
         # No special handling required.
         pass
