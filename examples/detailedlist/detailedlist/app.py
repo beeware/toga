@@ -12,8 +12,6 @@ class ExampleDetailedListApp(toga.App):
     def on_select_handler(self, widget, row, **kwargs):
         self.label.text = 'Bee is {} in {}'.format(row.title, row.subtitle) \
             if row is not None else 'No row selected'
-        # TODO: remove self.selected_row when #962 is implemented
-        self.selected_row = row
 
     async def on_refresh_handler(self, widget, **kwargs):
         self.label.text = 'Refreshing list...'
@@ -25,25 +23,23 @@ class ExampleDetailedListApp(toga.App):
 
     def on_delete_handler(self, widget, row, **kwargs):
         self.label.text = 'Row {} is going to be deleted.'.format(row.subtitle)
-        self.selected_row = None
 
     # Button callback functions
     def insert_handler(self, widget, **kwargs):
         item = {"icon": None, "subtitle": "The Hive", "title": "Bzzz!"}
-        if self.selected_row:
-            self.dl.data.insert(self.dl.data.index(self.selected_row) + 1, **item)
+        if self.dl.selection:
+            index = self.dl.data.index(self.dl.selection) + 1
+            self.dl.data.insert(index, **item)
         else:
+            index = len(self.dl.data)
             self.dl.data.append(**item)
-        self.dl.scroll_to_row(len(self.dl.data) - 1)
+        self.dl.scroll_to_row(index)
 
     def remove_handler(self, widget, **kwargs):
-        selection = self.selected_row
-        if selection:
-            self.dl.data.remove(selection)
+        if self.dl.selection:
+            self.dl.data.remove(self.dl.selection)
 
     def startup(self):
-        self.selected_row = None
-
         # Set up main window
         self.main_window = toga.MainWindow(title=self.name)
 
