@@ -126,11 +126,7 @@ class DetailedList(Widget):
         self.native.reloadData()
 
     def get_selection(self):
-        index = self.native.indexPathForSelectedRow.row
-        if index != -1:
-            return self.interface.data[index]
-        else:
-            return None
+        return None
 
     def set_on_select(self, handler):
         # No special handling required
