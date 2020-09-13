@@ -60,6 +60,16 @@ class DetailedList(Widget):
         # No special handling required
         pass
 
+    def get_selection(self):
+        tree_model, tree_iter = self.selection.get_selected()
+        if tree_iter:
+            row = tree_model.get(tree_iter, 0)[0]
+        else:
+            row = None
+
+        return row
+
+
     def set_on_select(self, handler):
         # No special handling required
         pass
