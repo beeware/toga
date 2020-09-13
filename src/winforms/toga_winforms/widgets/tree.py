@@ -16,13 +16,13 @@ class Tree(Widget):
     def change_source(self, source):
         self.interface.factory.not_implemented('Tree.change_source()')
 
-    def insert(self, parent, index, item, **kwargs):
+    def insert(self, parent, index, item):
         self.interface.factory.not_implemented('Tree.insert()')
 
     def change(self, item):
         self.interface.factory.not_implemented('Tree.change()')
 
-    def remove(self, item, index, parent):
+    def remove(self, parent, index, item):
         self.interface.factory.not_implemented('Tree.remove()')
 
     def clear(self):

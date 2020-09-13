@@ -272,7 +272,7 @@ class Tree(Widget):
             withAnimation=NSTableViewAnimation.SlideDown.value
         )
 
-    def change(self, parent, item):
+    def change(self, item):
         try:
             self.tree.reloadItem(item._impl)
         except AttributeError:

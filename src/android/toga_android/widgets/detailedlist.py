@@ -140,7 +140,7 @@ class DetailedList(Widget):
         # If the data changes, re-build the widget. Brutally effective.
         self.create()
 
-    def remove(self, item):
+    def remove(self, index, item):
         # If the data changes, re-build the widget. Brutally effective.
         self.create()
 

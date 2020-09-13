@@ -24,8 +24,8 @@ class Table(Tree):
 
         self.treeview.set_model(self.store)
 
-    def insert(self, index, item, **kwargs):
-        super().insert(None, index, item, **kwargs)
+    def insert(self, index, item):
+        super().insert(None, index, item)
 
     def scroll_to_row(self, row):
         return NotImplementedError
@@ -47,7 +47,7 @@ class Table(Tree):
     def change(self, item):
         super().change(item)
 
-    def remove(self, item, index):
+    def remove(self, index, item):
         super().remove(item, index=index, parent=None)
 
     def clear(self):
