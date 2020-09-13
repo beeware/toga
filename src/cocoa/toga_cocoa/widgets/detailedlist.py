@@ -79,11 +79,14 @@ class TogaList(NSTableView):
 
     @objc_method
     def tableViewSelectionDidChange_(self, notification) -> None:
-        self.interface.selection = notification.object.selectedRow
-        self.interface.selected = self.interface.data[notification.object.selectedRow]
+        index = notification.object.selectedRow
+        if index == -1:
+            selection = None
+        else:
+            selection = self.interface.data[index]
+
         if self.interface.on_select:
-            row = notification.object.selectedRow if notification.object.selectedRow != -1 else None
-            self.interface.on_select(self.interface, row=row)
+            self.interface.on_select(self.interface, row=selection)
 
 
 class DetailedList(Widget):
@@ -137,8 +140,14 @@ class DetailedList(Widget):
     def change(self, item):
         self.detailedlist.reloadData()
 
-    def remove(self, item, index):
+    def remove(self, index, item):
         self.detailedlist.reloadData()
+
+        # After deletion, the selection changes, but Cocoa doesn't send
+        # a tableViewSelectionDidChange: message.
+        selection = self.get_selection()
+        if selection and self.interface.on_select:
+            self.interface.on_select(self.interface, row=selection)
 
     def clear(self):
         self.detailedlist.reloadData()
@@ -148,6 +157,13 @@ class DetailedList(Widget):
 
     def after_on_refresh(self):
         self.native.finishedLoading()
+
+    def get_selection(self):
+        index = self.detailedlist.selectedRow
+        if index != -1:
+            return self.interface.data[index]
+        else:
+            return None
 
     def set_on_select(self, handler):
         pass

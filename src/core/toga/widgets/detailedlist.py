@@ -131,6 +131,14 @@ class DetailedList(Widget):
         self._impl.set_on_refresh(self._on_refresh)
 
     @property
+    def selection(self):
+        """The current selection of the table.
+
+        A value of None indicates no selection.
+        """
+        return self._impl.get_selection()
+
+    @property
     def on_select(self):
         """ The handler function must accept two arguments, widget and row.
 

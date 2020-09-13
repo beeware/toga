@@ -259,7 +259,6 @@ class Tree(Widget):
         self.tree.reloadData()
 
     def insert(self, parent, index, item):
-
         # set parent = None if inserting to the root item
         index_set = NSIndexSet.indexSetWithIndex(index)
         if parent is self.interface.data:
@@ -273,14 +272,13 @@ class Tree(Widget):
             withAnimation=NSTableViewAnimation.SlideDown.value
         )
 
-    def change(self, item):
+    def change(self, parent, item):
         try:
             self.tree.reloadItem(item._impl)
         except AttributeError:
             pass
 
-    def remove(self, item, index, parent):
-        # todo: index and parent seem useful here...
+    def remove(self, parent, index, item):
         try:
             index = self.tree.childIndexForItem(item._impl)
         except AttributeError:
