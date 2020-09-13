@@ -111,7 +111,7 @@ function release {
 }
 
 
-MODULES="core dummy cocoa iOS gtk django android winforms toga demo"
+MODULES="android cocoa core django dummy flask gtk iOS web winforms toga demo"
 
 action=$1
 shift

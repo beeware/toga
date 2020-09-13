@@ -5,6 +5,7 @@ from .fonts import Font
 from .icons import Icon
 from .images import Image
 from .paths import paths
+from .widgets.activityindicator import ActivityIndicator
 from .widgets.box import Box
 from .widgets.button import Button
 from .widgets.canvas import Canvas
@@ -46,6 +47,7 @@ __all__ = [
     'paths',
 
     # Widgets
+    'ActivityIndicator',
     'Box',
     'Button',
     'Canvas',

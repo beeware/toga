@@ -7,7 +7,6 @@ from .base import Widget
 
 class Table(Widget):
     def create(self):
-        self._container = self
         self.native = WinForms.ListView()
         self.native.View = WinForms.View.Details
         self._cache = []
@@ -15,9 +14,9 @@ class Table(Widget):
 
         dataColumn = []
         for i, (heading, accessor) in enumerate(zip(
-                    self.interface.headings,
-                    self.interface._accessors
-                )):
+                self.interface.headings,
+                self.interface._accessors
+        )):
             dataColumn.append(self._create_column(heading, accessor))
 
         self.native.FullRowSelect = True
@@ -26,12 +25,12 @@ class Table(Widget):
         self.native.VirtualMode = True
         self.native.Columns.AddRange(dataColumn)
 
-        self.native.ItemSelectionChanged += self._native_item_selection_changed
-        self.native.RetrieveVirtualItem += self._native_retrieve_virtual_item
-        self.native.CacheVirtualItems += self._native_cache_virtual_items
-        self.native.VirtualItemsSelectionRangeChanged += self._native_virtual_item_selection_range_changed
+        self.native.ItemSelectionChanged += self.winforms_item_selection_changed
+        self.native.RetrieveVirtualItem += self.winforms_retrieve_virtual_item
+        self.native.CacheVirtualItems += self.winforms_cache_virtual_items
+        self.native.VirtualItemsSelectionRangeChanged += self.winforms_virtual_item_selection_range_changed
 
-    def _native_virtual_item_selection_range_changed(self, sender, e):
+    def winforms_virtual_item_selection_range_changed(self, sender, e):
         # update selection interface property
         self.interface._selection = self._selected_rows()
 
@@ -41,18 +40,18 @@ class Table(Widget):
             selected = self.interface.data[e.EndIndex]
             self.interface.on_select(self.interface, row=selected)
 
-    def _native_retrieve_virtual_item(self, sender, e):
+    def winforms_retrieve_virtual_item(self, sender, e):
         # Because ListView is in VirtualMode, it's necessary implement
         # VirtualItemsSelectionRangeChanged event to create ListViewItem when it's needed
         if self._cache and e.ItemIndex >= self._first_item and \
-           e.ItemIndex < self._first_item + len(self._cache):
+                e.ItemIndex < self._first_item + len(self._cache):
             e.Item = self._cache[e.ItemIndex - self._first_item]
         else:
             e.Item = WinForms.ListViewItem(self.row_data(self.interface.data[e.ItemIndex]))
 
-    def _native_cache_virtual_items(self, sender, e):
+    def winforms_cache_virtual_items(self, sender, e):
         if self._cache and e.StartIndex >= self._first_item and \
-           e.EndIndex <= self._first_item + len(self._cache):
+                e.EndIndex <= self._first_item + len(self._cache):
             # If the newly requested cache is a subset of the old cache,
             # no need to rebuild everything, so do nothing
             return
@@ -66,11 +65,11 @@ class Table(Widget):
         for i in range(new_length):
             self._cache.append(WinForms.ListViewItem(self.row_data(self.interface.data[i])))
 
-    def _native_item_selection_changed(self, sender, e):
+    def winforms_item_selection_changed(self, sender, e):
         # update selection interface property
         self.interface._selection = self._selected_rows()
 
-        if e.IsSelected:
+        if e.IsSelected and self.interface.on_select:
             self.interface.on_select(self.interface, row=self.interface.data[e.ItemIndex])
 
     def _selected_rows(self):
@@ -125,6 +124,9 @@ class Table(Widget):
 
     def set_on_select(self, handler):
         pass
+
+    def set_on_double_click(self, handler):
+        self.interface.factory.not_implemented('Table.set_on_double_click()')
 
     def scroll_to_row(self, row):
         self.native.EnsureVisible(row)

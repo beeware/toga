@@ -101,8 +101,8 @@ class DetailedList(Widget):
             self.controller.refreshControl = None
 
     def after_on_refresh(self):
-        self.refreshControl.endRefreshing()
-        self.tableView.reloadData()
+        self.controller.refreshControl.endRefreshing()
+        self.controller.tableView.reloadData()
 
     def change_source(self, source):
         self.native.reloadData()

@@ -1,4 +1,7 @@
 from ..libs.activity import MainActivity
+from ..libs.android_widgets import Gravity
+
+from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT
 
 
 class Widget:
@@ -11,6 +14,9 @@ class Widget:
         # can pass it as `context` when creating native Android widgets.
         self._native_activity = MainActivity.singletonThis
         self.create()
+        # Immediately re-apply styles. Some widgets may defer style application until
+        # they have been added to a container.
+        self.interface.style.reapply()
 
     def set_app(self, app):
         pass
@@ -59,6 +65,12 @@ class Widget:
         # By default, background color can't be changed.
         pass
 
+    def set_alignment(self, alignment):
+        pass  # If appropriate, a widget subclass will implement this.
+
+    def set_color(self, color):
+        pass  # If appropriate, a widget subclass will implement this.
+
     # INTERFACE
 
     def add_child(self, child):
@@ -68,3 +80,13 @@ class Widget:
 
     def rehint(self):
         pass
+
+
+def align(value):
+    """Convert toga alignment values into Android alignment values"""
+    return {
+        LEFT: Gravity.LEFT,
+        RIGHT: Gravity.RIGHT,
+        CENTER: Gravity.CENTER_HORIZONTAL,
+        JUSTIFY: Gravity.CENTER_HORIZONTAL,
+    }[value]

@@ -86,6 +86,9 @@ class Tree(Widget):
         # No special handling required
         pass
 
+    def set_on_double_click(self, handler):
+        self.interface.factory.not_implemented('Tree.set_on_double_click()')
+
     def scroll_to_node(self, node):
         path = self.store.path_to_node(node)
         self.treeview.scroll_to_cell(path)

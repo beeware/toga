@@ -22,3 +22,6 @@ class Tree(Widget):
 
     def set_on_select(self, handler):
         self._set_value('on_select', handler)
+
+    def set_on_double_click(self, handler):
+        self._set_value('on_double_click', handler)

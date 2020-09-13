@@ -8,8 +8,8 @@ class SplitContainer(Widget):
     def create(self):
         self.native = WinForms.SplitContainer()
         self.native.interface = self.interface
-        self.native.Resize += self.winforms_splitter_moved
-        self.native.SplitterMoved += self.winforms_splitter_moved
+        self.native.Resize += self.winforms_resize
+        self.native.SplitterMoved += self.winforms_resize
         self.ratio = None
 
     def add_content(self, position, widget):
@@ -44,7 +44,7 @@ class SplitContainer(Widget):
         self.native.Orientation = WinForms.Orientation.Vertical if value \
             else WinForms.Orientation.Horizontal
 
-    def winforms_splitter_moved(self, sender, args):
+    def winforms_resize(self, sender, args):
         if self.interface.content:
             # Re-layout the content
             for content in self.interface.content:

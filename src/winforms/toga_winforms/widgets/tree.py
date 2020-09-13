@@ -31,5 +31,8 @@ class Tree(Widget):
     def set_on_select(self, handler):
         self.interface.factory.not_implemented('Tree.set_on_select()')
 
+    def set_on_double_click(self, handler):
+        self.interface.factory.not_implemented('Table.set_on_double_click()')
+
     def scroll_to_node(self, node):
         self.interface.factory.not_implemented('Tree.scroll_to_node()')
