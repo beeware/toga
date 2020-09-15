@@ -159,7 +159,11 @@ class SourceTreeModel(GObject.Object, Gtk.TreeModel):
             return r
         if r is None:
             return None
-        return getattr(r, self.columns[column - 1]['attr'])
+        # workaround icon+name tuple breaking gtk tree
+        ret = getattr(r, self.columns[column - 1]['attr'])
+        if isinstance(ret, tuple):
+            ret = ret[1]
+        return ret
 
     def do_iter_children(self, parent):
         """ Gtk.TreeModel """
