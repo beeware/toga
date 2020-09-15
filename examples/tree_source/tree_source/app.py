@@ -120,7 +120,10 @@ class ExampleTreeSourceApp(toga.App):
         # If you iterate over widget.selection, you can get the names and the
         # paths of everything selected (if multiple_select is enabled.)
         # filepaths = [node.path for node in widget.selection]
-        files = len(widget.selection)
+        if isinstance(widget.selection, list):
+            files = len(widget.selection)
+        else:
+            files = 0 if widget.selection is None else 1
         if files == 0:
             self.label.text = 'A view of the current directory!'
         elif files == 1:
