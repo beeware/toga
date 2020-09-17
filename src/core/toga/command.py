@@ -1,3 +1,5 @@
+import os
+
 from toga.handlers import wrapped_handler
 from toga.icons import Icon
 
@@ -106,7 +108,7 @@ class Command:
         if isinstance(icon_or_name, Icon) or icon_or_name is None:
             self._icon = icon_or_name
         else:
-            self._icon = Icon(icon_or_name)
+            self._icon = Icon(os.getcwd() + "/" + icon_or_name)
 
         if self._icon and self.factory:
             self._icon.bind(self.factory)
