@@ -18,8 +18,10 @@ class Box(Widget):
 
     def __init__(self, id=None, style=None, children=None, factory=None):
         super().__init__(id=id, style=style, factory=factory)
+        
         self._children = []
         if children:
             self.add(*children)
 
+        # Create a platform specific implementation of a Box
         self._impl = self.factory.Box(interface=self)
