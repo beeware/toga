@@ -15,7 +15,7 @@ class SplitContainer(Widget):
             split or tuples of components to be split and adjusting parameters
             in the following order:
             widget (:class:`toga.Widget`): The widget that will be added.
-            weight (float): ....
+            weight (float):
             resize (boolean): Should the content expand when the widget is resized.
             shrink (boolean): Can the content be made smaller than its requisition.
             wide_handle (boolean): Does the seperation between the contents provide
