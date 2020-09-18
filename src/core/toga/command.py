@@ -1,5 +1,3 @@
-import os
-
 from toga.handlers import wrapped_handler
 from toga.icons import Icon
 
