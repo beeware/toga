@@ -14,12 +14,12 @@ class SplitContainer(Widget):
         content(``list`` of :class:`toga.Widget`): The list of components to be
             split or tuples of components to be split and adjusting parameters
             in the following order:
-            widget (:class:`toga.Widget`): The widget that will be added.
-            weight (float):
-            resize (boolean): Should the content expand when the widget is resized.
-            shrink (boolean): Can the content be made smaller than its requisition.
-            wide_handle (boolean): Does the seperation between the contents provide
-                stronger visual separation or notto be split.
+        widget (:class:`toga.Widget`): The widget that will be added.
+        weight (float):
+        resize (boolean): Should the content expand when the widget is resized.
+        shrink (boolean): Can the content be made smaller than its requisition.
+        wide_handle (boolean): Does the seperation between the contents provide
+            stronger visual separation or notto be split.
         factory (:obj:`module`): A python module that is capable to return a
             implementation of this class with the same name. (optional & normally not needed)
     """
