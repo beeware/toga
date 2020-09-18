@@ -67,7 +67,8 @@ class SplitContainer(Widget):
                     widget, weight, resize, shrink, wide_handle = item
                 elif len(item) < 5 and len(item) > 1:
                     raise ValueError(
-                        "The tuple of the content must be have the following ordring parameters: widget, weight, resize, shrink, wide_handle"
+                        "The tuple of the content must be have the following ordring parameters:"\
+                        "widget, weight, resize, shrink, wide_handle"
                     )
             else:
                 widget = item
