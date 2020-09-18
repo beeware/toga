@@ -65,6 +65,10 @@ class SplitContainer(Widget):
                     flex = True
                 elif len(item) == 3:
                     widget, weight, flex = item
+                else:
+                    raise ValueError("The tuple of the content must be the length of "
+                                     "2 or 3 parameters, with the following order: "
+                                     "widget, weight, flex")
             else:
                 widget = item
                 weight = 1.0
