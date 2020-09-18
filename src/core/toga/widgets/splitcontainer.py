@@ -12,7 +12,7 @@ class SplitContainer(Widget):
         direction: The direction for the container split,
             either `SplitContainer.HORIZONTAL` or `SplitContainer.VERTICAL`
         content(``list`` of :class:`toga.Widget`): The list of components to be
-            split or tuples of components to be split and adjusting parameters 
+            split or tuples of components to be split and adjusting parameters
             in the following order:
             widget (:class:`toga.Widget`): The widget that will be added.
             weight (float): ....
@@ -63,16 +63,18 @@ class SplitContainer(Widget):
         self._content = []
         for position, item in enumerate(content):
             if isinstance(item, tuple):
-                if len(item)==5:
+                if len(item) == 5:
                     widget, weight, resize, shrink, wide_handle = item
-                elif len(item)<5 and len(item)>1:
-                    raise ValueError("The tuple of the content must be have the following ordring parameters: widget, weight, resize, shrink, wide_handle")
+                elif len(item) < 5 and len(item) > 1:
+                    raise ValueError(
+                        "The tuple of the content must be have the following ordring parameters: widget, weight, resize, shrink, wide_handle"
+                    )
             else:
                 widget = item
                 weight = 1.0
-                resize=False
-                shrink=False
-                wide_handle=True
+                resize = False
+                shrink = False
+                wide_handle = True
 
             self._content.append(widget)
             self._weight.append(weight)
