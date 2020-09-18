@@ -11,7 +11,15 @@ class SplitContainer(Widget):
             If no style is provided then a new one will be created for the widget.
         direction: The direction for the container split,
             either `SplitContainer.HORIZONTAL` or `SplitContainer.VERTICAL`
-        content(``list`` of :class:`toga.Widget`): The list of components to be split.
+        content(``list`` of :class:`toga.Widget`): The list of components to be
+            split or tuples of components to be split and adjusting parameters 
+            in the following order:
+            widget (:class:`toga.Widget`): The widget that will be added.
+            weight (float): ....
+            resize (boolean): Should the content expand when the widget is resized.
+            shrink (boolean): Can the content be made smaller than its requisition.
+            wide_handle (boolean): Does the seperation between the contents provide
+                stronger visual separation or notto be split.
         factory (:obj:`module`): A python module that is capable to return a
             implementation of this class with the same name. (optional & normally not needed)
     """
@@ -55,17 +63,23 @@ class SplitContainer(Widget):
         self._content = []
         for position, item in enumerate(content):
             if isinstance(item, tuple):
-                widget, weight = item
+                if len(item)==5:
+                    widget, weight, resize, shrink, wide_handle = item
+                elif len(item)<5 and len(item)>1:
+                    raise ValueError("The tuple of the content must be have the following ordring parameters: widget, weight, resize, shrink, wide_handle")
             else:
                 widget = item
                 weight = 1.0
+                resize=False
+                shrink=False
+                wide_handle=True
 
             self._content.append(widget)
             self._weight.append(weight)
 
             widget.app = self.app
             widget.window = self.window
-            self._impl.add_content(position, widget._impl, resize=False, shrink=False, wide_handle=True)
+            self._impl.add_content(position, widget._impl, resize, shrink, wide_handle)
             widget.refresh()
 
     def _set_window(self, window):
