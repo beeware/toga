@@ -46,7 +46,7 @@ __all__ = [
     # Applications
     'App', 'DocumentApp', 'MainWindow',
     # Commands
-    'Command', 'CommandSet', 'Group', 'GROUP_BREAK', 'SECTION_BREAK',
+    'Command', 'CommandSet', 'Group', 'GROUP_BREAK', 'SECTION_BREAK', "AboutCommand",
     # Documents
     'Document',
     # Keys
