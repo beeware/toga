@@ -2,9 +2,6 @@ import toga
 
 
 class ExampleFocusApp(toga.App):
-    a_button: toga.Button
-    b_button: toga.Button
-    c_button: toga.Button
 
     def startup(self):
         # Window class
