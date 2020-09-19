@@ -12,7 +12,8 @@ class SplitContainer(Widget):
         self.native.SplitterMoved += self.winforms_resize
         self.ratio = None
 
-    def add_content(self, position, widget):
+    def add_content(self, position, widget, flex):
+        # TODO: Add flex option to the implementation
         widget.frame = self
 
         # Add all children to the content widget.
