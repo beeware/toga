@@ -154,13 +154,14 @@ class SourceTreeModel(GObject.Object, Gtk.TreeModel):
         """ Gtk.TreeModel """
         if iter_ is None or iter_.stamp != self.stamp:
             return None
-        r = self._get_user_data(iter_)
+        row = self._get_user_data(iter_)
         if column == 0:
-            return r
-        if r is None:
+            return row
+        if row is None:
             return None
+
         # workaround icon+name tuple breaking gtk tree
-        ret = getattr(r, self.columns[column - 1]['attr'])
+        ret = getattr(row, self.columns[column - 1]['attr'])
         if isinstance(ret, tuple):
             ret = ret[1]
         return ret
