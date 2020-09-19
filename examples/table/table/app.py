@@ -30,7 +30,9 @@ class ExampleTableApp(toga.App):
         self.table1.data.insert(0, *choice(bee_movies))
 
     def delete_handler(self, widget, **kwargs):
-        if len(self.table1.data) > 0:
+        if self.table1.selection:
+            self.table1.data.remove(self.table1.selection)
+        elif len(self.table1.data) > 0:
             self.table1.data.remove(self.table1.data[0])
         else:
             print('Table is empty!')

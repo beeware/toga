@@ -31,11 +31,8 @@ class Table(Widget):
         self.native.VirtualItemsSelectionRangeChanged += self.winforms_virtual_item_selection_range_changed
 
     def winforms_virtual_item_selection_range_changed(self, sender, e):
-        # update selection interface property
-        self.interface._selection = self._selected_rows()
-
         # `Shift` key or Range selection handler
-        if e.IsSelected and self.interface.multiple_select and self.interface.on_select:
+        if self.interface.multiple_select and self.interface.on_select:
             # call on select with the last row of the multi selection
             selected = self.interface.data[e.EndIndex]
             self.interface.on_select(self.interface, row=selected)
@@ -66,21 +63,8 @@ class Table(Widget):
             self._cache.append(WinForms.ListViewItem(self.row_data(self.interface.data[i])))
 
     def winforms_item_selection_changed(self, sender, e):
-        # update selection interface property
-        self.interface._selection = self._selected_rows()
-
-        if e.IsSelected and self.interface.on_select:
+        if self.interface.on_select:
             self.interface.on_select(self.interface, row=self.interface.data[e.ItemIndex])
-
-    def _selected_rows(self):
-        if not self.native.SelectedIndices.Count:
-            return None
-
-        if self.interface.multiple_select:
-            selected = [row for i, row in enumerate(self.interface.data) if i in self.native.SelectedIndices]
-            return selected
-        else:
-            return self.interface.data[self.native.SelectedIndices[0]]
 
     def _create_column(self, heading, accessor):
         col = WinForms.ColumnHeader()
@@ -121,6 +105,19 @@ class Table(Widget):
 
     def clear(self):
         self.native.Items.Clear()
+
+    def get_selection(self):
+        if self.interface.multiple_select:
+            selected = [
+                row
+                for i, row in enumerate(self.interface.data)
+                if i in self.native.SelectedIndices
+            ]
+            return selected
+        elif not self.native.SelectedIndices.Count:
+            return None
+        else:
+            return self.interface.data[self.native.SelectedIndices[0]]
 
     def set_on_select(self, handler):
         pass

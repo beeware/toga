@@ -57,7 +57,6 @@ class Table(Widget):
         self._multiple_select = multiple_select
         self._on_select = None
         self._on_double_click = None
-        self._selection = None
         self._data = None
         if missing_value is None:
             print("WARNING: Using empty string for missing value in data. "
@@ -102,10 +101,10 @@ class Table(Widget):
         """The current selection of the table.
 
         A value of None indicates no selection.
-        If the table allows multiple selection, returns a list of
+        If the tree allows multiple selection, returns a list of
         selected data nodes. Otherwise, returns a single data node.
         """
-        return self._selection
+        return self._impl.get_selection()
 
     def scroll_to_top(self):
         """Scroll the view so that the top of the list (first row) is visible

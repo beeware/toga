@@ -20,6 +20,10 @@ class Tree(Widget):
     def clear(self):
         self._action('clear')
 
+    def get_selection(self):
+        self._action('get selection')
+        return None
+
     def set_on_select(self, handler):
         self._set_value('on_select', handler)
 

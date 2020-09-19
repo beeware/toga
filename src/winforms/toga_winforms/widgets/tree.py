@@ -28,6 +28,9 @@ class Tree(Widget):
     def clear(self):
         self.interface.factory.not_implemented('Tree.clear()')
 
+    def get_selection(self):
+        self.interface.factory.not_implemented('Tree.get_selection()')
+
     def set_on_select(self, handler):
         self.interface.factory.not_implemented('Tree.set_on_select()')
 

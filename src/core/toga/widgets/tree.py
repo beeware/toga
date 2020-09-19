@@ -44,7 +44,6 @@ class Tree(Widget):
         self.headings = headings
         self._accessors = build_accessors(headings, accessors)
         self._multiple_select = multiple_select
-        self._selection = None
         self._data = None
         self._on_select = None
         self._on_double_click = None
@@ -91,10 +90,10 @@ class Tree(Widget):
         """The current selection of the table.
 
         A value of None indicates no selection.
-        If the table allows multiple selection, returns a list of
+        If the tree allows multiple selection, returns a list of
         selected data nodes. Otherwise, returns a single data node.
         """
-        return self._selection
+        return self._impl.get_selection()
 
     @property
     def on_select(self):
