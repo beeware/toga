@@ -23,7 +23,6 @@ class Tree(Widget):
         for i, heading in enumerate(self.interface.headings):
             renderer = Gtk.CellRendererText()
             column = Gtk.TreeViewColumn(heading, renderer, text=i + 1)
-            column.set_cell_data_func(renderer, self.strip_icon, self.interface._accessors[i])
             self.treeview.append_column(column)
 
         self.native = Gtk.ScrolledWindow()
@@ -32,12 +31,6 @@ class Tree(Widget):
         self.native.add(self.treeview)
         self.native.set_min_content_width(200)
         self.native.set_min_content_height(200)
-
-    @staticmethod
-    def strip_icon(tree_colum, cell, tree_model, iter_, attr):
-        item = tree_model.do_get_value(iter_, 0)
-        val = getattr(item, attr)
-        return str(val)
 
     def gtk_on_select(self, selection):
         if self.interface.on_select:
