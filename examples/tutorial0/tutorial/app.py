@@ -1,4 +1,5 @@
 import toga
+from tutorial import __version__
 
 
 def button_handler(widget):
@@ -17,7 +18,13 @@ def build(app):
 
 
 def main():
-    return toga.App('First App', 'org.beeware.helloworld', startup=build)
+    return toga.App(
+        'First App',
+        app_id='org.beeware.helloworld',
+        author='Tiberius Yak',
+        version=__version__,
+        startup=build,
+    )
 
 
 if __name__ == '__main__':

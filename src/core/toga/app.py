@@ -3,7 +3,7 @@ import sys
 from builtins import id as identifier
 from email.message import Message
 
-from toga.command import CommandSet
+from toga.command import CommandSet, AboutCommand
 from toga.handlers import wrapped_handler
 from toga.icons import Icon
 from toga.platform import get_platform_factory
@@ -79,6 +79,8 @@ class App:
         argument of :class:`toga.App`.
     :param factory: A python module that is capable to return a implementation
         of this class with the same name. (optional & normally not needed)
+    :param default_about_command: Create default implementation of the About command.
+        For more information, go to :class:`toga.AboutCommand`
     """
     app = None
 
@@ -96,6 +98,7 @@ class App:
         startup=None,
         on_exit=None,
         factory=None,
+        default_about_command=True,
     ):
         # Keep an accessible copy of the app instance
         App.app = self
@@ -168,7 +171,7 @@ class App:
         if app_id:
             self._app_id = app_id
         else:
-            self._app_id = self.metadata['App-ID']
+            self._app_id = self.metadata.get('App-ID', None)
 
         if self._app_id is None:
             raise RuntimeError('Toga application must have an App ID')
@@ -177,29 +180,29 @@ class App:
         # the module metadata.
         if author:
             self._author = author
-        elif self.metadata['Author']:
-            self._author = self.metadata['Author']
+        else:
+            self._author = self.metadata.get('Author', None)
 
         # If a version has been provided, use it; otherwise, look to
         # the module metadata.
         if version:
             self._version = version
-        elif self.metadata['Version']:
-            self._version = self.metadata['Version']
+        else:
+            self._version = self.metadata.get('Version', None)
 
         # If a home_page has been provided, use it; otherwise, look to
         # the module metadata.
         if home_page:
             self._home_page = home_page
-        elif self.metadata['Home-page']:
-            self._home_page = self.metadata['home_page']
+        else:
+            self._home_page = self.metadata.get('home_page', None)
 
         # If a description has been provided, use it; otherwise, look to
         # the module metadata.
         if description:
             self._description = description
-        elif self.metadata['description']:
-            self._description = self.metadata['Summary']
+        else:
+            self._description = self.metadata.get('Summary', None)
 
         # Set the application DOM ID; create an ID if one hasn't been provided.
         self._id = id if id else identifier(self)
@@ -226,6 +229,9 @@ class App:
 
         self._impl = self._create_impl()
         self.on_exit = on_exit
+
+        if default_about_command:
+            self.commands.add(AboutCommand(self))
 
     def _create_impl(self):
         return self.factory.App(interface=self)

@@ -54,7 +54,6 @@ class App:
         self.native.SetCompatibleTextRenderingDefault(False)
 
         self.interface.commands.add(
-            toga.Command(None, 'About ' + self.interface.name, group=toga.Group.HELP),
             toga.Command(None, 'Preferences', group=toga.Group.FILE),
             # Quit should always be the last item, in a section on it's own
             toga.Command(

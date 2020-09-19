@@ -157,3 +157,28 @@ class CommandSet:
 
             yield cmd
             prev_cmd = cmd
+
+
+class AboutCommand(Command):
+
+    def __init__(self, app, group=Group.HELP, label="About", **kwargs):
+        super(AboutCommand, self).__init__(
+            action=self.about_action,
+            label=label,
+            group=group,
+            **kwargs)
+        self._app = app
+
+    @property
+    def app(self):
+        return self._app
+
+    def about_action(self, widget):
+        message_parts = []
+        if self.app.name is not None:
+            message_parts.append("Name: {name}".format(name=self.app.name))
+        if self.app.author is not None:
+            message_parts.append("Author: {author}".format(author=self.app.author))
+        if self.app.version is not None:
+            message_parts.append("Version: {version}".format(version=self.app.version))
+        self._app.main_window.info_dialog("About", "\n".join(message_parts))

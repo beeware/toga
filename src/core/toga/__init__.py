@@ -1,7 +1,14 @@
 from .app import App, DocumentApp, MainWindow
 # Resources
 from .colors import hsl, hsla, rgb, rgba
-from .command import GROUP_BREAK, SECTION_BREAK, Command, CommandSet, Group
+from .command import (
+    GROUP_BREAK,
+    SECTION_BREAK,
+    Command,
+    CommandSet,
+    Group,
+    AboutCommand,
+)
 from .documents import Document
 from .fonts import Font
 from .icons import Icon
