@@ -17,7 +17,10 @@ class Tree(Widget):
         # The scroll view is the _impl, because it's the outer container.
         self.treeview = Gtk.TreeView(model=self.store)
         self.selection = self.treeview.get_selection()
-        self.selection.set_mode(Gtk.SelectionMode.SINGLE)
+        if self.interface.multiple_select:
+            self.selection.set_mode(Gtk.SelectionMode.MULTIPLE)
+        else:
+            self.selection.set_mode(Gtk.SelectionMode.SINGLE)
         self.selection.connect("changed", self.gtk_on_select)
 
         for i, heading in enumerate(self.interface.headings):
@@ -34,13 +37,21 @@ class Tree(Widget):
 
     def gtk_on_select(self, selection):
         if self.interface.on_select:
-            tree_model, tree_iter = selection.get_selected()
+            if self.interface.multiple_select:
+                tree_model, tree_path = selection.get_selected_rows()
+                if tree_path:
+                    tree_iter = tree_model.get_iter(tree_path[-1])
+                else:
+                    tree_iter = None
+            else:
+                tree_model, tree_iter = selection.get_selected()
+
+            # Covert the tree iter into the actual node.
             if tree_iter:
                 node = tree_model.get(tree_iter, 0)[0]
             else:
                 node = None
-            self.interface._selection = node
-            self.interface.on_select(self.interface, node=node)
+            self.interface.on_select(None, node=node)
 
     def change_source(self, source):
         # Temporarily disconnecting the TreeStore improves performance for large
@@ -55,7 +66,6 @@ class Tree(Widget):
                     self.insert(parent, i, node)
                     append_children(node, parent=node)
 
-        # XXX: I don't understand why it was self.interface.data instead of source
         append_children(source, parent=None)
 
         self.treeview.set_model(self.store)
@@ -71,6 +81,22 @@ class Tree(Widget):
 
     def clear(self):
         self.store.clear()
+
+    def get_selection(self):
+        if self.interface.multiple_select:
+            tree_model, tree_paths = self.selection.get_selected_rows()
+            return [
+                tree_model.get(tree_model.get_iter(path), 0)[0]
+                for path in tree_paths
+            ]
+        else:
+            tree_model, tree_iter = self.selection.get_selected()
+            if tree_iter:
+                row = tree_model.get(tree_iter, 0)[0]
+            else:
+                row = None
+
+        return row
 
     def set_on_select(self, handler):
         # No special handling required

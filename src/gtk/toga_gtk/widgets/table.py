@@ -5,7 +5,16 @@ class Table(Tree):
 
     def gtk_on_select(self, selection):
         if self.interface.on_select:
-            tree_model, tree_iter = selection.get_selected()
+            if self.interface.multiple_select:
+                tree_model, tree_path = selection.get_selected_rows()
+                if tree_path:
+                    tree_iter = tree_model.get_iter(tree_path[-1])
+                else:
+                    tree_iter = None
+            else:
+                tree_model, tree_iter = selection.get_selected()
+
+            # Covert the tree iter into the actual row.
             if tree_iter:
                 row = tree_model.get(tree_iter, 0)[0]
             else:
@@ -52,6 +61,9 @@ class Table(Tree):
 
     def clear(self):
         super().clear()
+
+    def get_selection(self):
+        return super().get_selection()
 
     def set_on_select(self, handler):
         super().set_on_select(handler)
