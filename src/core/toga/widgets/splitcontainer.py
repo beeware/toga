@@ -16,7 +16,7 @@ class SplitContainer(Widget):
             in the following order:
             widget (:class:`toga.Widget`): The widget that will be added.
             weight (float): Specifying the weighted splits.
-            flex (boolean): Should the content expand when the widget is resized.
+            flex (boolean): Should the content expand when the widget is resized. (optional)
         factory (:obj:`module`): A python module that is capable to return a
             implementation of this class with the same name. (optional & normally not needed)
     """
@@ -68,7 +68,7 @@ class SplitContainer(Widget):
                 else:
                     raise ValueError("The tuple of the content must be the length of "
                                      "2 or 3 parameters, with the following order: "
-                                     "widget, weight, flex")
+                                     "widget, weight and flex (optional)")
             else:
                 widget = item
                 weight = 1.0
