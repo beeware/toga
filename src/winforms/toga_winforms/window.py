@@ -69,7 +69,12 @@ class Window:
         self.native.ClientSize = Size(*self.interface._size)
 
     def set_app(self, app):
-        pass
+        if app is None:
+            return
+        icon_impl = app.interface.icon._impl
+        if icon_impl is None:
+            return
+        self.native.Icon = icon_impl.native
 
     @property
     def vertical_shift(self):
