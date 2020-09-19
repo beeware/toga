@@ -99,20 +99,6 @@ class TogaTable(NSTableView):
 
     @objc_method
     def tableViewSelectionDidChange_(self, notification) -> None:
-        selection = []
-        current_index = self.selectedRowIndexes.firstIndex
-        for i in range(self.selectedRowIndexes.count):
-            selection.append(self.interface.data[current_index])
-            current_index = self.selectedRowIndexes.indexGreaterThanIndex(current_index)
-
-        if not self.interface.multiple_select:
-            try:
-                self.interface._selection = selection[0]
-            except IndexError:
-                self.interface._selection = None
-        else:
-            self.interface._selection = selection
-
         if notification.object.selectedRow == -1:
             selected = None
         else:
@@ -224,6 +210,23 @@ class Table(Widget):
     def clear(self):
         self._view_for_row.clear()
         self.table.reloadData()
+
+    def get_selection(self):
+        if self.interface.multiple_select:
+            selection = []
+
+            current_index = self.table.selectedRowIndexes.firstIndex
+            for i in range(self.table.selectedRowIndexes.count):
+                selection.append(self.interface.data[current_index])
+                current_index = self.table.selectedRowIndexes.indexGreaterThanIndex(current_index)
+
+            return selection
+        else:
+            index = self.table.selectedRow
+            if index != -1:
+                return self.interface.data[index]
+            else:
+                return None
 
     def set_on_select(self, handler):
         pass

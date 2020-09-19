@@ -168,20 +168,6 @@ class TogaTree(NSOutlineView):
     # OutlineViewDelegate methods
     @objc_method
     def outlineViewSelectionDidChange_(self, notification) -> None:
-        selection = []
-        current_index = self.selectedRowIndexes.firstIndex
-        for i in range(self.selectedRowIndexes.count):
-            selection.append(self.itemAtRow(current_index).attrs['node'])
-            current_index = self.selectedRowIndexes.indexGreaterThanIndex(current_index)
-
-        if not self.interface.multiple_select:
-            try:
-                self.interface._selection = selection[0]
-            except IndexError:
-                self.interface._selection = None
-        else:
-            self.interface._selection = selection
-
         if notification.object.selectedRow == -1:
             selected = None
         else:
@@ -294,6 +280,23 @@ class Tree(Widget):
 
     def clear(self):
         self.tree.reloadData()
+
+    def get_selection(self):
+        if self.interface.multiple_select:
+            selection = []
+
+            current_index = self.tree.selectedRowIndexes.firstIndex
+            for i in range(self.tree.selectedRowIndexes.count):
+                selection.append(self.tree.itemAtRow(current_index).attrs['node'])
+                current_index = self.tree.selectedRowIndexes.indexGreaterThanIndex(current_index)
+
+            return selection
+        else:
+            index = self.tree.selectedRow
+            if index != -1:
+                return self.tree.itemAtRow(current_index).attrs['node']
+            else:
+                return None
 
     def set_on_select(self, handler):
         pass
