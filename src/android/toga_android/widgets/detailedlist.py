@@ -140,13 +140,16 @@ class DetailedList(Widget):
         # If the data changes, re-build the widget. Brutally effective.
         self.create()
 
-    def remove(self, item):
+    def remove(self, index, item):
         # If the data changes, re-build the widget. Brutally effective.
         self.create()
 
     def clear(self):
         # If the data changes, re-build the widget. Brutally effective.
         self.create()
+
+    def get_selection(self):
+        return None
 
     def set_on_select(self, handler):
         # No special handling required.

@@ -1,3 +1,4 @@
+import os
 import unittest
 try:
     import gi
@@ -23,56 +24,60 @@ def handle_events():
 
 
 @unittest.skipIf(Gtk is None, "Can't run GTK implementation tests on a non-Linux platform")
-class TestGtkTable(unittest.TestCase):
+class TestGtkDetailedList(unittest.TestCase):
     def setUp(self):
-        self.table = toga.Table(
-            headings=("one", "two")
-        )
+        icon = toga.Icon(os.path.join(os.path.dirname(__file__), '../../../../demo/toga_demo/resources/brutus-32.png'))
+        self.dl = toga.DetailedList([
+            dict(icon=icon, title='Item %i' % i, subtitle='this is the subtitle for item %i' % i)
+            for i in range(10)
+        ])
 
         # make a shortcut for easy use
-        self.gtk_table = self.table._impl
+        self.gtk_dl = self.dl._impl
 
         self.window = Gtk.Window()
-        self.window.add(self.table._impl.native)
+        self.window.add(self.dl._impl.native)
 
     def assertRowEqual(self, row, data):
-        self.assertEqual(tuple(row)[1:], data)
+        for attr in ('icon', 'title', 'subtitle'):
+            self.assertEqual(getattr(row[0], attr), data[attr])
 
     def test_change_source(self):
         # Clear the table directly
-        self.gtk_table.clear()
+        self.gtk_dl.clear()
 
         # Assign pre-constructed data
-        self.table.data = [
-            ("A1", "A2"),
-            ("B1", "B2")
-        ]
+        a = dict(icon=None, title='A', subtitle='a subtitle')
+        b = dict(icon=None, title='B', subtitle='b subtitle')
+
+        self.dl.data = [a, b]
 
         # Make sure the data was stored correctly
-        store = self.gtk_table.store
-        self.assertRowEqual(store[0], ("A1", "A2"))
-        self.assertRowEqual(store[1], ("B1", "B2"))
+        store = self.gtk_dl.store
+        self.assertRowEqual(store[0], a)
+        self.assertRowEqual(store[1], b)
 
         # Clear the table with empty assignment
-        self.table.data = []
+        self.dl.data = []
 
         # Make sure the table is empty
         self.assertEqual(len(store), 0)
 
         # Repeat with a few different cases
-        self.table.data = None
+        self.dl.data = None
         self.assertEqual(len(store), 0)
 
-        self.table.data = ()
+        self.dl.data = ()
         self.assertEqual(len(store), 0)
 
     def test_insert(self):
-        listener = TreeModelListener(self.gtk_table.store)
+        listener = TreeModelListener(self.gtk_dl.store)
 
         # Insert a row
-        row_data = ("1", "2")
+        row_data = dict(icon=None, title='A', subtitle='a subtitle')
+
         INSERTED_AT = 0
-        row = self.table.data.insert(INSERTED_AT, *row_data)
+        row = self.dl.data.insert(INSERTED_AT, **row_data)
 
         # Make sure it's in there
         self.assertIsNotNone(listener.inserted_it)
@@ -84,10 +89,10 @@ class TestGtkTable(unittest.TestCase):
         self.assertTrue(isinstance(tree_iter, Gtk.TreeIter))
 
         # Make sure it's the correct Gtk.TreeIter
-        self.assertEqual(row, self.gtk_table.store.get(tree_iter, 0)[0])
+        self.assertEqual(row, self.gtk_dl.store.get(tree_iter, 0)[0])
 
         # Get the Gtk.TreePath of the Gtk.TreeIter
-        path = self.gtk_table.store.get_path(tree_iter)
+        path = self.gtk_dl.store.get_path(tree_iter)
 
         # Make sure it's the correct Gtk.TreePath
         self.assertTrue(isinstance(path, Gtk.TreePath))
@@ -97,35 +102,35 @@ class TestGtkTable(unittest.TestCase):
         self.assertEqual(path, listener.inserted_path)
 
         # Make sure the row got stored correctly
-        result_row = self.gtk_table.store[path]
+        result_row = self.gtk_dl.store[path]
         self.assertRowEqual(result_row, row_data)
 
     def test_remove(self):
-        listener = TreeModelListener(self.gtk_table.store)
+        listener = TreeModelListener(self.gtk_dl.store)
         # Insert a row
-        row = self.table.data.insert(0, "1", "2")
+        row = self.dl.data.insert(0, icon=None, title="1", subtitle="2")
 
         # Make sure it's in there
         self.assertIsNotNone(listener.inserted_it)
 
         # Then remove it
-        self.gtk_table.remove(index=0, item=row)
+        self.gtk_dl.remove(row, index=0)
 
         # Make sure its gone
         self.assertIsNotNone(listener.deleted_path)
 
     def test_change(self):
-        listener = TreeModelListener(self.gtk_table.store)
+        listener = TreeModelListener(self.gtk_dl.store)
 
         # Insert a row
-        row = self.table.data.insert(0, "1", "2")
+        row = self.dl.data.insert(0, icon=None, title="1", subtitle="2")
 
         # Make sure it's in there
         self.assertIsNotNone(listener.inserted_it)
 
         # Change a column
-        row.one = "something_changed"
-        # (not testing that self.gtk_table.change is called. The Core API
+        row.title = "something changed"
+        # (not testing that self.gtk_dl.change is called. The Core API
         # unit tests should ensure this already.)
 
         # Get the Gtk.TreeIter
@@ -135,28 +140,28 @@ class TestGtkTable(unittest.TestCase):
         self.assertTrue(isinstance(tree_iter, Gtk.TreeIter))
 
         # Make sure it's the correct Gtk.TreeIter
-        self.assertEqual(row, self.gtk_table.store.get(tree_iter, 0)[0])
+        self.assertEqual(row, self.gtk_dl.store.get(tree_iter, 0)[0])
 
         # Make sure the value changed
-        path = self.gtk_table.store.get_path(tree_iter)
-        result_row = self.gtk_table.store[path]
-        self.assertRowEqual(result_row, (row.one, row.two))
+        path = self.gtk_dl.store.get_path(tree_iter)
+        result_row = self.gtk_dl.store[path]
+        self.assertRowEqual(result_row, dict(icon=None, title="something changed", subtitle="2"))
 
     def test_row_persistence(self):
-        self.table.data.insert(0, one="A1", two="A2")
-        self.table.data.insert(0, one="B1", two="B2")
+        self.dl.data.insert(0, icon=None, title="A1", subtitle="A2")
+        self.dl.data.insert(0, icon=None, title="B1", subtitle="B2")
 
         # B should now precede A
         # tests passes if A "knows" it has moved to index 1
 
-        self.assertRowEqual(self.gtk_table.store[0], ("B1", "B2"))
-        self.assertRowEqual(self.gtk_table.store[1], ("A1", "A2"))
+        self.assertRowEqual(self.gtk_dl.store[0], dict(icon=None, title="B1", subtitle="B2"))
+        self.assertRowEqual(self.gtk_dl.store[1], dict(icon=None, title="A1", subtitle="A2"))
 
-    def test_on_select_root_row(self):
+    def test_on_select_row(self):
         # Insert two dummy rows
-        self.table.data = []
-        self.table.data.append(None, one="A1", two="A2")
-        b = self.table.data.append(None, one="B1", two="B2")
+        self.dl.data = []
+        self.dl.data.append(None, icon=None, title="A1", subtitle="A2")
+        b = self.dl.data.append(None, icon=None, title="B1", subtitle="B2")
 
         # Create a flag
         succeed = False
@@ -168,39 +173,10 @@ class TestGtkTable(unittest.TestCase):
             nonlocal succeed
             succeed = True
 
-        self.table.on_select = on_select
+        self.dl.on_select = on_select
 
         # Select row B
-        self.gtk_table.selection.select_path(1)
-
-        # Allow on_select to call
-        handle_events()
-
-        self.assertTrue(succeed)
-
-    def test_on_select_child_row(self):
-        # Insert two nodes
-        self.table.data = []
-
-        listener = TreeModelListener(self.gtk_table.store)
-
-        a = self.table.data.append(None, one="A1", two="A2")
-        b = self.table.data.append(a, one="B1", two="B2")
-
-        # Create a flag
-        succeed = False
-
-        def on_select(able, row, *kw):
-            # Make sure the right node was selected
-            self.assertEqual(row, b)
-
-            nonlocal succeed
-            succeed = True
-
-        self.table.on_select = on_select
-
-        # Select node B
-        self.gtk_table.selection.select_iter(listener.inserted_it)
+        self.gtk_dl.selection.select_path(1)
 
         # Allow on_select to call
         handle_events()
@@ -209,13 +185,13 @@ class TestGtkTable(unittest.TestCase):
 
     def test_on_select_deleted_node(self):
         # Insert two nodes
-        self.table.data = []
+        self.dl.data = []
 
-        listener = TreeModelListener(self.gtk_table.store)
+        listener = TreeModelListener(self.gtk_dl.store)
 
-        self.table.data.append(None, one="A1", two="A2")
+        self.dl.data.append(None, icon=None, title="A1", subtitle="A2")
         listener.clear()
-        b = self.table.data.append(None, one="B1", two="B2")
+        b = self.dl.data.append(None,  icon=None, title="B1", subtitle="B2")
 
         # Create a flag
         succeed = False
@@ -232,10 +208,10 @@ class TestGtkTable(unittest.TestCase):
                 self.assertEqual(row, None)
                 succeed = True
 
-        self.table.on_select = on_select
+        self.dl.on_select = on_select
 
         # Select row B
-        self.gtk_table.selection.select_iter(listener.inserted_it)
+        self.gtk_dl.selection.select_iter(listener.inserted_it)
 
         # Allow on_select to call
         handle_events()

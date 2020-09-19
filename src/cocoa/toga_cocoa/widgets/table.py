@@ -214,21 +214,12 @@ class Table(Widget):
             columnIndexes=column_indexes
         )
 
-    def remove(self, item):
-        try:
-            # We can't get the index from self.interface.data because the
-            # row has already been removed. Instead we look up the index
-            # from an associated view.
-            view = self._view_for_row.pop(item)
-            index = self.table.rowForView(view)
-        except KeyError:
-            pass
-        else:
-            indexes = NSIndexSet.indexSetWithIndex(index)
-            self.table.removeRowsAtIndexes(
-                indexes,
-                withAnimation=NSTableViewAnimation.EffectNone
-            )
+    def remove(self, index, item):
+        indexes = NSIndexSet.indexSetWithIndex(index)
+        self.table.removeRowsAtIndexes(
+            indexes,
+            withAnimation=NSTableViewAnimation.EffectNone
+        )
 
     def clear(self):
         self._view_for_row.clear()

@@ -259,7 +259,6 @@ class Tree(Widget):
         self.tree.reloadData()
 
     def insert(self, parent, index, item):
-
         # set parent = None if inserting to the root item
         index_set = NSIndexSet.indexSetWithIndex(index)
         if parent is self.interface.data:
@@ -279,7 +278,7 @@ class Tree(Widget):
         except AttributeError:
             pass
 
-    def remove(self, item):
+    def remove(self, parent, index, item):
         try:
             index = self.tree.childIndexForItem(item._impl)
         except AttributeError:

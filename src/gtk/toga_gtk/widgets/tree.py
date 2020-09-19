@@ -1,10 +1,17 @@
+import toga
 from ..libs import Gtk
 from .base import Widget
+from .internal.sourcetreemodel import SourceTreeModel
 
 
 class Tree(Widget):
     def create(self):
-        self.store = Gtk.TreeStore(*[object] + [str for h in self.interface.headings])
+        # Tree is reused for table, where it's a ListSource, not a tree
+        # so check here if the actual widget is a Tree or a Table.
+        # It can't be based on the source, since it determines flags
+        # and GtkTreeModel.flags is not allowed to change after creation
+        is_tree = isinstance(self.interface, toga.Tree)
+        self.store = SourceTreeModel([{'type': str, 'attr': a} for a in self.interface._accessors], is_tree=is_tree)
 
         # Create a tree view, and put it in a scroll view.
         # The scroll view is the _impl, because it's the outer container.
@@ -25,20 +32,6 @@ class Tree(Widget):
         self.native.set_min_content_width(200)
         self.native.set_min_content_height(200)
 
-    def row_data(self, item):
-        # TODO: GTK can't support icons in tree cells; so, if the data source
-        # specifies an icon, strip it when converting to row data.
-        def strip_icon(item, attr):
-            val = getattr(item, attr)
-            if isinstance(val, tuple):
-                return str(val[1])
-            return str(val)
-
-        return [item] + [
-            strip_icon(item, attr)
-            for attr in self.interface._accessors
-        ]
-
     def gtk_on_select(self, selection):
         if self.interface.on_select:
             tree_model, tree_iter = selection.get_selected()
@@ -47,14 +40,14 @@ class Tree(Widget):
             else:
                 node = None
             self.interface._selection = node
-            self.interface.on_select(None, node=node)
+            self.interface.on_select(self.interface, node=node)
 
     def change_source(self, source):
         # Temporarily disconnecting the TreeStore improves performance for large
         # updates by deferring row rendering until the update is complete.
         self.treeview.set_model(None)
 
-        self.store.clear()
+        self.store.change_source(source)
 
         def append_children(data, parent=None):
             if data.can_have_children():
@@ -62,27 +55,19 @@ class Tree(Widget):
                     self.insert(parent, i, node)
                     append_children(node, parent=node)
 
-        append_children(self.interface.data, parent=None)
+        # XXX: I don't understand why it was self.interface.data instead of source
+        append_children(source, parent=None)
 
         self.treeview.set_model(self.store)
 
     def insert(self, parent, index, item, **kwargs):
-        impl = self.store.insert(
-            parent._impl[self] if parent else None,
-            index,
-            self.row_data(item)
-        )
-        try:
-            item._impl[self] = impl
-        except AttributeError:
-            item._impl = {self: impl}
+        self.store.insert(item)
 
     def change(self, item):
-        self.store[item._impl[self]] = self.row_data(item)
+        self.store.change(item)
 
-    def remove(self, item):
-        del self.store[item._impl[self]]
-        del item._impl[self]
+    def remove(self, item, index, parent):
+        self.store.remove(item, index=index, parent=parent)
 
     def clear(self):
         self.store.clear()
@@ -95,4 +80,5 @@ class Tree(Widget):
         self.interface.factory.not_implemented('Tree.set_on_double_click()')
 
     def scroll_to_node(self, node):
-        raise NotImplementedError
+        path = self.store.path_to_node(node)
+        self.treeview.scroll_to_cell(path)
