@@ -96,12 +96,12 @@ provide you with an example of ``How they are work together`` in linux as a one
 of the available platforms, do not wary they are really very simple unlike they
 are appearing:
 * ``toga.Button`` defined in ``toga/src/core`` folder. This is the public
-  interface, and defines (amongst other things) that there is an ``on_click``
-  event handler on a Button.
+interface, and defines (amongst other things) that there is an ``on_click``
+event handler on a Button.
 * ``toga-gtk.widgets.Button`` defined in ``toga/scr/toga-gtk`` folder. This
-  provides the implementation of ``toga.Button``, describing how to create a
-  button on GTK, and how to connect the ``GTK`` clicked signal to the ``on_click``
-  Toga handler.
+provides the implementation of ``toga.Button``, describing how to create a
+button on GTK, and how to connect the ``GTK`` clicked signal to the ``on_click``
+Toga handler.
 * ``Gtk.Button`` the native GTK-Python Widget API that implements buttons on GTK.
 
 As you may conclude, in this way we can change the implementation of ``Button``
