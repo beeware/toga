@@ -1,7 +1,4 @@
 import toga
-from toga.colors import BLUE, RED
-from toga.constants import CENTER, COLUMN, GREEN, ROW, WHITE, YELLOW
-from toga.style import Pack
 
 
 class ExampleFocusApp(toga.App):
