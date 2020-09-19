@@ -46,8 +46,8 @@ class MovieSource(Source):
         self._movies.sort(key=lambda m: m.year)
         self._notify('insert', index=self._movies.index(movie), item=movie)
 
-    def remove(self, index):
-        item = self._movies[index]
+    def remove(self, item):
+        index = self.index(item)
         self._notify('pre_remove', index=index, item=item)
         del self._movies[index]
         self._notify('remove', index=index, item=item)
@@ -64,7 +64,7 @@ class GoodMovieSource(Source):
         super().__init__()
         self._source = source
         self._source.add_listener(self)
-        self._removals = set()
+        self._removals = {}
 
     # Implement the filtering of the underlying data source
     def _filtered(self):
@@ -104,14 +104,14 @@ class GoodMovieSource(Source):
         for i, filtered_item in enumerate(self._filtered()):
             if filtered_item == item:
                 # Track that the object *was* in the data source
-                self._removals.add(item)
+                self._removals[item] = i
 
     def remove(self, index, item):
         # If the removed item previously existed in the filtered data source,
         # propegate the removal notification.
         try:
-            self._removals.remove(item)
-            self._notify('remove', index=index, item=item)
+            i = self._removals.pop(item)
+            self._notify('remove', index=i, item=item)
         except KeyError:
             # object wasn't previously in the data source
             pass
@@ -130,8 +130,10 @@ class ExampleTableSourceApp(toga.App):
         self.table1.data.add(choice(bee_movies))
 
     def delete_handler(self, widget, **kwargs):
-        if len(self.table1.data) > 0:
-            self.table1.data.remove(0)
+        if self.table1.selection:
+            self.table1.data.remove(self.table1.selection)
+        elif len(self.table1.data) > 0:
+            self.table1.data.remove(self.table1.data[0])
         else:
             print('Table is empty!')
 
