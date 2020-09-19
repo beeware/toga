@@ -29,10 +29,10 @@ class SplitContainer(Widget):
 
         if position == 0:
             self.native.set_wide_handle(True)
-            self.native.pack1(widget.native, flex)
+            self.native.pack1(widget.native, flex, False)
         elif position == 1:
             self.native.set_wide_handle(True)
-            self.native.pack2(widget.native, flex)
+            self.native.pack2(widget.native, flex, False)
 
     def set_app(self, app):
         if self.interface.content:
