@@ -21,11 +21,14 @@ class App:
         self.interface.icon.bind(self.interface.factory)
         # self.resource_path = os.path.dirname(os.path.dirname(NSBundle.mainBundle.bundlePath))
 
-        formal_name = self.interface.formal_name
-        self.interface.commands.add(
-            toga.Command(None, 'About ' + formal_name, group=toga.Group.APP),
-            toga.Command(None, 'Preferences', group=toga.Group.APP),
-        )
+    def about_command(self):
+        return toga.AboutCommand(self.interface, group=toga.Group.APP)
+
+    def preferences_command(self):
+        return toga.Command(None, 'Preferences', group=toga.Group.APP)
+
+    def home_page_command(self):
+        return toga.Command(None, 'Visit homepage', group=toga.Group.HELP)
 
     def main_loop(self):
         # Main loop is a no-op

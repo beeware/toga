@@ -75,19 +75,6 @@ class App:
 
     def gtk_startup(self, data=None):
         # Set up the default commands for the interface.
-        self.interface.commands.add(
-            Command(None, 'About ' + self.interface.name, group=toga.Group.HELP),
-            Command(None, 'Preferences', group=toga.Group.APP),
-            # Quit should always be the last item, in a section on it's own
-            Command(
-                lambda widget: self.exit(),
-                'Quit ' + self.interface.name,
-                shortcut=toga.Key.MOD_1 + 'q',
-                group=toga.Group.APP,
-                section=sys.maxsize
-            ),
-            Command(None, 'Visit homepage', group=toga.Group.HELP)
-        )
         self._create_app_commands()
 
         self.interface.startup()
@@ -104,6 +91,24 @@ class App:
         # see #872 for details.
         settings = Gtk.Settings.get_default()
         settings.set_property("gtk-shell-shows-menubar", False)
+
+    def home_page_command(self):
+        return Command(None, 'Visit homepage', group=toga.Group.HELP)
+
+    def preferences_command(self):
+        return Command(None, 'Preferences', group=toga.Group.APP)
+
+    def about_command(self):
+        return toga.AboutCommand(self.interface, group=toga.Group.HELP)
+
+    def quit_command(self):
+        return Command(
+            lambda widget: self.exit(),
+            'Quit ' + self.interface.name,
+            shortcut=toga.Key.MOD_1 + 'q',
+            group=toga.Group.APP,
+            section=sys.maxsize
+        )
 
     def _create_app_commands(self):
         # No extra menus
