@@ -161,7 +161,7 @@ class CommandSet:
 
 class AboutCommand(Command):
 
-    def __init__(self, app, group=Group.HELP, label="About", **kwargs):
+    def __init__(self, app, group, label="About", **kwargs):
         super(AboutCommand, self).__init__(
             action=self.about_action,
             label=label,

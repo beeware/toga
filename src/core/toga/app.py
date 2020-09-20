@@ -79,8 +79,13 @@ class App:
         argument of :class:`toga.App`.
     :param factory: A python module that is capable to return a implementation
         of this class with the same name. (optional & normally not needed)
-    :param default_about_command: Create default implementation of the About command.
+    :param about_command: Add "About" command as implemented in the "about" method.
         For more information, go to :class:`toga.AboutCommand`
+    :param quit_command: Add "Quit" command as implemented in the "quit" method.
+    :param home_page_command: Add "Homepage" command as implemented in the "home_page"
+        method.
+    :param preferences_command: Add "Preferences" command as implemented in the
+        "preferences" method.
     """
     app = None
 
@@ -98,7 +103,10 @@ class App:
         startup=None,
         on_exit=None,
         factory=None,
-        default_about_command=True,
+        about_command=True,
+        preferences_command=True,
+        home_page_command=True,
+        quit_command=True,
     ):
         # Keep an accessible copy of the app instance
         App.app = self
@@ -230,8 +238,14 @@ class App:
         self._impl = self._create_impl()
         self.on_exit = on_exit
 
-        if default_about_command:
-            self.commands.add(AboutCommand(self))
+        if about_command:
+            self.commands.add(self.about_command())
+        if preferences_command:
+            self.commands.add(self.preferences_command())
+        if home_page_command:
+            self.commands.add(self.home_page_command())
+        if quit_command:
+            self.commands.add(self.quit_command())
 
     def _create_impl(self):
         return self.factory.App(interface=self)
@@ -410,6 +424,38 @@ class App:
     def hide_cursor(self):
         """Hide cursor from view."""
         self._impl.hide_cursor()
+
+    def about_command(self):
+        """
+        Returns the "About" command.
+
+        This method can be override if you you wish to implement your own command.
+        """
+        return self._impl.about_command()
+
+    def quit_command(self):
+        """
+        Returns the "Quit" command.
+
+        This method can be override if you you wish to implement your own command.
+        """
+        return self._impl.quit_command()
+
+    def home_page_command(self):
+        """
+        Returns the "Homepage" command.
+
+        This method can be override if you you wish to implement your own command.
+        """
+        return self._impl.home_page_command()
+
+    def preferences_command(self):
+        """
+        Returns the "Preferences" command.
+
+        This method can be override if you you wish to implement your own command.
+        """
+        return self._impl.preferences_command()
 
     def startup(self):
         """ Create and show the main window for the application

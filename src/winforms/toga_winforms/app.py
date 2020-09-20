@@ -52,19 +52,6 @@ class App:
 
         self.native.EnableVisualStyles()
         self.native.SetCompatibleTextRenderingDefault(False)
-
-        self.interface.commands.add(
-            toga.Command(None, 'Preferences', group=toga.Group.FILE),
-            # Quit should always be the last item, in a section on it's own
-            toga.Command(
-                lambda s: self.exit(),
-                'Exit ' + self.interface.name,
-                shortcut=Key.MOD_1 + 'q',
-                group=toga.Group.FILE,
-                section=sys.maxsize
-            ),
-            toga.Command(None, 'Visit homepage', group=toga.Group.HELP)
-        )
         self._create_app_commands()
 
         # Call user code to populate the main window
@@ -73,6 +60,24 @@ class App:
         self.create_menus()
         self.interface.icon.bind(self.interface.factory)
         self.interface.main_window._impl.set_app(self)
+
+    def about_command(self):
+        return toga.AboutCommand(self.interface, group=toga.Group.HELP)
+
+    def home_page_command(self):
+        return toga.Command(None, 'Visit homepage', group=toga.Group.HELP)
+
+    def preferences_command(self):
+        return toga.Command(None, 'Preferences', group=toga.Group.FILE)
+
+    def quit_command(self):
+        return toga.Command(
+            lambda s: self.exit(),
+            'Exit ' + self.interface.name,
+            shortcut=Key.MOD_1 + 'q',
+            group=toga.Group.FILE,
+            section=sys.maxsize
+        )
 
     def create_menus(self):
         toga.Group.FILE.order = 0

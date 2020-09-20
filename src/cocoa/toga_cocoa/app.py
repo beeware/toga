@@ -120,20 +120,6 @@ class App:
         self.appDelegate.native = self.native
         self.native.setDelegate_(self.appDelegate)
 
-        formal_name = self.interface.formal_name
-
-        self.interface.commands.add(
-            toga.Command(None, 'Preferences', group=toga.Group.APP),
-            # Quit should always be the last item, in a section on it's own
-            toga.Command(
-                lambda s: self.exit(), 'Quit ' + formal_name,
-                shortcut=toga.Key.MOD_1 + 'q',
-                group=toga.Group.APP,
-                section=sys.maxsize
-            ),
-
-            toga.Command(None, 'Visit homepage', group=toga.Group.HELP)
-        )
         self._create_app_commands()
 
         # Call user code to populate the main window
@@ -143,6 +129,24 @@ class App:
         # then force the creation of the menus.
         self._menu_items = {}
         self.create_menus()
+
+    def about_command(self):
+        return toga.AboutCommand(self.interface, group=toga.Group.APP)
+
+    def home_page_command(self):
+        return toga.Command(None, 'Visit homepage', group=toga.Group.HELP)
+
+    def preferences_command(self):
+        return toga.Command(None, 'Preferences', group=toga.Group.APP)
+
+    def quit_command(self):
+        return toga.Command(
+            lambda s: self.exit(),
+            'Quit',
+            shortcut=toga.Key.MOD_1 + 'q',
+            group=toga.Group.APP,
+            section=sys.maxsize
+        )
 
     def _create_app_commands(self):
         # No extra commands
