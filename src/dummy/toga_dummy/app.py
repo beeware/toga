@@ -61,19 +61,15 @@ class App(LoggedObject):
     def add_background_task(self, handler):
         self._action('add_background_task', handler=handler)
 
-    @not_required_on('mobile')
     def about_command(self):
         return dummy_command(self, "about")
 
-    @not_required_on('mobile')
     def preferences_command(self):
         return dummy_command(self, "preferences")
 
-    @not_required_on('mobile')
     def home_page_command(self):
         return dummy_command(self, "homepage")
 
-    @not_required_on('mobile', 'web')
     def quit_command(self):
         return dummy_command(self, "quit")
 

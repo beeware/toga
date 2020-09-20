@@ -1,4 +1,7 @@
+import sys
+
 import toga
+from toga import Key
 
 from .window import Window
 
@@ -29,6 +32,15 @@ class App:
 
     def home_page_command(self):
         return toga.Command(None, 'Visit homepage', group=toga.Group.HELP)
+
+    def quit_command(self):
+        return toga.Command(
+            lambda s: self.exit(),
+            'Exit',
+            shortcut=Key.MOD_1 + 'q',
+            group=toga.Group.FILE,
+            section=sys.maxsize
+        )
 
     def main_loop(self):
         # Main loop is a no-op

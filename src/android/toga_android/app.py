@@ -1,5 +1,9 @@
+import sys
+
 from rubicon.java import android_events
 
+import toga
+from toga import Command, Key
 from toga.handlers import wrapped_handler
 
 from .libs.activity import IPythonApp, MainActivity
@@ -89,3 +93,21 @@ class App:
 
     def add_background_task(self, handler):
         self.loop.call_soon(wrapped_handler(self, handler), self)
+
+    def about_command(self):
+        return Command(None, "About")
+
+    def preferences_command(self):
+        return Command(None, "Preferences")
+
+    def home_page_command(self):
+        return Command(None, "Visit homepage", group=toga.Group.HELP)
+
+    def quit_command(self):
+        return Command(
+            lambda s: self.exit(),
+            'Exit ' + self.interface.name,
+            shortcut=Key.MOD_1 + 'q',
+            group=toga.Group.FILE,
+            section=sys.maxsize
+        )
