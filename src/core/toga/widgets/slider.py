@@ -66,6 +66,8 @@ class Slider(Widget):
         else:
             raise ValueError('Slider value ({}) is not in range ({}-{})'.format(value, _min, _max))
         self._impl.set_value(final)
+        if self.on_slide:
+            self.on_slide(self)
 
     @property
     def range(self):
