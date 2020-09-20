@@ -1,3 +1,5 @@
+from unittest import mock
+
 import toga
 import toga_dummy
 from toga_dummy.utils import TestCase
@@ -8,13 +10,12 @@ class SliderTests(TestCase):
         super().setUp()
 
         self.default = 50
-        self.range = (0, 100)
-        self.tick_count = 10
+        self.min_val = 0
+        self.max_val = 100
+        self.range = (self.min_val, self.max_val)
+        self.tick_count = 11
 
-        def callback(widget):
-            pass
-
-        self.on_slide = callback
+        self.on_slide = mock.Mock()
         self.enabled = True
 
         self.slider = toga.Slider(default=self.default,
@@ -31,7 +32,6 @@ class SliderTests(TestCase):
     def test_parameter_are_all_set_correctly(self):
         self.assertEqual(self.slider.value, self.default)
         self.assertEqual(self.slider.range, self.range)
-        self.assertEqual(self.slider._range, self.range)
         self.assertEqual(self.slider.on_slide._raw, self.on_slide)
         self.assertEqual(self.slider.enabled, self.enabled)
 
@@ -39,37 +39,74 @@ class SliderTests(TestCase):
         self.slider.value
         self.assertValueGet(self.slider, 'value')
 
-    def test_set_value_invokes_impl_method(self):
-        new_value = 33
-        self.slider.value = new_value
-        self.assertValueSet(self.slider, 'value', new_value)
+    def test_set_value_between_min_and_max(self):
+        average = (self.min_val + self.max_val) / 2
+        self.slider.value = average
+        self.assert_slider_value(average)
 
-    def test_new_value_works_with_range(self):
-        ok_value = 10
-        min_range = self.range[0]
-        max_range = self.range[1]
+    def test_set_value_to_be_min(self):
+        self.slider.value = self.min_val
+        self.assert_slider_value(self.min_val)
 
-        self.slider.value = ok_value
-        self.slider.value = min_range
-        self.slider.value = max_range
+    def test_set_value_to_be_max(self):
+        self.slider.value = self.max_val
+        self.assert_slider_value(self.max_val)
 
-    def test_new_value_out_of_range(self):
-        to_small_value = -10
-        to_big_value = 300
-
+    def test_set_value_to_be_too_small(self):
         with self.assertRaises(ValueError):
-            self.slider.value = to_small_value
+            self.slider.value = self.min_val - 1
 
+    def test_set_value_to_be_too_big(self):
         with self.assertRaises(ValueError):
-            self.slider.value = to_big_value
+            self.slider.value = self.max_val + 1
 
     def test_new_value_is_None(self):
         self.slider.value = None
         self.assertEqual(self.slider.value, 0.5)
 
+    def test_increasing_by_value(self):
+        delta = 20
+        self.slider.increase_value(delta)
+        self.assert_slider_value(self.default + delta)
+
+    def test_safe_increasing_by_value(self):
+        delta = 1000
+        self.slider.increase_value(delta, safe=True)
+        self.assert_slider_value(self.max_val)
+
+    def test_decreasing_by_value(self):
+        delta = 20
+        self.slider.decrease_value(delta)
+        self.assert_slider_value(self.default - delta)
+
+    def test_safe_decreasing_by_value(self):
+        delta = 1000
+        self.slider.decrease_value(delta, safe=True)
+        self.assert_slider_value(self.min_val)
+
+    def test_increasing_by_ticks(self):
+        ticks = 2
+        self.slider.increase_ticks(number_of_ticks=ticks)
+        self.assert_slider_value(70)
+
+    def test_safe_increasing_by_ticks(self):
+        ticks = 100
+        self.slider.increase_ticks(number_of_ticks=ticks, safe=True)
+        self.assert_slider_value(self.max_val)
+
+    def test_decreasing_by_ticks(self):
+        ticks = 2
+        self.slider.decrease_ticks(number_of_ticks=ticks)
+        self.assert_slider_value(30)
+
+    def test_safe_decreasing_by_ticks(self):
+        ticks = 100
+        self.slider.decrease_ticks(number_of_ticks=ticks, safe=True)
+        self.assert_slider_value(self.min_val)
+
     def test_working_range_values(self):
-        self.slider.range = (0, 100)
-        self.slider.range = (100, 1000)
+        self.assert_set_range(0, 100)
+        self.assert_set_range(100, 1000)
 
     def test_false_range(self):
         with self.assertRaises(ValueError):
@@ -92,3 +129,15 @@ class SliderTests(TestCase):
     def test_focus(self):
         self.slider.focus()
         self.assertActionPerformed(self.slider, "focus")
+
+    def assert_slider_value(self, value):
+        self.assertEqual(self.slider.value, value)
+        self.assertValueSet(self.slider, "value", value)
+        self.on_slide.assert_called_once_with(self.slider)
+
+    def assert_set_range(self, min_val, max_val):
+        self.slider.range = (min_val, max_val)
+        self.assertEqual(self.slider.min, min_val)
+        self.assertEqual(self.slider.max, max_val)
+        self.assertEqual(self.slider.range, (min_val, max_val))
+        self.assertValueSet(self.slider, "range", (min_val, max_val))
