@@ -1,3 +1,4 @@
+from toga import Command
 from .utils import LoggedObject, not_required_on
 from .window import Window
 
@@ -54,6 +55,22 @@ class App(LoggedObject):
 
     def add_background_task(self, handler):
         self._action('add_background_task', handler=handler)
+
+    def about_command(self):
+        return self.__dummy_command("about")
+
+    def preferences_command(self):
+        return self.__dummy_command("preferences")
+
+    def home_page_command(self):
+        return self.__dummy_command("homepage")
+
+    def quit_command(self):
+        return self.__dummy_command("quit")
+
+    def __dummy_command(self, name):
+        self._set_value("{name} command".format(name=name), name)
+        return Command(None, name)
 
 
 @not_required_on('mobile', 'web')

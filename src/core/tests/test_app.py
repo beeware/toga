@@ -17,17 +17,7 @@ class AppTests(TestCase):
 
         self.started = False
 
-        def test_startup_function(app):
-            self.started = True
-            return self.content
-
-        self.app = toga.App(
-            formal_name=self.name,
-            app_id=self.app_id,
-            startup=test_startup_function,
-            factory=toga_dummy.factory,
-            id=self.id
-        )
+        self.app = self.create_app()
 
     def test_app_name(self):
         self.assertEqual(self.app.name, self.name)
@@ -103,6 +93,42 @@ class AppTests(TestCase):
         self.assertTrue(self.app.is_full_screen)
         self.app.set_full_screen()
         self.assertFalse(self.app.is_full_screen)
+
+    def test_default_commands(self):
+        self.assertValueSet(self.app, "about command", "about")
+        self.assertValueSet(self.app, "preferences command", "preferences")
+        self.assertValueSet(self.app, "homepage command", "homepage")
+        self.assertValueSet(self.app, "quit command", "quit")
+
+    def test_no_about_command(self):
+        app = self.create_app(about_command=False)
+        self.assertNoValueSet(app, "about command")
+
+    def test_no_preferences_command(self):
+        app = self.create_app(preferences_command=False)
+        self.assertNoValueSet(app, "preferences command")
+
+    def test_no_home_page_command(self):
+        app = self.create_app(home_page_command=False)
+        self.assertNoValueSet(app, "homepage command")
+
+    def test_no_quit_command(self):
+        app = self.create_app(quit_command=False)
+        self.assertNoValueSet(app, "quit command")
+
+    def create_app(self, **kwargs):
+        def test_startup_function(app):
+            self.started = True
+            return self.content
+
+        return toga.App(
+            factory=toga_dummy.factory,
+            formal_name=self.name,
+            id=self.id,
+            app_id=self.app_id,
+            startup=test_startup_function,
+            **kwargs,
+        )
 
 
 class DocumentAppTests(TestCase):

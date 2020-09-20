@@ -338,6 +338,12 @@ class TestCase(unittest.TestCase):
         except AttributeError:
             self.fail('Widget {} is not a logged object'.format(_widget))
 
+    def assertNoValueSet(self, _widget, attr):
+        self.assertFalse(
+            attr in _widget._impl._sets,
+            "Widget {} should not have set attribute {}".format(_widget, attr)
+        )
+
     def assertValueGet(self, _widget, attr):
         """Assert that the widget implementation attempted to retrieve an attribute
 
