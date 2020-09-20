@@ -35,6 +35,9 @@ class Widget:
     def set_enabled(self, value):
         self.native.enabled = self.interface.enabled
 
+    def focus(self):
+        self.interface.factory.not_implemented("Widget.focus()")
+
     # APPLICATOR
 
     def set_bounds(self, x, y, width, height):
