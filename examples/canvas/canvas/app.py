@@ -1,4 +1,5 @@
 import math
+import sys
 
 from travertino.constants import (
     BLACK,
@@ -24,6 +25,8 @@ from toga.fonts import (
 from toga.style import Pack
 from toga.style.pack import COLUMN, ROW
 from toga.widgets.canvas import FillRule
+
+MOVE_STEP = 5
 
 STROKE = "Stroke"
 FILL = "Fill"
@@ -197,6 +200,80 @@ class ExampleCanvasApp(toga.App):
         self.change_shape()
         self.render_drawing()
 
+        self.commands.add(
+            toga.Command(
+                lambda widget: self.move(0, -MOVE_STEP),
+                "Move up",
+                shortcut=toga.Key.MOD_1 + toga.Key.UP,
+                group=toga.Group.COMMANDS,
+                section=1,
+                order=1,
+            ),
+            toga.Command(
+                lambda widget: self.move(0, MOVE_STEP),
+                "Move down",
+                shortcut=toga.Key.MOD_1 + toga.Key.DOWN,
+                group=toga.Group.COMMANDS,
+                section=1,
+                order=2,
+            ),
+            toga.Command(
+                lambda widget: self.move(MOVE_STEP, 0),
+                "Move right",
+                shortcut=toga.Key.MOD_1 + toga.Key.RIGHT,
+                group=toga.Group.COMMANDS,
+                section=1,
+                order=3,
+            ),
+            toga.Command(
+                lambda widget: self.move(-MOVE_STEP, 0),
+                "Move left",
+                shortcut=toga.Key.MOD_1 + toga.Key.LEFT,
+                group=toga.Group.COMMANDS,
+                section=1,
+                order=4,
+            ),
+            toga.Command(
+                lambda widget: self.scale(1, 0),
+                "Scale up x",
+                shortcut=toga.Key.MOD_1 + toga.Key.SHIFT + toga.Key.X,
+                group=toga.Group.COMMANDS,
+                section=2,
+                order=1,
+            ),
+            toga.Command(
+                lambda widget: self.scale(-1, 0),
+                "Scale down x",
+                shortcut=toga.Key.MOD_1 + toga.Key.X,
+                group=toga.Group.COMMANDS,
+                section=2,
+                order=2,
+            ),
+            toga.Command(
+                lambda widget: self.scale(0, 1),
+                "Scale up y",
+                shortcut=toga.Key.MOD_1 + toga.Key.SHIFT + toga.Key.Y,
+                group=toga.Group.COMMANDS,
+                section=2,
+                order=3,
+            ),
+            toga.Command(
+                lambda widget: self.scale(0, -1),
+                "Scale down y",
+                shortcut=toga.Key.MOD_1 + toga.Key.Y,
+                group=toga.Group.COMMANDS,
+                section=2,
+                order=4,
+            ),
+            toga.Command(
+                self.reset_transform,
+                "Reset",
+                shortcut=toga.Key.MOD_1 + toga.Key.R,
+                group=toga.Group.COMMANDS,
+                section=sys.maxsize,
+            ),
+        )
+
         # Show the main window
         self.main_window.show()
 
@@ -286,6 +363,22 @@ class ExampleCanvasApp(toga.App):
     def on_alt_release(self, widget, x, y, clicks):
         self.clicked_point = None
         self.render_drawing()
+
+    def move(self, delta_x, delta_y):
+        try:
+            self.x_translation += delta_x
+            self.y_translation += delta_y
+        except ValueError:
+            return
+        self.refresh_canvas(None)
+
+    def scale(self, delta_x, delta_y):
+        try:
+            self.scale_x_slider.tick_value += delta_x
+            self.scale_y_slider.tick_value += delta_y
+        except ValueError:
+            return
+        self.refresh_canvas(None)
 
     def get_location_vector(self, x, y):
         return x - self.x_middle, y - self.y_middle
