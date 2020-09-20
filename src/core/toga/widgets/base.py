@@ -209,3 +209,7 @@ class Widget(Node):
     def refresh_sublayouts(self):
         for child in self.children:
             child.refresh_sublayouts()
+
+    def focus(self):
+        if self._impl is not None:
+            self._impl.focus()

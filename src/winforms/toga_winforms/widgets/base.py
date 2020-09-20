@@ -45,6 +45,10 @@ class Widget:
         if self.native:
             self.native.Enabled = self.interface.enabled
 
+    def focus(self):
+        if self.native:
+            self.native.Focus()
+
     # APPLICATOR
 
     @property

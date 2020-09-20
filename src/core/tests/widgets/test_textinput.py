@@ -50,3 +50,7 @@ class TextInputTests(TestCase):
 
         self.text_input.on_change = dummy_function
         self.assertIsNotNone(self.text_input.on_change)
+
+    def test_focus(self):
+        self.text_input.focus()
+        self.assertActionPerformed(self.text_input, "focus")
