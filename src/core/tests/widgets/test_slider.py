@@ -88,3 +88,7 @@ class SliderTests(TestCase):
         new_tick_count = 5
         self.slider.tick_count = new_tick_count
         self.assertValueSet(self.slider, 'tick_count', new_tick_count)
+
+    def test_focus(self):
+        self.slider.focus()
+        self.assertActionPerformed(self.slider, "focus")
