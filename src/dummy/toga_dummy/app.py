@@ -9,6 +9,11 @@ class MainWindow(Window):
         self.action('handle MainWindow on_close')
 
 
+def dummy_command(app, name):
+    app._set_value("{name} command".format(name=name), name)
+    return Command(None, name)
+
+
 class App(LoggedObject):
     def __init__(self, interface):
         super().__init__()
@@ -57,20 +62,16 @@ class App(LoggedObject):
         self._action('add_background_task', handler=handler)
 
     def about_command(self):
-        return self.__dummy_command("about")
+        return dummy_command(self, "about")
 
     def preferences_command(self):
-        return self.__dummy_command("preferences")
+        return dummy_command(self, "preferences")
 
     def home_page_command(self):
-        return self.__dummy_command("homepage")
+        return dummy_command(self, "homepage")
 
     def quit_command(self):
-        return self.__dummy_command("quit")
-
-    def __dummy_command(self, name):
-        self._set_value("{name} command".format(name=name), name)
-        return Command(None, name)
+        return dummy_command(self, "quit")
 
 
 @not_required_on('mobile', 'web')
