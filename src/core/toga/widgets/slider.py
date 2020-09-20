@@ -58,13 +58,15 @@ class Slider(Widget):
 
     @value.setter
     def value(self, value):
-        _min, _max = self.range
         if value is None:
             final = 0.5
-        elif _min <= value <= _max:
+        elif self.min <= value <= self.max:
             final = value
         else:
-            raise ValueError('Slider value ({}) is not in range ({}-{})'.format(value, _min, _max))
+            raise ValueError(
+                'Slider value ({}) is not in range ({}-{})'.format(
+                    value, self.min, self.max)
+            )
         self._impl.set_value(final)
         if self.on_slide:
             self.on_slide(self)
@@ -76,7 +78,7 @@ class Slider(Widget):
         Returns:
             Returns the range in a ``tuple`` like this (min, max)
         """
-        return self._range
+        return self.min, self.max
 
     @range.setter
     def range(self, range):
@@ -84,8 +86,17 @@ class Slider(Widget):
         _min, _max = default_range if range is None else range
         if _min > _max or _min == _max:
             raise ValueError('Range min value has to be smaller than max value.')
-        self._range = (_min, _max)
+        self._min = _min
+        self._max = _max
         self._impl.set_range((_min, _max))
+
+    @property
+    def min(self):
+        return self._min
+
+    @property
+    def max(self):
+        return self._max
 
     @property
     def tick_count(self):
@@ -95,6 +106,12 @@ class Slider(Widget):
     def tick_count(self, tick_count):
         self._tick_count = tick_count
         self._impl.set_tick_count(tick_count)
+
+    @property
+    def tick_step(self):
+        if self.tick_count is None:
+            return None
+        return (self.max - self.min) / (self.tick_count - 1)
 
     @property
     def on_slide(self):
@@ -109,3 +126,33 @@ class Slider(Widget):
     def on_slide(self, handler):
         self._on_slide = wrapped_handler(self, handler)
         self._impl.set_on_slide(self._on_slide)
+
+    def increase_value(self, delta, safe=False):
+        if delta < 0:
+            raise ValueError("Cannot increase slider value by negative delta")
+        try:
+            self.value = self.value + delta
+        except ValueError as err:
+            if not safe:
+                raise err
+            self.value = self.max
+
+    def decrease_value(self, delta, safe=False):
+        if delta < 0:
+            raise ValueError("Cannot decrease slider value by negative delta")
+        try:
+            self.value = self.value - delta
+        except ValueError as err:
+            if not safe:
+                raise err
+            self.value = self.min
+
+    def increase_ticks(self, number_of_ticks=1, safe=False):
+        if self.tick_count is None:
+            raise ValueError("Ticks count haven't been set")
+        self.increase_value(number_of_ticks * self.tick_step, safe=safe)
+
+    def decrease_ticks(self, number_of_ticks=1, safe=False):
+        if self.tick_count is None:
+            raise ValueError("Ticks count haven't been set")
+        self.decrease_value(number_of_ticks * self.tick_step, safe=safe)
