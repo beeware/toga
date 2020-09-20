@@ -19,6 +19,8 @@ WINFORMS_MODIFIERS_MAP = {
     Key.MOD_2: WinForms.Keys.Alt,
 }
 WINFORMS_KEYS_MAP = {
+    Key.PLUS.value: WinForms.Keys.Oemplus,
+    Key.MINUS.value: WinForms.Keys.OemMinus,
     "a": WinForms.Keys.A,
     "b": WinForms.Keys.B,
     "c": WinForms.Keys.C,
