@@ -29,21 +29,14 @@ class ScrollContainer(Widget):
 
     def set_bounds(self, x, y, width, height):
         super().set_bounds(x, y, width, height)
-        if not self.interface.horizontal:
-            self.interface.content._impl.native.frame = NSMakeRect(
-                0, 0, width, self.interface.content.layout.height
-            )
-        elif not self.interface.vertical:
-            self.interface.content._impl.native.frame = NSMakeRect(
-                0, 0, self.interface.content.layout.width, height
-            )
-        else:
-            self.interface.content._impl.native.frame = NSMakeRect(
-                0,
-                0,
-                self.interface.content.layout.width,
-                self.interface.content.layout.height,
-            )
+
+        if self.interface.horizontal:
+            width = self.interface.content.layout.width
+
+        if self.interface.vertical:
+            height = self.interface.content.layout.height
+
+        self.interface.content._impl.native.frame = NSMakeRect(0, 0, width, height)
 
     def set_vertical(self, value):
         self.native.hasVerticalScroller = value
