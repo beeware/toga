@@ -3,7 +3,7 @@ import sys
 from builtins import id as identifier
 from email.message import Message
 
-from toga.command import CommandSet, AboutCommand
+from toga.command import CommandSet
 from toga.handlers import wrapped_handler
 from toga.icons import Icon
 from toga.platform import get_platform_factory
