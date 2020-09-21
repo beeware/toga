@@ -30,6 +30,10 @@ class ScrollContainer(Widget):
     def set_bounds(self, x, y, width, height):
         super().set_bounds(x, y, width, height)
 
+        # Restrict dimensions of content to dimensions of ScrollContainer
+        # along any non-scrolling directions. Set dimensions of content
+        # to its layout dimensions along the scrolling directions.
+
         if self.interface.horizontal:
             width = self.interface.content.layout.width
 
