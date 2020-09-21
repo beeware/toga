@@ -75,6 +75,7 @@ class ScrollContainer(Widget):
 
     @vertical.setter
     def vertical(self, value):
+        self._vertical = value
         self._impl.set_vertical(value)
 
     @property
@@ -88,4 +89,5 @@ class ScrollContainer(Widget):
 
     @horizontal.setter
     def horizontal(self, value):
+        self._horizontal = value
         self._impl.set_horizontal(value)
