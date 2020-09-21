@@ -27,8 +27,8 @@ class ScrollContainer(Widget):
         self._impl = self.factory.ScrollContainer(interface=self)
 
         # Set all attributes
-        self.vertical = vertical
         self.horizontal = horizontal
+        self.vertical = vertical
         self.content = content
 
     def _set_window(self, window):
