@@ -21,6 +21,8 @@ class ScrollContainer(Widget):
                  vertical=True, content=None, factory=None):
         super().__init__(id=id, style=style, factory=factory)
 
+        self._vertical = vertical
+        self._horizontal = horizontal
         self._content = None
 
         # Create a platform specific implementation of a Scroll Container
@@ -73,7 +75,6 @@ class ScrollContainer(Widget):
 
     @vertical.setter
     def vertical(self, value):
-        self._vertical = value
         self._impl.set_vertical(value)
 
     @property
@@ -87,5 +88,4 @@ class ScrollContainer(Widget):
 
     @horizontal.setter
     def horizontal(self, value):
-        self._horizontal = value
         self._impl.set_horizontal(value)
