@@ -32,6 +32,12 @@ class AppTests(TestCase):
     def test_app_name(self):
         self.assertEqual(self.app.name, self.name)
 
+    def test_app_module_name(self):
+        self.assertEqual(self.app.app_name, self.app_id.split('.')[-1])
+
+    def test_module_name(self):
+        self.assertEqual(self.app.module_name, self.app_id.split('.')[-1].replace('-', '_'))
+
     def test_app_icon(self):
         # App icon will default to a name autodetected from the running module
         self.assertEqual(self.app.icon.path, 'resources/toga')
