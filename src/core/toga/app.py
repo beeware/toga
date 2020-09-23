@@ -168,7 +168,7 @@ class App:
         if app_id:
             self._app_id = app_id
         else:
-            self._app_id = self.metadata['App-ID']
+            self._app_id = self.metadata.get('App-ID', None)
 
         if self._app_id is None:
             raise RuntimeError('Toga application must have an App ID')
@@ -177,29 +177,29 @@ class App:
         # the module metadata.
         if author:
             self._author = author
-        elif self.metadata['Author']:
-            self._author = self.metadata['Author']
+        else:
+            self._author = self.metadata.get('Author', None)
 
         # If a version has been provided, use it; otherwise, look to
         # the module metadata.
         if version:
             self._version = version
-        elif self.metadata['Version']:
-            self._version = self.metadata['Version']
+        else:
+            self._version = self.metadata.get('Version', None)
 
         # If a home_page has been provided, use it; otherwise, look to
         # the module metadata.
         if home_page:
             self._home_page = home_page
-        elif self.metadata['Home-page']:
-            self._home_page = self.metadata['home_page']
+        else:
+            self._home_page = self.metadata.get('home_page', None)
 
         # If a description has been provided, use it; otherwise, look to
         # the module metadata.
         if description:
             self._description = description
-        elif self.metadata['description']:
-            self._description = self.metadata['Summary']
+        else:
+            self._description = self.metadata.get('Summary', None)
 
         # Set the application DOM ID; create an ID if one hasn't been provided.
         self._id = id if id else identifier(self)
@@ -414,6 +414,22 @@ class App:
             self.main_window.content = self._startup_method(self)
 
         self.main_window.show()
+
+    def about_command(self, widget):
+        """Default implementation of the "About" command.
+        This can be override in inherited App classes."""
+        message_parts = []
+        if self.name is not None:
+            message_parts.append("Name: {name}".format(name=self.name))
+        if self.author is not None:
+            message_parts.append("Author: {author}".format(author=self.author))
+        if self.version is not None:
+            message_parts.append("Version: {version}".format(version=self.version))
+        if self.description is not None:
+            message_parts.append(
+                "Description: {description}".format(description=self.description)
+            )
+        self.main_window.info_dialog("About", "\n".join(message_parts))
 
     def main_loop(self):
         """ Invoke the application to handle user input.

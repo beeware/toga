@@ -23,7 +23,11 @@ class App:
 
         formal_name = self.interface.formal_name
         self.interface.commands.add(
-            toga.Command(None, 'About ' + formal_name, group=toga.Group.APP),
+            toga.Command(
+                self.interface.about_command,
+                'About ' + formal_name,
+                group=toga.Group.APP
+            ),
             toga.Command(None, 'Preferences', group=toga.Group.APP),
         )
 

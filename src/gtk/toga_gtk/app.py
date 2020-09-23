@@ -76,7 +76,11 @@ class App:
     def gtk_startup(self, data=None):
         # Set up the default commands for the interface.
         self.interface.commands.add(
-            Command(None, 'About ' + self.interface.name, group=toga.Group.HELP),
+            Command(
+                self.interface.about_command,
+                'About ' + self.interface.name,
+                group=toga.Group.HELP
+            ),
             Command(None, 'Preferences', group=toga.Group.APP),
             # Quit should always be the last item, in a section on it's own
             Command(
