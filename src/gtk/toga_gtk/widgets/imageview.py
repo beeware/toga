@@ -15,6 +15,11 @@ class ImageView(Widget):
     def set_image(self, image):
         self._pixbuf = image._impl.native
 
+    def set_bounds(self, x, y, width, height):
+        super().set_bounds(x, y, width, height)
+        # rehint to update scaling of pixbuf
+        self.rehint()
+        
     def rehint(self):
         if self._pixbuf:
             height, width = self._resize_max(
