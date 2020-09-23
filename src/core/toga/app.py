@@ -431,6 +431,11 @@ class App:
             )
         self.main_window.info_dialog("About", "\n".join(message_parts))
 
+    def quit_command(self, widget):
+        """Default implementation of the "Quit" command.
+        This can be override in inherited App classes."""
+        self.exit()
+
     def main_loop(self):
         """ Invoke the application to handle user input.
         This method typically only returns once the application is exiting.

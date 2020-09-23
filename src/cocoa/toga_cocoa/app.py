@@ -131,7 +131,8 @@ class App:
             toga.Command(None, 'Preferences', group=toga.Group.APP),
             # Quit should always be the last item, in a section on it's own
             toga.Command(
-                lambda s: self.exit(), 'Quit ' + formal_name,
+                self.interface.quit_command,
+                'Quit ' + formal_name,
                 shortcut=toga.Key.MOD_1 + 'q',
                 group=toga.Group.APP,
                 section=sys.maxsize
