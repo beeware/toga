@@ -36,7 +36,10 @@ class Button(Widget):
             self.native.ForeColor = native_color(TRANSPARENT)
 
     def set_background_color(self, value):
-        self.native.BackColor = native_color(value)
+        if value:
+            self.native.BackColor = native_color(value)
+        else:
+            self.native.BackColor = native_color(TRANSPARENT)
 
     def rehint(self):
         # self.native.Size = Size(0, 0)
