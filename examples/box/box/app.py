@@ -1,6 +1,15 @@
 import toga
-from toga.colors import BLUE, RED
-from toga.constants import CENTER, COLUMN, GREEN, ROW, WHITE, YELLOW
+from toga.constants import (
+    CENTER,
+    COLUMN,
+    GREEN,
+    ROW,
+    WHITE,
+    YELLOW,
+    BLUE,
+    RED,
+    TRANSPARENT,
+)
 from toga.style import Pack
 
 
@@ -10,13 +19,12 @@ class ExampleBoxApp(toga.App):
         #   Main window of the application with title and size
         #   Also make the window non-resizable and non-minimizable.
         self.main_window = toga.MainWindow(
-            title=self.name, size=(800, 500),
-            resizeable=False, minimizable=False
+            title=self.name, size=(800, 500), resizeable=False, minimizable=False
         )
         self.yellow_button = toga.Button(
             label="Set yellow color",
             on_press=self.set_yellow_color,
-            style=Pack(background_color=YELLOW)
+            style=Pack(background_color=YELLOW),
         )
         self.inner_box = toga.Box(
             style=Pack(direction=ROW),
@@ -24,25 +32,25 @@ class ExampleBoxApp(toga.App):
                 toga.Button(
                     label="Set red color",
                     on_press=self.set_red_color,
-                    style=Pack(background_color=RED)
+                    style=Pack(background_color=RED),
                 ),
                 self.yellow_button,
                 toga.Button(
                     label="Set blue color",
                     on_press=self.set_blue_color,
-                    style=Pack(background_color=BLUE)
+                    style=Pack(background_color=BLUE),
                 ),
                 toga.Button(
                     label="Set green color",
                     on_press=self.set_green_color,
-                    style=Pack(background_color=GREEN)
+                    style=Pack(background_color=GREEN),
                 ),
                 toga.Button(
                     label="Reset color",
                     on_press=self.reset_color,
-                    style=Pack(background_color=WHITE)
-                )
-            ]
+                    style=Pack(background_color=WHITE),
+                ),
+            ],
         )
         #  Create the outer box with 2 rows
         self.outer_box = toga.Box(
@@ -50,8 +58,10 @@ class ExampleBoxApp(toga.App):
             children=[
                 self.inner_box,
                 toga.Label(text="Hello to my world!", style=Pack(text_align=CENTER)),
-                toga.Switch("Enable yellow", is_on=True, on_toggle=self.toggle_yellow_button)
-            ]
+                toga.Switch(
+                    "Enable yellow", is_on=True, on_toggle=self.toggle_yellow_button
+                ),
+            ],
         )
 
         # Add the content on the main window
@@ -72,6 +82,9 @@ class ExampleBoxApp(toga.App):
     def set_green_color(self, widget):
         self.outer_box.style.background_color = GREEN
 
+    def set_transparent_color(self, widget):
+        self.outer_box.style.background_color = TRANSPARENT
+
     def reset_color(self, widget):
         self.outer_box.style.background_color = None
 
@@ -85,5 +98,5 @@ class ExampleBoxApp(toga.App):
 def main():
     # Application class
     #   App name and namespace
-    app = ExampleBoxApp('Box', 'org.beeware.widgets.boxes')
+    app = ExampleBoxApp("Box", "org.beeware.widgets.boxes")
     return app

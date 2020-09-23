@@ -1,3 +1,5 @@
+from travertino.constants import TRANSPARENT
+
 from toga_winforms.colors import native_color
 from toga_winforms.libs import Point, Size, WinForms
 
@@ -26,3 +28,5 @@ class Box(Widget):
     def set_background_color(self, value):
         if value:
             self.native.BackColor = native_color(value)
+        else:
+            self.native.BackColor = native_color(TRANSPARENT)
