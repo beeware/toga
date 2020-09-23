@@ -90,7 +90,12 @@ class App:
                 group=toga.Group.APP,
                 section=sys.maxsize
             ),
-            Command(None, 'Visit homepage', group=toga.Group.HELP)
+            Command(
+                self.interface.visit_homepage_command,
+                'Visit homepage',
+                enabled=self.interface.home_page is not None,
+                group=toga.Group.HELP
+            )
         )
         self._create_app_commands()
 

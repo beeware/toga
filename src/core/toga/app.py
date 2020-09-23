@@ -1,5 +1,6 @@
 import signal
 import sys
+import webbrowser
 from builtins import id as identifier
 from email.message import Message
 
@@ -435,6 +436,10 @@ class App:
         """Default implementation of the "Quit" command.
         This can be override in inherited App classes."""
         self.exit()
+
+    def visit_homepage_command(self, widget):
+        if self.home_page is not None:
+            webbrowser.open(self.home_page)
 
     def main_loop(self):
         """ Invoke the application to handle user input.

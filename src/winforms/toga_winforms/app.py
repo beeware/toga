@@ -68,7 +68,12 @@ class App:
                 group=toga.Group.FILE,
                 section=sys.maxsize
             ),
-            toga.Command(None, 'Visit homepage', group=toga.Group.HELP)
+            toga.Command(
+                self.interface.visit_homepage_command,
+                'Visit homepage',
+                enabled=self.interface.home_page is not None,
+                group=toga.Group.HELP
+            )
         )
         self._create_app_commands()
 
@@ -97,8 +102,7 @@ class App:
                     item = WinForms.ToolStripMenuItem(cmd.label)
                     if cmd.action:
                         item.Click += cmd._impl.as_handler()
-                    else:
-                        item.Enabled = False
+                    item.Enabled = cmd.enabled
                     if cmd.shortcut is not None:
                         shortcut_keys = toga_to_winforms_key(cmd.shortcut)
                         item.ShortcutKeys = shortcut_keys

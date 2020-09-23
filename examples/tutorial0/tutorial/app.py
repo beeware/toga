@@ -24,6 +24,7 @@ def main():
         author='Tiberius Yak',
         description="A testing app",
         version=__version__,
+        home_page="https://beeware.org",
         startup=build
     )
 
