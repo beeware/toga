@@ -418,7 +418,7 @@ class App:
 
     def about_command(self, widget):
         """Default implementation of the "About" command.
-        This can be override in inherited App classes."""
+        This can be overridden in inherited App classes."""
         message_parts = []
         if self.name is not None:
             message_parts.append("Name: {name}".format(name=self.name))
@@ -434,10 +434,12 @@ class App:
 
     def quit_command(self, widget):
         """Default implementation of the "Quit" command.
-        This can be override in inherited App classes."""
+        This can be overridden in inherited App classes."""
         self.exit()
 
     def visit_homepage_command(self, widget):
+        """Default implementation of the "Visit homepage" command.
+        This can be overridden in inherited App classes."""
         if self.home_page is not None:
             webbrowser.open(self.home_page)
 
