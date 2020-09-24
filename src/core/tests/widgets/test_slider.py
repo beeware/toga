@@ -65,10 +65,22 @@ class SliderTests(TestCase):
     def test_set_value_to_be_too_small(self):
         with self.assertRaises(ValueError):
             self.slider.value = self.min_val - 1
+        self.assert_slider_value(tick_value=self.default_tick, value=self.default)
 
     def test_set_value_to_be_too_big(self):
         with self.assertRaises(ValueError):
             self.slider.value = self.max_val + 1
+        self.assert_slider_value(tick_value=self.default_tick, value=self.default)
+
+    def test_set_tick_value_to_be_too_small(self):
+        with self.assertRaises(ValueError):
+            self.slider.tick_value = 0
+        self.assert_slider_value(tick_value=self.default_tick, value=self.default)
+
+    def test_set_tick_value_to_be_too_big(self):
+        with self.assertRaises(ValueError):
+            self.slider.tick_value = self.max_val + 1
+        self.assert_slider_value(tick_value=self.default_tick, value=self.default)
 
     def test_new_value_is_None(self):
         self.slider.value = None
