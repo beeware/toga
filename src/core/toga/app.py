@@ -416,7 +416,7 @@ class App:
 
         self.main_window.show()
 
-    def about_command(self, widget):
+    def about_action(self, widget):
         """Default implementation of the "About" command.
         This can be overridden in inherited App classes."""
         message_parts = []
@@ -432,12 +432,12 @@ class App:
             )
         self.main_window.info_dialog("About", "\n".join(message_parts))
 
-    def quit_command(self, widget):
+    def quit_action(self, widget):
         """Default implementation of the "Quit" command.
         This can be overridden in inherited App classes."""
         self.exit()
 
-    def visit_homepage_command(self, widget):
+    def visit_homepage_action(self, widget):
         """Default implementation of the "Visit homepage" command.
         This can be overridden in inherited App classes."""
         if self.home_page is not None:

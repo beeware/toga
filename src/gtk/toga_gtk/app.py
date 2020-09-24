@@ -77,21 +77,21 @@ class App:
         # Set up the default commands for the interface.
         self.interface.commands.add(
             Command(
-                self.interface.about_command,
+                self.interface.about_action,
                 'About ' + self.interface.name,
                 group=toga.Group.HELP
             ),
             Command(None, 'Preferences', group=toga.Group.APP),
             # Quit should always be the last item, in a section on it's own
             Command(
-                self.interface.quit_command,
+                self.interface.quit_action,
                 'Quit ' + self.interface.name,
                 shortcut=toga.Key.MOD_1 + 'q',
                 group=toga.Group.APP,
                 section=sys.maxsize
             ),
             Command(
-                self.interface.visit_homepage_command,
+                self.interface.visit_homepage_action,
                 'Visit homepage',
                 enabled=self.interface.home_page is not None,
                 group=toga.Group.HELP
