@@ -99,7 +99,7 @@ class Widget:
     def add_child(self, child):
 
         if self.viewport:
-            # we are the the top level NSView
+            # we are the the top level UIView
             child.container = self
         else:
             child.container = self.container
