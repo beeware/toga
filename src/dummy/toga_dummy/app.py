@@ -26,7 +26,7 @@ class App(LoggedObject):
     def set_main_window(self, window):
         self._set_value('main_window', window)
 
-    def about_action(self, widget):
+    def on_about(self, widget):
         self._action('about', widget=widget)
 
     def exit(self):

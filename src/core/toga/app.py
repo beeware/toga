@@ -416,17 +416,17 @@ class App:
 
         self.main_window.show()
 
-    def about_action(self, widget):
+    def on_about(self, widget):
         """Default implementation of the "About" command.
         This can be overridden in inherited App classes."""
-        self._impl.about_action(widget)
+        self._impl.on_about(widget)
 
-    def quit_action(self, widget):
+    def on_quit(self, widget):
         """Default implementation of the "Quit" command.
         This can be overridden in inherited App classes."""
         self.exit()
 
-    def visit_homepage_action(self, widget):
+    def on_visit_homepage(self, widget):
         """Default implementation of the "Visit homepage" command.
         This can be overridden in inherited App classes."""
         if self.home_page is not None:

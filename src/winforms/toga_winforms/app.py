@@ -55,21 +55,21 @@ class App:
 
         self.interface.commands.add(
             toga.Command(
-                self.interface.about_action,
+                self.interface.on_about,
                 'About {}'.format(self.interface.name),
                 group=toga.Group.HELP
             ),
             toga.Command(None, 'Preferences', group=toga.Group.FILE),
             # Quit should always be the last item, in a section on it's own
             toga.Command(
-                self.interface.quit_action,
+                self.interface.on_quit,
                 'Exit ' + self.interface.name,
                 shortcut=Key.MOD_1 + 'q',
                 group=toga.Group.FILE,
                 section=sys.maxsize
             ),
             toga.Command(
-                self.interface.visit_homepage_action,
+                self.interface.on_visit_homepage,
                 'Visit homepage',
                 enabled=self.interface.home_page is not None,
                 group=toga.Group.HELP
@@ -177,7 +177,7 @@ class App:
     def winforms_application_exit(self, sender, *args, **kwargs):
         pass
 
-    def about_action(self, widget):
+    def on_about(self, widget):
         message_parts = []
         if self.interface.name is not None:
             message_parts.append(
