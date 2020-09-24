@@ -15,6 +15,7 @@ class TogaOnSeekBarChangeListener(SeekBar__OnSeekBarChangeListener):
         self.impl = impl
 
     def onProgressChanged(self, _view, _progress, _from_user):
+        self.interface._calculate_tick_value()
         if self.impl.interface.on_slide:
             self.impl.interface.on_slide(widget=self.impl.interface)
 
