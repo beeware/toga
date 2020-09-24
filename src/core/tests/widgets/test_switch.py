@@ -49,3 +49,7 @@ class SwitchTests(TestCase):
     def test_getting_is_on_invokes_impl_method(self):
         self.switch.is_on
         self.assertValueGet(self.switch, 'is_on')
+
+    def test_focus(self):
+        self.switch.focus()
+        self.assertActionPerformed(self.switch, "focus")

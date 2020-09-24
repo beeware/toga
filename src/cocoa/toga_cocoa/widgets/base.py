@@ -89,6 +89,9 @@ class Widget:
             self.native.backgroundColor = native_color(color)
             self.native.drawsBackground = True
 
+    def focus(self):
+        self.interface.window._impl.native.makeFirstResponder(self.native)
+
     # INTERFACE
 
     def add_child(self, child):
