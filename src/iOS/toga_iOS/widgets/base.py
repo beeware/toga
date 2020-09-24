@@ -6,10 +6,12 @@ class Widget:
         self.interface = interface
         self.interface._impl = self
         self._container = None
+        self._viewport = None
         self.constraints = None
         self.native = None
         self.create()
         self.interface.style.reapply()
+        self.set_enabled(self.interface.enabled)
 
     def set_app(self, app):
         pass
@@ -23,14 +25,34 @@ class Widget:
 
     @container.setter
     def container(self, container):
-        self._container = container
-        if self.constraints:
+        if self.container:
+            if container:
+                raise RuntimeError('Already have a container')
+            else:
+                # existing container should be removed
+                self.constraints = None
+                self._container = None
+                self.native.removeFromSuperview()
+        elif container:
+            # setting container
+            self._container = container
             self._container.native.addSubview(self.native)
+            if not self.constraints:
+                self.add_constraints()
             self.constraints.container = container
 
         for child in self.interface.children:
             child._impl.container = container
+
         self.rehint()
+
+    @property
+    def viewport(self):
+        return self._viewport
+
+    @viewport.setter
+    def viewport(self, viewport):
+        self._viewport = viewport
 
     def set_enabled(self, value):
         self.native.enabled = self.interface.enabled
@@ -41,13 +63,13 @@ class Widget:
     # APPLICATOR
 
     def set_bounds(self, x, y, width, height):
+        offset_y = 0
         if self.container:
-            viewport = self.container.viewport
-        else:
-            viewport = self.viewport
-
+            offset_y = self.container.viewport.statusbar_height
+        elif self.viewport:
+            offset_y = self.viewport.statusbar_height
         self.constraints.update(
-            x, y + viewport.statusbar_height,
+            x, y + offset_y,
             width, height
         )
 
@@ -55,8 +77,8 @@ class Widget:
         pass
 
     def set_hidden(self, hidden):
-        if self._container:
-            for view in self._container._impl.subviews:
+        if self.container:
+            for view in self.container._impl.subviews:
                 if view._impl:
                     view.setHidden(hidden)
 
@@ -75,20 +97,18 @@ class Widget:
     # INTERFACE
 
     def add_child(self, child):
-        if self.container:
-            child.viewport = self.root.viewport
-            child.container = self.container
-        # The highest level box doesn't have a container - it is one
-        elif getattr(self, "viewport", None):
-            child.viewport = self.viewport
+
+        if self.viewport:
+            # we are the the top level NSView
             child.container = self
+        else:
+            child.container = self.container
+
+    def insert_child(self, index, child):
+        self.add_child(child)
 
     def remove_child(self, child):
-        # Remove the child UIView and all of its child subviews
-        child.native.removeFromSuperview()
-        for sub_child in child.interface.children:
-            if sub_child._impl:
-                child.remove_child(sub_child._impl)
+        child.container = None
 
     def add_constraints(self):
         self.native.translatesAutoresizingMaskIntoConstraints = False
