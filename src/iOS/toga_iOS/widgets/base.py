@@ -78,6 +78,17 @@ class Widget:
         if self.container:
             child.viewport = self.root.viewport
             child.container = self.container
+        # The highest level box doesn't have a container - it is one
+        elif getattr(self, "viewport", None):
+            child.viewport = self.viewport
+            child.container = self
+
+    def remove_child(self, child):
+        # Remove the child UIView and all of its child subviews
+        child.native.removeFromSuperview()
+        for sub_child in child.interface.children:
+            if sub_child._impl:
+                child.remove_child(sub_child._impl)
 
     def add_constraints(self):
         self.native.translatesAutoresizingMaskIntoConstraints = False
