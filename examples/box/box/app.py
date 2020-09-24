@@ -8,7 +8,6 @@ from toga.constants import (
     YELLOW,
     BLUE,
     RED,
-    TRANSPARENT,
 )
 from toga.style import Pack
 
