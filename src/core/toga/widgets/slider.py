@@ -31,6 +31,7 @@ class Slider(Widget):
         super().__init__(id=id, style=style, factory=factory)
 
         # Needed for _impl initialization
+        self._tick_value = None
         self._tick_count = None
         self._on_slide = None
 
@@ -38,9 +39,10 @@ class Slider(Widget):
 
         self.range = range
         self.tick_count = tick_count
-        self.value = default
         self.on_slide = on_slide
         self.enabled = enabled
+
+        self.value = default
 
     MIN_WIDTH = 100
 
@@ -59,15 +61,17 @@ class Slider(Widget):
     @value.setter
     def value(self, value):
         if value is None:
-            final = 0.5
+            final = (self.min + self.max) / 2
         elif self.min <= value <= self.max:
             final = value
         else:
+            self.__calculate_tick_value()
             raise ValueError(
                 'Slider value ({}) is not in range ({}-{})'.format(
                     value, self.min, self.max)
             )
         self._impl.set_value(final)
+        self.__calculate_tick_value()
         if self.on_slide:
             self.on_slide(self)
 
@@ -105,6 +109,7 @@ class Slider(Widget):
     @tick_count.setter
     def tick_count(self, tick_count):
         self._tick_count = tick_count
+        self.__calculate_tick_value()
         self._impl.set_tick_count(tick_count)
 
     @property
@@ -112,6 +117,25 @@ class Slider(Widget):
         if self.tick_count is None:
             return None
         return (self.max - self.min) / (self.tick_count - 1)
+
+    @property
+    def tick_value(self):
+        """The value of the slider, measured in ticks.
+
+        If tick count is not None, a value between 1 and tick count.
+        Otherwise, None.
+        """
+        return self._tick_value
+
+    @tick_value.setter
+    def tick_value(self, tick_value):
+        if self._tick_value == tick_value:
+            return
+        if tick_value is not None and self.tick_count is None:
+            raise ValueError("Cannot set tick value when tick count is None")
+        self._tick_value = tick_value
+        if tick_value is not None:
+            self.value = self.min + (tick_value - 1) * self.tick_step
 
     @property
     def on_slide(self):
@@ -127,32 +151,8 @@ class Slider(Widget):
         self._on_slide = wrapped_handler(self, handler)
         self._impl.set_on_slide(self._on_slide)
 
-    def increase_value(self, delta, safe=False):
-        if delta < 0:
-            raise ValueError("Cannot increase slider value by negative delta")
-        try:
-            self.value = self.value + delta
-        except ValueError as err:
-            if not safe:
-                raise err
-            self.value = self.max
-
-    def decrease_value(self, delta, safe=False):
-        if delta < 0:
-            raise ValueError("Cannot decrease slider value by negative delta")
-        try:
-            self.value = self.value - delta
-        except ValueError as err:
-            if not safe:
-                raise err
-            self.value = self.min
-
-    def increase_ticks(self, number_of_ticks=1, safe=False):
-        if self.tick_count is None:
-            raise ValueError("Ticks count haven't been set")
-        self.increase_value(number_of_ticks * self.tick_step, safe=safe)
-
-    def decrease_ticks(self, number_of_ticks=1, safe=False):
-        if self.tick_count is None:
-            raise ValueError("Ticks count haven't been set")
-        self.decrease_value(number_of_ticks * self.tick_step, safe=safe)
+    def __calculate_tick_value(self):
+        if self.tick_count is not None and self.value is not None:
+            self._tick_value = round((self.value - self.min) / self.tick_step) + 1
+        else:
+            self._tick_value = None

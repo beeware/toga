@@ -103,10 +103,12 @@ class SliderApp(toga.App):
         self.discrete_slider_value_label.text = "The slider value changed to {0}".format(slider.value)
 
     def increase_discrete_slider(self, widget):
-        self.discrete_slider.increase_ticks(safe=True)
+        if self.discrete_slider.tick_value != self.discrete_slider.tick_count:
+            self.discrete_slider.tick_value += 1
 
     def decrease_discrete_slider(self, widget):
-        self.discrete_slider.decrease_ticks(safe=True)
+        if self.discrete_slider.tick_value != 1:
+            self.discrete_slider.tick_value -= 1
 
 
 def main():
