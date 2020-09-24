@@ -56,7 +56,7 @@ class App:
         self.interface.commands.add(
             toga.Command(
                 self.interface.about_action,
-                'About ' + self.interface.name,
+                'About {}'.format(self.interface.name),
                 group=toga.Group.HELP
             ),
             toga.Command(None, 'Preferences', group=toga.Group.FILE),
@@ -176,6 +176,30 @@ class App:
 
     def winforms_application_exit(self, sender, *args, **kwargs):
         pass
+
+    def about_action(self, widget):
+        message_parts = []
+        if self.interface.name is not None:
+            message_parts.append(
+                "Name: {name}".format(name=self.interface.name)
+            )
+        if self.interface.author is not None:
+            message_parts.append(
+                "Author: {author}".format(author=self.interface.author)
+            )
+        if self.interface.version is not None:
+            message_parts.append(
+                "Version: {version}".format(version=self.interface.version)
+            )
+        if self.interface.description is not None:
+            message_parts.append(
+                "Description: {description}".format(
+                    description=self.interface.description
+                )
+            )
+        self.interface.main_window.info_dialog(
+            'About {}'.format(self.interface.name), "\n".join(message_parts)
+        )
 
     def exit(self):
         self.native.Exit()

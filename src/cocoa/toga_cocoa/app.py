@@ -215,6 +215,9 @@ class App:
     def set_main_window(self, window):
         pass
 
+    def about_action(self, widget):
+        self.interface.factory.not_implemented("App.about_action")
+
     def exit(self):
         self.native.terminate(None)
 

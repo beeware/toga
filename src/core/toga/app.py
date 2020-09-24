@@ -419,18 +419,7 @@ class App:
     def about_action(self, widget):
         """Default implementation of the "About" command.
         This can be overridden in inherited App classes."""
-        message_parts = []
-        if self.name is not None:
-            message_parts.append("Name: {name}".format(name=self.name))
-        if self.author is not None:
-            message_parts.append("Author: {author}".format(author=self.author))
-        if self.version is not None:
-            message_parts.append("Version: {version}".format(version=self.version))
-        if self.description is not None:
-            message_parts.append(
-                "Description: {description}".format(description=self.description)
-            )
-        self.main_window.info_dialog("About", "\n".join(message_parts))
+        self._impl.about_action(widget)
 
     def quit_action(self, widget):
         """Default implementation of the "Quit" command.
