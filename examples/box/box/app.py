@@ -82,9 +82,6 @@ class ExampleBoxApp(toga.App):
     def set_green_color(self, widget):
         self.outer_box.style.background_color = GREEN
 
-    def set_transparent_color(self, widget):
-        self.outer_box.style.background_color = TRANSPARENT
-
     def reset_color(self, widget):
         self.outer_box.style.background_color = None
 
