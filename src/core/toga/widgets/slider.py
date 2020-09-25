@@ -1,3 +1,5 @@
+from functools import wraps
+
 from toga.handlers import wrapped_handler
 
 from .base import Widget
@@ -152,6 +154,7 @@ class Slider(Widget):
     @on_slide.setter
     def on_slide(self, handler):
 
+        @wraps(handler)
         def new_handler(widget):
             self.__calculate_tick_value()
             handler(widget)

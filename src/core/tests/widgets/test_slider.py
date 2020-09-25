@@ -35,7 +35,7 @@ class SliderTests(TestCase):
     def test_parameter_are_all_set_correctly(self):
         self.assertEqual(self.slider.value, self.default)
         self.assertEqual(self.slider.range, self.range)
-        self.assertEqual(self.slider.on_slide._raw, self.on_slide)
+        self.assertEqual(self.slider.on_slide._raw.__wrapped__, self.on_slide)
         self.assertEqual(self.slider.enabled, self.enabled)
 
     def test_get_value_invokes_impl_method(self):
