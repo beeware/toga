@@ -34,7 +34,6 @@ class Slider(Widget):
 
     def winforms_scroll(self, sender, event):
         if self.container:
-            self.interface._calculate_tick_value()
             if self.interface.on_slide:
                 self.interface.on_slide(self.interface)
 

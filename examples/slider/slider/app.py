@@ -100,9 +100,7 @@ class SliderApp(toga.App):
 
     def my_discrete_on_slide(self, slider):
         # get the current value of the slider with `slider.value`
-        self.discrete_slider_value_label.text = "The slider value changed to {}. tick value is {}".format(
-            slider.value, slider.tick_value
-        )
+        self.discrete_slider_value_label.text = "The slider value changed to {0}".format(slider.value)
 
     def increase_discrete_slider(self, widget):
         if self.discrete_slider.tick_value != self.discrete_slider.tick_count:

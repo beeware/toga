@@ -15,7 +15,6 @@ class Slider(Widget):
         self.rehint()
 
     def gtk_on_slide(self, widget):
-        self.interface._calculate_tick_value()
         if self.interface.on_slide:
             self.interface.on_slide(widget)
 

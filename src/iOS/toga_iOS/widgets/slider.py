@@ -8,7 +8,6 @@ from toga_iOS.widgets.base import Widget
 class TogaSlider(UISlider):
     @objc_method
     def onSlide_(self, obj) -> None:
-        self.interface._calculate_tick_value()
         if self.interface.on_slide:
             self.interface.on_slide(self.interface)
 
