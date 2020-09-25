@@ -51,6 +51,11 @@ class ExampleCanvasApp(toga.App):
         # Set up main window
         self.main_window = toga.MainWindow(title=self.name, size=(750, 500))
 
+        self.clicked_point = None
+        self.translation = None
+        self.scale = None
+        self.rotation = 0
+
         self.canvas = toga.Canvas(
             style=Pack(flex=1),
             on_resize=self.refresh_canvas,
@@ -101,9 +106,6 @@ class ExampleCanvasApp(toga.App):
             items=list(self.dash_patterns.keys()),
             on_select=self.refresh_canvas
         )
-        self.clicked_point = None
-        self.translation = None
-        self.rotation = 0
         self.scale_x_slider = toga.Slider(
             range=(0, 2),
             default=1,
@@ -242,6 +244,33 @@ class ExampleCanvasApp(toga.App):
     @y_translation.setter
     def y_translation(self, y_translation):
         self._y_translation = y_translation
+
+    @property
+    def x_scale(self):
+        return self._x_scale
+
+    @x_scale.setter
+    def x_scale(self, x_scale):
+        self._x_scale = x_scale
+
+    @property
+    def y_scale(self):
+        return self._y_scale
+
+    @y_scale.setter
+    def y_scale(self, y_scale):
+        self._y_scale = y_scale
+
+    @property
+    def scale(self):
+        return self._x_scale, self._y_scale
+
+    @scale.setter
+    def scale(self, xy_tuple):
+        if xy_tuple is None:
+            self.x_scale = self.y_scale = 1
+        else:
+            self.x_scale, self.y_scale = xy_tuple
 
     def reset_transform(self, widget):
         self.translation = None

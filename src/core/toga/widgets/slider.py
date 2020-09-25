@@ -39,10 +39,13 @@ class Slider(Widget):
 
         self.range = range
         self.tick_count = tick_count
+
+        # IMPORTANT NOTE: Setting value before on_slide in order to not call it in
+        # constructor. Please do not move it from here.
+        self.value = default
+
         self.on_slide = on_slide
         self.enabled = enabled
-
-        self.value = default
 
     MIN_WIDTH = 100
 
