@@ -34,7 +34,7 @@ class AppTests(TestCase):
 
     def test_app_icon(self):
         # App icon will default to a name autodetected from the running module
-        # self.assertEqual(self.app.icon.path, 'resources/toga')
+        self.assertEqual(self.app.icon.path, 'resources/toga')
 
         # This icon will not be bound, since app icons are bound by the
         # platform layer.
