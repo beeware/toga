@@ -3,8 +3,7 @@ import unittest
 import toga
 from tests.utils import order_test
 
-PARENT_GROUP1 = toga.Group("P", 1)
-PARENT_GROUP2 = toga.Group("O", 2)
+from tests.command.constants import PARENT_GROUP1, PARENT_GROUP2
 
 
 class TestCommandsGroup(unittest.TestCase):
