@@ -25,6 +25,10 @@ Toga
    :target: https://github.com/beeware/toga/actions
    :alt: Build Status
 
+.. image:: https://codecov.io/gh/beeware/toga/branch/master/graph/badge.svg
+   :target: https://codecov.io/gh/beeware/toga
+   :alt: Codecov
+
 .. image:: https://badges.gitter.im/beeware/general.svg
    :target: https://gitter.im/beeware/general
    :alt: Gitter chat room
