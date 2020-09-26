@@ -8,19 +8,109 @@ class Group:
     Args:
         label:
         order:
+        parent:
     """
-    def __init__(self, label, order=None):
+    def __init__(self, label, order=None, section=None, parent=None, children=None):
         self.label = label
         self.order = order if order else 0
+        if parent is None and section is not None:
+            raise ValueError("Section cannot be set without parent group")
+        self.section = section if section else 0
+
+        # First initialization needed for later
+        self._parent = None
+        self._children = []
+
+        self.parent = parent
+        self.children = children
+
+    @property
+    def parent(self):
+        return self._parent
+
+    @parent.setter
+    def parent(self, parent):
+        old_parent = self.parent
+        self._parent = parent
+        if old_parent is not None:
+            old_parent.remove_child(self)
+        if parent is not None:
+            parent.add_child(self)
+
+    @property
+    def children(self):
+        # Returning copy in order to keep internal data safe
+        return list(self._children)
+
+    @children.setter
+    def children(self, children):
+        if children is None:
+            children = []
+        for child in self.children:
+            child.parent = None
+        self._children = []
+        for child in children:
+            self.add_child(child)
+
+    def add_child(self, child):
+        if child.parent != self:
+            child.parent = self
+        if child not in self._children:
+            self._children.append(child)
+
+    def remove_child(self, child):
+        if child.parent == self:
+            child.parent = None
+        if child in self._children:
+            self._children.remove(child)
+
+    def is_parent_of(self, child):
+        if child.parent is None:
+            return False
+        if child.parent == self:
+            return True
+        return self.is_parent_of(child.parent)
+
+    def is_child_of(self, parent):
+        return parent.is_parent_of(self)
 
     def __lt__(self, other):
-        return (
-            self.order < other.order
-            or self.order == other.order and self.label < other.label
-        )
+        if self.parent == other.parent:
+            return [self.section, self.order, self.label] < [
+                other.section, other.order, other.label
+            ]
+        if self.is_parent_of(other):
+            return True
+        if other.is_parent_of(self):
+            return False
+        if self.parent is None:
+            return self < other.parent
+        if other.parent is None:
+            return self.parent < other
+        return self.parent < other.parent
+
+    def __gt__(self, other):
+        return other < self
 
     def __eq__(self, other):
+        if other is None:
+            return False
         return self.order == other.order and self.label == other.label
+
+    def __repr__(self):
+        parent_string = self.__to_string(self.parent)
+        children_strings = "[" + ", ".join(
+            [self.__to_string(child) for child in self.children]
+        ) + "]"
+        return "Group[label={}, order={}, parent={}, children={}]".format(
+            self.label, self.order, parent_string, children_strings
+        )
+
+    @classmethod
+    def __to_string(cls, group):
+        if group is None:
+            return "None"
+        return group.label
 
 
 Group.APP = Group('*', order=0)
