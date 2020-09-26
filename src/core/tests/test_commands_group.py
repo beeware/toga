@@ -1,6 +1,10 @@
 import unittest
 
 import toga
+from tests.utils import order_test
+
+PARENT_GROUP1 = toga.Group("P", 1)
+PARENT_GROUP2 = toga.Group("O", 2)
 
 
 class TestCommandsGroup(unittest.TestCase):
@@ -109,20 +113,17 @@ class TestCommandsGroup(unittest.TestCase):
                 self.assertTrue(groups[i].is_parent_of(groups[j]))
                 self.assertTrue(groups[j].is_child_of(groups[i]))
 
-    def test_group_order(self):
-        parent = toga.Group("P", 1)
-        parent2 = toga.Group("O", 2)
-        self.assert_order(toga.Group('A', 1), toga.Group('A', 2))
-        self.assert_order(toga.Group('B', 1), toga.Group('A', 2))
-        self.assert_order(toga.Group('A'), toga.Group('B'))
-        self.assert_order(
-            parent,
-            toga.Group('C', parent=parent),
-            toga.Group('D', parent=parent),
-            toga.Group('A', parent=parent, section=2),
-            parent2,
-            toga.Group("B", parent=parent2),
-        )
+    test_order_by_number = order_test(toga.Group('A', 1), toga.Group('A', 2))
+    test_order_ignore_label = order_test(toga.Group('B', 1), toga.Group('A', 2))
+    test_order_by_label = order_test(toga.Group('A'), toga.Group('B'))
+    test_order_by_groups = order_test(
+        PARENT_GROUP1,
+        toga.Group('C', parent=PARENT_GROUP1),
+        toga.Group('D', parent=PARENT_GROUP1),
+        toga.Group('A', parent=PARENT_GROUP1, section=2),
+        PARENT_GROUP2,
+        toga.Group("B", parent=PARENT_GROUP2),
+    )
 
     def test_group_repr(self):
         parent = toga.Group("P")
@@ -141,12 +142,3 @@ class TestCommandsGroup(unittest.TestCase):
     def test_set_section_without_parent(self):
         with self.assertRaises(ValueError):
             g = toga.Group("A", section=2)
-
-    def assert_order(self, *groups):
-        for i in range(0, len(groups) - 1):
-            for j in range(i + 1, len(groups)):
-                self.assertLess(groups[i], groups[j])
-                self.assertGreater(groups[j], groups[i])
-                self.assertFalse(groups[j] < groups[i])
-                self.assertFalse(groups[i] > groups[j])
-

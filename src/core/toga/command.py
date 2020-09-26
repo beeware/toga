@@ -202,13 +202,37 @@ class Command:
         if self._icon and self.factory:
             self._icon.bind(self.factory)
 
+    def __lt__(self, other):
+        if self.group == other.group:
+            return [self.section, self.order, self.label] < [
+                other.section, other.order, other.label
+            ]
+        if self.group == other.group.parent:
+            return [self.section, self.order, self.label] < [
+                other.group.section,
+                other.group.order,
+                other.group.label,
+            ]
+        if self.group.parent == other.group:
+            return [self.group.section, self.group.order, self.group.label] < [
+                other.section, other.order, other.label
+            ]
+        return self.group < other.group
+
+    def __gt__(self, other):
+        return other < self
+
+    def __repr__(self):
+        return "Command[label={}, group={}, section={}, order={}]".format(
+            self.label,
+            self.group.parent,
+            self.section,
+            self.order,
+        )
+
 
 GROUP_BREAK = object()
 SECTION_BREAK = object()
-
-
-def cmd_sort_key(value):
-    return (value.group, value.section, value.order, value.label)
 
 
 class CommandSet:
@@ -239,7 +263,7 @@ class CommandSet:
 
     def __iter__(self):
         prev_cmd = None
-        for cmd in sorted(self._commands, key=cmd_sort_key):
+        for cmd in sorted(self._commands):
             if prev_cmd:
                 if cmd.group != prev_cmd.group:
                     yield GROUP_BREAK
