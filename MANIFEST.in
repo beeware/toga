@@ -4,6 +4,7 @@ include LICENSE
 include README.rst
 include release.sh
 include tox.ini
+include .coveragerc
 recursive-exclude attic *
 recursive-exclude contrib *
 recursive-exclude demo *
