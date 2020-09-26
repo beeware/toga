@@ -1,5 +1,6 @@
 import random
 import unittest
+from unittest.mock import Mock
 
 import toga
 import toga_dummy
@@ -44,8 +45,9 @@ class TestCommandSet(unittest.TestCase):
         self.assertIsNotNone(cmd._impl)
 
     def test_cmdset_iter_in_order(self):
-
         test_widget = toga.Widget(factory=toga_dummy.factory)
+        test_widget._impl = Mock()
+        test_widget.app = Mock()
         cs = toga.CommandSet(
             factory=toga_dummy.factory,
             widget=test_widget
@@ -53,4 +55,5 @@ class TestCommandSet(unittest.TestCase):
         commands = list(COMMANDS_IN_ORDER)
         random.shuffle(commands)
         cs.add(*commands)
+        test_widget.app.commands.add.assert_called_once_with(*commands)
         self.assertEqual(list(cs), COMMANDS_IN_SET)

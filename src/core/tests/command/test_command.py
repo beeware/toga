@@ -90,6 +90,12 @@ class TestCommand(TestCase):
         cmd.enabled = True
         self.assertActionPerformedWith(cmd, 'set enabled', value=True)
 
+    def test_command_repr(self):
+        self.assertEqual(
+            repr(toga.Command(None, "A", group=PARENT_GROUP1, order=1, section=4)),
+            "Command[label=A, group=None, section=4, order=1]"
+        )
+
     test_order_commands_by_label = order_test(
         toga.Command(None, "A"), toga.Command(None, "B")
     )
