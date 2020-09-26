@@ -6,10 +6,10 @@ import traceback
 import toga
 from toga import Key
 from toga.handlers import wrapped_handler
-from .keys import toga_to_winforms_key
 
 from .libs import Threading, WinForms, shcore, user32, win_version
 from .libs.proactor import WinformsProactorEventLoop
+from .menu_builder import MenuBuilder
 from .window import Window
 
 
@@ -87,33 +87,9 @@ class App:
     def create_menus(self):
         toga.Group.FILE.order = 0
         # Only create the menu if the menu item index has been created.
-        if hasattr(self, '_menu_items'):
-            menubar = WinForms.MenuStrip()
-            submenu = None
-            for cmd in self.interface.commands:
-                if cmd == toga.GROUP_BREAK:
-                    menubar.Items.Add(submenu)
-                    submenu = None
-                elif cmd == toga.SECTION_BREAK:
-                    submenu.DropDownItems.Add('-')
-                else:
-                    if submenu is None:
-                        submenu = WinForms.ToolStripMenuItem(cmd.group.label)
-                    item = WinForms.ToolStripMenuItem(cmd.label)
-                    if cmd.action:
-                        item.Click += cmd._impl.as_handler()
-                    item.Enabled = cmd.enabled
-                    if cmd.shortcut is not None:
-                        shortcut_keys = toga_to_winforms_key(cmd.shortcut)
-                        item.ShortcutKeys = shortcut_keys
-                        item.ShowShortcutKeys = True
-                    cmd._impl.native.append(item)
-                    self._menu_items[item] = cmd
-                    submenu.DropDownItems.Add(item)
-            if submenu:
-                menubar.Items.Add(submenu)
-            self.interface.main_window._impl.native.Controls.Add(menubar)
-            self.interface.main_window._impl.native.MainMenuStrip = menubar
+        menubar = MenuBuilder(self.interface.commands).build()
+        self.interface.main_window._impl.native.Controls.Add(menubar)
+        self.interface.main_window._impl.native.MainMenuStrip = menubar
         self.interface.main_window.content.refresh()
 
     def _create_app_commands(self):
