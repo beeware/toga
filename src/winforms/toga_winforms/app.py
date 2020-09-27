@@ -177,23 +177,32 @@ class App:
     def winforms_application_exit(self, sender, *args, **kwargs):
         pass
 
-    def on_about(self, widget):
+    def show_about_dialog(self):
         message_parts = []
         if self.interface.name is not None:
+            if self.interface.version is not None:
+                message_parts.append(
+                    "{name} v{version}".format(
+                        name=self.interface.name,
+                        version=self.interface.version,
+                    )
+                )
+            else:
+                message_parts.append(
+                    "{name}".format(name=self.interface.name)
+                )
+        elif self.interface.version is not None:
             message_parts.append(
-                "Name: {name}".format(name=self.interface.name)
+                "v{version}".format(version=self.interface.version)
             )
+
         if self.interface.author is not None:
             message_parts.append(
                 "Author: {author}".format(author=self.interface.author)
             )
-        if self.interface.version is not None:
-            message_parts.append(
-                "Version: {version}".format(version=self.interface.version)
-            )
         if self.interface.description is not None:
             message_parts.append(
-                "Description: {description}".format(
+                "\n{description}".format(
                     description=self.interface.description
                 )
             )
