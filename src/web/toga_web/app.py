@@ -38,8 +38,8 @@ class App:
     def set_main_window(self, window):
         pass
 
-    def on_about(self, widget):
-        self.interface.factory.not_implemented("App.on_about")
+    def show_about_dialog(self):
+        self.interface.factory.not_implemented("App.show_about_dialog()")
 
     def exit(self):
         pass

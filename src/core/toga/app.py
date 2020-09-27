@@ -419,7 +419,7 @@ class App:
     def on_about(self, widget):
         """Default implementation of the "About" command.
         This can be overridden in inherited App classes."""
-        self._impl.on_about(widget)
+        self._impl.show_about_dialog()
 
     def on_quit(self, widget):
         """Default implementation of the "Quit" command.
