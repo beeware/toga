@@ -193,7 +193,7 @@ class App:
         if home_page:
             self._home_page = home_page
         else:
-            self._home_page = self.metadata.get('home_page', None)
+            self._home_page = self.metadata.get('Home-page', None)
 
         # If a description has been provided, use it; otherwise, look to
         # the module metadata.
