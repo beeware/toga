@@ -1,6 +1,3 @@
-import random
-import unittest
-
 import toga
 import toga_dummy
 from tests.utils import order_test
@@ -107,4 +104,3 @@ class TestCommand(TestCase):
         toga.Command(None, "A", group=PARENT_GROUP1, section=2, order=1)
     )
     test_order_commands_by_groups = order_test(*COMMANDS_IN_ORDER)
-

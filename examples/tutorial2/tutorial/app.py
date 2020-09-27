@@ -33,6 +33,7 @@ def action5(widget):
 def action6(widget):
     print("action 6")
 
+
 SUBGROUP = toga.Group("Sub", parent=toga.Group.COMMANDS, order=2)
 
 

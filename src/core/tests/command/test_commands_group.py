@@ -140,4 +140,4 @@ class TestCommandsGroup(unittest.TestCase):
 
     def test_set_section_without_parent(self):
         with self.assertRaises(ValueError):
-            g = toga.Group("A", section=2)
+            toga.Group("A", section=2)
