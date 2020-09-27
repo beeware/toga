@@ -407,7 +407,7 @@ class App:
         self._impl.hide_cursor()
 
     def startup(self):
-        """ Create and show the main window for the application
+        """Create and show the main window for the application
         """
         self.main_window = MainWindow(title=self.formal_name, factory=self.factory)
 
@@ -417,18 +417,19 @@ class App:
         self.main_window.show()
 
     def on_about(self, widget):
-        """Default implementation of the "About" command.
-        This can be overridden in inherited App classes."""
+        """Display the About dialog for the app.
+
+        Default implementation shows a platform-appropriate about dialog
+        using app metadata. Override if you want to display a custom About
+        dialog.
+        """
         self._impl.show_about_dialog()
 
-    def on_quit(self, widget):
-        """Default implementation of the "Quit" command.
-        This can be overridden in inherited App classes."""
-        self.exit()
-
     def on_visit_homepage(self, widget):
-        """Default implementation of the "Visit homepage" command.
-        This can be overridden in inherited App classes."""
+        """Open the application's homepage in the default browser.
+
+        If the application metadata doesn't define a homepage, this is a no-op.
+        """
         if self.home_page is not None:
             webbrowser.open(self.home_page)
 

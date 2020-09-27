@@ -62,7 +62,7 @@ class App:
             toga.Command(None, 'Preferences', group=toga.Group.FILE),
             # Quit should always be the last item, in a section on it's own
             toga.Command(
-                self.interface.on_quit,
+                lambda widget: self.interface.exit(),
                 'Exit ' + self.interface.name,
                 shortcut=Key.MOD_1 + 'q',
                 group=toga.Group.FILE,
