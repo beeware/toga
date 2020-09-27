@@ -13,6 +13,9 @@ from .keys import cocoa_key
 from .libs import (
     NSURL,
     SEL,
+    NSAboutPanelOptionApplicationIcon,
+    NSAboutPanelOptionApplicationName,
+    NSAboutPanelOptionApplicationVersion,
     NSApplication,
     NSApplicationActivationPolicyRegular,
     NSBundle,
@@ -109,8 +112,8 @@ class App:
         self.native = NSApplication.sharedApplication
         self.native.setActivationPolicy(NSApplicationActivationPolicyRegular)
 
-        self.interface.icon.bind(self.interface.factory)
-        self.native.setApplicationIconImage_(self.interface.icon._impl.native)
+        icon = self.interface.icon.bind(self.interface.factory)
+        self.native.setApplicationIconImage_(icon.native)
 
         self.resource_path = os.path.dirname(os.path.dirname(NSBundle.mainBundle.bundlePath))
 
@@ -215,8 +218,27 @@ class App:
     def set_main_window(self, window):
         pass
 
-    def on_about(self, widget):
-        self.interface.factory.not_implemented("App.on_about")
+    def show_about_dialog(self):
+        options = NSMutableDictionary.alloc().init()
+
+        options[NSAboutPanelOptionApplicationIcon] = self.interface.icon.bind(self.interface.factory).native
+
+        if self.interface.name is not None:
+            options[NSAboutPanelOptionApplicationName] = self.interface.name
+
+        if self.interface.version is not None:
+            options[NSAboutPanelOptionApplicationVersion] = self.interface.version
+
+        # The build number
+        # if self.interface.version is not None:
+        #     options[NSAboutPanelOptionVersion] = "the build"
+
+        if self.interface.author is not None:
+            options["Copyright"] = "Copyright © {author}".format(
+                author=self.interface.author
+            )
+
+        self.native.orderFrontStandardAboutPanelWithOptions(options)
 
     def exit(self):
         self.native.terminate(None)
