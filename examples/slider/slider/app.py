@@ -27,7 +27,7 @@ class SliderApp(toga.App):
 
         # Add the content on the main window
         self.discrete_slider = toga.Slider(
-            on_slide=self.my_discrete_on_slide,
+            on_slide=self.my_discrete_on_change,
             range=(MIN_VAL, MAX_VAL),
             tick_count=MAX_VAL - MIN_VAL + 1,
             style=slider_style
@@ -38,7 +38,7 @@ class SliderApp(toga.App):
                 toga.Box(style=box_style, children=[
                     self.continuous_slider_value_label,
                     toga.Slider(
-                        on_slide=self.my_continuous_on_slide,
+                        on_change=self.my_continuous_on_change,
                         style=slider_style
                     ),
                 ]),
@@ -94,11 +94,11 @@ class SliderApp(toga.App):
 
         self.main_window.show()
 
-    def my_continuous_on_slide(self, slider):
+    def my_continuous_on_change(self, slider):
         # get the current value of the slider with `slider.value`
         self.continuous_slider_value_label.text = "The slider value changed to {0}".format(slider.value)
 
-    def my_discrete_on_slide(self, slider):
+    def my_discrete_on_change(self, slider):
         # get the current value of the slider with `slider.value`
         self.discrete_slider_value_label.text = "The slider value changed to {0}".format(slider.value)
 

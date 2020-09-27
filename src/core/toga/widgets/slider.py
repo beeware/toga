@@ -1,4 +1,4 @@
-from functools import wraps
+import warnings
 
 from toga.handlers import wrapped_handler
 
@@ -14,7 +14,7 @@ class Slider(Widget):
         default (float): Default value of the slider
         range (``tuple``): Min and max values of the slider in this form (min, max).
         tick_count (``int``): How many ticks in range. if None, slider is continuous.
-        on_slide (``callable``): The function that is executed on_slide.
+        on_change (``callable``): The handler to invoke when the slider value changes.
         enabled (bool): Whether user interaction is possible or not.
         factory (:obj:`module`): A python module that is capable to return a
             implementation of this class with the same name. (optional & normally not needed)
@@ -26,6 +26,7 @@ class Slider(Widget):
         default=None,
         range=None,
         tick_count=None,
+        on_change=None,
         on_slide=None,
         enabled=True,
         factory=None
@@ -34,18 +35,21 @@ class Slider(Widget):
 
         # Needed for _impl initialization
         self._tick_count = None
-        self._on_slide = None
+        self._on_change = None
 
         self._impl = self.factory.Slider(interface=self)
 
         self.range = range
         self.tick_count = tick_count
 
-        # IMPORTANT NOTE: Setting value before on_slide in order to not call it in
-        # constructor. Please do not move it from here.
+        # IMPORTANT NOTE: Setting value before on_change in order to not
+        # call it in constructor. Please do not move it from here.
         self.value = default
 
-        self.on_slide = on_slide
+        if on_slide:
+            self.on_slide = on_slide
+        else:
+            self.on_change = on_change
         self.enabled = enabled
 
     MIN_WIDTH = 100
@@ -74,8 +78,8 @@ class Slider(Widget):
                     value, self.min, self.max)
             )
         self._impl.set_value(final)
-        if self.on_slide:
-            self.on_slide(self)
+        if self.on_change:
+            self.on_change(self)
 
     @property
     def range(self):
@@ -139,15 +143,32 @@ class Slider(Widget):
             self.value = self.min + (tick_value - 1) * self.tick_step
 
     @property
+    def on_change(self):
+        """ The function for when the value of the slider is changed
+
+        Returns:
+            The ``callable`` that is executed when the value changes.
+        """
+        return self._on_change
+
+    @on_change.setter
+    def on_change(self, handler):
+        self._on_change = wrapped_handler(self, handler)
+        self._impl.set_on_change(self._on_change)
+
+    @property
     def on_slide(self):
-        """ The function for when the slider is slided
+        """ The function for when the value of the slider is changed
+
+        **DEPRECATED: renamed as on_change**
 
         Returns:
             The ``callable`` that is executed on slide.
         """
-        return self._on_slide
+        warnings.warn("Slider.on_slide has been renamed Slider.on_change", DeprecationWarning)
+        return self._on_change
 
     @on_slide.setter
     def on_slide(self, handler):
-        self._on_slide = wrapped_handler(self, handler)
-        self._impl.set_on_slide(self._on_slide)
+        warnings.warn("Slider.on_slide has been renamed Slider.on_change", DeprecationWarning)
+        self.on_change = handler

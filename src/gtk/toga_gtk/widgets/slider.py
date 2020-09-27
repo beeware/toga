@@ -10,15 +10,15 @@ class Slider(Widget):
 
         self.native = Gtk.Scale.new(Gtk.Orientation.HORIZONTAL, self.adj)
         self.native.interface = self.interface
-        self.native.connect("value-changed", self.gtk_on_slide)
+        self.native.connect("value-changed", self.gtk_on_change)
 
         self.rehint()
 
-    def gtk_on_slide(self, widget):
-        if self.interface.on_slide:
-            self.interface.on_slide(widget)
+    def gtk_on_change(self, widget):
+        if self.interface.on_change:
+            self.interface.on_change(widget)
 
-    def set_on_slide(self, handler):
+    def set_on_change(self, handler):
         # No special handling required
         pass
 

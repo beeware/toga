@@ -16,13 +16,13 @@ class SliderTests(TestCase):
         self.range = (self.min_val, self.max_val)
         self.tick_count = 11
 
-        self.on_slide = mock.Mock()
+        self.on_change = mock.Mock()
         self.enabled = True
 
         self.slider = toga.Slider(
             default=self.default,
             range=self.range,
-            on_slide=self.on_slide,
+            on_change=self.on_change,
             enabled=self.enabled,
             factory=toga_dummy.factory,
             tick_count=self.tick_count,
@@ -35,7 +35,7 @@ class SliderTests(TestCase):
     def test_parameter_are_all_set_correctly(self):
         self.assertEqual(self.slider.value, self.default)
         self.assertEqual(self.slider.range, self.range)
-        self.assertEqual(self.slider.on_slide._raw.__wrapped__, self.on_slide)
+        self.assertEqual(self.slider.on_change._raw.__wrapped__, self.on_change)
         self.assertEqual(self.slider.enabled, self.enabled)
 
     def test_get_value_invokes_impl_method(self):
@@ -47,19 +47,19 @@ class SliderTests(TestCase):
         tick_value = 4
         self.slider.value = value
         self.assert_slider_value(
-            value=value, tick_value=tick_value, on_slide_call_count=1
+            value=value, tick_value=tick_value, on_change_call_count=1
         )
 
     def test_set_value_to_be_min(self):
         self.slider.value = self.min_val
         self.assert_slider_value(
-            value=self.min_val, tick_value=1, on_slide_call_count=1
+            value=self.min_val, tick_value=1, on_change_call_count=1
         )
 
     def test_set_value_to_be_max(self):
         self.slider.value = self.max_val
         self.assert_slider_value(
-            value=self.max_val, tick_value=self.tick_count, on_slide_call_count=1
+            value=self.max_val, tick_value=self.tick_count, on_change_call_count=1
         )
 
     def test_set_value_to_be_too_small(self):
@@ -93,7 +93,7 @@ class SliderTests(TestCase):
         self.assert_slider_value(
             value=self.default + delta,
             tick_value=self.default_tick + tick_delta,
-            on_slide_call_count=1,
+            on_change_call_count=1,
         )
 
     def test_decreasing_by_value(self):
@@ -103,7 +103,7 @@ class SliderTests(TestCase):
         self.assert_slider_value(
             value=self.default - delta,
             tick_value=self.default_tick - tick_delta,
-            on_slide_call_count=1,
+            on_change_call_count=1,
         )
 
     def test_increasing_by_ticks(self):
@@ -113,7 +113,7 @@ class SliderTests(TestCase):
         self.assert_slider_value(
             value=self.default + delta,
             tick_value=self.default_tick + tick_delta,
-            on_slide_call_count=1,
+            on_change_call_count=1,
         )
 
     def test_decreasing_by_ticks(self):
@@ -123,7 +123,7 @@ class SliderTests(TestCase):
         self.assert_slider_value(
             value=self.default - delta,
             tick_value=self.default_tick - tick_delta,
-            on_slide_call_count=1,
+            on_change_call_count=1,
         )
 
     def test_working_range_values(self):
@@ -152,14 +152,14 @@ class SliderTests(TestCase):
         self.slider.focus()
         self.assertActionPerformed(self.slider, "focus")
 
-    def assert_slider_value(self, tick_value, value, on_slide_call_count=0):
+    def assert_slider_value(self, tick_value, value, on_change_call_count=0):
         self.assertEqual(self.slider.tick_value, tick_value)
         self.assertEqual(self.slider.value, value)
         self.assertValueSet(self.slider, "value", value)
         self.assertEqual(
-            self.on_slide.call_count,
-            on_slide_call_count,
-            msg="on_slider call count is different than expected",
+            self.on_change.call_count,
+            on_change_call_count,
+            msg="on_changer call count is different than expected",
         )
 
     def assert_set_range(self, min_val, max_val):

@@ -34,8 +34,8 @@ class Slider(Widget):
 
     def winforms_scroll(self, sender, event):
         if self.container:
-            if self.interface.on_slide:
-                self.interface.on_slide(self.interface)
+            if self.interface.on_change:
+                self.interface.on_change(self.interface)
 
     def get_value(self):
         actual_value = self.native.Value
@@ -66,5 +66,5 @@ class Slider(Widget):
             self.native.TickStyle = BOTTOM_RIGHT_TICK_STYLE
             self.native.Maximum = tick_count - 1
 
-    def set_on_slide(self, handler):
+    def set_on_change(self, handler):
         pass

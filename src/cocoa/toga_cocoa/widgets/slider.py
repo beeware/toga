@@ -8,8 +8,8 @@ from .base import Widget
 class TogaSlider(NSSlider):
     @objc_method
     def onSlide_(self, obj) -> None:
-        if self.interface.on_slide:
-            self.interface.on_slide(self.interface)
+        if self.interface.on_change:
+            self.interface.on_change(self.interface)
 
 
 class Slider(Widget):
@@ -46,5 +46,5 @@ class Slider(Widget):
         self.interface.intrinsic.height = content_size.height
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
 
-    def set_on_slide(self, handler):
+    def set_on_change(self, handler):
         pass
