@@ -416,7 +416,7 @@ class App:
 
         self.main_window.show()
 
-    def on_about(self, widget):
+    def about(self):
         """Display the About dialog for the app.
 
         Default implementation shows a platform-appropriate about dialog
@@ -425,7 +425,7 @@ class App:
         """
         self._impl.show_about_dialog()
 
-    def on_visit_homepage(self, widget):
+    def visit_homepage(self):
         """Open the application's homepage in the default browser.
 
         If the application metadata doesn't define a homepage, this is a no-op.

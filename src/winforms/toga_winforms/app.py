@@ -55,21 +55,21 @@ class App:
 
         self.interface.commands.add(
             toga.Command(
-                self.interface.on_about,
+                lambda _: self.interface.about(),
                 'About {}'.format(self.interface.name),
                 group=toga.Group.HELP
             ),
             toga.Command(None, 'Preferences', group=toga.Group.FILE),
             # Quit should always be the last item, in a section on it's own
             toga.Command(
-                lambda widget: self.interface.exit(),
+                lambda _: self.interface.exit(),
                 'Exit ' + self.interface.name,
                 shortcut=Key.MOD_1 + 'q',
                 group=toga.Group.FILE,
                 section=sys.maxsize
             ),
             toga.Command(
-                self.interface.on_visit_homepage,
+                lambda _: self.interface.visit_homepage(),
                 'Visit homepage',
                 enabled=self.interface.home_page is not None,
                 group=toga.Group.HELP
