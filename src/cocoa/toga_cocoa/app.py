@@ -9,7 +9,6 @@ from rubicon.objc.eventloop import CocoaLifecycle, EventLoopPolicy
 import toga
 from toga.handlers import wrapped_handler
 
-from .keys import cocoa_key
 from .libs import (
     NSURL,
     SEL,
@@ -32,6 +31,7 @@ from .libs import (
     NSString,
     objc_method
 )
+from .menu_builder import MenuBuilder
 from .window import Window
 
 
@@ -163,51 +163,10 @@ class App:
         pass
 
     def create_menus(self):
-        # Only create the menu if the menu item index has been created.
-        if hasattr(self, '_menu_items'):
-            self._menu_items = {}
-            menubar = NSMenu.alloc().initWithTitle('MainMenu')
-            submenu = None
-            menuItem = None
-            for cmd in self.interface.commands:
-                if cmd == toga.GROUP_BREAK:
-                    menubar.setSubmenu(submenu, forItem=menuItem)
-                    submenu = None
-                elif cmd == toga.SECTION_BREAK:
-                    submenu.addItem_(NSMenuItem.separatorItem())
-                else:
-                    if submenu is None:
-                        menuItem = menubar.addItemWithTitle(cmd.group.label, action=None, keyEquivalent='')
-                        submenu = NSMenu.alloc().initWithTitle(cmd.group.label)
-                        submenu.setAutoenablesItems(False)
+        menubar = MenuBuilder(self.interface.commands).build()
 
-                    if cmd.shortcut:
-                        key, modifier = cocoa_key(cmd.shortcut)
-                    else:
-                        key = ''
-                        modifier = None
-
-                    item = NSMenuItem.alloc().initWithTitle(
-                        cmd.label,
-                        action=SEL('selectMenuItem:'),
-                        keyEquivalent=key,
-                    )
-                    if modifier is not None:
-                        item.keyEquivalentModifierMask = modifier
-
-                    cmd._impl.native.append(item)
-                    self._menu_items[item] = cmd
-
-                    # This line may appear redundant, but it triggers the logic
-                    # to force the enabled status on the underlying widgets.
-                    cmd.enabled = cmd.enabled
-                    submenu.addItem(item)
-
-            if submenu:
-                menubar.setSubmenu(submenu, forItem=menuItem)
-
-            # Set the menu for the app.
-            self.native.mainMenu = menubar
+        # Set the menu for the app.
+        self.native.mainMenu = menubar
 
     def main_loop(self):
         # Stimulate the build of the app
