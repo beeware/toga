@@ -29,10 +29,14 @@ class SplitContainer(Widget):
 
         if position == 0:
             self.native.set_wide_handle(True)
-            self.native.pack1(widget.native, flex, False)
+            widget_frame = Gtk.Frame()
+            widget_frame.add(widget.native)
+            self.native.pack1(widget_frame, flex, False)
         elif position == 1:
             self.native.set_wide_handle(True)
-            self.native.pack2(widget.native, flex, False)
+            widget_frame = Gtk.Frame()
+            widget_frame.add(widget.native)
+            self.native.pack2(widget_frame, flex, False)
 
     def set_app(self, app):
         if self.interface.content:

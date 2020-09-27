@@ -54,17 +54,26 @@ class App:
         self.native.SetCompatibleTextRenderingDefault(False)
 
         self.interface.commands.add(
-            toga.Command(None, 'About ' + self.interface.name, group=toga.Group.HELP),
+            toga.Command(
+                lambda _: self.interface.about(),
+                'About {}'.format(self.interface.name),
+                group=toga.Group.HELP
+            ),
             toga.Command(None, 'Preferences', group=toga.Group.FILE),
             # Quit should always be the last item, in a section on it's own
             toga.Command(
-                lambda s: self.exit(),
+                lambda _: self.interface.exit(),
                 'Exit ' + self.interface.name,
                 shortcut=Key.MOD_1 + 'q',
                 group=toga.Group.FILE,
                 section=sys.maxsize
             ),
-            toga.Command(None, 'Visit homepage', group=toga.Group.HELP)
+            toga.Command(
+                lambda _: self.interface.visit_homepage(),
+                'Visit homepage',
+                enabled=self.interface.home_page is not None,
+                group=toga.Group.HELP
+            )
         )
         self._create_app_commands()
 
@@ -93,8 +102,7 @@ class App:
                     item = WinForms.ToolStripMenuItem(cmd.label)
                     if cmd.action:
                         item.Click += cmd._impl.as_handler()
-                    else:
-                        item.Enabled = False
+                    item.Enabled = cmd.enabled
                     if cmd.shortcut is not None:
                         shortcut_keys = toga_to_winforms_key(cmd.shortcut)
                         item.ShortcutKeys = shortcut_keys
@@ -168,6 +176,39 @@ class App:
 
     def winforms_application_exit(self, sender, *args, **kwargs):
         pass
+
+    def show_about_dialog(self):
+        message_parts = []
+        if self.interface.name is not None:
+            if self.interface.version is not None:
+                message_parts.append(
+                    "{name} v{version}".format(
+                        name=self.interface.name,
+                        version=self.interface.version,
+                    )
+                )
+            else:
+                message_parts.append(
+                    "{name}".format(name=self.interface.name)
+                )
+        elif self.interface.version is not None:
+            message_parts.append(
+                "v{version}".format(version=self.interface.version)
+            )
+
+        if self.interface.author is not None:
+            message_parts.append(
+                "Author: {author}".format(author=self.interface.author)
+            )
+        if self.interface.description is not None:
+            message_parts.append(
+                "\n{description}".format(
+                    description=self.interface.description
+                )
+            )
+        self.interface.main_window.info_dialog(
+            'About {}'.format(self.interface.name), "\n".join(message_parts)
+        )
 
     def exit(self):
         self.native.Exit()

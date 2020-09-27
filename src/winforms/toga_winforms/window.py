@@ -187,7 +187,7 @@ class Window:
         if multiselect:
             dialog.Multiselect = True
         if dialog.ShowDialog() == WinForms.DialogResult.OK:
-            return dialog.FileName
+            return dialog.FileNames if multiselect else dialog.FileName
         else:
             raise ValueError("No filename provided in the open file dialog")
 

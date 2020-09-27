@@ -5,6 +5,8 @@ from ctypes import Structure, c_void_p, cdll, util
 from enum import Enum
 
 from rubicon.objc import CGFloat, ObjCClass, objc_const
+from rubicon.objc.api import NSString
+
 from travertino.colors import (
     BLACK,
     BLUE,
@@ -62,6 +64,12 @@ NSEventTrackingRunLoopMode = c_void_p.in_dll(appkit, 'NSEventTrackingRunLoopMode
 
 NSApplicationDidHideNotification = c_void_p.in_dll(appkit, 'NSApplicationDidHideNotification')
 NSApplicationDidUnhideNotification = c_void_p.in_dll(appkit, 'NSApplicationDidUnhideNotification')
+
+NSAboutPanelOptionApplicationIcon = NSString(c_void_p.in_dll(appkit, "NSAboutPanelOptionApplicationIcon"))
+NSAboutPanelOptionApplicationName = NSString(c_void_p.in_dll(appkit, "NSAboutPanelOptionApplicationName"))
+NSAboutPanelOptionApplicationVersion = NSString(c_void_p.in_dll(appkit, "NSAboutPanelOptionApplicationVersion"))
+NSAboutPanelOptionCredits = NSString(c_void_p.in_dll(appkit, "NSAboutPanelOptionCredits"))
+NSAboutPanelOptionVersion = NSString(c_void_p.in_dll(appkit, "NSAboutPanelOptionVersion"))
 
 ######################################################################
 # NSAttributedString.h
@@ -574,7 +582,6 @@ NSStepper = ObjCClass('NSStepper')
 ######################################################################
 # NSStringDrawing.h
 
-NSString = ObjCClass('NSString')
 NSStringDrawingUsesLineFragmentOrigin = 1 << 0
 NSStringDrawingUsesFontLeading = 1 << 1
 NSStringDrawingDisableScreenFontSubstitution = 1 << 2  # DEPRECATED

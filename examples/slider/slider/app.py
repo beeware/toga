@@ -27,7 +27,7 @@ class SliderApp(toga.App):
 
         # Add the content on the main window
         self.discrete_slider = toga.Slider(
-            on_slide=self.my_discrete_on_change,
+            on_change=self.my_discrete_on_change,
             range=(MIN_VAL, MAX_VAL),
             tick_count=MAX_VAL - MIN_VAL + 1,
             style=slider_style
