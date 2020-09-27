@@ -21,8 +21,13 @@ class Group:
         self._parent = None
         self._children = []
 
-        self.parent = parent
-        self.children = children
+        try:
+            self.parent = parent
+            self.children = children
+        except ValueError as error:
+            self.parent = None
+            self.children = None
+            raise error
 
     @property
     def parent(self):

@@ -139,6 +139,14 @@ class TestCommandsGroup(unittest.TestCase):
         with self.assertRaises(ValueError):
             toga.Group("A", section=2)
 
+    def test_constructor_causes_cyclic_parenting(self):
+        parent = toga.Group("P")
+        child = toga.Group("C", parent=parent)
+        with self.assertRaises(ValueError):
+            toga.Group("G", parent=child, children=[parent])
+        self.assert_parent_and_children(parent, None, [child])
+        self.assert_parent_and_children(child, parent, [])
+
     def test_set_parent_causes_cyclic_parenting(self):
         parent = toga.Group("P")
         child = toga.Group("C", parent=parent)
