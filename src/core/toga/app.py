@@ -500,8 +500,6 @@ class App:
     def exit(self):
         """ Quit the application gracefully.
         """
-        if self.on_exit is not None:
-            self.on_exit(self)
         self._impl.exit()
 
     @property
