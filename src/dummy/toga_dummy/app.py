@@ -26,6 +26,9 @@ class App(LoggedObject):
     def set_main_window(self, window):
         self._set_value('main_window', window)
 
+    def show_about_dialog(self):
+        self._action('show_about_dialog')
+
     def exit(self):
         self._action('exit')
 

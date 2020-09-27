@@ -13,6 +13,9 @@ from .keys import cocoa_key
 from .libs import (
     NSURL,
     SEL,
+    NSAboutPanelOptionApplicationIcon,
+    NSAboutPanelOptionApplicationName,
+    NSAboutPanelOptionApplicationVersion,
     NSApplication,
     NSApplicationActivationPolicyRegular,
     NSBundle,
@@ -109,8 +112,8 @@ class App:
         self.native = NSApplication.sharedApplication
         self.native.setActivationPolicy(NSApplicationActivationPolicyRegular)
 
-        self.interface.icon.bind(self.interface.factory)
-        self.native.setApplicationIconImage_(self.interface.icon._impl.native)
+        icon = self.interface.icon.bind(self.interface.factory)
+        self.native.setApplicationIconImage_(icon.native)
 
         self.resource_path = os.path.dirname(os.path.dirname(NSBundle.mainBundle.bundlePath))
 
@@ -123,17 +126,27 @@ class App:
         formal_name = self.interface.formal_name
 
         self.interface.commands.add(
-            toga.Command(None, 'About ' + formal_name, group=toga.Group.APP),
+            toga.Command(
+                lambda _: self.interface.about(),
+                'About ' + formal_name,
+                group=toga.Group.APP
+            ),
             toga.Command(None, 'Preferences', group=toga.Group.APP),
             # Quit should always be the last item, in a section on it's own
             toga.Command(
-                lambda s: self.exit(), 'Quit ' + formal_name,
+                lambda _: self.interface.exit(),
+                'Quit ' + formal_name,
                 shortcut=toga.Key.MOD_1 + 'q',
                 group=toga.Group.APP,
                 section=sys.maxsize
             ),
 
-            toga.Command(None, 'Visit homepage', group=toga.Group.HELP)
+            toga.Command(
+                lambda _: self.interface.visit_homepage(),
+                'Visit homepage',
+                enabled=self.interface.home_page is not None,
+                group=toga.Group.HELP
+            )
         )
         self._create_app_commands()
 
@@ -204,6 +217,28 @@ class App:
 
     def set_main_window(self, window):
         pass
+
+    def show_about_dialog(self):
+        options = NSMutableDictionary.alloc().init()
+
+        options[NSAboutPanelOptionApplicationIcon] = self.interface.icon.bind(self.interface.factory).native
+
+        if self.interface.name is not None:
+            options[NSAboutPanelOptionApplicationName] = self.interface.name
+
+        if self.interface.version is not None:
+            options[NSAboutPanelOptionApplicationVersion] = self.interface.version
+
+        # The build number
+        # if self.interface.version is not None:
+        #     options[NSAboutPanelOptionVersion] = "the build"
+
+        if self.interface.author is not None:
+            options["Copyright"] = "Copyright © {author}".format(
+                author=self.interface.author
+            )
+
+        self.native.orderFrontStandardAboutPanelWithOptions(options)
 
     def exit(self):
         self.native.terminate(None)
