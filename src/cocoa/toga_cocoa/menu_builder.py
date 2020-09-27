@@ -14,7 +14,6 @@ class MenuBuilder:
     def build(self):
         menubar = NSMenu.alloc().initWithTitle('MainMenu')
         submenu = None
-        menuItem = None
         for cmd in self.commands_set:
             if cmd == toga.GROUP_BREAK:
                 submenu = None
@@ -22,7 +21,7 @@ class MenuBuilder:
                 submenu.addItem_(NSMenuItem.separatorItem())
             else:
                 if submenu is None:
-                    submenu, menuItem = self.get_or_create_group_menu(cmd.group, menubar)
+                    submenu = self.get_or_create_group_menu(cmd.group, menubar)
                 if cmd.shortcut:
                     key, modifier = cocoa_key(cmd.shortcut)
                 else:
@@ -43,22 +42,19 @@ class MenuBuilder:
                 # to force the enabled status on the underlying widgets.
                 cmd.enabled = cmd.enabled
                 submenu.addItem(item)
-
-        if submenu:
-            menubar.setSubmenu(submenu, forItem=menuItem)
         return menubar
 
     def get_or_create_group_menu(self, group, menubar):
         if group is None:
-            return menubar, None
+            return menubar
         if group.label in self.group_menus:
             return self.group_menus[group.label]
-        parent_menu, _ = self.get_or_create_group_menu(group.parent, menubar)
-        menuItem = parent_menu.addItemWithTitle(
+        parent_menu = self.get_or_create_group_menu(group.parent, menubar)
+        menu_item = parent_menu.addItemWithTitle(
             group.label, action=None, keyEquivalent=''
         )
         submenu = NSMenu.alloc().initWithTitle(group.label)
         submenu.setAutoenablesItems(False)
-        parent_menu.setSubmenu(submenu, forItem=menuItem)
-        self.group_menus[group.label] = (submenu, menuItem)
-        return submenu, menuItem
+        parent_menu.setSubmenu(submenu, forItem=menu_item)
+        self.group_menus[group.label] = submenu
+        return submenu
