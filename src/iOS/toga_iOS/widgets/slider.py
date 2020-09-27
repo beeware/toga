@@ -8,8 +8,8 @@ from toga_iOS.widgets.base import Widget
 class TogaSlider(UISlider):
     @objc_method
     def onSlide_(self, obj) -> None:
-        if self.interface.on_slide:
-            self.interface.on_slide(self.interface)
+        if self.interface.on_change:
+            self.interface.on_change(self.interface)
 
 
 class Slider(Widget):
@@ -18,7 +18,11 @@ class Slider(Widget):
         self.native.interface = self.interface
 
         self.native.continuous = True
-        self.native.addTarget_action_forControlEvents_(self.native, SEL('onSlide:'), UIControlEventValueChanged)
+        self.native.addTarget(
+            self.native,
+            action=SEL('onSlide:'),
+            forControlEvents=UIControlEventValueChanged
+        )
 
         # Add the layout constraints
         self.add_constraints()
@@ -41,6 +45,6 @@ class Slider(Widget):
         self.interface.intrinsic.width = at_least(fitting_size.width)
         self.interface.intrinsic.height = fitting_size.height
 
-    def set_on_slide(self, handler):
+    def set_on_change(self, handler):
         # No special handling required
         pass

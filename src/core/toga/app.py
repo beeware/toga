@@ -1,5 +1,6 @@
 import signal
 import sys
+import warnings
 import webbrowser
 from builtins import id as identifier
 from email.message import Message
@@ -15,6 +16,10 @@ try:
 except ImportError:
     # Backwards compatibility - imporlib.metadata was added in Python 3.8
     import importlib_metadata
+
+
+# Make sure deprecation warnings are shown by default
+warnings.filterwarnings("default", category=DeprecationWarning)
 
 
 class MainWindow(Window):

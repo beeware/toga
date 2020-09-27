@@ -16,23 +16,29 @@ class SliderApp(toga.App):
         box_style = Pack(direction=ROW, padding=10)
         slider_style = Pack(flex=1)
 
-        self.discreteSliderValueLabel = toga.Label(
-            "slide me",
+        self.discrete_slider_value_label = toga.Label(
+            'Slide me or use "ctrl" + "+/-"',
             style=label_style
         )
-        self.continuousSliderValueLabel = toga.Label(
+        self.continuous_slider_value_label = toga.Label(
             "Default Slider is a continuous range between 0 to 1",
             style=label_style
         )
 
         # Add the content on the main window
+        self.discrete_slider = toga.Slider(
+            on_change=self.my_discrete_on_change,
+            range=(MIN_VAL, MAX_VAL),
+            tick_count=MAX_VAL - MIN_VAL + 1,
+            style=slider_style
+        )
         self.main_window.content = toga.Box(
             children=[
 
                 toga.Box(style=box_style, children=[
-                    self.continuousSliderValueLabel,
+                    self.continuous_slider_value_label,
                     toga.Slider(
-                        on_slide=self.my_continuous_on_slide,
+                        on_change=self.my_continuous_on_change,
                         style=slider_style
                     ),
                 ]),
@@ -64,26 +70,45 @@ class SliderApp(toga.App):
                 ]),
 
                 toga.Box(style=box_style, children=[
-                    self.discreteSliderValueLabel,
-                    toga.Slider(
-                        on_slide=self.my_discrete_on_slide,
-                        range=(MIN_VAL, MAX_VAL),
-                        tick_count=MAX_VAL - MIN_VAL + 1, style=slider_style
-                    ),
+                    self.discrete_slider_value_label,
+                    self.discrete_slider,
                 ]),
             ],
             style=Pack(direction=COLUMN, padding=24)
         )
 
+        self.commands.add(
+            toga.Command(
+                self.increase_discrete_slider,
+                "Increase slider",
+                shortcut=toga.Key.MOD_1 + toga.Key.PLUS,
+                group=toga.Group.COMMANDS
+            ),
+            toga.Command(
+                self.decrease_discrete_slider,
+                "Decrease slider",
+                shortcut=toga.Key.MOD_1 + toga.Key.MINUS,
+                group=toga.Group.COMMANDS
+            )
+        )
+
         self.main_window.show()
 
-    def my_continuous_on_slide(self, slider):
+    def my_continuous_on_change(self, slider):
         # get the current value of the slider with `slider.value`
-        self.continuousSliderValueLabel.text = "The slider value changed to {0}".format(slider.value)
+        self.continuous_slider_value_label.text = "The slider value changed to {0}".format(slider.value)
 
-    def my_discrete_on_slide(self, slider):
+    def my_discrete_on_change(self, slider):
         # get the current value of the slider with `slider.value`
-        self.discreteSliderValueLabel.text = "The slider value changed to {0}".format(slider.value)
+        self.discrete_slider_value_label.text = "The slider value changed to {0}".format(slider.value)
+
+    def increase_discrete_slider(self, widget):
+        if self.discrete_slider.tick_value != self.discrete_slider.tick_count:
+            self.discrete_slider.tick_value += 1
+
+    def decrease_discrete_slider(self, widget):
+        if self.discrete_slider.tick_value != 1:
+            self.discrete_slider.tick_value -= 1
 
 
 def main():
