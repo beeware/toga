@@ -11,7 +11,6 @@ from toga.handlers import wrapped_handler
 
 from .libs import (
     NSURL,
-    SEL,
     NSAboutPanelOptionApplicationIcon,
     NSAboutPanelOptionApplicationName,
     NSAboutPanelOptionApplicationVersion,
@@ -20,8 +19,6 @@ from .libs import (
     NSBundle,
     NSCursor,
     NSDocumentController,
-    NSMenu,
-    NSMenuItem,
     NSMutableArray,
     NSMutableDictionary,
     NSNumber,
