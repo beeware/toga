@@ -28,56 +28,56 @@ class TestCommandsGroup(unittest.TestCase):
     def test_set_parent_in_constructor(self):
         parent = toga.Group("parent")
         child = toga.Group("child", parent=parent)
-        self.assertEqual(child.parent, parent)
-        self.assertEqual(parent.children, [child])
+        self.assert_parent_and_children(parent, None, [child])
+        self.assert_parent_and_children(child, parent, [])
 
     def test_set_parent_in_property(self):
         parent = toga.Group("parent")
         child = toga.Group("child")
         child.parent = parent
-        self.assertEqual(child.parent, parent)
-        self.assertEqual(parent.children, [child])
+        self.assert_parent_and_children(parent, None, [child])
+        self.assert_parent_and_children(child, parent, [])
 
     def test_set_children_in_constructor(self):
         child1 = toga.Group("child1")
         child2 = toga.Group("child2")
         parent = toga.Group("parent", children=[child1, child2])
-        self.assertEqual(child1.parent, parent)
-        self.assertEqual(child2.parent, parent)
-        self.assertEqual(parent.children, [child1, child2])
+        self.assert_parent_and_children(parent, None, [child1, child2])
+        self.assert_parent_and_children(child1, parent, [])
+        self.assert_parent_and_children(child2, parent, [])
 
     def test_set_children_in_property(self):
         child1 = toga.Group("child1")
         child2 = toga.Group("child2")
         parent = toga.Group("parent")
         parent.children = [child1, child2]
-        self.assertEqual(child1.parent, parent)
-        self.assertEqual(child2.parent, parent)
-        self.assertEqual(parent.children, [child1, child2])
+        self.assert_parent_and_children(parent, None, [child1, child2])
+        self.assert_parent_and_children(child1, parent, [])
+        self.assert_parent_and_children(child2, parent, [])
 
     def test_add_child(self):
         child1 = toga.Group("child1")
         child2 = toga.Group("child2")
         parent = toga.Group("parent", children=[child1])
         parent.add_child(child2)
-        self.assertEqual(child1.parent, parent)
-        self.assertEqual(child2.parent, parent)
-        self.assertEqual(parent.children, [child1, child2])
+        self.assert_parent_and_children(parent, None, [child1, child2])
+        self.assert_parent_and_children(child1, parent, [])
+        self.assert_parent_and_children(child2, parent, [])
 
     def test_remove_child(self):
         child1 = toga.Group("child1")
         child2 = toga.Group("child2")
         parent = toga.Group("parent", children=[child1, child2])
         parent.remove_child(child1)
-        self.assertEqual(child1.parent, None)
-        self.assertEqual(child2.parent, parent)
-        self.assertEqual(parent.children, [child2])
+        self.assert_parent_and_children(parent, None, [child2])
+        self.assert_parent_and_children(child1, None, [])
+        self.assert_parent_and_children(child2, parent, [])
 
     def test_add_child_twice_in_constructor(self):
         child = toga.Group("child")
         parent = toga.Group("parent", children=[child, child])
-        self.assertEqual(child.parent, parent)
-        self.assertEqual(parent.children, [child])
+        self.assert_parent_and_children(parent, None, [child])
+        self.assert_parent_and_children(child, parent, [])
 
     def test_change_children_after_initialize(self):
         child1 = toga.Group("child1")
@@ -85,22 +85,19 @@ class TestCommandsGroup(unittest.TestCase):
         child3 = toga.Group("child3")
         parent = toga.Group("parent", children=[child1, child2])
         parent.children = [child2, child3]
-        self.assertEqual(child1.parent, None)
-        self.assertEqual(child2.parent, parent)
-        self.assertEqual(child3.parent, parent)
-        self.assertEqual(parent.children, [child2, child3])
+        self.assert_parent_and_children(parent, None, [child2, child3])
+        self.assert_parent_and_children(child1, None, [])
+        self.assert_parent_and_children(child2, parent, [])
+        self.assert_parent_and_children(child3, parent, [])
 
     def test_change_parent(self):
         child = toga.Group("child")
         parent1 = toga.Group("parent1", children=[child])
         parent2 = toga.Group("parent2")
         child.parent = parent2
-        self.assertEqual(parent1.parent, None)
-        self.assertEqual(parent1.children, [])
-        self.assertEqual(parent2.parent, None)
-        self.assertEqual(parent2.children, [child])
-        self.assertEqual(child.parent, parent2)
-        self.assertEqual(child.children, [])
+        self.assert_parent_and_children(parent1, None, [])
+        self.assert_parent_and_children(parent2, None, [child])
+        self.assert_parent_and_children(child, parent2, [])
 
     def test_groups_inheritance(self):
         top = toga.Group("C")
@@ -141,3 +138,63 @@ class TestCommandsGroup(unittest.TestCase):
     def test_set_section_without_parent(self):
         with self.assertRaises(ValueError):
             toga.Group("A", section=2)
+
+    def test_set_parent_causes_cyclic_parenting(self):
+        parent = toga.Group("P")
+        child = toga.Group("C", parent=parent)
+        with self.assertRaises(ValueError):
+            parent.parent = child
+        self.assert_parent_and_children(parent, None, [child])
+        self.assert_parent_and_children(child, parent, [])
+
+    def test_set_children_causes_cyclic_parenting(self):
+        parent = toga.Group("P")
+        child1 = toga.Group("C", parent=parent)
+        child2 = toga.Group("D")
+        with self.assertRaises(ValueError):
+            child1.children = [parent, child2]
+        self.assert_parent_and_children(parent, None, [child1])
+        self.assert_parent_and_children(child1, parent, [])
+        self.assert_parent_and_children(child2, None, [])
+
+    def test_add_child_causes_cyclic_parenting(self):
+        parent = toga.Group("P")
+        child = toga.Group("C", parent=parent)
+        with self.assertRaises(ValueError):
+            child.add_child(parent)
+        self.assert_parent_and_children(parent, None, [child])
+        self.assert_parent_and_children(child, parent, [])
+
+    def test_cannot_set_self_as_parent(self):
+        group = toga.Group("P")
+        with self.assertRaises(ValueError):
+            group.parent = group
+        self.assert_parent_and_children(group, None, [])
+
+    def test_cannot_set_self_as_child(self):
+        group = toga.Group("P")
+        child = toga.Group("C")
+        with self.assertRaises(ValueError):
+            group.children = [group, child]
+        self.assert_parent_and_children(group, None, [])
+        self.assert_parent_and_children(child, None, [])
+
+    def test_cannot_add_self_as_child(self):
+        parent = toga.Group("P")
+        with self.assertRaises(ValueError):
+            parent.add_child(parent)
+        self.assert_parent_and_children(parent, None, [])
+
+    def test_cannot_set_child_to_be_a_parent_of_its_grandparent(self):
+        grandparent = toga.Group("G")
+        parent = toga.Group("P", parent=grandparent)
+        child = toga.Group("C", parent=parent)
+        with self.assertRaises(ValueError):
+            grandparent.parent = child
+        self.assert_parent_and_children(grandparent, None, [parent])
+        self.assert_parent_and_children(parent, grandparent, [child])
+        self.assert_parent_and_children(child, parent, [])
+
+    def assert_parent_and_children(self, group, parent, children):
+        self.assertEqual(group.parent, parent)
+        self.assertEqual(group.children, children)

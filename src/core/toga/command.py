@@ -30,6 +30,8 @@ class Group:
 
     @parent.setter
     def parent(self, parent):
+        if parent == self or self.is_parent_of(parent):
+            self.__raise_parent_error(parent, self)
         old_parent = self.parent
         self._parent = parent
         if old_parent is not None:
@@ -46,6 +48,12 @@ class Group:
     def children(self, children):
         if children is None:
             children = []
+        invalid_children = [
+            child for child in children
+            if child == self or child.is_parent_of(self)
+        ]
+        if len(invalid_children) != 0:
+            self.__raise_parent_error(self, invalid_children[0])
         for child in self.children:
             child.parent = None
         self._children = []
@@ -53,6 +61,8 @@ class Group:
             self.add_child(child)
 
     def add_child(self, child):
+        if child == self or child.is_parent_of(self):
+            self.__raise_parent_error(self, child)
         if child.parent != self:
             child.parent = self
         if child not in self._children:
@@ -65,6 +75,8 @@ class Group:
             self._children.remove(child)
 
     def is_parent_of(self, child):
+        if child is None:
+            return False
         if child.parent is None:
             return False
         if child.parent == self:
@@ -111,6 +123,13 @@ class Group:
         if group is None:
             return "None"
         return group.label
+
+    @classmethod
+    def __raise_parent_error(cls, parent, child):
+        error_message = 'Cannot set {} to be a parent of {} because it causes a cyclic parenting.'.format(
+            parent.label, child.label
+        )
+        raise ValueError(error_message)
 
 
 Group.APP = Group('*', order=0)
