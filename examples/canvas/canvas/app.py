@@ -95,7 +95,7 @@ class ExampleCanvasApp(toga.App):
         self.line_width_slider = toga.Slider(
             range=(1, 10),
             default=1,
-            on_slide=self.refresh_canvas
+            on_change=self.refresh_canvas
         )
         self.dash_pattern_selection = toga.Selection(
             items=list(self.dash_patterns.keys()),
@@ -108,13 +108,13 @@ class ExampleCanvasApp(toga.App):
             range=(0, 2),
             default=1,
             tick_count=10,
-            on_slide=self.refresh_canvas
+            on_change=self.refresh_canvas
         )
         self.scale_y_slider = toga.Slider(
             range=(0, 2),
             default=1,
             tick_count=10,
-            on_slide=self.refresh_canvas
+            on_change=self.refresh_canvas
         )
         self.font_selection = toga.Selection(
             items=[

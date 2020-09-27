@@ -6,6 +6,7 @@ from .base import Widget
 class ScrollContainer(Widget):
     def create(self):
         self.native = Gtk.ScrolledWindow()
+        self.native.set_overlay_scrolling(True)
         self.native.interface = self.interface
 
     def set_content(self, widget):
@@ -17,9 +18,11 @@ class ScrollContainer(Widget):
         for child in widget.interface.children:
             child._impl.container = widget
 
+        # Remove the old widget before add the new one
         if self.native.get_child():
             self.native.get_child().destroy()
 
+        # Add the widget to ScrolledWindow as a scrollable widget
         self.native.add(self.inner_container.native)
         self.native.show_all()
 
@@ -31,14 +34,14 @@ class ScrollContainer(Widget):
         if self.interface.content:
             self.interface.content.window = window
 
-    def set_vertical(self, value):
-        self.native.set_policy(
-            Gtk.PolicyType.AUTOMATIC if getattr(self, 'horizontal', True) else Gtk.PolicyType.NEVER,
-            Gtk.PolicyType.AUTOMATIC if getattr(self, 'vertical', True) else Gtk.PolicyType.NEVER,
-        )
-
     def set_horizontal(self, value):
         self.native.set_policy(
-            Gtk.PolicyType.AUTOMATIC if getattr(self, 'horizontal', True) else Gtk.PolicyType.NEVER,
-            Gtk.PolicyType.AUTOMATIC if getattr(self, 'vertical', True) else Gtk.PolicyType.NEVER,
+            Gtk.PolicyType.AUTOMATIC if self.interface.horizontal else Gtk.PolicyType.NEVER,
+            Gtk.PolicyType.AUTOMATIC if self.interface.vertical else Gtk.PolicyType.NEVER,
+        )
+
+    def set_vertical(self, value):
+        self.native.set_policy(
+            Gtk.PolicyType.AUTOMATIC if self.interface.horizontal else Gtk.PolicyType.NEVER,
+            Gtk.PolicyType.AUTOMATIC if self.interface.vertical else Gtk.PolicyType.NEVER,
         )

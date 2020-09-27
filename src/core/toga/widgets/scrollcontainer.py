@@ -21,14 +21,16 @@ class ScrollContainer(Widget):
                  vertical=True, content=None, factory=None):
         super().__init__(id=id, style=style, factory=factory)
 
+        self._vertical = vertical
+        self._horizontal = horizontal
         self._content = None
 
         # Create a platform specific implementation of a Scroll Container
         self._impl = self.factory.ScrollContainer(interface=self)
 
         # Set all attributes
-        self.horizontal = horizontal
         self.vertical = vertical
+        self.horizontal = horizontal
         self.content = content
 
     def _set_window(self, window):

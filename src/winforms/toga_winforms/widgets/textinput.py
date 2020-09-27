@@ -12,8 +12,8 @@ class TextInput(Widget):
     def create(self):
         self.native = WinForms.TextBox()
         self.native.Multiline = False
-        self.native.Click += self.winforms_Click
-        self.native.TextChanged += self.winforms_onTextChanged
+        self.native.DoubleClick += self.winforms_double_click
+        self.native.TextChanged += self.winforms_text_changed
 
     def set_readonly(self, value):
         self.native.ReadOnly = value
@@ -38,9 +38,9 @@ class TextInput(Widget):
     def set_alignment(self, value):
         self.native.TextAlign = HorizontalTextAlignment(value)
 
-    def set_font(self, value):
-        if value:
-            self.native.Font = value._impl.native
+    def set_font(self, font):
+        if font:
+            self.native.Font = font.bind(self.interface.factory).native
 
     def rehint(self):
         # Height of a text input is known and fixed.
@@ -52,9 +52,9 @@ class TextInput(Widget):
     def set_on_change(self, handler):
         pass
 
-    def winforms_onTextChanged(self, sender, event):
+    def winforms_text_changed(self, sender, event):
         if self.interface._on_change:
             self.interface.on_change(self.interface)
 
-    def winforms_Click(self, sender, event):
+    def winforms_double_click(self, sender, event):
         self.native.SelectAll()

@@ -69,7 +69,12 @@ class Window:
         self.native.ClientSize = Size(*self.interface._size)
 
     def set_app(self, app):
-        pass
+        if app is None:
+            return
+        icon_impl = app.interface.icon._impl
+        if icon_impl is None:
+            return
+        self.native.Icon = icon_impl.native
 
     @property
     def vertical_shift(self):
@@ -176,6 +181,8 @@ class Window:
         dialog.Title = title
         if suggested_filename is not None:
             dialog.FileName = suggested_filename
+        if file_types is not None:
+            dialog.Filter = self.build_filter(file_types)
         if dialog.ShowDialog() == WinForms.DialogResult.OK:
             return dialog.FileName
         else:
@@ -191,7 +198,7 @@ class Window:
         if multiselect:
             dialog.Multiselect = True
         if dialog.ShowDialog() == WinForms.DialogResult.OK:
-            return dialog.FileName
+            return dialog.FileNames if multiselect else dialog.FileName
         else:
             raise ValueError("No filename provided in the open file dialog")
 

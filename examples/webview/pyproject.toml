@@ -1,0 +1,43 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name = "WebView Demo"
+bundle = "org.beeware"
+version = "0.3.0.dev24"
+url = "https://beeware.org"
+license = "BSD license"
+author = 'Tiberius Yak'
+author_email = "tiberius@beeware.org"
+
+[tool.briefcase.app.webview]
+formal_name = "WebView Demo"
+description = "A demo app using all WebView features"
+sources = ['webview']
+requires = []
+
+[tool.briefcase.app.webview.macOS]
+requires = [
+    'toga-cocoa',
+]
+
+[tool.briefcase.app.webview.linux]
+requires = [
+    'toga-gtk',
+]
+
+[tool.briefcase.app.webview.windows]
+requires = [
+    'toga-winforms',
+]
+
+# Mobile deployments
+[tool.briefcase.app.webview.iOS]
+requires = [
+    'toga-ios',
+]
+
+[tool.briefcase.app.webview.android]
+requires = [
+    'toga-android',
+]

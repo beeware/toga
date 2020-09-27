@@ -4,6 +4,10 @@ CACHE = {}
 
 
 def native_color(c):
+
+    if not c:
+        return None
+
     try:
         color = CACHE[c]
     except KeyError:

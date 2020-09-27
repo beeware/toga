@@ -48,13 +48,13 @@ class TogaTableViewController(UITableViewController):
     @objc_method
     def tableView_commitEditingStyle_forRowAtIndexPath_(self, tableView, editingStyle: int, indexPath):
         if editingStyle == UITableViewCellEditingStyleDelete:
-            item = self.interface.data.row(indexPath.row)
+            item = self.interface.data[indexPath.row]
             if editingStyle == UITableViewCellEditingStyleDelete:
                 if self.interface.on_delete:
-                    self.interface.on_delete(self.interface, row=indexPath.row)
+                    self.interface.on_delete(self.interface, row=item)
 
                 tableView.beginUpdates()
-                self.interface.data.remove(item, refresh=False)
+                self.interface.data.remove(item)
                 tableView.deleteRowsAtIndexPaths_withRowAnimation_([indexPath], UITableViewRowAnimationLeft)
                 tableView.endUpdates()
             elif editingStyle == UITableViewCellEditingStyleInsert:
@@ -68,8 +68,14 @@ class TogaTableViewController(UITableViewController):
 
     @objc_method
     def tableView_willSelectRowAtIndexPath_(self, tableView, indexPath):
+        index = indexPath.row
+        if index == -1:
+            selection = None
+        else:
+            selection = self.interface.data[index]
+
         if self.interface.on_select:
-            self.interface.on_select(self.interface, row=indexPath.row)
+            self.interface.on_select(self.interface, row=selection)
 
     # @objc_method
     # def tableView_heightForRowAtIndexPath_(self, tableView, indexPath) -> float:
@@ -101,8 +107,8 @@ class DetailedList(Widget):
             self.controller.refreshControl = None
 
     def after_on_refresh(self):
-        self.refreshControl.endRefreshing()
-        self.tableView.reloadData()
+        self.controller.refreshControl.endRefreshing()
+        self.controller.tableView.reloadData()
 
     def change_source(self, source):
         self.native.reloadData()
@@ -113,11 +119,14 @@ class DetailedList(Widget):
     def change(self, item):
         self.native.reloadData()
 
-    def remove(self, item):
+    def remove(self, item, index):
         self.native.reloadData()
 
     def clear(self):
         self.native.reloadData()
+
+    def get_selection(self):
+        return None
 
     def set_on_select(self, handler):
         # No special handling required

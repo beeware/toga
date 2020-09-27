@@ -86,7 +86,8 @@ class Window:
     def set_content(self, widget):
         # Construct the top-level layout, and set the window's view to
         # the be the widget's native object.
-        self.layout = Gtk.VBox()
+        # Alaway avoid using deprecated widgets and methods.
+        self.layout = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
 
         if self.toolbar_native:
             self.layout.pack_start(self.toolbar_native, False, False, 0)

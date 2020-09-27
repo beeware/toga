@@ -1,3 +1,4 @@
+from travertino.constants import TRANSPARENT
 from travertino.size import at_least
 
 from toga_winforms.libs import TextAlignment, WinForms
@@ -16,17 +17,21 @@ class Label(Widget):
     def set_text(self, value):
         self.native.Text = self.interface._text
 
-    def set_font(self, value):
-        if value:
-            self.native.Font = value._impl.native
+    def set_font(self, font):
+        if font:
+            self.native.Font = font.bind(self.interface.factory).native
 
     def set_color(self, value):
         if value:
             self.native.ForeColor = native_color(value)
+        else:
+            self.native.ForeColor = native_color(TRANSPARENT)
 
     def set_background_color(self, value):
         if value:
             self.native.BackColor = native_color(value)
+        else:
+            self.native.BackColor = native_color(TRANSPARENT)
 
     def rehint(self):
         # Width & height of a label is known and fixed.

@@ -1,9 +1,7 @@
 toga-pyramid
 ============
 
-A Pyramid backend for the `Toga widget toolkit`_.
-
-**Toga requires Python 3**
+A `Pyramid <https://trypyramid.com>`__ backend for the `Toga widget toolkit`_.
 
 **THIS IS A PLACEHOLDER PROJECT**
 

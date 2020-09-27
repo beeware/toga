@@ -59,9 +59,9 @@ class Canvas(Box):
         self.native.DoubleBuffered = True
         self.native.Paint += self.winforms_paint
         self.native.Resize += self.winforms_resize
-        self.native.MouseDown += self.winforms_mouse_press
-        self.native.MouseMove += self.winforms_mouse_drag
-        self.native.MouseUp += self.winforms_mouse_release
+        self.native.MouseDown += self.winforms_mouse_down
+        self.native.MouseMove += self.winforms_mouse_move
+        self.native.MouseUp += self.winforms_mouse_up
         self.clicks = 0
 
     def set_on_resize(self, handler):
@@ -99,7 +99,7 @@ class Canvas(Box):
         if self.interface.on_resize:
             self.interface.on_resize(self.interface)
 
-    def winforms_mouse_press(self, obj, mouse_event):
+    def winforms_mouse_down(self, obj, mouse_event):
         self.clicks = mouse_event.Clicks
         if mouse_event.Button == WinForms.MouseButtons.Left and self.interface.on_press:
             self.interface.on_press(
@@ -110,7 +110,7 @@ class Canvas(Box):
                 self.interface, mouse_event.X, mouse_event.Y, mouse_event.Clicks
             )
 
-    def winforms_mouse_drag(self, obj, mouse_event):
+    def winforms_mouse_move(self, obj, mouse_event):
         if self.clicks == 0:
             return
         if mouse_event.Button == WinForms.MouseButtons.Left and self.interface.on_drag:
@@ -122,7 +122,7 @@ class Canvas(Box):
                 self.interface, mouse_event.X, mouse_event.Y, self.clicks
             )
 
-    def winforms_mouse_release(self, obj, mouse_event):
+    def winforms_mouse_up(self, obj, mouse_event):
         if mouse_event.Button == WinForms.MouseButtons.Left and self.interface.on_release:
             self.interface.on_release(
                 self.interface, mouse_event.X, mouse_event.Y, self.clicks
@@ -296,7 +296,7 @@ class Canvas(Box):
 
     def measure_text(self, text, font, tight=False):
         sizes = [
-            WinForms.TextRenderer.MeasureText(line, font._impl.native)
+            WinForms.TextRenderer.MeasureText(line, font.bind(self.interface.factory).native)
             for line in text.splitlines()
         ]
         width = max([size.Width for size in sizes])

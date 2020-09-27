@@ -50,10 +50,11 @@ class Command:
         order: (optional) an integer indicating where a command falls within a
             section. If a Command doesn't have an order, it will be sorted
             alphabetically by label within its section.
+        enabled: whether to enable the command or not.
     """
     def __init__(self, action, label,
                  shortcut=None, tooltip=None, icon=None,
-                 group=None, section=None, order=None, factory=None):
+                 group=None, section=None, order=None, enabled=True, factory=None):
         self.factory = factory
 
         self.action = wrapped_handler(self, action)
@@ -67,9 +68,9 @@ class Command:
         self.section = section if section else 0
         self.order = order if order else 0
 
-        self._enabled = self.action is not None
-
         self._impl = None
+
+        self.enabled = enabled and self.action is not None
 
     def bind(self, factory):
         self.factory = factory

@@ -50,3 +50,7 @@ class DatePickerTests(TestCase):
 
         self.date_picker.on_change = dummy_function
         self.assertIsNotNone(self.date_picker.on_change)
+
+    def test_focus(self):
+        self.date_picker.focus()
+        self.assertActionPerformed(self.date_picker, "focus")

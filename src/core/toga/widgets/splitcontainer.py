@@ -11,7 +11,12 @@ class SplitContainer(Widget):
             If no style is provided then a new one will be created for the widget.
         direction: The direction for the container split,
             either `SplitContainer.HORIZONTAL` or `SplitContainer.VERTICAL`
-        content(``list`` of :class:`toga.Widget`): The list of components to be split.
+        content(``list`` of :class:`toga.Widget`): The list of components to be
+            split or tuples of components to be split and adjusting parameters
+            in the following order:
+            widget (:class:`toga.Widget`): The widget that will be added.
+            weight (float): Specifying the weighted splits.
+            flex (boolean): Should the content expand when the widget is resized. (optional)
         factory (:obj:`module`): A python module that is capable to return a
             implementation of this class with the same name. (optional & normally not needed)
     """
@@ -55,17 +60,26 @@ class SplitContainer(Widget):
         self._content = []
         for position, item in enumerate(content):
             if isinstance(item, tuple):
-                widget, weight = item
+                if len(item) == 2:
+                    widget, weight = item
+                    flex = True
+                elif len(item) == 3:
+                    widget, weight, flex = item
+                else:
+                    raise ValueError("The tuple of the content must be the length of "
+                                     "2 or 3 parameters, with the following order: "
+                                     "widget, weight and flex (optional)")
             else:
                 widget = item
                 weight = 1.0
+                flex = True
 
             self._content.append(widget)
             self._weight.append(weight)
 
             widget.app = self.app
             widget.window = self.window
-            self._impl.add_content(position, widget._impl)
+            self._impl.add_content(position, widget._impl, flex)
             widget.refresh()
 
     def _set_window(self, window):

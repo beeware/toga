@@ -28,8 +28,8 @@ class MainWindow(Window):
     def create(self):
         super().create()
         self.native.set_role("MainWindow")
-        toga_App.app.icon.bind(self.interface.factory)
-        self.native.set_icon(toga_App.app.icon._impl.native_72.get_pixbuf())
+        icon = toga_App.app.icon.bind(self.interface.factory)
+        self.native.set_icon(icon.native_72.get_pixbuf())
 
     def set_app(self, app):
         super().set_app(app)
@@ -76,17 +76,20 @@ class App:
     def gtk_startup(self, data=None):
         # Set up the default commands for the interface.
         self.interface.commands.add(
-            Command(None, 'About ' + self.interface.name, group=toga.Group.HELP),
+            Command(
+                lambda _: self.interface.about(),
+                'About ' + self.interface.name,
+                group=toga.Group.HELP
+            ),
             Command(None, 'Preferences', group=toga.Group.APP),
             # Quit should always be the last item, in a section on it's own
             Command(
-                lambda widget: self.exit(),
+                lambda _: self.interface.exit(),
                 'Quit ' + self.interface.name,
                 shortcut=toga.Key.MOD_1 + 'q',
                 group=toga.Group.APP,
                 section=sys.maxsize
             ),
-            Command(None, 'Visit homepage', group=toga.Group.HELP)
         )
         self._create_app_commands()
 
@@ -182,6 +185,26 @@ class App:
 
     def set_main_window(self, window):
         pass
+
+    def show_about_dialog(self):
+        about = Gtk.AboutDialog()
+
+        icon = toga_App.app.icon.bind(self.interface.factory)
+        about.set_logo(icon.native_72.get_pixbuf())
+
+        if self.interface.name is not None:
+            about.set_program_name(self.interface.name)
+        if self.interface.version is not None:
+            about.set_version(self.interface.version)
+        if self.interface.author is not None:
+            about.set_authors([self.interface.author])
+        if self.interface.description is not None:
+            about.set_comments(self.interface.description)
+        if self.interface.home_page is not None:
+            about.set_website(self.interface.home_page)
+
+        about.run()
+        about.destroy()
 
     def exit(self):
         self.native.quit()

@@ -51,3 +51,7 @@ class TimePickerTests(TestCase):
 
         self.time_picker.on_change = dummy_function
         self.assertIsNotNone(self.time_picker.on_change)
+
+    def test_focus(self):
+        self.time_picker.focus()
+        self.assertActionPerformed(self.time_picker, "focus")

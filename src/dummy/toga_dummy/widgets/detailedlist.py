@@ -8,17 +8,21 @@ class DetailedList(Widget):
     def change_source(self, source):
         self._action('change source', source=source)
 
-    def insert(self, item):
-        self._action('insert', item=item)
+    def insert(self, index, item):
+        self._action('insert', index=index, item=item)
 
     def change(self, item):
         self._action('change', item=item)
 
-    def remove(self, item):
-        self._action('remove', item=item)
+    def remove(self, index, item):
+        self._action('remove', index=index, item=item)
 
     def clear(self):
         self._action('clear')
+
+    def get_selection(self):
+        self._action('get selection')
+        return None
 
     def set_on_refresh(self, handler):
         self._set_value('on_refresh', handler)

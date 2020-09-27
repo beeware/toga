@@ -14,6 +14,9 @@ class Widget:
         # can pass it as `context` when creating native Android widgets.
         self._native_activity = MainActivity.singletonThis
         self.create()
+        # Immediately re-apply styles. Some widgets may defer style application until
+        # they have been added to a container.
+        self.interface.style.reapply()
 
     def set_app(self, app):
         pass
@@ -44,6 +47,9 @@ class Widget:
     def set_enabled(self, value):
         self.native.setEnabled(value)
 
+    def focus(self):
+        self.interface.factory.not_implemented("Widget.focus()")
+
     # APPLICATOR
 
     def set_bounds(self, x, y, width, height):
@@ -61,6 +67,12 @@ class Widget:
     def set_background_color(self, color):
         # By default, background color can't be changed.
         pass
+
+    def set_alignment(self, alignment):
+        pass  # If appropriate, a widget subclass will implement this.
+
+    def set_color(self, color):
+        pass  # If appropriate, a widget subclass will implement this.
 
     # INTERFACE
 

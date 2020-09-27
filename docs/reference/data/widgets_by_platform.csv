@@ -6,7 +6,7 @@ ActivityIndicator,Core Component,:class:`~toga.widgets.activityindicator.Activit
 Button,General Widget,:class:`~toga.widgets.button.Button`,Basic clickable Button,|y|,|y|,|y|,|y|,|y|,|y|
 Canvas,General Widget,:class:`~toga.widgets.canvas.Canvas`,Area you can draw on,|y|,|y|,,|y|,,
 DetailedList,General Widget,:class:`~toga.widgets.detailedlist.DetailedList`,A list of complex content,|y|,,,|y|,,
-Divider,General Widget,:class:`~toga.widgets.divider.Divider`,A horizontal or vertical line,|y|,,,,,
+Divider,General Widget,:class:`~toga.widgets.divider.Divider`,A horizontal or vertical line,|y|,|y|,,,,
 ImageView,General Widget,:class:`~toga.widgets.imageview.ImageView`,Image Viewer,|y|,|y|,|y|,|y|,,
 Label,General Widget,:class:`~toga.widgets.label.Label`,Text label,|y|,|y|,|y|,|y|,|y|,
 MultilineTextInput,General Widget,:class:`~toga.widgets.multilinetextinput.MultilineTextInput`,Multi-line Text Input field,|y|,|y|,|y|,|y|,,
@@ -19,7 +19,7 @@ Switch,General Widget,:class:`~toga.widgets.switch.Switch`,Switch,|y|,|y|,|y|,|y
 Table,General Widget,:class:`~toga.widgets.table.Table`,Table of data,|y|,|y|,|y|,,,
 TextInput,General Widget,:class:`~toga.widgets.textinput.TextInput`,Text Input field,|y|,|y|,|y|,|y|,|y|,|y|
 Tree,General Widget,:class:`~toga.widgets.tree.Tree`,Tree of data,|y|,|y|,,,,
-WebView,General Widget,:class:`~toga.widgets.webview.WebView`,A panel for displaying HTML,|y|,|y|,|y|,,|y|,|y|
+WebView,General Widget,:class:`~toga.widgets.webview.WebView`,A panel for displaying HTML,|y|,|y|,|y|,,,|y|
 Widget,General Widget,:class:`~toga.widgets.base.Widget`,The base widget,|y|,|y|,|y|,|y|,,|y|
 Box,Layout Widget,:class:`~toga.widgets.box.Box`,Container for components,|y|,|y|,|y|,|y|,|y|,|y|
 ScrollContainer,Layout Widget,:class:`~toga.widgets.scrollcontainer.ScrollContainer`,Scrollable Container,|y|,|y|,|y|,|y|,,

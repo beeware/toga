@@ -81,6 +81,9 @@ class App:
     def set_main_window(self, window):
         pass
 
+    def show_about_dialog(self):
+        self.interface.factory.not_implemented("App.show_about_dialog()")
+
     def exit(self):
         pass
 

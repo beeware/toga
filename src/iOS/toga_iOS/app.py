@@ -112,10 +112,30 @@ class App:
         # Main loop is a no-op on iOS; the app loop is integrated with the
         # main iOS event loop.
 
-        self.loop.run_forever(lifecycle=iOSLifecycle())
+        # The rest of this method will eventually be wrapped into
+        # rubicon as the method `run_forever_cooperatively()`.
+        # self.loop.run_forever_cooperatively(lifecycle=iOSLifecycle())
+        # ==== start run_forever_cooperatively()
+        self.loop._set_lifecycle(iOSLifecycle())
+
+        if self.loop.is_running():
+            raise RuntimeError(
+                "Recursively calling run_forever is forbidden. "
+                "To recursively run the event loop, call run().")
+
+        self.loop._running = True
+        from asyncio import events
+        if hasattr(events, "_set_running_loop"):
+            events._set_running_loop(self.loop)
+
+        self.loop._lifecycle.start()
+        # ==== end run_forever_cooperatively()
 
     def set_main_window(self, window):
         pass
+
+    def show_about_dialog(self):
+        self.interface.factory.not_implemented("App.show_about_dialog()")
 
     def exit(self):
         pass

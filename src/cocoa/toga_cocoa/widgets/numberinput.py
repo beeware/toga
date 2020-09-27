@@ -161,9 +161,9 @@ class NumberInput(Widget):
     def set_alignment(self, value):
         self.input.alignment = NSTextAlignment(value)
 
-    def set_font(self, value):
-        if value:
-            self.input.font = value._impl.native
+    def set_font(self, font):
+        if font:
+            self.input.font = font.bind(self.interface.factory).native
 
     def set_value(self, value):
         if self.interface.value is None:

@@ -57,7 +57,7 @@ class NumberInput(Widget):
     def set_alignment(self, value):
         self.interface.factory.not_implemented('NumberInput.set_alignment()')
 
-    def set_font(self, value):
+    def set_font(self, font):
         self.interface.factory.not_implemented('NumberInput.set_font()')
 
     def rehint(self):

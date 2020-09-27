@@ -1,3 +1,4 @@
+from travertino.constants import TRANSPARENT
 from travertino.size import at_least
 
 from toga_winforms.colors import native_color
@@ -31,10 +32,14 @@ class Button(Widget):
     def set_color(self, value):
         if value:
             self.native.ForeColor = native_color(value)
+        else:
+            self.native.ForeColor = native_color(TRANSPARENT)
 
     def set_background_color(self, value):
         if value:
             self.native.BackColor = native_color(value)
+        else:
+            self.native.BackColor = native_color(TRANSPARENT)
 
     def rehint(self):
         # self.native.Size = Size(0, 0)

@@ -5,6 +5,7 @@
 *.dist-info
 .eggs
 .coverage
+coverage.xml
 dist
 build
 _build
@@ -28,6 +29,7 @@ src/gtk/cairo
 pip-selfcheck.json
 pyvenv.cfg
 .vscode
+.envrc
 bin/
 lib/
 

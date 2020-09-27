@@ -42,8 +42,8 @@ class ExampleLayoutApp(toga.App):
         self.scroll_box = toga.Box(children=[], style=Pack(direction=COLUMN, padding=10, flex=1))
         self.scroll_view = toga.ScrollContainer(content=self.scroll_box, style=Pack(width=120))
 
-        icon = toga.Icon('')
-        self.image_view = toga.ImageView(icon, style=Pack(padding=10, width=60, height=60))
+        image = toga.Image('resources/tiberius.png')
+        self.image_view = toga.ImageView(image, style=Pack(padding=10, width=60, height=60))
 
         # this tests adding children during init, before we have an implementation
         self.button_box = toga.Box(

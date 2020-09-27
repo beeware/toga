@@ -7,6 +7,7 @@ from ..libs.android_widgets import (
     Gravity,
     InputType,
     TextWatcher,
+    TypedValue,
     View__MeasureSpec
 )
 from .base import Widget, align
@@ -70,8 +71,11 @@ class NumberInput(Widget):
     def set_alignment(self, value):
         self.native.setGravity(Gravity.CENTER_VERTICAL | align(value))
 
-    def set_font(self, value):
-        self.interface.factory.not_implemented("NumberInput.set_font()")
+    def set_font(self, font):
+        if font:
+            font_impl = font.bind(self.interface.factory)
+            self.native.setTextSize(TypedValue.COMPLEX_UNIT_SP, font_impl.get_size())
+            self.native.setTypeface(font_impl.get_typeface(), font_impl.get_style())
 
     def set_value(self, value):
         # Store a string in the Android widget. The `afterTextChanged` method
