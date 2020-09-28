@@ -11,8 +11,8 @@ class Divider(Widget):
         self.native.BorderStyle = WinForms.BorderStyle.Fixed3D
         self.native.AutoSize = False
 
-    def set_direction(self, direction):
-        if direction == toga.Divider.HORIZONTAL:
+    def set_direction(self, value):
+        if value == toga.Divider.HORIZONTAL:
             self.native.Height = 2
         else:
             self.native.Width = 2
