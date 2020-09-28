@@ -5,7 +5,7 @@ from string import ascii_uppercase
 
 def toga_to_winforms_key(key):
     code = 0
-    for modifier, modifier_code in WINFORMS_MODIFIERS_MAP.items():
+    for modifier, modifier_code in WINFORMS_NON_PRINTABLES_MAP.items():
         if modifier.value in key:
             code |= modifier_code
             key = key.replace(modifier.value, "")
@@ -15,11 +15,11 @@ def toga_to_winforms_key(key):
     return code
 
 
-WINFORMS_MODIFIERS_MAP = {
+WINFORMS_NON_PRINTABLES_MAP = {
     Key.MOD_1: WinForms.Keys.Control,
     Key.MOD_2: WinForms.Keys.Alt,
 }
-WINFORMS_MODIFIERS_MAP.update({
+WINFORMS_NON_PRINTABLES_MAP.update({
     getattr(Key, modifier.upper()): getattr(WinForms.Keys, modifier.title())
     for modifier in ["shift", "up", "down", "left", "right", "home"]
 })
