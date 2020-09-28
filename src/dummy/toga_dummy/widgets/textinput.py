@@ -28,3 +28,9 @@ class TextInput(Widget):
 
     def set_on_change(self, handler):
         self._set_value('on_change', handler)
+
+    def set_error(self, error_message):
+        self._set_value('error', error_message)
+
+    def unset_error(self):
+        self._action('unset_error')

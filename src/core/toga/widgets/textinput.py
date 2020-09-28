@@ -31,10 +31,10 @@ class TextInput(Widget):
         self.on_change = on_change
         self.placeholder = placeholder
         self.readonly = readonly
-        self.validator = validator
 
-        # Set the actual value last, as it may trigger change events, etc.
+        # Set the actual value after on_change, as it may trigger change events, etc.
         self.value = initial
+        self.validator = validator
 
     def _create(self):
         self._impl = self.factory.TextInput(interface=self)
@@ -111,8 +111,20 @@ class TextInput(Widget):
         self._on_change = wrapped_handler(self, handler)
         self._impl.set_on_change(self._on_change)
 
+    @property
+    def validator(self):
+        return self._validator
+
+    @validator.setter
+    def validator(self, validator):
+        self._validator = validator
+        self.validate()
+
     def validate(self):
-        error_message = None if self.validator is None else self.validator(self.value)
+        if self.validator is None:
+            error_message = None
+        else:
+            error_message = self.validator(self.value)
         if error_message is None:
             self.unset_error()
         else:
