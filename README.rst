@@ -59,8 +59,8 @@ Minimum requirements
 
 * We're working on Windows support, but not all features and widgets are
   supported. At a minimum, you'll need Python 3 and .NET Framework 4. This has
-  been tested on Windows 10, but should work on 7 and 8. Pull requests, help and
-  corrections are most welcome.
+  been tested on Windows 10, but should work on 7 and 8. Pull requests, help
+  and corrections are most welcome.
 
 Quickstart
 ~~~~~~~~~~
