@@ -20,7 +20,9 @@ class TextInput(Widget):
 
     def __init__(
             self, id=None, style=None, factory=None,
-            initial=None, placeholder=None, readonly=False, on_change=None):
+            initial=None, placeholder=None, readonly=False, on_change=None,
+            validator=None
+    ):
         super().__init__(id=id, style=style, factory=factory)
 
         # Create a platform specific implementation of the widget
@@ -29,6 +31,7 @@ class TextInput(Widget):
         self.on_change = on_change
         self.placeholder = placeholder
         self.readonly = readonly
+        self.validator = validator
 
         # Set the actual value last, as it may trigger change events, etc.
         self.value = initial
@@ -100,10 +103,28 @@ class TextInput(Widget):
 
     @on_change.setter
     def on_change(self, handler):
-        """Set the handler to invoke when the value is changeed.
+        """Set the handler to invoke when the value is changed.
 
         Args:
-            handler (:obj:`callable`): The handler to invoke when the value is changeed.
+            handler (:obj:`callable`): The handler to invoke when the value is changed.
         """
         self._on_change = wrapped_handler(self, handler)
         self._impl.set_on_change(self._on_change)
+
+    def validate(self):
+        error_message = None if self.validator is None else self.validator(self.value)
+        if error_message is None:
+            self.unset_error()
+        else:
+            self.set_error(error_message)
+
+    def is_valid(self):
+        if self.validator is None:
+            return True
+        return self.validator(self.value) is None
+
+    def set_error(self, error_message):
+        self._impl.set_error(error_message)
+
+    def unset_error(self):
+        self._impl.unset_error()

@@ -14,6 +14,12 @@ class TextInput(Widget):
         self.native.Multiline = False
         self.native.DoubleClick += self.winforms_double_click
         self.native.TextChanged += self.winforms_text_changed
+        self.native.Validated += self.winforms_validated
+        self.error_provider = WinForms.ErrorProvider()
+        self.error_provider.SetIconAlignment(
+            self.native, WinForms.ErrorIconAlignment.BottomRight
+        )
+        self.error_provider.BlinkStyle = WinForms.ErrorBlinkStyle.NeverBlink
 
     def set_readonly(self, value):
         self.native.ReadOnly = value
@@ -55,6 +61,15 @@ class TextInput(Widget):
     def winforms_text_changed(self, sender, event):
         if self.interface._on_change:
             self.interface.on_change(self.interface)
+
+    def winforms_validated(self, sender, event):
+        self.interface.validate()
+
+    def unset_error(self):
+        self.error_provider.SetError(self.native, "")
+
+    def set_error(self, error_message):
+        self.error_provider.SetError(self.native, error_message)
 
     def winforms_double_click(self, sender, event):
         self.native.SelectAll()
