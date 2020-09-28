@@ -363,7 +363,7 @@ class TestCase(unittest.TestCase):
     def assertValueNotSet(self, _widget, attr):
         self.assertTrue(
             attr not in _widget._impl._sets,
-            msg=f"Expected {attr} not to be set, but it was."
+            msg="Expected {attr} not to be set, but it was.".format(attr=attr)
         )
 
     def assertActionNotPerformed(self, _widget, action):
