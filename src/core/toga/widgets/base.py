@@ -213,3 +213,6 @@ class Widget(Node):
     def focus(self):
         if self._impl is not None:
             self._impl.focus()
+
+    def noise(self):
+        print("Do a thing")
