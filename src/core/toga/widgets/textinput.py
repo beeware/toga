@@ -15,6 +15,9 @@ class TextInput(Widget):
         initial (str): The initial text for the input.
         placeholder (str): If no input is present this text is shown.
         readonly (bool):  Whether a user can write into the text input, defaults to `False`.
+        on_change (Callable): Method to be called when text is changed in text box
+        validator (Callable): Validator to run on the value of the text box. Should
+            return None is value is valid and an error message if not.
     """
     MIN_WIDTH = 100
 
