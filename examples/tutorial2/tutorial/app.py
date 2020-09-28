@@ -34,7 +34,7 @@ def action6(widget):
     print("action 6")
 
 
-SUBGROUP = toga.Group("Sub", parent=toga.Group.COMMANDS, order=2)
+SUB_MENU_GROUP = toga.Group("Sub Menu", parent=toga.Group.COMMANDS, order=2)
 
 
 def build(app):
@@ -98,21 +98,21 @@ def build(app):
         tooltip='Perform action 3',
         shortcut=toga.Key.MOD_1 + 'k',
         icon=cricket_icon,
-        order=1
+        order=3
     )
     cmd5 = toga.Command(
         action5,
         label='Action 5',
         tooltip='Perform action 5',
-        order=1,
-        group=SUBGROUP
+        order=2,
+        group=SUB_MENU_GROUP
     )
     cmd6 = toga.Command(
         action6,
         label='Action 6',
         tooltip='Perform action 6',
-        order=2,
-        group=SUBGROUP
+        order=1,
+        group=SUB_MENU_GROUP
     )
 
     def action4(widget):
@@ -124,7 +124,7 @@ def build(app):
         label='Action 4',
         tooltip='Perform action 4',
         icon=brutus_icon,
-        order=3
+        order=1
     )
 
     app.commands.add(cmd1, cmd3, cmd4, cmd0, cmd5, cmd6)
