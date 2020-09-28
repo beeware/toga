@@ -11,7 +11,7 @@ class DividerApp(toga.App):
         self.main_window = toga.MainWindow(title=self.name, size=(300, 150))
 
         style = Pack(padding_top=24)
-        substyle = Pack(padding_right=24, flex=1)
+        substyle = Pack(padding_right=12, padding_left=12, flex=1)
 
         # Add the content on the main window
         self.main_window.content = toga.Box(
@@ -23,9 +23,9 @@ class DividerApp(toga.App):
                 toga.Label('Section 3', style=style),
                 toga.Box(
                     children=[
-                        toga.DetailedList(['List 1'], style=substyle),
+                        toga.TextInput(placeholder="First textbox"),
                         toga.Divider(direction=toga.Divider.VERTICAL, style=substyle),
-                        toga.DetailedList(['List 2'], style=substyle),
+                        toga.TextInput(placeholder="Second textbox"),
                     ],
                     style=Pack(direction=ROW, padding=24, flex=1),
                 ),
