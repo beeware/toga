@@ -71,7 +71,12 @@ class Switch(Widget):
 
     @is_on.setter
     def is_on(self, value):
-        if value is True:
-            self._impl.set_is_on(True)
-        elif value is False:
-            self._impl.set_is_on(False)
+        if not isinstance(value, bool):
+            raise ValueError("Switch.is_on can only be set to true or false")
+        self._impl.set_is_on(value)
+
+    def toggle(self):
+        """Reverse the value of `Slider.is_on` property from true to false and
+        vice versa.
+        """
+        self.is_on = not self.is_on

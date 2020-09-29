@@ -53,3 +53,17 @@ class SwitchTests(TestCase):
     def test_focus(self):
         self.switch.focus()
         self.assertActionPerformed(self.switch, "focus")
+
+    def test_toggle_from_true_to_false(self):
+        self.switch.is_on = True
+        self.switch.toggle()
+        self.assertValueSet(self.switch, 'is_on', False)
+
+    def test_toggle_from_false_to_true(self):
+        self.switch.is_on = False
+        self.switch.toggle()
+        self.assertValueSet(self.switch, 'is_on', True)
+
+    def test_set_is_on_with_non_boolean(self):
+        with self.assertRaises(ValueError):
+            self.switch.is_on = "on"
