@@ -32,6 +32,8 @@ class TextInput(Widget):
         self.native.bezeled = True
         self.native.bezelStyle = NSTextFieldSquareBezel
 
+        self.native.wantsLayer = True
+
         # Add the layout constraints
         self.add_constraints()
 
@@ -69,7 +71,6 @@ class TextInput(Widget):
         pass
 
     def set_error(self, error_message):
-        self.native.wantsLayer = True
         self.native.layer.borderColor = NSColor.redColor.CGColor
         self.native.layer.borderWidth = 1.0
         self.native.layer.cornerRadius = 0.0
@@ -79,5 +80,4 @@ class TextInput(Widget):
         self.set_background_color(None)
         self.native.toolTip = ""
         if self.native.layer is not None:
-            self.native.layer.borderColor = None
-        self.native.wantsLayer = False
+            self.native.layer = None
