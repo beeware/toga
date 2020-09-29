@@ -162,3 +162,8 @@ class Key(Enum):
             return self.value + other.value
         except AttributeError:
             return self.value + other
+
+    def __radd__(self, other):
+        """Same as add
+        """
+        return self + other

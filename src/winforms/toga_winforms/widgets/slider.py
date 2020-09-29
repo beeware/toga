@@ -49,7 +49,7 @@ class Slider(Widget):
         minimum, maximum = self.interface.range
         span = maximum - minimum
         actual_tick_count = self.native.Maximum
-        self.native.Value = (value - minimum) / span * actual_tick_count
+        self.native.Value = round((value - minimum) / span * actual_tick_count)
 
     def set_range(self, range):
         pass
