@@ -5,7 +5,8 @@ from toga_cocoa.libs import (
     NSTextAlignment,
     NSTextField,
     NSTextFieldSquareBezel,
-    objc_method
+    objc_method,
+    NSColor,
 )
 
 from .base import Widget
@@ -16,6 +17,7 @@ class TogaTextFieldDelegate(NSObject):
     def controlTextDidChange_(self, notification) -> None:
         if self.interface.on_change:
             self.interface.on_change(self.interface)
+        self.interface.validate()
 
 
 class TextInput(Widget):
@@ -67,7 +69,15 @@ class TextInput(Widget):
         pass
 
     def set_error(self, error_message):
-        self.interface.factory.not_implemented("TextInput.set_error()")
+        self.native.wantsLayer = True
+        self.native.layer.borderColor = NSColor.redColor.CGColor
+        self.native.layer.borderWidth = 1.0
+        self.native.layer.cornerRadius = 0.0
+        self.native.toolTip = error_message
 
     def unset_error(self):
-        self.interface.factory.not_implemented("TextInput.unset_error()")
+        self.set_background_color(None)
+        self.native.toolTip = ""
+        if self.native.layer is not None:
+            self.native.layer.borderColor = None
+        self.native.wantsLayer = False
