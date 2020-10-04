@@ -17,8 +17,9 @@ class TextInput(Widget):
         self.native.Validated += self.winforms_validated
         self.error_provider = WinForms.ErrorProvider()
         self.error_provider.SetIconAlignment(
-            self.native, WinForms.ErrorIconAlignment.BottomRight
+            self.native, WinForms.ErrorIconAlignment.MiddleRight
         )
+        self.error_provider.SetIconPadding(self.native, -20)
         self.error_provider.BlinkStyle = WinForms.ErrorBlinkStyle.NeverBlink
 
     def set_readonly(self, value):
