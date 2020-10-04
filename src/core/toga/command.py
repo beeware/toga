@@ -10,7 +10,7 @@ class Group:
         order:
         parent:
     """
-    def __init__(self, label, order=None, section=None, parent=None, children=None):
+    def __init__(self, label, order=None, section=None, parent=None):
         self.label = label
         self.order = order if order else 0
         if parent is None and section is not None:
@@ -19,15 +19,7 @@ class Group:
 
         # First initialization needed for later
         self._parent = None
-        self._children = []
-
-        try:
-            self.parent = parent
-            self.children = children
-        except ValueError as error:
-            self.parent = None
-            self.children = None
-            raise error
+        self.parent = parent
 
     @property
     def parent(self):
@@ -35,49 +27,23 @@ class Group:
 
     @parent.setter
     def parent(self, parent):
+        if parent is None:
+            self._parent = None
+            self._root = self
+            return
         if parent == self or self.is_parent_of(parent):
-            self.__raise_parent_error(parent, self)
-        old_parent = self.parent
+            error_message = (
+                'Cannot set {} to be a parent of {} '
+                'because it causes a cyclic parenting.').format(
+                parent.label, self.label
+            )
+            raise ValueError(error_message)
         self._parent = parent
-        if old_parent is not None:
-            old_parent.remove_child(self)
-        if parent is not None:
-            parent.add_child(self)
+        self._root = parent.root
 
     @property
-    def children(self):
-        # Returning copy in order to keep internal data safe
-        return list(self._children)
-
-    @children.setter
-    def children(self, children):
-        if children is None:
-            children = []
-        invalid_children = [
-            child for child in children
-            if child == self or child.is_parent_of(self)
-        ]
-        if len(invalid_children) != 0:
-            self.__raise_parent_error(self, invalid_children[0])
-        for child in self.children:
-            child.parent = None
-        self._children = []
-        for child in children:
-            self.add_child(child)
-
-    def add_child(self, child):
-        if child == self or child.is_parent_of(self):
-            self.__raise_parent_error(self, child)
-        if child.parent != self:
-            child.parent = self
-        if child not in self._children:
-            self._children.append(child)
-
-    def remove_child(self, child):
-        if child.parent == self:
-            child.parent = None
-        if child in self._children:
-            self._children.remove(child)
+    def root(self):
+        return self._root
 
     def is_parent_of(self, child):
         if child is None:
@@ -92,19 +58,7 @@ class Group:
         return parent.is_parent_of(self)
 
     def __lt__(self, other):
-        if self.parent == other.parent:
-            return [self.section, self.order, self.label] < [
-                other.section, other.order, other.label
-            ]
-        if self.is_parent_of(other):
-            return True
-        if other.is_parent_of(self):
-            return False
-        if self.parent is None:
-            return self < other.parent
-        if other.parent is None:
-            return self.parent < other
-        return self.parent < other.parent
+        return self.to_tuple() < other.to_tuple()
 
     def __gt__(self, other):
         return other < self
@@ -115,26 +69,16 @@ class Group:
         return self.order == other.order and self.label == other.label
 
     def __repr__(self):
-        parent_string = self.__to_string(self.parent)
-        children_strings = "[" + ", ".join(
-            [self.__to_string(child) for child in self.children]
-        ) + "]"
-        return "Group[label={}, order={}, parent={}, children={}]".format(
-            self.label, self.order, parent_string, children_strings
+        parent_string = "None" if self.parent is None else self.parent.label
+        return "Group[label={}, order={}, parent={}]".format(
+            self.label, self.order, parent_string
         )
 
-    @classmethod
-    def __to_string(cls, group):
-        if group is None:
-            return "None"
-        return group.label
-
-    @classmethod
-    def __raise_parent_error(cls, parent, child):
-        error_message = 'Cannot set {} to be a parent of {} because it causes a cyclic parenting.'.format(
-            parent.label, child.label
-        )
-        raise ValueError(error_message)
+    def to_tuple(self):
+        self_tuple = (self.section, self.order, self.label)
+        if self.parent is None:
+            return tuple([self_tuple])
+        return tuple([*self.parent.to_tuple(), self_tuple])
 
 
 Group.APP = Group('*', order=0)
@@ -227,21 +171,7 @@ class Command:
             self._icon.bind(self.factory)
 
     def __lt__(self, other):
-        if self.group == other.group:
-            return [self.section, self.order, self.label] < [
-                other.section, other.order, other.label
-            ]
-        if self.group == other.group.parent:
-            return [self.section, self.order, self.label] < [
-                other.group.section,
-                other.group.order,
-                other.group.label,
-            ]
-        if self.group.parent == other.group:
-            return [self.group.section, self.group.order, self.group.label] < [
-                other.section, other.order, other.label
-            ]
-        return self.group < other.group
+        return self.to_tuple() < other.to_tuple()
 
     def __gt__(self, other):
         return other < self
@@ -253,6 +183,9 @@ class Command:
             self.section,
             self.order,
         )
+
+    def to_tuple(self):
+        return tuple([*self.group.to_tuple(), (self.section, self.order, self.label)])
 
 
 GROUP_BREAK = object()
