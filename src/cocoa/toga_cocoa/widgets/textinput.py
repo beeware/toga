@@ -6,7 +6,6 @@ from toga_cocoa.libs import (
     NSTextField,
     NSTextFieldSquareBezel,
     objc_method,
-    NSColor,
 )
 
 from .base import Widget
@@ -17,6 +16,9 @@ class TogaTextFieldDelegate(NSObject):
     def controlTextDidChange_(self, notification) -> None:
         if self.interface.on_change:
             self.interface.on_change(self.interface)
+
+    @objc_method
+    def controlTextDidEndEditing_(self) -> None:
         self.interface.validate()
 
 
@@ -32,10 +34,9 @@ class TextInput(Widget):
         self.native.bezeled = True
         self.native.bezelStyle = NSTextFieldSquareBezel
 
-        self.native.wantsLayer = True
-
         # Add the layout constraints
         self.add_constraints()
+        self.last_valid_value = None
 
     def set_readonly(self, value):
         # Even if it's not editable, it's still selectable.
@@ -71,13 +72,9 @@ class TextInput(Widget):
         pass
 
     def set_error(self, error_message):
-        self.native.layer.borderColor = NSColor.redColor.CGColor
-        self.native.layer.borderWidth = 1.0
-        self.native.layer.cornerRadius = 0.0
-        self.native.toolTip = error_message
+        self.interface.value = self.last_valid_value
+        if self.interface.window is not None:
+            self.interface.window.error_dialog("Validation Error", error_message)
 
     def unset_error(self):
-        self.set_background_color(None)
-        self.native.toolTip = ""
-        if self.native.layer is not None:
-            self.native.layer = None
+        self.last_valid_value = self.interface.value
