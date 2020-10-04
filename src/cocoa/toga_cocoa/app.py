@@ -9,7 +9,11 @@ from rubicon.objc.eventloop import CocoaLifecycle, EventLoopPolicy
 import toga
 from toga.handlers import wrapped_handler
 
+from .keys import cocoa_key
 from .libs import (
+    SEL,
+    NSMenu,
+    NSMenuItem,
     NSURL,
     NSAboutPanelOptionApplicationIcon,
     NSAboutPanelOptionApplicationName,
@@ -28,7 +32,6 @@ from .libs import (
     NSString,
     objc_method
 )
-from .menu_builder import MenuBuilder
 from .window import Window
 
 
@@ -152,7 +155,6 @@ class App:
 
         # Create the lookup table of menu items,
         # then force the creation of the menus.
-        self._menu_items = {}
         self.create_menus()
 
     def _create_app_commands(self):
@@ -160,7 +162,44 @@ class App:
         pass
 
     def create_menus(self):
-        menubar = MenuBuilder(self.interface.commands).build()
+        # Only create the menu if the menu item index has been created.
+        if hasattr(self, '_menu_items'):
+            return
+        self._menu_items = {}
+        self._group_menus = {}
+        menubar = NSMenu.alloc().initWithTitle('MainMenu')
+        submenu = None
+        for cmd in self.interface.commands:
+            if cmd == toga.GROUP_BREAK:
+                submenu = None
+            elif cmd == toga.SECTION_BREAK:
+                submenu.addItem_(NSMenuItem.separatorItem())
+            else:
+                if submenu is None:
+                    submenu = self.__get_or_create_group_menu(cmd.group, menubar)
+                    submenu.setAutoenablesItems(False)
+
+                if cmd.shortcut:
+                    key, modifier = cocoa_key(cmd.shortcut)
+                else:
+                    key = ''
+                    modifier = None
+
+                item = NSMenuItem.alloc().initWithTitle(
+                    cmd.label,
+                    action=SEL('selectMenuItem:'),
+                    keyEquivalent=key,
+                )
+                if modifier is not None:
+                    item.keyEquivalentModifierMask = modifier
+
+                cmd._impl.native.append(item)
+                self._menu_items[item] = cmd
+
+                # This line may appear redundant, but it triggers the logic
+                # to force the enabled status on the underlying widgets.
+                cmd.enabled = cmd.enabled
+                submenu.addItem(item)
 
         # Set the menu for the app.
         self.native.mainMenu = menubar
@@ -243,6 +282,21 @@ class App:
 
     def add_background_task(self, handler):
         self.loop.call_soon(wrapped_handler(self, handler), self)
+
+    def __get_or_create_group_menu(self, group, menubar):
+        if group is None:
+            return menubar
+        if group.label in self._group_menus:
+            return self._group_menus[group.label]
+        parent_menu = self.__get_or_create_group_menu(group.parent, menubar)
+        menu_item = parent_menu.addItemWithTitle(
+            group.label, action=None, keyEquivalent=''
+        )
+        submenu = NSMenu.alloc().initWithTitle(group.label)
+        submenu.setAutoenablesItems(False)
+        parent_menu.setSubmenu(submenu, forItem=menu_item)
+        self._group_menus[group.label] = submenu
+        return submenu
 
 
 class DocumentApp(App):
