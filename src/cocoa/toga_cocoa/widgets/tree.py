@@ -294,7 +294,7 @@ class Tree(Widget):
         else:
             index = self.tree.selectedRow
             if index != -1:
-                return self.tree.itemAtRow(current_index).attrs['node']
+                return self.tree.itemAtRow(index).attrs['node']
             else:
                 return None
 

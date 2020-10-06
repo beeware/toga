@@ -5,6 +5,7 @@
 *.dist-info
 .eggs
 .coverage
+coverage.xml
 dist
 build
 _build

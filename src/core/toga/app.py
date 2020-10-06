@@ -1,5 +1,7 @@
 import signal
 import sys
+import warnings
+import webbrowser
 from builtins import id as identifier
 from email.message import Message
 
@@ -14,6 +16,10 @@ try:
 except ImportError:
     # Backwards compatibility - imporlib.metadata was added in Python 3.8
     import importlib_metadata
+
+
+# Make sure deprecation warnings are shown by default
+warnings.filterwarnings("default", category=DeprecationWarning)
 
 
 class MainWindow(Window):
@@ -168,7 +174,7 @@ class App:
         if app_id:
             self._app_id = app_id
         else:
-            self._app_id = self.metadata['App-ID']
+            self._app_id = self.metadata.get('App-ID', None)
 
         if self._app_id is None:
             raise RuntimeError('Toga application must have an App ID')
@@ -177,29 +183,29 @@ class App:
         # the module metadata.
         if author:
             self._author = author
-        elif self.metadata['Author']:
-            self._author = self.metadata['Author']
+        else:
+            self._author = self.metadata.get('Author', None)
 
         # If a version has been provided, use it; otherwise, look to
         # the module metadata.
         if version:
             self._version = version
-        elif self.metadata['Version']:
-            self._version = self.metadata['Version']
+        else:
+            self._version = self.metadata.get('Version', None)
 
         # If a home_page has been provided, use it; otherwise, look to
         # the module metadata.
         if home_page:
             self._home_page = home_page
-        elif self.metadata['Home-page']:
-            self._home_page = self.metadata['home_page']
+        else:
+            self._home_page = self.metadata.get('Home-page', None)
 
         # If a description has been provided, use it; otherwise, look to
         # the module metadata.
         if description:
             self._description = description
-        elif self.metadata['description']:
-            self._description = self.metadata['Summary']
+        else:
+            self._description = self.metadata.get('Summary', None)
 
         # Set the application DOM ID; create an ID if one hasn't been provided.
         self._id = id if id else identifier(self)
@@ -406,7 +412,7 @@ class App:
         self._impl.hide_cursor()
 
     def startup(self):
-        """ Create and show the main window for the application
+        """Create and show the main window for the application
         """
         self.main_window = MainWindow(title=self.formal_name, factory=self.factory)
 
@@ -414,6 +420,23 @@ class App:
             self.main_window.content = self._startup_method(self)
 
         self.main_window.show()
+
+    def about(self):
+        """Display the About dialog for the app.
+
+        Default implementation shows a platform-appropriate about dialog
+        using app metadata. Override if you want to display a custom About
+        dialog.
+        """
+        self._impl.show_about_dialog()
+
+    def visit_homepage(self):
+        """Open the application's homepage in the default browser.
+
+        If the application metadata doesn't define a homepage, this is a no-op.
+        """
+        if self.home_page is not None:
+            webbrowser.open(self.home_page)
 
     def main_loop(self):
         """ Invoke the application to handle user input.

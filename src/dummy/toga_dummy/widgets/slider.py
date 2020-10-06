@@ -20,5 +20,5 @@ class Slider(Widget):
     def rehint(self):
         self._action('rehint Slider')
 
-    def set_on_slide(self, handler):
-        self._set_value('on_slide', handler)
+    def set_on_change(self, handler):
+        self._set_value('on_change', handler)
