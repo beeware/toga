@@ -9,6 +9,7 @@ class Widget:
         self._viewport = None
         self.constraints = None
         self.native = None
+        self.native._impl = self
         self.create()
         self.interface.style.reapply()
         self.set_enabled(self.interface.enabled)

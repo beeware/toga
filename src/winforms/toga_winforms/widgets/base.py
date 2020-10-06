@@ -8,6 +8,7 @@ class Widget:
 
         self._container = None
         self.native = None
+        self.native._impl = self
         self.create()
         self.interface.style.reapply()
 

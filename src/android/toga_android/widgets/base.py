@@ -10,6 +10,7 @@ class Widget:
         self.interface._impl = self
         self._container = None
         self.native = None
+        self.native._impl = self
         # Capture a reference to the Java `MainActivity` instance, so that subclasses
         # can pass it as `context` when creating native Android widgets.
         self._native_activity = MainActivity.singletonThis

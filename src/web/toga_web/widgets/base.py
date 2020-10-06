@@ -4,6 +4,8 @@ class Widget:
         self.interface = interface
         self.interface._impl = self
         self._container = None
+        self.native = None
+        self.native._impl = self
         self.create()
 
     def handler(self, fn, name):
