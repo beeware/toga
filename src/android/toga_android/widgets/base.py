@@ -10,11 +10,11 @@ class Widget:
         self.interface._impl = self
         self._container = None
         self.native = None
-        self.native._impl = self
         # Capture a reference to the Java `MainActivity` instance, so that subclasses
         # can pass it as `context` when creating native Android widgets.
         self._native_activity = MainActivity.singletonThis
         self.create()
+        self.native._impl = self
         # Immediately re-apply styles. Some widgets may defer style application until
         # they have been added to a container.
         self.interface.style.reapply()

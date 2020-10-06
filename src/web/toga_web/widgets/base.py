@@ -5,8 +5,8 @@ class Widget:
         self.interface._impl = self
         self._container = None
         self.native = None
-        self.native._impl = self
         self.create()
+        self.native._impl = self
 
     def handler(self, fn, name):
         if hasattr(fn, '__self__'):
