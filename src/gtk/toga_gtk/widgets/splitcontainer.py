@@ -7,15 +7,17 @@ class SplitContainer(Widget):
     def create(self):
         # Use Paned widget rather than VPaned and HPaned deprecated widgets
         # Note that orientation in toga behave unlike Gtk
-        if self.interface.VERTICAL:
+        if self.interface.direction == self.interface.VERTICAL:
             self.native = Gtk.Paned.new(Gtk.Orientation.HORIZONTAL)
-        elif self.interface.HORIZONTAL:
+        elif self.interface.direction == self.interface.HORIZONTAL:
             self.native = Gtk.Paned.new(Gtk.Orientation.VERTICAL)
         else:
             raise ValueError("Allowed orientation is VERTICAL or HORIZONTAL")
 
         self.native.interface = self.interface
-        self.ratio = None
+
+        # Set the position of splitter depending on the weight of each split
+        self.native.set_position(120)
 
     def add_content(self, position, widget, flex):
         widget.viewport = GtkViewport(self.native)
