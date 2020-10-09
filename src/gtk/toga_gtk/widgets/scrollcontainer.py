@@ -6,6 +6,12 @@ from .base import Widget
 class ScrollContainer(Widget):
     def create(self):
         self.native = Gtk.ScrolledWindow()
+
+        # Set this minimum size of scroll windows because we must reserve space for
+        # scrollbars when splitter resized. See, https://gitlab.gnome.org/GNOME/gtk/-/issues/210
+        self.native.set_min_content_width(70)
+        self.native.set_min_content_height(70)
+
         self.native.set_overlay_scrolling(True)
         self.native.interface = self.interface
 
