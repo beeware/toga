@@ -309,7 +309,6 @@ class App:
         self.loop.call_soon(wrapped_handler(self, handler), self)
 
 
-
 class DocumentApp(App):
     def _create_app_commands(self):
         self.interface.commands.add(

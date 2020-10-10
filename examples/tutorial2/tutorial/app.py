@@ -34,7 +34,6 @@ def action6(widget):
     print("action 6")
 
 
-
 def build(app):
     brutus_icon = "icons/brutus"
     cricket_icon = "icons/cricket-72.png"
