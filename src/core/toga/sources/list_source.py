@@ -105,3 +105,30 @@ class ListSource(Source):
 
     def index(self, row):
         return self._data.index(row)
+
+    def first(self):
+        return self[0]
+
+    def last(self):
+        return self[len(self) - 1]
+
+
+class StackSource(ListSource):
+
+    def __init__(self, data, accessors, size):
+        super(StackSource, self).__init__(data, accessors)
+        self.size = size
+
+    def insert(self, index, *values, **named):
+        row = super(StackSource, self).insert(index, *values, **named)
+        self.__remove_overflow()
+        return row
+
+    def append(self, *values, **named):
+        if len(self) == self.size:
+            raise ValueError("Cannot append value because of stack overflow")
+        return super(StackSource, self).append(*values, **named)
+
+    def __remove_overflow(self):
+        while len(self._data) > self.size:
+            self.remove(self.last())

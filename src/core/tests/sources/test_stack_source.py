@@ -1,20 +1,21 @@
 from unittest import TestCase
 from unittest.mock import Mock
 
-from toga.sources import ListSource
+from toga.sources import StackSource
 from toga.sources.list_source import Row
 
 
-class ListSourceTests(TestCase):
+class StackSourceTests(TestCase):
     def test_init_with_tuple(self):
-        "A ListSource can be instantiated from tuples"
-        source = ListSource(
+        "A StackSource can be instantiated from tuples"
+        source = StackSource(
             data=[
                 ('first', 111),
                 ('second', 222),
                 ('third', 333),
             ],
-            accessors=['val1', 'val2']
+            accessors=['val1', 'val2'],
+            size=4,
         )
 
         self.assertEqual(len(source), 3)
@@ -39,14 +40,15 @@ class ListSourceTests(TestCase):
         listener.insert.assert_called_once_with(index=1, item=source[1])
 
     def test_init_with_list(self):
-        "A ListSource can be instantiated from lists"
-        source = ListSource(
+        "A StackSource can be instantiated from lists"
+        source = StackSource(
             data=[
                 ['first', 111],
                 ['second', 222],
                 ['third', 333],
             ],
-            accessors=['val1', 'val2']
+            accessors=['val1', 'val2'],
+            size=4,
         )
 
         self.assertEqual(len(source), 3)
@@ -71,14 +73,15 @@ class ListSourceTests(TestCase):
         listener.insert.assert_called_once_with(index=1, item=source[1])
 
     def test_init_with_dict(self):
-        "A ListSource can be instantiated from dicts"
-        source = ListSource(
+        "A StackSource can be instantiated from dicts"
+        source = StackSource(
             data=[
                 {'val1': 'first', 'val2': 111},
                 {'val1': 'second', 'val2': 222},
                 {'val1': 'third', 'val2': 333},
             ],
-            accessors=['val1', 'val2']
+            accessors=['val1', 'val2'],
+            size=4,
         )
 
         self.assertEqual(len(source), 3)
@@ -118,9 +121,9 @@ class ListSourceTests(TestCase):
             MyObject("string"),
         ]
 
-        source = ListSource(
+        source = StackSource(
             data=data,
-            accessors=['col1'],
+            accessors=['col1'], size=4
         )
 
         for i, row in enumerate(source):
@@ -135,9 +138,9 @@ class ListSourceTests(TestCase):
             -3.14,
         ]
 
-        source = ListSource(
+        source = StackSource(
             data=data,
-            accessors=['col1'],
+            accessors=['col1'], size=4
         )
 
         for i, row in enumerate(source):
@@ -152,23 +155,24 @@ class ListSourceTests(TestCase):
             "zzz",
         ]
 
-        source = ListSource(
+        source = StackSource(
             data=data,
-            accessors=['col1'],
+            accessors=['col1'], size=4
         )
 
         for i, row in enumerate(source):
             self.assertEqual(row.col1, data[i])
 
     def test_first_and_last(self):
-        "A ListSource can be instantiated from tuples"
-        source = ListSource(
+        "A StackSource can be instantiated from tuples"
+        source = StackSource(
             data=[
                 ('first', 111),
                 ('second', 222),
                 ('third', 333),
             ],
-            accessors=['val1', 'val2']
+            accessors=['val1', 'val2'],
+            size=4,
         )
 
         self.assertEqual(source.first().val1, 'first')
@@ -179,13 +183,14 @@ class ListSourceTests(TestCase):
 
     def test_iter(self):
         "A list source can be iterated over"
-        source = ListSource(
+        source = StackSource(
             data=[
                 {'val1': 'first', 'val2': 111},
                 {'val1': 'second', 'val2': 222},
                 {'val1': 'third', 'val2': 333},
             ],
-            accessors=['val1', 'val2']
+            accessors=['val1', 'val2'],
+            size=4,
         )
 
         self.assertEqual(len(source), 3)
@@ -198,13 +203,14 @@ class ListSourceTests(TestCase):
 
     def test_clear(self):
         "A list source can be cleared"
-        source = ListSource(
+        source = StackSource(
             data=[
                 {'val1': 'first', 'val2': 111},
                 {'val1': 'second', 'val2': 222},
                 {'val1': 'third', 'val2': 333},
             ],
-            accessors=['val1', 'val2']
+            accessors=['val1', 'val2'],
+            size=4,
         )
 
         self.assertEqual(len(source), 3)
@@ -220,13 +226,14 @@ class ListSourceTests(TestCase):
 
     def test_insert_kwarg(self):
         "You can insert into a list source using kwargs"
-        source = ListSource(
+        source = StackSource(
             data=[
                 {'val1': 'first', 'val2': 111},
                 {'val1': 'second', 'val2': 222},
                 {'val1': 'third', 'val2': 333},
             ],
-            accessors=['val1', 'val2']
+            accessors=['val1', 'val2'],
+            size=4,
         )
 
         self.assertEqual(len(source), 3)
@@ -246,13 +253,14 @@ class ListSourceTests(TestCase):
 
     def test_insert(self):
         "You can insert into a list source using positional args"
-        source = ListSource(
+        source = StackSource(
             data=[
                 {'val1': 'first', 'val2': 111},
                 {'val1': 'second', 'val2': 222},
                 {'val1': 'third', 'val2': 333},
             ],
-            accessors=['val1', 'val2']
+            accessors=['val1', 'val2'],
+            size=4,
         )
 
         self.assertEqual(len(source), 3)
@@ -272,13 +280,14 @@ class ListSourceTests(TestCase):
 
     def test_prepend_kwarg(self):
         "You can prepend to a list source using kwargs"
-        source = ListSource(
+        source = StackSource(
             data=[
                 {'val1': 'first', 'val2': 111},
                 {'val1': 'second', 'val2': 222},
                 {'val1': 'third', 'val2': 333},
             ],
-            accessors=['val1', 'val2']
+            accessors=['val1', 'val2'],
+            size=4,
         )
 
         self.assertEqual(len(source), 3)
@@ -296,15 +305,16 @@ class ListSourceTests(TestCase):
 
         listener.insert.assert_called_once_with(index=0, item=row)
 
-    def test_prepend(self):
+    def test_prepend_without_remove(self):
         "You can prepend to a list source using positional args"
-        source = ListSource(
+        source = StackSource(
             data=[
                 {'val1': 'first', 'val2': 111},
                 {'val1': 'second', 'val2': 222},
                 {'val1': 'third', 'val2': 333},
             ],
-            accessors=['val1', 'val2']
+            accessors=['val1', 'val2'],
+            size=4,
         )
 
         self.assertEqual(len(source), 3)
@@ -322,15 +332,47 @@ class ListSourceTests(TestCase):
 
         listener.insert.assert_called_once_with(index=0, item=row)
 
-    def test_append_kwarg(self):
-        "You can append to a list source using kwargs"
-        source = ListSource(
+    def test_prepend_with_remove(self):
+        "You can prepend to a list source using positional args"
+        source = StackSource(
             data=[
                 {'val1': 'first', 'val2': 111},
                 {'val1': 'second', 'val2': 222},
                 {'val1': 'third', 'val2': 333},
             ],
-            accessors=['val1', 'val2']
+            accessors=['val1', 'val2'],
+            size=3,
+        )
+
+        self.assertEqual(len(source), 3)
+
+        listener = Mock()
+        source.add_listener(listener)
+
+        # Prepend the new element
+        row = source.prepend('new element', 999)
+
+        self.assertEqual(len(source), 3)
+
+        self.assertEqual(source[0], row)
+        self.assertEqual(row.val1, 'new element')
+        self.assertEqual(row.val2, 999)
+
+        self.assertEqual(source[2].val1, 'second')
+        self.assertEqual(source[2].val2, 222)
+
+        listener.insert.assert_called_once_with(index=0, item=row)
+
+    def test_append_kwarg(self):
+        "You can append to a list source using kwargs"
+        source = StackSource(
+            data=[
+                {'val1': 'first', 'val2': 111},
+                {'val1': 'second', 'val2': 222},
+                {'val1': 'third', 'val2': 333},
+            ],
+            accessors=['val1', 'val2'],
+            size=4,
         )
 
         self.assertEqual(len(source), 3)
@@ -348,15 +390,16 @@ class ListSourceTests(TestCase):
 
         listener.insert.assert_called_once_with(index=3, item=row)
 
-    def test_append(self):
+    def test_append_without_exception(self):
         "You can append to a list source using positional args"
-        source = ListSource(
+        source = StackSource(
             data=[
                 {'val1': 'first', 'val2': 111},
                 {'val1': 'second', 'val2': 222},
                 {'val1': 'third', 'val2': 333},
             ],
-            accessors=['val1', 'val2']
+            accessors=['val1', 'val2'],
+            size=4,
         )
 
         self.assertEqual(len(source), 3)
@@ -374,15 +417,33 @@ class ListSourceTests(TestCase):
 
         listener.insert.assert_called_once_with(index=3, item=row)
 
-    def test_remove(self):
-        "You can remove an item from a list source"
-        source = ListSource(
+    def test_append_with_exception(self):
+        "You can append to a list source using positional args"
+        source = StackSource(
             data=[
                 {'val1': 'first', 'val2': 111},
                 {'val1': 'second', 'val2': 222},
                 {'val1': 'third', 'val2': 333},
             ],
-            accessors=['val1', 'val2']
+            accessors=['val1', 'val2'],
+            size=3,
+        )
+
+        self.assertEqual(len(source), 3)
+
+        with self.assertRaises(ValueError):
+            source.append('new element', 999)
+
+    def test_remove(self):
+        "You can remove an item from a list source"
+        source = StackSource(
+            data=[
+                {'val1': 'first', 'val2': 111},
+                {'val1': 'second', 'val2': 222},
+                {'val1': 'third', 'val2': 333},
+            ],
+            accessors=['val1', 'val2'],
+            size=4,
         )
 
         self.assertEqual(len(source), 3)
@@ -405,13 +466,14 @@ class ListSourceTests(TestCase):
     def test_get_row_index(self):
         "You can get the index of any row within a list source"
 
-        source = ListSource(
+        source = StackSource(
             data=[
                 ('first', 111),
                 ('second', 222),
                 ('third', 333),
             ],
-            accessors=['val1', 'val2']
+            accessors=['val1', 'val2'],
+            size=4,
         )
 
         for i, row in enumerate(source):
