@@ -11,8 +11,10 @@ from toga.handlers import wrapped_handler
 
 from .keys import cocoa_key
 from .libs import (
-    NSURL,
     SEL,
+    NSMenu,
+    NSMenuItem,
+    NSURL,
     NSAboutPanelOptionApplicationIcon,
     NSAboutPanelOptionApplicationName,
     NSAboutPanelOptionApplicationVersion,
@@ -21,8 +23,6 @@ from .libs import (
     NSBundle,
     NSCursor,
     NSDocumentController,
-    NSMenu,
-    NSMenuItem,
     NSMutableArray,
     NSMutableDictionary,
     NSNumber,
@@ -155,7 +155,6 @@ class App:
 
         # Create the lookup table of menu items,
         # then force the creation of the menus.
-        self._menu_items = {}
         self.create_menus()
 
     def _create_app_commands(self):
@@ -163,51 +162,72 @@ class App:
         pass
 
     def create_menus(self):
-        # Only create the menu if the menu item index has been created.
-        if hasattr(self, '_menu_items'):
-            self._menu_items = {}
-            menubar = NSMenu.alloc().initWithTitle('MainMenu')
-            submenu = None
-            menuItem = None
-            for cmd in self.interface.commands:
-                if cmd == toga.GROUP_BREAK:
-                    menubar.setSubmenu(submenu, forItem=menuItem)
-                    submenu = None
-                elif cmd == toga.SECTION_BREAK:
-                    submenu.addItem_(NSMenuItem.separatorItem())
+        # Recreate the menu
+        self._menu_items = {}
+        self._menu_groups = {}
+        menubar = NSMenu.alloc().initWithTitle('MainMenu')
+        submenu = None
+        for cmd in self.interface.commands:
+            if cmd == toga.GROUP_BREAK:
+                submenu = None
+            elif cmd == toga.SECTION_BREAK:
+                submenu.addItem_(NSMenuItem.separatorItem())
+            else:
+                submenu = self._submenu(cmd.group, menubar)
+
+                if cmd.shortcut:
+                    key, modifier = cocoa_key(cmd.shortcut)
                 else:
-                    if submenu is None:
-                        menuItem = menubar.addItemWithTitle(cmd.group.label, action=None, keyEquivalent='')
-                        submenu = NSMenu.alloc().initWithTitle(cmd.group.label)
-                        submenu.setAutoenablesItems(False)
+                    key = ''
+                    modifier = None
 
-                    if cmd.shortcut:
-                        key, modifier = cocoa_key(cmd.shortcut)
-                    else:
-                        key = ''
-                        modifier = None
+                item = NSMenuItem.alloc().initWithTitle(
+                    cmd.label,
+                    action=SEL('selectMenuItem:'),
+                    keyEquivalent=key,
+                )
+                if modifier is not None:
+                    item.keyEquivalentModifierMask = modifier
 
-                    item = NSMenuItem.alloc().initWithTitle(
-                        cmd.label,
-                        action=SEL('selectMenuItem:'),
-                        keyEquivalent=key,
-                    )
-                    if modifier is not None:
-                        item.keyEquivalentModifierMask = modifier
+                cmd._impl.native.append(item)
+                self._menu_items[item] = cmd
 
-                    cmd._impl.native.append(item)
-                    self._menu_items[item] = cmd
+                # This line may appear redundant, but it triggers the logic
+                # to force the enabled status on the underlying widgets.
+                cmd.enabled = cmd.enabled
+                submenu.addItem(item)
 
-                    # This line may appear redundant, but it triggers the logic
-                    # to force the enabled status on the underlying widgets.
-                    cmd.enabled = cmd.enabled
-                    submenu.addItem(item)
+        # Set the menu for the app.
+        self.native.mainMenu = menubar
 
-            if submenu:
-                menubar.setSubmenu(submenu, forItem=menuItem)
+    def _submenu(self, group, menubar):
+        """
+        Obtain the submenu representing the command group.
 
-            # Set the menu for the app.
-            self.native.mainMenu = menubar
+        This will create the submenu if it doesn't exist. It will call itself
+        recursively to build the full path to menus inside submenus, returning
+        the "leaf" node in the submenu path. Once created, it caches the menu
+        that has been created for future lookup.
+        """
+        try:
+            return self._menu_groups[group]
+        except KeyError:
+            if group is None:
+                submenu = menubar
+            else:
+                parent_menu = self._submenu(group.parent, menubar)
+
+                menu_item = parent_menu.addItemWithTitle(
+                    group.label, action=None, keyEquivalent=''
+                )
+                submenu = NSMenu.alloc().initWithTitle(group.label)
+                submenu.setAutoenablesItems(False)
+
+                parent_menu.setSubmenu(submenu, forItem=menu_item)
+
+            # Install the item in the group cache.
+            self._menu_groups[group] = submenu
+            return submenu
 
     def main_loop(self):
         # Stimulate the build of the app
