@@ -162,11 +162,9 @@ class App:
         pass
 
     def create_menus(self):
-        # Only create the menu if the menu item index has been created.
-        if hasattr(self, '_menu_items'):
-            return
+        # Recreate the menu
         self._menu_items = {}
-        self._group_menus = {}
+        self._menu_groups = {}
         menubar = NSMenu.alloc().initWithTitle('MainMenu')
         submenu = None
         for cmd in self.interface.commands:
@@ -175,9 +173,7 @@ class App:
             elif cmd == toga.SECTION_BREAK:
                 submenu.addItem_(NSMenuItem.separatorItem())
             else:
-                if submenu is None:
-                    submenu = self.__get_or_create_group_menu(cmd.group, menubar)
-                    submenu.setAutoenablesItems(False)
+                submenu = self._submenu(cmd.group, menubar)
 
                 if cmd.shortcut:
                     key, modifier = cocoa_key(cmd.shortcut)
@@ -203,6 +199,35 @@ class App:
 
         # Set the menu for the app.
         self.native.mainMenu = menubar
+
+    def _submenu(self, group, menubar):
+        """
+        Obtain the submenu representing the command group.
+
+        This will create the submenu if it doesn't exist. It will call itself
+        recursively to build the full path to menus inside submenus, returning
+        the "leaf" node in the submenu path. Once created, it caches the menu
+        that has been created for future lookup.
+        """
+        try:
+            return self._menu_groups[group]
+        except KeyError:
+            if group is None:
+                submenu = menubar
+            else:
+                parent_menu = self._submenu(group.parent, menubar)
+
+                menu_item = parent_menu.addItemWithTitle(
+                    group.label, action=None, keyEquivalent=''
+                )
+                submenu = NSMenu.alloc().initWithTitle(group.label)
+                submenu.setAutoenablesItems(False)
+
+                parent_menu.setSubmenu(submenu, forItem=menu_item)
+
+            # Install the item in the group cache.
+            self._menu_groups[group] = submenu
+            return submenu
 
     def main_loop(self):
         # Stimulate the build of the app
@@ -283,20 +308,6 @@ class App:
     def add_background_task(self, handler):
         self.loop.call_soon(wrapped_handler(self, handler), self)
 
-    def __get_or_create_group_menu(self, group, menubar):
-        if group is None:
-            return menubar
-        if group.label in self._group_menus:
-            return self._group_menus[group.label]
-        parent_menu = self.__get_or_create_group_menu(group.parent, menubar)
-        menu_item = parent_menu.addItemWithTitle(
-            group.label, action=None, keyEquivalent=''
-        )
-        submenu = NSMenu.alloc().initWithTitle(group.label)
-        submenu.setAutoenablesItems(False)
-        parent_menu.setSubmenu(submenu, forItem=menu_item)
-        self._group_menus[group.label] = submenu
-        return submenu
 
 
 class DocumentApp(App):
