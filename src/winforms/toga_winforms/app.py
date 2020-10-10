@@ -79,52 +79,64 @@ class App:
 
         # Call user code to populate the main window
         self.interface.startup()
-        self._menu_items = {}
-        self._group_menus = {}
         self.create_menus()
         self.interface.icon.bind(self.interface.factory)
         self.interface.main_window._impl.set_app(self)
 
     def create_menus(self):
+        self._menu_items = {}
+        self._menu_groups = {}
+
         toga.Group.FILE.order = 0
-        # Only create the menu if the menu item index has been created.
-        if not hasattr(self, '_menu_items'):
-            return
         menubar = WinForms.MenuStrip()
         submenu = None
-        group = None
         for cmd in self.interface.commands:
             if cmd == toga.GROUP_BREAK:
-                if group.parent is None:
-                    menubar.Items.Add(submenu)
-                else:
-                    self.__get_or_create_group_menu(group.parent).DropDownItems.Add(
-                        submenu
-                    )
-                group = None
                 submenu = None
             elif cmd == toga.SECTION_BREAK:
                 submenu.DropDownItems.Add('-')
             else:
-                if submenu is None:
-                    group = cmd.group
-                    submenu = self.__get_or_create_group_menu(group)
+                submenu = self._submenu(cmd.group, menubar)
+
                 item = WinForms.ToolStripMenuItem(cmd.label)
+
                 if cmd.action:
                     item.Click += cmd._impl.as_handler()
                 item.Enabled = cmd.enabled
+
                 if cmd.shortcut is not None:
                     shortcut_keys = toga_to_winforms_key(cmd.shortcut)
                     item.ShortcutKeys = shortcut_keys
                     item.ShowShortcutKeys = True
+
                 cmd._impl.native.append(item)
+
                 self._menu_items[item] = cmd
                 submenu.DropDownItems.Add(item)
-        if submenu:
-            menubar.Items.Add(submenu)
+
         self.interface.main_window._impl.native.Controls.Add(menubar)
         self.interface.main_window._impl.native.MainMenuStrip = menubar
         self.interface.main_window.content.refresh()
+
+    def _submenu(self, group, menubar):
+        try:
+            return self._menu_groups[group]
+        except KeyError:
+            if group is None:
+                submenu = menubar
+            else:
+                parent_menu = self._submenu(group.parent, menubar)
+
+                submenu = WinForms.ToolStripMenuItem(group.label)
+
+                # Top level menus are added in a different way to submenus
+                if group.parent is None:
+                    parent_menu.Items.Add(submenu)
+                else:
+                    parent_menu.DropDownItems.Add(submenu)
+
+            self._menu_groups[group] = submenu
+        return submenu
 
     def _create_app_commands(self):
         # No extra menus
@@ -249,13 +261,6 @@ class App:
 
     def add_background_task(self, handler):
         self.loop.call_soon(wrapped_handler(self, handler), self)
-
-    def __get_or_create_group_menu(self, group):
-        if group.label in self._group_menus:
-            return self._group_menus[group.label]
-        submenu = WinForms.ToolStripMenuItem(group.label)
-        self._group_menus[group.label] = submenu
-        return submenu
 
 
 class DocumentApp(App):
