@@ -31,6 +31,13 @@ class SplitContainer(Widget):
             self.native.Panel2.Controls.Add(widget.native)
             widget.viewport = WinFormsViewport(self.native.Panel2, self)
 
+            # Turn all the weights into a fraction of 1.0
+            total = sum(self.interface._weight)
+            self.interface._weight = [weight/total for weight in self.interface._weight]
+
+            # Set the position of splitter depending on the weight of splits.
+            self.native.SplitterDistance(int(self.interface._weight[0]*self.interface.style.width))
+
     def set_app(self, app):
         if self.interface.content:
             for content in self.interface.content:
