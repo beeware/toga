@@ -38,7 +38,6 @@ class Window:
 
     def create(self):
         self.native = self._IMPL_CLASS()
-        self.native._impl = self
 
         self.native.connect("delete-event", self.gtk_on_close)
         self.native.set_default_size(self.interface.size[0], self.interface.size[1])

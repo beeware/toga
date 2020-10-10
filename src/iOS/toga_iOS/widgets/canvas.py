@@ -41,7 +41,6 @@ class Canvas(Widget):
     def create(self):
         self.native = TogaCanvas.alloc().init()
         self.native.interface = self.interface
-        self.native._impl = self
         self.native.backgroundColor = UIColor.whiteColor
 
         # Add the layout constraints
