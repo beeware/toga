@@ -1,11 +1,12 @@
 ##########################################################################
 # System/Library/Frameworks/AppKit.framework
 ##########################################################################
-from ctypes import Structure, c_void_p, cdll, util
+from ctypes import Structure, c_void_p
 from enum import Enum
 
 from rubicon.objc import CGFloat, ObjCClass, objc_const
 from rubicon.objc.api import NSString
+from rubicon.objc.runtime import load_library
 
 from travertino.colors import (
     BLACK,
@@ -27,7 +28,7 @@ from travertino.colors import (
 from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT
 
 ######################################################################
-appkit = cdll.LoadLibrary(util.find_library('AppKit'))
+appkit = load_library('AppKit')
 ######################################################################
 
 ######################################################################

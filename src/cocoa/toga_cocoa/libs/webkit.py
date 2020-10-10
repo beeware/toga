@@ -1,12 +1,12 @@
 ##########################################################################
 # System/Library/Frameworks/WebKit.framework
 ##########################################################################
-from ctypes import cdll, util
 
 from rubicon.objc import ObjCClass
+from rubicon.objc.runtime import load_library
 
 ######################################################################
-webkit = cdll.LoadLibrary(util.find_library('WebKit'))
+webkit = load_library('WebKit')
 ######################################################################
 
 ######################################################################
