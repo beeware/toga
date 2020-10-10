@@ -1,7 +1,14 @@
 from .app import App, DocumentApp, MainWindow
 # Resources
 from .colors import hsl, hsla, rgb, rgba
-from .command import GROUP_BREAK, SECTION_BREAK, Command, CommandSet, Group
+from .command import (
+    GROUP_BREAK,
+    SECTION_BREAK,
+    Command,
+    CommandSet,
+    DataSourceCommandSet,
+    Group,
+)
 from .documents import Document
 from .fonts import Font
 from .icons import Icon
@@ -39,7 +46,8 @@ __all__ = [
     # Applications
     'App', 'DocumentApp', 'MainWindow',
     # Commands
-    'Command', 'CommandSet', 'Group', 'GROUP_BREAK', 'SECTION_BREAK',
+    'Command', 'CommandSet', 'DataSourceCommandSet', 'Group', 'GROUP_BREAK',
+    'SECTION_BREAK',
     # Documents
     'Document',
     # Keys

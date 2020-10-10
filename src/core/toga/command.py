@@ -130,19 +130,23 @@ class Command:
         self.order = order if order else 0
 
         self._impl = None
+        self._build_impl()
 
         self.enabled = enabled and self.action is not None
 
     def bind(self, factory):
         self.factory = factory
 
-        if self._impl is None:
-            self._impl = self.factory.Command(interface=self)
+        self._build_impl()
 
         if self._icon:
             self._icon.bind(self.factory)
 
         return self._impl
+
+    def _build_impl(self):
+        if self._impl is None and self.factory is not None:
+            self._impl = self.factory.Command(interface=self)
 
     @property
     def enabled(self):
@@ -177,7 +181,7 @@ class Command:
         return self.to_tuple() < other.to_tuple()
 
     def __gt__(self, other):
-        return other < self
+        return self.to_tuple() > other.to_tuple()
 
     def __repr__(self):
         return "<Command label={} group={} section={} order={}>".format(
@@ -189,6 +193,91 @@ class Command:
 
     def to_tuple(self):
         return tuple([*self.group.to_tuple(), (self.section, self.order, self.label)])
+
+
+class DataSourceCommandSet(Command):
+
+    def __init__(
+            self,
+            label,
+            data,
+            item_to_label,
+            group=None,
+            section=None,
+            order=None,
+            item_action=None,
+            app=None,
+            factory=None,
+    ):
+        super(DataSourceCommandSet, self).__init__(
+            action=None,
+            label=label,
+            group=group,
+            section=section,
+            order=order,
+            factory=factory
+        )
+        self.data = data
+        self.item_action = item_action
+        self.item_to_label = item_to_label
+        self.app = app
+
+        self.data.add_listener(self)
+
+    def __iter__(self):
+        for index, item in enumerate(self.data):
+            yield self.__build_command(index, item)
+
+    @property
+    def data(self):
+        return self._data
+
+    @data.setter
+    def data(self, data):
+        self._data = data
+
+    @property
+    def item_action(self):
+        return self._item_action
+
+    @item_action.setter
+    def item_action(self, item_action):
+        self._item_action = item_action
+
+    @property
+    def item_to_label(self):
+        return self._item_to_label
+
+    @item_to_label.setter
+    def item_to_label(self, item_to_label):
+        self._item_to_label = item_to_label
+
+    def insert(self, index, item):
+        if self.app is not None:
+            self.app._set_commands(self.as_group(), list(self))
+
+    def remove(self, index, item):
+        if self.app is not None:
+            self.app._set_commands(self.as_group(), list(self))
+
+    def as_group(self):
+        return Group(
+            label=self.label, order=self.order, section=self.section, parent=self.group
+        )
+
+    def __build_command(self, index, item):
+        return Command(
+            self.__get_action(item),
+            self.item_to_label(item),
+            group=self.as_group(),
+            order=index,
+            factory=self.factory
+        )
+
+    def __get_action(self, item):
+        if self.item_action is None:
+            return None
+        return lambda widget: self.item_action(widget, item)
 
 
 class Break:
