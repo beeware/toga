@@ -180,9 +180,9 @@ class Command:
         return other < self
 
     def __repr__(self):
-        return "Command[label={}, group={}, section={}, order={}]".format(
+        return "<Command label={} group={} section={} order={}>".format(
             self.label,
-            self.group.parent,
+            self.group,
             self.section,
             self.order,
         )
@@ -191,8 +191,16 @@ class Command:
         return tuple([*self.group.to_tuple(), (self.section, self.order, self.label)])
 
 
-GROUP_BREAK = object()
-SECTION_BREAK = object()
+class Break:
+    def __init__(self, name):
+        self.name = name
+
+    def __repr__(self):
+        return "<{self.name} break>".format(self=self)
+
+
+GROUP_BREAK = Break('Group')
+SECTION_BREAK = Break('Section')
 
 
 class CommandSet:
