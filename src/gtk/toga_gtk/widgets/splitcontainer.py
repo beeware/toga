@@ -37,14 +37,12 @@ class SplitContainer(Widget):
             widget_frame.add(widget.native)
             self.native.pack2(widget_frame, flex, False)
 
-        # Set the position of splitter depending on the weight of each split.
-        # Turn all the weights into a fraction of 1.0
-        total = sum(self.interface._weight)
-        self.interface._weight = [
-            weight / total
-            for weight in self.interface._weight
-        ]
-        self.native.set_position(130)
+            # Turn all the weights into a fraction of 1.0
+            total = sum(self.interface._weight)
+            self.interface._weight = [weight/total for weight in self.interface._weight]
+
+            # Set the position of splitter depending on the weight of splits.
+            self.native.set_position(int(self.interface._weight[0]*self.interface.style.width))
 
     def set_app(self, app):
         if self.interface.content:
