@@ -58,7 +58,7 @@ class Group:
         return parent.is_parent_of(self)
 
     def __hash__(self):
-        return hash(self.to_tuple)
+        return hash(self.to_tuple())
 
     def __lt__(self, other):
         return self.to_tuple() < other.to_tuple()

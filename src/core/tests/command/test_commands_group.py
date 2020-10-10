@@ -19,18 +19,28 @@ class TestCommandsGroup(unittest.TestCase):
         self.assertEqual(grp.order, 2)
 
     def test_hashable(self):
-        grp1 = toga.Group('label')
-        grp2 = toga.Group('label')
+        grp1 = toga.Group('label 1')
+        grp2 = toga.Group('label 2')
+
+        # The hash is based on the full path, not just the label.
+        # This allows labels to be non-unique, as long as they're in
+        # different groups
+        grp1_child = toga.Group('label', parent=grp1)
+        grp2_child = toga.Group('label', parent=grp2)
 
         # Insert the groups as keys in a dict. This is
         # only possible if Group is hashable.
         groups = {
             grp1: 'First',
             grp2: 'Second',
+            grp1_child: "Child of 1",
+            grp2_child: "Child of 2",
         }
 
         self.assertEqual(groups[grp1], "First")
         self.assertEqual(groups[grp2], "Second")
+        self.assertEqual(groups[grp1_child], "Child of 1")
+        self.assertEqual(groups[grp2_child], "Child of 2")
 
     def test_group_eq(self):
         self.assertEqual(toga.Group('A'), toga.Group('A'))
