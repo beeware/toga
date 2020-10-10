@@ -57,6 +57,9 @@ class Group:
     def is_child_of(self, parent):
         return parent.is_parent_of(self)
 
+    def __hash__(self):
+        return hash(self.to_tuple)
+
     def __lt__(self, other):
         return self.to_tuple() < other.to_tuple()
 
@@ -66,11 +69,11 @@ class Group:
     def __eq__(self, other):
         if other is None:
             return False
-        return self.order == other.order and self.label == other.label
+        return self.to_tuple() == other.to_tuple()
 
     def __repr__(self):
         parent_string = "None" if self.parent is None else self.parent.label
-        return "Group[label={}, order={}, parent={}]".format(
+        return "<Group label={} order={} parent={}>".format(
             self.label, self.order, parent_string
         )
 

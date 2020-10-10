@@ -18,6 +18,20 @@ class TestCommandsGroup(unittest.TestCase):
         self.assertEqual(grp.label, 'label')
         self.assertEqual(grp.order, 2)
 
+    def test_hashable(self):
+        grp1 = toga.Group('label')
+        grp2 = toga.Group('label')
+
+        # Insert the groups as keys in a dict. This is
+        # only possible if Group is hashable.
+        groups = {
+            grp1: 'First',
+            grp2: 'Second',
+        }
+
+        self.assertEqual(groups[grp1], "First")
+        self.assertEqual(groups[grp2], "Second")
+
     def test_group_eq(self):
         self.assertEqual(toga.Group('A'), toga.Group('A'))
         self.assertEqual(toga.Group('A', 1), toga.Group('A', 1))
@@ -86,11 +100,11 @@ class TestCommandsGroup(unittest.TestCase):
     def test_group_repr(self):
         parent = toga.Group("P")
         self.assertEqual(
-            repr(toga.Group("A")), "Group[label=A, order=0, parent=None]"
+            repr(toga.Group("A")), "<Group label=A order=0 parent=None>"
         )
         self.assertEqual(
             repr(toga.Group("A", parent=parent)),
-            "Group[label=A, order=0, parent=P]"
+            "<Group label=A order=0 parent=P>"
         )
 
     def test_set_section_without_parent(self):
