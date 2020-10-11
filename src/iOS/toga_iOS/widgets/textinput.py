@@ -66,5 +66,5 @@ class TextInput(Widget):
     def set_error(self, error_message):
         self.interface.factory.not_implemented("TextInput.set_error()")
 
-    def unset_error(self):
-        self.interface.factory.not_implemented("TextInput.unset_error()")
+    def clear_error(self):
+        self.interface.factory.not_implemented("TextInput.clear_error()")

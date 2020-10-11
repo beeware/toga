@@ -129,7 +129,7 @@ class TextInput(Widget):
         else:
             error_message = self.validator(self.value)
         if error_message is None:
-            self.unset_error()
+            self.clear_error()
         else:
             self.set_error(error_message)
 
@@ -141,5 +141,5 @@ class TextInput(Widget):
     def set_error(self, error_message):
         self._impl.set_error(error_message)
 
-    def unset_error(self):
-        self._impl.unset_error()
+    def clear_error(self):
+        self._impl.clear_error()

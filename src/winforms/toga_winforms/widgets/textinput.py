@@ -66,7 +66,7 @@ class TextInput(Widget):
     def winforms_validated(self, sender, event):
         self.interface.validate()
 
-    def unset_error(self):
+    def clear_error(self):
         self.error_provider.SetError(self.native, "")
 
     def set_error(self, error_message):

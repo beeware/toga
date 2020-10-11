@@ -73,7 +73,7 @@ class ValidatedTextInputTests(TestCase):
             factory=toga_dummy.factory
         )
         self.assertValueNotSet(text_input, "error")
-        self.assertActionPerformed(text_input, "unset_error")
+        self.assertActionPerformed(text_input, "clear_error")
         validator.assert_called_once_with(self.initial)
 
     def test_validator_run_after_set(self):

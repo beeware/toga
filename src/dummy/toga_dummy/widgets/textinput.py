@@ -32,5 +32,5 @@ class TextInput(Widget):
     def set_error(self, error_message):
         self._set_value('error', error_message)
 
-    def unset_error(self):
-        self._action('unset_error')
+    def clear_error(self):
+        self._action('clear_error')

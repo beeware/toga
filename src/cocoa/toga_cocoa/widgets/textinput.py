@@ -76,5 +76,5 @@ class TextInput(Widget):
         if self.interface.window is not None:
             self.interface.window.error_dialog("Validation Error", error_message)
 
-    def unset_error(self):
+    def clear_error(self):
         self.last_valid_value = self.interface.value
