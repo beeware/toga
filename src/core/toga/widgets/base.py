@@ -2,6 +2,7 @@ from builtins import id as identifier
 
 from travertino.node import Node
 
+from toga.handlers import wrapped_handler
 from toga.platform import get_platform_factory
 from toga.style import Pack, TogaApplicator
 
@@ -26,7 +27,15 @@ class Widget(Node):
             implementation of this class with the same name (optional & normally not needed).
     """
 
-    def __init__(self, id=None, enabled=True, style=None, factory=None):
+    def __init__(
+            self,
+            id=None,
+            enabled=True,
+            style=None,
+            on_focus_gain=None,
+            on_focus_loss=None,
+            factory=None,
+    ):
         super().__init__(
             style=style if style else Pack(),
             applicator=TogaApplicator(self)
@@ -38,6 +47,8 @@ class Widget(Node):
         self._impl = None
 
         self._enabled = enabled
+        self._on_focus_gain = on_focus_gain
+        self._on_focus_loss = on_focus_loss
 
         self.factory = get_platform_factory(factory)
 
@@ -186,9 +197,6 @@ class Widget(Node):
 
         self._set_window(window)
 
-    def _set_window(self, window):
-        pass
-
     @property
     def enabled(self):
         return self._enabled
@@ -197,6 +205,34 @@ class Widget(Node):
     def enabled(self, value):
         self._enabled = bool(value)
         self._impl.set_enabled(value)
+
+    @property
+    def on_focus_gain(self):
+        """The handler to invoke when the widget get focus.
+
+        Returns:
+            The function ``callable`` that is called on widget focus gain.
+        """
+        return self._on_focus_gain
+
+    @on_focus_gain.setter
+    def on_focus_gain(self, handler):
+        self._on_focus_gain = wrapped_handler(self, handler)
+        self._impl.set_on_focus_gain(self._on_focus_gain)
+
+    @property
+    def on_focus_loss(self):
+        """The handler to invoke when the widget lose focus.
+
+        Returns:
+            The function ``callable`` that is called on widget focus loss.
+        """
+        return self._on_focus_loss
+
+    @on_focus_loss.setter
+    def on_focus_loss(self, handler):
+        self._on_focus_loss = wrapped_handler(self, handler)
+        self._impl.set_on_focus_loss(self._on_focus_loss)
 
     def refresh(self):
         """Refresh the layout and appearance of the tree this node is contained in."""
@@ -213,3 +249,6 @@ class Widget(Node):
     def focus(self):
         if self._impl is not None:
             self._impl.focus()
+
+    def _set_window(self, window):
+        pass
