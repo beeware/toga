@@ -9,12 +9,33 @@ class Widget:
         self._container = None
         self.native = None
         self.create()
+        if self.native is not None:
+            self.native.GotFocus += self.winforms_got_focus
+            self.native.LostFocus += self.winforms_lost_focus
         self.interface.style.reapply()
 
+    def winforms_got_focus(self, sender, event):
+        if self.container and self.interface.on_focus_gain:
+            self.interface.on_focus_gain(self.interface)
+
+    def winforms_lost_focus(self, sender, event):
+        if self.container and self.interface.on_focus_loss:
+            self.interface.on_focus_loss(self.interface)
+
     def set_app(self, app):
+        # No special handling required
         pass
 
     def set_window(self, window):
+        # No special handling required
+        pass
+
+    def set_on_focus_gain(self, app):
+        # No special handling required
+        pass
+
+    def set_on_focus_loss(self, app):
+        # No special handling required
         pass
 
     @property
