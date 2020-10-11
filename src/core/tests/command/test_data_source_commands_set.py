@@ -102,7 +102,6 @@ class TestDataSourceCommandSet(unittest.TestCase):
                 (0, 3, "three")
             ),
         )
-        self.app._set_commands.assert_called()
 
     def test_remove(self):
         self.data.remove(self.data[1])
@@ -118,7 +117,6 @@ class TestDataSourceCommandSet(unittest.TestCase):
                 (0, 1, "three"),
             ),
         )
-        self.app._set_commands.assert_called()
 
     def assert_all_commands(self, *all_commands_tuples):
         self.assertEqual(
