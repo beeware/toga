@@ -86,65 +86,27 @@ class App:
     def create_menus(self):
         self._menu_items = {}
         self._menu_groups = {}
+        self._menubar = WinForms.MenuStrip()
 
         toga.Group.FILE.order = 0
-        menubar = WinForms.MenuStrip()
-        submenu = None
+        previous_command = None
         for cmd in self.interface.commands:
             if cmd == toga.GROUP_BREAK:
-                submenu = None
+                continue
             elif cmd == toga.SECTION_BREAK:
+                submenu = self._submenu(previous_command.group)
                 submenu.DropDownItems.Add('-')
             else:
-                submenu = self._submenu(cmd.group, menubar)
+                self._add_command(cmd)
+                previous_command = cmd
 
-                item = WinForms.ToolStripMenuItem(cmd.label)
-
-                if cmd.action:
-                    item.Click += cmd._impl.as_handler()
-                item.Enabled = cmd.enabled
-
-                if cmd.shortcut is not None:
-                    shortcut_keys = toga_to_winforms_key(cmd.shortcut)
-                    item.ShortcutKeys = shortcut_keys
-                    item.ShowShortcutKeys = True
-
-                cmd._impl.native.append(item)
-
-                self._menu_items[item] = cmd
-                submenu.DropDownItems.Add(item)
-
-        self.interface.main_window._impl.native.Controls.Add(menubar)
-        self.interface.main_window._impl.native.MainMenuStrip = menubar
+        self.interface.main_window._impl.native.Controls.Add(self._menubar)
+        self.interface.main_window._impl.native.MainMenuStrip = self._menubar
         self.interface.main_window.content.refresh()
-
-    def _submenu(self, group, menubar):
-        try:
-            return self._menu_groups[group]
-        except KeyError:
-            if group is None:
-                submenu = menubar
-            else:
-                parent_menu = self._submenu(group.parent, menubar)
-
-                submenu = WinForms.ToolStripMenuItem(group.label)
-
-                # Top level menus are added in a different way to submenus
-                if group.parent is None:
-                    parent_menu.Items.Add(submenu)
-                else:
-                    parent_menu.DropDownItems.Add(submenu)
-
-            self._menu_groups[group] = submenu
-        return submenu
 
     def _create_app_commands(self):
         # No extra menus
         pass
-
-    def open_document(self, fileURL):
-        '''Add a new document to this app.'''
-        print("STUB: If you want to handle opening documents, implement App.open_document(fileURL)")
 
     def winforms_thread_exception(self, sender, winforms_exc):
         # The PythonException returned by Winforms doesn't give us
@@ -262,23 +224,80 @@ class App:
     def add_background_task(self, handler):
         self.loop.call_soon(wrapped_handler(self, handler), self)
 
+    def _add_command(self, command):
+        submenu = self._submenu(command.group)
+        submenu.Enabled = True
+
+        item = WinForms.ToolStripMenuItem(command.label)
+
+        if command.action:
+            item.Click += command._impl.as_handler()
+        item.Enabled = command.enabled
+
+        if command.shortcut is not None:
+            shortcut_keys = toga_to_winforms_key(command.shortcut)
+            item.ShortcutKeys = shortcut_keys
+            item.ShowShortcutKeys = True
+
+        command._impl.native.append(item)
+
+        self._menu_items[command.to_tuple()] = item
+        if command.group not in self._menu_groups:
+            self._menu_groups[command.group] = []
+        self._menu_groups[command.group].append(command)
+        submenu.DropDownItems.Add(item)
+
+    def _set_commands(self, group, commands):
+        submenu = self._menu_items[group.to_tuple()]
+        if group in self._menu_groups:
+            for command in self._menu_groups.pop(group):
+                item = self._menu_items[command.to_tuple()]
+                submenu.DropDownItems.Remove(item)
+                del self._menu_items[command.to_tuple()]
+
+        for command in commands:
+            self._add_command(command)
+
+    def _submenu(self, group):
+        if group is None:
+            return self._menubar
+        try:
+            return self._menu_items[group.to_tuple()]
+        except KeyError:
+            pass
+        parent_menu = self._submenu(group.parent)
+
+        submenu = WinForms.ToolStripMenuItem(group.label)
+
+        # Top level menus are added in a different way to submenus
+        if group.parent is None:
+            parent_menu.Items.Add(submenu)
+        else:
+            parent_menu.DropDownItems.Add(submenu)
+
+        self._menu_items[group.to_tuple()] = submenu
+        return submenu
+
 
 class DocumentApp(App):
     def _create_app_commands(self):
         self.interface.commands.add(
             toga.Command(
-                lambda w: self.open_file,
+                lambda w: self.interface.open_file(),
                 label='Open...',
                 shortcut=Key.MOD_1 + 'o',
                 group=toga.Group.FILE,
-                section=0
+                section=0,
+                order=1
             ),
+            toga.DataSourceCommandSet(
+                label="Recent",
+                data=self.interface.documents,
+                item_to_label=lambda item: item.path.stem,
+                group=toga.Group.FILE,
+                section=0,
+                order=2,
+                item_action=lambda widget, item: self.interface.open_recent(item.path),
+                app=self.interface,
+            )
         )
-
-    def open_document(self, fileURL):
-        """Open a new document in this app.
-
-        Args:
-            fileURL (str): The URL/path to the file to add as a document.
-        """
-        self.interface.factory.not_implemented('DocumentApp.open_document()')

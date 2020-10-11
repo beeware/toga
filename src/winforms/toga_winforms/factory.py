@@ -1,4 +1,4 @@
-from .app import App, MainWindow
+from .app import App, DocumentApp, MainWindow
 from .command import Command
 from .fonts import Font
 from .icons import Icon
@@ -38,6 +38,7 @@ __all__ = [
     'not_implemented',
 
     'App',
+    'DocumentApp',
     'MainWindow',
     'Command',
 

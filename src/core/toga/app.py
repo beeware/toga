@@ -4,11 +4,13 @@ import warnings
 import webbrowser
 from builtins import id as identifier
 from email.message import Message
+from pathlib import Path
 
 from toga.command import CommandSet
 from toga.handlers import wrapped_handler
 from toga.icons import Icon
 from toga.platform import get_platform_factory
+from toga.sources import StackSource
 from toga.window import Window
 
 try:
@@ -474,6 +476,9 @@ class App:
     def add_background_task(self, handler):
         self._impl.add_background_task(handler)
 
+    def _set_commands(self, group, commands):
+        self._impl._set_commands(group, commands)
+
 
 class DocumentApp(App):
     """
@@ -499,12 +504,19 @@ class DocumentApp(App):
         description=None,
         startup=None,
         document_types=None,
+        initial_directory=None,
         on_exit=None,
+        load_document=None,
+        recent_documents_size=10,
         factory=None,
     ):
 
+        self.initial_directory = initial_directory
         self.document_types = document_types
-        self._documents = []
+        self._documents = StackSource(
+            data=[], accessors=["path"], size=recent_documents_size
+        )
+        self.load_document = load_document
 
         super().__init__(
             formal_name=formal_name,
@@ -523,6 +535,31 @@ class DocumentApp(App):
 
     def _create_impl(self):
         return self.factory.DocumentApp(interface=self)
+
+    def open_file(self):
+        try:
+            file_path = self.main_window.open_file_dialog(
+                "Open file",
+                initial_directory=self.initial_directory,
+                file_types=self.document_types,
+            )
+        except ValueError:
+            return
+        self.open_recent(Path(file_path).absolute())
+
+    def open_recent(self, file_path):
+        self._add_to_recent(file_path)
+        if self.load_document is not None:
+            self.load_document(self, file_path)
+
+    def _add_to_recent(self, file_path):
+        try:
+            self._documents.remove(
+                next(filter(lambda row: row.path == file_path, self._documents))
+            )
+        except StopIteration:
+            pass
+        self._documents.prepend(Path(file_path).absolute())
 
     @property
     def documents(self):
