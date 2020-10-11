@@ -15,6 +15,8 @@ class Slider(Widget):
         range (``tuple``): Min and max values of the slider in this form (min, max).
         tick_count (``int``): How many ticks in range. if None, slider is continuous.
         on_change (``callable``): The handler to invoke when the slider value changes.
+        on_focus_gain (:obj:`callable`): Function to execute when get focused.
+        on_focus_loss (:obj:`callable`): Function to execute when lose focus.
         enabled (bool): Whether user interaction is possible or not.
         factory (:obj:`module`): A python module that is capable to return a
             implementation of this class with the same name. (optional & normally not needed)
@@ -27,6 +29,8 @@ class Slider(Widget):
         range=None,
         tick_count=None,
         on_change=None,
+        on_focus_gain=None,
+        on_focus_loss=None,
         on_slide=None,
         enabled=True,
         factory=None
@@ -51,6 +55,8 @@ class Slider(Widget):
         else:
             self.on_change = on_change
         self.enabled = enabled
+        self.on_focus_loss = on_focus_loss
+        self.on_focus_gain = on_focus_gain
 
     MIN_WIDTH = 100
 

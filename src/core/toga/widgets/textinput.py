@@ -15,12 +15,24 @@ class TextInput(Widget):
         initial (str): The initial text for the input.
         placeholder (str): If no input is present this text is shown.
         readonly (bool):  Whether a user can write into the text input, defaults to `False`.
+        on_change (``callable``): The handler to invoke when the text changes.
+        on_focus_gain (:obj:`callable`): Function to execute when get focused.
+        on_focus_loss (:obj:`callable`): Function to execute when lose focus.
     """
     MIN_WIDTH = 100
 
     def __init__(
-            self, id=None, style=None, factory=None,
-            initial=None, placeholder=None, readonly=False, on_change=None):
+            self,
+            id=None,
+            style=None,
+            factory=None,
+            initial=None,
+            placeholder=None,
+            readonly=False,
+            on_change=None,
+            on_focus_gain=None,
+            on_focus_loss=None,
+    ):
         super().__init__(id=id, style=style, factory=factory)
 
         # Create a platform specific implementation of the widget
@@ -32,6 +44,9 @@ class TextInput(Widget):
 
         # Set the actual value last, as it may trigger change events, etc.
         self.value = initial
+
+        self.on_focus_loss = on_focus_loss
+        self.on_focus_gain = on_focus_gain
 
     def _create(self):
         self._impl = self.factory.TextInput(interface=self)
