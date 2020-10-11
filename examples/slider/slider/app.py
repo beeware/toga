@@ -28,6 +28,8 @@ class SliderApp(toga.App):
         # Add the content on the main window
         self.discrete_slider = toga.Slider(
             on_change=self.my_discrete_on_change,
+            on_press=self.my_discrete_on_press,
+            on_release=self.my_discrete_on_release,
             range=(MIN_VAL, MAX_VAL),
             tick_count=MAX_VAL - MIN_VAL + 1,
             style=slider_style
@@ -96,11 +98,25 @@ class SliderApp(toga.App):
 
     def my_continuous_on_change(self, slider):
         # get the current value of the slider with `slider.value`
-        self.continuous_slider_value_label.text = "The slider value changed to {0}".format(slider.value)
+        self.continuous_slider_value_label.text = "The slider value changed to {0}".format(
+            slider.value
+        )
 
     def my_discrete_on_change(self, slider):
         # get the current value of the slider with `slider.value`
-        self.discrete_slider_value_label.text = "The slider value changed to {0}".format(slider.value)
+        self.discrete_slider_value_label.text = "The slider value changed to {0}".format(
+            slider.value
+        )
+
+    def my_discrete_on_press(self, slider):
+        # get the current value of the slider with `slider.value`
+        self.discrete_slider_value_label.text = "Oh no! they got me!"
+
+    def my_discrete_on_release(self, slider):
+        # get the current value of the slider with `slider.value`
+        self.discrete_slider_value_label.text = "I am free! Changed to {0}".format(
+            slider.value
+        )
 
     def increase_discrete_slider(self, widget):
         if self.discrete_slider.tick_value != self.discrete_slider.tick_count:
