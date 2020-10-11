@@ -123,8 +123,8 @@ class DocumentAppTests(TestCase):
         )
 
     def test_app_documents(self):
-        self.assertEqual(self.app.documents, [])
+        self.assertEqual(list(self.app.documents), [])
 
         doc = MagicMock()
         self.app._documents.append(doc)
-        self.assertEqual(self.app.documents, [doc])
+        self.assertEqual([item.path for item in self.app.documents], [doc])
