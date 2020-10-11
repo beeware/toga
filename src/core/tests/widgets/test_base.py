@@ -1,3 +1,5 @@
+from unittest import mock
+
 import toga
 import toga_dummy
 from toga.style import Pack
@@ -11,9 +13,16 @@ class WidgetTests(TestCase):
         self.id = 'widget_id'
         self.style = Pack(padding=666)
 
-        self.widget = toga.Widget(id=self.id,
-                                  style=self.style,
-                                  factory=toga_dummy.factory)
+        self.on_focus_gain = mock.Mock()
+        self.on_focus_loss = mock.Mock()
+
+        self.widget = toga.Widget(
+            id=self.id,
+            style=self.style,
+            on_focus_gain=self.on_focus_gain,
+            on_focus_loss=self.on_focus_loss,
+            factory=toga_dummy.factory
+        )
 
     def test_arguments_were_set_correctly(self):
         self.assertEqual(self.widget.id, self.id)
@@ -55,3 +64,9 @@ class WidgetTests(TestCase):
         self.widget._children = []
         self.widget.add(child1, child2)
         self.assertEqual(self.widget.children, [child1, child2])
+
+    def test_on_focus_gain(self):
+        self.assertEqual(self.widget.on_focus_gain, self.on_focus_gain)
+
+    def test_on_focus_loss(self):
+        self.assertEqual(self.widget.on_focus_loss, self.on_focus_loss)
