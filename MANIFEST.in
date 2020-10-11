@@ -33,6 +33,7 @@ recursive-include examples *.py
 recursive-include examples *.rst
 recursive-include examples *.toml
 recursive-include examples README
+recursive-include examples *.txt
 prune examples/*/.vscode
 
 recursive-include src *.html
