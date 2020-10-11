@@ -1,0 +1,5 @@
+I am the forth file
+
+
+
+and I have blank lines

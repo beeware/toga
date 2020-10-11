@@ -1,0 +1,44 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name = "Document App Demo"
+bundle = "org.beeware"
+version = "0.3.0.dev24"
+url = "https://beeware.org"
+license = "BSD license"
+author = 'Tiberius Yak'
+author_email = "tiberius@beeware.org"
+
+[tool.briefcase.app.document_app]
+formal_name = "Document App Demo"
+description = "A testing app"
+sources = ['document_app']
+requires = []
+
+
+[tool.briefcase.app.document_app.macOS]
+requires = [
+    'toga-cocoa',
+]
+
+[tool.briefcase.app.document_app.linux]
+requires = [
+    'toga-gtk',
+]
+
+[tool.briefcase.app.document_app.windows]
+requires = [
+    'toga-winforms',
+]
+
+# Mobile deployments
+[tool.briefcase.app.document_app.iOS]
+requires = [
+    'toga-iOS',
+]
+
+[tool.briefcase.app.document_app.android]
+requires = [
+    'toga-android',
+]
