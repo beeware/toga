@@ -30,11 +30,11 @@ class Widget:
         # No special handling required
         pass
 
-    def set_on_focus_gain(self, app):
+    def set_on_focus_gain(self, handler):
         # No special handling required
         pass
 
-    def set_on_focus_loss(self, app):
+    def set_on_focus_loss(self, handler):
         # No special handling required
         pass
 
