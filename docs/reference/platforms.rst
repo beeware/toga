@@ -13,7 +13,7 @@ macOS
 
 .. image:: /reference/screenshots/cocoa.png
 
-The backend for macOS is named `toga-cocoa`_. It supports macOS 10.7 (Lion)
+The backend for macOS is named `toga-cocoa`_. It supports macOS 10.10 (Yosemite)
 and later. It is installed automatically on macOS machines (machines that
 report ``sys.platform == 'darwin'``), or can be manually installed by invoking::
 

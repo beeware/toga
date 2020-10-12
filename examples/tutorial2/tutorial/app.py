@@ -26,6 +26,14 @@ def action3(widget):
     print("action 3")
 
 
+def action5(widget):
+    print("action 5")
+
+
+def action6(widget):
+    print("action 6")
+
+
 def build(app):
     brutus_icon = "icons/brutus"
     cricket_icon = "icons/cricket-72.png"
@@ -58,8 +66,12 @@ def build(app):
 
     split.content = [left_container, right_container]
 
+    # Create a "Things" menu group to contain some of the commands.
+    # No explicit ordering is provided on the group, so it will appear
+    # after application-level menus, but *before* the Command group.
+    # Items in the Things group are not explicitly ordered either, so they
+    # will default to alphabetical ordering within the group.
     things = toga.Group('Things')
-
     cmd0 = toga.Command(
         action0,
         label='Action 0',
@@ -81,12 +93,37 @@ def build(app):
         icon=toga.Icon.TOGA_ICON,
         group=things
     )
+
+    # Commands without an explicit group end up in the "Commands" group.
+    # The items have an explicit ordering that overrides the default
+    # alphabetical ordering
     cmd3 = toga.Command(
         action3,
         label='Action 3',
         tooltip='Perform action 3',
         shortcut=toga.Key.MOD_1 + 'k',
-        icon=cricket_icon
+        icon=cricket_icon,
+        order=3
+    )
+
+    # Define a submenu inside the Commands group.
+    # The submenu group has an order that places it in the parent menu.
+    # The items have an explicit ordering that overrides the default
+    # alphabetical ordering.
+    sub_menu = toga.Group("Sub Menu", parent=toga.Group.COMMANDS, order=2)
+    cmd5 = toga.Command(
+        action5,
+        label='Action 5',
+        tooltip='Perform action 5',
+        order=2,
+        group=sub_menu
+    )
+    cmd6 = toga.Command(
+        action6,
+        label='Action 6',
+        tooltip='Perform action 6',
+        order=1,
+        group=sub_menu
     )
 
     def action4(widget):
@@ -97,11 +134,14 @@ def build(app):
         action4,
         label='Action 4',
         tooltip='Perform action 4',
-        icon=brutus_icon
+        icon=brutus_icon,
+        order=1
     )
 
-    app.commands.add(cmd1, cmd3, cmd4, cmd0)
-    app.main_window.toolbar.add(cmd1, cmd2, cmd3, cmd4)
+    # The order in which commands are added to the app or the toolbar won't
+    # alter anything. Ordering is defined by the command definitions.
+    app.commands.add(cmd1, cmd0, cmd6, cmd4, cmd5, cmd3)
+    app.main_window.toolbar.add(cmd1, cmd3, cmd2, cmd4)
 
     return split
 

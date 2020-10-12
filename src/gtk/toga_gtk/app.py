@@ -97,7 +97,6 @@ class App:
 
         # Create the lookup table of menu items,
         # then force the creation of the menus.
-        self._actions = {}
         self.create_menus()
 
         # Now that we have menus, make the app take responsibility for
@@ -117,65 +116,65 @@ class App:
 
     def create_menus(self):
         # Only create the menu if the menu item index has been created.
-        if hasattr(self, '_actions'):
-            self._actions = {}
-            menubar = Gio.Menu()
-            label = None
-            submenu = None
-            section = None
-            for cmd in self.interface.commands:
-                if cmd == GROUP_BREAK:
-                    if section:
-                        submenu.append_section(None, section)
+        self._menu_items = {}
+        self._menu_groups = {}
 
-                    if label == '*':
-                        label = self.interface.name
-                    menubar.append_submenu(label, submenu)
+        # Create the menu for the top level menubar.
+        menubar = Gio.Menu()
+        section = None
+        for cmd in self.interface.commands:
+            if cmd == GROUP_BREAK:
+                section = None
+            elif cmd == SECTION_BREAK:
+                section = None
+            else:
+                submenu = self._submenu(cmd.group, menubar)
 
-                    label = None
-                    submenu = None
-                    section = None
-                elif cmd == SECTION_BREAK:
+                if section is None:
+                    section = Gio.Menu()
                     submenu.append_section(None, section)
-                    section = None
 
-                else:
-                    if submenu is None:
-                        label = cmd.group.label
-                        submenu = Gio.Menu()
+                cmd_id = "command-%s" % id(cmd)
+                action = Gio.SimpleAction.new(cmd_id, None)
+                if cmd.action:
+                    action.connect("activate", gtk_menu_item_activate(cmd))
 
-                    if section is None:
-                        section = Gio.Menu()
+                cmd._impl.native.append(action)
+                cmd._impl.set_enabled(cmd.enabled)
+                self._menu_items[action] = cmd
+                self.native.add_action(action)
 
-                    try:
-                        action = self._actions[cmd]
-                    except KeyError:
-                        cmd_id = "command-%s" % id(cmd)
-                        action = Gio.SimpleAction.new(cmd_id, None)
-                        if cmd.action:
-                            action.connect("activate", gtk_menu_item_activate(cmd))
+                item = Gio.MenuItem.new(cmd.label, 'app.' + cmd_id)
+                if cmd.shortcut:
+                    item.set_attribute_value('accel', GLib.Variant('s', gtk_accel(cmd.shortcut)))
 
-                        cmd._impl.native.append(action)
-                        cmd._impl.set_enabled(cmd.enabled)
-                        self._actions[cmd] = action
-                        self.native.add_action(action)
+                section.append_item(item)
 
-                    item = Gio.MenuItem.new(cmd.label, 'app.' + cmd_id)
-                    if cmd.shortcut:
-                        item.set_attribute_value('accel', GLib.Variant('s', gtk_accel(cmd.shortcut)))
+        # Set the menu for the app.
+        self.native.set_menubar(menubar)
 
-                    section.append_item(item)
+    def _submenu(self, group, menubar):
+        try:
+            return self._menu_groups[group]
+        except KeyError:
+            if group is None:
+                submenu = menubar
+            else:
+                parent_menu = self._submenu(group.parent, menubar)
 
-            if section:
-                submenu.append_section(None, section)
+                submenu = Gio.Menu()
+                self._menu_groups[group] = submenu
 
-            if submenu:
+                label = group.label
                 if label == '*':
                     label = self.interface.name
-                menubar.append_submenu(label, submenu)
 
-            # Set the menu for the app.
-            self.native.set_menubar(menubar)
+                parent_menu.append_submenu(label, submenu)
+
+            # Install the item in the group cache.
+            self._menu_groups[group] = submenu
+
+            return submenu
 
     def main_loop(self):
         # Modify signal handlers to make sure Ctrl-C is caught and handled.
