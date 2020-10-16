@@ -19,8 +19,11 @@ class MultilineTextInput(Widget):
     MIN_WIDTH = 100
 
     def __init__(self, id=None, style=None, factory=None,
-                 initial=None, readonly=False, placeholder=None):
+                 initial=None, readonly=False, placeholder=None,
+                 on_change=None):
         super().__init__(id=id, style=style, factory=factory)
+
+        self._on_change = on_change
 
         # Create a platform specific implementation of a MultilineTextInput
         self._impl = self.factory.MultilineTextInput(interface=self)
