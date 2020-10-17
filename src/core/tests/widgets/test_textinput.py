@@ -1,6 +1,7 @@
 import toga
 import toga_dummy
 from toga_dummy.utils import TestCase
+from unittest.mock import Mock, call
 
 
 class TextInputTests(TestCase):
@@ -10,10 +11,12 @@ class TextInputTests(TestCase):
         self.initial = 'Initial Text'
         self.placeholder = 'Placeholder Text'
         self.readonly = False
-        self.text_input = toga.TextInput(initial=self.initial,
-                                         placeholder=self.placeholder,
-                                         readonly=self.readonly,
-                                         factory=toga_dummy.factory)
+        self.text_input = toga.TextInput(
+            initial=self.initial,
+            placeholder=self.placeholder,
+            readonly=self.readonly,
+            factory=toga_dummy.factory
+        )
 
     def test_widget_created(self):
         self.assertEqual(self.text_input._impl.interface, self.text_input)
@@ -54,3 +57,93 @@ class TextInputTests(TestCase):
     def test_focus(self):
         self.text_input.focus()
         self.assertActionPerformed(self.text_input, "focus")
+
+
+class ValidatedTextInputTests(TestCase):
+    def setUp(self):
+        super().setUp()
+
+        self.initial = 'Initial Text'
+
+    def test_validator_run_in_constructor(self):
+        validator = Mock(return_value=None)
+        text_input = toga.TextInput(
+            initial=self.initial,
+            validator=validator,
+            factory=toga_dummy.factory
+        )
+        self.assertValueNotSet(text_input, "error")
+        self.assertActionPerformed(text_input, "clear_error")
+        validator.assert_called_once_with(self.initial)
+
+    def test_validator_run_after_set(self):
+        message = "This is an error message"
+        validator = Mock(return_value=message)
+        text_input = toga.TextInput(
+            initial=self.initial,
+            factory=toga_dummy.factory
+        )
+
+        self.assertValueNotSet(text_input, "error")
+
+        text_input.validator = validator
+
+        self.assertValueSet(text_input, "error", message)
+        validator.assert_called_once_with(self.initial)
+
+    def test_text_input_with_no_validator_is_valid(self):
+        text_input = toga.TextInput(
+            initial=self.initial,
+            factory=toga_dummy.factory
+        )
+        self.assertTrue(text_input.is_valid())
+
+    def test_is_valid_returns_true(self):
+        validator = Mock(return_value=None)
+        text_input = toga.TextInput(
+            initial=self.initial,
+            validator=validator,
+            factory=toga_dummy.factory
+        )
+        self.assertTrue(text_input.is_valid())
+
+    def test_is_valid_returns_false(self):
+        message = "This is an error message"
+        validator = Mock(return_value=message)
+        text_input = toga.TextInput(
+            initial=self.initial,
+            validator=validator,
+            factory=toga_dummy.factory
+        )
+        self.assertFalse(text_input.is_valid())
+
+    def test_validate_passes(self):
+        validator = Mock(side_effect=[None, None])
+        text_input = toga.TextInput(
+            initial=self.initial,
+            validator=validator,
+            factory=toga_dummy.factory
+        )
+        self.assertValueNotSet(text_input, "error")
+
+        text_input.validate()
+        self.assertValueNotSet(text_input, "error")
+        self.assertEqual(
+            validator.call_args_list, [call(self.initial), call(self.initial)]
+        )
+
+    def test_validate_fails(self):
+        message = "This is an error message"
+        validator = Mock(side_effect=[None, message])
+        text_input = toga.TextInput(
+            initial=self.initial,
+            validator=validator,
+            factory=toga_dummy.factory
+        )
+        self.assertValueNotSet(text_input, "error")
+
+        text_input.validate()
+        self.assertValueSet(text_input, "error", message)
+        self.assertEqual(
+            validator.call_args_list, [call(self.initial), call(self.initial)]
+        )
