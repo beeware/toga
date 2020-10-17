@@ -2,7 +2,7 @@
 # System/Library/Frameworks/AppKit.framework
 ##########################################################################
 from ctypes import Structure, c_void_p
-from enum import Enum
+from enum import Enum, IntEnum
 
 from rubicon.objc import CGFloat, ObjCClass, objc_const
 from rubicon.objc.api import NSString
@@ -315,6 +315,18 @@ NSEventModifierFlagShift = 1 << 17
 NSEventModifierFlagControl = 1 << 18
 NSEventModifierFlagOption = 1 << 19
 NSEventModifierFlagCommand = 1 << 20
+
+
+class NSEventType(IntEnum):
+    LeftMouseDown = 1
+    LeftMouseUp = 2
+    RightMouseDown = 3
+    RightMouseUp = 4
+    MouseMoved = 5
+    LeftMouseDragged = 6
+    RightMouseDragged = 7
+    MouseEntered = 8
+
 
 ######################################################################
 # NSFont.h

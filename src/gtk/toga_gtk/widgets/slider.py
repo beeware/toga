@@ -22,6 +22,12 @@ class Slider(Widget):
         # No special handling required
         pass
 
+    def set_on_press(self, handler):
+        self.interface.factory.not_implemented("Slider.set_on_press()")
+
+    def set_on_release(self, handler):
+        self.interface.factory.not_implemented("Slider.set_on_release()")
+
     def set_value(self, value):
         self.adj.set_value(value)
 
