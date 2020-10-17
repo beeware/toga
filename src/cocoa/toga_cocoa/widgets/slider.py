@@ -15,8 +15,7 @@ class TogaSlider(NSSlider):
         elif event_type == NSEventType.LeftMouseUp:
             if self.interface.on_release:
                 self.interface.on_release(self.interface)
-
-        if self.interface.on_change:
+        elif self.interface.on_change:
             self.interface.on_change(self.interface)
 
 
