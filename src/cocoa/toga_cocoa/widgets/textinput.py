@@ -11,25 +11,25 @@ from toga_cocoa.libs import (
 from .base import Widget
 
 
-class TogaTextFieldDelegate(NSObject):
+class TogaTextField(NSTextField):
     @objc_method
-    def controlTextDidChange_(self, notification) -> None:
+    def textDidChange_(self, notification) -> None:
         if self.interface.on_change:
             self.interface.on_change(self.interface)
 
     @objc_method
-    def controlTextDidEndEditing_(self) -> None:
-        self.interface.validate()
+    def textShouldEndEditing_(self, textObject) -> bool:
+        return self.interface.validate()
 
 
 class TextInput(Widget):
     def create(self):
-        self.native = NSTextField.new()
+        self.native = TogaTextField.new()
         self.native.interface = self.interface
 
-        delegate = TogaTextFieldDelegate.new()
-        delegate.interface = self.interface
-        self.native.delegate = delegate
+        # delegate = TogaTextFieldDelegate.new()
+        # delegate.interface = self.interface
+        # self.native.delegate = delegate
 
         self.native.bezeled = True
         self.native.bezelStyle = NSTextFieldSquareBezel
@@ -72,9 +72,9 @@ class TextInput(Widget):
         pass
 
     def set_error(self, error_message):
-        self.interface.value = self.last_valid_value
         if self.interface.window is not None:
             self.interface.window.error_dialog("Validation Error", error_message)
 
     def clear_error(self):
-        self.last_valid_value = self.interface.value
+        # Cocoa TextInput can't ever be in an invalid state, so clear is a no-op
+        pass
