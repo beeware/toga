@@ -1,7 +1,6 @@
 from travertino.size import at_least
 
 from toga_cocoa.libs import (
-    NSObject,
     NSTextAlignment,
     NSTextField,
     NSTextFieldSquareBezel,
@@ -27,16 +26,11 @@ class TextInput(Widget):
         self.native = TogaTextField.new()
         self.native.interface = self.interface
 
-        # delegate = TogaTextFieldDelegate.new()
-        # delegate.interface = self.interface
-        # self.native.delegate = delegate
-
         self.native.bezeled = True
         self.native.bezelStyle = NSTextFieldSquareBezel
 
         # Add the layout constraints
         self.add_constraints()
-        self.last_valid_value = None
 
     def set_readonly(self, value):
         # Even if it's not editable, it's still selectable.
