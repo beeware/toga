@@ -1,9 +1,9 @@
-import re
 from string import ascii_lowercase, ascii_uppercase, digits
 
 import toga
 from toga.constants import COLUMN
 from toga.style import Pack
+from toga import validators
 
 EMPTY_PASSWORD = 'Empty password'
 
@@ -71,18 +71,25 @@ class TextInputApp(toga.App):
         self.password_input = toga.PasswordInput(
             placeholder='Password...',
             style=Pack(padding=10),
-            on_change=self.on_password_change
+            on_change=self.on_password_change,
+            validator=validators.combine(
+                validators.min_length(10),
+                validators.contains_uppercase(),
+                validators.contains_lowercase(),
+                validators.contains_special(),
+                validators.contains_digit()
+            )
         )
         self.email_input = toga.TextInput(
             placeholder='Email...',
             style=Pack(padding=10),
-            validator=self.validate_email
+            validator=validators.email()
         )
         self.number_input = toga.NumberInput(style=Pack(padding=10))
         btn_extract = toga.Button(
             'Extract values',
             on_press=self.do_extract_values,
-            style=Pack(flex=1)
+            style=Pack(flex=1),
         )
 
         # Outermost box
@@ -130,23 +137,6 @@ class TextInputApp(toga.App):
             else:
                 contains.add("special characters")
         return "Password contains: {}".format(', '.join(contains))
-
-    @classmethod
-    def validate_email(cls, value):
-        if value == "":
-            return
-        split_email = value.split("@")
-        email_parts = len(split_email)
-        if email_parts == 1:
-            return 'No "@" in address'
-        if email_parts >= 3:
-            return 'Too many "@" symbols in address'
-        name, domain = split_email
-        if not re.match(r"[A-Za-z][A-Za-z0-9\-.]*", name):
-            return 'Email name is invalid'
-        if not re.match(r"[A-Za-z][A-Za-z0-9\-.]*", domain):
-            return 'Email domain is invalid'
-        return
 
 
 def main():
