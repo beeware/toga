@@ -476,9 +476,6 @@ class App:
     def add_background_task(self, handler):
         self._impl.add_background_task(handler)
 
-    def _set_commands(self, group, commands):
-        self._impl._set_commands(group, commands)
-
 
 class DocumentApp(App):
     """

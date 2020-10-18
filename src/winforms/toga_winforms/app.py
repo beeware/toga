@@ -85,6 +85,7 @@ class App:
 
     def create_menus(self):
         self._menu_items = {}
+        self._data_menu_items = {}
         self._menu_groups = {}
         self._menubar = WinForms.MenuStrip()
 
@@ -97,7 +98,7 @@ class App:
                 submenu = self._submenu(previous_command.group)
                 submenu.DropDownItems.Add('-')
             else:
-                self._add_command(cmd)
+                self._menu_items[cmd] = self._add_command(cmd)
                 previous_command = cmd
 
         self.interface.main_window._impl.native.Controls.Add(self._menubar)
@@ -228,7 +229,13 @@ class App:
         submenu = self._submenu(command.group)
         submenu.Enabled = True
 
-        item = WinForms.ToolStripMenuItem(command.label)
+        # If a command has a sub_group, it's a menu item that is used
+        # as the insertion point for data-based menu items (e.g., recent files)
+        # Register it as a submenu.
+        if command.sub_group:
+            item = self._submenu(command.sub_group)
+        else:
+            item = WinForms.ToolStripMenuItem(command.label)
 
         if command.action:
             item.Click += command._impl.as_handler()
@@ -241,28 +248,33 @@ class App:
 
         command._impl.native.append(item)
 
-        self._menu_items[command.to_tuple()] = item
-        if command.group not in self._menu_groups:
-            self._menu_groups[command.group] = []
-        self._menu_groups[command.group].append(command)
         submenu.DropDownItems.Add(item)
 
-    def _set_commands(self, group, commands):
-        submenu = self._menu_items[group.to_tuple()]
-        if group in self._menu_groups:
-            for command in self._menu_groups.pop(group):
-                item = self._menu_items[command.to_tuple()]
-                submenu.DropDownItems.Remove(item)
-                del self._menu_items[command.to_tuple()]
+        return item
 
-        for command in commands:
-            self._add_command(command)
+    def _update_data_menu_items(self, commandset):
+        """
+        Update the menu items relating to a data source.
+
+        :param commandset: The commandset that needs to be updated.
+        """
+        # Remove all existing menu items
+        if commandset in self._data_menu_items:
+            submenu = self._submenu(commandset.sub_group)
+            for item in self._data_menu_items[commandset]:
+                submenu.DropDownItems.Remove(item)
+
+        # Reset the data menu items list, and re-create the items
+        # based on the current contents of the data source.
+        self._data_menu_items[commandset] = []
+        for command in commandset:
+            self._data_menu_items[commandset].append(self._add_command(command))
 
     def _submenu(self, group):
         if group is None:
             return self._menubar
         try:
-            return self._menu_items[group.to_tuple()]
+            return self._menu_groups[group]
         except KeyError:
             pass
         parent_menu = self._submenu(group.parent)
@@ -275,7 +287,7 @@ class App:
         else:
             parent_menu.DropDownItems.Add(submenu)
 
-        self._menu_items[group.to_tuple()] = submenu
+        self._menu_groups[group] = submenu
         return submenu
 
 

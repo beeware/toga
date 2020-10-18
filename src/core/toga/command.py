@@ -64,7 +64,7 @@ class Group:
         return self.to_tuple() < other.to_tuple()
 
     def __gt__(self, other):
-        return other < self
+        return not self.__lt__(other)
 
     def __eq__(self, other):
         if other is None:
@@ -73,8 +73,8 @@ class Group:
 
     def __repr__(self):
         parent_string = "None" if self.parent is None else self.parent.label
-        return "<Group label={} order={} parent={}>".format(
-            self.label, self.order, parent_string
+        return "<Group label={} parent={}>".format(
+            self.label, parent_string
         )
 
     def to_tuple(self):
@@ -126,6 +126,7 @@ class Command:
         self.icon = icon
 
         self.group = group if group else Group.COMMANDS
+        self.sub_group = None
         self.section = section if section else 0
         self.order = order if order else 0
 
@@ -181,15 +182,10 @@ class Command:
         return self.to_tuple() < other.to_tuple()
 
     def __gt__(self, other):
-        return self.to_tuple() > other.to_tuple()
+        return not self.__lt__(other)
 
     def __repr__(self):
-        return "<Command label={} group={} section={} order={}>".format(
-            self.label,
-            self.group,
-            self.section,
-            self.order,
-        )
+        return "<Command label={}>".format(self.label)
 
     def to_tuple(self):
         return tuple([*self.group.to_tuple(), (self.section, self.order, self.label)])
@@ -232,6 +228,9 @@ class DataSourceCommandSet(Command):
         for index, item in enumerate(self.data):
             yield self.__build_command(index, item)
 
+    def __repr__(self):
+        return "<DataSourceCommandSet label={}>".format(self.label)
+
     @property
     def data(self):
         return self._data
@@ -258,11 +257,11 @@ class DataSourceCommandSet(Command):
 
     def insert(self, index, item):
         if self.app is not None:
-            self.app._set_commands(self.sub_group, list(self))
+            self.app._impl._update_data_menu_items(self)
 
     def remove(self, index, item):
         if self.app is not None:
-            self.app._set_commands(self.sub_group, list(self))
+            self.app._impl._update_data_menu_items(self)
 
     def __build_command(self, index, item):
         return Command(
