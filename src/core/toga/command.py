@@ -222,6 +222,10 @@ class DataSourceCommandSet(Command):
         self.item_to_label = item_to_label
         self.app = app
 
+        self.sub_group = Group(
+            label=self.label, order=self.order, section=self.section, parent=self.group
+        )
+
         self.data.add_listener(self)
 
     def __iter__(self):
@@ -254,22 +258,17 @@ class DataSourceCommandSet(Command):
 
     def insert(self, index, item):
         if self.app is not None:
-            self.app._set_commands(self.as_group(), list(self))
+            self.app._set_commands(self.sub_group, list(self))
 
     def remove(self, index, item):
         if self.app is not None:
-            self.app._set_commands(self.as_group(), list(self))
-
-    def as_group(self):
-        return Group(
-            label=self.label, order=self.order, section=self.section, parent=self.group
-        )
+            self.app._set_commands(self.sub_group, list(self))
 
     def __build_command(self, index, item):
         return Command(
             self.__get_action(item),
             self.item_to_label(item),
-            group=self.as_group(),
+            group=self.sub_group,
             order=index,
             factory=self.factory
         )
