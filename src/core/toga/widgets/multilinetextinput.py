@@ -1,3 +1,4 @@
+from toga.handlers import wrapped_handler
 from .base import Widget
 
 
@@ -23,8 +24,6 @@ class MultilineTextInput(Widget):
                  on_change=None):
         super().__init__(id=id, style=style, factory=factory)
 
-        self._on_change = on_change
-
         # Create a platform specific implementation of a MultilineTextInput
         self._impl = self.factory.MultilineTextInput(interface=self)
 
@@ -32,6 +31,7 @@ class MultilineTextInput(Widget):
         self.value = initial
         self.readonly = readonly
         self.placeholder = placeholder
+        self.on_change = on_change
 
     @property
     def placeholder(self):
@@ -80,3 +80,22 @@ class MultilineTextInput(Widget):
         """ Clears the text from the widget.
         """
         self.value = ''
+
+    @property
+    def on_change(self):
+        """The handler to invoke when the value changes
+
+        Returns:
+            The function ``callable`` that is called on a content change.
+        """
+        return self._on_change
+
+    @on_change.setter
+    def on_change(self, handler):
+        """Set the handler to invoke when the value is changeed.
+
+        Args:
+            handler (:obj:`callable`): The handler to invoke when the value is changeed.
+        """
+        self._on_change = wrapped_handler(self, handler)
+        self._impl.set_on_change(self._on_change)

@@ -29,6 +29,9 @@ class MultilineTextInput(Widget):
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
         self.interface.intrinsic.height = at_least(self.interface.MIN_HEIGHT)
 
+    def set_on_change(self, handler):
+        pass
+
     def winforms_text_changed(self, sender, event):
         if self.interface._on_change:
             self.interface._on_change(self.interface)
