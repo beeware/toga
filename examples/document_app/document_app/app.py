@@ -12,7 +12,7 @@ class ExampleDocumentApp(toga.DocumentApp):
             resizeable=False, minimizable=False
         )
 
-        self.text_input = toga.MultilineTextInput()
+        self.text_input = toga.MultilineTextInput(style=Pack(flex=1))
         outer_box = toga.Box(
             style=Pack(direction=COLUMN),
             children=[
@@ -38,7 +38,6 @@ def main():
     app = ExampleDocumentApp(
         'DocumentApp',
         'org.beeware.widgets.document_app',
-        recent_documents_size=3,
         load_document=load_file,
         initial_directory=str(Path(__file__).parent.parent / "resources"),
         document_types=["txt"]
