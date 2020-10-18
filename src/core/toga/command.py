@@ -192,7 +192,6 @@ class Command:
 
 
 class DataSourceCommandSet(Command):
-
     def __init__(
             self,
             label,
@@ -218,15 +217,28 @@ class DataSourceCommandSet(Command):
         self.item_to_label = item_to_label
         self.app = app
 
+        # Track the group for the child commands represented by this commandset
+        # and the individual subcommand instances.
         self.sub_group = Group(
             label=self.label, order=self.order, section=self.section, parent=self.group
         )
+        self._sub_commands = {}
+
+        # Artificially generate insertion events for existing data in the
+        # data source; then set up the listener for any new data.
+        for index, item in enumerate(self.data):
+            self.insert(index, item)
 
         self.data.add_listener(self)
 
     def __iter__(self):
         for index, item in enumerate(self.data):
-            yield self.__build_command(index, item)
+            # This is a big of a hack; inserting and deleting items
+            # messes with the ordering. Since we're iterating over all the
+            # items in a known order, fix the command ordering as we do so.
+            command = self._sub_commands[item]
+            command.order = index
+            yield command
 
     def __repr__(self):
         return "<DataSourceCommandSet label={}>".format(self.label)
@@ -256,26 +268,22 @@ class DataSourceCommandSet(Command):
         self._item_to_label = item_to_label
 
     def insert(self, index, item):
-        if self.app is not None:
-            self.app._impl._update_data_menu_items(self)
-
-    def remove(self, index, item):
-        if self.app is not None:
-            self.app._impl._update_data_menu_items(self)
-
-    def __build_command(self, index, item):
-        return Command(
-            self.__get_action(item),
+        self._sub_commands[item] = Command(
+            lambda widget: self.item_action(widget, item),
             self.item_to_label(item),
             group=self.sub_group,
             order=index,
             factory=self.factory
         )
 
-    def __get_action(self, item):
-        if self.item_action is None:
-            return None
-        return lambda widget: self.item_action(widget, item)
+        if self.app is not None:
+            self.app._impl._update_data_menu_items(self)
+
+    def remove(self, index, item):
+        del self._sub_commands[item]
+
+        if self.app is not None:
+            self.app._impl._update_data_menu_items(self)
 
 
 class Break:

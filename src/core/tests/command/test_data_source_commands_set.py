@@ -67,17 +67,6 @@ class TestDataSourceCommandSet(unittest.TestCase):
             ]
         )
 
-    def test_none_command_action(self):
-        commands_set = toga.DataSourceCommandSet(
-            self.label,
-            self.data,
-            item_to_label=lambda item: item.value,
-            factory=toga_dummy.factory,
-            item_action=None,
-        )
-        for command in commands_set:
-            self.assertIsNone(command.action)
-
     def test_insert(self):
         self.data.insert(1, "four")
         self.assert_all_commands(

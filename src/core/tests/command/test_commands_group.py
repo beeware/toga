@@ -110,11 +110,11 @@ class TestCommandsGroup(unittest.TestCase):
     def test_group_repr(self):
         parent = toga.Group("P")
         self.assertEqual(
-            repr(toga.Group("A")), "<Group label=A order=0 parent=None>"
+            repr(toga.Group("A")), "<Group label=A parent=None>"
         )
         self.assertEqual(
             repr(toga.Group("A", parent=parent)),
-            "<Group label=A order=0 parent=P>"
+            "<Group label=A parent=P>"
         )
 
     def test_set_section_without_parent(self):

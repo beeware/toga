@@ -90,7 +90,7 @@ class TestCommand(TestCase):
     def test_command_repr(self):
         self.assertEqual(
             repr(toga.Command(None, "A", group=PARENT_GROUP1, order=1, section=4)),
-            "<Command label=A group=<Group label=P order=1 parent=None> section=4 order=1>"
+            "<Command label=A>"
         )
 
     test_order_commands_by_label = order_test(
