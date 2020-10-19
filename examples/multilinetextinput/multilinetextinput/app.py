@@ -14,13 +14,21 @@ class ExampleMultilineTextInputApp(toga.App):
     def clear_pressed(self, widget, **kwargs):
         self.multiline_input.clear()
 
+    def set_label(self, widget):
+        if self.multiline_input.value == "":
+            self.label.text = "Nothing has been written yet"
+            return
+        number_of_lines = len(self.multiline_input.value.split("\n"))
+        self.label.text = "{} lines has been written".format(number_of_lines)
+
     def startup(self):
         self.main_window = toga.MainWindow(title=self.name)
 
         self.multiline_input = toga.MultilineTextInput(
             placeholder='Enter text here...',
             initial='Initial value',
-            style=Pack(flex=1)
+            style=Pack(flex=1),
+            on_change=self.set_label
         )
 
         button_toggle_enabled = toga.Button(
@@ -49,9 +57,10 @@ class ExampleMultilineTextInputApp(toga.App):
                 padding=10
             )
         )
+        self.label = toga.Label("Nothing has been written yet")
 
         outer_box = toga.Box(
-            children=[btn_box, self.multiline_input],
+            children=[btn_box, self.multiline_input, self.label],
             style=Pack(
                 direction=COLUMN,
                 padding=10
