@@ -9,28 +9,41 @@ EMAIL_REGEX = (
 )
 
 
-def min_length(length: int, error_message: Optional[str] = None):
+def min_length(
+    length: int, error_message: Optional[str] = None, allow_empty: bool = True
+):
     if error_message is None:
         error_message = "Input is too short (length should be at least {})".format(
             length
         )
     return __build_boolean_validator(
-        is_valid_method=lambda a: len(a) >= length, error_message=error_message
+        is_valid_method=lambda a: len(a) >= length,
+        error_message=error_message,
+        allow_empty=allow_empty,
     )
 
 
-def max_length(length: int, error_message: Optional[str] = None):
+def max_length(
+    length: int, error_message: Optional[str] = None, allow_empty: bool = True
+):
     if error_message is None:
         error_message = "Input is too long (length should be at most {})".format(length)
     return __build_boolean_validator(
-        is_valid_method=lambda a: len(a) <= length, error_message=error_message
+        is_valid_method=lambda a: len(a) <= length,
+        error_message=error_message,
+        allow_empty=allow_empty,
     )
 
 
-def length_between(min_value: int, max_value: int, error_message: Optional[str] = None):
+def length_between(
+    min_value: int,
+    max_value: int,
+    error_message: Optional[str] = None,
+    allow_empty: bool = True,
+):
     return combine(
-        min_length(min_value, error_message=error_message),
-        max_length(max_value, error_message=error_message),
+        min_length(min_value, error_message=error_message, allow_empty=allow_empty),
+        max_length(max_value, error_message=error_message, allow_empty=allow_empty),
     )
 
 
@@ -38,6 +51,7 @@ def contains(
     substrings: Union[str, List[str]],
     count: Optional[int] = None,
     error_message: Optional[str] = None,
+    allow_empty: bool = True,
 ):
     if isinstance(substrings, str):
         substrings = [substrings]
@@ -63,24 +77,34 @@ def contains(
         expected_existence=expected_existence,
         expected_non_existence=expected_non_existence,
         expected_count=expected_count,
+        allow_empty=allow_empty,
     )
 
 
-def not_contains(substring: str, error_message: Optional[str] = None):
-    return contains(substring, count=0, error_message=error_message)
+def not_contains(
+    substring: str, error_message: Optional[str] = None, allow_empty: bool = True
+):
+    return contains(
+        substring, count=0, error_message=error_message, allow_empty=allow_empty
+    )
 
 
-def match_regex(regex_string, error_message: Optional[str] = None):
+def match_regex(
+    regex_string, error_message: Optional[str] = None, allow_empty: bool = True
+):
     if error_message is None:
         error_message = "Input should match regex: {}".format(regex_string)
     return __build_boolean_validator(
         is_valid_method=lambda a: bool(re.search(regex_string, a)),
         error_message=error_message,
+        allow_empty=allow_empty,
     )
 
 
 def contains_uppercase(
-    count: Optional[int] = None, error_message: Optional[str] = None
+    count: Optional[int] = None,
+    error_message: Optional[str] = None,
+    allow_empty: bool = True,
 ):
     if error_message is not None:
         expected_non_existence = expected_count = expected_existence = error_message
@@ -97,11 +121,14 @@ def contains_uppercase(
         expected_existence=expected_existence,
         expected_non_existence=expected_non_existence,
         expected_count=expected_count,
+        allow_empty=allow_empty,
     )
 
 
 def contains_lowercase(
-    count: Optional[int] = None, error_message: Optional[str] = None
+    count: Optional[int] = None,
+    error_message: Optional[str] = None,
+    allow_empty: bool = True,
 ):
     if error_message is not None:
         expected_non_existence = expected_count = expected_existence = error_message
@@ -118,10 +145,15 @@ def contains_lowercase(
         expected_existence=expected_existence,
         expected_non_existence=expected_non_existence,
         expected_count=expected_count,
+        allow_empty=allow_empty,
     )
 
 
-def contains_digit(count: Optional[int] = None, error_message: Optional[str] = None):
+def contains_digit(
+    count: Optional[int] = None,
+    error_message: Optional[str] = None,
+    allow_empty: bool = True,
+):
     if error_message is not None:
         expected_non_existence = expected_count = expected_existence = error_message
     else:
@@ -135,10 +167,15 @@ def contains_digit(count: Optional[int] = None, error_message: Optional[str] = N
         expected_existence=expected_existence,
         expected_non_existence=expected_non_existence,
         expected_count=expected_count,
+        allow_empty=allow_empty,
     )
 
 
-def contains_special(count: Optional[int] = None, error_message: Optional[str] = None):
+def contains_special(
+    count: Optional[int] = None,
+    error_message: Optional[str] = None,
+    allow_empty: bool = True,
+):
     if error_message is not None:
         expected_non_existence = expected_count = expected_existence = error_message
     else:
@@ -156,27 +193,30 @@ def contains_special(count: Optional[int] = None, error_message: Optional[str] =
         expected_existence=expected_existence,
         expected_non_existence=expected_non_existence,
         expected_count=expected_count,
+        allow_empty=allow_empty,
     )
 
 
-def integer(error_message: Optional[str] = None):
+def integer(error_message: Optional[str] = None, allow_empty: bool = True):
     if error_message is None:
         error_message = "Input should be an integer"
-    return match_regex(INTEGER_REGEX, error_message=error_message)
+    return match_regex(
+        INTEGER_REGEX, error_message=error_message, allow_empty=allow_empty
+    )
 
 
-def number(error_message: Optional[str] = None):
+def number(error_message: Optional[str] = None, allow_empty: bool = True):
     if error_message is None:
         error_message = "Input should be a number"
-    return match_regex(NUMBER_REGEX, error_message=error_message)
+    return match_regex(
+        NUMBER_REGEX, error_message=error_message, allow_empty=allow_empty
+    )
 
 
-def email(error_message: Optional[str] = None):
+def email(error_message: Optional[str] = None, allow_empty: bool = True):
     if error_message is None:
         error_message = "Input should be a valid email address"
-    return match_regex(
-        EMAIL_REGEX,
-        error_message=error_message)
+    return match_regex(EMAIL_REGEX, error_message=error_message, allow_empty=allow_empty)
 
 
 def combine(*validators):
@@ -193,12 +233,12 @@ def combine(*validators):
 
 
 def __build_boolean_validator(
-    is_valid_method: Callable[[str], bool], error_message: str
+    is_valid_method: Callable[[str], bool], error_message: str, allow_empty: bool
 ):
     def validator(input_string: str):
-        if not is_valid_method(input_string):
-            return error_message
-        return None
+        if allow_empty and input_string == "":
+            return None
+        return None if is_valid_method(input_string) else error_message
 
     return validator
 
@@ -209,8 +249,11 @@ def __build_count_validator(
     expected_existence: str,
     expected_non_existence: str,
     expected_count: str,
+    allow_empty: bool,
 ):
     def validator(input_string: str):
+        if allow_empty and input_string == "":
+            return None
         actual_count = count_method(input_string)
         if actual_count == 0 and count != 0:
             return expected_existence

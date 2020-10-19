@@ -9,6 +9,7 @@ class TestValidators(unittest.TestCase):
         self.validator_factory = None
         self.valid_inputs = []
         self.invalid_inputs = []
+        self.check_empty = True
 
     def check(self):
         if self.validator_factory is None:
@@ -29,6 +30,18 @@ class TestValidators(unittest.TestCase):
                 for input_string, error_message in self.invalid_inputs
             ],
         )
+        if self.check_empty:
+            self.assertIsNone(
+                self.validator_factory(
+                    *self.args, **self.kwargs, error_message=dummy_error, allow_empty=True
+                )("")
+            )
+            self.assertEqual(
+                self.validator_factory(
+                    *self.args, **self.kwargs, error_message=dummy_error, allow_empty=False
+                )(""),
+                dummy_error
+            )
 
     def check_validator(self, validator, valid_inputs, invalid_inputs):
         for valid_input in valid_inputs:
@@ -52,7 +65,6 @@ class TestValidators(unittest.TestCase):
         self.validator_factory = validators.min_length
         self.valid_inputs = ["I am long enough", "right", "longer"]
         self.invalid_inputs = [
-            ("", default_error_message),
             ("I", default_error_message),
             ("am", default_error_message),
             ("tiny", default_error_message),
@@ -70,6 +82,7 @@ class TestValidators(unittest.TestCase):
             ("I am way too long", default_error_message),
             ("are you serious now?", default_error_message),
         ]
+        self.check_empty = False
 
         self.check()
 
@@ -81,7 +94,6 @@ class TestValidators(unittest.TestCase):
         self.validator_factory = validators.length_between
         self.valid_inputs = ["I am good", "right", "123456789"]
         self.invalid_inputs = [
-            ("", too_short_error_message),
             ("I", too_short_error_message),
             ("am", too_short_error_message),
             ("tiny", too_short_error_message),
@@ -126,13 +138,14 @@ class TestValidators(unittest.TestCase):
         self.kwargs = dict(count=0)
         self.validator_factory = validators.contains
         self.valid_inputs = [
-            "This is very good", "goodness", "goody", "nogood", "good, very good"
+            "", "This is very good", "goodness", "goody", "nogood", "good, very good"
         ]
         self.invalid_inputs = [
             ("I am so bad", 'Input should not contain "bad"'),
             ("Why being so baddy?", 'Input should not contain "bad"'),
             ("sinbad", 'Input should not contain "bad"'),
         ]
+        self.check_empty = False
 
         self.check()
 
@@ -140,13 +153,14 @@ class TestValidators(unittest.TestCase):
         self.args = ["bad"]
         self.validator_factory = validators.not_contains
         self.valid_inputs = [
-            "This is very good", "goodness", "goody", "nogood", "good, very good"
+            "", "This is very good", "goodness", "goody", "nogood", "good, very good"
         ]
         self.invalid_inputs = [
             ("I am so bad", 'Input should not contain "bad"'),
             ("Why being so baddy?", 'Input should not contain "bad"'),
             ("sinbad", 'Input should not contain "bad"'),
         ]
+        self.check_empty = False
 
         self.check()
 
