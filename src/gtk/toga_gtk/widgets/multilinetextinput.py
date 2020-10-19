@@ -1,4 +1,4 @@
-from travertino.size import at_least
+\from travertino.size import at_least
 
 from ..libs import Gtk
 from .base import Widget
@@ -56,3 +56,6 @@ class MultilineTextInput(Widget):
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
         self.interface.intrinsic.height = at_least(self.interface.MIN_HEIGHT)
+
+    def set_on_change(self, handler):
+        self.interface.factory.not_implemented('MultilineTextInput.set_on_change()')
