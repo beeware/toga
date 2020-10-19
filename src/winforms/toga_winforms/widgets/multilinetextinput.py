@@ -33,5 +33,5 @@ class MultilineTextInput(Widget):
         pass
 
     def winforms_text_changed(self, sender, event):
-        if self.interface._on_change:
-            self.interface._on_change(self.interface)
+        if self.interface.on_change:
+            self.interface.on_change(self.interface)
