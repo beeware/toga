@@ -92,10 +92,10 @@ class MultilineTextInput(Widget):
 
     @on_change.setter
     def on_change(self, handler):
-        """Set the handler to invoke when the value is changeed.
+        """Set the handler to invoke when the value is changed.
 
         Args:
-            handler (:obj:`callable`): The handler to invoke when the value is changeed.
+            handler (:obj:`callable`): The handler to invoke when the value is changed.
         """
         self._on_change = wrapped_handler(self, handler)
         self._impl.set_on_change(self._on_change)
