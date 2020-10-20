@@ -39,11 +39,11 @@ class ExampleExamplesOverviewApp(toga.App):
 
         readme_path = row.path / "README.rst"
 
-        if readme_path.is_file():
+        try:
             with open(readme_path) as f:
                 readme_text = f.read()
-        else:
-            readme_text = "No README found"
+        except OSError:
+            readme_text = "README could not be loaded"
 
         self.info_view.value = readme_text
 
