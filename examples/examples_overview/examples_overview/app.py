@@ -20,12 +20,10 @@ class ExampleExamplesOverviewApp(toga.App):
         env = os.environ.copy()
         env["PYTHONPATH"] = row.path
 
-        self._process = subprocess.Popen(
-            [sys.executable, "-m", row.name],
-            env=env,
-        )
+        subprocess.run([sys.executable, "-m", row.name], env=env)
 
     def open(self, widget, **kwargs):
+
         row = self.table.selection
 
         if platform.system() == "Windows":
@@ -48,8 +46,6 @@ class ExampleExamplesOverviewApp(toga.App):
         self.info_view.value = readme_text
 
     def startup(self):
-
-        self._process = None
 
         # ==== Set up main window ======================================================
 
