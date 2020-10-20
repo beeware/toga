@@ -93,7 +93,7 @@ class ExampleExamplesOverviewApp(toga.App):
 
         button_box = toga.Box(children=[self.btn_run, self.btn_open])
 
-        # ==== View of example code ====================================================
+        # ==== View of example README ==================================================
 
         self.info_view = toga.MultilineTextInput(
             placeholder="Please select example", readonly=True, style=Pack(padding=1)
