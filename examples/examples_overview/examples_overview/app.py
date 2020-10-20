@@ -1,6 +1,7 @@
 import sys
 import os
 import subprocess
+import platform
 from pathlib import Path
 import toga
 from toga.style import Pack
@@ -24,8 +25,15 @@ class ExampleExamplesOverviewApp(toga.App):
             env=env,
         )
 
-    def reset_code(self, widget, **kwargs):
-        pass
+    def open(self, widget, **kwargs):
+        row = self.table.selection
+
+        if platform.system() == "Windows":
+            os.startfile(row.path)
+        elif platform.system() == "Darwin":
+            subprocess.run(["open", row.path])
+        else:
+            subprocess.run(["xdg-open", row.path])
 
     def on_example_selected(self, widget, row):
 
@@ -76,8 +84,14 @@ class ExampleExamplesOverviewApp(toga.App):
         )
 
         # Buttons
-        self.btn_run = toga.Button("Run Example", on_press=self.run)
-        self.btn_reset = toga.Button("Reset Code", on_press=self.reset_code)
+        self.btn_run = toga.Button(
+            "Run Example", on_press=self.run, style=Pack(flex=1, padding_right=5)
+        )
+        self.btn_open = toga.Button(
+            "Open folder", on_press=self.open, style=Pack(flex=1, padding_left=5)
+        )
+
+        button_box = toga.Box(children=[self.btn_run, self.btn_open])
 
         # ==== View of example code ====================================================
 
@@ -88,7 +102,7 @@ class ExampleExamplesOverviewApp(toga.App):
         # ==== Assemble layout =========================================================
 
         left_box = toga.Box(
-            children=[self.table, self.btn_run],
+            children=[self.table, button_box],
             style=Pack(
                 direction=COLUMN,
                 padding=1,
