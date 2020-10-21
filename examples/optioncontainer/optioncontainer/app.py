@@ -48,6 +48,20 @@ class ExampleOptionContainerApp(toga.App):
         except toga.OptionContainer.OptionException as e:
             self.main_window.info_dialog('Oops', str(e))
 
+    def set_next_tab(self, widget):
+        if self.optioncontainer.current_tab_index < self.optioncontainer.number_of_tabs - 1:
+            self.optioncontainer.current_tab_index += 1
+
+    def set_previous_tab(self, widget):
+        if self.optioncontainer.current_tab_index > 0:
+            self.optioncontainer.current_tab_index -= 1
+
+    def on_select_tab(self, widget):
+        self.selected_label.text = "Tab {} has been chosen: {}".format(
+            self.optioncontainer.current_tab_index,
+            self.optioncontainer.current_tab.label,
+        )
+
     def startup(self):
         # Set up main window
         self.main_window = toga.MainWindow(title=self.name)
@@ -101,7 +115,11 @@ class ExampleOptionContainerApp(toga.App):
             children=[box_select, box_actions]
         )
 
-        self.optioncontainer = toga.OptionContainer(style=Pack(padding_bottom=20))
+        self.selected_label = toga.Label("")
+        self.optioncontainer = toga.OptionContainer(
+            on_select=self.on_select_tab,
+            style=Pack(padding_bottom=20)
+        )
         self._create_options()
 
         btn_add = toga.Button('Add Option', on_press=self.on_add_option)
@@ -115,7 +133,8 @@ class ExampleOptionContainerApp(toga.App):
             children=[
                 box_general_actions,
                 box_container_actions,
-                self.optioncontainer
+                self.selected_label,
+                self.optioncontainer,
             ],
             style=Pack(
                 flex=1,
@@ -124,8 +143,26 @@ class ExampleOptionContainerApp(toga.App):
             )
         )
 
+        self.commands.add(
+            toga.Command(
+                self.set_next_tab,
+                "Next tab",
+                shortcut=toga.Key.MOD_1 + toga.Key.RIGHT,
+                group=toga.Group.COMMANDS,
+                order=1
+            ),
+            toga.Command(
+                self.set_previous_tab,
+                "Previous tab",
+                shortcut=toga.Key.MOD_1 + toga.Key.LEFT,
+                group=toga.Group.COMMANDS,
+                order=1
+            )
+        )
+
         # Add the content on the main window
         self.main_window.content = outer_box
+        self.on_select_tab(None)
 
         # Show the main window
         self.main_window.show()
