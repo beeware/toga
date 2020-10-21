@@ -26,12 +26,6 @@ class Widget:
     def set_window(self, window):
         pass
 
-    def set_on_gain_focus(self, handler):
-        self.interface.factory.not_implemented("Widget.set_on_gain_focus()")
-
-    def set_on_lose_focus(self, handler):
-        self.interface.factory.not_implemented("Widget.set_on_lose_focus()")
-
     @property
     def container(self):
         return self._container

@@ -65,6 +65,12 @@ class TextInput(Widget):
     def set_on_change(self, handler):
         pass
 
+    def set_on_gain_focus(self, handler):
+        self.interface.factory.not_implemented("TextInput.set_on_gain_focus()")
+
+    def set_on_lose_focus(self, handler):
+        self.interface.factory.not_implemented("TextInput.set_on_lose_focus()")
+
     def set_error(self, error_message):
         if self.interface.window is not None:
             self.interface.window.error_dialog("Validation Error", error_message)
