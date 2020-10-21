@@ -1,3 +1,5 @@
+from unittest import mock
+
 import toga
 import toga_dummy
 from toga_dummy.utils import TestCase
@@ -11,10 +13,14 @@ class TextInputTests(TestCase):
         self.initial = 'Initial Text'
         self.placeholder = 'Placeholder Text'
         self.readonly = False
+        self.on_gain_focus = mock.Mock()
+        self.on_lose_focus = mock.Mock()
         self.text_input = toga.TextInput(
             initial=self.initial,
             placeholder=self.placeholder,
             readonly=self.readonly,
+            on_gain_focus=self.on_gain_focus,
+            on_lose_focus=self.on_lose_focus,
             factory=toga_dummy.factory
         )
 
@@ -57,6 +63,13 @@ class TextInputTests(TestCase):
     def test_focus(self):
         self.text_input.focus()
         self.assertActionPerformed(self.text_input, "focus")
+
+    def test_on_gain_focus(self):
+        self.assertEqual(self.text_input.on_gain_focus._raw, self.on_gain_focus)
+
+    def test_on_lose_focus(self):
+        self.assertEqual(self.text_input.on_lose_focus._raw, self.on_lose_focus)
+
 
 
 class ValidatedTextInputTests(TestCase):

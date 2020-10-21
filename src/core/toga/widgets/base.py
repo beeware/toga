@@ -27,14 +27,7 @@ class Widget(Node):
             implementation of this class with the same name (optional & normally not needed).
     """
 
-    def __init__(
-            self,
-            id=None,
-            enabled=True,
-            style=None,
-            on_gain_focus=None,
-            on_lose_focus=None,
-            factory=None,
+    def __init__(self, id=None, enabled=True, style=None, factory=None
     ):
         super().__init__(
             style=style if style else Pack(),
@@ -47,8 +40,6 @@ class Widget(Node):
         self._impl = None
 
         self._enabled = enabled
-        self._on_gain_focus = on_gain_focus
-        self._on_lose_focus = on_lose_focus
 
         self.factory = get_platform_factory(factory)
 
@@ -205,34 +196,6 @@ class Widget(Node):
     def enabled(self, value):
         self._enabled = bool(value)
         self._impl.set_enabled(value)
-
-    @property
-    def on_gain_focus(self):
-        """The handler to invoke when the widget get focus.
-
-        Returns:
-            The function ``callable`` that is called on widget focus gain.
-        """
-        return self._on_gain_focus
-
-    @on_gain_focus.setter
-    def on_gain_focus(self, handler):
-        self._on_gain_focus = wrapped_handler(self, handler)
-        self._impl.set_on_gain_focus(self._on_gain_focus)
-
-    @property
-    def on_lose_focus(self):
-        """The handler to invoke when the widget lose focus.
-
-        Returns:
-            The function ``callable`` that is called on widget focus loss.
-        """
-        return self._on_lose_focus
-
-    @on_lose_focus.setter
-    def on_lose_focus(self, handler):
-        self._on_lose_focus = wrapped_handler(self, handler)
-        self._impl.set_on_lose_focus(self._on_lose_focus)
 
     def refresh(self):
         """Refresh the layout and appearance of the tree this node is contained in."""

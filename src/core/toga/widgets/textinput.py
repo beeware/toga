@@ -136,6 +136,34 @@ class TextInput(Widget):
         self._validator = validator
         self.validate()
 
+    @property
+    def on_gain_focus(self):
+        """The handler to invoke when the widget get focus.
+
+        Returns:
+            The function ``callable`` that is called on widget focus gain.
+        """
+        return self._on_gain_focus
+
+    @on_gain_focus.setter
+    def on_gain_focus(self, handler):
+        self._on_gain_focus = wrapped_handler(self, handler)
+        self._impl.set_on_gain_focus(self._on_gain_focus)
+
+    @property
+    def on_lose_focus(self):
+        """The handler to invoke when the widget lose focus.
+
+        Returns:
+            The function ``callable`` that is called on widget focus loss.
+        """
+        return self._on_lose_focus
+
+    @on_lose_focus.setter
+    def on_lose_focus(self, handler):
+        self._on_lose_focus = wrapped_handler(self, handler)
+        self._impl.set_on_lose_focus(self._on_lose_focus)
+
     def validate(self):
         if self.validator is None:
             error_message = None
