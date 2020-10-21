@@ -19,14 +19,6 @@ class Widget:
         # No special handling required
         pass
 
-    def set_on_gain_focus(self, handler):
-        # No special handling required
-        pass
-
-    def set_on_lose_focus(self, handler):
-        # No special handling required
-        pass
-
     @property
     def container(self):
         return self._container

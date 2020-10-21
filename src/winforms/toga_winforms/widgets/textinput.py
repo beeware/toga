@@ -60,6 +60,15 @@ class TextInput(Widget):
         self.interface.intrinsic.height = self.native.PreferredSize.Height
 
     def set_on_change(self, handler):
+        # No special handling required
+        pass
+
+    def set_on_gain_focus(self, handler):
+        # No special handling required
+        pass
+
+    def set_on_lose_focus(self, handler):
+        # No special handling required
         pass
 
     def winforms_text_changed(self, sender, event):
