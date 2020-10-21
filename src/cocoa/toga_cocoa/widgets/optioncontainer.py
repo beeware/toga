@@ -80,3 +80,13 @@ class OptionContainer(Widget):
     def get_option_label(self, index):
         tabview = self.native.tabViewItemAtIndex(index)
         return tabview.label
+
+    def get_current_tab_index(self):
+        self.interface.factory.not_implemented(
+            'OptionContainer.get_current_tab_index()'
+        )
+
+    def set_current_tab_index(self, current_tab_index):
+        self.interface.factory.not_implemented(
+            'OptionContainer.set_current_tab_index()'
+        )
