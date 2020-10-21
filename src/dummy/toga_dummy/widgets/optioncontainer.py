@@ -15,13 +15,19 @@ class OptionContainer(Widget):
         self._set_value('on_select', handler)
 
     def set_option_enabled(self, index, enabled):
-        self._action('set option enabled', index=index)
+        self._set_value('option_{}_enabled'.format(index), value=enabled)
 
     def is_option_enabled(self, index):
-        self._action('is enabled', index=index)
+        return self._get_value('option_{}_enabled'.format(index))
 
     def set_option_label(self, index, value):
-        self._action('set option label', index=index, value=value)
+        self._set_value('option_{}_label'.format(index), value=value)
 
     def get_option_label(self, index):
-        self._action('get label', index=index)
+        return self._get_value('option_{}_label'.format(index))
+
+    def set_current_tab_index(self, current_tab_index):
+        self._set_value('current_tab_index', current_tab_index)
+
+    def get_current_tab_index(self):
+        return self._get_value('current_tab_index', 0)
