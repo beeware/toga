@@ -42,6 +42,10 @@ class OptionItem:
     def label(self, value):
         self._interface._impl.set_option_label(self.index, value)
 
+    @property
+    def widget(self):
+        return self._widget
+
     def refresh(self):
         self._widget.refresh()
 
@@ -136,6 +140,22 @@ class OptionContainer(Widget):
             ValueError: If the list is less than two elements long.
         """
         return self._content
+
+    @property
+    def number_of_tabs(self):
+        return len(self.content)
+
+    @property
+    def current_tab_index(self):
+        return self._impl.get_current_tab_index()
+
+    @current_tab_index.setter
+    def current_tab_index(self, current_tab_index):
+        self._impl.set_current_tab_index(current_tab_index)
+
+    @property
+    def current_tab(self):
+        return self.content[self.current_tab_index]
 
     def _set_window(self, window):
         if self._content:
