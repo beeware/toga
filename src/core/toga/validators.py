@@ -47,6 +47,34 @@ def length_between(
     )
 
 
+def startswith(
+    substrings: Union[str, List[str]],
+    error_message: Optional[str] = None,
+    allow_empty: bool = True,
+):
+    if error_message is None:
+        error_message = 'Input should start with "{}"'.format(substrings)
+    return __build_boolean_validator(
+        lambda a: a.startswith(substrings),
+        error_message=error_message,
+        allow_empty=allow_empty,
+    )
+
+
+def endswith(
+    substrings: Union[str, List[str]],
+    error_message: Optional[str] = None,
+    allow_empty: bool = True,
+):
+    if error_message is None:
+        error_message = 'Input should end with "{}"'.format(substrings)
+    return __build_boolean_validator(
+        lambda a: a.endswith(substrings),
+        error_message=error_message,
+        allow_empty=allow_empty,
+    )
+
+
 def contains(
     substrings: Union[str, List[str]],
     count: Optional[int] = None,

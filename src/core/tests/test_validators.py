@@ -103,6 +103,48 @@ class TestValidators(unittest.TestCase):
 
         self.check()
 
+    def test_validate_startswith(self):
+        default_error_message = 'Input should start with "good"'
+
+        self.args = ["good"]
+        self.validator_factory = validators.startswith
+        self.valid_inputs = [
+            "good to be back", "goodness!", "goody", "good, good, good"
+        ]
+        self.invalid_inputs = [
+            ("no good", default_error_message),
+            ("I am so bad", default_error_message),
+            ("goo goo dolls", default_error_message),
+            ("go od", default_error_message),
+            (
+                "It doesn't matter if I'm good, if I don't start with it",
+                default_error_message
+            ),
+        ]
+
+        self.check()
+
+    def test_validate_endswith(self):
+        default_error_message = 'Input should end with "good"'
+
+        self.args = ["good"]
+        self.validator_factory = validators.endswith
+        self.valid_inputs = [
+            "go back to good", "It is so good", "good", "good, good, good"
+        ]
+        self.invalid_inputs = [
+            ("good start, but no", default_error_message),
+            ("I am so bad", default_error_message),
+            ("goo goo dolls", default_error_message),
+            ("go od", default_error_message),
+            (
+                "It doesn't matter if I'm good, if I don't end with it",
+                default_error_message
+            ),
+        ]
+
+        self.check()
+
     def test_validate_contains(self):
         default_error_message = 'Input should contain "good"'
 
