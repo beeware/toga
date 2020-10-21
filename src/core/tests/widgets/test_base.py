@@ -13,14 +13,14 @@ class WidgetTests(TestCase):
         self.id = 'widget_id'
         self.style = Pack(padding=666)
 
-        self.on_focus_gain = mock.Mock()
-        self.on_focus_loss = mock.Mock()
+        self.on_gain_focus = mock.Mock()
+        self.on_lose_focus = mock.Mock()
 
         self.widget = toga.Widget(
             id=self.id,
             style=self.style,
-            on_focus_gain=self.on_focus_gain,
-            on_focus_loss=self.on_focus_loss,
+            on_gain_focus=self.on_gain_focus,
+            on_lose_focus=self.on_lose_focus,
             factory=toga_dummy.factory
         )
 
@@ -65,8 +65,8 @@ class WidgetTests(TestCase):
         self.widget.add(child1, child2)
         self.assertEqual(self.widget.children, [child1, child2])
 
-    def test_on_focus_gain(self):
-        self.assertEqual(self.widget.on_focus_gain, self.on_focus_gain)
+    def test_on_gain_focus(self):
+        self.assertEqual(self.widget.on_gain_focus, self.on_gain_focus)
 
-    def test_on_focus_loss(self):
-        self.assertEqual(self.widget.on_focus_loss, self.on_focus_loss)
+    def test_on_lose_focus(self):
+        self.assertEqual(self.widget.on_lose_focus, self.on_lose_focus)

@@ -12,8 +12,8 @@ class Switch(Widget):
         style (:obj:`Style`): An optional style object.
             If no style is provided then a new one will be created for the widget.
         on_toggle (``callable``): Function to execute when pressed.
-        on_focus_gain (:obj:`callable`): Function to execute when get focused.
-        on_focus_loss (:obj:`callable`): Function to execute when lose focus.
+        on_gain_focus (:obj:`callable`): Function to execute when get focused.
+        on_lose_focus (:obj:`callable`): Function to execute when lose focus.
         is_on (bool): Current on or off state of the switch.
         enabled (bool): Whether or not interaction with the button is possible, defaults to `True`.
         factory (:obj:`module`): A python module that is capable to return a
@@ -26,8 +26,8 @@ class Switch(Widget):
             id=None,
             style=None,
             on_toggle=None,
-            on_focus_gain=None,
-            on_focus_loss=None,
+            on_gain_focus=None,
+            on_lose_focus=None,
             is_on=False,
             enabled=True,
             factory=None,
@@ -35,8 +35,8 @@ class Switch(Widget):
         super().__init__(
             id=id,
             style=style,
-            on_focus_gain=on_focus_gain,
-            on_focus_loss=on_focus_loss,
+            on_gain_focus=on_gain_focus,
+            on_lose_focus=on_lose_focus,
             factory=factory,
         )
 
@@ -46,8 +46,8 @@ class Switch(Widget):
         self.on_toggle = on_toggle
         self.is_on = is_on
         self.enabled = enabled
-        self.on_focus_gain = on_focus_gain
-        self.on_focus_loss = on_focus_loss
+        self.on_gain_focus = on_gain_focus
+        self.on_lose_focus = on_lose_focus
 
     @property
     def label(self):

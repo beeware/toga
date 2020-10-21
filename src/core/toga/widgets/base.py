@@ -32,8 +32,8 @@ class Widget(Node):
             id=None,
             enabled=True,
             style=None,
-            on_focus_gain=None,
-            on_focus_loss=None,
+            on_gain_focus=None,
+            on_lose_focus=None,
             factory=None,
     ):
         super().__init__(
@@ -47,8 +47,8 @@ class Widget(Node):
         self._impl = None
 
         self._enabled = enabled
-        self._on_focus_gain = on_focus_gain
-        self._on_focus_loss = on_focus_loss
+        self._on_gain_focus = on_gain_focus
+        self._on_lose_focus = on_lose_focus
 
         self.factory = get_platform_factory(factory)
 
@@ -207,32 +207,32 @@ class Widget(Node):
         self._impl.set_enabled(value)
 
     @property
-    def on_focus_gain(self):
+    def on_gain_focus(self):
         """The handler to invoke when the widget get focus.
 
         Returns:
             The function ``callable`` that is called on widget focus gain.
         """
-        return self._on_focus_gain
+        return self._on_gain_focus
 
-    @on_focus_gain.setter
-    def on_focus_gain(self, handler):
-        self._on_focus_gain = wrapped_handler(self, handler)
-        self._impl.set_on_focus_gain(self._on_focus_gain)
+    @on_gain_focus.setter
+    def on_gain_focus(self, handler):
+        self._on_gain_focus = wrapped_handler(self, handler)
+        self._impl.set_on_gain_focus(self._on_gain_focus)
 
     @property
-    def on_focus_loss(self):
+    def on_lose_focus(self):
         """The handler to invoke when the widget lose focus.
 
         Returns:
             The function ``callable`` that is called on widget focus loss.
         """
-        return self._on_focus_loss
+        return self._on_lose_focus
 
-    @on_focus_loss.setter
-    def on_focus_loss(self, handler):
-        self._on_focus_loss = wrapped_handler(self, handler)
-        self._impl.set_on_focus_loss(self._on_focus_loss)
+    @on_lose_focus.setter
+    def on_lose_focus(self, handler):
+        self._on_lose_focus = wrapped_handler(self, handler)
+        self._impl.set_on_lose_focus(self._on_lose_focus)
 
     def refresh(self):
         """Refresh the layout and appearance of the tree this node is contained in."""

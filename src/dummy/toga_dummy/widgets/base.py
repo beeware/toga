@@ -15,11 +15,11 @@ class Widget(LoggedObject):
     def set_window(self, window):
         self._set_value('window', window)
 
-    def set_on_focus_gain(self, handler):
-        self._set_value('on_focus_gain', handler)
+    def set_on_gain_focus(self, handler):
+        self._set_value('on_gain_focus', handler)
 
-    def set_on_focus_loss(self, handler):
-        self._set_value('on_focus_loss', handler)
+    def set_on_lose_focus(self, handler):
+        self._set_value('on_lose_focus', handler)
 
     @property
     def container(self):

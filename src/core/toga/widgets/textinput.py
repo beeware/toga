@@ -19,8 +19,8 @@ class TextInput(Widget):
         validator (Callable): Validator to run on the value of the text box. Should
             return None is value is valid and an error message if not.
         on_change (``callable``): The handler to invoke when the text changes.
-        on_focus_gain (:obj:`callable`): Function to execute when get focused.
-        on_focus_loss (:obj:`callable`): Function to execute when lose focus.
+        on_gain_focus (:obj:`callable`): Function to execute when get focused.
+        on_lose_focus (:obj:`callable`): Function to execute when lose focus.
     """
     MIN_WIDTH = 100
 
@@ -33,8 +33,8 @@ class TextInput(Widget):
             placeholder=None,
             readonly=False,
             on_change=None,
-            on_focus_gain=None,
-            on_focus_loss=None,
+            on_gain_focus=None,
+            on_lose_focus=None,
             validator=None
     ):
         super().__init__(id=id, style=style, factory=factory)
@@ -49,8 +49,8 @@ class TextInput(Widget):
         # Set the actual value after on_change, as it may trigger change events, etc.
         self.value = initial
         self.validator = validator
-        self.on_focus_loss = on_focus_loss
-        self.on_focus_gain = on_focus_gain
+        self.on_lose_focus = on_lose_focus
+        self.on_gain_focus = on_gain_focus
 
     def _create(self):
         self._impl = self.factory.TextInput(interface=self)

@@ -12,8 +12,8 @@ class Button(Widget):
         style (:obj:`Style`): An optional style object. If no style is provided then
             a new one will be created for the widget.
         on_press (:obj:`callable`): Function to execute when pressed.
-        on_focus_gain (:obj:`callable`): Function to execute when get focused.
-        on_focus_loss (:obj:`callable`): Function to execute when lose focus.
+        on_gain_focus (:obj:`callable`): Function to execute when get focused.
+        on_lose_focus (:obj:`callable`): Function to execute when lose focus.
         enabled (bool): Whether or not interaction with the button is possible, defaults to `True`.
         factory (:obj:`module`): A python module that is capable to return a
             implementation of this class with the same name. (optional & normally not needed)
@@ -25,8 +25,8 @@ class Button(Widget):
             id=None,
             style=None,
             on_press=None,
-            on_focus_gain=None,
-            on_focus_loss=None,
+            on_gain_focus=None,
+            on_lose_focus=None,
             enabled=True,
             factory=None
     ):
@@ -34,8 +34,8 @@ class Button(Widget):
             id=id,
             style=style,
             enabled=enabled,
-            on_focus_gain=on_focus_gain,
-            on_focus_loss=on_focus_loss,
+            on_gain_focus=on_gain_focus,
+            on_lose_focus=on_lose_focus,
             factory=factory,
         )
 
@@ -45,8 +45,8 @@ class Button(Widget):
         # Set all the properties
         self.label = label
         self.on_press = on_press
-        self.on_focus_gain = on_focus_gain
-        self.on_focus_loss = on_focus_loss
+        self.on_gain_focus = on_gain_focus
+        self.on_lose_focus = on_lose_focus
         self.enabled = enabled
 
     @property

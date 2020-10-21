@@ -19,8 +19,8 @@ class Slider(Widget):
             pressed.
         on_release (``callable``): The handler to invoke when the slider has been
             released.
-        on_focus_gain (:obj:`callable`): Function to execute when get focused.
-        on_focus_loss (:obj:`callable`): Function to execute when lose focus.
+        on_gain_focus (:obj:`callable`): Function to execute when get focused.
+        on_lose_focus (:obj:`callable`): Function to execute when lose focus.
         enabled (bool): Whether user interaction is possible or not.
         factory (:obj:`module`): A python module that is capable to return a
             implementation of this class with the same name. (optional & normally not
@@ -37,8 +37,8 @@ class Slider(Widget):
         on_slide=None,  # DEPRECATED!
         on_press=None,
         on_release=None,
-        on_focus_gain=None,
-        on_focus_loss=None,
+        on_gain_focus=None,
+        on_lose_focus=None,
         enabled=True,
         factory=None
     ):
@@ -64,8 +64,8 @@ class Slider(Widget):
         self.enabled = enabled
         self.on_press = on_press
         self.on_release = on_release
-        self.on_focus_loss = on_focus_loss
-        self.on_focus_gain = on_focus_gain
+        self.on_lose_focus = on_lose_focus
+        self.on_gain_focus = on_gain_focus
 
     MIN_WIDTH = 100
 
