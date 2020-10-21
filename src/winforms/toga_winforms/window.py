@@ -210,7 +210,7 @@ class Window:
             "All files (*.*)|*.*"
         ]
 
-        if len(file_types) > 0:
+        if len(file_types) > 1:
             filters.insert(0, "All matching files ({0})|{0}".format(
                 ';'.join([
                     '*.{0}'.format(ext)

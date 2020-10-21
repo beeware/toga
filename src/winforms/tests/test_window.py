@@ -11,7 +11,7 @@ class TestWindow(TestCase):
         test_filter = self.window.build_filter(None, ["txt"])
         self.assertEqual(
             test_filter,
-            "|txt files (*.txt)|*.txt"
+            "txt files (*.txt)|*.txt"
             "|All files (*.*)|*.*",
         )
 
