@@ -203,6 +203,18 @@ class Window:
             raise ValueError("No folder provided in the select folder dialog")
 
     def build_filter(self, file_types):
-        file_string = "{0} files (*.{0})|*.{0}"
-        return '|'.join([file_string.format(ext) for ext in file_types]) + \
-            "|All files (*.*)|*.*"
+        return '|'.join(
+            [
+                "All matching files ({0})|{0}".format(
+                    ';'.join([
+                        '*.{0}'.format(ext)
+                        for ext in file_types
+                    ])
+                ),
+            ] + [
+                "{0} files (*.{0})|*.{0}".format(ext)
+                for ext in file_types
+            ] + [
+                "All files (*.*)|*.*"
+            ]
+        )
