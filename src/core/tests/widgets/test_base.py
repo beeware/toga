@@ -1,5 +1,3 @@
-from unittest import mock
-
 import toga
 import toga_dummy
 from toga.style import Pack

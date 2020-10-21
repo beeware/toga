@@ -71,7 +71,6 @@ class TextInputTests(TestCase):
         self.assertEqual(self.text_input.on_lose_focus._raw, self.on_lose_focus)
 
 
-
 class ValidatedTextInputTests(TestCase):
     def setUp(self):
         super().setUp()

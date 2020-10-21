@@ -2,7 +2,6 @@ from builtins import id as identifier
 
 from travertino.node import Node
 
-from toga.handlers import wrapped_handler
 from toga.platform import get_platform_factory
 from toga.style import Pack, TogaApplicator
 
@@ -27,8 +26,7 @@ class Widget(Node):
             implementation of this class with the same name (optional & normally not needed).
     """
 
-    def __init__(self, id=None, enabled=True, style=None, factory=None
-    ):
+    def __init__(self, id=None, enabled=True, style=None, factory=None):
         super().__init__(
             style=style if style else Pack(),
             applicator=TogaApplicator(self)
