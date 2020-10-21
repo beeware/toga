@@ -15,11 +15,16 @@ class Slider(Widget):
         range (``tuple``): Min and max values of the slider in this form (min, max).
         tick_count (``int``): How many ticks in range. if None, slider is continuous.
         on_change (``callable``): The handler to invoke when the slider value changes.
+        on_press (``callable``): The handler to invoke when the slider has been
+            pressed.
+        on_release (``callable``): The handler to invoke when the slider has been
+            released.
         on_focus_gain (:obj:`callable`): Function to execute when get focused.
         on_focus_loss (:obj:`callable`): Function to execute when lose focus.
         enabled (bool): Whether user interaction is possible or not.
         factory (:obj:`module`): A python module that is capable to return a
-            implementation of this class with the same name. (optional & normally not needed)
+            implementation of this class with the same name. (optional & normally not
+            needed).
     """
     def __init__(
         self,
@@ -29,9 +34,11 @@ class Slider(Widget):
         range=None,
         tick_count=None,
         on_change=None,
+        on_slide=None,  # DEPRECATED!
+        on_press=None,
+        on_release=None,
         on_focus_gain=None,
         on_focus_loss=None,
-        on_slide=None,
         enabled=True,
         factory=None
     ):
@@ -55,6 +62,8 @@ class Slider(Widget):
         else:
             self.on_change = on_change
         self.enabled = enabled
+        self.on_press = on_press
+        self.on_release = on_release
         self.on_focus_loss = on_focus_loss
         self.on_focus_gain = on_focus_gain
 
@@ -163,6 +172,34 @@ class Slider(Widget):
         self._impl.set_on_change(self._on_change)
 
     @property
+    def on_press(self):
+        """ The function for when the user click the slider before sliding it
+
+        Returns:
+            The ``callable`` that is executed when the slider is clicked.
+        """
+        return self._on_press
+
+    @on_press.setter
+    def on_press(self, handler):
+        self._on_press = wrapped_handler(self, handler)
+        self._impl.set_on_press(self._on_press)
+
+    @property
+    def on_release(self):
+        """ The function for when the user release the slider after sliding it
+
+        Returns:
+            The ``callable`` that is executed when the slider is released.
+        """
+        return self._on_release
+
+    @on_release.setter
+    def on_release(self, handler):
+        self._on_release = wrapped_handler(self, handler)
+        self._impl.set_on_release(self._on_release)
+
+    @property
     def on_slide(self):
         """ The function for when the value of the slider is changed
 
@@ -171,10 +208,14 @@ class Slider(Widget):
         Returns:
             The ``callable`` that is executed on slide.
         """
-        warnings.warn("Slider.on_slide has been renamed Slider.on_change", DeprecationWarning)
+        warnings.warn(
+            "Slider.on_slide has been renamed Slider.on_change", DeprecationWarning
+        )
         return self._on_change
 
     @on_slide.setter
     def on_slide(self, handler):
-        warnings.warn("Slider.on_slide has been renamed Slider.on_change", DeprecationWarning)
+        warnings.warn(
+            "Slider.on_slide has been renamed Slider.on_change", DeprecationWarning
+        )
         self.on_change = handler

@@ -43,6 +43,20 @@ class ExampledialogsApp(toga.App):
         except ValueError:
             self.label.text = "Open file dialog was canceled"
 
+    def action_open_file_filtered_dialog(self, widget):
+        try:
+            fname = self.main_window.open_file_dialog(
+                title="Open file with Toga",
+                multiselect=False,
+                file_types=['doc', 'txt'],
+            )
+            if fname is not None:
+                self.label.text = "File to open:" + fname
+            else:
+                self.label.text = "No file selected!"
+        except ValueError:
+            self.label.text = "Open file dialog was canceled"
+
     def action_open_file_dialog_multi(self, widget):
         try:
             filenames = self.main_window.open_file_dialog(
@@ -104,6 +118,11 @@ class ExampledialogsApp(toga.App):
         btn_confirm = toga.Button('Confirm', on_press=self.action_confirm_dialog, style=btn_style)
         btn_error = toga.Button('Error', on_press=self.action_error_dialog, style=btn_style)
         btn_open = toga.Button('Open File', on_press=self.action_open_file_dialog, style=btn_style)
+        btn_open_filtered = toga.Button(
+            'Open File (Filtered)',
+            on_press=self.action_open_file_filtered_dialog,
+            style=btn_style
+        )
         btn_open_multi = toga.Button(
             'Open File (Multiple)',
             on_press=self.action_open_file_dialog_multi,
@@ -127,6 +146,7 @@ class ExampledialogsApp(toga.App):
                 btn_confirm,
                 btn_error,
                 btn_open,
+                btn_open_filtered,
                 btn_save,
                 btn_select,
                 btn_select_multi,

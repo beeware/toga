@@ -15,6 +15,9 @@ class TextInput(Widget):
         initial (str): The initial text for the input.
         placeholder (str): If no input is present this text is shown.
         readonly (bool):  Whether a user can write into the text input, defaults to `False`.
+        on_change (Callable): Method to be called when text is changed in text box
+        validator (Callable): Validator to run on the value of the text box. Should
+            return None is value is valid and an error message if not.
         on_change (``callable``): The handler to invoke when the text changes.
         on_focus_gain (:obj:`callable`): Function to execute when get focused.
         on_focus_loss (:obj:`callable`): Function to execute when lose focus.
@@ -32,6 +35,7 @@ class TextInput(Widget):
             on_change=None,
             on_focus_gain=None,
             on_focus_loss=None,
+            validator=None
     ):
         super().__init__(id=id, style=style, factory=factory)
 
@@ -42,9 +46,9 @@ class TextInput(Widget):
         self.placeholder = placeholder
         self.readonly = readonly
 
-        # Set the actual value last, as it may trigger change events, etc.
+        # Set the actual value after on_change, as it may trigger change events, etc.
         self.value = initial
-
+        self.validator = validator
         self.on_focus_loss = on_focus_loss
         self.on_focus_gain = on_focus_gain
 
@@ -115,10 +119,37 @@ class TextInput(Widget):
 
     @on_change.setter
     def on_change(self, handler):
-        """Set the handler to invoke when the value is changeed.
+        """Set the handler to invoke when the value is changed.
 
         Args:
-            handler (:obj:`callable`): The handler to invoke when the value is changeed.
+            handler (:obj:`callable`): The handler to invoke when the value is changed.
         """
         self._on_change = wrapped_handler(self, handler)
         self._impl.set_on_change(self._on_change)
+
+    @property
+    def validator(self):
+        return self._validator
+
+    @validator.setter
+    def validator(self, validator):
+        self._validator = validator
+        self.validate()
+
+    def validate(self):
+        if self.validator is None:
+            error_message = None
+        else:
+            error_message = self.validator(self.value)
+
+        if error_message is None:
+            self._impl.clear_error()
+            return True
+        else:
+            self._impl.set_error(error_message)
+            return False
+
+    def is_valid(self):
+        if self.validator is None:
+            return True
+        return self.validator(self.value) is None

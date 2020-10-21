@@ -47,3 +47,9 @@ class TextInput(Widget):
     def set_on_change(self, handler):
         # No special handling required
         pass
+
+    def set_error(self, error_message):
+        self.interface.factory.not_implemented("TextInput.set_error()")
+
+    def clear_error(self):
+        self.interface.factory.not_implemented("TextInput.clear_error()")

@@ -70,3 +70,9 @@ class Slider(Widget):
     def set_on_change(self, handler):
         # No special handling required
         pass
+
+    def set_on_press(self, handler):
+        self.interface.factory.not_implemented("Slider.set_on_press()")
+
+    def set_on_release(self, handler):
+        self.interface.factory.not_implemented("Slider.set_on_release()")

@@ -197,7 +197,8 @@ class App:
         thread.Join()
 
     def winforms_application_exit(self, sender, *args, **kwargs):
-        pass
+        if self.interface.on_exit is not None:
+            self.interface.on_exit(sender)
 
     def show_about_dialog(self):
         message_parts = []
