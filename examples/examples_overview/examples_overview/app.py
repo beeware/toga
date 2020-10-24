@@ -8,7 +8,7 @@ from toga.style import Pack
 from toga.constants import COLUMN
 
 
-examples_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+examples_dir = Path(__file__).parents[3]
 
 
 class ExampleExamplesOverviewApp(toga.App):
