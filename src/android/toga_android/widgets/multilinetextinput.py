@@ -42,6 +42,9 @@ class MultilineTextInput(Widget):
     def set_value(self, value):
         self.native.setText(value)
 
+    def set_on_change(self, handler):
+        self.interface.factory.not_implemented('MultilineTextInput.set_on_change()')
+
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
         self.interface.intrinsic.height = at_least(self.interface.MIN_HEIGHT)

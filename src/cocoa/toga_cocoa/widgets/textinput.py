@@ -1,31 +1,30 @@
 from travertino.size import at_least
 
 from toga_cocoa.libs import (
-    NSObject,
     NSTextAlignment,
     NSTextField,
     NSTextFieldSquareBezel,
-    objc_method
+    objc_method,
 )
 
 from .base import Widget
 
 
-class TogaTextFieldDelegate(NSObject):
+class TogaTextField(NSTextField):
     @objc_method
-    def controlTextDidChange_(self, notification) -> None:
+    def textDidChange_(self, notification) -> None:
         if self.interface.on_change:
             self.interface.on_change(self.interface)
+
+    @objc_method
+    def textShouldEndEditing_(self, textObject) -> bool:
+        return self.interface.validate()
 
 
 class TextInput(Widget):
     def create(self):
-        self.native = NSTextField.new()
+        self.native = TogaTextField.new()
         self.native.interface = self.interface
-
-        delegate = TogaTextFieldDelegate.new()
-        delegate.interface = self.interface
-        self.native.delegate = delegate
 
         self.native.bezeled = True
         self.native.bezelStyle = NSTextFieldSquareBezel
@@ -64,4 +63,12 @@ class TextInput(Widget):
         self.interface.intrinsic.height = self.native.intrinsicContentSize().height
 
     def set_on_change(self, handler):
+        pass
+
+    def set_error(self, error_message):
+        if self.interface.window is not None:
+            self.interface.window.error_dialog("Validation Error", error_message)
+
+    def clear_error(self):
+        # Cocoa TextInput can't ever be in an invalid state, so clear is a no-op
         pass

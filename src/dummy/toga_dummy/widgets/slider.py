@@ -22,3 +22,9 @@ class Slider(Widget):
 
     def set_on_change(self, handler):
         self._set_value('on_change', handler)
+
+    def set_on_press(self, handler):
+        self._set_value('on_press', handler)
+
+    def set_on_release(self, handler):
+        self._set_value('on_press', handler)
