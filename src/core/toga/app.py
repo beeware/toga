@@ -468,7 +468,7 @@ class App:
         Args:
             handler (:obj:`callable`): The handler to invoke before the app exits.
         """
-        self._on_exit = wrapped_handler(self, handler)
+        self._on_exit = wrapped_handler(handler)
         self._impl.set_on_exit(self._on_exit)
 
     def add_background_task(self, handler):

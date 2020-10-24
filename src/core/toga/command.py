@@ -118,7 +118,7 @@ class Command:
                  group=None, section=None, order=None, enabled=True, factory=None):
         self.factory = factory
 
-        self.action = wrapped_handler(self, action)
+        self.action = wrapped_handler(action)
         self.label = label
 
         self.shortcut = shortcut

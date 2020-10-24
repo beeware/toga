@@ -148,7 +148,7 @@ class Table(Widget):
         :param handler: callback function
         :type handler: ``callable``
         """
-        self._on_select = wrapped_handler(self, handler)
+        self._on_select = wrapped_handler(handler)
         self._impl.set_on_select(self._on_select)
 
     @property
@@ -170,7 +170,7 @@ class Table(Widget):
         :param handler: callback function
         :type handler: ``callable``
         """
-        self._on_double_click = wrapped_handler(self, handler)
+        self._on_double_click = wrapped_handler(handler)
         self._impl.set_on_double_click(self._on_double_click)
 
     def add_column(self, heading, accessor=None):

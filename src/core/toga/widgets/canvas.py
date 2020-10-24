@@ -577,7 +577,7 @@ class Canvas(Context, Widget):
         Args:
             handler (:obj:`callable`): The handler to invoke when the canvas is resized.
         """
-        self._on_resize = wrapped_handler(self, handler)
+        self._on_resize = wrapped_handler(handler)
         self._impl.set_on_resize(self._on_resize)
 
     @property
@@ -599,7 +599,7 @@ class Canvas(Context, Widget):
             handler (:obj:`callable`): The handler to invoke when the
             primary mouse button is pressed.
         """
-        self._on_press = wrapped_handler(self, handler)
+        self._on_press = wrapped_handler(handler)
         self._impl.set_on_press(self._on_press)
 
     @property
@@ -621,7 +621,7 @@ class Canvas(Context, Widget):
             handler (:obj:`callable`): The handler to invoke when the
             primary mouse button is released.
         """
-        self._on_release = wrapped_handler(self, handler)
+        self._on_release = wrapped_handler(handler)
         self._impl.set_on_release(self._on_release)
 
     @property
@@ -644,7 +644,7 @@ class Canvas(Context, Widget):
             handler (:obj:`callable`): The handler to invoke when the
             mouse is dragged with the primary button pressed.
         """
-        self._on_drag = wrapped_handler(self, handler)
+        self._on_drag = wrapped_handler(handler)
         self._impl.set_on_drag(self._on_drag)
 
     @property
@@ -666,7 +666,7 @@ class Canvas(Context, Widget):
             handler (:obj:`callable`): The handler to invoke when the
             alternate mouse button is pressed.
         """
-        self._on_alt_press = wrapped_handler(self, handler)
+        self._on_alt_press = wrapped_handler(handler)
         self._impl.set_on_alt_press(self._on_alt_press)
 
     @property
@@ -688,7 +688,7 @@ class Canvas(Context, Widget):
             handler (:obj:`callable`): The handler to invoke when the
             alternate mouse button is released.
         """
-        self._on_alt_release = wrapped_handler(self, handler)
+        self._on_alt_release = wrapped_handler(handler)
         self._impl.set_on_alt_release(self._on_alt_release)
 
     @property
@@ -711,7 +711,7 @@ class Canvas(Context, Widget):
             handler (:obj:`callable`): The handler to invoke when the
             mouse is dragged with the alternate button pressed.
         """
-        self._on_alt_drag = wrapped_handler(self, handler)
+        self._on_alt_drag = wrapped_handler(handler)
         self._impl.set_on_alt_drag(self._on_alt_drag)
 
     ###########################################################################

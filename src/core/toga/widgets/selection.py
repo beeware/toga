@@ -81,5 +81,5 @@ class Selection(Widget):
         :param handler:     callback function
         :type handler:      ``callable``
         """
-        self._on_select = wrapped_handler(self, handler)
+        self._on_select = wrapped_handler(handler)
         self._impl.set_on_select(self._on_select)

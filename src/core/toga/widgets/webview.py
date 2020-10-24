@@ -70,7 +70,7 @@ class WebView(Widget):
         Args:
             handler (:obj:`callable`): The handler to invoke when a key is pressed.
         """
-        self._on_key_down = wrapped_handler(self, handler)
+        self._on_key_down = wrapped_handler(handler)
         self._impl.set_on_key_down(self._on_key_down)
 
     @property
@@ -89,7 +89,7 @@ class WebView(Widget):
         Args:
             handler (:obj:`callable`): The handler to invoke when the button is pressed.
         """
-        self._on_webview_load = wrapped_handler(self, handler)
+        self._on_webview_load = wrapped_handler(handler)
         self._impl.set_on_webview_load(self._on_webview_load)
 
     @property

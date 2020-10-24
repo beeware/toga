@@ -92,5 +92,5 @@ class DatePicker(Widget):
         Args:
             handler (:obj:`callable`): The handler to invoke when the date is changed.
         """
-        self._on_change = wrapped_handler(self, handler)
+        self._on_change = wrapped_handler(handler)
         self._impl.set_on_change(self._on_change)

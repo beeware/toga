@@ -57,7 +57,7 @@ class Switch(Widget):
 
     @on_toggle.setter
     def on_toggle(self, handler):
-        self._on_toggle = wrapped_handler(self, handler)
+        self._on_toggle = wrapped_handler(handler)
         self._impl.set_on_toggle(self._on_toggle)
 
     @property

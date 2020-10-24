@@ -114,7 +114,7 @@ class DetailedList(Widget):
 
     @on_delete.setter
     def on_delete(self, handler: callable):
-        self._on_delete = wrapped_handler(self, handler)
+        self._on_delete = wrapped_handler(handler)
         self._impl.set_on_delete(self._on_delete)
 
     @property
@@ -127,7 +127,7 @@ class DetailedList(Widget):
 
     @on_refresh.setter
     def on_refresh(self, handler: callable):
-        self._on_refresh = wrapped_handler(self, handler, self._impl.after_on_refresh)
+        self._on_refresh = wrapped_handler(handler, self._impl.after_on_refresh)
         self._impl.set_on_refresh(self._on_refresh)
 
     @property
@@ -149,5 +149,5 @@ class DetailedList(Widget):
 
     @on_select.setter
     def on_select(self, handler: callable):
-        self._on_select = wrapped_handler(self, handler)
+        self._on_select = wrapped_handler(handler)
         self._impl.set_on_select(self._on_select)

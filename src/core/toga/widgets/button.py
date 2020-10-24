@@ -61,5 +61,5 @@ class Button(Widget):
         Args:
             handler (:obj:`callable`): The handler to invoke when the button is pressed.
         """
-        self._on_press = wrapped_handler(self, handler)
+        self._on_press = wrapped_handler(handler)
         self._impl.set_on_press(self._on_press)
