@@ -176,7 +176,7 @@ class Slider(Widget):
 
     @on_press.setter
     def on_press(self, handler):
-        self._on_press = wrapped_handler(self, handler)
+        self._on_press = wrapped_handler(handler)
         self._impl.set_on_press(self._on_press)
 
     @property
@@ -190,7 +190,7 @@ class Slider(Widget):
 
     @on_release.setter
     def on_release(self, handler):
-        self._on_release = wrapped_handler(self, handler)
+        self._on_release = wrapped_handler(handler)
         self._impl.set_on_release(self._on_release)
 
     @property
