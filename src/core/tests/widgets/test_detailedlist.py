@@ -66,8 +66,8 @@ class TestDetailedList(TestCase):
         self.dlist.on_delete = callback
         self.assertEqual(self.dlist.on_delete._raw, callback)
         self.assertEqual(
-            self.dlist.on_delete('widget', a=1),
-            "called <class 'toga.widgets.detailedlist.DetailedList'> with {'a': 1}"
+            self.dlist.on_delete(self, a=1),
+            "called <class 'tests.widgets.test_detailedlist.TestDetailedList'> with {'a': 1}"
         )
         self.assertValueSet(self.dlist, 'on_delete', self.dlist.on_delete)
 
@@ -81,8 +81,8 @@ class TestDetailedList(TestCase):
         self.dlist.on_refresh = callback
         self.assertEqual(self.dlist.on_refresh._raw, callback)
         self.assertEqual(
-            self.dlist.on_refresh('widget', a=1),
-            "called <class 'toga.widgets.detailedlist.DetailedList'> with {'a': 1}"
+            self.dlist.on_refresh(self, a=1),
+            "called <class 'tests.widgets.test_detailedlist.TestDetailedList'> with {'a': 1}"
         )
         self.assertValueSet(self.dlist, 'on_refresh', self.dlist.on_refresh)
 
@@ -96,7 +96,7 @@ class TestDetailedList(TestCase):
         self.dlist.on_select = callback
         self.assertEqual(self.dlist.on_select._raw, callback)
         self.assertEqual(
-            self.dlist.on_select('widget', a=1),
-            "called <class 'toga.widgets.detailedlist.DetailedList'> with {'a': 1}"
+            self.dlist.on_select(self, a=1),
+            "called <class 'tests.widgets.test_detailedlist.TestDetailedList'> with {'a': 1}"
         )
         self.assertValueSet(self.dlist, 'on_select', self.dlist.on_select)
