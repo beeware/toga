@@ -130,3 +130,6 @@ class MultilineTextInput(Widget):
             native_font = font.bind(self.interface.factory).native
             self.native.font = native_font
             self.placeholder_label.font = native_font
+
+    def set_on_change(self, handler):
+        self.interface.factory.not_implemented('MultilineTextInput.set_on_change()')

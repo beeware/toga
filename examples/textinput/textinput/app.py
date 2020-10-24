@@ -1,3 +1,4 @@
+import re
 from string import ascii_lowercase, ascii_uppercase, digits
 
 import toga
@@ -72,6 +73,11 @@ class TextInputApp(toga.App):
             style=Pack(padding=10),
             on_change=self.on_password_change
         )
+        self.email_input = toga.TextInput(
+            placeholder='Email...',
+            style=Pack(padding=10),
+            validator=self.validate_email
+        )
         self.number_input = toga.NumberInput(style=Pack(padding=10))
         btn_extract = toga.Button(
             'Extract values',
@@ -86,6 +92,7 @@ class TextInputApp(toga.App):
                 self.text_input,
                 self.password_input,
                 self.password_content_label,
+                self.email_input,
                 self.number_input,
                 self.text_label,
                 self.password_label,
@@ -123,6 +130,23 @@ class TextInputApp(toga.App):
             else:
                 contains.add("special characters")
         return "Password contains: {}".format(', '.join(contains))
+
+    @classmethod
+    def validate_email(cls, value):
+        if value == "":
+            return
+        split_email = value.split("@")
+        email_parts = len(split_email)
+        if email_parts == 1:
+            return 'No "@" in address'
+        if email_parts >= 3:
+            return 'Too many "@" symbols in address'
+        name, domain = split_email
+        if not re.match(r"[A-Za-z][A-Za-z0-9\-.]*", name):
+            return 'Email name is invalid'
+        if not re.match(r"[A-Za-z][A-Za-z0-9\-.]*", domain):
+            return 'Email domain is invalid'
+        return
 
 
 def main():
