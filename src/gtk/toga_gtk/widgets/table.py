@@ -19,7 +19,7 @@ class Table(Tree):
                 row = tree_model.get(tree_iter, 0)[0]
             else:
                 row = None
-            self.interface.on_select(None, row=row)
+            self.interface.on_select(self, row=row)
 
     def change_source(self, source):
         # Temporarily disconnecting the TreeStore improves performance for large
