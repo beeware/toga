@@ -103,7 +103,7 @@ class TogaIconView(NSTableCellView):
             self.setup()
 
         if image:
-            self.imageView.image = image.resizeTo(16)
+            self.imageView.image = image
             # set icon width to 16
             self.iv_width_constraint.constant = 16
             # add padding between icon and text
