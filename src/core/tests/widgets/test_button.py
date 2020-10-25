@@ -38,8 +38,8 @@ class ButtonTests(TestCase):
         self.btn.on_press = callback
         self.assertEqual(self.btn.on_press._raw, callback)
         self.assertEqual(
-            self.btn.on_press(self, a=1),
-            "called <class 'tests.widgets.test_button.ButtonTests'> with {'a': 1}"
+            self.btn.on_press(self.btn, a=1),
+            "called <class 'toga.widgets.button.Button'> with {'a': 1}"
         )
         self.assertValueSet(self.btn, 'on_press', self.btn.on_press)
 
