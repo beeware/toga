@@ -25,6 +25,11 @@ class Table(Widget):
         self.native.VirtualMode = True
         self.native.Columns.AddRange(dataColumn)
 
+        for i, c in enumerate(self.native.Columns):
+            width = self.interface._col_widths.get(i, None)
+            if width is not None:
+                c.Width = width
+
         self.native.ItemSelectionChanged += self.winforms_item_selection_changed
         self.native.RetrieveVirtualItem += self.winforms_retrieve_virtual_item
         self.native.CacheVirtualItems += self.winforms_cache_virtual_items

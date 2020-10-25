@@ -24,6 +24,7 @@ class Table(Widget):
             will be shown.
         factory (:obj:`module`): A python module that is capable to return a
             implementation of this class with the same name. (optional & normally not needed)
+        col_widths (dict): Mapping of column index to pixel width.
 
     Examples:
         >>> headings = ['Head 1', 'Head 2', 'Head 3']
@@ -50,7 +51,7 @@ class Table(Widget):
 
     def __init__(self, headings, id=None, style=None, data=None, accessors=None,
                  multiple_select=False, on_select=None, on_double_click=None,
-                 missing_value=None, factory=None):
+                 missing_value=None, factory=None, col_widths=None):
         super().__init__(id=id, style=style, factory=factory)
         self.headings = headings[:]
         self._accessors = build_accessors(self.headings, accessors)
@@ -58,6 +59,7 @@ class Table(Widget):
         self._on_select = None
         self._on_double_click = None
         self._data = None
+        self._col_widths = col_widths if col_widths is not None else {}
         if missing_value is None:
             print("WARNING: Using empty string for missing value in data. "
                   "Define a 'missing_value' on the table to silence this message")
