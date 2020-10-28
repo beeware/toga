@@ -32,9 +32,9 @@ class Slider(Widget):
         range=None,
         tick_count=None,
         on_change=None,
+        on_slide=None,  # DEPRECATED!
         on_press=None,
         on_release=None,
-        on_slide=None,  # DEPRECATED!
         enabled=True,
         factory=None
     ):
@@ -57,9 +57,9 @@ class Slider(Widget):
             self.on_slide = on_slide
         else:
             self.on_change = on_change
+        self.enabled = enabled
         self.on_press = on_press
         self.on_release = on_release
-        self.enabled = enabled
 
     MIN_WIDTH = 100
 

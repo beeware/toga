@@ -15,6 +15,9 @@ class TextInput(Widget):
         self.native.DoubleClick += self.winforms_double_click
         self.native.TextChanged += self.winforms_text_changed
         self.native.Validated += self.winforms_validated
+        self.native.GotFocus += self.winforms_got_focus
+        self.native.LostFocus += self.winforms_lost_focus
+
         self.error_provider = WinForms.ErrorProvider()
         self.error_provider.SetIconAlignment(
             self.native, WinForms.ErrorIconAlignment.MiddleRight
@@ -57,6 +60,15 @@ class TextInput(Widget):
         self.interface.intrinsic.height = self.native.PreferredSize.Height
 
     def set_on_change(self, handler):
+        # No special handling required
+        pass
+
+    def set_on_gain_focus(self, handler):
+        # No special handling required
+        pass
+
+    def set_on_lose_focus(self, handler):
+        # No special handling required
         pass
 
     def winforms_text_changed(self, sender, event):
@@ -65,6 +77,14 @@ class TextInput(Widget):
 
     def winforms_validated(self, sender, event):
         self.interface.validate()
+
+    def winforms_got_focus(self, sender, event):
+        if self.container and self.interface.on_gain_focus:
+            self.interface.on_gain_focus(self.interface)
+
+    def winforms_lost_focus(self, sender, event):
+        if self.container and self.interface.on_lose_focus:
+            self.interface.on_lose_focus(self.interface)
 
     def clear_error(self):
         self.error_provider.SetError(self.native, "")

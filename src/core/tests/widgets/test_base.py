@@ -11,9 +11,11 @@ class WidgetTests(TestCase):
         self.id = 'widget_id'
         self.style = Pack(padding=666)
 
-        self.widget = toga.Widget(id=self.id,
-                                  style=self.style,
-                                  factory=toga_dummy.factory)
+        self.widget = toga.Widget(
+            id=self.id,
+            style=self.style,
+            factory=toga_dummy.factory
+        )
 
     def test_arguments_were_set_correctly(self):
         self.assertEqual(self.widget.id, self.id)
