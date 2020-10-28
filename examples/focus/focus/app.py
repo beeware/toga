@@ -27,6 +27,10 @@ class ExampleFocusApp(toga.App):
             on_gain_focus=self.on_textinput_gain_focus,
             on_lose_focus=self.on_textinput_lose_focus
         )
+        self.other_text_input = toga.TextInput(
+            placeholder="A non-focussed text input.",
+            style=Pack(height=25, width=200, font_size=10),
+        )
         self.switch = toga.Switch("Switch", on_toggle=self.on_switch_toggle)
         self.info_label = toga.Label(
             "Use keyboard shortcuts to focus on the different widgets",
@@ -37,6 +41,7 @@ class ExampleFocusApp(toga.App):
             style=Pack(direction=COLUMN), children=[
                 toga.Box(children=[self.a_button, self.b_button, self.c_button]),
                 toga.Box(children=[self.text_input]),
+                toga.Box(children=[self.other_text_input]),
                 toga.Box(children=[self.switch]),
                 toga.Box(children=[self.info_label])
             ]
@@ -90,8 +95,8 @@ class ExampleFocusApp(toga.App):
 
     def on_textinput_gain_focus(self, widget: toga.TextInput):
         self.info_label.text = (
-            "TextInput get focus in the "
-            "{} time".format(self.text_input_focus_count)
+            "TextInput has previously had focus "
+            "{} times".format(self.text_input_focus_count)
         )
 
     def on_textinput_lose_focus(self, widget: toga.TextInput):
