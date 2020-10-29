@@ -12,9 +12,11 @@ class Widget:
         self.interface.style.reapply()
 
     def set_app(self, app):
+        # No special handling required
         pass
 
     def set_window(self, window):
+        # No special handling required
         pass
 
     @property

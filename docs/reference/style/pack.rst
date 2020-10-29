@@ -65,7 +65,7 @@ If the box is a ``column`` box, only the values ``left``, ``right`` and
 If the box is a ``row`` box, only the values ``top``, ``bottom and ``center``
 are honored.
 
-If a value value is provided, but the value isn't honored, the alignment
+If a value is provided, but the value isn't honored, the alignment
 reverts to the default for the direction.
 
 

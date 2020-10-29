@@ -11,9 +11,11 @@ class WidgetTests(TestCase):
         self.id = 'widget_id'
         self.style = Pack(padding=666)
 
-        self.widget = toga.Widget(id=self.id,
-                                  style=self.style,
-                                  factory=toga_dummy.factory)
+        self.widget = toga.Widget(
+            id=self.id,
+            style=self.style,
+            factory=toga_dummy.factory
+        )
 
     def test_arguments_were_set_correctly(self):
         self.assertEqual(self.widget.id, self.id)
@@ -31,10 +33,8 @@ class WidgetTests(TestCase):
         self.assertActionPerformedWith(box, 'set enabled', value=None)
 
     def test_adding_child(self):
-        """
-        """
-        self.assertEqual(self.widget.children, [], 'No child was added, should return a empty list.')
-        # Create a child widget to add to the our widget.
+        self.assertEqual(self.widget.children, [], 'No child was added, should return an empty list.')
+        # Create a child widget to add to widget.
         child = toga.Widget(factory=toga_dummy.factory)
 
         with self.assertRaises(ValueError, msg='Widget cannot have children.'):
@@ -47,7 +47,7 @@ class WidgetTests(TestCase):
         self.assertEqual(self.widget.children, [child])
 
     def test_adding_children(self):
-        self.assertEqual(self.widget.children, [], ' No children added, should return a empty list.')
+        self.assertEqual(self.widget.children, [], 'No children added, should return an empty list.')
         # Create 2 children to add to widget.
         child1 = toga.Widget(factory=toga_dummy.factory)
         child2 = toga.Widget(factory=toga_dummy.factory)
@@ -55,3 +55,42 @@ class WidgetTests(TestCase):
         self.widget._children = []
         self.widget.add(child1, child2)
         self.assertEqual(self.widget.children, [child1, child2])
+
+    def test_removing_child(self):
+        self.assertEqual(self.widget.children, [], 'No child was added, should return an empty list.')
+        # Create a child widget to add then remove from widget.
+        child = toga.Widget(factory=toga_dummy.factory)
+
+        self.widget._children = []
+        self.widget.add(child)
+        self.assertEqual(self.widget.children, [child])
+
+        self.widget.remove(child)
+        self.assertEqual(self.widget.children, [])
+
+    def test_removing_children(self):
+        self.assertEqual(self.widget.children, [], 'No children added, should return an empty list.')
+        # Create 2 children to add then remove from widget.
+        child1 = toga.Widget(factory=toga_dummy.factory)
+        child2 = toga.Widget(factory=toga_dummy.factory)
+
+        self.widget._children = []
+        self.widget.add(child1, child2)
+        self.assertEqual(self.widget.children, [child1, child2])
+
+        self.widget.remove(child1, child2)
+        self.assertEqual(self.widget.children, [])
+
+    def test_removing_two_out_of_three_children(self):
+        self.assertEqual(self.widget.children, [], 'No children added, should return am empty list.')
+        # Create 3 children to add to widget, 2 of which will be removed.
+        child1 = toga.Widget(factory=toga_dummy.factory)
+        child2 = toga.Widget(factory=toga_dummy.factory)
+        child3 = toga.Widget(factory=toga_dummy.factory)
+
+        self.widget._children = []
+        self.widget.add(child1, child2, child3)
+        self.assertEqual(self.widget.children, [child1, child2, child3])
+
+        self.widget.remove(child1, child3)
+        self.assertEqual(self.widget.children, [child2])

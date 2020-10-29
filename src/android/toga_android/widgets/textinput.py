@@ -80,3 +80,9 @@ class TextInput(Widget):
             View__MeasureSpec.UNSPECIFIED, View__MeasureSpec.UNSPECIFIED
         )
         self.interface.intrinsic.height = self.native.getMeasuredHeight()
+
+    def set_on_gain_focus(self, handler):
+        self.interface.factory.not_implemented("TextInput.set_on_gain_focus()")
+
+    def set_on_lose_focus(self, handler):
+        self.interface.factory.not_implemented("TextInput.set_on_lose_focus()")
