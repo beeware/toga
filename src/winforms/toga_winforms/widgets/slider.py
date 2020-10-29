@@ -52,9 +52,9 @@ class Slider(Widget):
         Since picking and releasing the slider is also a change, calling the
             on_change method.
         """
+        self.winforms_scroll(sender, event)
         if self.container and self.interface.on_release:
             self.interface.on_release(self.interface)
-        self.winforms_scroll(sender, event)
 
     def get_value(self):
         actual_value = self.native.Value
