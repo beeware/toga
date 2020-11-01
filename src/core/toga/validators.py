@@ -1,5 +1,5 @@
 import re
-from typing import Optional, Union, List, Callable
+from typing import Optional, Union, List
 from string import ascii_uppercase, ascii_lowercase, digits
 
 
