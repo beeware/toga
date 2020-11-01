@@ -9,6 +9,55 @@ EMAIL_REGEX = (
 )
 
 
+class BooleanValidator:
+
+    def __init__(
+        self,
+        is_valid_method: Callable[[str], bool],
+        error_message: str,
+        allow_empty: bool = True
+    ):
+        self.is_valid_method = is_valid_method
+        self.error_message = error_message
+        self.allow_empty = allow_empty
+
+    def __call__(self, input_string: str):
+        if self.allow_empty and input_string == "":
+            return None
+        return None if self.is_valid_method(input_string) else self.error_message
+
+
+class CountValidator:
+
+    def __init__(
+        self,
+        count_method: Callable[[str], int],
+        count: Optional[int],
+        expected_existence: str,
+        expected_non_existence: str,
+        expected_count: str,
+        allow_empty: bool = True,
+    ):
+        self.count_method = count_method
+        self.count = count
+        self.expected_existence = expected_existence
+        self.expected_non_existence = expected_non_existence
+        self.expected_count = expected_count
+        self.allow_empty = allow_empty
+
+    def __call__(self, input_string: str):
+        if self.allow_empty and input_string == "":
+            return None
+        actual_count = self.count_method(input_string)
+        if actual_count == 0 and self.count != 0:
+            return self.expected_existence
+        if actual_count != 0 and self.count == 0:
+            return self.expected_non_existence
+        if self.count is not None and actual_count != self.count:
+            return self.expected_count
+        return None
+
+
 def min_length(
     length: int, error_message: Optional[str] = None, allow_empty: bool = True
 ):
@@ -16,7 +65,7 @@ def min_length(
         error_message = "Input is too short (length should be at least {})".format(
             length
         )
-    return __build_boolean_validator(
+    return BooleanValidator(
         is_valid_method=lambda a: len(a) >= length,
         error_message=error_message,
         allow_empty=allow_empty,
@@ -28,7 +77,7 @@ def max_length(
 ):
     if error_message is None:
         error_message = "Input is too long (length should be at most {})".format(length)
-    return __build_boolean_validator(
+    return BooleanValidator(
         is_valid_method=lambda a: len(a) <= length,
         error_message=error_message,
         allow_empty=allow_empty,
@@ -54,7 +103,7 @@ def startswith(
 ):
     if error_message is None:
         error_message = 'Input should start with "{}"'.format(substrings)
-    return __build_boolean_validator(
+    return BooleanValidator(
         lambda a: a.startswith(substrings),
         error_message=error_message,
         allow_empty=allow_empty,
@@ -68,7 +117,7 @@ def endswith(
 ):
     if error_message is None:
         error_message = 'Input should end with "{}"'.format(substrings)
-    return __build_boolean_validator(
+    return BooleanValidator(
         lambda a: a.endswith(substrings),
         error_message=error_message,
         allow_empty=allow_empty,
@@ -99,7 +148,7 @@ def contains(
             substrings_string, count
         )
 
-    return __build_count_validator(
+    return CountValidator(
         count_method=lambda a: sum(a.count(substring) for substring in substrings),
         count=count,
         expected_existence=expected_existence,
@@ -122,7 +171,7 @@ def match_regex(
 ):
     if error_message is None:
         error_message = "Input should match regex: {}".format(regex_string)
-    return __build_boolean_validator(
+    return BooleanValidator(
         is_valid_method=lambda a: bool(re.search(regex_string, a)),
         error_message=error_message,
         allow_empty=allow_empty,
@@ -143,7 +192,7 @@ def contains_uppercase(
             count
         )
 
-    return __build_count_validator(
+    return CountValidator(
         count_method=lambda a: len([char for char in a if char in ascii_uppercase]),
         count=count,
         expected_existence=expected_existence,
@@ -167,7 +216,7 @@ def contains_lowercase(
             count
         )
 
-    return __build_count_validator(
+    return CountValidator(
         count_method=lambda a: len([char for char in a if char in ascii_lowercase]),
         count=count,
         expected_existence=expected_existence,
@@ -189,7 +238,7 @@ def contains_digit(
         expected_non_existence = "Input should not contain digits"
         expected_count = "Input should contain exactly {} digits".format(count)
 
-    return __build_count_validator(
+    return CountValidator(
         count_method=lambda a: len([char for char in a if char in digits]),
         count=count,
         expected_existence=expected_existence,
@@ -213,7 +262,7 @@ def contains_special(
             count
         )
 
-    return __build_count_validator(
+    return CountValidator(
         count_method=lambda a: len(
             [char for char in a if not char.isalpha() and not char.isdigit()]
         ),
@@ -259,36 +308,3 @@ def combine(*validators):
 
     return combined_validator
 
-
-def __build_boolean_validator(
-    is_valid_method: Callable[[str], bool], error_message: str, allow_empty: bool
-):
-    def validator(input_string: str):
-        if allow_empty and input_string == "":
-            return None
-        return None if is_valid_method(input_string) else error_message
-
-    return validator
-
-
-def __build_count_validator(
-    count_method: Callable[[str], int],
-    count: Optional[int],
-    expected_existence: str,
-    expected_non_existence: str,
-    expected_count: str,
-    allow_empty: bool,
-):
-    def validator(input_string: str):
-        if allow_empty and input_string == "":
-            return None
-        actual_count = count_method(input_string)
-        if actual_count == 0 and count != 0:
-            return expected_existence
-        if actual_count != 0 and count == 0:
-            return expected_non_existence
-        if count is not None and actual_count != count:
-            return expected_count
-        return None
-
-    return validator
