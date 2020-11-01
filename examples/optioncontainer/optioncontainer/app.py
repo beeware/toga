@@ -49,16 +49,16 @@ class ExampleOptionContainerApp(toga.App):
             self.main_window.info_dialog('Oops', str(e))
 
     def set_next_tab(self, widget):
-        if self.optioncontainer.current_tab_index < self.optioncontainer.number_of_tabs - 1:
-            self.optioncontainer.current_tab_index += 1
+        if self.optioncontainer.current_tab.index < len(self.optioncontainer.content) - 1:
+            self.optioncontainer.current_tab += 1
 
     def set_previous_tab(self, widget):
-        if self.optioncontainer.current_tab_index > 0:
-            self.optioncontainer.current_tab_index -= 1
+        if self.optioncontainer.current_tab.index > 0:
+            self.optioncontainer.current_tab -= 1
 
     def on_select_tab(self, widget):
         self.selected_label.text = "Tab {} has been chosen: {}".format(
-            self.optioncontainer.current_tab_index,
+            self.optioncontainer.current_tab.index,
             self.optioncontainer.current_tab.label,
         )
 
