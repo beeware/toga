@@ -94,6 +94,18 @@ class OptionContainerTests(TestCase):
             enabled=True,
         )
 
+    def test_current_tab_increment(self):
+        self.add_widgets()
+        self.op_container.current_tab = 1
+        self.op_container.current_tab += 1
+        self.assert_tab(
+            self.op_container.current_tab,
+            index=2,
+            label=self.label3,
+            widget=self.widget3,
+            enabled=True,
+        )
+
     def test_set_current_tab_as_label_raises_an_error(self):
         self.add_widgets()
 
@@ -101,6 +113,34 @@ class OptionContainerTests(TestCase):
             self.op_container.current_tab = "I do not exist!"
 
         self.assertRaises(ValueError, set_label)
+
+    def test_current_tab_string_increment_raises_an_error(self):
+        self.add_widgets()
+
+        def set_label():
+            self.op_container.current_tab += "I do not exist!"
+
+        self.assertRaises(ValueError, set_label)
+
+    def test_current_tab_string_decrement_raises_an_error(self):
+        self.add_widgets()
+
+        def set_label():
+            self.op_container.current_tab -= "I do not exist!"
+
+        self.assertRaises(ValueError, set_label)
+
+    def test_current_tab_decrement(self):
+        self.add_widgets()
+        self.op_container.current_tab = 1
+        self.op_container.current_tab -= 1
+        self.assert_tab(
+            self.op_container.current_tab,
+            index=0,
+            label=self.label,
+            widget=self.widget,
+            enabled=True,
+        )
 
     def test_disable_tab(self):
         self.op_container.current_tab.enabled = False

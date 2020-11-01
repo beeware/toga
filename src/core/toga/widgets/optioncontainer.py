@@ -49,6 +49,16 @@ class OptionItem:
     def refresh(self):
         self._widget.refresh()
 
+    def __add__(self, other):
+        if not isinstance(other, int):
+            raise ValueError("Cannot add non-integer value to OptionItem")
+        return self.interface.content[self.index + other]
+
+    def __sub__(self, other):
+        if not isinstance(other, int):
+            raise ValueError("Cannot add non-integer value to OptionItem")
+        return self.interface.content[self.index - other]
+
 
 class OptionList:
     def __init__(self, interface):
