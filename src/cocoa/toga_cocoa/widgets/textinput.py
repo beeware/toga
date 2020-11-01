@@ -5,6 +5,7 @@ from toga_cocoa.libs import (
     NSTextField,
     NSTextFieldSquareBezel,
     objc_method,
+    send_super,
 )
 
 from .base import Widget
@@ -19,6 +20,27 @@ class TogaTextField(NSTextField):
     @objc_method
     def textShouldEndEditing_(self, textObject) -> bool:
         return self.interface.validate()
+
+    @objc_method
+    def becomeFirstResponder(self) -> bool:
+        # Cocoa gives and then immediately revokes focus when the widget
+        # is first displayed. Set a local attribute on the first *loss*
+        # of focus, and only trigger Toga events when that attribute exists.
+        if hasattr(self, '_configured'):
+            if self.interface.on_gain_focus:
+                self.interface.on_gain_focus(self.interface)
+        return send_super(__class__, self, 'becomeFirstResponder')
+
+    @objc_method
+    def textDidEndEditing_(self, textObject) -> None:
+        # Cocoa gives and then immediately revokes focus when the widget
+        # is first displayed. Set a local attribute on the first *loss*
+        # of focus, and only trigger Toga events when that attribute exists.
+        if hasattr(self, '_configured'):
+            if self.interface.on_lose_focus:
+                self.interface.on_lose_focus(self.interface)
+        else:
+            self._configured = True
 
 
 class TextInput(Widget):
@@ -63,6 +85,12 @@ class TextInput(Widget):
         self.interface.intrinsic.height = self.native.intrinsicContentSize().height
 
     def set_on_change(self, handler):
+        pass
+
+    def set_on_gain_focus(self, handler):
+        pass
+
+    def set_on_lose_focus(self, handler):
         pass
 
     def set_error(self, error_message):

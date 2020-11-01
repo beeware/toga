@@ -20,9 +20,16 @@ class ExampleFocusApp(toga.App):
         self.a_button = toga.Button("A", on_press=self.on_button_press)
         self.b_button = toga.Button("B", on_press=self.on_button_press)
         self.c_button = toga.Button("C", on_press=self.on_button_press)
+        self.text_input_focus_count = 0
         self.text_input = toga.TextInput(
             placeholder="I get focused on startup.",
-            style=Pack(height=25, width=200, font_size=10)
+            style=Pack(height=25, width=200, font_size=10),
+            on_gain_focus=self.on_textinput_gain_focus,
+            on_lose_focus=self.on_textinput_lose_focus
+        )
+        self.other_text_input = toga.TextInput(
+            placeholder="A non-focussed text input.",
+            style=Pack(height=25, width=200, font_size=10),
         )
         self.switch = toga.Switch("Switch", on_toggle=self.on_switch_toggle)
         self.info_label = toga.Label(
@@ -34,6 +41,7 @@ class ExampleFocusApp(toga.App):
             style=Pack(direction=COLUMN), children=[
                 toga.Box(children=[self.a_button, self.b_button, self.c_button]),
                 toga.Box(children=[self.text_input]),
+                toga.Box(children=[self.other_text_input]),
                 toga.Box(children=[self.switch]),
                 toga.Box(children=[self.info_label])
             ]
@@ -59,7 +67,7 @@ class ExampleFocusApp(toga.App):
                 group=WIDGETS_GROUP
             ),
             toga.Command(
-                lambda widget: self.focus_on(self.text_input, "TextInput"),
+                lambda widget: self.text_input.focus(),
                 label="Focus on text input",
                 shortcut=toga.Key.MOD_1 + "t",
                 group=WIDGETS_GROUP
@@ -85,12 +93,18 @@ class ExampleFocusApp(toga.App):
         on_off = "on" if widget.is_on else "off"
         self.info_label.text = "Switch turned {on_off}!".format(on_off=on_off)
 
-    def focus_on(self, widget: toga.Widget, name: str):
-        widget.focus()
-        self.info_label.text = "{name} is focused!".format(name=name)
+    def on_textinput_gain_focus(self, widget: toga.TextInput):
+        self.info_label.text = (
+            "TextInput has previously had focus "
+            "{} times".format(self.text_input_focus_count)
+        )
+
+    def on_textinput_lose_focus(self, widget: toga.TextInput):
+        self.text_input_focus_count += 1
 
     def focus_with_label(self, widget: toga.Widget):
-        self.focus_on(widget, name=widget.label)
+        widget.focus()
+        self.info_label.text = "{name} is focused!".format(name=widget.label)
 
 
 def main():

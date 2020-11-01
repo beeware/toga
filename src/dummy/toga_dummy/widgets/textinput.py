@@ -29,6 +29,12 @@ class TextInput(Widget):
     def set_on_change(self, handler):
         self._set_value('on_change', handler)
 
+    def set_on_gain_focus(self, handler):
+        self._set_value('on_gain_focus', handler)
+
+    def set_on_lose_focus(self, handler):
+        self._set_value('on_lose_focus', handler)
+
     def set_error(self, error_message):
         self._set_value('error', error_message)
 
