@@ -83,7 +83,7 @@ class TextInputApp(toga.App):
         self.email_input = toga.TextInput(
             placeholder='Email...',
             style=Pack(padding=10),
-            validator=validators.email()
+            validator=validators.Email()
         )
         self.number_input = toga.NumberInput(style=Pack(padding=10))
         btn_extract = toga.Button(

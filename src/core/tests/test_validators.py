@@ -370,7 +370,7 @@ class TestValidators(unittest.TestCase):
     def test_integer(self):
         default_error_message = "Input should be an integer"
 
-        self.validator_factory = validators.integer
+        self.validator_factory = validators.Integer
         self.valid_inputs = ["0", "00", "1", "21", "1234", "12423571"]
         self.invalid_inputs = [
             ("a", default_error_message),
@@ -389,7 +389,7 @@ class TestValidators(unittest.TestCase):
     def test_number(self):
         default_error_message = "Input should be a number"
 
-        self.validator_factory = validators.number
+        self.validator_factory = validators.Number
         self.valid_inputs = [
             "0", "00", "0.0", "1", "2.1", "-1", "-0.22", ".2", "88.0", "9."
         ]
@@ -406,7 +406,7 @@ class TestValidators(unittest.TestCase):
     def test_email(self):
         default_error_message = "Input should be a valid email address"
 
-        self.validator_factory = validators.email
+        self.validator_factory = validators.Email
         self.valid_inputs = [
             "tiberius@beeware.org",
             "tiberius.yak@beeware.org",

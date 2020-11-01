@@ -2,12 +2,6 @@ import re
 from typing import Optional, Union, List, Callable
 from string import ascii_uppercase, ascii_lowercase, digits
 
-INTEGER_REGEX = r"^[0-9]+$"
-NUMBER_REGEX = r"^[-]?(\d+|\d*\.\d+|\d+.\d*)$"
-EMAIL_REGEX = (
-    r"^[a-zA-Z][a-zA-Z0-9\.]*[a-zA-Z0-9]@[a-zA-Z][a-zA-Z0-9]*(\.[a-zA-Z0-9]+)+$"
-)
-
 
 class BooleanValidator:
 
@@ -303,26 +297,42 @@ def contains_special(
     )
 
 
-def integer(error_message: Optional[str] = None, allow_empty: bool = True):
-    if error_message is None:
-        error_message = "Input should be an integer"
-    return MatchRegex(
-        INTEGER_REGEX, error_message=error_message, allow_empty=allow_empty
+class Integer(MatchRegex):
+
+    INTEGER_REGEX = r"^[0-9]+$"
+
+    def __init__(self, error_message: Optional[str] = None, allow_empty: bool = True):
+        if error_message is None:
+            error_message = "Input should be an integer"
+        super().__init__(
+            self.INTEGER_REGEX, error_message=error_message, allow_empty=allow_empty
+        )
+
+
+class Number(MatchRegex):
+
+    NUMBER_REGEX = r"^[-]?(\d+|\d*\.\d+|\d+.\d*)$"
+
+    def __init__(self, error_message: Optional[str] = None, allow_empty: bool = True):
+        if error_message is None:
+            error_message = "Input should be a number"
+        super().__init__(
+            self.NUMBER_REGEX, error_message=error_message, allow_empty=allow_empty
+        )
+
+
+class Email(MatchRegex):
+
+    EMAIL_REGEX = (
+        r"^[a-zA-Z][a-zA-Z0-9\.]*[a-zA-Z0-9]@[a-zA-Z][a-zA-Z0-9]*(\.[a-zA-Z0-9]+)+$"
     )
 
-
-def number(error_message: Optional[str] = None, allow_empty: bool = True):
-    if error_message is None:
-        error_message = "Input should be a number"
-    return MatchRegex(
-        NUMBER_REGEX, error_message=error_message, allow_empty=allow_empty
-    )
-
-
-def email(error_message: Optional[str] = None, allow_empty: bool = True):
-    if error_message is None:
-        error_message = "Input should be a valid email address"
-    return MatchRegex(EMAIL_REGEX, error_message=error_message, allow_empty=allow_empty)
+    def __init__(self, error_message: Optional[str] = None, allow_empty: bool = True):
+        if error_message is None:
+            error_message = "Input should be a valid email address"
+        super().__init__(
+            self.EMAIL_REGEX, error_message=error_message, allow_empty=allow_empty
+        )
 
 
 def combine(*validators):
