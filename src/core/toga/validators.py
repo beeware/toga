@@ -4,12 +4,7 @@ from string import ascii_uppercase, ascii_lowercase, digits
 
 
 class BooleanValidator:
-
-    def __init__(
-        self,
-        error_message: str,
-        allow_empty: bool = True
-    ):
+    def __init__(self, error_message: str, allow_empty: bool = True):
         self.error_message = error_message
         self.allow_empty = allow_empty
 
@@ -20,24 +15,20 @@ class BooleanValidator:
 
     def is_valid(self, input_string: str):
         raise NotImplementedError(
-            "is_valid is not implemented in BooleanValidator. "
-            "Please override it."
+            "is_valid is not implemented in BooleanValidator. " "Please override it."
         )
 
 
 class CountValidator:
-
     def __init__(
         self,
-        count_method: Callable[[str], int],
-        count: Optional[int],
+        compare_count: Optional[int],
         expected_existence: str,
         expected_non_existence: str,
         expected_count: str,
         allow_empty: bool = True,
     ):
-        self.count_method = count_method
-        self.count = count
+        self.compare_count = compare_count
         self.expected_existence = expected_existence
         self.expected_non_existence = expected_non_existence
         self.expected_count = expected_count
@@ -46,23 +37,24 @@ class CountValidator:
     def __call__(self, input_string: str):
         if self.allow_empty and input_string == "":
             return None
-        actual_count = self.count_method(input_string)
-        if actual_count == 0 and self.count != 0:
+        actual_count = self.count(input_string)
+        if actual_count == 0 and self.compare_count != 0:
             return self.expected_existence
-        if actual_count != 0 and self.count == 0:
+        if actual_count != 0 and self.compare_count == 0:
             return self.expected_non_existence
-        if self.count is not None and actual_count != self.count:
+        if self.compare_count is not None and actual_count != self.compare_count:
             return self.expected_count
         return None
 
+    def count(self, input_string: str):
+        raise NotImplementedError(
+            "count is not implemented in CountValidator. " "Please override it."
+        )
+
 
 class MinLength(BooleanValidator):
-
     def __init__(
-        self,
-        length: int,
-        error_message: Optional[str] = None,
-        allow_empty: bool = True
+        self, length: int, error_message: Optional[str] = None, allow_empty: bool = True
     ):
         if error_message is None:
             error_message = "Input is too short (length should be at least {})".format(
@@ -76,12 +68,8 @@ class MinLength(BooleanValidator):
 
 
 class MaxLength(BooleanValidator):
-
     def __init__(
-        self,
-        length: int,
-        error_message: Optional[str] = None,
-        allow_empty: bool = True
+        self, length: int, error_message: Optional[str] = None, allow_empty: bool = True
     ):
         if error_message is None:
             error_message = "Input is too long (length should be at most {})".format(
@@ -107,7 +95,6 @@ def length_between(
 
 
 class StartsWith(BooleanValidator):
-
     def __init__(
         self,
         substring: str,
@@ -125,7 +112,6 @@ class StartsWith(BooleanValidator):
 
 
 class EndsWith(BooleanValidator):
-
     def __init__(
         self,
         substring: str,
@@ -142,159 +128,196 @@ class EndsWith(BooleanValidator):
         return input_string.endswith(self.substring)
 
 
-def contains(
-    substrings: Union[str, List[str]],
-    count: Optional[int] = None,
-    error_message: Optional[str] = None,
-    allow_empty: bool = True,
-):
-    if isinstance(substrings, str):
-        substrings = [substrings]
+class Contains(CountValidator):
+    def __init__(
+        self,
+        substrings: Union[str, List[str]],
+        compare_count: Optional[int] = None,
+        error_message: Optional[str] = None,
+        allow_empty: bool = True,
+    ):
+        if isinstance(substrings, str):
+            substrings = [substrings]
 
-    if error_message is not None:
-        expected_non_existence = expected_count = expected_existence = error_message
-    else:
-        if len(substrings) == 1:
-            substrings_string = '"{}"'.format(substrings[0])
+        if error_message is not None:
+            expected_non_existence = expected_count = expected_existence = error_message
         else:
-            substrings_string = ", ".join(
-                '"{}"'.format(substring) for substring in substrings[:-1]
-            ) + ' or "{}"'.format(substrings[-1])
-        expected_existence = "Input should contain {}".format(substrings_string)
-        expected_non_existence = "Input should not contain {}".format(substrings_string)
-        expected_count = "Input should contain {} exactly {} times".format(
-            substrings_string, count
+            if len(substrings) == 1:
+                substrings_string = '"{}"'.format(substrings[0])
+            else:
+                substrings_string = ", ".join(
+                    '"{}"'.format(substring) for substring in substrings[:-1]
+                ) + ' or "{}"'.format(substrings[-1])
+            expected_existence = "Input should contain {}".format(substrings_string)
+            expected_non_existence = "Input should not contain {}".format(
+                substrings_string
+            )
+            expected_count = "Input should contain {} exactly {} times".format(
+                substrings_string, compare_count
+            )
+
+        super(Contains, self).__init__(
+            compare_count=compare_count,
+            expected_existence=expected_existence,
+            expected_non_existence=expected_non_existence,
+            expected_count=expected_count,
+            allow_empty=allow_empty,
         )
+        self.substrings = substrings
 
-    return CountValidator(
-        count_method=lambda a: sum(a.count(substring) for substring in substrings),
-        count=count,
-        expected_existence=expected_existence,
-        expected_non_existence=expected_non_existence,
-        expected_count=expected_count,
-        allow_empty=allow_empty,
-    )
+    def count(self, input_string: str):
+        return sum(input_string.count(substring) for substring in self.substrings)
 
 
-def not_contains(
-    substring: str, error_message: Optional[str] = None, allow_empty: bool = True
-):
-    return contains(
-        substring, count=0, error_message=error_message, allow_empty=allow_empty
-    )
+class NotContains(Contains):
+    def __init__(
+        self,
+        substring: str,
+        error_message: Optional[str] = None,
+        allow_empty: bool = True,
+    ):
+        super(NotContains, self).__init__(
+            substring,
+            compare_count=0,
+            error_message=error_message,
+            allow_empty=allow_empty,
+        )
 
 
 class MatchRegex(BooleanValidator):
-
     def __init__(
         self,
         regex_string,
         error_message: Optional[str] = None,
-        allow_empty: bool = True
+        allow_empty: bool = True,
     ):
         if error_message is None:
             error_message = "Input should match regex: {}".format(regex_string)
         super().__init__(error_message=error_message, allow_empty=allow_empty)
         self.regex_string = regex_string
-    
+
     def is_valid(self, input_string: str):
         return bool(re.search(self.regex_string, input_string))
 
 
-def contains_uppercase(
-    count: Optional[int] = None,
-    error_message: Optional[str] = None,
-    allow_empty: bool = True,
-):
-    if error_message is not None:
-        expected_non_existence = expected_count = expected_existence = error_message
-    else:
-        expected_existence = "Input should contain at least one uppercase character"
-        expected_non_existence = "Input should not contain uppercase characters"
-        expected_count = "Input should contain exactly {} uppercase characters".format(
-            count
+class ContainsUppercase(CountValidator):
+    def __init__(
+        self,
+        compare_count: Optional[int] = None,
+        error_message: Optional[str] = None,
+        allow_empty: bool = True,
+    ):
+        if error_message is not None:
+            expected_non_existence = expected_count = expected_existence = error_message
+        else:
+            expected_existence = "Input should contain at least one uppercase character"
+            expected_non_existence = "Input should not contain uppercase characters"
+            expected_count = (
+                "Input should contain exactly {} uppercase characters".format(
+                    compare_count
+                )
+            )
+
+        super().__init__(
+            compare_count=compare_count,
+            expected_existence=expected_existence,
+            expected_non_existence=expected_non_existence,
+            expected_count=expected_count,
+            allow_empty=allow_empty,
         )
 
-    return CountValidator(
-        count_method=lambda a: len([char for char in a if char in ascii_uppercase]),
-        count=count,
-        expected_existence=expected_existence,
-        expected_non_existence=expected_non_existence,
-        expected_count=expected_count,
-        allow_empty=allow_empty,
-    )
+    def count(self, input_string: str):
+        return len([char for char in input_string if char in ascii_uppercase])
 
 
-def contains_lowercase(
-    count: Optional[int] = None,
-    error_message: Optional[str] = None,
-    allow_empty: bool = True,
-):
-    if error_message is not None:
-        expected_non_existence = expected_count = expected_existence = error_message
-    else:
-        expected_existence = "Input should contain at least one lowercase character"
-        expected_non_existence = "Input should not contain lowercase characters"
-        expected_count = "Input should contain exactly {} lowercase characters".format(
-            count
+class ContainsLowercase(CountValidator):
+    def __init__(
+        self,
+        compare_count: Optional[int] = None,
+        error_message: Optional[str] = None,
+        allow_empty: bool = True,
+    ):
+        if error_message is not None:
+            expected_non_existence = expected_count = expected_existence = error_message
+        else:
+            expected_existence = "Input should contain at least one lowercase character"
+            expected_non_existence = "Input should not contain lowercase characters"
+            expected_count = (
+                "Input should contain exactly {} lowercase characters".format(
+                    compare_count
+                )
+            )
+
+        super().__init__(
+            compare_count=compare_count,
+            expected_existence=expected_existence,
+            expected_non_existence=expected_non_existence,
+            expected_count=expected_count,
+            allow_empty=allow_empty,
         )
 
-    return CountValidator(
-        count_method=lambda a: len([char for char in a if char in ascii_lowercase]),
-        count=count,
-        expected_existence=expected_existence,
-        expected_non_existence=expected_non_existence,
-        expected_count=expected_count,
-        allow_empty=allow_empty,
-    )
+    def count(self, input_string: str):
+        return len([char for char in input_string if char in ascii_lowercase])
 
 
-def contains_digit(
-    count: Optional[int] = None,
-    error_message: Optional[str] = None,
-    allow_empty: bool = True,
-):
-    if error_message is not None:
-        expected_non_existence = expected_count = expected_existence = error_message
-    else:
-        expected_existence = "Input should contain at least one digit"
-        expected_non_existence = "Input should not contain digits"
-        expected_count = "Input should contain exactly {} digits".format(count)
+class ContainsDigit(CountValidator):
+    def __init__(
+        self,
+        compare_count: Optional[int] = None,
+        error_message: Optional[str] = None,
+        allow_empty: bool = True,
+    ):
+        if error_message is not None:
+            expected_non_existence = expected_count = expected_existence = error_message
+        else:
+            expected_existence = "Input should contain at least one digit"
+            expected_non_existence = "Input should not contain digits"
+            expected_count = "Input should contain exactly {} digits".format(
+                compare_count
+            )
 
-    return CountValidator(
-        count_method=lambda a: len([char for char in a if char in digits]),
-        count=count,
-        expected_existence=expected_existence,
-        expected_non_existence=expected_non_existence,
-        expected_count=expected_count,
-        allow_empty=allow_empty,
-    )
-
-
-def contains_special(
-    count: Optional[int] = None,
-    error_message: Optional[str] = None,
-    allow_empty: bool = True,
-):
-    if error_message is not None:
-        expected_non_existence = expected_count = expected_existence = error_message
-    else:
-        expected_existence = "Input should contain at least one special character"
-        expected_non_existence = "Input should not contain specials characters"
-        expected_count = "Input should contain exactly {} special characters".format(
-            count
+        super().__init__(
+            compare_count=compare_count,
+            expected_existence=expected_existence,
+            expected_non_existence=expected_non_existence,
+            expected_count=expected_count,
+            allow_empty=allow_empty,
         )
 
-    return CountValidator(
-        count_method=lambda a: len(
-            [char for char in a if not char.isalpha() and not char.isdigit()]
-        ),
-        count=count,
-        expected_existence=expected_existence,
-        expected_non_existence=expected_non_existence,
-        expected_count=expected_count,
-        allow_empty=allow_empty,
-    )
+    def count(self, input_string: str):
+        return len([char for char in input_string if char in digits])
+
+
+class ContainsSpecial(CountValidator):
+    def __init__(
+        self,
+        compare_count: Optional[int] = None,
+        error_message: Optional[str] = None,
+        allow_empty: bool = True,
+    ):
+        if error_message is not None:
+            expected_non_existence = expected_count = expected_existence = error_message
+        else:
+            expected_existence = "Input should contain at least one special character"
+            expected_non_existence = "Input should not contain specials characters"
+            expected_count = (
+                "Input should contain exactly {} special characters".format(
+                    compare_count
+                )
+            )
+
+        super(ContainsSpecial, self).__init__(
+            compare_count=compare_count,
+            expected_existence=expected_existence,
+            expected_non_existence=expected_non_existence,
+            expected_count=expected_count,
+            allow_empty=allow_empty,
+        )
+
+    def count(self, input_string: str):
+        return len(
+            [char for char in input_string if not char.isalpha() and not char.isdigit()]
+        )
 
 
 class Integer(MatchRegex):
@@ -346,4 +369,3 @@ def combine(*validators):
         return None
 
     return combined_validator
-

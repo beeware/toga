@@ -74,10 +74,10 @@ class TextInputApp(toga.App):
             on_change=self.on_password_change,
             validator=validators.combine(
                 validators.MinLength(10),
-                validators.contains_uppercase(),
-                validators.contains_lowercase(),
-                validators.contains_special(),
-                validators.contains_digit()
+                validators.ContainsUppercase(),
+                validators.ContainsLowercase(),
+                validators.ContainsSpecial(),
+                validators.ContainsDigit()
             )
         )
         self.email_input = toga.TextInput(

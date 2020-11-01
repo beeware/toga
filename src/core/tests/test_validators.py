@@ -149,7 +149,7 @@ class TestValidators(unittest.TestCase):
         default_error_message = 'Input should contain "good"'
 
         self.args = ["good"]
-        self.validator_factory = validators.contains
+        self.validator_factory = validators.Contains
         self.valid_inputs = ["This is very good", "goodness", "goody", "nogood"]
         self.invalid_inputs = [
             ("I am so bad", default_error_message),
@@ -161,8 +161,8 @@ class TestValidators(unittest.TestCase):
 
     def test_validate_contains_once(self):
         self.args = ["good"]
-        self.kwargs = dict(count=1)
-        self.validator_factory = validators.contains
+        self.kwargs = dict(compare_count=1)
+        self.validator_factory = validators.Contains
         self.valid_inputs = ["This is very good", "goodness", "goody", "nogood"]
         self.invalid_inputs = [
             ("I am so bad", 'Input should contain "good"'),
@@ -177,8 +177,8 @@ class TestValidators(unittest.TestCase):
 
     def test_validate_contains_zero_times(self):
         self.args = ["bad"]
-        self.kwargs = dict(count=0)
-        self.validator_factory = validators.contains
+        self.kwargs = dict(compare_count=0)
+        self.validator_factory = validators.Contains
         self.valid_inputs = [
             "", "This is very good", "goodness", "goody", "nogood", "good, very good"
         ]
@@ -193,7 +193,7 @@ class TestValidators(unittest.TestCase):
 
     def test_validate_not_contains(self):
         self.args = ["bad"]
-        self.validator_factory = validators.not_contains
+        self.validator_factory = validators.NotContains
         self.valid_inputs = [
             "", "This is very good", "goodness", "goody", "nogood", "good, very good"
         ]
@@ -210,7 +210,7 @@ class TestValidators(unittest.TestCase):
         default_error_message = 'Input should contain "good" or "bad"'
 
         self.args = [["good", "bad"]]
-        self.validator_factory = validators.contains
+        self.validator_factory = validators.Contains
         self.valid_inputs = [
             "There are always good and bad in life",
             "bad before good",
@@ -245,7 +245,7 @@ class TestValidators(unittest.TestCase):
         self.check()
 
     def test_contains_uppercase(self):
-        self.validator_factory = validators.contains_uppercase
+        self.validator_factory = validators.ContainsUppercase
         self.valid_inputs = [
             "Good", "using Toga is very helpful", "ending with uppercase workS"
         ]
@@ -259,8 +259,8 @@ class TestValidators(unittest.TestCase):
         self.check()
 
     def test_contains_two_uppercase(self):
-        self.kwargs = dict(count=2)
-        self.validator_factory = validators.contains_uppercase
+        self.kwargs = dict(compare_count=2)
+        self.validator_factory = validators.ContainsUppercase
         self.valid_inputs = [
             "GooD", "using TogA is very helpful"
         ]
@@ -282,7 +282,7 @@ class TestValidators(unittest.TestCase):
         self.check()
 
     def test_contains_lowercase(self):
-        self.validator_factory = validators.contains_lowercase
+        self.validator_factory = validators.ContainsLowercase
         self.valid_inputs = [
             "gOOD", "USING tOGA IS VERY HELPFUL", "ENDING WITH LOWERCASE WORKs"
         ]
@@ -296,8 +296,8 @@ class TestValidators(unittest.TestCase):
         self.check()
 
     def test_contains_two_lowercase(self):
-        self.kwargs = dict(count=2)
-        self.validator_factory = validators.contains_lowercase
+        self.kwargs = dict(compare_count=2)
+        self.validator_factory = validators.ContainsLowercase
         self.valid_inputs = [
             "GooD", "USING tOGa IS VERY HELPFUL"
         ]
@@ -319,7 +319,7 @@ class TestValidators(unittest.TestCase):
         self.check()
 
     def test_contains_digit(self):
-        self.validator_factory = validators.contains_digit
+        self.validator_factory = validators.ContainsDigit
         self.valid_inputs = [
             "1) start counting", "count 2 and continue", "ends with 3"
         ]
@@ -330,8 +330,8 @@ class TestValidators(unittest.TestCase):
         self.check()
 
     def test_contains_two_digits(self):
-        self.kwargs = dict(count=2)
-        self.validator_factory = validators.contains_digit
+        self.kwargs = dict(compare_count=2)
+        self.validator_factory = validators.ContainsDigit
         self.valid_inputs = [
             "1+2", "the number 3 is bigger than 1",
         ]
@@ -346,7 +346,7 @@ class TestValidators(unittest.TestCase):
     def test_contains_special(self):
         default_error_message = "Input should contain at least one special character"
 
-        self.validator_factory = validators.contains_special
+        self.validator_factory = validators.ContainsSpecial
         self.valid_inputs = ["Hey!", "tiberius@beeware.org", "#1"]
         self.invalid_inputs = [
             ("bad", default_error_message),
@@ -356,8 +356,8 @@ class TestValidators(unittest.TestCase):
         self.check()
 
     def test_contains_two_special(self):
-        self.kwargs = dict(count=2)
-        self.validator_factory = validators.contains_special
+        self.kwargs = dict(compare_count=2)
+        self.validator_factory = validators.ContainsSpecial
         self.valid_inputs = ["!Hey!", "tiberius@beeware.org", "#1#"]
         self.invalid_inputs = [
             ("nospecial", "Input should contain at least one special character"),
