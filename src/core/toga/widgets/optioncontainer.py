@@ -142,20 +142,21 @@ class OptionContainer(Widget):
         return self._content
 
     @property
-    def number_of_tabs(self):
-        return len(self.content)
-
-    @property
-    def current_tab_index(self):
-        return self._impl.get_current_tab_index()
-
-    @current_tab_index.setter
-    def current_tab_index(self, current_tab_index):
-        self._impl.set_current_tab_index(current_tab_index)
-
-    @property
     def current_tab(self):
-        return self.content[self.current_tab_index]
+        return self.content[self._impl.get_current_tab_index()]
+
+    @current_tab.setter
+    def current_tab(self, current_tab):
+        if isinstance(current_tab, str):
+            try:
+                current_tab = next(
+                    filter(lambda item: item.label == current_tab, self.content)
+                )
+            except StopIteration:
+                raise ValueError("No tab named {}".format(current_tab))
+        if isinstance(current_tab, OptionItem):
+            current_tab = current_tab.index
+        self._impl.set_current_tab_index(current_tab)
 
     def _set_window(self, window):
         if self._content:

@@ -25,6 +25,13 @@ class OptionContainerTests(TestCase):
         self.label = 'New Container'
         self.op_container.add(self.label, self.widget)
 
+    def assert_tab(self, tab, index, label, widget, enabled):
+        self.assertEqual(tab.index, index)
+        self.assertEqual(tab.label, label)
+        self.assertEqual(tab.widget, widget)
+        self.assertEqual(tab.interface, self.op_container)
+        self.assertEqual(tab.enabled, enabled)
+
     def add_widgets(self):
         self.op_container.add(self.label2, self.widget2)
         self.op_container.add(self.label3, self.widget3)
@@ -54,16 +61,46 @@ class OptionContainerTests(TestCase):
             self.widget, 'set bounds', x=0, y=0, width=0, height=0
         )
 
-    def test_set_current_tab(self):
+    def test_set_current_tab_as_index(self):
         self.add_widgets()
-        index = 1
-        self.op_container.current_tab_index = index
-        self.assertEqual(self.op_container.current_tab_index, index)
-        self.assertEqual(self.op_container.current_tab.index, index)
-        self.assertEqual(self.op_container.current_tab.label, self.label2)
-        self.assertEqual(self.op_container.current_tab.widget, self.widget2)
-        self.assertEqual(self.op_container.current_tab.interface, self.op_container)
-        self.assertEqual(self.op_container.current_tab.enabled, True)
+        self.op_container.current_tab = 1
+        self.assert_tab(
+            self.op_container.current_tab,
+            index=1,
+            label=self.label2,
+            widget=self.widget2,
+            enabled=True,
+        )
+
+    def test_set_current_tab_as_label(self):
+        self.add_widgets()
+        self.op_container.current_tab = self.label3
+        self.assert_tab(
+            self.op_container.current_tab,
+            index=2,
+            label=self.label3,
+            widget=self.widget3,
+            enabled=True,
+        )
+
+    def test_set_current_tab_as_tab(self):
+        self.add_widgets()
+        self.op_container.current_tab = self.op_container.content[1]
+        self.assert_tab(
+            self.op_container.current_tab,
+            index=1,
+            label=self.label2,
+            widget=self.widget2,
+            enabled=True,
+        )
+
+    def test_set_current_tab_as_label_raises_an_error(self):
+        self.add_widgets()
+
+        def set_label():
+            self.op_container.current_tab = "I do not exist!"
+
+        self.assertRaises(ValueError, set_label)
 
     def test_disable_tab(self):
         self.op_container.current_tab.enabled = False
@@ -82,7 +119,7 @@ class OptionContainerTests(TestCase):
 
     def test_add_tabs(self):
         self.add_widgets()
-        self.assertEqual(self.op_container.number_of_tabs, 3)
+        self.assertEqual(len(self.op_container.content), 3)
         self.assertEqual(self.op_container.content[0].widget, self.widget)
         self.assertEqual(self.op_container.content[1].widget, self.widget2)
         self.assertEqual(self.op_container.content[2].widget, self.widget3)
@@ -90,7 +127,7 @@ class OptionContainerTests(TestCase):
     def test_remove_tab(self):
         self.add_widgets()
         self.op_container.remove(1)
-        self.assertEqual(self.op_container.number_of_tabs, 2)
+        self.assertEqual(len(self.op_container.content), 2)
         self.assertEqual(self.op_container.content[0].widget, self.widget)
         self.assertEqual(self.op_container.content[1].widget, self.widget3)
 
