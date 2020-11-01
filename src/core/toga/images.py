@@ -23,7 +23,7 @@ class Image:
         :returns: The platform implementation
         """
         if self._impl is None:
-            if self.path.StartsWith('http://') or self.path.StartsWith('https://'):
+            if self.path.startswith('http://') or self.path.startswith('https://'):
                 self._impl = factory.Image(interface=self, url=self.path)
             else:
                 full_path = factory.paths.app / factory.paths.Path(self.path)
