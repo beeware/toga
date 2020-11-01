@@ -91,7 +91,7 @@ class TestValidators(unittest.TestCase):
         too_long_error_message = "Input is too long (length should be at most 10)"
 
         self.args = [5, 10]
-        self.validator_factory = validators.length_between
+        self.validator_factory = validators.LengthBetween
         self.valid_inputs = ["I am good", "right", "123456789"]
         self.invalid_inputs = [
             ("I", too_short_error_message),

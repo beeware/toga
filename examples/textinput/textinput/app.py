@@ -72,7 +72,7 @@ class TextInputApp(toga.App):
             placeholder='Password...',
             style=Pack(padding=10),
             on_change=self.on_password_change,
-            validator=validators.combine(
+            validator=validators.Combine(
                 validators.MinLength(10),
                 validators.ContainsUppercase(),
                 validators.ContainsLowercase(),

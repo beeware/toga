@@ -3,6 +3,19 @@ from typing import Optional, Union, List, Callable
 from string import ascii_uppercase, ascii_lowercase, digits
 
 
+class Combine:
+    def __init__(self, *validators):
+        """Use this method to combine multiple validators."""
+        self.validators = validators
+
+    def __call__(self, input_string):
+        for validator in self.validators:
+            error_message = validator(input_string)
+            if error_message is not None:
+                return error_message
+        return None
+
+
 class BooleanValidator:
     def __init__(self, error_message: str, allow_empty: bool = True):
         self.error_message = error_message
@@ -82,16 +95,18 @@ class MaxLength(BooleanValidator):
         return len(input_string) <= self.length
 
 
-def length_between(
-    min_value: int,
-    max_value: int,
-    error_message: Optional[str] = None,
-    allow_empty: bool = True,
-):
-    return combine(
-        MinLength(min_value, error_message=error_message, allow_empty=allow_empty),
-        MaxLength(max_value, error_message=error_message, allow_empty=allow_empty),
-    )
+class LengthBetween(Combine):
+    def __init__(
+        self,
+        min_value: int,
+        max_value: int,
+        error_message: Optional[str] = None,
+        allow_empty: bool = True,
+    ):
+        super().__init__(
+            MinLength(min_value, error_message=error_message, allow_empty=allow_empty),
+            MaxLength(max_value, error_message=error_message, allow_empty=allow_empty),
+        )
 
 
 class StartsWith(BooleanValidator):
@@ -356,16 +371,3 @@ class Email(MatchRegex):
         super().__init__(
             self.EMAIL_REGEX, error_message=error_message, allow_empty=allow_empty
         )
-
-
-def combine(*validators):
-    """Use this method to combine multiple validators."""
-
-    def combined_validator(input_string):
-        for validator in validators:
-            error_message = validator(input_string)
-            if error_message is not None:
-                return error_message
-        return None
-
-    return combined_validator
