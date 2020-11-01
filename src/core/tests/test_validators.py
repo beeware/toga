@@ -62,7 +62,7 @@ class TestValidators(unittest.TestCase):
         default_error_message = "Input is too short (length should be at least 5)"
 
         self.args = [5]
-        self.validator_factory = validators.min_length
+        self.validator_factory = validators.MinLength
         self.valid_inputs = ["I am long enough", "right", "longer"]
         self.invalid_inputs = [
             ("I", default_error_message),
@@ -76,7 +76,7 @@ class TestValidators(unittest.TestCase):
         default_error_message = "Input is too long (length should be at most 10)"
 
         self.args = [10]
-        self.validator_factory = validators.max_length
+        self.validator_factory = validators.MaxLength
         self.valid_inputs = ["", "I am good", "nice", "a"]
         self.invalid_inputs = [
             ("I am way too long", default_error_message),
@@ -107,7 +107,7 @@ class TestValidators(unittest.TestCase):
         default_error_message = 'Input should start with "good"'
 
         self.args = ["good"]
-        self.validator_factory = validators.startswith
+        self.validator_factory = validators.StartsWith
         self.valid_inputs = [
             "good to be back", "goodness!", "goody", "good, good, good"
         ]
@@ -128,7 +128,7 @@ class TestValidators(unittest.TestCase):
         default_error_message = 'Input should end with "good"'
 
         self.args = ["good"]
-        self.validator_factory = validators.endswith
+        self.validator_factory = validators.EndsWith
         self.valid_inputs = [
             "go back to good", "It is so good", "good", "good, good, good"
         ]
@@ -230,7 +230,7 @@ class TestValidators(unittest.TestCase):
         default_error_message = "Input should match regex: [A-Z]{1}[a-z]{2}[A-Z]{1}"
 
         self.args = ["[A-Z]{1}[a-z]{2}[A-Z]{1}"]
-        self.validator_factory = validators.match_regex
+        self.validator_factory = validators.MatchRegex
         self.valid_inputs = [
             "GooD", "partial is AlsO good in this case"
         ]

@@ -73,7 +73,7 @@ class TextInputApp(toga.App):
             style=Pack(padding=10),
             on_change=self.on_password_change,
             validator=validators.combine(
-                validators.min_length(10),
+                validators.MinLength(10),
                 validators.contains_uppercase(),
                 validators.contains_lowercase(),
                 validators.contains_special(),

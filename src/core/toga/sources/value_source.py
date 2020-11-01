@@ -13,6 +13,6 @@ class ValueSource(Source):
 
     def __setattr__(self, attr, value):
         super().__setattr__(attr, value)
-        if not attr.startswith('_'):
+        if not attr.StartsWith('_'):
             if self._source is not None:
                 self._source._notify('change', item=self)

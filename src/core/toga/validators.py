@@ -13,18 +13,22 @@ class BooleanValidator:
 
     def __init__(
         self,
-        is_valid_method: Callable[[str], bool],
         error_message: str,
         allow_empty: bool = True
     ):
-        self.is_valid_method = is_valid_method
         self.error_message = error_message
         self.allow_empty = allow_empty
 
     def __call__(self, input_string: str):
         if self.allow_empty and input_string == "":
             return None
-        return None if self.is_valid_method(input_string) else self.error_message
+        return None if self.is_valid(input_string) else self.error_message
+
+    def is_valid(self, input_string: str):
+        raise NotImplementedError(
+            "is_valid is not implemented in BooleanValidator. "
+            "Please override it."
+        )
 
 
 class CountValidator:
@@ -58,30 +62,42 @@ class CountValidator:
         return None
 
 
-def min_length(
-    length: int, error_message: Optional[str] = None, allow_empty: bool = True
-):
-    if error_message is None:
-        error_message = "Input is too short (length should be at least {})".format(
-            length
-        )
-    return BooleanValidator(
-        is_valid_method=lambda a: len(a) >= length,
-        error_message=error_message,
-        allow_empty=allow_empty,
-    )
+class MinLength(BooleanValidator):
+
+    def __init__(
+        self,
+        length: int,
+        error_message: Optional[str] = None,
+        allow_empty: bool = True
+    ):
+        if error_message is None:
+            error_message = "Input is too short (length should be at least {})".format(
+                length
+            )
+        super().__init__(error_message=error_message, allow_empty=allow_empty)
+        self.length = length
+
+    def is_valid(self, input_string: str):
+        return len(input_string) >= self.length
 
 
-def max_length(
-    length: int, error_message: Optional[str] = None, allow_empty: bool = True
-):
-    if error_message is None:
-        error_message = "Input is too long (length should be at most {})".format(length)
-    return BooleanValidator(
-        is_valid_method=lambda a: len(a) <= length,
-        error_message=error_message,
-        allow_empty=allow_empty,
-    )
+class MaxLength(BooleanValidator):
+
+    def __init__(
+        self,
+        length: int,
+        error_message: Optional[str] = None,
+        allow_empty: bool = True
+    ):
+        if error_message is None:
+            error_message = "Input is too long (length should be at most {})".format(
+                length
+            )
+        super().__init__(error_message=error_message, allow_empty=allow_empty)
+        self.length = length
+
+    def is_valid(self, input_string: str):
+        return len(input_string) <= self.length
 
 
 def length_between(
@@ -91,37 +107,45 @@ def length_between(
     allow_empty: bool = True,
 ):
     return combine(
-        min_length(min_value, error_message=error_message, allow_empty=allow_empty),
-        max_length(max_value, error_message=error_message, allow_empty=allow_empty),
+        MinLength(min_value, error_message=error_message, allow_empty=allow_empty),
+        MaxLength(max_value, error_message=error_message, allow_empty=allow_empty),
     )
 
 
-def startswith(
-    substrings: Union[str, List[str]],
-    error_message: Optional[str] = None,
-    allow_empty: bool = True,
-):
-    if error_message is None:
-        error_message = 'Input should start with "{}"'.format(substrings)
-    return BooleanValidator(
-        lambda a: a.startswith(substrings),
-        error_message=error_message,
-        allow_empty=allow_empty,
-    )
+class StartsWith(BooleanValidator):
+
+    def __init__(
+        self,
+        substring: str,
+        error_message: Optional[str] = None,
+        allow_empty: bool = True,
+    ):
+        if error_message is None:
+            error_message = 'Input should start with "{}"'.format(substring)
+
+        super().__init__(error_message=error_message, allow_empty=allow_empty)
+        self.substring = substring
+
+    def is_valid(self, input_string: str):
+        return input_string.startswith(self.substring)
 
 
-def endswith(
-    substrings: Union[str, List[str]],
-    error_message: Optional[str] = None,
-    allow_empty: bool = True,
-):
-    if error_message is None:
-        error_message = 'Input should end with "{}"'.format(substrings)
-    return BooleanValidator(
-        lambda a: a.endswith(substrings),
-        error_message=error_message,
-        allow_empty=allow_empty,
-    )
+class EndsWith(BooleanValidator):
+
+    def __init__(
+        self,
+        substring: str,
+        error_message: Optional[str] = None,
+        allow_empty: bool = True,
+    ):
+        if error_message is None:
+            error_message = 'Input should end with "{}"'.format(substring)
+
+        super().__init__(error_message=error_message, allow_empty=allow_empty)
+        self.substring = substring
+
+    def is_valid(self, input_string: str):
+        return input_string.endswith(self.substring)
 
 
 def contains(
@@ -166,16 +190,21 @@ def not_contains(
     )
 
 
-def match_regex(
-    regex_string, error_message: Optional[str] = None, allow_empty: bool = True
-):
-    if error_message is None:
-        error_message = "Input should match regex: {}".format(regex_string)
-    return BooleanValidator(
-        is_valid_method=lambda a: bool(re.search(regex_string, a)),
-        error_message=error_message,
-        allow_empty=allow_empty,
-    )
+class MatchRegex(BooleanValidator):
+
+    def __init__(
+        self,
+        regex_string,
+        error_message: Optional[str] = None,
+        allow_empty: bool = True
+    ):
+        if error_message is None:
+            error_message = "Input should match regex: {}".format(regex_string)
+        super().__init__(error_message=error_message, allow_empty=allow_empty)
+        self.regex_string = regex_string
+    
+    def is_valid(self, input_string: str):
+        return bool(re.search(self.regex_string, input_string))
 
 
 def contains_uppercase(
@@ -277,7 +306,7 @@ def contains_special(
 def integer(error_message: Optional[str] = None, allow_empty: bool = True):
     if error_message is None:
         error_message = "Input should be an integer"
-    return match_regex(
+    return MatchRegex(
         INTEGER_REGEX, error_message=error_message, allow_empty=allow_empty
     )
 
@@ -285,7 +314,7 @@ def integer(error_message: Optional[str] = None, allow_empty: bool = True):
 def number(error_message: Optional[str] = None, allow_empty: bool = True):
     if error_message is None:
         error_message = "Input should be a number"
-    return match_regex(
+    return MatchRegex(
         NUMBER_REGEX, error_message=error_message, allow_empty=allow_empty
     )
 
@@ -293,7 +322,7 @@ def number(error_message: Optional[str] = None, allow_empty: bool = True):
 def email(error_message: Optional[str] = None, allow_empty: bool = True):
     if error_message is None:
         error_message = "Input should be a valid email address"
-    return match_regex(EMAIL_REGEX, error_message=error_message, allow_empty=allow_empty)
+    return MatchRegex(EMAIL_REGEX, error_message=error_message, allow_empty=allow_empty)
 
 
 def combine(*validators):

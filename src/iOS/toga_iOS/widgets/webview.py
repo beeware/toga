@@ -41,7 +41,7 @@ class WebView(Widget):
 
     def set_url(self, value):
         if value:
-            if self.interface.url.startswith('file://'):
+            if self.interface.url.StartsWith('file://'):
                 url = NSURL.fileURLWithPath(self.interface.url[7:])
             else:
                 url = NSURL.URLWithString(self.interface.url)
