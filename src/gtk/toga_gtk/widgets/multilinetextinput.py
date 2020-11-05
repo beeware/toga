@@ -17,7 +17,7 @@ class MultilineTextInput(Widget):
         self.tag_placholder = self.buffer.create_tag("placeholder", foreground="gray")
 
     def set_value(self, value):
-        self.buffer.set_text(self.interface.value)
+        self.buffer.set_text(value)
 
     def get_value(self):
         return self.buffer.get_text(self.buffer.get_start_iter(), self.buffer.get_end_iter(), True)
