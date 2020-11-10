@@ -56,6 +56,21 @@ class WidgetTests(TestCase):
         self.widget.add(child1, child2)
         self.assertEqual(self.widget.children, [child1, child2])
 
+    def test_adding_child_with_existing_parent(self):
+        # Create a second parent widget.
+        widget2 = toga.Widget(factory=toga_dummy.factory)
+        # Create a child widget to add to widget2 before adding to widget.
+        child = toga.Widget(factory=toga_dummy.factory)
+
+        widget2._children = []
+        widget2.add(child)
+        self.assertEqual(widget2.children, [child])
+
+        self.widget._children = []
+        self.widget.add(child)
+        self.assertEqual(self.widget.children, [child])
+        self.assertEqual(widget2.children, [])
+
     def test_inserting_child_into_empty_list(self):
         self.assertEqual(self.widget.children, [], 'No child was inserted, should return an empty list.')
         # Create a child widget to insert into widget.
