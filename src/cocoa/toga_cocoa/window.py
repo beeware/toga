@@ -271,7 +271,7 @@ class Window:
         return dialogs.save_file(self.interface, title, suggested_filename, file_types)
 
     def open_file_dialog(self, title, initial_directory, file_types, multiselect):
-        return dialogs.open_file(self.interface, title, file_types, multiselect)
+        return dialogs.open_file(self.interface, title, initial_directory, file_types, multiselect)
 
     def select_folder_dialog(self, title, initial_directory, multiselect):
-        return dialogs.select_folder(self.interface, title, multiselect)
+        return dialogs.select_folder(self.interface, title, initial_directory, multiselect)
