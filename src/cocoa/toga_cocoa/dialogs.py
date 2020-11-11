@@ -9,7 +9,8 @@ from .libs import (
     NSOpenPanel,
     NSSavePanel,
     NSScrollView,
-    NSTextView
+    NSTextView,
+    NSURL
 )
 
 
@@ -95,7 +96,7 @@ def stack_trace(window, title, message, content, retry=False):
 def save_file(window, title, suggested_filename, file_types=None):
     panel = NSSavePanel.alloc().init()
     panel.title = title
-    
+
     if file_types:
         arr = NSArray.alloc().init()
         for x in file_types:
@@ -131,7 +132,7 @@ def open_file(window, title, initial_directory, file_types, multiselect):
     # Initialize and configure the panel.
     panel = NSOpenPanel.alloc().init()
     panel.title = title
-    panel.setDirectoryURL( NSURL.URLWithString('file://'+initial_directory)),
+    panel.setDirectoryURL(NSURL.URLWithString('file://'+initial_directory)),
     panel.allowedFileTypes = file_types
     panel.allowsMultipleSelection = multiselect
     panel.canChooseDirectories = False
