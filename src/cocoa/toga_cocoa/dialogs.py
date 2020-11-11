@@ -95,7 +95,7 @@ def stack_trace(window, title, message, content, retry=False):
 def save_file(window, title, suggested_filename, file_types=None):
     panel = NSSavePanel.alloc().init()
     panel.title = title
-
+    
     if file_types:
         arr = NSArray.alloc().init()
         for x in file_types:
@@ -113,7 +113,7 @@ def save_file(window, title, suggested_filename, file_types=None):
     return None
 
 
-def open_file(window, title, file_types, multiselect):
+def open_file(window, title, initial_directory, file_types, multiselect):
     """Cocoa open file dialog implementation.
 
     We restrict the panel invocation to only choose files. We also allow
@@ -131,6 +131,7 @@ def open_file(window, title, file_types, multiselect):
     # Initialize and configure the panel.
     panel = NSOpenPanel.alloc().init()
     panel.title = title
+    panel.setDirectoryURL( NSURL.URLWithString('file://'+initial_directory)),
     panel.allowedFileTypes = file_types
     panel.allowsMultipleSelection = multiselect
     panel.canChooseDirectories = False
@@ -146,7 +147,7 @@ def open_file(window, title, file_types, multiselect):
         return filename_or_filenames
 
 
-def select_folder(window, title, multiselect):
+def select_folder(window, title, inital_directory, multiselect):
     """Cocoa select folder dialog implementation.
 
     Args:
@@ -158,7 +159,7 @@ def select_folder(window, title, multiselect):
     """
     dialog = NSOpenPanel.alloc().init()
     dialog.title = title
-
+    dialog.setDirectoryURL(NSURL.URLWithString('file://'+initial_directory)),
     dialog.canChooseFiles = False
     dialog.canChooseDirectories = True
     dialog.resolvesAliases = True
