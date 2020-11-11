@@ -123,6 +123,7 @@ def open_file(window, title, initial_directory, file_types, multiselect):
     Args:
         window: The window this dialog belongs to.
         title: Title of the modal.
+        initial_directory: directory where modal shall open with
         file_types: Ignored for now.
         multiselect: Flag to allow multiple file selection.
     Returns:
@@ -148,12 +149,13 @@ def open_file(window, title, initial_directory, file_types, multiselect):
         return filename_or_filenames
 
 
-def select_folder(window, title, inital_directory, multiselect):
+def select_folder(window, title, initial_directory, multiselect):
     """Cocoa select folder dialog implementation.
 
     Args:
         window: Window dialog belongs to.
         title: Title of the dialog.
+        initial_directory: directory where modal shall open with
         multiselect: Flag to allow multiple folder selection.
     Returns:
         (list) A list of folder paths.
