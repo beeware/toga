@@ -133,7 +133,7 @@ def open_file(window, title, initial_directory, file_types, multiselect):
     # Initialize and configure the panel.
     panel = NSOpenPanel.alloc().init()
     panel.title = title
-    if initial_durectory is not None:
+    if initial_directory is not None:
         panel.setDirectoryURL(NSURL.URLWithString('file://'+initial_directory)),
     panel.allowedFileTypes = file_types
     panel.allowsMultipleSelection = multiselect
