@@ -133,7 +133,8 @@ def open_file(window, title, initial_directory, file_types, multiselect):
     # Initialize and configure the panel.
     panel = NSOpenPanel.alloc().init()
     panel.title = title
-    panel.setDirectoryURL(NSURL.URLWithString('file://'+initial_directory)),
+    if initial_durectory is not None:
+        panel.setDirectoryURL(NSURL.URLWithString('file://'+initial_directory)),
     panel.allowedFileTypes = file_types
     panel.allowsMultipleSelection = multiselect
     panel.canChooseDirectories = False
@@ -162,7 +163,8 @@ def select_folder(window, title, initial_directory, multiselect):
     """
     dialog = NSOpenPanel.alloc().init()
     dialog.title = title
-    dialog.setDirectoryURL(NSURL.URLWithString('file://'+initial_directory)),
+    if initial_directory is not None:
+        dialog.setDirectoryURL(NSURL.URLWithString('file://'+initial_directory)),
     dialog.canChooseFiles = False
     dialog.canChooseDirectories = True
     dialog.resolvesAliases = True
