@@ -11,6 +11,9 @@ class ExampleMultilineTextInputApp(toga.App):
     def readonly_toggle_pressed(self, widget, **kwargs):
         self.multiline_input.readonly = not self.multiline_input.readonly
 
+    def add_content_pressed(self, widget, **kwargs):
+        self.multiline_input.value = "All work and no play makes Jack a dull boy... " * 100
+
     def clear_pressed(self, widget, **kwargs):
         self.multiline_input.clear()
 
@@ -41,6 +44,11 @@ class ExampleMultilineTextInputApp(toga.App):
             on_press=self.readonly_toggle_pressed,
             style=Pack(flex=1)
         )
+        button_add_content = toga.Button(
+            'Add content',
+            on_press=self.add_content_pressed,
+            style=Pack(flex=1)
+        )
         button_clear = toga.Button(
             'Clear',
             on_press=self.clear_pressed,
@@ -50,7 +58,8 @@ class ExampleMultilineTextInputApp(toga.App):
             children=[
                 button_toggle_enabled,
                 button_toggle_readonly,
-                button_clear
+                button_add_content,
+                button_clear,
             ],
             style=Pack(
                 direction=ROW,
