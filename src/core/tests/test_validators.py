@@ -87,18 +87,17 @@ class TestValidators(unittest.TestCase):
         self.check()
 
     def test_validate_length_between(self):
-        too_short_error_message = "Input is too short (length should be at least 5)"
-        too_long_error_message = "Input is too long (length should be at most 10)"
+        default_error_message = "Input should be between 5 and 10 characters"
 
         self.args = [5, 10]
         self.validator_factory = validators.LengthBetween
         self.valid_inputs = ["I am good", "right", "123456789"]
         self.invalid_inputs = [
-            ("I", too_short_error_message),
-            ("am", too_short_error_message),
-            ("tiny", too_short_error_message),
-            ("I am way too long", too_long_error_message),
-            ("are you serious now?", too_long_error_message),
+            ("I", default_error_message),
+            ("am", default_error_message),
+            ("tiny", default_error_message),
+            ("I am way too long", default_error_message),
+            ("are you serious now?", default_error_message),
         ]
 
         self.check()
