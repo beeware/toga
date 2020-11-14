@@ -6,14 +6,21 @@ from .base import Widget
 
 class MultilineTextInput(Widget):
     def create(self):
-        self.native = Gtk.TextView()
+        # Wrap the TextView in a ScrolledWindow in order to show a
+        # vertical scroll bar when necessary.
+        self.native = Gtk.ScrolledWindow()
         self.native.interface = self.interface
+        self.native.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+
+        self.textview = Gtk.TextView()
         self.buffer = Gtk.TextBuffer()
-        self.native.set_buffer(self.buffer)
+        self.textview.set_buffer(self.buffer)
+        self.textview.set_wrap_mode(Gtk.WrapMode.WORD_CHAR)
+        self.native.add(self.textview)
 
         self._placeholder = ''
-        self.native.connect("focus-in-event", self.gtk_on_focus_in)
-        self.native.connect("focus-out-event", self.gtk_on_focus_out)
+        self.textview.connect("focus-in-event", self.gtk_on_focus_in)
+        self.textview.connect("focus-out-event", self.gtk_on_focus_out)
         self.tag_placholder = self.buffer.create_tag("placeholder", foreground="gray")
 
     def set_value(self, value):
@@ -23,8 +30,8 @@ class MultilineTextInput(Widget):
         return self.buffer.get_text(self.buffer.get_start_iter(), self.buffer.get_end_iter(), True)
 
     def set_readonly(self, value):
-        self.native.set_property('editable', not value)
-        self.native.set_property('cursor-visible', not value)
+        self.textview.set_property('editable', not value)
+        self.textview.set_property('cursor-visible', not value)
 
     def set_placeholder(self, value):
         """ Set the placeholder text of the widget.
