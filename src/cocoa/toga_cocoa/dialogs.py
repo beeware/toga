@@ -1,3 +1,4 @@
+from pathlib import Path
 from .libs import (
     NSAlert,
     NSAlertFirstButtonReturn,
@@ -134,7 +135,7 @@ def open_file(window, title, initial_directory, file_types, multiselect):
     panel = NSOpenPanel.alloc().init()
     panel.title = title
     if initial_directory is not None:
-        panel.setDirectoryURL(NSURL.URLWithString('file://'+initial_directory)),
+        panel.setDirectoryURL( NSURL.URLWithString(str(Path(initial_directory).as_uri())))
     panel.allowedFileTypes = file_types
     panel.allowsMultipleSelection = multiselect
     panel.canChooseDirectories = False
@@ -164,7 +165,7 @@ def select_folder(window, title, initial_directory, multiselect):
     dialog = NSOpenPanel.alloc().init()
     dialog.title = title
     if initial_directory is not None:
-        dialog.setDirectoryURL(NSURL.URLWithString('file://'+initial_directory)),
+        panel.setDirectoryURL( NSURL.URLWithString(str(Path(initial_directory).as_uri())))
     dialog.canChooseFiles = False
     dialog.canChooseDirectories = True
     dialog.resolvesAliases = True
