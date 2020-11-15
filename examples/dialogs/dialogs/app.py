@@ -130,8 +130,8 @@ class ExampledialogsApp(toga.App):
         btn_error = toga.Button('Error', on_press=self.action_error_dialog, style=btn_style)
         btn_open = toga.Button('Open File', on_press=self.action_open_file_dialog, style=btn_style)
         btn_open_init_folder = toga.Button(
-            'Open File In Home Directory', 
-            on_press=action_open_file_dialog_with_inital_folder, 
+            'Open File In Home Folder', 
+            on_press=self.action_open_file_dialog_with_inital_folder, 
             style=btn_style
         )
         btn_open_multi = toga.Button(
@@ -142,7 +142,7 @@ class ExampledialogsApp(toga.App):
         btn_save = toga.Button('Save File', on_press=self.action_save_file_dialog, style=btn_style)
         btn_select = toga.Button('Select Folder', on_press=self.action_select_folder_dialog, style=btn_style)
         btn_select_init_folder = toga.Button(
-            'Select Folder Initial Folder', 
+            'Select Folder In Home Folder', 
             on_press=self.action_select_folder_dialog_with_initial_folder, 
             style=btn_style
         )
