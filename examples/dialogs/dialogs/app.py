@@ -86,7 +86,7 @@ class ExampledialogsApp(toga.App):
         try:
             path_names = self.main_window.select_folder_dialog(
                 title="Select folder with Toga in home folder",
-                initial_directory=Path.home()
+                initial_directory='./..'
             )
             self.label.text = "Folder selected:" + ','.join([path for path in path_names])
         except ValueError:
