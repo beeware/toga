@@ -142,7 +142,7 @@ class ExampledialogsApp(toga.App):
         btn_save = toga.Button('Save File', on_press=self.action_save_file_dialog, style=btn_style)
         btn_select = toga.Button('Select Folder', on_press=self.action_select_folder_dialog, style=btn_style)
         btn_select_init_folder = toga.Button(
-            'Select Folder In Home Folder', 
+            'Select Folder In Home Folder ', 
             on_press=self.action_select_folder_dialog_with_initial_folder, 
             style=btn_style
         )
