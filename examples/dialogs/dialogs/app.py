@@ -1,4 +1,5 @@
 import toga
+from pathlib import Path
 from toga.constants import COLUMN
 from toga.style import Pack
 
@@ -57,11 +58,35 @@ class ExampledialogsApp(toga.App):
 
         except ValueError:
             self.label.text = "Open file dialog was canceled"
-
+            
+    def action_open_file_dialog_with_inital_folder(self, widget):
+        try:
+            fname = self.main_window.open_file_dialog(
+                title="Open file with Toga in home folder",
+                initial_directory=Path.home()
+                multiselect=False
+            )
+            if fname is not None:
+                self.label.text = "File to open:" + fname
+            else:
+                self.label.text = "No file selected!"
+        except ValueError:
+            self.label.text = "Open file dialog was canceled"
+            
     def action_select_folder_dialog(self, widget):
         try:
             path_names = self.main_window.select_folder_dialog(
                 title="Select folder with Toga"
+            )
+            self.label.text = "Folder selected:" + ','.join([path for path in path_names])
+        except ValueError:
+            self.label.text = "Folder select dialog was canceled"
+            
+    def action_select_folder_dialog_with_initial_folder(self, widget):
+        try:
+            path_names = self.main_window.select_folder_dialog(
+                title="Select folder with Toga in home folder",
+                initial_directory=Path.home()
             )
             self.label.text = "Folder selected:" + ','.join([path for path in path_names])
         except ValueError:
@@ -104,6 +129,11 @@ class ExampledialogsApp(toga.App):
         btn_confirm = toga.Button('Confirm', on_press=self.action_confirm_dialog, style=btn_style)
         btn_error = toga.Button('Error', on_press=self.action_error_dialog, style=btn_style)
         btn_open = toga.Button('Open File', on_press=self.action_open_file_dialog, style=btn_style)
+        btn_open_init_folder = toga.Button(
+            'Open File In Home Directory', 
+            on_press=action_open_file_dialog_with_inital_folder, 
+            style=btn_style
+        )
         btn_open_multi = toga.Button(
             'Open File (Multiple)',
             on_press=self.action_open_file_dialog_multi,
@@ -111,12 +141,16 @@ class ExampledialogsApp(toga.App):
         )
         btn_save = toga.Button('Save File', on_press=self.action_save_file_dialog, style=btn_style)
         btn_select = toga.Button('Select Folder', on_press=self.action_select_folder_dialog, style=btn_style)
+        btn_select_init_folder = toga.Button(
+            'Select Folder Initial Folder', 
+            on_press=self.action_select_folder_dialog_with_initial_folder, 
+            style=btn_style
+        )
         btn_select_multi = toga.Button(
             'Select Folders',
             on_press=self.action_select_folder_dialog_multi,
             style=btn_style
         )
-
         btn_clear = toga.Button('Clear', on_press=self.do_clear, style=btn_style)
 
         # Outermost box
@@ -130,7 +164,9 @@ class ExampledialogsApp(toga.App):
                 btn_save,
                 btn_select,
                 btn_select_multi,
+                btn_select_init_folder,
                 btn_open_multi,
+                btn_open_init_folder,
                 btn_clear,
                 self.label
             ],
