@@ -72,18 +72,18 @@ class TextInputApp(toga.App):
             placeholder='Password...',
             style=Pack(padding=10),
             on_change=self.on_password_change,
-            validator=validators.Combine(
+            validators=[
                 validators.MinLength(10),
                 validators.ContainsUppercase(),
                 validators.ContainsLowercase(),
                 validators.ContainsSpecial(),
                 validators.ContainsDigit()
-            )
+            ]
         )
         self.email_input = toga.TextInput(
             placeholder='Email...',
             style=Pack(padding=10),
-            validator=validators.Email()
+            validators=[validators.Email()]
         )
         self.number_input = toga.NumberInput(style=Pack(padding=10))
         btn_extract = toga.Button(
