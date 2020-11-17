@@ -108,18 +108,18 @@ class ValidatedTextInputTests(TestCase):
             initial=self.initial,
             factory=toga_dummy.factory
         )
-        self.assertTrue(text_input.is_valid())
+        self.assertTrue(text_input.validate())
 
-    def test_is_valid_returns_true(self):
+    def test_validate_true_when_valid(self):
         validator = Mock(return_value=None)
         text_input = toga.TextInput(
             initial=self.initial,
             validators=[validator],
             factory=toga_dummy.factory
         )
-        self.assertTrue(text_input.is_valid())
+        self.assertTrue(text_input.validate())
 
-    def test_is_valid_returns_false(self):
+    def test_validate_false_when_invalid(self):
         message = "This is an error message"
         validator = Mock(return_value=message)
         text_input = toga.TextInput(
@@ -127,7 +127,7 @@ class ValidatedTextInputTests(TestCase):
             validators=[validator],
             factory=toga_dummy.factory
         )
-        self.assertFalse(text_input.is_valid())
+        self.assertFalse(text_input.validate())
 
     def test_validate_passes(self):
         validator = Mock(side_effect=[None, None])

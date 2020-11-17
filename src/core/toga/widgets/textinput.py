@@ -179,6 +179,3 @@ class TextInput(Widget):
         else:
             self._impl.set_error(error_message)
             return False
-
-    def is_valid(self):
-        return self.validate()
