@@ -56,10 +56,9 @@ class ExampleOptionContainerApp(toga.App):
         if self.optioncontainer.current_tab.index > 0:
             self.optioncontainer.current_tab -= 1
 
-    def on_select_tab(self, widget):
+    def on_select_tab(self, widget, option):
         self.selected_label.text = "Tab {} has been chosen: {}".format(
-            self.optioncontainer.current_tab.index,
-            self.optioncontainer.current_tab.label,
+            option.index, option.label,
         )
 
     def startup(self):
@@ -162,7 +161,6 @@ class ExampleOptionContainerApp(toga.App):
 
         # Add the content on the main window
         self.main_window.content = outer_box
-        self.on_select_tab(None)
 
         # Show the main window
         self.main_window.show()
