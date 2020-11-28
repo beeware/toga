@@ -58,4 +58,7 @@ class OptionContainer(Widget):
 
     def winforms_selected(self, sender, event):
         if self.interface.on_select:
-            self.interface.on_select(self.interface)
+            self.interface.on_select(
+                self.interface,
+                option=self.interface.content[self.native.SelectedIndex]
+            )
