@@ -16,7 +16,6 @@ class OptionItem:
     @interface.setter
     def interface(self, interface):
         self._interface = interface
-        self.refresh()
 
     @property
     def index(self):
@@ -79,7 +78,6 @@ class OptionList:
         self._options[index] = option
 
     def __getitem__(self, index):
-        # sync options index attr
         self._options[index].index = index
         return self._options[index]
 
@@ -103,12 +101,23 @@ class OptionList:
         self._insert(index, label, widget, enabled)
 
     def _insert(self, index, label, widget, enabled=True):
-        self.interface._impl.add_content(label, widget._impl)
+        # Create an interface wrapper for the option.
         option = OptionItem(widget)
+        option.interface = self.interface
+        option.index = index
+
+        # Add the option to the list maintained on the interface
         self._options.insert(index, option)
-        self[index].interface = self.interface
-        self[index].label = label
-        self[index].enabled = enabled
+
+        # Add the content to the implementation.
+        # This will cause the native implementation to be created.
+        self.interface._impl.add_content(label, widget._impl)
+
+        # The option now exists on the implementation;
+        # finalize the display properties that can't be resolved until the
+        # implementation exists.
+        widget.refresh()
+        option.enabled = enabled
 
 
 class OptionContainer(Widget):
