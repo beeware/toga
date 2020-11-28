@@ -1,22 +1,5 @@
 from .base import Source
-
-
-class Row:
-    def __init__(self, **data):
-        self._attrs = list(data.keys())
-        self._source = None
-        for name, value in data.items():
-            setattr(self, name, value)
-
-    ######################################################################
-    # Utility wrappers
-    ######################################################################
-
-    def __setattr__(self, attr, value):
-        super().__setattr__(attr, value)
-        if attr in self._attrs:
-            if self._source is not None:
-                self._source._notify('change', item=self)
+from .row import Row
 
 
 class ListSource(Source):
@@ -33,7 +16,9 @@ class ListSource(Source):
         self._accessors = accessors.copy()
         self._data = []
         for value in data:
-            self._data.append(self._create_row(value))
+            self._data.append(
+                Row.create_row(data=value, accessors=self._accessors, source=self)
+            )
 
     ######################################################################
     # Methods required by the ListSource interface
@@ -46,33 +31,11 @@ class ListSource(Source):
         return self._data[index]
 
     ######################################################################
-    # Factory methods for new rows
-    ######################################################################
-
-    def _create_row(self, data):
-        """Create a Row object from the given data.
-        Args:
-            data (any): The type of `data` determines how it is handled
-                ``dict``: each key corresponds to a column accessor
-                iterables, except ``str`` and ``dict``: each item corresponds to a column
-                all else: `data` will fill the first column
-        """
-
-        if isinstance(data, dict):
-            row = Row(**data)
-        elif hasattr(data, '__iter__') and not isinstance(data, str):
-            row = Row(**dict(zip(self._accessors, data)))
-        else:
-            row = Row(**{self._accessors[0]: data})
-        row._source = self
-        return row
-
-    ######################################################################
     # Utility methods to make ListSources more list-like
     ######################################################################
 
     def __setitem__(self, index, value):
-        row = self._create_row(value)
+        row = Row.create_row(data=value, accessors=self._accessors, source=self)
         self._data[index] = row
         self._notify('insert', index=index, item=row)
 
@@ -86,7 +49,11 @@ class ListSource(Source):
     def insert(self, index, *values, **named):
         # Coalesce values and data into a single data dictionary,
         # and use that to create the data row. Explicitly named data override.
-        row = self._create_row(dict(zip(self._accessors, values), **named))
+        row = Row.create_row(
+            data=dict(zip(self._accessors, values), **named),
+            accessors=self._accessors,
+            source=self,
+        )
         self._data.insert(index, row)
         self._notify('insert', index=index, item=row)
         return row

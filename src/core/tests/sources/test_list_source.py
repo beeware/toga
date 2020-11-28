@@ -422,7 +422,7 @@ class ListSourceTests(TestCase):
 
         # look-alike rows are not equal, so index lookup should fail
         with self.assertRaises(ValueError):
-            lookalike_row = Row(val1='second', val2=222)
+            lookalike_row = Row(val1='second', val2=225)
             source.index(lookalike_row)
 
         with self.assertRaises(ValueError):

@@ -765,7 +765,7 @@ class TreeSourceTests(TestCase):
 
         # look-alike nodes are not equal, so index lookup should fail
         with self.assertRaises(ValueError):
-            lookalike_node = Node(val1='second', val2=222)
+            lookalike_node = Node(val1='second', val2=225)
             source.index(lookalike_node)
 
         # Describe how edge cases are handled
