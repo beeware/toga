@@ -7,9 +7,11 @@ from .base import Widget
 class TogaTabViewDelegate(NSObject):
     @objc_method
     def tabView_didSelectTabViewItem_(self, view, item) -> None:
-        index = at(item.identifier).longValue
         if self.interface.on_select:
-            self.interface.on_select(self.interface, option=self.interface.content[index])
+            self.interface.on_select(
+                self.interface,
+                option=self.interface.content[at(item.identifier).longValue]
+            )
 
 
 class OptionContainer(Widget):
@@ -82,11 +84,7 @@ class OptionContainer(Widget):
         return tabview.label
 
     def get_current_tab_index(self):
-        self.interface.factory.not_implemented(
-            'OptionContainer.get_current_tab_index()'
-        )
+        return self.native.indexOfTabViewItem(self.native.selectedTabViewItem)
 
     def set_current_tab_index(self, current_tab_index):
-        self.interface.factory.not_implemented(
-            'OptionContainer.set_current_tab_index()'
-        )
+        self.native.selectTabViewItemAtIndex(current_tab_index)
