@@ -8,9 +8,10 @@ class TogaTabViewDelegate(NSObject):
     @objc_method
     def tabView_didSelectTabViewItem_(self, view, item) -> None:
         if self.interface.on_select:
+            index = view.indexOfTabViewItem(view.selectedTabViewItem)
             self.interface.on_select(
                 self.interface,
-                option=self.interface.content[at(item.identifier).longValue]
+                option=self.interface.content[index]
             )
 
 
@@ -24,8 +25,8 @@ class OptionContainer(Widget):
 
         # Cocoa doesn't provide an explicit (public) API for tracking
         # tab enabled/disabled status; it's handled by the delegate returning
-        # if a specific tab should be enabled/disabled. Keep a set of
-        # disabled tabs
+        # if a specific tab should be enabled/disabled. Keep the set set of
+        # currently disabled tabs for reference purposes.
         self._disabled_tabs = set()
 
         # Add the layout constraints
@@ -43,7 +44,7 @@ class OptionContainer(Widget):
         for child in widget.interface.children:
             child._impl.container = widget
 
-        item = NSTabViewItem.alloc().initWithIdentifier(len(self.interface.content) - 1)
+        item = NSTabViewItem.alloc().init()
         item.label = label
 
         # Turn the autoresizing mask on the widget widget
