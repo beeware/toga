@@ -8,10 +8,6 @@ class BaseOptionItem:
         self._interface = interface
 
     @property
-    def interface(self):
-        return self._interface
-
-    @property
     def enabled(self):
         return self._interface._impl.is_option_enabled(self.index)
 
@@ -27,9 +23,6 @@ class BaseOptionItem:
     def label(self, value):
         self._interface._impl.set_option_label(self.index, value)
 
-    def refresh(self):
-        self.widget.refresh()
-
 
 class OptionItem(BaseOptionItem):
     """OptionItem is an interface wrapper for a tab on the OptionContainer"""
@@ -42,10 +35,6 @@ class OptionItem(BaseOptionItem):
     def index(self):
         return self._index
 
-    @property
-    def widget(self):
-        return self._widget
-
     def refresh(self):
         self._widget.refresh()
 
@@ -56,19 +45,18 @@ class CurrentOptionItem(BaseOptionItem):
     def index(self):
         return self._interface._impl.get_current_tab_index()
 
-    @property
-    def widget(self):
-        return self._interface._options[self.index]._widget
-
     def __add__(self, other):
         if not isinstance(other, int):
             raise ValueError("Cannot add non-integer value to OptionItem")
-        return self.interface.content[self.index + other]
+        return self._interface.content[self.index + other]
 
     def __sub__(self, other):
         if not isinstance(other, int):
             raise ValueError("Cannot add non-integer value to OptionItem")
-        return self.interface.content[self.index - other]
+        return self._interface.content[self.index - other]
+
+    def refresh(self):
+        self._interface.content[self.index]._widget.refresh()
 
 
 class OptionList:
@@ -196,7 +184,7 @@ class OptionContainer(Widget):
     def _set_window(self, window):
         if self._content:
             for content in self._content:
-                content.widget.window = window
+                content._widget.window = window
 
     def add(self, label, widget):
         """ Add a new option to the option container.
