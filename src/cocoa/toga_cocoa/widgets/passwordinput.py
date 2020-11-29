@@ -10,6 +10,10 @@ class TogaSecureTextField(NSSecureTextField):
         if self.interface.on_change:
             self.interface.on_change(self.interface)
 
+    @objc_method
+    def textShouldEndEditing_(self, textObject) -> bool:
+        return self.interface.validate()
+
 
 class PasswordInput(TextInput):
     def create(self):

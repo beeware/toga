@@ -81,7 +81,7 @@ class ValidatedTextInputTests(TestCase):
         validator = Mock(return_value=None)
         text_input = toga.TextInput(
             initial=self.initial,
-            validator=validator,
+            validators=[validator],
             factory=toga_dummy.factory
         )
         self.assertValueNotSet(text_input, "error")
@@ -98,7 +98,7 @@ class ValidatedTextInputTests(TestCase):
 
         self.assertValueNotSet(text_input, "error")
 
-        text_input.validator = validator
+        text_input.validators = [validator]
 
         self.assertValueSet(text_input, "error", message)
         validator.assert_called_once_with(self.initial)
@@ -108,32 +108,32 @@ class ValidatedTextInputTests(TestCase):
             initial=self.initial,
             factory=toga_dummy.factory
         )
-        self.assertTrue(text_input.is_valid())
+        self.assertTrue(text_input.validate())
 
-    def test_is_valid_returns_true(self):
+    def test_validate_true_when_valid(self):
         validator = Mock(return_value=None)
         text_input = toga.TextInput(
             initial=self.initial,
-            validator=validator,
+            validators=[validator],
             factory=toga_dummy.factory
         )
-        self.assertTrue(text_input.is_valid())
+        self.assertTrue(text_input.validate())
 
-    def test_is_valid_returns_false(self):
+    def test_validate_false_when_invalid(self):
         message = "This is an error message"
         validator = Mock(return_value=message)
         text_input = toga.TextInput(
             initial=self.initial,
-            validator=validator,
+            validators=[validator],
             factory=toga_dummy.factory
         )
-        self.assertFalse(text_input.is_valid())
+        self.assertFalse(text_input.validate())
 
     def test_validate_passes(self):
         validator = Mock(side_effect=[None, None])
         text_input = toga.TextInput(
             initial=self.initial,
-            validator=validator,
+            validators=[validator],
             factory=toga_dummy.factory
         )
         self.assertValueNotSet(text_input, "error")
@@ -149,7 +149,7 @@ class ValidatedTextInputTests(TestCase):
         validator = Mock(side_effect=[None, message])
         text_input = toga.TextInput(
             initial=self.initial,
-            validator=validator,
+            validators=[validator],
             factory=toga_dummy.factory
         )
         self.assertValueNotSet(text_input, "error")

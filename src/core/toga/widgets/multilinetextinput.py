@@ -72,8 +72,8 @@ class MultilineTextInput(Widget):
 
     @value.setter
     def value(self, value):
-        self._value = '' if value is None else str(value)
-        self._impl.set_value(self._value)
+        cleaned_value = '' if value is None else str(value)
+        self._impl.set_value(cleaned_value)
         self._impl.rehint()
 
     def clear(self):
