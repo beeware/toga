@@ -21,10 +21,6 @@ class OptionItem:
     def index(self):
         return self._index
 
-    @index.setter
-    def index(self, index):
-        self._index = index
-
     @property
     def enabled(self):
         return self._interface._impl.is_option_enabled(self.index)
@@ -76,19 +72,20 @@ class OptionList:
 
     def __setitem__(self, index, option):
         self._options[index] = option
+        option._index = index
 
     def __getitem__(self, index):
-        self._options[index].index = index
         return self._options[index]
 
     def __delitem__(self, index):
         self.interface._impl.remove_content(index)
         del self._options[index]
+        # Update the index for each of the options
+        # after the one that was removed.
+        for option in self._options[index:]:
+            option._index -= 1
 
     def __iter__(self):
-        for i, option in enumerate(self._options):
-            # sync options index attr
-            option.index = i
         return iter(self._options)
 
     def __len__(self):
@@ -104,10 +101,13 @@ class OptionList:
         # Create an interface wrapper for the option.
         option = OptionItem(widget)
         option.interface = self.interface
-        option.index = index
+        option._index = index
 
-        # Add the option to the list maintained on the interface
+        # Add the option to the list maintained on the interface,
+        # and increment the index of all items after the one that was added.
         self._options.insert(index, option)
+        for option in self._options[index + 1:]:
+            option._index += 1
 
         # Add the content to the implementation.
         # This will cause the native implementation to be created.
