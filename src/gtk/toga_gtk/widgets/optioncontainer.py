@@ -25,12 +25,20 @@ class OptionContainer(Widget):
             child._impl.container = widget
 
         self.native.append_page(widget.native, Gtk.Label(label=label))
+        # Tabs aren't visible by default;
+        # tell the notebook to show all content.
+        self.native.show_all()
 
     def set_on_select(self, handler):
         # No special handling required
         pass
 
     def remove_content(self, index):
+        if index == self.native.get_current_page():
+            # Don't allow removal of a selected tab
+            raise self.interface.OptionException(
+                'Currently selected option cannot be removed'
+            )
         self.native.remove_page(index)
 
     def set_option_enabled(self, index, enabled):
