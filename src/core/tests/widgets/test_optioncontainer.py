@@ -28,8 +28,7 @@ class OptionContainerTests(TestCase):
     def assert_tab(self, tab, index, label, widget, enabled):
         self.assertEqual(tab.index, index)
         self.assertEqual(tab.label, label)
-        self.assertEqual(tab.widget, widget)
-        self.assertEqual(tab.interface, self.op_container)
+        self.assertEqual(tab._interface, self.op_container)
         self.assertEqual(tab.enabled, enabled)
 
     def add_widgets(self):
@@ -160,16 +159,16 @@ class OptionContainerTests(TestCase):
     def test_add_tabs(self):
         self.add_widgets()
         self.assertEqual(len(self.op_container.content), 3)
-        self.assertEqual(self.op_container.content[0].widget, self.widget)
-        self.assertEqual(self.op_container.content[1].widget, self.widget2)
-        self.assertEqual(self.op_container.content[2].widget, self.widget3)
+        self.assertEqual(self.op_container.content[0]._widget, self.widget)
+        self.assertEqual(self.op_container.content[1]._widget, self.widget2)
+        self.assertEqual(self.op_container.content[2]._widget, self.widget3)
 
     def test_remove_tab(self):
         self.add_widgets()
         self.op_container.remove(1)
         self.assertEqual(len(self.op_container.content), 2)
-        self.assertEqual(self.op_container.content[0].widget, self.widget)
-        self.assertEqual(self.op_container.content[1].widget, self.widget3)
+        self.assertEqual(self.op_container.content[0]._widget, self.widget)
+        self.assertEqual(self.op_container.content[1]._widget, self.widget3)
 
     def test_set_content_in_constructor(self):
         new_container = toga.OptionContainer(
@@ -182,12 +181,12 @@ class OptionContainerTests(TestCase):
             ]
         )
         self.assertEqual(len(new_container.content), 3)
-        self.assertEqual(new_container.content[0].widget, self.widget)
-        self.assertEqual(new_container.content[1].widget, self.widget2)
-        self.assertEqual(new_container.content[2].widget, self.widget3)
+        self.assertEqual(new_container.content[0]._widget, self.widget)
+        self.assertEqual(new_container.content[1]._widget, self.widget2)
+        self.assertEqual(new_container.content[2]._widget, self.widget3)
 
     def test_set_window(self):
         window = mock.Mock()
         self.op_container.window = window
         for item in self.op_container.content:
-            self.assertEqual(item.widget.window, window)
+            self.assertEqual(item._widget.window, window)
