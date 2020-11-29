@@ -3,23 +3,13 @@ from toga.handlers import wrapped_handler
 from .base import Widget
 
 
-class OptionItem:
-    def __init__(self, widget):
-        self._interface = None
-        self._index = None
-        self._widget = widget
+class BaseOptionItem:
+    def __init__(self, interface):
+        self._interface = interface
 
     @property
     def interface(self):
         return self._interface
-
-    @interface.setter
-    def interface(self, interface):
-        self._interface = interface
-
-    @property
-    def index(self):
-        return self._index
 
     @property
     def enabled(self):
@@ -37,12 +27,38 @@ class OptionItem:
     def label(self, value):
         self._interface._impl.set_option_label(self.index, value)
 
+    def refresh(self):
+        self.widget.refresh()
+
+
+class OptionItem(BaseOptionItem):
+    """OptionItem is an interface wrapper for a tab on the OptionContainer"""
+    def __init__(self, interface, widget, index):
+        super().__init__(interface)
+        self._widget = widget
+        self._index = index
+
+    @property
+    def index(self):
+        return self._index
+
     @property
     def widget(self):
         return self._widget
 
     def refresh(self):
         self._widget.refresh()
+
+
+class CurrentOptionItem(BaseOptionItem):
+    """CurrentOptionItem is a proxy for whichever tab is currently selected."""
+    @property
+    def index(self):
+        return self._interface._impl.get_current_tab_index()
+
+    @property
+    def widget(self):
+        return self._interface._options[self.index]._widget
 
     def __add__(self, other):
         if not isinstance(other, int):
@@ -99,9 +115,7 @@ class OptionList:
 
     def _insert(self, index, label, widget, enabled=True):
         # Create an interface wrapper for the option.
-        option = OptionItem(widget)
-        option.interface = self.interface
-        option._index = index
+        option = OptionItem(self.interface, widget, index)
 
         # Add the option to the list maintained on the interface,
         # and increment the index of all items after the one that was added.
@@ -146,6 +160,8 @@ class OptionContainer(Widget):
                 self.add(label, widget)
 
         self.on_select = on_select
+        # Create a proxy object to represent the currently selected item.
+        self._current_tab = CurrentOptionItem(self)
 
     @property
     def content(self):
@@ -162,7 +178,7 @@ class OptionContainer(Widget):
 
     @property
     def current_tab(self):
-        return self.content[self._impl.get_current_tab_index()]
+        return self._current_tab
 
     @current_tab.setter
     def current_tab(self, current_tab):
