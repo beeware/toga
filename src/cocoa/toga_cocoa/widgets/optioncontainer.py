@@ -22,6 +22,12 @@ class OptionContainer(Widget):
         self.delegate._impl = self
         self.native.delegate = self.delegate
 
+        # Cocoa doesn't provide an explicit (public) API for tracking
+        # tab enabled/disabled status; it's handled by the delegate returning
+        # if a specific tab should be enabled/disabled. Keep a set of
+        # disabled tabs
+        self._disabled_tabs = set()
+
         # Add the layout constraints
         self.add_constraints()
 
@@ -63,17 +69,23 @@ class OptionContainer(Widget):
 
     def set_option_enabled(self, index, enabled):
         tabview = self.native.tabViewItemAtIndex(index)
-        if not enabled and tabview == self.native.selectedTabViewItem:
-            # Don't allow disable a selected tab
-            raise self.interface.OptionException(
-                'Currently selected option cannot be disabled'
-            )
+        if enabled:
+            try:
+                self._disabled_tabs.remove(index)
+            except KeyError:
+                pass
+        else:
+            if tabview == self.native.selectedTabViewItem:
+                # Don't allow disable a selected tab
+                raise self.interface.OptionException(
+                    'Currently selected option cannot be disabled'
+                )
 
+            self._disabled_tabs.add(index)
         tabview._setTabEnabled(enabled)
 
     def is_option_enabled(self, index):
-        tabview = self.native.tabViewItemAtIndex(index)
-        return tabview._isTabEnabled()
+        return index not in self._disabled_tabs
 
     def set_option_label(self, index, value):
         tabview = self.native.tabViewItemAtIndex(index)
