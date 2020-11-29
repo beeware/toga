@@ -1,6 +1,8 @@
 from .base import Widget
+from ..utils import not_required
 
 
+@not_required
 class Option:
     def __init__(self, label, widget, enabled):
         self.label = label

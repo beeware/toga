@@ -77,7 +77,7 @@ class DefinitionExtractor:
         if node.decorator_list:  # check if a decorator list exists
             for decorator in node.decorator_list:
                 try:
-                    if decorator.func.id == 'not_required':
+                    if decorator.id == 'not_required':
                         return False
                     elif decorator.func.id == 'not_required_on':
                         platforms_to_skip = [arg.s for arg in decorator.args]
