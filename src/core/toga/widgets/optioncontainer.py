@@ -3,28 +3,9 @@ from toga.handlers import wrapped_handler
 from .base import Widget
 
 
-class OptionItem:
-    def __init__(self, widget):
-        self._interface = None
-        self._index = None
-        self._widget = widget
-
-    @property
-    def interface(self):
-        return self._interface
-
-    @interface.setter
-    def interface(self, interface):
+class BaseOptionItem:
+    def __init__(self, interface):
         self._interface = interface
-        self.refresh()
-
-    @property
-    def index(self):
-        return self._index
-
-    @index.setter
-    def index(self, index):
-        self._index = index
 
     @property
     def enabled(self):
@@ -42,8 +23,40 @@ class OptionItem:
     def label(self, value):
         self._interface._impl.set_option_label(self.index, value)
 
+
+class OptionItem(BaseOptionItem):
+    """OptionItem is an interface wrapper for a tab on the OptionContainer"""
+    def __init__(self, interface, widget, index):
+        super().__init__(interface)
+        self._widget = widget
+        self._index = index
+
+    @property
+    def index(self):
+        return self._index
+
     def refresh(self):
         self._widget.refresh()
+
+
+class CurrentOptionItem(BaseOptionItem):
+    """CurrentOptionItem is a proxy for whichever tab is currently selected."""
+    @property
+    def index(self):
+        return self._interface._impl.get_current_tab_index()
+
+    def __add__(self, other):
+        if not isinstance(other, int):
+            raise ValueError("Cannot add non-integer value to OptionItem")
+        return self._interface.content[self.index + other]
+
+    def __sub__(self, other):
+        if not isinstance(other, int):
+            raise ValueError("Cannot add non-integer value to OptionItem")
+        return self._interface.content[self.index - other]
+
+    def refresh(self):
+        self._interface.content[self.index]._widget.refresh()
 
 
 class OptionList:
@@ -63,20 +76,20 @@ class OptionList:
 
     def __setitem__(self, index, option):
         self._options[index] = option
+        option._index = index
 
     def __getitem__(self, index):
-        # sync options index attr
-        self._options[index].index = index
         return self._options[index]
 
     def __delitem__(self, index):
         self.interface._impl.remove_content(index)
         del self._options[index]
+        # Update the index for each of the options
+        # after the one that was removed.
+        for option in self._options[index:]:
+            option._index -= 1
 
     def __iter__(self):
-        for i, option in enumerate(self._options):
-            # sync options index attr
-            option.index = i
         return iter(self._options)
 
     def __len__(self):
@@ -89,12 +102,24 @@ class OptionList:
         self._insert(index, label, widget, enabled)
 
     def _insert(self, index, label, widget, enabled=True):
-        self.interface._impl.add_content(label, widget._impl)
-        option = OptionItem(widget)
+        # Create an interface wrapper for the option.
+        option = OptionItem(self.interface, widget, index)
+
+        # Add the option to the list maintained on the interface,
+        # and increment the index of all items after the one that was added.
         self._options.insert(index, option)
-        self[index].interface = self.interface
-        self[index].label = label
-        self[index].enabled = enabled
+        for option in self._options[index + 1:]:
+            option._index += 1
+
+        # Add the content to the implementation.
+        # This will cause the native implementation to be created.
+        self.interface._impl.add_content(label, widget._impl)
+
+        # The option now exists on the implementation;
+        # finalize the display properties that can't be resolved until the
+        # implementation exists.
+        widget.refresh()
+        option.enabled = enabled
 
 
 class OptionContainer(Widget):
@@ -123,6 +148,8 @@ class OptionContainer(Widget):
                 self.add(label, widget)
 
         self.on_select = on_select
+        # Create a proxy object to represent the currently selected item.
+        self._current_tab = CurrentOptionItem(self)
 
     @property
     def content(self):
@@ -137,10 +164,27 @@ class OptionContainer(Widget):
         """
         return self._content
 
+    @property
+    def current_tab(self):
+        return self._current_tab
+
+    @current_tab.setter
+    def current_tab(self, current_tab):
+        if isinstance(current_tab, str):
+            try:
+                current_tab = next(
+                    filter(lambda item: item.label == current_tab, self.content)
+                )
+            except StopIteration:
+                raise ValueError("No tab named {}".format(current_tab))
+        if isinstance(current_tab, OptionItem):
+            current_tab = current_tab.index
+        self._impl.set_current_tab_index(current_tab)
+
     def _set_window(self, window):
         if self._content:
             for content in self._content:
-                content.window = window
+                content._widget.window = window
 
     def add(self, label, widget):
         """ Add a new option to the option container.
