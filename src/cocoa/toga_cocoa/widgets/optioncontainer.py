@@ -1,4 +1,4 @@
-from toga_cocoa.libs import NSObject, NSTabView, NSTabViewItem, at, objc_method
+from toga_cocoa.libs import NSObject, NSTabView, NSTabViewItem, objc_method
 from toga_cocoa.window import CocoaViewport
 
 from .base import Widget
