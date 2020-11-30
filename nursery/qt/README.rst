@@ -25,8 +25,9 @@ Toga is part of the `BeeWare suite`_. You can talk to the community through:
 Contributing
 ------------
 
-If you experience problems with this backend, `log them on GitHub`_. If you
-want to contribute code, please `fork the code`_ and `submit a pull request`_.
+If you experience problems with this backend, `log them on GitHub`_.
+If you want to contribute toga-qt, please `fork the Qt repo`_ and `submit a pull request to Qt repo`_.
+If you want to contribute toga-core or another part, please `fork the code`_ and `submit a pull request`_.
 
 .. _Toga widget toolkit: http://beeware.org/toga
 .. _the core Toga library: https://pypi.python.org/pypi/toga-core
@@ -36,4 +37,7 @@ want to contribute code, please `fork the code`_ and `submit a pull request`_.
 .. _beeware/general: https://gitter.im/beeware/general
 .. _log them on Github: https://github.com/beeware/toga/issues
 .. _fork the code: https://github.com/beeware/toga
+.. _fork the Qt repo: https://github.com/Ksengine/toga/fork
 .. _submit a pull request: https://github.com/beeware/toga/pulls
+.. _submit a pull request to Qt repo: https://github.com/Ksengine/toga/pulls
+
