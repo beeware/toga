@@ -12,6 +12,9 @@ class MainWindow(Window):
 
 
 class TogaApp(IPythonApp):
+    last_intent_requestcode = -1  # always increment before using it for invoking new Intents
+    running_intents = {}          # dictionary for currently running Intents
+
     def __init__(self, app):
         super().__init__()
         self._interface = app
@@ -38,6 +41,12 @@ class TogaApp(IPythonApp):
 
     def onRestart(self):
         print("Toga app: onRestart")
+
+    def onActivityResult(self, requestCode, resultCode, resultData):
+        print("Toga app: onActivityResult")
+        result_future = self.running_intents[str(resultCode)]
+        self.running_intents.pop(str(resultCode))  # remove Intent from the list of running Intents
+        result_future.set_result({"resultCode": resultCode, "resultData": resultData})
 
     @property
     def native(self):
@@ -92,3 +101,9 @@ class App:
 
     def add_background_task(self, handler):
         self.loop.call_soon(wrapped_handler(self, handler), self)
+
+    def invoke_intent(self, intent, result_future):
+        self.native.last_intent_requestcode += 1
+        code = self.native.last_intent_requestcode
+        self.native.running_intents[str(code)] = result_future
+        MainActivity.startActivityForResult(intent, code)

@@ -1,0 +1,48 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name = "Filebrowser Demo"
+bundle = "org.beeware"
+version = "0.3.0.dev25"
+url = "https://beeware.org"
+license = "BSD license"
+author = 'Tiberius Yak'
+author_email = "tiberius@beeware.org"
+
+[tool.briefcase.app.filebrowser]
+formal_name = "Filebrowser Demo"
+description = "A testing app"
+sources = ['filebrowser']
+requires = [
+    'c:/Projects/Python/Toga/src/core'
+]
+
+
+[tool.briefcase.app.filebrowser.macOS]
+requires = [
+    'toga-cocoa',
+]
+
+[tool.briefcase.app.filebrowser.linux]
+requires = [
+    'toga-gtk',
+]
+
+[tool.briefcase.app.filebrowser.windows]
+requires = [
+    # 'toga-winforms',
+    'c:/Projects/Python/Toga/src/winforms'
+]
+
+# Mobile deployments
+[tool.briefcase.app.filebrowser.iOS]
+requires = [
+    'toga-iOS',
+]
+
+[tool.briefcase.app.filebrowser.android]
+requires = [
+    #'toga-android',
+    'c:/Projects/Python/Toga/src/android'
+]

@@ -1,5 +1,9 @@
 from . import dialogs
 
+import asyncio
+from rubicon.java import JavaClass, JavaInterface
+Intent = JavaClass("android/content/Intent")
+Activity = JavaClass("android/app/Activity")
 
 class AndroidViewport:
     def __init__(self, native):
@@ -78,3 +82,18 @@ class Window:
 
     def save_file_dialog(self, title, suggested_filename, file_types):
         self.interface.factory.not_implemented('Window.save_file_dialog()')
+
+    async def open_file_dialog(self, title, initial_directory, file_types, multiselect):
+        print('Invoking Intent ACTION_OPEN_DOCUMENT')
+        intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+        intent.addCategory(Intent.CATEGORY_OPENABLE)
+        intent.setType("*/*")  # allow all file types to be selectable
+        result_future = asyncio.Future()
+        self.app.invoke_intent(intent, result_future)
+        await result_future
+        selected_uri = ""
+        result = result_future.result()
+        if result["resultCode"] == Activity.RESULT_OK:
+            if result["resultData"] is not None:
+                selected_uri = result["resultData"].getData()
+        return selected_uri
