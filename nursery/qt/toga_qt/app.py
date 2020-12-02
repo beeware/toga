@@ -1,5 +1,5 @@
 import signal
-from .libs.QtWidgets import QApplication, QMessageBox
+from PySide2.QtWidgets import QApplication, QMessageBox
 from .window import Window
 
 
