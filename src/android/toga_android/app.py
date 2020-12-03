@@ -5,6 +5,7 @@ from toga.handlers import wrapped_handler
 from .libs.activity import IPythonApp, MainActivity
 from .window import Window
 
+import asyncio
 
 # `MainWindow` is defined here in `app.py`, not `window.py`, to mollify the test suite.
 class MainWindow(Window):
@@ -44,6 +45,7 @@ class TogaApp(IPythonApp):
 
     def onActivityResult(self, requestCode, resultCode, resultData):
         print("Toga app: onActivityResult")
+        print("resultData: "+str(resultData))
         result_future = self.running_intents[str(requestCode)]
         self.running_intents.pop(str(requestCode))  # remove Intent from the list of running Intents
         result_future.set_result({"resultCode": resultCode, "resultData": resultData})
@@ -102,9 +104,11 @@ class App:
     def add_background_task(self, handler):
         self.loop.call_soon(wrapped_handler(self, handler), self)
 
-    def invoke_intent(self, intent, result_future):
+    async def invoke_intent_for_result(self, intent):
         self._listener.last_intent_requestcode += 1
         code = self._listener.last_intent_requestcode
+        result_future = asyncio.Future()
         self._listener.running_intents[str(code)] = result_future
         self.native.startActivityForResult(intent, code)
-
+        await result_future
+        return result_future.result()
