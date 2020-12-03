@@ -3,6 +3,7 @@ from . import dialogs
 from rubicon.java import JavaClass, JavaInterface
 Intent = JavaClass("android/content/Intent")
 Activity = JavaClass("android/app/Activity")
+Uri = JavaClass("android/net/Uri")
 
 class AndroidViewport:
     def __init__(self, native):
@@ -88,7 +89,7 @@ class Window:
         intent.addCategory(Intent.CATEGORY_OPENABLE)
         intent.setType("*/*")
         if initial_uri is not None and initial_uri != '':
-            intent.putExtra("android.provider.extra.INITIAL_URI", initial_uri)
+            intent.putExtra("android.provider.extra.INITIAL_URI", Uri.parse(initial_uri))
         if file_mime_types is not None and file_mime_types != '':
             intent.putExtra(Intent.EXTRA_MIME_TYPES, file_mime_types)
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, multiselect)
