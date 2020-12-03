@@ -10,9 +10,9 @@ from toga.constants import COLUMN, ROW
 
 class ExampleFilebrowserApp(toga.App):
     # Button callback functions
-    def do_stuff(self, widget, **kwargs):
+    async def do_stuff(self, widget, **kwargs):
         print("Clicked on 'Do stuff'")
-        selected_uri = self.app.main_window.open_file_dialog("Choose a file")
+        selected_uri = await self.app.main_window.open_file_dialog("Choose a file")
         self.label.text = "You selected: " + str(selected_uri)
 
     def do_clear(self, widget, **kwargs):

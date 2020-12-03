@@ -44,8 +44,8 @@ class TogaApp(IPythonApp):
 
     def onActivityResult(self, requestCode, resultCode, resultData):
         print("Toga app: onActivityResult")
-        result_future = self.running_intents[str(resultCode)]
-        self.running_intents.pop(str(resultCode))  # remove Intent from the list of running Intents
+        result_future = self.running_intents[str(requestCode)]
+        self.running_intents.pop(str(requestCode))  # remove Intent from the list of running Intents
         result_future.set_result({"resultCode": resultCode, "resultData": resultData})
 
     @property
@@ -103,7 +103,8 @@ class App:
         self.loop.call_soon(wrapped_handler(self, handler), self)
 
     def invoke_intent(self, intent, result_future):
-        self.native.last_intent_requestcode += 1
-        code = self.native.last_intent_requestcode
-        self.native.running_intents[str(code)] = result_future
-        MainActivity.startActivityForResult(intent, code)
+        self._listener.last_intent_requestcode += 1
+        code = self._listener.last_intent_requestcode
+        self._listener.running_intents[str(code)] = result_future
+        self.native.startActivityForResult(intent, code)
+

@@ -1,5 +1,5 @@
 @echo off
-briefcase update android
+briefcase update android -d
 echo.
 if not "%errorlevel%"=="0" goto end
 
