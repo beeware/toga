@@ -20,6 +20,9 @@ class Row:
             return False
         return self.as_dict() == other.as_dict()
 
+    def __repr__(self):
+        return repr(self.as_dict())
+
     def as_dict(self):
         return {attr: getattr(self, attr) for attr in self._attrs}
 
