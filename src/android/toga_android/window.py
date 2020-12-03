@@ -97,13 +97,14 @@ class Window:
         if result["resultCode"] == Activity.RESULT_OK:
             if result["resultData"] is not None:
                 selected_uri = result["resultData"].getData()
-                if selected_uri is None:
-                    selected_uri = ""
-                    clip_data = result["resultData"].getClipData()
-                    if clip_data is not None:
-                        for i in range (0, clip_data.getItemCount()):
-                            if i > 0:
-                                selected_uri += '\n'
-                            selected_uri += str(clip_data.getItemAt(i).getUri())
+                if multiselect is True:
+                    if selected_uri is None:
+                        selected_uri = []
+                        clip_data = result["resultData"].getClipData()
+                        if clip_data is not None:
+                            for i in range (0, clip_data.getItemCount()):
+                                selected_uri.append(str(clip_data.getItemAt(i).getUri()))
+                    else:
+                        selected_uri = [str(selected_uri)]
         print (selected_uri)
         return selected_uri

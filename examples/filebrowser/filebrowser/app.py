@@ -24,7 +24,7 @@ class ExampleFilebrowserApp(toga.App):
 
     def startup(self):
         # Set up main window
-        self.main_window = toga.MainWindow(title=self.name)
+        self.main_window = toga.MainWindow(title=self.name, size=(400, 700))
 
         flex_style = Pack(flex=1)
 
