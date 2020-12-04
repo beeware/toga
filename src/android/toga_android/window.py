@@ -84,14 +84,30 @@ class Window:
         self.interface.factory.not_implemented('Window.save_file_dialog()')
 
     async def open_file_dialog(self, title, initial_uri, file_mime_types, multiselect):
+        """
+        Opens a file chooser dialog and returns the chosen file as content URI.
+        Raises a ValueError when nothing has been selected
+
+        :param str title: The title is ignored on Android
+        :param initial_uri: The initial location shown in the file chooser. Must be a content URI, e.g.
+                            'content://com.android.externalstorage.documents/document/primary%3ADownload%2FTest-dir'
+        :type initial_uri: str or None
+        :param file_mime_types: The file types allowed to select. Must be MIME types, e.g. ['application/pdf'].
+                                Currently ignored to avoid error in rubicon
+        :type file_mime_types: list[str] or None
+        :param bool multiselect: If True, then several files can be selected
+        :returns: The content URI of the chosen file or a list of content URIs when multiselect=True.
+        :rtype: str or list[str]
+        """
         print('Invoking Intent ACTION_OPEN_DOCUMENT')
         intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
         intent.addCategory(Intent.CATEGORY_OPENABLE)
         intent.setType("*/*")
         if initial_uri is not None and initial_uri != '':
             intent.putExtra("android.provider.extra.INITIAL_URI", Uri.parse(initial_uri))
-        if file_mime_types is not None and file_mime_types != '':
-            intent.putExtra(Intent.EXTRA_MIME_TYPES, file_mime_types)
+        if file_mime_types is not None and file_mime_types != ['']:
+            # intent.putExtra(Intent.EXTRA_MIME_TYPES, file_mime_types)  # currently creates an error in rubicon
+            pass
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, multiselect)
         selected_uri = None
         result = await self.app.invoke_intent_for_result(intent)
@@ -107,5 +123,6 @@ class Window:
                                 selected_uri.append(str(clip_data.getItemAt(i).getUri()))
                     else:
                         selected_uri = [str(selected_uri)]
-        print (selected_uri)
+        if selected_uri is None:
+            raise ValueError("No filename provided in the open file dialog")
         return selected_uri

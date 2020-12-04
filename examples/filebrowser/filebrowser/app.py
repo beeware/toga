@@ -13,9 +13,13 @@ class ExampleFilebrowserApp(toga.App):
     async def do_open_file(self, widget, **kwargs):
         print("Clicked on 'Open file'")
         multiselect = False
+        mimetypes = str(self.file_types.value).split(' ')
         if self.multiselect.value == 'True':
             multiselect = True
-        selected_uri = await self.app.main_window.open_file_dialog("Choose a file", self.initial_dir.value, self.file_types.value, multiselect)
+        try:
+            selected_uri = await self.app.main_window.open_file_dialog("Choose a file", self.initial_dir.value, mimetypes, multiselect)
+        except ValueError as e:
+            selected_uri = str(e)
         self.multiline.value = "You selected: \n" + str(selected_uri)
 
     def do_clear(self, widget, **kwargs):
@@ -30,7 +34,7 @@ class ExampleFilebrowserApp(toga.App):
 
         # set options
         self.initial_dir = toga.TextInput(placeholder='initial directory', style=flex_style)
-        self.file_types = toga.TextInput(placeholder='file types', style=flex_style)
+        self.file_types = toga.TextInput(placeholder='MIME types (blank separated)', style=flex_style)
         self.multiselect = toga.TextInput(placeholder='is multiselect? (True / False)', style=flex_style)
         self.folder = toga.TextInput(placeholder='what to select? (file / folder)', style=flex_style)
         # Toga.Switch does not seem to work on Android ...
