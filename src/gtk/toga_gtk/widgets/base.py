@@ -75,11 +75,11 @@ class Widget:
         # Deprecated since version 3.16: Use a custom style provider and style classes instead
 
     def set_color(self, color):
-        self.native.override_color(Gtk.STATE_NORMAL, Gdk.RGBA(*color))
+        self.native.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(*color))
         # Deprecated since version 3.16: Use a custom style provider and style classes instead
 
     def set_background_color(self, color):
-        self.native.override_background_color(Gtk.STATE_NORMAL, Gdk.RGBA(*color))
+        self.native.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(*color))
         # Deprecated since version 3.16: Use a custom style provider and style classes instead
 
     ######################################################################
