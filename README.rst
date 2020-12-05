@@ -96,6 +96,7 @@ If you experience problems with Toga, `log them on GitHub`_. If you want to
 contribute code, please `fork the code`_ and `submit a pull request`_.
 
 **contributors**
+
 .. image:: https://contributors-img.web.app/image?repo=beeware/toga
     :target: https://github.com/beeware/toga/graphs/contributors
 
