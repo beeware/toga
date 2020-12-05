@@ -71,16 +71,19 @@ class Widget:
         return not self.native.set_visible(not hidden)
 
     def set_font(self, font):
-        self.native.override_font(Font(font).native)
-        # Deprecated since version 3.16: Use a custom style provider and style classes instead
+        if font:
+            self.native.override_font(Font(font).native)
+            # Deprecated since version 3.16: Use a custom style provider and style classes instead
 
     def set_color(self, color):
-        self.native.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(*color))
-        # Deprecated since version 3.16: Use a custom style provider and style classes instead
+        if color:
+            self.native.override_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(*color))
+            # Deprecated since version 3.16: Use a custom style provider and style classes instead
 
     def set_background_color(self, color):
-        self.native.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(*color))
-        # Deprecated since version 3.16: Use a custom style provider and style classes instead
+        if color:
+            self.native.override_background_color(Gtk.StateFlags.NORMAL, Gdk.RGBA(*color))
+            # Deprecated since version 3.16: Use a custom style provider and style classes instead
 
     ######################################################################
     # INTERFACE
