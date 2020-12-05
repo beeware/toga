@@ -1,5 +1,6 @@
 from travertino.size import at_least
 from ..libs import Gtk, Gdk
+from ..fonts import Font
 
 
 class Widget:
@@ -70,7 +71,7 @@ class Widget:
         return not self.native.set_visible(not hidden)
 
     def set_font(self, font):
-        self.native.override_font(font)
+        self.native.override_font(Font(font).native)
         # Deprecated since version 3.16: Use a custom style provider and style classes instead
 
     def set_color(self, color):
