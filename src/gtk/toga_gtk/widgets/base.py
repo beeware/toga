@@ -1,6 +1,7 @@
 from travertino.size import at_least
 from ..libs import Gtk, Gdk
 
+
 class Widget:
     def __init__(self, interface):
         self.interface = interface
