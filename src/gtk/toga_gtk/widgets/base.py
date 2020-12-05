@@ -1,5 +1,5 @@
 from travertino.size import at_least
-
+from ..libs import Gtk, Gdk
 
 class Widget:
     def __init__(self, interface):
@@ -69,16 +69,16 @@ class Widget:
         return not self.native.set_visible(not hidden)
 
     def set_font(self, font):
-        # By default, font can't be changed
-        pass
+        self.native.override_font(font)
+        # Deprecated since version 3.16: Use a custom style provider and style classes instead
 
     def set_color(self, color):
-        # By default, color can't be changed
-        pass
+        self.native.override_color(Gtk.STATE_NORMAL, Gdk.RGBA(*color))
+        # Deprecated since version 3.16: Use a custom style provider and style classes instead
 
     def set_background_color(self, color):
-        # By default, background color can't be changed
-        pass
+        self.native.override_background_color(Gtk.STATE_NORMAL, Gdk.RGBA(*color))
+        # Deprecated since version 3.16: Use a custom style provider and style classes instead
 
     ######################################################################
     # INTERFACE
