@@ -39,7 +39,7 @@ class WebView(Widget):
         self.native.customUserAgent = user_agent
 
     async def evaluate_javascript(self, javascript):
-        result = self.native.Document.InvokeScript('eval', (script,))
+        result = self.native.Document.InvokeScript('eval', (javascript,))
         return None if result is None or result == 'null' else json.loads(result)
 
     def invoke_javascript(self, javascript):
