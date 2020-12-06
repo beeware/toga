@@ -1,9 +1,10 @@
+import sys
+
 from travertino.size import at_least
 
 from toga_winforms.libs import Uri, WinForms
 
 from .base import Widget
-
 
 ie_updated = False
 
@@ -31,7 +32,8 @@ def _set_ie_mode():
         Get the installed version of IE
         :return:
         """
-        ie_key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r"Software\Microsoft\Internet Explorer")
+        ie_key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE,
+                                r"Software\Microsoft\Internet Explorer")
         try:
             version, type = winreg.QueryValueEx(ie_key, "svcVersion")
         except:
@@ -53,26 +55,31 @@ def _set_ie_mode():
         return value
 
     try:
-        browser_emulation = winreg.OpenKey(winreg.HKEY_CURRENT_USER,
-                                           r"Software\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION",
-                                           0, winreg.KEY_ALL_ACCESS)
+        browser_emulation = winreg.OpenKey(
+            winreg.HKEY_CURRENT_USER,
+            r"Software\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION",
+            0, winreg.KEY_ALL_ACCESS)
     except WindowsError:
-        browser_emulation = winreg.CreateKeyEx(winreg.HKEY_CURRENT_USER,
-                                               r"Software\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION",
-                                               0, winreg.KEY_ALL_ACCESS)
+        browser_emulation = winreg.CreateKeyEx(
+            winreg.HKEY_CURRENT_USER,
+            r"Software\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION",
+            0, winreg.KEY_ALL_ACCESS)
 
     try:
-        dpi_support = winreg.OpenKey(winreg.HKEY_CURRENT_USER,
-                                     r"Software\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_96DPI_PIXEL",
-                                     0, winreg.KEY_ALL_ACCESS)
+        dpi_support = winreg.OpenKey(
+            winreg.HKEY_CURRENT_USER,
+            r"Software\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_96DPI_PIXEL",
+            0, winreg.KEY_ALL_ACCESS)
     except WindowsError:
-        dpi_support = winreg.CreateKeyEx(winreg.HKEY_CURRENT_USER,
-                                               r"Software\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_96DPI_PIXEL",
-                                               0, winreg.KEY_ALL_ACCESS)
+        dpi_support = winreg.CreateKeyEx(
+            winreg.HKEY_CURRENT_USER,
+            r"Software\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_96DPI_PIXEL",
+            0, winreg.KEY_ALL_ACCESS)
 
     mode = get_ie_mode()
     executable_name = sys.executable.split("\\")[-1]
-    winreg.SetValueEx(browser_emulation, executable_name, 0, winreg.REG_DWORD, mode)
+    winreg.SetValueEx(browser_emulation, executable_name, 0, winreg.REG_DWORD,
+                      mode)
     winreg.CloseKey(browser_emulation)
 
     winreg.SetValueEx(dpi_support, executable_name, 0, winreg.REG_DWORD, 1)
@@ -101,7 +108,8 @@ class WebView(Widget):
 
     def set_url(self, value):
         if value:
-            self.native.Navigate(Uri(self.interface.url), "_self", None, "User-Agent: %s" % self.interface.user_agent)
+            self.native.Navigate(Uri(self.interface.url), "_self", None,
+                                 "User-Agent: %s" % self.interface.user_agent)
 
     def set_content(self, root_url, content):
         self.native.Url = Uri(root_url)
