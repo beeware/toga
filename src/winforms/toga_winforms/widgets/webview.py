@@ -36,7 +36,7 @@ def _set_ie_mode():
                                 r"Software\Microsoft\Internet Explorer")
         try:
             version, type = winreg.QueryValueEx(ie_key, "svcVersion")
-        except:
+        except Exception:
             version, type = winreg.QueryValueEx(ie_key, "Version")
 
         winreg.CloseKey(ie_key)
