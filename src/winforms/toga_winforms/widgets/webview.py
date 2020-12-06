@@ -84,6 +84,8 @@ class TogaWebBrowser(WinForms.WebBrowser):
     def __init__(self, interface):
         _set_ie_mode()
         super().__init__()
+        self.ScriptErrorsSuppressed = True
+        self.DpiAware = True
         self.interface = interface
 
 
