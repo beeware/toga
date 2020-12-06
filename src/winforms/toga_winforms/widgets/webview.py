@@ -1,5 +1,7 @@
 from travertino.size import at_least
 
+import json
+
 from toga_winforms.libs import Uri, WinForms
 
 from .base import Widget
@@ -37,7 +39,8 @@ class WebView(Widget):
         self.native.customUserAgent = user_agent
 
     async def evaluate_javascript(self, javascript):
-        self.interface.factory.not_implemented('WebView.evaluate_javascript()')
+        result = self.native.Document.InvokeScript('eval', (script,))
+        return None if result is None or result == 'null' else json.loads(result)
 
     def invoke_javascript(self, javascript):
         self.interface.factory.not_implemented('WebView.invoke_javascript()')
