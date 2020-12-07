@@ -1,9 +1,10 @@
 from . import dialogs
 
-from rubicon.java import JavaClass, JavaInterface
+from rubicon.java import JavaClass
 Intent = JavaClass("android/content/Intent")
 Activity = JavaClass("android/app/Activity")
 Uri = JavaClass("android/net/Uri")
+
 
 class AndroidViewport:
     def __init__(self, native):
@@ -121,7 +122,7 @@ class Window:
                         selected_uri = []
                         clip_data = result["resultData"].getClipData()
                         if clip_data is not None:
-                            for i in range (0, clip_data.getItemCount()):
+                            for i in range(0, clip_data.getItemCount()):
                                 selected_uri.append(str(clip_data.getItemAt(i).getUri()))
                     else:
                         selected_uri = [str(selected_uri)]
@@ -157,7 +158,7 @@ class Window:
                         selected_uri = []
                         clip_data = result["resultData"].getClipData()
                         if clip_data is not None:
-                            for i in range (0, clip_data.getItemCount()):
+                            for i in range(0, clip_data.getItemCount()):
                                 selected_uri.append(str(clip_data.getItemAt(i).getUri()))
                     else:
                         selected_uri = [str(selected_uri)]

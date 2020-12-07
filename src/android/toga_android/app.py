@@ -7,6 +7,7 @@ from .window import Window
 
 import asyncio
 
+
 # `MainWindow` is defined here in `app.py`, not `window.py`, to mollify the test suite.
 class MainWindow(Window):
     pass
@@ -50,7 +51,8 @@ class TogaApp(IPythonApp):
         :param int requestCode: The integer request code originally supplied to startActivityForResult(),
                                 allowing you to identify who this result came from.
         :param int resultCode: The integer result code returned by the child activity through its setResult().
-        :param Intent resultData: An Intent, which can return result data to the caller (various data can be attached to Intent "extras").
+        :param Intent resultData: An Intent, which can return result data to the caller (various data can be attached
+                                  to Intent "extras").
         """
         print("Toga app: onActivityResult")
         result_future = self.running_intents[str(requestCode)]

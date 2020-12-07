@@ -6,9 +6,10 @@
 import toga
 from toga.style import Pack
 from toga.constants import COLUMN, ROW
-from rubicon.java import JavaClass, JavaInterface
+from rubicon.java import JavaClass
 Intent = JavaClass("android/content/Intent")
 Activity = JavaClass("android/app/Activity")
+
 
 class ExampleFilebrowserApp(toga.App):
     # Button callback functions
@@ -21,7 +22,8 @@ class ExampleFilebrowserApp(toga.App):
         try:
             selected_uri = ''
             if self.use_oifm.value != 'True':
-                selected_uri = await self.app.main_window.open_file_dialog("Choose a file", self.initial_dir.value, mimetypes, multiselect)
+                selected_uri = await self.app.main_window.open_file_dialog("Choose a file", self.initial_dir.value,
+                                                                           mimetypes, multiselect)
             else:
                 intent = Intent("org.openintents.action.PICK_FILE")
                 intent.putExtra("org.openintents.extra.TITLE", "Choose a file")
@@ -33,7 +35,7 @@ class ExampleFilebrowserApp(toga.App):
                     selected_uri = 'No file selected, ResultCode was ' + str(result["resultCode"]) + ")"
         except ValueError as e:
             selected_uri = str(e)
-        print (str(selected_uri))
+        print(str(selected_uri))
         self.multiline.value = "You selected: \n" + str(selected_uri)
 
     async def do_open_folder(self, widget, **kwargs):
@@ -44,7 +46,8 @@ class ExampleFilebrowserApp(toga.App):
         try:
             selected_uri = ''
             if self.use_oifm.value != 'True':
-                selected_uri = await self.app.main_window.select_folder_dialog("Choose a folder", self.initial_dir.value, multiselect)
+                selected_uri = await self.app.main_window.select_folder_dialog("Choose a folder",
+                                                                                self.initial_dir.value, multiselect)
             else:
                 intent = Intent("org.openintents.action.PICK_DIRECTORY")
                 intent.putExtra("org.openintents.extra.TITLE", "Choose a folder")
