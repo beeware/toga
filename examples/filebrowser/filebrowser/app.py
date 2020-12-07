@@ -7,6 +7,7 @@ import toga
 from toga.style import Pack
 from toga.constants import COLUMN, ROW
 from rubicon.java import JavaClass
+
 Intent = JavaClass("android/content/Intent")
 Activity = JavaClass("android/app/Activity")
 
@@ -47,7 +48,7 @@ class ExampleFilebrowserApp(toga.App):
             selected_uri = ''
             if self.use_oifm.value != 'True':
                 selected_uri = await self.app.main_window.select_folder_dialog("Choose a folder",
-                                                                                self.initial_dir.value, multiselect)
+                                                                               self.initial_dir.value, multiselect)
             else:
                 intent = Intent("org.openintents.action.PICK_DIRECTORY")
                 intent.putExtra("org.openintents.extra.TITLE", "Choose a folder")
