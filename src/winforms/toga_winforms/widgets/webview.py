@@ -35,10 +35,6 @@ def _set_ie_mode():
         winreg.SetValueEx(key, executable_name, 0, winreg.REG_DWORD, mode)
         winreg.CloseKey(key)
 
-    browser_emulation = open_key()
-    dpi_support = open_key(
-        r"Software\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_96DPI_PIXEL"
-    )
     # Get the installed version of IE
     ie_key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE,
                             r"Software\Microsoft\Internet Explorer")
