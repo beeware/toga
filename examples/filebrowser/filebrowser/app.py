@@ -6,7 +6,9 @@
 import toga
 from toga.style import Pack
 from toga.constants import COLUMN, ROW
-
+from rubicon.java import JavaClass, JavaInterface
+Intent = JavaClass("android/content/Intent")
+Activity = JavaClass("android/app/Activity")
 
 class ExampleFilebrowserApp(toga.App):
     # Button callback functions
@@ -17,7 +19,18 @@ class ExampleFilebrowserApp(toga.App):
         if self.multiselect.value == 'True':
             multiselect = True
         try:
-            selected_uri = await self.app.main_window.open_file_dialog("Choose a file", self.initial_dir.value, mimetypes, multiselect)
+            selected_uri = ''
+            if self.use_oifm.value != 'True':
+                selected_uri = await self.app.main_window.open_file_dialog("Choose a file", self.initial_dir.value, mimetypes, multiselect)
+            else:
+                intent = Intent("org.openintents.action.PICK_FILE")
+                intent.putExtra("org.openintents.extra.TITLE", "Choose a file")
+                result = await self.app._impl.invoke_intent_for_result(intent)
+                print(str(result))
+                if result["resultData"] is not None:
+                    selected_uri = result["resultData"].getData()
+                else:
+                    selected_uri = 'No file selected, ResultCode was ' + str(result["resultCode"]) + ")"
         except ValueError as e:
             selected_uri = str(e)
         print (str(selected_uri))
@@ -29,7 +42,18 @@ class ExampleFilebrowserApp(toga.App):
         if self.multiselect.value == 'True':
             multiselect = True
         try:
-            selected_uri = await self.app.main_window.select_folder_dialog("Choose a folder", self.initial_dir.value, multiselect)
+            selected_uri = ''
+            if self.use_oifm.value != 'True':
+                selected_uri = await self.app.main_window.select_folder_dialog("Choose a folder", self.initial_dir.value, multiselect)
+            else:
+                intent = Intent("org.openintents.action.PICK_DIRECTORY")
+                intent.putExtra("org.openintents.extra.TITLE", "Choose a folder")
+                result = await self.app._impl.invoke_intent_for_result(intent)
+                print(str(result))
+                if result["resultData"] is not None:
+                    selected_uri = result["resultData"].getData()
+                else:
+                    selected_uri = 'No folder selected, ResultCode was ' + str(result["resultCode"]) + ")"
         except ValueError as e:
             selected_uri = str(e)
         self.multiline.value = "You selected: \n" + str(selected_uri)
@@ -41,20 +65,19 @@ class ExampleFilebrowserApp(toga.App):
     def startup(self):
         # Set up main window
         self.main_window = toga.MainWindow(title=self.name, size=(400, 700))
-        self.app.main_window.size = (400, 700)
         flex_style = Pack(flex=1)
 
         # set options
         self.initial_dir = toga.TextInput(placeholder='initial directory', style=flex_style)
         self.file_types = toga.TextInput(placeholder='MIME types (blank separated)', style=flex_style)
         self.multiselect = toga.TextInput(placeholder='is multiselect? (True / False)', style=flex_style)
-        self.folder = toga.TextInput(placeholder='what to select? (file / folder)', style=flex_style)
+        self.use_oifm = toga.TextInput(placeholder='Use OI Filemanager? (True / False)', style=flex_style)
         # Toga.Switch does not seem to work on Android ...
         # self.multiselect = toga.Switch('multiselect', is_on=False)
-        # self.folder = toga.Switch('select folder')
+        # self.use_oifm = toga.Switch('Use OI Filemanager')
 
         # Text field to show responses.
-        self.multiline = toga.MultilineTextInput('Ready.', style=flex_style)
+        self.multiline = toga.MultilineTextInput('Ready.', style=(Pack(height=200)))
 
         # Buttons
         btn_open_file = toga.Button('Open file', on_press=self.do_open_file, style=flex_style)
@@ -71,7 +94,7 @@ class ExampleFilebrowserApp(toga.App):
 
         # Outermost box
         outer_box = toga.Box(
-            children=[self.initial_dir, self.file_types, self.multiselect, self.folder, btn_box, self.multiline],
+            children=[self.initial_dir, self.file_types, self.multiselect, self.use_oifm, btn_box, self.multiline],
             style=Pack(
                 flex=1,
                 direction=COLUMN,
@@ -89,7 +112,7 @@ class ExampleFilebrowserApp(toga.App):
 
 
 def main():
-    return ExampleFilebrowserApp('Filebrowser Demo', 'org.beeware.widgets.filebrowser')
+    return ExampleFilebrowserApp('Android Filebrowser Demo', 'org.beeware.widgets.filebrowser')
 
 
 if __name__ == '__main__':

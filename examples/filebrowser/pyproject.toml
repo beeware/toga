@@ -2,7 +2,7 @@
 requires = ["briefcase"]
 
 [tool.briefcase]
-project_name = "Filebrowser Demo"
+project_name = "Android Filebrowser Demo"
 bundle = "org.beeware"
 version = "0.3.0.dev25"
 url = "https://beeware.org"
@@ -11,7 +11,7 @@ author = 'Tiberius Yak'
 author_email = "tiberius@beeware.org"
 
 [tool.briefcase.app.filebrowser]
-formal_name = "Filebrowser Demo"
+formal_name = "Android Filebrowser Demo"
 description = "A testing app"
 sources = ['filebrowser']
 requires = [
