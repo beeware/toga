@@ -1,10 +1,11 @@
 import sys
-
+import winreg
+from os import path
 from travertino.size import at_least
-
 from toga_winforms.libs import Uri, WinForms
 
 from .base import Widget
+
 
 ie_updated = False
 
@@ -22,68 +23,49 @@ def _set_ie_mode():
     if ie_updated:
         return
 
-    try:
-        import _winreg as winreg  # Python 2
-    except ImportError:
-        import winreg  # Python 3
+    executable_name = path.basename(sys.executable)
 
-    def get_ie_mode():
-        """
-        Get the installed version of IE
-        :return:
-        """
-        ie_key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE,
-                                r"Software\Microsoft\Internet Explorer")
+    def write(key, mode):
         try:
-            version, type = winreg.QueryValueEx(ie_key, "svcVersion")
-        except Exception:
-            version, type = winreg.QueryValueEx(ie_key, "Version")
+            key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, key, 0,
+                                 winreg.KEY_ALL_ACCESS)
+        except WindowsError:
+            key = winreg.CreateKeyEx(winreg.HKEY_CURRENT_USER, key, 0,
+                                     winreg.KEY_ALL_ACCESS)
+        winreg.SetValueEx(key, executable_name, 0, winreg.REG_DWORD, mode)
+        winreg.CloseKey(key)
 
-        winreg.CloseKey(ie_key)
-
-        if version.startswith("11"):
-            value = 0x2AF9
-        elif version.startswith("10"):
-            value = 0x2711
-        elif version.startswith("9"):
-            value = 0x270F
-        elif version.startswith("8"):
-            value = 0x22B8
-        else:
-            value = 0x2AF9  # Set IE11 as default
-
-        return value
-
+    browser_emulation = open_key()
+    dpi_support = open_key(
+        r"Software\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_96DPI_PIXEL"
+    )
+    # Get the installed version of IE
+    ie_key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE,
+                            r"Software\Microsoft\Internet Explorer")
     try:
-        browser_emulation = winreg.OpenKey(
-            winreg.HKEY_CURRENT_USER,
-            r"Software\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION",
-            0, winreg.KEY_ALL_ACCESS)
-    except WindowsError:
-        browser_emulation = winreg.CreateKeyEx(
-            winreg.HKEY_CURRENT_USER,
-            r"Software\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION",
-            0, winreg.KEY_ALL_ACCESS)
+        version, type = winreg.QueryValueEx(ie_key, "svcVersion")
+    except Exception:
+        version, type = winreg.QueryValueEx(ie_key, "Version")
 
-    try:
-        dpi_support = winreg.OpenKey(
-            winreg.HKEY_CURRENT_USER,
-            r"Software\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_96DPI_PIXEL",
-            0, winreg.KEY_ALL_ACCESS)
-    except WindowsError:
-        dpi_support = winreg.CreateKeyEx(
-            winreg.HKEY_CURRENT_USER,
-            r"Software\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_96DPI_PIXEL",
-            0, winreg.KEY_ALL_ACCESS)
+    winreg.CloseKey(ie_key)
 
-    mode = get_ie_mode()
-    executable_name = sys.executable.split("\\")[-1]
-    winreg.SetValueEx(browser_emulation, executable_name, 0, winreg.REG_DWORD,
-                      mode)
-    winreg.CloseKey(browser_emulation)
+    if version.startswith("11"):
+        mode = 0x2AF9
+    elif version.startswith("10"):
+        mode = 0x2711
+    elif version.startswith("9"):
+        mode = 0x270F
+    elif version.startswith("8"):
+        mode = 0x22B8
+    else:
+        mode = 0x2AF9  # Set IE11 as default
+    write(
+        r'Software\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION',
+        mode)
+    write(
+        r'Software\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_96DPI_PIXEL',
+        mode)
 
-    winreg.SetValueEx(dpi_support, executable_name, 0, winreg.REG_DWORD, 1)
-    winreg.CloseKey(dpi_support)
     ie_updated = True
 
 
