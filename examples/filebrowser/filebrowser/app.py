@@ -20,6 +20,18 @@ class ExampleFilebrowserApp(toga.App):
             selected_uri = await self.app.main_window.open_file_dialog("Choose a file", self.initial_dir.value, mimetypes, multiselect)
         except ValueError as e:
             selected_uri = str(e)
+        print (str(selected_uri))
+        self.multiline.value = "You selected: \n" + str(selected_uri)
+
+    async def do_open_folder(self, widget, **kwargs):
+        print("Clicked on 'Open folder'")
+        multiselect = False
+        if self.multiselect.value == 'True':
+            multiselect = True
+        try:
+            selected_uri = await self.app.main_window.select_folder_dialog("Choose a folder", self.initial_dir.value, multiselect)
+        except ValueError as e:
+            selected_uri = str(e)
         self.multiline.value = "You selected: \n" + str(selected_uri)
 
     def do_clear(self, widget, **kwargs):
@@ -29,7 +41,7 @@ class ExampleFilebrowserApp(toga.App):
     def startup(self):
         # Set up main window
         self.main_window = toga.MainWindow(title=self.name, size=(400, 700))
-
+        self.app.main_window.size = (400, 700)
         flex_style = Pack(flex=1)
 
         # set options
@@ -46,10 +58,12 @@ class ExampleFilebrowserApp(toga.App):
 
         # Buttons
         btn_open_file = toga.Button('Open file', on_press=self.do_open_file, style=flex_style)
+        btn_open_folder = toga.Button('Open folder', on_press=self.do_open_folder, style=flex_style)
         btn_clear = toga.Button('Clear', on_press=self.do_clear, style=flex_style)
         btn_box = toga.Box(
             children=[
                 btn_open_file,
+                btn_open_folder,
                 btn_clear
             ],
             style=Pack(direction=ROW)
