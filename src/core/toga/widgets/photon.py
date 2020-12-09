@@ -5,8 +5,8 @@
 #
 # Photon JavaScript Library v3.5.1
 # https://ksengine.github.io/photon/
-# 
-# Copyright Kavindu Santhusa 
+#
+# Copyright Kavindu Santhusa
 # Released under the MIT license
 # https://github.com/Ksengine/Photon/license
 
