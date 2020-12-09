@@ -87,7 +87,7 @@ class Window:
 
         :param str title: The title is ignored on Android
         :param initial_uri: The initial location shown in the file chooser. Must be a content URI, e.g.
-                            'content://com.android.externalstorage.documents/document/primary%3ADownload%2FTest-dir'
+            'content://com.android.externalstorage.documents/document/primary%3ADownload%2FTest-dir'
         :type initial_uri: str or None
         :param file_mime_types: The file types allowed to select. Must be MIME types, e.g.
                ['application/pdf','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'].
