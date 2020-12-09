@@ -1,6 +1,7 @@
 from . import dialogs
 from .libs.android import Activity, Intent, Uri
 
+
 class AndroidViewport:
     def __init__(self, native):
         self.native = native
