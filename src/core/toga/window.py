@@ -270,6 +270,7 @@ class Window:
         """ This opens a native dialog where the user can select the file to open.
         It is possible to set the initial folder and only show files with specified file extensions.
         If no path is returned (eg. dialog is canceled), a ValueError is raised.
+
         Args:
             title (str): The title of the dialog window (ignored on Android)
             initial_directory(str): Initial folder displayed in the dialog. On Android, this needs to be a content URI,
@@ -280,7 +281,7 @@ class Window:
 
         Returns:
             The absolute path(str) to the selected file or a list(str) if multiselect. On Android, you will get back
-            content URIs.
+                content URIs.
         """
         return self._impl.open_file_dialog(title, initial_directory, file_types, multiselect)
 
@@ -288,6 +289,7 @@ class Window:
         """ This opens a native dialog where the user can select a folder.
         It is possible to set the initial folder.
         If no path is returned (eg. dialog is canceled), a ValueError is raised.
+
         Args:
             title (str): The title of the dialog window (ignored on Android)
             initial_directory(str): Initial folder displayed in the dialog. On Android, this needs to be a content URI,
@@ -296,6 +298,6 @@ class Window:
 
         Returns:
             The absolute path(str) to the selected file or None. On Android, you will get back
-            content tree URIs.
+                content tree URIs.
         """
         return self._impl.select_folder_dialog(title, initial_directory, multiselect)
