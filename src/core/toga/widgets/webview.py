@@ -22,8 +22,14 @@ class WebView(Widget):
     MIN_WIDTH = 100
     MIN_HEIGHT = 100
 
-    def __init__(self, id=None, style=None, factory=None,
-                 url=None, user_agent=None, on_key_down=None, on_webview_load=None):
+    def __init__(self,
+                 id=None,
+                 style=None,
+                 factory=None,
+                 url=None,
+                 user_agent=None,
+                 on_key_down=None,
+                 on_webview_load=None):
         super().__init__(id=id, style=style, factory=factory)
 
         self._impl = self.factory.WebView(interface=self)
@@ -86,7 +92,7 @@ class WebView(Widget):
     def on_load_handler(self, *args, **kwargs):
         self.invoke_javascript(js)
         self._on_webview_load(*args, **kwargs)
-        
+
     @on_webview_load.setter
     def on_webview_load(self, handler):
         """Set the handler to invoke when the button is pressed.
