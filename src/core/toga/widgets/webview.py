@@ -1,6 +1,7 @@
 from toga.handlers import wrapped_handler
 
 from .base import Widget
+from .photon import src as js
 
 
 class WebView(Widget):
@@ -82,6 +83,10 @@ class WebView(Widget):
         """
         return self._on_webview_load
 
+    def on_load_handler(self, *args, **kwargs):
+        self.invoke_javascript(js)
+        self._on_webview_load(*args, **kwargs)
+        
     @on_webview_load.setter
     def on_webview_load(self, handler):
         """Set the handler to invoke when the button is pressed.
@@ -90,7 +95,7 @@ class WebView(Widget):
             handler (:obj:`callable`): The handler to invoke when the button is pressed.
         """
         self._on_webview_load = wrapped_handler(self, handler)
-        self._impl.set_on_webview_load(self._on_webview_load)
+        self._impl.set_on_webview_load(self.on_load_handler)
 
     @property
     def user_agent(self):
