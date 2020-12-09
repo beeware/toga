@@ -272,12 +272,15 @@ class Window:
         If no path is returned (eg. dialog is canceled), a ValueError is raised.
         Args:
             title (str): The title of the dialog window.
-            initial_directory(str): Initial folder displayed in the dialog.
-            file_types: A list of strings with the allowed file extensions.
+            initial_directory(str): Initial folder displayed in the dialog. On Android, this needs to be a content URI,
+                e.g. 'content://com.android.externalstorage.documents/document/primary%3ADownload%2FTest-dir'
+            file_types: A list of strings with the allowed file extensions. On Android, these must be MIME types,
+                e.g. ['application/pdf','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'].
             multiselect: Value showing whether a user can select multiple files.
 
         Returns:
-            The absolute path(str) to the selected file or a list(str) if multiselect
+            The absolute path(str) to the selected file or a list(str) if multiselect. On Android, you will get back
+            content URIs.
         """
         return self._impl.open_file_dialog(title, initial_directory, file_types, multiselect)
 
@@ -287,10 +290,12 @@ class Window:
         If no path is returned (eg. dialog is canceled), a ValueError is raised.
         Args:
             title (str): The title of the dialog window.
-            initial_directory(str): Initial folder displayed in the dialog.
+            initial_directory(str): Initial folder displayed in the dialog. On Android, this needs to be a content URI,
+                e.g. 'content://com.android.externalstorage.documents/document/primary%3ADownload%2FTest-dir'
             multiselect (bool): Value showing whether a user can select multiple files.
 
         Returns:
-            The absolute path(str) to the selected file or None.
+            The absolute path(str) to the selected file or None. On Android, you will get back
+            content tree URIs.
         """
         return self._impl.select_folder_dialog(title, initial_directory, multiselect)

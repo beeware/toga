@@ -22,6 +22,7 @@ class ExampleFilebrowserApp(toga.App):
             multiselect = True
         try:
             selected_uri = ''
+            print(mimetypes)
             if self.use_oifm.value != 'True':
                 selected_uri = await self.app.main_window.open_file_dialog("Choose a file", self.initial_dir.value,
                                                                            mimetypes, multiselect)

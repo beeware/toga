@@ -1,10 +1,5 @@
 from . import dialogs
-
-from rubicon.java import JavaClass
-Intent = JavaClass("android/content/Intent")
-Activity = JavaClass("android/app/Activity")
-Uri = JavaClass("android/net/Uri")
-
+from .libs.android import Activity, Intent, Uri
 
 class AndroidViewport:
     def __init__(self, native):
@@ -109,19 +104,23 @@ class Window:
             intent.putExtra("android.provider.extra.INITIAL_URI", Uri.parse(initial_uri))
         if file_mime_types is not None and file_mime_types != ['']:
             # Commented out because rubicon currently does not support arrays and nothing else works with this Intent
+            # see https://github.com/beeware/rubicon-java/pull/53
             # intent.putExtra(Intent.EXTRA_MIME_TYPES, file_mime_types)
-            pass
+            self.interface.factory.not_implemented(
+                'Window.open_file_dialog() on Android currently does not support the file_type parameter')
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, multiselect)
         selected_uri = None
         result = await self.app.invoke_intent_for_result(intent)
         if result["resultCode"] == Activity.RESULT_OK:
             if result["resultData"] is not None:
                 selected_uri = result["resultData"].getData()
-                if multiselect is True:
+                if multiselect:
                     if selected_uri is None:
+                        # when the user selects more than 1 file, getData() will be None. Instead, getClipData() will
+                        # contain the list of chosen files
                         selected_uri = []
                         clip_data = result["resultData"].getClipData()
-                        if clip_data is not None:
+                        if clip_data is not None:  # just to be sure there will never be a null reference exception...
                             for i in range(0, clip_data.getItemCount()):
                                 selected_uri.append(str(clip_data.getItemAt(i).getUri()))
                     else:
@@ -140,7 +139,7 @@ class Window:
                             'content://com.android.externalstorage.documents/document/primary%3ADownload%2FTest-dir'
         :type initial_uri: str or None
         :param bool multiselect: If True, then several files can be selected
-        :returns: The content URI of the chosen folder or a list of content URIs when multiselect=True.
+        :returns: The content tree URI of the chosen folder or a list of content URIs when multiselect=True.
         :rtype: str or list[str]
         """
         print('Invoking Intent ACTION_OPEN_DOCUMENT_TREE')
