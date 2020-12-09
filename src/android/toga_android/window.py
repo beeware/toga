@@ -137,7 +137,7 @@ class Window:
 
         :param str title: The title is ignored on Android
         :param initial_uri: The initial location shown in the file chooser. Must be a content URI, e.g.
-                            'content://com.android.externalstorage.documents/document/primary%3ADownload%2FTest-dir'
+            'content://com.android.externalstorage.documents/document/primary%3ADownload%2FTest-dir'
         :type initial_uri: str or None
         :param bool multiselect: If True, then several files can be selected
         :returns: The content tree URI of the chosen folder or a list of content URIs when multiselect=True.
