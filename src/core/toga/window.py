@@ -271,7 +271,7 @@ class Window:
         It is possible to set the initial folder and only show files with specified file extensions.
         If no path is returned (eg. dialog is canceled), a ValueError is raised.
         Args:
-            title (str): The title of the dialog window.
+            title (str): The title of the dialog window (ignored on Android)
             initial_directory(str): Initial folder displayed in the dialog. On Android, this needs to be a content URI,
                 e.g. 'content://com.android.externalstorage.documents/document/primary%3ADownload%2FTest-dir'
             file_types: A list of strings with the allowed file extensions. On Android, these must be MIME types,
@@ -289,10 +289,10 @@ class Window:
         It is possible to set the initial folder.
         If no path is returned (eg. dialog is canceled), a ValueError is raised.
         Args:
-            title (str): The title of the dialog window.
+            title (str): The title of the dialog window (ignored on Android)
             initial_directory(str): Initial folder displayed in the dialog. On Android, this needs to be a content URI,
                 e.g. 'content://com.android.externalstorage.documents/document/primary%3ADownload%2FTest-dir'
-            multiselect (bool): Value showing whether a user can select multiple files.
+            multiselect (bool): Value showing whether a user can select multiple folders (ignored on Android)
 
         Returns:
             The absolute path(str) to the selected file or None. On Android, you will get back
