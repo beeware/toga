@@ -10,28 +10,28 @@ class ScrollContainer(Widget):
     def create(self):
         print('ScrollContainer.create()')
         if self.interface.vertical:
-            vScrollView = android_widgets.ScrollView(self._native_activity)
+            self.vScrollView = android_widgets.ScrollView(self._native_activity)
             vScrollView_layout_params = android_widgets.LinearLayout__LayoutParams(
                 android_widgets.LinearLayout__LayoutParams.MATCH_PARENT,
                 android_widgets.LinearLayout__LayoutParams.MATCH_PARENT
             )
             vScrollView_layout_params.gravity = android_widgets.Gravity.TOP
         if self.interface.horizontal:
-            hScrollView = android_widgets.HorizontalScrollView(self._native_activity)
+            self.hScrollView = android_widgets.HorizontalScrollView(self._native_activity)
             hScrollView_layout_params = android_widgets.LinearLayout__LayoutParams(
                 android_widgets.LinearLayout__LayoutParams.MATCH_PARENT,
                 android_widgets.LinearLayout__LayoutParams.MATCH_PARENT
             )
             hScrollView_layout_params.gravity = android_widgets.Gravity.LEFT
             if (self.interface.vertical):
-                vScrollView.addView(hScrollView, hScrollView_layout_params)
-        if vScrollView is not None:
+                self.vScrollView.addView(self.hScrollView, hScrollView_layout_params)
+        if self.vScrollView is not None:
             print('Created vertical ScrollView')
-            self.native = vScrollView
+            self.native = self.vScrollView
         else:
-            if hScrollView is not None:
+            if self.hScrollView is not None:
                 print('Created horizontal ScrollView')
-                self.native = hScrollView
+                self.native = self.hScrollView
             else:
                 raise ValueError('ScrollContainer: either horizontal or vertical must be true')
         if self.interface.content is not None:
