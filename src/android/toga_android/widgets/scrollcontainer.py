@@ -1,6 +1,6 @@
 from ..libs import android_widgets
 from .base import Widget
-
+from toga_android.window import AndroidViewport
 
 class ScrollContainer(Widget):
     hScrollView = None
@@ -34,11 +34,12 @@ class ScrollContainer(Widget):
 
     def set_content(self, widget):
         self.content = widget
+        widget.viewport = AndroidViewport(widget.native)
         content_view_params = android_widgets.LinearLayout__LayoutParams(
             android_widgets.LinearLayout__LayoutParams.MATCH_PARENT,
             android_widgets.LinearLayout__LayoutParams.MATCH_PARENT
         )
-        self.native.addView(widget, content_view_params)
+        self.native.addView(widget.native, content_view_params)
 
     def set_vertical(self, value):
         self.create()

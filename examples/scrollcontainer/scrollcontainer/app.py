@@ -9,11 +9,13 @@ class Item(toga.Box):
 
         label = toga.Label(text)
 
-        hline = toga.Divider()
-        hline.style.padding_top = 5
-        hline.style.padding_bottom = 5
-
-        self.add(label, hline)
+        if toga.platform.current_platform != 'android':  # Divider does not yet exist on Android
+            hline = toga.Divider()
+            hline.style.padding_top = 5
+            hline.style.padding_bottom = 5
+            self.add(label, hline)
+        else:
+            self.add(label)
 
 
 class ScrollContainerApp(toga.App):
@@ -30,7 +32,7 @@ class ScrollContainerApp(toga.App):
         scroller = toga.ScrollContainer(horizontal=False)
         scroller.content = box
 
-        self.main_window = toga.MainWindow(self.name)
+        self.main_window = toga.MainWindow(self.name, size=(400, 700))
         self.main_window.content = scroller
         self.main_window.show()
 
