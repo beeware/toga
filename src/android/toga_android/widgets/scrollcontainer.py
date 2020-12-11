@@ -1,3 +1,5 @@
+from travertino.size import at_least
+
 from ..libs import android_widgets
 from .base import Widget
 from toga_android.window import AndroidViewport
@@ -14,8 +16,9 @@ class ScrollContainer(Widget):
             vScrollView_layout_params = android_widgets.LinearLayout__LayoutParams(
                 android_widgets.LinearLayout__LayoutParams.MATCH_PARENT,
                 android_widgets.LinearLayout__LayoutParams.MATCH_PARENT
-            )
+            )  # how do I now apply these layout params??
             vScrollView_layout_params.gravity = android_widgets.Gravity.TOP
+            self.vScrollView.setLayoutParams(vScrollView_layout_params)  # is this correct ??
         if self.interface.horizontal:
             self.hScrollView = android_widgets.HorizontalScrollView(self._native_activity)
             hScrollView_layout_params = android_widgets.LinearLayout__LayoutParams(
