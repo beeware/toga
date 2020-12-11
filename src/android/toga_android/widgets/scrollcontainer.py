@@ -8,6 +8,7 @@ class ScrollContainer(Widget):
     content = None
 
     def create(self):
+        print('ScrollContainer.create()')
         if self.interface.vertical:
             vScrollView = android_widgets.ScrollView(self._native_activity)
             vScrollView_layout_params = android_widgets.LinearLayout__LayoutParams(
@@ -25,14 +26,19 @@ class ScrollContainer(Widget):
             if (self.interface.vertical):
                 vScrollView.addView(hScrollView, hScrollView_layout_params)
         if vScrollView is not None:
+            print('Created vertical ScrollView')
             self.native = vScrollView
         else:
             if hScrollView is not None:
+                print('Created horizontal ScrollView')
                 self.native = hScrollView
             else:
                 raise ValueError('ScrollContainer: either horizontal or vertical must be true')
+        if self.interface.content is not None:
+            self.set_content(content)
 
     def set_content(self, widget):
+        print('ScrollContainer.set_content()')
         self.content = widget
         widget.viewport = AndroidViewport(widget.native)
         content_view_params = android_widgets.LinearLayout__LayoutParams(
@@ -40,19 +46,29 @@ class ScrollContainer(Widget):
             android_widgets.LinearLayout__LayoutParams.MATCH_PARENT
         )
         self.native.addView(widget.native, content_view_params)
+        print('Added content to ScrollContainer')
 
     def set_vertical(self, value):
-        self.create()
-        if self.content is not None:
-            self.set_content(self.content)
+        print('ScrollContainer.set_vertical(): '+str(value))
+        if (value is True and self.vScrollView is None) or (value is False and self.vScrollView is not None):
+            self.vScrollView = None
+            self.hScrollView = None
+            self.create()
+            if self.content is not None:
+                self.set_content(self.content)
 
     def set_horizontal(self, value):
-        self.create()
-        if self.content is not None:
-            self.set_content(self.content)
+        print('ScrollContainer.set_horizontal(): '+str(value))
+        if (value is True and self.hScrollView is None) or (value is False and self.hScrollView is not None):
+            self.vScrollView = None
+            self.hScrollView = None
+            self.create()
+            if self.content is not None:
+                self.set_content(self.content)
 
     def rehint(self):
         # Android can crash when rendering some widgets until they have their layout params set. Guard for that case.
+        print('ScrollContainer.rehint()')
         if self.native.getLayoutParams() is None:
             return
         self.native.measure(
