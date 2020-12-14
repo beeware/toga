@@ -49,6 +49,8 @@ class ScrollContainer(Widget):
             android_widgets.LinearLayout__LayoutParams.MATCH_PARENT
         )
         self.native.addView(widget.native, content_view_params)
+        for child in widget.interface.children:
+            child._impl.container = widget
         print('Added content to ScrollContainer')
 
     def set_vertical(self, value):
