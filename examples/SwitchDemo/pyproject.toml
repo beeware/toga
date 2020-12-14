@@ -10,35 +10,35 @@ license = "BSD license"
 author = 'Tiberius Yak'
 author_email = "tiberius@beeware.org"
 
-[tool.briefcase.app.switch]
+[tool.briefcase.app.SwitchDemo]
 formal_name = "Switch Demo"
 description = "A testing app"
-sources = ['switch']
+sources = ['SwitchDemo']
 requires = []
 
 
-[tool.briefcase.app.switch.macOS]
+[tool.briefcase.app.SwitchDemo.macOS]
 requires = [
     'toga-cocoa',
 ]
 
-[tool.briefcase.app.switch.linux]
+[tool.briefcase.app.SwitchDemo.linux]
 requires = [
     'toga-gtk',
 ]
 
-[tool.briefcase.app.switch.windows]
+[tool.briefcase.app.SwitchDemo.windows]
 requires = [
     'toga-winforms',
 ]
 
 # Mobile deployments
-[tool.briefcase.app.switch.iOS]
+[tool.briefcase.app.SwitchDemo.iOS]
 requires = [
     'toga-iOS',
 ]
 
-[tool.briefcase.app.switch.android]
+[tool.briefcase.app.SwitchDemo.android]
 requires = [
     'toga-android',
 ]
