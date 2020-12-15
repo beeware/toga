@@ -13,7 +13,7 @@ class Item(toga.Box):
             hline = toga.Divider()
             hline.style.padding_top = 5
             hline.style.padding_bottom = 5
-            for x in range(1,10):
+            for x in range(1, 10):
                 label = toga.Label(text+", "+str(x))
                 row.add(label)
             self.add(row)
@@ -26,12 +26,14 @@ class Item(toga.Box):
 
 
 class ScrollContainerApp(toga.App):
+    vscrolling = True
+    hscrolling = False
+    scroller = None
+
     def startup(self):
         box = toga.Box()
         box.style.direction = COLUMN
         box.style.padding = 10
-        self.vscrolling = True
-        self.hscrolling = False
         self.scroller = toga.ScrollContainer(horizontal=self.hscrolling, vertical=self.vscrolling)
         switch_box = toga.Box(style=Pack(direction=ROW))
         switch_box.add(toga.Switch('vertical scrolling', is_on=self.vscrolling, on_toggle=self.handle_vscrolling))
