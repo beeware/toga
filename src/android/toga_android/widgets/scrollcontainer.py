@@ -4,6 +4,7 @@ from ..libs import android_widgets, android
 from .base import Widget
 from toga_android.window import AndroidViewport
 
+
 class TogaOnTouchListener(android.View__OnTouchListener):
     is_scrolling_enabled = True
 
