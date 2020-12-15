@@ -27,7 +27,6 @@ class Item(toga.Box):
 
 class ScrollContainerApp(toga.App):
     def startup(self):
-
         box = toga.Box()
         box.style.direction = COLUMN
         box.style.padding = 10
