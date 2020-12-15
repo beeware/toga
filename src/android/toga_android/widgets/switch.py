@@ -40,6 +40,8 @@ class Switch(Widget):
         pass
 
     def rehint(self):
+        if self.native.getLayoutParams() is None:
+            return
         self.native.measure(
             android_widgets.View__MeasureSpec.UNSPECIFIED, android_widgets.View__MeasureSpec.UNSPECIFIED
         )
