@@ -112,7 +112,7 @@ class ExampledialogsApp(toga.App):
         try:
             selected_uri = ''
             selected_uri = await self.app.main_window.select_folder_dialog("Choose a folder",
-                multiselect=False)
+                                                                           multiselect=False)
             self.label.text = "You selected: " + str(selected_uri)
         except ValueError as e:
             selected_uri = str(e)
@@ -171,7 +171,7 @@ class ExampledialogsApp(toga.App):
                 style=btn_style
             )
             btn_select = toga.Button('Select Folder',
-                on_press=self.action_select_folder_dialog_android, style=btn_style)
+                                     on_press=self.action_select_folder_dialog_android, style=btn_style)
             btn_select_multi = toga.Button(
                 'Select Folders',
                 on_press=self.action_select_folder_dialog_multi_android, style=btn_style
