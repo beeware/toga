@@ -24,10 +24,6 @@ class ScrollContainer(Widget):
     hScrollListener = None
 
     def create(self):
-        print('ScrollContainer.create()')
-        print('self.interface.vertical='+str(self.interface.vertical))
-        print('self.interface.horizontal='+str(self.interface.horizontal))
-        print('self.interface.content='+str(self.interface.content))
         vScrollView = android_widgets.ScrollView(self._native_activity)
         vScrollView_layout_params = android_widgets.LinearLayout__LayoutParams(
             android_widgets.LinearLayout__LayoutParams.MATCH_PARENT,
@@ -53,7 +49,6 @@ class ScrollContainer(Widget):
             self.set_content(self.interface.content)
 
     def set_content(self, widget):
-        print('ScrollContainer.set_content()')
         widget.viewport = AndroidViewport(widget.native)
         content_view_params = android_widgets.LinearLayout__LayoutParams(
             android_widgets.LinearLayout__LayoutParams.MATCH_PARENT,
@@ -61,22 +56,18 @@ class ScrollContainer(Widget):
         )
         widget_parent = widget.native.getParent()
         if widget_parent is not None:
-            print('Removing existing parent from widget')
             widget_parent.removeView(widget.native)
         self.hScrollView.addView(widget.native, content_view_params)
         for child in widget.interface.children:
             child._impl.container = widget
 
     def set_vertical(self, value):
-        print('ScrollContainer.set_vertical({0}'.format(value))
         self.vScrollListener.is_scrolling_enabled = value
 
     def set_horizontal(self, value):
-        print('ScrollContainer.set_horizontal({0}'.format(value))
         self.hScrollListener.is_scrolling_enabled = value
 
     def rehint(self):
-        print('ScrollContainer.rehint()')
         # Android can crash when rendering some widgets until they have their layout params set. Guard for that case.
         if self.native.getLayoutParams() is None:
             return

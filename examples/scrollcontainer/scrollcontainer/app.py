@@ -7,22 +7,11 @@ class Item(toga.Box):
     def __init__(self, text):
         super().__init__(style=Pack(direction=COLUMN))
 
-        row = toga.Box(style=Pack(direction=ROW, padding_right=10))
-
-        if toga.platform.current_platform != 'android':  # Divider does not yet exist on Android
-            hline = toga.Divider()
-            hline.style.padding_top = 5
-            hline.style.padding_bottom = 5
-            for x in range(1, 10):
-                label = toga.Label(text+", "+str(x))
-                row.add(label)
-            self.add(row)
-            self.add(hline)
-        else:
-            for x in range(10):
-                label = toga.Label(text+", "+str(x))
-                row.add(label)
-            self.add(row)
+        row = toga.Box(style=Pack(direction=ROW))
+        for x in range(10):
+            label = toga.Label(text+", "+str(x), style=Pack(padding_right=10))
+            row.add(label)
+        self.add(row)
 
 
 class ScrollContainerApp(toga.App):
