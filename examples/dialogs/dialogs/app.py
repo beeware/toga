@@ -43,6 +43,18 @@ class ExampledialogsApp(toga.App):
         except ValueError:
             self.label.text = "Open file dialog was canceled"
 
+    async def action_open_file_dialog_android(self, widget):
+        try:
+            selected_uri = ''
+            selected_uri = await self.app.main_window.open_file_dialog(
+                title="Choose a file",
+                multiselect=False)
+            self.label.text = "You selected: " + str(selected_uri)
+        except ValueError as e:
+            selected_uri = str(e)
+            self.label.text = selected_uri
+        print(str(selected_uri))
+
     def action_open_file_filtered_dialog(self, widget):
         try:
             fname = self.main_window.open_file_dialog(
@@ -56,6 +68,9 @@ class ExampledialogsApp(toga.App):
                 self.label.text = "No file selected!"
         except ValueError:
             self.label.text = "Open file dialog was canceled"
+
+    def action_open_file_filtered_dialog_android(self, widget):
+        self.label.text = "file_types currently not supported by rubicon java"
 
     def action_open_file_dialog_multi(self, widget):
         try:
@@ -72,6 +87,18 @@ class ExampledialogsApp(toga.App):
         except ValueError:
             self.label.text = "Open file dialog was canceled"
 
+    async def action_open_file_dialog_multi_android(self, widget):
+        try:
+            selected_uri = ''
+            selected_uri = await self.app.main_window.open_file_dialog(
+                title="Choose a file",
+                multiselect=True)
+            self.label.text = "You selected: " + str(selected_uri)
+        except ValueError as e:
+            selected_uri = str(e)
+            self.label.text = selected_uri
+        print(str(selected_uri))
+
     def action_select_folder_dialog(self, widget):
         try:
             path_names = self.main_window.select_folder_dialog(
@@ -80,6 +107,17 @@ class ExampledialogsApp(toga.App):
             self.label.text = "Folder selected:" + ','.join([path for path in path_names])
         except ValueError:
             self.label.text = "Folder select dialog was canceled"
+
+    async def action_select_folder_dialog_android(self, widget):
+        try:
+            selected_uri = ''
+            selected_uri = await self.app.main_window.select_folder_dialog("Choose a folder",
+                multiselect=False)
+            self.label.text = "You selected: " + str(selected_uri)
+        except ValueError as e:
+            selected_uri = str(e)
+            self.label.text = selected_uri
+        print(str(selected_uri))
 
     def action_select_folder_dialog_multi(self, widget):
         try:
@@ -90,6 +128,9 @@ class ExampledialogsApp(toga.App):
             self.label.text = "Folders selected:" + ','.join([path for path in path_names])
         except ValueError:
             self.label.text = "Folders select dialog was canceled"
+
+    async def action_select_folder_dialog_multi_android(self, widget):
+        self.label.text = "Multiple folder selection is not supported"
 
     def action_save_file_dialog(self, widget):
         fname = 'Toga_file.txt'
@@ -117,24 +158,43 @@ class ExampledialogsApp(toga.App):
         btn_question = toga.Button('Question', on_press=self.action_question_dialog, style=btn_style)
         btn_confirm = toga.Button('Confirm', on_press=self.action_confirm_dialog, style=btn_style)
         btn_error = toga.Button('Error', on_press=self.action_error_dialog, style=btn_style)
-        btn_open = toga.Button('Open File', on_press=self.action_open_file_dialog, style=btn_style)
-        btn_open_filtered = toga.Button(
-            'Open File (Filtered)',
-            on_press=self.action_open_file_filtered_dialog,
-            style=btn_style
-        )
-        btn_open_multi = toga.Button(
-            'Open File (Multiple)',
-            on_press=self.action_open_file_dialog_multi,
-            style=btn_style
-        )
+        if toga.platform.current_platform == 'android':
+            btn_open = toga.Button('Open File', on_press=self.action_open_file_dialog_android, style=btn_style)
+            btn_open_filtered = toga.Button(
+                'Open File (Filtered)',
+                on_press=self.action_open_file_filtered_dialog_android,
+                style=btn_style
+            )
+            btn_open_multi = toga.Button(
+                'Open File (Multiple)',
+                on_press=self.action_open_file_dialog_multi_android,
+                style=btn_style
+            )
+            btn_select = toga.Button('Select Folder',
+                on_press=self.action_select_folder_dialog_android, style=btn_style)
+            btn_select_multi = toga.Button(
+                'Select Folders',
+                on_press=self.action_select_folder_dialog_multi_android, style=btn_style
+            )
+        else:
+            btn_open = toga.Button('Open File', on_press=self.action_open_file_dialog, style=btn_style)
+            btn_open_filtered = toga.Button(
+                'Open File (Filtered)',
+                on_press=self.action_open_file_filtered_dialog,
+                style=btn_style
+            )
+            btn_open_multi = toga.Button(
+                'Open File (Multiple)',
+                on_press=self.action_open_file_dialog_multi,
+                style=btn_style
+            )
+            btn_select = toga.Button('Select Folder', on_press=self.action_select_folder_dialog, style=btn_style)
+            btn_select_multi = toga.Button(
+                'Select Folders',
+                on_press=self.action_select_folder_dialog_multi,
+                style=btn_style
+            )
         btn_save = toga.Button('Save File', on_press=self.action_save_file_dialog, style=btn_style)
-        btn_select = toga.Button('Select Folder', on_press=self.action_select_folder_dialog, style=btn_style)
-        btn_select_multi = toga.Button(
-            'Select Folders',
-            on_press=self.action_select_folder_dialog_multi,
-            style=btn_style
-        )
 
         btn_clear = toga.Button('Clear', on_press=self.do_clear, style=btn_style)
 
