@@ -40,4 +40,5 @@ class StackSource(CollectionSource):
     def pop(self, ):
         row = self._data[-1]
         del self[-1]
+        self._notify('pop', item=row)
         return row

@@ -1,4 +1,5 @@
 from unittest import TestCase
+from unittest.mock import Mock
 
 from toga.sources.row import Row
 from toga.sources.stack_source import StackSource
@@ -27,6 +28,15 @@ class TestStackSource(TestCase):
         stack = StackSource(accessors=["first", "last"])
         stack.push(**self.one)
         self.assert_rows(stack, [Row(**self.one)])
+
+    def test_push_listener(self):
+        listener = Mock()
+        stack = StackSource(accessors=["first", "last"])
+        stack.add_listener(listener)
+        stack.push(**self.one)
+        row = Row(**self.one)
+        self.assert_rows(stack, [row])
+        listener.push.assert_called_once_with(item=row)
 
     def test_push_multiple_times(self):
         stack = StackSource(accessors=["first", "last"])
@@ -86,3 +96,15 @@ class TestStackSource(TestCase):
         popped_row = stack.pop()
         self.assertEqual(popped_row, Row(**self.one))
         self.assert_rows(stack, [Row(**self.four), Row(**self.three), Row(**self.two)])
+
+    def test_pop_listener(self):
+        listener = Mock()
+        stack = StackSource(accessors=["first", "last"])
+        stack.add_listener(listener)
+        stack.push(**self.one)
+        stack.push(**self.two)
+        stack.push(**self.three)
+        popped_row = stack.pop()
+        self.assertEqual(popped_row, Row(**self.one))
+        self.assert_rows(stack, [Row(**self.three), Row(**self.two)])
+        listener.pop.assert_called_once_with(item=popped_row)
