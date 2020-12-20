@@ -16,12 +16,15 @@ class Row:
             self._source._notify('change', item=self)
 
     def __eq__(self, other):
-        if other is None:
+        if not isinstance(other, Row):
             return False
         return self.as_dict() == other.as_dict()
 
+    def __hash__(self):
+        return hash(self.as_dict())
+
     def __repr__(self):
-        return repr(self.as_dict())
+        return "[Row: {}]".format(self.as_dict())
 
     def as_dict(self):
         return {attr: getattr(self, attr) for attr in self._attrs}
