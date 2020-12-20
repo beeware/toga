@@ -21,7 +21,7 @@ class Row:
         return self.as_dict() == other.as_dict()
 
     def __hash__(self):
-        return hash(self.as_dict())
+        return hash(frozenset(self.as_dict().items()))
 
     def __repr__(self):
         return "[Row: {}]".format(self.as_dict())
