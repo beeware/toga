@@ -21,14 +21,9 @@ class StackSource(CollectionSource):
         )
         if self.unique:
             try:
-                existing_index = next(
-                    filter(
-                        lambda index_row_tuple: index_row_tuple[1] == row,
-                        enumerate(self._data)
-                    )
-                )[0]
+                existing_index = self.index(row)
                 del self[existing_index]
-            except StopIteration:
+            except ValueError:
                 pass
         self._data.insert(0, row)
         self._notify('push', item=row)
