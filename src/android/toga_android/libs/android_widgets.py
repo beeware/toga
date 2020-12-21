@@ -30,6 +30,8 @@ SwipeRefreshLayout__OnRefreshListener = JavaInterface(
     "androidx/swiperefreshlayout/widget/SwipeRefreshLayout$OnRefreshListener")
 Switch = JavaClass("android/widget/Switch")
 Spinner = JavaClass("android/widget/Spinner")
+TableLayout = JavaClass("android/widget/TableLayout")
+TableLayout__Layoutparams = JavaClass("android/widget/TableLayout$LayoutParams")
 TextView = JavaClass("android/widget/TextView")
 TextWatcher = JavaInterface("android/text/TextWatcher")
 TypedValue = JavaClass("android/util/TypedValue")
