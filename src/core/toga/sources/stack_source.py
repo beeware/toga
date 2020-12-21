@@ -14,7 +14,7 @@ class StackSource(CollectionSource):
         self.size = size
 
     def push(self, *values, **named):
-        row = Row.create_row(
+        row = CollectionSource.create_row(
             data=dict(zip(self._accessors, values), **named),
             accessors=self._accessors,
             source=self,

@@ -13,14 +13,14 @@ class ListSource(CollectionSource):
     ######################################################################
 
     def __setitem__(self, index, value):
-        row = Row.create_row(data=value, accessors=self._accessors, source=self)
+        row = CollectionSource.create_row(data=value, accessors=self._accessors, source=self)
         self._data[index] = row
         self._notify('insert', index=index, item=row)
 
     def insert(self, index, *values, **named):
         # Coalesce values and data into a single data dictionary,
         # and use that to create the data row. Explicitly named data override.
-        row = Row.create_row(
+        row = CollectionSource.create_row(
             data=dict(zip(self._accessors, values), **named),
             accessors=self._accessors,
             source=self,
