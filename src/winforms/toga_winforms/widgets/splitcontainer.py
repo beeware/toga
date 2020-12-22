@@ -36,10 +36,13 @@ class SplitContainer(Widget):
             self.interface._weight = [weight/total for weight in self.interface._weight]
 
             # Set the position of splitter depending on the weight of splits.
-            self.native.SplitterDistance = int(
-                self.interface._weight[0] * self.interface.style.width
+            total_distance = (
+                self.native.Width
                 if self.interface.direction == self.interface.VERTICAL
-                else self.interface.style.height
+                else self.native.Height
+            )
+            self.native.SplitterDistance = int(
+                self.interface._weight[0] * total_distance
             )
 
     def set_app(self, app):
