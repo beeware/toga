@@ -16,10 +16,16 @@ class Table(Widget):
         )
         self.table_layout.setLayoutParams(table_layout_params)
         self.native = self.table_layout
-        widget.viewport = AndroidViewport(widget.native)
+        #widget.viewport = AndroidViewport(widget.native)
 
     def change_source(self, source):
-        pass
+        print('change_source: '+str(source))
+        print('# of rows: '+str(len(source)))
+
+        for i in range(len(source)):
+            row = source[i]
+            for key in row._attrs:
+                print('cell=({},{}), key={}, value={}'.format(i, self.interface._accessors.index(key), key, getattr(row, key)))
 
     def get_selection(self):
         pass
