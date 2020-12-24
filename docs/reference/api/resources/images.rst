@@ -20,6 +20,7 @@ role where an Image is required, it is bound to a factory, at which time
 the implementation is created.
 
 The path specified for an Image can be:
+
 1. A path relative to the module that defines your Toga application.
 2. An absolute filesystem path
 3. A URL. The content of the URL will be loaded in the background.
