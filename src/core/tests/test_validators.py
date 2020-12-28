@@ -390,14 +390,31 @@ class TestValidators(unittest.TestCase):
 
         self.validator_factory = validators.Number
         self.valid_inputs = [
-            "0", "00", "0.0", "1", "2.1", "-1", "-0.22", ".2", "88.0", "9."
+            "0",
+            "00",
+            "0.0",
+            "1",
+            "2.1",
+            "-1",
+            "-0.22",
+            ".2",
+            "88.0",
+            "9.",
+            "2e+7",
+            "9e-6",
+            "1.23e+15",
+            "-9.2E+23",
+            "1.23e-15",
+            "-9.2E-23",
         ]
         self.invalid_inputs = [
             ("a", default_error_message),
             ("ab", default_error_message),
             ("this is a not valid!", default_error_message),
             (".", default_error_message),
-            ("88.a", default_error_message)
+            ("88.a", default_error_message),
+            ("e+12", default_error_message),
+            ("E-9", default_error_message),
         ]
 
         self.check()
