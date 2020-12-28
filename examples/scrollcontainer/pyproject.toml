@@ -14,7 +14,9 @@ author_email = "tiberius@beeware.org"
 formal_name = "ScrollContainer Demo"
 description = "A testing app"
 sources = ['scrollcontainer']
-requires = []
+requires = [
+    'c:/Projects/Python/Toga/src/core'
+]
 
 
 [tool.briefcase.app.scrollcontainer.macOS]
@@ -40,5 +42,6 @@ requires = [
 
 [tool.briefcase.app.scrollcontainer.android]
 requires = [
-    'toga-android',
+    #'toga-android',
+   'c:/Projects/Python/Toga/src/android'
 ]
