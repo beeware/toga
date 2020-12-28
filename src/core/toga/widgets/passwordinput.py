@@ -7,3 +7,6 @@ class PasswordInput(TextInput):
     """
     def _create(self):
         self._impl = self.factory.PasswordInput(interface=self)
+
+    def set_font(self, font):
+        raise AttributeError("PasswordInput.set_font is non-sensical.")

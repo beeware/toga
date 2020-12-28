@@ -25,3 +25,6 @@ class Box(Widget):
 
         # Create a platform specific implementation of a Box
         self._impl = self.factory.Box(interface=self)
+
+    def set_font(self, font):
+        raise AttributeError("Box.set_font is non-sensical.")

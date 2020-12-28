@@ -91,3 +91,6 @@ class ScrollContainer(Widget):
     def horizontal(self, value):
         self._horizontal = value
         self._impl.set_horizontal(value)
+
+    def set_font(self, font):
+        raise AttributeError("ScrollContainer.set_font is non-sensical.")

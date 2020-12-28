@@ -106,3 +106,6 @@ class SplitContainer(Widget):
         self._direction = value
         self._impl.set_direction(value)
         self._impl.rehint()
+
+    def set_font(self, font):
+        raise AttributeError("SplitContainer.set_font is non-sensical.")
