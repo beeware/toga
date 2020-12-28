@@ -17,9 +17,6 @@ class TextInput(Widget):
     def set_value(self, value):
         self._set_value('value', value)
 
-    def set_font(self, font):
-        self._set_value('font', font=font)
-
     def set_alignment(self, value):
         self._set_value('alignment', value)
 
