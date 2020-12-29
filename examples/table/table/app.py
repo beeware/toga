@@ -23,7 +23,10 @@ class ExampleTableApp(toga.App):
         self.label_table1.text = 'You selected row: {}'.format(row.title) if row is not None else 'No row selected'
 
     def on_select_handler2(self, widget, row, **kwargs):
-        self.label_table2.text = 'Rows selected: {}'.format(len(self.table2.selection))
+        titles = ''
+        for row in self.table2.selection:
+            titles = titles + '  '+row.title
+        self.label_table2.text = 'Rows selected: {}: {}'.format(len(self.table2.selection),titles)
 
     # Button callback functions
     def insert_handler(self, widget, **kwargs):

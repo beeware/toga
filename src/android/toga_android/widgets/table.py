@@ -62,7 +62,7 @@ class Table(Widget):
                 android_widgets.TableRow__Layoutparams.MATCH_PARENT,
                 android_widgets.TableRow__Layoutparams.WRAP_CONTENT
             )
-            text_view_params.setMargins(5, 2, 5, 2)  # left, top, right, bottom
+            text_view_params.setMargins(10, 5, 10, 5)  # left, top, right, bottom
             text_view_params.gravity = android_widgets.Gravity.START
             text_view.setLayoutParams(text_view_params)
             table_row.addView(text_view)
@@ -85,7 +85,7 @@ class Table(Widget):
                 android_widgets.TableRow__Layoutparams.MATCH_PARENT,
                 android_widgets.TableRow__Layoutparams.WRAP_CONTENT
             )
-            text_view_params.setMargins(5, 2, 5, 2)  # left, top, right, bottom
+            text_view_params.setMargins(10, 5, 10, 5)  # left, top, right, bottom
             text_view_params.gravity = android_widgets.Gravity.START
             text_view.setLayoutParams(text_view_params)
             table_row.addView(text_view)
@@ -100,16 +100,22 @@ class Table(Widget):
         return value
 
     def get_selection(self):
-        pass
+        selection = []
+        for row_index in range(len(self.interface.data)):
+            try:
+                selection.append(self.selection[row_index])
+            except KeyError:
+                pass  # this row was not selected
+        return selection
 
     def scroll_to_row(self, row):
         pass
 
     def set_on_select(self, _on_select):
-        pass
+        self.interface.factory.not_implemented('Table.set_on_select()')
 
     def set_on_double_click(self, _on_double_click):
-        pass
+        self.interface.factory.not_implemented('Table.set_on_double_click()')
 
     def add_column(self, heading, accessor):
         pass
