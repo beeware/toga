@@ -120,6 +120,8 @@ class Table(Widget):
                 selection.append(self.selection[row_index])
             except KeyError:
                 pass  # this row was not selected
+        if len(selection) == 0:
+            selection = None
         return selection
 
     def scroll_to_row(self, row):
