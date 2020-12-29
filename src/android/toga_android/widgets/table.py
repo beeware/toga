@@ -5,8 +5,26 @@ from .base import Widget
 from toga_android.window import AndroidViewport
 
 
+class TogaOnClickListener(android_widgets.OnClickListener):
+    def __init__(self, impl):
+        super().__init__()
+        self.impl = impl
+
+    def onClick(self, _view):
+        tr_id = _view.getId()
+        print('tr_id='+str(tr_id))
+        row = self.impl.interface.data[tr_id]
+        if not self.impl.interface.multiple_select:
+            self.impl.selection = {}
+        self.impl.selection[tr_id] = row
+        print('selection='+str(self.impl.selection))
+        if self.impl.interface.on_select:
+            self.impl.interface.on_select(self.impl.interface, row=row)
+
+
 class Table(Widget):
     table_layout = None
+    selection = {}
 
     def create(self):
         self.table_layout = android_widgets.TableLayout(self._native_activity)
@@ -57,6 +75,9 @@ class Table(Widget):
             android_widgets.TableRow__Layoutparams.WRAP_CONTENT
         )
         table_row.setLayoutParams(table_row_params)
+        table_row.setClickable(True)
+        table_row.setOnClickListener(TogaOnClickListener(impl=self))
+        table_row.setId(row_index)
         for col_index in range(len(self.interface._accessors)):
             text_view = android_widgets.TextView(self._native_activity)
             text_view.setText(self.get_data_value(row_index, col_index))
