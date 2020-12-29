@@ -14,9 +14,17 @@ class TogaOnClickListener(android_widgets.OnClickListener):
         tr_id = _view.getId()
         print('tr_id='+str(tr_id))
         row = self.impl.interface.data[tr_id]
-        if not self.impl.interface.multiple_select:
-            self.impl.selection = {}
-        self.impl.selection[tr_id] = row
+        if self.impl.interface.multiple_select:
+            if tr_id in self.impl.selection:
+                self.impl.selection.pop(tr_id)
+                _view.setBackgroundColor(-1)  # WHITE, this should not be hard-coded, but what better way?
+            else:
+                self.impl.selection[tr_id] = row
+                _view.setBackgroundColor(-3355444)  # LTGREY, this should not be hard-coded, but what better way?
+        else:
+            self.impl.clear_selection()
+            self.impl.selection[tr_id] = row
+            _view.setBackgroundColor(-3355444)  # LTGREY, this should not be hard-coded, but what better way?
         print('selection='+str(self.impl.selection))
         if self.impl.interface.on_select:
             self.impl.interface.on_select(self.impl.interface, row=row)
@@ -47,6 +55,12 @@ class Table(Widget):
         for row_index in range(len(source)):
             table_row = self.create_table_row(row_index)
             self.table_layout.addView(table_row)
+
+    def clear_selection(self):
+        for i in range(self.table_layout.getChildCount()):
+            row = self.table_layout.getChildAt(i)
+            row.setBackgroundColor(-1)  # WHITE, this should not be hard-coded, but what better way?
+        self.selection = {}
 
     def create_table_header(self):
         table_row = android_widgets.TableRow(self._native_activity)
