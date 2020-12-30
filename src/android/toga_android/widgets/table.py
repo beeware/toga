@@ -1,6 +1,7 @@
 from travertino.size import at_least
 
 from ..libs import android_widgets
+from ..libs.activity import MainActivity
 from .base import Widget
 from toga_android.window import AndroidViewport
 
@@ -35,7 +36,7 @@ class Table(Widget):
     selection = {}
 
     def create(self):
-        self.table_layout = android_widgets.TableLayout(self._native_activity)
+        self.table_layout = android_widgets.TableLayout(MainActivity.singletonThis)
         table_layout_params = android_widgets.TableLayout__Layoutparams(
             android_widgets.TableLayout__Layoutparams.MATCH_PARENT,
             android_widgets.TableLayout__Layoutparams.WRAP_CONTENT
@@ -47,16 +48,16 @@ class Table(Widget):
             self.change_source(self.interface.data)
 
     def change_source(self, source):
-        print('change_source: '+str(source))
-        print('# of rows: '+str(len(source)))
+        print('table.change_source()')
         self.selection = {}
-        if source is None:
-            return
+        print('removing all viewss')
         self.table_layout.removeAllViews()
-        self.table_layout.addView(self.create_table_header())
-        for row_index in range(len(source)):
-            table_row = self.create_table_row(row_index)
-            self.table_layout.addView(table_row)
+        if source is not None:
+            self.table_layout.addView(self.create_table_header())
+            for row_index in range(len(source)):
+                table_row = self.create_table_row(row_index)
+                self.table_layout.addView(table_row)
+        self.table_layout.invalidate()
 
     def clear_selection(self):
         for i in range(self.table_layout.getChildCount()):
@@ -65,14 +66,14 @@ class Table(Widget):
         self.selection = {}
 
     def create_table_header(self):
-        table_row = android_widgets.TableRow(self._native_activity)
+        table_row = android_widgets.TableRow(MainActivity.singletonThis)
         table_row_params = android_widgets.TableRow__Layoutparams(
             android_widgets.TableRow__Layoutparams.MATCH_PARENT,
             android_widgets.TableRow__Layoutparams.WRAP_CONTENT
         )
         table_row.setLayoutParams(table_row_params)
         for col_index in range(len(self.interface._accessors)):
-            text_view = android_widgets.TextView(self._native_activity)
+            text_view = android_widgets.TextView(MainActivity.singletonThis)
             text_view.setText(self.interface.headings[col_index])
             text_view_params = android_widgets.TableRow__Layoutparams(
                 android_widgets.TableRow__Layoutparams.MATCH_PARENT,
@@ -85,7 +86,7 @@ class Table(Widget):
         return table_row
 
     def create_table_row(self, row_index):
-        table_row = android_widgets.TableRow(self._native_activity)
+        table_row = android_widgets.TableRow(MainActivity.singletonThis)
         table_row_params = android_widgets.TableRow__Layoutparams(
             android_widgets.TableRow__Layoutparams.MATCH_PARENT,
             android_widgets.TableRow__Layoutparams.WRAP_CONTENT
@@ -95,7 +96,7 @@ class Table(Widget):
         table_row.setOnClickListener(TogaOnClickListener(impl=self))
         table_row.setId(row_index)
         for col_index in range(len(self.interface._accessors)):
-            text_view = android_widgets.TextView(self._native_activity)
+            text_view = android_widgets.TextView(MainActivity.singletonThis)
             text_view.setText(self.get_data_value(row_index, col_index))
             text_view_params = android_widgets.TableRow__Layoutparams(
                 android_widgets.TableRow__Layoutparams.MATCH_PARENT,
@@ -125,6 +126,21 @@ class Table(Widget):
         elif not self.interface.multiple_select:
             _selection = _selection[0]
         return _selection
+
+    # data listener method
+    def insert(self, index, item):
+        print('table.insert()')
+        self.change_source(self.interface.data)
+
+    # data listener method
+    def clear(self):
+        print('table.clear()')
+        self.change_source(self.interface.data)
+
+    # data listener method
+    def remove(self, item, index):
+        print('table.remove()')
+        self.change_source(self.interface.data)
 
     def scroll_to_row(self, row):
         pass
