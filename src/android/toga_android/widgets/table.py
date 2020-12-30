@@ -49,8 +49,10 @@ class Table(Widget):
     def change_source(self, source):
         print('change_source: '+str(source))
         print('# of rows: '+str(len(source)))
+        self.selection = {}
         if source is None:
             return
+        self.table_layout.removeAllViews()
         self.table_layout.addView(self.create_table_header())
         for row_index in range(len(source)):
             table_row = self.create_table_row(row_index)
@@ -114,15 +116,15 @@ class Table(Widget):
         return value
 
     def get_selection(self):
-        selection = []
+        _selection = []
         for row_index in range(len(self.interface.data)):
-            try:
-                selection.append(self.selection[row_index])
-            except KeyError:
-                pass  # this row was not selected
-        if len(selection) == 0:
-            selection = None
-        return selection
+            if row_index in self.selection:
+                _selection.append(self.selection[row_index])
+        if len(_selection) == 0:
+            _selection = None
+        elif not self.interface.multiple_select:
+            _selection = _selection[0]
+        return _selection
 
     def scroll_to_row(self, row):
         pass
@@ -134,10 +136,10 @@ class Table(Widget):
         self.interface.factory.not_implemented('Table.set_on_double_click()')
 
     def add_column(self, heading, accessor):
-        pass
+        self.change_source(self.interface.data)
 
     def remove_column(self, accessor):
-        pass
+        self.change_source(self.interface.data)
 
     def rehint(self):
         # Android can crash when rendering some widgets until they have their layout params set. Guard for that case.

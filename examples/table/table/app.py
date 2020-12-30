@@ -24,9 +24,12 @@ class ExampleTableApp(toga.App):
 
     def on_select_handler2(self, widget, row, **kwargs):
         titles = ''
-        for row in self.table2.selection:
-            titles = titles + '  '+row.title
-        self.label_table2.text = 'Rows selected: {}: {}'.format(len(self.table2.selection),titles)
+        if self.table2.selection is not None:
+            for row in self.table2.selection:
+                titles = titles + '  '+row.title
+            self.label_table2.text = 'Rows selected: {}: {}'.format(len(self.table2.selection),titles)
+        else:
+            self.label_table2.text = 'No row selected'
 
     # Button callback functions
     def insert_handler(self, widget, **kwargs):
@@ -34,6 +37,9 @@ class ExampleTableApp(toga.App):
 
     def delete_handler(self, widget, **kwargs):
         if self.table1.selection:
+            for row in self.table1.data:
+                print(row)
+            print(self.table1.selection)
             self.table1.data.remove(self.table1.selection)
         elif len(self.table1.data) > 0:
             self.table1.data.remove(self.table1.data[0])
