@@ -265,3 +265,7 @@ class Table(Widget):
         del self.column_identifiers[accessor]
 
         self.table.sizeToFit()
+
+    def set_font(self, font):
+        # Table doesn't have a font to set
+        pass

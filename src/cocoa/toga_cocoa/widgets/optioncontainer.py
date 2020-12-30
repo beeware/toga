@@ -101,3 +101,7 @@ class OptionContainer(Widget):
 
     def set_current_tab_index(self, current_tab_index):
         self.native.selectTabViewItemAtIndex(current_tab_index)
+
+    def set_font(self, font):
+        # OptionContainer doesn't have a font to set
+        pass

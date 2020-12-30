@@ -31,10 +31,6 @@ class Button(Widget):
         # Add the layout constraints
         self.add_constraints()
 
-    def set_font(self, font):
-        if font:
-            self.native.font = font.bind(self.interface.factory).native
-
     def set_label(self, label):
         self.native.title = self.interface.label
 

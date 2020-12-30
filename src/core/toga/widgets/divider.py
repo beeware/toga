@@ -39,6 +39,3 @@ class Divider(Widget):
         self._direction = value
         self._impl.set_direction(value)
         self._impl.rehint()
-
-    def set_font(self, font):
-        raise AttributeError("Divider.set_font is non-sensical.")

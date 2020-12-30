@@ -27,3 +27,7 @@ class ActivityIndicator(Widget):
 
     def stop(self):
         self.native.stopAnimation(self.native)
+
+    def set_font(self, font):
+        # ActivityIndicator doesn't have a font to set
+        pass

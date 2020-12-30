@@ -62,3 +62,7 @@ class Slider(Widget):
 
     def set_on_release(self, handler):
         pass
+
+    def set_font(self, font):
+        # Slider doesn't have a font to set
+        pass

@@ -108,6 +108,10 @@ class Canvas(Widget):
     def redraw(self):
         self.native.needsDisplay = True
 
+    def set_font(self, font):
+        # Canvas doesn't have a single font to set
+        pass
+
     # Basic paths
 
     def new_path(self, draw_context, *args, **kwargs):

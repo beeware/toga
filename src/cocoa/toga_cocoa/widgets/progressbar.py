@@ -34,3 +34,7 @@ class ProgressBar(Widget):
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
         self.interface.intrinsic.height = self.native.intrinsicContentSize().height
+
+    def set_font(self, font):
+        # ProgressBar doesn't have a font to set
+        pass

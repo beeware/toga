@@ -225,6 +225,3 @@ class OptionContainer(Widget):
         """
         self._on_select = wrapped_handler(self, handler)
         self._impl.set_on_select(self._on_select)
-
-    def set_font(self, font):
-        raise AttributeError("OptionContainer.set_font is non-sensical.")

@@ -776,13 +776,6 @@ class Canvas(Context, Widget):
     def measure_text(self, text, font, tight=False):
         return self._impl.measure_text(text, font, tight=tight)
 
-    ###########################################################################
-    # Others
-    ###########################################################################
-
-    def set_font(self, font):
-        raise AttributeError("Canvas.set_font is non-sensical.")
-
 
 class MoveTo:
     """A user-created :class:`MoveTo <MoveTo>` drawing object which moves the

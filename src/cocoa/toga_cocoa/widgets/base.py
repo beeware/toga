@@ -76,7 +76,8 @@ class Widget:
             self.native.setHidden(hidden)
 
     def set_font(self, font):
-        pass
+        if font:
+            self.native.font = font.bind(self.interface.factory).native
 
     def set_color(self, color):
         pass

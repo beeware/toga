@@ -29,3 +29,7 @@ class Box(Widget):
         content_size = self.native.intrinsicContentSize()
         self.interface.intrinsic.width = at_least(content_size.width)
         self.interface.intrinsic.height = at_least(content_size.height)
+
+    def set_font(self, font):
+        # Box doesn't have a font to set
+        pass

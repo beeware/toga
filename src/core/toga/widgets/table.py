@@ -227,6 +227,3 @@ class Table(Widget):
     @property
     def missing_value(self):
         return self._missing_value
-
-    def set_font(self, font):
-        raise AttributeError("Table.set_font is non-sensical.")

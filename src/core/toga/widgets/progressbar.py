@@ -111,6 +111,3 @@ class ProgressBar(Widget):
 
         self._max = value
         self._impl.set_max(value)
-
-    def set_font(self, font):
-        raise AttributeError("ProgressBar.set_font is non-sensical.")

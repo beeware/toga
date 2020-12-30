@@ -36,10 +36,6 @@ class Switch(Widget):
     def set_label(self, label):
         self.native.title = self.interface.label
 
-    def set_font(self, font):
-        if font:
-            self.native.font = font.bind(self.interface.factory).native
-
     def set_is_on(self, value):
         if value is True:
             self.native.state = NSOnState
@@ -61,4 +57,8 @@ class Switch(Widget):
         self.interface.intrinsic.width = at_least(content_size.width)
 
     def set_on_toggle(self, handler):
+        pass
+
+    def set_font(self, font):
+        # Switch doesn't have a font to set
         pass

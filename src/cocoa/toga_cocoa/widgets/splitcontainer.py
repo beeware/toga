@@ -69,3 +69,7 @@ class SplitContainer(Widget):
 
     def on_resize(self):
         pass
+
+    def set_font(self, font):
+        # SplitContainer doesn't have a font to set
+        pass

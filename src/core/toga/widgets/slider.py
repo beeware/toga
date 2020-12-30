@@ -213,6 +213,3 @@ class Slider(Widget):
             "Slider.on_slide has been renamed Slider.on_change", DeprecationWarning
         )
         self.on_change = handler
-
-    def set_font(self, font):
-        raise AttributeError("Slider.set_font is non-sensical.")

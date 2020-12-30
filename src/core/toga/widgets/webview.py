@@ -142,6 +142,3 @@ class WebView(Widget):
             javascript (str): The javascript expression to evaluate.
         """
         self._impl.invoke_javascript(javascript)
-
-    def set_font(self, font):
-        raise AttributeError("WebView.set_font is non-sensical.")

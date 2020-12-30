@@ -39,3 +39,7 @@ class ImageView(Widget):
 
     def rehint(self):
         pass
+
+    def set_font(self, font):
+        # ImageView doesn't have a font to set
+        pass

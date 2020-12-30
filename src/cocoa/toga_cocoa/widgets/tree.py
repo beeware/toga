@@ -307,3 +307,7 @@ class Tree(Widget):
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
         self.interface.intrinsic.height = at_least(self.interface.MIN_HEIGHT)
+
+    def set_font(self, font):
+        # Tree doesn't have a font to set
+        pass

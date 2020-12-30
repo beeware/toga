@@ -29,3 +29,7 @@ class Divider(Widget):
         # other implementations might need to change
         # the width or height of the box here
         pass
+
+    def set_font(self, font):
+        # Divider doesn't have a font to set
+        pass
