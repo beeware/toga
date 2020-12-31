@@ -22,6 +22,10 @@ class Button(Widget):
         self.native.Text = self.interface.label
         self.rehint()
 
+    def set_font(self, font):
+        if font:
+            self.native.Font = font.bind(self.interface.factory).native
+
     def set_enabled(self, value):
         self.native.Enabled = self.interface._enabled
 
