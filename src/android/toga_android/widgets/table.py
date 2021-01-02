@@ -34,6 +34,7 @@ class TogaOnClickListener(android_widgets.OnClickListener):
 class Table(Widget):
     table_layout = None
     selection = {}
+    _deleted_column = None
 
     def create(self):
         self.table_layout = android_widgets.TableLayout(MainActivity.singletonThis)
@@ -73,6 +74,8 @@ class Table(Widget):
         )
         table_row.setLayoutParams(table_row_params)
         for col_index in range(len(self.interface._accessors)):
+            if self.interface._accessors[col_index] == self._deleted_column:
+                continue
             text_view = android_widgets.TextView(MainActivity.singletonThis)
             text_view.setText(self.interface.headings[col_index])
             text_view_params = android_widgets.TableRow__Layoutparams(
@@ -96,6 +99,8 @@ class Table(Widget):
         table_row.setOnClickListener(TogaOnClickListener(impl=self))
         table_row.setId(row_index)
         for col_index in range(len(self.interface._accessors)):
+            if self.interface._accessors[col_index] == self._deleted_column:
+                continue
             text_view = android_widgets.TextView(MainActivity.singletonThis)
             text_view.setText(self.get_data_value(row_index, col_index))
             text_view_params = android_widgets.TableRow__Layoutparams(
@@ -155,7 +160,9 @@ class Table(Widget):
         self.change_source(self.interface.data)
 
     def remove_column(self, accessor):
+        self._deleted_column = accessor
         self.change_source(self.interface.data)
+        self._deleted_column = None
 
     def rehint(self):
         # Android can crash when rendering some widgets until they have their layout params set. Guard for that case.
