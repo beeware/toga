@@ -7,7 +7,6 @@ on:
 jobs:
   windows:
     name: Winforms backend tests
-    needs: python-versions
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v1
@@ -30,7 +29,6 @@ jobs:
 
   macOS:
     name: macOS backend tests
-    needs: python-versions
     runs-on: macOS-latest
     steps:
     - uses: actions/checkout@v1
@@ -53,7 +51,6 @@ jobs:
 
   iOS:
     name: iOS backend tests
-    needs: python-versions
     runs-on: macOS-latest
     steps:
     - uses: actions/checkout@v1
@@ -76,7 +73,6 @@ jobs:
 
   gtk:
     name: GTK+ backend tests
-    needs: python-versions
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
@@ -100,7 +96,6 @@ jobs:
 
   android:
     name: Android backend tests
-    needs: python-versions
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
@@ -123,7 +118,6 @@ jobs:
 
   web:
     name: Web backend tests
-    needs: python-versions
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
