@@ -4,7 +4,7 @@ requires = ["briefcase"]
 [tool.briefcase]
 project_name = "Option Container Example"
 bundle = "org.beeware"
-version = "0.3.0.dev26"
+version = "0.3.0.dev27"
 url = "https://beeware.org"
 license = "BSD license"
 author = 'Tiberius Yak'
