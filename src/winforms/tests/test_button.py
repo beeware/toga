@@ -13,5 +13,5 @@ class TestButton(unittest.TestCase):
         self.button = toga.Button(label="Run", on_press=generator)
 
     def test_winforms_click(self):
-        self.button.on_press(None)
+        self.button.on_press(self, None)
         self.assertEqual(self.val, 4)
