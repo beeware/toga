@@ -8,6 +8,7 @@ async def long_running_task(generator, cleanup):
     """Run a generator as an asynchronous coroutine
 
     """
+    print("long_running_task")
     try:
         while True:
             delay = next(generator)
@@ -21,6 +22,7 @@ async def long_running_task(generator, cleanup):
 
 
 async def handler_with_cleanup(handler, cleanup, interface, *args, **kwargs):
+    print("Handler with cleanup")
     try:
         await handler(interface, *args, **kwargs)
         if cleanup:
