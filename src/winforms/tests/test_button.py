@@ -1,20 +1,17 @@
-from toga_dummy.utils import TestCase
-from toga_winforms.widgets import button
+import toga
+import unittest
 
 
-def generator(interface, obj):
-    for i in range(5):
-        obj.val = i
-        yield 1
-
-
-class TestButton(TestCase):
+class TestButton(unittest.TestCase):
     def setUp(self):
-        super().setUp()
-        self.button = button.Button
+        self.val = None
+
+        def generator(self, widget):
+            for i in range(5):
+                self.val = i
+                yield 1
+        self.button = toga.Button(label="Run", on_press=generator)
 
     def test_winforms_click(self):
-        self.val = None
-        self.button.on_press = generator
-        button.on_press('widget', self)
+        self.button.on_press()
         self.assertEqual(self.val, 4)
