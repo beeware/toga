@@ -2,7 +2,7 @@ from unittest import TestCase
 from unittest.mock import Mock
 
 from toga.sources import ListSource
-from toga.sources.list_source import Row
+from toga.sources.row import Row
 
 
 class RowTests(TestCase):

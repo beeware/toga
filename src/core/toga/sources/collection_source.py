@@ -62,4 +62,3 @@ class CollectionSource(Source):
         if source is not None:
             row._source = source
         return row
-

@@ -1,5 +1,4 @@
 from .collection_source import CollectionSource
-from .row import Row
 
 
 class StackSource(CollectionSource):
