@@ -420,10 +420,14 @@ class ListSourceTests(TestCase):
         for i, row in enumerate(source):
             self.assertEqual(i, source.index(row))
 
-        # look-alike rows are not equal, so index lookup should fail
+        # look-alike rows are equal, so index lookup should fail
+        lookalike_row = Row(val1='second', val2=222)
+        assert source.index(lookalike_row) == 1
+
+        # Lookup of non-existent rows raises a value error
         with self.assertRaises(ValueError):
-            lookalike_row = Row(val1='second', val2=225)
-            source.index(lookalike_row)
+            row = Row(val1='second', val2=225)
+            source.index(row)
 
         with self.assertRaises(ValueError):
             source.index(None)
