@@ -26,7 +26,8 @@ def handle_events():
 class TestGtkTable(unittest.TestCase):
     def setUp(self):
         self.table = toga.Table(
-            headings=("one", "two")
+            headings=("one", "two"),
+            missing_value='',
         )
 
         # make a shortcut for easy use

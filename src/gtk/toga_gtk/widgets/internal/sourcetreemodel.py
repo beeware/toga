@@ -133,7 +133,7 @@ class SourceTreeModel(GObject.Object, Gtk.TreeModel):
         indices = path.get_indices()
         r = self._get_row(indices)
         if r is None:
-            return (False, Gtk.TreeIter(stamp=-1))
+            return (False, Gtk.TreeIter())
         return (True, self._create_iter(user_data=r))
 
     def do_get_n_columns(self):
@@ -174,7 +174,7 @@ class SourceTreeModel(GObject.Object, Gtk.TreeModel):
             r = self._get_user_data(parent)
         if self._row_has_child(r, 0):
             return (True, self._create_iter(user_data=r[0]))
-        return (False, Gtk.TreeIter(stamp=-1))
+        return (False, Gtk.TreeIter())
 
     def do_iter_has_child(self, iter_):
         """ Gtk.TreeModel """
@@ -243,23 +243,23 @@ class SourceTreeModel(GObject.Object, Gtk.TreeModel):
         if parent is None:
             r = self.source
         elif parent.stamp != self.stamp:
-            return (False, Gtk.TreeIter(stamp=-1))
+            return (False, Gtk.TreeIter())
         else:
             r = self._get_user_data(parent)
         if self._row_has_child(r, n):
             return (True, self._create_iter(user_data=r[n]))
-        return (False, Gtk.TreeIter(stamp=-1))
+        return (False, Gtk.TreeIter())
 
     def do_iter_parent(self, child):
         """ Gtk.TreeModel """
         if not self.is_tree or child is None or (child.stamp != self.stamp):
-            return (False, Gtk.TreeIter(stamp=-1))
+            return (False, Gtk.TreeIter())
         r = self._get_user_data(child)
         if r is None or r is self.source:
-            return (False, Gtk.TreeIter(stamp=-1))
+            return (False, Gtk.TreeIter())
         parent = r._parent or self.source
         if parent is self.source:
-            return (False, Gtk.TreeIter(stamp=-1))
+            return (False, Gtk.TreeIter())
         return (True, self._create_iter(user_data=parent))
 
     def do_ref_node(self, iter_):
