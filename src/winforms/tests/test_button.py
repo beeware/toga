@@ -15,7 +15,7 @@ class TestButton(TestCase):
 
     def test_winforms_click(self):
         self.val = None
-        button = self.button()
+        button = self.button(None)
         button.set_on_press(generator)
         button.on_press()
         self.assertEqual(self.val, 4)
