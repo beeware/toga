@@ -42,7 +42,7 @@ class DetailedList(Widget):
         self.treeview.set_model(self.store)
 
     def insert(self, index, item):
-        self.store.insert(item)
+        self.store.insert(item, index=index)
 
     def change(self, item):
         self.store.change(item)

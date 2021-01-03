@@ -57,7 +57,7 @@ class SourceTreeModel(GObject.Object, Gtk.TreeModel):
         self.source = source
         self.stamp += 1
 
-    def insert(self, row):
+    def insert(self, row, index, parent=None):
         """ Called from toga impl widget """
         it = self._create_iter(user_data=row)
         index = self.source.index(row)

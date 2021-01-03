@@ -71,7 +71,7 @@ class Tree(Widget):
         self.treeview.set_model(self.store)
 
     def insert(self, parent, index, item, **kwargs):
-        self.store.insert(item)
+        self.store.insert(item, index=index, parent=parent)
 
     def change(self, item):
         self.store.change(item)
