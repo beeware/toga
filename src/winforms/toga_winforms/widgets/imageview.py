@@ -11,6 +11,9 @@ class ImageView(Widget):
         self.native.SizeMode = WinForms.PictureBoxSizeMode.StretchImage
 
     def set_image(self, image):
+        # Dispose the image when image is set to None
+        if self.native.Image is not None:
+            self.native.Image.Dispose()
         if image:
             # Workaround for loading image from url
             if self.interface._image._impl.url:
