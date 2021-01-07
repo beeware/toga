@@ -35,15 +35,24 @@ class OptionItem(BaseOptionItem):
     def index(self):
         return self._index
 
+    @property
+    def widget(self):
+        return self._widget
+
     def refresh(self):
         self._widget.refresh()
 
 
 class CurrentOptionItem(BaseOptionItem):
     """CurrentOptionItem is a proxy for whichever tab is currently selected."""
+
     @property
     def index(self):
         return self._interface._impl.get_current_tab_index()
+
+    @property
+    def widget(self):
+        return self._interface.content[self.index].widget
 
     def __add__(self, other):
         if not isinstance(other, int):

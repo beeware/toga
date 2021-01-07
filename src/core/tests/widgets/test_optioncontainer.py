@@ -30,6 +30,7 @@ class OptionContainerTests(TestCase):
         self.assertEqual(tab.label, label)
         self.assertEqual(tab._interface, self.op_container)
         self.assertEqual(tab.enabled, enabled)
+        self.assertEqual(tab.widget, widget)
 
     def add_widgets(self):
         self.op_container.add(self.label2, self.widget2)
