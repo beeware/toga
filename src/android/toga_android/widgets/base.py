@@ -6,17 +6,31 @@ from rubicon.java.jni import java
 from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT
 
 
+def _get_activity(_cache=[]):
+    """
+    Android Toga widgets need a reference to the current activity to pass it as `context` when creating
+    Android native widgets. This may be useful at any time, so we retain a global JNI ref.
+
+    :param _cache: List that is either empty or contains 1 item, the cached global JNI ref
+    """
+    if _cache:
+        return _cache[0]
+    # See MainActivity.onCreate() for initialization of .singletonThis:
+    # https://github.com/beeware/briefcase-android-gradle-template/blob/3.7/%7B%7B%20cookiecutter.formal_name%20%7D%7D/app/src/main/java/org/beeware/android/MainActivity.java
+    if MainActivity.singletonThis is None:
+        raise ValueError("Unable to find MainActivity.singletonThis from Python. This is typically set by "
+                         "org.beeware.android.MainActivity.onCreate().")
+    _cache.append(MainActivity(__jni__=java.NewGlobalRef(MainActivity.singletonThis)))
+    return _cache[0]
+
+
 class Widget:
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
         self._container = None
         self.native = None
-        # In Android, there is only one `app` (i.e., `Activity)`. Android widgets need a reference to
-        # the current activity to pass it as `context` when creating native Android widgets.
-        #
-        # This may happen at any time, so we need a global JNI ref.
-        self._native_activity = MainActivity(__jni__=java.NewGlobalRef(MainActivity.singletonThis))
+        self._native_activity = _get_activity()
         self.create()
         # Immediately re-apply styles. Some widgets may defer style application until
         # they have been added to a container.
