@@ -58,11 +58,10 @@ class Window:
         pass
 
     def get_position(self):
-        self.interface.factory.not_implemented('Window.get_position()')
-        return self.interface._position
+        return self._position
 
     def set_position(self, position):
-        pass
+        self._position = (0, 0)  # windows are always full screen in iOS
 
     def set_size(self, size):
         pass
