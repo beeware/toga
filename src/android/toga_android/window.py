@@ -51,7 +51,6 @@ class Window:
 
     def set_position(self, position):
         self._position = (0, 0)  # windows are always full screen in Android
-        pass
 
     def set_size(self, size):
         pass
