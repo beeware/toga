@@ -4,7 +4,7 @@ requires = ["briefcase"]
 [tool.briefcase]
 project_name = "WebView Demo"
 bundle = "org.beeware"
-version = "0.3.0.dev23"
+version = "0.3.0.dev25"
 url = "https://beeware.org"
 license = "BSD license"
 author = 'Tiberius Yak'
@@ -18,8 +18,7 @@ requires = []
 
 [tool.briefcase.app.webview.macOS]
 requires = [
-'../../src/core',
-'../../src/cocoa',
+    'toga-cocoa',
 ]
 
 [tool.briefcase.app.webview.linux]
@@ -35,8 +34,7 @@ requires = [
 # Mobile deployments
 [tool.briefcase.app.webview.iOS]
 requires = [
-'../../src/core',
-'../../src/ios',
+    'toga-ios',
 ]
 
 [tool.briefcase.app.webview.android]

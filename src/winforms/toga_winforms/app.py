@@ -4,7 +4,9 @@ import sys
 import traceback
 
 import toga
+from toga import Key
 from toga.handlers import wrapped_handler
+from .keys import toga_to_winforms_key
 
 from .libs import Threading, WinForms, shcore, user32, win_version
 from .libs.proactor import WinformsProactorEventLoop
@@ -52,51 +54,89 @@ class App:
         self.native.SetCompatibleTextRenderingDefault(False)
 
         self.interface.commands.add(
-            toga.Command(None, 'About ' + self.interface.name, group=toga.Group.HELP),
+            toga.Command(
+                lambda _: self.interface.about(),
+                'About {}'.format(self.interface.name),
+                group=toga.Group.HELP
+            ),
             toga.Command(None, 'Preferences', group=toga.Group.FILE),
             # Quit should always be the last item, in a section on it's own
-            toga.Command(lambda s: self.exit(), 'Exit ' + self.interface.name, shortcut='q', group=toga.Group.FILE,
-                         section=sys.maxsize),
-            toga.Command(None, 'Visit homepage', group=toga.Group.HELP)
+            toga.Command(
+                lambda _: self.interface.exit(),
+                'Exit ' + self.interface.name,
+                shortcut=Key.MOD_1 + 'q',
+                group=toga.Group.FILE,
+                section=sys.maxsize
+            ),
+            toga.Command(
+                lambda _: self.interface.visit_homepage(),
+                'Visit homepage',
+                enabled=self.interface.home_page is not None,
+                group=toga.Group.HELP
+            )
         )
         self._create_app_commands()
 
         # Call user code to populate the main window
         self.interface.startup()
-        self._menu_items = {}
         self.create_menus()
         self.interface.icon.bind(self.interface.factory)
-        self.interface.main_window._impl.native.Icon = \
-            self.interface.icon._impl.native
+        self.interface.main_window._impl.set_app(self)
 
     def create_menus(self):
+        self._menu_items = {}
+        self._menu_groups = {}
+
         toga.Group.FILE.order = 0
-        # Only create the menu if the menu item index has been created.
-        if hasattr(self, '_menu_items'):
-            menubar = WinForms.MenuStrip()
-            submenu = None
-            for cmd in self.interface.commands:
-                if cmd == toga.GROUP_BREAK:
-                    menubar.Items.Add(submenu)
-                    submenu = None
-                elif cmd == toga.SECTION_BREAK:
-                    submenu.DropDownItems.Add('-')
-                else:
-                    if submenu is None:
-                        submenu = WinForms.ToolStripMenuItem(cmd.group.label)
-                    item = WinForms.ToolStripMenuItem(cmd.label)
-                    if cmd.action:
-                        item.Click += cmd._impl.as_handler()
-                    else:
-                        item.Enabled = False
-                    cmd._impl.native.append(item)
-                    self._menu_items[item] = cmd
-                    submenu.DropDownItems.Add(item)
-            if submenu:
-                menubar.Items.Add(submenu)
-            self.interface.main_window._impl.native.Controls.Add(menubar)
-            self.interface.main_window._impl.native.MainMenuStrip = menubar
+        menubar = WinForms.MenuStrip()
+        submenu = None
+        for cmd in self.interface.commands:
+            if cmd == toga.GROUP_BREAK:
+                submenu = None
+            elif cmd == toga.SECTION_BREAK:
+                submenu.DropDownItems.Add('-')
+            else:
+                submenu = self._submenu(cmd.group, menubar)
+
+                item = WinForms.ToolStripMenuItem(cmd.label)
+
+                if cmd.action:
+                    item.Click += cmd._impl.as_handler()
+                item.Enabled = cmd.enabled
+
+                if cmd.shortcut is not None:
+                    shortcut_keys = toga_to_winforms_key(cmd.shortcut)
+                    item.ShortcutKeys = shortcut_keys
+                    item.ShowShortcutKeys = True
+
+                cmd._impl.native.append(item)
+
+                self._menu_items[item] = cmd
+                submenu.DropDownItems.Add(item)
+
+        self.interface.main_window._impl.native.Controls.Add(menubar)
+        self.interface.main_window._impl.native.MainMenuStrip = menubar
         self.interface.main_window.content.refresh()
+
+    def _submenu(self, group, menubar):
+        try:
+            return self._menu_groups[group]
+        except KeyError:
+            if group is None:
+                submenu = menubar
+            else:
+                parent_menu = self._submenu(group.parent, menubar)
+
+                submenu = WinForms.ToolStripMenuItem(group.label)
+
+                # Top level menus are added in a different way to submenus
+                if group.parent is None:
+                    parent_menu.Items.Add(submenu)
+                else:
+                    parent_menu.DropDownItems.Add(submenu)
+
+            self._menu_groups[group] = submenu
+        return submenu
 
     def _create_app_commands(self):
         # No extra menus
@@ -157,7 +197,41 @@ class App:
         thread.Join()
 
     def winforms_application_exit(self, sender, *args, **kwargs):
-        pass
+        if self.interface.on_exit is not None:
+            self.interface.on_exit(sender)
+
+    def show_about_dialog(self):
+        message_parts = []
+        if self.interface.name is not None:
+            if self.interface.version is not None:
+                message_parts.append(
+                    "{name} v{version}".format(
+                        name=self.interface.name,
+                        version=self.interface.version,
+                    )
+                )
+            else:
+                message_parts.append(
+                    "{name}".format(name=self.interface.name)
+                )
+        elif self.interface.version is not None:
+            message_parts.append(
+                "v{version}".format(version=self.interface.version)
+            )
+
+        if self.interface.author is not None:
+            message_parts.append(
+                "Author: {author}".format(author=self.interface.author)
+            )
+        if self.interface.description is not None:
+            message_parts.append(
+                "\n{description}".format(
+                    description=self.interface.description
+                )
+            )
+        self.interface.main_window.info_dialog(
+            'About {}'.format(self.interface.name), "\n".join(message_parts)
+        )
 
     def exit(self):
         self.native.Exit()
@@ -196,7 +270,7 @@ class DocumentApp(App):
             toga.Command(
                 lambda w: self.open_file,
                 label='Open...',
-                shortcut='o',
+                shortcut=Key.MOD_1 + 'o',
                 group=toga.Group.FILE,
                 section=0
             ),

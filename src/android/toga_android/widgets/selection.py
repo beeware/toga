@@ -51,7 +51,7 @@ class Selection(Widget):
         return self.native.getSelectedItem().toString()
 
     def remove_all_items(self):
-        self.native.getAdapter().clear()
+        self.adapter.clear()
 
     def rehint(self):
         self.native.measure(

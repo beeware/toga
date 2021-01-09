@@ -1,31 +1,52 @@
 from travertino.size import at_least
 
 from toga_cocoa.libs import (
-    NSObject,
     NSTextAlignment,
     NSTextField,
     NSTextFieldSquareBezel,
-    objc_method
+    objc_method,
+    send_super,
 )
 
 from .base import Widget
 
 
-class TogaTextFieldDelegate(NSObject):
+class TogaTextField(NSTextField):
     @objc_method
-    def controlTextDidChange_(self, notification) -> None:
+    def textDidChange_(self, notification) -> None:
         if self.interface.on_change:
             self.interface.on_change(self.interface)
+
+    @objc_method
+    def textShouldEndEditing_(self, textObject) -> bool:
+        return self.interface.validate()
+
+    @objc_method
+    def becomeFirstResponder(self) -> bool:
+        # Cocoa gives and then immediately revokes focus when the widget
+        # is first displayed. Set a local attribute on the first *loss*
+        # of focus, and only trigger Toga events when that attribute exists.
+        if hasattr(self, '_configured'):
+            if self.interface.on_gain_focus:
+                self.interface.on_gain_focus(self.interface)
+        return send_super(__class__, self, 'becomeFirstResponder')
+
+    @objc_method
+    def textDidEndEditing_(self, textObject) -> None:
+        # Cocoa gives and then immediately revokes focus when the widget
+        # is first displayed. Set a local attribute on the first *loss*
+        # of focus, and only trigger Toga events when that attribute exists.
+        if hasattr(self, '_configured'):
+            if self.interface.on_lose_focus:
+                self.interface.on_lose_focus(self.interface)
+        else:
+            self._configured = True
 
 
 class TextInput(Widget):
     def create(self):
-        self.native = NSTextField.new()
+        self.native = TogaTextField.new()
         self.native.interface = self.interface
-
-        delegate = TogaTextFieldDelegate.new()
-        delegate.interface = self.interface
-        self.native.delegate = delegate
 
         self.native.bezeled = True
         self.native.bezelStyle = NSTextFieldSquareBezel
@@ -64,4 +85,18 @@ class TextInput(Widget):
         self.interface.intrinsic.height = self.native.intrinsicContentSize().height
 
     def set_on_change(self, handler):
+        pass
+
+    def set_on_gain_focus(self, handler):
+        pass
+
+    def set_on_lose_focus(self, handler):
+        pass
+
+    def set_error(self, error_message):
+        if self.interface.window is not None:
+            self.interface.window.error_dialog("Validation Error", error_message)
+
+    def clear_error(self):
+        # Cocoa TextInput can't ever be in an invalid state, so clear is a no-op
         pass

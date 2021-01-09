@@ -42,3 +42,7 @@ class ButtonTests(TestCase):
             "called <class 'toga.widgets.button.Button'> with {'a': 1}"
         )
         self.assertValueSet(self.btn, 'on_press', self.btn.on_press)
+
+    def test_focus(self):
+        self.btn.focus()
+        self.assertActionPerformed(self.btn, "focus")

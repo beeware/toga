@@ -42,6 +42,10 @@ class DetailedList(Widget):
     ):
         super().__init__(id=id, style=style, factory=factory)
         self._data = None
+        self._on_delete = None
+        self._on_refresh = None
+        # at least _on_select must be defined before setting data for the Gtk impl
+        self._on_select = None
         self._impl = self.factory.DetailedList(interface=self)
 
         self.data = data
@@ -125,6 +129,14 @@ class DetailedList(Widget):
     def on_refresh(self, handler: callable):
         self._on_refresh = wrapped_handler(self, handler, self._impl.after_on_refresh)
         self._impl.set_on_refresh(self._on_refresh)
+
+    @property
+    def selection(self):
+        """The current selection of the table.
+
+        A value of None indicates no selection.
+        """
+        return self._impl.get_selection()
 
     @property
     def on_select(self):

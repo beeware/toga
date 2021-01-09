@@ -10,6 +10,7 @@ class MultilineTextInput(Widget):
         # because https://stackoverflow.com/a/612234
         self.native = WinForms.RichTextBox()
         self.native.Multiline = True
+        self.native.TextChanged += self.winforms_text_changed
 
     def set_readonly(self, value):
         self.native.ReadOnly = self.interface.readonly
@@ -27,3 +28,10 @@ class MultilineTextInput(Widget):
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
         self.interface.intrinsic.height = at_least(self.interface.MIN_HEIGHT)
+
+    def set_on_change(self, handler):
+        pass
+
+    def winforms_text_changed(self, sender, event):
+        if self.interface.on_change:
+            self.interface.on_change(self.interface)

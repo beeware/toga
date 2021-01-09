@@ -1,0 +1,44 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name = "Focus Demo"
+bundle = "org.beeware"
+version = "0.3.0.dev25"
+url = "https://beeware.org"
+license = "BSD license"
+author = 'Tiberius Yak'
+author_email = "tiberius@beeware.org"
+
+[tool.briefcase.app.focus]
+formal_name = "Focus Demo"
+description = "A testing app"
+sources = ['focus']
+requires = []
+
+
+[tool.briefcase.app.focus.macOS]
+requires = [
+    'toga-cocoa',
+]
+
+[tool.briefcase.app.focus.linux]
+requires = [
+    'toga-gtk',
+]
+
+[tool.briefcase.app.focus.windows]
+requires = [
+    'toga-winforms',
+]
+
+# Mobile deployments
+[tool.briefcase.app.focus.iOS]
+requires = [
+    'toga-iOS',
+]
+
+[tool.briefcase.app.focus.android]
+requires = [
+    'toga-android',
+]

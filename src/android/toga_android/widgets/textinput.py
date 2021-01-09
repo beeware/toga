@@ -63,6 +63,12 @@ class TextInput(Widget):
         # No special handling required.
         pass
 
+    def set_error(self, error_message):
+        self.interface.factory.not_implemented("TextInput.set_error()")
+
+    def clear_error(self):
+        self.interface.factory.not_implemented("TextInput.clear_error()")
+
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
         # Refuse to call measure() if widget has no container, i.e., has no LayoutParams.
@@ -74,3 +80,9 @@ class TextInput(Widget):
             View__MeasureSpec.UNSPECIFIED, View__MeasureSpec.UNSPECIFIED
         )
         self.interface.intrinsic.height = self.native.getMeasuredHeight()
+
+    def set_on_gain_focus(self, handler):
+        self.interface.factory.not_implemented("TextInput.set_on_gain_focus()")
+
+    def set_on_lose_focus(self, handler):
+        self.interface.factory.not_implemented("TextInput.set_on_lose_focus()")

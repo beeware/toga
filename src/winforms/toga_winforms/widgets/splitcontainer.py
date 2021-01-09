@@ -12,7 +12,8 @@ class SplitContainer(Widget):
         self.native.SplitterMoved += self.winforms_resize
         self.ratio = None
 
-    def add_content(self, position, widget):
+    def add_content(self, position, widget, flex):
+        # TODO: Add flex option to the implementation
         widget.frame = self
 
         # Add all children to the content widget.
@@ -29,6 +30,20 @@ class SplitContainer(Widget):
         elif position == 1:
             self.native.Panel2.Controls.Add(widget.native)
             widget.viewport = WinFormsViewport(self.native.Panel2, self)
+
+            # Turn all the weights into a fraction of 1.0
+            total = sum(self.interface._weight)
+            self.interface._weight = [weight/total for weight in self.interface._weight]
+
+            # Set the position of splitter depending on the weight of splits.
+            total_distance = (
+                self.native.Width
+                if self.interface.direction == self.interface.VERTICAL
+                else self.native.Height
+            )
+            self.native.SplitterDistance = int(
+                self.interface._weight[0] * total_distance
+            )
 
     def set_app(self, app):
         if self.interface.content:

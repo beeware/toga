@@ -76,7 +76,12 @@ class Window:
         self.native.ClientSize = Size(*self.interface._size)
 
     def set_app(self, app):
-        pass
+        if app is None:
+            return
+        icon_impl = app.interface.icon._impl
+        if icon_impl is None:
+            return
+        self.native.Icon = icon_impl.native
 
     @property
     def vertical_shift(self):
@@ -152,8 +157,10 @@ class Window:
         return WinForms.MessageBox.Show(message, title, WinForms.MessageBoxButtons.OK)
 
     def question_dialog(self, title, message):
-        result = WinForms.MessageBox.Show(message, title, WinForms.MessageBoxButtons.YesNo)
-        return result
+        result = WinForms.MessageBox.Show(
+            message, title, WinForms.MessageBoxButtons.YesNo
+        )
+        return result == WinForms.DialogResult.Yes
 
     def confirm_dialog(self, title, message):
         result = WinForms.MessageBox.Show(message, title, WinForms.MessageBoxButtons.OKCancel)
@@ -172,6 +179,8 @@ class Window:
         dialog.Title = title
         if suggested_filename is not None:
             dialog.FileName = suggested_filename
+        if file_types is not None:
+            dialog.Filter = self.build_filter(file_types)
         if dialog.ShowDialog() == WinForms.DialogResult.OK:
             return dialog.FileName
         else:
@@ -187,7 +196,7 @@ class Window:
         if multiselect:
             dialog.Multiselect = True
         if dialog.ShowDialog() == WinForms.DialogResult.OK:
-            return dialog.FileName
+            return dialog.FileNames if multiselect else dialog.FileName
         else:
             raise ValueError("No filename provided in the open file dialog")
 
@@ -203,6 +212,18 @@ class Window:
             raise ValueError("No folder provided in the select folder dialog")
 
     def build_filter(self, file_types):
-        file_string = "{0} files (*.{0})|*.{0}"
-        return '|'.join([file_string.format(ext) for ext in file_types]) + \
-            "|All files (*.*)|*.*"
+        filters = [
+            "{0} files (*.{0})|*.{0}".format(ext)
+            for ext in file_types
+        ] + [
+            "All files (*.*)|*.*"
+        ]
+
+        if len(file_types) > 1:
+            filters.insert(0, "All matching files ({0})|{0}".format(
+                ';'.join([
+                    '*.{0}'.format(ext)
+                    for ext in file_types
+                ])
+            ))
+        return '|'.join(filters)

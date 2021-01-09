@@ -1,15 +1,23 @@
 from travertino.size import at_least
 
-from toga_cocoa.libs import SEL, NSSlider, objc_method
+from toga_cocoa.libs import NSEventType, NSSlider, SEL, objc_method
 
 from .base import Widget
 
 
 class TogaSlider(NSSlider):
     @objc_method
-    def onSlide_(self, obj) -> None:
-        if self.interface.on_slide:
-            self.interface.on_slide(self.interface)
+    def onSlide_(self, sender) -> None:
+        event_type = sender.window.currentEvent().type
+        if event_type == NSEventType.LeftMouseDown:
+            if self.interface.on_press:
+                self.interface.on_press(self.interface)
+        elif event_type == NSEventType.LeftMouseUp:
+            if self.interface.on_release:
+                self.interface.on_release(self.interface)
+
+        if self.interface.on_change:
+            self.interface.on_change(self.interface)
 
 
 class Slider(Widget):
@@ -46,5 +54,11 @@ class Slider(Widget):
         self.interface.intrinsic.height = content_size.height
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
 
-    def set_on_slide(self, handler):
+    def set_on_change(self, handler):
+        pass
+
+    def set_on_press(self, handler):
+        pass
+
+    def set_on_release(self, handler):
         pass

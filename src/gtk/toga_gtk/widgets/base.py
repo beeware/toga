@@ -39,6 +39,7 @@ class Widget:
             # setting container, adding self to container.native
             self._container = container
             self._container.native.add(self.native)
+            self.native.show_all()
 
         for child in self.interface.children:
             child._impl.container = container
@@ -47,6 +48,9 @@ class Widget:
 
     def set_enabled(self, value):
         self.native.set_sensitive(self.interface.enabled)
+
+    def focus(self):
+        self.interface.factory.not_implemented("Widget.focus()")
 
     ######################################################################
     # APPLICATOR
@@ -62,10 +66,10 @@ class Widget:
         pass
 
     def set_hidden(self, hidden):
-        self.interface.factory.not_implemented('Widget.set_hidden()')
+        return not self.native.set_visible(not hidden)
 
     def set_font(self, font):
-        # By default, fon't can't be changed
+        # By default, font can't be changed
         pass
 
     def set_color(self, color):
@@ -81,8 +85,14 @@ class Widget:
     ######################################################################
 
     def add_child(self, child):
-        if self.container:
+        if self.viewport:
+            # we are the the top level container
+            child.container = self
+        else:
             child.container = self.container
+
+    def insert_child(self, index, child):
+        self.add_child(child)
 
     def remove_child(self, child):
         child.container = None

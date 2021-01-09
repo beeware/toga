@@ -1,4 +1,3 @@
-
 from builtins import id as identifier
 
 from travertino.node import Node
@@ -141,7 +140,8 @@ class Widget(Node):
     @property
     def app(self):
         """The App to which this widget belongs.
-        On setting the app we also iterate over all children of this widget and set them to the same app.
+        On setting the app we also iterate over all children of this widget and
+        set them to the same app.
 
         Returns:
             The :class:`toga.App` to which this widget belongs.
@@ -157,7 +157,6 @@ class Widget(Node):
         # with a different app
         if self._app and app and self._app != app:
             raise ValueError("Widget %s is already associated with an App" % self)
-
         elif self._impl:
             self._app = app
             self._impl.set_app(app)
@@ -167,7 +166,8 @@ class Widget(Node):
     @property
     def window(self):
         """The Window to which this widget belongs.
-        On setting the window, we automatically update all children of this widget to belong to the same window.
+        On setting the window, we automatically update all children of this
+        widget to belong to the same window.
 
         Returns:
             The :class:`toga.Window` to which the widget belongs.
@@ -185,9 +185,6 @@ class Widget(Node):
                 child.window = window
 
         self._set_window(window)
-
-    def _set_window(self, window):
-        pass
 
     @property
     def enabled(self):
@@ -209,3 +206,10 @@ class Widget(Node):
     def refresh_sublayouts(self):
         for child in self.children:
             child.refresh_sublayouts()
+
+    def focus(self):
+        if self._impl is not None:
+            self._impl.focus()
+
+    def _set_window(self, window):
+        pass

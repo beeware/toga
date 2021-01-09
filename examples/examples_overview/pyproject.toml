@@ -1,0 +1,44 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name = "Examples Overview"
+bundle = "org.beeware"
+version = "0.3.0.dev24"
+url = "https://beeware.org"
+license = "BSD license"
+author = 'Tiberius Yak'
+author_email = "tiberius@beeware.org"
+
+[tool.briefcase.app.examples_overview]
+formal_name = "Examples Overview"
+description = "A testing app"
+sources = ['examples_overview']
+requires = []
+
+
+[tool.briefcase.app.examples_overview.macOS]
+requires = [
+    'toga-cocoa',
+]
+
+[tool.briefcase.app.examples_overview.linux]
+requires = [
+    'toga-gtk',
+]
+
+[tool.briefcase.app.examples_overview.windows]
+requires = [
+    'toga-winforms',
+]
+
+# Mobile deployments
+[tool.briefcase.app.examples_overview.iOS]
+requires = [
+    'toga-iOS',
+]
+
+[tool.briefcase.app.examples_overview.android]
+requires = [
+    'toga-android',
+]

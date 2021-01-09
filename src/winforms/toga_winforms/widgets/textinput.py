@@ -12,8 +12,18 @@ class TextInput(Widget):
     def create(self):
         self.native = WinForms.TextBox()
         self.native.Multiline = False
-        self.native.Click += self.winforms_click
+        self.native.DoubleClick += self.winforms_double_click
         self.native.TextChanged += self.winforms_text_changed
+        self.native.Validated += self.winforms_validated
+        self.native.GotFocus += self.winforms_got_focus
+        self.native.LostFocus += self.winforms_lost_focus
+
+        self.error_provider = WinForms.ErrorProvider()
+        self.error_provider.SetIconAlignment(
+            self.native, WinForms.ErrorIconAlignment.MiddleRight
+        )
+        self.error_provider.SetIconPadding(self.native, -20)
+        self.error_provider.BlinkStyle = WinForms.ErrorBlinkStyle.NeverBlink
 
     def set_readonly(self, value):
         self.native.ReadOnly = value
@@ -50,11 +60,37 @@ class TextInput(Widget):
         self.interface.intrinsic.height = self.native.PreferredSize.Height
 
     def set_on_change(self, handler):
+        # No special handling required
+        pass
+
+    def set_on_gain_focus(self, handler):
+        # No special handling required
+        pass
+
+    def set_on_lose_focus(self, handler):
+        # No special handling required
         pass
 
     def winforms_text_changed(self, sender, event):
         if self.interface._on_change:
             self.interface.on_change(self.interface)
 
-    def winforms_click(self, sender, event):
+    def winforms_validated(self, sender, event):
+        self.interface.validate()
+
+    def winforms_got_focus(self, sender, event):
+        if self.container and self.interface.on_gain_focus:
+            self.interface.on_gain_focus(self.interface)
+
+    def winforms_lost_focus(self, sender, event):
+        if self.container and self.interface.on_lose_focus:
+            self.interface.on_lose_focus(self.interface)
+
+    def clear_error(self):
+        self.error_provider.SetError(self.native, "")
+
+    def set_error(self, error_message):
+        self.error_provider.SetError(self.native, error_message)
+
+    def winforms_double_click(self, sender, event):
         self.native.SelectAll()

@@ -1,4 +1,4 @@
-from toga_cocoa.libs import NSObject, NSTabView, NSTabViewItem, at, objc_method
+from toga_cocoa.libs import NSObject, NSTabView, NSTabViewItem, objc_method
 from toga_cocoa.window import CocoaViewport
 
 from .base import Widget
@@ -7,9 +7,12 @@ from .base import Widget
 class TogaTabViewDelegate(NSObject):
     @objc_method
     def tabView_didSelectTabViewItem_(self, view, item) -> None:
-        index = at(item.identifier).longValue
         if self.interface.on_select:
-            self.interface.on_select(self.interface, option=self.interface.content[index])
+            index = view.indexOfTabViewItem(view.selectedTabViewItem)
+            self.interface.on_select(
+                self.interface,
+                option=self.interface.content[index]
+            )
 
 
 class OptionContainer(Widget):
@@ -19,6 +22,12 @@ class OptionContainer(Widget):
         self.delegate.interface = self.interface
         self.delegate._impl = self
         self.native.delegate = self.delegate
+
+        # Cocoa doesn't provide an explicit (public) API for tracking
+        # tab enabled/disabled status; it's handled by the delegate returning
+        # if a specific tab should be enabled/disabled. Keep the set set of
+        # currently disabled tabs for reference purposes.
+        self._disabled_tabs = set()
 
         # Add the layout constraints
         self.add_constraints()
@@ -35,7 +44,7 @@ class OptionContainer(Widget):
         for child in widget.interface.children:
             child._impl.container = widget
 
-        item = NSTabViewItem.alloc().initWithIdentifier(len(self.interface.content) - 1)
+        item = NSTabViewItem.alloc().init()
         item.label = label
 
         # Turn the autoresizing mask on the widget widget
@@ -61,17 +70,23 @@ class OptionContainer(Widget):
 
     def set_option_enabled(self, index, enabled):
         tabview = self.native.tabViewItemAtIndex(index)
-        if not enabled and tabview == self.native.selectedTabViewItem:
-            # Don't allow disable a selected tab
-            raise self.interface.OptionException(
-                'Currently selected option cannot be disabled'
-            )
+        if enabled:
+            try:
+                self._disabled_tabs.remove(index)
+            except KeyError:
+                pass
+        else:
+            if tabview == self.native.selectedTabViewItem:
+                # Don't allow disable a selected tab
+                raise self.interface.OptionException(
+                    'Currently selected option cannot be disabled'
+                )
 
+            self._disabled_tabs.add(index)
         tabview._setTabEnabled(enabled)
 
     def is_option_enabled(self, index):
-        tabview = self.native.tabViewItemAtIndex(index)
-        return tabview._isTabEnabled()
+        return index not in self._disabled_tabs
 
     def set_option_label(self, index, value):
         tabview = self.native.tabViewItemAtIndex(index)
@@ -80,3 +95,9 @@ class OptionContainer(Widget):
     def get_option_label(self, index):
         tabview = self.native.tabViewItemAtIndex(index)
         return tabview.label
+
+    def get_current_tab_index(self):
+        return self.native.indexOfTabViewItem(self.native.selectedTabViewItem)
+
+    def set_current_tab_index(self, current_tab_index):
+        self.native.selectTabViewItemAtIndex(current_tab_index)

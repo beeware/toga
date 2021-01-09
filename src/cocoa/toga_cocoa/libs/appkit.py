@@ -1,10 +1,13 @@
 ##########################################################################
 # System/Library/Frameworks/AppKit.framework
 ##########################################################################
-from ctypes import Structure, c_void_p, cdll, util
-from enum import Enum
+from ctypes import Structure, c_void_p
+from enum import Enum, IntEnum
 
 from rubicon.objc import CGFloat, ObjCClass, objc_const
+from rubicon.objc.api import NSString
+from rubicon.objc.runtime import load_library
+
 from travertino.colors import (
     BLACK,
     BLUE,
@@ -25,7 +28,7 @@ from travertino.colors import (
 from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT
 
 ######################################################################
-appkit = cdll.LoadLibrary(util.find_library('AppKit'))
+appkit = load_library('AppKit')
 ######################################################################
 
 ######################################################################
@@ -62,6 +65,12 @@ NSEventTrackingRunLoopMode = c_void_p.in_dll(appkit, 'NSEventTrackingRunLoopMode
 
 NSApplicationDidHideNotification = c_void_p.in_dll(appkit, 'NSApplicationDidHideNotification')
 NSApplicationDidUnhideNotification = c_void_p.in_dll(appkit, 'NSApplicationDidUnhideNotification')
+
+NSAboutPanelOptionApplicationIcon = NSString(c_void_p.in_dll(appkit, "NSAboutPanelOptionApplicationIcon"))
+NSAboutPanelOptionApplicationName = NSString(c_void_p.in_dll(appkit, "NSAboutPanelOptionApplicationName"))
+NSAboutPanelOptionApplicationVersion = NSString(c_void_p.in_dll(appkit, "NSAboutPanelOptionApplicationVersion"))
+NSAboutPanelOptionCredits = NSString(c_void_p.in_dll(appkit, "NSAboutPanelOptionCredits"))
+NSAboutPanelOptionVersion = NSString(c_void_p.in_dll(appkit, "NSAboutPanelOptionVersion"))
 
 ######################################################################
 # NSAttributedString.h
@@ -307,6 +316,18 @@ NSEventModifierFlagControl = 1 << 18
 NSEventModifierFlagOption = 1 << 19
 NSEventModifierFlagCommand = 1 << 20
 
+
+class NSEventType(IntEnum):
+    LeftMouseDown = 1
+    LeftMouseUp = 2
+    RightMouseDown = 3
+    RightMouseUp = 4
+    MouseMoved = 5
+    LeftMouseDragged = 6
+    RightMouseDragged = 7
+    MouseEntered = 8
+
+
 ######################################################################
 # NSFont.h
 NSFont = ObjCClass('NSFont')
@@ -490,6 +511,19 @@ NSOpenPanel = ObjCClass('NSOpenPanel')
 NSOutlineView = ObjCClass('NSOutlineView')
 
 ######################################################################
+# NSParagraphStyle.h
+
+
+class NSLineBreakMode(Enum):
+    byWordWrapping = 0
+    byCharWrapping = 1
+    byClipping = 2
+    byTruncatingHead = 3
+    byTruncatingTail = 4
+    byTruncatingMiddle = 5
+
+
+######################################################################
 # NSPanel.h
 
 NSUtilityWindowMask = 1 << 4
@@ -561,7 +595,6 @@ NSStepper = ObjCClass('NSStepper')
 ######################################################################
 # NSStringDrawing.h
 
-NSString = ObjCClass('NSString')
 NSStringDrawingUsesLineFragmentOrigin = 1 << 0
 NSStringDrawingUsesFontLeading = 1 << 1
 NSStringDrawingDisableScreenFontSubstitution = 1 << 2  # DEPRECATED

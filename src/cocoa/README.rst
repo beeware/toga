@@ -12,7 +12,7 @@ For more details, see the `Toga project on Github`_.
 Prerequisites
 ~~~~~~~~~~~~~
 
-This backend requires OS X 10.7 (Lion).
+This backend requires OS X 10.10 (Yosemite).
 
 Community
 ---------
