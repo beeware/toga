@@ -18,14 +18,14 @@ class TogaOnClickListener(android_widgets.OnClickListener):
         if self.impl.interface.multiple_select:
             if tr_id in self.impl.selection:
                 self.impl.selection.pop(tr_id)
-                _view.setBackgroundColor(-1)  # WHITE, this should not be hard-coded, but what better way?
+                _view.setBackgroundColor(self.impl.color_unselected)
             else:
                 self.impl.selection[tr_id] = row
-                _view.setBackgroundColor(-3355444)  # LTGREY, this should not be hard-coded, but what better way?
+                _view.setBackgroundColor(self.impl.color_selected)
         else:
             self.impl.clear_selection()
             self.impl.selection[tr_id] = row
-            _view.setBackgroundColor(-3355444)  # LTGREY, this should not be hard-coded, but what better way?
+            _view.setBackgroundColor(self.impl.color_selected)
         print('selection='+str(self.impl.selection))
         if self.impl.interface.on_select:
             self.impl.interface.on_select(self.impl.interface, row=row)
@@ -33,10 +33,28 @@ class TogaOnClickListener(android_widgets.OnClickListener):
 
 class Table(Widget):
     table_layout = None
+    color_selected = -3355444  # LTGREY, colorControlHighlight
+    color_unselected = -1  # WHITE, colorControlNormal
     selection = {}
     _deleted_column = None
 
     def create(self):
+        _current_theme = MainActivity.singletonThis.getApplication().getTheme()
+        print('Theme: '+str(_current_theme))
+        _resources = _current_theme.getResources()
+        print(str(_current_theme.getResources()))
+        # _res_id = _resources.getIdentifier("colorMultiSelectHighlight", "color", "android")
+        _res_id = _resources.getIdentifier("colorControlHighlight", "color", "org.beeware.table")
+        print('resId: '+str(_res_id))
+        if (_res_id != 0):
+            iColor = _resources.getColor(_red_id, None)
+            print('iColor=' + str(iColor))
+            color = android_widgets.TypedValue()
+            ok = _current_theme.resolveAttribute(_res_id, color, True)
+            print(ok)
+            if ok:
+                self.color_selected = color.data
+                print('attr='+str(color.data))
         self.table_layout = android_widgets.TableLayout(MainActivity.singletonThis)
         table_layout_params = android_widgets.TableLayout__Layoutparams(
             android_widgets.TableLayout__Layoutparams.MATCH_PARENT,
@@ -63,7 +81,7 @@ class Table(Widget):
     def clear_selection(self):
         for i in range(self.table_layout.getChildCount()):
             row = self.table_layout.getChildAt(i)
-            row.setBackgroundColor(-1)  # WHITE, this should not be hard-coded, but what better way?
+            row.setBackgroundColor(self.color_unselected)
         self.selection = {}
 
     def create_table_header(self):
