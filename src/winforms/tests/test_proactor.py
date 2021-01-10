@@ -13,13 +13,6 @@ class Counter(object):
         self.count += 1
 
 
-def wrapped_func(func, context):
-    def wrapper(func, *args, **kwargs):
-        while True:
-            func(context)
-    return wrapper
-
-
 class TestProactor(unittest.TestCase):
     def setUp(self):
         self.loop = proactor.WinformsProactorEventLoop()
@@ -30,9 +23,7 @@ class TestProactor(unittest.TestCase):
         print("=====================================================================")
         # c = Counter()
         # with mock.patch.object(Counter, 'increment', wraps=c.increment) as fake_increment:
-        func = wrapped_func(self.loop.run_forever, self.app_context)
-        print("wrapped:", func)
-        thread = Thread(target=func, args=(self.app_context))
+        thread = Thread(target=self.loop.run_forever, args=(self.app_context))
         thread.start()
         # await asyncio.sleep(5)
         print('Started!')
