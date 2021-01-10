@@ -16,7 +16,7 @@ class myThread(Thread):
     def __init__(self, func, cnt):
         Thread.__init__(self)
         self.daemon = True
-        self.fun = func
+        self.func = func
         self.cnt = cnt
     def run(self):
         self.func(self.cnt)
