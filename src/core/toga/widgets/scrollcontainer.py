@@ -17,8 +17,8 @@ class ScrollContainer(Widget):
     MIN_WIDTH = 100
     MIN_HEIGHT = 100
 
-    def __init__(self, id=None, style=None, horizontal=True,
-                 vertical=True, content=None, factory=None):
+    def __init__(self, id=None, style=None, horizontal=True, vertical=True,
+                 on_scroll=None, content=None, factory=None):
         super().__init__(id=id, style=style, factory=factory)
 
         self._vertical = vertical
@@ -32,6 +32,7 @@ class ScrollContainer(Widget):
         self.vertical = vertical
         self.horizontal = horizontal
         self.content = content
+        self.on_scroll = on_scroll
 
     def _set_window(self, window):
         if self._content:
@@ -91,3 +92,28 @@ class ScrollContainer(Widget):
     def horizontal(self, value):
         self._horizontal = value
         self._impl.set_horizontal(value)
+
+    @property
+    def on_scroll(self):
+        return self._on_scroll
+
+    @on_scroll.setter
+    def on_scroll(self, on_scroll):
+        self._on_scroll = on_scroll
+        self._impl.set_on_scroll(on_scroll)
+
+    @property
+    def horizontal_position(self):
+        return self._impl.get_horizontal_position()
+
+    @horizontal_position.setter
+    def horizontal_position(self, horizontal_position):
+        self._impl.set_horizontal_position(horizontal_position)
+
+    @property
+    def vertical_position(self):
+        return self._impl.get_vertical_position()
+
+    @vertical_position.setter
+    def vertical_position(self, vertical_position):
+        return self._impl.set_vertical_position(vertical_position)
