@@ -15,7 +15,7 @@ class Counter(object):
 
 def async_test(coro):
     def wrapper(*args, **kwargs):
-        await coro
+        await asyncio.run(coro)
     return wrapper
 
 
