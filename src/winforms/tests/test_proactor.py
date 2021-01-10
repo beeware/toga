@@ -12,14 +12,6 @@ class Counter(object):
     def increment(self):
         self.count += 1
 
-class myThread(Thread):
-    def __init__(self, func, cnt):
-        Thread.__init__(self)
-        self.daemon = True
-        self.func = func
-        self.cnt = cnt
-    def run(self):
-        self.func(self.cnt)
 
 class TestProactor(unittest.TestCase):
     def setUp(self):
@@ -29,11 +21,9 @@ class TestProactor(unittest.TestCase):
 
     def test_proactor_loop(self):
         print("=====================================================================")
-        c = Counter()
+        # c = Counter()
         # with mock.patch.object(Counter, 'increment', wraps=c.increment) as fake_increment:
-        # thread = Thread(target=self.loop.run_forever, args=(self.app_context))
-        # thread.start()
-        thread = myThread(self.loop.run_forever, self.app_context)
+        thread = Thread(target=self.loop.run_forever, args=(self.app_context))
         thread.start()
         # await asyncio.sleep(5)
         print('Started!')
