@@ -1,7 +1,7 @@
 from toga_dummy.utils import TestCase
 from toga_winforms.libs import proactor, WinForms
 import unittest
-import mock
+import unittest.mock
 
 
 class Counter(object):
