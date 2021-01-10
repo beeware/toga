@@ -19,7 +19,7 @@ class TestProactor(unittest.TestCase):
         asyncio.set_event_loop(self.loop)
         self.app_context = WinForms.ApplicationContext()
 
-    async def test_proactor_loop(self):
+    def test_proactor_loop(self):
         print("=====================================================================")
         c = Counter()
         with mock.patch.object(Counter, 'increment', wraps=c.increment) as fake_increment:
