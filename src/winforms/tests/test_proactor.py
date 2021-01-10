@@ -26,7 +26,7 @@ class TestWindow(TestCase):
     def setUp(self):
         super().setUp()
 
-    @async_test
+    # @async_test
     def test_proactor_loop(self):
         print("=====================================================================")
         c = Counter()
@@ -35,4 +35,6 @@ class TestWindow(TestCase):
             asyncio.set_event_loop(self.loop)
             self.app_context = WinForms.ApplicationContext()
             self.loop.run_forever(self.app_context)
+            asyncio.sleep(5)
+            self.loop.stop()
             unittest.TestCase.assertGreaterEqual(1, fake_increment.count)
