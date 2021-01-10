@@ -16,7 +16,7 @@ class Counter(object):
 def async_test(coro):
     def wrapper(*args, **kwargs):
         loop = coro
-        thread = Thread(target=loop.run_forever)
+        thread = Thread(target=coro.loop.run_forever)
         thread.start()
         print('Started!')
         loop.call_soon_threadsafe(loop.stop)  # here
@@ -33,10 +33,10 @@ class TestProactor(unittest.TestCase):
         print("=====================================================================")
         c = Counter()
         with mock.patch.object(Counter, 'increment', wraps=c.increment) as fake_increment:
-            self.loop = proactor.WinformsProactorEventLoop()
-            asyncio.set_event_loop(self.loop)
+            loop = proactor.WinformsProactorEventLoop()
+            asyncio.set_event_loop(loop)
             self.app_context = WinForms.ApplicationContext()
-            self.loop.run_forever(self.app_context)
+            loop.run_forever(self.app_context)
             await asyncio.sleep(5)
-            self.loop.stop()
+            loop.stop()
             unittest.TestCase.assertGreaterEqual(1, fake_increment.count)
