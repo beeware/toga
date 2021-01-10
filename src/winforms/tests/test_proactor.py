@@ -32,4 +32,5 @@ class TestProactor(unittest.TestCase):
             thread.join()
             # self.loop.run_forever(self.app_context)
             print('Finished!')
+            print("fake_increment:", fake_increment)
             unittest.TestCase.assertGreaterEqual(1, fake_increment.count)
