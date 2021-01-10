@@ -13,8 +13,19 @@ class Counter(object):
         self.count += 1
 
 
+def async_test(coro):
+    def wrapper(*args, **kwargs):
+        loop = asyncio.new_event_loop()
+        try:
+            return loop.run_until_complete(coro(*args, **kwargs))
+        finally:
+            loop.close()
+    return wrapper
+
+
 class TestProactor(unittest.TestCase):
 
+    @async_test
     async def test_proactor_loop(self):
         print("=====================================================================")
         c = Counter()
