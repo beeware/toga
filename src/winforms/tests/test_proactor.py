@@ -31,6 +31,7 @@ class TestProactor(unittest.TestCase):
         # c = Counter()
         # with mock.patch.object(Counter, 'increment', wraps=c.increment) as fake_increment:
         func = wrapped_func(self.loop.run_forever, self.app_context)
+        print("wrapped:", func)
         thread = Thread(target=func)
         thread.start()
         # await asyncio.sleep(5)
