@@ -1,5 +1,5 @@
 from toga_dummy.utils import TestCase
-from toga_winforms import proactor
+from toga_winforms.libs import proactor
 import unittest
 
 
