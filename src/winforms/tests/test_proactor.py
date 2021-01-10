@@ -2,7 +2,7 @@ from toga_winforms.libs import proactor, WinForms
 import unittest
 import unittest.mock as mock
 import asyncio
-from unittest import IsolatedAsyncioTestCase
+from threading import Thread
 
 
 class Counter(object):
@@ -15,7 +15,14 @@ class Counter(object):
 
 def async_test(coro):
     def wrapper(*args, **kwargs):
-        asyncio.run(coro)
+        loop = coro
+        thread = Thread(target=loop.run_forever)
+        thread.start()
+        print('Started!')
+        loop.call_soon_threadsafe(loop.stop)  # here
+        print('Requested stop!')
+        thread.join()
+        print('Finished!')
     return wrapper
 
 
