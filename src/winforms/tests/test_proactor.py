@@ -13,10 +13,10 @@ class Counter(object):
         self.count += 1
 
 
-def wrapped_func(func, *args, **kwargs):
+def wrapped_func(func, context):
     def wrapper(func, *args, **kwargs):
         while True:
-            func(*args)
+            func(context)
     return wrapper
 
 
