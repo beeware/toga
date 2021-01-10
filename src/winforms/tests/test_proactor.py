@@ -13,8 +13,8 @@ class Counter(object):
         self.count += 1
 
 
-class TestProactor(IsolatedAsyncioTestCase):
-    
+class TestProactor(unittest.TestCase):
+
     async def test_proactor_loop(self):
         print("=====================================================================")
         c = Counter()
