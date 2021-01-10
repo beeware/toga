@@ -25,7 +25,7 @@ class TestProactor(unittest.TestCase):
         with mock.patch.object(Counter, 'increment', wraps=c.increment) as fake_increment:
             thread = Thread(target=self.loop.run_forever)
             thread.start()
-            await asyncio.sleep(5)
+            # await asyncio.sleep(5)
             print('Started!')
             self.loop.call_soon_threadsafe(self.loop.stop)  # here
             print('Requested stop!')
