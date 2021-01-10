@@ -29,6 +29,7 @@ class AsyncIOTickMessageFilter(WinForms.IMessageFilter):
 
 class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
     def run_forever(self, app_context):
+        print("run_forever")
         """Set up the asyncio event loop, integrate it with the Winforms
         event loop, and start the application.
 
@@ -99,11 +100,13 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
         WinForms.Application.Run(self.app_context)
 
     def enqueue_tick(self):
+        print("enqueue_tick")
         # Queue a call to tick in 5ms.
         self.task = Action[Task](self.tick)
         Task.Delay(5).ContinueWith(self.task)
 
     def tick(self, *args, **kwargs):
+        print("tick")
         """
         Cause a single iteration of the event loop to run on the main GUI thread.
         """
