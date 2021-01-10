@@ -5,10 +5,10 @@ from toga.constants import COLUMN, ROW
 
 class ExampleClipboardApp(toga.App):
     # Button callback functions
-    def do_stuff(self, widget, **kwargs):
+    def do_copy(self, widget, **kwargs):
         self.label.text = "Do stuff."
 
-    def do_clear(self, widget, **kwargs):
+    def do_paste(self, widget, **kwargs):
         self.label.text = "Ready."
 
     def startup(self):
@@ -22,12 +22,12 @@ class ExampleClipboardApp(toga.App):
 
         # Buttons
         btn_style = Pack(flex=1)
-        btn_do_stuff = toga.Button('Do stuff', on_press=self.do_stuff, style=btn_style)
-        btn_clear = toga.Button('Clear', on_press=self.do_clear, style=btn_style)
+        btn_copy = toga.Button('copy', on_press=self.do_copy, style=btn_style)
+        btn_paste = toga.Button('Paste', on_press=self.do_paste, style=btn_style)
         btn_box = toga.Box(
             children=[
-                btn_do_stuff,
-                btn_clear
+                btn_copy,
+                btn_paste
             ],
             style=Pack(direction=ROW)
         )
