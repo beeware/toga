@@ -23,7 +23,7 @@ class TestProactor(unittest.TestCase):
         print("=====================================================================")
         c = Counter()
         with mock.patch.object(Counter, 'increment', wraps=c.increment) as fake_increment:
-            thread = Thread(target=self.loop.run_forever)
+            thread = Thread(target=self.loop.run_forever, args=(self.app_context))
             thread.start()
             # await asyncio.sleep(5)
             print('Started!')
