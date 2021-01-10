@@ -1,0 +1,48 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name = "Clipboard Demo"
+bundle = "org.beeware"
+version = "0.3.0.dev27"
+url = "https://beeware.org"
+license = "BSD license"
+author = 'Tiberius Yak'
+author_email = "tiberius@beeware.org"
+
+[tool.briefcase.app.clipboard]
+formal_name = "Clipboard Demo"
+description = "A testing app"
+sources = ['clipboard']
+requires = [
+	'c:/Projects/Python/Toga/src/core'
+]
+
+
+[tool.briefcase.app.clipboard.macOS]
+requires = [
+    'toga-cocoa',
+]
+
+[tool.briefcase.app.clipboard.linux]
+requires = [
+    'toga-gtk',
+]
+
+[tool.briefcase.app.clipboard.windows]
+requires = [
+    # 'toga-winforms',
+	'c:/Projects/Python/Toga/src/winforms'
+]
+
+# Mobile deployments
+[tool.briefcase.app.clipboard.iOS]
+requires = [
+    'toga-iOS',
+]
+
+[tool.briefcase.app.clipboard.android]
+requires = [
+    # 'toga-android',
+	'c:/Projects/Python/Toga/src/android'
+]

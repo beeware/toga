@@ -1,7 +1,7 @@
 from toga.platform import get_platform_factory
 
 
-class Clipboard():
+class Clipboard:
 
     def __init__(self, factory=None):
         self.factory = get_platform_factory(factory)
