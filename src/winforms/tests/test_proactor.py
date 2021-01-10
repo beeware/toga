@@ -1,5 +1,5 @@
 from toga_dummy.utils import TestCase
-from toga_winforms.libs import proactor
+from toga_winforms.libs import proactor, WinForms
 import unittest
 
 
@@ -8,4 +8,4 @@ class TestWindow(TestCase):
         super().setUp()
 
     def test_proactor_loop(self):
-        self.proactor = proactor.WinformsProactorEventLoop().run_forever(None)
+        self.proactor = proactor.WinformsProactorEventLoop().run_forever(WinForms.ApplicationContext())
