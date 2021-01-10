@@ -16,7 +16,7 @@ class Counter(object):
 class TestProactor(unittest.TestCase):
     def setUp(self):
         self.loop = proactor.WinformsProactorEventLoop()
-        asyncio.set_event_loop(self.loop)
+        # asyncio.set_event_loop(self.loop)
         self.app_context = WinForms.ApplicationContext()
 
     def test_proactor_loop(self):
