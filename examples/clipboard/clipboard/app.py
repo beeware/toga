@@ -6,10 +6,13 @@ from toga.constants import COLUMN, ROW
 class ExampleClipboardApp(toga.App):
     # Button callback functions
     def do_copy(self, widget, **kwargs):
-        self.label.text = "Do stuff."
+        self.clipboard.set_clipdata(self.input.value)
+        self.label.text = "Text copied to clipboard"
 
     def do_paste(self, widget, **kwargs):
-        self.label.text = "Ready."
+        txt = self.clipboard.get_clipdata()
+        self.input.value = txt
+        self.label.text = "Text pasted from clipboard"
 
     def startup(self):
         # Set up main window
@@ -17,12 +20,13 @@ class ExampleClipboardApp(toga.App):
 
         # Label to show responses.
         self.label = toga.Label('Ready.')
-
-        widget = toga.Clipboard()
+        
+        self.input = Toga.TextInput(style=Pack(flex=1))
+        self.clipboard = toga.Clipboard()
 
         # Buttons
         btn_style = Pack(flex=1)
-        btn_copy = toga.Button('copy', on_press=self.do_copy, style=btn_style)
+        btn_copy = toga.Button('Copy', on_press=self.do_copy, style=btn_style)
         btn_paste = toga.Button('Paste', on_press=self.do_paste, style=btn_style)
         btn_box = toga.Box(
             children=[
@@ -34,7 +38,7 @@ class ExampleClipboardApp(toga.App):
 
         # Outermost box
         outer_box = toga.Box(
-            children=[btn_box, widget, self.label],
+            children=[self.input, btn_box, self.label],
             style=Pack(
                 flex=1,
                 direction=COLUMN,
