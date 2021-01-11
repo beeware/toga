@@ -2,20 +2,28 @@ from ..libs import WinForms
 
 
 class Clipboard():
+    data_types = {
+        "String": WinForms.DataFormats.StringFormat
+    }
 
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
 
-    def get_clipdata(self):
-        IDataObject iData = WinForms.Clipboard.GetDataObject()
-        #.Determines whether the data is in a format you can use.
-        if(iData.GetDataPresent(DataFormats.Text)):
-          # Yes it is, so display it in a text box.
-          return str(iData.GetData(DataFormats.Text))
+    def get_clipdata(self, type):
+        if type not in self.data_types:
+            raise ValueError('data type not implemented for this platform.')
+        iDataObject = WinForms.Clipboard.GetDataObject()
+        # Determines if the data is available in the requested format.
+        if iDataObject.GetDataPresent(data_types[type]):
+            return iData.GetData(data_types[type])
         else:
-          return None
+            return None
 
     def set_clipdata(self, data):
-        WinForms.Clipboard.SetDataObject(data)
+        if data is None:
+            WinForms.Clipboard.Clear()
+        else:
+            # set data persistently (stays in clipboard when app ends)
+            WinForms.Clipboard.SetDataObject(data, true)
         
