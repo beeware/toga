@@ -10,7 +10,7 @@ class ExampleClipboardApp(toga.App):
         self.label.text = "Text copied to clipboard"
 
     def do_paste(self, widget, **kwargs):
-        txt = self.clipboard.get_clipdata()
+        txt = self.clipboard.get_clipdata("String")
         self.input.value = txt
         self.label.text = "Text pasted from clipboard"
 
