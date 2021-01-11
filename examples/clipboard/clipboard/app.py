@@ -7,13 +7,16 @@ from toga.util.clipboard import Clipboard
 class ExampleClipboardApp(toga.App):
     # Button callback functions
     def do_copy(self, widget, **kwargs):
-        self.clipboard.set_clipdata(self.input.value)
+        self.clipboard.set_text(self.input.value)
         self.label.text = "Text copied to clipboard"
 
     def do_paste(self, widget, **kwargs):
-        txt = self.clipboard.get_clipdata("Text")
-        self.input.value = txt
-        self.label.text = "Text pasted from clipboard"
+        txt = self.clipboard.get_text()
+        if txt is None:
+            self.label.text = "No text data available in clipboard"
+        else:
+            self.input.value = txt
+            self.label.text = "Text pasted from clipboard"
 
     def startup(self):
         # Set up main window
@@ -22,7 +25,7 @@ class ExampleClipboardApp(toga.App):
         # Label to show responses.
         self.label = toga.Label('Ready.')
         
-        self.input = toga.TextInput(style=Pack(flex=1))
+        self.input = toga.MultilineTextInput(style=Pack(flex=1))
         self.clipboard = Clipboard()
 
         # Buttons

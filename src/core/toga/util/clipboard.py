@@ -2,10 +2,6 @@ from toga.platform import get_platform_factory
 
 
 class Clipboard:
-    # all data types that are currently supported
-    data_types = (
-        "Text"
-    )
 
     def __init__(self, factory=None):
         self.factory = get_platform_factory(factory)
@@ -13,21 +9,18 @@ class Clipboard:
         # Create a platform specific implementation of the clipboard
         self._impl = self.factory.Clipboard(interface=self)
 
-    def get_clipdata(self, type):
+    def get_text(self):
         """
-        Get the data currently stored in the clipboard
+        Get the text data currently stored in the clipboard
 
-        :param str type: The data type of the data to get, must be a type listed in Clipboard.data_types
-        :returns: The data from the clipboard or None
+        :returns: The clipboard text data or None
         """
-        if type not in self.data_types:
-            raise ValueError('unsupported data type')
-        return self._impl.get_clipdata(type)
+        return self._impl.get_text()
 
-    def set_clipdata(self, data):
+    def set_text(self, text):
         """
-        Put data into the clipboard
+        Put text data into the clipboard
 
-        :param data: The data to put into the clipboard. Use None to clear the clipboard
+        :param text: The text to put into the clipboard. Use None to clear the clipboard
         """
-        self._impl.set_clipdata(data)
+        self._impl.set_text(text)
