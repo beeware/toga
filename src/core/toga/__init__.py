@@ -7,8 +7,8 @@ from .fonts import Font
 from .icons import Icon
 from .images import Image
 from .keys import Key
-from .widgets.activityindicator import ActivityIndicator
 # Widgets
+from .widgets.activityindicator import ActivityIndicator
 from .widgets.base import Widget
 from .widgets.box import Box
 from .widgets.button import Button

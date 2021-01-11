@@ -4,7 +4,7 @@ from toga.platform import get_platform_factory
 class Clipboard:
     # all data types that are currently supported
     data_types = (
-        "String"
+        "Text"
     )
 
     def __init__(self, factory=None):

@@ -1,6 +1,7 @@
 import toga
 from toga.style import Pack
 from toga.constants import COLUMN, ROW
+from toga.util.clipboard import Clipboard
 
 
 class ExampleClipboardApp(toga.App):
@@ -10,7 +11,7 @@ class ExampleClipboardApp(toga.App):
         self.label.text = "Text copied to clipboard"
 
     def do_paste(self, widget, **kwargs):
-        txt = self.clipboard.get_clipdata("String")
+        txt = self.clipboard.get_clipdata("Text")
         self.input.value = txt
         self.label.text = "Text pasted from clipboard"
 
@@ -21,8 +22,8 @@ class ExampleClipboardApp(toga.App):
         # Label to show responses.
         self.label = toga.Label('Ready.')
         
-        self.input = Toga.TextInput(style=Pack(flex=1))
-        self.clipboard = toga.Clipboard()
+        self.input = toga.TextInput(style=Pack(flex=1))
+        self.clipboard = Clipboard()
 
         # Buttons
         btn_style = Pack(flex=1)

@@ -3,7 +3,7 @@ from ..libs import WinForms
 
 class Clipboard():
     data_types = {
-        "String": WinForms.DataFormats.StringFormat
+        "Text": WinForms.DataFormats.Text
     }
 
     def __init__(self, interface):
@@ -15,8 +15,8 @@ class Clipboard():
             raise ValueError('data type not implemented for this platform.')
         iDataObject = WinForms.Clipboard.GetDataObject()
         # Determines if the data is available in the requested format.
-        if iDataObject.GetDataPresent(data_types[type]):
-            return iData.GetData(data_types[type])
+        if iDataObject.GetDataPresent(self.data_types[type]):
+            return iDataObject.GetData(self.data_types[type])
         else:
             return None
 
@@ -25,5 +25,5 @@ class Clipboard():
             WinForms.Clipboard.Clear()
         else:
             # set data persistently (stays in clipboard when app ends)
-            WinForms.Clipboard.SetDataObject(data, true)
+            WinForms.Clipboard.SetDataObject(data, True)
         
