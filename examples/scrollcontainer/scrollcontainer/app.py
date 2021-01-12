@@ -17,7 +17,7 @@ class Item(toga.Box):
 
 
 class ScrollContainerApp(toga.App):
-    TOGGLE_CHUNK = 0.1
+    TOGGLE_CHUNK = 10
 
     def startup(self):
         self.top_label = toga.Label("I'm top", style=Pack(width=100))
@@ -61,12 +61,16 @@ class ScrollContainerApp(toga.App):
         self.top_label.text = "I'm at {:.2f}".format(self.scroller.vertical_position)
 
     def toggle_up(self, widget):
-        if self.scroller.vertical_position > self.TOGGLE_CHUNK:
+        try:
             self.scroller.vertical_position -= self.TOGGLE_CHUNK
+        except ValueError:
+            pass
 
     def toggle_down(self, widget):
-        if self.scroller.vertical_position < 1 - self.TOGGLE_CHUNK:
+        try:
             self.scroller.vertical_position += self.TOGGLE_CHUNK
+        except ValueError:
+            pass
 
 
 def main():

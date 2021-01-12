@@ -19,6 +19,7 @@ class ScrollContainerTests(TestCase):
 
     def test_on_scroll_is_set(self):
         self.assertValueSet(self.sc, "on_scroll", self.on_scroll)
+        self.assertEqual(self.sc.on_scroll, self.on_scroll)
 
     def test_initial_scroll_position_is_zero(self):
         self.assertEqual(self.sc.horizontal_position, 0)
@@ -73,36 +74,12 @@ class ScrollContainerTests(TestCase):
         self.assertEqual(self.sc.horizontal, new_value)
         self.assertValueSet(self.sc, 'horizontal', new_value)
 
-    def test_set_negative_horizontal_position_raises_an_error(self):
-        with self.assertRaisesRegex(
-            ValueError, "^Horizontal position must be between 0 and 1, got -2.$"
-        ):
-            self.sc.horizontal_position = -2
-
-    def test_set_greater_than_1_horizontal_position_raises_an_error(self):
-        with self.assertRaisesRegex(
-            ValueError, "^Horizontal position must be between 0 and 1, got 1.2.$"
-        ):
-            self.sc.horizontal_position = 1.2
-
     def test_set_horizontal_position_when_unset_raises_an_error(self):
         self.sc.horizontal = False
         with self.assertRaisesRegex(
             ValueError, "^Cannot set horizontal position when horizontal is not set.$"
         ):
             self.sc.horizontal_position = 0.5
-
-    def test_set_negative_vertical_position_raises_an_error(self):
-        with self.assertRaisesRegex(
-            ValueError, "^Vertical position must be between 0 and 1, got -2.$"
-        ):
-            self.sc.vertical_position = -2
-
-    def test_set_greater_than_1_vertical_position_raises_an_error(self):
-        with self.assertRaisesRegex(
-            ValueError, "^Vertical position must be between 0 and 1, got 1.2.$"
-        ):
-            self.sc.vertical_position = 1.2
 
     def test_set_vertical_position_when_unset_raises_an_error(self):
         self.sc.vertical = False

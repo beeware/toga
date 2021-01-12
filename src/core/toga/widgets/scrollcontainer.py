@@ -108,12 +108,6 @@ class ScrollContainer(Widget):
 
     @horizontal_position.setter
     def horizontal_position(self, horizontal_position):
-        if horizontal_position < 0 or horizontal_position > 1:
-            raise ValueError(
-                "Horizontal position must be between 0 and 1, got {}.".format(
-                    horizontal_position
-                )
-            )
         if not self.horizontal:
             raise ValueError(
                 "Cannot set horizontal position when horizontal is not set."
@@ -126,12 +120,6 @@ class ScrollContainer(Widget):
 
     @vertical_position.setter
     def vertical_position(self, vertical_position):
-        if vertical_position < 0 or vertical_position > 1:
-            raise ValueError(
-                "Vertical position must be between 0 and 1, got {}.".format(
-                    vertical_position
-                )
-            )
         if not self.vertical:
             raise ValueError(
                 "Cannot set vertical position when vertical is not set."

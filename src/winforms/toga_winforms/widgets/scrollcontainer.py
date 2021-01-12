@@ -52,19 +52,40 @@ class ScrollContainer(Widget):
         pass
 
     def get_vertical_position(self):
-        return self.native.VerticalScroll.Value / self.native.VerticalScroll.Maximum
+        return self.native.VerticalScroll.Value
 
     def set_vertical_position(self, vertical_position):
-        new_value = int(vertical_position * self.native.VerticalScroll.Maximum)
-        self.native.VerticalScroll.Value = new_value
+        if vertical_position < 0 or vertical_position > self.maximum_vertical_position:
+            raise ValueError(
+                "Vertical position should be between 0 and {}, got {}".format(
+                    self.maximum_vertical_position, vertical_position
+                )
+            )
+        self.native.VerticalScroll.Value = vertical_position
         if self.interface.on_scroll is not None:
             self.interface.on_scroll(self.interface)
 
     def get_horizontal_position(self):
-        return self.native.HorizontalScroll.Value / self.native.HorizontalScroll.Maximum
+        return self.native.HorizontalScroll.Value
 
     def set_horizontal_position(self, horizontal_position):
-        new_value = int(horizontal_position * self.native.HorizontalScroll.Maximum)
-        self.native.HorizontalScroll.Value = new_value
+        if (
+            horizontal_position < 0
+            or horizontal_position > self.maximum_horizontal_position
+        ):
+            raise ValueError(
+                "Horizontal position should be between 0 and {}, got {}".format(
+                    self.maximum_horizontal_position, horizontal_position
+                )
+            )
+        self.native.HorizontalScroll.Value = horizontal_position
         if self.interface.on_scroll is not None:
             self.interface.on_scroll(self.interface)
+
+    @property
+    def maximum_vertical_position(self):
+        return self.native.VerticalScroll.Maximum
+
+    @property
+    def maximum_horizontal_position(self):
+        return self.native.HorizontalScroll.Maximum
