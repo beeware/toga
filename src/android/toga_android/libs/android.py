@@ -1,6 +1,5 @@
-from rubicon.java import JavaClass
+from rubicon.java import JavaClass, JavaInterface
 
 
 ClipboardManager = JavaClass("android/content/ClipboardManager")
 ClipData = JavaClass("android/content/ClipData")
-ClipData__Item = JavaClass("android/content/ClipData$Item")

@@ -1,5 +1,6 @@
 from ..libs import android
 from ..libs.activity import MainActivity
+from rubicon.java.jni import java
 
 
 class Clipboard():
@@ -10,7 +11,9 @@ class Clipboard():
         self.interface = interface
         self.interface._impl = self
         self._native_activity = MainActivity.singletonThis
-        self.clipboard_manager = self._native_activity.getSystemService("clipboard")
+        clipboard = self._native_activity.getSystemService("clipboard")  # returns a java/lang/Object
+        # cast the Object to ClipboardManager and assign it to self.clipboard_manager
+        self.clipboard_manager = android.ClipboardManager(__jni__=java.NewGlobalRef(clipboard))
 
     def get_text(self):
         if self.clipboard_manager.hasPrimaryClip():
