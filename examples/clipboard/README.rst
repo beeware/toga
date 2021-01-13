@@ -1,7 +1,7 @@
 Clipboard Demo
 ==============
 
-Test app for the Clipboard Demo widget.
+Test app for the Clipboard Demo.
 
 Quickstart
 ~~~~~~~~~~
