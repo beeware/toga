@@ -24,7 +24,7 @@ class ExampleClipboardApp(toga.App):
 
         # Label to show responses.
         self.label = toga.Label('Ready.')
-        
+
         self.input = toga.MultilineTextInput(style=Pack(flex=1))
         self.clipboard = Clipboard()
 

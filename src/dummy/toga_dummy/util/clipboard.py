@@ -9,4 +9,4 @@ class Clipboard():
         return self._clipdata
 
     def set_text(self, text):
-        self._clipdata = data
+        self._clipdata = text

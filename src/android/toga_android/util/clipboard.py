@@ -22,7 +22,7 @@ class Clipboard():
             if item.getText() is not None:
                 return item.getText().toString()
             else:
-              return None
+                return None
         else:
             return None
 
@@ -30,6 +30,5 @@ class Clipboard():
         if text is None:
             self.clipboard_manager.clearPrimaryClip()
         else:
-            clip_data = android.ClipData.newPlainText(self.data_types[0], text);
-            self.clipboard_manager.setPrimaryClip(clip_data);
-
+            clip_data = android.ClipData.newPlainText(self.data_types[0], text)
+            self.clipboard_manager.setPrimaryClip(clip_data)

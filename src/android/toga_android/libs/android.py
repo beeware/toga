@@ -1,4 +1,4 @@
-from rubicon.java import JavaClass, JavaInterface
+from rubicon.java import JavaClass
 
 
 ClipboardManager = JavaClass("android/content/ClipboardManager")
