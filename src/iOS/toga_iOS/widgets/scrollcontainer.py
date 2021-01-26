@@ -139,6 +139,7 @@ class ScrollContainer(Widget):
         self.interface.factory.not_implemented(
             "ScrollContainer.get_vertical_position()"
         )
+        return 0
 
     def set_vertical_position(self, vertical_position):
         self.interface.factory.not_implemented(
@@ -149,6 +150,7 @@ class ScrollContainer(Widget):
         self.interface.factory.not_implemented(
             "ScrollContainer.get_horizontal_position()"
         )
+        return 0
 
     def set_horizontal_position(self, horizontal_position):
         self.interface.factory.not_implemented(
