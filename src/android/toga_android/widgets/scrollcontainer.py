@@ -67,6 +67,28 @@ class ScrollContainer(Widget):
     def set_horizontal(self, value):
         self.hScrollListener.is_scrolling_enabled = value
 
+    def get_vertical_position(self):
+        self.interface.factory.not_implemented(
+            "ScrollContainer.get_vertical_position()"
+        )
+        return 0
+
+    def set_vertical_position(self, vertical_position):
+        self.interface.factory.not_implemented(
+            "ScrollContainer.set_vertical_position()"
+        )
+
+    def get_horizontal_position(self):
+        self.interface.factory.not_implemented(
+            "ScrollContainer.get_horizontal_position()"
+        )
+        return 0
+
+    def set_horizontal_position(self, horizontal_position):
+        self.interface.factory.not_implemented(
+            "ScrollContainer.set_horizontal_position()"
+        )
+
     def rehint(self):
         # Android can crash when rendering some widgets until they have their layout params set. Guard for that case.
         if self.native.getLayoutParams() is None:
