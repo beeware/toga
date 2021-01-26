@@ -67,6 +67,9 @@ class ScrollContainer(Widget):
     def set_horizontal(self, value):
         self.hScrollListener.is_scrolling_enabled = value
 
+    def set_on_scroll(self, on_scroll):
+        self.interface.factory.not_implemented("ScrollContainer.set_on_scroll()")
+
     def get_vertical_position(self):
         self.interface.factory.not_implemented(
             "ScrollContainer.get_vertical_position()"
