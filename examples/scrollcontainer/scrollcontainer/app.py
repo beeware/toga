@@ -1,5 +1,5 @@
 import toga
-from toga.constants import COLUMN
+from toga.constants import COLUMN, ROW
 from toga.style import Pack
 
 
@@ -7,70 +7,45 @@ class Item(toga.Box):
     def __init__(self, text):
         super().__init__(style=Pack(direction=COLUMN))
 
-        label = toga.Label(text)
-
-        hline = toga.Divider()
-        hline.style.padding_top = 5
-        hline.style.padding_bottom = 5
-
-        self.add(label, hline)
+        row = toga.Box(style=Pack(direction=ROW))
+        for x in range(10):
+            label = toga.Label(text+", "+str(x), style=Pack(padding_right=10))
+            row.add(label)
+        self.add(row)
 
 
 class ScrollContainerApp(toga.App):
-    TOGGLE_CHUNK = 10
+    vscrolling = True
+    hscrolling = False
+    scroller = None
 
     def startup(self):
-        self.top_label = toga.Label("I'm top", style=Pack(width=100))
-        top_box = toga.Box(children=[self.top_label])
-        self.scroller = toga.ScrollContainer(horizontal=False, on_scroll=self.on_scroll)
-        self.scroller.content = self.build_items_box()
-
-        self.main_window = toga.MainWindow(self.name)
-        self.main_window.content = toga.Box(
-            children=[top_box, self.scroller],
-            style=Pack(direction=COLUMN)
-        )
-        self.main_window.show()
-
-        self.commands.add(
-            toga.Command(
-                self.toggle_up,
-                "Toggle Up",
-                shortcut=toga.Key.MOD_1 + toga.Key.UP,
-                group=toga.Group.COMMANDS
-            ),
-            toga.Command(
-                self.toggle_down,
-                "Toggle DOWN",
-                shortcut=toga.Key.MOD_1 + toga.Key.DOWN,
-                group=toga.Group.COMMANDS
-            )
-        )
-
-    @classmethod
-    def build_items_box(cls):
         box = toga.Box()
         box.style.direction = COLUMN
         box.style.padding = 10
+        self.scroller = toga.ScrollContainer(horizontal=self.hscrolling, vertical=self.vscrolling)
+        switch_box = toga.Box(style=Pack(direction=ROW))
+        switch_box.add(toga.Switch('vertical scrolling', is_on=self.vscrolling, on_toggle=self.handle_vscrolling))
+        switch_box.add(toga.Switch('horizontal scrolling', is_on=self.hscrolling, on_toggle=self.handle_hscrolling))
+        box.add(switch_box)
+
         for x in range(100):
             label_text = 'Label {}'.format(x)
             box.add(Item(label_text))
-        return box
 
-    def on_scroll(self, widget):
-        self.top_label.text = "I'm at {:.2f}".format(self.scroller.vertical_position)
+        self.scroller.content = box
 
-    def toggle_up(self, widget):
-        try:
-            self.scroller.vertical_position -= self.TOGGLE_CHUNK
-        except ValueError:
-            pass
+        self.main_window = toga.MainWindow(self.name, size=(400, 700))
+        self.main_window.content = self.scroller
+        self.main_window.show()
 
-    def toggle_down(self, widget):
-        try:
-            self.scroller.vertical_position += self.TOGGLE_CHUNK
-        except ValueError:
-            pass
+    def handle_hscrolling(self, widget):
+        self.hscrolling = widget.is_on
+        self.scroller.horizontal = self.hscrolling
+
+    def handle_vscrolling(self, widget):
+        self.vscrolling = widget.is_on
+        self.scroller.vertical = self.vscrolling
 
 
 def main():
