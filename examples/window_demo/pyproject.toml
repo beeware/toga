@@ -1,0 +1,47 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name = "Window Demo"
+bundle = "org.beeware"
+version = "0.3.0.dev25"
+url = "https://beeware.org"
+license = "BSD license"
+author = 'Tiberius Yak'
+author_email = "tiberius@beeware.org"
+
+[tool.briefcase.app.window_demo]
+formal_name = "Window Demo"
+description = "A testing app"
+sources = ['window_demo']
+requires = [
+	'c:/Projects/Python/Toga/src/core'
+]
+
+
+[tool.briefcase.app.window_demo.macOS]
+requires = [
+    'toga-cocoa',
+]
+
+[tool.briefcase.app.window_demo.linux]
+requires = [
+    'toga-gtk',
+]
+
+[tool.briefcase.app.window_demo.windows]
+requires = [
+    # 'toga-winforms',
+	'c:/Projects/Python/Toga/src/winforms'
+]
+
+# Mobile deployments
+[tool.briefcase.app.window_demo.iOS]
+requires = [
+    'toga-iOS',
+]
+
+[tool.briefcase.app.window_demo.android]
+requires = [
+    'toga-android',
+]
