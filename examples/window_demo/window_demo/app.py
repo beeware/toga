@@ -13,7 +13,7 @@ class WindowDemoApp(toga.App):
 
     def startup(self):
         # Set up main window
-        self.main_window = toga.MainWindow(title=self.name, position=(200,300))
+        self.main_window = toga.MainWindow(title=self.name, position=(200, 300))
         flex_style = Pack(flex=1)
 
         # Label to show responses.

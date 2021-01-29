@@ -58,10 +58,10 @@ class Window:
         pass
 
     def get_position(self):
-        return self._position
+        return (0, 0)  # windows are always full screen in iOS
 
     def set_position(self, position):
-        self._position = (0, 0)  # windows are always full screen in iOS
+        pass  # windows are always full screen in iOS
 
     def set_size(self, size):
         pass

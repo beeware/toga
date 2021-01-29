@@ -47,10 +47,10 @@ class Window:
         pass
 
     def get_position(self):
-        return self._position
+        return (0, 0)  # windows are always full screen in Android
 
     def set_position(self, position):
-        self._position = (0, 0)  # windows are always full screen in Android
+        pass   # windows are always full screen in Android
 
     def set_size(self, size):
         pass

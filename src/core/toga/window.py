@@ -30,7 +30,6 @@ class Window:
         self._impl = None
         self._app = None
         self._content = None
-        self._position = position
         self._size = size
         self._is_full_screen = False
 
@@ -158,12 +157,10 @@ class Window:
         Returns:
             A ``tuple`` of (``int``, ``int``) int the from (x, y).
         """
-        self._position = self._impl.get_position()
-        return self._position
+        return self._impl.get_position()
 
     @position.setter
     def position(self, position):
-        self._position = position
         self._impl.set_position(position)
 
     def show(self):
