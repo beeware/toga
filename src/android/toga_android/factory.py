@@ -13,6 +13,7 @@ from .widgets.numberinput import NumberInput
 from .widgets.multilinetextinput import MultilineTextInput
 from .widgets.passwordinput import PasswordInput
 from .widgets.selection import Selection
+from .widgets.scrollcontainer import ScrollContainer
 from .widgets.slider import Slider
 from .widgets.switch import Switch
 from .widgets.textinput import TextInput
@@ -40,6 +41,7 @@ __all__ = [
     "PasswordInput",
     "Selection",
     "Slider",
+    "ScrollContainer",
     "Switch",
     "TextInput",
     "WebView",
