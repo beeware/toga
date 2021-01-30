@@ -1,7 +1,6 @@
 import toga
 from toga.style import Pack
 from toga.constants import COLUMN, ROW
-from toga.util.clipboard import Clipboard
 
 
 class ExampleClipboardApp(toga.App):
@@ -30,7 +29,6 @@ class ExampleClipboardApp(toga.App):
         self.label = toga.Label('Ready.')
 
         self.input = toga.MultilineTextInput(style=Pack(flex=1))
-        self.clipboard = Clipboard()
 
         # Buttons
         btn_style = Pack(flex=1)
