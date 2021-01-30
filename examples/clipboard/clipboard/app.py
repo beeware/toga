@@ -6,6 +6,10 @@ from toga.util.clipboard import Clipboard
 
 class ExampleClipboardApp(toga.App):
     # Button callback functions
+    def do_clear(self, widget, **kwargs):
+        self.clipboard.clear()
+        self.label.text = "Clipboard cleared"
+
     def do_copy(self, widget, **kwargs):
         self.clipboard.set_text(self.input.value)
         self.label.text = "Text copied to clipboard"
@@ -32,10 +36,12 @@ class ExampleClipboardApp(toga.App):
         btn_style = Pack(flex=1)
         btn_copy = toga.Button('Copy', on_press=self.do_copy, style=btn_style)
         btn_paste = toga.Button('Paste', on_press=self.do_paste, style=btn_style)
+        btn_clear = toga.Button('Clear', on_press=self.do_clear, style=btn_style)
         btn_box = toga.Box(
             children=[
                 btn_copy,
-                btn_paste
+                btn_paste,
+                btn_clear
             ],
             style=Pack(direction=ROW)
         )

@@ -9,6 +9,12 @@ class Clipboard:
         # Create a platform specific implementation of the clipboard
         self._impl = self.factory.Clipboard(interface=self)
 
+    def clear(self):
+        """
+        Clears the clipboard content
+        """
+        self._impl.clear()
+
     def get_text(self):
         """
         Get the text data currently stored in the clipboard

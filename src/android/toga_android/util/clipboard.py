@@ -15,6 +15,9 @@ class Clipboard():
         # cast the Object to ClipboardManager and assign it to self.clipboard_manager
         self.clipboard_manager = android.ClipboardManager(__jni__=java.NewGlobalRef(clipboard))
 
+    def clear(self):
+        self.clipboard_manager.clearPrimaryClip()
+
     def get_text(self):
         if self.clipboard_manager.hasPrimaryClip():
             clip_data = self.clipboard_manager.getPrimaryClip()
@@ -28,7 +31,7 @@ class Clipboard():
 
     def set_text(self, text):
         if text is None:
-            self.clipboard_manager.clearPrimaryClip()
+            self.clear()
         else:
             clip_data = android.ClipData.newPlainText(self.data_types[0], text)
             self.clipboard_manager.setPrimaryClip(clip_data)

@@ -14,7 +14,9 @@ author_email = "tiberius@beeware.org"
 formal_name = "Clipboard Demo"
 description = "A testing app"
 sources = ['clipboard']
-requires = []
+requires = [
+	'c:/Projects/Python/Toga/src/core'
+]
 
 
 [tool.briefcase.app.clipboard.macOS]
@@ -29,7 +31,8 @@ requires = [
 
 [tool.briefcase.app.clipboard.windows]
 requires = [
-    'toga-winforms',
+    #'toga-winforms',
+	'c:/Projects/Python/Toga/src/winforms'
 ]
 
 # Mobile deployments
@@ -40,5 +43,6 @@ requires = [
 
 [tool.briefcase.app.clipboard.android]
 requires = [
-    'toga-android',
+	'c:/Projects/Python/Toga/src/android'
+    #'toga-android',
 ]

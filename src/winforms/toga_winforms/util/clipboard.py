@@ -7,6 +7,9 @@ class Clipboard():
         self.interface = interface
         self.interface._impl = self
 
+    def clear(self):
+        WinForms.Clipboard.Clear()
+
     def get_text(self):
         if WinForms.Clipboard.ContainsText():
             return WinForms.Clipboard.GetText()
@@ -15,6 +18,6 @@ class Clipboard():
 
     def set_text(self, text):
         if text is None:
-            WinForms.Clipboard.Clear()
+            self.clear()
         else:
             WinForms.Clipboard.SetText(text)
