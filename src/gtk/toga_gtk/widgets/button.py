@@ -19,8 +19,93 @@ class Button(Widget):
     def set_enabled(self, value):
         self.native.set_sensitive(value)
 
-    def set_background_color(self, value):
-        self.interface.factory.not_implemented('Button.set_background_color()')
+    def set_font(self, value):
+        if value:
+
+            style = ".custom-style { "
+
+            flag = False
+            if value.family != "system":
+                style += f"font-family: {value.family}; "
+                flag = True
+            if value.size != -1:
+                style += f"font-size: {value.size}px; "
+                flag = True
+            if value.style != "normal":
+                style += f"font-style: {value.style}; "
+                flag = True
+            if value.variant != "normal":
+                style += f"font-variant: {value.variant}; "
+                flag = True
+            if value.weight != "normal":
+                style += f"font-weight: {value.weight}; "
+                flag = True
+
+            if flag:
+                style += "}"
+                print(style)
+
+                # getting StyleContext of the widget
+                style_context = self.native.get_style_context()
+
+                # creating StyleProvider (i.e CssProvider)
+                style_provider = Gtk.CssProvider()
+                style_provider.load_from_data(style.encode())
+
+                # setting the StyleProvider to StyleContext
+                style_context.add_provider(
+                    style_provider,
+                    Gtk.STYLE_PROVIDER_PRIORITY_USER,
+                    )
+                style_context.add_class("custom-style")
+
+    def set_color(self, color):
+        if color:
+            # getting StyleContext of the widget
+            style_context = self.native.get_style_context()
+
+            # creating css
+            style = (
+                ".custom-style {" +
+                f"color: rgba({color.r}, {color.g}, {color.b}, {color.a});" +
+                "}"
+                )
+
+            # creating StyleProvider (i.e CssProvider)
+            style_provider = Gtk.CssProvider()
+            style_provider.load_from_data(style.encode())
+
+            # setting the StyleProvider to StyleContext
+            style_context.add_provider(
+                style_provider,
+                Gtk.STYLE_PROVIDER_PRIORITY_USER,
+                )
+            style_context.add_class("custom-style")
+
+    def set_background_color(self, color):
+        if color:
+
+            # getting StyleContext of the widget
+            style_context = self.native.get_style_context()
+
+            # creating css
+            style = (
+                ".custom-style {" +
+                f"background-color: rgba({color.r}, {color.g}, {color.b}, {color.a});" +
+                "background-image: none;" +
+                "}"
+                )
+
+            # creating StyleProvider (i.e CssProvider)
+            style_provider = Gtk.CssProvider()
+            style_provider.load_from_data(style.encode())
+
+            # setting the StyleProvider to StyleContext
+            style_context.add_provider(
+                style_provider,
+                Gtk.STYLE_PROVIDER_PRIORITY_USER,
+                )
+            style_context.add_class("custom-style")
 
     def set_on_press(self, handler):
         # No special handling required
