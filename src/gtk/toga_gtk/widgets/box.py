@@ -85,6 +85,7 @@ class Box(Widget):
         self.native = TogaBox(self)
 
     def set_background_color(self, color):
+        # THIS DOES NOT WORK
         if color:
 
             # getting StyleContext of the widget
