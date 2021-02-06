@@ -44,9 +44,17 @@ class ScrollContainer(Widget):
 
     def set_vertical(self, value):
         self.native.hasVerticalScroller = value
+        # If the scroll container has content, we need to force a refresh
+        # to let the scroll container know how large it's content is.
+        if self.interface.content:
+            self.interface.refresh()
 
     def set_horizontal(self, value):
         self.native.hasHorizontalScroller = value
+        # If the scroll container has content, we need to force a refresh
+        # to let the scroll container know how large it's content is.
+        if self.interface.content:
+            self.interface.refresh()
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
