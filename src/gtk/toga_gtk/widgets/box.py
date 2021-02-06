@@ -85,27 +85,6 @@ class Box(Widget):
         self.native = TogaBox(self)
 
     def set_background_color(self, color):
-        # THIS DOES NOT WORK
-        if color:
-
-            # getting StyleContext of the widget
-            style_context = self.native.get_style_context()
-
-            # creating css
-            style = (
-                ".custom-style {" +
-                f"background-color: rgba({color.r}, {color.g}, {color.b}, {color.a});" +
-                "background-image: none;" +
-                "}"
-                )
-
-            # creating StyleProvider (i.e CssProvider)
-            style_provider = Gtk.CssProvider()
-            style_provider.load_from_data(style.encode())
-
-            # setting the StyleProvider to StyleContext
-            style_context.add_provider(
-                style_provider,
-                Gtk.STYLE_PROVIDER_PRIORITY_USER,
-                )
-            style_context.add_class("custom-style")
+        # FIXME
+        # 
+        self.interface.factory.not_implemented('Box.set_background_color()')
