@@ -66,11 +66,11 @@ Next, install Toga into your virtual environment:
       (venv) $ sudo apt-get update
       (venv) $ sudo apt-get install python3-dev libgirepository1.0-dev libcairo2-dev libpango1.0-dev libwebkitgtk-3.0-0 gir1.2-webkit-3.0
 
-      # Ubuntu 18.04 / Debian 10
+      # Ubuntu 18.04 / Ubuntu 20.04 / Debian 10
       # has webkit2-4.0
       # libwebkitgtk version seems very specific, but that is what it currently is @ 20190825
       (venv) $ sudo apt-get update
-      (venv) $ sudo apt-get install python3-dev python3-gi python3-gi-cairo libgirepository1.0-dev libcairo2-dev libwebkitgtk-4.0-37 gir1.2-webkit2-4.0
+      (venv) $ sudo apt-get install python3-dev libgirepository1.0-dev libcairo2-dev libpango1.0-dev libwebkit2gtk-4.0-37 gir1.2-webkit2-4.0
 
       # Fedora
       (venv) $ sudo dnf install pkg-config python3-devel gobject-introspection-devel cairo-devel cairo-gobject-devel pango-devel webkitgtk3
