@@ -11,7 +11,7 @@ class ImageView(Widget):
         self.native.SizeMode = WinForms.PictureBoxSizeMode.StretchImage
 
     def set_image(self, image):
-        # Dispose the image when image is set to None
+        # If an image already exists, ensure it is destroyed
         if self.native.Image is not None:
             self.native.Image.Dispose()
         if image:
