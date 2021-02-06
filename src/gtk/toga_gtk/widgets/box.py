@@ -86,5 +86,4 @@ class Box(Widget):
 
     def set_background_color(self, color):
         # FIXME
-        # 
         self.interface.factory.not_implemented('Box.set_background_color()')

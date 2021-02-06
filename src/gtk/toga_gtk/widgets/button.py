@@ -2,7 +2,6 @@ from travertino.size import at_least
 
 from ..libs import (
     Gtk,
-    gtk_alignment,
     apply_bg_color,
     apply_color,
     apply_font
