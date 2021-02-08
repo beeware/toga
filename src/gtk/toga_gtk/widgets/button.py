@@ -2,9 +2,10 @@ from travertino.size import at_least
 
 from ..libs import (
     Gtk,
-    apply_bg_color,
-    apply_color,
-    apply_font
+    apply,
+    get_color_css,
+    get_bg_color_css,
+    get_font_css
 )
 from .base import Widget
 
@@ -27,17 +28,20 @@ class Button(Widget):
     def set_color(self, color):
         if color:
             style_context = self.native.get_style_context()
-            apply_color(style_context, color)
+            css = get_color_css(color)
+            apply(style_context, css)
 
     def set_background_color(self, color):
         if color:
             style_context = self.native.get_style_context()
-            apply_bg_color(style_context, color)
+            css = get_bg_color_css(color)
+            apply(style_context, css)
 
     def set_font(self, value):
         if value:
             style_context = self.native.get_style_context()
-            apply_font(style_context, value)
+            css = get_font_css(value)
+            apply(style_context, css)
 
     def set_on_press(self, handler):
         # No special handling required

@@ -1,14 +1,7 @@
 from . import Gtk
 
 
-def apply_color(style_context, value):
-    # creating css
-    style = (
-        ".custom-style {"
-        f"color: rgba({value.r}, {value.g}, {value.b}, {value.a});"
-        "}"
-    )
-
+def apply(style_context, style):
     # creating StyleProvider (i.e CssProvider)
     style_provider = Gtk.CssProvider()
     style_provider.load_from_data(style.encode())
@@ -21,29 +14,24 @@ def apply_color(style_context, value):
     style_context.add_class("custom-style")
 
 
-def apply_bg_color(style_context, value):
-    # creating css
-    style = (
+def get_color_css(value):
+    return (
+        ".custom-style {"
+        f"color: rgba({value.r}, {value.g}, {value.b}, {value.a});"
+        "}"
+    )
+
+
+def get_bg_color_css(value):
+    return (
         ".custom-style {"
         f"background-color: rgba({value.r}, {value.g}, {value.b}, {value.a});"
         "background-image: none;"
         "}"
     )
 
-    # creating StyleProvider (i.e CssProvider)
-    style_provider = Gtk.CssProvider()
-    style_provider.load_from_data(style.encode())
 
-    # setting the StyleProvider to StyleContext
-    style_context.add_provider(
-        style_provider,
-        Gtk.STYLE_PROVIDER_PRIORITY_USER,
-    )
-    style_context.add_class("custom-style")
-
-
-def apply_font(style_context, value):
-    # creating css
+def get_font_css(value):
     style = (
         ".custom-style { "
         f"font-style: {value.style}; "
@@ -58,13 +46,4 @@ def apply_font(style_context, value):
 
     style += "}"
 
-    # creating StyleProvider (i.e CssProvider)
-    style_provider = Gtk.CssProvider()
-    style_provider.load_from_data(style.encode())
-
-    # setting the StyleProvider to StyleContext
-    style_context.add_provider(
-        style_provider,
-        Gtk.STYLE_PROVIDER_PRIORITY_USER,
-        )
-    style_context.add_class("custom-style")
+    return style
