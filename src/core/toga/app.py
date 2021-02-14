@@ -346,7 +346,7 @@ class App:
 
         :returns: The system clipboard
         """
-        if self._clipboard == None:
+        if self._clipboard is None:
             self._clipboard = Clipboard()
         return self._clipboard
 
