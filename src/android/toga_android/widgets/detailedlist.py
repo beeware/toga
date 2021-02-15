@@ -13,8 +13,10 @@ class DetailedListOnClickListener(android_widgets.OnClickListener):
         self._row_number = row_number
 
     def onClick(self, _view):
+        row = self._impl.interface.data[self._row_number]
+        self._impl._selection = row
         if self._impl.interface.on_select:
-            self._impl.interface.on_select(widget=self._impl.interface, row=self._row_number)
+            self._impl.interface.on_select(widget=self._impl.interface, row=row)
 
 
 class OnRefreshListener(android_widgets.SwipeRefreshLayout__OnRefreshListener):
@@ -29,6 +31,7 @@ class OnRefreshListener(android_widgets.SwipeRefreshLayout__OnRefreshListener):
 
 class DetailedList(Widget):
     _android_swipe_refresh_layout = None
+    _selection = None
 
     def create(self):
         # DetailedList is not a specific widget on Android, so we build it out
@@ -154,7 +157,7 @@ class DetailedList(Widget):
         self.create()
 
     def get_selection(self):
-        return None
+        return self._selection
 
     def set_on_select(self, handler):
         # No special handling required.
