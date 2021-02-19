@@ -51,3 +51,28 @@ class ScrollContainer(Widget):
             Gtk.PolicyType.AUTOMATIC if self.interface.horizontal else Gtk.PolicyType.NEVER,
             Gtk.PolicyType.AUTOMATIC if self.interface.vertical else Gtk.PolicyType.NEVER,
         )
+
+    def set_on_scroll(self, on_scroll):
+        self.interface.factory.not_implemented("ScrollContainer.set_on_scroll()")
+
+    def get_vertical_position(self):
+        self.interface.factory.not_implemented(
+            "ScrollContainer.get_vertical_position()"
+        )
+        return 0
+
+    def set_vertical_position(self, vertical_position):
+        self.interface.factory.not_implemented(
+            "ScrollContainer.set_vertical_position()"
+        )
+
+    def get_horizontal_position(self):
+        self.interface.factory.not_implemented(
+            "ScrollContainer.get_horizontal_position()"
+        )
+        return 0
+
+    def set_horizontal_position(self, horizontal_position):
+        self.interface.factory.not_implemented(
+            "ScrollContainer.set_horizontal_position()"
+        )
