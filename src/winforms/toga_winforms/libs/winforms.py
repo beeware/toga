@@ -33,6 +33,7 @@ from System.Drawing import (  # noqa: F401, E402
     Size,
     SolidBrush,
     StringFormat,
+    SystemColors,
     SystemFonts,
     Text,
     Rectangle,

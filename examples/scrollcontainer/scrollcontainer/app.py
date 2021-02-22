@@ -15,6 +15,8 @@ class Item(toga.Box):
 
 
 class ScrollContainerApp(toga.App):
+    TOGGLE_CHUNK = 10
+
     vscrolling = True
     hscrolling = False
     scroller = None
@@ -38,6 +40,36 @@ class ScrollContainerApp(toga.App):
         self.main_window = toga.MainWindow(self.name, size=(400, 700))
         self.main_window.content = self.scroller
         self.main_window.show()
+        self.commands.add(
+            toga.Command(
+                self.toggle_up,
+                "Toggle Up",
+                shortcut=toga.Key.MOD_1 + toga.Key.UP,
+                group=toga.Group.VIEW,
+                order=1
+            ),
+            toga.Command(
+                self.toggle_down,
+                "Toggle Down",
+                shortcut=toga.Key.MOD_1 + toga.Key.DOWN,
+                group=toga.Group.VIEW,
+                order=2
+            ),
+            toga.Command(
+                self.toggle_left,
+                "Toggle Left",
+                shortcut=toga.Key.MOD_1 + toga.Key.LEFT,
+                group=toga.Group.VIEW,
+                order=3
+            ),
+            toga.Command(
+                self.toggle_right,
+                "Toggle Right",
+                shortcut=toga.Key.MOD_1 + toga.Key.RIGHT,
+                group=toga.Group.VIEW,
+                order=4
+            ),
+        )
 
     def handle_hscrolling(self, widget):
         self.hscrolling = widget.is_on
@@ -46,6 +78,38 @@ class ScrollContainerApp(toga.App):
     def handle_vscrolling(self, widget):
         self.vscrolling = widget.is_on
         self.scroller.vertical = self.vscrolling
+
+    def toggle_up(self, widget):
+        if not self.vscrolling:
+            return
+        try:
+            self.scroller.vertical_position -= self.TOGGLE_CHUNK
+        except ValueError:
+            pass
+
+    def toggle_down(self, widget):
+        if not self.vscrolling:
+            return
+        try:
+            self.scroller.vertical_position += self.TOGGLE_CHUNK
+        except ValueError:
+            pass
+
+    def toggle_left(self, widget):
+        if not self.hscrolling:
+            return
+        try:
+            self.scroller.horizontal_position -= self.TOGGLE_CHUNK
+        except ValueError:
+            pass
+
+    def toggle_right(self, widget):
+        if not self.hscrolling:
+            return
+        try:
+            self.scroller.horizontal_position += self.TOGGLE_CHUNK
+        except ValueError:
+            pass
 
 
 def main():
