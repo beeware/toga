@@ -16,7 +16,8 @@ from .winforms import (
     FontStyle,
     SystemFonts,
     Text,
-    WinForms
+    WinForms,
+    ArgumentException
 )
 
 
@@ -51,14 +52,14 @@ def win_font_family(value):
             MONOSPACE: FontFamily.GenericMonospace,
         }[value]
     except KeyError:
-        if value in Text.InstalledFontCollection().Families:
+        try:
             return FontFamily(value)
-    else:
-        print(
-            "Unable to load font-family '{}', loading {} instead".format(
-                value, SystemFonts.DefaultFont.FontFamily)
-        )
-        return SystemFonts.DefaultFont.FontFamily
+        except ArgumentException:
+            print(
+                "Unable to load font-family '{}', loading '{}' instead".format(
+                    value, SystemFonts.DefaultFont.FontFamily.Name)
+            )
+            return SystemFonts.DefaultFont.FontFamily
 
 
 def win_font_style(weight, style, font_family):
