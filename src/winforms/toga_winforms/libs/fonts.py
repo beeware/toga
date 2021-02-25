@@ -15,7 +15,6 @@ from .winforms import (
     FontFamily,
     FontStyle,
     SystemFonts,
-    Text,
     WinForms,
     ArgumentException
 )
