@@ -3,7 +3,7 @@ from travertino.size import at_least
 from ..libs import (
     Gtk,
     gtk_alignment,
-    apply,
+    apply_gtk_style,
     get_color_css,
     get_bg_color_css,
     get_font_css
@@ -29,19 +29,19 @@ class Label(Widget):
         if color:
             style_context = self.native.get_style_context()
             css = get_color_css(color)
-            apply(style_context, css)
+            apply_gtk_style(style_context, css)
 
     def set_background_color(self, color):
         if color:
             style_context = self.native.get_style_context()
             css = get_bg_color_css(color)
-            apply(style_context, css)
+            apply_gtk_style(style_context, css)
 
     def set_font(self, value):
         if value:
             style_context = self.native.get_style_context()
             css = get_font_css(value)
-            apply(style_context, css)
+            apply_gtk_style(style_context, css)
 
     def set_text(self, value):
         # FIXME after setting the label the label jumps to the top left
