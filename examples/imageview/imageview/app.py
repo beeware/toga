@@ -23,7 +23,6 @@ class ImageViewApp(toga.App):
         image_from_path2 = toga.Image('resources/click-me.png')
         imageview_from_path2 = toga.ImageView(image_from_path2, on_press=self.on_image_click)
         imageview_from_path2.style.update(height=100, width=200)
-        imageview_from_path2._image_path = image_from_path2.path
         box.add(imageview_from_path2)
 
         # image from remote URL
@@ -37,7 +36,7 @@ class ImageViewApp(toga.App):
         self.main_window.show()
 
     def on_image_click(self, widget):
-        self.main_window.info_dialog('on_image_click', "You clicked the image '"+widget._image_path+"'")
+        self.main_window.info_dialog('on_image_click', "You clicked the image '"+widget.image.path+"'")
 
 def main():
     return ImageViewApp('ImageView', 'org.beeware.widgets.imageview')
