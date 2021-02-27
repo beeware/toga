@@ -9,6 +9,12 @@ class ImageView(Widget):
         self.native = WinForms.PictureBox()
         self.native.interface = self.interface
         self.native.SizeMode = WinForms.PictureBoxSizeMode.StretchImage
+        self.native.Click += self.winforms_click
+
+    def winforms_click(self, sender, event):
+        if self.container:
+            if self.interface.on_press:
+                self.interface.on_press(self.interface)
 
     def set_image(self, image):
         # If an image already exists, ensure it is destroyed
@@ -32,6 +38,10 @@ class ImageView(Widget):
             # Setting background color to white is not necessary, but it shows the
             # picture frame
             self.native.BackColor = Color.White
+
+    def set_on_press(self, handler):
+        # No special handling required
+        pass
 
     def rehint(self):
         pass

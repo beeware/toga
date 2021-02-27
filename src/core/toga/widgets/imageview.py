@@ -1,6 +1,6 @@
+from toga.handlers import wrapped_handler
 from toga.images import Image
 from toga.widgets.base import Widget
-
 
 class ImageView(Widget):
     """
@@ -9,6 +9,7 @@ class ImageView(Widget):
         image (:class:`toga.Image`): The image to display.
         id (str): An identifier for this widget.
         style (:obj:`Style`):
+        on_press (:obj:`callable`): Function to execute when ImageView is pressed.
         factory (:obj:`module`): A python module that is capable to return a
             implementation of this class with the same name. (optional & normally not needed)
 
@@ -18,12 +19,14 @@ class ImageView(Widget):
 
     def __init__(
         self, image=None,
-        id=None, style=None, factory=None,
+        id=None, style=None, on_press=None, factory=None
     ):
         super().__init__(id=id, style=style, factory=factory)
 
+        # Set all the properties
         self._impl = self.factory.ImageView(interface=self)
         self.image = image
+        self.on_press = on_press
 
     @property
     def image(self):
@@ -61,3 +64,22 @@ class ImageView(Widget):
         # def scaling(self, value):
         #     self._scaling = value
         #     self._impl.setAlignment_(NSTextAlignment(self._scaling))
+
+    @property
+    def on_press(self):
+        """The handler to invoke when the ImageView is pressed.
+
+        Returns:
+            The function ``callable`` that is called on ImageView press.
+        """
+        return self._on_press
+
+    @on_press.setter
+    def on_press(self, handler):
+        """Set the handler to invoke when the ImageView is pressed.
+
+        Args:
+            handler (:obj:`callable`): The handler to invoke when the ImageView is pressed.
+        """
+        self._on_press = wrapped_handler(self, handler)
+        self._impl.set_on_press(self._on_press)
