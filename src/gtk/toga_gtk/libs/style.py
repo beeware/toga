@@ -1,7 +1,7 @@
 from . import Gtk
 
 
-def apply_gtk_style(style_context, style):
+def apply_gtk_style(style_context, style, name):
     # creating StyleProvider (i.e CssProvider)
     style_provider = Gtk.CssProvider()
     style_provider.load_from_data(style.encode())
@@ -11,12 +11,12 @@ def apply_gtk_style(style_context, style):
         style_provider,
         Gtk.STYLE_PROVIDER_PRIORITY_USER,
     )
-    style_context.add_class("toga")
+    style_context.add_class(name)
 
 
 def get_color_css(value):
     return (
-        ".toga {"
+        ".toga-color {"
         f"color: rgba({value.r}, {value.g}, {value.b}, {value.a});"
         "}"
     )
@@ -24,7 +24,7 @@ def get_color_css(value):
 
 def get_bg_color_css(value):
     return (
-        ".toga {"
+        ".toga-bg-color {"
         f"background-color: rgba({value.r}, {value.g}, {value.b}, {value.a});"
         "background-image: none;"
         "}"
@@ -33,7 +33,7 @@ def get_bg_color_css(value):
 
 def get_font_css(value):
     style = (
-        ".toga { "
+        ".toga-font { "
         f"font-style: {value.style}; "
         f"font-variant: {value.variant}; "
         f"font-weight: {value.weight}; "
