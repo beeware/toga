@@ -37,5 +37,10 @@ class ImageView(Widget):
 
             self.native.image = NSImage.alloc().initWithSize(NSSize(width, height))
 
+    def set_on_press(self, handler):
+        self.interface.factory.not_implemented(
+            "ImageView.set_on_press()"
+        )
+
     def rehint(self):
         pass
