@@ -38,6 +38,7 @@ class ImageViewApp(toga.App):
     def on_image_click(self, widget):
         self.main_window.info_dialog('on_image_click', "You clicked the image '"+widget.image.path+"'")
 
+
 def main():
     return ImageViewApp('ImageView', 'org.beeware.widgets.imageview')
 

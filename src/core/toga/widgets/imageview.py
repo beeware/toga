@@ -2,6 +2,7 @@ from toga.handlers import wrapped_handler
 from toga.images import Image
 from toga.widgets.base import Widget
 
+
 class ImageView(Widget):
     """
 
