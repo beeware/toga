@@ -18,6 +18,9 @@ class ImageView(Widget):
         # rehint to update scaling of pixbuf
         self.rehint()
 
+    def set_on_press(self, handler):
+        self.interface.factory.not_implemented('ImageView.set_on_press()')
+
     def rehint(self):
         if self._pixbuf:
             height, width = self._resize_max(

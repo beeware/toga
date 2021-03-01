@@ -21,3 +21,6 @@ class ImageView(Widget):
             self.native.image = image._impl.native
         else:
             self.native.image = None
+
+    def set_on_press(self, handler):
+        self.interface.factory.not_implemented('ImageView.set_on_press()')
