@@ -3,10 +3,6 @@ from travertino.size import at_least
 from ..libs import (
     Gtk,
     gtk_alignment,
-    apply_gtk_style,
-    get_color_css,
-    get_bg_color_css,
-    get_font_css
 )
 from .base import Widget
 

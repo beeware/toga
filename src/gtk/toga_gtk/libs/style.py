@@ -44,5 +44,5 @@ def get_font_css(value):
         style.append(f"font-size: {value.size}px; ")
 
     style.append("}")
-    
+
     return " ".join(style)
