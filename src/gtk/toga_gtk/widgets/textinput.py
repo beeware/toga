@@ -24,9 +24,6 @@ class TextInput(Widget):
     def set_alignment(self, value):
         self.interface.factory.not_implemented('TextInput.set_alignment()')
 
-    def set_font(self, font):
-        self.interface.factory.not_implemented('TextInput.set_font()')
-
     def get_value(self):
         return self.native.get_text()
 

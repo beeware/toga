@@ -32,16 +32,17 @@ def get_bg_color_css(value):
 
 
 def get_font_css(value):
-    style = (
+    style = [
         ".toga-font { "
         f"font-style: {value.style}; "
         f"font-variant: {value.variant}; "
         f"font-weight: {value.weight}; "
         f"font-family: {value.family}; "
-    )
+    ]
 
     if value.size != -1:
-        style += f"font-size: {value.size}px; "
+        style.append(f"font-size: {value.size}px; ")
 
-    style += "}"
-    return style
+    style.append("}")
+    
+    return " ".join(style)
