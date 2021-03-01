@@ -83,7 +83,3 @@ class Box(Widget):
         self.min_width = None
         self.min_height = None
         self.native = TogaBox(self)
-
-    def set_background_color(self, color):
-        # FIXME
-        self.interface.factory.not_implemented('Box.set_background_color()')

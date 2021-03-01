@@ -1,5 +1,12 @@
 from travertino.size import at_least
 
+from ..libs import (
+    apply_gtk_style,
+    get_color_css,
+    get_bg_color_css,
+    get_font_css
+)
+
 
 class Widget:
     def __init__(self, interface):
@@ -68,17 +75,23 @@ class Widget:
     def set_hidden(self, hidden):
         return not self.native.set_visible(not hidden)
 
-    def set_font(self, font):
-        # By default, font can't be changed
-        pass
-
     def set_color(self, color):
-        # By default, color can't be changed
-        pass
+        if color:
+            style_context = self.native.get_style_context()
+            css = get_color_css(color)
+            apply_gtk_style(style_context, css, "toga-color")
 
     def set_background_color(self, color):
-        # By default, background color can't be changed
-        pass
+        if color:
+            style_context = self.native.get_style_context()
+            css = get_bg_color_css(color)
+            apply_gtk_style(style_context, css, "toga-bg-color")
+
+    def set_font(self, value):
+        if value:
+            style_context = self.native.get_style_context()
+            css = get_font_css(value)
+            apply_gtk_style(style_context, css, "toga-font")
 
     ######################################################################
     # INTERFACE

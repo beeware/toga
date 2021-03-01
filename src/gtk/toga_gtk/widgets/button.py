@@ -25,24 +25,6 @@ class Button(Widget):
     def set_enabled(self, value):
         self.native.set_sensitive(value)
 
-    def set_color(self, color):
-        if color:
-            style_context = self.native.get_style_context()
-            css = get_color_css(color)
-            apply_gtk_style(style_context, css, "toga-color")
-
-    def set_background_color(self, color):
-        if color:
-            style_context = self.native.get_style_context()
-            css = get_bg_color_css(color)
-            apply_gtk_style(style_context, css, "toga-bg-color")
-
-    def set_font(self, value):
-        if value:
-            style_context = self.native.get_style_context()
-            css = get_font_css(value)
-            apply_gtk_style(style_context, css, "toga-font")
-
     def set_on_press(self, handler):
         # No special handling required
         pass
