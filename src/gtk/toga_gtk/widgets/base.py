@@ -87,10 +87,10 @@ class Widget:
             css = get_bg_color_css(color)
             apply_gtk_style(style_context, css, "toga-bg-color")
 
-    def set_font(self, value):
-        if value:
+    def set_font(self, font):
+        if font:
             style_context = self.native.get_style_context()
-            css = get_font_css(value)
+            css = get_font_css(font)
             apply_gtk_style(style_context, css, "toga-font")
 
     ######################################################################
