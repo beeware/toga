@@ -68,8 +68,6 @@ class DetailedList(Widget):
     def _make_row(self, container, i):
         # Create the foreground.
         row_foreground = android_widgets.RelativeLayout(self._native_activity)
-        row_foreground.setBackgroundColor(self._native_activity.getResources().getColor(
-            android_widgets.R__color.background_light))
         container.addView(row_foreground)
 
         # Add user-provided icon to layout.
