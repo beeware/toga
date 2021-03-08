@@ -11,17 +11,19 @@ class ExampleAndroidIntentDemoApp(toga.App):
         if self.Intent == None:
             from rubicon.java import JavaClass
             self.Intent = JavaClass("android/content/Intent")
-        intent = self.Intent("org.openintents.action.PICK_FILE")
-        intent.putExtra("org.openintents.extra.TITLE", "Choose a file")
-        result = await self.app._impl.invoke_intent_for_result(intent)
-        print(str(result))
-        if result["errorMessage"] is not None:
-            self.label.text = result["errorMessage"]
-        elif result["resultData"] is not None:
-            selected_file = str(result["resultData"].getData())[7:]
-            self.label.text = 'Selected file: ' + selected_file
-        else:
-            self.label.text = 'No file selected, ResultCode was ' + str(result["resultCode"]) + ")"
+        try:
+            intent = self.Intent("org.openintents.action.PICK_FILE")
+            intent.putExtra("org.openintents.extra.TITLE", "Choose a file")
+            result = await self.app._impl.invoke_intent_for_result(intent)
+            print(str(result))
+            if result["resultData"] is not None:
+                selected_file = str(result["resultData"].getData())[7:]
+                self.label.text = 'Selected file: ' + selected_file
+            else:
+                self.label.text = 'No file selected, ResultCode was ' + str(result["resultCode"]) + ")"
+        except Exception as ex:
+            self.label.text = str(ex)
+            self.main_window.info_dialog("Error", "This example requires that 'IO Filemanager' is installed.")
 
     def do_clear(self, widget, **kwargs):
         self.label.text = "Ready."

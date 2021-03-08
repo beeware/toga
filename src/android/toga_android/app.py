@@ -57,7 +57,7 @@ class TogaApp(IPythonApp):
         print("Toga app: onActivityResult, requestCode={0}, resultData={1}".format(requestCode, resultData))
         if requestCode in self.running_intents:
             result_future = self.running_intents.pop(requestCode)  # remove Intent from the list of running Intents
-            result_future.set_result({"resultCode": resultCode, "resultData": resultData, "errorMessage": None})
+            result_future.set_result({"resultCode": resultCode, "resultData": resultData})
 
     @property
     def native(self):
@@ -116,12 +116,10 @@ class App:
     async def invoke_intent_for_result(self, intent):
         """
         Calls an Intent and waits for its result.
-        The returned dictionary contains "errorMessage" which will contain the error message on failure and
-        None on success.
+        An Exception will be raised when the Intent cannot be invoked.
 
         :param Intent intent: The Intent to call
-        :returns: A Dictionary containing "resultCode" (int), "resultData" (Intent or None) and
-        "errorMessage" (str)
+        :returns: A Dictionary containing "resultCode" (int) and "resultData" (Intent or None)
         :rtype: dict
         """
         self._listener.last_intent_requestcode += 1
@@ -131,7 +129,8 @@ class App:
         errorMessage = self.native.tryStartActivityForResult(intent, code)
         if errorMessage is not None:
             self._listener.running_intents.pop(code)  # remove Intent from the list of running Intents
-            result_future.set_result({"resultCode": None, "resultData": None, "errorMessage": errorMessage})
-        else:
-            await result_future
+            result_future.set_result({"resultCode": None, "resultData": None})
+            raise Exception(errorMessage)
+            return
+        await result_future
         return result_future.result()
