@@ -55,8 +55,9 @@ class TogaApp(IPythonApp):
                                   to Intent "extras").
         """
         print("Toga app: onActivityResult, requestCode={0}, resultData={1}".format(requestCode, resultData))
-        result_future = self.running_intents.pop(requestCode)  # remove Intent from the list of running Intents
-        result_future.set_result({"resultCode": resultCode, "resultData": resultData})
+        if requestCode in self.running_intents:
+            result_future = self.running_intents.pop(requestCode)  # remove Intent from the list of running Intents
+            result_future.set_result({"resultCode": resultCode, "resultData": resultData, "errorMessage": None})
 
     @property
     def native(self):
@@ -114,16 +115,23 @@ class App:
 
     async def invoke_intent_for_result(self, intent):
         """
-        Calls an Intent and waits for its result
+        Calls an Intent and waits for its result.
+        The returned dictionary contains "errorMessage" which will contain the error message on failure and
+        None on success.
 
         :param Intent intent: The Intent to call
-        :returns: A Dictionary containing "resultCode" (int) and "resultData" (Intent or None)
+        :returns: A Dictionary containing "resultCode" (int), "resultData" (Intent or None) and
+        "errorMessage" (str)
         :rtype: dict
         """
         self._listener.last_intent_requestcode += 1
         code = self._listener.last_intent_requestcode
         result_future = asyncio.Future()
         self._listener.running_intents[code] = result_future
-        self.native.startActivityForResult(intent, code)
-        await result_future
+        errorMessage = self.native.tryStartActivityForResult(intent, code)
+        if errorMessage is not None:
+            self._listener.running_intents.pop(code)  # remove Intent from the list of running Intents
+            result_future.set_result({"resultCode": None, "resultData": None, "errorMessage": errorMessage})
+        else:
+            await result_future
         return result_future.result()
