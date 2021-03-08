@@ -1,0 +1,47 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name = "Android Intent Demo"
+bundle = "org.beeware"
+version = "0.3.0.dev27"
+url = "https://beeware.org"
+license = "BSD license"
+author = 'Tiberius Yak'
+author_email = "tiberius@beeware.org"
+
+[tool.briefcase.app.android_intent]
+formal_name = "Android Intent Demo"
+description = "A testing app"
+sources = ['android_intent']
+requires = [
+	'c:/Projects/Python/Toga/src/core'
+]
+
+
+[tool.briefcase.app.android_intent.macOS]
+requires = [
+    'toga-cocoa',
+]
+
+[tool.briefcase.app.android_intent.linux]
+requires = [
+    'toga-gtk',
+]
+
+[tool.briefcase.app.android_intent.windows]
+requires = [
+    'toga-winforms',
+]
+
+# Mobile deployments
+[tool.briefcase.app.android_intent.iOS]
+requires = [
+    'toga-iOS',
+]
+
+[tool.briefcase.app.android_intent.android]
+requires = [
+    # 'toga-android',
+	'c:/Projects/Python/Toga/src/android'
+]

@@ -5,6 +5,8 @@ from toga.handlers import wrapped_handler
 from .libs.activity import IPythonApp, MainActivity
 from .window import Window
 
+import asyncio
+
 
 # `MainWindow` is defined here in `app.py`, not `window.py`, to mollify the test suite.
 class MainWindow(Window):
@@ -12,6 +14,9 @@ class MainWindow(Window):
 
 
 class TogaApp(IPythonApp):
+    last_intent_requestcode = -1  # always increment before using it for invoking new Intents
+    running_intents = {}          # dictionary for currently running Intents
+
     def __init__(self, app):
         super().__init__()
         self._interface = app
@@ -38,6 +43,20 @@ class TogaApp(IPythonApp):
 
     def onRestart(self):
         print("Toga app: onRestart")
+
+    def onActivityResult(self, requestCode, resultCode, resultData):
+        """
+        Callback method, called from MainActivity when an Intent ends
+
+        :param int requestCode: The integer request code originally supplied to startActivityForResult(),
+                                allowing you to identify who this result came from.
+        :param int resultCode: The integer result code returned by the child activity through its setResult().
+        :param Intent resultData: An Intent, which can return result data to the caller (various data can be attached
+                                  to Intent "extras").
+        """
+        print("Toga app: onActivityResult, requestCode={0}, resultData={1}".format(requestCode, resultData))
+        result_future = self.running_intents.pop(requestCode)  # remove Intent from the list of running Intents
+        result_future.set_result({"resultCode": resultCode, "resultData": resultData})
 
     @property
     def native(self):
@@ -92,3 +111,19 @@ class App:
 
     def add_background_task(self, handler):
         self.loop.call_soon(wrapped_handler(self, handler), self)
+
+    async def invoke_intent_for_result(self, intent):
+        """
+        Calls an Intent and waits for its result
+
+        :param Intent intent: The Intent to call
+        :returns: A Dictionary containing "resultCode" (int) and "resultData" (Intent or None)
+        :rtype: dict
+        """
+        self._listener.last_intent_requestcode += 1
+        code = self._listener.last_intent_requestcode
+        result_future = asyncio.Future()
+        self._listener.running_intents[code] = result_future
+        self.native.startActivityForResult(intent, code)
+        await result_future
+        return result_future.result()
