@@ -14,9 +14,7 @@ author_email = "tiberius@beeware.org"
 formal_name = "Android Intent Demo"
 description = "A testing app"
 sources = ['android_intent']
-requires = [
-	'c:/Projects/Python/Toga/src/core'
-]
+requires = []
 
 
 [tool.briefcase.app.android_intent.macOS]
@@ -42,6 +40,5 @@ requires = [
 
 [tool.briefcase.app.android_intent.android]
 requires = [
-    # 'toga-android',
-	'c:/Projects/Python/Toga/src/android'
+    'toga-android',
 ]
