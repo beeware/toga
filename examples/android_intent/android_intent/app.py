@@ -23,7 +23,7 @@ class ExampleAndroidIntentDemoApp(toga.App):
                 self.label.text = 'No file selected, ResultCode was ' + str(result["resultCode"]) + ")"
         except Exception as ex:
             self.label.text = str(ex)
-            self.main_window.info_dialog("Error", "This example requires that 'IO Filemanager' is installed.")
+            self.main_window.info_dialog("Error", "This example requires that 'OI Filemanager' is installed.")
 
     def do_clear(self, widget, **kwargs):
         self.label.text = "Ready."
