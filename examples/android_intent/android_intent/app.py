@@ -8,7 +8,7 @@ class ExampleAndroidIntentDemoApp(toga.App):
 
     # Button callback functions
     async def do_stuff(self, widget, **kwargs):
-        if self.Intent == None:
+        if self.Intent is None:
             from rubicon.java import JavaClass
             self.Intent = JavaClass("android/content/Intent")
         try:
