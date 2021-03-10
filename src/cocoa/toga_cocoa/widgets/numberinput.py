@@ -56,6 +56,7 @@ class NumberInput(Widget):
 
         self.input = NSTextField.new()
         self.input.interface = self.interface
+        self.input._impl = self
         self.input.bezeled = True
         self.input.bezelStyle = NSTextFieldSquareBezel
         self.input.translatesAutoresizingMaskIntoConstraints = False

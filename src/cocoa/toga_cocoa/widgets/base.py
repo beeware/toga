@@ -14,6 +14,7 @@ class Widget:
         self.constraints = None
         self.native = None
         self.create()
+        self.native._impl = self
         self.interface.style.reapply()
         self.set_enabled(self.interface.enabled)
 
