@@ -33,6 +33,9 @@ class DetailedList(Widget):
         self.native.set_min_content_width(self.interface.MIN_WIDTH)
         self.native.set_min_content_height(self.interface.MIN_HEIGHT)
 
+        # set _impl layer for other native layer versions
+        self.treeview._impl = self
+
     def change_source(self, source):
         self.treeview.set_model(None)
         self.store.change_source(source)

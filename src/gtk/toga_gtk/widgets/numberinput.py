@@ -20,6 +20,9 @@ class NumberInput(Widget):
 
         self.rehint()
 
+        # set _impl layer for other native layer versions
+        self.adjustment._impl = self
+
     def gtk_on_change(self, widget):
         value = widget.get_text().replace(",", ".") or 0
         self.interface._value = Decimal(value).quantize(self.interface.step)

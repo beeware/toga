@@ -35,6 +35,9 @@ class Tree(Widget):
         self.native.set_min_content_width(200)
         self.native.set_min_content_height(200)
 
+        # set _impl layer for other native layer versions
+        self.treeview._impl = self
+
     def gtk_on_select(self, selection):
         if self.interface.on_select:
             if self.interface.multiple_select:

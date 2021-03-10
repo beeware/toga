@@ -23,6 +23,10 @@ class MultilineTextInput(Widget):
         self.textview.connect("focus-out-event", self.gtk_on_focus_out)
         self.tag_placholder = self.buffer.create_tag("placeholder", foreground="gray")
 
+        # set _impl layer for other native layer versions
+        self.textview._impl = self
+        self.buffer._impl = self
+
     def set_value(self, value):
         self.buffer.set_text(value)
 
