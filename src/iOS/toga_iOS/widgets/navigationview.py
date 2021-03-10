@@ -32,6 +32,7 @@ class NavigationView(NavigationViewInterface, WidgetMixin):
         self._create()
 
     def create(self):
+        # TODO: This need to be fix to follow `Toga` architecture
         self._controller = TogaNavigationController.alloc().initWithRootViewController_(
             self._config['content']._controller
         )

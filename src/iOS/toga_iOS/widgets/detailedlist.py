@@ -86,6 +86,7 @@ class DetailedList(Widget):
     def create(self):
         self.controller = TogaTableViewController.alloc().init()
         self.controller.interface = self.interface
+        self.controller._impl = self
         self.native = self.controller.tableView
 
         self.native.separatorStyle = UITableViewCellSeparatorStyleNone

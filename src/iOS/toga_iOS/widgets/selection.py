@@ -34,6 +34,7 @@ class Selection(Widget):
 
         self.picker = TogaPickerView.alloc().init()
         self.picker.interface = self.interface
+        self.picker._impl = self
         self.picker.native = self.native
         self.picker.delegate = self.picker
         self.picker.dataSource = self.picker
