@@ -46,13 +46,13 @@ def wrapped_handler(interface, handler, cleanup=None):
     the original handler function on the `_raw` attribute.
     """
     if handler:
-        def _handler(widget, *args, **kwargs):
+        def _handler(widget=interface, *args, **kwargs):
             if asyncio.iscoroutinefunction(handler):
                 asyncio.ensure_future(
-                    handler_with_cleanup(handler, cleanup, interface, *args, **kwargs)
+                    handler_with_cleanup(handler, cleanup, widget, *args, **kwargs)
                 )
             else:
-                result = handler(interface, *args, **kwargs)
+                result = handler(widget, *args, **kwargs)
                 if inspect.isgenerator(result):
                     asyncio.ensure_future(
                         long_running_task(result, cleanup)
