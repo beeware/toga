@@ -57,6 +57,8 @@ class Canvas(Box):
     def create(self):
         super(Canvas, self).create()
         self.native.DoubleBuffered = True
+        self.native.interface = self.interface
+        self.native._impl = self
         self.native.Paint += self.winforms_paint
         self.native.Resize += self.winforms_resize
         self.native.MouseDown += self.winforms_mouse_down

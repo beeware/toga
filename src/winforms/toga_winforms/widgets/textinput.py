@@ -11,6 +11,8 @@ from .base import Widget
 class TextInput(Widget):
     def create(self):
         self.native = WinForms.TextBox()
+        self.native.interface = self.interface
+        self.native._impl = self
         self.native.Multiline = False
         self.native.DoubleClick += self.winforms_double_click
         self.native.TextChanged += self.winforms_text_changed
@@ -19,6 +21,8 @@ class TextInput(Widget):
         self.native.LostFocus += self.winforms_lost_focus
 
         self.error_provider = WinForms.ErrorProvider()
+        self.error_provider.interface = self.interface
+        self.error_provider._impl = self
         self.error_provider.SetIconAlignment(
             self.native, WinForms.ErrorIconAlignment.MiddleRight
         )

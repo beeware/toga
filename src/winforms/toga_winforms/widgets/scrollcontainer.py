@@ -8,6 +8,7 @@ class ScrollContainer(Widget):
     def create(self):
         self.native = WinForms.Panel()
         self.native.interface = self.interface
+        self.native._impl = self
         self.native.AutoScroll = True
         self.native.Scroll += self.winforms_scroll
         self.native.MouseWheel += self.winforms_scroll

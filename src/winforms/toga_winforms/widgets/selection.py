@@ -20,6 +20,8 @@ class TogaComboBox(WinForms.ComboBox):
 class Selection(Widget):
     def create(self):
         self.native = TogaComboBox(self.interface)
+        self.native.interface = self.interface
+        self.native._impl = self
 
     def remove_all_items(self):
         self.native.Items.Clear()

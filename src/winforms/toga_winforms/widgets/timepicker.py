@@ -10,6 +10,8 @@ from .base import Widget
 class TimePicker(Widget):
     def create(self):
         self.native = WinForms.DateTimePicker()
+        self.native.interface = self.interface
+        self.native._impl = self
         self.native.ValueChanged += self.winforms_value_changed
         self.native.Format = WinForms.DateTimePickerFormat.Time
         self.native.ShowUpDown = True

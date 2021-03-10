@@ -8,6 +8,7 @@ class SplitContainer(Widget):
     def create(self):
         self.native = WinForms.SplitContainer()
         self.native.interface = self.interface
+        self.native._impl = self
         self.native.Resize += self.winforms_resize
         self.native.SplitterMoved += self.winforms_resize
         self.ratio = None
