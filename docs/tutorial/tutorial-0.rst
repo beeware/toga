@@ -230,6 +230,8 @@ menu entries to quit the app, and an About page. The keyboard bindings to quit
 the app, plus the "close" button on the window will also work as expected. The
 app will have a default Toga icon (a picture of Tiberius the yak).
 
+.. note:: Methods for starting app
+
 This method has some consequences, the app may be failed to find some of icons path.
 The "default recommendation" is really "Use the Briefcase bootstrap", that's no more
 than an easy recommendation. Toga is, ultimately, Python. Any way of starting the
