@@ -48,6 +48,11 @@ class ScrollContainer(Widget):
         if self.interface.content is not None:
             self.set_content(self.interface.content)
 
+        # set _impl layer for other native layer versions
+        self.vScrollListener._impl = self
+        self.hScrollListener._impl = self
+        self.hScrollView._impl = self
+
     def set_content(self, widget):
         widget.viewport = AndroidViewport(widget.native)
         content_view_params = android_widgets.LinearLayout__LayoutParams(
