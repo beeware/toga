@@ -110,13 +110,14 @@ class Window:
 
         # Now that the content is visible, we can do our initial hinting,
         # and use that as the basis for setting the minimum window size.
-        self.interface.content._impl.rehint()
         self.interface.content.style.layout(
             self.interface.content,
             GtkViewport(native=None)
         )
         self.interface.content._impl.min_width = self.interface.content.layout.width
         self.interface.content._impl.min_height = self.interface.content.layout.height
+
+        self.interface.content._impl.rehint()
 
     def gtk_on_close(self, widget, data):
         if self.interface.on_close:
