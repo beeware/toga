@@ -1,7 +1,7 @@
 from travertino.size import at_least
 
 from ..keys import toga_key
-from ..libs import Gtk, WebKit2
+from ..libs import WebKit2
 from .base import Widget
 
 
