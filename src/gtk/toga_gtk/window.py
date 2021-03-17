@@ -108,8 +108,11 @@ class Window:
     def show(self):
         self.native.show_all()
 
-        # Now that the content is visible, we can do our initial hinting,
-        # and use that as the basis for setting the minimum window size.
+        # WARNING! the our current implementation for GTK backend does not
+        # need initial hinting here because the `Box` widget implementation
+        # already calculate the minimum size for each widget when allocate it,
+        # if we do hinting here some widget will inherit its size from size
+        # window of application.
         self.interface.content.style.layout(
             self.interface.content,
             GtkViewport(native=None)
