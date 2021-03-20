@@ -33,28 +33,19 @@ class TogaOnClickListener(android_widgets.OnClickListener):
 
 class Table(Widget):
     table_layout = None
-    color_selected = -3355444  # LTGREY, colorControlHighlight
-    color_unselected = -1  # WHITE, colorControlNormal
+    color_selected = None
+    color_unselected = MainActivity.singletonThis.getResources().getColor(
+        android_widgets.R__color.background_light)
     selection = {}
     _deleted_column = None
 
     def create(self):
+        # get the selection color from the current theme
         _current_theme = MainActivity.singletonThis.getApplication().getTheme()
-        print('Theme: '+str(_current_theme))
-        _resources = _current_theme.getResources()
-        print(str(_current_theme.getResources()))
-        # _res_id = _resources.getIdentifier("colorMultiSelectHighlight", "color", "android")
-        _res_id = _resources.getIdentifier("colorControlHighlight", "color", "org.beeware.table")
-        print('resId: '+str(_res_id))
-        if (_res_id != 0):
-            iColor = _resources.getColor(_red_id, None)
-            print('iColor=' + str(iColor))
-            color = android_widgets.TypedValue()
-            ok = _current_theme.resolveAttribute(_res_id, color, True)
-            print(ok)
-            if ok:
-                self.color_selected = color.data
-                print('attr='+str(color.data))
+        _typed_array = _current_theme.obtainStyledAttributes([android_widgets.R__attr.colorControlHighlight])
+        self.color_selected = _typed_array.getColor(0, 0)
+        _typed_array.recycle()
+
         self.table_layout = android_widgets.TableLayout(MainActivity.singletonThis)
         table_layout_params = android_widgets.TableLayout__Layoutparams(
             android_widgets.TableLayout__Layoutparams.MATCH_PARENT,
@@ -62,16 +53,16 @@ class Table(Widget):
         )
         self.table_layout.setLayoutParams(table_layout_params)
         self.native = self.table_layout
-        #widget.viewport = AndroidViewport(widget.native)
         if self.interface.data is not None:
             self.change_source(self.interface.data)
 
     def change_source(self, source):
         print('table.change_source()')
         self.selection = {}
-        print('removing all viewss')
+        print('removing all views')
         self.table_layout.removeAllViews()
         if source is not None:
+            #todo: add scrollview
             self.table_layout.addView(self.create_table_header())
             for row_index in range(len(source)):
                 table_row = self.create_table_row(row_index)
