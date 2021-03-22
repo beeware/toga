@@ -49,6 +49,7 @@ class Table(Widget):
         parent = android_widgets.LinearLayout(self._native_activity)
         parent.setOrientation(android_widgets.LinearLayout.VERTICAL)
         vscroll_view = android_widgets.ScrollView(self._native_activity)
+        # add vertical scroll view
         vscroll_view_layout_params = android_widgets.LinearLayout__LayoutParams(
             android_widgets.LinearLayout__LayoutParams.MATCH_PARENT,
             android_widgets.LinearLayout__LayoutParams.MATCH_PARENT
@@ -59,8 +60,18 @@ class Table(Widget):
             android_widgets.TableLayout__Layoutparams.MATCH_PARENT,
             android_widgets.TableLayout__Layoutparams.WRAP_CONTENT
         )
+        # add horizontal scroll view
+        hscroll_view = android_widgets.HorizontalScrollView(self._native_activity)
+        hccroll_view_layout_params = android_widgets.LinearLayout__LayoutParams(
+            android_widgets.LinearLayout__LayoutParams.MATCH_PARENT,
+            android_widgets.LinearLayout__LayoutParams.MATCH_PARENT
+        )
+        hscroll_view_layout_params.gravity = android_widgets.Gravity.LEFT
+        vscroll_view.addView(hscroll_view, hscroll_view_layout_params)
+        # add table layout to scrollbox
         self.table_layout.setLayoutParams(table_layout_params)
-        vscroll_view.addView(self.table_layout)
+        hscroll_view.addView(self.table_layout)
+        # add scroll box to parent layout
         parent.addView(vscroll_view, vscroll_view_layout_params)
         self.native = parent
         if self.interface.data is not None:

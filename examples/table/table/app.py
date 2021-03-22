@@ -6,7 +6,7 @@ from toga.style import Pack
 
 headings = ['Title', 'Year', 'Rating', 'Genre']
 bee_movies = [
-    ('The Secret Life of Bees', '2008', '7.3', 'Drama'),
+    ('The Secret Life of Bees fdjshf sdjfh dsjkf hdsjkf hdskjfh dsfkj hdskj hfdskjfhdskjfkjs', '2008', '7.3', 'Drama'),
     ('Bee Movie', '2007', '6.1', 'Animation, Adventure, Comedy'),
     ('Bees', '1998', '6.3', 'Horror'),
     ('The Girl Who Swallowed Bees', '2007', '7.5', 'Short'),
