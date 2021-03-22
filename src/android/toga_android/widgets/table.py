@@ -3,7 +3,6 @@ from travertino.size import at_least
 from ..libs import android_widgets
 from ..libs.activity import MainActivity
 from .base import Widget
-from toga_android.window import AndroidViewport
 
 
 class TogaOnClickListener(android_widgets.OnClickListener):
@@ -39,7 +38,7 @@ class Table(Widget):
     def create(self):
         # get the selection color from the current theme
         _current_theme = MainActivity.singletonThis.getApplication().getTheme()
-        _attrs = [android_widgets.R__attr.colorBackground,android_widgets.R__attr.colorControlHighlight]
+        _attrs = [android_widgets.R__attr.colorBackground, android_widgets.R__attr.colorControlHighlight]
         _typed_array = _current_theme.obtainStyledAttributes(_attrs)
         self.color_unselected = _typed_array.getColor(0, 0)
         self.color_selected = _typed_array.getColor(1, 0)
