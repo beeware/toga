@@ -81,7 +81,7 @@ class ExampleTableApp(toga.App):
         self.table1 = toga.Table(
             headings=headings,
             data=bee_movies[:4],
-            style=Pack(flex=1, padding_right=5),
+            style=Pack(flex=1, padding_right=5, height=250),
             multiple_select=False,
             on_select=self.on_select_handler1
         )

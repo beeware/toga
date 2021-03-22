@@ -47,6 +47,12 @@ class Table(Widget):
 
         parent = android_widgets.LinearLayout(self._native_activity)
         parent.setOrientation(android_widgets.LinearLayout.VERTICAL)
+        parent_layout_params = android_widgets.LinearLayout__LayoutParams(
+            android_widgets.LinearLayout__LayoutParams.MATCH_PARENT,
+            android_widgets.LinearLayout__LayoutParams.MATCH_PARENT
+        )
+        parent_layout_params.gravity = android_widgets.Gravity.TOP
+        parent.setLayoutParams(parent_layout_params)
         vscroll_view = android_widgets.ScrollView(self._native_activity)
         # add vertical scroll view
         vscroll_view_layout_params = android_widgets.LinearLayout__LayoutParams(
