@@ -170,6 +170,9 @@ class Table(Widget):
     def clear(self):
         self.change_source(self.interface.data)
 
+    def change(self, item):
+        self.interface.factory.not_implemented('Table.change()')
+
     # data listener method
     def remove(self, item, index):
         self.change_source(self.interface.data)
@@ -177,10 +180,10 @@ class Table(Widget):
     def scroll_to_row(self, row):
         pass
 
-    def set_on_select(self, _on_select):
-        self.interface.factory.not_implemented('Table.set_on_select()')
+    def set_on_select(self, handler):
+        pass
 
-    def set_on_double_click(self, _on_double_click):
+    def set_on_double_click(self, handler):
         self.interface.factory.not_implemented('Table.set_on_double_click()')
 
     def add_column(self, heading, accessor):
