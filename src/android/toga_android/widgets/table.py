@@ -46,13 +46,23 @@ class Table(Widget):
         self.color_selected = _typed_array.getColor(0, 0)
         _typed_array.recycle()
 
+        parent = android_widgets.LinearLayout(self._native_activity)
+        parent.setOrientation(android_widgets.LinearLayout.VERTICAL)
+        vscroll_view = android_widgets.ScrollView(self._native_activity)
+        vscroll_view_layout_params = android_widgets.LinearLayout__LayoutParams(
+            android_widgets.LinearLayout__LayoutParams.MATCH_PARENT,
+            android_widgets.LinearLayout__LayoutParams.MATCH_PARENT
+        )
+        vscroll_view_layout_params.gravity = android_widgets.Gravity.TOP
         self.table_layout = android_widgets.TableLayout(MainActivity.singletonThis)
         table_layout_params = android_widgets.TableLayout__Layoutparams(
             android_widgets.TableLayout__Layoutparams.MATCH_PARENT,
             android_widgets.TableLayout__Layoutparams.WRAP_CONTENT
         )
         self.table_layout.setLayoutParams(table_layout_params)
-        self.native = self.table_layout
+        vscroll_view.addView(self.table_layout)
+        parent.addView(vscroll_view, vscroll_view_layout_params)
+        self.native = parent
         if self.interface.data is not None:
             self.change_source(self.interface.data)
 
@@ -62,7 +72,6 @@ class Table(Widget):
         print('removing all views')
         self.table_layout.removeAllViews()
         if source is not None:
-            #todo: add scrollview
             self.table_layout.addView(self.create_table_header())
             for row_index in range(len(source)):
                 table_row = self.create_table_row(row_index)
