@@ -14,9 +14,7 @@ author_email = "tiberius@beeware.org"
 formal_name = "Table Demo"
 description = "A testing app"
 sources = ['table']
-requires = [
-	'c:/Projects/Python/Toga/src/core'
-]
+requires = []
 
 
 [tool.briefcase.app.table.macOS]
@@ -42,6 +40,5 @@ requires = [
 
 [tool.briefcase.app.table.android]
 requires = [
-    #'toga-android',
-	'c:/Projects/Python/Toga/src/android'
+    'toga-android',
 ]
