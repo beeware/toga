@@ -16,7 +16,6 @@ description = "A testing app"
 sources = ['table']
 requires = []
 
-
 [tool.briefcase.app.table.macOS]
 requires = [
     'toga-cocoa',
