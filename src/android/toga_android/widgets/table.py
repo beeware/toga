@@ -13,7 +13,6 @@ class TogaOnClickListener(android_widgets.OnClickListener):
 
     def onClick(self, _view):
         tr_id = _view.getId()
-        print('tr_id='+str(tr_id))
         row = self.impl.interface.data[tr_id]
         if self.impl.interface.multiple_select:
             if tr_id in self.impl.selection:
@@ -26,7 +25,6 @@ class TogaOnClickListener(android_widgets.OnClickListener):
             self.impl.clear_selection()
             self.impl.selection[tr_id] = row
             _view.setBackgroundColor(self.impl.color_selected)
-        print('selection='+str(self.impl.selection))
         if self.impl.interface.on_select:
             self.impl.interface.on_select(self.impl.interface, row=row)
 
@@ -34,16 +32,17 @@ class TogaOnClickListener(android_widgets.OnClickListener):
 class Table(Widget):
     table_layout = None
     color_selected = None
-    color_unselected = MainActivity.singletonThis.getResources().getColor(
-        android_widgets.R__color.background_light)
+    color_unselected = None
     selection = {}
     _deleted_column = None
 
     def create(self):
         # get the selection color from the current theme
         _current_theme = MainActivity.singletonThis.getApplication().getTheme()
-        _typed_array = _current_theme.obtainStyledAttributes([android_widgets.R__attr.colorControlHighlight])
-        self.color_selected = _typed_array.getColor(0, 0)
+        _attrs = [android_widgets.R__attr.colorBackground,android_widgets.R__attr.colorControlHighlight]
+        _typed_array = _current_theme.obtainStyledAttributes(_attrs)
+        self.color_unselected = _typed_array.getColor(0, 0)
+        self.color_selected = _typed_array.getColor(1, 0)
         _typed_array.recycle()
 
         parent = android_widgets.LinearLayout(self._native_activity)
@@ -62,7 +61,7 @@ class Table(Widget):
         )
         # add horizontal scroll view
         hscroll_view = android_widgets.HorizontalScrollView(self._native_activity)
-        hccroll_view_layout_params = android_widgets.LinearLayout__LayoutParams(
+        hscroll_view_layout_params = android_widgets.LinearLayout__LayoutParams(
             android_widgets.LinearLayout__LayoutParams.MATCH_PARENT,
             android_widgets.LinearLayout__LayoutParams.MATCH_PARENT
         )
@@ -78,9 +77,7 @@ class Table(Widget):
             self.change_source(self.interface.data)
 
     def change_source(self, source):
-        print('table.change_source()')
         self.selection = {}
-        print('removing all views')
         self.table_layout.removeAllViews()
         if source is not None:
             self.table_layout.addView(self.create_table_header())
@@ -147,7 +144,6 @@ class Table(Widget):
             return None
         row_object = self.interface.data[row_index]
         value = getattr(row_object, self.interface._accessors[col_index])
-        #print('data({},{})={}'.format(row_index, col_index, value))
         return value
 
     def get_selection(self):
@@ -163,17 +159,14 @@ class Table(Widget):
 
     # data listener method
     def insert(self, index, item):
-        print('table.insert()')
         self.change_source(self.interface.data)
 
     # data listener method
     def clear(self):
-        print('table.clear()')
         self.change_source(self.interface.data)
 
     # data listener method
     def remove(self, item, index):
-        print('table.remove()')
         self.change_source(self.interface.data)
 
     def scroll_to_row(self, row):
