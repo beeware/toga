@@ -8,6 +8,7 @@ CompoundButton__OnCheckedChangeListener = JavaInterface("android/widget/Compound
 DialogInterface__OnClickListener = JavaInterface("android/content/DialogInterface$OnClickListener")
 EditText = JavaClass("android/widget/EditText")
 Gravity = JavaClass("android/view/Gravity")
+HorizontalScrollView = JavaClass("android/widget/HorizontalScrollView")
 ImageView = JavaClass("android/widget/ImageView")
 ImageView__ScaleType = JavaClass("android/widget/ImageView$ScaleType")
 InputType = JavaClass("android/text/InputType")

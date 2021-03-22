@@ -1,6 +1,6 @@
 from travertino.size import at_least
 
-from toga_winforms.libs import WinForms
+from toga_winforms.libs import WinForms, SystemColors
 
 from .base import Widget
 
@@ -11,16 +11,27 @@ class MultilineTextInput(Widget):
         self.native = WinForms.RichTextBox()
         self.native.Multiline = True
         self.native.TextChanged += self.winforms_text_changed
+        self.native.Enter += self.winforms_enter
+        self.native.Leave += self.winforms_leave
+        self._placeholder = None
+
+    def winforms_enter(self, sender, event):
+        if self._placeholder is not None and self.get_value() == self._placeholder:
+            self.native.Text = ""
+            self._update_text_color()
+
+    def winforms_leave(self, sender, event):
+        self._update_text()
 
     def set_readonly(self, value):
         self.native.ReadOnly = self.interface.readonly
 
     def set_placeholder(self, value):
-        # self.native.cell.placeholderString = self._placeholder
-        self.interface.factory.not_implemented('MultilineTextInput.set_placeholder()')
+        self._placeholder = value
 
     def set_value(self, value):
         self.native.Text = value
+        self._update_text()
 
     def get_value(self):
         return self.native.Text
@@ -35,3 +46,16 @@ class MultilineTextInput(Widget):
     def winforms_text_changed(self, sender, event):
         if self.interface.on_change:
             self.interface.on_change(self.interface)
+
+    def _update_text(self):
+        if self._placeholder is not None and self.get_value() == "":
+            self.set_value(self._placeholder)
+            self._update_placeholder_color()
+        else:
+            self._update_text_color()
+
+    def _update_text_color(self):
+        self.native.ForeColor = SystemColors.WindowText
+
+    def _update_placeholder_color(self):
+        self.native.ForeColor = SystemColors.GrayText

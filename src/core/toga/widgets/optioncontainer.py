@@ -28,22 +28,31 @@ class OptionItem(BaseOptionItem):
     """OptionItem is an interface wrapper for a tab on the OptionContainer"""
     def __init__(self, interface, widget, index):
         super().__init__(interface)
-        self._widget = widget
+        self._content = widget
         self._index = index
 
     @property
     def index(self):
         return self._index
 
+    @property
+    def content(self):
+        return self._content
+
     def refresh(self):
-        self._widget.refresh()
+        self._content.refresh()
 
 
 class CurrentOptionItem(BaseOptionItem):
     """CurrentOptionItem is a proxy for whichever tab is currently selected."""
+
     @property
     def index(self):
         return self._interface._impl.get_current_tab_index()
+
+    @property
+    def content(self):
+        return self._interface.content[self.index].content
 
     def __add__(self, other):
         if not isinstance(other, int):
@@ -56,7 +65,7 @@ class CurrentOptionItem(BaseOptionItem):
         return self._interface.content[self.index - other]
 
     def refresh(self):
-        self._interface.content[self.index]._widget.refresh()
+        self._interface.content[self.index]._content.refresh()
 
 
 class OptionList:
@@ -184,7 +193,7 @@ class OptionContainer(Widget):
     def _set_window(self, window):
         if self._content:
             for content in self._content:
-                content._widget.window = window
+                content._content.window = window
 
     def add(self, label, widget):
         """ Add a new option to the option container.
