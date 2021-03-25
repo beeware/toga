@@ -42,6 +42,7 @@ class Window:
         self.native.ClientSize = Size(*self.interface._size)
         self.native.interface = self.interface
         self.native.Resize += self.winforms_resize
+        self.native.FormClosing += self.winforms_FormClosing
         self.toolbar_native = None
         self.toolbar_items = None
 
@@ -129,6 +130,7 @@ class Window:
         self.native.Show()
 
     def winforms_FormClosing(self, event, handler):
+        self.interface.on_close()
         if self.interface.app.on_exit:
             self.interface.app.on_exit(self.interface.app)
 
