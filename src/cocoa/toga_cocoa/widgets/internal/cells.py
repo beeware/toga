@@ -33,8 +33,16 @@ class TogaIconView(NSTableCellView):
 
     @objc_method
     def setup(self):
-        self.imageView = NSImageView.alloc().init()
-        self.textField = NSTextField.alloc().init()
+        image_view = NSImageView.alloc().init()
+        text_field = NSTextField.alloc().init()
+
+        # this will retain image_view and text_field without needing to keep
+        # a Python reference
+        self.addSubview(image_view)
+        self.addSubview(text_field)
+
+        self.imageView = image_view
+        self.textField = text_field
 
         self.textField.cell.lineBreakMode = NSLineBreakMode.byTruncatingTail
         self.textField.bordered = False
@@ -42,9 +50,6 @@ class TogaIconView(NSTableCellView):
 
         self.imageView.translatesAutoresizingMaskIntoConstraints = False
         self.textField.translatesAutoresizingMaskIntoConstraints = False
-
-        self.addSubview(self.imageView)
-        self.addSubview(self.textField)
 
         # center icon vertically in cell
         self.iv_vertical_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # NOQA:E501
@@ -103,7 +108,7 @@ class TogaIconView(NSTableCellView):
             self.setup()
 
         if image:
-            self.imageView.image = image.resizeTo(16)
+            self.imageView.image = image
             # set icon width to 16
             self.iv_width_constraint.constant = 16
             # add padding between icon and text

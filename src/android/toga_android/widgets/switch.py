@@ -35,11 +35,19 @@ class Switch(Widget):
     def get_is_on(self):
         return self.native.isChecked()
 
+    def set_font(self, font):
+        if font:
+            font_impl = font.bind(self.interface.factory)
+            self.native.setTextSize(android_widgets.TypedValue.COMPLEX_UNIT_SP, font_impl.get_size())
+            self.native.setTypeface(font_impl.get_typeface(), font_impl.get_style())
+
     def set_on_toggle(self, handler):
         # No special handling required
         pass
 
     def rehint(self):
+        if self.native.getLayoutParams() is None:
+            return
         self.native.measure(
             android_widgets.View__MeasureSpec.UNSPECIFIED, android_widgets.View__MeasureSpec.UNSPECIFIED
         )

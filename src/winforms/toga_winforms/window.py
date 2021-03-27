@@ -161,7 +161,9 @@ class Window:
         return WinForms.MessageBox.Show(message, title, WinForms.MessageBoxButtons.OK)
 
     def question_dialog(self, title, message):
-        result = WinForms.MessageBox.Show(message, title, WinForms.MessageBoxButtons.YesNo)
+        result = WinForms.MessageBox.Show(
+            message, title, WinForms.MessageBoxButtons.YesNo
+        )
         return result == WinForms.DialogResult.Yes
 
     def confirm_dialog(self, title, message):
@@ -214,6 +216,18 @@ class Window:
             raise ValueError("No folder provided in the select folder dialog")
 
     def build_filter(self, file_types):
-        file_string = "{0} files (*.{0})|*.{0}"
-        return '|'.join([file_string.format(ext) for ext in file_types]) + \
-            "|All files (*.*)|*.*"
+        filters = [
+            "{0} files (*.{0})|*.{0}".format(ext)
+            for ext in file_types
+        ] + [
+            "All files (*.*)|*.*"
+        ]
+
+        if len(file_types) > 1:
+            filters.insert(0, "All matching files ({0})|{0}".format(
+                ';'.join([
+                    '*.{0}'.format(ext)
+                    for ext in file_types
+                ])
+            ))
+        return '|'.join(filters)

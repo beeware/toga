@@ -28,6 +28,12 @@ class Button(Widget):
     def set_background_color(self, value):
         self.interface.factory.not_implemented("Button.set_background_color()")
 
+    def set_font(self, font):
+        if font:
+            font_impl = font.bind(self.interface.factory)
+            self.native.setTextSize(android_widgets.TypedValue.COMPLEX_UNIT_SP, font_impl.get_size())
+            self.native.setTypeface(font_impl.get_typeface(), font_impl.get_style())
+
     def set_on_press(self, handler):
         # No special handling required
         pass

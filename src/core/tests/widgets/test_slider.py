@@ -146,6 +146,16 @@ class SliderTests(TestCase):
         self.slider.focus()
         self.assertActionPerformed(self.slider, "focus")
 
+    def test_set_on_press(self):
+        on_press = mock.Mock()
+        slider = toga.Slider(on_press=on_press, factory=toga_dummy.factory)
+        self.assertEqual(slider.on_press._raw, on_press)
+
+    def test_set_on_release(self):
+        on_release = mock.Mock()
+        slider = toga.Slider(on_release=on_release, factory=toga_dummy.factory)
+        self.assertEqual(slider.on_release._raw, on_release)
+
     def assert_slider_value(self, tick_value, value, on_change_call_count=0):
         self.assertEqual(self.slider.tick_value, tick_value)
         self.assertEqual(self.slider.value, value)

@@ -43,7 +43,7 @@ Minimum requirements
 
 * Toga requires **Python 3**. Python 2 is not supported.
 
-* If you're on macOS, you need to be on 10.7 (Lion) or newer.
+* If you're on macOS, you need to be on 10.10 (Yosemite) or newer.
 
 * If you're on Linux, you need to have GTK+ 3.10 or later. This is the version
   that ships starting with Ubuntu 14.04 and Fedora 20. You also need to install

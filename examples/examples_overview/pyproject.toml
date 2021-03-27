@@ -2,43 +2,43 @@
 requires = ["briefcase"]
 
 [tool.briefcase]
-project_name = "Switch Demo"
+project_name = "Examples Overview"
 bundle = "org.beeware"
-version = "0.3.0.dev24"
+version = "0.3.0.dev27"
 url = "https://beeware.org"
 license = "BSD license"
 author = 'Tiberius Yak'
 author_email = "tiberius@beeware.org"
 
-[tool.briefcase.app.switch]
-formal_name = "Switch Demo"
+[tool.briefcase.app.examples_overview]
+formal_name = "Examples Overview"
 description = "A testing app"
-sources = ['switch']
+sources = ['examples_overview']
 requires = []
 
 
-[tool.briefcase.app.switch.macOS]
+[tool.briefcase.app.examples_overview.macOS]
 requires = [
     'toga-cocoa',
 ]
 
-[tool.briefcase.app.switch.linux]
+[tool.briefcase.app.examples_overview.linux]
 requires = [
     'toga-gtk',
 ]
 
-[tool.briefcase.app.switch.windows]
+[tool.briefcase.app.examples_overview.windows]
 requires = [
     'toga-winforms',
 ]
 
 # Mobile deployments
-[tool.briefcase.app.switch.iOS]
+[tool.briefcase.app.examples_overview.iOS]
 requires = [
     'toga-iOS',
 ]
 
-[tool.briefcase.app.switch.android]
+[tool.briefcase.app.examples_overview.android]
 requires = [
     'toga-android',
 ]

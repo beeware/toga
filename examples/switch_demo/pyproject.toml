@@ -1,0 +1,44 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name = "Switch Demo"
+bundle = "org.beeware"
+version = "0.3.0.dev27"
+url = "https://beeware.org"
+license = "BSD license"
+author = 'Tiberius Yak'
+author_email = "tiberius@beeware.org"
+
+[tool.briefcase.app.switch_demo]
+formal_name = "Switch Demo"
+description = "A testing app"
+sources = ['switch_demo']
+requires = []
+
+
+[tool.briefcase.app.switch_demo.macOS]
+requires = [
+    'toga-cocoa',
+]
+
+[tool.briefcase.app.switch_demo.linux]
+requires = [
+    'toga-gtk',
+]
+
+[tool.briefcase.app.switch_demo.windows]
+requires = [
+    'toga-winforms',
+]
+
+# Mobile deployments
+[tool.briefcase.app.switch_demo.iOS]
+requires = [
+    'toga-iOS',
+]
+
+[tool.briefcase.app.switch_demo.android]
+requires = [
+    'toga-android',
+]

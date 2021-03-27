@@ -28,14 +28,33 @@ class Slider(Widget):
     def create(self):
         self.native = WinForms.TrackBar()
         self.native.Scroll += self.winforms_scroll
+        self.native.MouseDown += self.winforms_mouse_down
+        self.native.MouseUp += self.winforms_mouse_up
         self.set_enabled(self.interface._enabled)
         self.native.Minimum = 0
         self.set_tick_count(self.interface.tick_count)
 
     def winforms_scroll(self, sender, event):
-        if self.container:
-            if self.interface.on_change:
-                self.interface.on_change(self.interface)
+        if self.container and self.interface.on_change:
+            self.interface.on_change(self.interface)
+
+    def winforms_mouse_down(self, sender, event):
+        """
+        Since picking and releasing the slider is also a change, calling the
+            on_change method.
+        """
+        if self.container and self.interface.on_press:
+            self.interface.on_press(self.interface)
+        self.winforms_scroll(sender, event)
+
+    def winforms_mouse_up(self, sender, event):
+        """
+        Since picking and releasing the slider is also a change, calling the
+            on_change method.
+        """
+        self.winforms_scroll(sender, event)
+        if self.container and self.interface.on_release:
+            self.interface.on_release(self.interface)
 
     def get_value(self):
         actual_value = self.native.Value
@@ -49,7 +68,7 @@ class Slider(Widget):
         minimum, maximum = self.interface.range
         span = maximum - minimum
         actual_tick_count = self.native.Maximum
-        self.native.Value = (value - minimum) / span * actual_tick_count
+        self.native.Value = round((value - minimum) / span * actual_tick_count)
 
     def set_range(self, range):
         pass
@@ -67,4 +86,10 @@ class Slider(Widget):
             self.native.Maximum = tick_count - 1
 
     def set_on_change(self, handler):
+        pass
+
+    def set_on_press(self, handler):
+        pass
+
+    def set_on_release(self, handler):
         pass

@@ -67,13 +67,17 @@ class ExampleButtonApp(toga.App):
         # Button with label and string color
         button7 = toga.Button('String : Fashion', style=Pack(background_color=BLUE))
 
+        # Button with label and string color
+        button8 = toga.Button('Big Font', style=Pack(font_family='serif', font_size=20, font_weight='bold'))
+
         # Add components for the second row of the outer box
         inner_box2 = toga.Box(
             style=style_inner_box,
             children=[
                 button5,
                 button6,
-                button7
+                button7,
+                button8
             ]
         )
 
