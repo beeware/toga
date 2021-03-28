@@ -14,7 +14,7 @@ class DetailedListOnClickListener(android_widgets.OnClickListener):
 
     def onClick(self, _view):
         if self._impl.interface.on_select:
-            self._impl.interface.on_select(widget=self._impl.interface, row=self._row_number)
+            self._impl.interface.on_select(self._impl.interface, row=self._impl.interface.data[self._row_number])
 
 
 class OnRefreshListener(android_widgets.SwipeRefreshLayout__OnRefreshListener):
