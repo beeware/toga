@@ -48,7 +48,7 @@ class Table(Widget):
 
     def winforms_cache_virtual_items(self, sender, e):
         if self._cache and e.StartIndex >= self._first_item and \
-                e.EndIndex <= self._first_item + len(self._cache):
+                e.EndIndex < self._first_item + len(self._cache):
             # If the newly requested cache is a subset of the old cache,
             # no need to rebuild everything, so do nothing
             return
@@ -60,7 +60,7 @@ class Table(Widget):
 
         # Fill the cache with the appropriate ListViewItems.
         for i in range(new_length):
-            self._cache.append(WinForms.ListViewItem(self.row_data(self.interface.data[i])))
+            self._cache.append(WinForms.ListViewItem(self.row_data(self.interface.data[i + self._first_item])))
 
     def winforms_item_selection_changed(self, sender, e):
         if self.interface.on_select:
