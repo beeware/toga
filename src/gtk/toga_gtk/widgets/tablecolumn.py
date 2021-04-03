@@ -5,6 +5,9 @@ from .base import Widget
 class Column(Widget):
     def create(self):
         self.native = Gtk.TreeViewColumn("")
+        self.native.set_resizable(True)
+        self.native.set_reorderable(True)
+
         self.native.interface = self.interface
         self.native._impl = self
 
