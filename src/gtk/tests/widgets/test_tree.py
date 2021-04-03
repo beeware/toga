@@ -14,6 +14,7 @@ except ImportError:
         Gtk = None
 
 import toga
+from toga.sources import TreeSource
 
 from .utils import TreeModelListener
 
@@ -27,7 +28,8 @@ def handle_events():
 class TestGtkTree(unittest.TestCase):
     def setUp(self):
         self.tree = toga.Tree(
-            headings=("one", "two")
+            columns=("one", "two"),
+            data=TreeSource([], accessors=["one", "two"])
         )
 
         # make a shortcut for easy use
@@ -44,12 +46,13 @@ class TestGtkTree(unittest.TestCase):
         self.gtk_tree.clear()
 
         # Assign pre-constructed data
-        self.tree.data = {
-            ("A1", "A2"): [],
-            ("B1", "B2"): [
-                ("B1.1", "B2.1")
-            ]
-        }
+        self.tree.data = TreeSource(
+            data={
+                ("A1", "A2"): [],
+                ("B1", "B2"): [("B1.1", "B2.1")]
+            },
+            accessors=["one", "two"],
+        )
 
         # Make sure the data was stored correctly
         store = self.gtk_tree.store
@@ -57,17 +60,10 @@ class TestGtkTree(unittest.TestCase):
         self.assertNodeEqual(store[1], ("B1", "B2"))
         self.assertNodeEqual(store[(1, 0)], ("B1.1", "B2.1"))
 
-        # Clear the table with empty assignment
-        self.tree.data = []
+        # Clear the table data
+        self.tree.data.clear()
 
         # Make sure the table is empty
-        self.assertEqual(len(store), 0)
-
-        # Repeat with a few different cases
-        self.tree.data = None
-        self.assertEqual(len(store), 0)
-
-        self.tree.data = ()
         self.assertEqual(len(store), 0)
 
     def test_insert_root_node(self):
@@ -105,7 +101,7 @@ class TestGtkTree(unittest.TestCase):
     def test_insert_child_node(self):
         listener = TreeModelListener(self.gtk_tree.store)
 
-        self.tree.data = []
+        self.tree.data.clear()
 
         # Insert blank node as parent
         parent = self.tree.data.insert(None, 0, *(None, None))
@@ -186,7 +182,7 @@ class TestGtkTree(unittest.TestCase):
         self.assertNodeEqual(self.gtk_tree.store[path], (node.one, node.two))
 
     def test_node_persistence_for_replacement(self):
-        self.tree.data = []
+        self.tree.data.clear()
         self.tree.data.insert(None, 0, one="A1", two="A2")
         self.tree.data.insert(None, 0, one="B1", two="B2")
 
@@ -197,7 +193,7 @@ class TestGtkTree(unittest.TestCase):
         self.assertNodeEqual(self.gtk_tree.store[1], ("A1", "A2"))
 
     def test_node_persistence_for_deletion(self):
-        self.tree.data = []
+        self.tree.data.clear()
         a = self.tree.data.append(None, one="A1", two="A2")
         self.tree.data.append(None, one="B1", two="B2")
 
@@ -210,7 +206,7 @@ class TestGtkTree(unittest.TestCase):
         listener = TreeModelListener(self.gtk_tree.store)
 
         # Insert dummy nodes
-        self.tree.data = []
+        self.tree.data.clear()
         self.tree.data.append(None, one="A1", two="A2")
         listener.clear()
         b = self.tree.data.append(None, one="B1", two="B2")
@@ -239,7 +235,7 @@ class TestGtkTree(unittest.TestCase):
         listener = TreeModelListener(self.gtk_tree.store)
 
         # Insert two nodes
-        self.tree.data = []
+        self.tree.data.clear()
         a = self.tree.data.append(None, one="A1", two="A2")
         a_iter = listener.inserted_it
         listener.clear()
@@ -272,7 +268,7 @@ class TestGtkTree(unittest.TestCase):
         listener = TreeModelListener(self.gtk_tree.store)
 
         # Insert two nodes
-        self.tree.data = []
+        self.tree.data.clear()
         self.tree.data.append(None, one="A1", two="A2")
         b = self.tree.data.append(None, one="B1", two="B2")
 

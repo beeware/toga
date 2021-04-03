@@ -14,6 +14,7 @@ except ImportError:
         Gtk = None
 
 import toga
+from toga.sources import ListSource
 from .utils import TreeModelListener
 
 
@@ -26,7 +27,8 @@ def handle_events():
 class TestGtkTable(unittest.TestCase):
     def setUp(self):
         self.table = toga.Table(
-            headings=("one", "two")
+            columns=("one", "two"),
+            data=ListSource([], accessors=["one", "two"])
         )
 
         # make a shortcut for easy use
@@ -43,27 +45,30 @@ class TestGtkTable(unittest.TestCase):
         self.gtk_table.clear()
 
         # Assign pre-constructed data
-        self.table.data = [
-            ("A1", "A2"),
-            ("B1", "B2")
-        ]
+        self.table.data = ListSource(
+            data=[
+                ("A1", "A2"),
+                ("B1", "B2"),
+            ],
+            accessors=["one", "two"],
+        )
 
         # Make sure the data was stored correctly
         store = self.gtk_table.store
         self.assertRowEqual(store[0], ("A1", "A2"))
         self.assertRowEqual(store[1], ("B1", "B2"))
 
-        # Clear the table with empty assignment
-        self.table.data = []
+        # Clear the table
+        self.table.data.clear()
 
         # Make sure the table is empty
         self.assertEqual(len(store), 0)
 
         # Repeat with a few different cases
-        self.table.data = None
+        self.table.data.clear()
         self.assertEqual(len(store), 0)
 
-        self.table.data = ()
+        self.table.data.clear()
         self.assertEqual(len(store), 0)
 
     def test_insert(self):
@@ -154,7 +159,7 @@ class TestGtkTable(unittest.TestCase):
 
     def test_on_select_root_row(self):
         # Insert two dummy rows
-        self.table.data = []
+        self.table.data.clear()
         self.table.data.append(None, one="A1", two="A2")
         b = self.table.data.append(None, one="B1", two="B2")
 
@@ -180,7 +185,7 @@ class TestGtkTable(unittest.TestCase):
 
     def test_on_select_child_row(self):
         # Insert two nodes
-        self.table.data = []
+        self.table.data.clear()
 
         listener = TreeModelListener(self.gtk_table.store)
 
@@ -209,7 +214,7 @@ class TestGtkTable(unittest.TestCase):
 
     def test_on_select_deleted_node(self):
         # Insert two nodes
-        self.table.data = []
+        self.table.data.clear()
 
         listener = TreeModelListener(self.gtk_table.store)
 

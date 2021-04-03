@@ -12,7 +12,8 @@ class TableTests(TestCase):
     def setUp(self):
         super().setUp()
 
-        self.headings = ['Heading 1', 'Heading 2', 'Heading 3']
+        self.headings = ["Heading 1", "Heading 2", "Heading 3"]
+        self.accessors = ["heading_1", "heading_2", "heading_3"]
 
         def select_handler(widget, row):
             pass
@@ -24,25 +25,27 @@ class TableTests(TestCase):
         self.on_double_click = double_click_handler
 
         self.table = toga.Table(
-            self.headings,
+            columns=self.headings,
             on_select=self.on_select,
             on_double_click=self.on_double_click,
-            factory=toga_dummy.factory
+            factory=toga_dummy.factory,
         )
 
     def test_widget_created(self):
         self.assertEqual(self.table._impl.interface, self.table)
-        self.assertActionPerformed(self.table, 'create Table')
+        self.assertActionPerformed(self.table, "create Table")
 
-        self.assertEqual(self.table.headings, self.headings)
+        col_titles = [col.title for col in self.table.columns]
+        self.assertEqual(col_titles, self.headings)
         self.assertIsInstance(self.table.data, ListSource)
 
     def test_list_of_lists_data_source(self):
-        self.table.data = [
-            ['a1', 'b1', 'c1'],
-            ['a2', 'b2', 'c2'],
+        data = [
+            ["a1", "b1", "c1"],
+            ["a2", "b2", "c2"],
         ]
 
+        self.table.data = ListSource(data, self.accessors)
         self.assertIsInstance(self.table.data, ListSource)
 
     def test_custom_data_source(self):
@@ -54,46 +57,46 @@ class TableTests(TestCase):
         self.assertEqual(self.table.selection, None)
 
     def test_scroll_to_row(self):
-        self.table.data = [
-            ['a1', 'b1', 'c1'],
-            ['a2', 'b2', 'c2'],
-            ['a3', 'b3', 'c3'],
-            ['a4', 'b3', 'c4']
+        data = [
+            ["a1", "b1", "c1"],
+            ["a2", "b2", "c2"],
+            ["a3", "b3", "c3"],
+            ["a4", "b3", "c4"],
         ]
+        self.table.data = ListSource(data, self.accessors)
         self.table.scroll_to_row(2)
-        self.assertValueSet(self.table, 'scroll to', 2)
+        self.assertValueSet(self.table, "scroll to", 2)
 
     def test_scroll_to_top(self):
-        self.table.data = [
-            ['a1', 'b1', 'c1'],
-            ['a2', 'b2', 'c2'],
-            ['a3', 'b3', 'c3'],
-            ['a4', 'b3', 'c4']
+        data = [
+            ["a1", "b1", "c1"],
+            ["a2", "b2", "c2"],
+            ["a3", "b3", "c3"],
+            ["a4", "b3", "c4"],
         ]
+        self.table.data = ListSource(data, self.accessors)
         self.table.scroll_to_top()
-        self.assertValueSet(self.table, 'scroll to', 0)
+        self.assertValueSet(self.table, "scroll to", 0)
 
     def test_scroll_to_bottom(self):
-        self.table.data = [
-            ['a1', 'b1', 'c1'],
-            ['a2', 'b2', 'c2'],
-            ['a3', 'b3', 'c3'],
-            ['a4', 'b3', 'c4']
+        data = [
+            ["a1", "b1", "c1"],
+            ["a2", "b2", "c2"],
+            ["a3", "b3", "c3"],
+            ["a4", "b3", "c4"],
         ]
+        self.table.data = ListSource(data, self.accessors)
         self.table.scroll_to_bottom()
-        self.assertValueSet(self.table, 'scroll to', len(self.table.data) - 1)
+        self.assertValueSet(self.table, "scroll to", len(self.table.data) - 1)
 
     def test_multiple_select(self):
         self.assertEqual(self.table.multiple_select, False)
         secondtable = toga.Table(
-            self.headings,
-            multiple_select=True,
-            factory=toga_dummy.factory
+            self.headings, multiple_select=True, factory=toga_dummy.factory
         )
         self.assertEqual(secondtable.multiple_select, True)
 
     def test_on_select(self):
-
         def dummy_handler(widget, row):
             pass
 
@@ -107,7 +110,6 @@ class TableTests(TestCase):
         self.assertEqual(on_select._raw, dummy_handler)
 
     def test_on_double_click(self):
-
         def dummy_handler(widget, row):
             pass
 
@@ -121,76 +123,33 @@ class TableTests(TestCase):
         self.assertEqual(on_double_click._raw, dummy_handler)
 
     def test_add_column(self):
-        new_heading = 'Heading 4'
-        dummy_data = [
-            ['a1', 'b1', 'c1'],
-            ['a2', 'b2', 'c2'],
-            ['a3', 'b3', 'c3'],
-            ['a4', 'b3', 'c4']
+        new_column = toga.Column("Heading 4", text="heading_4", factory=toga_dummy.factory)
+        data = [
+            ["a1", "b1", "c1"],
+            ["a2", "b2", "c2"],
+            ["a3", "b3", "c3"],
+            ["a4", "b3", "c4"],
         ]
-        self.table.data = dummy_data
+        self.table.data = ListSource(data, self.accessors)
 
-        expecting_headings = self.headings + [new_heading]
-        self.table.add_column(new_heading)
+        expecting_columns = self.table.columns + [new_column]
+        self.table.add_column(new_column)
 
-        self.assertEqual(self.table.headings, expecting_headings)
+        self.assertEqual(self.table.columns, expecting_columns)
 
-    def test_add_columns_accessor_in_use(self):
-
-        new_heading = 'Heading 4'
-        accessor = 'heading_2'
-
-        with self.assertRaises(ValueError):
-            self.table.add_column(new_heading, accessor)
-
-    def test_remove_column_by_accessor(self):
-        remove = 'heading_2'
-        dummy_data = [
-            ['a1', 'b1', 'c1'],
-        ]
-        self.table.data = dummy_data
-
-        expecting_accessors = [h for h in self.table._accessors if h != remove]
+    def test_remove_column(self):
+        remove = self.table.columns[-1]
         self.table.remove_column(remove)
-        self.assertEqual(self.table._accessors, expecting_accessors)
+        self.assertNotIn(remove, self.table.columns)
 
-    def test_remove_column_by_position(self):
-        remove = 2
-        dummy_data = [
-            ['a1', 'b1', 'c1'],
-        ]
-        self.table.data = dummy_data
-
-        heading = self.table.headings[remove]
-        expecting_headings = [h for h in self.table.headings if h != heading]
-        self.table.remove_column(remove)
-        self.assertEqual(self.table.headings, expecting_headings)
-
-    def test_remove_column_invalid_name(self):
-        dummy_data = [
-            ['a1', 'b1', 'c1'],
-        ]
-        self.table.data = dummy_data
+    def test_remove_column_invalid(self):
+        new_column = toga.Column("New", text="heading_24", factory=toga_dummy.factory)
 
         # Remove a column that doesn't exist
         with self.assertRaises(ValueError):
-            self.table.remove_column("Not a column")
-
-    def test_remove_column_invalid_index(self):
-        dummy_data = [
-            ['a1', 'b1', 'c1'],
-        ]
-        self.table.data = dummy_data
-
-        # Remove a column using an index that doesn't exist
-        with self.assertRaises(ValueError):
-            self.table.remove_column(42)
+            self.table.remove_column(new_column)
 
     def test_remove_column_invalid_type(self):
-        dummy_data = [
-            ['a1', 'b1', 'c1'],
-        ]
-        self.table.data = dummy_data
 
         # Remove a column using a data type that isn't valid
         with self.assertRaises(ValueError):
