@@ -7,6 +7,7 @@ from pathlib import Path
 import toga
 from toga.constants import COLUMN
 from toga.sources import Source
+from toga.widgets.table import Column
 from toga.style import Pack
 
 # This is a slightly less toy example of a tree view to display
@@ -42,7 +43,7 @@ class LoadingFailedNode:
         return False
 
 
-class Node:
+class FileSystemNode:
     """A node which loads its children on-demand."""
 
     def __init__(self, path, parent):
@@ -72,10 +73,19 @@ class Node:
         # this will trigger loading of children, if not yet done
         return len(self.children) > 0
 
-    # Property that returns the first column value as (icon, label)
+    # Properties for column access
+
+    @property
+    def icon(self):
+        return self._icon
+
     @property
     def name(self):
-        return self._icon, self.path.name
+        return self.path.name
+
+    @property
+    def selected(self):
+        return True
 
     # Property that returns modified date as str
     @property
@@ -93,22 +103,23 @@ class Node:
     def load_children(self):
         try:
             sub_paths = [p for p in self.path.iterdir()]
-            self._children = [Node(p, self) for p in sub_paths]
+            self._children = [FileSystemNode(p, self) for p in sub_paths]
         except NotADirectoryError:
             self._children = []
         except OSError:
             self._children = [LoadingFailedNode(self)]
+
+
+class FileSystemSource(FileSystemNode, Source):
+    def __init__(self, path):
+        super().__init__(path, parent=None)
+        self.accessors = ["icon", "name", "date_modified"]
 
     def index(self, node):
         if node._parent:
             return node._parent._children.index(node)
         else:
             return self.children.index(node)
-
-
-class FileSystemSource(Node, Source):
-    def __init__(self, path):
-        super().__init__(path, parent=None)
 
 
 class ExampleTreeSourceApp(toga.App):
@@ -147,8 +158,12 @@ class ExampleTreeSourceApp(toga.App):
 
         self.fs_source = FileSystemSource(Path.cwd())
 
+        col0 = Column(title="Name", icon="icon", text="name")
+        col1 = Column(title="Date Modified", text="date_modified")
+        col2 = Column(title="Selected", checked_state="selected")
+
         self.tree = toga.Tree(
-            headings=['Name', 'Date Modified'],
+            columns=[col0, col1, col2],
             data=self.fs_source,
             style=Pack(flex=1),
             multiple_select=True,

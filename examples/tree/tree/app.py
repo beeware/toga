@@ -1,6 +1,7 @@
 from random import choice
 
 import toga
+from toga.sources import TreeSource
 from toga.constants import COLUMN, ROW
 from toga.style import Pack
 
@@ -21,10 +22,10 @@ class ExampleTreeApp(toga.App):
     # Table callback functions
     def on_select_handler(self, widget, node):
         if node is not None and node.title:
-            self.label.text = 'You selected node: {}'.format(node.title)
+            self.label.text = "You selected node: {}".format(node)
             self.btn_remove.enabled = True
         else:
-            self.label.text = 'No node selected'
+            self.label.text = "No node selected"
             self.btn_remove.enabled = False
 
     # Button callback functions
@@ -49,7 +50,7 @@ class ExampleTreeApp(toga.App):
 
     def remove_handler(self, widget, **kwargs):
         selection = self.tree.selection
-        if selection.title:
+        if selection is not None:
             self.tree.data.remove(selection)
 
     def startup(self):
@@ -59,10 +60,13 @@ class ExampleTreeApp(toga.App):
         # Label to show responses.
         self.label = toga.Label('Ready.', style=Pack(padding=10))
 
+        data_source = TreeSource([], accessors=["year", "title", "rating", "genre"])
+
         self.tree = toga.Tree(
-            headings=['Year', 'Title', 'Rating', 'Genre'],
+            columns=["Year", "Title", "Rating", "Genre"],
+            data=data_source,
             on_select=self.on_select_handler,
-            style=Pack(flex=1)
+            style=Pack(flex=1),
         )
 
         self.decade_1940s = self.tree.data.append(None, year='1940s', title='', rating='', genre='')

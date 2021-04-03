@@ -1,26 +1,32 @@
 from random import choice
 
 import toga
+from toga.sources import ListSource
 from toga.constants import COLUMN, ROW
 from toga.style import Pack
 
-headings = ['Title', 'Year', 'Rating', 'Genre']
+headings = ['Title', 'Year', 'Rating', 'Genre', 'Favourite']
+accessors = [h.lower() for h in headings]
 bee_movies = [
-    ('The Secret Life of Bees', '2008', '7.3', 'Drama'),
-    ('Bee Movie', '2007', '6.1', 'Animation, Adventure, Comedy'),
-    ('Bees', '1998', '6.3', 'Horror'),
-    ('The Girl Who Swallowed Bees', '2007', '7.5', 'Short'),
-    ('Birds Do It, Bees Do It', '1974', '7.3', 'Documentary'),
-    ('Bees: A Life for the Queen', '1998', '8.0', 'TV Movie'),
-    ('Bees in Paradise', '1944', '5.4', 'Comedy, Musical'),
-    ('Keeper of the Bees', '1947', '6.3', 'Drama')
+    ('The Secret Life of Bees', '2008', '7.3', 'Drama', False),
+    ('Bee Movie', '2007', '6.1', 'Animation, Adventure, Comedy', False),
+    ('Bees', '1998', '6.3', 'Horror', False),
+    ('The Girl Who Swallowed Bees', '2007', '7.5', 'Short', False),
+    ('Birds Do It, Bees Do It', '1974', '7.3', 'Documentary', False),
+    ('Bees: A Life for the Queen', '1998', '8.0', 'TV Movie', False),
+    ('Bees in Paradise', '1944', '5.4', 'Comedy, Musical', False),
+    ('Keeper of the Bees', '1947', '6.3', 'Drama', False),
 ]
 
 
 class ExampleTableApp(toga.App):
     # Table callback functions
     def on_select_handler1(self, widget, row, **kwargs):
-        self.label_table1.text = 'You selected row: {}'.format(row.title) if row is not None else 'No row selected'
+        self.label_table1.text = (
+            "You selected row: {}".format(row.title)
+            if row is not None
+            else "No row selected"
+        )
 
     def on_select_handler2(self, widget, row, **kwargs):
         if self.table2.selection is not None:
@@ -38,26 +44,26 @@ class ExampleTableApp(toga.App):
         elif len(self.table1.data) > 0:
             self.table1.data.remove(self.table1.data[0])
         else:
-            print('Table is empty!')
+            self.label_table2.text = 'Table is empty!'
 
     def clear_handler(self, widget, **kwargs):
         self.table1.data.clear()
 
     def reset_handler(self, widget, **kwargs):
-        self.table1.data = bee_movies[3:]
+        self.table1.data = ListSource(bee_movies[:4], accessors=accessors)
 
     def toggle_handler(self, widget, **kwargs):
-        try:
-            # Try to delete the "genre" column by accessor.
-            # If the column doesn't exist, this will raise a ValueError,
-            # which means we need to add it.
-            self.table1.remove_column('genre')
-        except ValueError:
-            # Add the genre column. We provide the column *title*,
-            # which is automatically converted into the data accessor `genre`.
-            # If the data accessor can't be determined from the column title,
-            # you could manually specify the accessor here, too.
-            self.table1.add_column('Genre')
+
+        genre_column = next(
+            (col for col in self.table1.columns if col.title == "Genre"), None
+        )
+
+        if genre_column:
+            # remove the "Genre" column if it exists
+            self.table1.remove_column(genre_column)
+        else:
+            # Add a genre column
+            self.table1.add_column("Genre", accessor="genre")
 
     def startup(self):
         self.main_window = toga.MainWindow(title=self.name)
@@ -67,16 +73,26 @@ class ExampleTableApp(toga.App):
         self.label_table2 = toga.Label('Try multiple row selection.', style=Pack(flex=1, padding_left=5))
         labelbox = toga.Box(children=[self.label_table1, self.label_table2], style=Pack(flex=0, padding_top=5))
 
+        table_data = ListSource(bee_movies[:4], accessors=accessors)
+
+        columns = [
+            toga.Column('Title', text='title'),
+            toga.Column('Year', text='year'),
+            toga.Column('Rating', text='rating'),
+            toga.Column('Genre', text='genre'),
+            toga.Column('Favourite', checked_state='favourite'),
+        ]
+
         self.table1 = toga.Table(
-            headings=headings,
-            data=bee_movies*1000,
+            columns=columns,
+            data=table_data,
             style=Pack(flex=1, padding_right=5),
             multiple_select=False,
             on_select=self.on_select_handler1
         )
 
         self.table2 = toga.Table(
-            headings=headings,
+            columns=headings,
             data=self.table1.data,
             multiple_select=True,
             style=Pack(flex=1, padding_left=5),

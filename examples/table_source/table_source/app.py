@@ -30,6 +30,7 @@ class MovieSource(Source):
     def __init__(self):
         super().__init__()
         self._movies = []
+        self.accessors = ["year", "title", "rating", "genre"]
 
     def __len__(self):
         return len(self._movies)
@@ -65,6 +66,7 @@ class GoodMovieSource(Source):
         self._source = source
         self._source.add_listener(self)
         self._removals = {}
+        self.accessors = ["year", "title", "rating", "genre"]
 
     # Implement the filtering of the underlying data source
     def _filtered(self):
@@ -123,7 +125,10 @@ class GoodMovieSource(Source):
 class ExampleTableSourceApp(toga.App):
     # Table callback functions
     def on_select_handler(self, widget, row, **kwargs):
-        self.label.text = 'You selected row: {}'.format(row.title) if row is not None else 'No row selected'
+        if row is None:
+            self.label.text = "No row selected"
+        else:
+            self.label.text = "You selected row: {}".format(row.title)
 
     # Button callback functions
     def insert_handler(self, widget, **kwargs):
@@ -135,7 +140,7 @@ class ExampleTableSourceApp(toga.App):
         elif len(self.table1.data) > 0:
             self.table1.data.remove(self.table1.data[0])
         else:
-            print('Table is empty!')
+            self.label.text = "Table is empty!"
 
     def clear_handler(self, widget, **kwargs):
         self.table1.data.clear()
@@ -150,14 +155,14 @@ class ExampleTableSourceApp(toga.App):
         # of the second reads from the first.
         # The headings are also in a different order.
         self.table1 = toga.Table(
-            headings=['Year', 'Title', 'Rating', 'Genre'],
+            columns=["Year", "Title", "Rating", "Genre"],
             data=MovieSource(),
             style=Pack(flex=1),
-            on_select=self.on_select_handler
+            on_select=self.on_select_handler,
         )
 
         self.table2 = toga.Table(
-            headings=['Rating', 'Title', 'Year', 'Genre'],
+            columns=["Rating", "Title", "Year", "Genre"],
             data=GoodMovieSource(self.table1.data),
             style=Pack(flex=1)
         )
