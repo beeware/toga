@@ -93,7 +93,7 @@ class TreeSource(Source):
 
     def __init__(self, data, accessors):
         super().__init__()
-        self._accessors = accessors
+        self.accessors = list(accessors)
         self._roots = self._create_nodes(data)
 
     ######################################################################
@@ -114,10 +114,13 @@ class TreeSource(Source):
     ######################################################################
 
     def _create_node(self, data, children=None):
+
         if isinstance(data, dict):
             node = Node(**data)
+        elif hasattr(data, '__iter__') and not isinstance(data, str):
+            node = Node(**dict(zip(self.accessors, data)))
         else:
-            node = Node(**dict(zip(self._accessors, data)))
+            raise ValueError('Invalid data format')
 
         node._source = self
 
@@ -159,7 +162,7 @@ class TreeSource(Source):
         self._notify('clear')
 
     def insert(self, parent, index, *values, **named):
-        node = self._create_node(dict(zip(self._accessors, values), **named))
+        node = self._create_node(dict(zip(self.accessors, values), **named))
 
         if parent is None:
             self._roots.insert(index, node)

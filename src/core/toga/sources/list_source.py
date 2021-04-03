@@ -64,7 +64,7 @@ class ListSource(Source):
     """
     def __init__(self, data, accessors):
         super().__init__()
-        self._accessors = accessors.copy()
+        self.accessors = list(accessors)
         self._data = []
         for value in data:
             self._data.append(self._create_row(value))
@@ -95,9 +95,9 @@ class ListSource(Source):
         if isinstance(data, dict):
             row = Row(**data)
         elif hasattr(data, '__iter__') and not isinstance(data, str):
-            row = Row(**dict(zip(self._accessors, data)))
+            row = Row(**dict(zip(self.accessors, data)))
         else:
-            row = Row(**{self._accessors[0]: data})
+            row = Row(**{self.accessors[0]: data})
         row._source = self
         return row
 
@@ -120,7 +120,7 @@ class ListSource(Source):
     def insert(self, index, *values, **named):
         # Coalesce values and data into a single data dictionary,
         # and use that to create the data row. Explicitly named data override.
-        row = self._create_row(dict(zip(self._accessors, values), **named))
+        row = self._create_row(dict(zip(self.accessors, values), **named))
         self._data.insert(index, row)
         self._notify('insert', index=index, item=row)
         return row
