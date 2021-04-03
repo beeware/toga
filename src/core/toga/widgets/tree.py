@@ -1,6 +1,9 @@
+import warnings
+
 from toga.handlers import wrapped_handler
 from toga.sources import TreeSource
-from toga.sources.accessors import build_accessors
+from toga.sources.accessors import to_accessor, build_accessors
+from toga.widgets.table import Column
 
 from .base import Widget
 
@@ -8,25 +11,17 @@ from .base import Widget
 class Tree(Widget):
     """Tree Widget
 
-    :param headings: The list of headings for the interface.
+    :param columns: Can be a list of titles to generate columns or a list of
+        :class:`Column` instances.
+    :param accessors: Optional; a list of attributes to access the value in the
+        columns. If not given, the headings will be taken.
     :param id:  An identifier for this widget.
     :param style: An optional style object. If no style is provided then a new
         one will be created for the widget.
     :param data: The data to display in the widget. Can be an instance of
-        :class:`toga.sources.TreeSource`, a list, dict or tuple with data to
+        :class:`toga.sources.TreeSource`, a list, or tuple with data to
         display in the tree widget, or a class instance which implements the
-        interface of :class:`toga.sources.TreeSource`. Entries can be:
-
-          - any Python object ``value`` with a string representation. This
-            string will be shown in the widget. If ``value`` has an attribute
-            ``icon``, instance of (:class:`toga.Icon`), the icon will be shown
-            in front of the text.
-
-          - a tuple ``(icon, value)`` where again the string representation of
-            ``value`` will be used as text.
-
-    :param accessors: Optional; a list of attributes to access the value in the
-        columns. If not given, the headings will be taken.
+        interface of :class:`toga.sources.TreeSource`.
     :param multiple_select: Boolean; if ``True``, allows for the selection of
         multiple rows. Defaults to ``False``.
     :param on_select: A handler to be invoked when the user selects one or
@@ -34,46 +29,118 @@ class Tree(Widget):
     :param on_double_click: A handler to be invoked when the user double clicks a row.
     :param factory:: A python module that is capable to return a implementation
         of this class with the same name. (optional; used only for testing)
+
+    Examples:
+
+        Lets prepare a data source first.
+
+        >>> data = {
+        >>>    ('father', 38): [('child 1', 17), ('child 1', 15)],
+        >>>    ('mother', 42): [('child 1', 17)],
+        >>> }
+        >>> accessors = ['name', 'age']
+        >>> tree_source = TreeSource(data, accessors)
+
+        Columns can be provided in several forms.
+        As a list of column titles which will be matched against accessors in the data:
+
+        >>> columns = ['Name', 'Age']
+
+        As ``Column`` instances with column properties assigned to data accessors:
+
+        >>> columns = [
+        >>>     Column(title='Name', text='name'),
+        >>>     Column(title='Age', text='age'),
+        >>> ]
+
+        Now we can create our Table:
+
+        >>> table = Tree(columns=columns, data=tree_source)
     """
+
     MIN_WIDTH = 100
     MIN_HEIGHT = 100
 
-    def __init__(self, headings, id=None, style=None, data=None, accessors=None,
-                 multiple_select=False, on_select=None, on_double_click=None, factory=None):
+    def __init__(
+        self,
+        columns=None,
+        headings=None,
+        accessors=None,
+        id=None,
+        style=None,
+        data=None,
+        multiple_select=False,
+        on_select=None,
+        on_double_click=None,
+        factory=None,
+    ):
         super().__init__(id=id, style=style, factory=factory)
-        self.headings = headings
-        self._accessors = build_accessors(headings, accessors)
+
+        # backward compatibility
+        if not columns:
+            warnings.warn(
+                "Future versions will require a columns argument", DeprecationWarning
+            )
+
+        if headings is not None:
+            warnings.warn(
+                "'headings' and 'accessors' are deprecated and will be removed in a "
+                "future version. Use 'columns' instead.", DeprecationWarning
+            )
+            accessors = build_accessors(headings, accessors)
+            columns = [Column(title=h, text=a) for h, a in zip(headings, accessors)]
+
+        if not (columns or headings):
+            raise ValueError("Must provide columns or headers for table")
+
+        self._columns = []
+        for col_index, col in enumerate(columns):
+            if isinstance(col, Column):
+                self._columns.append(col)
+            elif isinstance(col, str):
+                title = col
+                accessor = to_accessor(title)
+                self._columns.append(Column(title, text=accessor, factory=self.factory))
+            else:
+                raise ValueError("Column must be str or Column instance")
+
+        self._accessors = [col.text for col in self._columns]  # backward compatibility
+
         self._multiple_select = multiple_select
-        self._data = None
+        self._data = TreeSource([], [])
         self._on_select = None
         self._on_double_click = None
 
         self._impl = self.factory.Tree(interface=self)
         self.data = data
-
         self.on_select = on_select
         self.on_double_click = on_double_click
 
     @property
+    def columns(self):
+        return self._columns
+
+    @property
     def data(self):
-        '''
+        """
+        The data source of the widget. It accepts table data in the form of
+        :obj:`TreeSource`
+
         :returns: The data source of the tree
-        :rtype: ``dict``
-        '''
+        :rtype: :class:`toga.sources.TreeSource`
+        """
         return self._data
 
     @data.setter
     def data(self, data):
-        '''
-        Set the data source of the data
-
-        :param data: Data source
-        :type  data: ``dict`` or ``class``
-        '''
         if data is None:
-            self._data = TreeSource(accessors=self._accessors, data=[])
-        elif isinstance(data, (list, tuple, dict)):
-            self._data = TreeSource(accessors=self._accessors, data=data)
+            self._data = TreeSource([], [])
+        elif isinstance(data, (list, tuple)):
+            warnings.warn(
+                "Future versions will only accept a TreeSource instance or None",
+                DeprecationWarning
+            )
+            self._data = TreeSource(data=data, accessors=self._accessors)
         else:
             self._data = data
 

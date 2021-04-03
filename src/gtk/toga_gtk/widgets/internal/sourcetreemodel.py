@@ -11,18 +11,14 @@ class SourceTreeModel(GObject.Object, Gtk.TreeModel):
     TODO: If the source is a TreeSource, it uses the Node._parent attribute.
     Maybe an method could be added (like index()) to the TreeSource to access it.
     """
-    def __init__(self, columns, is_tree):
+
+    def __init__(self, is_tree):
         """
-        Args:
-            columns (list(dict(str, any))): the columns excluding first column which is always the row object.
-                each ``dict`` must have have:
-                 - an ``attr`` entry, with a string value naming the attribute to get from the row
-                 - a ``type`` entry, with the column type (``str``, ``Gtk.Pixbuf``, ...)
-            is_tree (bool): the model must know if it's for a tree or a list to set flags
+        :param is_tree: the model must know if it's for a tree or a list to set flags
         """
         super().__init__()
         self.source = None
-        self.columns = columns
+        self.columns = []
         self.is_tree = is_tree
         # by storing the row and calling index later, we can opt-in for this performance
         # boost and don't have to track iterators (we would have to if we stored indices).
@@ -40,9 +36,7 @@ class SourceTreeModel(GObject.Object, Gtk.TreeModel):
         self.index_in_parent = {}
 
     def clear(self):
-        """
-            Called from toga impl widget
-        """
+        """Called from toga impl widget"""
         if self.is_tree:
             self._remove_children_rec([], self.roots)
         else:
@@ -55,6 +49,7 @@ class SourceTreeModel(GObject.Object, Gtk.TreeModel):
         if self.source:
             self.clear()
         self.source = source
+        self.columns = [{"type": str, "accessor": a} for a in source.accessors]
         self.stamp += 1
 
     def insert(self, row):
@@ -160,11 +155,10 @@ class SourceTreeModel(GObject.Object, Gtk.TreeModel):
         if row is None:
             return None
 
-        # workaround icon+name tuple breaking gtk tree
-        ret = getattr(row, self.columns[column - 1]['attr'])
-        if isinstance(ret, tuple):
-            ret = ret[1]
-        return ret
+        accessor = self.columns[column - 1]["accessor"]
+        ret = getattr(row, accessor)
+
+        return str(ret)
 
     def do_iter_children(self, parent):
         """ Gtk.TreeModel """

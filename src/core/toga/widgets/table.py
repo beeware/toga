@@ -1,78 +1,122 @@
+import warnings
+
 from toga.handlers import wrapped_handler
 from toga.sources import ListSource
-from toga.sources.accessors import build_accessors, to_accessor
+from toga.sources.accessors import to_accessor, build_accessors
 
 from .base import Widget
+from .tablecolumn import Column
 
 
 class Table(Widget):
-    """ A Table Widget allows the display of data in the form of columns and rows.
+    """A Table Widget allows the display of data in the form of columns and rows.
 
-    Args:
-        headings (``list`` of ``str``): The list of headings for the table.
-        id (str): An identifier for this widget.
-        data (``list`` of ``tuple``): The data to be displayed on the table.
-        accessors: A list of methods, same length as ``headings``, that describes
-            how to extract the data value for each column from the row. (Optional)
-        style (:obj:`Style`): An optional style object.
-            If no style is provided` then a new one will be created for the widget.
-        on_select (``callable``): A function to be invoked on selecting a row of the table.
-        on_double_click (``callable``): A function to be invoked on double clicking a row of
-            the table.
-        missing_value (``str`` or ``None``): value for replacing a missing value
-            in the data source. (Default: None). When 'None', a warning message
-            will be shown.
-        factory (:obj:`module`): A python module that is capable to return a
-            implementation of this class with the same name. (optional & normally not needed)
+    :param columns: Can be a list of titles to generate columns, a list of tuples
+        ``(title, accessor)`` where the accessor defines which column of the data source
+        to access, or a list of :class:`Column` instances.
+    :param id: An identifier for this widget.
+    :param data: The data to display in the widget. Must be an instance of
+        :class:`toga.sources.ListSource` or a class instance which implements the
+        interface of :class:`toga.sources.ListSource`.
+    :param style: An optional style object. If no style is provided` then a new one will
+        be created for the widget.
+    :param on_select: A function to be invoked on selecting a row of the table.
+    :param on_double_click: A function to be invoked on double clicking a row of the table.
+    :param factory: A python module that is capable to return a implementation of this
+        class with the same name. (optional & normally not needed)
 
     Examples:
-        >>> headings = ['Head 1', 'Head 2', 'Head 3']
-        >>> data = []
-        >>> table = Table(headings, data=data)
 
-        Data can be in several forms.
-        A list of dictionaries, where the keys match the heading names:
+        Lets prepare a data source first.
 
         >>> data = [{'head_1': 'value 1', 'head_2': 'value 2', 'head_3': 'value3'}),
         >>>         {'head_1': 'value 1', 'head_2': 'value 2', 'head_3': 'value3'}]
+        >>> table_source = ListSource(data)
 
-        A list of lists. These will be mapped to the headings in order:
+        Columns can be provided in several forms.
+        As a list of column titles which will be matched against accessors in the data:
 
-        >>> data = [('value 1', 'value 2', 'value3'),
-        >>>         ('value 1', 'value 2', 'value3')]
+        >>> columns = ['Head 1', 'Head 2', 'Head 3']
 
-        A list of values. This is only accepted if there is a single heading.
+        As ``Column`` instances with column properties assigned to data accessors:
 
-        >>> data = ['item 1', 'item 2', 'item 3']
+        >>> columns = [
+        >>>     Column(title='Head 1', text='head_1', icon='head_2'),
+        >>>     Column(title='Head 2', text='head_1'),
+        >>> ]
+
+        Now we can create our Table:
+
+        >>> table = Table(columns=columns, data=table_source)
     """
+
     MIN_WIDTH = 100
     MIN_HEIGHT = 100
 
-    def __init__(self, headings, id=None, style=None, data=None, accessors=None,
-                 multiple_select=False, on_select=None, on_double_click=None,
-                 missing_value=None, factory=None):
+    def __init__(
+        self,
+        columns=None,
+        headings=None,
+        accessors=None,
+        id=None,
+        style=None,
+        data=None,
+        multiple_select=False,
+        on_select=None,
+        on_double_click=None,
+        factory=None,
+    ):
         super().__init__(id=id, style=style, factory=factory)
-        self.headings = headings[:]
-        self._accessors = build_accessors(self.headings, accessors)
+
+        # backward compatibility
+        if not columns:
+            warnings.warn(
+                "Future versions will require a columns argument", DeprecationWarning
+            )
+
+        if headings is not None:
+            warnings.warn(
+                "'headings' and 'accessors' are deprecated and will be removed in a "
+                "future version. Use 'columns' instead.", DeprecationWarning
+            )
+            accessors = build_accessors(headings, accessors)
+            columns = [Column(title=h, text=a) for h, a in zip(headings, accessors)]
+
+        if not (columns or headings):
+            raise ValueError("Must provide columns or headers for table")
+
+        self._columns = []
+        for col_index, col in enumerate(columns):
+            if isinstance(col, Column):
+                self._columns.append(col)
+            elif isinstance(col, str):
+                title = col
+                accessor = to_accessor(title)
+                self._columns.append(Column(title, text=accessor, factory=self.factory))
+            else:
+                raise ValueError("Column must be tuple str or Column instance")
+
+        self._accessors = [col.text for col in self._columns]  # backward compatibility
+
         self._multiple_select = multiple_select
         self._on_select = None
         self._on_double_click = None
-        self._data = None
-        if missing_value is None:
-            print("WARNING: Using empty string for missing value in data. "
-                  "Define a 'missing_value' on the table to silence this message")
-        self._missing_value = missing_value or ''
+        self._data = ListSource([], [])
 
         self._impl = self.factory.Table(interface=self)
-        self.data = data
-
+        if data is not None:
+            self.data = data
         self.on_select = on_select
         self.on_double_click = on_double_click
 
     @property
+    def columns(self):
+        return self._columns
+
+    @property
     def data(self):
-        """ The data source of the widget. It accepts table data
-        in the form of ``list``, ``tuple``, or :obj:`ListSource`
+        """The data source of the widget. It accepts table data in the form of
+        :obj:`ListSource`
 
         Returns:
             Returns a (:obj:`ListSource`).
@@ -82,9 +126,13 @@ class Table(Widget):
     @data.setter
     def data(self, data):
         if data is None:
-            self._data = ListSource(accessors=self._accessors, data=[])
+            self._data = ListSource([], [])
         elif isinstance(data, (list, tuple)):
-            self._data = ListSource(accessors=self._accessors, data=data)
+            warnings.warn(
+                "Future versions will only accept a TreeSource instance or None",
+                DeprecationWarning
+            )
+            self._data = ListSource(data=data, accessors=self._accessors)
         else:
             self._data = data
 
@@ -107,8 +155,7 @@ class Table(Widget):
         return self._impl.get_selection()
 
     def scroll_to_top(self):
-        """Scroll the view so that the top of the list (first row) is visible
-        """
+        """Scroll the view so that the top of the list (first row) is visible"""
         self.scroll_to_row(0)
 
     def scroll_to_row(self, row):
@@ -125,13 +172,12 @@ class Table(Widget):
             self._impl.scroll_to_row(len(self.data) + row)
 
     def scroll_to_bottom(self):
-        """Scroll the view so that the bottom of the list (last row) is visible
-        """
+        """Scroll the view so that the bottom of the list (last row) is visible"""
         self.scroll_to_row(-1)
 
     @property
     def on_select(self):
-        """ The callback function that is invoked when a row of the table is selected.
+        """The callback function that is invoked when a row of the table is selected.
         The provided callback function has to accept two arguments table (:obj:`Table`)
         and row (``Row`` or ``None``).
 
@@ -153,7 +199,7 @@ class Table(Widget):
 
     @property
     def on_double_click(self):
-        """ The callback function that is invoked when a row of the table is double clicked.
+        """The callback function that is invoked when a row of the table is double clicked.
         The provided callback function has to accept two arguments table (:obj:`Table`)
         and row (``Row`` or ``None``).
 
@@ -173,57 +219,37 @@ class Table(Widget):
         self._on_double_click = wrapped_handler(self, handler)
         self._impl.set_on_double_click(self._on_double_click)
 
-    def add_column(self, heading, accessor=None):
+    def add_column(self, column, accessor=None):
         """
         Add a new column to the table
 
-        :param heading: title of the column
-        :type heading: ``string``
-        :param accessor: accessor of this new column
-        :type heading: ``string``
+        :param column: title of the column or Column instance
+        :param accessor: attribute name in data source
         """
 
-        if not accessor:
-            accessor = to_accessor(heading)
+        if isinstance(column, str):
+            accessor = accessor or to_accessor(column)
+            column = Column(title=column, text=accessor)
+        elif isinstance(column, Column):
+            pass
+        else:
+            raise ValueError("Column must of type str or column")
 
-        if accessor in self._accessors:
-            raise ValueError('Accessor "{}" is already in use'.format(accessor))
+        self._columns.append(column)
+        self._impl.add_column(column)
 
-        self.headings.append(heading)
-        self._accessors.append(accessor)
-
-        self._impl.add_column(heading, accessor)
+        return column
 
     def remove_column(self, column):
         """
         Remove a table column.
 
-        :param column: accessor or position (>0)
-        :type column: ``string``
-        :type column: ``int``
+        :param column: Column instance
         """
-
-        if isinstance(column, str):
-            # Column is a string; use as-is
-            accessor = column
-        else:
-            try:
-                accessor = self._accessors[column]
-            except IndexError:
-                # Column specified as an integer, but the integer is out of range.
-                raise ValueError("Column {} does not exist".format(column))
-            except TypeError:
-                # Column specified as something other than int or str
-                raise ValueError("Column must be an integer or string")
 
         try:
             # Remove column
-            self._impl.remove_column(accessor)
-            del self.headings[self._accessors.index(accessor)]
-            self._accessors.remove(accessor)
+            self._columns.remove(column)
+            self._impl.remove_column(column)
         except KeyError:
             raise ValueError('Invalid column: "{}"'.format(column))
-
-    @property
-    def missing_value(self):
-        return self._missing_value

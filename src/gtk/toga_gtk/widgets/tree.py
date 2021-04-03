@@ -1,5 +1,5 @@
 import toga
-from ..libs import Gtk
+from ..libs import Gtk, Gdk
 from .base import Widget
 from .internal.sourcetreemodel import SourceTreeModel
 
@@ -11,7 +11,7 @@ class Tree(Widget):
         # It can't be based on the source, since it determines flags
         # and GtkTreeModel.flags is not allowed to change after creation
         is_tree = isinstance(self.interface, toga.Tree)
-        self.store = SourceTreeModel([{'type': str, 'attr': a} for a in self.interface._accessors], is_tree=is_tree)
+        self.store = SourceTreeModel(is_tree)
 
         # Create a tree view, and put it in a scroll view.
         # The scroll view is the _impl, because it's the outer container.
@@ -23,14 +23,13 @@ class Tree(Widget):
             self.selection.set_mode(Gtk.SelectionMode.SINGLE)
         self.selection.connect("changed", self.gtk_on_select)
 
-        for i, heading in enumerate(self.interface.headings):
-            renderer = Gtk.CellRendererText()
-            column = Gtk.TreeViewColumn(heading, renderer, text=i + 1)
-            self.treeview.append_column(column)
+        for column in self.interface.columns:
+            self.treeview.append_column(column._impl.native)
 
         self.native = Gtk.ScrolledWindow()
         self.native.interface = self.interface
         self.native.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        self.native.set_shadow_type(Gtk.ShadowType.IN)
         self.native.add(self.treeview)
         self.native.set_min_content_width(200)
         self.native.set_min_content_height(200)
@@ -57,7 +56,6 @@ class Tree(Widget):
         # Temporarily disconnecting the TreeStore improves performance for large
         # updates by deferring row rendering until the update is complete.
         self.treeview.set_model(None)
-
         self.store.change_source(source)
 
         def append_children(data, parent=None):
@@ -68,7 +66,79 @@ class Tree(Widget):
 
         append_children(source, parent=None)
 
+        self._update_columns()
+
         self.treeview.set_model(self.store)
+
+    def _update_columns(self):
+
+        # Gtk renderer requires the index of the data in the source
+        # However, our interface does not guarantee that the accessor actually
+        # exists in the source. We therefore update the indices when the source changes.
+
+        for column, gtk_column in zip(self.interface.columns, self.treeview.get_columns()):
+            gtk_column.clear()  # remove all existing renderers and mappings
+
+            if column.icon:
+                renderer = Gtk.CellRendererPixbuf()
+                gtk_column.pack_start(renderer, False)
+                gtk_column.set_cell_data_func(renderer, self._set_icon)
+
+            if column.checked_state:
+                renderer = Gtk.CellRendererToggle()
+                renderer.connect("toggled", self.gtk_on_toggled, column)
+                gtk_column.pack_start(renderer, False)
+                gtk_column.set_cell_data_func(renderer, self._set_toggle)
+
+            if column.text:
+                renderer = Gtk.CellRendererText()
+                renderer.connect("edited", self.gtk_on_edited, column)
+                gtk_column.pack_start(renderer, True)
+                gtk_column.set_cell_data_func(renderer, self._set_text)
+
+    def gtk_on_edited(self, renderer, path, new_text, column):
+        iter_ = self.store.get_iter(path)
+        node = self.store.get_value(iter_, 0)
+        column.set_data_for_node(node, "text", new_text)
+
+        if column.on_change:
+            column.on_change(column, node, new_text)
+
+    def gtk_on_toggled(self, renderer, path, column):
+        iter_ = self.store.get_iter(path)
+        node = self.store.get_value(iter_, 0)
+        old_checked_state = column.get_data_for_node(node, "checked_state")
+        column.set_data_for_node(node, "checked_state", not old_checked_state)
+
+        if column.on_toggle:
+            column.on_toggle(column, node, not old_checked_state)
+
+    def _set_icon(self, col, cell, model, iter_, user_data):
+        node = model.get_value(iter_, 0)
+
+        icon = col.interface.get_data_for_node(node, "icon")
+
+        # bind icon and draw in hi-dpi on cairo surface
+        pixbuf = icon.bind(self.interface.factory).native_32.get_pixbuf()
+        surface = Gdk.cairo_surface_create_from_pixbuf(
+            pixbuf, 0, self.native.get_window()
+        )
+
+        cell.set_property("surface", surface)
+
+    def _set_toggle(self, col, cell, model, iter_, user_data):
+        node = model.get_value(iter_, 0)
+        checked_state = col.interface.get_data_for_node(node, "checked_state")
+
+        cell.set_property("active", checked_state)
+        cell.set_property("activatable", True)
+
+    def _set_text(self, col, cell, model, iter_, user_data):
+        node = model.get_value(iter_, 0)
+        text = col.interface.get_data_for_node(node, "text")
+
+        cell.set_property("text", text)
+        cell.set_property("editable", col.interface.editable)
 
     def insert(self, parent, index, item, **kwargs):
         self.store.insert(item)
@@ -86,8 +156,7 @@ class Tree(Widget):
         if self.interface.multiple_select:
             tree_model, tree_paths = self.selection.get_selected_rows()
             return [
-                tree_model.get(tree_model.get_iter(path), 0)[0]
-                for path in tree_paths
+                tree_model.get(tree_model.get_iter(path), 0)[0] for path in tree_paths
             ]
         else:
             tree_model, tree_iter = self.selection.get_selected()

@@ -31,19 +31,21 @@ class Table(Tree):
         for i, row in enumerate(self.interface.data):
             self.insert(i, row)
 
+        self._update_columns()
+
         self.treeview.set_model(self.store)
 
     def insert(self, index, item):
         super().insert(None, index, item)
 
     def scroll_to_row(self, row):
-        return NotImplementedError
+        self.interface.factory.not_implemented("Table.scroll_to_row()")
 
-    def add_column(self, heading, accessor):
-        return NotImplementedError
+    def add_column(self, column):
+        self.interface.factory.not_implemented("Table.add_column()")
 
-    def remove_column(self, accessor):
-        return NotImplementedError
+    def remove_column(self, column):
+        self.interface.factory.not_implemented("Table.remove_column()")
 
     # =================================
     # UNCHANGED METHODS (inherited from Tree)

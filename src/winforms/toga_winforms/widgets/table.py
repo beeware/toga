@@ -12,18 +12,11 @@ class Table(Widget):
         self._cache = []
         self._first_item = 0
 
-        dataColumn = []
-        for i, (heading, accessor) in enumerate(zip(
-                self.interface.headings,
-                self.interface._accessors
-        )):
-            dataColumn.append(self._create_column(heading, accessor))
-
         self.native.FullRowSelect = True
         self.native.MultiSelect = self.interface.multiple_select
         self.native.DoubleBuffered = True
         self.native.VirtualMode = True
-        self.native.Columns.AddRange(dataColumn)
+        self.native.Columns.AddRange([col.native for col in self.interface.columns])
 
         self.native.ItemSelectionChanged += self.winforms_item_selection_changed
         self.native.RetrieveVirtualItem += self.winforms_retrieve_virtual_item
@@ -56,7 +49,7 @@ class Table(Widget):
         # Now we need to rebuild the cache.
         self._first_item = e.StartIndex
         new_length = e.EndIndex - e.StartIndex + 1
-        self._cache = []
+        self._cache.clear()
 
         # Fill the cache with the appropriate ListViewItems.
         for i in range(new_length):
@@ -66,33 +59,15 @@ class Table(Widget):
         if self.interface.on_select:
             self.interface.on_select(self.interface, row=self.interface.data[e.ItemIndex])
 
-    def _create_column(self, heading, accessor):
-        col = WinForms.ColumnHeader()
-        col.Text = heading
-        col.Name = accessor
-        return col
-
     def change_source(self, source):
         self.update_data()
 
-    def row_data(self, item):
-        # TODO: Winforms can't support icons in tree cells; so, if the data source
-        # specifies an icon, strip it when converting to row data.
-        def strip_icon(item, attr):
-            val = getattr(item, attr, self.interface.missing_value)
-
-            if isinstance(val, tuple):
-                return str(val[1])
-            return str(val)
-
-        return [
-            strip_icon(item, attr)
-            for attr in self.interface._accessors
-        ]
+    def row_data(self, row):
+        return [col.get_data_for_node(row, "text") for col in self.interface.columns]
 
     def update_data(self):
         self.native.VirtualListSize = len(self.interface.data)
-        self._cache = []
+        self._cache.clear()
 
     def insert(self, index, item):
         self.update_data()
@@ -132,9 +107,10 @@ class Table(Widget):
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
         self.interface.intrinsic.height = at_least(self.interface.MIN_HEIGHT)
 
-    def remove_column(self, accessor):
-        self.native.Columns.RemoveByKey(accessor)
+    def remove_column(self, column):
+        if hasattr(column, "_native"):
+            self.native.Columns.Remove(column._native)
 
-    def add_column(self, heading, accessor):
-        self.native.Columns.Add(self._create_column(heading, accessor))
+    def add_column(self, column):
+        self.native.Columns.Add(column._impl.native)
         self.update_data()
