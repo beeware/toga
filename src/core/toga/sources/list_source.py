@@ -18,6 +18,11 @@ class Row:
             if self._source is not None:
                 self._source._notify('change', item=self)
 
+    def __repr__(self):
+        attr_str_list = ['{0}={1}'.format(attr, repr(getattr(self, attr))) for attr in self._attrs]
+        attr_str = ', '.join(attr_str_list)
+        return "<{0}({1})>".format(self.__class__.__name__, attr_str)
+
 
 class ListSource(Source):
     """A data source to store a list of multiple data values, in a row-like fashion. The
