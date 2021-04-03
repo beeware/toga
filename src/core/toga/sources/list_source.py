@@ -20,13 +20,42 @@ class Row:
 
 
 class ListSource(Source):
-    """A data source to store a list of multiple data values, in a row-like fashion.
+    """A data source to store a list of multiple data values, in a row-like fashion. The
+    ``ListSource`` acts like Python list where entries are ``Row``s. Data values are
+    accessible as attributes of each ``Row`` and the attribute names are defined by
+    ``accessor``s.
 
-    Args:
-        data (`list`): The data in the list. Each entry in the list should have the
-            same number of entries as there are accessors.
-        accessors (`list`): A list of attribute names for accessing the value
-            in each column of the row.
+    :param data: The data in the list. Each entry in the list should have the same number
+        of entries as there are accessors.
+    :param accessors: A list of attribute names for accessing the value in each column of
+        the row. This must be given if accessors are not provided by the data.
+
+    Examples:
+
+        Data can be provided in several forms.
+        A list of dictionaries, where the keys match the accessors names:
+
+        >>> data = [{'head_1': 'value 1', 'head_2': 'value 2', 'head_3': 'value3'},
+        >>>         {'head_1': 'value 1', 'head_2': 'value 2', 'head_3': 'value3'}]
+        >>> accessors = ('head_1', 'head_2', 'head_3')]
+        >>> source = ListSource(data, accessors)
+
+        A list of lists. These will be mapped to the accessors in order:
+
+        >>> data = [('value 1', 'value 2', 'value3'),
+        >>>         ('value 1', 'value 2', 'value3')]
+        >>> accessors = ('head_1', 'head_2', 'head_3')]
+        >>> source = ListSource(data, accessors)
+
+        Rows in the source can be accessed by index:
+
+        >>> print(source[0])
+        <Row(head_1='value 1', head_2='value 2', head_3='value 3')>
+
+        Data values can be accessed as row attributes:
+
+        >>> print(source[0].head_1)
+        'value 1'
     """
     def __init__(self, data, accessors):
         super().__init__()

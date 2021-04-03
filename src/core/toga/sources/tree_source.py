@@ -50,6 +50,47 @@ class Node(Row):
 
 
 class TreeSource(Source):
+    """A data source to store a tree of data. The ``TreeSource`` acts like Python list
+    where entries are ``Node``s. Data values of each node are accessible as attributes of
+     the node and the attribute names are defined by ``accessor``s.
+
+    :param data: The data in the tree. Each entry in the list should have the same number
+        of entries as there are accessors.
+    :param accessors: A list of attribute names for accessing the value in each column of
+        the row.
+
+    Examples:
+
+        Data can is provided as a dictionary where the keys represent nodes and the values
+        are lists of their child nodes. Nodes can be provided  as iterables with accessors
+        provided separately:
+
+        >>> data = {
+        >>>    ('father', 38): [('child 1', 17), ('child 1', 15)],
+        >>>    ('mother', 42): [('child 1', 17)],
+        >>> }
+        >>> accessors = ['name', 'age']
+        >>> source = TreeSource(data, accessors)
+
+        Nodes in the source can be accessed by index:
+
+        >>> node = source[0]
+        >>> print(node)
+        <Node(name='father', age=38)>
+
+        Data values can be accessed as row attributes:
+
+        >>> print(node.name)
+        'father'
+
+        Children can be accessed by iterating over a parent:
+
+        >>> for child in node:
+        >>>     print(child)
+        <Node(name='child 1', age=17)>
+        <Node(name='child 2', age=15)>
+    """
+
     def __init__(self, data, accessors):
         super().__init__()
         self._accessors = accessors
