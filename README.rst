@@ -5,7 +5,7 @@
 Toga
 ====
 
-.. image:: https://img.shields.io/badge/python-3.6%2C%203.7%2C3.8-blue.svg
+.. image:: https://img.shields.io/badge/python-3.6%2C%203.7%2C3.9-blue.svg
     :target: https://pypi.python.org/pypi/toga
     :alt: Python Versions
 
