@@ -114,9 +114,6 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
         # message, it will be caught by the MessageFilter we installed on the
         # Application thread.
 
-        if self.task:
-            self.task.Dispose()
-            del self.task
         # The message is sent with:
         # * HWND 0xfff (all windows),
         # * MSG self.msg_id (a message ID in the WM_USER range)
@@ -130,8 +127,6 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
         if self.app_context.MainForm:
             action = Action(self.run_once_recurring)
             self.app_context.MainForm.Invoke(action)
-            action.Dispose()
-            del action
 
     def run_once_recurring(self):
         """
