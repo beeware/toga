@@ -14,6 +14,7 @@ from System import (  # noqa: F401, E402
     Single,
     Threading,
     Uri,
+    ArgumentException,
 )
 
 from System.Drawing import (  # noqa: F401, E402
@@ -33,6 +34,7 @@ from System.Drawing import (  # noqa: F401, E402
     Size,
     SolidBrush,
     StringFormat,
+    SystemColors,
     SystemFonts,
     Text,
     Rectangle,

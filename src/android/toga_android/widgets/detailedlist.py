@@ -16,7 +16,7 @@ class DetailedListOnClickListener(android_widgets.OnClickListener):
         row = self._impl.interface.data[self._row_number]
         self._impl._selection = row
         if self._impl.interface.on_select:
-            self._impl.interface.on_select(widget=self._impl.interface, row=row)
+            self._impl.interface.on_select(self._impl.interface, row=self._impl.interface.data[self._row_number])
 
 
 class OnRefreshListener(android_widgets.SwipeRefreshLayout__OnRefreshListener):
@@ -71,8 +71,6 @@ class DetailedList(Widget):
     def _make_row(self, container, i):
         # Create the foreground.
         row_foreground = android_widgets.RelativeLayout(self._native_activity)
-        row_foreground.setBackgroundColor(self._native_activity.getResources().getColor(
-            android_widgets.R__color.background_light))
         container.addView(row_foreground)
 
         # Add user-provided icon to layout.
