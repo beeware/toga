@@ -1,3 +1,7 @@
+
+from rubicon.objc import objc_ivar, send_super
+from rubicon.objc.runtime import objc_id
+
 from toga_cocoa.libs import (
     NSAffineTransform,
     NSBezierPath,
@@ -33,8 +37,11 @@ from toga_cocoa.libs import (
 
 class TogaTableCellView(NSTableCellView):
 
+    checkbox = objc_ivar(objc_id)
+
     @objc_method
-    def setup(self):
+    def initWithLayout(self):
+        send_super(__class__, self, "init")
         self.imageView = NSImageView.alloc().init()
         self.checkbox = NSButton.alloc().init()
         self.textField = NSTextField.alloc().init()
@@ -129,11 +136,10 @@ class TogaTableCellView(NSTableCellView):
         self.addConstraint(self.tv_left_constraint)
         self.addConstraint(self.tv_right_constraint)
 
+        return self
+
     @objc_method
     def setImage_(self, image):
-
-        if not self.imageView:
-            self.setup()
 
         if image:
             self.imageView.image = image
@@ -147,9 +153,6 @@ class TogaTableCellView(NSTableCellView):
     @objc_method
     def setCheckState_(self, value):
 
-        if not self.imageView:
-            self.setup()
-
         if isinstance(value, int):
             self.cb_width_constraint.constant = 16
             self.tv_left_constraint.constant = 5
@@ -161,10 +164,6 @@ class TogaTableCellView(NSTableCellView):
 
     @objc_method
     def setText_(self, text):
-
-        if not self.imageView:
-            self.setup()
-
         self.textField.stringValue = text or ""
 
 

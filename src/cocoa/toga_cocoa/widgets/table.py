@@ -33,12 +33,18 @@ class TogaTable(NSTableView):
         tcv = self.makeViewWithIdentifier(column.identifier, owner=self)
 
         if not tcv:  # there is no existing view to reuse so create a new one
-            tcv = TogaTableCellView.alloc().init()
+            tcv = TogaTableCellView.alloc().initWithLayout()
             tcv.identifier = column.identifier
+
 			# Prevent tcv from being deallocated prematurely when no Python references
             # are left
 			tcv.retain()
 			tcv.autorelease()
+
+            tcv.checkbox.target = self
+            tcv.textField.target = self
+            tcv.checkbox.action = SEL('onToggled:')
+            tcv.textField.action = SEL('onTextEdited:')
 
         text = column.interface.get_data_for_node(data_row, "text")
         checked_state = column.interface.get_data_for_node(data_row, "checked_state")
@@ -48,11 +54,6 @@ class TogaTable(NSTableView):
         tcv.setText(text)
         tcv.setImage(native_icon)
         tcv.setCheckState(checked_state)
-
-        tcv.checkbox.target = self
-        tcv.textField.target = self
-        tcv.checkbox.action = SEL('onToggled:')
-        tcv.textField.action = SEL('onTextEdited:')
 
         # Keep track of last visible view for row
         self._impl._view_for_row[data_row] = tcv
