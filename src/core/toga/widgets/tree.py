@@ -49,8 +49,8 @@ class Tree(Widget):
         As ``Column`` instances with column properties assigned to data accessors:
 
         >>> columns = [
-        >>>     Column(title='Name', text='name'),
-        >>>     Column(title='Age', text='age'),
+        >>>     Tree.Column(title='Name', text='name'),
+        >>>     Tree.Column(title='Age', text='age'),
         >>> ]
 
         Now we can create our Table:
@@ -60,6 +60,8 @@ class Tree(Widget):
 
     MIN_WIDTH = 100
     MIN_HEIGHT = 100
+
+    Column = Column
 
     def __init__(
         self,
@@ -88,19 +90,19 @@ class Tree(Widget):
                 "future version. Use 'columns' instead.", DeprecationWarning
             )
             accessors = build_accessors(headings, accessors)
-            columns = [Column(title=h, text=a) for h, a in zip(headings, accessors)]
+            columns = [Tree.Column(title=h, text=a) for h, a in zip(headings, accessors)]
 
         if not (columns or headings):
             raise ValueError("Must provide columns or headers for table")
 
         self._columns = []
         for col_index, col in enumerate(columns):
-            if isinstance(col, Column):
+            if isinstance(col, Tree.Column):
                 self._columns.append(col)
             elif isinstance(col, str):
                 title = col
                 accessor = to_accessor(title)
-                self._columns.append(Column(title, text=accessor, factory=self.factory))
+                self._columns.append(Tree.Column(title, text=accessor, factory=self.factory))
             else:
                 raise ValueError("Column must be str or Column instance")
 

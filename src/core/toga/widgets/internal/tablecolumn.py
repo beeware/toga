@@ -2,14 +2,8 @@ import enum
 from toga.handlers import wrapped_handler
 from toga.style import Pack
 
-from .base import Widget
-from ..icons import Icon
-
-
-class DataRole(enum.Enum):
-    Text = "title"
-    Icon = "icon"
-    CheckedState = "checked_state"
+from ..base import Widget
+from ...icons import Icon
 
 
 class Column(Widget):

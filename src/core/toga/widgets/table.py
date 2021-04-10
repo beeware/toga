@@ -5,7 +5,7 @@ from toga.sources import ListSource
 from toga.sources.accessors import to_accessor, build_accessors
 
 from .base import Widget
-from .tablecolumn import Column
+from .internal.tablecolumn import Column
 
 
 class Table(Widget):
@@ -41,8 +41,8 @@ class Table(Widget):
         As ``Column`` instances with column properties assigned to data accessors:
 
         >>> columns = [
-        >>>     Column(title='Head 1', text='head_1', icon='head_2'),
-        >>>     Column(title='Head 2', text='head_1'),
+        >>>     Table.Column(title='Head 1', text='head_1', icon='head_2'),
+        >>>     Table.Column(title='Head 2', text='head_1'),
         >>> ]
 
         Now we can create our Table:
@@ -52,6 +52,8 @@ class Table(Widget):
 
     MIN_WIDTH = 100
     MIN_HEIGHT = 100
+
+    Column = Column
 
     def __init__(
         self,
@@ -80,19 +82,19 @@ class Table(Widget):
                 "future version. Use 'columns' instead.", DeprecationWarning
             )
             accessors = build_accessors(headings, accessors)
-            columns = [Column(title=h, text=a) for h, a in zip(headings, accessors)]
+            columns = [Table.Column(title=h, text=a) for h, a in zip(headings, accessors)]
 
         if not (columns or headings):
             raise ValueError("Must provide columns or headers for table")
 
         self._columns = []
         for col_index, col in enumerate(columns):
-            if isinstance(col, Column):
+            if isinstance(col, Table.Column):
                 self._columns.append(col)
             elif isinstance(col, str):
                 title = col
                 accessor = to_accessor(title)
-                self._columns.append(Column(title, text=accessor, factory=self.factory))
+                self._columns.append(Table.Column(title, text=accessor, factory=self.factory))
             else:
                 raise ValueError("Column must be tuple str or Column instance")
 
