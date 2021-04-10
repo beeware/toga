@@ -16,9 +16,3 @@ class Column(Widget):
 
     def set_editable(self, value):
         self.native.editable = value
-
-    def set_on_toggle(self, handler):
-        pass
-
-    def set_on_change(self, handler):
-        pass

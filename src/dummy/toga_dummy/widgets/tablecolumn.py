@@ -10,9 +10,3 @@ class Column(Widget):
 
     def set_editable(self, value):
         self._set_value('editable', value)
-
-    def set_on_toggle(self, handler):
-        self._set_value('on_toggle', handler)
-
-    def set_on_change(self, handler):
-        self._set_value('on_change', handler)

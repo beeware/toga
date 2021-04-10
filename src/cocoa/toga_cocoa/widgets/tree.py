@@ -162,9 +162,6 @@ class TogaTree(NSOutlineView):
         new_text = py_from_ns(sender.textField.stringValue)
         column.set_data_for_node(node, "text", new_text)
 
-        if column.on_change:
-            column.on_change(column, node, new_text)
-
     @objc_method
     def onToggled_(self, sender) -> None:
         row_index = self.rowForView(sender)
@@ -175,9 +172,6 @@ class TogaTree(NSOutlineView):
 
         checked_state = bool(py_from_ns(sender.checkbox.state))
         column.set_data_for_node(node, "checked_state", checked_state)
-
-        if column.on_change:
-            column.on_change(column, node, checked_state)
 
 
 class Tree(Widget):

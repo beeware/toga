@@ -101,17 +101,11 @@ class Tree(Widget):
         node = self.store.get_value(iter_, 0)
         column.set_data_for_node(node, "text", new_text)
 
-        if column.on_change:
-            column.on_change(column, node, new_text)
-
     def gtk_on_toggled(self, renderer, path, column):
         iter_ = self.store.get_iter(path)
         node = self.store.get_value(iter_, 0)
         old_checked_state = column.get_data_for_node(node, "checked_state")
         column.set_data_for_node(node, "checked_state", not old_checked_state)
-
-        if column.on_toggle:
-            column.on_toggle(column, node, not old_checked_state)
 
     def _set_icon(self, col, cell, model, iter_, user_data):
         node = model.get_value(iter_, 0)
