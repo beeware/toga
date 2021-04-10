@@ -7,7 +7,6 @@ from pathlib import Path
 import toga
 from toga.constants import COLUMN
 from toga.sources import Source
-from toga.widgets.table import Column
 from toga.style import Pack
 
 # This is a slightly less toy example of a tree view to display
@@ -158,9 +157,9 @@ class ExampleTreeSourceApp(toga.App):
 
         self.fs_source = FileSystemSource(Path.cwd())
 
-        col0 = Column(title="Name", icon="icon", text="name")
-        col1 = Column(title="Date Modified", text="date_modified")
-        col2 = Column(title="Selected", checked_state="selected")
+        col0 = toga.Tree.Column(title="Name", icon="icon", text="name")
+        col1 = toga.Tree.Column(title="Date Modified", text="date_modified")
+        col2 = toga.Tree.Column(title="Selected", checked_state="selected")
 
         self.tree = toga.Tree(
             columns=[col0, col1, col2],

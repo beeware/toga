@@ -76,11 +76,11 @@ class ExampleTableApp(toga.App):
         table_data = ListSource(bee_movies[:4], accessors=accessors)
 
         columns = [
-            toga.Column('Title', text='title'),
-            toga.Column('Year', text='year'),
-            toga.Column('Rating', text='rating'),
-            toga.Column('Genre', text='genre'),
-            toga.Column('Favourite', checked_state='favourite'),
+            toga.Table.Column('Title', text='title'),
+            toga.Table.Column('Year', text='year'),
+            toga.Table.Column('Rating', text='rating'),
+            toga.Table.Column('Genre', text='genre'),
+            toga.Table.Column('Favourite', checked_state='favourite'),
         ]
 
         self.table1 = toga.Table(
