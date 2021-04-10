@@ -1,5 +1,3 @@
-import enum
-from toga.handlers import wrapped_handler
 from toga.style import Pack
 
 from ..base import Widget
