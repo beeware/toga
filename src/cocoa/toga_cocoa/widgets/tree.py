@@ -2,8 +2,8 @@ from travertino.size import at_least
 from rubicon.objc import py_from_ns
 
 from toga.keys import Key
-from toga_cocoa.keys import toga_key
-from toga_cocoa.libs import (
+from ..keys import toga_key
+from ..libs import (
     NSBezelBorder,
     NSIndexSet,
     NSOutlineView,
@@ -14,9 +14,9 @@ from toga_cocoa.libs import (
     send_super,
     SEL,
 )
-from toga_cocoa.widgets.base import Widget
-from toga_cocoa.widgets.internal.cells import TogaIconTextView
-from toga_cocoa.widgets.internal.data import TogaData
+from .base import Widget
+from .internal.cells import TogaTableCellView
+from .internal.data import TogaData
 
 
 class TogaTree(NSOutlineView):
@@ -72,7 +72,7 @@ class TogaTree(NSOutlineView):
         tcv = self.makeViewWithIdentifier(column.identifier, owner=self)
 
         if not tcv:  # there is no existing view to reuse so create a new one
-            tcv = TogaIconTextView.alloc().init()
+            tcv = TogaTableCellView.alloc().init()
             tcv.identifier = column.identifier
             # Prevent tcv from being deallocated prematurely when no Python references
             # are left

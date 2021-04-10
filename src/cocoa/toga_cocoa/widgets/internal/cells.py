@@ -31,7 +31,7 @@ from toga_cocoa.libs import (
 )
 
 
-class TogaIconTextView(NSTableCellView):
+class TogaTableCellView(NSTableCellView):
 
     @objc_method
     def setup(self):

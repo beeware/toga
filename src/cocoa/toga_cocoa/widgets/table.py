@@ -14,7 +14,7 @@ from toga_cocoa.libs import (
 )
 
 from .base import Widget
-from .internal.cells import TogaIconTextView
+from .internal.cells import TogaTableCellView
 
 
 class TogaTable(NSTableView):
@@ -33,7 +33,7 @@ class TogaTable(NSTableView):
         tcv = self.makeViewWithIdentifier(column.identifier, owner=self)
 
         if not tcv:  # there is no existing view to reuse so create a new one
-            tcv = TogaIconTextView.alloc().init()
+            tcv = TogaTableCellView.alloc().init()
             tcv.identifier = column.identifier
 			# Prevent tcv from being deallocated prematurely when no Python references
             # are left
