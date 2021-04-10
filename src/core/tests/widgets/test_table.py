@@ -123,7 +123,7 @@ class TableTests(TestCase):
         self.assertEqual(on_double_click._raw, dummy_handler)
 
     def test_add_column(self):
-        new_column = toga.Column("Heading 4", text="heading_4", factory=toga_dummy.factory)
+        new_column = toga.Table.Column("Heading 4", text="heading_4", factory=toga_dummy.factory)
         data = [
             ["a1", "b1", "c1"],
             ["a2", "b2", "c2"],
@@ -143,7 +143,7 @@ class TableTests(TestCase):
         self.assertNotIn(remove, self.table.columns)
 
     def test_remove_column_invalid(self):
-        new_column = toga.Column("New", text="heading_24", factory=toga_dummy.factory)
+        new_column = toga.Table.Column("New", text="heading_24", factory=toga_dummy.factory)
 
         # Remove a column that doesn't exist
         with self.assertRaises(ValueError):
