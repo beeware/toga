@@ -67,6 +67,17 @@ Resources
  :doc:`Image </reference/api/resources/images>`      An image
 =================================================== =================================
 
+Data Sources
+------------
+
+========================================================= =================================
+ Component                                                Description
+========================================================= =================================
+ :doc:`TreeSource </reference/api/sources/tree_source>`   Data source for tree-like data
+ :doc:`ListSource </reference/api/sources/table_source>`  Data source for list-like data
+ :doc:`Base </reference/api/sources/base>`                Base class for data sources
+========================================================= =================================
+
 .. |y| image:: /_static/yes.png
     :width: 16
 
@@ -78,4 +89,5 @@ Resources
    window
    containers/index
    resources/index
+   sources/index
    widgets/index
