@@ -137,8 +137,6 @@ class AppTests(TestCase):
         with self.assertRaises(KeyError):
             self.app.windows -= test_window_not_in_app
 
-
-
     def test_window_iteration(self):
         print('\n', self.app.windows, len(self.app.windows))
         for i in range(4):
