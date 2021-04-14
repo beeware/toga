@@ -109,7 +109,7 @@ class AppTests(TestCase):
         self.assertFalse(self.app.is_full_screen)
 
     def test_add_window(self):
-        test_window = toga.Window()
+        test_window = toga.Window(factory=toga_dummy.factory)
 
         self.assertEqual(len(self.app.windows), 0)
         self.app.windows += test_window
@@ -123,7 +123,7 @@ class AppTests(TestCase):
             self.app.windows += not_a_window
 
     def test_remove_window(self):
-        test_window = toga.Window()
+        test_window = toga.Window(factory=toga_dummy.factory)
         self.app.windows += test_window
 
         self.app.windows -= test_window
@@ -133,14 +133,14 @@ class AppTests(TestCase):
         with self.assertRaises(TypeError):
             self.app.windows -= not_a_window
 
-        test_window_not_in_app = toga.Window()
+        test_window_not_in_app = toga.Window(factory=toga_dummy.factory)
         with self.assertRaises(KeyError):
             self.app.windows -= test_window_not_in_app
 
     def test_window_iteration(self):
         print('\n', self.app.windows, len(self.app.windows))
         for i in range(4):
-            window = toga.Window(id=i+1)
+            window = toga.Window(id=i+1, factory=toga_dummy.factory)
             self.app.windows += window
             print(f'{i} Added window: {window.id}/ {window}')
 
