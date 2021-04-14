@@ -92,7 +92,7 @@ class TogaTree(NSOutlineView):
 
         tcv.setText(text)
         tcv.setImage(native_icon)
-        tcv.setCheckState(checked_state)
+        tcv.setCheckedState(checked_state)
 
         return tcv
 
@@ -170,7 +170,7 @@ class TogaTree(NSOutlineView):
         column = self.interface.columns[column_index]
         node = self.itemAtRow(row_index).attrs["node"]
 
-        checked_state = bool(py_from_ns(sender.checkbox.state))
+        checked_state = int(py_from_ns(sender.checkbox.state))
         column.set_data_for_node(node, "checked_state", checked_state)
 
 

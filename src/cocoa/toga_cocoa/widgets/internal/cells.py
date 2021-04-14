@@ -53,6 +53,7 @@ class TogaTableCellView(NSTableCellView):
         self.addSubview(self.textField)
 
         self.checkbox.setButtonType(NSSwitchButton)
+        self.checkbox.setAllowsMixedState(True)
 
         self.textField.cell.lineBreakMode = NSLineBreakMode.byTruncatingTail
         self.textField.bordered = False

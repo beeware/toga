@@ -112,7 +112,8 @@ class TogaTable(NSTableView):
         column = self.interface.columns[column_index]
         node = self.interface.data[row_index]
 
-        checked_state = bool(py_from_ns(sender.state))
+        # don't allow setting intermediate state through GUI
+        checked_state = abs(int(py_from_ns(sender.state)))
         column.set_data_for_node(node, "checked_state", checked_state)
 
 

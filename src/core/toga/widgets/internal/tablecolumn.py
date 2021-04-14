@@ -67,11 +67,12 @@ class Column(Widget):
             elif not isinstance(value, Icon):
                 raise ValueError(f"Don't know how to convert {value} to Icon ")
         elif role == "checked_state":
-            value = bool(value)
+            value = int(value)
 
         return value
 
     def set_data_for_node(self, node, role, value):
+
         try:
             accessor = getattr(self, role)
         except AttributeError:

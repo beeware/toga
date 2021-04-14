@@ -1,4 +1,6 @@
 import toga
+from toga.constants import ON, OFF, MIXED
+
 from ..libs import Gtk, Gdk
 from .base import Widget
 from .internal.sourcetreemodel import SourceTreeModel
@@ -105,7 +107,7 @@ class Tree(Widget):
         iter_ = self.store.get_iter(path)
         node = self.store.get_value(iter_, 0)
         old_checked_state = column.get_data_for_node(node, "checked_state")
-        column.set_data_for_node(node, "checked_state", not old_checked_state)
+        column.set_data_for_node(node, "checked_state", int(not old_checked_state))
 
     def _set_icon(self, col, cell, model, iter_, user_data):
         node = model.get_value(iter_, 0)
@@ -124,7 +126,9 @@ class Tree(Widget):
         node = model.get_value(iter_, 0)
         checked_state = col.interface.get_data_for_node(node, "checked_state")
 
-        cell.set_property("active", checked_state)
+        if checked_state in (ON, OFF):
+            cell.set_property("active", bool(checked_state))
+        cell.set_property("inconsistent", checked_state == MIXED)
         cell.set_property("activatable", True)
 
     def _set_text(self, col, cell, model, iter_, user_data):
