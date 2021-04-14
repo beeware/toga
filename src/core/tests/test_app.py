@@ -88,6 +88,10 @@ class AppTests(TestCase):
         self.assertFalse(self.app.is_full_screen)
 
     def test_app_exit(self):
+        def exit_handler():
+            return
+        self.app.on_exit = exit_handler
+        self.assertIs(self.app.on_exit._raw, exit_handler)
         self.app.exit()
 
         self.assertActionPerformed(self.app, 'exit')
@@ -103,6 +107,47 @@ class AppTests(TestCase):
         self.assertTrue(self.app.is_full_screen)
         self.app.set_full_screen()
         self.assertFalse(self.app.is_full_screen)
+
+    def test_add_window(self):
+        test_window = toga.Window()
+
+        self.assertEqual(len(self.app.windows), 0)
+        self.app.windows += test_window
+        self.assertEqual(len(self.app.windows), 1)
+        self.app.windows += test_window
+        self.assertEqual(len(self.app.windows), 1)
+        self.assertIs(test_window.app, self.app)
+
+        not_a_window = 'not_a_window'
+        with self.assertRaises(TypeError):
+            self.app.windows += not_a_window
+
+    def test_remove_window(self):
+        test_window = toga.Window()
+        self.app.windows += test_window
+
+        self.app.windows -= test_window
+        self.assertEqual(len(self.app.windows), 0)
+
+        not_a_window = 'not_a_window'
+        with self.assertRaises(TypeError):
+            self.app.windows -= not_a_window
+
+        test_window_not_in_app = toga.Window()
+        with self.assertRaises(KeyError):
+            self.app.windows -= test_window_not_in_app
+
+
+
+    def test_window_iteration(self):
+        print('\n', self.app.windows, len(self.app.windows))
+        for i in range(4):
+            window = toga.Window(id=i+1)
+            self.app.windows += window
+            print(f'{i} Added window: {window.id}/ {window}')
+
+        for i, window in enumerate(self.app.windows):
+            print(i, window, window.id)
 
 
 class DocumentAppTests(TestCase):

@@ -35,15 +35,17 @@ class Windows(MutableSet):
 
     def add(self, window: Window) -> None:
         if not isinstance(window, Window):
-            raise TypeError("Toga app windows should be of toga.Window type")
-        self.elements.add(window)
-        window.app = self.app
+            raise TypeError("Toga app windows can only add objects of toga.Window type")
+        # Silently not add if duplicate
+        if window not in self.elements:
+            self.elements.add(window)
+            window.app = self.app
 
     def discard(self, window: Window) -> None:
         if not isinstance(window, Window):
-            # TODO: I guess this error message would be too cryptic when removing
-            # something from app.windows that is not of type toga.Window
-            raise TypeError("Toga app windows should be of toga.Window type")
+            raise TypeError("Toga app.windows can only discard an object of a toga.Window type")
+        # Should we tell the user that the window is not associated with this app?
+
         self.elements.remove(window)
 
     def __iadd__(self, window):

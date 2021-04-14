@@ -12,6 +12,11 @@ class TestWindow(TestCase):
         self.window = toga.Window(factory=toga_dummy.factory)
         self.app = toga.App('test_name', 'id.app', factory=toga_dummy.factory)
 
+    def test_raises_error_when_app_not_set(self):
+        self.app = None
+        with self.assertRaises(AttributeError):
+            self.window.show()
+
     def test_widget_created(self):
         self.assertIsNotNone(self.window.id)
         new_app = toga.App('error_name', 'id.error', factory=toga_dummy.factory)
