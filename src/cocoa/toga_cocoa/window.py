@@ -50,7 +50,9 @@ class CocoaViewport:
 class WindowDelegate(NSObject):
     @objc_method
     def windowWillClose_(self, notification) -> None:
-        self.interface.on_close()
+        self.interface.app.windows -= self.interface
+        if self.interface.on_close:
+            self.interface.on_close(self)
 
     @objc_method
     def windowDidResize_(self, notification) -> None:
