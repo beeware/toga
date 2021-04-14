@@ -138,14 +138,17 @@ class AppTests(TestCase):
             self.app.windows -= test_window_not_in_app
 
     def test_window_iteration(self):
-        print('\n', self.app.windows, len(self.app.windows))
-        for i in range(4):
-            window = toga.Window(id=i+1, factory=toga_dummy.factory)
+        test_windows = [
+            toga.Window(id=1, factory=toga_dummy.factory),
+            toga.Window(id=2, factory=toga_dummy.factory),
+            toga.Window(id=3, factory=toga_dummy.factory),
+        ]
+        for window in test_windows:
             self.app.windows += window
-            print(f'{i} Added window: {window.id}/ {window}')
+        self.assertEqual(len(self.app.windows), 3)
 
-        for i, window in enumerate(self.app.windows):
-            print(i, window, window.id)
+        for window in self.app.windows:
+            self.assertIn(window, test_windows)
 
 
 class DocumentAppTests(TestCase):
