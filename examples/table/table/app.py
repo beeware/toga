@@ -2,20 +2,20 @@ from random import choice
 
 import toga
 from toga.sources import ListSource
-from toga.constants import COLUMN, ROW
+from toga.constants import COLUMN, ROW, OFF
 from toga.style import Pack
 
-headings = ['Title', 'Year', 'Rating', 'Genre', 'Favourite']
+headings = ['Title', 'Year', 'Rating', 'Genre', 'Selected']
 accessors = [h.lower() for h in headings]
 bee_movies = [
-    ('The Secret Life of Bees', '2008', '7.3', 'Drama', False),
-    ('Bee Movie', '2007', '6.1', 'Animation, Adventure, Comedy', False),
-    ('Bees', '1998', '6.3', 'Horror', False),
-    ('The Girl Who Swallowed Bees', '2007', '7.5', 'Short', False),
-    ('Birds Do It, Bees Do It', '1974', '7.3', 'Documentary', False),
-    ('Bees: A Life for the Queen', '1998', '8.0', 'TV Movie', False),
-    ('Bees in Paradise', '1944', '5.4', 'Comedy, Musical', False),
-    ('Keeper of the Bees', '1947', '6.3', 'Drama', False),
+    ('The Secret Life of Bees', '2008', '7.3', 'Drama', OFF),
+    ('Bee Movie', '2007', '6.1', 'Animation, Adventure, Comedy', OFF),
+    ('Bees', '1998', '6.3', 'Horror', OFF),
+    ('The Girl Who Swallowed Bees', '2007', '7.5', 'Short', OFF),
+    ('Birds Do It, Bees Do It', '1974', '7.3', 'Documentary', OFF),
+    ('Bees: A Life for the Queen', '1998', '8.0', 'TV Movie', OFF),
+    ('Bees in Paradise', '1944', '5.4', 'Comedy, Musical', OFF),
+    ('Keeper of the Bees', '1947', '6.3', 'Drama', OFF),
 ]
 
 
@@ -80,7 +80,7 @@ class ExampleTableApp(toga.App):
             toga.Table.Column('Year', text='year'),
             toga.Table.Column('Rating', text='rating'),
             toga.Table.Column('Genre', text='genre'),
-            toga.Table.Column('Favourite', checked_state='favourite'),
+            toga.Table.Column('Selected', checked_state='selected'),
         ]
 
         self.table1 = toga.Table(
