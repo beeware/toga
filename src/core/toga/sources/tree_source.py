@@ -14,7 +14,7 @@ class Node(Row):
     The containing data can be accessed through instance attributes. Children can be
     accessed by indexing into or iterating over the node.
 
-    Examples:
+    :Example:
 
         >>> node = Node(region='United Kingdom', population=67*10**6)
         >>> print(len(node))
@@ -26,8 +26,9 @@ class Node(Row):
         'London'
         >>> print(node[0].population)
         9000000
-        :param data: Keyword arguments with data to create the row. Argument names will
-            become instance attributes.
+
+    :param data: Keyword arguments with data to create the row. Argument names will
+        become instance attributes.
     """
 
     def __init__(self, **data: Any) -> None:
