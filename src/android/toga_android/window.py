@@ -28,7 +28,8 @@ class AndroidViewport:
         if not has_action_bar_size:
             return 0
 
-        return TypedValue.complexToDimensionPixelSize(tv.data, self.native.getContext().getResources().getDisplayMetrics())
+        return TypedValue.complexToDimensionPixelSize(
+            tv.data, self.native.getContext().getResources().getDisplayMetrics())
 
     def _status_bar_height(self):
         """
