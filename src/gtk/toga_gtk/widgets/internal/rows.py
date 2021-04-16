@@ -40,7 +40,7 @@ class ScrollableRow(Gtk.ListBoxRow):
         # Test whether the widget has already been allocated.
         list_box = self.get_parent()
         _, y = self.translate_coordinates(list_box, 0, 0)
-        if y > 0:
+        if y >= 0:
             self._do_scroll_to_position(position)
         else:
             # Wait for 'size-allocate' because we will need the
