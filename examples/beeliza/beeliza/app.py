@@ -20,7 +20,7 @@ class BeelizaApp(toga.App):
             subtitle=input_text,
         )
         # Clear the current input, ready for more input.
-        self.text_input.value = ''
+        #self.text_input.value = ''
         # Scroll so the most recent entry is visible.
         self.chat.scroll_to_bottom()
 
@@ -51,7 +51,7 @@ class BeelizaApp(toga.App):
                     'icon': toga.Icon('resources/brutus.png'),
                     'title': 'Brutus',
                     'subtitle': 'Hello. How are you feeling today?',
-                }
+                },
             ],
             style=Pack(flex=1)
         )
