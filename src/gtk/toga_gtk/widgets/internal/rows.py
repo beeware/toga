@@ -4,49 +4,20 @@ from toga_gtk.libs import Gtk
 from toga_gtk.icons import Icon
 
 
-class TextIconRow(Gtk.ListBoxRow):
+class ScrollableRow(Gtk.ListBoxRow):
     """
-    Create a TextIconRow from a toga.sources.Row.
-    A reference to the original row is kept in self.row, this is useful for comparisons.
+    You can use and inherit from this class as if it were Gtk.ListBoxRow, nothing 
+    from the original implementation is changed.
+    There are three new public methods: scroll_to_top(), scroll_to_center() and 
+    scroll_to_bottom(). 'top', 'center' and 'bottom' are with respect to where in the
+    visible region the row will move to.
     """
-    def __init__(self, row, interface, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # We need to wait until this widget is allocated to scroll it in,
         # for that we use signals and callbacks. The handler_is of the
         # signal is used to disconnect and we store it here.
         self._scroll_handler_id_value = None
-
-        self.interface = interface
-        self.row = row
-        self.hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-        self.vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-      
-        self.text = Gtk.Label(xalign=0)
-        text_markup = self.markup(row)
-        self.text.set_markup(text_markup)
-
-        self.icon = self.get_icon(self.row)
-
-        self.vbox.pack_start(self.text, True, True, 0)
-        
-        self.hbox.pack_start(self.icon, False, False, 6)
-        self.hbox.pack_start(self.vbox, True, True, 0)
-
-        self.add(self.hbox)
-
-    def get_icon(self, row):
-        row.icon.bind(self.interface.factory)
-        # TODO: see get_scale_factor() to choose 72 px on hidpi
-        return getattr(self.row.icon._impl, "native_" + str(32))
-
-    @staticmethod
-    def markup(row):
-        markup = [
-            html.escape(row.title or ''),
-            '\n',
-            '<small>', html.escape(row.subtitle or ''), '</small>',
-        ]
-        return ''.join(markup)
 
     def scroll_to_top(self):
         self.scroll_to_position("TOP")
@@ -64,7 +35,7 @@ class TextIconRow(Gtk.ListBoxRow):
         `position` is one of "TOP", "CENTER" or "BOTTOM"
         """
         if position not in ("TOP", "CENTER", "BOTTOM"):
-            return
+            return False
 
         # Test whether the widget has already been allocated.
         list_box = self.get_parent()
@@ -81,6 +52,8 @@ class TextIconRow(Gtk.ListBoxRow):
                 # We don't need 'wdiget' and 'gpointer'
                 lambda widget, gpointer: self._do_scroll_to_position(position)
             )
+
+        return True
 
     def _do_scroll_to_position(self, position):
         # Disconnect the from the signal that called us
@@ -131,3 +104,43 @@ class TextIconRow(Gtk.ListBoxRow):
 
         self._scroll_handler_id_value = value
             
+
+class TextIconRow(ScrollableRow):
+    """
+    Create a TextIconRow from a toga.sources.Row.
+    A reference to the original row is kept in self.row, this is useful for comparisons.
+    """
+    def __init__(self, row, interface, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.interface = interface
+        self.row = row
+        self.hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+        self.vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+      
+        self.text = Gtk.Label(xalign=0)
+        text_markup = self.markup(row)
+        self.text.set_markup(text_markup)
+
+        self.icon = self.get_icon(self.row)
+
+        self.vbox.pack_start(self.text, True, True, 0)
+        
+        self.hbox.pack_start(self.icon, False, False, 6)
+        self.hbox.pack_start(self.vbox, True, True, 0)
+
+        self.add(self.hbox)
+
+    def get_icon(self, row):
+        row.icon.bind(self.interface.factory)
+        # TODO: see get_scale_factor() to choose 72 px on hidpi
+        return getattr(self.row.icon._impl, "native_" + str(32))
+
+    @staticmethod
+    def markup(row):
+        markup = [
+            html.escape(row.title or ''),
+            '\n',
+            '<small>', html.escape(row.subtitle or ''), '</small>',
+        ]
+        return ''.join(markup)
