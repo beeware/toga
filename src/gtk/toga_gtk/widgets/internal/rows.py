@@ -11,10 +11,10 @@ class TextIconRow(Gtk.ListBoxRow):
     """
     def __init__(self, row, interface, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # The implementation of DetailedList needs to wait until
-        # this widget is allocated to call "_do_scroll_to_row".
-        # We keep the handler_id here for disconnecting later.
-        self._scroll_handler_id = None
+        # We need to wait until this widget is allocated to scroll it in,
+        # for that we use signal and callbacks. The handler_is of the
+        # signal is used to disconnect and we store it here.
+        self._scroll_handler_id_value = None
 
         self.interface = interface
         self.row = row
@@ -48,14 +48,45 @@ class TextIconRow(Gtk.ListBoxRow):
         ]
         return ''.join(markup)
 
-    @property
-    def scroll_handler_id(self):
-        return self._scroll_handler_id
-    
-    @scroll_handler_id.setter
-    def scroll_handler_id(self, value):
-        if self._scroll_handler_id is not None:
-            self.disconnect(self._scroll_handler_id)
+    def scroll_to_center(self):
+        """
+        Scrolls the parent Gtk.ListBox until child is in the center of the
+        view.
+        """
+        # Wait for 'size-allocate' because we will need the
+        # dimensions of the widget. At this point 
+        # widget.size_request is already available but that's
+        # only the requested size, not the size it will get.
+        self._scroll_handler_id = self.connect(
+            'size-allocate',
+            # We don't need 'wdiget' and 'gpointer'
+            lambda widget, gpointer: self._do_scroll_to_center()
+            )
 
-        self._scroll_handler_id = value
+    def _do_scroll_to_center(self):
+        # Disconnect the from the signal that called us
+        self._scroll_handler_id = None
+
+        list_box = self.get_parent()
+
+        adj = list_box.get_adjustment()
+        page_size = adj.get_page_size()
+
+        # 'height' and 'y' are always valid because we are
+        # being called after 'size-allocate'
+        height = self.get_allocation().height
+        _, y = self.translate_coordinates(list_box, 0, 0)
+
+        adj.set_value(y - (page_size - height)/2)
+
+    @property
+    def _scroll_handler_id(self):
+        return self._scroll_handler_id_value
+    
+    @_scroll_handler_id.setter
+    def _scroll_handler_id(self, value):
+        if self._scroll_handler_id_value is not None:
+            self.disconnect(self._scroll_handler_id_value)
+
+        self._scroll_handler_id_value = value
             

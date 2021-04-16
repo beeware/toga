@@ -76,30 +76,10 @@ class DetailedListNew(Widget):
 
     def scroll_to_row(self, row):
         list_box_row = self.store[row]
-        
-        # Wait for 'size-allocate' because we will need the
-        # dimensions of the widget. At this point 
-        # widget.size_request is already available but that's
-        # only the requested size, not the size it will get.
-        list_box_row.scroll_handler_id = list_box_row.connect(
-            'size-allocate',
-            lambda widget, gpointer: self._do_scroll_to_row(list_box_row) # We don't need 'wdiget' and 'gpointer'.
-            )
+        list_box_row.scroll_to_center()
 
     def gtk_on_select(self, selection):
         pass
-
-    def _do_scroll_to_row(self, list_box_row):
-        list_box_row.scroll_handler_id = None
-
-        adj = self.list_box.get_adjustment()
-        page_size = adj.get_page_size()
-
-        # 'y' and 'height' are always valid because we are
-        # being called after 'size-allocate'
-        height = list_box_row.get_allocation().height
-        _, y = list_box_row.translate_coordinates(self.list_box, 0, 0)
-        adj.set_value(y - (page_size - height)/2)
 
     def _find(self, item):
         found, index = self.store.find_with_equal_func(
