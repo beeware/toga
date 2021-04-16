@@ -12,7 +12,7 @@ class TextIconRow(Gtk.ListBoxRow):
     def __init__(self, row, interface, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # We need to wait until this widget is allocated to scroll it in,
-        # for that we use signal and callbacks. The handler_is of the
+        # for that we use signals and callbacks. The handler_is of the
         # signal is used to disconnect and we store it here.
         self._scroll_handler_id_value = None
 
@@ -48,22 +48,41 @@ class TextIconRow(Gtk.ListBoxRow):
         ]
         return ''.join(markup)
 
+    def scroll_to_top(self):
+        self.scroll_to_position("TOP")
+
     def scroll_to_center(self):
+        self.scroll_to_position("CENTER")
+
+    def scroll_to_bottom(self):
+        self.scroll_to_position("BOTTOM")
+
+    def scroll_to_position(self, position):
         """
         Scrolls the parent Gtk.ListBox until child is in the center of the
         view.
+        `position` is one of "TOP", "CENTER" or "BOTTOM"
         """
-        # Wait for 'size-allocate' because we will need the
-        # dimensions of the widget. At this point 
-        # widget.size_request is already available but that's
-        # only the requested size, not the size it will get.
-        self._scroll_handler_id = self.connect(
-            'size-allocate',
-            # We don't need 'wdiget' and 'gpointer'
-            lambda widget, gpointer: self._do_scroll_to_center()
+        if position not in ("TOP", "CENTER", "BOTTOM"):
+            return
+
+        # Test whether the widget has already been allocated.
+        list_box = self.get_parent()
+        _, y = self.translate_coordinates(list_box, 0, 0)
+        if y > 0:
+            self._do_scroll_to_position(position)
+        else:
+            # Wait for 'size-allocate' because we will need the
+            # dimensions of the widget. At this point 
+            # widget.size_request is already available but that's
+            # only the requested size, not the size it will get.
+            self._scroll_handler_id = self.connect(
+                'size-allocate',
+                # We don't need 'wdiget' and 'gpointer'
+                lambda widget, gpointer: self._do_scroll_to_position(position)
             )
 
-    def _do_scroll_to_center(self):
+    def _do_scroll_to_position(self, position):
         # Disconnect the from the signal that called us
         self._scroll_handler_id = None
 
@@ -75,9 +94,31 @@ class TextIconRow(Gtk.ListBoxRow):
         # 'height' and 'y' are always valid because we are
         # being called after 'size-allocate'
         height = self.get_allocation().height
+        # `y` is the position of the top of the row in the frame of
+        # reference of the parent Gtk.ListBox
         _, y = self.translate_coordinates(list_box, 0, 0)
 
-        adj.set_value(y - (page_size - height)/2)
+        # `offset` is the remaining space in the visible region
+        offset = page_size - height
+
+        top = y
+        center = top - offset/2
+        bottom = top - offset
+
+        # `value` is the position the parent Gtk.ListBox will put at the
+        # top of the visible region.
+        value = 0.0
+        if position == "TOP":
+            value = top
+
+        if position == "CENTER":
+            value = center
+
+        if position == "BOTTOM":
+            value = bottom
+            
+        if value > 0:
+            adj.set_value(value)
 
     @property
     def _scroll_handler_id(self):
