@@ -34,6 +34,7 @@ class DetailedList(Widget):
     ROW_HEIGHT = 250
     _swipe_refresh_layout = None
     _scroll_view = None
+    _dismissable_container = None
     _selection = None
 
     def create(self):
@@ -61,6 +62,9 @@ class DetailedList(Widget):
         swipe_refresh_wrapper.addView(scroll_view)
         self.native.addView(swipe_refresh_wrapper, scroll_view_layout_params)
         dismissable_container = android_widgets.LinearLayout(self._native_activity)
+        self._dismissable_container = android_widgets.LinearLayout(
+            __jni__=java.NewGlobalRef(dismissable_container)
+        )
         dismissable_container.setOrientation(android_widgets.LinearLayout.VERTICAL)
         dismissable_container_params = android_widgets.LinearLayout__LayoutParams(
                 android_widgets.LinearLayout__LayoutParams.MATCH_PARENT,
@@ -170,8 +174,16 @@ class DetailedList(Widget):
         self.interface.factory.not_implemented("DetailedList.set_on_delete()")
 
     def scroll_to_row(self, row):
-        row_bottom = self.ROW_HEIGHT * (row + 1)
-        Handler().post(PythonRunnable(lambda: self._scroll_view.scrollTo(0, row_bottom)))
+        def scroll():
+            row_obj = self._dismissable_container.getChildAt(row)
+            hit_rect = android_widgets.Rect()
+            row_obj.getHitRect(hit_rect)
+            self._scroll_view.requestChildRectangleOnScreen(
+                    self._dismissable_container,
+                    hit_rect,
+                    False,
+                )
+        Handler().post(PythonRunnable(scroll))
 
     def rehint(self):
         # Android can crash when rendering some widgets until they have their layout params set. Guard for that case.
