@@ -78,7 +78,8 @@ class Tree(Widget):
         # However, our interface does not guarantee that the accessor actually
         # exists in the source. We therefore update the indices when the source changes.
 
-        for column, gtk_column in zip(self.interface.columns, self.treeview.get_columns()):
+        for column in self.interface.columns:
+            gtk_column = column._impl.native
             gtk_column.clear()  # remove all existing renderers and mappings
 
             if column.icon:
