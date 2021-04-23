@@ -90,6 +90,7 @@ class Tree(Widget):
             if column.checked_state:
                 renderer = Gtk.CellRendererToggle()
                 renderer.connect("toggled", self.gtk_on_toggled, column)
+                renderer.set_alignment(0, 0)
                 gtk_column.pack_start(renderer, False)
                 gtk_column.set_cell_data_func(renderer, self._set_toggle)
 
