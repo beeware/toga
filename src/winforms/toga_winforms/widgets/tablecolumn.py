@@ -6,6 +6,8 @@ from .base import Widget
 class Column(Widget):
     def create(self):
         self.native = WinForms.ColumnHeader()
+        if self.interface.style.width > 0:
+            self.native.Width = self.interface.style.width
 
     def set_editable(self, value):
         pass

@@ -638,6 +638,13 @@ NSStringDrawingTruncatesLastVisibleLine = 1 << 5
 NSTableCellView = ObjCClass('NSTableCellView')
 
 ######################################################################
+# NSTableColumn.h
+
+NSTableColumnNoResizing = 0
+NSTableColumnAutoresizingMask = 1 << 0
+NSTableColumnUserResizingMask = 1 << 1
+
+######################################################################
 # NSTableView.h
 NSTableColumn = ObjCClass('NSTableColumn')
 NSTableView = ObjCClass('NSTableView')

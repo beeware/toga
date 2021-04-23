@@ -8,6 +8,9 @@ class Column(Widget):
         self.native.set_resizable(True)
         self.native.set_reorderable(True)
 
+        if self.interface.style.width > 0:
+            self.native.set_fixed_width(self.interface.style.width)
+
         self.native.interface = self.interface
         self.native._impl = self
 
