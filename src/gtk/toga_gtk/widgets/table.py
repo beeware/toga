@@ -42,10 +42,11 @@ class Table(Tree):
         self.interface.factory.not_implemented("Table.scroll_to_row()")
 
     def add_column(self, column):
-        self.interface.factory.not_implemented("Table.add_column()")
+        self.treeview.append_column(column._impl.native)
+        self._update_columns()
 
     def remove_column(self, column):
-        self.interface.factory.not_implemented("Table.remove_column()")
+        self.treeview.remove_column(column._impl.native)
 
     # =================================
     # UNCHANGED METHODS (inherited from Tree)
