@@ -128,8 +128,8 @@ class SourceTreeModel(GObject.Object, Gtk.TreeModel):
         indices = path.get_indices()
         r = self._get_row(indices)
         if r is None:
-            return (False, Gtk.TreeIter(stamp=-1))
-        return (True, self._create_iter(user_data=r))
+            return False, Gtk.TreeIter()
+        return True, self._create_iter(user_data=r)
 
     def do_get_n_columns(self):
         """ Gtk.TreeModel """
