@@ -16,9 +16,9 @@ class DetailedListNew(Widget):
     toga.sources.ListSource is converted to Gtk.ListBoxRow in self.change_source.
     """
     def create(self):
-        self._on_refresh = None
-        self._on_select = None
-        self._on_delete = None
+        self._on_refresh_handler = None
+        self._on_select_handler = None
+        self._on_delete_handler = None
 
         self.store = None
 
@@ -56,17 +56,20 @@ class DetailedListNew(Widget):
         self.list_box.show_all()
 
     def change(self, item):
-        pass
-
+        new_item = TextIconRow(item)
+        index = self._find(item)
+        self.insert(index, new_item)
+        
     def remove(self, item: 'TextIconRow'):
         index = self._find(item)
         self.store.remove(index)
+        self._on_delete(item.toga_row)
         
     def clear(self):
         self.store.remove_all()
 
     def set_on_refresh(self, handler: callable):
-        self._on_refresh = handler
+        self._on_refresh_handler = handler
 
     def after_on_refresh(self):
         # No special handling required
@@ -77,11 +80,10 @@ class DetailedListNew(Widget):
         return list_box_row.toga_row
 
     def set_on_select(self, handler: callable):
-        # No special handling required
-        pass
+        self._on_select_handler = handler
 
     def set_on_delete(self, handler: callable):
-        pass
+        self._on_delete_handler = handler
 
     def scroll_to_row(self, row: int):
         list_box_row = self.store[row]
@@ -89,15 +91,17 @@ class DetailedListNew(Widget):
 
     def _on_row_selected(self, widget: 'GObject', list_box_row: 'ListBoxRow'):
         if self.interface.on_select and list_box_row is not None:
+            self._on_select(list_box_row.toga_row)
+            # Old comment and code below. Not sure what the issue was about.
             # TODO See #682 DetailedList should have a _selection attribute + selection property like Tree
             # self.interface._selection = node
-            self.interface.on_select(self.interface, list_box_row=row.toga_row)
+            #self.interface.on_select(self.interface, list_box_row=row.toga_row)
 
     def _on_edge_overshot(self, widget: 'GObject', pos: 'Gtk.PostitionType'):
         if pos == Gtk.PositionType.TOP and self._on_refresh is not None:
             self._on_referesh()
 
-    def _find(self, item: 'TextIconRow') -> int:
+    def _find(self, item: 'Row') -> int:
         found, index = self.store.find_with_equal_func(
             item,
             lambda a, b: a == b.toga_row
@@ -107,6 +111,18 @@ class DetailedListNew(Widget):
             return -1
         else:
             return index
+
+    def _on_refresh(self):
+        if self._on_refresh_handler is not None:
+            self._on_refresh_handler()
+
+    def _on_select(self, row: 'Row'):
+        if self._on_select_handler is not None:
+            self._on_select_handler(self, row)
+
+    def _on_delete(self, row: 'Row'):
+        if self._on_delete_handler is not None:
+            self._on_delete_handler(self, row)
 
 
 class DetailedListOld(Widget):
