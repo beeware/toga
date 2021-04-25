@@ -20,10 +20,12 @@ class DetailedListNew(Widget):
 
         self.list_box = Gtk.ListBox()
 
+        self.list_box.set_selection_mode(Gtk.SelectionMode.SINGLE)
+        self.list_box.connect("row-selected", self._on_row_selected)
+
         self.native = Gtk.ScrolledWindow()
         self.native.add(self.list_box)
         self.native.interface = self.interface
-
       
     def change_source(self, source):
         if self.store is not None:
@@ -65,7 +67,8 @@ class DetailedListNew(Widget):
         pass
 
     def get_selection(self):
-        pass
+        list_box_row = self.list_box.get_selected_row()
+        return list_box_row.toga_row
 
     def set_on_select(self, handler):
         # No special handling required
@@ -78,13 +81,17 @@ class DetailedListNew(Widget):
         list_box_row = self.store[row]
         list_box_row.scroll_to_center()
 
-    def gtk_on_select(self, selection):
-        pass
+    def _on_row_selected(self, list_box, list_box_row):
+        if self.interface.on_select and list_box_row is not None:
+            # TODO See #682 DetailedList should have a _selection attribute + selection property like Tree
+            # self.interface._selection = node
+            self.interface.on_select(self.interface, list_box_row=row.toga_row)
 
     def _find(self, item):
         found, index = self.store.find_with_equal_func(
             item,
-            lambda a, b: a == b.row)
+            lambda a, b: a == b.toga_row
+        )
 
         if not found:
             return -1
