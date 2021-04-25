@@ -59,7 +59,7 @@ class DetailedListNew(Widget):
         self.store.insert(index, row)
         self.list_box.show_all()
 
-    def change(self, item):
+    def change(self, item: 'Row'):
         new_item = TextIconRow(item, self.interface)
         index = self._find(item)
         self.insert(index, new_item)
