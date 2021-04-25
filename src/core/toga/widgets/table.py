@@ -133,7 +133,7 @@ class Table(Widget):
             self._data = ListSource([], [])
         elif isinstance(data, (list, tuple)):
             warnings.warn(
-                "Future versions will only accept a TreeSource instance or None",
+                "Future versions will only accept a ListSource instance or None",
                 DeprecationWarning
             )
             self._data = ListSource(data=data, accessors=self._accessors)
