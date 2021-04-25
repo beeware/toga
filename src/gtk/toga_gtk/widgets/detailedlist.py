@@ -30,6 +30,10 @@ class DetailedListNew(Widget):
         self.native = Gtk.ScrolledWindow()
         self.native.connect("edge-overshot", self._on_edge_overshot)
 
+        self.native.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        self.native.set_min_content_width(self.interface.MIN_WIDTH)
+        self.native.set_min_content_height(self.interface.MIN_HEIGHT)
+
         self.native.add(self.list_box)
         self.native.interface = self.interface
       
