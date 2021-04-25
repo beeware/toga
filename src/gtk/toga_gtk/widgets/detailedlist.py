@@ -40,7 +40,7 @@ class DetailedList(Widget):
             self.store = Gio.ListStore()
         for row in source:
             self.store.append(
-                TextIconRow(row, self.interface))
+                TextIconRow(row, self))
 
         # Gtk.ListBox.bind_model() requires a function to convert
         # the objects in the store to presentation objects.
@@ -51,19 +51,19 @@ class DetailedList(Widget):
         self.list_box.bind_model(self.store, lambda a: a)
 
     def insert(self, index: int, item: 'Row'):
-        row = TextIconRow(item, self.interface)
+        row = TextIconRow(item, self)
         self.store.insert(index, row)
         self.list_box.show_all()
 
     def change(self, item: 'Row'):
-        new_item = TextIconRow(item, self.interface)
+        new_item = TextIconRow(item, self)
         index = self._find(item)
         self.insert(index, new_item)
         
     def remove(self, item: 'TextIconRow'):
         index = self._find(item)
         self.store.remove(index)
-        self._on_delete(item.toga_row)
+        self._on_delete(item.interface)
         
     def clear(self):
         self.store.remove_all()
@@ -77,7 +77,7 @@ class DetailedList(Widget):
 
     def get_selection(self):
         list_box_row = self.list_box.get_selected_row()
-        return list_box_row.toga_row
+        return list_box_row.interface
 
     def set_on_select(self, handler: callable):
         self._on_select_handler = handler
@@ -91,20 +91,20 @@ class DetailedList(Widget):
 
     def _on_row_selected(self, widget: 'GObject', list_box_row: 'ListBoxRow'):
         if list_box_row is not None:
-            self._on_select(list_box_row.toga_row)
+            self._on_select(list_box_row.interface)
             # Old comment and code below. Not sure what the issue was about.
             # TODO See #682 DetailedList should have a _selection attribute + selection property like Tree
             # self.interface._selection = node
-            #self.interface.on_select(self.interface, list_box_row=row.toga_row)
+            #self.interface.on_select(self.interface, list_box_row=row.interface)
 
     def _on_edge_overshot(self, widget: 'GObject', pos: 'Gtk.PostitionType'):
         if pos == Gtk.PositionType.TOP:
-            self._on_referesh()
+            self._on_refresh()
 
     def _find(self, item: 'Row') -> int:
         found, index = self.store.find_with_equal_func(
             item,
-            lambda a, b: a == b.toga_row
+            lambda a, b: a == b.interface
         )
 
         if not found:

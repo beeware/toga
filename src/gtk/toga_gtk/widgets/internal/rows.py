@@ -110,20 +110,20 @@ class TextIconRow(ScrollableRow):
     Create a TextIconRow from a toga.sources.Row.
     A reference to the original row is kept in self.toga_row, this is useful for comparisons.
     """
-    def __init__(self, row, interface, *args, **kwargs):
+    def __init__(self, interface: 'Row', parent_impl: 'DetailedList', *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.interface = interface
+        self.parent_impl = parent_impl
         # Keep a reference to the original core.toga.sources.list_source.Row
-        self.toga_row = row
+        self.interface = interface
         self.hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
         self.vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
       
         self.text = Gtk.Label(xalign=0)
-        text_markup = self.markup(self.toga_row)
+        text_markup = self.markup(self.interface)
         self.text.set_markup(text_markup)
 
-        self.icon = self.get_icon(self.toga_row)
+        self.icon = self.get_icon(self.interface)
 
         self.vbox.pack_start(self.text, True, True, 0)
         
@@ -133,9 +133,9 @@ class TextIconRow(ScrollableRow):
         self.add(self.hbox)
 
     def get_icon(self, row):
-        row.icon.bind(self.interface.factory)
+        row.icon.bind(self.parent_impl.interface.factory)
         # TODO: see get_scale_factor() to choose 72 px on hidpi
-        return getattr(self.toga_row.icon._impl, "native_" + str(32))
+        return getattr(self.interface.icon._impl, "native_" + str(32))
 
     @staticmethod
     def markup(row):
