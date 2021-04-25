@@ -6,6 +6,7 @@ from pathlib import Path
 import toga
 from toga.style import Pack
 from toga.constants import COLUMN
+from toga.sources import ListSource
 
 
 examples_dir = Path(__file__).parents[3]
@@ -59,7 +60,7 @@ class ExampleExamplesOverviewApp(toga.App):
 
         # ==== Table with examples =====================================================
 
-        self.examples = []
+        examples = []
 
         # search for all folders that contain modules
         for root, dirs, files in os.walk(examples_dir):
@@ -67,13 +68,13 @@ class ExampleExamplesOverviewApp(toga.App):
             dirs[:] = [d for d in dirs if not d.startswith(".")]
             if any(name == "__main__.py" for name in files):
                 path = Path(root)
-                self.examples.append(dict(name=path.name, path=path.parent))
+                examples.append(dict(name=path.name, path=path.parent))
 
-        self.examples.sort(key=lambda e: e["path"])
+        examples.sort(key=lambda e: e["path"])
 
         self.table = toga.Table(
-            headings=["Name", "Path"],
-            data=self.examples,
+            columns=["Name", "Path"],
+            data=ListSource(examples, accessors=["name", "path"]),
             on_double_click=self.run,
             on_select=self.on_example_selected,
             style=Pack(padding_bottom=10, flex=1),
