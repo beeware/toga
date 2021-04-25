@@ -16,6 +16,10 @@ class DetailedListNew(Widget):
     toga.sources.ListSource is converted to Gtk.ListBoxRow in self.change_source.
     """
     def create(self):
+        self._on_refresh = None
+        self._on_select = None
+        self._on_delete = None
+
         self.store = None
 
         self.list_box = Gtk.ListBox()
@@ -62,7 +66,7 @@ class DetailedListNew(Widget):
         self.store.remove_all()
 
     def set_on_refresh(self, handler):
-        pass
+        self._on_refresh = handler
 
     def after_on_refresh(self):
         # No special handling required
@@ -90,8 +94,8 @@ class DetailedListNew(Widget):
             self.interface.on_select(self.interface, list_box_row=row.toga_row)
 
     def _on_edge_overshot(self, widget, pos):
-        if pos == Gtk.PositionType.TOP:
-            print("aaa")
+        if pos == Gtk.PositionType.TOP and self._on_refresh is not None:
+            self._on_referesh()
 
     def _find(self, item):
         found, index = self.store.find_with_equal_func(
