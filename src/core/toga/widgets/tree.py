@@ -34,12 +34,12 @@ class Tree(Widget):
 
         Lets prepare a data source first.
 
-        >>> data = {
-        >>>    ('father', 38): [('child 1', 17), ('child 1', 15)],
-        >>>    ('mother', 42): [('child 1', 17)],
-        >>> }
+        >>> nodes = {
+        ...    ('father', 38): [('child 1', 17), ('child 1', 15)],
+        ...    ('mother', 42): [('child 1', 17)],
+        ... }
         >>> accessors = ['name', 'age']
-        >>> tree_source = TreeSource(data, accessors)
+        >>> tree_source = TreeSource(nodes, accessors)
 
         Columns can be provided in several forms.
         As a list of column titles which will be matched against accessors in the data:
@@ -49,9 +49,9 @@ class Tree(Widget):
         As ``Column`` instances with column properties assigned to data accessors:
 
         >>> columns = [
-        >>>     Tree.Column(title='Name', text='name'),
-        >>>     Tree.Column(title='Age', text='age'),
-        >>> ]
+        ...     Tree.Column(title='Name', text='name'),
+        ...     Tree.Column(title='Age', text='age'),
+        ... ]
 
         Now we can create our Table:
 

@@ -29,9 +29,11 @@ class Table(Widget):
 
         Lets prepare a data source first.
 
-        >>> data = [{'head_1': 'value 1', 'head_2': 'value 2', 'head_3': 'value3'}),
-        >>>         {'head_1': 'value 1', 'head_2': 'value 2', 'head_3': 'value3'}]
-        >>> table_source = ListSource(data)
+        >>> rows = [
+        ...     {'head_1': 'value 1', 'head_2': 'value 2', 'head_3': 'value3'}),
+        ...     {'head_1': 'value 1', 'head_2': 'value 2', 'head_3': 'value3'},
+        ... ]
+        >>> table_source = ListSource(rows, accessors=['head_1', 'head_2', 'head_3'])
 
         Columns can be provided in several forms.
         As a list of column titles which will be matched against accessors in the data:
@@ -41,9 +43,9 @@ class Table(Widget):
         As ``Column`` instances with column properties assigned to data accessors:
 
         >>> columns = [
-        >>>     Table.Column(title='Head 1', text='head_1', icon='head_2'),
-        >>>     Table.Column(title='Head 2', text='head_1'),
-        >>> ]
+        ...     Table.Column(title='Head 1', text='head_1', icon='head_2'),
+        ...     Table.Column(title='Head 2', text='head_1'),
+        ... ]
 
         Now we can create our Table:
 
