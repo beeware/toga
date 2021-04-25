@@ -16,6 +16,10 @@ class DetailedListNew(Widget):
     toga.sources.ListSource is converted to Gtk.ListBoxRow in self.change_source.
     """
     def create(self):
+        self._on_refresh = None
+        self._on_select = None
+        self._on_delete = None
+
         self.store = None
 
         self.list_box = Gtk.ListBox()
@@ -29,7 +33,7 @@ class DetailedListNew(Widget):
         self.native.add(self.list_box)
         self.native.interface = self.interface
       
-    def change_source(self, source):
+    def change_source(self, source: 'ListSource'):
         if self.store is not None:
             self.store.remove_all()
         else:
@@ -46,7 +50,7 @@ class DetailedListNew(Widget):
         # toga.sources.Row in it.
         self.list_box.bind_model(self.store, lambda a: a)
 
-    def insert(self, index, item):
+    def insert(self, index: int, item: 'Row'):
         row = TextIconRow(item, self.interface)
         self.store.insert(index, row)
         self.list_box.show_all()
@@ -54,15 +58,15 @@ class DetailedListNew(Widget):
     def change(self, item):
         pass
 
-    def remove(self, item):
+    def remove(self, item: 'TextIconRow'):
         index = self._find(item)
         self.store.remove(index)
         
     def clear(self):
         self.store.remove_all()
 
-    def set_on_refresh(self, handler):
-        pass
+    def set_on_refresh(self, handler: callable):
+        self._on_refresh = handler
 
     def after_on_refresh(self):
         # No special handling required
@@ -72,28 +76,28 @@ class DetailedListNew(Widget):
         list_box_row = self.list_box.get_selected_row()
         return list_box_row.toga_row
 
-    def set_on_select(self, handler):
+    def set_on_select(self, handler: callable):
         # No special handling required
         pass
 
-    def set_on_delete(self, handler):
+    def set_on_delete(self, handler: callable):
         pass
 
-    def scroll_to_row(self, row):
+    def scroll_to_row(self, row: int):
         list_box_row = self.store[row]
         list_box_row.scroll_to_center()
 
-    def _on_row_selected(self, widget, list_box_row):
+    def _on_row_selected(self, widget: 'GObject', list_box_row: 'ListBoxRow'):
         if self.interface.on_select and list_box_row is not None:
             # TODO See #682 DetailedList should have a _selection attribute + selection property like Tree
             # self.interface._selection = node
             self.interface.on_select(self.interface, list_box_row=row.toga_row)
 
-    def _on_edge_overshot(self, widget, pos):
-        if pos == Gtk.PositionType.TOP:
-            print("aaa")
+    def _on_edge_overshot(self, widget: 'GObject', pos: 'Gtk.PostitionType'):
+        if pos == Gtk.PositionType.TOP and self._on_refresh is not None:
+            self._on_referesh()
 
-    def _find(self, item):
+    def _find(self, item: 'TextIconRow') -> int:
         found, index = self.store.find_with_equal_func(
             item,
             lambda a, b: a == b.toga_row
