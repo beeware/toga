@@ -6,7 +6,7 @@ from pathlib import Path
 
 import toga
 from toga.constants import COLUMN
-from toga.sources import Source
+from toga.sources import TreeSource, Node
 from toga.style import Pack
 
 # This is a slightly less toy example of a tree view to display
@@ -24,11 +24,8 @@ from toga.style import Pack
 class LoadingFailedNode:
     """A node to represent failed loading of children"""
 
-    def __init__(self, parent):
-        self._parent = parent
-        self.children = []
-        self.name = 'loading failed'
-        self.date_modified = ''
+    def __init__(self):
+        super().__init__(name='loading failed', date_modified='')
 
     # Methods required for the data source interface
     def __len__(self):
@@ -42,24 +39,27 @@ class LoadingFailedNode:
         return False
 
 
-class FileSystemNode:
+class FileSystemNode(Node):
     """A node which loads its children on-demand."""
 
-    def __init__(self, path, parent):
-        super().__init__()
-        self._parent = parent
+    def __init__(self, path):
+
+        mtime = path.stat().st_mtime
+        date_str = datetime.fromtimestamp(mtime).strftime('%d %b %Y at %H:%M')
+
+        if path.is_file():
+            icon = toga.Icon('resources/file')
+        else:
+            icon = toga.Icon('resources/folder')
+
+        super().__init__(name=path.name, icon=icon, date_modified=date_str, selected=1)
+
+        self._path = path
+        self._did_start_loading = False
         self._children = []
 
-        self.path = path
-        self._mtime = self.path.stat().st_mtime
-        if self.path.is_file():
-            self._icon = toga.Icon('resources/file')
-        else:
-            self._icon = toga.Icon('resources/folder')
-        self._did_start_loading = False
-
     def __repr__(self):
-        return "<Node {0}>".format(self.path)
+        return "<Node {0}>".format(self._path)
 
     # Methods required for the data source interface
     def __len__(self):
@@ -72,25 +72,6 @@ class FileSystemNode:
         # this will trigger loading of children, if not yet done
         return len(self.children) > 0
 
-    # Properties for column access
-
-    @property
-    def icon(self):
-        return self._icon
-
-    @property
-    def name(self):
-        return self.path.name
-
-    @property
-    def selected(self):
-        return True
-
-    # Property that returns modified date as str
-    @property
-    def date_modified(self):
-        return datetime.fromtimestamp(self._mtime).strftime('%d %b %Y at %H:%M')
-
     # on-demand loading of children
     @property
     def children(self):
@@ -101,24 +82,40 @@ class FileSystemNode:
 
     def load_children(self):
         try:
-            sub_paths = [p for p in self.path.iterdir()]
-            self._children = [FileSystemNode(p, self) for p in sub_paths]
+            sub_paths = [p for p in self._path.iterdir()]
+            for path in sub_paths:
+                node = FileSystemNode(path)
+                node._parent = self
+                node._source = self._source
+                self._children.append(node)
         except NotADirectoryError:
             self._children = []
         except OSError:
-            self._children = [LoadingFailedNode(self)]
+            node = LoadingFailedNode()
+            node._parent = self
+            node._source = self._source
+            self._children = [node]
 
 
-class FileSystemSource(FileSystemNode, Source):
+class FileSystemSource(TreeSource):
     def __init__(self, path):
-        super().__init__(path, parent=None)
-        self.accessors = ["icon", "name", "date_modified"]
+        super().__init__(data=[], accessors=["icon", "name", "date_modified"])
+        self._path = path
+        self._load_children()
 
-    def index(self, node):
-        if node._parent:
-            return node._parent._children.index(node)
-        else:
-            return self.children.index(node)
+    def _load_children(self):
+        try:
+            sub_paths = [p for p in self._path.iterdir()]
+            for path in sub_paths:
+                node = FileSystemNode(path)
+                node._source = self
+                self._roots.append(node)
+        except NotADirectoryError:
+            self._roots = []
+        except OSError:
+            node = LoadingFailedNode()
+            node._source = self
+            self._roots = [node]
 
 
 class ExampleTreeSourceApp(toga.App):
@@ -157,9 +154,9 @@ class ExampleTreeSourceApp(toga.App):
 
         self.fs_source = FileSystemSource(Path.cwd())
 
-        col0 = toga.Tree.Column(title="Name", icon="icon", text="name")
-        col1 = toga.Tree.Column(title="Date Modified", text="date_modified")
-        col2 = toga.Tree.Column(title="Selected", checked_state="selected")
+        col0 = toga.Tree.Column(title="Name", icon="icon", text="name", editable=False)
+        col1 = toga.Tree.Column(title="Date Modified", text="date_modified", editable=False)
+        col2 = toga.Tree.Column(title="Selected", checked_state="selected", editable=False)
 
         self.tree = toga.Tree(
             columns=[col0, col1, col2],
