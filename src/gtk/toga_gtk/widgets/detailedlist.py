@@ -12,7 +12,8 @@ class DetailedListNew(Widget):
     """
     Gtk DetailedList implementation.
     Gtk.ListBox inside a Gtk.ScrolledWindow.
-    The rows are Gtk.ListBoxRow and are kept inside a Gio.ListStore.
+    The rows inherit from .internal.rows.ScrollableRow which inherits from Gtk.ListBoxRow, 
+    they are kept inside a Gio.ListStore.
     toga.sources.ListSource is converted to Gtk.ListBoxRow in self.change_source.
     """
     def create(self):
@@ -102,7 +103,7 @@ class DetailedListNew(Widget):
             #self.interface.on_select(self.interface, list_box_row=row.toga_row)
 
     def _on_edge_overshot(self, widget: 'GObject', pos: 'Gtk.PostitionType'):
-        if pos == Gtk.PositionType.TOP and self._on_refresh is not None:
+        if pos == Gtk.PositionType.TOP:
             self._on_referesh()
 
     def _find(self, item: 'Row') -> int:
