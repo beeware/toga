@@ -137,7 +137,7 @@ class Tree(Widget):
     def data(self, data):
         if data is None:
             self._data = TreeSource([], [])
-        elif isinstance(data, (list, tuple)):
+        elif isinstance(data, (list, tuple, dict)):
             warnings.warn(
                 "Future versions will only accept a TreeSource instance or None",
                 DeprecationWarning
