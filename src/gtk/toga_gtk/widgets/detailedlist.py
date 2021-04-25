@@ -94,7 +94,7 @@ class DetailedListNew(Widget):
         list_box_row.scroll_to_center()
 
     def _on_row_selected(self, widget: 'GObject', list_box_row: 'ListBoxRow'):
-        if self.interface.on_select and list_box_row is not None:
+        if list_box_row is not None:
             self._on_select(list_box_row.toga_row)
             # Old comment and code below. Not sure what the issue was about.
             # TODO See #682 DetailedList should have a _selection attribute + selection property like Tree
