@@ -62,7 +62,7 @@ The alignment of children relative to the outside of the packed box.
 If the box is a ``column`` box, only the values ``left``, ``right`` and
 ``center`` are honored.
 
-If the box is a ``row`` box, only the values ``top``, ``bottom and ``center``
+If the box is a ``row`` box, only the values ``top``, ``bottom`` and ``center``
 are honored.
 
 If a value is provided, but the value isn't honored, the alignment
