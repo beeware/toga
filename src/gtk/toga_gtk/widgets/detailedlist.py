@@ -60,10 +60,9 @@ class DetailedList(Widget):
         index = self._find(item)
         self.insert(index, new_item)
         
-    def remove(self, item: 'TextIconRow'):
-        index = self._find(item)
+    def remove(self, item: 'Row', index: int):
         self.store.remove(index)
-        self._on_delete(item.interface)
+        self._on_delete(item)
         
     def clear(self):
         self.store.remove_all()
@@ -110,13 +109,13 @@ class DetailedList(Widget):
 
     def _on_refresh(self):
         if self._on_refresh_handler is not None:
-            self._on_refresh_handler()
+            self._on_refresh_handler(self.interface)
 
     def _on_select(self, row: 'Row'):
         if self._on_select_handler is not None:
-            self._on_select_handler(self, row)
+            self._on_select_handler(self.interface, row)
 
     def _on_delete(self, row: 'Row'):
         if self._on_delete_handler is not None:
-            self._on_delete_handler(self, row)
+            self._on_delete_handler(self.interface, row)
 

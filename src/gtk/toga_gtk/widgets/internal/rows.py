@@ -123,19 +123,24 @@ class TextIconRow(ScrollableRow):
         text_markup = self.markup(self.interface)
         self.text.set_markup(text_markup)
 
-        self.icon = self.get_icon(self.interface)
+        self.icon = self.get_icon(self.interface, self.parent_impl.interface.factory)
 
         self.vbox.pack_start(self.text, True, True, 0)
         
-        self.hbox.pack_start(self.icon, False, False, 6)
+        if self.icon is not None:
+            self.hbox.pack_start(self.icon, False, False, 6)
+
         self.hbox.pack_start(self.vbox, True, True, 0)
 
         self.add(self.hbox)
 
-    def get_icon(self, row):
-        row.icon.bind(self.parent_impl.interface.factory)
-        # TODO: see get_scale_factor() to choose 72 px on hidpi
-        return getattr(self.interface.icon._impl, "native_" + str(32))
+    def get_icon(self, row, factory):
+        if getattr(row, "icon") is None:
+            return None
+        else:
+            row.icon.bind(factory)
+            # TODO: see get_scale_factor() to choose 72 px on hidpi
+            return getattr(row.icon._impl, "native_" + str(32))
 
     @staticmethod
     def markup(row):
