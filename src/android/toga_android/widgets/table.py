@@ -203,4 +203,4 @@ class Table(Widget):
             android_widgets.View__MeasureSpec.UNSPECIFIED,
         )
         self.interface.intrinsic.width = at_least(self.native.getMeasuredWidth())
-        self.interface.intrinsic.height = self.native.getMeasuredHeight()
+        self.interface.intrinsic.height = at_least(self.native.getMeasuredHeight())
