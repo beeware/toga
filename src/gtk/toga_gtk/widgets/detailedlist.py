@@ -92,10 +92,6 @@ class DetailedList(Widget):
     def _on_row_selected(self, widget: 'GObject', list_box_row: 'ListBoxRow'):
         if list_box_row is not None:
             self._on_select(list_box_row.interface)
-            # Old comment and code below. Not sure what the issue was about.
-            # TODO See #682 DetailedList should have a _selection attribute + selection property like Tree
-            # self.interface._selection = node
-            #self.interface.on_select(self.interface, list_box_row=row.interface)
 
     def _on_edge_overshot(self, widget: 'GObject', pos: 'Gtk.PostitionType'):
         if pos == Gtk.PositionType.TOP:
