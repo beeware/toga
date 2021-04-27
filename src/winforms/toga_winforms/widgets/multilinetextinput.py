@@ -23,6 +23,10 @@ class MultilineTextInput(Widget):
     def winforms_leave(self, sender, event):
         self._update_text()
 
+    def set_font(self, font):
+        if font:
+            self.native.Font = font.bind(self.interface.factory).native
+
     def set_readonly(self, value):
         self.native.ReadOnly = self.interface.readonly
 
