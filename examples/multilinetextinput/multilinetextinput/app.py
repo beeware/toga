@@ -30,7 +30,7 @@ class ExampleMultilineTextInputApp(toga.App):
         self.multiline_input = toga.MultilineTextInput(
             placeholder='Enter text here...',
             initial='Initial value',
-            style=Pack(flex=1),
+            style=Pack(flex=1, font_family='monospace', font_size=14),
             on_change=self.set_label
         )
 
