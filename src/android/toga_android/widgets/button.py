@@ -2,7 +2,7 @@ from travertino.size import at_least
 
 from ..libs import android_widgets
 from .base import Widget
-
+from toga_android.colors import native_color
 
 class TogaOnClickListener(android_widgets.OnClickListener):
     def __init__(self, button_impl):
@@ -25,9 +25,6 @@ class Button(Widget):
     def set_enabled(self, value):
         self.native.setEnabled(value)
 
-    def set_background_color(self, value):
-        self.interface.factory.not_implemented("Button.set_background_color()")
-
     def set_font(self, font):
         if font:
             font_impl = font.bind(self.interface.factory)
@@ -37,6 +34,14 @@ class Button(Widget):
     def set_on_press(self, handler):
         # No special handling required
         pass
+
+    def set_color(self, value):
+        if value:
+            self.native.setTextColor(native_color(value))
+
+    def set_background_color(self, value):
+        if value:
+            self.native.setBackgroundColor(native_color(value))
 
     def rehint(self):
         # Like other text-viewing widgets, Android crashes when rendering
