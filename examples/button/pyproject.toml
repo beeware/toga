@@ -14,9 +14,7 @@ author_email = "tiberius@beeware.org"
 formal_name = "Button Demo"
 description = "A testing app"
 sources = ['button']
-requires = [
-    'c:/Projects/Python/Toga/src/core'
-]
+requires = []
 
 
 [tool.briefcase.app.button.macOS]
@@ -42,6 +40,5 @@ requires = [
 
 [tool.briefcase.app.button.android]
 requires = [
-    # 'toga-android',
-    'c:/Projects/Python/Toga/src/android'
+    'toga-android',
 ]
