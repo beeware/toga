@@ -1,6 +1,7 @@
 from travertino.size import at_least
 
 from ..libs import android_widgets
+from ..libs.android import PorterDuff__Mode
 from .base import Widget
 from toga_android.colors import native_color
 
@@ -41,7 +42,8 @@ class Button(Widget):
 
     def set_background_color(self, value):
         if value:
-            self.native.setBackgroundColor(native_color(value))
+            # do not use self.native.setBackgroundColor - this messes with the button style!
+            self.native.getBackground().setColorFilter(native_color(value), PorterDuff__Mode.MULTIPLY)
 
     def rehint(self):
         # Like other text-viewing widgets, Android crashes when rendering
