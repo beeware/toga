@@ -5,6 +5,7 @@ from ..libs.android import PorterDuff__Mode
 from .base import Widget
 from toga_android.colors import native_color
 
+
 class TogaOnClickListener(android_widgets.OnClickListener):
     def __init__(self, button_impl):
         super().__init__()
