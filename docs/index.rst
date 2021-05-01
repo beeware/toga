@@ -96,7 +96,6 @@ Toga is part of the `BeeWare suite`_. You can talk to the community through:
 
 .. _BeeWare suite: http://beeware.org
 .. _Read The Docs: https://toga.readthedocs.io
-.. _@pybeeware on Twitter: https://twitter.com/pybeeware
 
 
 .. toctree::
