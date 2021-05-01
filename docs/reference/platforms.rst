@@ -130,10 +130,12 @@ Eventually, the Toga project would like to provide support for the following pla
  * Curses (for console)
 
 If you are interested in these platforms and would like to contribute, please
-get in touch on Twitter_ or Gitter_.
+get in touch on Twitter_ or Discord_ (`Click here for an invitation to the
+Discord server <https://beeware.org/bee/chat/>`__).
 
 .. _Twitter: https://twitter.com/pybeeware
-.. _Gitter: https://gitter.im/beeware/general
+.. _Discord: https://discord.com/channels/836455665257021440/836455665257021443
+
 
 Unofficial platform support
 ===========================
