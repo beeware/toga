@@ -80,7 +80,10 @@ class DetailedList(Widget):
 
     def get_selection(self):
         list_box_row = self.list_box.get_selected_row()
-        return list_box_row.interface
+        if list_box_row is None:
+            return list_box_row
+        else:
+            return list_box_row.interface
 
     def set_on_select(self, handler: callable):
         self._on_select_handler = handler
