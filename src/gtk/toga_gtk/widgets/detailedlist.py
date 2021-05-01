@@ -2,6 +2,10 @@ from ..libs import Gtk, Gio, GLib
 from .base import Widget
 from .internal.rows import TextIconRow
 
+# Idea to implement pull to refresh: There is a widget above the listbox in the viewport.
+# It contains a button to refresh and it wants to be hidden, when it becomes visible it sets
+# a timer to hide itself again. How long it remains exposed depends on whether 
+# 'edge-overshot' was triggered.
 
 class DetailedList(Widget):
     """
