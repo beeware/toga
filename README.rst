@@ -29,9 +29,9 @@ Toga
    :target: https://codecov.io/gh/beeware/toga
    :alt: Codecov
 
-.. image:: https://badges.gitter.im/beeware/general.svg
-   :target: https://gitter.im/beeware/general
-   :alt: Gitter chat room
+.. image:: https://img.shields.io/discord/836455665257021440?label=Discord%20Chat&logo=discord&style=plastic
+   :target: https://beeware.org/bee/chat/
+   :alt: Discord server
 
 A Python native, OS native GUI toolkit.
 
@@ -82,9 +82,12 @@ Community
 
 Toga is part of the `BeeWare suite`_. You can talk to the community through:
 
-* `@pybeeware on Twitter`_
+* `@pybeeware on Twitter <https://twitter.com/pybeeware>`__
 
-* The `beeware/general`_ channel on Gitter.
+* `Discord <https://discord.com/channels/836455665257021440/836455665257021443>`__ 
+  (`Click here for an invitation to the server <https://beeware.org/bee/chat/>`__)
+
+* The Toga `Github Discussions forum <https://github.com/beeware/toga/discussions>`__
 
 Contributing
 ~~~~~~~~~~~~
@@ -97,8 +100,6 @@ contribute code, please `fork the code`_ and `submit a pull request`_.
 
 .. _BeeWare suite: https://beeware.org/
 .. _Read The Docs: https://toga.readthedocs.io
-.. _@pybeeware on Twitter: https://twitter.com/pybeeware
-.. _beeware/general: https://gitter.im/beeware/general
 .. _guide for first time contributors: https://toga.readthedocs.io/en/latest/how-to/contribute.html
 .. _log them on Github: https://github.com/beeware/toga/issues
 .. _fork the code: https://github.com/beeware/toga

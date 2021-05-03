@@ -18,9 +18,12 @@ Community
 
 Toga is part of the `BeeWare suite`_. You can talk to the community through:
 
-* `@pybeeware on Twitter`_
+* `@pybeeware on Twitter <https://twitter.com/pybeeware>`__
 
-* The `pybee/general`_ channel on Gitter.
+* `Discord <https://discord.com/channels/836455665257021440/836455665257021443>`__ 
+  (`Click here for an invitation to the server <https://beeware.org/bee/chat/>`__)
+
+* The Toga `Github Discussions forum <https://github.com/beeware/toga/discussions>`__
 
 Contributing
 ------------
@@ -32,8 +35,6 @@ want to contribute code, please `fork the code`_ and `submit a pull request`_.
 .. _the core Toga library: https://pypi.python.org/pypi/toga-core
 .. _Toga project on Github: https://github.com/beeware/toga
 .. _BeeWare suite: http://beeware.org
-.. _@pybeeware on Twitter: https://twitter.com/pybeeware
-.. _pybee/general: https://gitter.im/beeware/general
 .. _log them on Github: https://github.com/beeware/toga/issues
 .. _fork the code: https://github.com/beeware/toga
 .. _submit a pull request: https://github.com/beeware/toga/pulls
