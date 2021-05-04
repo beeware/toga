@@ -93,6 +93,7 @@ class ScrollableRow(Gtk.ListBoxRow):
         if value > 0:
             adj.set_value(value)
 
+
     @property
     def _scroll_handler_id(self):
         return self._scroll_handler_id_value

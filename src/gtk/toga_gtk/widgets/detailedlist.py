@@ -2,10 +2,24 @@ from ..libs import Gtk, Gio, GLib
 from .base import Widget
 from .internal.rows import TextIconRow
 
-# Idea to implement pull to refresh: There is a widget above the listbox in the viewport.
-# It contains a button to refresh and it wants to be hidden, when it becomes visible it sets
-# a timer to hide itself again. How long it remains exposed depends on whether 
-# 'edge-overshot' was triggered.
+# Idea to implement pull to refresh: Use a floating button like the "scroll to bottom" button on
+# Fractal.
+
+# If the user is at the top of the list, then they are probably interested in the content at
+# the top and we put the button at the bottom.
+# If the user is at the botom of the list, then they are probably interested in the content at
+# the bottom and we put the button at the top.
+
+# If the user is scrolling through the list then don't show the button at all.
+# If there is not enough content to scroll, show the button at the bottom and have a side button to
+# move it to the top. After moving the button to the top, show a button to move it to the bottom.
+
+# Example:
+#
+#  -------------
+# | Refresh | X |
+#  -------------
+
 
 class DetailedList(Widget):
     """
