@@ -20,6 +20,12 @@ from .internal.rows import TextIconRow
 # | Refresh | X |
 #  -------------
 
+# To get whether the list is scrollable use `adj.get_page_size() == 0`.
+# To get notified when the list is scrolled use `adj.connect(value_changed)` and use 
+# `adj.get_value() + adj.get_page_size() == adj.get_upper()` to know if it is at the bottom and
+# `adj.get_value() == adj.get_lower()` to know if it is at the top. This might not work well 
+# when there is a hovering button, it seems that then scrolling is not immediately performed 
+# when the mouse wheel is turned.
 
 class DetailedList(Widget):
     """
