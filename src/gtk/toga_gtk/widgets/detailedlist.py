@@ -1,4 +1,4 @@
-from ..libs import Gtk, Gio, GLib
+from ..libs import Gtk, Gio
 from .base import Widget
 from .internal.rows import TextIconRow
 
