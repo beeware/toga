@@ -1,31 +1,8 @@
 from ..libs import Gtk, Gio
 from .base import Widget
 from .internal.rows import TextIconRow
+from .internal.buttons import RefreshButton
 
-# Idea to implement pull to refresh: Use a floating button like the "scroll to bottom" button on
-# Fractal.
-
-# If the user is at the top of the list, then they are probably interested in the content at
-# the top and we put the button at the bottom.
-# If the user is at the botom of the list, then they are probably interested in the content at
-# the bottom and we put the button at the top.
-
-# If the user is scrolling through the list then don't show the button at all.
-# If there is not enough content to scroll, show the button at the bottom and have a side button to
-# move it to the top. After moving the button to the top, show a button to move it to the bottom.
-
-# Example:
-#
-#  -------------
-# | Refresh | X |
-#  -------------
-
-# To get whether the list is scrollable use `adj.get_page_size() == 0`.
-# To get notified when the list is scrolled use `adj.connect(value_changed)` and use 
-# `adj.get_value() + adj.get_page_size() == adj.get_upper()` to know if it is at the bottom and
-# `adj.get_value() == adj.get_lower()` to know if it is at the top. This might not work well 
-# when there is a hovering button, it seems that then scrolling is not immediately performed 
-# when the mouse wheel is turned.
 
 class DetailedList(Widget):
     """
@@ -47,14 +24,20 @@ class DetailedList(Widget):
         self.list_box.set_selection_mode(Gtk.SelectionMode.SINGLE)
         self.list_box.connect("row-selected", self._on_row_selected)
 
-        self.native = Gtk.ScrolledWindow()
-        self.native.connect("edge-overshot", self._on_edge_overshot)
+        self.scrolled_window = Gtk.ScrolledWindow()
+        self.scrolled_window.connect("edge-overshot", self._on_edge_overshot)
 
-        self.native.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
-        self.native.set_min_content_width(self.interface.MIN_WIDTH)
-        self.native.set_min_content_height(self.interface.MIN_HEIGHT)
+        self.scrolled_window.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        self.scrolled_window.set_min_content_width(self.interface.MIN_WIDTH)
+        self.scrolled_window.set_min_content_height(self.interface.MIN_HEIGHT)
 
-        self.native.add(self.list_box)
+        self.scrolled_window.add(self.list_box)
+        
+        self.refresh_button = RefreshButton("TOP", self._on_refresh)
+
+        self.native = Gtk.Overlay()
+        self.native.add_overlay(self.scrolled_window)
+        self.native.add_overlay(self.refresh_button)
         self.native.interface = self.interface
       
     def change_source(self, source: 'ListSource'):
