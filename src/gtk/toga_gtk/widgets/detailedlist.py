@@ -32,8 +32,8 @@ class DetailedList(Widget):
 
         self.scrolled_window.add(self.list_box)
 
-        self.refresh_button = RefreshButton(self._on_refresh,
-                                            self.scrolled_window.get_vadjustment())
+        self.refresh_button = RefreshButton(self.scrolled_window.get_vadjustment())
+        self.refresh_button.set_on_refresh(self._on_refresh)
         
         self.native = Gtk.Overlay()
         self.native.add_overlay(self.scrolled_window)

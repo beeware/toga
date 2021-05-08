@@ -64,13 +64,12 @@ class RefreshButton:
     | Refresh | X |
      -------------
     """
-    def __init__(self, on_refresh: callable, 
-                 adj: Gtk.Adjustment, margin=12, *args, **kwargs):
+    def __init__(self, adj: Gtk.Adjustment, margin=12, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.adj = adj
-        self.on_refresh = on_refresh
         self.margin = margin
         self.parent = None
+        self._on_refresh = None
         
         self.button_top = RefreshButtonWidget(self._on_refresh_clicked,
                                               self._on_close_clicked,
@@ -98,9 +97,12 @@ class RefreshButton:
         self.button_bottom.destroy()
         return super().destroy(*args, **kwargs)
 
+    def set_on_refresh(self, on_refresh: callable):
+        self._on_refresh = on_refresh
+
     def _on_refresh_clicked(self):
-        if self.on_refresh is not None:
-            self.on_refresh()
+        if self._on_refresh is not None:
+            self._on_refresh()
 
     def _on_close_clicked(self):
         is_top_visible = self.button_top.is_visible()
