@@ -23,6 +23,9 @@ class MainWindow(Window):
         if should_exit == 'cancel':
             event.Cancel = True
 
+    def on_close(self):
+        pass
+
 
 class App:
     _MAIN_WINDOW_CLASS = MainWindow

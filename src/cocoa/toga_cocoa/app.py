@@ -35,7 +35,8 @@ from .window import Window
 
 
 class MainWindow(Window):
-    pass
+    def on_close(self):
+        pass
 
 
 class AppDelegate(NSObject):
