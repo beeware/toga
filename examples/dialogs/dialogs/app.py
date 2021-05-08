@@ -106,11 +106,15 @@ class ExampledialogsApp(toga.App):
 
     def action_open_secondary_window(self, widget):
         def close_handler(window):
-            # This handler is called before the window is closed, so there is 2 more
-            # windows than the number of secondary windows after it is closed
-            self.window_label.text = '{} secondary windows open'.format(len(self.windows) - 1)
+            # This handler is called before the window is closed, so there
+            # still are 1 more windows than the number of secondary windows
+            # after it is closed
+            # Return 'cancel' if the app should stay open
+            self.window_label.text = '{} secondary window(s) open' \
+                .format(len(self.windows) - 1)
 
-        window = toga.Window(title="New Window {}".format(len(self.windows)))
+        self.window_counter += 1
+        window = toga.Window(title="New Window {}".format(self.window_counter))
         # Both self.windows.add() and self.windows += work:
         # self.windows += window
         self.windows.add(window)
@@ -129,11 +133,18 @@ class ExampledialogsApp(toga.App):
         window.on_close = close_handler
         window.show()
 
+    def action_close_secondary_windows(self, widget):
+        for window in list(self.windows):
+            if window._WINDOW_CLASS != 'MainWindow':
+                window.close()
+
     def exit_handler(self, app):
+        # Return 'cancel' if app should remain open
         if self.main_window.confirm_dialog('Toga', 'Are you sure you want to quit?'):
             print("Label text was \'{}\' when you quit the app".format(self.label.text))
         else:
             self.label.text = 'Exit canceled'
+            return 'cancel'
 
     def set_window_label_text(self):
         self.window_label.text = '{} secondary windows open'.format(len(self.windows) - 1)
@@ -146,6 +157,7 @@ class ExampledialogsApp(toga.App):
         # Label to show responses.
         self.label = toga.Label('Ready.', style=Pack(padding_top=20))
         self.window_label = toga.Label('', style=Pack(padding_top=20))
+        self.window_counter = 0
         self.set_window_label_text()
 
         # Buttons
@@ -177,6 +189,11 @@ class ExampledialogsApp(toga.App):
             on_press=self.action_open_secondary_window,
             style=btn_style
         )
+        btn_close_secondary_window = toga.Button(
+            'Close All Secondary Windows',
+            on_press=self.action_close_secondary_windows,
+            style=btn_style
+        )
 
         btn_clear = toga.Button('Clear', on_press=self.do_clear, style=btn_style)
 
@@ -194,6 +211,7 @@ class ExampledialogsApp(toga.App):
                 btn_select_multi,
                 btn_open_multi,
                 btn_open_secondary_window,
+                btn_close_secondary_window,
                 btn_clear,
                 self.label,
                 self.window_label

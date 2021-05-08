@@ -134,7 +134,7 @@ class AppTests(TestCase):
             self.app.windows -= not_a_window
 
         test_window_not_in_app = toga.Window(factory=toga_dummy.factory)
-        with self.assertRaises(KeyError):
+        with self.assertRaises(AttributeError):
             self.app.windows -= test_window_not_in_app
 
     def test_window_iteration(self):

@@ -4,9 +4,8 @@ import os
 import sys
 from urllib.parse import unquote, urlparse
 
-from rubicon.objc.eventloop import CocoaLifecycle, EventLoopPolicy
-
 import toga
+from rubicon.objc.eventloop import CocoaLifecycle, EventLoopPolicy
 from toga.handlers import wrapped_handler
 
 from .keys import cocoa_key
@@ -36,15 +35,13 @@ from .window import Window
 
 
 class MainWindow(Window):
-    def on_close(self):
-        self.interface.app.exit()
+    pass
 
 
 class AppDelegate(NSObject):
     @objc_method
-    def applicationWillTerminate_(self, sender):
-        if self.interface.app.on_exit:
-            self.interface.app.on_exit(self.interface.app)
+    def applicationShouldTerminate_(self, sender):
+        return True
 
     @objc_method
     def applicationDidFinishLaunching_(self, notification):

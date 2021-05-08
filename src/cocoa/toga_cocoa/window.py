@@ -49,10 +49,13 @@ class CocoaViewport:
 
 class WindowDelegate(NSObject):
     @objc_method
-    def windowWillClose_(self, notification) -> None:
+    def windowShouldClose_(self, notification):
+        # TODO: This should be the toga's inner on_close handler
+        # So, the function's body should be `self.interface.<toga_>on_close`
         self.interface.app.windows -= self.interface
         if self.interface.on_close:
-            self.interface.on_close(self)
+            should_close = self.interface.on_close(self)
+            return should_close != 'cancel'
 
     @objc_method
     def windowDidResize_(self, notification) -> None:
@@ -129,6 +132,21 @@ class WindowDelegate(NSObject):
         item.action(obj)
 
 
+class MainWindowDelegate(WindowDelegate):
+    @objc_method
+    def windowShouldClose_(self, notification):
+        # TODO: This should be the toga's inner on_close handler
+        # So, the function's body should be `self.interface.<toga_>on_close`
+        # Call app's on_exit if this is the main window
+        # TODO: do not call app's exit if this is a Document App
+        if self.interface.on_close:
+            should_close = self.interface.on_close(self)
+            return should_close != 'cancel'
+        should_exit = self.interface.app.on_exit(self)
+        if should_exit != 'cancel':
+            self.interface.app.exit()
+
+
 class Window:
     def __init__(self, interface):
         self.interface = interface
@@ -165,8 +183,10 @@ class Window:
         self.native.setFrame(position, display=True, animate=False)
         self.native.interface = self.interface
         self.native.impl = self
-
-        self.delegate = WindowDelegate.alloc().init()
+        if self.interface._WINDOW_CLASS == 'MainWindow':
+            self.delegate = MainWindowDelegate.alloc().init()
+        else:
+            self.delegate = WindowDelegate.alloc().init()
         self.delegate.interface = self.interface
         self.delegate.impl = self
 
@@ -255,8 +275,9 @@ class Window:
         pass
 
     def close(self):
-        self.interface.app.windows -= self.interface
-        self.native.close()
+        # Calling performClose instead of close ensures that the on_close
+        # handlers in the delegates will be called
+        self.native.performClose(self.native)
 
     def info_dialog(self, title, message):
         return dialogs.info(self.interface, title, message)
