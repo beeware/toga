@@ -125,7 +125,7 @@ class AppTests(TestCase):
     def test_remove_window(self):
         test_window = toga.Window(factory=toga_dummy.factory)
         self.app.windows += test_window
-
+        self.assertEqual(len(self.app.windows), 1)
         self.app.windows -= test_window
         self.assertEqual(len(self.app.windows), 0)
 
@@ -136,6 +136,12 @@ class AppTests(TestCase):
         test_window_not_in_app = toga.Window(factory=toga_dummy.factory)
         with self.assertRaises(AttributeError):
             self.app.windows -= test_window_not_in_app
+
+    def test_app_contains_window(self):
+        test_window = toga.Window(factory=toga_dummy.factory)
+        self.assertFalse(test_window in self.app.windows)
+        self.app.windows += test_window
+        self.assertTrue(test_window in self.app.windows)
 
     def test_window_iteration(self):
         test_windows = [
