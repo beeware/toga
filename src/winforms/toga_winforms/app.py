@@ -14,8 +14,14 @@ from .window import Window
 
 
 class MainWindow(Window):
-    def on_close(self):
-        pass
+    def winforms_form_closing(self, sender, event):
+        if self.interface.on_close:
+            should_close = self.interface.on_close(self)
+            if should_close == 'cancel':
+                event.Cancel = True
+        should_exit = self.interface.app.on_exit(self)
+        if should_exit == 'cancel':
+            event.Cancel = True
 
 
 class App:
@@ -197,8 +203,8 @@ class App:
         thread.Join()
 
     def winforms_application_exit(self, sender, *args, **kwargs):
-        if self.interface.on_exit is not None:
-            self.interface.on_exit(sender)
+        # The on_exit is called by the main window
+        pass
 
     def show_about_dialog(self):
         message_parts = []

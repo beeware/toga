@@ -135,10 +135,10 @@ class Window:
     def winforms_form_closing(self, sender, event):
         self.interface.app.windows -= self.interface
         if self.interface.on_close:
-            self.interface.on_close(self.interface.app)
-        if self.interface.app._main_window is self.interface:
-            if self.interface.app.on_exit:
-                self.interface.app.on_exit(self.interface.app)
+            should_close = self.interface.on_close(self)
+            if should_close == 'cancel':
+                event.Cancel = True
+                self.interface.app.windows += self.interface
 
     def set_full_screen(self, is_full_screen):
         self.interface.factory.not_implemented('Window.set_full_screen()')
