@@ -4,7 +4,7 @@ from .window import Window
 
 class MainWindow(Window):
     @not_required_on('mobile')
-    def on_close(self):
+    def toga_on_close(self):
         self.action('handle MainWindow on_close')
 
 
