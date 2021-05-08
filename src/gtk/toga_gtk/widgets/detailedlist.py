@@ -70,13 +70,16 @@ class DetailedList(Widget):
         new_item = TextIconRow(item, self)
         index = self._find(item)
         self.insert(index, new_item)
+        self.refresh_button.list_changed()
         
     def remove(self, item: 'Row', index: int):
         self.store.remove(index)
         self._on_delete(item)
+        self.refresh_button.list_changed()
         
     def clear(self):
         self.store.remove_all()
+        self.refresh_button.list_changed()
 
     def set_on_refresh(self, handler: callable):
         self._on_refresh_handler = handler

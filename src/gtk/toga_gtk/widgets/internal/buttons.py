@@ -32,24 +32,16 @@ class RefreshButtonWidget(Gtk.HBox):
         self.add(self._refresh_btn)
         self.add(self._close_btn)
 
-    def _parent_show_all(self):
-        if self.parent is not None:
-            self.parent.show_all()
-
     def show(self, *args, **kwargs):
-        self._parent_show_all()
         return super().show(*args, **kwargs)
 
     def hide(self, *args, **kwargs):
-        self._parent_show_all()
         return super().hide(*args, **kwargs)
 
     def show_close(self):
-        self._parent_show_all()
         return self._close_btn.show_now()
 
     def hide_close(self):
-        self._parent_show_all()
         return self._close_btn.hide()
 
     def destroy(self, *args, **kwargs):
@@ -157,21 +149,21 @@ class RefreshButton:
             self.button_bottom.show()
             self.button_bottom.show_close()
 
-        elif is_at_top:
+        if is_at_top:
             self.button_top.hide()
             self.button_top.hide_close()
 
             self.button_bottom.show()
             self.button_bottom.hide_close()
 
-        elif is_at_bottom:
+        if is_at_bottom:
             self.button_top.show()
             self.button_top.hide_close()
 
             self.button_bottom.hide()
             self.button_bottom.hide_close()
 
-        else:
+        if is_scrollable and not is_at_top and not is_at_bottom:
             self.button_top.hide()
             self.button_bottom.hide()
 
