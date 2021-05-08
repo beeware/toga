@@ -35,8 +35,14 @@ from .window import Window
 
 
 class MainWindow(Window):
-    def on_close(self):
-        pass
+    def toga_on_close(self):
+        # TODO: do not call app's exit if this is a Document App
+        if self.interface.on_close:
+            should_close = self.interface.on_close(self)
+            return should_close != 'cancel'
+        should_exit = self.interface.app.on_exit(self)
+        if should_exit != 'cancel':
+            self.interface.app.exit()
 
 
 class AppDelegate(NSObject):

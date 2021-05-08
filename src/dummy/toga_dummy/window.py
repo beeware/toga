@@ -35,12 +35,12 @@ class Window(LoggedObject):
         self._set_value('is_full_screen', is_full_screen)
 
     @not_required_on('mobile')
-    def on_close(self):
+    def toga_on_close(self):
         self._action('handle Window on_close')
 
     @not_required_on('mobile')
     def set_on_close(self, handler):
-        self._set_value('on_press', handler)
+        self._set_value('on_close', handler)
 
     def info_dialog(self, title, message):
         self._action('show info dialog', title=title, message=message)

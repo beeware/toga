@@ -126,13 +126,13 @@ class Window:
         )
         self.interface.content.refresh()
 
-        self.native.FormClosing += self.winforms_form_closing
+        self.native.FormClosing += self.toga_on_close
 
         if self.interface is not self.interface.app._main_window:
             self.native.Icon = self.interface.app.icon._impl.native
             self.native.Show()
 
-    def winforms_form_closing(self, sender, event):
+    def toga_on_close(self, sender, event):
         self.interface.app.windows -= self.interface
         if self.interface.on_close:
             should_close = self.interface.on_close(self)
@@ -144,9 +144,6 @@ class Window:
         self.interface.factory.not_implemented('Window.set_full_screen()')
 
     def set_on_close(self, handler):
-        pass
-
-    def on_close(self, *args):
         pass
 
     def close(self):
