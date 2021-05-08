@@ -1,97 +1,178 @@
 from toga_gtk.libs import Gtk
 
 
-# RefreshButton explanation:
-
-# If the user is at the top of the list, then they are probably interested in the content at
-# the top and we put the button at the bottom.
-# If the user is at the botom of the list, then they are probably interested in the content at
-# the bottom and we put the button at the top.
-
-# If the user is scrolling through the list then don't show the button at all.
-# If there is not enough content to scroll, show the button at the bottom and have a side button to
-# move it to the top. After moving the button to the top, show a button to move it to the bottom.
-
-# Example:
-
-#  -------------
-# | Refresh | X |
-#  -------------
-
-# To get whether the list is scrollable use `adj.get_page_size() == 0`.
-# To get notified when the list is scrolled use `adj.connect(value_changed)` and use 
-# `adj.get_value() + adj.get_page_size() == adj.get_upper()` to know if it is at the bottom and
-# `adj.get_value() == adj.get_lower()` to know if it is at the top. This might not work well 
-# when there is a hovering button, it seems that then scrolling is not immediately performed 
-# when the mouse wheel is turned.
-
-class RefreshButton(Gtk.HBox):
-    """
-    Shows a refresh button at the top of a list when the user is at the bottom of the list.
-    Shows a refresh button at the bottom of a list when the user is at the top of the list.
-    When there is not enough content to scroll, show the button at the bottom and have a side button 
-    to move it to the top. After moving the button to the top, show a button to move it to the bottom.
-
-    Example:
-
-     -------------
-    | Refresh | X |
-     -------------
-    """
-    def __init__(self, position: str, on_refresh=None, margin=12, *args, **kwargs):
+class RefreshButtonWidget(Gtk.HBox):
+    def __init__(self, on_refresh: callable, on_close: callable, 
+                 position: Gtk.Align, margin: int, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if position in ("TOP", None,):
-            self.position = Gtk.Align.START
 
-        if position is "BOTTOM":
-            self.position = Gtk.Align.END
+        self.parent = None
 
-        self.on_refresh = on_refresh
-        self.on_close = None
-
-        self.set_valign(self.position)
+        self.set_valign(position)
         self.set_halign(Gtk.Align.CENTER)
         self.set_margin_top(margin)
         self.set_margin_bottom(margin)
 
-        left_btn = Gtk.Button.new_with_label("Refresh")
-        left_btn_context = left_btn.get_style_context()
-        left_btn_context.add_class("toga-refresh-button")
+        self._refresh_btn = Gtk.Button.new_with_label("Refresh")
+        refresh_btn_context = self._refresh_btn.get_style_context()
+        refresh_btn_context.add_class("toga-refresh-button")
 
-        right_btn = Gtk.Button.new_with_label("Close")
-        right_btn_context = right_btn.get_style_context()
-        right_btn_context.add_class("toga-refresh-button")
-        
-        left_btn.connect("clicked",
-                         self._on_refresh_clicked)
-        
-        right_btn.connect("clicked", 
-                          self._on_close_clicked)
-        
-        self.add(left_btn)
-        self.add(right_btn)
+        self._refresh_btn_handler = self._refresh_btn.connect(
+            "clicked",
+            lambda w: on_refresh())
 
-    def _on_refresh_clicked(self, widget):
+        self._close_btn = Gtk.Button.new_with_label("Close")
+        close_btn_context = self._close_btn.get_style_context()
+        close_btn_context.add_class("toga-refresh-button")
+
+        self._close_btn_handler = self._close_btn.connect(
+            "clicked", 
+            lambda w: on_close())
+
+        self.add(self._refresh_btn)
+        self.add(self._close_btn)
+
+    def _parent_show_all(self):
+        if self.parent is not None:
+            self.parent.show_all()
+
+    def show(self, *args, **kwargs):
+        self._parent_show_all()
+        return super().show(*args, **kwargs)
+
+    def hide(self, *args, **kwargs):
+        self._parent_show_all()
+        return super().hide(*args, **kwargs)
+
+    def show_close(self):
+        self._parent_show_all()
+        return self._close_btn.show_now()
+
+    def hide_close(self):
+        self._parent_show_all()
+        return self._close_btn.hide()
+
+    def destroy(self, *args, **kwargs):
+        self._refresh_btn.disconnect(self._refresh_btn_handler)
+        self._close_btn.disconnect(self._close_btn_handler)
+
+        return super().destroy(*args, **kwargs)
+
+
+class RefreshButton:
+    """
+    Shows a refresh button at the top of a list when the user is at the bottom of the list.
+    Shows a refresh button at the bottom of a list when the user is at the top of the list.
+    When there is not enough content to scroll, show the button at the bottom and have a side 
+    button to move it to the top. After moving the button to the top, show a button to move it
+    to the bottom.
+
+    Example:
+     -------------
+    | Refresh | X |
+     -------------
+    """
+    def __init__(self, on_refresh: callable, 
+                 adj: Gtk.Adjustment, margin=12, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.adj = adj
+        self.on_refresh = on_refresh
+        self.margin = margin
+        self.parent = None
+        
+        self.button_top = RefreshButtonWidget(self._on_refresh_clicked,
+                                              self._on_close_clicked,
+                                              Gtk.Align.START,
+                                              self.margin)
+
+        self.button_bottom = RefreshButtonWidget(self._on_refresh_clicked,
+                                                 self._on_close_clicked,
+                                                 Gtk.Align.END,
+                                                 self.margin)
+
+        self.adj_handler = self.adj.connect(
+            "value-changed",
+            lambda adj: self.list_changed())
+
+    def attach_to(self, parent):
+        self.parent = parent
+        self.list_changed()
+        parent.add_overlay(self.button_top)
+        parent.add_overlay(self.button_bottom)
+        
+    def destroy(self, *args, **kwargs):
+        self.adj.disconnect(self.adj_handler)
+        self.button_top.destroy()
+        self.button_bottom.destroy()
+        return super().destroy(*args, **kwargs)
+
+    def _on_refresh_clicked(self):
         if self.on_refresh is not None:
             self.on_refresh()
 
-    @classmethod
-    def _on_close_clicked(cls, widget):
-        current_position = widget.get_parent().get_valign()
-        box = widget.get_parent()
-        overlay = box.get_parent()
+    def _on_close_clicked(self):
+        is_top_visible = self.button_top.is_visible()
+        is_bottom_visible = self.button_bottom.is_visible()
 
-        if current_position == Gtk.Align.END:
-            new_button = cls("TOP", box.on_refresh)
+        self.button_top.show_all()
+        self.button_top.set_visible(not is_top_visible)
+
+        self.button_top.show_all()
+        self.button_bottom.set_visible(not is_bottom_visible)
+
+    def _is_parent_scrollable(self):
+        page_size = self.adj.get_page_size()
+        upper = self.adj.get_upper()
+        lower = self.adj.get_lower()
+        return upper - lower > page_size
+
+    def _is_parent_at_top(self):
+        is_scrollable = self._is_parent_scrollable()
+
+        value = self.adj.get_value()
+        lower = self.adj.get_lower()
+        is_at_top = (value == lower)
+
+        return is_scrollable and is_at_top
+
+    def _is_parent_at_bottom(self):
+        is_scrollable = self._is_parent_scrollable()
+
+        page_size = self.adj.get_page_size()
+        value = self.adj.get_value()
+        upper = self.adj.get_upper()
+        is_at_bottom = (value + page_size == upper)
+
+        return is_scrollable and is_at_bottom
+
+    def list_changed(self):
+        is_scrollable = self._is_parent_scrollable()
+        is_at_top = self._is_parent_at_top()
+        is_at_bottom = self._is_parent_at_bottom()
         
-        if current_position == Gtk.Align.START:
-            new_button = cls("BOTTOM", box.on_refresh)
+        if not is_scrollable:
+            self.button_top.hide()
+            self.button_top.show_close()
 
-        # Better make this function a class method since we are going to destroy the instance.
-        box.destroy()
-        overlay.add_overlay(new_button)
-        overlay.show_all()
+            self.button_bottom.show()
+            self.button_bottom.show_close()
 
+        elif is_at_top:
+            self.button_top.hide()
+            self.button_top.hide_close()
 
-    def _on_parent_list_scrolled(self, adj):
-        pass
+            self.button_bottom.show()
+            self.button_bottom.hide_close()
+
+        elif is_at_bottom:
+            self.button_top.show()
+            self.button_top.hide_close()
+
+            self.button_bottom.hide()
+            self.button_bottom.hide_close()
+
+        else:
+            self.button_top.hide()
+            self.button_bottom.hide()
+
+        return True

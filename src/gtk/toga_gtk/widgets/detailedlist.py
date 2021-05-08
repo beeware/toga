@@ -1,4 +1,4 @@
-from ..libs import Gtk, Gio
+from ..libs import Gtk, Gio, GLib
 from .base import Widget
 from .internal.rows import TextIconRow
 from .internal.buttons import RefreshButton
@@ -25,19 +25,20 @@ class DetailedList(Widget):
         self.list_box.connect("row-selected", self._on_row_selected)
 
         self.scrolled_window = Gtk.ScrolledWindow()
-        self.scrolled_window.connect("edge-overshot", self._on_edge_overshot)
 
         self.scrolled_window.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
         self.scrolled_window.set_min_content_width(self.interface.MIN_WIDTH)
         self.scrolled_window.set_min_content_height(self.interface.MIN_HEIGHT)
 
         self.scrolled_window.add(self.list_box)
-        
-        self.refresh_button = RefreshButton("TOP", self._on_refresh)
 
+        self.refresh_button = RefreshButton(self._on_refresh,
+                                            self.scrolled_window.get_vadjustment())
+        
         self.native = Gtk.Overlay()
         self.native.add_overlay(self.scrolled_window)
-        self.native.add_overlay(self.refresh_button)
+        self.refresh_button.attach_to(self.native)
+
         self.native.interface = self.interface
       
     def change_source(self, source: 'ListSource'):
@@ -49,18 +50,21 @@ class DetailedList(Widget):
             self.store.append(
                 TextIconRow(row, self))
 
-        # Gtk.ListBox.bind_model() requires a function to convert
-        # the objects in the store to presentation objects.
-        # But the objects in the store are already what we want.
+        # Gtk.ListBox.bind_model() requires a function to convert the objects in the store
+        # to presentation objects.But the objects in the store are already what we want.
         # Thus the identity function.
-        # ListStore only accepts GObjects so we can't put
-        # toga.sources.Row in it.
+        # ListStore only accepts GObjects so we can't put toga.sources.Row in it.
         self.list_box.bind_model(self.store, lambda a: a)
+
+        # We have to wait until the rows are actually added decide how to position the
+        # refresh button
+        GLib.idle_add(lambda: not self.refresh_button.list_changed())
 
     def insert(self, index: int, item: 'Row'):
         row = TextIconRow(item, self)
         self.store.insert(index, row)
         self.list_box.show_all()
+        self.refresh_button.list_changed()
 
     def change(self, item: 'Row'):
         new_item = TextIconRow(item, self)
@@ -102,21 +106,6 @@ class DetailedList(Widget):
         if list_box_row is not None:
             self._on_select(list_box_row.interface)
 
-    def _on_edge_overshot(self, widget: 'GObject', pos: 'Gtk.PostitionType'):
-        if pos == Gtk.PositionType.TOP:
-            self._on_refresh()
-
-    def _find(self, item: 'Row') -> int:
-        found, index = self.store.find_with_equal_func(
-            item,
-            lambda a, b: a == b.interface
-        )
-
-        if not found:
-            return -1
-        else:
-            return index
-
     def _on_refresh(self):
         if self._on_refresh_handler is not None:
             self._on_refresh_handler(self.interface)
@@ -129,3 +118,13 @@ class DetailedList(Widget):
         if self._on_delete_handler is not None:
             self._on_delete_handler(self.interface, row)
 
+    def _find(self, item: 'Row') -> int:
+        found, index = self.store.find_with_equal_func(
+            item,
+            lambda a, b: a == b.interface
+        )
+
+        if not found:
+            return -1
+        else:
+            return index
