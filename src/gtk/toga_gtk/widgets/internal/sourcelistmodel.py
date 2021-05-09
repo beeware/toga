@@ -11,14 +11,23 @@ class SourceListModel(Gio.ListStore):
         super().__init__(*args, **kwargs)
         self.row_class = row_class
         self.icon_factory = icon_factory
-        self.parent_list = None
+        self._parent_list = None
+        self._on_select = None
 
-    def bind_function(self, item):
+    def _bind_function(self, item):
         return item
 
     def bind_to_list(self, parent_list):
-        self.parent_list = parent_list
-        parent_list.bind_model(self, self.bind_function)
+        self._parent_list = parent_list
+        parent_list.bind_model(self, self._bind_function)
+
+    def set_on_select(self, on_select: callable):
+        self._on_select = on_select
+        self._on_select_handler = self._parent_list.connect("row-selected", self._on_row_selected)
+
+    def destroy(self, *args, **kwargs):
+        self._parent_list.dsconnect(self._on_select_handler)
+        super().destroy(*args, **kwargs)
 
     def change_source(self, source: 'ListSource'):
         # Gtk.ListBox.bind_model() requires a function to convert the objects in the store
@@ -42,7 +51,6 @@ class SourceListModel(Gio.ListStore):
     def remove(self, item: 'Row', index: int):
         if index is None:
             index = self._find(item)
-
         super().remove(index)
 
     def scroll_to_row(self, index: int):
@@ -50,11 +58,15 @@ class SourceListModel(Gio.ListStore):
         row.scroll_to_center()
 
     def get_selection(self):
-        row = self.parent_list.get_selected_row()
+        row = self._parent_list.get_selected_row()
         if row is None:
             return row
         else:
             return row.interface
+
+    def _on_row_selected(self, widget: 'GObject', item: 'ListBoxRow'):
+        if item is not None and self._on_select is not None:
+            self._on_select(item.interface)
 
     def _find(self, item: 'Row') -> int:
         found, index = self.store.find_with_equal_func(
@@ -66,3 +78,4 @@ class SourceListModel(Gio.ListStore):
             return -1
         else:
             return index
+

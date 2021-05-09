@@ -18,10 +18,10 @@ class DetailedList(Widget):
         self.list_box = Gtk.ListBox()
 
         self.list_box.set_selection_mode(Gtk.SelectionMode.SINGLE)
-        self.list_box.connect("row-selected", self._on_row_selected)
 
         self.store = SourceListModel(TextIconRow, self.interface.factory)
         self.store.bind_to_list(self.list_box)
+        self.store.set_on_select(self._on_select)
 
         self.scrolled_window = Gtk.ScrolledWindow()
 
@@ -50,23 +50,23 @@ class DetailedList(Widget):
     def insert(self, index: int, item: 'Row'):
         self.store.insert(index, item)
         self.list_box.show_all()
-        self.refresh_button.list_changed()
+        self._changed()
 
     def change(self, item: 'Row'):
         self.store.change(item)
-        self.refresh_button.list_changed()
+        self._changed()
         
     def remove(self, item: 'Row', index: int):
         self.store.remove(item, index)
-        self.refresh_button.list_changed()
+        self._changed()
         self._on_delete(item)
         
     def clear(self):
         self.store.remove_all()
-        self.refresh_button.list_changed()
+        self._changed()
 
     def get_selection(self):
-        self.store.get_selection()
+        return self.store.get_selection()
 
     def scroll_to_row(self, row: int):
         self.store.scroll_to_row(row)
@@ -96,7 +96,6 @@ class DetailedList(Widget):
         if self._on_delete_handler is not None:
             self._on_delete_handler(self.interface, row)
 
-    def _on_row_selected(self, widget: 'GObject', list_box_row: 'ListBoxRow'):
-        if list_box_row is not None:
-            self._on_select(list_box_row.interface)
+    def _changed(self):
+        self.refresh_button.list_changed()
 
