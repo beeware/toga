@@ -111,10 +111,11 @@ class TextIconRow(ScrollableRow):
     Create a TextIconRow from a toga.sources.Row.
     A reference to the original row is kept in self.toga_row, this is useful for comparisons.
     """
-    def __init__(self, interface: 'Row', parent_impl: 'DetailedList', *args, **kwargs):
+    def __init__(self, interface: 'Row', factory: callable, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.parent_impl = parent_impl
+        # This is the factory of the DetailedList implementation.
+        self.factory = factory
         # Keep a reference to the original core.toga.sources.list_source.Row
         self.interface = interface
         self.hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
@@ -124,7 +125,7 @@ class TextIconRow(ScrollableRow):
         text_markup = self.markup(self.interface)
         self.text.set_markup(text_markup)
 
-        self.icon = self.get_icon(self.interface, self.parent_impl.interface.factory)
+        self.icon = self.get_icon(self.interface, self.factory)
 
         self.vbox.pack_start(self.text, True, True, 0)
         

@@ -1,70 +1,27 @@
-from ..libs import Gtk, Gio, GLib
+from ..libs import Gtk, GLib
 from .base import Widget
 from .internal.rows import TextIconRow
 from .internal.buttons import RefreshButton
+from .internal.sourcelistmodel import SourceListModel
 
-
-class SourceListModel(Gio.ListStore):
-    def __init_(self, row_class, icon_factory, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.row_class = row_class
-        self.icon_factory = icon_factory
-
-    def change_source(self, source: 'ListSource'):
-        super().remove_all()
-        for row in source:
-            self.append(
-                row_class(row, icon_factory))
-
-    def insert(self, index: int, item: 'Row'):
-        new_item = self.row_class(item, self.icon_factory)
-        super().insert(index, new_item)
-
-    def change(self, item: 'Row'):
-        new_item = self.row_class(item, self)
-        index = self._find(item)
-        super().insert(index, new_item)
-
-    def remove(self, item: 'Row', index: int):
-        super().remove(index)
-
-    def clear(self):
-        super().remove_all()
-
-    def bind_function(self, item):
-        return item
-
-    def _find(self, item: 'Row') -> int:
-        found, index = self.store.find_with_equal_func(
-            item,
-            lambda a, b: a == b.interface
-        )
-
-        if not found:
-            return -1
-        else:
-            return index
-        
 
 class DetailedList(Widget):
     """
     Gtk DetailedList implementation.
     Gtk.ListBox inside a Gtk.ScrolledWindow.
-    The rows inherit from .internal.rows.ScrollableRow which inherits from Gtk.ListBoxRow, 
-    they are kept inside a Gio.ListStore.
-    toga.sources.ListSource is converted to Gtk.ListBoxRow in self.change_source.
     """
     def create(self):
         self._on_refresh_handler = None
         self._on_select_handler = None
         self._on_delete_handler = None
 
-        self.store = None
-
         self.list_box = Gtk.ListBox()
 
         self.list_box.set_selection_mode(Gtk.SelectionMode.SINGLE)
         self.list_box.connect("row-selected", self._on_row_selected)
+
+        self.store = SourceListModel(TextIconRow, self.interface.factory)
+        self.store.bind_to_list(self.list_box)
 
         self.scrolled_window = Gtk.ScrolledWindow()
 
@@ -84,58 +41,38 @@ class DetailedList(Widget):
         self.native.interface = self.interface
       
     def change_source(self, source: 'ListSource'):
-        if self.store is not None:
-            self.store.remove_all()
-        else:
-            self.store = Gio.ListStore()
-        for row in source:
-            self.store.append(
-                TextIconRow(row, self))
-
-        # Gtk.ListBox.bind_model() requires a function to convert the objects in the store
-        # to presentation objects. But the objects in the store are already what we want.
-        # Thus the identity function.
-        # ListStore only accepts GObjects so we can't put toga.sources.Row in it.
-        self.list_box.bind_model(self.store, lambda a: a)
+        self.store.change_source(source)
 
         # We have to wait until the rows are actually added decide how to position the
         # refresh button
         GLib.idle_add(lambda: not self.refresh_button.list_changed())
 
     def insert(self, index: int, item: 'Row'):
-        row = TextIconRow(item, self)
-        self.store.insert(index, row)
+        self.store.insert(index, item)
         self.list_box.show_all()
         self.refresh_button.list_changed()
 
     def change(self, item: 'Row'):
-        new_item = TextIconRow(item, self)
-        index = self._find(item)
-        self.insert(index, new_item)
+        self.store.change(item)
         self.refresh_button.list_changed()
         
     def remove(self, item: 'Row', index: int):
-        self.store.remove(index)
-        self._on_delete(item)
+        self.store.remove(item, index)
         self.refresh_button.list_changed()
+        self._on_delete(item)
         
     def clear(self):
         self.store.remove_all()
         self.refresh_button.list_changed()
 
+    def get_selection(self):
+        self.store.get_selection()
+
+    def scroll_to_row(self, row: int):
+        self.store.scroll_to_row(row)
+
     def set_on_refresh(self, handler: callable):
         self._on_refresh_handler = handler
-
-    def after_on_refresh(self):
-        # No special handling required
-        pass
-
-    def get_selection(self):
-        list_box_row = self.list_box.get_selected_row()
-        if list_box_row is None:
-            return list_box_row
-        else:
-            return list_box_row.interface
 
     def set_on_select(self, handler: callable):
         self._on_select_handler = handler
@@ -143,13 +80,9 @@ class DetailedList(Widget):
     def set_on_delete(self, handler: callable):
         self._on_delete_handler = handler
 
-    def scroll_to_row(self, row: int):
-        list_box_row = self.store[row]
-        list_box_row.scroll_to_center()
-
-    def _on_row_selected(self, widget: 'GObject', list_box_row: 'ListBoxRow'):
-        if list_box_row is not None:
-            self._on_select(list_box_row.interface)
+    def after_on_refresh(self):
+        # No special handling required
+        pass
 
     def _on_refresh(self):
         if self._on_refresh_handler is not None:
@@ -163,13 +96,7 @@ class DetailedList(Widget):
         if self._on_delete_handler is not None:
             self._on_delete_handler(self.interface, row)
 
-    def _find(self, item: 'Row') -> int:
-        found, index = self.store.find_with_equal_func(
-            item,
-            lambda a, b: a == b.interface
-        )
+    def _on_row_selected(self, widget: 'GObject', list_box_row: 'ListBoxRow'):
+        if list_box_row is not None:
+            self._on_select(list_box_row.interface)
 
-        if not found:
-            return -1
-        else:
-            return index
