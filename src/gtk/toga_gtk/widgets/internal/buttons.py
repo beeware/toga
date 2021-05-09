@@ -85,7 +85,7 @@ class RefreshButton:
             "value-changed",
             lambda adj: self.list_changed())
 
-    def attach_to(self, parent):
+    def add_to(self, parent):
         self.parent = parent
         self.list_changed()
         parent.add_overlay(self.button_top)

@@ -4,6 +4,48 @@ from .internal.rows import TextIconRow
 from .internal.buttons import RefreshButton
 
 
+class SourceListModel(Gio.ListStore):
+    def __init_(self, row_class, icon_factory, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.row_class = row_class
+        self.icon_factory = icon_factory
+
+    def change_source(self, source: 'ListSource'):
+        super().remove_all()
+        for row in source:
+            self.append(
+                row_class(row, icon_factory))
+
+    def insert(self, index: int, item: 'Row'):
+        new_item = self.row_class(item, self.icon_factory)
+        super().insert(index, new_item)
+
+    def change(self, item: 'Row'):
+        new_item = self.row_class(item, self)
+        index = self._find(item)
+        super().insert(index, new_item)
+
+    def remove(self, item: 'Row', index: int):
+        super().remove(index)
+
+    def clear(self):
+        super().remove_all()
+
+    def bind_function(self, item):
+        return item
+
+    def _find(self, item: 'Row') -> int:
+        found, index = self.store.find_with_equal_func(
+            item,
+            lambda a, b: a == b.interface
+        )
+
+        if not found:
+            return -1
+        else:
+            return index
+        
+
 class DetailedList(Widget):
     """
     Gtk DetailedList implementation.
@@ -37,7 +79,7 @@ class DetailedList(Widget):
         
         self.native = Gtk.Overlay()
         self.native.add_overlay(self.scrolled_window)
-        self.refresh_button.attach_to(self.native)
+        self.refresh_button.add_to(self.native)
 
         self.native.interface = self.interface
       
@@ -51,7 +93,7 @@ class DetailedList(Widget):
                 TextIconRow(row, self))
 
         # Gtk.ListBox.bind_model() requires a function to convert the objects in the store
-        # to presentation objects.But the objects in the store are already what we want.
+        # to presentation objects. But the objects in the store are already what we want.
         # Thus the identity function.
         # ListStore only accepts GObjects so we can't put toga.sources.Row in it.
         self.list_box.bind_model(self.store, lambda a: a)
