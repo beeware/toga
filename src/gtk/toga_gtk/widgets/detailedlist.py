@@ -36,7 +36,7 @@ class DetailedList(Widget):
         
         self.native = Gtk.Overlay()
         self.native.add_overlay(self.scrolled_window)
-        self.refresh_button.add_to(self.native)
+        self.refresh_button.overlay_over(self.native)
 
         self.native.interface = self.interface
       
