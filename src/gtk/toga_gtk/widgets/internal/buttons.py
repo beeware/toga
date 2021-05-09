@@ -90,7 +90,7 @@ class RefreshButton:
         self.list_changed()
         parent.add_overlay(self.button_top)
         parent.add_overlay(self.button_bottom)
-        
+
     def destroy(self, *args, **kwargs):
         self.adj.disconnect(self.adj_handler)
         self.button_top.destroy()
