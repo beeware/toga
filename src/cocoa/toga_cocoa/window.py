@@ -252,7 +252,7 @@ class Window:
         self.interface.app.windows -= self.interface
         if self.interface.on_close:
             should_close = self.interface.on_close(self)
-            return should_close != 'cancel'
+            return should_close
         return True
 
     def close(self):

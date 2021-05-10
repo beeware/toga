@@ -38,18 +38,11 @@ class MainWindow(Window):
     def toga_on_close(self):
         # TODO: do not call app's exit if this is a Document App
         if self.interface.on_close:
-            should_close = self.interface.on_close(self)
-            return should_close != 'cancel'
-        should_exit = self.interface.app.on_exit(self)
-        if should_exit != 'cancel':
-            self.interface.app.exit()
+            return self.interface.on_close(self)
+        self.interface.app.exit()
 
 
 class AppDelegate(NSObject):
-    @objc_method
-    def applicationShouldTerminate_(self, sender):
-        return True
-
     @objc_method
     def applicationDidFinishLaunching_(self, notification):
         self.native.activateIgnoringOtherApps(True)
@@ -265,7 +258,9 @@ class App:
         self.native.orderFrontStandardAboutPanelWithOptions(options)
 
     def exit(self):
-        self.native.terminate(None)
+        should_exit = self.interface.on_exit(self)
+        if should_exit:
+            self.native.terminate(self.native)
 
     def set_on_exit(self, value):
         pass

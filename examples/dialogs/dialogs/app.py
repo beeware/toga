@@ -109,8 +109,9 @@ class ExampledialogsApp(toga.App):
             # This handler is called before the window is closed, so there
             # still are 1 more windows than the number of secondary windows
             # after it is closed
-            # Return 'cancel' if the app should stay open
+            # Return False if the app should stay open
             self.set_window_label_text()
+            return True
 
         self.window_counter += 1
         window = toga.Window(title=f"New Window {self.window_counter}")
@@ -138,12 +139,13 @@ class ExampledialogsApp(toga.App):
                 window.close()
 
     def exit_handler(self, app):
-        # Return 'cancel' if app should remain open
+        # Return True if app should close, and False if it should remain open
         if self.main_window.confirm_dialog('Toga', 'Are you sure you want to quit?'):
             print(f"Label text was '{self.label.text}' when you quit the app")
+            return True
         else:
             self.label.text = 'Exit canceled'
-            return 'cancel'
+            return False
 
     def set_window_label_text(self):
         self.window_label.text = f"{len(self.windows) - 1} secondary window(s) open"
