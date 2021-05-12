@@ -109,7 +109,7 @@ class Table(Widget):
                 continue
             text_view = android_widgets.TextView(MainActivity.singletonThis)
             text_view.setText(self.interface.headings[col_index])
-            text_view.setTypeface(text_view.getTypeface(), android_widgets.Typeface.BOLD);
+            text_view.setTypeface(text_view.getTypeface(), android_widgets.Typeface.BOLD)
             text_view_params = android_widgets.TableRow__Layoutparams(
                 android_widgets.TableRow__Layoutparams.MATCH_PARENT,
                 android_widgets.TableRow__Layoutparams.WRAP_CONTENT
