@@ -16,12 +16,8 @@ from .window import Window
 class MainWindow(Window):
     def toga_on_close(self, sender, event):
         if self.interface.on_close:
-            should_close = self.interface.on_close(self)
-            if should_close == 'cancel':
-                event.Cancel = True
-        should_exit = self.interface.app.on_exit(self)
-        if should_exit == 'cancel':
-            event.Cancel = True
+            event.Cancel = not self.interface.on_close(self)
+        event.Cancel = not self.interface.app.on_exit(self)
 
 
 class App:
