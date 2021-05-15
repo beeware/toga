@@ -119,9 +119,15 @@ class Window:
         self.interface.content._impl.min_height = self.interface.content.layout.height
 
     def toga_on_close(self, widget, data):
-        self.interface.app.windows -= self.interface
         if self.interface.on_close:
-            self.interface.on_close(self.interface.app)
+            should_close = self.interface.on_close(self.interface.app)
+        else:
+            should_close = True
+
+        if should_close:
+            self.interface.app.windows -= self.interface
+
+        return should_close
 
     def set_on_close(self, handler):
         pass

@@ -133,12 +133,14 @@ class Window:
             self.native.Show()
 
     def toga_on_close(self, sender, event):
-        self.interface.app.windows -= self.interface
         if self.interface.on_close:
             should_close = self.interface.on_close(self)
-            if should_close == 'cancel':
-                event.Cancel = True
-                self.interface.app.windows += self.interface
+        else:
+            should_close = True
+
+        if should_close:
+            self.interface.app.windows -= self.interface
+            event.Cancel = True
 
     def set_full_screen(self, is_full_screen):
         self.interface.factory.not_implemented('Window.set_full_screen()')
