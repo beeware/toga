@@ -104,22 +104,30 @@ class ExampledialogsApp(toga.App):
         except ValueError:
             self.label.text = "Save file dialog was canceled"
 
-    def action_open_secondary_window(self, widget):
-        def close_handler(window):
-            # This handler is called before the window is closed, so there
-            # still are 1 more windows than the number of secondary windows
-            # after it is closed
-            # Return False if the app should stay open
+    def window_close_handler(self, window):
+        # This handler is called before the window is closed, so there
+        # still are 1 more windows than the number of secondary windows
+        # after it is closed
+        # Return False if the window should stay open
+
+        # Check to see if there has been a previous close attempt.
+        if window in self.close_attempts:
+            # If there has, allow the close to proceed
             self.set_window_label_text()
             return True
+        else:
+            window.info_dialog(f'Abort {window.title}!', 'Maybe try that again...')
+            self.close_attempts.add(window)
+            return False
 
+    def action_open_secondary_window(self, widget):
         self.window_counter += 1
         window = toga.Window(title=f"New Window {self.window_counter}")
         # Both self.windows.add() and self.windows += work:
-        # self.windows += window
-        self.windows.add(window)
+        self.windows += window
+
         self.set_window_label_text()
-        secondary_label = toga.Label(text="You are in secondary window!")
+        secondary_label = toga.Label(text="You are in a secondary window!")
         window.content = toga.Box(
             children=[
                 secondary_label
@@ -130,7 +138,7 @@ class ExampledialogsApp(toga.App):
                 padding=10
             )
         )
-        window.on_close = close_handler
+        window.on_close = self.window_close_handler
         window.show()
 
     def action_close_secondary_windows(self, widget):
@@ -152,13 +160,14 @@ class ExampledialogsApp(toga.App):
 
     def startup(self):
         # Set up main window
-        self.main_window = toga.MainWindow(title=self.name)
+        self.main_window = toga.MainWindow(title=self.name, on_close=self.window_close_handler)
         self.on_exit = self.exit_handler
 
         # Label to show responses.
         self.label = toga.Label('Ready.', style=Pack(padding_top=20))
         self.window_label = toga.Label('', style=Pack(padding_top=20))
         self.window_counter = 0
+        self.close_attempts = set()
         self.set_window_label_text()
 
         # Buttons
