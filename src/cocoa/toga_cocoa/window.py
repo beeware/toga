@@ -49,7 +49,7 @@ class CocoaViewport:
 
 class WindowDelegate(NSObject):
     @objc_method
-    def windowShouldClose_(self, notification):
+    def windowShouldClose_(self, notification) -> bool:
         return self.impl.toga_on_close()
 
     @objc_method
@@ -163,6 +163,7 @@ class Window:
         self.native.setFrame(position, display=True, animate=False)
         self.native.interface = self.interface
         self.native.impl = self
+
         self.delegate = WindowDelegate.alloc().init()
         self.delegate.interface = self.interface
         self.delegate.impl = self
@@ -249,11 +250,15 @@ class Window:
         pass
 
     def toga_on_close(self):
-        self.interface.app.windows -= self.interface
         if self.interface.on_close:
             should_close = self.interface.on_close(self)
-            return should_close
-        return True
+        else:
+            should_close = True
+
+        if should_close:
+            self.interface.app.windows -= self.interface
+
+        return should_close
 
     def close(self):
         # Calling performClose instead of close ensures that the on_close

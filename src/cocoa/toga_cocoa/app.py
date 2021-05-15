@@ -4,8 +4,9 @@ import os
 import sys
 from urllib.parse import unquote, urlparse
 
-import toga
 from rubicon.objc.eventloop import CocoaLifecycle, EventLoopPolicy
+
+import toga
 from toga.handlers import wrapped_handler
 
 from .keys import cocoa_key
@@ -36,10 +37,10 @@ from .window import Window
 
 class MainWindow(Window):
     def toga_on_close(self):
-        # TODO: do not call app's exit if this is a Document App
-        if self.interface.on_close:
-            return self.interface.on_close(self)
-        self.interface.app.exit()
+        should_close = super().toga_on_close()
+        if should_close:
+            self.interface.app.exit()
+        return should_close
 
 
 class AppDelegate(NSObject):
