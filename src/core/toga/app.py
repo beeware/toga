@@ -72,11 +72,11 @@ class MainWindow(Window):
 
     def __init__(self, id=None, title=None, position=(100, 100), size=(640, 480),
                  toolbar=None, resizeable=True, minimizable=True,
-                 factory=None):
+                 factory=None, on_close=None):
         super().__init__(
             id=id, title=title, position=position, size=size, toolbar=toolbar,
             resizeable=resizeable, closeable=True, minimizable=minimizable,
-            factory=factory
+            factory=factory, on_close=on_close,
         )
 
 
