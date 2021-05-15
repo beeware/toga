@@ -22,11 +22,11 @@ to install the following:
 
 * **Ubuntu 16.04 / Debian 8** ``apt-get install python3-gi gir1.2-webkit2-4.0``
   or ``apt-get install python3-gi gir1.2-webkit-3.0``
-  
+
 * **Fedora** ``dnf install python3-gobject pywebkitgtk``
-  or ``yum install python3-gobject pywebkitgtk`` 
-  
-* **Arch Linux** ``pacman -S python-gobject webkit2gtk`` 
+  or ``yum install python3-gobject pywebkitgtk``
+
+* **Arch Linux** ``pacman -S python-gobject webkit2gtk``
 
 Community
 ---------
@@ -35,8 +35,7 @@ Toga is part of the `BeeWare suite`_. You can talk to the community through:
 
 * `@pybeeware on Twitter <https://twitter.com/pybeeware>`__
 
-* `Discord <https://discord.com/channels/836455665257021440/836455665257021443>`__ 
-  (`Click here for an invitation to the server <https://beeware.org/bee/chat/>`__)
+* `Discord <https://beeware.org/bee/chat/>`__
 
 * The Toga `Github Discussions forum <https://github.com/beeware/toga/discussions>`__
 
