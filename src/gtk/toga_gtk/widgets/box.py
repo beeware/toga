@@ -12,7 +12,8 @@ class TogaBox(Gtk.Fixed):
         # Calculate the minimum and natural width of the container.
         # print("GET PREFERRED WIDTH", self._impl.native)
         width = self._impl.interface.layout.width
-        min_width = 0 if self._impl.min_width is None else self._impl.min_width
+        min_width = self._impl.interface.style.padding_right if self._impl.min_width is None \
+                else self._impl.min_width + self._impl.interface.style.padding_right
         for widget in self.get_children():
             if (
                 min_width
@@ -32,7 +33,8 @@ class TogaBox(Gtk.Fixed):
         # Calculate the minimum and natural height of the container.
         # print("GET PREFERRED HEIGHT", self._impl.native)
         height = self._impl.interface.layout.height
-        min_height = 0 if self._impl.min_height is None else self._impl.min_height
+        min_height = self._impl.interface.style.padding_bottom if self._impl.min_height is None \
+                else self._impl.min_height + self._impl.interface.style.padding_bottom
         for widget in self.get_children():
             if (
                 min_height
