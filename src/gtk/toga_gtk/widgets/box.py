@@ -28,7 +28,7 @@ class TogaBox(Gtk.Fixed):
         # print("GET PREFERRED HEIGHT", self._impl.native)
         height = self._impl.interface.layout.height
         min_height = (
-            self.interface.layout.height 
+            self.interface.layout.height
             if self._impl.min_height is None
             else self._impl.min_height + self._impl.interface.style.padding_bottom
         )
