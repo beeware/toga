@@ -15,7 +15,7 @@ class TogaBox(Gtk.Fixed):
         min_width = (
             self.interface.layout.width
             if self._impl.min_width is None
-            else self._impl.min_width + self._impl.interface.style.padding_right
+            else self._impl.min_width
         )
 
         if min_width > width:
@@ -30,7 +30,7 @@ class TogaBox(Gtk.Fixed):
         min_height = (
             self.interface.layout.height
             if self._impl.min_height is None
-            else self._impl.min_height + self._impl.interface.style.padding_bottom
+            else self._impl.min_height
         )
 
         if min_height > height:
