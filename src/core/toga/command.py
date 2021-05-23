@@ -115,10 +115,12 @@ class Command:
     """
     def __init__(self, action, label,
                  shortcut=None, tooltip=None, icon=None,
-                 group=None, section=None, order=None, enabled=True, factory=None):
+                 group=None, section=None, order=None, enabled=True, factory=None,
+                 _action_is_raw=False):
         self.factory = factory
 
-        self.action = wrapped_handler(self, action)
+        self._action_is_raw = _action_is_raw
+        self.action = action if _action_is_raw else wrapped_handler(self, action)
         self.label = label
 
         self.shortcut = shortcut

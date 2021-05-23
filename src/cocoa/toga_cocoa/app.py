@@ -95,6 +95,11 @@ class AppDelegate(NSObject):
         if cmd.action:
             cmd.action(None)
 
+    @objc_method
+    def validateMenuItem_(self, sender) -> bool:
+        cmd = self.interface._impl._menu_items[sender]
+        return cmd.enabled
+
 
 class App:
     _MAIN_WINDOW_CLASS = MainWindow
@@ -139,27 +144,30 @@ class App:
                 section=20,
             ),
             toga.Command(
-                lambda _: self.native.hide(self.native),
+                SEL('hide:'),
                 'Hide ' + formal_name,
                 shortcut=toga.Key.MOD_1 + 'h',
                 group=toga.Group.APP,
                 order=0,
                 section=sys.maxsize - 1,
+                _action_is_raw=True,
             ),
             toga.Command(
-                lambda _: self.native.hideOtherApplications(self.native),
+                SEL('hideOtherApplications:'),
                 'Hide Others',
                 shortcut=toga.Key.MOD_1 + toga.Key.MOD_2 + 'h',
                 group=toga.Group.APP,
                 order=1,
                 section=sys.maxsize - 1,
+                _action_is_raw=True,
             ),
             toga.Command(
-                lambda _: self.native.unhideAllApplications(self.native),
+                SEL('unhideAllApplications:'),
                 'Show All',
                 group=toga.Group.APP,
                 order=2,
                 section=sys.maxsize - 1,
+                _action_is_raw=True,
             ),
             # Quit should always be the last item, in a section on its own
             toga.Command(
@@ -210,20 +218,20 @@ class App:
                     key = ''
                     modifier = None
 
+                if cmd._action_is_raw:
+                    action = cmd.action
+                else:
+                    action = SEL('selectMenuItem:')
+
                 item = NSMenuItem.alloc().initWithTitle(
                     cmd.label,
-                    action=SEL('selectMenuItem:'),
+                    action=action,
                     keyEquivalent=key,
                 )
                 if modifier is not None:
                     item.keyEquivalentModifierMask = modifier
 
-                cmd._impl.native.append(item)
                 self._menu_items[item] = cmd
-
-                # This line may appear redundant, but it triggers the logic
-                # to force the enabled status on the underlying widgets.
-                cmd.enabled = cmd.enabled
                 submenu.addItem(item)
 
         # Set the menu for the app.
@@ -250,8 +258,6 @@ class App:
                     group.label, action=None, keyEquivalent=''
                 )
                 submenu = NSMenu.alloc().initWithTitle(group.label)
-                submenu.setAutoenablesItems(False)
-
                 parent_menu.setSubmenu(submenu, forItem=menu_item)
 
             # Install the item in the group cache.
