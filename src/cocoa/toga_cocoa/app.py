@@ -131,8 +131,37 @@ class App:
                 'About ' + formal_name,
                 group=toga.Group.APP
             ),
-            toga.Command(None, 'Preferences', group=toga.Group.APP),
-            # Quit should always be the last item, in a section on it's own
+            toga.Command(
+                None,
+                'Preferences',
+                shortcut=toga.Key.MOD_1 + ',',
+                group=toga.Group.APP,
+                section=20,
+            ),
+            toga.Command(
+                lambda _: self.native.hide(self.native),
+                'Hide ' + formal_name,
+                shortcut=toga.Key.MOD_1 + 'h',
+                group=toga.Group.APP,
+                order=0,
+                section=sys.maxsize - 1,
+            ),
+            toga.Command(
+                lambda _: self.native.hideOtherApplications(self.native),
+                'Hide Others',
+                shortcut=toga.Key.MOD_1 + toga.Key.MOD_2 + 'h',
+                group=toga.Group.APP,
+                order=1,
+                section=sys.maxsize - 1,
+            ),
+            toga.Command(
+                lambda _: self.native.unhideAllApplications(self.native),
+                'Show All',
+                group=toga.Group.APP,
+                order=2,
+                section=sys.maxsize - 1,
+            ),
+            # Quit should always be the last item, in a section on its own
             toga.Command(
                 lambda _: self.interface.exit(),
                 'Quit ' + formal_name,

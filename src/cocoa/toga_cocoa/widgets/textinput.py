@@ -42,6 +42,8 @@ class TogaTextField(NSTextField):
         else:
             self._configured = True
 
+        send_super(__class__, self, 'textDidEndEditing:', textObject)
+
 
 class TextInput(Widget):
     def create(self):
