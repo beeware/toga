@@ -10,6 +10,7 @@ class Box(Widget):
     def create(self):
         self.native = WinForms.Panel()
         self.native.interface = self.interface
+        self.native._impl = self
 
     def set_bounds(self, x, y, width, height):
         if self.native:

@@ -8,6 +8,8 @@ from .base import Widget
 class Table(Widget):
     def create(self):
         self.native = WinForms.ListView()
+        self.native.interface = self.interface
+        self.native._impl = self
         self.native.View = WinForms.View.Details
         self._cache = []
         self._first_item = 0

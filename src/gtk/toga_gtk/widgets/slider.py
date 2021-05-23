@@ -12,6 +12,9 @@ class Slider(Widget):
         self.native.interface = self.interface
         self.native.connect("value-changed", self.gtk_on_change)
 
+        # set _impl layer for other native layer versions
+        self.adj._impl = self
+
         self.rehint()
 
     def gtk_on_change(self, widget):

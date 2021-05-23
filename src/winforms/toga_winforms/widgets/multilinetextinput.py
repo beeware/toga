@@ -9,6 +9,8 @@ class MultilineTextInput(Widget):
     def create(self):
         # because https://stackoverflow.com/a/612234
         self.native = WinForms.RichTextBox()
+        self.native.interface = self.interface
+        self.native._impl = self
         self.native.Multiline = True
         self.native.TextChanged += self.winforms_text_changed
         self.native.Enter += self.winforms_enter

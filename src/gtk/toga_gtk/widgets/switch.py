@@ -19,6 +19,10 @@ class Switch(Widget):
         self.native.pack_start(self.switch, False, False, 0)
         self.native.connect('show', lambda event: self.rehint())
 
+        # set _impl layer for other native layer versions
+        self.label._impl = self
+        self.switch._impl = self
+
     def gtk_on_toggle(self, widget, state):
         if self.interface.on_toggle:
             self.interface.on_toggle(self.interface)

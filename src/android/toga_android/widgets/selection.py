@@ -39,6 +39,9 @@ class Selection(Widget):
         # Create a mapping from text to numeric index to support `select_item()`.
         self._indexByItem = {}
 
+        # set _impl layer for other native layer versions
+        self.adapter._impl = self
+
     def add_item(self, item):
         new_index = self.adapter.getCount()
         self.adapter.add(str(item))

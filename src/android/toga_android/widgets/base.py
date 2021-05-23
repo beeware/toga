@@ -32,6 +32,7 @@ class Widget:
         self.native = None
         self._native_activity = _get_activity()
         self.create()
+        self.native._impl = self
         # Immediately re-apply styles. Some widgets may defer style application until
         # they have been added to a container.
         self.interface.style.reapply()

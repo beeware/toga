@@ -93,7 +93,6 @@ class Canvas(Widget):
     def create(self):
         self.native = TogaCanvas.alloc().init()
         self.native.interface = self.interface
-        self.native._impl = self
 
         NSNotificationCenter.defaultCenter.addObserver(
             self.native,

@@ -9,6 +9,7 @@ class Widget:
         self.viewport = None
         self.native = None
         self.create()
+        self.native._impl = self
         self.interface.style.reapply()
 
     def set_app(self, app):

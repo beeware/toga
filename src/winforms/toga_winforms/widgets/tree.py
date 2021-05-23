@@ -6,6 +6,8 @@ from .base import Widget
 class Tree(Widget):
     def create(self):
         self.native = WinForms.TreeView()
+        self.native.interface = self.interface
+        self.native._impl = self
 
     def row_data(self, item):
         self.interface.factory.not_implemented('Tree.row_data()')
