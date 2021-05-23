@@ -55,9 +55,13 @@ class TogaApp(IPythonApp):
                                   to Intent "extras").
         """
         print("Toga app: onActivityResult, requestCode={0}, resultData={1}".format(requestCode, resultData))
-        if requestCode in self.running_intents:
-            result_future = self.running_intents.pop(requestCode)  # remove Intent from the list of running Intents
+        try:
+            # remove Intent from the list of running Intents,
+            # and set the result of the intent.
+            result_future = self.running_intents.pop(requestCode)
             result_future.set_result({"resultCode": resultCode, "resultData": resultData})
+        except KeyError:
+            print("No intent matching request code {requestCode}")
 
     @property
     def native(self):
@@ -113,21 +117,24 @@ class App:
     def add_background_task(self, handler):
         self.loop.call_soon(wrapped_handler(self, handler), self)
 
-    async def invoke_intent_for_result(self, intent):
+    async def intent_result(self, intent):
         """
         Calls an Intent and waits for its result.
-        An Exception will be raised when the Intent cannot be invoked.
+
+        A RuntimeError will be raised when the Intent cannot be invoked.
 
         :param Intent intent: The Intent to call
         :returns: A Dictionary containing "resultCode" (int) and "resultData" (Intent or None)
         :rtype: dict
         """
         if intent.resolveActivity(self.native.getPackageManager()) is None:
-            raise Exception('No appropriate Activity found to handle this intent.')
+            raise RuntimeError('No appropriate Activity found to handle this intent.')
         self._listener.last_intent_requestcode += 1
         code = self._listener.last_intent_requestcode
+
         result_future = asyncio.Future()
         self._listener.running_intents[code] = result_future
+
         self.native.startActivityForResult(intent, code)
         await result_future
         return result_future.result()
