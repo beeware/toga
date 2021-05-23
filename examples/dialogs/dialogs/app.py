@@ -113,7 +113,7 @@ class ExampledialogsApp(toga.App):
         # Check to see if there has been a previous close attempt.
         if window in self.close_attempts:
             # If there has, allow the close to proceed
-            self.set_window_label_text()
+            self.set_window_label_text(len(self.windows)-2)
             return True
         else:
             window.info_dialog(f'Abort {window.title}!', 'Maybe try that again...')
@@ -155,8 +155,10 @@ class ExampledialogsApp(toga.App):
             self.label.text = 'Exit canceled'
             return False
 
-    def set_window_label_text(self):
-        self.window_label.text = f"{len(self.windows) - 1} secondary window(s) open"
+    def set_window_label_text(self, num_windows=None):
+        if num_windows is None:
+            num_windows = len(self.windows) - 1
+        self.window_label.text = f"{num_windows} secondary window(s) open"
 
     def startup(self):
         # Set up main window

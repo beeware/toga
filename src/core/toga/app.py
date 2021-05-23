@@ -79,7 +79,6 @@ class MainWindow(Window):
             factory=factory, on_close=on_close,
         )
 
-
     @Window.on_close.setter
     def on_close(self, handler):
         """Raise an exception: on_exit for the app should be used instead of
@@ -88,7 +87,7 @@ class MainWindow(Window):
         Args:
             handler (:obj:`callable`): The handler passed.
         """
-        raise AttributeError("Cannot set `on_close` handler for the main window. Use the app `on_exit` handler instead")
+        raise AttributeError("Cannot set on_close handler for the main window. Use the app on_exit handler instead")
 
 
 class App:

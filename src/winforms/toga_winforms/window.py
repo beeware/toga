@@ -140,6 +140,7 @@ class Window:
 
         if should_close:
             self.interface.app.windows -= self.interface
+        else:
             event.Cancel = True
 
     def set_full_screen(self, is_full_screen):
