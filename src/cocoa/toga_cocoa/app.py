@@ -37,10 +37,7 @@ from .window import Window
 
 class MainWindow(Window):
     def toga_on_close(self):
-        should_close = super().toga_on_close()
-        if should_close:
-            self.interface.app.exit()
-        return should_close
+        self.interface.app.exit()
 
 
 class AppDelegate(NSObject):

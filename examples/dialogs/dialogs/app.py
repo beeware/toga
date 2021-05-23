@@ -160,7 +160,7 @@ class ExampledialogsApp(toga.App):
 
     def startup(self):
         # Set up main window
-        self.main_window = toga.MainWindow(title=self.name, on_close=self.window_close_handler)
+        self.main_window = toga.MainWindow(title=self.name)
         self.on_exit = self.exit_handler
 
         # Label to show responses.

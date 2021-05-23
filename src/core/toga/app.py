@@ -80,6 +80,17 @@ class MainWindow(Window):
         )
 
 
+    @Window.on_close.setter
+    def on_close(self, handler):
+        """Raise an exception: on_exit for the app should be used instead of
+        on_close on main window.
+
+        Args:
+            handler (:obj:`callable`): The handler passed.
+        """
+        raise AttributeError("Cannot set `on_close` handler for the main window. Use the app `on_exit` handler instead")
+
+
 class App:
     """
     The App is the top level of any GUI program. It is the manager of all the
