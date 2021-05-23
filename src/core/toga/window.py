@@ -51,6 +51,7 @@ class Window:
         self.position = position
         self.size = size
         self.title = title
+        self._on_close = None
         if on_close is not None:
             self.on_close = on_close
 
