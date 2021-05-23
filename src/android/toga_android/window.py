@@ -1,4 +1,5 @@
 from . import dialogs
+from .libs.android_widgets import R__attr, TypedValue
 
 
 class AndroidViewport:
@@ -15,7 +16,31 @@ class AndroidViewport:
 
     @property
     def height(self):
-        return self.native.getContext().getResources().getDisplayMetrics().heightPixels
+        screen_height = self.native.getContext().getResources().getDisplayMetrics().heightPixels
+        return screen_height - self._status_bar_height() - self._action_bar_height()
+
+    def _action_bar_height(self):
+        """
+        Get the size of the action bar. The action bar shows the app name and can provide some app actions.
+        """
+        tv = TypedValue()
+        has_action_bar_size = self.native.getContext().getTheme().resolveAttribute(R__attr.actionBarSize, tv, True)
+        if not has_action_bar_size:
+            return 0
+
+        return TypedValue.complexToDimensionPixelSize(
+            tv.data, self.native.getContext().getResources().getDisplayMetrics())
+
+    def _status_bar_height(self):
+        """
+        Get the size of the status bar. The status bar is typically rendered above the app,
+        showing the current time, battery level, etc.
+        """
+        resource_id = self.native.getContext().getResources().getIdentifier("status_bar_height", "dimen", "android")
+        if resource_id <= 0:
+            return 0
+
+        return self.native.getContext().getResources().getDimensionPixelSize(resource_id)
 
 
 class Window:

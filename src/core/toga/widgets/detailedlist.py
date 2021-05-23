@@ -132,7 +132,7 @@ class DetailedList(Widget):
 
     @property
     def selection(self):
-        """The current selection of the table.
+        """The current selection.
 
         A value of None indicates no selection.
         """

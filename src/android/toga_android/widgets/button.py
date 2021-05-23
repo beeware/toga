@@ -1,7 +1,9 @@
 from travertino.size import at_least
 
 from ..libs import android_widgets
+from ..libs.android import PorterDuff__Mode
 from .base import Widget
+from toga_android.colors import native_color
 
 
 class TogaOnClickListener(android_widgets.OnClickListener):
@@ -25,9 +27,6 @@ class Button(Widget):
     def set_enabled(self, value):
         self.native.setEnabled(value)
 
-    def set_background_color(self, value):
-        self.interface.factory.not_implemented("Button.set_background_color()")
-
     def set_font(self, font):
         if font:
             font_impl = font.bind(self.interface.factory)
@@ -37,6 +36,15 @@ class Button(Widget):
     def set_on_press(self, handler):
         # No special handling required
         pass
+
+    def set_color(self, value):
+        if value:
+            self.native.setTextColor(native_color(value))
+
+    def set_background_color(self, value):
+        if value:
+            # do not use self.native.setBackgroundColor - this messes with the button style!
+            self.native.getBackground().setColorFilter(native_color(value), PorterDuff__Mode.MULTIPLY)
 
     def rehint(self):
         # Like other text-viewing widgets, Android crashes when rendering
