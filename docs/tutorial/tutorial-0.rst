@@ -197,11 +197,11 @@ Running the app
 ---------------
 
 The app acts as a Python package--a collection of modules. That means you need
-to run it in a different manner than running a regular Python script With adjusting
+to run it in a different manner than running a regular Python script with adjusting
 the hierarchy of files of your app: You need first to create a folder and give it
-a name which you will be use it to run your app. Then, in this folder put your Python
-script and any files or folders that you called or used it in your app. After that,
-create in this folder these files: :code:`__init__.py` and :code:`__main__.py`.
+a name which you will use it to run your app. Then, in this folder put your Python
+script and any files or folders that you are calling or using it in your app. After
+that, create in this folder the following files: :code:`__init__.py` and :code:`__main__.py`.
 Finally, to run your application you need to specify the :code:`-m` flag and write
 the name of the folder that has your Python script and the files that you created
 a little while ago.
@@ -211,8 +211,8 @@ a little while ago.
     Be sure you are out of the folder that you are created a little while ago.
 
 Here is the command to run for your platform from your working directory,
-where we give the folder that we created a name similar to our Python script
-and of course without :code:`.py` extension:
+where we give the folder that we created a little while ago a name similar to
+our Python script and of course without :code:`.py` extension:
 
 .. tabs::
 
