@@ -196,9 +196,23 @@ And that's it! Save this script as ``helloworld.py``, and you're ready to go.
 Running the app
 ---------------
 
-The app acts as a Python module, which means you need to run it in a different manner than running a regular Python script: You need to specify the :code:`-m` flag and *not* include the :code:`.py` extension for the script name.
+The app acts as a Python package--a collection of modules. That means you need
+to run it in a different manner than running a regular Python script With adjusting
+the hierarchy of files of your app: You need first to create a folder and give it
+a name which you will be use it to run your app. Then, in this folder put your Python
+script and any files or folders that you called or used it in your app. After that,
+create in this folder these files: :code:`__init__.py` and :code:`__main__.py`.
+Finally, to run your application you need to specify the :code:`-m` flag and write
+the name of the folder that has your Python script and the files that you created
+a little while ago.
 
-Here is the command to run for your platform from your working directory:
+.. note:: Stand on the correct folder
+
+    Be sure you are out of the folder that you are created a little while ago.
+
+Here is the command to run for your platform from your working directory,
+where we give the folder that we created a name similar to our Python script
+and of course without :code:`.py` extension:
 
 .. tabs::
 
@@ -229,13 +243,6 @@ Even though we didn't define anything about menus, the app will have default
 menu entries to quit the app, and an About page. The keyboard bindings to quit
 the app, plus the "close" button on the window will also work as expected. The
 app will have a default Toga icon (a picture of Tiberius the yak).
-
-.. note:: Methods for starting app
-
-This method has some consequences, the app may be failed to find some of icons path.
-The "default recommendation" is really "Use the Briefcase bootstrap", that's no more
-than an easy recommendation. Toga is, ultimately, Python. Any way of starting the
-process is valid. However, some of the options have consequence.
 
 Troubleshooting issues
 ----------------------
