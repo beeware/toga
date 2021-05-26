@@ -7,8 +7,6 @@ from .base import Widget
 class OptionContainer(Widget):
     def create(self):
         self.native = WinForms.TabControl()
-        self.native.interface = self.interface
-        self.native._impl = self
         self.native.Selected += self.winforms_selected
 
     def add_content(self, label, widget):

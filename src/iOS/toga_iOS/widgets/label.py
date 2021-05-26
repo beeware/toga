@@ -9,7 +9,8 @@ from toga_iOS.widgets.base import Widget
 class Label(Widget):
     def create(self):
         self.native = UILabel.new()
-        self.native.interface = self.interface
+        self.native.impl = self
+        self.native.interface = self
 
         self.native.lineBreakMode = NSLineBreakByWordWrapping
 

@@ -8,8 +8,6 @@ from .base import Widget
 class Switch(Widget):
     def create(self):
         self.native = WinForms.CheckBox()
-        self.native.interface = self.interface
-        self.native._impl = self
         self.native.CheckedChanged += self.winforms_checked_changed
 
     def winforms_checked_changed(self, sender, event):

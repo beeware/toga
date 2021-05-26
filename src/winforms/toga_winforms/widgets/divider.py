@@ -8,8 +8,6 @@ from .base import Widget
 class Divider(Widget):
     def create(self):
         self.native = WinForms.Label()
-        self.native.interface = self.interface
-        self.native._impl = self
         self.native.BorderStyle = WinForms.BorderStyle.Fixed3D
         self.native.AutoSize = False
 

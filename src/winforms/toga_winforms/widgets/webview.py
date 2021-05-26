@@ -14,8 +14,6 @@ class TogaWebBrowser(WinForms.WebBrowser):
 class WebView(Widget):
     def create(self):
         self.native = TogaWebBrowser(self)
-        self.native.interface = self.interface
-        self.native._impl = self
 
     def set_on_key_down(self, handler):
         pass

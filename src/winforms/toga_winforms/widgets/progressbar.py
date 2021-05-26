@@ -8,8 +8,6 @@ from .base import Widget
 class ProgressBar(Widget):
     def create(self):
         self.native = WinForms.ProgressBar()
-        self.native.interface = self.interface
-        self.native._impl = self
 
     def start(self):
         self.set_running_style()

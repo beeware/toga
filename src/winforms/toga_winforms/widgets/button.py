@@ -10,8 +10,6 @@ from .base import Widget
 class Button(Widget):
     def create(self):
         self.native = WinForms.Button()
-        self.native.interface = self.interface
-        self.native._impl = self
         self.native.Click += self.winforms_click
         self.set_enabled(self.interface._enabled)
 
