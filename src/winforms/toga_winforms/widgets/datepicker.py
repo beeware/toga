@@ -10,8 +10,6 @@ from .base import Widget
 class DatePicker(Widget):
     def create(self):
         self.native = WinForms.DateTimePicker()
-        self.native.interface = self.interface
-        self.native._impl = self
 
     def get_value(self):
         date = datetime.datetime.strptime(self.native.Text, '%A, %B %d, %Y').date()

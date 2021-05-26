@@ -10,8 +10,6 @@ from .base import Widget
 class NumberInput(Widget):
     def create(self):
         self.native = WinForms.NumericUpDown()
-        self.native.interface = self.interface
-        self.native._impl = self
         self.native.Value = Convert.ToDecimal(0.0)
         self.native.ValueChanged += self.winforms_value_changed
 

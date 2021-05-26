@@ -34,8 +34,6 @@ class MultilineTextInput(Widget):
 
         # Create the actual text widget
         self.text = TogaTextView.alloc().init()
-        self.text.interface = self.interface
-        self.text._impl = self
         self.text.editable = True
         self.text.selectable = True
         self.text.verticallyResizable = True

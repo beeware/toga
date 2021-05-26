@@ -10,8 +10,6 @@ from .base import Widget
 class Label(Widget):
     def create(self):
         self.native = WinForms.Label()
-        self.native.interface = self.interface
-        self.native._impl = self
 
     def set_alignment(self, value):
         self.native.TextAlign = TextAlignment(value)

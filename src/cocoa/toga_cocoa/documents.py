@@ -18,6 +18,7 @@ class Document:
     def __init__(self, interface):
         self.native = TogaDocument.alloc()
         self.native.interface = interface
+        self.native._impl = self
 
         self.native.initWithContentsOfURL(
             NSURL.URLWithString('file://{}'.format(quote(interface.filename))),
