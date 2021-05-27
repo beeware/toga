@@ -33,23 +33,11 @@ class RefreshButtonWidget(Gtk.HBox):
         self.add(self._refresh_btn)
         self.add(self._close_btn)
 
-    # def show(self, *args, **kwargs):
-    #     return super().show(*args, **kwargs)
-
-    # def hide(self, *args, **kwargs):
-    #     return super().hide(*args, **kwargs)
-
     def show_close(self):
         return self._close_btn.show_now()
 
     def hide_close(self):
         return self._close_btn.hide()
-
-    # def destroy(self, *args, **kwargs):
-    #     self._refresh_btn.disconnect(self._refresh_btn_handler)
-    #     self._close_btn.disconnect(self._close_btn_handler)
-
-    #     return super().destroy(*args, **kwargs)
 
 
 class RefreshButton(ParentPosition):
@@ -115,7 +103,11 @@ class RefreshButton(ParentPosition):
         self.button_bottom.set_visible(not is_bottom_visible)
 
     def list_changed(self):
-        # Remove: is_parent_at_top and is_parent_at_bottom already check if the list is scrollable.
+        if self._on_refresh is None:
+            self.button_top.hide()
+            self.button_bottom.hide()
+            return
+
         is_scrollable = self._is_parent_scrollable()
         is_at_top = self._is_parent_at_top()
         is_at_bottom = self._is_parent_at_bottom()
@@ -141,8 +133,8 @@ class RefreshButton(ParentPosition):
             self.button_bottom.hide()
             self.button_bottom.hide_close()
 
-        if is_scrollable and not is_at_top and not is_at_bottom:
+        if not is_at_top and not is_at_bottom:
             self.button_top.hide()
             self.button_bottom.hide()
 
-        return True
+        return

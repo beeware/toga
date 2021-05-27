@@ -32,7 +32,6 @@ class DetailedList(Widget):
         self.scrolled_window.add(self.list_box)
 
         self.refresh_button = RefreshButton(self.scrolled_window.get_vadjustment())
-        self.refresh_button.set_on_refresh(self._on_refresh)
 
         self.scroll_button = ScrollButton(self.scrolled_window.get_vadjustment())
         self.scroll_button.set_scroll(lambda: self.scroll_to_row(-1))
@@ -78,6 +77,7 @@ class DetailedList(Widget):
 
     def set_on_refresh(self, handler: callable):
         self._on_refresh_handler = handler
+        self.refresh_button.set_on_refresh(handler)
 
     def set_on_select(self, handler: callable):
         self._on_select_handler = handler
