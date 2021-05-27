@@ -1,4 +1,5 @@
 from toga_gtk.libs import Gtk
+from .base import ParentPosition
 
 
 class RefreshButtonWidget(Gtk.HBox):
@@ -32,11 +33,11 @@ class RefreshButtonWidget(Gtk.HBox):
         self.add(self._refresh_btn)
         self.add(self._close_btn)
 
-    def show(self, *args, **kwargs):
-        return super().show(*args, **kwargs)
+    # def show(self, *args, **kwargs):
+    #     return super().show(*args, **kwargs)
 
-    def hide(self, *args, **kwargs):
-        return super().hide(*args, **kwargs)
+    # def hide(self, *args, **kwargs):
+    #     return super().hide(*args, **kwargs)
 
     def show_close(self):
         return self._close_btn.show_now()
@@ -44,14 +45,14 @@ class RefreshButtonWidget(Gtk.HBox):
     def hide_close(self):
         return self._close_btn.hide()
 
-    def destroy(self, *args, **kwargs):
-        self._refresh_btn.disconnect(self._refresh_btn_handler)
-        self._close_btn.disconnect(self._close_btn_handler)
+    # def destroy(self, *args, **kwargs):
+    #     self._refresh_btn.disconnect(self._refresh_btn_handler)
+    #     self._close_btn.disconnect(self._close_btn_handler)
 
-        return super().destroy(*args, **kwargs)
+    #     return super().destroy(*args, **kwargs)
 
 
-class RefreshButton:
+class RefreshButton(ParentPosition):
     """
     Shows a refresh button at the top of a list when the user is at the bottom of the list.
     Shows a refresh button at the bottom of a list when the user is at the top of the list.
@@ -65,10 +66,9 @@ class RefreshButton:
      -------------
     """
     def __init__(self, adj: Gtk.Adjustment, margin=12, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.adj = adj
+        super().__init__(adj, *args, **kwargs)
         self.margin = margin
-        self.parent = None
+        self._parent = None
         self._on_refresh = None
         
         self.button_top = RefreshButtonWidget(self._on_refresh_clicked,
@@ -86,7 +86,7 @@ class RefreshButton:
             lambda adj: self.list_changed())
 
     def overlay_over(self, parent):
-        self.parent = parent
+        self._parent = parent
         self.list_changed()
         parent.add_overlay(self.button_top)
         parent.add_overlay(self.button_bottom)
@@ -114,32 +114,8 @@ class RefreshButton:
         self.button_top.show_all()
         self.button_bottom.set_visible(not is_bottom_visible)
 
-    def _is_parent_scrollable(self):
-        page_size = self.adj.get_page_size()
-        upper = self.adj.get_upper()
-        lower = self.adj.get_lower()
-        return upper - lower > page_size
-
-    def _is_parent_at_top(self):
-        is_scrollable = self._is_parent_scrollable()
-
-        value = self.adj.get_value()
-        lower = self.adj.get_lower()
-        is_at_top = (value == lower)
-
-        return is_scrollable and is_at_top
-
-    def _is_parent_at_bottom(self):
-        is_scrollable = self._is_parent_scrollable()
-
-        page_size = self.adj.get_page_size()
-        value = self.adj.get_value()
-        upper = self.adj.get_upper()
-        is_at_bottom = (value + page_size == upper)
-
-        return is_scrollable and is_at_bottom
-
     def list_changed(self):
+        # Remove: is_parent_at_top and is_parent_at_bottom already check if the list is scrollable.
         is_scrollable = self._is_parent_scrollable()
         is_at_top = self._is_parent_at_top()
         is_at_bottom = self._is_parent_at_bottom()

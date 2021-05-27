@@ -1,7 +1,7 @@
 from ..libs import Gtk, GLib
 from .base import Widget
 from .internal.rows import TextIconRow
-from .internal.buttons import RefreshButton
+from .internal.buttons import RefreshButton, ScrollButton
 from .internal.sourcelistmodel import SourceListModel
 
 
@@ -33,10 +33,15 @@ class DetailedList(Widget):
 
         self.refresh_button = RefreshButton(self.scrolled_window.get_vadjustment())
         self.refresh_button.set_on_refresh(self._on_refresh)
+
+        self.scroll_button = ScrollButton(self.scrolled_window.get_vadjustment())
+        self.scroll_button.set_scroll(lambda: self.scroll_to_row(-1))
         
         self.native = Gtk.Overlay()
         self.native.add_overlay(self.scrolled_window)
+
         self.refresh_button.overlay_over(self.native)
+        self.scroll_button.overlay_over(self.native)
 
         self.native.interface = self.interface
       
@@ -45,7 +50,7 @@ class DetailedList(Widget):
 
         # We have to wait until the rows are actually added decide how to position the
         # refresh button
-        GLib.idle_add(lambda: not self.refresh_button.list_changed())
+        GLib.idle_add(lambda: not self._changed())
 
     def insert(self, index: int, item: 'Row'):
         self.store.insert(index, item)
@@ -98,4 +103,6 @@ class DetailedList(Widget):
 
     def _changed(self):
         self.refresh_button.list_changed()
+        self.scroll_button.list_changed()
+        return True
 
