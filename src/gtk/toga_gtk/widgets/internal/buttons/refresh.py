@@ -106,6 +106,7 @@ class RefreshButton(ParentPosition):
         if self._on_refresh is None:
             self.button_top.hide()
             self.button_bottom.hide()
+            
             return
 
         is_scrollable = self._is_parent_scrollable()
