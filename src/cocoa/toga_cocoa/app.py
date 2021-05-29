@@ -37,8 +37,13 @@ from .window import Window
 
 class MainWindow(Window):
     def toga_on_close(self):
+        # Main Window close is a proxy for "Exit app".
+        # Defer all handling to the app's exit method.
+        # As a result of calling that method, the app will either
+        # exit, or the user will cancel the exit; in which case
+        # the main window shouldn't close, either.
         self.interface.app.exit()
-
+        return False
 
 class AppDelegate(NSObject):
     @objc_method
