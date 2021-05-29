@@ -513,7 +513,15 @@ class App:
     def exit(self):
         """ Quit the application gracefully.
         """
-        self._impl.exit()
+        if self.on_exit:
+            should_exit = self.on_exit(self)
+        else:
+            should_exit = True
+
+        if should_exit:
+            self._impl.exit()
+
+        return should_exit
 
     @property
     def on_exit(self):

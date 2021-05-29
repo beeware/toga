@@ -127,7 +127,12 @@ class Window:
         if should_close:
             self.interface.app.windows -= self.interface
 
-        return should_close
+        # Return value of the GTK on_close handler indicates
+        # whether the event has been fully handled. Returning
+        # False indicates the event handling is *not* complete,
+        # so further event processing (including actually
+        # closing the window) should be performed.
+        return not should_close
 
     def set_on_close(self, handler):
         pass

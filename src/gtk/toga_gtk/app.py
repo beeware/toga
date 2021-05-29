@@ -40,7 +40,14 @@ class MainWindow(Window):
         self.native.set_wmclass(app.interface.name, app.interface.name)
 
     def toga_on_close(self, *args):
-        pass
+        # Return value of the GTK on_close handler indicates
+        # whether the event has been fully handled. Returning
+        # False indicates the event handling is *not* complete,
+        # so further event processing (including actually
+        # closing the window) should be performed; so
+        # "should_exit == True" must be converted to a return
+        # value of False.
+        return not self.interface.app.exit()
 
 
 class App:

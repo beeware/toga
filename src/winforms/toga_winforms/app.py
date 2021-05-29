@@ -15,7 +15,8 @@ from .window import Window
 
 class MainWindow(Window):
     def toga_on_close(self, sender, event):
-        event.Cancel = not self.interface.app.on_exit(self)
+        if not self.interface.app._impl._is_exiting:
+            event.Cancel = not self.interface.app.exit()
 
 
 class App:
@@ -24,6 +25,16 @@ class App:
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
+
+        # Winforms app exit is tightly bound to the close of the MainWindow.
+        # The FormClosing message on MainWindow calls app.exit(), which
+        # will then trigger the "on_exit" handler (which might abort the
+        # close). However, if app.exit() succeeds, it will request the
+        # Main Window to close... which calls app.exit().
+        # So - we have a flag that is only ever sent once a request has been
+        # made to exit the native app. This flag can be used to shortcut any
+        # window-level close handling.
+        self._is_exiting = False
 
         self.loop = WinformsProactorEventLoop()
         asyncio.set_event_loop(self.loop)
@@ -184,7 +195,6 @@ class App:
             self.create()
 
             self.native.ThreadException += self.winforms_thread_exception
-            self.native.ApplicationExit += self.winforms_application_exit
 
             self.loop.run_forever(self.app_context)
         except:  # NOQA
@@ -195,10 +205,6 @@ class App:
         thread.SetApartmentState(Threading.ApartmentState.STA)
         thread.Start()
         thread.Join()
-
-    def winforms_application_exit(self, sender, *args, **kwargs):
-        # The on_exit is called by the main window
-        pass
 
     def show_about_dialog(self):
         message_parts = []
@@ -234,6 +240,7 @@ class App:
         )
 
     def exit(self):
+        self._is_exiting = True
         self.native.Exit()
 
     def set_main_window(self, window):
