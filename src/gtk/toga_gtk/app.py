@@ -39,7 +39,7 @@ class MainWindow(Window):
         # Application name to something other than '__main__.py'.
         self.native.set_wmclass(app.interface.name, app.interface.name)
 
-    def toga_on_close(self, *args):
+    def gtk_delete_event(self, *args):
         # Return value of the GTK on_close handler indicates
         # whether the event has been fully handled. Returning
         # False indicates the event handling is *not* complete,
@@ -76,7 +76,6 @@ class App:
         # Connect the GTK signal that will cause app startup to occur
         self.native.connect('startup', self.gtk_startup)
         self.native.connect('activate', self.gtk_activate)
-        # self.native.connect('shutdown', self.shutdown)
 
         self.actions = None
 

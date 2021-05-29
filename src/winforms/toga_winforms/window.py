@@ -126,13 +126,13 @@ class Window:
         )
         self.interface.content.refresh()
 
-        self.native.FormClosing += self.toga_on_close
+        self.native.FormClosing += self.winforms_FormClosing
 
         if self.interface is not self.interface.app._main_window:
             self.native.Icon = self.interface.app.icon._impl.native
             self.native.Show()
 
-    def toga_on_close(self, sender, event):
+    def winforms_FormClosing(self, sender, event):
         if self.interface.on_close:
             should_close = self.interface.on_close(self)
         else:

@@ -14,7 +14,7 @@ from .window import Window
 
 
 class MainWindow(Window):
-    def toga_on_close(self, sender, event):
+    def winforms_FormClosing(self, sender, event):
         if not self.interface.app._impl._is_exiting:
             event.Cancel = not self.interface.app.exit()
 

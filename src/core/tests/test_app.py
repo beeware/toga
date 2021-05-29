@@ -88,8 +88,8 @@ class AppTests(TestCase):
         self.assertFalse(self.app.is_full_screen)
 
     def test_app_exit(self):
-        def exit_handler():
-            return
+        def exit_handler(widget):
+            return True
         self.app.on_exit = exit_handler
         self.assertIs(self.app.on_exit._raw, exit_handler)
         self.app.exit()

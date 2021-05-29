@@ -50,7 +50,7 @@ class CocoaViewport:
 class WindowDelegate(NSObject):
     @objc_method
     def windowShouldClose_(self, notification) -> bool:
-        return self.impl.toga_on_close()
+        return self.impl.cocoa_windowShouldClose()
 
     @objc_method
     def windowDidResize_(self, notification) -> None:
@@ -249,7 +249,7 @@ class Window:
     def set_on_close(self, handler):
         pass
 
-    def toga_on_close(self):
+    def cocoa_windowShouldClose(self):
         if self.interface.on_close:
             should_close = self.interface.on_close(self)
         else:
