@@ -112,8 +112,11 @@ class ExampledialogsApp(toga.App):
 
         # Check to see if there has been a previous close attempt.
         if window in self.close_attempts:
-            # If there has, allow the close to proceed
-            self.set_window_label_text(len(self.windows)-2)
+            # If there has, update the window label and allow
+            # the close to proceed. The count is -2 (rather than -1)
+            # because *this* window hasn't been removed from
+            # the window list.
+            self.set_window_label_text(len(self.windows) - 2)
             return True
         else:
             window.info_dialog(f'Abort {window.title}!', 'Maybe try that again...')
@@ -126,7 +129,7 @@ class ExampledialogsApp(toga.App):
         # Both self.windows.add() and self.windows += work:
         self.windows += window
 
-        self.set_window_label_text()
+        self.set_window_label_text(len(self.windows) - 1)
         secondary_label = toga.Label(text="You are in a secondary window!")
         window.content = toga.Box(
             children=[
@@ -142,8 +145,9 @@ class ExampledialogsApp(toga.App):
         window.show()
 
     def action_close_secondary_windows(self, widget):
+        # Close all windows that aren't the main window.
         for window in list(self.windows):
-            if window._WINDOW_CLASS != 'MainWindow':
+            if not isinstance(window, toga.MainWindow):
                 window.close()
 
     def exit_handler(self, app):
@@ -155,9 +159,7 @@ class ExampledialogsApp(toga.App):
             self.label.text = 'Exit canceled'
             return False
 
-    def set_window_label_text(self, num_windows=None):
-        if num_windows is None:
-            num_windows = len(self.windows) - 1
+    def set_window_label_text(self, num_windows):
         self.window_label.text = f"{num_windows} secondary window(s) open"
 
     def startup(self):
@@ -170,7 +172,7 @@ class ExampledialogsApp(toga.App):
         self.window_label = toga.Label('', style=Pack(padding_top=20))
         self.window_counter = 0
         self.close_attempts = set()
-        self.set_window_label_text()
+        self.set_window_label_text(0)
 
         # Buttons
         btn_style = Pack(flex=1)
