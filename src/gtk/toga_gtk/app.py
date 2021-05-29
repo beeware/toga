@@ -39,8 +39,15 @@ class MainWindow(Window):
         # Application name to something other than '__main__.py'.
         self.native.set_wmclass(app.interface.name, app.interface.name)
 
-    def on_close(self, *args):
-        pass
+    def gtk_delete_event(self, *args):
+        # Return value of the GTK on_close handler indicates
+        # whether the event has been fully handled. Returning
+        # False indicates the event handling is *not* complete,
+        # so further event processing (including actually
+        # closing the window) should be performed; so
+        # "should_exit == True" must be converted to a return
+        # value of False.
+        return not self.interface.app.exit()
 
 
 class App:
@@ -69,7 +76,6 @@ class App:
         # Connect the GTK signal that will cause app startup to occur
         self.native.connect('startup', self.gtk_startup)
         self.native.connect('activate', self.gtk_activate)
-        # self.native.connect('shutdown', self.shutdown)
 
         self.actions = None
 

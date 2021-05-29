@@ -36,16 +36,17 @@ from .window import Window
 
 
 class MainWindow(Window):
-    def on_close(self):
+    def cocoa_windowShouldClose(self):
+        # Main Window close is a proxy for "Exit app".
+        # Defer all handling to the app's exit method.
+        # As a result of calling that method, the app will either
+        # exit, or the user will cancel the exit; in which case
+        # the main window shouldn't close, either.
         self.interface.app.exit()
+        return False
 
 
 class AppDelegate(NSObject):
-    @objc_method
-    def applicationWillTerminate_(self, sender):
-        if self.interface.app.on_exit:
-            self.interface.app.on_exit(self.interface.app)
-
     @objc_method
     def applicationDidFinishLaunching_(self, notification):
         self.native.activateIgnoringOtherApps(True)
@@ -290,7 +291,7 @@ class App:
         self.native.orderFrontStandardAboutPanelWithOptions(options)
 
     def exit(self):
-        self.native.terminate(None)
+        self.native.terminate(self.native)
 
     def set_on_exit(self, value):
         pass
