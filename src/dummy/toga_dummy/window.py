@@ -1,4 +1,4 @@
-from .utils import LoggedObject, not_required_on
+from .utils import LoggedObject, not_required, not_required_on
 
 
 class Window(LoggedObject):
@@ -34,7 +34,7 @@ class Window(LoggedObject):
     def set_full_screen(self, is_full_screen):
         self._set_value('is_full_screen', is_full_screen)
 
-    @not_required_on('mobile')
+    @not_required
     def toga_on_close(self):
         self._action('handle Window on_close')
 
