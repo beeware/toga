@@ -10,11 +10,27 @@ class ScrollButton(ParentPosition):
         self._parent = None
         self._do_scroll = None
 
-        self._button = Gtk.Button.new_with_label("Bottom")
-        self._button.set_valign(Gtk.Align.END)
-        self._button.set_halign(Gtk.Align.END)
-        self._button.set_margin_bottom(self.bottom_margin)
-        self._button.set_margin_end(self.right_margin)
+        self._button = Gtk.Button.new_from_icon_name(
+            "go-bottom-symbolic", Gtk.IconSize.BUTTON)
+
+        self._button.set_can_focus(False)
+
+        button_context = self._button.get_style_context()
+        button_context.add_class("osd")
+        button_context.add_class("toga-detailed-list-floating-buttons")
+
+        self._revealer = Gtk.Revealer()
+
+        self._revealer.set_can_focus(False)
+
+        self._revealer.set_transition_type(Gtk.RevealerTransitionType.CROSSFADE)
+        self._revealer.set_valign(Gtk.Align.END)
+        self._revealer.set_halign(Gtk.Align.END)
+        self._revealer.set_margin_bottom(self.bottom_margin)
+        self._revealer.set_margin_end(self.right_margin)
+
+        self._revealer.set_reveal_child(False)
+        self._revealer.add(self._button)
 
         self._button_handler = self._button.connect(
             "clicked",
@@ -26,11 +42,17 @@ class ScrollButton(ParentPosition):
 
     def overlay_over(self, parent):
         self._parent = parent
-        parent.add_overlay(self._button)
+        parent.add_overlay(self._revealer)
         self.list_changed()
 
     def set_scroll(self, do_scroll: callable):
         self._do_scroll = do_scroll
+
+    def show(self):
+        self._revealer.set_reveal_child(True)
+
+    def hide(self):
+        self._revealer.set_reveal_child(False)
 
     def list_changed(self):
         is_at_top = self._is_parent_at_top()
@@ -41,9 +63,9 @@ class ScrollButton(ParentPosition):
 
         if not is_at_top and not is_at_bottom \
            and is_distant_from_top and is_distant_from_bottom:
-            self._button.show()
+            self.show()
         else:
-            self._button.hide()
+            self.hide()
 
     def _on_clicked(self):
         if self._do_scroll is not None:

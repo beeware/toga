@@ -76,8 +76,9 @@ class DetailedList(Widget):
         self.store.scroll_to_row(row)
 
     def set_on_refresh(self, handler: callable):
-        self._on_refresh_handler = handler
-        self.refresh_button.set_on_refresh(handler)
+        if handler is not None:
+            self._on_refresh_handler = handler
+            self.refresh_button.set_on_refresh(self._on_refresh)
 
     def set_on_select(self, handler: callable):
         self._on_select_handler = handler
