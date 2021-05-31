@@ -1,6 +1,6 @@
 import html
 
-from toga_gtk.libs import Gtk
+from toga_gtk.libs import Gtk, GLib
 from toga_gtk.icons import Icon
 
 
@@ -18,6 +18,12 @@ class ScrollableRow(Gtk.ListBoxRow):
         # for that we use signals and callbacks. The handler_is of the
         # signal is used to disconnect and we store it here.
         self._scroll_handler_id_value = None
+
+        # The animation function will use this variable to control whether the animation is
+        # progressing, whether the user manually scrolled the list during the animation and whether
+        # the list size changed.
+        # In any case the animation will be stopped.
+        self._animation_control = None
 
     def scroll_to_top(self):
         self.scroll_to_position("TOP")
@@ -60,39 +66,79 @@ class ScrollableRow(Gtk.ListBoxRow):
         self._scroll_handler_id = None
 
         list_box = self.get_parent()
-
         adj = list_box.get_adjustment()
+
         page_size = adj.get_page_size()
 
         # 'height' and 'y' are always valid because we are
         # being called after 'size-allocate'
-        height = self.get_allocation().height
+        row_height = self.get_allocation().height
         # `y` is the position of the top of the row in the frame of
         # reference of the parent Gtk.ListBox
         _, y = self.translate_coordinates(list_box, 0, 0)
 
         # `offset` is the remaining space in the visible region
-        offset = page_size - height
+        offset = page_size - row_height
 
-        top = y
-        center = top - offset/2
-        bottom = top - offset
+        value_at_top = y
+        value_at_center = value_at_top - offset/2
+        value_at_bottom = value_at_top - offset
 
         # `value` is the position the parent Gtk.ListBox will put at the
         # top of the visible region.
         value = 0.0
+
         if position == "TOP":
-            value = top
+            value = value_at_top
 
         if position == "CENTER":
-            value = center
+            value = value_at_center
 
         if position == "BOTTOM":
-            value = bottom
-            
-        if value > 0:
-            adj.set_value(value)
+            value = value_at_bottom
 
+        if value > 0:
+            GLib.idle_add(lambda: self._animate_scroll_to_position(value))
+
+    def _animate_scroll_to_position(self, final):
+        list_box = self.get_parent()
+        adj = list_box.get_adjustment()
+
+        list_height = self.get_allocation().height
+        current = adj.get_value()
+        step = 1
+        tol = 1e-9
+
+        if self._animation_control is not None:
+            # Whether the animation is progressing as planned or the user scrolled the list.
+            position_change = abs(current - self._animation_control["last_position"])
+            # Whether the list size changed.
+            size_change = list_height - self._animation_control["list_height"]
+
+            if position_change == 0 or position_change > step + tol or size_change != 0:
+                self._animation_control = None
+                return False
+
+        self._animation_control = {
+            "last_position": current,
+            "list_height": list_height
+        }
+
+        distance = final - current
+        value = None
+
+        if abs(distance) < step:
+            adj.set_value(final)
+            self._animation_control = None
+            return False
+
+        if distance > step:
+            adj.set_value(current + step)
+            return True
+
+        if distance < -step:
+            adj.set_value(current - step)
+            return True
 
     @property
     def _scroll_handler_id(self):
@@ -104,7 +150,7 @@ class ScrollableRow(Gtk.ListBoxRow):
             self.disconnect(self._scroll_handler_id_value)
 
         self._scroll_handler_id_value = value
-            
+
 
 class TextIconRow(ScrollableRow):
     """
