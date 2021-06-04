@@ -1,4 +1,4 @@
-from toga_gtk.libs import Gio
+from toga_gtk.libs import Gtk, Gio
 
 
 class SourceListModel(Gio.ListStore):
@@ -12,7 +12,8 @@ class SourceListModel(Gio.ListStore):
         self.row_class = row_class
         self.icon_factory = icon_factory
         self._parent_list = None
-        self._on_select = None
+        self._on_select_handler = None
+        self._on_select_signal_handler = None
 
     def _bind_function(self, item):
         return item
@@ -22,8 +23,13 @@ class SourceListModel(Gio.ListStore):
         parent_list.bind_model(self, self._bind_function)
 
     def set_on_select(self, on_select: callable):
-        self._on_select = on_select
-        self._on_select_handler = self._parent_list.connect("row-selected", self._on_row_selected)
+        self._on_select_handler = on_select
+        self._on_select_signal_handler = self._parent_list.connect(
+            "row-selected", self._on_row_selected)
+
+    def set_on_delete(self, on_delete: callable):
+        for item in self:
+            item.set_on_delete(on_delete)
 
     def destroy(self, *args, **kwargs):
         self._parent_list.dsconnect(self._on_select_handler)
@@ -35,20 +41,20 @@ class SourceListModel(Gio.ListStore):
         # Thus the identity function.
         # ListStore only accepts GObjects so we can't put toga.sources.Row in it.
         super().remove_all()
-        for row in source:
+        for item in source:
             self.append(
-                self.row_class(row, self.icon_factory))
+                self.row_class(self.icon_factory, item))
 
     def insert(self, index: int, item: 'Row'):
-        new_item = self.row_class(item, self.icon_factory)
+        new_item = self.row_class(self.icon_factory, row)
         super().insert(index, new_item)
 
     def change(self, item: 'Row'):
-        new_item = self.row_class(item, self)
+        new_item = self.row_class(self.icon_factory, row)
         index = self._find(item)
         super().insert(index, new_item)
 
-    def remove(self, item: 'Row', index: int):
+    def remove(self, item: 'Row', index: int = None):
         if index is None:
             index = self._find(item)
         super().remove(index)
@@ -65,17 +71,12 @@ class SourceListModel(Gio.ListStore):
             return row.interface
 
     def _on_row_selected(self, widget: 'GObject', item: 'ListBoxRow'):
-        if item is not None and self._on_select is not None:
-            self._on_select(item.interface)
+        if item is not None and self._on_select_handler is not None:
+            self._on_select_handler(item.interface)
 
     def _find(self, item: 'Row') -> int:
-        found, index = self.store.find_with_equal_func(
-            item,
-            lambda a, b: a == b.interface
-        )
+        for index in range(0, len(self)):
+            if item == self[index].interface:
+                return index
 
-        if not found:
-            return -1
-        else:
-            return index
-
+        return None

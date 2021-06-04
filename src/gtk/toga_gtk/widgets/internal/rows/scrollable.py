@@ -1,7 +1,4 @@
-import html
-
 from toga_gtk.libs import Gtk, GLib
-from toga_gtk.icons import Icon
 
 
 class ScrollableRow(Gtk.ListBoxRow):
@@ -101,6 +98,9 @@ class ScrollableRow(Gtk.ListBoxRow):
             GLib.idle_add(lambda: self._animate_scroll_to_position(value))
 
     def _animate_scroll_to_position(self, final):
+        # If this function returns True it is executed again.
+        # If this function returns False is is not executed anymore.
+        # Set self._animation_control to None after the animation is over.
         list_box = self.get_parent()
         adj = list_box.get_adjustment()
 
@@ -150,51 +150,3 @@ class ScrollableRow(Gtk.ListBoxRow):
             self.disconnect(self._scroll_handler_id_value)
 
         self._scroll_handler_id_value = value
-
-
-class TextIconRow(ScrollableRow):
-    """
-    Create a TextIconRow from a toga.sources.Row.
-    A reference to the original row is kept in self.toga_row, this is useful for comparisons.
-    """
-    def __init__(self, interface: 'Row', factory: callable, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        # This is the factory of the DetailedList implementation.
-        self.factory = factory
-        # Keep a reference to the original core.toga.sources.list_source.Row
-        self.interface = interface
-        self.hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-        self.vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-      
-        self.text = Gtk.Label(xalign=0)
-        text_markup = self.markup(self.interface)
-        self.text.set_markup(text_markup)
-
-        self.icon = self.get_icon(self.interface, self.factory)
-
-        self.vbox.pack_start(self.text, True, True, 0)
-        
-        if self.icon is not None:
-            self.hbox.pack_start(self.icon, False, False, 6)
-
-        self.hbox.pack_start(self.vbox, True, True, 0)
-
-        self.add(self.hbox)
-
-    def get_icon(self, row, factory):
-        if getattr(row, "icon") is None:
-            return None
-        else:
-            row.icon.bind(factory)
-            # TODO: see get_scale_factor() to choose 72 px on hidpi
-            return getattr(row.icon._impl, "native_" + str(32))
-
-    @staticmethod
-    def markup(row):
-        markup = [
-            html.escape(row.title or ''),
-            '\n',
-            '<small>', html.escape(row.subtitle or ''), '</small>',
-        ]
-        return ''.join(markup)
