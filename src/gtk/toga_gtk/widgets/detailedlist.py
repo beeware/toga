@@ -3,9 +3,7 @@ from .base import Widget
 from .internal.rows import TextIconRow
 from .internal.buttons import RefreshButton, ScrollButton
 
-
-# hide the buttons when the user left clicks somewhere else (use _on_select?)
-
+#Verify if right clicking a row currently works with touch screens, if not, use Gtk.GestureLongPress
 class DetailedList(Widget):
     """
     Gtk DetailedList implementation.
