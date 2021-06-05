@@ -13,10 +13,11 @@ class TextIconRow(HiddenButtonsRow):
     """
     def __init__(self, factory: callable, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._on_delete_handler = None
 
         # This is the factory of the DetailedList implementation.
         self.factory = factory
+
+        self._delete_button = None
 
         icon = self.get_icon(self.interface, self.factory)
 
@@ -36,19 +37,9 @@ class TextIconRow(HiddenButtonsRow):
 
         self.add_content(content)
 
-    def set_on_delete(self, on_delete: callable):
-        self._on_delete_handler = on_delete
-
-        if self._on_delete_handler is not None:
-            delete_button = Gtk.Button.new_from_icon_name("user-trash-symbolic", Gtk.IconSize.BUTTON)
-            delete_button.connect("clicked", lambda w: self._on_delete())
-            self.add_button(delete_button)
-        else:
-            self.destroy_buttons()
-
-    def _on_delete(self):
-        self._on_delete_handler(self.interface)
-        HiddenButtonsRow._hide_buttons_on_all = None
+        self._delete_button = Gtk.Button.new_from_icon_name("user-trash-symbolic", Gtk.IconSize.BUTTON)
+        self._delete_button.connect("clicked", lambda w: self._on_delete())
+        self.add_button(self._delete_button)
 
     def get_icon(self, row, factory):
         if getattr(row, "icon") is None:
@@ -68,4 +59,5 @@ class TextIconRow(HiddenButtonsRow):
         return ''.join(markup)
 
     def on_right_click(self, rect):
-        self.toggle_content()
+        if self._dl.on_delete is not None:
+            self.show_buttons()

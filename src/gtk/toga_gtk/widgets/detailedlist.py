@@ -1,38 +1,33 @@
-from ..libs import Gtk, GLib, Gdk, GObject
+from ..libs import Gtk, GLib, Gdk, Gio
 from .base import Widget
 from .internal.rows import TextIconRow
 from .internal.buttons import RefreshButton, ScrollButton
-from .internal.sourcelistmodel import SourceListModel
 
 
-class DetailedList(Widget, GObject.GObject):
+# hide the buttons when the user left clicks somewhere else (use _on_select?)
+
+class DetailedList(Widget):
     """
     Gtk DetailedList implementation.
     Gtk.ListBox inside a Gtk.ScrolledWindow.
     """
-    __gsignals__ = {
-        # signal for rows to hide their buttons when the user right clicks somewhere else
-        'right-clicked': (GObject.SIGNAL_RUN_FIRST, None, tuple()),
-        # signal for update the delete method on rows
-        'set-on-delete': (GObject.SIGNAL_RUN_LAST, None, (bool,))
-    }
-    
-    def __init__(self, *args, **kwargs):
-        GObject.GObject.__init__(self)
-        super().__init__(*args, **kwargs)
 
     def create(self):
         self._on_refresh_handler = None
         self._on_select_handler = None
         self._on_delete_handler = None
+        
+        # Not the same as selected row. _active_row is the one with its buttons exposed.
+        self._active_row = None
+
+        self._on_select_signal_handler = None
 
         self.list_box = Gtk.ListBox()
 
         self.list_box.set_selection_mode(Gtk.SelectionMode.NONE)
 
-        self.store = SourceListModel(TextIconRow, self.interface.factory)
-        self.store.bind_to_list(self.list_box)
-        self.store.set_on_select(self._on_select)
+        self.store = Gio.ListStore()
+        self.list_box.bind_model(self.store, lambda a: a)
 
         self.scrolled_window = Gtk.ScrolledWindow()
 
@@ -55,33 +50,54 @@ class DetailedList(Widget, GObject.GObject):
 
         self.native.interface = self.interface
 
+        self._on_select_signal_handler = self.list_box.connect(
+            'row-selected', lambda w, item: self._on_select(item))
+
         self.right_click_gesture = Gtk.GestureMultiPress.new(self.list_box)
         self.right_click_gesture.set_button(3)
         self.right_click_gesture.set_propagation_phase(Gtk.PropagationPhase.BUBBLE)
         self.right_click_gesture.connect("pressed", self._on_right_click)
 
-        # create row and liststore factories that sets up signals and stuff?
+    @property
+    def on_delete(self):
+        return self._on_delete
 
-        # move everything in sourcelistmodel back here?
+    def row_factory(self, item: 'Row'):
+        return TextIconRow(self.interface.factory, self, item)
+
+    def destroy(self):
+        self.disconnect(self._on_select_signal_handler)
+        super().destroy()
 
     def change_source(self, source: 'ListSource'):
-        self.store.change_source(source)
+        self.store.remove_all()
+        for item in source:
+            self.store.append(
+                self.row_factory(item))
 
         # We have to wait until the rows are actually added decide how to position the
         # refresh button
         GLib.idle_add(lambda: not self._changed())
 
     def insert(self, index: int, item: 'Row'):
-        self.store.insert(index, item)
+        self.store.insert(index, self.row_factory(item))
         self.list_box.show_all()
         self._changed()
 
     def change(self, item: 'Row'):
-        self.store.change(item)
-        self._changed()
+        list_box_row = self.row_factory(item)
+        _, index = self._find(item)
+        self.store.insert(index, list_box_row)
         
     def remove(self, item: 'Row', index: int):
-        self._on_delete(item)
+        if item is not None:
+            list_box_row, index = self._find(item)
+
+        if self._active_row == list_box_row:
+            self._active_row = None
+
+        self.store.remove(index)
+        list_box_row.destroy()
         self._changed()
         
     def clear(self):
@@ -89,10 +105,15 @@ class DetailedList(Widget, GObject.GObject):
         self._changed()
 
     def get_selection(self):
-        return self.store.get_selection()
+        item = self.list_box.get_selected_row()
+        if item is None:
+            return item
+        else:
+            return item.interface
 
     def scroll_to_row(self, row: int):
-        self.store.scroll_to_row(row)
+        item = self.store[row]
+        item.scroll_to_center()
 
     def set_on_refresh(self, handler: callable):
         if handler is not None:
@@ -106,11 +127,6 @@ class DetailedList(Widget, GObject.GObject):
 
     def set_on_delete(self, handler: callable):
         self._on_delete_handler = handler
-        if self._on_delete_handler is not None:
-            self.store.set_on_delete(self._on_delete)
-            self.emit('set-on-delete', True)
-        else:
-            self.emit('set-on-delete', False)
 
     def after_on_refresh(self):
         # No special handling required
@@ -120,14 +136,21 @@ class DetailedList(Widget, GObject.GObject):
         if self._on_refresh_handler is not None:
             self._on_refresh_handler(self.interface)
 
-    def _on_select(self, item: 'Row'):
-        if self._on_select_handler is not None:
-            self._on_select_handler(self.interface, item)
+    def _on_select(self, item: Gtk.ListBoxRow):
+        if self._on_select_handler is not None and item is not None:
+            self._on_select_handler(self.interface, item.interface)
 
-    def _on_delete(self, item: 'Row', index: int = None):
+        if self._active_row is not None and self._active_row != item:
+            self._active_row.hide_buttons()
+            self._active_row = None
+
+    def _on_delete(self, item: Gtk.ListBoxRow):
         if self._on_delete_handler is not None:
-            self.store.remove(item, index)
-            self._on_delete_handler(self.interface, item)
+            if self._active_row == item:
+                self._active_row = None
+
+            self.interface.data.remove(item.interface)
+            self._on_delete_handler(self.interface, item.interface)
 
     def _changed(self):
         self.refresh_button.list_changed()
@@ -135,13 +158,25 @@ class DetailedList(Widget, GObject.GObject):
         return True
 
     def _on_right_click(self, gesture, n_press, x, y):
-        self.emit('right-clicked')
         item = self.list_box.get_row_at_y(y)
 
+        rect = Gdk.Rectangle()
+        rect.x, rect.y = item.translate_coordinates(self.list_box, x, y)
+        
+        if self._active_row is not None and self._active_row != item:
+            self._active_row.hide_buttons()
+
+        self._active_row = item
+
+        item.toggle_content()
+        
         if self._on_select_handler is not None:
             self.list_box.select_row(item)
 
-        if item is not None:
-            rect = Gdk.Rectangle()
-            rect.x, rect.y = item.translate_coordinates(self.list_box, x, y)
-            item.on_right_click(rect)
+    def _find(self, item: 'Row'):
+        # Maybe this could be replaced by self.interface.data.index(item)
+        for index in range(0, len(self.store)):
+            if item == self.store[index].interface:
+                return self.store[index], index
+
+        return None
