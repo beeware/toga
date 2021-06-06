@@ -64,7 +64,7 @@ class DetailedList(Widget):
 
     def row_factory(self, item: 'Row'):
         new_item = TextIconRow(self.interface.factory, self, item)
-        item._impl = new_item
+        setattr(item, '_impl', new_item)
         return new_item
 
     def destroy(self):
