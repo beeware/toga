@@ -3,6 +3,8 @@ from .base import Widget
 from .internal.rows import TextIconRow
 from .internal.buttons import RefreshButton, ScrollButton
 
+from .internal import sourcetreemodel
+
 #Verify if right clicking a row currently works with touch screens, if not, use Gtk.GestureLongPress
 class DetailedList(Widget):
     """
@@ -61,7 +63,9 @@ class DetailedList(Widget):
         return self._on_delete
 
     def row_factory(self, item: 'Row'):
-        return TextIconRow(self.interface.factory, self, item)
+        new_item = TextIconRow(self.interface.factory, self, item)
+        item._impl = new_item
+        return new_item
 
     def destroy(self):
         self.disconnect(self._on_select_signal_handler)
@@ -83,19 +87,19 @@ class DetailedList(Widget):
         self._changed()
 
     def change(self, item: 'Row'):
-        list_box_row = self.row_factory(item)
-        _, index = self._find(item)
-        self.store.insert(index, list_box_row)
+        new_item = self.row_factory(item)
+        index = self.index(item)
+        self.store.insert(index, new_item)
         
     def remove(self, item: 'Row', index: int):
-        if item is not None:
-            list_box_row, index = self._find(item)
+        if index is None:
+            index = self.index(item)
 
-        if self._active_row == list_box_row:
+        if self._active_row == item._impl:
             self._active_row = None
 
         self.store.remove(index)
-        list_box_row.destroy()
+        item._impl.destroy()
         self._changed()
         
     def clear(self):
@@ -129,6 +133,12 @@ class DetailedList(Widget):
     def after_on_refresh(self):
         # No special handling required
         pass
+
+    def index(self, item: 'Row'):
+        for index in range(0, len(self.store)):
+            if item._impl == self.store[index]:
+                return index
+        return None
 
     def _on_refresh(self):
         if self._on_refresh_handler is not None:
@@ -170,11 +180,3 @@ class DetailedList(Widget):
         
         if self._on_select_handler is not None:
             self.list_box.select_row(item)
-
-    def _find(self, item: 'Row'):
-        # Maybe this could be replaced by self.interface.data.index(item)
-        for index in range(0, len(self.store)):
-            if item == self.store[index].interface:
-                return self.store[index], index
-
-        return None
