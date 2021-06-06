@@ -3,7 +3,6 @@ from .base import Widget
 from .internal.rows import TextIconRow
 from .internal.buttons import RefreshButton, ScrollButton
 
-from .internal import sourcetreemodel
 
 #Verify if right clicking a row currently works with touch screens, if not, use Gtk.GestureLongPress
 class DetailedList(Widget):
