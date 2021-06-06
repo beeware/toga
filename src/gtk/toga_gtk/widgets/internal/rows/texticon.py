@@ -59,5 +59,6 @@ class TextIconRow(HiddenButtonsRow):
         return ''.join(markup)
 
     def on_right_click(self, rect):
-        if self._dl.on_delete is not None:
-            self.show_buttons()
+        handler = self._dl.on_delete
+        if handler is not None:
+            self.toggle_content()

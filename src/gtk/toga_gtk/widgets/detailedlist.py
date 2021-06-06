@@ -56,10 +56,12 @@ class DetailedList(Widget):
         self.right_click_gesture.set_button(3)
         self.right_click_gesture.set_propagation_phase(Gtk.PropagationPhase.BUBBLE)
         self.right_click_gesture.connect("pressed", self._on_right_click)
-
+        
     @property
     def on_delete(self):
-        return self._on_delete
+        if self._on_delete_handler is not None:
+            return self._on_delete
+        return None
 
     def row_factory(self, item: 'Row'):
         new_item = TextIconRow(self.interface.factory, self, item)
@@ -167,6 +169,9 @@ class DetailedList(Widget):
     def _on_right_click(self, gesture, n_press, x, y):
         item = self.list_box.get_row_at_y(y)
 
+        if item is None:
+            return
+
         rect = Gdk.Rectangle()
         rect.x, rect.y = item.translate_coordinates(self.list_box, x, y)
         
@@ -174,8 +179,7 @@ class DetailedList(Widget):
             self._active_row.hide_buttons()
 
         self._active_row = item
+        item.on_right_click(rect)
 
-        item.toggle_content()
-        
         if self._on_select_handler is not None:
             self.list_box.select_row(item)
