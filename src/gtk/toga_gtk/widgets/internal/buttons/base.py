@@ -16,7 +16,7 @@ class ParentPosition:
         lower = self.adj.get_lower()
         is_at_top = (value == lower)
 
-        return is_scrollable and is_at_top
+        return is_at_top
 
     def _is_parent_at_bottom(self):
         is_scrollable = self._is_parent_scrollable()
@@ -26,7 +26,7 @@ class ParentPosition:
         upper = self.adj.get_upper()
         is_at_bottom = (value + page_size == upper)
 
-        return is_scrollable and is_at_bottom
+        return is_at_bottom
 
     def _is_parent_scrolled(self):
         is_at_top = self._is_parent_at_top()

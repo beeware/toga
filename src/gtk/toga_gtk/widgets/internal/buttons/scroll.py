@@ -8,6 +8,7 @@ class ScrollButton(ParentPosition):
         self.right_margin = right_margin
 
         self._parent = None
+        self._is_attached_to_parent = False
         self._do_scroll = None
 
         self._button = Gtk.Button.new_from_icon_name(
@@ -29,8 +30,8 @@ class ScrollButton(ParentPosition):
         self._revealer.set_margin_bottom(self.bottom_margin)
         self._revealer.set_margin_end(self.right_margin)
 
-        self._revealer.set_reveal_child(False)
         self._revealer.add(self._button)
+        self._revealer.set_reveal_child(False)
 
         self._button_handler = self._button.connect(
             "clicked",
@@ -55,13 +56,15 @@ class ScrollButton(ParentPosition):
         self._revealer.set_reveal_child(False)
 
     def list_changed(self):
+        is_scrollable = self._is_parent_scrollable()
         is_at_top = self._is_parent_at_top()
         is_at_bottom = self._is_parent_at_bottom()
 
         is_distant_from_top = self._is_parent_distant_from_top()
         is_distant_from_bottom = self._is_parent_distant_from_bottom()
 
-        if not is_at_top and not is_at_bottom \
+        if is_scrollable and \
+           not is_at_top and not is_at_bottom \
            and is_distant_from_top and is_distant_from_bottom:
             self.show()
         else:
