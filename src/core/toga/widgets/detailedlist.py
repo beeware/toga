@@ -11,7 +11,7 @@ class DetailedList(Widget):
     Args:
         id (str): An identifier for this widget.
         data (list of `dict`): List of dictionaries with required 'icon', 'title', and
-            'subtitle' keys as well as optional custom keys to store additional 
+            'subtitle' keys as well as optional custom keys to store additional
             info like 'pk' for a database primary key (think django ORM)
         on_delete (``callable``): Function that is invoked on row deletion.
         on_refresh (``callable``): Function that is invoked on user initialised refresh.
@@ -29,12 +29,12 @@ class DetailedList(Widget):
         >>> dlist = toga.DetailedList(
         ...     data=[
         ...         {
-        ...             'icon': '', 
-        ...             'title': 'John Doe', 
+        ...             'icon': '',
+        ...             'title': 'John Doe',
         ...             'subtitle': 'Employee of the Month',
         ...             'pk': 100
         ...          }
-        ...      ], 
+        ...      ],
         ...      on_select=selection_handler
         ... )
     """
