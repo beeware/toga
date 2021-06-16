@@ -10,7 +10,8 @@ class DetailedList(Widget):
 
     Args:
         id (str): An identifier for this widget.
-        data (list of `str`): List of strings which to display on the widget.
+        data (list of `dict`): List of dictionaries with required 'icon', 'title', and 'subtitle' keys
+            and optional custom keys to store additional information i.e. 'pk' for a database primary key (think django)
         on_delete (``callable``): Function that is invoked on row deletion.
         on_refresh (``callable``): Function that is invoked on user initialised refresh.
         on_select (``callable``): Function that is invoked on row selection.
@@ -55,8 +56,8 @@ class DetailedList(Widget):
 
     @property
     def data(self):
-        """ The data source of the widget. It accepts table data
-        in the form of ``list``, ``tuple``, or :obj:`ListSource`
+        """ The data source of the widget. It accepts data
+        in the form of ``list`` of ``dict`` or :obj:`ListSource`
 
         Returns:
             Returns a (:obj:`ListSource`).
