@@ -1,6 +1,6 @@
 import html
 
-from toga_gtk.libs import Gtk, GLib
+from toga_gtk.libs import Gtk, GLib, Pango
 from toga_gtk.icons import Icon
 
 from .base import HiddenButtonsRow
@@ -22,6 +22,11 @@ class TextIconRow(HiddenButtonsRow):
         icon = self.get_icon(self.interface, self.factory)
 
         text = Gtk.Label(xalign=0)
+
+        # The two line below are necessary for right to left text.
+        text.set_hexpand(True)
+        text.set_ellipsize(Pango.EllipsizeMode.END)
+
         text_markup = self.markup(self.interface)
         text.set_markup(text_markup)
 
@@ -29,7 +34,7 @@ class TextIconRow(HiddenButtonsRow):
         vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
 
         vbox.pack_start(text, True, True, 0)
-        
+
         if icon is not None:
             content.pack_start(icon, False, False, 6)
 
