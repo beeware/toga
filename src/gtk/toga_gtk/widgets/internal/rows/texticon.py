@@ -23,9 +23,10 @@ class TextIconRow(HiddenButtonsRow):
 
         text = Gtk.Label(xalign=0)
 
-        # The two line below are necessary for right to left text.
+        # The three line below are necessary for right to left text.
         text.set_hexpand(True)
         text.set_ellipsize(Pango.EllipsizeMode.END)
+        text.set_margin_end(12)
 
         text_markup = self.markup(self.interface)
         text.set_markup(text_markup)
