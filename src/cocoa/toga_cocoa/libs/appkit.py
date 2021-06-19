@@ -372,7 +372,7 @@ NSImageScaleAxesIndependently = 1
 NSImageScaleNone = 2
 NSImageScaleProportionallyUpOrDown = 3
 
-if platform == 'arm64':
+if platform.machine() == 'arm64':
     NSImageResizingModeTile = 1
     NSImageResizingModeStretch = 0
 else:
