@@ -7,7 +7,7 @@ from urllib.parse import unquote, urlparse
 from rubicon.objc.eventloop import CocoaLifecycle, EventLoopPolicy
 
 import toga
-from toga.handlers import wrapped_handler
+from toga.handlers import wrapped_handler, NativeHandler
 
 from .keys import cocoa_key
 from .libs import (
@@ -144,30 +144,27 @@ class App:
                 section=20,
             ),
             toga.Command(
-                SEL('hide:'),
+                NativeHandler(SEL('hide:')),
                 'Hide ' + formal_name,
                 shortcut=toga.Key.MOD_1 + 'h',
                 group=toga.Group.APP,
                 order=0,
                 section=sys.maxsize - 1,
-                _action_is_raw=True,
             ),
             toga.Command(
-                SEL('hideOtherApplications:'),
+                NativeHandler(SEL('hideOtherApplications:')),
                 'Hide Others',
                 shortcut=toga.Key.MOD_1 + toga.Key.MOD_2 + 'h',
                 group=toga.Group.APP,
                 order=1,
                 section=sys.maxsize - 1,
-                _action_is_raw=True,
             ),
             toga.Command(
-                SEL('unhideAllApplications:'),
+                NativeHandler(SEL('unhideAllApplications:')),
                 'Show All',
                 group=toga.Group.APP,
                 order=2,
                 section=sys.maxsize - 1,
-                _action_is_raw=True,
             ),
             # Quit should always be the last item, in a section on its own
             toga.Command(
@@ -218,10 +215,13 @@ class App:
                     key = ''
                     modifier = None
 
-                if cmd._action_is_raw:
-                    action = cmd.action
-                else:
+                # Native handlers can be invoked directly as menu actions.
+                # Standard wrapped menu items have a `_raw` attribute,
+                # and are invoked using the selectMenuItem:
+                if hasattr(cmd.action, '_raw'):
                     action = SEL('selectMenuItem:')
+                else:
+                    action = cmd.action
 
                 item = NSMenuItem.alloc().initWithTitle(
                     cmd.label,

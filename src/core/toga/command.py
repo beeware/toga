@@ -113,14 +113,14 @@ class Command:
             alphabetically by label within its section.
         enabled: whether to enable the command or not.
     """
-    def __init__(self, action, label,
-                 shortcut=None, tooltip=None, icon=None,
-                 group=None, section=None, order=None, enabled=True, factory=None,
-                 _action_is_raw=False):
+    def __init__(
+        self, action, label,
+        shortcut=None, tooltip=None, icon=None,
+        group=None, section=None, order=None, enabled=True, factory=None,
+    ):
         self.factory = factory
 
-        self._action_is_raw = _action_is_raw
-        self.action = action if _action_is_raw else wrapped_handler(self, action)
+        self.action = wrapped_handler(self, action)
         self.label = label
 
         self.shortcut = shortcut
