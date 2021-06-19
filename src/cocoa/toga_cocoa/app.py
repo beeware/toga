@@ -7,7 +7,7 @@ from urllib.parse import unquote, urlparse
 from rubicon.objc.eventloop import CocoaLifecycle, EventLoopPolicy
 
 import toga
-from toga.handlers import wrapped_handler
+from toga.handlers import wrapped_handler, NativeHandler
 
 from .keys import cocoa_key
 from .libs import (
@@ -96,6 +96,11 @@ class AppDelegate(NSObject):
         if cmd.action:
             cmd.action(None)
 
+    @objc_method
+    def validateMenuItem_(self, sender) -> bool:
+        cmd = self.interface._impl._menu_items[sender]
+        return cmd.enabled
+
 
 class App:
     _MAIN_WINDOW_CLASS = MainWindow
@@ -140,7 +145,7 @@ class App:
                 section=20,
             ),
             toga.Command(
-                lambda _: self.native.hide(self.native),
+                NativeHandler(SEL('hide:')),
                 'Hide ' + formal_name,
                 shortcut=toga.Key.MOD_1 + 'h',
                 group=toga.Group.APP,
@@ -148,7 +153,7 @@ class App:
                 section=sys.maxsize - 1,
             ),
             toga.Command(
-                lambda _: self.native.hideOtherApplications(self.native),
+                NativeHandler(SEL('hideOtherApplications:')),
                 'Hide Others',
                 shortcut=toga.Key.MOD_1 + toga.Key.MOD_2 + 'h',
                 group=toga.Group.APP,
@@ -156,7 +161,7 @@ class App:
                 section=sys.maxsize - 1,
             ),
             toga.Command(
-                lambda _: self.native.unhideAllApplications(self.native),
+                NativeHandler(SEL('unhideAllApplications:')),
                 'Show All',
                 group=toga.Group.APP,
                 order=2,
@@ -211,20 +216,23 @@ class App:
                     key = ''
                     modifier = None
 
+                # Native handlers can be invoked directly as menu actions.
+                # Standard wrapped menu items have a `_raw` attribute,
+                # and are invoked using the selectMenuItem:
+                if hasattr(cmd.action, '_raw'):
+                    action = SEL('selectMenuItem:')
+                else:
+                    action = cmd.action
+
                 item = NSMenuItem.alloc().initWithTitle(
                     cmd.label,
-                    action=SEL('selectMenuItem:'),
+                    action=action,
                     keyEquivalent=key,
                 )
                 if modifier is not None:
                     item.keyEquivalentModifierMask = modifier
 
-                cmd._impl.native.append(item)
                 self._menu_items[item] = cmd
-
-                # This line may appear redundant, but it triggers the logic
-                # to force the enabled status on the underlying widgets.
-                cmd.enabled = cmd.enabled
                 submenu.addItem(item)
 
         # Set the menu for the app.
@@ -251,8 +259,6 @@ class App:
                     group.label, action=None, keyEquivalent=''
                 )
                 submenu = NSMenu.alloc().initWithTitle(group.label)
-                submenu.setAutoenablesItems(False)
-
                 parent_menu.setSubmenu(submenu, forItem=menu_item)
 
             # Install the item in the group cache.

@@ -113,9 +113,11 @@ class Command:
             alphabetically by label within its section.
         enabled: whether to enable the command or not.
     """
-    def __init__(self, action, label,
-                 shortcut=None, tooltip=None, icon=None,
-                 group=None, section=None, order=None, enabled=True, factory=None):
+    def __init__(
+        self, action, label,
+        shortcut=None, tooltip=None, icon=None,
+        group=None, section=None, order=None, enabled=True, factory=None,
+    ):
         self.factory = factory
 
         self.action = wrapped_handler(self, action)

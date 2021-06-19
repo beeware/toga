@@ -109,6 +109,11 @@ class WindowDelegate(NSObject):
             native.setAction_(SEL('onToolbarButtonPress:'))
         except KeyError:
             pass
+
+        # Prevent the toolbar item from being deallocated when
+        # no Python references remain
+        native.retain()
+        native.autorelease()
         return native
 
     @objc_method
