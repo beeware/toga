@@ -50,17 +50,17 @@ class DetailedList(Widget):
         self.native.interface = self.interface
 
         self._on_select_signal_handler = self.list_box.connect(
-            'row-selected', lambda w, item: self._on_select(item))
+            'row-selected', lambda w, item: self.gtk_on_row_selected(item))
 
         self.right_click_gesture = Gtk.GestureMultiPress.new(self.list_box)
         self.right_click_gesture.set_button(3)
         self.right_click_gesture.set_propagation_phase(Gtk.PropagationPhase.BUBBLE)
         self.right_click_gesture.connect("pressed", self._on_right_click)
-        
+
     @property
     def on_delete(self):
         if self._on_delete_handler is not None:
-            return self._on_delete
+            return self.gtk_on_delete_clicked
         return None
 
     def row_factory(self, item: 'Row'):
@@ -121,7 +121,7 @@ class DetailedList(Widget):
     def set_on_refresh(self, handler: callable):
         if handler is not None:
             self._on_refresh_handler = handler
-            self.refresh_button.set_on_refresh(self._on_refresh)
+            self.refresh_button.set_on_refresh(self.gtk_on_refresh_clicked)
 
     def set_on_select(self, handler: callable):
         self._on_select_handler = handler
@@ -141,11 +141,11 @@ class DetailedList(Widget):
                 return index
         return None
 
-    def _on_refresh(self):
+    def gtk_on_refresh_clicked(self):
         if self._on_refresh_handler is not None:
             self._on_refresh_handler(self.interface)
 
-    def _on_select(self, item: Gtk.ListBoxRow):
+    def gtk_on_row_selected(self, item: Gtk.ListBoxRow):
         if self._on_select_handler is not None and item is not None:
             self._on_select_handler(self.interface, item.interface)
 
@@ -153,7 +153,7 @@ class DetailedList(Widget):
             self._active_row.hide_buttons()
             self._active_row = None
 
-    def _on_delete(self, item: Gtk.ListBoxRow):
+    def gtk_on_delete_clicked(self, item: Gtk.ListBoxRow):
         if self._on_delete_handler is not None:
             if self._active_row == item:
                 self._active_row = None
