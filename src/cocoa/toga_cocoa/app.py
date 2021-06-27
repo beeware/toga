@@ -132,6 +132,8 @@ class App:
         formal_name = self.interface.formal_name
 
         self.interface.commands.add(
+
+            # ---- App menu -----------------------------------
             toga.Command(
                 lambda _: self.interface.about(),
                 'About ' + formal_name,
@@ -176,6 +178,71 @@ class App:
                 section=sys.maxsize
             ),
 
+            # ---- Edit menu ----------------------------------
+            toga.Command(
+                NativeHandler(SEL('undo:')),
+                'Undo',
+                shortcut=toga.Key.MOD_1 + 'z',
+                group=toga.Group.EDIT,
+                order=10,
+            ),
+            toga.Command(
+                NativeHandler(SEL('redo:')),
+                'Redo',
+                shortcut=toga.Key.SHIFT + toga.Key.MOD_1 + 'z',
+                group=toga.Group.EDIT,
+                order=20,
+            ),
+
+            toga.Command(
+                NativeHandler(SEL('cut:')),
+                'Cut',
+                shortcut=toga.Key.MOD_1 + 'x',
+                group=toga.Group.EDIT,
+                section=10,
+                order=10,
+            ),
+            toga.Command(
+                NativeHandler(SEL('copy:')),
+                'Copy',
+                shortcut=toga.Key.MOD_1 + 'c',
+                group=toga.Group.EDIT,
+                section=10,
+                order=20,
+            ),
+            toga.Command(
+                NativeHandler(SEL('paste:')),
+                'Paste',
+                shortcut=toga.Key.MOD_1 + 'v',
+                group=toga.Group.EDIT,
+                section=10,
+                order=30,
+            ),
+            toga.Command(
+                NativeHandler(SEL('pasteAsPlainText:')),
+                'Paste and Match Style',
+                shortcut=toga.Key.MOD_2 + toga.Key.SHIFT + toga.Key.MOD_1 + 'v',
+                group=toga.Group.EDIT,
+                section=10,
+                order=40,
+            ),
+            toga.Command(
+                NativeHandler(SEL('delete:')),
+                'Delete',
+                group=toga.Group.EDIT,
+                section=10,
+                order=50,
+            ),
+            toga.Command(
+                NativeHandler(SEL('selectAll:')),
+                'Select All',
+                shortcut=toga.Key.MOD_1 + 'a',
+                group=toga.Group.EDIT,
+                section=10,
+                order=60,
+            ),
+
+            # ---- Help menu ----------------------------------
             toga.Command(
                 lambda _: self.interface.visit_homepage(),
                 'Visit homepage',
