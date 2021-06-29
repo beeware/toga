@@ -301,7 +301,7 @@ class TogaBox(Gtk.Fixed):
                                 #     widget,
                                 #     widget.children,
                                 #     min_height,
-                                )
+                                # )
         elif self.interface.style.direction == ROW:
             for widget in self.interface.children:
                 if str(type(widget)) == "<class 'toga.widgets.box.Box'>":
