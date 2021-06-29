@@ -106,10 +106,8 @@ class Window:
             child._impl.container = widget
 
     def show(self):
-        self.native.show_all()
-
-        # Now that the content is visible, we can do our initial hinting,
-        # and use that as the basis for setting the minimum window size.
+        # Now we will do our initial hinting, and use that as the basis
+        # for setting the minimum window size.
         self.interface.content._impl.rehint()
         self.interface.content.style.layout(
             self.interface.content,
@@ -117,6 +115,11 @@ class Window:
         )
         self.interface.content._impl.min_width = self.interface.content.layout.width
         self.interface.content._impl.min_height = self.interface.content.layout.height
+
+        # Because we modify gtk backend do_get_preferred_width and
+        # do_get_preferred_height methods, showing the window must be
+        # do after setting our layout.
+        self.native.show_all()
 
     def gtk_delete_event(self, widget, data):
         if self.interface.on_close:
