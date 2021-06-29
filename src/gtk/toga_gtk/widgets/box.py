@@ -67,7 +67,7 @@ class TogaBox(Gtk.Fixed):
                                     widget.style.padding_right
                                     + widget._impl.native.get_preferred_width()[0]
                                     + widget.style.padding_left
-                            )
+                                )
                             # print(
                             #     ".... NOT BOX WIDGET WITH ROW DIRECTION AND NO HEIGHT",
                             #     widget,
