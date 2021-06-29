@@ -13,18 +13,54 @@ class TogaBox(Gtk.Fixed):
         # print("GET PREFERRED WIDTH", self._impl.native)
         width = self._impl.interface.layout.width
         min_width = 0 if self._impl.min_width is None else self._impl.min_width
-        for widget in self.get_children():
-            if (
-                min_width
-                <= widget.interface.layout.absolute_content_right
-                + widget.interface.style.padding_right
-            ):
-                min_width = (
-                    widget.interface.layout.absolute_content_right
-                    + widget.interface.style.padding_right
-                )
+        if self.interface.style.direction == ROW:
+            if min_width == 0:
+                for widget in self.interface.children:
+                    if str(type(widget)) == "<class 'toga.widgets.box.Box'>":
+                        if widget.style.width:
+                            pass
+                        else:
+                            pass
+                    else:
+                        if widget.style.flex:
+                            if widget.style.width:
+                                # The widget is flex but it has width
+                                pass
+                            else:
+                                pass
+                        else:
+                            if widget.style.width:
+                                # The widget is flex but it has width
+                                pass
+                            else:
+                                # The widget is flex and it has not width
+                                pass
+        elif self.interface.style.direction == COLUMN:
+            for widget in self.interface.children:
+                if str(type(widget)) == "<class 'toga.widgets.box.Box'>":
+                    pass
+                else:
+                    if widget.style.flex:
+                        if widget.style.width:
+                            # The widget is flex but it has width
+                            pass
+                        else:
+                            # The widget is flex and it does not has width
+                            pass
+                    else:
+                        # The widget is flex but it has width
+                        if widget.style.width:
+                            # The widget is flex but it has width
+                            pass
+                        else:
+                            # The widget is flex and it has not width
+                            pass
+
+        min_width += self.interface.style.padding_right + self.interface.style.padding_left
         if min_width > width:
             width = min_width
+
+        # print(".... .... MIN WIDTH OF THE BOX", min_width)
 
         return min_width, width
 
