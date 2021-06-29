@@ -54,12 +54,19 @@ class TogaBox(Gtk.Fixed):
                             #     min_width,
                             # )
                         else:
-                            min_width += (
-                                widget.style.padding_right
-                                + widget.intrinsic.width.value
-                                if hasattr(widget.intrinsic.width, "value")
-                                else widget.intrinsic.width
-                                + widget.style.padding_left
+                            try:
+                                min_width += (
+                                    widget.style.padding_right
+                                    + widget.intrinsic.width.value
+                                    if hasattr(widget.intrinsic.width, "value")
+                                    else widget.intrinsic.width
+                                    + widget.style.padding_left
+                                )
+                            except:
+                                min_width += (
+                                    widget.style.padding_right
+                                    + widget._impl.native.get_preferred_width()[0]
+                                    + widget.style.padding_left
                             )
                             # print(
                             #     ".... NOT BOX WIDGET WITH ROW DIRECTION AND NO HEIGHT",
@@ -109,20 +116,33 @@ class TogaBox(Gtk.Fixed):
                         # )
                     else:
                         # The widget does not has width
-                        if (
-                            min_width
-                            <= widget.style.padding_right
-                            + widget.intrinsic.width.value
-                            if hasattr(widget.intrinsic.width, "value")
-                            else widget.intrinsic.width + widget.style.padding_left
-                        ):
-                            min_width = (
-                                widget.style.padding_right
+                        try:
+                            if (
+                                min_width
+                                <= widget.style.padding_right
                                 + widget.intrinsic.width.value
                                 if hasattr(widget.intrinsic.width, "value")
-                                else widget.intrinsic.width
+                                else widget.intrinsic.width + widget.style.padding_left
+                            ):
+                                min_width = (
+                                    widget.style.padding_right
+                                    + widget.intrinsic.width.value
+                                    if hasattr(widget.intrinsic.width, "value")
+                                    else widget.intrinsic.width
+                                    + widget.style.padding_left
+                                )
+                        except:
+                            if (
+                                min_width
+                                <= widget.style.padding_right
+                                + widget._impl.native.get_preferred_width()[0]
                                 + widget.style.padding_left
-                            )
+                            ):
+                                min_width = (
+                                    widget.style.padding_right
+                                    + widget._impl.native.get_preferred_width()[0]
+                                    + widget.style.padding_left
+                                )
                         # print(
                         #     ".... NOT BOX WIDGET WITH COLUMN DIRECTION AND NO HEIGHT",
                         #     widget,
@@ -185,13 +205,20 @@ class TogaBox(Gtk.Fixed):
                             #     min_height,
                             # )
                         else:
-                            min_height += (
-                                widget.style.padding_top
-                                + widget.intrinsic.height.value
-                                if hasattr(widget.intrinsic.height, "value")
-                                else widget.intrinsic.height
-                                + widget.style.padding_bottom
-                            )
+                            try:
+                                min_height += (
+                                    widget.style.padding_top
+                                    + widget.intrinsic.height.value
+                                    if hasattr(widget.intrinsic.height, "value")
+                                    else widget.intrinsic.height
+                                    + widget.style.padding_bottom
+                                )
+                            except:
+                                min_height += (
+                                    widget.style.padding_top
+                                    + widget._impl.native.get_preferred_height()[0]
+                                    + widget.style.padding_bottom
+                                )
                             # print(
                             #     ".... NOT BOX WIDGET WITH COLUMN DIRECTION AND NO HEIGHT",
                             #     widget,
@@ -240,21 +267,34 @@ class TogaBox(Gtk.Fixed):
                         # )
                     else:
                         # The widget does not has height
-                        if (
-                            min_height
-                            <= widget.style.padding_top
-                            + widget.intrinsic.height.value
-                            if hasattr(widget.intrinsic.height, "value")
-                            else widget.intrinsic.height
-                            + widget.style.padding_bottom
-                        ):
-                            min_height = (
-                                widget.style.padding_top
+                        try:
+                            if (
+                                min_height
+                                <= widget.style.padding_top
                                 + widget.intrinsic.height.value
                                 if hasattr(widget.intrinsic.height, "value")
                                 else widget.intrinsic.height
                                 + widget.style.padding_bottom
-                            )
+                            ):
+                                min_height = (
+                                    widget.style.padding_top
+                                    + widget.intrinsic.height.value
+                                    if hasattr(widget.intrinsic.height, "value")
+                                    else widget.intrinsic.height
+                                    + widget.style.padding_bottom
+                                )
+                        except:
+                            if (
+                                min_height
+                                <= widget.style.padding_top
+                                + widget._impl.native.get_preferred_height()[0]
+                                + widget.style.padding_bottom
+                            ):
+                                min_height = (
+                                    widget.style.padding_top
+                                    + widget._impl.native.get_preferred_height()[0]
+                                    + widget.style.padding_bottom
+                                )
                         # print(
                         #     ".... NOT BOX WIDGET WITH ROW DIRECTION AND NO HEIGHT",
                         #     widget,
