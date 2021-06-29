@@ -106,7 +106,7 @@ class ExampleExamplesOverviewApp(toga.App):
             ),
         )
 
-        split_container = toga.SplitContainer(content=[left_box, self.info_view])
+        split_container = toga.SplitContainer(style=Pack(flex=1), content=[left_box, self.info_view])
 
         outer_box = toga.Box(
             children=[label, split_container],
