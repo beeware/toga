@@ -106,6 +106,7 @@ class ExampleExamplesOverviewApp(toga.App):
             ),
         )
 
+        # make the SplitContainer flex to occupy available pox space
         split_container = toga.SplitContainer(style=Pack(flex=1), content=[left_box, self.info_view])
 
         outer_box = toga.Box(
