@@ -71,7 +71,7 @@ class TogaBox(Gtk.Fixed):
         if min_width > width:
             width = min_width
 
-        # print(".... .... MIN WIDTH OF THE BOX", min_width)
+        print(".... .... MIN WIDTH OF THE BOX", min_width)
 
         return min_width, width
 
