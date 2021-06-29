@@ -40,63 +40,33 @@ class TogaBox(Gtk.Fixed):
                         #     min_width,
                         # )
                     else:
-                        if widget.style.flex:
-                            if widget.style.width:
-                                # The widget is flex but it has width
-                                min_width += (
-                                    widget.style.padding_right
-                                    + widget.layout.width
-                                    + widget.style.padding_left
-                                )
-                                # print(
-                                #     ".... NOT BOX WIDGET WITH ROW DIRECTION, FLEX AND HEIGHT",
-                                #     widget,
-                                #     widget.children,
-                                #     min_width,
-                                # )
-                            else:
-                                min_width += (
-                                    widget.style.padding_right
-                                    + widget.intrinsic.width.value
-                                    if hasattr(widget.intrinsic.width, "value")
-                                    else widget.intrinsic.width
-                                    + widget.style.padding_left
-                                )
-                                # print(
-                                #     ".... NOT BOX WIDGET WITH ROW DIRECTION, FLEX AND NO HEIGHT",
-                                #     widget,
-                                #     widget.children,
-                                #     min_width,
-                                # )
+                        if widget.style.width:
+                            # The widget has width
+                            min_width += (
+                                widget.style.padding_right
+                                + widget.layout.width
+                                + widget.style.padding_left
+                            )
+                            # print(
+                            #     ".... NOT BOX WIDGET WITH ROW DIRECTION AND HEIGHT",
+                            #     widget,
+                            #     widget.children,
+                            #     min_width,
+                            # )
                         else:
-                            if widget.style.width:
-                                # The widget is flex but it has width
-                                min_width += (
-                                    widget.style.padding_right
-                                    + widget.layout.width
-                                    + widget.style.padding_left
-                                )
-                                # print(
-                                #     ".... NOT BOX WIDGET WITH ROW DIRECTION, NOT FLEX AND HEIGHT",
-                                #     widget,
-                                #     widget.children,
-                                #     min_width,
-                                # )
-                            else:
-                                # The widget is flex and it has not width
-                                min_width += (
-                                    widget.style.padding_right
-                                    + widget.intrinsic.width.value
-                                    if hasattr(widget.intrinsic.width, "value")
-                                    else widget.intrinsic.width
-                                    + widget.style.padding_left
-                                )
-                                # print(
-                                #     ".... NOT BOX WIDGET WITH ROW DIRECTION, NOT FLEX AND NO HEIGHT",
-                                #     widget,
-                                #     widget.children,
-                                #     min_width,
-                                # )
+                            min_width += (
+                                widget.style.padding_right
+                                + widget.intrinsic.width.value
+                                if hasattr(widget.intrinsic.width, "value")
+                                else widget.intrinsic.width
+                                + widget.style.padding_left
+                            )
+                            # print(
+                            #     ".... NOT BOX WIDGET WITH ROW DIRECTION AND NO HEIGHT",
+                            #     widget,
+                            #     widget.children,
+                            #     min_width,
+                            # )
         elif self.interface.style.direction == COLUMN:
             for widget in self.interface.children:
                 if str(type(widget)) == "<class 'toga.widgets.box.Box'>":
@@ -118,91 +88,47 @@ class TogaBox(Gtk.Fixed):
                     #     min_width,
                     # )
                 else:
-                    if widget.style.flex:
-                        if widget.style.width:
-                            # The widget is flex but it has width
-                            if (
-                                min_width
-                                <= widget.style.padding_right
+                    if widget.style.width:
+                        # The widget has width
+                        if (
+                            min_width
+                            <= widget.style.padding_right
+                            + widget.layout.width
+                            + widget.style.padding_left
+                        ):
+                            min_width = (
+                                widget.style.padding_right
                                 + widget.layout.width
                                 + widget.style.padding_left
-                            ):
-                                min_width = (
-                                    widget.style.padding_right
-                                    + widget.layout.width
-                                    + widget.style.padding_left
-                                )
-                            # print(
-                            #     ".... NOT BOX WIDGET WITH COLUMN DIRECTION, FLEX AND HEIGHT",
-                            #     widget,
-                            #     widget.children,
-                            #     min_width,
-                            # )
-                        else:
-                            # The widget is flex and it does not has width
-                            if (
-                                min_width
-                                <= widget.style.padding_right
-                                + widget.intrinsic.width.value
-                                if hasattr(widget.intrinsic.width, "value")
-                                else widget.intrinsic.width + widget.style.padding_left
-                            ):
-                                min_width = (
-                                    widget.style.padding_right
-                                    + widget.intrinsic.width.value
-                                    if hasattr(widget.intrinsic.width, "value")
-                                    else widget.intrinsic.width
-                                    + widget.style.padding_left
-                                )
-                            # print(
-                            #     ".... NOT BOX WIDGET WITH COLUMN DIRECTION, FLEX AND NO HEIGHT",
-                            #     widget,
-                            #     widget.children,
-                            #     min_width,
-                            # )
+                            )
+                        # print(
+                        #     ".... NOT BOX WIDGET WITH COLUMN DIRECTION AND HEIGHT",
+                        #     widget,
+                        #     widget.children,
+                        #     min_width,
+                        # )
                     else:
-                        # The widget is flex but it has width
-                        if widget.style.width:
-                            # The widget is flex but it has width
-                            if (
-                                min_width
-                                <= widget.style.padding_right
-                                + widget.layout.width
-                                + widget.style.padding_left
-                            ):
-                                min_width = (
-                                    widget.style.padding_right
-                                    + widget.layout.width
-                                    + widget.style.padding_left
-                                )
-                            # print(
-                            #     ".... NOT BOX WIDGET WITH COLUMN DIRECTION, NOT FLEX AND HEIGHT",
-                            #     widget,
-                            #     widget.children,
-                            #     min_width,
-                            # )
-                        else:
-                            # The widget is flex and it has not width
-                            if (
-                                min_width
-                                <= widget.style.padding_right
+                        # The widget does not has width
+                        if (
+                            min_width
+                            <= widget.style.padding_right
+                            + widget.intrinsic.width.value
+                            if hasattr(widget.intrinsic.width, "value")
+                            else widget.intrinsic.width + widget.style.padding_left
+                        ):
+                            min_width = (
+                                widget.style.padding_right
                                 + widget.intrinsic.width.value
                                 if hasattr(widget.intrinsic.width, "value")
-                                else widget.intrinsic.width + widget.style.padding_left
-                            ):
-                                min_width = (
-                                    widget.style.padding_right
-                                    + widget.intrinsic.width.value
-                                    if hasattr(widget.intrinsic.width, "value")
-                                    else widget.intrinsic.width
-                                    + widget.style.padding_left
-                                )
-                            # print(
-                            #     ".... NOT BOX WIDGET WITH COLUMN DIRECTION, NOT FLEX AND NO HEIGHT",
-                            #     widget,
-                            #     widget.children,
-                            #     min_width,
-                            # )
+                                else widget.intrinsic.width
+                                + widget.style.padding_left
+                            )
+                        # print(
+                        #     ".... NOT BOX WIDGET WITH COLUMN DIRECTION AND NO HEIGHT",
+                        #     widget,
+                        #     widget.children,
+                        #     min_width,
+                        # )
 
         min_width += (
             self.interface.style.padding_right + self.interface.style.padding_left
@@ -245,63 +171,33 @@ class TogaBox(Gtk.Fixed):
                         #     min_height,
                         # )
                     else:
-                        if widget.style.flex:
-                            if widget.style.height:
-                                # The widget is flex but it has height
-                                min_height += (
-                                    widget.style.padding_top
-                                    + widget.layout.height
-                                    + widget.style.padding_bottom
-                                )
-                                # print(
-                                #     ".... NOT BOX WIDGET WITH COLUMN DIRECTION, FLEX AND HEIGHT",
-                                #     widget,
-                                #     widget.children,
-                                #     min_height,
-                                # )
-                            else:
-                                min_height += (
-                                    widget.style.padding_top
-                                    + widget.intrinsic.height.value
-                                    if hasattr(widget.intrinsic.height, "value")
-                                    else widget.intrinsic.height
-                                    + widget.style.padding_bottom
-                                )
-                                # print(
-                                #     ".... NOT BOX WIDGET WITH COLUMN DIRECTION, FLEX AND NO HEIGHT",
-                                #     widget,
-                                #     widget.children,
-                                #     min_height,
-                                # )
+                        if widget.style.height:
+                            # The widget has height
+                            min_height += (
+                                widget.style.padding_top
+                                + widget.layout.height
+                                + widget.style.padding_bottom
+                            )
+                            # print(
+                            #     ".... NOT BOX WIDGET WITH COLUMN DIRECTION AND HEIGHT",
+                            #     widget,
+                            #     widget.children,
+                            #     min_height,
+                            # )
                         else:
-                            if widget.style.height:
-                                # The widget is flex but it has height
-                                min_height += (
-                                    widget.style.padding_top
-                                    + widget.layout.height
-                                    + widget.style.padding_bottom
-                                )
-                                # print(
-                                #     ".... NOT BOX WIDGET WITH COLUMN DIRECTION, NOT FLEX AND HEIGHT",
-                                #     widget,
-                                #     widget.children,
-                                #     min_height,
-                                # )
-                            else:
-                                # The widget is flex and it has not height
-                                min_height += (
-                                    widget.style.padding_top
-                                    + widget.intrinsic.height.value
-                                    if hasattr(widget.intrinsic.height, "value")
-                                    else widget.intrinsic.height
-                                    + widget.style.padding_bottom
-                                )
-                                # print(
-                                #     ".... NOT BOX WIDGET WITH COLUMN DIRECTION, NOT FLEX AND NO HEIGHT",
-                                #     widget,
-                                #     widget.children,
-                                #     min_height,
-                                # )
+                            min_height += (
+                                widget.style.padding_top
+                                + widget.intrinsic.height.value
+                                if hasattr(widget.intrinsic.height, "value")
+                                else widget.intrinsic.height
+                                + widget.style.padding_bottom
+                            )
+                            # print(
+                            #     ".... NOT BOX WIDGET WITH COLUMN DIRECTION AND NO HEIGHT",
+                            #     widget,
+                            #     widget.children,
+                            #     min_height,
+                            # )
         elif self.interface.style.direction == ROW:
             for widget in self.interface.children:
                 if str(type(widget)) == "<class 'toga.widgets.box.Box'>":
@@ -323,93 +219,48 @@ class TogaBox(Gtk.Fixed):
                     #     min_height,
                     # )
                 else:
-                    if widget.style.flex:
-                        if widget.style.height:
-                            # The widget is flex but it has height
-                            if (
-                                min_height
-                                <= widget.style.padding_top
+                    if widget.style.height:
+                        # The widget has height
+                        if (
+                            min_height
+                            <= widget.style.padding_top
+                            + widget.layout.height
+                            + widget.style.padding_bottom
+                        ):
+                            min_height = (
+                                widget.style.padding_top
                                 + widget.layout.height
                                 + widget.style.padding_bottom
-                            ):
-                                min_height = (
-                                    widget.style.padding_top
-                                    + widget.layout.height
-                                    + widget.style.padding_bottom
-                                )
-                            # print(
-                            #     ".... NOT BOX WIDGET WITH ROW DIRECTION, FLEX AND HEIGHT",
-                            #     widget,
-                            #     widget.children,
-                            #     min_height,
-                            # )
-                        else:
-                            # The widget is flex and it does not has height
-                            if (
-                                min_height
-                                <= widget.style.padding_top
-                                + widget.intrinsic.height.value
-                                if hasattr(widget.intrinsic.height, "value")
-                                else widget.intrinsic.height
-                                + widget.style.padding_bottom
-                            ):
-                                min_height = (
-                                    widget.style.padding_top
-                                    + widget.intrinsic.height.value
-                                    if hasattr(widget.intrinsic.height, "value")
-                                    else widget.intrinsic.height
-                                    + widget.style.padding_bottom
-                                )
-                            # print(
-                            #     ".... NOT BOX WIDGET WITH ROW DIRECTION, FLEX AND NO HEIGHT",
-                            #     widget,
-                            #     widget.children,
-                            #     min_height,
-                            # )
+                            )
+                        # print(
+                        #     ".... NOT BOX WIDGET WITH ROW DIRECTION AND HEIGHT",
+                        #     widget,
+                        #     widget.children,
+                        #     min_height,
+                        # )
                     else:
-                        # The widget is flex but it has height
-                        if widget.style.height:
-                            # The widget is flex but it has height
-                            if (
-                                min_height
-                                <= widget.style.padding_top
-                                + widget.layout.height
-                                + widget.style.padding_bottom
-                            ):
-                                min_height = (
-                                    widget.style.padding_top
-                                    + widget.layout.height
-                                    + widget.style.padding_bottom
-                                )
-                            # print(
-                            #     ".... NOT BOX WIDGET WITH ROW DIRECTION, NOT FLEX AND HEIGHT",
-                            #     widget,
-                            #     widget.children,
-                            #     min_height,
-                            # )
-                        else:
-                            # The widget is flex and it has not height
-                            if (
-                                min_height
-                                <= widget.style.padding_top
+                        # The widget does not has height
+                        if (
+                            min_height
+                            <= widget.style.padding_top
+                            + widget.intrinsic.height.value
+                            if hasattr(widget.intrinsic.height, "value")
+                            else widget.intrinsic.height
+                            + widget.style.padding_bottom
+                        ):
+                            min_height = (
+                                widget.style.padding_top
                                 + widget.intrinsic.height.value
                                 if hasattr(widget.intrinsic.height, "value")
                                 else widget.intrinsic.height
                                 + widget.style.padding_bottom
-                            ):
-                                min_height = (
-                                    widget.style.padding_top
-                                    + widget.intrinsic.height.value
-                                    if hasattr(widget.intrinsic.height, "value")
-                                    else widget.intrinsic.height
-                                    + widget.style.padding_bottom
-                                )
-                            # print(
-                            #     ".... NOT BOX WIDGET WITH ROW DIRECTION, NOT FLEX AND NO HEIGHT",
-                            #     widget,
-                            #     widget.children,
-                            #     min_height,
-                            # )
+                            )
+                        # print(
+                        #     ".... NOT BOX WIDGET WITH ROW DIRECTION AND NO HEIGHT",
+                        #     widget,
+                        #     widget.children,
+                        #     min_height,
+                        # )
 
         min_height += (
             self.interface.style.padding_bottom + self.interface.style.padding_top
