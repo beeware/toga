@@ -19,7 +19,8 @@ class TogaBox(Gtk.Fixed):
             if min_width == 0:
                 for widget in self.interface.children:
                     if str(type(widget)) == "<class 'toga.widgets.box.Box'>":
-                        # Use previously calculated min width from widget._impl.native.get_preferred_width()[0]
+                        # Use previously calculated min width from
+                        # widget._impl.native.get_preferred_width()[0]
                         if widget.style.width:
                             min_width += (
                                 widget.style.padding_right
@@ -32,7 +33,12 @@ class TogaBox(Gtk.Fixed):
                                 + widget._impl.native.get_preferred_width()[0]
                                 + widget.style.padding_left
                             )
-                        # print(".... BOX WIDGET WITH ROW DIRECTION", widget, widget.children, min_width)
+                        # print(
+                        #     ".... BOX WIDGET WITH ROW DIRECTION",
+                        #     widget,
+                        #     widget.children,
+                        #     min_width,
+                        # )
                     else:
                         if widget.style.flex:
                             if widget.style.width:
@@ -42,7 +48,12 @@ class TogaBox(Gtk.Fixed):
                                     + widget.layout.width
                                     + widget.style.padding_left
                                 )
-                                # print(".... NOT BOX WIDGET WITH ROW DIRECTION, FLEX AND HEIGHT", widget, widget.children, min_width)
+                                # print(
+                                #     ".... NOT BOX WIDGET WITH ROW DIRECTION, FLEX AND HEIGHT",
+                                #     widget,
+                                #     widget.children,
+                                #     min_width,
+                                # )
                             else:
                                 min_width += (
                                     widget.style.padding_right
@@ -51,7 +62,12 @@ class TogaBox(Gtk.Fixed):
                                     else widget.intrinsic.width
                                     + widget.style.padding_left
                                 )
-                                # print(".... NOT BOX WIDGET WITH ROW DIRECTION, FLEX AND NO HEIGHT", widget, widget.children, min_width)
+                                # print(
+                                #     ".... NOT BOX WIDGET WITH ROW DIRECTION, FLEX AND NO HEIGHT",
+                                #     widget,
+                                #     widget.children,
+                                #     min_width,
+                                # )
                         else:
                             if widget.style.width:
                                 # The widget is flex but it has width
@@ -60,7 +76,12 @@ class TogaBox(Gtk.Fixed):
                                     + widget.layout.width
                                     + widget.style.padding_left
                                 )
-                                # print(".... NOT BOX WIDGET WITH ROW DIRECTION, NOT FLEX AND HEIGHT", widget, widget.children, min_width)
+                                # print(
+                                #     ".... NOT BOX WIDGET WITH ROW DIRECTION, NOT FLEX AND HEIGHT",
+                                #     widget,
+                                #     widget.children,
+                                #     min_width,
+                                # )
                             else:
                                 # The widget is flex and it has not width
                                 min_width += (
@@ -70,7 +91,12 @@ class TogaBox(Gtk.Fixed):
                                     else widget.intrinsic.width
                                     + widget.style.padding_left
                                 )
-                                # print(".... NOT BOX WIDGET WITH ROW DIRECTION, NOT FLEX AND NO HEIGHT", widget, widget.children, min_width)
+                                # print(
+                                #     ".... NOT BOX WIDGET WITH ROW DIRECTION, NOT FLEX AND NO HEIGHT",
+                                #     widget,
+                                #     widget.children,
+                                #     min_width,
+                                # )
         elif self.interface.style.direction == COLUMN:
             for widget in self.interface.children:
                 if str(type(widget)) == "<class 'toga.widgets.box.Box'>":
@@ -85,7 +111,12 @@ class TogaBox(Gtk.Fixed):
                             + widget._impl.native.get_preferred_width()[0]
                             + widget.style.padding_left
                         )
-                    # print(".... BOX WIDGET WITH COLUMN DIRECTION", widget, widget.children, min_width)
+                    # print(
+                    #     ".... BOX WIDGET WITH COLUMN DIRECTION",
+                    #     widget,
+                    #     widget.children,
+                    #     min_width,
+                    # )
                 else:
                     if widget.style.flex:
                         if widget.style.width:
@@ -101,7 +132,12 @@ class TogaBox(Gtk.Fixed):
                                     + widget.layout.width
                                     + widget.style.padding_left
                                 )
-                            # print(".... NOT BOX WIDGET WITH COLUMN DIRECTION, FLEX AND HEIGHT", widget, widget.children, min_width)
+                            # print(
+                            #     ".... NOT BOX WIDGET WITH COLUMN DIRECTION, FLEX AND HEIGHT",
+                            #     widget,
+                            #     widget.children,
+                            #     min_width,
+                            # )
                         else:
                             # The widget is flex and it does not has width
                             if (
@@ -118,7 +154,12 @@ class TogaBox(Gtk.Fixed):
                                     else widget.intrinsic.width
                                     + widget.style.padding_left
                                 )
-                            # print(".... NOT BOX WIDGET WITH COLUMN DIRECTION, FLEX AND NO HEIGHT", widget, widget.children, min_width)
+                            # print(
+                            #     ".... NOT BOX WIDGET WITH COLUMN DIRECTION, FLEX AND NO HEIGHT",
+                            #     widget,
+                            #     widget.children,
+                            #     min_width,
+                            # )
                     else:
                         # The widget is flex but it has width
                         if widget.style.width:
@@ -134,7 +175,12 @@ class TogaBox(Gtk.Fixed):
                                     + widget.layout.width
                                     + widget.style.padding_left
                                 )
-                            # print(".... NOT BOX WIDGET WITH COLUMN DIRECTION, NOT FLEX AND HEIGHT", widget, widget.children, min_width)
+                            # print(
+                            #     ".... NOT BOX WIDGET WITH COLUMN DIRECTION, NOT FLEX AND HEIGHT",
+                            #     widget,
+                            #     widget.children,
+                            #     min_width,
+                            # )
                         else:
                             # The widget is flex and it has not width
                             if (
@@ -151,7 +197,12 @@ class TogaBox(Gtk.Fixed):
                                     else widget.intrinsic.width
                                     + widget.style.padding_left
                                 )
-                            # print(".... NOT BOX WIDGET WITH COLUMN DIRECTION, NOT FLEX AND NO HEIGHT", widget, widget.children, min_width)
+                            # print(
+                            #     ".... NOT BOX WIDGET WITH COLUMN DIRECTION, NOT FLEX AND NO HEIGHT",
+                            #     widget,
+                            #     widget.children,
+                            #     min_width,
+                            # )
 
         min_width += (
             self.interface.style.padding_right + self.interface.style.padding_left
@@ -173,7 +224,8 @@ class TogaBox(Gtk.Fixed):
             if min_height == 0:
                 for widget in self.interface.children:
                     if str(type(widget)) == "<class 'toga.widgets.box.Box'>":
-                        # Use previously calculated min height from widget._impl.native.get_preferred_height()[0]
+                        # Use previously calculated min height from
+                        # widget._impl.native.get_preferred_height()[0]
                         if widget.style.height:
                             min_height += (
                                 widget.style.padding_top
@@ -186,7 +238,12 @@ class TogaBox(Gtk.Fixed):
                                 + widget._impl.native.get_preferred_height()[0]
                                 + widget.style.padding_bottom
                             )
-                        # print(".... BOX WIDGET WITH COLUMN DIRECTION", widget, widget.children, min_height)
+                        # print(
+                        #     ".... BOX WIDGET WITH COLUMN DIRECTION",
+                        #     widget,
+                        #     widget.children,
+                        #     min_height,
+                        # )
                     else:
                         if widget.style.flex:
                             if widget.style.height:
@@ -196,7 +253,12 @@ class TogaBox(Gtk.Fixed):
                                     + widget.layout.height
                                     + widget.style.padding_bottom
                                 )
-                                # print(".... NOT BOX WIDGET WITH COLUMN DIRECTION, FLEX AND HEIGHT", widget, widget.children, min_height)
+                                # print(
+                                #     ".... NOT BOX WIDGET WITH COLUMN DIRECTION, FLEX AND HEIGHT",
+                                #     widget,
+                                #     widget.children,
+                                #     min_height,
+                                # )
                             else:
                                 min_height += (
                                     widget.style.padding_top
@@ -205,7 +267,12 @@ class TogaBox(Gtk.Fixed):
                                     else widget.intrinsic.height
                                     + widget.style.padding_bottom
                                 )
-                                # print(".... NOT BOX WIDGET WITH COLUMN DIRECTION, FLEX AND NO HEIGHT", widget, widget.children, min_height)
+                                # print(
+                                #     ".... NOT BOX WIDGET WITH COLUMN DIRECTION, FLEX AND NO HEIGHT",
+                                #     widget,
+                                #     widget.children,
+                                #     min_height,
+                                # )
                         else:
                             if widget.style.height:
                                 # The widget is flex but it has height
@@ -214,7 +281,12 @@ class TogaBox(Gtk.Fixed):
                                     + widget.layout.height
                                     + widget.style.padding_bottom
                                 )
-                                # print(".... NOT BOX WIDGET WITH COLUMN DIRECTION, NOT FLEX AND HEIGHT", widget, widget.children, min_height)
+                                # print(
+                                #     ".... NOT BOX WIDGET WITH COLUMN DIRECTION, NOT FLEX AND HEIGHT",
+                                #     widget,
+                                #     widget.children,
+                                #     min_height,
+                                # )
                             else:
                                 # The widget is flex and it has not height
                                 min_height += (
@@ -224,7 +296,12 @@ class TogaBox(Gtk.Fixed):
                                     else widget.intrinsic.height
                                     + widget.style.padding_bottom
                                 )
-                                # print(".... NOT BOX WIDGET WITH COLUMN DIRECTION, NOT FLEX AND NO HEIGHT", widget, widget.children, min_height)
+                                # print(
+                                #     ".... NOT BOX WIDGET WITH COLUMN DIRECTION, NOT FLEX AND NO HEIGHT",
+                                #     widget,
+                                #     widget.children,
+                                #     min_height,
+                                )
         elif self.interface.style.direction == ROW:
             for widget in self.interface.children:
                 if str(type(widget)) == "<class 'toga.widgets.box.Box'>":
@@ -239,7 +316,12 @@ class TogaBox(Gtk.Fixed):
                             + widget._impl.native.get_preferred_height()[0]
                             + widget.style.padding_bottom
                         )
-                    # print(".... BOX WIDGET WITH ROW DIRECTION", widget, widget.children, min_height)
+                    # print(
+                    #     ".... BOX WIDGET WITH ROW DIRECTION",
+                    #     widget,
+                    #     widget.children,
+                    #     min_height,
+                    # )
                 else:
                     if widget.style.flex:
                         if widget.style.height:
@@ -255,7 +337,12 @@ class TogaBox(Gtk.Fixed):
                                     + widget.layout.height
                                     + widget.style.padding_bottom
                                 )
-                            # print(".... NOT BOX WIDGET WITH ROW DIRECTION, FLEX AND HEIGHT", widget, widget.children, min_height)
+                            # print(
+                            #     ".... NOT BOX WIDGET WITH ROW DIRECTION, FLEX AND HEIGHT",
+                            #     widget,
+                            #     widget.children,
+                            #     min_height,
+                            # )
                         else:
                             # The widget is flex and it does not has height
                             if (
@@ -273,7 +360,12 @@ class TogaBox(Gtk.Fixed):
                                     else widget.intrinsic.height
                                     + widget.style.padding_bottom
                                 )
-                            # print(".... NOT BOX WIDGET WITH ROW DIRECTION, FLEX AND NO HEIGHT", widget, widget.children, min_height)
+                            # print(
+                            #     ".... NOT BOX WIDGET WITH ROW DIRECTION, FLEX AND NO HEIGHT",
+                            #     widget,
+                            #     widget.children,
+                            #     min_height,
+                            # )
                     else:
                         # The widget is flex but it has height
                         if widget.style.height:
@@ -289,7 +381,12 @@ class TogaBox(Gtk.Fixed):
                                     + widget.layout.height
                                     + widget.style.padding_bottom
                                 )
-                            # print(".... NOT BOX WIDGET WITH ROW DIRECTION, NOT FLEX AND HEIGHT", widget, widget.children, min_height)
+                            # print(
+                            #     ".... NOT BOX WIDGET WITH ROW DIRECTION, NOT FLEX AND HEIGHT",
+                            #     widget,
+                            #     widget.children,
+                            #     min_height,
+                            # )
                         else:
                             # The widget is flex and it has not height
                             if (
@@ -307,7 +404,12 @@ class TogaBox(Gtk.Fixed):
                                     else widget.intrinsic.height
                                     + widget.style.padding_bottom
                                 )
-                            # print(".... NOT BOX WIDGET WITH ROW DIRECTION, NOT FLEX AND NO HEIGHT", widget, widget.children, min_height)
+                            # print(
+                            #     ".... NOT BOX WIDGET WITH ROW DIRECTION, NOT FLEX AND NO HEIGHT",
+                            #     widget,
+                            #     widget.children,
+                            #     min_height,
+                            # )
 
         min_height += (
             self.interface.style.padding_bottom + self.interface.style.padding_top
