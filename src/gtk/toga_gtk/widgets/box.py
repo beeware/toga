@@ -46,7 +46,9 @@ class TogaBox(Gtk.Fixed):
                             else:
                                 min_width += (
                                     widget.style.padding_right
-                                    + widget.intrinsic.width.value if hasattr(widget.intrinsic.width, "value") else widget.intrinsic.width
+                                    + widget.intrinsic.width.value
+                                    if hasattr(widget.intrinsic.width, "value")
+                                    else widget.intrinsic.width
                                     + widget.style.padding_left
                                 )
                                 # print(".... NOT BOX WIDGET WITH ROW DIRECTION, FLEX AND NO HEIGHT", widget, widget.children, min_width)
@@ -63,7 +65,9 @@ class TogaBox(Gtk.Fixed):
                                 # The widget is flex and it has not width
                                 min_width += (
                                     widget.style.padding_right
-                                    + widget.intrinsic.width.value if hasattr(widget.intrinsic.width, "value") else widget.intrinsic.width
+                                    + widget.intrinsic.width.value
+                                    if hasattr(widget.intrinsic.width, "value")
+                                    else widget.intrinsic.width
                                     + widget.style.padding_left
                                 )
                                 # print(".... NOT BOX WIDGET WITH ROW DIRECTION, NOT FLEX AND NO HEIGHT", widget, widget.children, min_width)
@@ -103,12 +107,15 @@ class TogaBox(Gtk.Fixed):
                             if (
                                 min_width
                                 <= widget.style.padding_right
-                                + widget.intrinsic.width.value if hasattr(widget.intrinsic.width, "value") else widget.intrinsic.width
-                                + widget.style.padding_left
+                                + widget.intrinsic.width.value
+                                if hasattr(widget.intrinsic.width, "value")
+                                else widget.intrinsic.width + widget.style.padding_left
                             ):
                                 min_width = (
                                     widget.style.padding_right
-                                    + widget.intrinsic.width.value if hasattr(widget.intrinsic.width, "value") else widget.intrinsic.width
+                                    + widget.intrinsic.width.value
+                                    if hasattr(widget.intrinsic.width, "value")
+                                    else widget.intrinsic.width
                                     + widget.style.padding_left
                                 )
                             # print(".... NOT BOX WIDGET WITH COLUMN DIRECTION, FLEX AND NO HEIGHT", widget, widget.children, min_width)
@@ -133,17 +140,22 @@ class TogaBox(Gtk.Fixed):
                             if (
                                 min_width
                                 <= widget.style.padding_right
-                                + widget.intrinsic.width.value if hasattr(widget.intrinsic.width, "value") else widget.intrinsic.width
-                                + widget.style.padding_left
+                                + widget.intrinsic.width.value
+                                if hasattr(widget.intrinsic.width, "value")
+                                else widget.intrinsic.width + widget.style.padding_left
                             ):
                                 min_width = (
                                     widget.style.padding_right
-                                    + widget.intrinsic.width.value if hasattr(widget.intrinsic.width, "value") else widget.intrinsic.width
+                                    + widget.intrinsic.width.value
+                                    if hasattr(widget.intrinsic.width, "value")
+                                    else widget.intrinsic.width
                                     + widget.style.padding_left
                                 )
                             # print(".... NOT BOX WIDGET WITH COLUMN DIRECTION, NOT FLEX AND NO HEIGHT", widget, widget.children, min_width)
 
-        min_width += self.interface.style.padding_right + self.interface.style.padding_left
+        min_width += (
+            self.interface.style.padding_right + self.interface.style.padding_left
+        )
         if min_width > width:
             width = min_width
 
@@ -188,7 +200,9 @@ class TogaBox(Gtk.Fixed):
                             else:
                                 min_height += (
                                     widget.style.padding_top
-                                    + widget.intrinsic.height.value if hasattr(widget.intrinsic.height, "value") else widget.intrinsic.height
+                                    + widget.intrinsic.height.value
+                                    if hasattr(widget.intrinsic.height, "value")
+                                    else widget.intrinsic.height
                                     + widget.style.padding_bottom
                                 )
                                 # print(".... NOT BOX WIDGET WITH COLUMN DIRECTION, FLEX AND NO HEIGHT", widget, widget.children, min_height)
@@ -205,7 +219,9 @@ class TogaBox(Gtk.Fixed):
                                 # The widget is flex and it has not height
                                 min_height += (
                                     widget.style.padding_top
-                                    + widget.intrinsic.height.value if hasattr(widget.intrinsic.height, "value") else widget.intrinsic.height
+                                    + widget.intrinsic.height.value
+                                    if hasattr(widget.intrinsic.height, "value")
+                                    else widget.intrinsic.height
                                     + widget.style.padding_bottom
                                 )
                                 # print(".... NOT BOX WIDGET WITH COLUMN DIRECTION, NOT FLEX AND NO HEIGHT", widget, widget.children, min_height)
@@ -245,12 +261,16 @@ class TogaBox(Gtk.Fixed):
                             if (
                                 min_height
                                 <= widget.style.padding_top
-                                + widget.intrinsic.height.value if hasattr(widget.intrinsic.height, "value") else widget.intrinsic.height
+                                + widget.intrinsic.height.value
+                                if hasattr(widget.intrinsic.height, "value")
+                                else widget.intrinsic.height
                                 + widget.style.padding_bottom
                             ):
                                 min_height = (
                                     widget.style.padding_top
-                                    + widget.intrinsic.height.value if hasattr(widget.intrinsic.height, "value") else widget.intrinsic.height
+                                    + widget.intrinsic.height.value
+                                    if hasattr(widget.intrinsic.height, "value")
+                                    else widget.intrinsic.height
                                     + widget.style.padding_bottom
                                 )
                             # print(".... NOT BOX WIDGET WITH ROW DIRECTION, FLEX AND NO HEIGHT", widget, widget.children, min_height)
@@ -275,17 +295,23 @@ class TogaBox(Gtk.Fixed):
                             if (
                                 min_height
                                 <= widget.style.padding_top
-                                + widget.intrinsic.height.value if hasattr(widget.intrinsic.height, "value") else widget.intrinsic.height
+                                + widget.intrinsic.height.value
+                                if hasattr(widget.intrinsic.height, "value")
+                                else widget.intrinsic.height
                                 + widget.style.padding_bottom
                             ):
                                 min_height = (
                                     widget.style.padding_top
-                                    + widget.intrinsic.height.value if hasattr(widget.intrinsic.height, "value") else widget.intrinsic.height
+                                    + widget.intrinsic.height.value
+                                    if hasattr(widget.intrinsic.height, "value")
+                                    else widget.intrinsic.height
                                     + widget.style.padding_bottom
                                 )
                             # print(".... NOT BOX WIDGET WITH ROW DIRECTION, NOT FLEX AND NO HEIGHT", widget, widget.children, min_height)
 
-        min_height += self.interface.style.padding_bottom + self.interface.style.padding_top
+        min_height += (
+            self.interface.style.padding_bottom + self.interface.style.padding_top
+        )
         if min_height > height:
             height = min_height
 
@@ -315,8 +341,12 @@ class TogaBox(Gtk.Fixed):
                     # print("update ", widget.interface, widget.interface.layout)
                     widget.interface._impl.rehint()
                     widget_allocation = Gdk.Rectangle()
-                    widget_allocation.x = widget.interface.layout.absolute_content_left + allocation.x
-                    widget_allocation.y = widget.interface.layout.absolute_content_top + allocation.y
+                    widget_allocation.x = (
+                        widget.interface.layout.absolute_content_left + allocation.x
+                    )
+                    widget_allocation.y = (
+                        widget.interface.layout.absolute_content_top + allocation.y
+                    )
                     widget_allocation.width = widget.interface.layout.content_width
                     widget_allocation.height = widget.interface.layout.content_height
 
