@@ -57,9 +57,9 @@ class TogaBox(Gtk.Fixed):
                             try:
                                 min_width += (
                                     widget.style.padding_right
-                                    + widget.intrinsic.width.value
+                                    + (widget.intrinsic.width.value
                                     if hasattr(widget.intrinsic.width, "value")
-                                    else widget.intrinsic.width
+                                    else widget.intrinsic.width)
                                     + widget.style.padding_left
                                 )
                             except TypeError:
@@ -120,15 +120,15 @@ class TogaBox(Gtk.Fixed):
                             if (
                                 min_width
                                 <= widget.style.padding_right
-                                + widget.intrinsic.width.value
+                                + (widget.intrinsic.width.value
                                 if hasattr(widget.intrinsic.width, "value")
-                                else widget.intrinsic.width + widget.style.padding_left
+                                else widget.intrinsic.width) + widget.style.padding_left
                             ):
                                 min_width = (
                                     widget.style.padding_right
-                                    + widget.intrinsic.width.value
+                                    + (widget.intrinsic.width.value
                                     if hasattr(widget.intrinsic.width, "value")
-                                    else widget.intrinsic.width
+                                    else widget.intrinsic.width)
                                     + widget.style.padding_left
                                 )
                         except TypeError:
@@ -208,9 +208,9 @@ class TogaBox(Gtk.Fixed):
                             try:
                                 min_height += (
                                     widget.style.padding_top
-                                    + widget.intrinsic.height.value
+                                    + (widget.intrinsic.height.value
                                     if hasattr(widget.intrinsic.height, "value")
-                                    else widget.intrinsic.height
+                                    else widget.intrinsic.height)
                                     + widget.style.padding_bottom
                                 )
                             except TypeError:
@@ -271,16 +271,16 @@ class TogaBox(Gtk.Fixed):
                             if (
                                 min_height
                                 <= widget.style.padding_top
-                                + widget.intrinsic.height.value
+                                + (widget.intrinsic.height.value
                                 if hasattr(widget.intrinsic.height, "value")
-                                else widget.intrinsic.height
+                                else widget.intrinsic.height)
                                 + widget.style.padding_bottom
                             ):
                                 min_height = (
                                     widget.style.padding_top
-                                    + widget.intrinsic.height.value
+                                    + (widget.intrinsic.height.value
                                     if hasattr(widget.intrinsic.height, "value")
-                                    else widget.intrinsic.height
+                                    else widget.intrinsic.height)
                                     + widget.style.padding_bottom
                                 )
                         except TypeError:
