@@ -11,9 +11,9 @@ class TogaBox(Gtk.Fixed):
 
     def do_get_preferred_width(self):
         # Calculate the minimum and natural width of the container.
-        # print("GET PREFERRED WIDTH", self._impl.native)
         width = self._impl.interface.layout.width
         min_width = 0 if self._impl.min_width is None else self._impl.min_width
+
         # print(self.interface, "HAS", self.interface.children)
         if self.interface.style.direction == ROW:
             if min_width == 0:
@@ -48,7 +48,7 @@ class TogaBox(Gtk.Fixed):
                                 + widget.style.padding_left
                             )
                             # print(
-                            #     ".... NOT BOX WIDGET WITH ROW DIRECTION AND HEIGHT",
+                            #     ".... NOT BOX WIDGET WITH ROW DIRECTION AND WIDTH",
                             #     widget,
                             #     widget.children,
                             #     min_width,
@@ -69,7 +69,7 @@ class TogaBox(Gtk.Fixed):
                                     + widget.style.padding_left
                                 )
                             # print(
-                            #     ".... NOT BOX WIDGET WITH ROW DIRECTION AND NO HEIGHT",
+                            #     ".... NOT BOX WIDGET WITH ROW DIRECTION AND NO WIDTH",
                             #     widget,
                             #     widget.children,
                             #     min_width,
@@ -109,7 +109,7 @@ class TogaBox(Gtk.Fixed):
                                 + widget.style.padding_left
                             )
                         # print(
-                        #     ".... NOT BOX WIDGET WITH COLUMN DIRECTION AND HEIGHT",
+                        #     ".... NOT BOX WIDGET WITH COLUMN DIRECTION AND WIDTH",
                         #     widget,
                         #     widget.children,
                         #     min_width,
@@ -144,7 +144,7 @@ class TogaBox(Gtk.Fixed):
                                     + widget.style.padding_left
                                 )
                         # print(
-                        #     ".... NOT BOX WIDGET WITH COLUMN DIRECTION AND NO HEIGHT",
+                        #     ".... NOT BOX WIDGET WITH COLUMN DIRECTION AND NO WIDTH",
                         #     widget,
                         #     widget.children,
                         #     min_width,
@@ -162,9 +162,9 @@ class TogaBox(Gtk.Fixed):
 
     def do_get_preferred_height(self):
         # Calculate the minimum and natural height of the container.
-        # print("GET PREFERRED HEIGHT", self._impl.native)
         height = self._impl.interface.layout.height
         min_height = 0 if self._impl.min_height is None else self._impl.min_height
+
         # print(self.interface, "HAS", self.interface.children)
         if self.interface.style.direction == COLUMN:
             if min_height == 0:
