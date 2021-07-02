@@ -61,10 +61,13 @@ class NumberInput(Widget):
         self.interface.factory.not_implemented('NumberInput.set_font()')
 
     def rehint(self):
+        # Does not use self.interface.MIN_WIDTH as a minimum width; because
+        # the min width of the widget will fail when number input width be
+        # larger than self.interface.MIN_WIDTH
         width = self.native.get_preferred_width()
         height = self.native.get_preferred_height()
         if width and height:
-            self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
+            self.interface.intrinsic.width = at_least(width[0])
             self.interface.intrinsic.height = height[1]
 
     def set_on_change(self, handler):
