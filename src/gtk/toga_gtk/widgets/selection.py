@@ -33,10 +33,13 @@ class Selection(Widget):
         return self.native.get_active_text()
 
     def rehint(self):
-        # width = self.native.get_preferred_width()
+        # Does not use self.interface.MIN_WIDTH as a minimum width;
+        # because the min width of the widget will fail when item width
+        # be larger than self.interface.MIN_WIDTH
+        width = self.native.get_preferred_width()
         height = self.native.get_preferred_height()
 
-        self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
+        self.interface.intrinsic.width = at_least(width[0])
         self.interface.intrinsic.height = height[1]
 
     def set_on_select(self, handler):
