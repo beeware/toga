@@ -18,6 +18,7 @@ class TogaBox(Gtk.Fixed):
         if self.interface.style.direction == ROW:
             if min_width == 0:
                 for widget in self.interface.children:
+                    widget._impl.rehint()
                     if str(type(widget)) == "<class 'toga.widgets.box.Box'>":
                         # Use previously calculated min width from
                         # widget._impl.native.get_preferred_width()[0]
@@ -78,6 +79,7 @@ class TogaBox(Gtk.Fixed):
                             # )
         elif self.interface.style.direction == COLUMN:
             for widget in self.interface.children:
+                widget._impl.rehint()
                 if str(type(widget)) == "<class 'toga.widgets.box.Box'>":
                     if (
                         min_width
@@ -176,6 +178,7 @@ class TogaBox(Gtk.Fixed):
         if self.interface.style.direction == COLUMN:
             if min_height == 0:
                 for widget in self.interface.children:
+                    widget._impl.rehint()
                     if str(type(widget)) == "<class 'toga.widgets.box.Box'>":
                         # Use previously calculated min height from
                         # widget._impl.native.get_preferred_height()[0]
@@ -236,6 +239,7 @@ class TogaBox(Gtk.Fixed):
                             # )
         elif self.interface.style.direction == ROW:
             for widget in self.interface.children:
+                widget._impl.rehint()
                 if str(type(widget)) == "<class 'toga.widgets.box.Box'>":
                     if (
                         min_height
