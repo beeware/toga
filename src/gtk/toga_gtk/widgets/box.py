@@ -83,10 +83,10 @@ class TogaBox(Gtk.Fixed):
                 if str(type(widget)) == "<class 'toga.widgets.box.Box'>":
                     if widget.style.width:
                         if min_width <= (
-                                widget.style.padding_right
-                                + widget.layout.width
-                                + widget.style.padding_left
-                            ):
+                            widget.style.padding_right
+                            + widget.layout.width
+                            + widget.style.padding_left
+                        ):
                             min_width = (
                                 widget.style.padding_right
                                 + widget.layout.width
@@ -261,10 +261,10 @@ class TogaBox(Gtk.Fixed):
                 if str(type(widget)) == "<class 'toga.widgets.box.Box'>":
                     if widget.style.width:
                         if min_height <= (
-                                widget.style.padding_top
-                                + widget.layout.height
-                                + widget.style.padding_bottom
-                            ):
+                            widget.style.padding_top
+                            + widget.layout.height
+                            + widget.style.padding_bottom
+                        ):
                             min_height = (
                                 widget.style.padding_top
                                 + widget.layout.height
