@@ -37,7 +37,7 @@ def get_platform_factory(factory=None):
     elif current_platform == 'ios':
         from toga_iOS import factory
         return factory
-    elif current_platform == 'linux':
+    elif current_platform == 'freebsd13':
         from toga_gtk import factory
         return factory
     elif current_platform == 'tvos':

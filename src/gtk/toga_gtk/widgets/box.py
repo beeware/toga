@@ -81,23 +81,41 @@ class TogaBox(Gtk.Fixed):
             for widget in self.interface.children:
                 widget._impl.rehint()
                 if str(type(widget)) == "<class 'toga.widgets.box.Box'>":
-                    if (
-                        min_width
-                        <= widget.style.padding_right
-                        + widget._impl.native.get_preferred_width()[0]
-                        + widget.style.padding_left
-                    ):
-                        min_width = (
-                            widget.style.padding_right
+                    if widget.style.width:
+                        if min_width <= (
+                                widget.style.padding_right
+                                + widget.layout.width
+                                + widget.style.padding_left
+                            ):
+                            min_width = (
+                                widget.style.padding_right
+                                + widget.layout.width
+                                + widget.style.padding_left
+                            )
+                        # print(
+                        #     ".... BOX WIDGET WITH COLUMN DIRECTION AND WIDTH",
+                        #     widget,
+                        #     widget.children,
+                        #     min_width,
+                        # )
+                    else:
+                        if (
+                            min_width
+                            <= widget.style.padding_right
                             + widget._impl.native.get_preferred_width()[0]
                             + widget.style.padding_left
-                        )
-                    # print(
-                    #     ".... BOX WIDGET WITH COLUMN DIRECTION",
-                    #     widget,
-                    #     widget.children,
-                    #     min_width,
-                    # )
+                        ):
+                            min_width = (
+                                widget.style.padding_right
+                                + widget._impl.native.get_preferred_width()[0]
+                                + widget.style.padding_left
+                            )
+                        # print(
+                        #     ".... BOX WIDGET WITH COLUMN DIRECTION AND NO WIDTH",
+                        #     widget,
+                        #     widget.children,
+                        #     min_width,
+                        # )
                 else:
                     if widget.style.width:
                         # The widget has width
@@ -241,23 +259,41 @@ class TogaBox(Gtk.Fixed):
             for widget in self.interface.children:
                 widget._impl.rehint()
                 if str(type(widget)) == "<class 'toga.widgets.box.Box'>":
-                    if (
-                        min_height
-                        <= widget.style.padding_top
-                        + widget._impl.native.get_preferred_height()[0]
-                        + widget.style.padding_bottom
-                    ):
-                        min_height = (
-                            widget.style.padding_top
+                    if widget.style.width:
+                        if min_height <= (
+                                widget.style.padding_top
+                                + widget.layout.height
+                                + widget.style.padding_bottom
+                            ):
+                            min_height = (
+                                widget.style.padding_top
+                                + widget.layout.height
+                                + widget.style.padding_bottom
+                            )
+                        # print(
+                        #     ".... BOX WIDGET WITH COLUMN DIRECTION AND HEIGHT",
+                        #     widget,
+                        #     widget.children,
+                        #     min_height,
+                        # )
+                    else:
+                        if (
+                            min_height
+                            <= widget.style.padding_top
                             + widget._impl.native.get_preferred_height()[0]
                             + widget.style.padding_bottom
-                        )
-                    # print(
-                    #     ".... BOX WIDGET WITH ROW DIRECTION",
-                    #     widget,
-                    #     widget.children,
-                    #     min_height,
-                    # )
+                        ):
+                            min_height = (
+                                widget.style.padding_top
+                                + widget._impl.native.get_preferred_height()[0]
+                                + widget.style.padding_bottom
+                            )
+                        # print(
+                        #     ".... BOX WIDGET WITH ROW DIRECTION",
+                        #     widget,
+                        #     widget.children,
+                        #     min_height,
+                        # )
                 else:
                     if widget.style.height:
                         # The widget has height

@@ -1,3 +1,5 @@
+from travertino.size import at_least
+
 from ..colors import native_color
 from ..libs import Gtk, Pango, cairo
 from .base import Widget
@@ -171,6 +173,8 @@ class Canvas(Widget):
 
     def rehint(self):
         # print("REHINT", self, self.native.get_preferred_width(), self.native.get_preferred_height())
-        # width = self.native.get_preferred_width()
-        # height = self.native.get_preferred_height()
-        pass
+        width = self.native.get_preferred_width()
+        height = self.native.get_preferred_height()
+
+        self.interface.intrinsic.width = at_least(width[1])
+        self.interface.intrinsic.height = at_least(height[1])
