@@ -64,7 +64,16 @@ def build(app):
 
     split = toga.SplitContainer()
 
-    split.content = [left_container, right_container]
+    # The content of the split container can be specified as a simple list:
+    #    split.content = [left_container, right_container]
+    # but you can also specify "weight" with each content item, which will
+    # set an initial size of the columns to make a "heavy" column wider than
+    # a narrower one. In this example, the right container will be twice
+    # as wide as the left one.
+    split.content = [
+        (left_container, 1),
+        (right_container, 2)
+    ]
 
     # Create a "Things" menu group to contain some of the commands.
     # No explicit ordering is provided on the group, so it will appear
