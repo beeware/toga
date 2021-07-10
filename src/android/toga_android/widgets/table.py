@@ -1,11 +1,24 @@
 from travertino.size import at_least
 
-from ..libs import android_widgets
 from ..libs.activity import MainActivity
+from ..libs.android import R__attr
+from ..libs.android.graphics import Typeface
+from ..libs.android.view import Gravity, OnClickListener, View__MeasureSpec
+from ..libs.android.widget import (
+    HorizontalScrollView,
+    LinearLayout,
+    LinearLayout__LayoutParams,
+    ScrollView,
+    TableLayout,
+    TableLayout__Layoutparams,
+    TableRow,
+    TableRow__Layoutparams,
+    TextView
+)
 from .base import Widget
 
 
-class TogaOnClickListener(android_widgets.OnClickListener):
+class TogaOnClickListener(OnClickListener):
     def __init__(self, impl):
         super().__init__()
         self.impl = impl
@@ -38,39 +51,39 @@ class Table(Widget):
     def create(self):
         # get the selection color from the current theme
         current_theme = MainActivity.singletonThis.getApplication().getTheme()
-        attrs = [android_widgets.R__attr.colorBackground, android_widgets.R__attr.colorControlHighlight]
+        attrs = [R__attr.colorBackground, R__attr.colorControlHighlight]
         typed_array = current_theme.obtainStyledAttributes(attrs)
         self.color_unselected = typed_array.getColor(0, 0)
         self.color_selected = typed_array.getColor(1, 0)
         typed_array.recycle()
 
-        parent = android_widgets.LinearLayout(self._native_activity)
-        parent.setOrientation(android_widgets.LinearLayout.VERTICAL)
-        parent_layout_params = android_widgets.LinearLayout__LayoutParams(
-            android_widgets.LinearLayout__LayoutParams.MATCH_PARENT,
-            android_widgets.LinearLayout__LayoutParams.MATCH_PARENT
+        parent = LinearLayout(self._native_activity)
+        parent.setOrientation(LinearLayout.VERTICAL)
+        parent_layout_params = LinearLayout__LayoutParams(
+            LinearLayout__LayoutParams.MATCH_PARENT,
+            LinearLayout__LayoutParams.MATCH_PARENT
         )
-        parent_layout_params.gravity = android_widgets.Gravity.TOP
+        parent_layout_params.gravity = Gravity.TOP
         parent.setLayoutParams(parent_layout_params)
-        vscroll_view = android_widgets.ScrollView(self._native_activity)
+        vscroll_view = ScrollView(self._native_activity)
         # add vertical scroll view
-        vscroll_view_layout_params = android_widgets.LinearLayout__LayoutParams(
-            android_widgets.LinearLayout__LayoutParams.MATCH_PARENT,
-            android_widgets.LinearLayout__LayoutParams.MATCH_PARENT
+        vscroll_view_layout_params = LinearLayout__LayoutParams(
+            LinearLayout__LayoutParams.MATCH_PARENT,
+            LinearLayout__LayoutParams.MATCH_PARENT
         )
-        vscroll_view_layout_params.gravity = android_widgets.Gravity.TOP
-        self.table_layout = android_widgets.TableLayout(MainActivity.singletonThis)
-        table_layout_params = android_widgets.TableLayout__Layoutparams(
-            android_widgets.TableLayout__Layoutparams.MATCH_PARENT,
-            android_widgets.TableLayout__Layoutparams.WRAP_CONTENT
+        vscroll_view_layout_params.gravity = Gravity.TOP
+        self.table_layout = TableLayout(MainActivity.singletonThis)
+        table_layout_params = TableLayout__Layoutparams(
+            TableLayout__Layoutparams.MATCH_PARENT,
+            TableLayout__Layoutparams.WRAP_CONTENT
         )
         # add horizontal scroll view
-        hscroll_view = android_widgets.HorizontalScrollView(self._native_activity)
-        hscroll_view_layout_params = android_widgets.LinearLayout__LayoutParams(
-            android_widgets.LinearLayout__LayoutParams.MATCH_PARENT,
-            android_widgets.LinearLayout__LayoutParams.MATCH_PARENT
+        hscroll_view = HorizontalScrollView(self._native_activity)
+        hscroll_view_layout_params = LinearLayout__LayoutParams(
+            LinearLayout__LayoutParams.MATCH_PARENT,
+            LinearLayout__LayoutParams.MATCH_PARENT
         )
-        hscroll_view_layout_params.gravity = android_widgets.Gravity.LEFT
+        hscroll_view_layout_params.gravity = Gravity.LEFT
         vscroll_view.addView(hscroll_view, hscroll_view_layout_params)
 
         # add table layout to scrollbox
@@ -99,33 +112,33 @@ class Table(Widget):
         self.selection = {}
 
     def create_table_header(self):
-        table_row = android_widgets.TableRow(MainActivity.singletonThis)
-        table_row_params = android_widgets.TableRow__Layoutparams(
-            android_widgets.TableRow__Layoutparams.MATCH_PARENT,
-            android_widgets.TableRow__Layoutparams.WRAP_CONTENT
+        table_row = TableRow(MainActivity.singletonThis)
+        table_row_params = TableRow__Layoutparams(
+            TableRow__Layoutparams.MATCH_PARENT,
+            TableRow__Layoutparams.WRAP_CONTENT
         )
         table_row.setLayoutParams(table_row_params)
         for col_index in range(len(self.interface._accessors)):
             if self.interface._accessors[col_index] == self._deleted_column:
                 continue
-            text_view = android_widgets.TextView(MainActivity.singletonThis)
+            text_view = TextView(MainActivity.singletonThis)
             text_view.setText(self.interface.headings[col_index])
-            text_view.setTypeface(text_view.getTypeface(), android_widgets.Typeface.BOLD)
-            text_view_params = android_widgets.TableRow__Layoutparams(
-                android_widgets.TableRow__Layoutparams.MATCH_PARENT,
-                android_widgets.TableRow__Layoutparams.WRAP_CONTENT
+            text_view.setTypeface(text_view.getTypeface(), Typeface.BOLD)
+            text_view_params = TableRow__Layoutparams(
+                TableRow__Layoutparams.MATCH_PARENT,
+                TableRow__Layoutparams.WRAP_CONTENT
             )
             text_view_params.setMargins(10, 5, 10, 5)  # left, top, right, bottom
-            text_view_params.gravity = android_widgets.Gravity.START
+            text_view_params.gravity = Gravity.START
             text_view.setLayoutParams(text_view_params)
             table_row.addView(text_view)
         return table_row
 
     def create_table_row(self, row_index):
-        table_row = android_widgets.TableRow(MainActivity.singletonThis)
-        table_row_params = android_widgets.TableRow__Layoutparams(
-            android_widgets.TableRow__Layoutparams.MATCH_PARENT,
-            android_widgets.TableRow__Layoutparams.WRAP_CONTENT
+        table_row = TableRow(MainActivity.singletonThis)
+        table_row_params = TableRow__Layoutparams(
+            TableRow__Layoutparams.MATCH_PARENT,
+            TableRow__Layoutparams.WRAP_CONTENT
         )
         table_row.setLayoutParams(table_row_params)
         table_row.setClickable(True)
@@ -134,14 +147,14 @@ class Table(Widget):
         for col_index in range(len(self.interface._accessors)):
             if self.interface._accessors[col_index] == self._deleted_column:
                 continue
-            text_view = android_widgets.TextView(MainActivity.singletonThis)
+            text_view = TextView(MainActivity.singletonThis)
             text_view.setText(self.get_data_value(row_index, col_index))
-            text_view_params = android_widgets.TableRow__Layoutparams(
-                android_widgets.TableRow__Layoutparams.MATCH_PARENT,
-                android_widgets.TableRow__Layoutparams.WRAP_CONTENT
+            text_view_params = TableRow__Layoutparams(
+                TableRow__Layoutparams.MATCH_PARENT,
+                TableRow__Layoutparams.WRAP_CONTENT
             )
             text_view_params.setMargins(10, 5, 10, 5)  # left, top, right, bottom
-            text_view_params.gravity = android_widgets.Gravity.START
+            text_view_params.gravity = Gravity.START
             text_view.setLayoutParams(text_view_params)
             table_row.addView(text_view)
         return table_row
@@ -203,8 +216,8 @@ class Table(Widget):
             return
 
         self.native.measure(
-            android_widgets.View__MeasureSpec.UNSPECIFIED,
-            android_widgets.View__MeasureSpec.UNSPECIFIED,
+            View__MeasureSpec.UNSPECIFIED,
+            View__MeasureSpec.UNSPECIFIED,
         )
         self.interface.intrinsic.width = at_least(self.native.getMeasuredWidth())
         self.interface.intrinsic.height = at_least(self.native.getMeasuredHeight())

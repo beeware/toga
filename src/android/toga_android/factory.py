@@ -8,11 +8,11 @@ from .widgets.button import Button
 from .widgets.detailedlist import DetailedList
 from .widgets.imageview import ImageView
 from .widgets.label import Label
-from .widgets.numberinput import NumberInput
 from .widgets.multilinetextinput import MultilineTextInput
+from .widgets.numberinput import NumberInput
 from .widgets.passwordinput import PasswordInput
-from .widgets.selection import Selection
 from .widgets.scrollcontainer import ScrollContainer
+from .widgets.selection import Selection
 from .widgets.slider import Slider
 from .widgets.switch import Switch
 from .widgets.table import Table

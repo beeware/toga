@@ -1,13 +1,10 @@
 from toga.constants import LEFT
-
 from travertino.size import at_least
 
-from ..libs.android_widgets import (
-    EditText,
-    Gravity,
-    InputType,
-    TypedValue,
-)
+from ..libs.android.text import InputType
+from ..libs.android.util import TypedValue
+from ..libs.android.view import Gravity
+from ..libs.android.widget import EditText
 from .base import Widget, align
 
 

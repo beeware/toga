@@ -1,5 +1,6 @@
 from . import dialogs
-from .libs.android_widgets import R__attr, TypedValue
+from .libs.android import R__attr
+from .libs.android.util import TypedValue
 
 
 class AndroidViewport:
