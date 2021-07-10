@@ -10,20 +10,20 @@ class TogaOnClickListener(android_widgets.OnClickListener):
         super().__init__()
         self.impl = impl
 
-    def onClick(self, _view):
-        tr_id = _view.getId()
+    def onClick(self, view):
+        tr_id = view.getId()
         row = self.impl.interface.data[tr_id]
         if self.impl.interface.multiple_select:
             if tr_id in self.impl.selection:
                 self.impl.selection.pop(tr_id)
-                _view.setBackgroundColor(self.impl.color_unselected)
+                view.setBackgroundColor(self.impl.color_unselected)
             else:
                 self.impl.selection[tr_id] = row
-                _view.setBackgroundColor(self.impl.color_selected)
+                view.setBackgroundColor(self.impl.color_selected)
         else:
             self.impl.clear_selection()
             self.impl.selection[tr_id] = row
-            _view.setBackgroundColor(self.impl.color_selected)
+            view.setBackgroundColor(self.impl.color_selected)
         if self.impl.interface.on_select:
             self.impl.interface.on_select(self.impl.interface, row=row)
 
@@ -37,12 +37,12 @@ class Table(Widget):
 
     def create(self):
         # get the selection color from the current theme
-        _current_theme = MainActivity.singletonThis.getApplication().getTheme()
-        _attrs = [android_widgets.R__attr.colorBackground, android_widgets.R__attr.colorControlHighlight]
-        _typed_array = _current_theme.obtainStyledAttributes(_attrs)
-        self.color_unselected = _typed_array.getColor(0, 0)
-        self.color_selected = _typed_array.getColor(1, 0)
-        _typed_array.recycle()
+        current_theme = MainActivity.singletonThis.getApplication().getTheme()
+        attrs = [android_widgets.R__attr.colorBackground, android_widgets.R__attr.colorControlHighlight]
+        typed_array = current_theme.obtainStyledAttributes(attrs)
+        self.color_unselected = typed_array.getColor(0, 0)
+        self.color_selected = typed_array.getColor(1, 0)
+        typed_array.recycle()
 
         parent = android_widgets.LinearLayout(self._native_activity)
         parent.setOrientation(android_widgets.LinearLayout.VERTICAL)
@@ -72,6 +72,7 @@ class Table(Widget):
         )
         hscroll_view_layout_params.gravity = android_widgets.Gravity.LEFT
         vscroll_view.addView(hscroll_view, hscroll_view_layout_params)
+
         # add table layout to scrollbox
         self.table_layout.setLayoutParams(table_layout_params)
         hscroll_view.addView(self.table_layout)
@@ -153,15 +154,15 @@ class Table(Widget):
         return value
 
     def get_selection(self):
-        _selection = []
+        selection = []
         for row_index in range(len(self.interface.data)):
             if row_index in self.selection:
-                _selection.append(self.selection[row_index])
-        if len(_selection) == 0:
-            _selection = None
+                selection.append(self.selection[row_index])
+        if len(selection) == 0:
+            selection = None
         elif not self.interface.multiple_select:
-            _selection = _selection[0]
-        return _selection
+            selection = selection[0]
+        return selection
 
     # data listener method
     def insert(self, index, item):
@@ -196,9 +197,11 @@ class Table(Widget):
         self._deleted_column = None
 
     def rehint(self):
-        # Android can crash when rendering some widgets until they have their layout params set. Guard for that case.
+        # Android can crash when rendering some widgets until
+        # they have their layout params set. Guard for that case.
         if self.native.getLayoutParams() is None:
             return
+
         self.native.measure(
             android_widgets.View__MeasureSpec.UNSPECIFIED,
             android_widgets.View__MeasureSpec.UNSPECIFIED,

@@ -23,11 +23,8 @@ class ExampleTableApp(toga.App):
         self.label_table1.text = 'You selected row: {}'.format(row.title) if row is not None else 'No row selected'
 
     def on_select_handler2(self, widget, row, **kwargs):
-        titles = ''
         if self.table2.selection is not None:
-            for row in self.table2.selection:
-                titles = titles + '  '+row.title
-            self.label_table2.text = 'Rows selected: {}: {}'.format(len(self.table2.selection), titles)
+            self.label_table2.text = 'Rows selected: {}'.format(len(self.table2.selection))
         else:
             self.label_table2.text = 'No row selected'
 
@@ -37,9 +34,6 @@ class ExampleTableApp(toga.App):
 
     def delete_handler(self, widget, **kwargs):
         if self.table1.selection:
-            for row in self.table1.data:
-                print(row)
-            print(self.table1.selection)
             self.table1.data.remove(self.table1.selection)
         elif len(self.table1.data) > 0:
             self.table1.data.remove(self.table1.data[0])
