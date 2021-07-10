@@ -1,12 +1,15 @@
 from travertino.size import at_least
 
-from ..libs import android_widgets
-from ..libs.android import PorterDuff__Mode
-from .base import Widget
 from toga_android.colors import native_color
 
+from ..libs.android.graphics import PorterDuff__Mode
+from ..libs.android.util import TypedValue
+from ..libs.android.view import OnClickListener, View__MeasureSpec
+from ..libs.android.widget import Button as A_Button
+from .base import Widget
 
-class TogaOnClickListener(android_widgets.OnClickListener):
+
+class TogaOnClickListener(OnClickListener):
     def __init__(self, button_impl):
         super().__init__()
         self.button_impl = button_impl
@@ -18,7 +21,7 @@ class TogaOnClickListener(android_widgets.OnClickListener):
 
 class Button(Widget):
     def create(self):
-        self.native = android_widgets.Button(self._native_activity)
+        self.native = A_Button(self._native_activity)
         self.native.setOnClickListener(TogaOnClickListener(button_impl=self))
 
     def set_label(self, label):
@@ -30,7 +33,7 @@ class Button(Widget):
     def set_font(self, font):
         if font:
             font_impl = font.bind(self.interface.factory)
-            self.native.setTextSize(android_widgets.TypedValue.COMPLEX_UNIT_SP, font_impl.get_size())
+            self.native.setTextSize(TypedValue.COMPLEX_UNIT_SP, font_impl.get_size())
             self.native.setTypeface(font_impl.get_typeface(), font_impl.get_style())
 
     def set_on_press(self, handler):
@@ -52,8 +55,8 @@ class Button(Widget):
         if self.native.getLayoutParams() is None:
             return
         self.native.measure(
-            android_widgets.View__MeasureSpec.UNSPECIFIED,
-            android_widgets.View__MeasureSpec.UNSPECIFIED,
+            View__MeasureSpec.UNSPECIFIED,
+            View__MeasureSpec.UNSPECIFIED,
         )
         self.interface.intrinsic.width = at_least(self.native.getMeasuredWidth())
         self.interface.intrinsic.height = self.native.getMeasuredHeight()

@@ -1,10 +1,15 @@
 from travertino.size import at_least
 
+from ..libs.android.util import TypedValue
+from ..libs.android.view import View__MeasureSpec
+from ..libs.android.widget import (
+    CompoundButton__OnCheckedChangeListener,
+    Switch as A_Switch
+)
 from .base import Widget
-from ..libs import android_widgets
 
 
-class OnCheckedChangeListener(android_widgets.CompoundButton__OnCheckedChangeListener):
+class OnCheckedChangeListener(CompoundButton__OnCheckedChangeListener):
     def __init__(self, impl):
         super().__init__()
         self._impl = impl
@@ -16,7 +21,7 @@ class OnCheckedChangeListener(android_widgets.CompoundButton__OnCheckedChangeLis
 
 class Switch(Widget):
     def create(self):
-        self.native = android_widgets.Switch(self._native_activity)
+        self.native = A_Switch(self._native_activity)
         self.native.setOnCheckedChangeListener(OnCheckedChangeListener(self))
 
     def set_label(self, label):
@@ -38,7 +43,7 @@ class Switch(Widget):
     def set_font(self, font):
         if font:
             font_impl = font.bind(self.interface.factory)
-            self.native.setTextSize(android_widgets.TypedValue.COMPLEX_UNIT_SP, font_impl.get_size())
+            self.native.setTextSize(TypedValue.COMPLEX_UNIT_SP, font_impl.get_size())
             self.native.setTypeface(font_impl.get_typeface(), font_impl.get_style())
 
     def set_on_toggle(self, handler):
@@ -49,7 +54,7 @@ class Switch(Widget):
         if self.native.getLayoutParams() is None:
             return
         self.native.measure(
-            android_widgets.View__MeasureSpec.UNSPECIFIED, android_widgets.View__MeasureSpec.UNSPECIFIED
+            View__MeasureSpec.UNSPECIFIED, View__MeasureSpec.UNSPECIFIED
         )
         self.interface.intrinsic.width = at_least(self.native.getMeasuredWidth())
         self.interface.intrinsic.height = self.native.getMeasuredHeight()

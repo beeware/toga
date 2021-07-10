@@ -3,11 +3,12 @@ import base64
 
 from travertino.size import at_least
 
-from ..libs import android_widgets
+from ..libs.android.view import Gravity, View__MeasureSpec
+from ..libs.android.webkit import ValueCallback, WebView as A_WebView, WebViewClient
 from .base import Widget, align
 
 
-class ReceiveString(android_widgets.ValueCallback):
+class ReceiveString(ValueCallback):
     def __init__(self, fn=None):
         super().__init__()
         self._fn = fn
@@ -23,10 +24,10 @@ class ReceiveString(android_widgets.ValueCallback):
 
 class WebView(Widget):
     def create(self):
-        self.native = android_widgets.WebView(self._native_activity)
+        self.native = A_WebView(self._native_activity)
         # Set a WebViewClient so that new links open in this activity,
         # rather than triggering the phone's web browser.
-        self.native.setWebViewClient(android_widgets.WebViewClient())
+        self.native.setWebViewClient(WebViewClient())
         # Enable JS.
         self.native.getSettings().setJavaScriptEnabled(True)
 
@@ -71,7 +72,7 @@ class WebView(Widget):
         # This is because this widget's setGravity() requires LayoutParams before it can be called.
         if self.native.getLayoutParams() is None:
             return
-        self.native.setGravity(android_widgets.Gravity.CENTER_VERTICAL | align(value))
+        self.native.setGravity(Gravity.CENTER_VERTICAL | align(value))
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
@@ -80,8 +81,8 @@ class WebView(Widget):
         if self.native.getLayoutParams() is None:
             return
         self.native.measure(
-            android_widgets.View__MeasureSpec.UNSPECIFIED,
-            android_widgets.View__MeasureSpec.UNSPECIFIED,
+            View__MeasureSpec.UNSPECIFIED,
+            View__MeasureSpec.UNSPECIFIED,
         )
         self.interface.intrinsic.width = at_least(self.native.getMeasuredWidth())
         self.interface.intrinsic.height = self.native.getMeasuredHeight()

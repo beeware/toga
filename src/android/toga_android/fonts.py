@@ -7,12 +7,10 @@ from toga.fonts import (
     SANS_SERIF,
     SERIF,
     SYSTEM,
-    SYSTEM_DEFAULT_FONT_SIZE,
+    SYSTEM_DEFAULT_FONT_SIZE
 )
 
-from .libs.android_widgets import (
-    Typeface,
-)
+from .libs.android.graphics import Typeface
 
 
 class Font:

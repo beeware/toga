@@ -1,12 +1,8 @@
 from travertino.size import at_least
 
+from ..libs.android.view import View__MeasureSpec
+from ..libs.android.widget import SeekBar, SeekBar__OnSeekBarChangeListener
 from .base import Widget
-
-from ..libs.android_widgets import (
-    SeekBar,
-    SeekBar__OnSeekBarChangeListener,
-    View__MeasureSpec,
-)
 
 
 class TogaOnSeekBarChangeListener(SeekBar__OnSeekBarChangeListener):

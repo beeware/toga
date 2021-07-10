@@ -1,11 +1,10 @@
-from rubicon.java import android_events
+import asyncio
 
+from rubicon.java import android_events
 from toga.handlers import wrapped_handler
 
 from .libs.activity import IPythonApp, MainActivity
 from .window import Window
-
-import asyncio
 
 
 # `MainWindow` is defined here in `app.py`, not `window.py`, to mollify the test suite.

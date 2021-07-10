@@ -1,11 +1,21 @@
 from travertino.size import at_least
 
-from ..libs import android_widgets, android
-from .base import Widget
 from toga_android.window import AndroidViewport
 
+from ..libs.android.view import (
+    Gravity,
+    View__MeasureSpec,
+    View__OnTouchListener
+)
+from ..libs.android.widget import (
+    HorizontalScrollView,
+    LinearLayout__LayoutParams,
+    ScrollView
+)
+from .base import Widget
 
-class TogaOnTouchListener(android.View__OnTouchListener):
+
+class TogaOnTouchListener(View__OnTouchListener):
     is_scrolling_enabled = True
 
     def __init__(self):
@@ -24,23 +34,23 @@ class ScrollContainer(Widget):
     hScrollListener = None
 
     def create(self):
-        vScrollView = android_widgets.ScrollView(self._native_activity)
-        vScrollView_layout_params = android_widgets.LinearLayout__LayoutParams(
-            android_widgets.LinearLayout__LayoutParams.MATCH_PARENT,
-            android_widgets.LinearLayout__LayoutParams.MATCH_PARENT
+        vScrollView = ScrollView(self._native_activity)
+        vScrollView_layout_params = LinearLayout__LayoutParams(
+            LinearLayout__LayoutParams.MATCH_PARENT,
+            LinearLayout__LayoutParams.MATCH_PARENT
         )
-        vScrollView_layout_params.gravity = android_widgets.Gravity.TOP
+        vScrollView_layout_params.gravity = Gravity.TOP
         vScrollView.setLayoutParams(vScrollView_layout_params)
         self.vScrollListener = TogaOnTouchListener()
         self.vScrollListener.is_scrolling_enabled = self.interface.vertical
         vScrollView.setOnTouchListener(self.vScrollListener)
         self.native = vScrollView
-        self.hScrollView = android_widgets.HorizontalScrollView(self._native_activity)
-        hScrollView_layout_params = android_widgets.LinearLayout__LayoutParams(
-            android_widgets.LinearLayout__LayoutParams.MATCH_PARENT,
-            android_widgets.LinearLayout__LayoutParams.MATCH_PARENT
+        self.hScrollView = HorizontalScrollView(self._native_activity)
+        hScrollView_layout_params = LinearLayout__LayoutParams(
+            LinearLayout__LayoutParams.MATCH_PARENT,
+            LinearLayout__LayoutParams.MATCH_PARENT
         )
-        hScrollView_layout_params.gravity = android_widgets.Gravity.LEFT
+        hScrollView_layout_params.gravity = Gravity.LEFT
         self.hScrollListener = TogaOnTouchListener()
         self.hScrollListener.is_scrolling_enabled = self.interface.horizontal
         self.hScrollView.setOnTouchListener(self.hScrollListener)
@@ -50,9 +60,9 @@ class ScrollContainer(Widget):
 
     def set_content(self, widget):
         widget.viewport = AndroidViewport(widget.native)
-        content_view_params = android_widgets.LinearLayout__LayoutParams(
-            android_widgets.LinearLayout__LayoutParams.MATCH_PARENT,
-            android_widgets.LinearLayout__LayoutParams.MATCH_PARENT
+        content_view_params = LinearLayout__LayoutParams(
+            LinearLayout__LayoutParams.MATCH_PARENT,
+            LinearLayout__LayoutParams.MATCH_PARENT
         )
         widget_parent = widget.native.getParent()
         if widget_parent is not None:
@@ -97,8 +107,8 @@ class ScrollContainer(Widget):
         if self.native.getLayoutParams() is None:
             return
         self.native.measure(
-            android_widgets.View__MeasureSpec.UNSPECIFIED,
-            android_widgets.View__MeasureSpec.UNSPECIFIED,
+            View__MeasureSpec.UNSPECIFIED,
+            View__MeasureSpec.UNSPECIFIED,
         )
         self.interface.intrinsic.width = at_least(self.native.getMeasuredWidth())
         self.interface.intrinsic.height = at_least(self.native.getMeasuredHeight())
