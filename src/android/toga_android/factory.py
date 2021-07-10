@@ -15,6 +15,7 @@ from .widgets.selection import Selection
 from .widgets.scrollcontainer import ScrollContainer
 from .widgets.slider import Slider
 from .widgets.switch import Switch
+from .widgets.table import Table
 from .widgets.textinput import TextInput
 from .widgets.webview import WebView
 from .window import Window
@@ -41,6 +42,7 @@ __all__ = [
     "Slider",
     "ScrollContainer",
     "Switch",
+    "Table",
     "TextInput",
     "WebView",
     "Window",
