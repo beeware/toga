@@ -3,9 +3,9 @@ from toga_gtk.libs import Gtk, GLib
 
 class ScrollableRow(Gtk.ListBoxRow):
     """
-    You can use and inherit from this class as if it were Gtk.ListBoxRow, nothing 
+    You can use and inherit from this class as if it were Gtk.ListBoxRow, nothing
     from the original implementation is changed.
-    There are three new public methods: scroll_to_top(), scroll_to_center() and 
+    There are three new public methods: scroll_to_top(), scroll_to_center() and
     scroll_to_bottom(). 'top', 'center' and 'bottom' are with respect to where in the
     visible region the row will move to.
     """
@@ -14,7 +14,7 @@ class ScrollableRow(Gtk.ListBoxRow):
         # We need to wait until this widget is allocated to scroll it in,
         # for that we use signals and callbacks. The handler_is of the
         # signal is used to disconnect and we store it here.
-        self._scroll_handler_id_value = None
+        self._gtk_scroll_handler_id_value = None
 
         # The animation function will use this variable to control whether the animation is
         # progressing, whether the user manually scrolled the list during the animation and whether
@@ -44,31 +44,31 @@ class ScrollableRow(Gtk.ListBoxRow):
         list_box = self.get_parent()
         _, y = self.translate_coordinates(list_box, 0, 0)
         if y >= 0:
-            self._do_scroll_to_position(position)
+            self.gtk_do_scroll_to_position(position)
         else:
             # Wait for 'size-allocate' because we will need the
-            # dimensions of the widget. At this point 
+            # dimensions of the widget. At this point
             # widget.size_request is already available but that's
             # only the requested size, not the size it will get.
             self._scroll_handler_id = self.connect(
                 'size-allocate',
-                # We don't need 'wdiget' and 'gpointer'
-                lambda widget, gpointer: self._do_scroll_to_position(position)
+                # We don't need `wdiget` and `gpointer` but we do need to capture `position`
+                lambda widget, gpointer: self.gtk_do_scroll_to_position(position)
             )
 
         return True
 
-    def _do_scroll_to_position(self, position):
+    def gtk_do_scroll_to_position(self, position):
         # Disconnect the from the signal that called us
-        self._scroll_handler_id = None
+        self._gtk_scroll_handler_id = None
 
         list_box = self.get_parent()
         adj = list_box.get_adjustment()
 
         page_size = adj.get_page_size()
 
-        # 'height' and 'y' are always valid because we are
-        # being called after 'size-allocate'
+        # `height` and `y` are always valid because we are
+        # being called after `size-allocate`
         row_height = self.get_allocation().height
         # `y` is the position of the top of the row in the frame of
         # reference of the parent Gtk.ListBox
@@ -95,9 +95,10 @@ class ScrollableRow(Gtk.ListBoxRow):
             value = value_at_bottom
 
         if value > 0:
-            GLib.idle_add(lambda: self._animate_scroll_to_position(value))
+            # We need to capture `value`
+            GLib.idle_add(lambda: self.gtk_animate_scroll_to_position(value))
 
-    def _animate_scroll_to_position(self, final):
+    def gtk_animate_scroll_to_position(self, final):
         # If this function returns True it is executed again.
         # If this function returns False is is not executed anymore.
         # Set self._animation_control to None after the animation is over.
@@ -125,7 +126,6 @@ class ScrollableRow(Gtk.ListBoxRow):
         }
 
         distance = final - current
-        value = None
 
         if abs(distance) < step:
             adj.set_value(final)
@@ -141,12 +141,12 @@ class ScrollableRow(Gtk.ListBoxRow):
             return True
 
     @property
-    def _scroll_handler_id(self):
-        return self._scroll_handler_id_value
-    
-    @_scroll_handler_id.setter
-    def _scroll_handler_id(self, value):
-        if self._scroll_handler_id_value is not None:
-            self.disconnect(self._scroll_handler_id_value)
+    def _gtk_scroll_handler_id(self):
+        return self._gtk_scroll_handler_id_value
 
-        self._scroll_handler_id_value = value
+    @_gtk_scroll_handler_id.setter
+    def _gtk_scroll_handler_id(self, value):
+        if self._gtk_scroll_handler_id_value is not None:
+            self.disconnect(self._gtk_scroll_handler_id_value)
+
+        self._gtk_scroll_handler_id_value = value

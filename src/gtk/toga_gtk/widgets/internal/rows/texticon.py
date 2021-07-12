@@ -1,8 +1,6 @@
 import html
 
-from toga_gtk.libs import Gtk, GLib, Pango
-from toga_gtk.icons import Icon
-
+from toga_gtk.libs import Gtk, Pango
 from .base import HiddenButtonsRow
 
 
@@ -16,8 +14,6 @@ class TextIconRow(HiddenButtonsRow):
 
         # This is the factory of the DetailedList implementation.
         self.factory = factory
-
-        self._delete_button = None
 
         icon = self.get_icon(self.interface, self.factory)
 
@@ -44,7 +40,7 @@ class TextIconRow(HiddenButtonsRow):
         self.add_content(content)
 
         self._delete_button = Gtk.Button.new_from_icon_name("user-trash-symbolic", Gtk.IconSize.BUTTON)
-        self._delete_button.connect("clicked", lambda w: self._on_delete())
+        self._delete_button.connect("clicked", lambda w: self._dl.delete_row(self))
         self.add_button(self._delete_button)
 
     def get_icon(self, row, factory):
@@ -65,6 +61,6 @@ class TextIconRow(HiddenButtonsRow):
         return ''.join(markup)
 
     def on_right_click(self, rect):
-        handler = self._dl.on_delete
+        handler = self._dl.interface.on_delete
         if handler is not None:
             self.toggle_content()

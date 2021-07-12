@@ -1,4 +1,4 @@
-from toga_gtk.libs import Gtk, GLib
+from toga_gtk.libs import Gtk
 from .scrollable import ScrollableRow
 
 
@@ -20,7 +20,6 @@ class HiddenButtonsRow(BaseRow):
 
         self._content_name = "content"
         self._buttons_name = "buttons"
-        self._has_buttons = False
 
         self.stack = Gtk.Stack()
 
@@ -55,8 +54,3 @@ class HiddenButtonsRow(BaseRow):
 
         if visible_child == self._buttons_name:
             self.hide_buttons()
-
-    def _on_delete(self):
-        handler = self._dl.on_delete
-        if handler is not None:
-            handler(self)
