@@ -46,8 +46,14 @@ class Slider(Widget):
 
     def set_value(self, value):
         minimum, maximum = self.interface.range
-        tick_count = self.interface.tick_count or DEFAULT_NUMBER_OF_TICKS
-        self.native.setProgress(int((maximum - value - minimum) * tick_count))
+        if self.interface.tick_count is not None and self.interface.tick_count <= 1:
+            android_progress = 0
+        else:
+            toga_tick_count = self.interface.tick_count or DEFAULT_NUMBER_OF_TICKS
+            android_slider_max = toga_tick_count - 1
+            tick_factor = (maximum - minimum) / android_slider_max
+            android_progress = int((value - minimum) * tick_factor)
+        self.native.setProgress(android_progress)
 
     def set_range(self, range):
         pass
