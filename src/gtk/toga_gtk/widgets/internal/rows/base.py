@@ -3,7 +3,11 @@ from .scrollable import ScrollableRow
 
 
 class BaseRow(ScrollableRow):
-    def __init__(self, interface: 'Row', *args, **kwargs):
+    def __init__(self, interface, *args, **kwargs):
+        """
+        Args:
+            interface (:obj:`Row`)
+        """
         super().__init__(*args, **kwargs)
         # Keep a reference to the original core.toga.sources.list_source.Row
         self.interface = interface

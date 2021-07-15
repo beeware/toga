@@ -57,7 +57,13 @@ class DetailedList(Widget):
         self.right_click_gesture.set_propagation_phase(Gtk.PropagationPhase.BUBBLE)
         self.right_click_gesture.connect("pressed", self.gtk_on_right_click)
 
-    def row_factory(self, item: 'Row'):
+    def row_factory(self, item):
+        """
+        Args:
+            item (:obj:`Row`)
+        Returns:
+            Returns a (:obj:`TextIconRow`)
+        """
         new_item = TextIconRow(self.interface.factory, self, item)
         item._impl = new_item
         return new_item
@@ -66,7 +72,11 @@ class DetailedList(Widget):
         self.disconnect(self.gtk_on_select_signal_handler)
         super().destroy()
 
-    def change_source(self, source: 'ListSource'):
+    def change_source(self, source):
+        """
+        Args:
+            source (:obj:`ListSource`)
+        """
         self.store.remove_all()
         for item in source:
             self.store.append(
@@ -91,20 +101,33 @@ class DetailedList(Widget):
         # returning `False` on success.
         GLib.idle_add(lambda: not self._list_items_changed())
 
-    def insert(self, index: int, item: 'Row'):
+    def insert(self, index, item):
+        """
+        Args:
+            index (int)
+            item (:obj:`Row`)
+        """
         self.store.insert(index, self.row_factory(item))
         self.list_box.show_all()
         self._list_items_changed()
 
-    def change(self, item: 'Row'):
+    def change(self, item):
+        """
+        Args:
+            item (:obj:`Row`)
+        """
         new_item = self.row_factory(item)
         index = item._impl.get_index()
         self.store.insert(index, new_item)
 
-    def remove(self, item: 'Row', index: int):
+    def remove(self, item, index):
         """
         Removes a row from the store. This method doesn't trigger the `on_delete` callback and it
         doesn't remove the row from the interface.
+
+        Args:
+            item (:obj:`Row`)
+            index (int)
         """
         if index is None:
             index = item._impl.get_index()
