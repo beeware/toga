@@ -1,5 +1,5 @@
 from ..libs.activity import MainActivity
-from ..libs.android_widgets import RelativeLayout, RelativeLayout__LayoutParams
+from ..libs.android.widget import RelativeLayout, RelativeLayout__LayoutParams
 from .base import Widget
 
 

@@ -101,7 +101,10 @@ class Widget:
     # INTERFACE
 
     def add_child(self, child):
-        if self.container:
+        if self.viewport:
+            # we are the the top level container
+            child.container = self
+        else:
             child.container = self.container
 
     def insert_child(self, index, child):

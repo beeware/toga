@@ -7,7 +7,7 @@ from urllib.parse import unquote, urlparse
 from rubicon.objc.eventloop import CocoaLifecycle, EventLoopPolicy
 
 import toga
-from toga.handlers import wrapped_handler
+from toga.handlers import wrapped_handler, NativeHandler
 
 from .keys import cocoa_key
 from .libs import (
@@ -36,16 +36,17 @@ from .window import Window
 
 
 class MainWindow(Window):
-    def on_close(self):
+    def cocoa_windowShouldClose(self):
+        # Main Window close is a proxy for "Exit app".
+        # Defer all handling to the app's exit method.
+        # As a result of calling that method, the app will either
+        # exit, or the user will cancel the exit; in which case
+        # the main window shouldn't close, either.
         self.interface.app.exit()
+        return False
 
 
 class AppDelegate(NSObject):
-    @objc_method
-    def applicationWillTerminate_(self, sender):
-        if self.interface.app.on_exit:
-            self.interface.app.on_exit(self.interface.app)
-
     @objc_method
     def applicationDidFinishLaunching_(self, notification):
         self.native.activateIgnoringOtherApps(True)
@@ -95,6 +96,11 @@ class AppDelegate(NSObject):
         if cmd.action:
             cmd.action(None)
 
+    @objc_method
+    def validateMenuItem_(self, sender) -> bool:
+        cmd = self.interface._impl._menu_items[sender]
+        return cmd.enabled
+
 
 class App:
     _MAIN_WINDOW_CLASS = MainWindow
@@ -126,13 +132,44 @@ class App:
         formal_name = self.interface.formal_name
 
         self.interface.commands.add(
+
+            # ---- App menu -----------------------------------
             toga.Command(
                 lambda _: self.interface.about(),
                 'About ' + formal_name,
                 group=toga.Group.APP
             ),
-            toga.Command(None, 'Preferences', group=toga.Group.APP),
-            # Quit should always be the last item, in a section on it's own
+            toga.Command(
+                None,
+                'Preferences',
+                shortcut=toga.Key.MOD_1 + ',',
+                group=toga.Group.APP,
+                section=20,
+            ),
+            toga.Command(
+                NativeHandler(SEL('hide:')),
+                'Hide ' + formal_name,
+                shortcut=toga.Key.MOD_1 + 'h',
+                group=toga.Group.APP,
+                order=0,
+                section=sys.maxsize - 1,
+            ),
+            toga.Command(
+                NativeHandler(SEL('hideOtherApplications:')),
+                'Hide Others',
+                shortcut=toga.Key.MOD_1 + toga.Key.MOD_2 + 'h',
+                group=toga.Group.APP,
+                order=1,
+                section=sys.maxsize - 1,
+            ),
+            toga.Command(
+                NativeHandler(SEL('unhideAllApplications:')),
+                'Show All',
+                group=toga.Group.APP,
+                order=2,
+                section=sys.maxsize - 1,
+            ),
+            # Quit should always be the last item, in a section on its own
             toga.Command(
                 lambda _: self.interface.exit(),
                 'Quit ' + formal_name,
@@ -141,6 +178,71 @@ class App:
                 section=sys.maxsize
             ),
 
+            # ---- Edit menu ----------------------------------
+            toga.Command(
+                NativeHandler(SEL('undo:')),
+                'Undo',
+                shortcut=toga.Key.MOD_1 + 'z',
+                group=toga.Group.EDIT,
+                order=10,
+            ),
+            toga.Command(
+                NativeHandler(SEL('redo:')),
+                'Redo',
+                shortcut=toga.Key.SHIFT + toga.Key.MOD_1 + 'z',
+                group=toga.Group.EDIT,
+                order=20,
+            ),
+
+            toga.Command(
+                NativeHandler(SEL('cut:')),
+                'Cut',
+                shortcut=toga.Key.MOD_1 + 'x',
+                group=toga.Group.EDIT,
+                section=10,
+                order=10,
+            ),
+            toga.Command(
+                NativeHandler(SEL('copy:')),
+                'Copy',
+                shortcut=toga.Key.MOD_1 + 'c',
+                group=toga.Group.EDIT,
+                section=10,
+                order=20,
+            ),
+            toga.Command(
+                NativeHandler(SEL('paste:')),
+                'Paste',
+                shortcut=toga.Key.MOD_1 + 'v',
+                group=toga.Group.EDIT,
+                section=10,
+                order=30,
+            ),
+            toga.Command(
+                NativeHandler(SEL('pasteAsPlainText:')),
+                'Paste and Match Style',
+                shortcut=toga.Key.MOD_2 + toga.Key.SHIFT + toga.Key.MOD_1 + 'v',
+                group=toga.Group.EDIT,
+                section=10,
+                order=40,
+            ),
+            toga.Command(
+                NativeHandler(SEL('delete:')),
+                'Delete',
+                group=toga.Group.EDIT,
+                section=10,
+                order=50,
+            ),
+            toga.Command(
+                NativeHandler(SEL('selectAll:')),
+                'Select All',
+                shortcut=toga.Key.MOD_1 + 'a',
+                group=toga.Group.EDIT,
+                section=10,
+                order=60,
+            ),
+
+            # ---- Help menu ----------------------------------
             toga.Command(
                 lambda _: self.interface.visit_homepage(),
                 'Visit homepage',
@@ -181,20 +283,23 @@ class App:
                     key = ''
                     modifier = None
 
+                # Native handlers can be invoked directly as menu actions.
+                # Standard wrapped menu items have a `_raw` attribute,
+                # and are invoked using the selectMenuItem:
+                if hasattr(cmd.action, '_raw'):
+                    action = SEL('selectMenuItem:')
+                else:
+                    action = cmd.action
+
                 item = NSMenuItem.alloc().initWithTitle(
                     cmd.label,
-                    action=SEL('selectMenuItem:'),
+                    action=action,
                     keyEquivalent=key,
                 )
                 if modifier is not None:
                     item.keyEquivalentModifierMask = modifier
 
-                cmd._impl.native.append(item)
                 self._menu_items[item] = cmd
-
-                # This line may appear redundant, but it triggers the logic
-                # to force the enabled status on the underlying widgets.
-                cmd.enabled = cmd.enabled
                 submenu.addItem(item)
 
         # Set the menu for the app.
@@ -221,8 +326,6 @@ class App:
                     group.label, action=None, keyEquivalent=''
                 )
                 submenu = NSMenu.alloc().initWithTitle(group.label)
-                submenu.setAutoenablesItems(False)
-
                 parent_menu.setSubmenu(submenu, forItem=menu_item)
 
             # Install the item in the group cache.
@@ -261,7 +364,7 @@ class App:
         self.native.orderFrontStandardAboutPanelWithOptions(options)
 
     def exit(self):
-        self.native.terminate(None)
+        self.native.terminate(self.native)
 
     def set_on_exit(self, value):
         pass

@@ -1,11 +1,11 @@
-Dialogs
+Text Input
 =======
 
-Test app for the Dialog in Main Window.
+Test app for the Text Input widget.
 
 Quickstart
 ~~~~~~~~~~
 
 To run this example:
 
-    $ python -m dialogs
+    $ python -m textinput

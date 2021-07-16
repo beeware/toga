@@ -1,10 +1,10 @@
-from .utils import LoggedObject, not_required_on
+from .utils import LoggedObject, not_required, not_required_on
 from .window import Window
 
 
 class MainWindow(Window):
-    @not_required_on('mobile')
-    def on_close(self):
+    @not_required
+    def toga_on_close(self):
         self.action('handle MainWindow on_close')
 
 

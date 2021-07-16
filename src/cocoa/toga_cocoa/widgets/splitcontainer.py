@@ -7,20 +7,23 @@ from .base import Widget
 class TogaSplitViewDelegate(NSObject):
     @objc_method
     def splitView_resizeSubviewsWithOldSize_(self, view, size: NSSize) -> None:
-        if size.width and size.height:
-            # count = len(self.interface.content)
+        # Turn all the weights into a fraction of 1.0
+        total = sum(self.interface._weight)
+        self.interface._weight = [
+            weight / total
+            for weight in self.interface._weight
+        ]
 
-            # Turn all the weights into a fraction of 1.0
-            total = sum(self.interface._weight)
-            self.interface._weight = [
-                weight / total
-                for weight in self.interface._weight
-            ]
-
-            # Set the splitter positions based on the new weight fractions.
-            for i, weight in enumerate(self.interface._weight[:-1]):
-                view.setPosition(size.width * self.interface._weight[i], ofDividerAtIndex=i)
+        # Mark the subviews as needing adjustment
         view.adjustSubviews()
+
+        # Set the splitter positions based on the new weight fractions.
+        if self.interface.direction == self.interface.VERTICAL:
+            for i, weight in enumerate(self.interface._weight[:-1]):
+                view.setPosition(view.frame.size.width * weight, ofDividerAtIndex=i)
+        else:
+            for i, weight in enumerate(self.interface._weight[:-1]):
+                view.setPosition(view.frame.size.height * weight, ofDividerAtIndex=i)
 
     @objc_method
     def splitViewDidResizeSubviews_(self, notification) -> None:
