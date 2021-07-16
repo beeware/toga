@@ -54,10 +54,10 @@ def wrapped_handler(interface, handler, cleanup=None):
     function on the `_raw` attribute.
     """
     if handler:
-        def _handler(widget=interface, *args, **kwargs):
-            if isinstance(handler, NativeHandler):
-                return handler.native
+        if isinstance(handler, NativeHandler):
+            return handler.native
 
+        def _handler(widget=interface, *args, **kwargs):
             if asyncio.iscoroutinefunction(handler):
                 asyncio.ensure_future(
                     handler_with_cleanup(handler, cleanup, widget, *args, **kwargs)
