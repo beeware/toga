@@ -77,7 +77,7 @@ class TestWindow(TestCase):
             self.window.on_close = callback
             self.assertEqual(self.window.on_close._raw, callback)
             self.assertEqual(
-                self.window.on_close('widget', a=1),
+                self.window.on_close(a=1),
                 "called <class 'toga.window.Window'> with {'a': 1}"
             )
 
