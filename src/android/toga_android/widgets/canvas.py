@@ -117,3 +117,9 @@ class Canvas(Widget):
 
     def reset_transform(self, draw_context, *args, **kwargs):
         self.interface.factory.not_implemented('Canvas.reset_transform')
+
+    def rect(self, x, y, width, height, draw_context, *args, **kwargs):
+        self.interface.factory.not_implemented('Canvas.rect')
+
+    def measure_text(self, text, font, tight=False):
+        self.interface.factory.not_implemented('Canvas.measure_text')
