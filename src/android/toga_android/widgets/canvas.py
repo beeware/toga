@@ -102,3 +102,18 @@ class Canvas(Widget):
 
     def set_on_resize(self, handler):
         self.interface.factory.not_implemented('Canvas.on_resize')
+
+    def write_text(self, text, x, y, font, *args, **kwargs):
+        self.interface.factory.not_implemented('Canvas.write_text')
+
+    def translate(self, tx, ty, draw_context, *args, **kwargs):
+        self.interface.factory.not_implemented('Canvas.translate')
+
+    def scale(self, sx, sy, draw_context, *args, **kwargs):
+        self.interface.factory.not_implemented('Canvas.scale')
+
+    def rotate(self, radians, draw_context, *args, **kwargs):
+        self.interface.factory.not_implemented('Canvas.rotate')
+
+    def reset_transform(self, draw_context, *args, **kwargs):
+        self.interface.factory.not_implemented('Canvas.reset_transform')
