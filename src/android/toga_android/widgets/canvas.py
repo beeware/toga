@@ -82,6 +82,25 @@ class Canvas(Widget):
     ):
         self.interface.factory.not_implemented('Canvas.arc()')
 
+    def ellipse(
+        self,
+        x,
+        y,
+        radiusx,
+        radiusy,
+        rotation,
+        startangle,
+        endangle,
+        anticlockwise,
+        draw_context,
+        *args,
+        **kwargs
+    ):
+        self.interface.factory.not_implemented('Canvas.ellipse')
+
+    def rect(self, x, y, width, height, draw_context, *args, **kwargs):
+        self.interface.factory.not_implemented('Canvas.rect')
+
     # Drawing Paths
 
     def fill(self, color, fill_rule, preserve, draw_context, *args, **kwargs):
@@ -100,26 +119,29 @@ class Canvas(Widget):
 
         draw_context.drawPath(self._path, self._draw_paint)
 
-    def set_on_resize(self, handler):
-        self.interface.factory.not_implemented('Canvas.on_resize')
-
-    def write_text(self, text, x, y, font, *args, **kwargs):
-        self.interface.factory.not_implemented('Canvas.write_text')
-
-    def translate(self, tx, ty, draw_context, *args, **kwargs):
-        self.interface.factory.not_implemented('Canvas.translate')
-
-    def scale(self, sx, sy, draw_context, *args, **kwargs):
-        self.interface.factory.not_implemented('Canvas.scale')
+    # Transformations
 
     def rotate(self, radians, draw_context, *args, **kwargs):
         self.interface.factory.not_implemented('Canvas.rotate')
 
+    def scale(self, sx, sy, draw_context, *args, **kwargs):
+        self.interface.factory.not_implemented('Canvas.scale')
+
+    def translate(self, tx, ty, draw_context, *args, **kwargs):
+        self.interface.factory.not_implemented('Canvas.translate')
+
     def reset_transform(self, draw_context, *args, **kwargs):
         self.interface.factory.not_implemented('Canvas.reset_transform')
 
-    def rect(self, x, y, width, height, draw_context, *args, **kwargs):
-        self.interface.factory.not_implemented('Canvas.rect')
+    # Text
 
     def measure_text(self, text, font, tight=False):
         self.interface.factory.not_implemented('Canvas.measure_text')
+
+    def write_text(self, text, x, y, font, *args, **kwargs):
+        self.interface.factory.not_implemented('Canvas.write_text')
+
+    # Rehint
+
+    def set_on_resize(self, handler):
+        self.interface.factory.not_implemented('Canvas.on_resize')
