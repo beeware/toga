@@ -514,7 +514,7 @@ class App:
         """ Quit the application gracefully.
         """
         if self.on_exit:
-            should_exit = self.on_exit(self)
+            should_exit = self.on_exit()
         else:
             should_exit = True
 
