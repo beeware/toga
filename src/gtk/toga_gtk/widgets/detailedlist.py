@@ -89,4 +89,4 @@ class DetailedList(Widget):
                 node = None
             # TODO See #682 DetailedList should have a _selection attribute + selection property like Tree
             # self.interface._selection = node
-            self.interface.on_select(self.interface, row=node)
+            self.interface.on_select(row=node)
