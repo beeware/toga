@@ -256,7 +256,7 @@ class Window:
 
     def cocoa_windowShouldClose(self):
         if self.interface.on_close:
-            should_close = self.interface.on_close(self)
+            should_close = self.interface.on_close()
         else:
             should_close = True
 

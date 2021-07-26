@@ -179,7 +179,7 @@ class TogaTree(NSOutlineView):
             selected = self.itemAtRow(notification.object.selectedRow).attrs['node']
 
         if self.interface.on_select:
-            self.interface.on_select(self.interface, node=selected)
+            self.interface.on_select(node=selected)
 
     # target methods
     @objc_method
@@ -190,7 +190,7 @@ class TogaTree(NSOutlineView):
             node = self.itemAtRow(self.clickedRow).attrs['node']
 
         if self.interface.on_select:
-            self.interface.on_double_click(self.interface, node=node)
+            self.interface.on_double_click(node=node)
 
 
 class Tree(Widget):

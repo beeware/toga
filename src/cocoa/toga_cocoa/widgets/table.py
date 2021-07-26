@@ -110,7 +110,7 @@ class TogaTable(NSTableView):
             selected = self.interface.data[notification.object.selectedRow]
 
         if self.interface.on_select:
-            self.interface.on_select(self.interface, row=selected)
+            self.interface.on_select(row=selected)
 
     @objc_method
     def tableView_heightOfRow_(self, table, row: int) -> float:
@@ -141,7 +141,7 @@ class TogaTable(NSTableView):
             clicked = self.interface.data[self.clickedRow]
 
         if self.interface.on_double_click:
-            self.interface.on_double_click(self.interface, row=clicked)
+            self.interface.on_double_click(row=clicked)
 
 
 class Table(Widget):

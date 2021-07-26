@@ -23,7 +23,7 @@ class TogaWebView(WKWebView):
     @objc_method
     def keyDown_(self, event) -> None:
         if self.interface.on_key_down:
-            self.interface.on_key_down(self.interface, **toga_key(event))
+            self.interface.on_key_down(**toga_key(event))
         send_super(__class__, self, 'keyDown:', event)
 
     @objc_method

@@ -51,42 +51,42 @@ class TogaCanvas(NSView):
         """Invoke the on_press handler if configured."""
         if self.interface.on_press:
             position = self.convertPoint(event.locationInWindow, fromView=None)
-            self.interface.on_press(self.interface, position.x, position.y, event.clickCount)
+            self.interface.on_press(position.x, position.y, event.clickCount)
 
     @objc_method
     def rightMouseDown_(self, event) -> None:
         """Invoke the on_alt_press handler if configured."""
         if self.interface.on_alt_press:
             position = self.convertPoint(event.locationInWindow, fromView=None)
-            self.interface.on_alt_press(self.interface, position.x, position.y, event.clickCount)
+            self.interface.on_alt_press(position.x, position.y, event.clickCount)
 
     @objc_method
     def mouseUp_(self, event) -> None:
         """Invoke the on_release handler if configured."""
         if self.interface.on_release:
             position = self.convertPoint(event.locationInWindow, fromView=None)
-            self.interface.on_release(self.interface, position.x, position.y, event.clickCount)
+            self.interface.on_release(position.x, position.y, event.clickCount)
 
     @objc_method
     def rightMouseUp_(self, event) -> None:
         """Invoke the on_alt_release handler if configured."""
         if self.interface.on_alt_release:
             position = self.convertPoint(event.locationInWindow, fromView=None)
-            self.interface.on_alt_release(self.interface, position.x, position.y, event.clickCount)
+            self.interface.on_alt_release(position.x, position.y, event.clickCount)
 
     @objc_method
     def mouseDragged_(self, event) -> None:
         """Invoke the on_drag handler if configured."""
         if self.interface.on_drag:
             position = self.convertPoint(event.locationInWindow, fromView=None)
-            self.interface.on_drag(self.interface, position.x, position.y, event.clickCount)
+            self.interface.on_drag(position.x, position.y, event.clickCount)
 
     @objc_method
     def rightMouseDragged_(self, event) -> None:
         """Invoke the on_alt_drag handler if configured."""
         if self.interface.on_alt_drag:
             position = self.convertPoint(event.locationInWindow, fromView=None)
-            self.interface.on_alt_drag(self.interface, position.x, position.y, event.clickCount)
+            self.interface.on_alt_drag(position.x, position.y, event.clickCount)
 
 
 class Canvas(Widget):

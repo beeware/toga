@@ -43,7 +43,7 @@ class TogaList(NSTableView):
     @objc_method
     def actionDeleteRow_(self, menuitem):
         row = self.interface.data[menuitem.tag]
-        self.interface.on_delete(self.interface, row=row)
+        self.interface.on_delete(row=row)
 
     # TableDataSource methods
     @objc_method
@@ -86,7 +86,7 @@ class TogaList(NSTableView):
             selection = self.interface.data[index]
 
         if self.interface.on_select:
-            self.interface.on_select(self.interface, row=selection)
+            self.interface.on_select(row=selection)
 
 
 class DetailedList(Widget):
@@ -147,7 +147,7 @@ class DetailedList(Widget):
         # a tableViewSelectionDidChange: message.
         selection = self.get_selection()
         if selection and self.interface.on_select:
-            self.interface.on_select(self.interface, row=selection)
+            self.interface.on_select(row=selection)
 
     def clear(self):
         self.detailedlist.reloadData()
