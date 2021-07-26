@@ -35,7 +35,7 @@ class Table(Widget):
         if self.interface.multiple_select and self.interface.on_select:
             # call on select with the last row of the multi selection
             selected = self.interface.data[e.EndIndex]
-            self.interface.on_select(self.interface, row=selected)
+            self.interface.on_select(row=selected)
 
     def winforms_retrieve_virtual_item(self, sender, e):
         # Because ListView is in VirtualMode, it's necessary implement
@@ -64,7 +64,7 @@ class Table(Widget):
 
     def winforms_item_selection_changed(self, sender, e):
         if self.interface.on_select:
-            self.interface.on_select(self.interface, row=self.interface.data[e.ItemIndex])
+            self.interface.on_select(row=self.interface.data[e.ItemIndex])
 
     def _create_column(self, heading, accessor):
         col = WinForms.ColumnHeader()
