@@ -51,7 +51,7 @@ class TogaTableViewController(UITableViewController):
             item = self.interface.data[indexPath.row]
             if editingStyle == UITableViewCellEditingStyleDelete:
                 if self.interface.on_delete:
-                    self.interface.on_delete(self.interface, row=item)
+                    self.interface.on_delete(row=item)
 
                 tableView.beginUpdates()
                 self.interface.data.remove(item)
@@ -75,7 +75,7 @@ class TogaTableViewController(UITableViewController):
             selection = self.interface.data[index]
 
         if self.interface.on_select:
-            self.interface.on_select(self.interface, row=selection)
+            self.interface.on_select(row=selection)
 
     # @objc_method
     # def tableView_heightForRowAtIndexPath_(self, tableView, indexPath) -> float:
