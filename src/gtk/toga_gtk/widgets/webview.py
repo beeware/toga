@@ -34,7 +34,7 @@ class WebView(Widget):
             self._last_key_time = event.time
             toga_event = toga_key(event)
             if toga_event:
-                self.interface.on_key_down(self.interface, **toga_event)
+                self.interface.on_key_down(**toga_event)
 
     def set_url(self, value):
         if value:
