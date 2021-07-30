@@ -6,21 +6,23 @@ from .base import Widget
 SCALE_FACTOR = 5
 
 
-class CanvasView(activity.IView):
+class DrawHandler(activity.IDrawHandler):
     def __init__(self, interface):
         self.interface = interface
         super().__init__()
 
-    def onDraw(self, canvas):
+    def handleDraw(self, canvas):
         self.interface._draw(self.interface._impl, draw_context=canvas)
 
 
 class Canvas(Widget):
     def create(self):
-        self.native = activity.CustomView(self._native_activity.getApplicationContext())
+        # Our native widget is a DrawHandlerView, which delegates drawing to DrawHandler,
+        # so we can pass the `android.graphics.Canvas` around as `draw_context`.
+        self.native = activity.DrawHandlerView(self._native_activity.getApplicationContext())
+        self.native.setDrawHandler(DrawHandler(self.interface))
         self._path = None
         self._draw_paint = None
-        self.native.setView(CanvasView(self.interface))
 
     def redraw(self):
         pass
