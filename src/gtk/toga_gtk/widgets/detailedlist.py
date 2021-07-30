@@ -11,7 +11,6 @@ class DetailedList(Widget):
     Gtk DetailedList implementation.
     Gtk.ListBox inside a Gtk.ScrolledWindow.
     """
-
     def create(self):
         # Not the same as selected row. _active_row is the one with its buttons exposed.
         self._active_row = None
@@ -107,7 +106,13 @@ class DetailedList(Widget):
             index (int)
             item (:obj:`Row`)
         """
-        self.store.insert(index, self.row_factory(item))
+        new_item = self.row_factory(item)
+
+        if index == -1:
+            self.store.append(new_item)
+        else:
+            self.store.insert(index, new_item)
+
         self.list_box.show_all()
         self._list_items_changed()
 
@@ -118,7 +123,11 @@ class DetailedList(Widget):
         """
         new_item = self.row_factory(item)
         index = item._impl.get_index()
-        self.store.insert(index, new_item)
+
+        if index == -1:
+            self.store.append(new_item)
+        else:
+            self.store.insert(index, new_item)
 
     def remove(self, item, index):
         """
@@ -185,8 +194,8 @@ class DetailedList(Widget):
             self.interface.on_refresh(self.interface)
 
     def gtk_on_row_selected(self, w: Gtk.ListBox, item: Gtk.ListBoxRow):
-        if self.interface.on_select is not None and item is not None:
-            self.interface.on_select(self.interface, item.interface)
+        if self.interface.on_select is not None:
+            self.interface.on_select(self.interface, getattr(item, "interface", None))
 
         if self._active_row is not None and self._active_row != item:
             self._active_row.hide_buttons()

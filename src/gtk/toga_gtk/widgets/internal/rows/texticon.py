@@ -15,7 +15,7 @@ class TextIconRow(HiddenButtonsRow):
         # This is the factory of the DetailedList implementation.
         self.factory = factory
 
-        icon = self.get_icon(self.interface, self.factory)
+        self.icon = self.get_icon(self.interface, self.factory)
 
         text = Gtk.Label(xalign=0)
 
@@ -32,8 +32,8 @@ class TextIconRow(HiddenButtonsRow):
 
         vbox.pack_start(text, True, True, 0)
 
-        if icon is not None:
-            content.pack_start(icon, False, False, 6)
+        if self.icon is not None:
+            content.pack_start(self.icon, False, False, 6)
 
         content.pack_start(vbox, True, True, 5)
 
@@ -42,6 +42,14 @@ class TextIconRow(HiddenButtonsRow):
         self._delete_button = Gtk.Button.new_from_icon_name("user-trash-symbolic", Gtk.IconSize.BUTTON)
         self._delete_button.connect("clicked", lambda w: self._dl.delete_row(self))
         self.add_button(self._delete_button)
+
+    @property
+    def title(self):
+        return self.interface.title
+
+    @property
+    def subtitle(self):
+        return self.interface.subtitle
 
     def get_icon(self, row, factory):
         if getattr(row, "icon") is None:
