@@ -11,7 +11,7 @@ from toga import App as toga_App
 from toga.command import GROUP_BREAK, SECTION_BREAK, Command
 
 from .keys import gtk_accel
-from .libs import Gio, GLib, Gtk, Gdk, STYLES
+from .libs import Gio, GLib, Gtk, Gdk, TOGA_DEFAULT_STYLES
 from .window import Window
 
 
@@ -109,7 +109,7 @@ class App:
 
         # Set any custom styles
         css_provider = Gtk.CssProvider()
-        css_provider.load_from_data(STYLES)
+        css_provider.load_from_data(TOGA_DEFAULT_STYLES)
 
         context = Gtk.StyleContext()
         context.add_provider_for_screen(

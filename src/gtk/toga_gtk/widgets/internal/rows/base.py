@@ -11,6 +11,7 @@ class BaseRow(ScrollableRow):
         super().__init__(*args, **kwargs)
         # Keep a reference to the original core.toga.sources.list_source.Row
         self.interface = interface
+        interface._impl = self
 
 
 class HiddenButtonsRow(BaseRow):

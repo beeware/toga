@@ -5,7 +5,8 @@ from .internal.buttons.refresh import RefreshButton
 from .internal.buttons.scroll import ScrollButton
 
 
-# Verify if right clicking a row currently works with touch screens, if not, use Gtk.GestureLongPress
+# TODO: Verify if right clicking a row currently works with touch screens, if not,
+# use Gtk.GestureLongPress
 class DetailedList(Widget):
     """
     Gtk DetailedList implementation.
@@ -63,9 +64,7 @@ class DetailedList(Widget):
         Returns:
             Returns a (:obj:`TextIconRow`)
         """
-        new_item = TextIconRow(self.interface.factory, self, item)
-        item._impl = new_item
-        return new_item
+        return TextIconRow(self.interface.factory, self, item)
 
     def destroy(self):
         self.disconnect(self.gtk_on_select_signal_handler)
@@ -106,13 +105,8 @@ class DetailedList(Widget):
             index (int)
             item (:obj:`Row`)
         """
-        new_item = self.row_factory(item)
-
-        if index == -1:
-            self.store.append(new_item)
-        else:
-            self.store.insert(index, new_item)
-
+        item_impl = self.row_factory(item)
+        self.store.insert(index, item_impl)
         self.list_box.show_all()
         self._list_items_changed()
 
@@ -121,18 +115,14 @@ class DetailedList(Widget):
         Args:
             item (:obj:`Row`)
         """
-        new_item = self.row_factory(item)
         index = item._impl.get_index()
-
-        if index == -1:
-            self.store.append(new_item)
-        else:
-            self.store.insert(index, new_item)
+        self.remove(item, index)
+        item_impl = self.row_factory(item)
+        self.store.insert(index, item_impl)
 
     def remove(self, item, index):
         """
-        Removes a row from the store. This method doesn't trigger the `on_delete` callback and it
-        doesn't remove the row from the interface.
+        Removes a row from the store. Doesn't remove the row from the interface.
 
         Args:
             item (:obj:`Row`)
@@ -145,6 +135,10 @@ class DetailedList(Widget):
             self._active_row = None
 
         self.store.remove(index)
+
+        if self.interface.on_delete is not None:
+            self.interface.on_delete(self.interface, item._impl.interface)
+
         item._impl.destroy()
         self._list_items_changed()
 
@@ -153,11 +147,11 @@ class DetailedList(Widget):
         self._list_items_changed()
 
     def get_selection(self):
-        item = self.list_box.get_selected_row()
-        if item is None:
-            return item
+        item_impl = self.list_box.get_selected_row()
+        if item_impl is None:
+            return None
         else:
-            return item.interface
+            return item_impl.interface
 
     def scroll_to_row(self, row: int):
         item = self.store[row]
@@ -177,47 +171,38 @@ class DetailedList(Widget):
         # No special handling required
         pass
 
-    def delete_row(self, item: Gtk.ListBoxRow):
-        """
-        This methods asks the interface to remove a row. The `on_delete` callback is triggered.
-        The interface will call the `remove` method above.
-        """
-        if self.interface.on_delete is not None:
-            if self._active_row == item:
-                self._active_row = None
-
-            self.interface.data.remove(item.interface)
-            self.interface.on_delete(self.interface, item.interface)
-
     def gtk_on_refresh_clicked(self):
         if self.interface.on_refresh is not None:
             self.interface.on_refresh(self.interface)
 
-    def gtk_on_row_selected(self, w: Gtk.ListBox, item: Gtk.ListBoxRow):
+    def gtk_on_row_selected(self, w: Gtk.ListBox, item_impl: Gtk.ListBoxRow):
         if self.interface.on_select is not None:
-            self.interface.on_select(self.interface, getattr(item, "interface", None))
+            if item_impl is not None:
+                self.interface.on_select(self.interface, item_impl.interface)
+            else:
+                self.interface.on_select(self.interface, None)
 
-        if self._active_row is not None and self._active_row != item:
+        if self._active_row is not None and self._active_row != item_impl:
             self._active_row.hide_buttons()
             self._active_row = None
 
     def gtk_on_right_click(self, gesture, n_press, x, y):
-        item = self.list_box.get_row_at_y(y)
+        item_impl = self.list_box.get_row_at_y(y)
 
-        if item is None:
+        if item_impl is None:
             return
 
         rect = Gdk.Rectangle()
-        rect.x, rect.y = item.translate_coordinates(self.list_box, x, y)
+        rect.x, rect.y = item_impl.translate_coordinates(self.list_box, x, y)
 
-        if self._active_row is not None and self._active_row != item:
+        if self._active_row is not None and self._active_row != item_impl:
             self._active_row.hide_buttons()
 
-        self._active_row = item
-        item.on_right_click(rect)
+        self._active_row = item_impl
+        item_impl.on_right_click(rect)
 
         if self.interface.on_select is not None:
-            self.list_box.select_row(item)
+            self.list_box.select_row(item_impl)
 
     def _list_items_changed(self):
         """

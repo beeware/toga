@@ -40,7 +40,7 @@ class TextIconRow(HiddenButtonsRow):
         self.add_content(content)
 
         self._delete_button = Gtk.Button.new_from_icon_name("user-trash-symbolic", Gtk.IconSize.BUTTON)
-        self._delete_button.connect("clicked", lambda w: self._dl.delete_row(self))
+        self._delete_button.connect("clicked", self.gtk_on_delete_clicked)
         self.add_button(self._delete_button)
 
     @property
@@ -56,8 +56,8 @@ class TextIconRow(HiddenButtonsRow):
             return None
         else:
             row.icon.bind(factory)
-            # TODO: see get_scale_factor() to choose 72 px on hidpi
-            return getattr(row.icon._impl, "native_" + str(32))
+            dpr = self.get_scale_factor()
+            return getattr(row.icon._impl, "native_" + str(32*dpr))
 
     @staticmethod
     def markup(row):
@@ -72,3 +72,6 @@ class TextIconRow(HiddenButtonsRow):
         handler = self._dl.interface.on_delete
         if handler is not None:
             self.toggle_content()
+
+    def gtk_on_delete_clicked(self, w: Gtk.ListBoxRow):
+        self._dl.interface.data.remove(self.interface)

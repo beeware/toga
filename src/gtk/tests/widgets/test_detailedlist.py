@@ -118,6 +118,9 @@ class TestGtkDetailedList(unittest.TestCase):
         result_row = self.gtk_dl.store[INSERTED_AT]
         self.assertRowEqual(result_row, dict(icon=None, title="something changed", subtitle="2"))
 
+        # Make sure the row was replaced and not appended
+        self.assertEqual(len(self.gtk_dl.store), 1)
+
     def test_row_persistence(self):
         self.dl.data.insert(0, icon=None, title="A1", subtitle="A2")
         self.dl.data.insert(0, icon=None, title="B1", subtitle="B2")
@@ -181,7 +184,6 @@ class TestGtkDetailedList(unittest.TestCase):
 
         # Select row B
         self.gtk_dl.list_box.select_row(b._impl)
-        # self.gtk_dl.selection.select_iter(listener.inserted_it)
 
         # Allow on_select to call
         handle_events()

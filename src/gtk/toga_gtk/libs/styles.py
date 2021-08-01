@@ -1,4 +1,4 @@
-STYLES = b"""
+TOGA_DEFAULT_STYLES = b"""
 .toga-detailed-list-floating-buttons {
     min-width: 24px;
     min-height: 24px;
