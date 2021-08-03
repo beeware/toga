@@ -2,9 +2,6 @@ from ..libs import activity
 from ..libs.android.graphics import Paint, Paint__Style, Path
 from .base import Widget
 
-# Arbitrary scale factor; to be made more specific in the future.
-SCALE_FACTOR = 5
-
 
 class DrawHandler(activity.IDrawHandler):
     def __init__(self, interface):
@@ -12,7 +9,8 @@ class DrawHandler(activity.IDrawHandler):
         super().__init__()
 
     def handleDraw(self, canvas):
-        self.interface._draw(self.interface._impl, draw_context=canvas)
+        scale_factor = self.interface._impl.viewport.dpi / self.interface._impl.viewport.baseline_dpi
+        self.interface._draw(self.interface._impl, scale_factor=scale_factor, draw_context=canvas)
 
 
 class Canvas(Widget):
@@ -53,12 +51,14 @@ class Canvas(Widget):
     def closed_path(self, x, y, draw_context, *args, **kwargs):
         pass
 
-    def move_to(self, x, y, draw_context, *args, **kwargs):
+    def move_to(self, x, y, scale_factor, *args, **kwargs):
         self._path = Path()
-        self._path.moveTo(float(x) * SCALE_FACTOR, float(y) * SCALE_FACTOR)
+        self._path.moveTo(float(x) * scale_factor,
+                          float(y) * scale_factor)
 
-    def line_to(self, x, y, draw_context, *args, **kwargs):
-        self._path.lineTo(float(x) * SCALE_FACTOR, float(y) * SCALE_FACTOR)
+    def line_to(self, x, y, scale_factor, *args, **kwargs):
+        self._path.lineTo(float(x) * scale_factor,
+                          float(y) * scale_factor)
 
     # Basic shapes
 
@@ -108,10 +108,10 @@ class Canvas(Widget):
     def fill(self, color, fill_rule, preserve, draw_context, *args, **kwargs):
         self.interface.factory.not_implemented('Canvas.fill()')
 
-    def stroke(self, color, line_width, line_dash, draw_context, *args, **kwargs):
+    def stroke(self, color, line_width, line_dash, draw_context, scale_factor, *args, **kwargs):
         self._draw_paint = Paint()
         self._draw_paint.setAntiAlias(True)
-        self._draw_paint.setStrokeWidth(float(line_width) * SCALE_FACTOR)
+        self._draw_paint.setStrokeWidth(float(line_width) * scale_factor)
         self._draw_paint.setStyle(Paint__Style.STROKE)
         if color is None:
             a, r, g, b = 255, 0, 0, 0
