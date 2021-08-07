@@ -36,10 +36,10 @@ class TogaTable(NSTableView):
             tcv = TogaTableCellView.alloc().initWithLayout()
             tcv.identifier = column.identifier
 
-			# Prevent tcv from being deallocated prematurely when no Python references
+            # Prevent tcv from being deallocated prematurely when no Python references
             # are left
-			tcv.retain()
-			tcv.autorelease()
+            tcv.retain()
+            tcv.autorelease()
 
             tcv.checkbox.target = self
             tcv.textField.target = self
