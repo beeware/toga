@@ -52,12 +52,12 @@ class Canvas(Widget):
 
     def move_to(self, x, y, *args, **kwargs):
         self._path = Path()
-        self._path.moveTo(self.interface._impl.viewport.scale(x),
-                          self.interface._impl.viewport.scale(y))
+        self._path.moveTo(self.viewport.scale * x,
+                          self.viewport.scale * y)
 
     def line_to(self, x, y, *args, **kwargs):
-        self._path.lineTo(self.interface._impl.viewport.scale(x),
-                          self.interface._impl.viewport.scale(y))
+        self._path.lineTo(self.viewport.scale * x,
+                          self.viewport.scale * y)
 
     # Basic shapes
 
@@ -110,7 +110,7 @@ class Canvas(Widget):
     def stroke(self, color, line_width, line_dash, draw_context, *args, **kwargs):
         self._draw_paint = Paint()
         self._draw_paint.setAntiAlias(True)
-        self._draw_paint.setStrokeWidth(self.interface._impl.viewport.scale(line_width))
+        self._draw_paint.setStrokeWidth(self.viewport.scale * line_width)
         self._draw_paint.setStyle(Paint__Style.STROKE)
         if color is None:
             a, r, g, b = 255, 0, 0, 0
