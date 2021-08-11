@@ -1,5 +1,5 @@
 from ..libs import activity
-from ..libs.android.graphics import Paint, Paint__Style, Path
+from ..libs.android.graphics import DashPathEffect, Paint, Paint__Style, Path
 from .base import Widget
 
 
@@ -116,6 +116,9 @@ class Canvas(Widget):
             a, r, g, b = 255, 0, 0, 0
         else:
             a, r, g, b = round(color.a * 255), int(color.r), int(color.g), int(color.b)
+        if line_dash is not None:
+            self._draw_paint.setPathEffect(DashPathEffect(
+                [(self.viewport.scale * float(d)) for d in line_dash], 0.0))
         self._draw_paint.setARGB(a, r, g, b)
 
         draw_context.drawPath(self._path, self._draw_paint)
