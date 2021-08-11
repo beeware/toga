@@ -9,8 +9,7 @@ class DrawHandler(activity.IDrawHandler):
         super().__init__()
 
     def handleDraw(self, canvas):
-        scale_factor = self.interface._impl.viewport.dpi / self.interface._impl.viewport.baseline_dpi
-        self.interface._draw(self.interface._impl, scale_factor=scale_factor, draw_context=canvas)
+        self.interface._draw(self.interface._impl, draw_context=canvas)
 
 
 class Canvas(Widget):
@@ -51,14 +50,14 @@ class Canvas(Widget):
     def closed_path(self, x, y, draw_context, *args, **kwargs):
         pass
 
-    def move_to(self, x, y, scale_factor, *args, **kwargs):
+    def move_to(self, x, y, *args, **kwargs):
         self._path = Path()
-        self._path.moveTo(float(x) * scale_factor,
-                          float(y) * scale_factor)
+        self._path.moveTo(self.interface._impl.viewport.scale(x),
+                          self.interface._impl.viewport.scale(y))
 
-    def line_to(self, x, y, scale_factor, *args, **kwargs):
-        self._path.lineTo(float(x) * scale_factor,
-                          float(y) * scale_factor)
+    def line_to(self, x, y, *args, **kwargs):
+        self._path.lineTo(self.interface._impl.viewport.scale(x),
+                          self.interface._impl.viewport.scale(y))
 
     # Basic shapes
 
@@ -108,10 +107,10 @@ class Canvas(Widget):
     def fill(self, color, fill_rule, preserve, draw_context, *args, **kwargs):
         self.interface.factory.not_implemented('Canvas.fill()')
 
-    def stroke(self, color, line_width, line_dash, draw_context, scale_factor, *args, **kwargs):
+    def stroke(self, color, line_width, line_dash, draw_context, *args, **kwargs):
         self._draw_paint = Paint()
         self._draw_paint.setAntiAlias(True)
-        self._draw_paint.setStrokeWidth(float(line_width) * scale_factor)
+        self._draw_paint.setStrokeWidth(self.interface._impl.viewport.scale(line_width))
         self._draw_paint.setStyle(Paint__Style.STROKE)
         if color is None:
             a, r, g, b = 255, 0, 0, 0

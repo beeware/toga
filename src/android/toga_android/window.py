@@ -10,6 +10,10 @@ class AndroidViewport:
         # Toga needs to know how the current DPI compares to the platform default,
         # which is 160: https://developer.android.com/training/multiscreen/screendensities
         self.baseline_dpi = 160
+        self._scale_factor = float(self.dpi / self.baseline_dpi)
+
+    def scale(self, x):
+        return self._scale_factor * x
 
     @property
     def width(self):
