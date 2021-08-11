@@ -1,8 +1,9 @@
-from ..libs import android_widgets
+from ..libs.android.view import OnClickListener as A_OnClickListener
+from ..libs.android.widget import ImageView as A_ImageView
 from .base import Widget
 
 
-class TogaOnClickListener(android_widgets.OnClickListener):
+class TogaOnClickListener(A_OnClickListener):
     def __init__(self, imageview_impl):
         super().__init__()
         self.imageview_impl = imageview_impl
@@ -14,7 +15,7 @@ class TogaOnClickListener(android_widgets.OnClickListener):
 
 class ImageView(Widget):
     def create(self):
-        self.native = android_widgets.ImageView(self._native_activity)
+        self.native = A_ImageView(self._native_activity)
         self.native.setOnClickListener(TogaOnClickListener(imageview_impl=self))
 
     def set_image(self, image):

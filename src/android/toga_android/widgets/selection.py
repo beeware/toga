@@ -1,13 +1,8 @@
 from travertino.size import at_least
 
-from ..libs.android_widgets import (
-    ArrayAdapter,
-    Gravity,
-    OnItemSelectedListener,
-    R__layout,
-    Spinner,
-    View__MeasureSpec
-)
+from ..libs.android import R__layout
+from ..libs.android.view import Gravity, View__MeasureSpec
+from ..libs.android.widget import ArrayAdapter, OnItemSelectedListener, Spinner
 from .base import Widget, align
 
 

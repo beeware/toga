@@ -1,5 +1,6 @@
-from rubicon.java import android_events
+import asyncio
 
+from rubicon.java import android_events
 from toga.handlers import wrapped_handler
 
 from .libs.activity import IPythonApp, MainActivity
@@ -12,6 +13,9 @@ class MainWindow(Window):
 
 
 class TogaApp(IPythonApp):
+    last_intent_requestcode = -1  # always increment before using it for invoking new Intents
+    running_intents = {}          # dictionary for currently running Intents
+
     def __init__(self, app):
         super().__init__()
         self._interface = app
@@ -38,6 +42,25 @@ class TogaApp(IPythonApp):
 
     def onRestart(self):
         print("Toga app: onRestart")
+
+    def onActivityResult(self, requestCode, resultCode, resultData):
+        """
+        Callback method, called from MainActivity when an Intent ends
+
+        :param int requestCode: The integer request code originally supplied to startActivityForResult(),
+                                allowing you to identify who this result came from.
+        :param int resultCode: The integer result code returned by the child activity through its setResult().
+        :param Intent resultData: An Intent, which can return result data to the caller (various data can be attached
+                                  to Intent "extras").
+        """
+        print("Toga app: onActivityResult, requestCode={0}, resultData={1}".format(requestCode, resultData))
+        try:
+            # remove Intent from the list of running Intents,
+            # and set the result of the intent.
+            result_future = self.running_intents.pop(requestCode)
+            result_future.set_result({"resultCode": resultCode, "resultData": resultData})
+        except KeyError:
+            print("No intent matching request code {requestCode}")
 
     @property
     def native(self):
@@ -92,3 +115,25 @@ class App:
 
     def add_background_task(self, handler):
         self.loop.call_soon(wrapped_handler(self, handler), self)
+
+    async def intent_result(self, intent):
+        """
+        Calls an Intent and waits for its result.
+
+        A RuntimeError will be raised when the Intent cannot be invoked.
+
+        :param Intent intent: The Intent to call
+        :returns: A Dictionary containing "resultCode" (int) and "resultData" (Intent or None)
+        :rtype: dict
+        """
+        if intent.resolveActivity(self.native.getPackageManager()) is None:
+            raise RuntimeError('No appropriate Activity found to handle this intent.')
+        self._listener.last_intent_requestcode += 1
+        code = self._listener.last_intent_requestcode
+
+        result_future = asyncio.Future()
+        self._listener.running_intents[code] = result_future
+
+        self.native.startActivityForResult(intent, code)
+        await result_future
+        return result_future.result()

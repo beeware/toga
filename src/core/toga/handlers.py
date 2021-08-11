@@ -4,6 +4,11 @@ import sys
 import traceback
 
 
+class NativeHandler:
+    def __init__(self, handler):
+        self.native = handler
+
+
 async def long_running_task(generator, cleanup):
     """Run a generator as an asynchronous coroutine
 
@@ -33,6 +38,8 @@ async def handler_with_cleanup(handler, cleanup, interface, *args, **kwargs):
 def wrapped_handler(interface, handler, cleanup=None):
     """Wrap a handler provided by the user so it can be invoked.
 
+    If the handler is a NativeHandler, return the handler object
+        contained in the NativeHandler.
     If the handler is a bound method, or function, invoke it as it,
         and return the result.
     If the handler is a generator, invoke it asynchronously, with
@@ -41,11 +48,15 @@ def wrapped_handler(interface, handler, cleanup=None):
     If the handler is a coroutine, install it on the asynchronous
         event loop.
 
-    Returns a wrapped function that will invoke the handler, using
-    the interface as context. The wrapper function is annotated with
-    the original handler function on the `_raw` attribute.
+    Returns either the native handler, or a wrapped function that will
+    invoke the handler, using the interface as context. If a non-native
+    handler, the wrapper function is annotated with the original handler
+    function on the `_raw` attribute.
     """
     if handler:
+        if isinstance(handler, NativeHandler):
+            return handler.native
+
         def _handler(widget, *args, **kwargs):
             if asyncio.iscoroutinefunction(handler):
                 asyncio.ensure_future(

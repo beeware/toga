@@ -109,6 +109,11 @@ class TogaTree(NSOutlineView):
             tcv = TogaIconView.alloc().initWithFrame_(CGRectMake(0, 0, column.width, 16))
             tcv.identifier = identifier
 
+            # Prevent tcv from being deallocated prematurely when no Python references
+            # are left
+            tcv.retain()
+            tcv.autorelease()
+
         tcv.setText(str(value))
         if icon:
             tcv.setImage(icon.native)

@@ -57,7 +57,9 @@ community through:
 
 * `@pybeeware on Twitter <https://twitter.com/pybeeware>`__
 
-* The `beeware/general <https://gitter.im/beeware/general>`__ channel on Gitter.
+* `Discord <https://beeware.org/bee/chat/>`__
+
+* The Toga `Github Discussions forum <https://github.com/beeware/toga/discussions>`__
 
 Contributing
 ------------

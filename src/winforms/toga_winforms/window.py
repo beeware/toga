@@ -126,16 +126,27 @@ class Window:
         )
         self.interface.content.refresh()
 
-        self.native.Show()
+        self.native.FormClosing += self.winforms_FormClosing
 
-    def winforms_FormClosing(self, event, handler):
-        if self.interface.app.on_exit:
-            self.interface.app.on_exit(self.interface.app)
+        if self.interface is not self.interface.app._main_window:
+            self.native.Icon = self.interface.app.icon._impl.native
+            self.native.Show()
+
+    def winforms_FormClosing(self, sender, event):
+        if self.interface.on_close:
+            should_close = self.interface.on_close(self)
+        else:
+            should_close = True
+
+        if should_close:
+            self.interface.app.windows -= self.interface
+        else:
+            event.Cancel = True
 
     def set_full_screen(self, is_full_screen):
         self.interface.factory.not_implemented('Window.set_full_screen()')
 
-    def on_close(self):
+    def set_on_close(self, handler):
         pass
 
     def close(self):

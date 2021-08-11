@@ -10,12 +10,17 @@ class TestWindow(TestCase):
     def setUp(self):
         super().setUp()
         self.window = toga.Window(factory=toga_dummy.factory)
+        self.app = toga.App('test_name', 'id.app', factory=toga_dummy.factory)
+
+    def test_raises_error_when_app_not_set(self):
+        self.app = None
+        with self.assertRaises(AttributeError):
+            self.window.show()
 
     def test_widget_created(self):
         self.assertIsNotNone(self.window.id)
-        app = toga.App('test_name', 'id.app', factory=toga_dummy.factory)
         new_app = toga.App('error_name', 'id.error', factory=toga_dummy.factory)
-        self.window.app = app
+        self.window.app = self.app
         with self.assertRaises(Exception):
             self.window.app = new_app
 
@@ -62,8 +67,19 @@ class TestWindow(TestCase):
 
     def test_on_close(self):
         with patch.object(self.window, '_impl'):
-            self.window.on_close()
-            self.window._impl.on_close.assert_called_once_with()
+            self.app.windows += self.window
+            self.assertIsNone(self.window._on_close)
+
+            # set a new callback
+            def callback(window, **extra):
+                return 'called {} with {}'.format(type(window), extra)
+
+            self.window.on_close = callback
+            self.assertEqual(self.window.on_close._raw, callback)
+            self.assertEqual(
+                self.window.on_close('widget', a=1),
+                "called <class 'toga.window.Window'> with {'a': 1}"
+            )
 
     def test_close(self):
         with patch.object(self.window, "_impl"):

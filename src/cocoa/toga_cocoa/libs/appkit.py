@@ -1,6 +1,7 @@
 ##########################################################################
 # System/Library/Frameworks/AppKit.framework
 ##########################################################################
+import platform
 from ctypes import Structure, c_void_p
 from enum import Enum, IntEnum
 
@@ -371,6 +372,19 @@ NSImageScaleAxesIndependently = 1
 NSImageScaleNone = 2
 NSImageScaleProportionallyUpOrDown = 3
 
+if platform.machine() == 'arm64':
+    NSImageResizingModeTile = 1
+    NSImageResizingModeStretch = 0
+else:
+    NSImageResizingModeTile = 0
+    NSImageResizingModeStretch = 1
+
+
+class NSImageResizingMode(Enum):
+    Tile = NSImageResizingModeTile
+    Stretch = NSImageResizingModeStretch
+
+
 ######################################################################
 # NSImageCell.h
 
@@ -639,8 +653,13 @@ NSTabViewItem = ObjCClass('NSTabViewItem')
 ######################################################################
 # NSText.h
 NSLeftTextAlignment = 0
-NSRightTextAlignment = 1
-NSCenterTextAlignment = 2
+if platform.machine() == 'arm64':
+    NSRightTextAlignment = 2
+    NSCenterTextAlignment = 1
+else:
+    NSRightTextAlignment = 1
+    NSCenterTextAlignment = 2
+
 NSJustifiedTextAlignment = 3
 NSNaturalTextAlignment = 4
 
