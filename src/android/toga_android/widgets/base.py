@@ -1,9 +1,8 @@
-from ..libs.activity import MainActivity
-from ..libs.android_widgets import Gravity
-
 from rubicon.java.jni import java
-
 from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT
+
+from ..libs.activity import MainActivity
+from ..libs.android.view import Gravity
 
 
 def _get_activity(_cache=[]):

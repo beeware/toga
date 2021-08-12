@@ -1,12 +1,8 @@
 from travertino.size import at_least
 
+from ..libs.android.view import View__MeasureSpec
+from ..libs.android.widget import SeekBar, SeekBar__OnSeekBarChangeListener
 from .base import Widget
-
-from ..libs.android_widgets import (
-    SeekBar,
-    SeekBar__OnSeekBarChangeListener,
-    View__MeasureSpec,
-)
 
 
 class TogaOnSeekBarChangeListener(SeekBar__OnSeekBarChangeListener):
@@ -39,26 +35,37 @@ class Slider(Widget):
 
     def get_value(self):
         minimum, maximum = self.interface.range
-        n_steps = self.interface.tick_count
-        if n_steps is None:
-            n_steps = DEFAULT_NUMBER_OF_TICKS
-        return (self.native.getProgress() * (maximum - minimum) / n_steps) + minimum
+        if self.interface.tick_count is not None and self.interface.tick_count <= 1:
+            return minimum
+        toga_tick_count = self.interface.tick_count or DEFAULT_NUMBER_OF_TICKS
+        android_slider_max = toga_tick_count - 1
+        tick_factor = (maximum - minimum) / android_slider_max
+        progress_scaled = self.native.getProgress() * tick_factor
+        result = progress_scaled + minimum
+        return result
 
     def set_value(self, value):
         minimum, maximum = self.interface.range
-        n_steps = self.interface.tick_count
-        if n_steps is None:
-            n_steps = DEFAULT_NUMBER_OF_TICKS
-        self.native.setProgress(int((maximum - value - minimum) * n_steps))
+        if self.interface.tick_count is not None and self.interface.tick_count <= 1:
+            android_progress = 0
+        else:
+            toga_tick_count = self.interface.tick_count or DEFAULT_NUMBER_OF_TICKS
+            android_slider_max = toga_tick_count - 1
+            tick_factor = (maximum - minimum) / android_slider_max
+            android_progress = int((value - minimum) * tick_factor)
+        self.native.setProgress(android_progress)
 
     def set_range(self, range):
         pass
 
     def set_tick_count(self, tick_count):
-        if tick_count is None:
-            self.native.setMax(DEFAULT_NUMBER_OF_TICKS)
+        # Since the Android slider slides from 0 to max inclusive, always subtract 1 from tick_count.
+        if self.interface.tick_count is None:
+            android_slider_max = DEFAULT_NUMBER_OF_TICKS - 1
         else:
-            self.native.setMax(int(tick_count) - 1)
+            android_slider_max = int(self.interface.tick_count - 1)
+        # Set the Android SeekBar max, clamping so it's non-negative.
+        self.native.setMax(max(0, android_slider_max))
 
     def rehint(self):
         self.native.measure(

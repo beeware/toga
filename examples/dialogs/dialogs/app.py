@@ -104,12 +104,75 @@ class ExampledialogsApp(toga.App):
         except ValueError:
             self.label.text = "Save file dialog was canceled"
 
+    def window_close_handler(self, window):
+        # This handler is called before the window is closed, so there
+        # still are 1 more windows than the number of secondary windows
+        # after it is closed
+        # Return False if the window should stay open
+
+        # Check to see if there has been a previous close attempt.
+        if window in self.close_attempts:
+            # If there has, update the window label and allow
+            # the close to proceed. The count is -2 (rather than -1)
+            # because *this* window hasn't been removed from
+            # the window list.
+            self.set_window_label_text(len(self.windows) - 2)
+            return True
+        else:
+            window.info_dialog(f'Abort {window.title}!', 'Maybe try that again...')
+            self.close_attempts.add(window)
+            return False
+
+    def action_open_secondary_window(self, widget):
+        self.window_counter += 1
+        window = toga.Window(title=f"New Window {self.window_counter}")
+        # Both self.windows.add() and self.windows += work:
+        self.windows += window
+
+        self.set_window_label_text(len(self.windows) - 1)
+        secondary_label = toga.Label(text="You are in a secondary window!")
+        window.content = toga.Box(
+            children=[
+                secondary_label
+            ],
+            style=Pack(
+                flex=1,
+                direction=COLUMN,
+                padding=10
+            )
+        )
+        window.on_close = self.window_close_handler
+        window.show()
+
+    def action_close_secondary_windows(self, widget):
+        # Close all windows that aren't the main window.
+        for window in list(self.windows):
+            if not isinstance(window, toga.MainWindow):
+                window.close()
+
+    def exit_handler(self, app):
+        # Return True if app should close, and False if it should remain open
+        if self.main_window.confirm_dialog('Toga', 'Are you sure you want to quit?'):
+            print(f"Label text was '{self.label.text}' when you quit the app")
+            return True
+        else:
+            self.label.text = 'Exit canceled'
+            return False
+
+    def set_window_label_text(self, num_windows):
+        self.window_label.text = f"{num_windows} secondary window(s) open"
+
     def startup(self):
         # Set up main window
         self.main_window = toga.MainWindow(title=self.name)
+        self.on_exit = self.exit_handler
 
         # Label to show responses.
         self.label = toga.Label('Ready.', style=Pack(padding_top=20))
+        self.window_label = toga.Label('', style=Pack(padding_top=20))
+        self.window_counter = 0
+        self.close_attempts = set()
+        self.set_window_label_text(0)
 
         # Buttons
         btn_style = Pack(flex=1)
@@ -135,6 +198,16 @@ class ExampledialogsApp(toga.App):
             on_press=self.action_select_folder_dialog_multi,
             style=btn_style
         )
+        btn_open_secondary_window = toga.Button(
+            'Open Secondary Window',
+            on_press=self.action_open_secondary_window,
+            style=btn_style
+        )
+        btn_close_secondary_window = toga.Button(
+            'Close All Secondary Windows',
+            on_press=self.action_close_secondary_windows,
+            style=btn_style
+        )
 
         btn_clear = toga.Button('Clear', on_press=self.do_clear, style=btn_style)
 
@@ -151,8 +224,11 @@ class ExampledialogsApp(toga.App):
                 btn_select,
                 btn_select_multi,
                 btn_open_multi,
+                btn_open_secondary_window,
+                btn_close_secondary_window,
                 btn_clear,
-                self.label
+                self.label,
+                self.window_label
             ],
             style=Pack(
                 flex=1,
