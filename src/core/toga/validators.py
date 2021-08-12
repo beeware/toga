@@ -344,7 +344,7 @@ class ContainsSpecial(CountValidator):
 
 class Integer(MatchRegex):
 
-    INTEGER_REGEX = r"^[0-9]+$"
+    INTEGER_REGEX = r"^\d+$"
 
     def __init__(self, error_message: Optional[str] = None, allow_empty: bool = True):
         if error_message is None:
@@ -356,7 +356,7 @@ class Integer(MatchRegex):
 
 class Number(MatchRegex):
 
-    NUMBER_REGEX = r"^[-]?(\d+|\d*\.\d+|\d+.\d*)$"
+    NUMBER_REGEX = r"^[-+]?(\d+\.|\d*\.?\d+)([eE][-+]?\d+)?$"
 
     def __init__(self, error_message: Optional[str] = None, allow_empty: bool = True):
         if error_message is None:

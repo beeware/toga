@@ -4,7 +4,7 @@ from travertino.size import at_least
 
 from toga_cocoa.keys import toga_key
 from toga_cocoa.libs import NSURL, NSURLRequest, WKWebView
-from rubicon.objc import objc_method, py_from_ns
+from rubicon.objc import objc_method, py_from_ns, send_super
 from rubicon.objc.runtime import objc_id
 
 from .base import Widget
@@ -24,6 +24,7 @@ class TogaWebView(WKWebView):
     def keyDown_(self, event) -> None:
         if self.interface.on_key_down:
             self.interface.on_key_down(self.interface, **toga_key(event))
+        send_super(__class__, self, 'keyDown:', event)
 
     @objc_method
     def touchBar(self):
@@ -68,7 +69,7 @@ class WebView(Widget):
 
     def set_user_agent(self, value):
         user_agent = value if value else "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/603.3.8 (KHTML, like Gecko) Version/10.1.2 Safari/603.3.8"  # NOQA
-        # self.native.customUserAgent = user_agent
+        self.native.customUserAgent = user_agent
 
     async def evaluate_javascript(self, javascript):
         """

@@ -1,11 +1,17 @@
 import toga
-from toga.constants import CENTER, COLUMN, ROW
+from toga.constants import CENTER, COLUMN, ROW, HIDDEN, VISIBLE
 from toga.style import Pack
 
 
 class ExampleLayoutApp(toga.App):
 
     def startup(self):
+
+        self.button_hide = toga.Button(
+            label='Hide label',
+            style=Pack(padding=10, width=120),
+            on_press=self.hide_label,
+        )
 
         self.button_add = toga.Button(
             label='Add image',
@@ -48,6 +54,7 @@ class ExampleLayoutApp(toga.App):
         # this tests adding children during init, before we have an implementation
         self.button_box = toga.Box(
             children=[
+                self.button_hide,
                 self.button_add,
                 self.button_insert,
                 self.button_reparent,
@@ -67,12 +74,21 @@ class ExampleLayoutApp(toga.App):
         self.box.add(self.scroll_view)
 
         # add a couple of labels to get us started
+        self.labels = []
         for i in range(3):
             self.add_label()
 
         self.main_window = toga.MainWindow()
         self.main_window.content = self.box
         self.main_window.show()
+
+    def hide_label(self, sender):
+        if self.labels[0].style.visibility == HIDDEN:
+            self.labels[0].style.visibility = VISIBLE
+            self.button_hide.label = "Hide label"
+        else:
+            self.labels[0].style.visibility = HIDDEN
+            self.button_hide.label = "Show label"
 
     def add_image(self, sender):
         self.scroll_box.add(self.image_view)
@@ -111,6 +127,7 @@ class ExampleLayoutApp(toga.App):
             style=Pack(padding=2, width=70)
         )
         self.scroll_box.add(new_label)
+        self.labels.append(new_label)
 
 
 def main():

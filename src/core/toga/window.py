@@ -1,6 +1,7 @@
 from builtins import id as identifier
 
 from toga.command import CommandSet
+from toga.handlers import wrapped_handler
 from toga.platform import get_platform_factory
 
 
@@ -24,7 +25,7 @@ class Window:
     def __init__(self, id=None, title=None,
                  position=(100, 100), size=(640, 480),
                  toolbar=None, resizeable=True,
-                 closeable=True, minimizable=True, factory=None):
+                 closeable=True, minimizable=True, factory=None, on_close=None):
 
         self._id = id if id else identifier(self)
         self._impl = None
@@ -50,6 +51,9 @@ class Window:
         self.position = position
         self.size = size
         self.title = title
+        self._on_close = None
+        if on_close is not None:
+            self.on_close = on_close
 
     @property
     def id(self):
@@ -167,6 +171,8 @@ class Window:
 
     def show(self):
         """ Show window, if hidden """
+        if self.app is None:
+            raise AttributeError("Can't show a window that doesn't have an associated app")
         self._impl.show()
 
     @property
@@ -178,11 +184,27 @@ class Window:
         self._is_full_screen = is_full_screen
         self._impl.set_full_screen(is_full_screen)
 
+    @property
+    def on_close(self):
+        """The handler to invoke when the window is closed.
+
+        Returns:
+            The function ``callable`` that is called on window closing event.
+        """
+        return self._on_close
+
+    @on_close.setter
+    def on_close(self, handler):
+        """Set the handler to invoke when the window is closed.
+
+        Args:
+            handler (:obj:`callable`): The handler to invoke when the window is closing.
+        """
+        self._on_close = wrapped_handler(self, handler)
+        self._impl.set_on_close(self._on_close)
+
     def close(self):
         self._impl.close()
-
-    def on_close(self):
-        self._impl.on_close()
 
     ############################################################
     # Dialogs

@@ -55,4 +55,8 @@ class ImageView(Widget):
             height = original_height * height_ratio
             width = original_width * height_ratio
 
-        return int(height), int(width)
+        # On the first display the allocated height/width will be 1x1.
+        # If the image isn't square, this will result in one of the dimensions
+        # scaling to 0, which breaks GTK. So; constraint the minimum height
+        # and width to 1.
+        return max(int(height), 1), max(int(width), 1)

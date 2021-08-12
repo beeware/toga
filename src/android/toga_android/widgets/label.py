@@ -1,6 +1,8 @@
 from travertino.size import at_least
 
-from ..libs.android_widgets import Gravity, TextView, TypedValue, View__MeasureSpec
+from ..libs.android.util import TypedValue
+from ..libs.android.view import Gravity, View__MeasureSpec
+from ..libs.android.widget import TextView
 from .base import Widget, align
 
 

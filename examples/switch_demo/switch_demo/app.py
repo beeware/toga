@@ -8,7 +8,7 @@ class SwitchApp(toga.App):
     def startup(self):
         # Window class
         #   Main window of the application with title and size
-        self.main_window = toga.MainWindow(title=self.name, size=(350, 200))
+        self.main_window = toga.MainWindow(title=self.name, size=(350, 300))
 
         # Add the content on the main window
         self.main_window.content = toga.Box(
@@ -20,7 +20,11 @@ class SwitchApp(toga.App):
                 toga.Switch('Initial state', is_on=True, style=Pack(padding_top=24)),
 
                 # Switch with label and enable option
-                toga.Switch('Disabled', enabled=False, style=Pack(padding_top=24))
+                toga.Switch('Disabled', enabled=False, style=Pack(padding_top=24)),
+
+                # Switch with a big font
+                toga.Switch('Big font', style=Pack(padding_top=24, font_family='serif', font_size=20,
+                                                   font_weight='bold'))
             ],
             style=Pack(direction=COLUMN, padding=24)
         )

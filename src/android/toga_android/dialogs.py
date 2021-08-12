@@ -1,7 +1,5 @@
-from .libs.android_widgets import (
-    AlertDialog__Builder,
-    DialogInterface__OnClickListener
-)
+from .libs.android.app import AlertDialog__Builder
+from .libs.android.content import DialogInterface__OnClickListener
 
 
 class NoOpListener(DialogInterface__OnClickListener):
