@@ -240,17 +240,17 @@ class ExampledialogsApp(toga.App):
                 on_press=self.action_select_folder_dialog_multi_android, style=btn_style
             )
         else:
-        btn_open = toga.Button('Open File', on_press=self.action_open_file_dialog, style=btn_style)
-        btn_open_filtered = toga.Button(
-            'Open File (Filtered)',
-            on_press=self.action_open_file_filtered_dialog,
-            style=btn_style
-        )
-        btn_open_multi = toga.Button(
-            'Open File (Multiple)',
-            on_press=self.action_open_file_dialog_multi,
-            style=btn_style
-        )
+            btn_open = toga.Button('Open File', on_press=self.action_open_file_dialog, style=btn_style)
+            btn_open_filtered = toga.Button(
+                'Open File (Filtered)',
+                on_press=self.action_open_file_filtered_dialog,
+                style=btn_style
+            )
+            btn_open_multi = toga.Button(
+                'Open File (Multiple)',
+                on_press=self.action_open_file_dialog_multi,
+                style=btn_style
+            )
         btn_save = toga.Button('Save File', on_press=self.action_save_file_dialog, style=btn_style)
         btn_select = toga.Button('Select Folder', on_press=self.action_select_folder_dialog, style=btn_style)
         btn_select_multi = toga.Button(

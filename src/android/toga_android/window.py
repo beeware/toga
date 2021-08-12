@@ -1,7 +1,9 @@
 from . import dialogs
 from .libs.activity import Activity
+from .libs.android import R__attr
 from .libs.android.content import Intent
 from .libs.android.net import Uri
+from .libs.android.util import TypedValue
 
 
 class AndroidViewport:
