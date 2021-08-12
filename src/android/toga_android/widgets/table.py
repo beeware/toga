@@ -92,8 +92,7 @@ class Table(Widget):
         # add scroll box to parent layout
         parent.addView(vscroll_view, vscroll_view_layout_params)
         self.native = parent
-        if self.interface.data is not None:
-            self.change_source(self.interface.data)
+        self.change_source(self.interface.data)
 
     def change_source(self, source):
         self.selection = {}
@@ -118,11 +117,11 @@ class Table(Widget):
             TableRow__Layoutparams.WRAP_CONTENT
         )
         table_row.setLayoutParams(table_row_params)
-        for col_index in range(len(self.interface._accessors)):
-            if self.interface._accessors[col_index] == self._deleted_column:
+        for col_index, column in enumerate(self.interface.columns):
+            if column == self._deleted_column:
                 continue
             text_view = TextView(MainActivity.singletonThis)
-            text_view.setText(self.interface.headings[col_index])
+            text_view.setText(column.title)
             text_view.setTypeface(text_view.getTypeface(), Typeface.BOLD)
             text_view_params = TableRow__Layoutparams(
                 TableRow__Layoutparams.MATCH_PARENT,
@@ -135,6 +134,7 @@ class Table(Widget):
         return table_row
 
     def create_table_row(self, row_index):
+        # TODO: Support icon and checkbox.
         table_row = TableRow(MainActivity.singletonThis)
         table_row_params = TableRow__Layoutparams(
             TableRow__Layoutparams.MATCH_PARENT,
@@ -144,11 +144,10 @@ class Table(Widget):
         table_row.setClickable(True)
         table_row.setOnClickListener(TogaOnClickListener(impl=self))
         table_row.setId(row_index)
-        for col_index in range(len(self.interface._accessors)):
-            if self.interface._accessors[col_index] == self._deleted_column:
+        for col_index, column in enumerate(self.interface.columns):
+            if column == self._deleted_column:
                 continue
             text_view = TextView(MainActivity.singletonThis)
-            text_view.setText(self.get_data_value(row_index, col_index))
             text_view_params = TableRow__Layoutparams(
                 TableRow__Layoutparams.MATCH_PARENT,
                 TableRow__Layoutparams.WRAP_CONTENT
@@ -156,15 +155,15 @@ class Table(Widget):
             text_view_params.setMargins(10, 5, 10, 5)  # left, top, right, bottom
             text_view_params.gravity = Gravity.START
             text_view.setLayoutParams(text_view_params)
-            table_row.addView(text_view)
-        return table_row
 
-    def get_data_value(self, row_index, col_index):
-        if self.interface.data is None or self.interface._accessors is None:
-            return None
-        row_object = self.interface.data[row_index]
-        value = getattr(row_object, self.interface._accessors[col_index])
-        return value
+            # Populate data.
+            node = self.interface.data[row_index]
+            text = column.get_data_for_node(node, "text")
+            text_view.setText(text)
+
+            table_row.addView(text_view)
+
+        return table_row
 
     def get_selection(self):
         selection = []
@@ -179,6 +178,7 @@ class Table(Widget):
 
     # data listener method
     def insert(self, index, item):
+        # TODO: Don't rebuild the entire table.
         self.change_source(self.interface.data)
 
     # data listener method
@@ -190,6 +190,7 @@ class Table(Widget):
 
     # data listener method
     def remove(self, item, index):
+        # TODO: Don't rebuild the entire table.
         self.change_source(self.interface.data)
 
     def scroll_to_row(self, row):
@@ -201,11 +202,13 @@ class Table(Widget):
     def set_on_double_click(self, handler):
         self.interface.factory.not_implemented('Table.set_on_double_click()')
 
-    def add_column(self, heading, accessor):
+    def add_column(self, column):
+        # TODO: Don't rebuild the entire table.
         self.change_source(self.interface.data)
 
-    def remove_column(self, accessor):
-        self._deleted_column = accessor
+    def remove_column(self, column):
+        # TODO: Don't rebuild the entire table.
+        self._deleted_column = column
         self.change_source(self.interface.data)
         self._deleted_column = None
 
