@@ -1,4 +1,4 @@
-from rubicon.objc import objc_method
+from rubicon.objc import objc_method, objc_property
 
 from toga_iOS.colors import native_color
 from toga_iOS.libs import UIColor, UIView
@@ -6,6 +6,10 @@ from toga_iOS.widgets.base import Widget
 
 
 class TogaView(UIView):
+
+    interface = objc_property(object, weak=True)
+    impl = objc_property(object, weak=True)
+
     @objc_method
     def isFlipped(self) -> bool:
         # Default Cocoa coordinate frame is around the wrong way.
@@ -20,6 +24,8 @@ class TogaView(UIView):
 class Box(Widget):
     def create(self):
         self.native = TogaView.alloc().init()
+        self.native.interface = self.interface
+        self.native.impl = self
 
         # Add the layout constraints
         self.add_constraints()

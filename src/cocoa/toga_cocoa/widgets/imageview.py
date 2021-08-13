@@ -14,7 +14,6 @@ class ImageView(Widget):
 
     def create(self):
         self.native = NSImageView.alloc().init()
-        self.native.interface = self.interface
 
         # self._impl.imageFrameStyle = NSImageFrameGrayBezel
         self.native.imageFrameStyle = NSImageFrameNone

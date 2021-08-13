@@ -6,13 +6,14 @@ from toga_cocoa.libs import (
     NSScrollView,
     NSTextView,
     NSViewWidthSizable,
-    objc_method
+    objc_method,
 )
 
 from .base import Widget
 
 
 class TogaTextView(NSTextView):
+
     @objc_method
     def touchBar(self):
         # Disable the touchbar.

@@ -1,4 +1,4 @@
-from rubicon.objc import CGSize, objc_method
+from rubicon.objc import CGSize, objc_method, objc_property
 from travertino.size import at_least
 
 from toga_iOS.libs import UIColor, UIPickerView, UITextBorderStyle, UITextField
@@ -6,6 +6,10 @@ from toga_iOS.widgets.base import Widget
 
 
 class TogaPickerView(UIPickerView):
+
+    interface = objc_property(object, weak=True)
+    impl = objc_property(object, weak=True)
+
     @objc_method
     def numberOfComponentsInPickerView_(self, pickerView) -> int:
         return 1
@@ -29,6 +33,7 @@ class Selection(Widget):
     def create(self):
         self.native = UITextField.alloc().init()
         self.native.interface = self.interface
+        self.native.impl = self
         self.native.tintColor = UIColor.clearColor
         self.native.borderStyle = UITextBorderStyle.RoundedRect
 

@@ -21,7 +21,8 @@ from toga_cocoa.libs import (
     NSToolbar,
     NSToolbarItem,
     NSWindow,
-    objc_method
+    objc_method,
+    objc_property,
 )
 
 
@@ -48,6 +49,10 @@ class CocoaViewport:
 
 
 class WindowDelegate(NSObject):
+
+    interface = objc_property(object, weak=True)
+    impl = objc_property(object, weak=True)
+
     @objc_method
     def windowShouldClose_(self, notification) -> bool:
         return self.impl.cocoa_windowShouldClose()
@@ -94,7 +99,7 @@ class WindowDelegate(NSObject):
         "Create the requested toolbar button"
         native = NSToolbarItem.alloc().initWithItemIdentifier_(identifier)
         try:
-            item = self.interface._impl._toolbar_items[str(identifier)]
+            item = self.impl._toolbar_items[str(identifier)]
             if item.label:
                 native.setLabel(item.label)
                 native.setPaletteLabel(item.label)
@@ -119,7 +124,7 @@ class WindowDelegate(NSObject):
     @objc_method
     def validateToolbarItem_(self, item) -> bool:
         "Confirm if the toolbar item should be enabled"
-        return self.interface._impl._toolbar_items[str(item.itemIdentifier)].enabled
+        return self.impl._toolbar_items[str(item.itemIdentifier)].enabled
 
     ######################################################################
     # Toolbar button press delegate methods
@@ -128,7 +133,7 @@ class WindowDelegate(NSObject):
     @objc_method
     def onToolbarButtonPress_(self, obj) -> None:
         "Invoke the action tied to the toolbar button"
-        item = self.interface._impl._toolbar_items[str(obj.itemIdentifier)]
+        item = self.impl._toolbar_items[str(obj.itemIdentifier)]
         item.action(obj)
 
 
@@ -166,8 +171,6 @@ class Window:
             defer=False
         )
         self.native.setFrame(position, display=True, animate=False)
-        self.native.interface = self.interface
-        self.native.impl = self
 
         self.delegate = WindowDelegate.alloc().init()
         self.delegate.interface = self.interface
