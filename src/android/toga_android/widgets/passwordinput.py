@@ -1,4 +1,4 @@
-from ..libs.android_widgets import InputType
+from ..libs.android.text import InputType
 from .textinput import TextInput
 
 
