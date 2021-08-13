@@ -251,51 +251,71 @@ class ExampledialogsApp(toga.App):
                 on_press=self.action_open_file_dialog_multi,
                 style=btn_style
             )
-        btn_save = toga.Button('Save File', on_press=self.action_save_file_dialog, style=btn_style)
-        btn_select = toga.Button('Select Folder', on_press=self.action_select_folder_dialog, style=btn_style)
-        btn_select_multi = toga.Button(
-            'Select Folders',
-            on_press=self.action_select_folder_dialog_multi,
-            style=btn_style
-        )
-        btn_open_secondary_window = toga.Button(
-            'Open Secondary Window',
-            on_press=self.action_open_secondary_window,
-            style=btn_style
-        )
-        btn_close_secondary_window = toga.Button(
-            'Close All Secondary Windows',
-            on_press=self.action_close_secondary_windows,
-            style=btn_style
-        )
+            btn_save = toga.Button('Save File', on_press=self.action_save_file_dialog, style=btn_style)
+            btn_select = toga.Button('Select Folder', on_press=self.action_select_folder_dialog, style=btn_style)
+            btn_select_multi = toga.Button(
+                'Select Folders',
+                on_press=self.action_select_folder_dialog_multi,
+                style=btn_style
+            )
+            btn_open_secondary_window = toga.Button(
+                'Open Secondary Window',
+                on_press=self.action_open_secondary_window,
+                style=btn_style
+            )
+            btn_close_secondary_window = toga.Button(
+                'Close All Secondary Windows',
+                on_press=self.action_close_secondary_windows,
+                style=btn_style
+            )
 
         btn_clear = toga.Button('Clear', on_press=self.do_clear, style=btn_style)
 
         # Outermost box
-        box = toga.Box(
-            children=[
-                btn_info,
-                btn_question,
-                btn_confirm,
-                btn_error,
-                btn_open,
-                btn_open_filtered,
-                btn_save,
-                btn_select,
-                btn_select_multi,
-                btn_open_multi,
-                btn_open_secondary_window,
-                btn_close_secondary_window,
-                btn_clear,
-                self.label,
-                self.window_label
-            ],
-            style=Pack(
-                flex=1,
-                direction=COLUMN,
-                padding=10
+        if toga.platform.current_platform == 'android':
+            box = toga.Box(
+                children=[
+                    btn_info,
+                    btn_open,
+                    btn_open_filtered,
+                    btn_select,
+                    btn_select_multi,
+                    btn_open_multi,
+                    btn_clear,
+                    self.label,
+                    self.window_label
+                ],
+                style=Pack(
+                    flex=1,
+                    direction=COLUMN,
+                    padding=10
+                )
             )
-        )
+        else:
+                box = toga.Box(
+                children=[
+                    btn_info,
+                    btn_question,
+                    btn_confirm,
+                    btn_error,
+                    btn_open,
+                    btn_open_filtered,
+                    btn_save,
+                    btn_select,
+                    btn_select_multi,
+                    btn_open_multi,
+                    btn_open_secondary_window,
+                    btn_close_secondary_window,
+                    btn_clear,
+                    self.label,
+                    self.window_label
+                ],
+                style=Pack(
+                    flex=1,
+                    direction=COLUMN,
+                    padding=10
+                )
+            )
 
         # Add the content on the main window
         self.main_window.content = box
