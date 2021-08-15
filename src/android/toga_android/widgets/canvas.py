@@ -2,9 +2,6 @@ from ..libs import activity
 from ..libs.android.graphics import Paint, Paint__Style, Path
 from .base import Widget
 
-# Arbitrary scale factor; to be made more specific in the future.
-SCALE_FACTOR = 5
-
 
 class DrawHandler(activity.IDrawHandler):
     def __init__(self, interface):
@@ -53,12 +50,14 @@ class Canvas(Widget):
     def closed_path(self, x, y, draw_context, *args, **kwargs):
         pass
 
-    def move_to(self, x, y, draw_context, *args, **kwargs):
+    def move_to(self, x, y, *args, **kwargs):
         self._path = Path()
-        self._path.moveTo(float(x) * SCALE_FACTOR, float(y) * SCALE_FACTOR)
+        self._path.moveTo(self.viewport.scale * x,
+                          self.viewport.scale * y)
 
-    def line_to(self, x, y, draw_context, *args, **kwargs):
-        self._path.lineTo(float(x) * SCALE_FACTOR, float(y) * SCALE_FACTOR)
+    def line_to(self, x, y, *args, **kwargs):
+        self._path.lineTo(self.viewport.scale * x,
+                          self.viewport.scale * y)
 
     # Basic shapes
 
@@ -111,7 +110,7 @@ class Canvas(Widget):
     def stroke(self, color, line_width, line_dash, draw_context, *args, **kwargs):
         self._draw_paint = Paint()
         self._draw_paint.setAntiAlias(True)
-        self._draw_paint.setStrokeWidth(float(line_width) * SCALE_FACTOR)
+        self._draw_paint.setStrokeWidth(self.viewport.scale * line_width)
         self._draw_paint.setStyle(Paint__Style.STROKE)
         if color is None:
             a, r, g, b = 255, 0, 0, 0
