@@ -266,9 +266,10 @@ class Window:
         return should_close
 
     def close(self):
-        # Calling performClose instead of close ensures that the on_close
-        # handlers in the delegates will be called
-        self.native.performClose(self.native)
+        # Close window directly here, don't use `NSWindow.performClose()`
+        # because it won't work if the window does not have a close button.
+        if self.cocoa_windowShouldClose():
+            self.native.close()
 
     def info_dialog(self, title, message):
         return dialogs.info(self.interface, title, message)
