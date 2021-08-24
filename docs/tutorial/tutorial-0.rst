@@ -227,7 +227,7 @@ Following is a brief explanation of this skeleton:
 * :code:`helloworld/` direcotry is the app name (package name), it is also the name that will be call for run the app.
 * :code:`__init__.py` is an empty file that just say to Python interpreter that treat the direcotry that contains this file as a module or package.
 * :code:`resources/` is one of  module that will be used in the application. In fact, this module does not use in any part of the app but we just wanted showing to you how you can create a module to include it in our app.
-* When you include :code:`__main__.py` file in your app (package), this file will be your entry point of your app (package)::
+* When you include :code:`__main__.py` file in your app (package), this file will be your entry point of your app (package).
 * We then need to move::
 
     if __name__ == '__main__':
