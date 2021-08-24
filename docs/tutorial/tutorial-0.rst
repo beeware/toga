@@ -210,6 +210,34 @@ a little while ago.
 
     Be sure you are out of the folder that you are created a little while ago.
 
+In the following is the how should directory skeleton of your app must be look like:
+
+.. code-block:: bash
+
+  helloworld/
+  ├── resources/
+  │   ├── __init__.py
+  │   ├── ...
+  ├── __init__.py
+  ├── __main__.py
+  ├── helloworld.py
+
+1. :code:`helloworld/` direcotry is the app name (package name), it is also the name that will be call for run the app.
+2. :code:`__init__.py` is an empty file that just say to Python interpreter that treat the direcotry that contains this file as a module or package.
+3. :code:`resources/` is one of  module that will be used in the application. In fact, this module does not use in any part of the app but we just wanted showing to you how you can create a module to include it in our app.
+4. When you include :code:`__main__.py` file in your app (package), this file will be your entry point of your app (package)::
+5. We then need to move::
+
+    if __name__ == '__main__':
+        main().main_loop()
+
+from the :code:`helloworld.py` script to this :code:`__main.py` file, as following::
+
+    from helloworld.helloworld import main
+
+    if __name__ == '__main__':
+        main().main_loop()
+
 Here is the command to run for your platform from your working directory,
 where we give the directory that we created a little while ago a name similar to
 our Python script and of course without :code:`.py` extension:
