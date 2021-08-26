@@ -1,7 +1,8 @@
 from travertino.size import at_least
+from rubicon.java import JavaClass
 from ..libs.activity import MainActivity
 from ..libs.android import R__attr
-from ..libs.android.util import AttributeSet
+from ..libs.android.util import AttributeSet, Xml
 from ..libs.android.view import Gravity, View__MeasureSpec
 from ..libs.android.widget import (
     ProgressBar as A_ProgressBar,
@@ -16,7 +17,27 @@ class ProgressBar(Widget):
         # progressbar = A_ProgressBar(self._native_activity, attr_set, R__attr.progressBarStyleHorizontal)
         # progressbar = A_ProgressBar(self._native_activity, attr_set, R__attr.progressBarStyleLarge)
         # progressBar = A_ProgressBar(self._native_activity, None, R__attr.progressBarStyleLarge)
-        progressbar = A_ProgressBar(self._native_activity)
+
+        # create an AttributeSet from a xml string
+        xml_attrs = f'''<ProgressBar xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            style = "@android:style/Widget.ProgressBar.Horizontal" />
+        '''
+        StringReader = JavaClass("java/io/StringReader")
+        reader = StringReader(xml_attrs)
+        XmlPullParser = JavaClass("org/xmlpull/v1/XmlPullParser")
+        parser = Xml.newPullParser()
+        parser.setInput(reader)
+        attrs = Xml.asAttributeSet(parser)
+        eventtype = parser.next()
+        while eventtype != XmlPullParser.START_TAG and eventtype != XmlPullParser.END_DOCUMENT:
+            eventtype = parser.next()
+        # create instance of ProgressBar
+        print('SIZE OF ATTRIBUTESET: '+str(attrs.getAttributeCount()))
+        for i in range(0,attrs.getAttributeCount()):
+            print('Attribute: '+attrs.getAttributeName(i)+"="+attrs.getAttributeValue(i))
+        progressbar = A_ProgressBar(self._native_activity, attrs)
         self.native = progressbar
 
     def start(self):
