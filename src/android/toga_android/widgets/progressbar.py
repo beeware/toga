@@ -17,27 +17,18 @@ class ProgressBar(Widget):
         # progressbar = A_ProgressBar(self._native_activity, attr_set, R__attr.progressBarStyleHorizontal)
         # progressbar = A_ProgressBar(self._native_activity, attr_set, R__attr.progressBarStyleLarge)
         # progressBar = A_ProgressBar(self._native_activity, None, R__attr.progressBarStyleLarge)
+        # progressbar = A_ProgressBar(self._native_activity, attrs)
 
-        # create an AttributeSet from a xml string
-        xml_attrs = f'''<ProgressBar xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            style = "@android:style/Widget.ProgressBar.Horizontal" />
-        '''
-        StringReader = JavaClass("java/io/StringReader")
-        reader = StringReader(xml_attrs)
-        XmlPullParser = JavaClass("org/xmlpull/v1/XmlPullParser")
-        parser = Xml.newPullParser()
-        parser.setInput(reader)
-        attrs = Xml.asAttributeSet(parser)
-        eventtype = parser.next()
-        while eventtype != XmlPullParser.START_TAG and eventtype != XmlPullParser.END_DOCUMENT:
-            eventtype = parser.next()
-        # create instance of ProgressBar
-        print('SIZE OF ATTRIBUTESET: '+str(attrs.getAttributeCount()))
-        for i in range(0,attrs.getAttributeCount()):
-            print('Attribute: '+attrs.getAttributeName(i)+"="+attrs.getAttributeValue(i))
-        progressbar = A_ProgressBar(self._native_activity, attrs)
+        # Constructor cons = ProgressBar.class.getConstructor(Context.class, AttributeSet.class, int.class);
+        # ProgressBar progressbar = (ProgressBar) cons.newInstance(this, null, android.R.attr.progressBarStyleHorizontal);
+        Context = JavaClass("android/content/Context")
+        print('GET CLASS')
+        clazz = A_ProgressBar(self._native_activity).getClass()
+        print('GET CONSTRUCTOR')
+        cons = clazz.getConstructor(Context, AttributeSet, int)  # not working
+        constructors = clazz.getConstructors()  # not working
+        print('INVOKING PROGRESSBAR')
+        progressbar = cons.newInstance(self._native_activity, None, R__attr.progressBarStyleHorizontal)
         self.native = progressbar
 
     def start(self):
