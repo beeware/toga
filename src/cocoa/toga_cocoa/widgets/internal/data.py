@@ -4,6 +4,7 @@ from toga_cocoa.libs import NSObject, objc_method
 class TogaData(NSObject):
     @objc_method
     def copyWithZone_(self):
-        copy = TogaData.alloc().init()
-        copy.attrs = self.attrs
-        return copy
+        # TogaData is used as an immutable reference to a row
+        # so the same object can be returned as a copy.
+        self.retain()
+        return self
