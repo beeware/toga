@@ -67,14 +67,9 @@ class ExampleTableApp(toga.App):
         self.label_table2 = toga.Label('Try multiple row selection.', style=Pack(flex=1, padding_left=5))
         labelbox = toga.Box(children=[self.label_table1, self.label_table2], style=Pack(flex=0, padding_top=5))
 
-        # Data to populate the table.
-        data = []
-        for x in range(5):
-            data.append(tuple(str(x) for x in range(5)))
-
         self.table1 = toga.Table(
             headings=headings,
-            data=bee_movies[:4],
+            data=bee_movies*1000,
             style=Pack(flex=1, padding_right=5),
             multiple_select=False,
             on_select=self.on_select_handler1

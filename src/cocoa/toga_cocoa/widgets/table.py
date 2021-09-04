@@ -112,25 +112,29 @@ class TogaTable(NSTableView):
         if self.interface.on_select:
             self.interface.on_select(self.interface, row=selected)
 
-    @objc_method
-    def tableView_heightOfRow_(self, table, row: int) -> float:
-
-        default_row_height = self.rowHeight
-        margin = 2
-
-        # get all views in column
-        data_row = self.interface.data[row]
-
-        heights = [default_row_height]
-
-        for column in self.tableColumns:
-            col_identifier = str(column.identifier)
-            value = getattr(data_row, col_identifier, None)
-            if isinstance(value, toga.Widget):
-                # if the cell value is a widget, use its height
-                heights.append(value._impl.native.intrinsicContentSize().height + margin)
-
-        return max(heights)
+    # 2021-09-04: Commented out this method because it appears to be a
+    # source of significant slowdown when the table has a lot of data
+    # (10k rows). AFAICT, it's only needed if we want custom row heights
+    # for each row. Since we don't currently support custom row heights,
+    # we're paying the cost for no benefit.
+    # @objc_method
+    # def tableView_heightOfRow_(self, table, row: int) -> float:
+    #     default_row_height = self.rowHeight
+    #     margin = 2
+    #
+    #     # get all views in column
+    #     data_row = self.interface.data[row]
+    #
+    #     heights = [default_row_height]
+    #
+    #     for column in self.tableColumns:
+    #         col_identifier = str(column.identifier)
+    #         value = getattr(data_row, col_identifier, None)
+    #         if isinstance(value, toga.Widget):
+    #             # if the cell value is a widget, use its height
+    #             heights.append(value._impl.native.intrinsicContentSize().height + margin)
+    #
+    #     return max(heights)
 
     # target methods
     @objc_method
