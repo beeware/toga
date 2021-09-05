@@ -8,7 +8,8 @@ class RefreshButtonWidget(Gtk.Revealer):
         self.parent = None
 
         self.refresh_btn = Gtk.Button.new_from_icon_name(
-            "view-refresh-symbolic", Gtk.IconSize.BUTTON)
+            "view-refresh-symbolic", Gtk.IconSize.BUTTON
+        )
         self.refresh_btn.set_can_focus(False)
         refresh_btn_context = self.refresh_btn.get_style_context()
         refresh_btn_context.add_class("osd")
@@ -16,7 +17,8 @@ class RefreshButtonWidget(Gtk.Revealer):
         refresh_btn_context.remove_class("button")
 
         self.close_btn = Gtk.Button.new_from_icon_name(
-            "close-symbolic", Gtk.IconSize.BUTTON)
+            "close-symbolic", Gtk.IconSize.BUTTON
+        )
         self.close_btn.set_can_focus(False)
         close_btn_context = self.close_btn.get_style_context()
         close_btn_context.add_class("osd")

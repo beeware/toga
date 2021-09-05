@@ -50,7 +50,8 @@ class DetailedList(Widget):
         self.native.interface = self.interface
 
         self.gtk_on_select_signal_handler = self.list_box.connect(
-            'row-selected', self.gtk_on_row_selected)
+            'row-selected', self.gtk_on_row_selected
+        )
 
         self.right_click_gesture = Gtk.GestureMultiPress.new(self.list_box)
         self.right_click_gesture.set_button(3)

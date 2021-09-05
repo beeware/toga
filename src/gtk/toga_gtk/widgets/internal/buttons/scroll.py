@@ -13,7 +13,8 @@ class ScrollButton(ParentPosition):
         self._do_scroll = None
 
         self.button = Gtk.Button.new_from_icon_name(
-            "go-bottom-symbolic", Gtk.IconSize.BUTTON)
+            "go-bottom-symbolic", Gtk.IconSize.BUTTON
+        )
 
         self.button.set_can_focus(False)
 
@@ -70,9 +71,13 @@ class ScrollButton(ParentPosition):
         is_distant_from_top = self.is_parent_distant_from_top()
         is_distant_from_bottom = self.is_parent_distant_from_bottom()
 
-        if is_scrollable and \
-           not is_at_top and not is_at_bottom \
-           and is_distant_from_top and is_distant_from_bottom:
+        if (
+            is_scrollable
+            and not is_at_top
+            and not is_at_bottom
+            and is_distant_from_top
+            and is_distant_from_bottom
+        ):
             self.show()
         else:
             self.hide()

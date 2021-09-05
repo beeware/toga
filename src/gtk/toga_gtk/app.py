@@ -115,7 +115,8 @@ class App:
         context.add_provider_for_screen(
             Gdk.Screen.get_default(),
             css_provider,
-            Gtk.STYLE_PROVIDER_PRIORITY_USER)
+            Gtk.STYLE_PROVIDER_PRIORITY_USER
+        )
 
     def _create_app_commands(self):
         # No extra menus
