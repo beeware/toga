@@ -1,7 +1,6 @@
 from toga.widgets.canvas import FillRule
 from toga_cocoa.colors import native_color
 from toga_cocoa.libs import (
-    SEL,
     CGFloat,
     CGPathDrawingMode,
     CGRectMake,
@@ -10,13 +9,11 @@ from toga_cocoa.libs import (
     NSForegroundColorAttributeName,
     NSGraphicsContext,
     NSMutableDictionary,
-    NSNotificationCenter,
     NSPoint,
     NSRect,
     NSStrokeColorAttributeName,
     NSStrokeWidthAttributeName,
     NSView,
-    NSViewFrameDidChangeNotification,
     core_graphics,
     kCGPathEOFill,
     kCGPathFill,
@@ -40,11 +37,6 @@ class TogaCanvas(NSView):
     def isFlipped(self) -> bool:
         # Default Cocoa coordinate frame is around the wrong way.
         return True
-
-    @objc_method
-    def frameChanged_(self, notification) -> None:
-        if self.interface.on_resize:
-            self.interface.on_resize(self.interface)
 
     @objc_method
     def mouseDown_(self, event) -> None:
@@ -95,18 +87,16 @@ class Canvas(Widget):
         self.native.interface = self.interface
         self.native._impl = self
 
-        NSNotificationCenter.defaultCenter.addObserver(
-            self.native,
-            selector=SEL("frameChanged:"),
-            name=NSViewFrameDidChangeNotification,
-            object=self.native
-        )
-
         # Add the layout constraints
         self.add_constraints()
 
     def redraw(self):
         self.native.needsDisplay = True
+
+    def set_bounds(self, x, y, width, height):
+        super().set_bounds(x, y, width, height)
+        if self.interface.window and self.interface.on_resize:
+            self.interface.on_resize(self.interface)
 
     # Basic paths
 
