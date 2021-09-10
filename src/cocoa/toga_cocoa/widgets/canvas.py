@@ -1,7 +1,6 @@
 from toga.widgets.canvas import FillRule
 from toga_cocoa.colors import native_color
 from toga_cocoa.libs import (
-    SEL,
     CGFloat,
     CGPathDrawingMode,
     CGRectMake,
@@ -10,13 +9,11 @@ from toga_cocoa.libs import (
     NSForegroundColorAttributeName,
     NSGraphicsContext,
     NSMutableDictionary,
-    NSNotificationCenter,
     NSPoint,
     NSRect,
     NSStrokeColorAttributeName,
     NSStrokeWidthAttributeName,
     NSView,
-    NSViewFrameDidChangeNotification,
     core_graphics,
     kCGPathEOFill,
     kCGPathFill,
@@ -98,7 +95,7 @@ class Canvas(Widget):
 
     def set_bounds(self, x, y, width, height):
         super().set_bounds(x, y, width, height)
-        if self.interface.on_resize:
+        if self.interface.window and self.interface.on_resize:
             self.interface.on_resize(self.interface)
 
     # Basic paths
