@@ -42,11 +42,6 @@ class TogaCanvas(NSView):
         return True
 
     @objc_method
-    def frameChanged_(self, notification) -> None:
-        if self.interface.on_resize:
-            self.interface.on_resize(self.interface)
-
-    @objc_method
     def mouseDown_(self, event) -> None:
         """Invoke the on_press handler if configured."""
         if self.interface.on_press:
@@ -95,18 +90,16 @@ class Canvas(Widget):
         self.native.interface = self.interface
         self.native._impl = self
 
-        NSNotificationCenter.defaultCenter.addObserver(
-            self.native,
-            selector=SEL("frameChanged:"),
-            name=NSViewFrameDidChangeNotification,
-            object=self.native
-        )
-
         # Add the layout constraints
         self.add_constraints()
 
     def redraw(self):
         self.native.needsDisplay = True
+
+    def set_bounds(self, x, y, width, height):
+        super().set_bounds(x, y, width, height)
+        if self.interface.on_resize:
+            self.interface.on_resize(self.interface)
 
     # Basic paths
 
