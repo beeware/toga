@@ -146,7 +146,7 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
 
         # Every 1200 ticks (once per minute),
         # manually invoke garbage collection on both Python and .NET
-        self.gc_tick_count +=1
+        self.gc_tick_count += 1
         if self.gc_tick_count >= 1200:
             gc.collect()
             GC.Collect()
