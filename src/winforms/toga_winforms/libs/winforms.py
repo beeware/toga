@@ -11,6 +11,7 @@ from System import (  # noqa: F401, E402
     Convert,
     DateTime as WinDateTime,
     Environment,
+    GC,
     Single,
     Threading,
     Uri,

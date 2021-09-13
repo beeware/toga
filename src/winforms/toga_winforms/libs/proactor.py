@@ -1,9 +1,10 @@
 import asyncio
+import gc
 import sys
 import threading
 from asyncio import events
 
-from .winforms import Action, Task, WinForms, user32
+from .winforms import Action, GC, Task, WinForms, user32
 
 
 class AsyncIOTickMessageFilter(WinForms.IMessageFilter):
@@ -18,9 +19,9 @@ class AsyncIOTickMessageFilter(WinForms.IMessageFilter):
         self.msg_id = msg_id
 
     def PreFilterMessage(self, message):
-        print('ping', message)
+        # print('ping', message)
         if message.Msg == self.msg_id:
-            print("asyncio tick message!!")
+            # print("asyncio tick message!!")
             self.loop.run_once_recurring()
             return True
         # print("Filter message", message)
@@ -49,6 +50,10 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
 
         # Remember the application context.
         self.app_context = app_context
+
+        # We need to manually invoke garbage collection every now and then.
+        # so keep a track of how many ticks we have had.
+        self.gc_tick_count = 0
 
         # Register a custom user window message.
         self.msg_id = user32.RegisterWindowMessageA("Python asyncio tick")
@@ -138,6 +143,14 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
         """
         # Perform one tick of the event loop.
         self._run_once()
+
+        # Every 1200 ticks (once per minute),
+        # manually invoke garbage collection on both Python and .NET
+        self.gc_tick_count +=1
+        if self.gc_tick_count >= 1200:
+            gc.collect()
+            GC.Collect()
+            self.gc_tick_count = 0
 
         if self._stopping:
             # If we're stopping, we can do the "finally" handling from
