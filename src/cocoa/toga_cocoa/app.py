@@ -411,6 +411,9 @@ class App:
     def add_background_task(self, handler):
         self.loop.call_soon(wrapped_handler(self, handler), self)
 
+    def open_document(self, fileURL):
+        """No-op when the app is not a ``DocumentApp``."""
+
 
 class DocumentApp(App):
     def _create_app_commands(self):
