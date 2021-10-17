@@ -46,6 +46,9 @@ from System.Drawing.Drawing2D import (  # noqa: F401, E402
     GraphicsPath,
     Matrix,
 )
+
+from System.Net import SecurityProtocolType, ServicePointManager  # noqa: F401, E402
+
 from System.Threading.Tasks import Task  # noqa: F401, E402
 
 

@@ -9,6 +9,8 @@ from toga.handlers import wrapped_handler
 from .keys import toga_to_winforms_key
 
 from .libs import Threading, WinForms, shcore, user32, win_version
+
+from .libs.winforms import SecurityProtocolType, ServicePointManager
 from .libs.proactor import WinformsProactorEventLoop
 from .window import Window
 
@@ -35,6 +37,13 @@ class App:
         # made to exit the native app. This flag can be used to shortcut any
         # window-level close handling.
         self._is_exiting = False
+
+        # Winforms uses SSL 3.0/TLS 1.0 by default, and prevents the use of
+        # TLS 1.2. This is... bad. Tell WebClient to use TLS 1.2 or 1.3.
+        ServicePointManager.SecurityProtocol = (
+            SecurityProtocolType.Tls12
+            | SecurityProtocolType.Tls13
+        )
 
         self.loop = WinformsProactorEventLoop()
         asyncio.set_event_loop(self.loop)
