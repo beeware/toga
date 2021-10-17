@@ -2,11 +2,13 @@ from toga.fonts import (
     BOLD,
     CURSIVE,
     FANTASY,
+    ITALIC,
     MESSAGE,
     MONOSPACE,
     NORMAL,
     SANS_SERIF,
     SERIF,
+    SMALL_CAPS,
     SYSTEM,
     SYSTEM_DEFAULT_FONT_SIZE
 )
@@ -14,6 +16,8 @@ from toga_cocoa.libs import (
     NSAttributedString,
     NSFont,
     NSFontAttributeName,
+    NSFontManager,
+    NSFontMask,
     NSMutableDictionary
 )
 
@@ -53,12 +57,33 @@ class Font:
                 else:
                     family = self.interface.family
 
+                font = NSFont.fontWithName(family, size=self.interface.size)
+
+                if font is None:
+                    print(
+                        "Unable to load font: {}pt {}".format(
+                            self.interface.size, family
+                        )
+                    )
+
+                # Convert the base font definition into a font with all the desired traits.
+                attributes_mask = 0
+                if self.interface.weight == BOLD:
+                    attributes_mask |= NSFontMask.Bold.value
+
+                if self.interface.style == ITALIC:
+                    attributes_mask |= NSFontMask.Italic.value
+                elif self.interface.style == SMALL_CAPS:
+                    attributes_mask |= NSFontMask.SmallCaps.value
+
+                if attributes_mask:
+                    font = NSFontManager.sharedFontManager.convertFont(font, toHaveTrait=attributes_mask)
+
                 full_name = '{family}{weight}{style}'.format(
                     family=family,
                     weight=(' ' + self.interface.weight.title()) if self.interface.weight is not NORMAL else '',
                     style=(' ' + self.interface.style.title()) if self.interface.style is not NORMAL else '',
                 )
-                font = NSFont.fontWithName(full_name, size=self.interface.size)
 
                 if font is None:
                     print(

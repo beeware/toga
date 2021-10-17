@@ -186,19 +186,21 @@ class Window:
 
     @property
     def on_close(self):
-        """The handler to invoke when the window is closed.
+        """The handler to invoke before the window is closed.
 
         Returns:
-            The function ``callable`` that is called on window closing event.
+            The function ``callable`` that is called before the window is closed.
         """
         return self._on_close
 
     @on_close.setter
     def on_close(self, handler):
-        """Set the handler to invoke when the window is closed.
+        """Set the handler to invoke when before window is closed. If the handler
+        returns ``False``, the window will not be closed. This can be used for example
+        for confirmation dialogs.
 
         Args:
-            handler (:obj:`callable`): The handler to invoke when the window is closing.
+            handler (:obj:`callable`): The handler to invoke before the window is closed.
         """
         self._on_close = wrapped_handler(self, handler)
         self._impl.set_on_close(self._on_close)

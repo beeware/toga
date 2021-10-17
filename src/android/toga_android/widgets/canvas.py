@@ -1,9 +1,6 @@
 from ..libs import activity
-from ..libs.android.graphics import Paint, Paint__Style, Path
+from ..libs.android.graphics import DashPathEffect, Paint, Paint__Style, Path
 from .base import Widget
-
-# Arbitrary scale factor; to be made more specific in the future.
-SCALE_FACTOR = 5
 
 
 class DrawHandler(activity.IDrawHandler):
@@ -51,14 +48,16 @@ class Canvas(Widget):
         self.interface.factory.not_implemented('Canvas.new_path()')
 
     def closed_path(self, x, y, draw_context, *args, **kwargs):
-        pass
+        self._path.close()
 
-    def move_to(self, x, y, draw_context, *args, **kwargs):
+    def move_to(self, x, y, *args, **kwargs):
         self._path = Path()
-        self._path.moveTo(float(x) * SCALE_FACTOR, float(y) * SCALE_FACTOR)
+        self._path.moveTo(self.viewport.scale * x,
+                          self.viewport.scale * y)
 
-    def line_to(self, x, y, draw_context, *args, **kwargs):
-        self._path.lineTo(float(x) * SCALE_FACTOR, float(y) * SCALE_FACTOR)
+    def line_to(self, x, y, *args, **kwargs):
+        self._path.lineTo(self.viewport.scale * x,
+                          self.viewport.scale * y)
 
     # Basic shapes
 
@@ -111,12 +110,15 @@ class Canvas(Widget):
     def stroke(self, color, line_width, line_dash, draw_context, *args, **kwargs):
         self._draw_paint = Paint()
         self._draw_paint.setAntiAlias(True)
-        self._draw_paint.setStrokeWidth(float(line_width) * SCALE_FACTOR)
+        self._draw_paint.setStrokeWidth(self.viewport.scale * line_width)
         self._draw_paint.setStyle(Paint__Style.STROKE)
         if color is None:
             a, r, g, b = 255, 0, 0, 0
         else:
             a, r, g, b = round(color.a * 255), int(color.r), int(color.g), int(color.b)
+        if line_dash is not None:
+            self._draw_paint.setPathEffect(DashPathEffect(
+                [(self.viewport.scale * float(d)) for d in line_dash], 0.0))
         self._draw_paint.setARGB(a, r, g, b)
 
         draw_context.drawPath(self._path, self._draw_paint)

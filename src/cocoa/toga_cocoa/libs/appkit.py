@@ -332,6 +332,23 @@ class NSEventType(IntEnum):
 ######################################################################
 # NSFont.h
 NSFont = ObjCClass('NSFont')
+NSFontManager = ObjCClass('NSFontManager')
+
+
+class NSFontMask(Enum):
+    Italic = 0x01
+    Bold = 0x02
+    Unbold = 0x04
+    NonStandardCharacterSet = 0x08
+    Narrow = 0x10
+    Expanded = 0x20
+    Condensed = 0x40
+    SmallCaps = 0x80
+    Poster = 0x100
+    Compressed = 0x200
+    FixedPitch = 0x400
+    Unitalic = 0x01000000
+
 
 ######################################################################
 # NSGraphics.h

@@ -2,6 +2,7 @@ from rubicon.java import JavaClass
 
 BitmapFactory = JavaClass("android/graphics/BitmapFactory")
 Color = JavaClass("android/graphics/Color")
+DashPathEffect = JavaClass("android/graphics/DashPathEffect")
 Paint = JavaClass("android/graphics/Paint")
 Path = JavaClass("android/graphics/Path")
 Paint__Style = JavaClass("android/graphics/Paint$Style")
