@@ -15,15 +15,9 @@ class ImageViewApp(toga.App):
         # load brutus.png from the package
         # We set the style width/height parameters for this one
         image_from_path = toga.Image('resources/pride-brutus.png')
-        imageview_from_path = toga.ImageView(image_from_path)
+        imageview_from_path = toga.ImageView(image_from_path, on_press=self.on_image_click)
         imageview_from_path.style.update(height=72)
         box.add(imageview_from_path)
-
-        # image with click event
-        image_from_path2 = toga.Image('resources/click-me.png')
-        imageview_from_path2 = toga.ImageView(image_from_path2, on_press=self.on_image_click)
-        imageview_from_path2.style.update(height=100, width=200)
-        box.add(imageview_from_path2)
 
         # image from remote URL
         # no style parameters - we let Pack determine how to allocate
@@ -36,7 +30,7 @@ class ImageViewApp(toga.App):
         self.main_window.show()
 
     def on_image_click(self, widget):
-        self.main_window.info_dialog('on_image_click', "You clicked the image '"+widget.image.path+"'")
+        self.main_window.info_dialog("Image Click", "You clicked the image")
 
 
 def main():
