@@ -48,7 +48,7 @@ class Canvas(Widget):
         self.interface.factory.not_implemented('Canvas.new_path()')
 
     def closed_path(self, x, y, draw_context, *args, **kwargs):
-        pass
+        self._path.close()
 
     def move_to(self, x, y, *args, **kwargs):
         self._path = Path()
