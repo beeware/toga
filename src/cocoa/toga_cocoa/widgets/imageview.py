@@ -1,3 +1,4 @@
+from rubicon.objc.api import objc_method
 from toga_cocoa.libs import (
     NSImage,
     NSImageAlignment,
@@ -10,10 +11,17 @@ from toga_cocoa.libs import (
 from .base import Widget
 
 
+class TogaImageView(NSImageView):
+    @objc_method
+    def mouseDown_(self, event) -> None:
+        if self.interface.on_press:
+            self.interface.on_press(self.interface)
+
+
 class ImageView(Widget):
 
     def create(self):
-        self.native = NSImageView.alloc().init()
+        self.native = TogaImageView.alloc().init()
         self.native.interface = self.interface
 
         # self._impl.imageFrameStyle = NSImageFrameGrayBezel
@@ -38,9 +46,7 @@ class ImageView(Widget):
             self.native.image = NSImage.alloc().initWithSize(NSSize(width, height))
 
     def set_on_press(self, handler):
-        self.interface.factory.not_implemented(
-            "ImageView.set_on_press()"
-        )
+        pass
 
     def rehint(self):
         pass
