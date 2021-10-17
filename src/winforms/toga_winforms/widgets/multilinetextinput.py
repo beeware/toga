@@ -16,7 +16,7 @@ class MultilineTextInput(Widget):
         self._placeholder = None
 
     def winforms_enter(self, sender, event):
-        if self._placeholder is not None and self.get_value() == self._placeholder:
+        if self._placeholder != '' and self.native.Text == self._placeholder:
             self.native.Text = ""
             self._update_text_color()
 
@@ -32,13 +32,17 @@ class MultilineTextInput(Widget):
 
     def set_placeholder(self, value):
         self._placeholder = value
+        self._update_text()
 
     def set_value(self, value):
         self.native.Text = value
         self._update_text()
 
     def get_value(self):
-        return self.native.Text
+        if self._placeholder != '' and self.native.Text == self._placeholder:
+            return ''
+        else:
+            return self.native.Text
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
@@ -52,8 +56,8 @@ class MultilineTextInput(Widget):
             self.interface.on_change(self.interface)
 
     def _update_text(self):
-        if self._placeholder is not None and self.get_value() == "":
-            self.set_value(self._placeholder)
+        if self._placeholder != '' and self.native.Text == "":
+            self.native.Text = self._placeholder
             self._update_placeholder_color()
         else:
             self._update_text_color()
