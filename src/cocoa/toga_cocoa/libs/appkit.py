@@ -67,11 +67,19 @@ NSEventTrackingRunLoopMode = c_void_p.in_dll(appkit, 'NSEventTrackingRunLoopMode
 NSApplicationDidHideNotification = c_void_p.in_dll(appkit, 'NSApplicationDidHideNotification')
 NSApplicationDidUnhideNotification = c_void_p.in_dll(appkit, 'NSApplicationDidUnhideNotification')
 
-NSAboutPanelOptionApplicationIcon = NSString(c_void_p.in_dll(appkit, "NSAboutPanelOptionApplicationIcon"))
-NSAboutPanelOptionApplicationName = NSString(c_void_p.in_dll(appkit, "NSAboutPanelOptionApplicationName"))
-NSAboutPanelOptionApplicationVersion = NSString(c_void_p.in_dll(appkit, "NSAboutPanelOptionApplicationVersion"))
-NSAboutPanelOptionCredits = NSString(c_void_p.in_dll(appkit, "NSAboutPanelOptionCredits"))
-NSAboutPanelOptionVersion = NSString(c_void_p.in_dll(appkit, "NSAboutPanelOptionVersion"))
+# NSAboutPanelOption* keys are available only 10.13+
+try:
+    NSAboutPanelOptionApplicationIcon = NSString(c_void_p.in_dll(appkit, "NSAboutPanelOptionApplicationIcon"))
+    NSAboutPanelOptionApplicationName = NSString(c_void_p.in_dll(appkit, "NSAboutPanelOptionApplicationName"))
+    NSAboutPanelOptionApplicationVersion = NSString(c_void_p.in_dll(appkit, "NSAboutPanelOptionApplicationVersion"))
+    NSAboutPanelOptionCredits = NSString(c_void_p.in_dll(appkit, "NSAboutPanelOptionCredits"))
+    NSAboutPanelOptionVersion = NSString(c_void_p.in_dll(appkit, "NSAboutPanelOptionVersion"))
+except ValueError:
+    NSAboutPanelOptionApplicationIcon = None
+    NSAboutPanelOptionApplicationName = None
+    NSAboutPanelOptionApplicationVersion = None
+    NSAboutPanelOptionCredits = None
+    NSAboutPanelOptionVersion = None
 
 ######################################################################
 # NSAttributedString.h
