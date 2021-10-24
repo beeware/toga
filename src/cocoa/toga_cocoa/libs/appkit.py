@@ -74,7 +74,7 @@ try:
     NSAboutPanelOptionApplicationVersion = NSString(c_void_p.in_dll(appkit, "NSAboutPanelOptionApplicationVersion"))
     NSAboutPanelOptionCredits = NSString(c_void_p.in_dll(appkit, "NSAboutPanelOptionCredits"))
     NSAboutPanelOptionVersion = NSString(c_void_p.in_dll(appkit, "NSAboutPanelOptionVersion"))
-except AttributeError:
+except ValueError:
     NSAboutPanelOptionApplicationIcon = None
     NSAboutPanelOptionApplicationName = None
     NSAboutPanelOptionApplicationVersion = None
