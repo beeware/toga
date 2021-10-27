@@ -1,3 +1,5 @@
+import math
+
 from ..libs import activity
 from ..libs.android.graphics import DashPathEffect, Paint, Paint__Style, Path, Path__Direction
 from .base import Widget
@@ -81,7 +83,18 @@ class Canvas(Widget):
             *args,
             **kwargs
     ):
-        self.interface.factory.not_implemented('Canvas.arc()')
+        self.move_to(x, y)
+        sweep_angle = endangle - startangle
+        if anticlockwise:
+            sweep_angle -= 2 * math.pi
+        self._path.addArc(
+            self.viewport.scale * (x - radius),
+            self.viewport.scale * (y - radius),
+            self.viewport.scale * (x + radius),
+            self.viewport.scale * (y + radius),
+            startangle * (180 / math.pi),
+            sweep_angle * (180 / math.pi),
+        )
 
     def ellipse(
         self,
