@@ -1,5 +1,5 @@
 from ..libs import activity
-from ..libs.android.graphics import DashPathEffect, Paint, Paint__Style, Path
+from ..libs.android.graphics import DashPathEffect, Paint, Paint__Style, Path, Path__Direction
 from .base import Widget
 
 
@@ -100,7 +100,14 @@ class Canvas(Widget):
         self.interface.factory.not_implemented('Canvas.ellipse')
 
     def rect(self, x, y, width, height, draw_context, *args, **kwargs):
-        self.interface.factory.not_implemented('Canvas.rect')
+        self.move_to(x, y)
+        self._path.addRect(
+            self.viewport.scale * x,
+            self.viewport.scale * y,
+            self.viewport.scale * (x + width),
+            self.viewport.scale * (y + height),
+            Path__Direction.CW,
+        )
 
     # Drawing Paths
 
