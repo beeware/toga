@@ -18,7 +18,7 @@ class TogaApp(IPythonApp):
 
     def __init__(self, app):
         super().__init__()
-        self._interface = app
+        self._impl = app
         MainActivity.setPythonApp(self)
         print('Python app launched & stored in Android Activity class')
 
