@@ -149,7 +149,7 @@ class Canvas(Widget):
         self.interface.factory.not_implemented('Canvas.rotate')
 
     def scale(self, sx, sy, draw_context, *args, **kwargs):
-        self.interface.factory.not_implemented('Canvas.scale')
+        draw_context.scale(float(sx), float(sy))
 
     def translate(self, tx, ty, draw_context, *args, **kwargs):
         self.interface.factory.not_implemented('Canvas.translate')
