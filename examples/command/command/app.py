@@ -52,7 +52,7 @@ class ExampleTestCommandApp(toga.App):
         self.main_window = toga.MainWindow(title=self.name)
 
         # Add commands
-        print ('adding commands')
+        print('adding commands')
         # Create a "Things" menu group to contain some of the commands.
         # No explicit ordering is provided on the group, so it will appear
         # after application-level menus, but *before* the Command group.
