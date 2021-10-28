@@ -3,6 +3,7 @@ from toga.style import Pack
 from toga.constants import COLUMN, ROW
 import os
 
+
 class ExampleTestCommandApp(toga.App):
     # Button callback functions
     def do_stuff(self, widget, **kwargs):
