@@ -7,7 +7,7 @@ from toga.handlers import wrapped_handler
 from .libs.activity import IPythonApp, MainActivity
 from .libs.android.content import Intent
 from .libs.android.net import Uri
-from .libs.android.view import Menu, MenuItem, SubMenu
+from .libs.android.view import Menu, MenuItem
 from .libs.android.graphics import Drawable
 from .window import Window
 
@@ -107,7 +107,8 @@ class TogaApp(IPythonApp):
                         else:
                             itemid += 1
                             order = Menu.NONE if group.order is None else group.order
-                            menugroup = parentmenu.addSubMenu(Menu.NONE, itemid, order, group.label)  # groupId, itemId, order, title
+                            menugroup = parentmenu.addSubMenu(Menu.NONE, itemid, order,
+                                                              group.label)  # groupId, itemId, order, title
                             menulist[groupkey] = menugroup
                     parentmenu = menugroup
             # create menu item
@@ -125,7 +126,8 @@ class TogaApp(IPythonApp):
             itemid += 1
             order = Menu.NONE if cmd.order is None else cmd.order
             menuitem = menu.add(Menu.NONE, itemid, order, cmd.label)  # groupId, itemId, order, title
-            menuitem.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM)  # toolbar button / item in options menu on overflow
+            menuitem.setShowAsActionFlags(
+                MenuItem.SHOW_AS_ACTION_IF_ROOM)  # toolbar button / item in options menu on overflow
             menuitem.setEnabled(cmd.enabled)
             if cmd.icon:
                 icon = Drawable.createFromPath(str(cmd.icon._impl.path))
