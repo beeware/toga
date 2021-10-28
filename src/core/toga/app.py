@@ -502,7 +502,7 @@ class App:
             if hasattr(self._impl, 'visit_homepage'):
                 self._impl.visit_homepage()
             else:
-            webbrowser.open(self.home_page)
+                webbrowser.open(self.home_page)
 
     def main_loop(self):
         """ Invoke the application to handle user input.
