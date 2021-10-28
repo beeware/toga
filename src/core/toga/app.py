@@ -499,6 +499,9 @@ class App:
         If the application metadata doesn't define a homepage, this is a no-op.
         """
         if self.home_page is not None:
+            if hasattr(self._impl, 'visit_homepage'):
+                self._impl.visit_homepage()
+            else:
             webbrowser.open(self.home_page)
 
     def main_loop(self):

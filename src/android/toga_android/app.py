@@ -5,6 +5,8 @@ from rubicon.java import android_events
 from toga.handlers import wrapped_handler
 
 from .libs.activity import IPythonApp, MainActivity
+from .libs.android.content import Intent
+from .libs.android.net import Uri
 from .libs.android.view import Menu, MenuItem, SubMenu
 from .libs.android.graphics import Drawable
 from .window import Window
@@ -168,6 +170,20 @@ class App:
         # The `_listener` listens for activity event callbacks. For simplicity,
         # the app's `.native` is the listener's native Java class.
         self._listener = TogaApp(self)
+        toga.Group.HELP.order = 0
+        self.interface.commands.add(
+            toga.Command(
+                lambda _: self.interface.about(),
+                'About {}'.format(self.interface.name),
+                group=toga.Group.HELP
+            ),
+            toga.Command(
+                lambda _: self.interface.visit_homepage(),
+                'Visit homepage',
+                enabled=self.interface.home_page is not None,
+                group=toga.Group.HELP
+            )
+        )
         # Call user code to populate the main window
         self.interface.startup()
 
@@ -186,7 +202,42 @@ class App:
         pass
 
     def show_about_dialog(self):
-        self.interface.factory.not_implemented("App.show_about_dialog()")
+        message_parts = []
+        if self.interface.name is not None:
+            if self.interface.version is not None:
+                message_parts.append(
+                    "{name} v{version}".format(
+                        name=self.interface.name,
+                        version=self.interface.version,
+                    )
+                )
+            else:
+                message_parts.append(
+                    "{name}".format(name=self.interface.name)
+                )
+        elif self.interface.version is not None:
+            message_parts.append(
+                "v{version}".format(version=self.interface.version)
+            )
+
+        if self.interface.author is not None:
+            message_parts.append(
+                "Author: {author}".format(author=self.interface.author)
+            )
+        if self.interface.description is not None:
+            message_parts.append(
+                "\n{description}".format(
+                    description=self.interface.description
+                )
+            )
+        self.interface.main_window.info_dialog(
+            'About {}'.format(self.interface.name), "\n".join(message_parts)
+        )
+
+    def visit_homepage(self):
+        intent = Intent(Intent.ACTION_VIEW)
+        intent.setData(Uri.parse(self.interface.home_page))
+        self.invoke_intent(intent)
 
     def exit(self):
         pass
@@ -196,6 +247,18 @@ class App:
 
     def add_background_task(self, handler):
         self.loop.call_soon(wrapped_handler(self, handler), self)
+
+    def invoke_intent(self, intent):
+        """
+        Calls an Intent without waiting for its result.
+
+        A RuntimeError will be raised when the Intent cannot be invoked.
+
+        :param Intent intent: The Intent to call
+        """
+        if intent.resolveActivity(self.native.getPackageManager()) is None:
+            raise RuntimeError('No appropriate Activity found to handle this intent.')
+        self.native.startActivity(intent)
 
     async def intent_result(self, intent):
         """
