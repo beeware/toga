@@ -29,6 +29,9 @@ class App(LoggedObject):
     def show_about_dialog(self):
         self._action('show_about_dialog')
 
+    def visit_homepage(self):
+        self._action('visit_homepage')
+
     def exit(self):
         self._action('exit')
 
