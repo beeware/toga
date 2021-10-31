@@ -146,7 +146,7 @@ class Canvas(Widget):
     # Transformations
 
     def rotate(self, radians, draw_context, *args, **kwargs):
-        self.interface.factory.not_implemented('Canvas.rotate')
+        draw_context.rotate(radians * (180 / math.pi))
 
     def scale(self, sx, sy, draw_context, *args, **kwargs):
         self.interface.factory.not_implemented('Canvas.scale')
