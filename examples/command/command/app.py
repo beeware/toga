@@ -1,7 +1,6 @@
 import toga
 from toga.style import Pack
 from toga.constants import COLUMN, ROW
-import os
 
 
 class ExampleTestCommandApp(toga.App):
@@ -41,8 +40,6 @@ class ExampleTestCommandApp(toga.App):
         self.textpanel.value += 'action 7\n'
 
     def startup(self):
-        # the icons on Android are only found when path is complete
-        # brutus_icon_256 = str(self.paths.app) + os.sep + "resources" + os.sep + "brutus-256"
         brutus_icon_256 = "resources/brutus-256"
         cricket_icon_256 = "resources/cricket-256"
         tiberius_icon_256 = "resources/tiberius-256"

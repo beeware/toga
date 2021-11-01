@@ -5,7 +5,6 @@ from rubicon.java import android_events
 from toga.handlers import wrapped_handler
 
 from .libs.activity import IPythonApp, MainActivity
-from .libs.android.content import Intent
 from .libs.android.view import Menu, MenuItem
 from .libs.android.graphics import Drawable
 from .window import Window
