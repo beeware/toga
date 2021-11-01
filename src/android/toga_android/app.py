@@ -68,7 +68,7 @@ class TogaApp(IPythonApp):
 
     def onOptionsItemSelected(self, menuitem):
         consumed = False
-        for cmd in self._impl.interface.commands._commands.union(self._impl.interface.main_window.toolbar._commands):
+        for cmd in self._impl.interface.commands._commands:
             if cmd == toga.SECTION_BREAK or cmd == toga.GROUP_BREAK:
                 continue
             if menuitem.getItemId() == cmd._android_itemid:
