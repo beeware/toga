@@ -19,8 +19,6 @@ class ExampleTestCommandApp(toga.App):
     def action1(self, widget):
         print("action 1")
         self.textpanel.value += 'action 1\n'
-        for cmd in self.app.commands:
-            self.textpanel.value += repr(cmd)
 
     def action2(self, widget):
         print("action 2")
@@ -45,9 +43,9 @@ class ExampleTestCommandApp(toga.App):
     def startup(self):
         # the icons on Android are only found when path is complete
         # brutus_icon_256 = str(self.paths.app) + os.sep + "resources" + os.sep + "brutus-256"
-        brutus_icon_256 = "resources" + os.sep + "brutus-256"
-        cricket_icon_256 = str(self.paths.app) + os.sep + "resources" + os.sep + "cricket-256"
-        tiberius_icon_256 = str(self.paths.app) + os.sep + "resources" + os.sep + "tiberius-256"
+        brutus_icon_256 = "resources/brutus-256"
+        cricket_icon_256 = "resources/cricket-256"
+        tiberius_icon_256 = "resources/tiberius-256"
 
         # Set up main window
         self.main_window = toga.MainWindow(title=self.name)
@@ -107,7 +105,7 @@ class ExampleTestCommandApp(toga.App):
             tooltip='Perform toolbar action 5',
             order=2,
             group=sub_menu
-        )
+        )  # there is deliberately no icon to show that a toolbar action also works with text
         cmd6 = toga.Command(
             self.action6,
             label='Action 6',
@@ -163,9 +161,7 @@ class ExampleTestCommandApp(toga.App):
             style=Pack(
                 flex=1,
                 direction=COLUMN,
-                padding=10,
-                width=500,
-                height=300
+                padding=10
             )
         )
 

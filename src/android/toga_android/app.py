@@ -6,7 +6,6 @@ from toga.handlers import wrapped_handler
 
 from .libs.activity import IPythonApp, MainActivity
 from .libs.android.content import Intent
-from .libs.android.net import Uri
 from .libs.android.view import Menu, MenuItem
 from .libs.android.graphics import Drawable
 from .window import Window
@@ -236,11 +235,6 @@ class App:
             'About {}'.format(self.interface.name), "\n".join(message_parts)
         )
 
-    def visit_homepage(self):
-        intent = Intent(Intent.ACTION_VIEW)
-        intent.setData(Uri.parse(self.interface.home_page))
-        self.invoke_intent(intent)
-
     def exit(self):
         pass
 
@@ -249,18 +243,6 @@ class App:
 
     def add_background_task(self, handler):
         self.loop.call_soon(wrapped_handler(self, handler), self)
-
-    def invoke_intent(self, intent):
-        """
-        Calls an Intent without waiting for its result.
-
-        A RuntimeError will be raised when the Intent cannot be invoked.
-
-        :param Intent intent: The Intent to call
-        """
-        if intent.resolveActivity(self.native.getPackageManager()) is None:
-            raise RuntimeError('No appropriate Activity found to handle this intent.')
-        self.native.startActivity(intent)
 
     async def intent_result(self, intent):
         """
