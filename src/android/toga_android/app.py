@@ -18,6 +18,7 @@ class MainWindow(Window):
 class TogaApp(IPythonApp):
     last_intent_requestcode = -1  # always increment before using it for invoking new Intents
     running_intents = {}          # dictionary for currently running Intents
+    menuitem_mapping = {}         # dictionary for mapping menuitems to commands
 
     def __init__(self, app):
         super().__init__()
@@ -67,20 +68,18 @@ class TogaApp(IPythonApp):
 
     def onOptionsItemSelected(self, menuitem):
         consumed = False
-        for cmd in self._impl.interface.commands._commands:
-            if cmd == toga.SECTION_BREAK or cmd == toga.GROUP_BREAK:
-                continue
-            if menuitem.getItemId() == cmd._android_itemid:
-                consumed = True
-                if cmd.action is not None:
-                    cmd.action(menuitem)
-                break
+        if menuitem.getItemId() in self.menuitem_mapping:
+            consumed = True
+            cmd = self.menuitem_mapping[menuitem.getItemId()]
+            if cmd.action is not None:
+                cmd.action(menuitem)
         return consumed
 
     def onPrepareOptionsMenu(self, menu):
         menu.clear()
         itemid = 0
         menulist = {}  # dictionary with all menus
+        self.menuitem_mapping.clear()
 
         # create option menu
         for cmd in self._impl.interface.commands:
@@ -115,7 +114,7 @@ class TogaApp(IPythonApp):
             menuitem = menugroup.add(Menu.NONE, itemid, order, cmd.label)  # groupId, itemId, order, title
             menuitem.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_NEVER)
             menuitem.setEnabled(cmd.enabled)
-            cmd._android_itemid = itemid  # store itemid for use in onOptionsItemSelected
+            self.menuitem_mapping[itemid] = cmd  # store itemid for use in onOptionsItemSelected
 
         # create toolbar actions
         for cmd in self._impl.interface.main_window.toolbar:
@@ -133,7 +132,7 @@ class TogaApp(IPythonApp):
                     menuitem.setIcon(icon)
                 else:
                     print('Could not create icon: ' + str(cmd.icon._impl.path))
-            cmd._android_itemid = itemid  # store itemid for use in onOptionsItemSelected
+            self.menuitem_mapping[itemid] = cmd  # store itemid for use in onOptionsItemSelected
 
         return True
 
