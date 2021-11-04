@@ -68,11 +68,13 @@ class TogaApp(IPythonApp):
 
     def onOptionsItemSelected(self, menuitem):
         consumed = False
-        if menuitem.getItemId() in self.menuitem_mapping:
-            consumed = True
+        try:
             cmd = self.menuitem_mapping[menuitem.getItemId()]
+            consumed = True
             if cmd.action is not None:
                 cmd.action(menuitem)
+        except KeyError:
+            print ("menu item id not found in menuitem_mapping dictionary!")
         return consumed
 
     def onPrepareOptionsMenu(self, menu):
