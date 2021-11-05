@@ -193,37 +193,7 @@ class App:
         pass
 
     def show_about_dialog(self):
-        message_parts = []
-        if self.interface.name is not None:
-            if self.interface.version is not None:
-                message_parts.append(
-                    "{name} v{version}".format(
-                        name=self.interface.name,
-                        version=self.interface.version,
-                    )
-                )
-            else:
-                message_parts.append(
-                    "{name}".format(name=self.interface.name)
-                )
-        elif self.interface.version is not None:
-            message_parts.append(
-                "v{version}".format(version=self.interface.version)
-            )
-
-        if self.interface.author is not None:
-            message_parts.append(
-                "Author: {author}".format(author=self.interface.author)
-            )
-        if self.interface.description is not None:
-            message_parts.append(
-                "\n{description}".format(
-                    description=self.interface.description
-                )
-            )
-        self.interface.main_window.info_dialog(
-            'About {}'.format(self.interface.name), "\n".join(message_parts)
-        )
+        self.interface.factory.not_implemented("App.show_about_dialog()")
 
     def exit(self):
         pass
