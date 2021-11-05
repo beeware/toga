@@ -74,7 +74,7 @@ class TogaApp(IPythonApp):
             if cmd.action is not None:
                 cmd.action(menuitem)
         except KeyError:
-            print ("menu item id not found in menuitem_mapping dictionary!")
+            print("menu item id not found in menuitem_mapping dictionary!")
         return consumed
 
     def onPrepareOptionsMenu(self, menu):
