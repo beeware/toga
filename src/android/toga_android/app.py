@@ -90,6 +90,10 @@ class TogaApp(IPythonApp):
             if cmd in self._impl.interface.main_window.toolbar:
                 continue  # do not show toolbar commands in the option menu (except when overflowing)
             grouppath = self.get_group_path(cmd.group, [])
+            if grouppath[0].label != "Commands":
+                # only the Commands group (and its subgroups) are supported
+                # other groups should eventually go into the navigation drawer
+                continue
             if str(grouppath) in menulist:
                 menugroup = menulist[str(grouppath)]
             else:
@@ -171,20 +175,6 @@ class App:
         # The `_listener` listens for activity event callbacks. For simplicity,
         # the app's `.native` is the listener's native Java class.
         self._listener = TogaApp(self)
-        toga.Group.HELP.order = 0
-        self.interface.commands.add(
-            toga.Command(
-                lambda _: self.interface.about(),
-                'About {}'.format(self.interface.name),
-                group=toga.Group.HELP
-            ),
-            toga.Command(
-                lambda _: self.interface.visit_homepage(),
-                'Visit homepage',
-                enabled=self.interface.home_page is not None,
-                group=toga.Group.HELP
-            )
-        )
         # Call user code to populate the main window
         self.interface.startup()
 
