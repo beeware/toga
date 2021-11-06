@@ -2,6 +2,7 @@ import asyncio
 import toga
 
 from rubicon.java import android_events
+from toga.command import Group
 from toga.handlers import wrapped_handler
 
 from .libs.activity import IPythonApp, MainActivity
@@ -89,18 +90,19 @@ class TogaApp(IPythonApp):
                 continue
             if cmd in self._impl.interface.main_window.toolbar:
                 continue  # do not show toolbar commands in the option menu (except when overflowing)
-            grouppath = self.get_group_path(cmd.group, [])
-            if grouppath[0].label != "Commands":
+
+            grouppath = cmd.group.path
+            if grouppath[0] != Group.COMMANDS:
                 # only the Commands group (and its subgroups) are supported
                 # other groups should eventually go into the navigation drawer
                 continue
-            if str(grouppath) in menulist:
-                menugroup = menulist[str(grouppath)]
+            if cmd.group.key in menulist:
+                menugroup = menulist[cmd.group.key]
             else:
                 # create all missing submenus
                 parentmenu = menu
                 for group in grouppath:
-                    groupkey = str(self.get_group_path(group, []))
+                    groupkey = group.key
                     if groupkey in menulist:
                         menugroup = menulist[groupkey]
                     else:
@@ -141,14 +143,6 @@ class TogaApp(IPythonApp):
             self.menuitem_mapping[itemid] = cmd  # store itemid for use in onOptionsItemSelected
 
         return True
-
-    def get_group_path(self, group, path):
-        if len(path) == 0:
-            path.insert(0, group)
-        if group.parent is not None:
-            path.insert(0, group.parent)
-            self.get_group_path(group.parent, path)
-        return path
 
     @property
     def native(self):
