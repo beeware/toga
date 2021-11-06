@@ -15,7 +15,7 @@ formal_name = "Command Example"
 description = "A testing app"
 sources = ['command']
 requires = [
-    'c:/Projects/Python/Toga/src/core'
+    'toga-core'
 ]
 
 
@@ -42,6 +42,5 @@ requires = [
 
 [tool.briefcase.app.command.android]
 requires = [
-    # 'toga-android',
-	'c:/Projects/Python/Toga/src/android'
+    'toga-android',
 ]
