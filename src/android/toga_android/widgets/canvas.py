@@ -45,8 +45,8 @@ class Canvas(Widget):
 
     # Basic paths
 
-    def new_path(self, *args, **kwargs):
-        self.interface.factory.not_implemented('Canvas.new_path()')
+    def new_path(self, path, *args, **kwargs):
+        path.reset()
 
     def closed_path(self, x, y, path, *args, **kwargs):
         path.close()
