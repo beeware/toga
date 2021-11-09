@@ -57,10 +57,10 @@ Minimum requirements
 
   * **Arch / Manjaro** ``sudo pacman -Syu git pkgconf cairo python-cairo pango gobject-introspection gobject-introspection-runtime python-gobject webkit2gtk``
 
-* We're working on Windows support, but not all features and widgets are
-  supported. At a minimum, you'll need Python 3 and .NET Framework 4. This has
-  been tested on Windows 10, but should work on 7 and 8. Pull requests, help and
-  corrections are most welcome.
+* If you're on Windows, you'll need Windows 10, and .NET Framework 4. You'll
+  also need to use Python 3.8 or lower; unfortunately, we're dependent on a
+  library (`Python.net <https://github.com/pythonnet/pythonnet/>`__) that
+  hasn't been published for Python 3.9 or higher.
 
 Quickstart
 ~~~~~~~~~~

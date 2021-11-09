@@ -2,7 +2,7 @@
 requires = ["briefcase"]
 
 [tool.briefcase]
-project_name = "Divider Demo"
+project_name = "Command Example"
 bundle = "org.beeware"
 version = "0.3.0.dev30"
 url = "https://beeware.org"
@@ -10,35 +10,37 @@ license = "BSD license"
 author = 'Tiberius Yak'
 author_email = "tiberius@beeware.org"
 
-[tool.briefcase.app.divider]
-formal_name = "Divider Demo"
+[tool.briefcase.app.command]
+formal_name = "Command Example"
 description = "A testing app"
-sources = ['divider']
-requires = []
+sources = ['command']
+requires = [
+    'toga-core'
+]
 
 
-[tool.briefcase.app.divider.macOS]
+[tool.briefcase.app.command.macOS]
 requires = [
     'toga-cocoa',
 ]
 
-[tool.briefcase.app.divider.linux]
+[tool.briefcase.app.command.linux]
 requires = [
     'toga-gtk',
 ]
 
-[tool.briefcase.app.divider.windows]
+[tool.briefcase.app.command.windows]
 requires = [
-    'toga-winforms',
+	'toga-winforms',
 ]
 
 # Mobile deployments
-[tool.briefcase.app.divider.iOS]
+[tool.briefcase.app.command.iOS]
 requires = [
     'toga-iOS',
 ]
 
-[tool.briefcase.app.divider.android]
+[tool.briefcase.app.command.android]
 requires = [
     'toga-android',
 ]

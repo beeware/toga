@@ -58,10 +58,10 @@ class Group:
         return parent.is_parent_of(self)
 
     def __hash__(self):
-        return hash(self.to_tuple())
+        return hash(self.key)
 
     def __lt__(self, other):
-        return self.to_tuple() < other.to_tuple()
+        return self.key < other.key
 
     def __gt__(self, other):
         return other < self
@@ -69,7 +69,7 @@ class Group:
     def __eq__(self, other):
         if other is None:
             return False
-        return self.to_tuple() == other.to_tuple()
+        return self.key == other.key
 
     def __repr__(self):
         parent_string = "None" if self.parent is None else self.parent.label
@@ -77,11 +77,20 @@ class Group:
             self.label, self.order, parent_string
         )
 
-    def to_tuple(self):
+    @property
+    def key(self):
+        "A unique tuple describing the path to this group"
         self_tuple = (self.section, self.order, self.label)
         if self.parent is None:
             return tuple([self_tuple])
-        return tuple([*self.parent.to_tuple(), self_tuple])
+        return tuple([*self.parent.key, self_tuple])
+
+    @property
+    def path(self):
+        "A list containing the chain of groups that contain this group"
+        if self.parent is None:
+            return [self]
+        return [*self.parent.path, self]
 
 
 Group.APP = Group('*', order=0)
@@ -135,6 +144,11 @@ class Command:
 
         self.enabled = enabled and self.action is not None
 
+    @property
+    def key(self):
+        "A unique tuple describing the path to this command"
+        return tuple([*self.group.key, (self.section, self.order, self.label)])
+
     def bind(self, factory):
         self.factory = factory
 
@@ -176,7 +190,7 @@ class Command:
             self._icon.bind(self.factory)
 
     def __lt__(self, other):
-        return self.to_tuple() < other.to_tuple()
+        return self.key < other.key
 
     def __gt__(self, other):
         return other < self
@@ -188,9 +202,6 @@ class Command:
             self.section,
             self.order,
         )
-
-    def to_tuple(self):
-        return tuple([*self.group.to_tuple(), (self.section, self.order, self.label)])
 
 
 class Break:
