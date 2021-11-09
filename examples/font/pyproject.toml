@@ -1,0 +1,48 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name = "Font Example"
+bundle = "org.beeware"
+version = "0.3.0.dev30"
+url = "https://beeware.org"
+license = "BSD license"
+author = 'Tiberius Yak'
+author_email = "tiberius@beeware.org"
+
+[tool.briefcase.app.font]
+formal_name = "Font Example"
+description = "A testing app"
+sources = ['font']
+requires = [
+	c:/Projects/Python/Toga/src/core
+]
+
+
+[tool.briefcase.app.font.macOS]
+requires = [
+    'toga-cocoa',
+]
+
+[tool.briefcase.app.font.linux]
+requires = [
+    'toga-gtk',
+]
+
+[tool.briefcase.app.font.windows]
+requires = [
+    # 'toga-winforms',
+	c:/Projects/Python/Toga/src/winforms
+]
+
+# Mobile deployments
+[tool.briefcase.app.font.iOS]
+requires = [
+    'toga-iOS',
+]
+
+[tool.briefcase.app.font.android]
+requires = [
+    # 'toga-android',
+	c:/Projects/Python/Toga/src/android
+]
