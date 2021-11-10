@@ -18,6 +18,7 @@ from travertino.fonts import font  # noqa: F401
 
 
 SYSTEM_DEFAULT_FONT_SIZE = -1
+REGISTERED_FONTS = {}
 
 
 class Font(BaseFont):
@@ -34,3 +35,7 @@ class Font(BaseFont):
 
     def measure(self, text, dpi, tight=False):
         return self._impl.measure(text, dpi=dpi, tight=tight)
+
+    @staticmethod
+    def register(font_name, font_path):
+        REGISTERED_FONTS[font_name] = font_path

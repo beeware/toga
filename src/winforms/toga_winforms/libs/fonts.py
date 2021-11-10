@@ -7,7 +7,8 @@ from toga.fonts import (
     SANS_SERIF,
     SERIF,
     SYSTEM,
-    SYSTEM_DEFAULT_FONT_SIZE
+    SYSTEM_DEFAULT_FONT_SIZE,
+    REGISTERED_FONTS
 )
 
 from .winforms import (
@@ -52,6 +53,9 @@ def win_font_family(value):
         }[value]
     except KeyError:
         try:
+            if value in REGISTERED_FONTS:
+                #todo: implement font loading
+                print('toga_winforms.libs.fonts.win_font_family: loading font from path '+REGISTERED_FONTS[value])
             return FontFamily(value)
         except ArgumentException:
             print(
