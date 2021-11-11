@@ -11,6 +11,7 @@ from toga.fonts import (
 )
 
 from .libs.android.graphics import Typeface
+from toga.fonts import REGISTERED_FONTS
 
 
 class Font:
@@ -37,22 +38,29 @@ class Font:
         return Typeface.NORMAL
 
     def get_typeface(self):
-        if self.interface.family is SYSTEM:
-            family = Typeface.DEFAULT
-        elif self.interface.family is SERIF:
-            family = Typeface.SERIF
-        elif self.interface.family is SANS_SERIF:
-            family = Typeface.SANS_SERIF
-        elif self.interface.family is MONOSPACE:
-            family = Typeface.MONOSPACE
-        elif self.interface.family is CURSIVE:
-            family = Typeface.create("cursive", Typeface.NORMAL)
-        elif self.interface.family is FANTASY:
-            # Android appears to not have a fantasy font available by default,
-            # but if it ever does, we'll start using it. Android seems to choose
-            # a serif font when asked for a fantasy font.
-            family = Typeface.create("fantasy", Typeface.NORMAL)
-        else:
-            family = Typeface.create(self.interface.family, Typeface.NORMAL)
+        family = None
+        if self.interface.family in REGISTERED_FONTS:
+            try:
+                family = Typeface.createFromFile(str(self.interface.factory.paths.app / REGISTERED_FONTS[self.interface.family]))
+            except Exception as ex:
+                print("Registered font '" + self.interface.family + "' could not be loaded: " + str(ex))
+        if family is None:
+            if self.interface.family is SYSTEM:
+                family = Typeface.DEFAULT
+            elif self.interface.family is SERIF:
+                family = Typeface.SERIF
+            elif self.interface.family is SANS_SERIF:
+                family = Typeface.SANS_SERIF
+            elif self.interface.family is MONOSPACE:
+                family = Typeface.MONOSPACE
+            elif self.interface.family is CURSIVE:
+                family = Typeface.create("cursive", Typeface.NORMAL)
+            elif self.interface.family is FANTASY:
+                # Android appears to not have a fantasy font available by default,
+                # but if it ever does, we'll start using it. Android seems to choose
+                # a serif font when asked for a fantasy font.
+                family = Typeface.create("fantasy", Typeface.NORMAL)
+            else:
+                family = Typeface.create(self.interface.family, Typeface.NORMAL)
 
         return family
