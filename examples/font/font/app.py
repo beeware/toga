@@ -25,8 +25,9 @@ class ExampleFontExampleApp(toga.App):
         btn_clear = toga.Button('Clear', on_press=self.do_clear, style=btn_style)
         btn1 = toga.Button('Normal', on_press=self.do_normal_button, style=btn_style)
         btn2 = toga.Button('Monospace', on_press=self.do_monospace_button, style=Pack(font_family='monospace'))
-        toga.Font.register('awesome-free-regular', 'resources/Font Awesome 5 Free-Regular-400.otf')
-        btn3 = toga.Button('\uf14e', on_press=self.do_monospace_button, style=Pack(font_family='awesome-free-regular', font_size=16))
+        # toga.Font.register('awesome-free-regular', 'resources/Font Awesome 5 Free-Regular-400.otf')
+        toga.Font.register('awesome-free-regular', str(self.app.paths.app)+'\\resources\\Font Awesome 5 Free-Regular-400.otf')
+        btn3 = toga.Button('\uf0c5', on_press=self.do_monospace_button, style=Pack(font_family='awesome-free-regular', font_size=16))
         btn_box = toga.Box(
             children=[
                 btn_clear,

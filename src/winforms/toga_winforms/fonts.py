@@ -6,7 +6,8 @@ from .libs import (
     WinForms,
     win_font_family
 )
-from .libs.fonts import win_font_size, win_font_style
+from .libs.fonts import win_font_size, win_font_style, PrivateFontCollection
+from toga.fonts import REGISTERED_FONTS
 
 _FONT_CACHE = {}
 
@@ -21,16 +22,26 @@ class Font:
         try:
             font = _FONT_CACHE[self.interface]
         except KeyError:
-            font_family = win_font_family(self.interface.family)
-            font_style = win_font_style(
-                self.interface.weight,
-                self.interface.style,
-                font_family
-            )
-            font_size = win_font_size(self.interface.size)
-            font = WinFont.Overloads[FontFamily, Single, FontStyle](
-                font_family, font_size, font_style
-            )
+            font = None
+            if self.interface.family in REGISTERED_FONTS:
+                try:
+                    collection = PrivateFontCollection()
+                    collection.AddFontFile(REGISTERED_FONTS[self.interface.family])
+                    font_size = win_font_size(self.interface.size)
+                    font = WinFont(collection.Families[0], float(font_size))
+                except Exception as e:
+                    print('Registered font ' + self.interface.family + 'could not be loaded: ' + str(e))
+            if font == None:
+                font_family = win_font_family(self.interface.family)
+                font_style = win_font_style(
+                    self.interface.weight,
+                    self.interface.style,
+                    font_family
+                )
+                font_size = win_font_size(self.interface.size)
+                font = WinFont.Overloads[FontFamily, Single, FontStyle](
+                    font_family, font_size, font_style
+                )
             _FONT_CACHE[self.interface] = font
 
         self.native = font
