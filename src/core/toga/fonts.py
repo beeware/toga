@@ -37,5 +37,16 @@ class Font(BaseFont):
         return self._impl.measure(text, dpi=dpi, tight=tight)
 
     @staticmethod
-    def register(font_name, font_path):
-        REGISTERED_FONTS[font_name] = font_path
+    def register(font_name, path):
+        """
+        Registers a file-based font under a nice family name
+
+        Platforms that support dynamic font loading will load the font from the supplied path when a style references
+        the font's family name, e.g.
+
+        Font.register('awesome-free-solid', 'resources/Font Awesome 5 Free-Solid-900.otf')
+
+        :param font_name: An arbitrary family name for the font
+        :param path: The path to the font file, relative to the application's module directory.
+        """
+        REGISTERED_FONTS[font_name] = path

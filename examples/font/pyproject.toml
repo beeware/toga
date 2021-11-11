@@ -15,7 +15,7 @@ formal_name = "Font Example"
 description = "A testing app"
 sources = ['font']
 requires = [
-	c:/Projects/Python/Toga/src/core
+	'c:/Projects/Python/Toga/src/core'
 ]
 
 
@@ -32,7 +32,7 @@ requires = [
 [tool.briefcase.app.font.windows]
 requires = [
     # 'toga-winforms',
-	c:/Projects/Python/Toga/src/winforms
+	'c:/Projects/Python/Toga/src/winforms'
 ]
 
 # Mobile deployments
@@ -44,5 +44,5 @@ requires = [
 [tool.briefcase.app.font.android]
 requires = [
     # 'toga-android',
-	c:/Projects/Python/Toga/src/android
+	'c:/Projects/Python/Toga/src/android'
 ]
