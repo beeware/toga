@@ -62,7 +62,7 @@ class App:
         self.interface._impl = self
 
         gbulb.install(gtk=True)
-        self.loop = asyncio.get_event_loop()
+        self.loop = asyncio.get_event_loop_policy().get_event_loop()
 
         self.create()
 
