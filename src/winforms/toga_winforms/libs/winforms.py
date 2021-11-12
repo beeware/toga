@@ -47,7 +47,7 @@ from System.Drawing.Drawing2D import (  # noqa: F401, E402
     Matrix,
 )
 
-from System.Drawing.Text import PrivateFontCollection
+from System.Drawing.Text import PrivateFontCollection  # noqa: F401, E402
 
 from System.Threading.Tasks import Task  # noqa: F401, E402
 

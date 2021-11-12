@@ -26,13 +26,14 @@ class Font:
             if self.interface.family in REGISTERED_FONTS:
                 try:
                     collection = PrivateFontCollection()
-                    collection.AddFontFile(str(self.interface.factory.paths.app / REGISTERED_FONTS[self.interface.family]))
+                    collection.AddFontFile(
+                        str(self.interface.factory.paths.app / REGISTERED_FONTS[self.interface.family]))
                     font_size = win_font_size(self.interface.size)
                     font_style = win_font_style(self.interface.weight, self.interface.style, collection.Families[0])
                     font = WinFont(collection.Families[0], float(font_size), font_style)
                 except Exception as ex:
                     print("Registered font '" + self.interface.family + "' could not be loaded: " + str(ex))
-            if font == None:
+            if font is None:
                 font_family = win_font_family(self.interface.family)
                 font_style = win_font_style(
                     self.interface.weight,

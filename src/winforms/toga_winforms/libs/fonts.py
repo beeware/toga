@@ -14,7 +14,6 @@ from .winforms import (
     ContentAlignment,
     FontFamily,
     FontStyle,
-    PrivateFontCollection,
     SystemFonts,
     WinForms,
     ArgumentException

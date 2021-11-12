@@ -41,7 +41,8 @@ class Font:
         family = None
         if self.interface.family in REGISTERED_FONTS:
             try:
-                family = Typeface.createFromFile(str(self.interface.factory.paths.app / REGISTERED_FONTS[self.interface.family]))
+                family = Typeface.createFromFile(
+                    str(self.interface.factory.paths.app / REGISTERED_FONTS[self.interface.family]))
             except Exception as ex:
                 print("Registered font '" + self.interface.family + "' could not be loaded: " + str(ex))
         if family is None:
