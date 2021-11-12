@@ -46,7 +46,8 @@ class Font(BaseFont):
 
         Font.register('awesome-free-solid', 'resources/Font Awesome 5 Free-Solid-900.otf')
 
-        :param font_name: An arbitrary family name for the font
-        :param path: The path to the font file, relative to the application's module directory.
+        Args:
+            font_name (str): An arbitrary family name for the font
+            path (str): The path to the font file, relative to the application's module directory.
         """
         REGISTERED_FONTS[font_name] = path

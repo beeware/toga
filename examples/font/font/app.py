@@ -38,12 +38,18 @@ class ExampleFontExampleApp(toga.App):
             ],
             style=Pack(direction=ROW)
         )
+        toga.Font.register('Endor', 'resources/ENDOR___.ttf')
+        lbl1 = toga.Label('Endor', style=Pack(font_family='Endor', font_size=14))
+        lbl2 = toga.Label('Endor bold', style=Pack(font_family='Endor', font_size=14, font_weight='bold'))
+        lbl3 = toga.Label('Endor italic', style=Pack(font_family='Endor', font_size=14, font_style='italic'))
+        lbl4 = toga.Label('Endor bold italic',
+                          style=Pack(font_family='Endor', font_size=14, font_weight='bold', font_style='italic'))
 
         self.textpanel = toga.MultilineTextInput(readonly=False, style=Pack(flex=1), placeholder='Ready.')
 
         # Outermost box
         outer_box = toga.Box(
-            children=[btn_box, self.textpanel],
+            children=[btn_box, lbl1, lbl2, lbl3, lbl4, self.textpanel],
             style=Pack(
                 flex=1,
                 direction=COLUMN,
