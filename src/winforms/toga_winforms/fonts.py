@@ -6,7 +6,8 @@ from .libs import (
     WinForms,
     win_font_family
 )
-from .libs.fonts import win_font_size, win_font_style, PrivateFontCollection
+from .libs.fonts import win_font_size, win_font_style
+from .libs.winforms import PrivateFontCollection
 from toga.fonts import REGISTERED_FONTS
 
 _FONT_CACHE = {}
