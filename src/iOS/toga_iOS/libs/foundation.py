@@ -47,6 +47,8 @@ NSNotificationCenter = ObjCClass('NSNotificationCenter')
 # NSRunLoop.h
 NSRunLoop = ObjCClass('NSRunLoop')
 
+NSRunLoop.declare_class_property('currentRunLoop')
+
 
 ######################################################################
 # NSURL.h
