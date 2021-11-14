@@ -94,16 +94,21 @@ jobs:
     - name: Set up Python 3.9
       uses: actions/setup-python@v1
       with:
+        # Py3.9 is the first Python version for which
+        # a wheel of pythonnet isn't available on PyPI.
         python-version: "3.9"
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade "pip<21.3"
+        python -m pip install --upgrade pip
         python -m pip install --upgrade setuptools
         python -m pip install pytest-tldr
         python -m pip install -e src/core
         python -m pip install -e src/dummy
         python -m pip install -e src/winforms
     - name: Test
+      env:
+          # See pythonnet/pythonnet#1613 - .NET does something odd that clashes with pip 21.3
+          EnableSourceControlManagerQueries: False
       run: |
         cd src/winforms
         python setup.py test
