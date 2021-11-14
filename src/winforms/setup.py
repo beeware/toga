@@ -26,10 +26,12 @@ setup(
         # with Python 3.10. If we want to be able to support "current" Python,
         # we need to work off a source release until they formally release 3.0.
         #
-        # # The 8d93c39d hash is, as best as I can work out, what was in the
+        # The 8d93c39d hash is, as best as I can work out, what was in the
         # 3.0.0-preview2021-10-05 release published to nuget - but they didn't
-        # tag anything for that release.
-        'pythonnet @ git+https://github.com/pythonnet/pythonnet@8d93c39d#egg=pythonnet',
+        # tag anything for that release. That release contained a bug
+        # (https://github.com/pythonnet/pythonnet/issues/1613) that didn't play well
+        # with pip 21.3, so we use 94b1a71c which was released about a month later.
+        'pythonnet @ git+https://github.com/pythonnet/pythonnet@94b1a71c#egg=pythonnet',
         'toga-core==%s' % version,
     ],
     test_suite='tests',

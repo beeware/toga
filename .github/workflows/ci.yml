@@ -98,9 +98,6 @@ jobs:
         # a wheel of pythonnet isn't available on PyPI.
         python-version: "3.9"
     - name: Install dependencies
-      env:
-          # See pythonnet/pythonnet#1613 - .NET does something odd that clashes with pip 21.3
-          EnableSourceControlManagerQueries: false
       run: |
         python -m pip install --upgrade pip
         python -m pip install --upgrade setuptools

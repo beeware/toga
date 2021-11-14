@@ -57,8 +57,9 @@ Minimum requirements
 
   * **Arch / Manjaro** ``sudo pacman -Syu git pkgconf cairo python-cairo pango gobject-introspection gobject-introspection-runtime python-gobject webkit2gtk``
 
-* If you're on Windows, you'll need Windows 10, and the `.NET 6.0 SDK
-  <https://dotnet.microsoft.com/download>`__.
+* If you're on Windows, you'll need Windows 10. You'll also need the `.NET
+  6.0 SDK <https://dotnet.microsoft.com/download>`__ to develop Toga apps; users
+  do not need the SDK.
 
 Quickstart
 ~~~~~~~~~~
