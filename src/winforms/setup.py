@@ -29,7 +29,7 @@ setup(
         # # The 8d93c39d hash is, as best as I can work out, what was in the
         # 3.0.0-preview2021-10-05 release published to nuget - but they didn't
         # tag anything for that release.
-        'git+https://github.com/pythonnet/pythonnet@8d93c39d#egg=pythonnet',
+        'pythonnet @ git+https://github.com/pythonnet/pythonnet@8d93c39d#egg=pythonnet',
         'toga-core==%s' % version,
     ],
     test_suite='tests',
