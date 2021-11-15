@@ -294,14 +294,18 @@ class Window:
         """ This opens a native dialog where the user can select the file to open.
         It is possible to set the initial folder and only show files with specified file extensions.
         If no path is returned (eg. dialog is canceled), a ValueError is raised.
+
         Args:
-            title (str): The title of the dialog window.
-            initial_directory(str): Initial folder displayed in the dialog.
-            file_types: A list of strings with the allowed file extensions.
+            title (str): The title of the dialog window (ignored on Android)
+            initial_directory(str): Initial folder displayed in the dialog. On Android, this needs to be a content URI,
+                e.g. 'content://com.android.externalstorage.documents/document/primary%3ADownload%2FTest-dir'
+            file_types: A list of strings with the allowed file extensions. On Android, these must be MIME types,
+                e.g. ['application/pdf','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'].
             multiselect: Value showing whether a user can select multiple files.
 
         Returns:
-            The absolute path(str) to the selected file or a list(str) if multiselect
+            The absolute path(str) to the selected file or a list(str) if multiselect. On Android, you will get back
+                content URIs.
         """
         return self._impl.open_file_dialog(title, initial_directory, file_types, multiselect)
 
@@ -309,12 +313,15 @@ class Window:
         """ This opens a native dialog where the user can select a folder.
         It is possible to set the initial folder.
         If no path is returned (eg. dialog is canceled), a ValueError is raised.
+
         Args:
-            title (str): The title of the dialog window.
-            initial_directory(str): Initial folder displayed in the dialog.
-            multiselect (bool): Value showing whether a user can select multiple files.
+            title (str): The title of the dialog window (ignored on Android)
+            initial_directory(str): Initial folder displayed in the dialog. On Android, this needs to be a content URI,
+                e.g. 'content://com.android.externalstorage.documents/document/primary%3ADownload%2FTest-dir'
+            multiselect (bool): Value showing whether a user can select multiple folders (ignored on Android)
 
         Returns:
-            The absolute path(str) to the selected file or None.
+            The absolute path(str) to the selected file or None. On Android, you will get back
+                content tree URIs.
         """
         return self._impl.select_folder_dialog(title, initial_directory, multiselect)

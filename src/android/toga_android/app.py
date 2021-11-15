@@ -11,6 +11,7 @@ from .libs.android.graphics import Drawable
 from .window import Window
 
 
+
 # `MainWindow` is defined here in `app.py`, not `window.py`, to mollify the test suite.
 class MainWindow(Window):
     pass
@@ -219,3 +220,4 @@ class App:
         self.native.startActivityForResult(intent, code)
         await result_future
         return result_future.result()
+

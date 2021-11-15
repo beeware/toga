@@ -1,5 +1,7 @@
 from rubicon.java import JavaClass, JavaInterface
 
+Activity = JavaClass("android/app/Activity")
+
 # The Android cookiecutter template creates an app whose main Activity is
 # called `MainActivity`. The activity assumes that we will store a reference
 # to an implementation/subclass of `IPythonApp` in it.
