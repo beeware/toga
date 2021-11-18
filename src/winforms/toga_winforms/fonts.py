@@ -24,16 +24,18 @@ class Font:
             font = _FONT_CACHE[self.interface]
         except KeyError:
             font = None
-            if self.interface.family in REGISTERED_FONTS:
+            registered_font = self.interface.find_registered_font(self.interface.family, weight=self.interface.weight,
+                                                                  style=self.interface.style,
+                                                                  variant=self.interface.variant)
+            if registered_font is not None:
                 try:
                     collection = PrivateFontCollection()
-                    collection.AddFontFile(
-                        str(self.interface.factory.paths.app / REGISTERED_FONTS[self.interface.family]))
+                    collection.AddFontFile(str(self.interface.factory.paths.app / registered_font.path))
                     font_size = win_font_size(self.interface.size)
                     font_style = win_font_style(self.interface.weight, self.interface.style, collection.Families[0])
                     font = WinFont(collection.Families[0], float(font_size), font_style)
                 except Exception as ex:
-                    print("Registered font '" + self.interface.family + "' could not be loaded: " + str(ex))
+                    print("Registered font '" + registered_font + "' could not be loaded: " + str(ex))
             if font is None:
                 font_family = win_font_family(self.interface.family)
                 font_style = win_font_style(

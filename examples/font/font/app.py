@@ -68,7 +68,43 @@ class ExampleFontExampleApp(toga.App):
                 font_family="Endor",
                 font_size=14,
                 font_weight="bold",
-                font_style="italic",
+                font_style="italic"
+            ),
+        )
+        toga.Font.register("Roboto", "resources/Roboto-Regular.ttf")
+        toga.Font.register("Roboto", "resources/Roboto-Bold.ttf", weight="bold")
+        toga.Font.register("Roboto", "resources/Roboto-Italic.ttf", style="italic")
+        toga.Font.register("Roboto", "resources/Roboto-BoldItalic.ttf", weight="bold", style="italic")
+        lbl5 = toga.Label(
+            "Roboto",
+            style=Pack(
+                font_family="Roboto",
+                font_size=14
+            ),
+        )
+        lbl6 = toga.Label(
+            "Roboto bold",
+            style=Pack(
+                font_family="Roboto",
+                font_size=14,
+                font_weight="bold"
+            ),
+        )
+        lbl7 = toga.Label(
+            "Roboto italic",
+            style=Pack(
+                font_family="Roboto",
+                font_size=14,
+                font_style="italic"
+            ),
+        )
+        lbl8 = toga.Label(
+            "Roboto bold italic",
+            style=Pack(
+                font_family="Roboto",
+                font_size=14,
+                font_weight="bold",
+                font_style="italic"
             ),
         )
 
@@ -78,7 +114,7 @@ class ExampleFontExampleApp(toga.App):
 
         # Outermost box
         outer_box = toga.Box(
-            children=[btn_box, lbl1, lbl2, lbl3, lbl4, self.textpanel],
+             children=[btn_box, lbl1, lbl2, lbl3, lbl4, lbl5, lbl6, lbl7, lbl8, self.textpanel],
             style=Pack(flex=1, direction=COLUMN, padding=10),
         )
 
