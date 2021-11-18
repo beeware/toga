@@ -11,7 +11,6 @@ from toga.fonts import (
 )
 
 from .libs.android.graphics import Typeface
-from toga.fonts import REGISTERED_FONTS
 
 
 class Font:
@@ -39,12 +38,14 @@ class Font:
 
     def get_typeface(self):
         family = None
-        if self.interface.family in REGISTERED_FONTS:
+        registered_font = self.interface.find_registered_font(self.interface.family, weight=self.interface.weight,
+                                                              style=self.interface.style,
+                                                              variant=self.interface.variant)
+        if registered_font is not None:
             try:
-                family = Typeface.createFromFile(
-                    str(self.interface.factory.paths.app / REGISTERED_FONTS[self.interface.family]))
+                family = Typeface.createFromFile(str(self.interface.factory.paths.app / registered_font.path))
             except Exception as ex:
-                print("Registered font '" + self.interface.family + "' could not be loaded: " + str(ex))
+                print("Registered font '" + str(registered_font) + "' could not be loaded: " + str(ex))
         if family is None:
             if self.interface.family is SYSTEM:
                 family = Typeface.DEFAULT

@@ -34,7 +34,7 @@ class Font:
                     font_style = win_font_style(self.interface.weight, self.interface.style, collection.Families[0])
                     font = WinFont(collection.Families[0], float(font_size), font_style)
                 except Exception as ex:
-                    print("Registered font '" + registered_font + "' could not be loaded: " + str(ex))
+                    print("Registered font '" + str(registered_font) + "' could not be loaded: " + str(ex))
             if font is None:
                 font_family = win_font_family(self.interface.family)
                 font_style = win_font_style(
