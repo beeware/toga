@@ -114,7 +114,7 @@ class ExampleFontExampleApp(toga.App):
 
         # Outermost box
         outer_box = toga.Box(
-             children=[btn_box, lbl1, lbl2, lbl3, lbl4, lbl5, lbl6, lbl7, lbl8, self.textpanel],
+            children=[btn_box, lbl1, lbl2, lbl3, lbl4, lbl5, lbl6, lbl7, lbl8, self.textpanel],
             style=Pack(flex=1, direction=COLUMN, padding=10),
         )
 

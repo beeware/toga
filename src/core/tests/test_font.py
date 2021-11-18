@@ -13,8 +13,8 @@ class FontTests(TestCase):
         self.style = ITALIC
         self.variant = SMALL_CAPS
         self.weight = BOLD
-        self.custom_name = 'my-custom-font'
-        self.custom_path = 'resource/custom-font.otf'
+        self.custom_family = "customFamily"
+        self.custom_path = "resource/custom-font.otf"
 
         self.font = toga.Font(
             family=self.family,
@@ -27,7 +27,7 @@ class FontTests(TestCase):
         self.font.bind(toga_dummy.factory)
 
         # Register a file-based custom font
-        toga.Font.register(self.custom_name, self.custom_path)
+        toga.Font.register(self.custom_family, self.custom_path)
 
     def test_family(self):
         self.assertEqual(self.font.family, self.family)
@@ -45,7 +45,8 @@ class FontTests(TestCase):
         self.assertEqual(self.font.weight, self.weight)
 
     def test_register(self):
-        if self.custom_name not in toga.fonts.REGISTERED_FONTS:
-            self.fail("Registered font name not found in toga.fonts.REGISTERED_FONTS")
-        if toga.fonts.REGISTERED_FONTS[self.custom_name] != self.custom_path:
+        registered_font = toga.Font.find_registered_font(self.custom_family)
+        if registered_font is None:
+            self.fail("Registered font not found in toga.fonts.REGISTERED_FONTS")
+        if registered_font.path != self.custom_path:
             self.fail("Registered font's path is incorrect in toga.fonts.REGISTERED_FONTS")
