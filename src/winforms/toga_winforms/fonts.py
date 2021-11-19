@@ -18,6 +18,7 @@ def points_to_pixels(points, dpi):
 
 class Font:
     def __init__(self, interface):
+        self._pfc = None  # this needs to be a class variable, otherwise we might get Winforms exceptions later
         self.interface = interface
         try:
             font = _FONT_CACHE[self.interface]
@@ -28,13 +29,13 @@ class Font:
                                                                   variant=self.interface.variant)
             if registered_font is not None:
                 try:
-                    collection = PrivateFontCollection()
-                    collection.AddFontFile(str(self.interface.factory.paths.app / registered_font.path))
+                    self._pfc = PrivateFontCollection()
+                    self._pfc.AddFontFile(str(self.interface.factory.paths.app / registered_font.path))
                     font_size = win_font_size(self.interface.size)
-                    font_style = win_font_style(self.interface.weight, self.interface.style, collection.Families[0])
-                    font = WinFont(collection.Families[0], float(font_size), font_style)
+                    font_style = win_font_style(self.interface.weight, self.interface.style, self._pfc.Families[0])
+                    font = WinFont(self._pfc.Families[0], float(font_size), font_style)
                 except Exception as ex:
-                    print("Registered font '" + str(registered_font) + "' could not be loaded: " + str(ex))
+                    print("Registered font '" + str(registered_font.key) + "' could not be loaded: " + str(ex))
             if font is None:
                 font_family = win_font_family(self.interface.family)
                 font_style = win_font_style(

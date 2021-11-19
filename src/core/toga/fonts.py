@@ -11,7 +11,7 @@ from travertino.constants import (  # noqa: F401
     SANS_SERIF,
     SERIF,
     SMALL_CAPS,
-    SYSTEM
+    SYSTEM,
 )
 from travertino.fonts import Font as BaseFont  # noqa: F401
 from travertino.fonts import font  # noqa: F401
@@ -19,7 +19,7 @@ from travertino import constants  # noqa: F401
 
 
 SYSTEM_DEFAULT_FONT_SIZE = -1
-REGISTERED_FONTS = {}
+_REGISTERED_FONT_CACHE = {}
 
 
 class Font(BaseFont):
@@ -57,8 +57,10 @@ class Font(BaseFont):
             style (str):   The font style: Font.NORMAL (default) or a value from Font.FONT_STYLES
             variant (str): The font variant: Font.NORMAL (default) or a value from Font.FONT_VARIANTS
         """
-        registered_font = RegisteredFont(family, path, weight=weight, style=style, variant=variant)
-        REGISTERED_FONTS[registered_font.key()] = registered_font
+        registered_font = RegisteredFont(
+            family, path, weight=weight, style=style, variant=variant
+        )
+        _REGISTERED_FONT_CACHE[registered_font.key] = registered_font
 
     @staticmethod
     def find_registered_font(family, weight=NORMAL, style=NORMAL, variant=NORMAL):
@@ -77,15 +79,23 @@ class Font(BaseFont):
         Returns:
             The RegisteredFont or None
         """
-        font_key = RegisteredFont.get_key(family, weight, style, variant)
+        font_key = RegisteredFont.make_key(family, weight, style, variant)
         try:
-            return REGISTERED_FONTS[font_key]
+            return _REGISTERED_FONT_CACHE[font_key]
         except KeyError:
             try:
                 if weight != NORMAL or style != NORMAL or variant != NORMAL:
-                    font_key_family = RegisteredFont.get_key(family, NORMAL, NORMAL, NORMAL)
-                    print("Registered font " + font_key + " not found. Using " + font_key_family + " instead.")
-                    return REGISTERED_FONTS[font_key_family]
+                    font_key_family = RegisteredFont.make_key(
+                        family, NORMAL, NORMAL, NORMAL
+                    )
+                    print(
+                        "Registered font "
+                        + font_key
+                        + " not found. Using "
+                        + font_key_family
+                        + " instead."
+                    )
+                    return _REGISTERED_FONT_CACHE[font_key_family]
                 else:
                     return None
             except KeyError:
@@ -93,7 +103,7 @@ class Font(BaseFont):
                 return None
 
 
-class RegisteredFont():
+class RegisteredFont:
     def __init__(self, family, path, weight=NORMAL, style=NORMAL, variant=NORMAL):
         self.family = family
         self.path = path
@@ -101,16 +111,14 @@ class RegisteredFont():
         self.style = style if style in constants.FONT_STYLES else NORMAL
         self.variant = variant if variant in constants.FONT_VARIANTS else NORMAL
 
+    @property
     def key(self):
         return "<RegisteredFont family={} weight={} style={} variant={}>".format(
-            self.family,
-            self.weight,
-            self.style,
-            self.variant
+            self.family, self.weight, self.style, self.variant
         )
 
     @staticmethod
-    def get_key(family, weight, style, variant):
+    def make_key(family, weight, style, variant):
         if weight not in constants.FONT_WEIGHTS:
             weight = NORMAL
         if style not in constants.FONT_STYLES:
@@ -118,8 +126,5 @@ class RegisteredFont():
         if variant not in constants.FONT_VARIANTS:
             variant = NORMAL
         return "<RegisteredFont family={} weight={} style={} variant={}>".format(
-            family,
-            weight,
-            style,
-            variant
+            family, weight, style, variant
         )

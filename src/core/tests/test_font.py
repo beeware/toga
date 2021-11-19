@@ -21,7 +21,8 @@ class FontTests(TestCase):
             size=self.size,
             style=self.style,
             variant=self.variant,
-            weight=self.weight)
+            weight=self.weight,
+        )
 
         # Bind the font to the dummy factory
         self.font.bind(toga_dummy.factory)
@@ -47,6 +48,5 @@ class FontTests(TestCase):
     def test_register(self):
         registered_font = toga.Font.find_registered_font(self.custom_family)
         if registered_font is None:
-            self.fail("Registered font not found in toga.fonts.REGISTERED_FONTS")
-        if registered_font.path != self.custom_path:
-            self.fail("Registered font's path is incorrect in toga.fonts.REGISTERED_FONTS")
+            self.fail("Registered font not found in the cache for registered fonts.")
+        self.assertEqual(registered_font.path, self.custom_path)
