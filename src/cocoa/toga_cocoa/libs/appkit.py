@@ -162,20 +162,24 @@ NSRadioButton = 4
 NSMomentaryChangeButton = 5
 NSOnOffButton = 6
 NSMomentaryPushInButton = 7
-NSRoundedBezelStyle = 1
-NSRegularSquareBezelStyle = 2
-NSThickSquareBezelStyle = 3
-NSThickerSquareBezelStyle = 4
-NSDisclosureBezelStyle = 5
-NSShadowlessSquareBezelStyle = 6
-NSCircularBezelStyle = 7
-NSTexturedSquareBezelStyle = 8
-NSHelpButtonBezelStyle = 9
-NSSmallSquareBezelStyle = 10
-NSTexturedRoundedBezelStyle = 11
-NSRoundRectBezelStyle = 12
-NSRecessedBezelStyle = 13
-NSRoundedDisclosureBezelStyle = 14
+
+
+class NSBezelStyle(IntEnum):
+    Rounded = 1
+    RegularSquare = 2
+    ThickSquare = 3
+    ThickerSquare = 4
+    Disclosure = 5
+    ShadowlessSquare = 6
+    Circular = 7
+    TexturedSquare = 8
+    HelpButton = 9
+    SmallSquare = 10
+    TexturedRounded = 11
+    RoundRect = 12
+    Recessed = 13
+    RoundedDisclosure = 14
+
 
 ######################################################################
 # NSCell.h
