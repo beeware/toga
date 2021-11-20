@@ -1,10 +1,12 @@
 from travertino.size import at_least
 
+from toga.fonts import SYSTEM_DEFAULT_FONT_SIZE
+
 from toga_cocoa.libs import (
     SEL,
+    NSBezelStyle,
     NSButton,
     NSMomentaryPushInButton,
-    NSRoundedBezelStyle,
     objc_method
 )
 
@@ -23,7 +25,7 @@ class Button(Widget):
         self.native = TogaButton.alloc().init()
         self.native.interface = self.interface
 
-        self.native.bezelStyle = NSRoundedBezelStyle
+        self.native.bezelStyle = NSBezelStyle.Rounded
         self.native.buttonType = NSMomentaryPushInButton
         self.native.target = self.native
         self.native.action = SEL('onPress:')
