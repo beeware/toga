@@ -7,6 +7,13 @@ from .base import Widget
 class TogaTabViewDelegate(NSObject):
     @objc_method
     def tabView_didSelectTabViewItem_(self, view, item) -> None:
+        # If the widget is part of a visible layout, and a resize event has
+        # occurred while the tab wasn't visible, the layout of *this* tab won't
+        # reflect the new availalble size. Refresh the layout.
+        if self.interface.window:
+            self.interface.refresh()
+
+        # Trigger any selection handler
         if self.interface.on_select:
             index = view.indexOfTabViewItem(view.selectedTabViewItem)
             self.interface.on_select(
