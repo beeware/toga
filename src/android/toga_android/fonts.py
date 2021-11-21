@@ -12,6 +12,7 @@ from toga.fonts import (
 
 from .libs.android.graphics import Typeface
 from toga.fonts import _REGISTERED_FONT_CACHE
+import os
 
 _FONT_CACHE = {}
 
@@ -51,15 +52,20 @@ class Font:
                 variant=self.interface.variant,
             )
             if font_key in _REGISTERED_FONT_CACHE:
+                font_path = str(self.interface.factory.paths.app / _REGISTERED_FONT_CACHE[font_key])
                 try:
-                    family = Typeface.createFromFile(
-                            str(self.interface.factory.paths.app / _REGISTERED_FONT_CACHE[font_key])
-                    )
-                except Exception:
+                    if not os.path.isfile(font_path):
+                        # Exception cannot be catched otherwise
+                        raise FileNotFoundError()
+                    family = Typeface.createFromFile(font_path)
+                    # If the typeface cannot be created, following Exception is thrown:
+                    # E/Minikin: addFont failed to create font, invalid request
+                    # It does not kill the app, but there is currently no way to catch this Exception on Android
+                except FileNotFoundError as ex:
                     print(
-                        "Registered font with the key '"
-                        + str(font_key)
-                        + "' could not be loaded: "
+                        "Registered font path '"
+                        + font_path
+                        + "' could not be found"
                         + str(ex)
                     )
             if family is None:

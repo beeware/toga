@@ -2,6 +2,7 @@ from .libs import FontFamily, FontStyle, Single, WinFont, WinForms, win_font_fam
 from .libs.fonts import win_font_size, win_font_style
 from .libs.winforms import PrivateFontCollection
 from toga.fonts import _REGISTERED_FONT_CACHE
+import os
 
 _FONT_CACHE = {}
 
@@ -25,14 +26,13 @@ class Font:
                 variant=self.interface.variant,
             )
             if font_key in _REGISTERED_FONT_CACHE:
+                font_path = str(self.interface.factory.paths.app / _REGISTERED_FONT_CACHE[font_key])
                 try:
+                    if not os.path.isfile(font_path):
+                        # System.IO.FileNotFoundException cannot be catched by FileNotFoundError otherwise
+                        raise FileNotFoundError()
                     self._pfc = PrivateFontCollection()
-                    self._pfc.AddFontFile(
-                        str(
-                            self.interface.factory.paths.app
-                            / _REGISTERED_FONT_CACHE[font_key]
-                        )
-                    )
+                    self._pfc.AddFontFile(font_path)
                     font_size = win_font_size(self.interface.size)
                     font_style = win_font_style(
                         self.interface.weight,
@@ -40,7 +40,14 @@ class Font:
                         self._pfc.Families[0],
                     )
                     font = WinFont(self._pfc.Families[0], float(font_size), font_style)
-                except Exception as ex:
+                except FileNotFoundError as ex:
+                    print(
+                        "Registered font path '"
+                        + font_path
+                        + "' could not be found"
+                        + str(ex)
+                    )
+                except IndexError as ex:
                     print(
                         "Registered font with the key '"
                         + str(font_key)
