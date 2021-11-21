@@ -25,6 +25,11 @@ class ExampleFontExampleApp(toga.App):
             "awesome-free-solid", "resources/Font Awesome 5 Free-Solid-900.otf"
         )
         toga.Font.register("Endor", "resources/ENDOR___.ttf")
+        toga.Font.register("Endor", "resources/ENDOR___.ttf", weight="bold")
+        toga.Font.register("Endor", "resources/ENDOR___.ttf", style="italic")
+        toga.Font.register(
+            "Endor", "resources/ENDOR___.ttf", weight="bold", style="italic"
+        )
         toga.Font.register("Roboto", "resources/Roboto-Regular.ttf")
         toga.Font.register("Roboto", "resources/Roboto-Bold.ttf", weight="bold")
         toga.Font.register("Roboto", "resources/Roboto-Italic.ttf", style="italic")

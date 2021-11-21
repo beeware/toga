@@ -44,11 +44,15 @@ class Font(BaseFont):
         When invalid values for style, variant or weight are passed, NORMAL will be used instead.
 
         Platforms that support dynamic font loading will load the font from the supplied path when a toga style
-        references the registered font, e.g.
+        references the registered font. When a font file includes multiple font weight/style/variant, you will
+        need to register them separately
 
-        Font.register("Font Awesome 5 Free Solid", "resources/Font Awesome 5 Free-Solid-900.otf")
+        Font.register("Font Awesome 5 Free Solid", "resources/Font Awesome 5 Free-Solid-900.otf")\n
+        Font.register("Roboto", "resources/Roboto-Regular.ttf"\n
+        Font.register("Roboto", "resources/Roboto-Bold.ttf", weight=Font.BOLD)\n
+        Font.register("Bahnschrift", "resources/Bahnschrift.ttf"\n
+        Font.register("Bahnschrift", "resources/Bahnschrift.ttf", weight=Font.BOLD)
 
-        Font.register("Roboto", "resources/Roboto-Bold.ttf", weight=Font.BOLD)
 
         Args:
             family (str):  The font family name
@@ -57,74 +61,32 @@ class Font(BaseFont):
             style (str):   The font style: Font.NORMAL (default) or a value from Font.FONT_STYLES
             variant (str): The font variant: Font.NORMAL (default) or a value from Font.FONT_VARIANTS
         """
-        registered_font = RegisteredFont(
-            family, path, weight=weight, style=style, variant=variant
+        font_key = Font.make_registered_font_key(
+            family, weight=weight, style=style, variant=variant
         )
-        _REGISTERED_FONT_CACHE[registered_font.key] = registered_font
+        _REGISTERED_FONT_CACHE[font_key] = path
 
     @staticmethod
-    def find_registered_font(family, weight=NORMAL, style=NORMAL, variant=NORMAL):
+    def make_registered_font_key(family, weight, style, variant):
         """
-        Returns the RegisteredFont which has been registered with Font.register()
-        When the exact family/weight/style/variant combination has not been registered, the method tries
-        to return the RegisteredFont for the registered family only, e.g.
-
-        registered_font = Font.find_registered_font("Roboto", weight=Font.BOLD)
+        Creates a key for storing a registered font in the font cache.\n
+        If weight, style or variant contain an invalid value, Font.NORMAL is used instead
 
         Args:
             family (str):  The font family name
             weight (str):  The font weight: Font.NORMAL (default) or a value from Font.FONT_WEIGHTS
             style (str):   The font style: Font.NORMAL (default) or a value from Font.FONT_STYLES
             variant (str): The font variant: Font.NORMAL (default) or a value from Font.FONT_VARIANTS
+
         Returns:
-            The RegisteredFont or None
+            The font key (str)
         """
-        font_key = RegisteredFont.make_key(family, weight, style, variant)
-        try:
-            return _REGISTERED_FONT_CACHE[font_key]
-        except KeyError:
-            try:
-                if weight != NORMAL or style != NORMAL or variant != NORMAL:
-                    font_key_family = RegisteredFont.make_key(
-                        family, NORMAL, NORMAL, NORMAL
-                    )
-                    print(
-                        "Registered font "
-                        + font_key
-                        + " not found. Using "
-                        + font_key_family
-                        + " instead."
-                    )
-                    return _REGISTERED_FONT_CACHE[font_key_family]
-                else:
-                    return None
-            except KeyError:
-                print("Registered font " + font_key_family + " not found.")
-                return None
-
-
-class RegisteredFont:
-    def __init__(self, family, path, weight=NORMAL, style=NORMAL, variant=NORMAL):
-        self.family = family
-        self.path = path
-        self.weight = weight if weight in constants.FONT_WEIGHTS else NORMAL
-        self.style = style if style in constants.FONT_STYLES else NORMAL
-        self.variant = variant if variant in constants.FONT_VARIANTS else NORMAL
-
-    @property
-    def key(self):
-        return "<RegisteredFont family={} weight={} style={} variant={}>".format(
-            self.family, self.weight, self.style, self.variant
-        )
-
-    @staticmethod
-    def make_key(family, weight, style, variant):
         if weight not in constants.FONT_WEIGHTS:
             weight = NORMAL
         if style not in constants.FONT_STYLES:
             style = NORMAL
         if variant not in constants.FONT_VARIANTS:
             variant = NORMAL
-        return "<RegisteredFont family={} weight={} style={} variant={}>".format(
+        return "<registered_font_key: family={} weight={} style={} variant={}>".format(
             family, weight, style, variant
         )

@@ -1,6 +1,13 @@
 import toga
 import toga_dummy
-from toga.fonts import BOLD, ITALIC, SANS_SERIF, SMALL_CAPS
+from toga.fonts import (
+    NORMAL,
+    BOLD,
+    ITALIC,
+    SANS_SERIF,
+    SMALL_CAPS,
+    _REGISTERED_FONT_CACHE,
+)
 from toga_dummy.utils import TestCase
 
 
@@ -46,7 +53,9 @@ class FontTests(TestCase):
         self.assertEqual(self.font.weight, self.weight)
 
     def test_register(self):
-        registered_font = toga.Font.find_registered_font(self.custom_family)
-        if registered_font is None:
+        font_key = toga.Font.make_registered_font_key(
+            self.custom_family, NORMAL, NORMAL, NORMAL
+        )
+        if font_key not in _REGISTERED_FONT_CACHE:
             self.fail("Registered font not found in the cache for registered fonts.")
-        self.assertEqual(registered_font.path, self.custom_path)
+        self.assertEqual(self.custom_path, _REGISTERED_FONT_CACHE[font_key])

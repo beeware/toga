@@ -11,6 +11,7 @@ from toga.fonts import (
 )
 
 from .libs.android.graphics import Typeface
+from toga.fonts import _REGISTERED_FONT_CACHE
 
 _FONT_CACHE = {}
 
@@ -43,21 +44,21 @@ class Font:
             family = _FONT_CACHE[self.interface]
         except KeyError:
             family = None
-            registered_font = self.interface.find_registered_font(
+            font_key = self.interface.make_registered_font_key(
                 self.interface.family,
                 weight=self.interface.weight,
                 style=self.interface.style,
                 variant=self.interface.variant,
             )
-            if registered_font is not None:
+            if font_key in _REGISTERED_FONT_CACHE:
                 try:
                     family = Typeface.createFromFile(
-                        str(self.interface.factory.paths.app / registered_font.path)
+                            str(self.interface.factory.paths.app / _REGISTERED_FONT_CACHE[font_key])
                     )
-                except Exception as ex:
+                except Exception:
                     print(
-                        "Registered font '"
-                        + str(registered_font.key)
+                        "Registered font with the key '"
+                        + str(font_key)
                         + "' could not be loaded: "
                         + str(ex)
                     )
