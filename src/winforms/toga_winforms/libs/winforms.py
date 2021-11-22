@@ -49,6 +49,9 @@ from System.Drawing.Drawing2D import (  # noqa: F401, E402
 
 from System.Drawing.Text import PrivateFontCollection  # noqa: F401, E402
 
+from System.IO import FileNotFoundException
+from System.Runtime.InteropServices import ExternalException
+
 from System.Threading.Tasks import Task  # noqa: F401, E402
 
 

@@ -3,6 +3,8 @@ from .libs.fonts import win_font_size, win_font_style
 from .libs.winforms import PrivateFontCollection
 from toga.fonts import _REGISTERED_FONT_CACHE
 import os
+from .libs.winforms import ExternalException
+from .libs.winforms import FileNotFoundException
 
 _FONT_CACHE = {}
 
@@ -28,9 +30,6 @@ class Font:
             if font_key in _REGISTERED_FONT_CACHE:
                 font_path = str(self.interface.factory.paths.app / _REGISTERED_FONT_CACHE[font_key])
                 try:
-                    if not os.path.isfile(font_path):
-                        # System.IO.FileNotFoundException cannot be catched by FileNotFoundError otherwise
-                        raise FileNotFoundError()
                     self._pfc = PrivateFontCollection()
                     self._pfc.AddFontFile(font_path)
                     font_size = win_font_size(self.interface.size)
@@ -40,11 +39,18 @@ class Font:
                         self._pfc.Families[0],
                     )
                     font = WinFont(self._pfc.Families[0], float(font_size), font_style)
-                except FileNotFoundError as ex:
+                except FileNotFoundException as ex:
                     print(
                         "Registered font path '"
                         + font_path
-                        + "' could not be found"
+                        + "' could not be found: "
+                        + str(ex)
+                    )
+                except ExternalException as ex:
+                    print(
+                        "Registered font path '"
+                        + font_path
+                        + "' could not be loaded: "
                         + str(ex)
                     )
                 except IndexError as ex:
