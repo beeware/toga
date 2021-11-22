@@ -2,7 +2,6 @@ from .libs import FontFamily, FontStyle, Single, WinFont, WinForms, win_font_fam
 from .libs.fonts import win_font_size, win_font_style
 from .libs.winforms import PrivateFontCollection
 from toga.fonts import _REGISTERED_FONT_CACHE
-import os
 from .libs.winforms import ExternalException
 from .libs.winforms import FileNotFoundException
 
@@ -28,7 +27,9 @@ class Font:
                 variant=self.interface.variant,
             )
             if font_key in _REGISTERED_FONT_CACHE:
-                font_path = str(self.interface.factory.paths.app / _REGISTERED_FONT_CACHE[font_key])
+                font_path = str(
+                    self.interface.factory.paths.app / _REGISTERED_FONT_CACHE[font_key]
+                )
                 try:
                     self._pfc = PrivateFontCollection()
                     self._pfc.AddFontFile(font_path)
