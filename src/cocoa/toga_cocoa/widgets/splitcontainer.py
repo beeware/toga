@@ -18,12 +18,15 @@ class TogaSplitViewDelegate(NSObject):
         view.adjustSubviews()
 
         # Set the splitter positions based on the new weight fractions.
+        cumulative = 0.0
         if self.interface.direction == self.interface.VERTICAL:
             for i, weight in enumerate(self.interface._weight[:-1]):
-                view.setPosition(view.frame.size.width * weight, ofDividerAtIndex=i)
+                cumulative += weight
+                view.setPosition(view.frame.size.width * cumulative, ofDividerAtIndex=i)
         else:
             for i, weight in enumerate(self.interface._weight[:-1]):
-                view.setPosition(view.frame.size.height * weight, ofDividerAtIndex=i)
+                cumulative += weight
+                view.setPosition(view.frame.size.height * cumulative, ofDividerAtIndex=i)
 
     @objc_method
     def splitViewDidResizeSubviews_(self, notification) -> None:

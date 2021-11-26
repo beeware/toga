@@ -1,18 +1,21 @@
+import operator
+from functools import reduce
+from string import ascii_uppercase
+
 from toga.keys import Key
 from .libs import WinForms
-from string import ascii_uppercase
 
 
 def toga_to_winforms_key(key):
-    code = 0
+    codes = []
     for modifier, modifier_code in WINFORMS_NON_PRINTABLES_MAP.items():
         if modifier.value in key:
-            code |= modifier_code
+            codes.append(modifier_code)
             key = key.replace(modifier.value, "")
     key_code = WINFORMS_KEYS_MAP.get(key, None)
     if key_code is not None:
-        code |= key_code
-    return code
+        codes.append(key_code)
+    return reduce(operator.or_, codes)
 
 
 WINFORMS_NON_PRINTABLES_MAP = {

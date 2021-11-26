@@ -28,7 +28,7 @@ ScrollContainer,Layout Widget,:class:`~toga.widgets.scrollcontainer.ScrollContai
 SplitContainer,Layout Widget,:class:`~toga.widgets.splitcontainer.SplitContainer`,Split Container,|y|,|y|,|y|,,,
 OptionContainer,Layout Widget,:class:`~toga.widgets.optioncontainer.OptionContainer`,Option Container,|y|,|y|,|y|,,,
 Font,Resource,:class:`~toga.fonts.Font`,Fonts,|y|,|y|,|y|,|y|,|y|,
-Command,Resource,:class:`~toga.command.Command`,Command,|y|,|y|,|y|,,,
+Command,Resource,:class:`~toga.command.Command`,Command,|y|,|y|,|y|,,|y|,
 Group,Resource,:class:`~toga.command.Group`,Command group,|y|,|y|,|y|,|y|,|y|,|y|
 Icon,Resource,:class:`~toga.icons.Icon`,"An icon for buttons, menus, etc",|y|,|y|,|y|,|y|,|y|,
 Image,Resource,:class:`~toga.images.Image`,An image,|y|,|y|,|y|,|y|,|y|,

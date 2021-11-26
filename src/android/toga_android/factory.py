@@ -1,4 +1,5 @@
 from .app import App, MainWindow
+from .command import Command
 from .fonts import Font
 from .icons import Icon
 from .images import Image
@@ -32,6 +33,7 @@ __all__ = [
     "Box",
     "Button",
     "Canvas",
+    "Command",
     "Font",
     "Icon",
     "Image",

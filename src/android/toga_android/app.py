@@ -1,9 +1,13 @@
 import asyncio
+import toga
 
 from rubicon.java import android_events
+from toga.command import Group
 from toga.handlers import wrapped_handler
 
 from .libs.activity import IPythonApp, MainActivity
+from .libs.android.view import Menu, MenuItem
+from .libs.android.graphics import Drawable
 from .window import Window
 
 
@@ -15,10 +19,11 @@ class MainWindow(Window):
 class TogaApp(IPythonApp):
     last_intent_requestcode = -1  # always increment before using it for invoking new Intents
     running_intents = {}          # dictionary for currently running Intents
+    menuitem_mapping = {}         # dictionary for mapping menuitems to commands
 
     def __init__(self, app):
         super().__init__()
-        self._interface = app
+        self._impl = app
         MainActivity.setPythonApp(self)
         print('Python app launched & stored in Android Activity class')
 
@@ -61,6 +66,83 @@ class TogaApp(IPythonApp):
             result_future.set_result({"resultCode": resultCode, "resultData": resultData})
         except KeyError:
             print("No intent matching request code {requestCode}")
+
+    def onOptionsItemSelected(self, menuitem):
+        consumed = False
+        try:
+            cmd = self.menuitem_mapping[menuitem.getItemId()]
+            consumed = True
+            if cmd.action is not None:
+                cmd.action(menuitem)
+        except KeyError:
+            print("menu item id not found in menuitem_mapping dictionary!")
+        return consumed
+
+    def onPrepareOptionsMenu(self, menu):
+        menu.clear()
+        itemid = 0
+        menulist = {}  # dictionary with all menus
+        self.menuitem_mapping.clear()
+
+        # create option menu
+        for cmd in self._impl.interface.commands:
+            if cmd == toga.SECTION_BREAK or cmd == toga.GROUP_BREAK:
+                continue
+            if cmd in self._impl.interface.main_window.toolbar:
+                continue  # do not show toolbar commands in the option menu (except when overflowing)
+
+            grouppath = cmd.group.path
+            if grouppath[0] != Group.COMMANDS:
+                # only the Commands group (and its subgroups) are supported
+                # other groups should eventually go into the navigation drawer
+                continue
+            if cmd.group.key in menulist:
+                menugroup = menulist[cmd.group.key]
+            else:
+                # create all missing submenus
+                parentmenu = menu
+                for group in grouppath:
+                    groupkey = group.key
+                    if groupkey in menulist:
+                        menugroup = menulist[groupkey]
+                    else:
+                        if group.label == toga.Group.COMMANDS.label:
+                            menulist[groupkey] = menu
+                            menugroup = menu
+                        else:
+                            itemid += 1
+                            order = Menu.NONE if group.order is None else group.order
+                            menugroup = parentmenu.addSubMenu(Menu.NONE, itemid, order,
+                                                              group.label)  # groupId, itemId, order, title
+                            menulist[groupkey] = menugroup
+                    parentmenu = menugroup
+            # create menu item
+            itemid += 1
+            order = Menu.NONE if cmd.order is None else cmd.order
+            menuitem = menugroup.add(Menu.NONE, itemid, order, cmd.label)  # groupId, itemId, order, title
+            menuitem.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_NEVER)
+            menuitem.setEnabled(cmd.enabled)
+            self.menuitem_mapping[itemid] = cmd  # store itemid for use in onOptionsItemSelected
+
+        # create toolbar actions
+        for cmd in self._impl.interface.main_window.toolbar:
+            if cmd == toga.SECTION_BREAK or cmd == toga.GROUP_BREAK:
+                continue
+            itemid += 1
+            order = Menu.NONE if cmd.order is None else cmd.order
+            menuitem = menu.add(Menu.NONE, itemid, order, cmd.label)  # groupId, itemId, order, title
+            menuitem.setShowAsActionFlags(
+                MenuItem.SHOW_AS_ACTION_IF_ROOM)  # toolbar button / item in options menu on overflow
+            menuitem.setEnabled(cmd.enabled)
+            if cmd.icon:
+                icon = Drawable.createFromPath(str(cmd.icon._impl.path))
+                if icon:
+                    menuitem.setIcon(icon)
+                else:
+                    print('Could not create icon: ' + str(cmd.icon._impl.path))
+            self.menuitem_mapping[itemid] = cmd  # store itemid for use in onOptionsItemSelected
+
+        return True
 
     @property
     def native(self):
