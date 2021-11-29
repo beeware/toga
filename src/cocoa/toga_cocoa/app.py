@@ -116,8 +116,9 @@ class App:
 
         self._cursor_visible = True
 
-        asyncio.set_event_loop_policy(EventLoopPolicy())
-        self.loop = asyncio.get_event_loop()
+        policy = EventLoopPolicy()
+        asyncio.set_event_loop_policy(policy)
+        self.loop = policy.get_event_loop()
 
     def create(self):
         self.native = NSApplication.sharedApplication
@@ -415,6 +416,9 @@ class App:
 
     def add_background_task(self, handler):
         self.loop.call_soon(wrapped_handler(self, handler), self)
+
+    def open_document(self, fileURL):
+        """No-op when the app is not a ``DocumentApp``."""
 
 
 class DocumentApp(App):

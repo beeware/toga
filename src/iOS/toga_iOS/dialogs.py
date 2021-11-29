@@ -115,7 +115,7 @@ class TogaModalDialog:
         )
 
         while self.response is None:
-            NSRunLoop.currentRunLoop().runUntilDate(NSDate.alloc().init())
+            NSRunLoop.currentRunLoop.runUntilDate(NSDate.alloc().init())
 
         return self.response
 

@@ -1,10 +1,12 @@
 from travertino.size import at_least
 
+from toga.fonts import SYSTEM_DEFAULT_FONT_SIZE
+
 from toga_cocoa.libs import (
     SEL,
+    NSBezelStyle,
     NSButton,
     NSMomentaryPushInButton,
-    NSRoundedBezelStyle,
     objc_method,
     objc_property,
 )
@@ -29,7 +31,7 @@ class Button(Widget):
         self.native.interface = self.interface
         self.native.impl = self
 
-        self.native.bezelStyle = NSRoundedBezelStyle
+        self.native.bezelStyle = NSBezelStyle.Rounded
         self.native.buttonType = NSMomentaryPushInButton
         self.native.target = self.native
         self.native.action = SEL('onPress:')
@@ -49,6 +51,18 @@ class Button(Widget):
         pass
 
     def rehint(self):
+        # Normal Cocoa "rounded" buttons have a fixed height by definition.
+        # If the user specifies any font size other than the default,
+        # or specifies an explicit height for layout, switch to using a
+        # RegularSquare button.
+        if (
+            self.interface.style.font_size != SYSTEM_DEFAULT_FONT_SIZE
+            or self.interface.style.height
+        ):
+            self.native.bezelStyle = NSBezelStyle.RegularSquare
+        else:
+            self.native.bezelStyle = NSBezelStyle.Rounded
+
         content_size = self.native.intrinsicContentSize()
         self.interface.intrinsic.width = at_least(content_size.width)
         self.interface.intrinsic.height = content_size.height

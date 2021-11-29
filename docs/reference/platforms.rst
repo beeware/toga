@@ -42,18 +42,20 @@ with widget layout. It uses the native GObject Python bindings.
 
 .. _toga-gtk: https://github.com/beeware/toga/tree/master/src/gtk
 
-Winforms
+Windows
 ~~~~~~~~
 
-The backend for Windows is named `toga-winforms`_. It supports Windows XP or
-later with .NET installed. It is installed automatically on Windows machines
+.. image:: /reference/screenshots/winforms.png
+
+The backend for Windows is named `toga-winforms`_. It supports Windows 10 with
+.NET 4 installed. It is installed automatically on Windows machines
 (machines that report ``sys.platform == 'win32'``), or can be manually
 installed by invoking::
 
     $ pip install toga-winforms
 
-The Windows backend is currently proof-of-concept only. Most widgets have not been
-implemented. It uses `Python.net`_
+It uses `Python.net`_. Unfortunately, python.net has not been packaged for
+Python 3.9 or higher, so you'll need to use Python 3.8 or earlier in your app.
 
 .. _toga-winforms: https://github.com/beeware/toga/tree/master/src/winforms
 .. _Python.net: https://pythonnet.github.io

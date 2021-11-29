@@ -11,7 +11,7 @@ from toga import App as toga_App
 from toga.command import GROUP_BREAK, SECTION_BREAK, Command
 
 from .keys import gtk_accel
-from .libs import Gio, GLib, Gtk
+from .libs import Gio, GLib, Gtk, Gdk, TOGA_DEFAULT_STYLES
 from .window import Window
 
 
@@ -62,7 +62,7 @@ class App:
         self.interface._impl = self
 
         gbulb.install(gtk=True)
-        self.loop = asyncio.get_event_loop()
+        self.loop = asyncio.get_event_loop_policy().get_event_loop()
 
         self.create()
 
@@ -112,6 +112,17 @@ class App:
         # see #872 for details.
         settings = Gtk.Settings.get_default()
         settings.set_property("gtk-shell-shows-menubar", False)
+
+        # Set any custom styles
+        css_provider = Gtk.CssProvider()
+        css_provider.load_from_data(TOGA_DEFAULT_STYLES)
+
+        context = Gtk.StyleContext()
+        context.add_provider_for_screen(
+            Gdk.Screen.get_default(),
+            css_provider,
+            Gtk.STYLE_PROVIDER_PRIORITY_USER
+        )
 
     def _create_app_commands(self):
         # No extra menus
