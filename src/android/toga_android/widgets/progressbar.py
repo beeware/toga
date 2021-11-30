@@ -2,7 +2,7 @@ from travertino.size import at_least
 from rubicon.java import JavaClass
 from ..libs.activity import MainActivity
 from ..libs.android import R__attr
-from ..libs.android.util import AttributeSet, Xml
+from ..libs.android.util import AttributeSet
 from ..libs.android.view import Gravity, View__MeasureSpec
 from ..libs.android.widget import (
     ProgressBar as A_ProgressBar,
@@ -13,22 +13,7 @@ from .base import Widget
 
 class ProgressBar(Widget):
     def create(self):
-        # progressBar = new ProgressBar(youractivity.this, null, android.R.attr.progressBarStyleLarge);
-        # progressbar = A_ProgressBar(self._native_activity, attr_set, R__attr.progressBarStyleHorizontal)
-        # progressbar = A_ProgressBar(self._native_activity, attr_set, R__attr.progressBarStyleLarge)
-        # progressBar = A_ProgressBar(self._native_activity, None, R__attr.progressBarStyleLarge)
-        # progressbar = A_ProgressBar(self._native_activity, attrs)
-
-        # Constructor cons = ProgressBar.class.getConstructor(Context.class, AttributeSet.class, int.class);
-        # ProgressBar progressbar = (ProgressBar) cons.newInstance(this, null, android.R.attr.progressBarStyleHorizontal);
-        Context = JavaClass("android/content/Context")
-        print('GET CLASS')
-        clazz = A_ProgressBar(self._native_activity).getClass()
-        print('GET CONSTRUCTOR')
-        cons = clazz.getConstructor(Context, AttributeSet, int)  # not working
-        constructors = clazz.getConstructors()  # not working
-        print('INVOKING PROGRESSBAR')
-        progressbar = cons.newInstance(self._native_activity, None, R__attr.progressBarStyleHorizontal)
+        progressbar = A_ProgressBar(self._native_activity, AttributeSet.__null__, R__attr.progressBarStyleHorizontal)
         self.native = progressbar
 
     def start(self):
