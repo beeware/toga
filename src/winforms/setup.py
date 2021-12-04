@@ -24,12 +24,11 @@ setup(
         # and their development effort seems to be focussed on the 3.X branch;
         # they've indicated they're not planning to make the 2.X branch compatible
         # with Python 3.10. If we want to be able to support "current" Python,
-        # we need to work off a source release until they formally release 3.0.
+        # we need to use the 3.0 branch.
         #
-        # The most recent version of pythonnet is the alpha version 3.0.0a1.
-        # At the moment we will use this version until an official release
-        # will be published.
-        'pythonnet==3.0.0a1',
+        # At time of writing, the most recent (and only) version of Python.net 3.0
+        # that has been released is the alpha version 3.0.0a1.
+        'pythonnet>=3.0.0a1',
         'toga-core==%s' % version,
     ],
     test_suite='tests',
