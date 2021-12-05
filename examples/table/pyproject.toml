@@ -14,30 +14,32 @@ author_email = "tiberius@beeware.org"
 formal_name = "Table Demo"
 description = "A testing app"
 sources = ['table']
-requires = []
+requires = [
+    '../../src/core',
+]
 
 [tool.briefcase.app.table.macOS]
 requires = [
-    'toga-cocoa',
+    '../../src/cocoa',
 ]
 
 [tool.briefcase.app.table.linux]
 requires = [
-    'toga-gtk',
+    '../../src/gtk',
 ]
 
 [tool.briefcase.app.table.windows]
 requires = [
-    'toga-winforms',
+    '../../src/winforms',
 ]
 
 # Mobile deployments
 [tool.briefcase.app.table.iOS]
 requires = [
-    'toga-iOS',
+    '../../src/iOS',
 ]
 
 [tool.briefcase.app.table.android]
 requires = [
-    'toga-android',
+    '../../src/android',
 ]
