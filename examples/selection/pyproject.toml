@@ -14,31 +14,33 @@ author_email = "tiberius@beeware.org"
 formal_name = "Selection Demo"
 description = "A testing app"
 sources = ['selection']
-requires = []
+requires = [
+    '../../src/core',
+]
 
 
 [tool.briefcase.app.selection.macOS]
 requires = [
-    'toga-cocoa',
+    '../../src/cocoa',
 ]
 
 [tool.briefcase.app.selection.linux]
 requires = [
-    'toga-gtk',
+    '../../src/gtk',
 ]
 
 [tool.briefcase.app.selection.windows]
 requires = [
-    'toga-winforms',
+    '../../src/winforms',
 ]
 
 # Mobile deployments
 [tool.briefcase.app.selection.iOS]
 requires = [
-    'toga-iOS',
+    '../../src/iOS',
 ]
 
 [tool.briefcase.app.selection.android]
 requires = [
-    'toga-android',
+    '../../src/android',
 ]

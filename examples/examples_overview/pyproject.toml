@@ -14,31 +14,33 @@ author_email = "tiberius@beeware.org"
 formal_name = "Examples Overview"
 description = "A testing app"
 sources = ['examples_overview']
-requires = []
+requires = [
+    '../../src/core',
+]
 
 
 [tool.briefcase.app.examples_overview.macOS]
 requires = [
-    'toga-cocoa',
+    '../../src/cocoa',
 ]
 
 [tool.briefcase.app.examples_overview.linux]
 requires = [
-    'toga-gtk',
+    '../../src/gtk',
 ]
 
 [tool.briefcase.app.examples_overview.windows]
 requires = [
-    'toga-winforms',
+    '../../src/winforms',
 ]
 
 # Mobile deployments
 [tool.briefcase.app.examples_overview.iOS]
 requires = [
-    'toga-iOS',
+    '../../src/iOS',
 ]
 
 [tool.briefcase.app.examples_overview.android]
 requires = [
-    'toga-android',
+    '../../src/android',
 ]
