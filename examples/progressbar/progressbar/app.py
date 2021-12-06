@@ -15,9 +15,10 @@ class ProgressBarApp(toga.App):
         self.progress_adder = toga.ProgressBar(max=MAX_PROGRESSBAR_VALUE)
 
         # set up common styles
-        label_style = Pack(flex=1, padding_right=24)
-        row_box_style = Pack(direction=ROW, padding=24)
-        col_box_style = Pack(direction=COLUMN, padding=24)
+        label_style = Pack(flex=1, padding_right=5)
+        row_box_style = Pack(direction=ROW, padding=10)
+        col_box_style = Pack(direction=COLUMN, padding=10)
+        pbar_style = Pack(width=100, height= 20, padding_right=5)
 
         # Add the content on the main window
         self.main_window.content = toga.Box(style=col_box_style, children=[
@@ -39,17 +40,17 @@ class ProgressBarApp(toga.App):
 
             toga.Box(style=row_box_style, children=[
                 toga.Label("default ProgressBar", style=label_style),
-                toga.ProgressBar(),
+                toga.ProgressBar(style=pbar_style),
             ]),
 
             toga.Box(style=row_box_style, children=[
                 toga.Label("disabled ProgressBar", style=label_style),
-                toga.ProgressBar(max=None,  running=False),
+                toga.ProgressBar(max=None,  running=False, style=pbar_style),
             ]),
 
             toga.Box(style=row_box_style, children=[
                 toga.Label("indeterminate ProgressBar", style=label_style),
-                toga.ProgressBar(max=None,  running=True),
+                toga.ProgressBar(max=None,  running=True, style=pbar_style),
             ]),
 
             toga.Box(style=row_box_style, children=[
@@ -57,7 +58,7 @@ class ProgressBarApp(toga.App):
                 toga.ProgressBar(
                     max=MAX_PROGRESSBAR_VALUE,
                     running=False,
-                    value=0.5 * MAX_PROGRESSBAR_VALUE),
+                    value=0.5 * MAX_PROGRESSBAR_VALUE, style=pbar_style),
             ]),
 
             toga.Box(style=row_box_style, children=[
@@ -65,7 +66,7 @@ class ProgressBarApp(toga.App):
                 toga.ProgressBar(
                     max=MAX_PROGRESSBAR_VALUE,
                     running=True,
-                    value=0.5 * MAX_PROGRESSBAR_VALUE),
+                    value=0.5 * MAX_PROGRESSBAR_VALUE, style=pbar_style),
             ]),
         ])
 
