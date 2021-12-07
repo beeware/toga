@@ -75,7 +75,7 @@ class ProgressBar(Widget):
         """
         Stop this progress bar (if not already stopped).
         """
-        self._enabled = bool(self.max)
+        self.enabled = bool(self.max)
         if self.is_running:
             self._impl.stop()
         self._is_running = False
