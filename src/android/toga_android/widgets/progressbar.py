@@ -1,14 +1,8 @@
 from travertino.size import at_least
-from rubicon.java import JavaClass
-from ..libs.activity import MainActivity
 from ..libs.android import R__attr
 from ..libs.android.util import AttributeSet
-from ..libs.android.view import Gravity, View__MeasureSpec
-from ..libs.android.widget import (
-    ProgressBar as A_ProgressBar,
-    LinearLayout,
-    LinearLayout__LayoutParams,
-)
+from ..libs.android.view import View__MeasureSpec
+from ..libs.android.widget import ProgressBar as A_ProgressBar
 from .base import Widget
 
 
