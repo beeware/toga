@@ -14,9 +14,7 @@ author_email = "tiberius@beeware.org"
 formal_name = "ProgressBar demo"
 description = "A testing app"
 sources = ['progressbar']
-requires = [
-	'c:/Projects/Python/Toga/src/core'
-]
+requires = []
 
 
 [tool.briefcase.app.progressbar.macOS]
@@ -42,6 +40,5 @@ requires = [
 
 [tool.briefcase.app.progressbar.android]
 requires = [
-    # 'toga-android',
-	'c:/Projects/Python/Toga/src/android'
+    'toga-android',
 ]
