@@ -7,13 +7,18 @@ from ..libs.android.view import Gravity, View__MeasureSpec
 from ..libs.android.widget import (
     ProgressBar as A_ProgressBar,
     LinearLayout,
-    LinearLayout__LayoutParams
+    LinearLayout__LayoutParams,
 )
 from .base import Widget
 
+
 class ProgressBar(Widget):
     def create(self):
-        progressbar = A_ProgressBar(self._native_activity, AttributeSet.__null__, R__attr.progressBarStyleHorizontal)
+        progressbar = A_ProgressBar(
+            self._native_activity,
+            AttributeSet.__null__,
+            R__attr.progressBarStyleHorizontal,
+        )
         self.native = progressbar
 
     def start(self):

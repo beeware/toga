@@ -2,17 +2,13 @@ from .base import Widget
 
 
 class ProgressBar(Widget):
-    """
-    """
+    """ """
+
     MIN_WIDTH = 100
 
-    def __init__(self,
-                 id=None,
-                 style=None,
-                 max=1,
-                 value=0,
-                 running=False,
-                 factory=None):
+    def __init__(
+        self, id=None, style=None, max=1, value=0, running=False, factory=None
+    ):
         """
 
         Args:
@@ -98,7 +94,7 @@ class ProgressBar(Widget):
 
     @property
     def max(self):
-        """ The maximum value of the progressbar.
+        """The maximum value of the progressbar.
 
         Returns:
             The maximum value as a ``int`` or ``float``.
