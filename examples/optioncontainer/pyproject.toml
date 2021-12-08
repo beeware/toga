@@ -14,31 +14,33 @@ author_email = "tiberius@beeware.org"
 formal_name = "Option Container Example"
 description = "A testing app"
 sources = ['optioncontainer']
-requires = []
+requires = [
+    '../../src/core',
+]
 
 
 [tool.briefcase.app.optioncontainer.macOS]
 requires = [
-    'toga-cocoa',
+    '../../src/cocoa',
 ]
 
 [tool.briefcase.app.optioncontainer.linux]
 requires = [
-    'toga-gtk',
+    '../../src/gtk',
 ]
 
 [tool.briefcase.app.optioncontainer.windows]
 requires = [
-    'toga-winforms',
+    '../../src/winforms',
 ]
 
 # Mobile deployments
 [tool.briefcase.app.optioncontainer.iOS]
 requires = [
-    'toga-iOS',
+    '../../src/iOS',
 ]
 
 [tool.briefcase.app.optioncontainer.android]
 requires = [
-    'toga-android',
+    '../../src/android',
 ]

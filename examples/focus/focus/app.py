@@ -112,3 +112,8 @@ def main():
     #   App name and namespace
     app = ExampleFocusApp('Focus', 'org.beeware.widgets.focus')
     return app
+
+
+if __name__ == '__main__':
+    app = main()
+    app.main_loop()
