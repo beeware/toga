@@ -15,18 +15,18 @@ formal_name = "Command Example"
 description = "A testing app"
 sources = ['command']
 requires = [
-    'toga-core'
+    '../../src/core',
 ]
 
 
 [tool.briefcase.app.command.macOS]
 requires = [
-    'toga-cocoa',
+    '../../src/cocoa',
 ]
 
 [tool.briefcase.app.command.linux]
 requires = [
-    'toga-gtk',
+    '../../src/gtk',
 ]
 
 [tool.briefcase.app.command.windows]
@@ -37,10 +37,10 @@ requires = [
 # Mobile deployments
 [tool.briefcase.app.command.iOS]
 requires = [
-    'toga-iOS',
+    '../../src/iOS',
 ]
 
 [tool.briefcase.app.command.android]
 requires = [
-    'toga-android',
+    '../../src/android',
 ]

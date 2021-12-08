@@ -134,3 +134,8 @@ class ProgressBarApp(toga.App):
 def main():
     # App name and namespace
     return ProgressBarApp("ProgressBar", "org.beeware.examples.progressbar")
+
+
+if __name__ == '__main__':
+    app = main()
+    app.main_loop()
