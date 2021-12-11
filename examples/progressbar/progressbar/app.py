@@ -1,6 +1,7 @@
 import toga
 from toga.constants import COLUMN, ROW
 from toga.style import Pack
+import asyncio
 
 MAX_PROGRESSBAR_VALUE = 100
 
@@ -41,6 +42,11 @@ class ProgressBarApp(toga.App):
                                 toga.Button(
                                     "-",
                                     on_press=self.decrease_progress,
+                                    style=Pack(flex=1),
+                                ),
+                                toga.Button(
+                                    "auto",
+                                    on_press=self.auto_progress,
                                     style=Pack(flex=1),
                                 ),
                             ]
@@ -107,6 +113,12 @@ class ProgressBarApp(toga.App):
         print("is determinate: " + str(self.progress_adder.is_determinate))
         print("is running: " + str(self.progress_adder.is_running))
         self.main_window.show()
+
+    async def auto_progress(self, button, **kw):
+        if self.progress_adder.is_determinate:
+            for i in range(1, 100):
+                self.progress_adder.value = i + 1
+                await asyncio.sleep(0.1)
 
     def increase_progress(self, button, **kw):
         if self.progress_adder.is_determinate:
