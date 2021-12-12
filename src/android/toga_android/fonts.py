@@ -86,6 +86,7 @@ class Font:
                     family = Typeface.create("fantasy", Typeface.NORMAL)
                 else:
                     family = Typeface.create(self.interface.family, Typeface.NORMAL)
+            family = family.__global__()  # store a JNI global reference to prevent objects from becoming stale
             _FONT_CACHE[self.interface] = family
 
         return family

@@ -14,31 +14,33 @@ author_email = "tiberius@beeware.org"
 formal_name = "Font Example"
 description = "A testing app"
 sources = ['font']
-requires = []
+requires = [
+    '../../src/core',
+]
 
 
 [tool.briefcase.app.font.macOS]
 requires = [
-    'toga-cocoa',
+    '../../src/cocoa',
 ]
 
 [tool.briefcase.app.font.linux]
 requires = [
-    'toga-gtk',
+    '../../src/gtk',
 ]
 
 [tool.briefcase.app.font.windows]
 requires = [
-    'toga-winforms',
+    '../../src/winforms',
 ]
 
 # Mobile deployments
 [tool.briefcase.app.font.iOS]
 requires = [
-    'toga-iOS',
+    '../../src/iOS',
 ]
 
 [tool.briefcase.app.font.android]
 requires = [
-    'toga-android',
+    '../../src/android',
 ]
