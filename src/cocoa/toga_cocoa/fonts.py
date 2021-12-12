@@ -99,7 +99,7 @@ class Font:
     def measure(self, text, tight=False):
         textAttributes = NSMutableDictionary.alloc().init()
         textAttributes[NSFontAttributeName] = self.native
-        text_string = NSAttributedString.alloc().initWithString_attributes_(text, textAttributes)
+        text_string = NSAttributedString.alloc().initWithString(text, attributes=textAttributes)
         size = text_string.size()
 
         # TODO: This is a magic fudge factor...

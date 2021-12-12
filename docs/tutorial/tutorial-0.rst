@@ -89,6 +89,11 @@ Next, install Toga into your virtual environment:
 
   .. group-tab:: Windows
 
+    Before you install Toga, you'll need to install the `.NET 6.0 SDK
+    <https://dotnet.microsoft.com/download>`__. Once you've installed
+    that SDK, open a new terminal, re-activate your virtual environment,
+    and run:
+
     .. code-block:: doscon
 
       (venv) C:\...>pip install --pre toga

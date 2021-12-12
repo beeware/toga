@@ -1,7 +1,7 @@
 import math
 
 from ..libs import activity
-from ..libs.android.graphics import DashPathEffect, Paint, Paint__Style, Path, Path__Direction
+from ..libs.android.graphics import DashPathEffect, Matrix, Paint, Paint__Style, Path, Path__Direction
 from .base import Widget
 
 
@@ -11,6 +11,7 @@ class DrawHandler(activity.IDrawHandler):
         super().__init__()
 
     def handleDraw(self, canvas):
+        canvas.save()
         self.interface._draw(self.interface._impl, path=Path(), canvas=canvas)
 
 
@@ -59,12 +60,24 @@ class Canvas(Widget):
     # Basic shapes
 
     def bezier_curve_to(
-            self, cp1x, cp1y, cp2x, cp2y, x, y, *args, **kwargs
+            self, cp1x, cp1y, cp2x, cp2y, x, y, path, *args, **kwargs
     ):
-        self.interface.factory.not_implemented('Canvas.bezier_curve_to()')
+        path.cubicTo(
+            cp1x * self.viewport.scale,
+            cp1y * self.viewport.scale,
+            cp2x * self.viewport.scale,
+            cp2y * self.viewport.scale,
+            x * self.viewport.scale,
+            y * self.viewport.scale,
+        )
 
-    def quadratic_curve_to(self, cpx, cpy, x, y, *args, **kwargs):
-        self.interface.factory.not_implemented('Canvas.quadratic_curve_to()')
+    def quadratic_curve_to(self, cpx, cpy, x, y, path, *args, **kwargs):
+        path.quadTo(
+            cpx * self.viewport.scale,
+            cpy * self.viewport.scale,
+            x * self.viewport.scale,
+            y * self.viewport.scale,
+        )
 
     def arc(
             self,
@@ -80,14 +93,14 @@ class Canvas(Widget):
     ):
         sweep_angle = endangle - startangle
         if anticlockwise:
-            sweep_angle -= 2 * math.pi
+            sweep_angle -= math.radians(360)
         path.arcTo(
             self.viewport.scale * (x - radius),
             self.viewport.scale * (y - radius),
             self.viewport.scale * (x + radius),
             self.viewport.scale * (y + radius),
-            startangle * (180 / math.pi),
-            sweep_angle * (180 / math.pi),
+            math.degrees(startangle),
+            math.degrees(sweep_angle),
             False,
         )
 
@@ -101,10 +114,26 @@ class Canvas(Widget):
         startangle,
         endangle,
         anticlockwise,
+        path,
         *args,
         **kwargs
     ):
-        self.interface.factory.not_implemented('Canvas.ellipse')
+        sweep_angle = endangle - startangle
+        if anticlockwise:
+            sweep_angle -= math.radians(360)
+        ellipse_path = Path()
+        ellipse_path.addArc(
+            self.viewport.scale * (x - radiusx),
+            self.viewport.scale * (y - radiusy),
+            self.viewport.scale * (x + radiusx),
+            self.viewport.scale * (y + radiusy),
+            math.degrees(startangle),
+            math.degrees(sweep_angle),
+        )
+        rotation_matrix = Matrix()
+        rotation_matrix.postRotate(math.degrees(rotation), self.viewport.scale * x, self.viewport.scale * y)
+        ellipse_path.transform(rotation_matrix)
+        path.addPath(ellipse_path)
 
     def rect(self, x, y, width, height, path, *args, **kwargs):
         path.addRect(
@@ -150,7 +179,7 @@ class Canvas(Widget):
     # Transformations
 
     def rotate(self, radians, canvas, *args, **kwargs):
-        canvas.rotate(radians * (180 / math.pi))
+        canvas.rotate(math.degrees(radians))
 
     def scale(self, sx, sy, canvas, *args, **kwargs):
         canvas.scale(float(sx), float(sy))
@@ -158,8 +187,9 @@ class Canvas(Widget):
     def translate(self, tx, ty, canvas, *args, **kwargs):
         canvas.translate(self.viewport.scale * tx, self.viewport.scale * ty)
 
-    def reset_transform(self, *args, **kwargs):
-        self.interface.factory.not_implemented('Canvas.reset_transform')
+    def reset_transform(self, canvas, *args, **kwargs):
+        canvas.restore()
+        canvas.save()
 
     # Text
 

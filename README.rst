@@ -45,7 +45,7 @@ Minimum requirements
 
 * If you're on macOS, you need to be on 10.10 (Yosemite) or newer.
 
-* If you're on Linux, you need to have GTK+ 3.10 or later. This is the version
+* If you're on Linux, you need to have GTK+ 3.10 or newer. This is the version
   that ships starting with Ubuntu 14.04 and Fedora 20. You also need to install
   the Python 3 bindings and development files for GTK+.
 
@@ -57,10 +57,7 @@ Minimum requirements
 
   * **Arch / Manjaro** ``sudo pacman -Syu git pkgconf cairo python-cairo pango gobject-introspection gobject-introspection-runtime python-gobject webkit2gtk``
 
-* If you're on Windows, you'll need Windows 10, and .NET Framework 4. You'll
-  also need to use Python 3.8 or lower; unfortunately, we're dependent on a
-  library (`Python.net <https://github.com/pythonnet/pythonnet/>`__) that
-  hasn't been published for Python 3.9 or higher.
+* If you're on Windows, you'll need Windows 10 or newer.
 
 Quickstart
 ~~~~~~~~~~

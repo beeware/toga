@@ -258,9 +258,7 @@ class Canvas(Widget):
         else:
             raise ValueError("No stroke or fill of write text")
 
-        text_string = NSAttributedString.alloc().initWithString_attributes_(
-            text, textAttributes
-        )
+        text_string = NSAttributedString.alloc().initWithString(text, attributes=textAttributes)
         text_string.drawAtPoint(NSPoint(x, y - height))
 
     # Rehint
