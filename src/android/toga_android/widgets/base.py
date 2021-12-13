@@ -65,7 +65,7 @@ class Widget:
         self.native.setEnabled(value)
 
     def focus(self):
-        self.interface.factory.not_implemented("Widget.focus()")
+        self.native.requestFocus()
 
     # APPLICATOR
 
