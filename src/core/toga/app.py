@@ -44,9 +44,13 @@ class WindowSet(MutableSet):
 
     def discard(self, window: Window) -> None:
         if not isinstance(window, Window):
-            raise TypeError("Toga app.windows can only discard an object of a toga.Window type")
+            raise TypeError(
+                "Toga app.windows can only discard an object of a toga.Window type"
+            )
         if window not in self.elements:
-            raise AttributeError("The window you are trying to remove is not associated with this app")
+            raise AttributeError(
+                "The window you are trying to remove is not associated with this app"
+            )
         self.elements.remove(window)
 
     def __iadd__(self, window):
@@ -68,15 +72,31 @@ class WindowSet(MutableSet):
 
 
 class MainWindow(Window):
-    _WINDOW_CLASS = 'MainWindow'
+    _WINDOW_CLASS = "MainWindow"
 
-    def __init__(self, id=None, title=None, position=(100, 100), size=(640, 480),
-                 toolbar=None, resizeable=True, minimizable=True,
-                 factory=None, on_close=None):
+    def __init__(
+        self,
+        id=None,
+        title=None,
+        position=(100, 100),
+        size=(640, 480),
+        toolbar=None,
+        resizeable=True,
+        minimizable=True,
+        factory=None,
+        on_close=None,
+    ):
         super().__init__(
-            id=id, title=title, position=position, size=size, toolbar=toolbar,
-            resizeable=resizeable, closeable=True, minimizable=minimizable,
-            factory=factory, on_close=on_close,
+            id=id,
+            title=title,
+            position=position,
+            size=size,
+            toolbar=toolbar,
+            resizeable=resizeable,
+            closeable=True,
+            minimizable=minimizable,
+            factory=factory,
+            on_close=on_close,
         )
 
     @Window.on_close.setter
@@ -87,7 +107,9 @@ class MainWindow(Window):
         Args:
             handler (:obj:`callable`): The handler passed.
         """
-        raise AttributeError("Cannot set on_close handler for the main window. Use the app on_exit handler instead")
+        raise AttributeError(
+            "Cannot set on_close handler for the main window. Use the app on_exit handler instead"
+        )
 
 
 class App:
@@ -178,8 +200,8 @@ class App:
             # If the code is contained in a folder, and you start the app
             # using `python -m appname`, the main module will report as the
             # name of the folder.
-            main_module_pkg = sys.modules['__main__'].__package__
-            if main_module_pkg == '':
+            main_module_pkg = sys.modules["__main__"].__package__
+            if main_module_pkg == "":
                 self._app_name = None
             else:
                 self._app_name = main_module_pkg
@@ -189,7 +211,7 @@ class App:
 
             # Try deconstructing the app name from the app ID
             if self._app_name is None and app_id:
-                self._app_name = app_id.split('.')[-1]
+                self._app_name = app_id.split(".")[-1]
 
         # Load the app metdata (if it is available)
         # Apps packaged with Briefcase will have this metadata.
@@ -203,8 +225,8 @@ class App:
         # of ``hello-world`` will have a module name of ``hello_world``).
         # We use the PEP566-compliant key ``Name```, rather than the internally
         # consistent key ``App-Name```.
-        if self.metadata['Name'] is not None:
-            self._app_name = self.metadata['Name']
+        if self.metadata["Name"] is not None:
+            self._app_name = self.metadata["Name"]
 
         # Whatever app name has been given, speculatively attempt to import
         # the app module. Single-file apps won't have an app folder; apps with
@@ -215,55 +237,55 @@ class App:
             sys.modules[self.module_name]
         except KeyError:
             # Well that didn't work...
-            self._app_name = 'toga'
+            self._app_name = "toga"
 
         # If a name has been provided, use it; otherwise, look to
         # the module metadata. However, a name *must* be provided.
         if formal_name:
             self._formal_name = formal_name
         else:
-            self._formal_name = self.metadata['Formal-Name']
+            self._formal_name = self.metadata["Formal-Name"]
 
         if self._formal_name is None:
-            raise RuntimeError('Toga application must have a formal name')
+            raise RuntimeError("Toga application must have a formal name")
 
         # If an app_id has been provided, use it; otherwise, look to
         # the module metadata. However, an app_id *must* be provied
         if app_id:
             self._app_id = app_id
         else:
-            self._app_id = self.metadata.get('App-ID', None)
+            self._app_id = self.metadata.get("App-ID", None)
 
         if self._app_id is None:
-            raise RuntimeError('Toga application must have an App ID')
+            raise RuntimeError("Toga application must have an App ID")
 
         # If an author has been provided, use it; otherwise, look to
         # the module metadata.
         if author:
             self._author = author
         else:
-            self._author = self.metadata.get('Author', None)
+            self._author = self.metadata.get("Author", None)
 
         # If a version has been provided, use it; otherwise, look to
         # the module metadata.
         if version:
             self._version = version
         else:
-            self._version = self.metadata.get('Version', None)
+            self._version = self.metadata.get("Version", None)
 
         # If a home_page has been provided, use it; otherwise, look to
         # the module metadata.
         if home_page:
             self._home_page = home_page
         else:
-            self._home_page = self.metadata.get('Home-page', None)
+            self._home_page = self.metadata.get("Home-page", None)
 
         # If a description has been provided, use it; otherwise, look to
         # the module metadata.
         if description:
             self._description = description
         else:
-            self._description = self.metadata.get('Summary', None)
+            self._description = self.metadata.get("Summary", None)
 
         # Set the application DOM ID; create an ID if one hasn't been provided.
         self._id = id if id else identifier(self)
@@ -277,7 +299,7 @@ class App:
         if icon:
             self.icon = icon
         else:
-            self.icon = 'resources/{app_name}'.format(app_name=self.app_name)
+            self.icon = "resources/{app_name}".format(app_name=self.app_name)
 
         self.commands = CommandSet(factory=self.factory)
 
@@ -334,7 +356,7 @@ class App:
         :returns: The module name for the app, as a ``str``.
         """
         try:
-            return self._app_name.replace('-', '_')
+            return self._app_name.replace("-", "_")
         except AttributeError:
             # If the app was created from an interactive prompt,
             # there won't be a module name.
@@ -475,8 +497,7 @@ class App:
         self._impl.hide_cursor()
 
     def startup(self):
-        """Create and show the main window for the application
-        """
+        """Create and show the main window for the application"""
         self.main_window = MainWindow(title=self.formal_name, factory=self.factory)
 
         if self._startup_method:
@@ -502,7 +523,7 @@ class App:
             webbrowser.open(self.home_page)
 
     def main_loop(self):
-        """ Invoke the application to handle user input.
+        """Invoke the application to handle user input.
         This method typically only returns once the application is exiting.
         """
         # Modify signal handlers to make sure Ctrl-C is caught and handled.
@@ -511,8 +532,7 @@ class App:
         self._impl.main_loop()
 
     def exit(self):
-        """ Quit the application gracefully.
-        """
+        """Quit the application gracefully."""
         if self.on_exit:
             should_exit = self.on_exit(self)
         else:
@@ -544,6 +564,23 @@ class App:
 
     def add_background_task(self, handler):
         self._impl.add_background_task(handler)
+
+    def onSaveInstanceState(self, outState):
+        """Override this method in your Android toga.App to save the data of your
+        displayed widgets in the outState Bundle. You also need to override
+        onRestoreInstanceState() where you set the widget data again after the app has restarted.
+
+        :param JavaClass("android/os/Bundle") outState: The Bundle to save the data to
+        """
+        pass
+
+    def onRestoreInstanceState(self, savedInstanceState):
+        """Override this method in your Android toga.App to restore your widget data
+        saved in onSaveInstanceState()
+
+        :param JavaClass("android/os/Bundle") savedInstanceState: The Bundle that contains the widget data
+        """
+        pass
 
 
 class DocumentApp(App):

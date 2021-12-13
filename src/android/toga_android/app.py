@@ -25,7 +25,7 @@ class TogaApp(IPythonApp):
         super().__init__()
         self._impl = app
         MainActivity.setPythonApp(self)
-        print('Python app launched & stored in Android Activity class')
+        print("Python app launched & stored in Android Activity class")
 
     def onCreate(self):
         print("Toga app: onCreate")
@@ -112,14 +112,17 @@ class TogaApp(IPythonApp):
                         else:
                             itemid += 1
                             order = Menu.NONE if group.order is None else group.order
-                            menugroup = parentmenu.addSubMenu(Menu.NONE, itemid, order,
-                                                              group.label)  # groupId, itemId, order, title
+                            menugroup = parentmenu.addSubMenu(
+                                Menu.NONE, itemid, order, group.label
+                            )  # groupId, itemId, order, title
                             menulist[groupkey] = menugroup
                     parentmenu = menugroup
             # create menu item
             itemid += 1
             order = Menu.NONE if cmd.order is None else cmd.order
-            menuitem = menugroup.add(Menu.NONE, itemid, order, cmd.label)  # groupId, itemId, order, title
+            menuitem = menugroup.add(
+                Menu.NONE, itemid, order, cmd.label
+            )  # groupId, itemId, order, title
             menuitem.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_NEVER)
             menuitem.setEnabled(cmd.enabled)
             self.menuitem_mapping[itemid] = cmd  # store itemid for use in onOptionsItemSelected
@@ -130,19 +133,30 @@ class TogaApp(IPythonApp):
                 continue
             itemid += 1
             order = Menu.NONE if cmd.order is None else cmd.order
-            menuitem = menu.add(Menu.NONE, itemid, order, cmd.label)  # groupId, itemId, order, title
+            menuitem = menu.add(
+                Menu.NONE, itemid, order, cmd.label
+            )  # groupId, itemId, order, title
             menuitem.setShowAsActionFlags(
-                MenuItem.SHOW_AS_ACTION_IF_ROOM)  # toolbar button / item in options menu on overflow
+                MenuItem.SHOW_AS_ACTION_IF_ROOM
+            )  # toolbar button / item in options menu on overflow
             menuitem.setEnabled(cmd.enabled)
             if cmd.icon:
                 icon = Drawable.createFromPath(str(cmd.icon._impl.path))
                 if icon:
                     menuitem.setIcon(icon)
                 else:
-                    print('Could not create icon: ' + str(cmd.icon._impl.path))
+                    print("Could not create icon: " + str(cmd.icon._impl.path))
             self.menuitem_mapping[itemid] = cmd  # store itemid for use in onOptionsItemSelected
 
         return True
+
+    def onSaveInstanceState(self, outState):
+        print("Toga app: onSaveInstanceState")
+        self._impl.onSaveInstanceState(outState)
+
+    def onRestoreInstanceState(self, savedInstanceState):
+        print("Toga app: onRestoreInstanceState")
+        self._impl.onRestoreInstanceState(savedInstanceState)
 
     @property
     def native(self):
@@ -209,7 +223,7 @@ class App:
         :rtype: dict
         """
         if intent.resolveActivity(self.native.getPackageManager()) is None:
-            raise RuntimeError('No appropriate Activity found to handle this intent.')
+            raise RuntimeError("No appropriate Activity found to handle this intent.")
         self._listener.last_intent_requestcode += 1
         code = self._listener.last_intent_requestcode
 
@@ -219,3 +233,9 @@ class App:
         self.native.startActivityForResult(intent, code)
         await result_future
         return result_future.result()
+
+    def onSaveInstanceState(self, outState):
+        self.interface.onSaveInstanceState(outState)
+
+    def onRestoreInstanceState(self, savedInstanceState):
+        self.interface.onRestoreInstanceState(savedInstanceState)
