@@ -67,10 +67,16 @@ class ExampleTableApp(toga.App):
         self.label_table2 = toga.Label('Try multiple row selection.', style=Pack(flex=1, padding_left=5))
         labelbox = toga.Box(children=[self.label_table1, self.label_table2], style=Pack(flex=0, padding_top=5))
 
+        # Data to populate the table.
+        if toga.platform.current_platform in ["android", "ios"]:
+            table_data = bee_movies[:4]
+        else:
+            table_data = bee_movies*1000
+
         self.table1 = toga.Table(
             headings=headings,
-            data=bee_movies*1000,
-            style=Pack(flex=1, padding_right=5),
+            data=table_data,
+            style=Pack(flex=1, padding_right=5, font_family="monospace", font_size=10, font_style="italic"),
             multiple_select=False,
             on_select=self.on_select_handler1
         )
