@@ -152,11 +152,11 @@ class TogaApp(IPythonApp):
 
     def onSaveInstanceState(self, outState):
         print("Toga app: onSaveInstanceState")
-        self._impl.onSaveInstanceState(outState)
+        self._impl.interface.onSaveInstanceState(outState)
 
     def onRestoreInstanceState(self, savedInstanceState):
         print("Toga app: onRestoreInstanceState")
-        self._impl.onRestoreInstanceState(savedInstanceState)
+        self._impl.interface.onRestoreInstanceState(savedInstanceState)
 
     @property
     def native(self):
@@ -233,9 +233,3 @@ class App:
         self.native.startActivityForResult(intent, code)
         await result_future
         return result_future.result()
-
-    def onSaveInstanceState(self, outState):
-        self.interface.onSaveInstanceState(outState)
-
-    def onRestoreInstanceState(self, savedInstanceState):
-        self.interface.onRestoreInstanceState(savedInstanceState)
