@@ -43,7 +43,7 @@ class TextInput(Widget):
         # Refuse to set alignment unless widget has been added to a container.
         # This is because Android EditText requires LayoutParams before
         # setGravity() can be called.
-        if self.native.getLayoutParams() is None:
+        if not self.native.getLayoutParams():
             return
         self.native.setGravity(Gravity.CENTER_VERTICAL | align(value))
 
@@ -71,7 +71,7 @@ class TextInput(Widget):
         # Refuse to call measure() if widget has no container, i.e., has no LayoutParams.
         # On Android, EditText's measure() throws NullPointerException if the widget has no
         # LayoutParams.
-        if self.native.getLayoutParams() is None:
+        if not self.native.getLayoutParams():
             return
         self.native.measure(
             View__MeasureSpec.UNSPECIFIED, View__MeasureSpec.UNSPECIFIED

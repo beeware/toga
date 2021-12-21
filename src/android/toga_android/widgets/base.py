@@ -16,7 +16,7 @@ def _get_activity(_cache=[]):
         return _cache[0]
     # See MainActivity.onCreate() for initialization of .singletonThis:
     # https://github.com/beeware/briefcase-android-gradle-template/blob/3.7/%7B%7B%20cookiecutter.formal_name%20%7D%7D/app/src/main/java/org/beeware/android/MainActivity.java
-    if MainActivity.singletonThis is None:
+    if not MainActivity.singletonThis:
         raise ValueError("Unable to find MainActivity.singletonThis from Python. This is typically set by "
                          "org.beeware.android.MainActivity.onCreate().")
     _cache.append(MainActivity(__jni__=java.NewGlobalRef(MainActivity.singletonThis)))
