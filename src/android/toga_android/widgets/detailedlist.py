@@ -202,7 +202,7 @@ class DetailedList(Widget):
 
     def rehint(self):
         # Android can crash when rendering some widgets until they have their layout params set. Guard for that case.
-        if self.native.getLayoutParams() is None:
+        if not self.native.getLayoutParams():
             return
         self.native.measure(
             View__MeasureSpec.UNSPECIFIED,
