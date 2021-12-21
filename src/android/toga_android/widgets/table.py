@@ -221,6 +221,8 @@ class Table(Widget):
     def set_font(self, font):
         if font:
             self._font_impl = font.bind(self.interface.factory)
+        if self.interface.data is not None:
+            self.change_source(self.interface.data)
 
     def rehint(self):
         # Android can crash when rendering some widgets until

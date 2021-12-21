@@ -18,6 +18,8 @@ bee_movies = [
 
 
 class ExampleTableApp(toga.App):
+    lbl_fontsize = None
+
     # Table callback functions
     def on_select_handler1(self, widget, row, **kwargs):
         self.label_table1.text = 'You selected row: {}'.format(row.title) if row is not None else 'No row selected'
@@ -67,6 +69,16 @@ class ExampleTableApp(toga.App):
         self.label_table2 = toga.Label('Try multiple row selection.', style=Pack(flex=1, padding_left=5))
         labelbox = toga.Box(children=[self.label_table1, self.label_table2], style=Pack(flex=0, padding_top=5))
 
+        # Change font size
+        lbl_fontlabel = toga.Label("Font size =")
+        self.lbl_fontsize = toga.Label("10")
+        btn_reduce_size = toga.Button(" - ", on_press=self.reduce_fontsize, style=Pack(width=40))
+        btn_increase_size = toga.Button(" + ", on_press=self.increase_fontsize, style=Pack(width=40))
+        font_box = toga.Box(
+            children=[lbl_fontlabel, self.lbl_fontsize, btn_reduce_size, btn_increase_size],
+            style=Pack(direction=ROW, padding_bottom=5)
+        )
+
         # Data to populate the table.
         if toga.platform.current_platform in ["android", "ios"]:
             table_data = bee_movies[:4]
@@ -76,9 +88,8 @@ class ExampleTableApp(toga.App):
         self.table1 = toga.Table(
             headings=headings,
             data=table_data,
-            style=Pack(flex=1, padding_right=5, font_family="monospace", font_size=10, font_style="italic"),
-            multiple_select=False,
-            on_select=self.on_select_handler1
+            style=Pack(flex=1, padding_right=5, font_family="monospace", font_size=int(self.lbl_fontsize.text),
+                       font_style="italic"), multiple_select=False, on_select=self.on_select_handler1
         )
 
         self.table2 = toga.Table(
@@ -105,7 +116,7 @@ class ExampleTableApp(toga.App):
 
         # Most outer box
         outer_box = toga.Box(
-            children=[btn_box, tablebox, labelbox],
+            children=[font_box, btn_box, tablebox, labelbox],
             style=Pack(
                 flex=1,
                 direction=COLUMN,
@@ -119,6 +130,17 @@ class ExampleTableApp(toga.App):
         # Show the main window
         self.main_window.show()
 
+    def reduce_fontsize(self, widget):
+        font_size = int(self.lbl_fontsize.text) - 1
+        self.lbl_fontsize.text = str(font_size)
+        font = toga.Font("monospace", font_size)
+        self.table1._impl.set_font(font)
+
+    def increase_fontsize(self, widget):
+        font_size = int(self.lbl_fontsize.text) + 1
+        self.lbl_fontsize.text = str(font_size)
+        font = toga.Font("monospace", font_size)
+        self.table1._impl.set_font(font)
 
 def main():
     return ExampleTableApp('Table', 'org.beeware.widgets.table')
