@@ -104,9 +104,8 @@ class Table(Widget):
         If the table allows multiple selection, returns a list of
         selected data nodes. Otherwise, returns a single data node.
 
-        The value of a column of the selection can be accessed with selection.header_name and selection.accessor_name
-        (for single selection) or with selection[x].header_name and selection[x].accessor_name (for multiple
-        selection)
+        The value of a column of the selection can be accessed with selection.accessor_name
+        (for single selection) and with selection[x].accessor_name (for multiple selection)
         """
         return self._impl.get_selection()
 
@@ -139,7 +138,7 @@ class Table(Widget):
         The provided callback function has to accept two arguments table (:obj:`Table`)
         and row (``Row`` or ``None``).
 
-        The value of a column of row can be accessed with row.header_name or row.accessor_name
+        The value of a column of row can be accessed with row.accessor_name
 
         Returns:
             (``callable``) The callback function.
@@ -163,7 +162,7 @@ class Table(Widget):
         The provided callback function has to accept two arguments table (:obj:`Table`)
         and row (``Row`` or ``None``).
 
-        The value of a column of row can be accessed with row.header_name or row.accessor_name
+        The value of a column of row can be accessed with row.accessor_name
 
         Returns:
             (``callable``) The callback function.
