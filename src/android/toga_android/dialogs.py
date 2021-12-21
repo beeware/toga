@@ -8,7 +8,7 @@ class NoOpListener(DialogInterface__OnClickListener):
 
 
 def info(window, title, message):
-    builder = AlertDialog__Builder(window.app.native)
+    builder = AlertDialog__Builder(window.native)
     builder.setTitle(title)
     builder.setMessage(message)
     builder.setPositiveButton("OK", NoOpListener())

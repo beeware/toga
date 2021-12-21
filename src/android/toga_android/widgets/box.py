@@ -1,11 +1,10 @@
-from ..libs.activity import MainActivity
 from ..libs.android.widget import RelativeLayout, RelativeLayout__LayoutParams
 from .base import Widget
 
 
 class Box(Widget):
     def create(self):
-        self.native = RelativeLayout(MainActivity.singletonThis)
+        self.native = RelativeLayout(self._native_activity)
 
     def set_child_bounds(self, widget, x, y, width, height):
         # Avoid setting child boundaries if `create()` has not been called.

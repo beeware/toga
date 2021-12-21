@@ -1,6 +1,7 @@
 from rubicon.java import JavaClass
 
 BitmapFactory = JavaClass("android/graphics/BitmapFactory")
+Bitmap = JavaClass("android/graphics/Bitmap")
 Color = JavaClass("android/graphics/Color")
 DashPathEffect = JavaClass("android/graphics/DashPathEffect")
 Drawable = JavaClass("android/graphics/drawable/Drawable")

@@ -1,4 +1,5 @@
-from .libs.android.graphics import BitmapFactory
+from .libs.android.graphics import BitmapFactory, Bitmap
+from rubicon.java.jni import java
 
 
 class Image:
@@ -8,7 +9,7 @@ class Image:
         self.url = url
 
         if path:
-            self.native = BitmapFactory.decodeFile(str(path))
+            self.native = Bitmap(__jni__ = java.NewGlobalRef(BitmapFactory.decodeFile(str(path))))
         elif url:
             # Android BitmapFactory nor ImageView provide a convenient async way to fetch images by URL
             self.native = None

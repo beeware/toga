@@ -1,3 +1,5 @@
+from typing import Callable
+from inspect import ismethod
 from rubicon.java.jni import java
 from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT
 
@@ -25,12 +27,50 @@ def _get_activity(_cache=[]):
 
 class Widget:
     def __init__(self, interface):
+        self.deferred_execution = [False, []]
+        """
+        [whether_execuate_now, (method, args, kargs)]
+        for defered excecution of methods which need access to activity,
+        because the activity can not be got until onCreate event.
+
+        When activity is got, `replay` method will be called and 
+        defered methods will be executed.
+        """
+        self.native = None
         self.interface = interface
         self.interface._impl = self
         self._container = None
-        self.native = None
-        self._native_activity = _get_activity()
+        self._native_activity = None
         self.create()
+
+    def __getattribute__(self, name):
+        """
+        It is a hack for lazy execution which access the Activity.
+        """
+        deferred_execution = object.__getattribute__(self, "deferred_execution")
+        member = object.__getattribute__(self, name)
+        if deferred_execution[0] or not ismethod(member):
+            return member
+        if name == "replay_deferred_methods" or name.startswith("__"):
+            return member
+
+        def defered_method(*args, **kargs):
+            if deferred_execution[0]:
+                return member(*args, **kargs)
+            deferred_execution[1].append((member, args, kargs))
+
+        return defered_method
+
+    # execute the defered methods
+    def replay_deferred_methods(self, native_activity):
+        self._native_activity = native_activity
+        for child in self.interface.children:
+            child._impl.replay_deferred_methods(native_activity)
+        self.deferred_execution[0] = True
+        for method, x, y in self.deferred_execution[1]:
+            print("execute: ", method, x, y)
+            method(*x, **y)
+        self.deferred_execution[1].clear()
         # Immediately re-apply styles. Some widgets may defer style application until
         # they have been added to a container.
         self.interface.style.reapply()
@@ -48,8 +88,10 @@ class Widget:
     @container.setter
     def container(self, container):
         self._container = container
-        self.viewport = container.viewport
+        self.set_container(container)
 
+    def set_container(self, container):
+        self.viewport = container.viewport
         if self.native:
             # When initially setting the container and adding widgets to the container,
             # we provide no `LayoutParams`. Those are promptly added when Toga
