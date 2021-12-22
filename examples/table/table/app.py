@@ -170,13 +170,13 @@ class ExampleTableApp(toga.App):
     def reduce_fontsize(self, widget):
         font_size = int(self.lbl_fontsize.text) - 1
         self.lbl_fontsize.text = str(font_size)
-        font = toga.Font("monospace", font_size)
+        font = toga.Font("monospace", font_size, "italic")
         self.table1._impl.set_font(font)
 
     def increase_fontsize(self, widget):
         font_size = int(self.lbl_fontsize.text) + 1
         self.lbl_fontsize.text = str(font_size)
-        font = toga.Font("monospace", font_size)
+        font = toga.Font("monospace", font_size, "italic")
         self.table1._impl.set_font(font)
 
 
