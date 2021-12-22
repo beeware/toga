@@ -1,9 +1,12 @@
+from rubicon.java import JavaClass
 from travertino.size import at_least
 
 from ..libs.android import R__layout
+from ..libs.android.graphics import Typeface
 from ..libs.android.view import Gravity, View__MeasureSpec
 from ..libs.android.widget import ArrayAdapter, OnItemSelectedListener, Spinner
 from .base import Widget, align
+SpinnerAdapter = JavaClass("org/beeware/android/SpinnerAdapter")
 
 
 class TogaOnItemSelectedListener(OnItemSelectedListener):
@@ -23,13 +26,12 @@ class Selection(Widget):
             impl=self
         ))
         # On Android, the list of options is provided to the `Spinner` wrapped in
-        # an `ArrayAdapter`. We store `self.adapter` to avoid having to typecast it
+        # a `SpinnerAdapter`. We store `self.adapter` to avoid having to typecast it
         # in `add_item()`.
-        self.adapter = ArrayAdapter(
+        self.adapter = SpinnerAdapter(
             self._native_activity,
             R__layout.simple_spinner_item
         )
-        self.adapter.setDropDownViewResource(R__layout.simple_spinner_dropdown_item)
         self.native.setAdapter(self.adapter)
         # Create a mapping from text to numeric index to support `select_item()`.
         self._indexByItem = {}
@@ -61,3 +63,9 @@ class Selection(Widget):
     def set_on_select(self, handler):
         # No special handling is required.
         pass
+
+    def set_font(self, font):
+        if font:
+            font_impl = font.bind(self.interface.factory)
+            self.adapter.setTextSize(TypedValue.COMPLEX_UNIT_SP, font_impl.get_size())
+            self.adapter.setTypeface(font_impl.get_typeface(), font_impl.get_style())
