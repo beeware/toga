@@ -18,7 +18,9 @@ class SelectionApp(toga.App):
         box_style = Pack(direction=ROW, padding=10)
 
         # Add the content on the main window
-        self.selection = toga.Selection(items=self.OPTIONS)
+        self.selection = toga.Selection(
+            items=self.OPTIONS, style=Pack(font_family="monospace", font_size=16, font_style="italic")
+        )
 
         self.main_window.content = toga.Box(
             children=[
