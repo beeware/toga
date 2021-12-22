@@ -2,11 +2,11 @@ from rubicon.java import JavaClass
 from travertino.size import at_least
 
 from ..libs.android import R__layout
-from ..libs.android.graphics import Typeface
 from ..libs.android.util import TypedValue
 from ..libs.android.view import Gravity, View__MeasureSpec
 from ..libs.android.widget import OnItemSelectedListener, Spinner
 from .base import Widget, align
+
 BeewareSpinnerAdapter = JavaClass("org/beeware/android/BeewareSpinnerAdapter")
 
 
