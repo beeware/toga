@@ -67,3 +67,4 @@ class Selection(Widget):
             font_impl = font.bind(self.interface.factory)
             self.adapter.setSpinnerTextSize(TypedValue.COMPLEX_UNIT_SP, int(font_impl.get_size()))
             self.adapter.setSpinnerTypeFace(font_impl.get_typeface(), font_impl.get_style())
+            self.adapter.notifyDataSetChanged()
