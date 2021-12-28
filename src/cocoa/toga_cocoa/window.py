@@ -14,6 +14,7 @@ from toga_cocoa.libs import (
     NSMiniaturizableWindowMask,
     NSMutableArray,
     NSObject,
+    NSPoint,
     NSResizableWindowMask,
     NSScreen,
     NSSize,
@@ -222,7 +223,18 @@ class Window:
         self.native.title = title
 
     def set_position(self, position):
-        pass
+
+        x, y = position
+        screen = self.native.screen
+        frame = screen.frame
+
+        # From the bottom left corner of the screen to the bottom left corner
+        # of the window.
+        # self.native.setFrameOrigin(NSPoint(x, y))
+
+        # From the top left corner of the screen to the top left corner
+        # of the window.
+        self.native.setFrameTopLeftPoint(NSPoint(x, frame.size.height - y))
 
     def set_size(self, size):
         frame = self.native.frame
