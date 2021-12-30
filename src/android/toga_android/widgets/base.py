@@ -1,5 +1,5 @@
-from typing import Callable
 from inspect import ismethod
+
 from rubicon.java.jni import java
 from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT
 
@@ -33,7 +33,7 @@ class Widget:
         for defered excecution of methods which need access to activity,
         because the activity can not be got until onCreate event.
 
-        When activity is got, `replay` method will be called and 
+        When activity is got, `replay` method will be called and
         defered methods will be executed.
         """
         self.native = None

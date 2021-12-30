@@ -1,7 +1,14 @@
 import math
 
 from ..libs import activity
-from ..libs.android.graphics import DashPathEffect, Matrix, Paint, Paint__Style, Path, Path__Direction
+from ..libs.android.graphics import (
+    DashPathEffect,
+    Matrix,
+    Paint,
+    Paint__Style,
+    Path,
+    Path__Direction
+)
 from .base import Widget
 
 

@@ -1,5 +1,6 @@
-from .libs.android.graphics import BitmapFactory, Bitmap
 from rubicon.java.jni import java
+
+from .libs.android.graphics import Bitmap, BitmapFactory
 
 
 class Image:

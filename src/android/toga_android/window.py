@@ -1,15 +1,15 @@
 import asyncio
+
 import toga
-from .libs.activity import IPythonWin, WinActivity, MainActivity
-from .libs.android.view import Menu, MenuItem
-from .libs.android.graphics import Drawable
+from rubicon.java.jni import java
 from toga.command import Group
 
 from . import dialogs
+from .libs.activity import IPythonWin, MainActivity, WinActivity
 from .libs.android import R__attr
+from .libs.android.graphics import Drawable
 from .libs.android.util import TypedValue
-
-from rubicon.java.jni import java
+from .libs.android.view import Menu, MenuItem
 
 
 class AndroidViewport:
@@ -82,7 +82,7 @@ class TogaWin(IPythonWin):
 
     def onCreate(self):
         print("Toga app: onCreate")
-        # Now we get the activity
+        # Now the activity has been got
         self._impl.widget.replay_deferred_methods(self._impl.native)
 
         # Set the widget's viewport to be based on the window's content.

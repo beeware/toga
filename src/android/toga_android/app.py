@@ -1,14 +1,17 @@
-from toga.handlers import wrapped_handler
 import ctypes
-from .window import Window, TogaWin
-from .libs.activity import IPythonApp, MainActivity
+
 from rubicon.java import android_events
+from toga.handlers import wrapped_handler
+
+from .libs.activity import IPythonApp, MainActivity
+from .window import TogaWin, Window
 
 
 # `MainWindow` is defined here in `app.py`, not `window.py`, to mollify the test suite.
 class MainWindow(Window):
     def show(self):
         pass
+
 
 class TogaApp(IPythonApp):
     def __init__(self, app):

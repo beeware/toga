@@ -12,6 +12,7 @@ class Label(Widget):
         self.native.setSingleLine()
 
     def set_text(self, value):
+        print("Set text "+value)
         self.native.setText(value)
 
     def set_font(self, font):
