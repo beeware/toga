@@ -48,13 +48,15 @@ class Widget:
     @container.setter
     def container(self, container):
         self._container = container
-        self.viewport = container.viewport
 
-        if self.native:
-            # When initially setting the container and adding widgets to the container,
-            # we provide no `LayoutParams`. Those are promptly added when Toga
-            # calls `widget.rehint()` and `widget.set_bounds()`.
-            self._container.native.addView(self.native)
+        if container:
+            self.viewport = container.viewport
+
+            if self.native:
+                # When initially setting the container and adding widgets to the container,
+                # we provide no `LayoutParams`. Those are promptly added when Toga
+                # calls `widget.rehint()` and `widget.set_bounds()`.
+                self._container.native.addView(self.native)
 
         for child in self.interface.children:
             child._impl.container = container
@@ -95,7 +97,6 @@ class Widget:
 
     def add_child(self, child):
         if self.container:
-            child.viewport = self.root.viewport
             child.container = self.container
 
     def rehint(self):
