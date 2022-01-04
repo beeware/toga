@@ -22,6 +22,5 @@ class Box(Widget):
 
     def remove_child(self, child):
         child.container = None
-        self.native.removeView(child.native)
-        parent = self.native.getParent()
-        parent.requestLayout()  # view needs to be refreshed, but it's not working :-(
+        self.container.native.removeView(child.native)
+        self.container.native.invalidate()
