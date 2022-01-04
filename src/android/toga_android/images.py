@@ -10,7 +10,7 @@ class Image:
         self.url = url
 
         if path:
-            self.native = Bitmap(__jni__ = java.NewGlobalRef(BitmapFactory.decodeFile(str(path))))
+            self.native = Bitmap(__jni__=java.NewGlobalRef(BitmapFactory.decodeFile(str(path))))
         elif url:
             # Android BitmapFactory nor ImageView provide a convenient async way to fetch images by URL
             self.native = None

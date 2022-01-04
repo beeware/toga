@@ -113,7 +113,7 @@ class TogaWin(IPythonWin):
 
     def onDestory(self):
         print("Toga app: onDestory")
-        if not self._impl.interface.on_close is None:
+        if self._impl.interface.on_close is not None:
             self._impl.interface.on_close(self._impl)
 
     def onRestart(self):
