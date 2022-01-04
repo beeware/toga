@@ -19,8 +19,3 @@ class Box(Widget):
         layout_params.topMargin = y
         layout_params.leftMargin = x
         self.native.updateViewLayout(widget.native, layout_params)
-
-    def remove_child(self, child):
-        child.container = None
-        self.container.native.removeView(child.native)
-        self.container.native.invalidate()

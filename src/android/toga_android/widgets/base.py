@@ -47,11 +47,17 @@ class Widget:
 
     @container.setter
     def container(self, container):
-        self._container = container
-
-        if container:
+        if self.container:
+            if container:
+                raise RuntimeError('Already have a container')
+            else:
+                # container is set to None, removing self from the container.native
+                self._container.native.removeView(self.native)
+                self._container.native.invalidate()
+                self._container = None
+        elif container:
+            self._container = container
             self.viewport = container.viewport
-
             if self.native:
                 # When initially setting the container and adding widgets to the container,
                 # we provide no `LayoutParams`. Those are promptly added when Toga
@@ -98,6 +104,9 @@ class Widget:
     def add_child(self, child):
         if self.container:
             child.container = self.container
+
+    def remove_child(self, child):
+        child.container = None
 
     def rehint(self):
         pass
