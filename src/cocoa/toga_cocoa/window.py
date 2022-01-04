@@ -226,6 +226,8 @@ class Window:
 
         x, y = position
         screen = self.native.screen
+        if screen is None:
+            return
         frame = screen.frame
 
         # From the bottom left corner of the screen to the bottom left corner
