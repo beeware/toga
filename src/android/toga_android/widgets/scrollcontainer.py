@@ -65,7 +65,7 @@ class ScrollContainer(Widget):
             LinearLayout__LayoutParams.MATCH_PARENT
         )
         widget_parent = widget.native.getParent()
-        if widget_parent is not None:
+        if widget_parent:
             widget_parent.removeView(widget.native)
         self.hScrollView.addView(widget.native, content_view_params)
         for child in widget.interface.children:

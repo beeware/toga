@@ -1,5 +1,4 @@
 from rubicon.java.android_events import Handler, PythonRunnable
-from rubicon.java.jni import java
 from travertino.size import at_least
 
 from ..libs.android import R__color

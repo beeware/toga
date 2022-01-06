@@ -125,22 +125,23 @@ class TogaApp(IPythonApp):
             self.menuitem_mapping[itemid] = cmd  # store itemid for use in onOptionsItemSelected
 
         # create toolbar actions
-        for cmd in self._impl.interface.main_window.toolbar:
-            if cmd == toga.SECTION_BREAK or cmd == toga.GROUP_BREAK:
-                continue
-            itemid += 1
-            order = Menu.NONE if cmd.order is None else cmd.order
-            menuitem = menu.add(Menu.NONE, itemid, order, cmd.label)  # groupId, itemId, order, title
-            menuitem.setShowAsActionFlags(
-                MenuItem.SHOW_AS_ACTION_IF_ROOM)  # toolbar button / item in options menu on overflow
-            menuitem.setEnabled(cmd.enabled)
-            if cmd.icon:
-                icon = Drawable.createFromPath(str(cmd.icon._impl.path))
-                if icon:
-                    menuitem.setIcon(icon)
-                else:
-                    print('Could not create icon: ' + str(cmd.icon._impl.path))
-            self.menuitem_mapping[itemid] = cmd  # store itemid for use in onOptionsItemSelected
+        if self._impl.interface.main_window:
+            for cmd in self._impl.interface.main_window.toolbar:
+                if cmd == toga.SECTION_BREAK or cmd == toga.GROUP_BREAK:
+                    continue
+                itemid += 1
+                order = Menu.NONE if cmd.order is None else cmd.order
+                menuitem = menu.add(Menu.NONE, itemid, order, cmd.label)  # groupId, itemId, order, title
+                menuitem.setShowAsActionFlags(
+                    MenuItem.SHOW_AS_ACTION_IF_ROOM)  # toolbar button / item in options menu on overflow
+                menuitem.setEnabled(cmd.enabled)
+                if cmd.icon:
+                    icon = Drawable.createFromPath(str(cmd.icon._impl.path))
+                    if icon:
+                        menuitem.setIcon(icon)
+                    else:
+                        print('Could not create icon: ' + str(cmd.icon._impl.path))
+                self.menuitem_mapping[itemid] = cmd  # store itemid for use in onOptionsItemSelected
 
         return True
 
