@@ -70,7 +70,7 @@ class WebView(Widget):
     def set_alignment(self, value):
         # Refuse to set alignment unless widget has been added to a container.
         # This is because this widget's setGravity() requires LayoutParams before it can be called.
-        if self.native.getLayoutParams() is None:
+        if not self.native.getLayoutParams():
             return
         self.native.setGravity(Gravity.CENTER_VERTICAL | align(value))
 
@@ -78,7 +78,7 @@ class WebView(Widget):
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
         # Refuse to call measure() if widget has no container, i.e., has no LayoutParams.
         # Android's measure() throws NullPointerException if the widget has no LayoutParams.
-        if self.native.getLayoutParams() is None:
+        if not self.native.getLayoutParams():
             return
         self.native.measure(
             View__MeasureSpec.UNSPECIFIED,
