@@ -209,7 +209,7 @@ class App:
         :returns: A Dictionary containing "resultCode" (int) and "resultData" (Intent or None)
         :rtype: dict
         """
-        if intent.resolveActivity(self.native.getPackageManager()) is None:
+        if not intent.resolveActivity(self.native.getPackageManager()):
             raise RuntimeError('No appropriate Activity found to handle this intent.')
         self._listener.last_intent_requestcode += 1
         code = self._listener.last_intent_requestcode
