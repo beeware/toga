@@ -96,3 +96,8 @@ def main():
     #   App name and namespace
     app = ExampleBoxApp("Box", "org.beeware.widgets.boxes")
     return app
+
+
+if __name__ == '__main__':
+    app = main()
+    app.main_loop()

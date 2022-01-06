@@ -15,15 +15,15 @@ class Paths:
 
     @property
     def data(self):
-        return Path.home() / 'Library' / 'Application Support' / App.app.app_id
+        return Path(App.app._impl.native.getApplicationContext().getFilesDir().getPath())
 
     @property
     def cache(self):
-        return Path.home() / 'Library' / 'Caches' / App.app.app_id
+        return Path(App.app._impl.native.getApplicationContext().getCacheDir().getPath())
 
     @property
     def logs(self):
-        return Path.home() / 'Library' / 'Logs' / App.app.app_id
+        return Path(App.app._impl.native.getApplicationContext().getCacheDir().getPath()) / 'log'
 
     @property
     def toga(self):

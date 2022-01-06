@@ -4,7 +4,7 @@ requires = ["briefcase"]
 [tool.briefcase]
 project_name = "Tree Demo"
 bundle = "org.beeware"
-version = "0.3.0.dev29"
+version = "0.3.0.dev30"
 url = "https://beeware.org"
 license = "BSD license"
 author = 'Tiberius Yak'
@@ -14,31 +14,33 @@ author_email = "tiberius@beeware.org"
 formal_name = "Tree Demo"
 description = "A testing app"
 sources = ['tree']
-requires = []
+requires = [
+    '../../src/core',
+]
 
 
 [tool.briefcase.app.tree.macOS]
 requires = [
-    'toga-cocoa',
+    '../../src/cocoa',
 ]
 
 [tool.briefcase.app.tree.linux]
 requires = [
-    'toga-gtk',
+    '../../src/gtk',
 ]
 
 [tool.briefcase.app.tree.windows]
 requires = [
-    'toga-winforms',
+    '../../src/winforms',
 ]
 
 # Mobile deployments
 [tool.briefcase.app.tree.iOS]
 requires = [
-    'toga-iOS',
+    '../../src/iOS',
 ]
 
 [tool.briefcase.app.tree.android]
 requires = [
-    'toga-android',
+    '../../src/android',
 ]

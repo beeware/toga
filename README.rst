@@ -45,22 +45,19 @@ Minimum requirements
 
 * If you're on macOS, you need to be on 10.10 (Yosemite) or newer.
 
-* If you're on Linux, you need to have GTK+ 3.10 or later. This is the version
+* If you're on Linux, you need to have GTK+ 3.10 or newer. This is the version
   that ships starting with Ubuntu 14.04 and Fedora 20. You also need to install
   the Python 3 bindings and development files for GTK+.
 
-  * **Ubuntu 16.04 / Debian 9** ``sudo apt-get install python3-dev python3-gi python3-gi-cairo libgirepository1.0-dev libcairo2-dev libwebkitgtk-3.0-0 gir1.2-webkit2-3.0``
+  * **Ubuntu 16.04 / Debian 9** ``sudo apt-get install python3-dev python3-gi python3-gi-cairo libgirepository1.0-dev libcairo2-dev libpango1.0-dev libwebkitgtk-3.0-0 gir1.2-webkit2-3.0``
 
-  * **Ubuntu 18.04 / Debian 10** ``sudo apt-get install python3-dev python3-gi python3-gi-cairo libgirepository1.0-dev libcairo2-dev libwebkitgtk-4.0-37 gir1.2-webkit2-4.0``
+  * **Ubuntu 18.04, 20.04 / Debian 10, 11** ``sudo apt-get install python3-dev python3-gi python3-gi-cairo libgirepository1.0-dev libcairo2-dev libpango1.0-dev libwebkit2gtk-4.0-37 gir1.2-webkit2-4.0``
 
   * **Fedora** ``sudo dnf install pygobject3 python3-gobject python3-cairo-devel cairo-gobject-devel gobject-introspection-devel pywebkitgtk``
 
   * **Arch / Manjaro** ``sudo pacman -Syu git pkgconf cairo python-cairo pango gobject-introspection gobject-introspection-runtime python-gobject webkit2gtk``
 
-* We're working on Windows support, but not all features and widgets are
-  supported. At a minimum, you'll need Python 3 and .NET Framework 4. This has
-  been tested on Windows 10, but should work on 7 and 8. Pull requests, help and
-  corrections are most welcome.
+* If you're on Windows, you'll need Windows 10 or newer.
 
 Quickstart
 ~~~~~~~~~~

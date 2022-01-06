@@ -2,7 +2,9 @@ from ctypes import c_uint
 from ctypes.wintypes import HWND, WPARAM
 
 from travertino.size import at_least
+from travertino.constants import TRANSPARENT
 
+from toga_winforms.colors import native_color
 from toga_winforms.libs import HorizontalTextAlignment, WinForms, user32
 
 from .base import Widget
@@ -51,6 +53,18 @@ class TextInput(Widget):
     def set_font(self, font):
         if font:
             self.native.Font = font.bind(self.interface.factory).native
+
+    def set_color(self, color):
+        if color:
+            self.native.ForeColor = native_color(color)
+        else:
+            self.native.ForeColor = self.native.DefaultForeColor
+
+    def set_background_color(self, value):
+        if value:
+            self.native.BackColor = native_color(value)
+        else:
+            self.native.BackColor = native_color(TRANSPARENT)
 
     def rehint(self):
         # Height of a text input is known and fixed.

@@ -23,7 +23,7 @@ class Clipboard():
         if self.clipboard_manager.hasPrimaryClip():
             clip_data = self.clipboard_manager.getPrimaryClip()
             item = clip_data.getItemAt(0)
-            if item.getText() is not None:
+            if item.getText():
                 return item.getText().toString()
             else:
                 return None

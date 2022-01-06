@@ -1,0 +1,46 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name = "Command Example"
+bundle = "org.beeware"
+version = "0.3.0.dev30"
+url = "https://beeware.org"
+license = "BSD license"
+author = 'Tiberius Yak'
+author_email = "tiberius@beeware.org"
+
+[tool.briefcase.app.command]
+formal_name = "Command Example"
+description = "A testing app"
+sources = ['command']
+requires = [
+    '../../src/core',
+]
+
+
+[tool.briefcase.app.command.macOS]
+requires = [
+    '../../src/cocoa',
+]
+
+[tool.briefcase.app.command.linux]
+requires = [
+    '../../src/gtk',
+]
+
+[tool.briefcase.app.command.windows]
+requires = [
+	'toga-winforms',
+]
+
+# Mobile deployments
+[tool.briefcase.app.command.iOS]
+requires = [
+    '../../src/iOS',
+]
+
+[tool.briefcase.app.command.android]
+requires = [
+    '../../src/android',
+]

@@ -1,9 +1,8 @@
-from ..libs import activity
-from ..libs.android.graphics import Paint, Paint__Style, Path
-from .base import Widget
+import math
 
-# Arbitrary scale factor; to be made more specific in the future.
-SCALE_FACTOR = 5
+from ..libs import activity
+from ..libs.android.graphics import DashPathEffect, Matrix, Paint, Paint__Style, Path, Path__Direction
+from .base import Widget
 
 
 class DrawHandler(activity.IDrawHandler):
@@ -12,17 +11,16 @@ class DrawHandler(activity.IDrawHandler):
         super().__init__()
 
     def handleDraw(self, canvas):
-        self.interface._draw(self.interface._impl, draw_context=canvas)
+        canvas.save()
+        self.interface._draw(self.interface._impl, path=Path(), canvas=canvas)
 
 
 class Canvas(Widget):
     def create(self):
         # Our native widget is a DrawHandlerView, which delegates drawing to DrawHandler,
-        # so we can pass the `android.graphics.Canvas` around as `draw_context`.
+        # so we can pass the `android.graphics.Canvas` around as `canvas`.
         self.native = activity.DrawHandlerView(self._native_activity.getApplicationContext())
         self.native.setDrawHandler(DrawHandler(self.interface))
-        self._path = None
-        self._draw_paint = None
 
     def redraw(self):
         pass
@@ -47,28 +45,39 @@ class Canvas(Widget):
 
     # Basic paths
 
-    def new_path(self, draw_context, *args, **kwargs):
+    def new_path(self, *args, **kwargs):
         self.interface.factory.not_implemented('Canvas.new_path()')
 
-    def closed_path(self, x, y, draw_context, *args, **kwargs):
-        pass
+    def closed_path(self, x, y, path, *args, **kwargs):
+        path.close()
 
-    def move_to(self, x, y, draw_context, *args, **kwargs):
-        self._path = Path()
-        self._path.moveTo(float(x) * SCALE_FACTOR, float(y) * SCALE_FACTOR)
+    def move_to(self, x, y, path, *args, **kwargs):
+        path.moveTo(self.viewport.scale * x, self.viewport.scale * y)
 
-    def line_to(self, x, y, draw_context, *args, **kwargs):
-        self._path.lineTo(float(x) * SCALE_FACTOR, float(y) * SCALE_FACTOR)
+    def line_to(self, x, y, path, *args, **kwargs):
+        path.lineTo(self.viewport.scale * x, self.viewport.scale * y)
 
     # Basic shapes
 
     def bezier_curve_to(
-            self, cp1x, cp1y, cp2x, cp2y, x, y, draw_context, *args, **kwargs
+            self, cp1x, cp1y, cp2x, cp2y, x, y, path, *args, **kwargs
     ):
-        self.interface.factory.not_implemented('Canvas.bezier_curve_to()')
+        path.cubicTo(
+            cp1x * self.viewport.scale,
+            cp1y * self.viewport.scale,
+            cp2x * self.viewport.scale,
+            cp2y * self.viewport.scale,
+            x * self.viewport.scale,
+            y * self.viewport.scale,
+        )
 
-    def quadratic_curve_to(self, cpx, cpy, x, y, draw_context, *args, **kwargs):
-        self.interface.factory.not_implemented('Canvas.quadratic_curve_to()')
+    def quadratic_curve_to(self, cpx, cpy, x, y, path, *args, **kwargs):
+        path.quadTo(
+            cpx * self.viewport.scale,
+            cpy * self.viewport.scale,
+            x * self.viewport.scale,
+            y * self.viewport.scale,
+        )
 
     def arc(
             self,
@@ -78,11 +87,22 @@ class Canvas(Widget):
             startangle,
             endangle,
             anticlockwise,
-            draw_context,
+            path,
             *args,
             **kwargs
     ):
-        self.interface.factory.not_implemented('Canvas.arc()')
+        sweep_angle = endangle - startangle
+        if anticlockwise:
+            sweep_angle -= math.radians(360)
+        path.arcTo(
+            self.viewport.scale * (x - radius),
+            self.viewport.scale * (y - radius),
+            self.viewport.scale * (x + radius),
+            self.viewport.scale * (y + radius),
+            math.degrees(startangle),
+            math.degrees(sweep_angle),
+            False,
+        )
 
     def ellipse(
         self,
@@ -94,46 +114,82 @@ class Canvas(Widget):
         startangle,
         endangle,
         anticlockwise,
-        draw_context,
+        path,
         *args,
         **kwargs
     ):
-        self.interface.factory.not_implemented('Canvas.ellipse')
+        sweep_angle = endangle - startangle
+        if anticlockwise:
+            sweep_angle -= math.radians(360)
+        ellipse_path = Path()
+        ellipse_path.addArc(
+            self.viewport.scale * (x - radiusx),
+            self.viewport.scale * (y - radiusy),
+            self.viewport.scale * (x + radiusx),
+            self.viewport.scale * (y + radiusy),
+            math.degrees(startangle),
+            math.degrees(sweep_angle),
+        )
+        rotation_matrix = Matrix()
+        rotation_matrix.postRotate(math.degrees(rotation), self.viewport.scale * x, self.viewport.scale * y)
+        ellipse_path.transform(rotation_matrix)
+        path.addPath(ellipse_path)
 
-    def rect(self, x, y, width, height, draw_context, *args, **kwargs):
-        self.interface.factory.not_implemented('Canvas.rect')
+    def rect(self, x, y, width, height, path, *args, **kwargs):
+        path.addRect(
+            self.viewport.scale * x,
+            self.viewport.scale * y,
+            self.viewport.scale * (x + width),
+            self.viewport.scale * (y + height),
+            Path__Direction.CW,
+        )
 
     # Drawing Paths
 
-    def fill(self, color, fill_rule, preserve, draw_context, *args, **kwargs):
-        self.interface.factory.not_implemented('Canvas.fill()')
-
-    def stroke(self, color, line_width, line_dash, draw_context, *args, **kwargs):
-        self._draw_paint = Paint()
-        self._draw_paint.setAntiAlias(True)
-        self._draw_paint.setStrokeWidth(float(line_width) * SCALE_FACTOR)
-        self._draw_paint.setStyle(Paint__Style.STROKE)
+    def fill(self, color, fill_rule, preserve, path, canvas, *args, **kwargs):
+        draw_paint = Paint()
+        draw_paint.setAntiAlias(True)
+        draw_paint.setStyle(Paint__Style.FILL)
         if color is None:
             a, r, g, b = 255, 0, 0, 0
         else:
             a, r, g, b = round(color.a * 255), int(color.r), int(color.g), int(color.b)
-        self._draw_paint.setARGB(a, r, g, b)
+        draw_paint.setARGB(a, r, g, b)
 
-        draw_context.drawPath(self._path, self._draw_paint)
+        canvas.drawPath(path, draw_paint)
+        path.reset()
+
+    def stroke(self, color, line_width, line_dash, path, canvas, *args, **kwargs):
+        draw_paint = Paint()
+        draw_paint.setAntiAlias(True)
+        draw_paint.setStrokeWidth(self.viewport.scale * line_width)
+        draw_paint.setStyle(Paint__Style.STROKE)
+        if color is None:
+            a, r, g, b = 255, 0, 0, 0
+        else:
+            a, r, g, b = round(color.a * 255), int(color.r), int(color.g), int(color.b)
+        if line_dash is not None:
+            draw_paint.setPathEffect(DashPathEffect(
+                [(self.viewport.scale * float(d)) for d in line_dash], 0.0))
+        draw_paint.setARGB(a, r, g, b)
+
+        canvas.drawPath(path, draw_paint)
+        path.reset()
 
     # Transformations
 
-    def rotate(self, radians, draw_context, *args, **kwargs):
-        self.interface.factory.not_implemented('Canvas.rotate')
+    def rotate(self, radians, canvas, *args, **kwargs):
+        canvas.rotate(math.degrees(radians))
 
-    def scale(self, sx, sy, draw_context, *args, **kwargs):
-        self.interface.factory.not_implemented('Canvas.scale')
+    def scale(self, sx, sy, canvas, *args, **kwargs):
+        canvas.scale(float(sx), float(sy))
 
-    def translate(self, tx, ty, draw_context, *args, **kwargs):
-        self.interface.factory.not_implemented('Canvas.translate')
+    def translate(self, tx, ty, canvas, *args, **kwargs):
+        canvas.translate(self.viewport.scale * tx, self.viewport.scale * ty)
 
-    def reset_transform(self, draw_context, *args, **kwargs):
-        self.interface.factory.not_implemented('Canvas.reset_transform')
+    def reset_transform(self, canvas, *args, **kwargs):
+        canvas.restore()
+        canvas.save()
 
     # Text
 

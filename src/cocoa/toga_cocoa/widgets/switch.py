@@ -2,10 +2,10 @@ from travertino.size import at_least
 
 from toga_cocoa.libs import (
     SEL,
+    NSBezelStyle,
     NSButton,
     NSOffState,
     NSOnState,
-    NSRoundedBezelStyle,
     NSSwitchButton,
     objc_method
 )
@@ -25,7 +25,7 @@ class Switch(Widget):
         self.native = TogaSwitch.alloc().init()
         self.native.interface = self.interface
 
-        self.native.bezelStyle = NSRoundedBezelStyle
+        self.native.bezelStyle = NSBezelStyle.Rounded
         self.native.setButtonType(NSSwitchButton)
         self.native.target = self.native
         self.native.action = SEL('onPress:')
