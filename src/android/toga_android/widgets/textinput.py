@@ -1,6 +1,6 @@
 from travertino.size import at_least
 
-from ..libs.android.text import TextWatcher
+from ..libs.android.text import InputType, TextWatcher
 from ..libs.android.util import TypedValue
 from ..libs.android.view import Gravity, View__MeasureSpec
 from ..libs.android.widget import EditText
@@ -28,6 +28,7 @@ class TextInput(Widget):
     def create(self):
         self.native = EditText(self._native_activity)
         self.native.addTextChangedListener(TogaTextWatcher(self))
+        self.native.setInputType(InputType.TYPE_CLASS_TEXT)
 
     def get_value(self):
         return self.native.getText().toString()
