@@ -40,34 +40,40 @@ class Font(BaseFont):
     @staticmethod
     def register(family, path, weight=NORMAL, style=NORMAL, variant=NORMAL):
         """
-        Registers a file-based font with it's family name, style, variant and weight.
-        When invalid values for style, variant or weight are passed, NORMAL will be used instead.
+        Registers a file-based font with it's family name, style, variant and
+        weight. When invalid values for style, variant or weight are passed,
+        NORMAL will be used.
 
-        Platforms that support dynamic font loading will load the font from the supplied path when a toga style
-        references the registered font. When a font file includes multiple font weight/style/variant, you will
-        need to register them separately
+        When a font file includes multiple font weight/style/etc, each variant
+        must be registerered separately:
 
-        Font.register("Font Awesome 5 Free Solid", "resources/Font Awesome 5 Free-Solid-900.otf")\n
-        Font.register("Roboto", "resources/Roboto-Regular.ttf"\n
-        Font.register("Roboto", "resources/Roboto-Bold.ttf", weight=Font.BOLD)\n
-        Font.register("Bahnschrift", "resources/Bahnschrift.ttf"\n
-        Font.register("Bahnschrift", "resources/Bahnschrift.ttf", weight=Font.BOLD)
+            # Register a simple regular font
+            Font.register("Font Awesome 5 Free Solid", "resources/Font Awesome 5 Free-Solid-900.otf")
 
+            # Register a regular and bold font, contained in separate font files
+            Font.register("Roboto", "resources/Roboto-Regular.ttf")
+            Font.register("Roboto", "resources/Roboto-Bold.ttf", weight=Font.BOLD)
+
+            # Register a single font file that contains both a regular and bold weight
+            Font.register("Bahnschrift", "resources/Bahnschrift.ttf")
+            Font.register("Bahnschrift", "resources/Bahnschrift.ttf", weight=Font.BOLD)
 
         Args:
-            family (str):  The font family name
-            path (str):    The path to the font file, relative to the application's module directory.
-            weight (str):  The font weight: Font.NORMAL (default) or a value from Font.FONT_WEIGHTS
-            style (str):   The font style: Font.NORMAL (default) or a value from Font.FONT_STYLES
-            variant (str): The font variant: Font.NORMAL (default) or a value from Font.FONT_VARIANTS
+            family (str): The font family name. This is the name that can be
+                referenced in style definitions.
+            path (str): The path to the font file.
+            weight (str): The font weight: Font.NORMAL (default) or a value
+                from Font.FONT_WEIGHTS
+            style (str): The font style: Font.NORMAL (default) or a value from
+                Font.FONT_STYLES
+            variant (str): The font variant: Font.NORMAL (default) or a value
+                from Font.FONT_VARIANTS
         """
-        font_key = Font.make_registered_font_key(
-            family, weight=weight, style=style, variant=variant
-        )
+        font_key = Font.registered_font_key(family, weight=weight, style=style, variant=variant)
         _REGISTERED_FONT_CACHE[font_key] = path
 
     @staticmethod
-    def make_registered_font_key(family, weight, style, variant):
+    def registered_font_key(family, weight, style, variant):
         """
         Creates a key for storing a registered font in the font cache.\n
         If weight, style or variant contain an invalid value, Font.NORMAL is used instead
@@ -87,6 +93,5 @@ class Font(BaseFont):
             style = NORMAL
         if variant not in constants.FONT_VARIANTS:
             variant = NORMAL
-        return "<registered_font_key: family={} weight={} style={} variant={}>".format(
-            family, weight, style, variant
-        )
+
+        return (family, weight, style, variant)

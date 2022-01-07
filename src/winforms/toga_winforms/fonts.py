@@ -20,7 +20,7 @@ class Font:
             font = _FONT_CACHE[self.interface]
         except KeyError:
             font = None
-            font_key = self.interface.make_registered_font_key(
+            font_key = self.interface.registered_font_key(
                 self.interface.family,
                 weight=self.interface.weight,
                 style=self.interface.style,
@@ -40,27 +40,13 @@ class Font:
                         self._pfc.Families[0],
                     )
                     font = WinFont(self._pfc.Families[0], float(font_size), font_style)
-                except FileNotFoundException as ex:
-                    print(
-                        "Registered font path '"
-                        + font_path
-                        + "' could not be found: "
-                        + str(ex)
-                    )
-                except ExternalException as ex:
-                    print(
-                        "Registered font path '"
-                        + font_path
-                        + "' could not be loaded: "
-                        + str(ex)
-                    )
-                except IndexError as ex:
-                    print(
-                        "Registered font with the key '"
-                        + str(font_key)
-                        + "' could not be loaded: "
-                        + str(ex)
-                    )
+                except FileNotFoundException as e:
+                    print(f"Registered font path {font_path!r} could not be found: {e}")
+                except ExternalException as e:
+                    print(f"Registered font path {font_path!r} could not be loaded: {e}")
+                except IndexError as e:
+                    print(f"Registered font {font_key} could not be loaded: {e}")
+
             if font is None:
                 font_family = win_font_family(self.interface.family)
                 font_style = win_font_style(

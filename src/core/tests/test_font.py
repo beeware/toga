@@ -53,9 +53,9 @@ class FontTests(TestCase):
         self.assertEqual(self.font.weight, self.weight)
 
     def test_register(self):
-        font_key = toga.Font.make_registered_font_key(
+        font_key = toga.Font.registered_font_key(
             self.custom_family, NORMAL, NORMAL, NORMAL
         )
-        if font_key not in _REGISTERED_FONT_CACHE:
-            self.fail("Registered font not found in the cache for registered fonts.")
+
+        self.assertIn(font_key, _REGISTERED_FONT_CACHE)
         self.assertEqual(self.custom_path, _REGISTERED_FONT_CACHE[font_key])

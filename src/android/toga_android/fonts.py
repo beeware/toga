@@ -1,3 +1,5 @@
+import os
+
 from toga.fonts import (
     BOLD,
     CURSIVE,
@@ -9,10 +11,9 @@ from toga.fonts import (
     SYSTEM,
     SYSTEM_DEFAULT_FONT_SIZE,
 )
-
-from .libs.android.graphics import Typeface
 from toga.fonts import _REGISTERED_FONT_CACHE
-import os
+
+from toga_android.libs.android.graphics import Typeface
 
 _FONT_CACHE = {}
 
@@ -36,16 +37,17 @@ class Font:
                 return Typeface.BOLD_ITALIC
             else:
                 return Typeface.BOLD
-        if self.interface.style == ITALIC:
+        elif self.interface.style == ITALIC:
             return Typeface.ITALIC
-        return Typeface.NORMAL
+        else:
+            return Typeface.NORMAL
 
     def get_typeface(self):
         try:
             family = _FONT_CACHE[self.interface]
         except KeyError:
             family = None
-            font_key = self.interface.make_registered_font_key(
+            font_key = self.interface.registered_font_key(
                 self.interface.family,
                 weight=self.interface.weight,
                 style=self.interface.style,
@@ -53,21 +55,15 @@ class Font:
             )
             if font_key in _REGISTERED_FONT_CACHE:
                 font_path = str(self.interface.factory.paths.app / _REGISTERED_FONT_CACHE[font_key])
-                try:
-                    if not os.path.isfile(font_path):
-                        # Exception cannot be catched otherwise
-                        raise FileNotFoundError()
+                if os.path.isfile(font_path):
                     family = Typeface.createFromFile(font_path)
                     # If the typeface cannot be created, following Exception is thrown:
                     # E/Minikin: addFont failed to create font, invalid request
-                    # It does not kill the app, but there is currently no way to catch this Exception on Android
-                except FileNotFoundError as ex:
-                    print(
-                        "Registered font path '"
-                        + font_path
-                        + "' could not be found"
-                        + str(ex)
-                    )
+                    # It does not kill the app, but there is currently no way to
+                    # catch this Exception on Android
+                else:
+                    print(f"Registered font path {font_path!r} could not be found")
+
             if family is None:
                 if self.interface.family is SYSTEM:
                     family = Typeface.DEFAULT
@@ -86,6 +82,7 @@ class Font:
                     family = Typeface.create("fantasy", Typeface.NORMAL)
                 else:
                     family = Typeface.create(self.interface.family, Typeface.NORMAL)
+
             family = family.__global__()  # store a JNI global reference to prevent objects from becoming stale
             _FONT_CACHE[self.interface] = family
 
