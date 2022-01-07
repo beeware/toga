@@ -63,12 +63,10 @@ def win_font_family(value):
 
 def win_font_style(weight, style, font_family):
     font_style = FontStyle.Regular
-    if weight.lower() == "bold" and font_family.IsStyleAvailable(
-            FontStyle.Bold):
-        font_style += FontStyle.Bold
-    if style.lower() == "italic" and font_family.IsStyleAvailable(
-            FontStyle.Italic):
-        font_style += FontStyle.Italic
+    if weight.lower() == "bold" and font_family.IsStyleAvailable(FontStyle.Bold):
+        font_style |= FontStyle.Bold
+    if style.lower() == "italic" and font_family.IsStyleAvailable(FontStyle.Italic):
+        font_style |= FontStyle.Italic
     return font_style
 
 
