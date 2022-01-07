@@ -13,7 +13,7 @@ Label,General Widget,:class:`~toga.widgets.label.Label`,Text label,|y|,|y|,|y|,|
 MultilineTextInput,General Widget,:class:`~toga.widgets.multilinetextinput.MultilineTextInput`,Multi-line Text Input field,|y|,|y|,|y|,|y|,|y|,
 NumberInput,General Widget,:class:`~toga.widgets.numberinput.NumberInput`,Number Input field,|y|,|y|,|y|,|y|,|y|,
 PasswordInput,General Widget,:class:`~toga.widgets.passwordinput.PasswordInput`,A text input that hides it’s input,|y|,|y|,|y|,|y|,|y|,
-ProgressBar,General Widget,:class:`~toga.widgets.progressbar.ProgressBar`,Progress Bar,|y|,|y|,|y|,|y|,,
+ProgressBar,General Widget,:class:`~toga.widgets.progressbar.ProgressBar`,Progress Bar,|y|,|y|,|y|,|y|,|y|,
 Selection,General Widget,:class:`~toga.widgets.selection.Selection`,Selection,|y|,|y|,|y|,|y|,|y|,
 Slider,General Widget,:class:`~toga.widgets.slider.Slider`,Slider,|y|,|y|,|y|,|y|,|y|,
 Switch,General Widget,:class:`~toga.widgets.switch.Switch`,Switch,|y|,|y|,|y|,|y|,|y|,

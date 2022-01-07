@@ -1,4 +1,3 @@
-from rubicon.java.jni import java
 from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT
 
 from ..libs.activity import MainActivity
@@ -16,10 +15,10 @@ def _get_activity(_cache=[]):
         return _cache[0]
     # See MainActivity.onCreate() for initialization of .singletonThis:
     # https://github.com/beeware/briefcase-android-gradle-template/blob/3.7/%7B%7B%20cookiecutter.formal_name%20%7D%7D/app/src/main/java/org/beeware/android/MainActivity.java
-    if MainActivity.singletonThis is None:
+    if not MainActivity.singletonThis:
         raise ValueError("Unable to find MainActivity.singletonThis from Python. This is typically set by "
                          "org.beeware.android.MainActivity.onCreate().")
-    _cache.append(MainActivity(__jni__=java.NewGlobalRef(MainActivity.singletonThis)))
+    _cache.append(MainActivity.singletonThis.__global__())
     return _cache[0]
 
 
@@ -47,14 +46,22 @@ class Widget:
 
     @container.setter
     def container(self, container):
-        self._container = container
-        self.viewport = container.viewport
-
-        if self.native:
-            # When initially setting the container and adding widgets to the container,
-            # we provide no `LayoutParams`. Those are promptly added when Toga
-            # calls `widget.rehint()` and `widget.set_bounds()`.
-            self._container.native.addView(self.native)
+        if self.container:
+            if container:
+                raise RuntimeError('Already have a container')
+            else:
+                # container is set to None, removing self from the container.native
+                self._container.native.removeView(self.native)
+                self._container.native.invalidate()
+                self._container = None
+        elif container:
+            self._container = container
+            self.viewport = container.viewport
+            if self.native:
+                # When initially setting the container and adding widgets to the container,
+                # we provide no `LayoutParams`. Those are promptly added when Toga
+                # calls `widget.rehint()` and `widget.set_bounds()`.
+                self._container.native.addView(self.native)
 
         for child in self.interface.children:
             child._impl.container = container
@@ -65,7 +72,7 @@ class Widget:
         self.native.setEnabled(value)
 
     def focus(self):
-        self.interface.factory.not_implemented("Widget.focus()")
+        self.native.requestFocus()
 
     # APPLICATOR
 
@@ -95,8 +102,10 @@ class Widget:
 
     def add_child(self, child):
         if self.container:
-            child.viewport = self.root.viewport
             child.container = self.container
+
+    def remove_child(self, child):
+        child.container = None
 
     def rehint(self):
         pass
