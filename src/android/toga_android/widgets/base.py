@@ -1,4 +1,3 @@
-from rubicon.java.jni import java
 from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT
 
 from ..libs.activity import MainActivity
@@ -19,7 +18,7 @@ def _get_activity(_cache=[]):
     if not MainActivity.singletonThis:
         raise ValueError("Unable to find MainActivity.singletonThis from Python. This is typically set by "
                          "org.beeware.android.MainActivity.onCreate().")
-    _cache.append(MainActivity(__jni__=java.NewGlobalRef(MainActivity.singletonThis)))
+    _cache.append(MainActivity.singletonThis.__global__())
     return _cache[0]
 
 

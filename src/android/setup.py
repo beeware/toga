@@ -20,7 +20,7 @@ with open('toga_android/__init__.py', encoding='utf8') as version_file:
 setup(
     version=version,
     install_requires=[
-        'rubicon-java>=0.2.2',
+        'rubicon-java>=0.2.6',
         'toga-core==%s' % version,
     ],
     test_suite='tests',
