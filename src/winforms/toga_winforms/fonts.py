@@ -1,9 +1,19 @@
-from .libs import FontFamily, FontStyle, Single, WinFont, WinForms, win_font_family
-from .libs.fonts import win_font_size, win_font_style
-from .libs.winforms import PrivateFontCollection
 from toga.fonts import _REGISTERED_FONT_CACHE
-from .libs.winforms import ExternalException
-from .libs.winforms import FileNotFoundException
+
+from toga_winforms.libs import (
+    FontFamily,
+    FontStyle,
+    Single,
+    WinFont,
+    WinForms,
+    win_font_family
+)
+from toga_winforms.libs.fonts import win_font_size, win_font_style
+from toga_winforms.libs.winforms import (
+    ExternalException,
+    FileNotFoundException,
+    PrivateFontCollection
+)
 
 _FONT_CACHE = {}
 
