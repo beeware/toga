@@ -100,7 +100,6 @@ class ExampleButtonApp(toga.App):
             ]
         )
 
-
         #  Create the outer box with 4 rows
         outer_box = toga.Box(
             style=Pack(direction=COLUMN, height=10),
@@ -139,7 +138,7 @@ class ExampleButtonApp(toga.App):
 
     def seek_origin(self, button):
         # Move the window to the somewhere near the top-left of the main screen
-        self.main_window.position = (100, 200)
+        self.main_window.position = (100, 30)
 
     def seek_right_screen(self, button):
         # Move the window off the right hand side of the main screen.
