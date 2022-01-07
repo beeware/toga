@@ -100,8 +100,9 @@ class ExampleTableApp(toga.App):
         )
 
         # Data to populate the table.
-        if toga.platform.current_platform in ["android", "ios"]:
-            table_data = bee_movies[:4]
+        if toga.platform.current_platform == "android":
+            # FIXME: beeware/toga#1392 - Android Table doesn't allow lots of content
+            table_data = bee_movies
         else:
             table_data = bee_movies * 1000
 
