@@ -223,16 +223,15 @@ class Window:
         self.native.title = title
 
     def set_position(self, position):
-
         x, y = position
         screen = self.native.screen
+
+        # If the window isn't visible, it won't be on a screen;
+        # don't try to set the position.
         if screen is None:
             return
-        frame = screen.frame
 
-        # From the bottom left corner of the screen to the bottom left corner
-        # of the window.
-        # self.native.setFrameOrigin(NSPoint(x, y))
+        frame = screen.frame
 
         # From the top left corner of the screen to the top left corner
         # of the window.
