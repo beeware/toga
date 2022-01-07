@@ -1,0 +1,46 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name = "Font Example"
+bundle = "org.beeware"
+version = "0.3.0.dev30"
+url = "https://beeware.org"
+license = "BSD license"
+author = 'Tiberius Yak'
+author_email = "tiberius@beeware.org"
+
+[tool.briefcase.app.font]
+formal_name = "Font Example"
+description = "A testing app"
+sources = ['font']
+requires = [
+    '../../src/core',
+]
+
+
+[tool.briefcase.app.font.macOS]
+requires = [
+    '../../src/cocoa',
+]
+
+[tool.briefcase.app.font.linux]
+requires = [
+    '../../src/gtk',
+]
+
+[tool.briefcase.app.font.windows]
+requires = [
+    '../../src/winforms',
+]
+
+# Mobile deployments
+[tool.briefcase.app.font.iOS]
+requires = [
+    '../../src/iOS',
+]
+
+[tool.briefcase.app.font.android]
+requires = [
+    '../../src/android',
+]
