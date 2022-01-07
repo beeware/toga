@@ -40,19 +40,23 @@ class ExampleButtonApp(toga.App):
         # Button with label and style option
         button3 = toga.Button('Bigger', style=Pack(width=200))
 
-        # Button with label and callback function called
-        button4a = toga.Button('Make window larger', on_press=self.callbackLarger)
-        button4b = toga.Button('Make window smaller', on_press=self.callbackSmaller)
-
-        # Box class
-        # Container of components
-        #   Add components for the first row of the outer box
         inner_box1 = toga.Box(
             style=style_inner_box,
             children=[
                 button1,
                 self.button2,
                 button3,
+            ]
+        )
+
+        # Button with label and callback function called
+        button4a = toga.Button('Make window larger', on_press=self.callbackLarger)
+        button4b = toga.Button('Make window smaller', on_press=self.callbackSmaller)
+
+        # Add components for the second row of the outer box
+        inner_box2 = toga.Box(
+            style=style_inner_box,
+            children=[
                 button4a,
                 button4b,
             ]
@@ -62,29 +66,45 @@ class ExampleButtonApp(toga.App):
         button5 = toga.Button('Far from home', style=Pack(padding=50, color=BLUE))
 
         # Button with label and RGB color
-        button6 = toga.Button('RGB : Fashion', style=Pack(background_color=RED))
+        button6 = toga.Button('RGB : Fashion', style=Pack(padding=10, background_color=RED))
 
         # Button with label and string color
-        button7 = toga.Button('String : Fashion', style=Pack(background_color=BLUE))
+        button7 = toga.Button('String : Fashion', style=Pack(padding=10, background_color=BLUE))
 
         # Button with label and string color
-        button8 = toga.Button('Big Font', style=Pack(font_family='serif', font_size=20, font_weight='bold'))
+        button8 = toga.Button('Big Font', style=Pack(padding=5, font_family='serif', font_size=20, font_weight='bold'))
 
-        # Add components for the second row of the outer box
-        inner_box2 = toga.Box(
+        # Add components for the third row of the outer box
+        inner_box3 = toga.Box(
             style=style_inner_box,
             children=[
                 button5,
                 button6,
                 button7,
-                button8
+                button8,
             ]
         )
 
-        #  Create the outer box with 2 rows
+        # Buttons to change window position
+        button9 = toga.Button('Not quite the origin', style=Pack(padding=5), on_press=self.seek_origin)
+        button10 = toga.Button('To the left screen', style=Pack(padding=5), on_press=self.seek_left_screen)
+        button11 = toga.Button('To the right screen', style=Pack(padding=5), on_press=self.seek_right_screen)
+
+        # Add components for the fourth row of the outer box
+        inner_box4 = toga.Box(
+            style=style_inner_box,
+            children=[
+                button9,
+                button10,
+                button11,
+            ]
+        )
+
+
+        #  Create the outer box with 4 rows
         outer_box = toga.Box(
             style=Pack(direction=COLUMN, height=10),
-            children=[inner_box1, inner_box2]
+            children=[inner_box1, inner_box2, inner_box3, inner_box4]
         )
 
         # Add the content on the main window
@@ -116,6 +136,22 @@ class ExampleButtonApp(toga.App):
         # Some action when you hit the button
         #   In this case the window size will change
         self.main_window.size = (200, 200)
+
+    def seek_origin(self, button):
+        # Move the window to the somewhere near the top-left of the main screen
+        self.main_window.position = (100, 200)
+
+    def seek_right_screen(self, button):
+        # Move the window off the right hand side of the main screen.
+        # If the user has multiple monitors with a screen to the right
+        # of the main screen, the window should appear there.
+        self.main_window.position = (2000, 400)
+
+    def seek_left_screen(self, button):
+        # Move the window off the left hand side of the main screen.
+        # If the user has multiple monitors with a screen to the left
+        # of the main screen, the window should appear there.
+        self.main_window.position = (-1000, 300)
 
 
 def main():
