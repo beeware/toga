@@ -13,6 +13,7 @@ from .widgets.label import Label
 from .widgets.multilinetextinput import MultilineTextInput
 from .widgets.numberinput import NumberInput
 from .widgets.passwordinput import PasswordInput
+from .widgets.progressbar import ProgressBar
 from .widgets.scrollcontainer import ScrollContainer
 from .widgets.selection import Selection
 from .widgets.slider import Slider
@@ -42,6 +43,7 @@ __all__ = [
     "MultilineTextInput",
     "NumberInput",
     "PasswordInput",
+    "ProgressBar",
     "Selection",
     "Slider",
     "ScrollContainer",
