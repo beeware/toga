@@ -235,7 +235,9 @@ class Window:
 
         # From the top left corner of the screen to the top left corner
         # of the window.
-        self.native.setFrameTopLeftPoint(NSPoint(x, frame.size.height - y))
+        x = frame.origin.x + x
+        y = frame.origin.y + frame.size.height - y
+        self.native.setFrameTopLeftPoint(NSPoint(x, y))
 
     def set_size(self, size):
         frame = self.native.frame
