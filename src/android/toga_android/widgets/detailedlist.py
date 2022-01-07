@@ -1,5 +1,4 @@
 from rubicon.java.android_events import Handler, PythonRunnable
-from rubicon.java.jni import java
 from travertino.size import at_least
 
 from ..libs.android import R__color
@@ -63,8 +62,7 @@ class DetailedList(Widget):
             self.native.removeAllViews()
 
         scroll_view = ScrollView(self._native_activity)
-        self._scroll_view = ScrollView(
-            __jni__=java.NewGlobalRef(scroll_view))
+        self._scroll_view = scroll_view.__global__()
         scroll_view_layout_params = LinearLayout__LayoutParams(
                 LinearLayout__LayoutParams.MATCH_PARENT,
                 LinearLayout__LayoutParams.MATCH_PARENT
@@ -72,14 +70,11 @@ class DetailedList(Widget):
         scroll_view_layout_params.gravity = Gravity.TOP
         swipe_refresh_wrapper = SwipeRefreshLayout(self._native_activity)
         swipe_refresh_wrapper.setOnRefreshListener(OnRefreshListener(self.interface))
-        self._swipe_refresh_layout = SwipeRefreshLayout(
-            __jni__=java.NewGlobalRef(swipe_refresh_wrapper))
+        self._swipe_refresh_layout = swipe_refresh_wrapper.__global__()
         swipe_refresh_wrapper.addView(scroll_view)
         self.native.addView(swipe_refresh_wrapper, scroll_view_layout_params)
         dismissable_container = LinearLayout(self._native_activity)
-        self._dismissable_container = LinearLayout(
-            __jni__=java.NewGlobalRef(dismissable_container)
-        )
+        self._dismissable_container = dismissable_container.__global__()
         dismissable_container.setOrientation(LinearLayout.VERTICAL)
         dismissable_container_params = LinearLayout__LayoutParams(
                 LinearLayout__LayoutParams.MATCH_PARENT,
@@ -202,7 +197,7 @@ class DetailedList(Widget):
 
     def rehint(self):
         # Android can crash when rendering some widgets until they have their layout params set. Guard for that case.
-        if self.native.getLayoutParams() is None:
+        if not self.native.getLayoutParams():
             return
         self.native.measure(
             View__MeasureSpec.UNSPECIFIED,
