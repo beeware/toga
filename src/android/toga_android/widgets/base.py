@@ -1,7 +1,7 @@
 from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT
 
 from ..libs.activity import MainActivity
-from ..libs.android.view import Gravity
+from ..libs.android.view import Gravity, View
 
 
 def _get_activity(_cache=[]):
@@ -82,7 +82,10 @@ class Widget:
             self.container.set_child_bounds(self, x, y, width, height)
 
     def set_hidden(self, hidden):
-        self.interface.factory.not_implemented("Widget.set_hidden()")
+        if hidden:
+            self.native.setVisibility(View.INVISIBLE)
+        else:
+            self.native.setVisibility(View.VISIBLE)
 
     def set_font(self, font):
         # By default, font can't be changed

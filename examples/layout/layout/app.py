@@ -46,7 +46,8 @@ class ExampleLayoutApp(toga.App):
         )
 
         self.scroll_box = toga.Box(children=[], style=Pack(direction=COLUMN, padding=10, flex=1))
-        self.scroll_view = toga.ScrollContainer(content=self.scroll_box, style=Pack(width=120))
+        if toga.platform.current_platform != "android":
+            self.scroll_view = toga.ScrollContainer(content=self.scroll_box, style=Pack(width=120))
 
         image = toga.Image('resources/tiberius.png')
         self.image_view = toga.ImageView(image, style=Pack(padding=10, width=60, height=60))
@@ -71,7 +72,12 @@ class ExampleLayoutApp(toga.App):
 
         # this tests adding children when we already have an impl but no window or app
         self.box.add(self.button_box)
-        self.box.add(self.scroll_view)
+        if toga.platform.current_platform == "android":
+            # Android's ScrollContainer (currently) cannot re-adjust its size when the content is changed
+            # To make this example work for Android, we use a normal Box here
+            self.box.add(self.scroll_box)
+        else:
+            self.box.add(self.scroll_view)
 
         # add a couple of labels to get us started
         self.labels = []
