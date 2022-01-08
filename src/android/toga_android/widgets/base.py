@@ -82,6 +82,11 @@ class Widget:
             self.container.set_child_bounds(self, x, y, width, height)
 
     def set_hidden(self, hidden):
+        view = View(self._native_activity)
+        if not view.getClass().isInstance(self.native):
+            # save guard for Widgets like Canvas that are not based on View
+            self.interface.factory.not_implemented("Widget.set_hidden()")
+            return
         if hidden:
             self.native.setVisibility(View.INVISIBLE)
         else:
