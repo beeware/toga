@@ -236,7 +236,7 @@ class Window:
         except AttributeError:
             return self.interface._position
 
-    def update_position(self):
+    def __update_position(self):
         self.interface._position = self.get_position()
 
     def set_position(self, position):
@@ -255,7 +255,7 @@ class Window:
         self.native.setFrameTopLeftPoint(NSPoint(x, y))
 
         # Update the actual position.
-        self.update_position()
+        self.__update_position()
 
         # If we ended up off screen, or not where requested,
         # fall back to the "main" screen.
@@ -267,7 +267,7 @@ class Window:
         frame = self.native.frame
         frame.size = NSSize(self.interface._size[0], self.interface._size[1])
         self.native.setFrame(frame, display=True, animate=True)
-        self.update_position()
+        self.__update_position()
 
     def set_app(self, app):
         pass
