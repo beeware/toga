@@ -162,6 +162,8 @@ class Window:
         Returns:
             A ``tuple`` of (``int``, ``int``) int the from (x, y).
         """
+        if hasattr(self._impl, 'get_position'):
+            return self._impl.get_position()
         return self._position
 
     @position.setter

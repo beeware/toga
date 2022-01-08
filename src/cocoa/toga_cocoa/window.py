@@ -222,17 +222,22 @@ class Window:
     def set_title(self, title):
         self.native.title = title
 
-    def update_position(self):
-        screen = self.native.screen
-        window = self.native
-        if screen is not None:
+    def get_position(self):
+        try:
+            screen = self.native.screen
+            window = self.native
             y = screen.frame.size.height - (
                 window.frame.origin.y + window.frame.size.height
             )
-            self.interface._position = (
+            return (
                 screen.frame.origin.x + window.frame.origin.x,
                 screen.frame.origin.y + y
             )
+        except AttributeError:
+            return self.interface._position
+
+    def update_position(self):
+        self.interface._position = self.get_position()
 
     def set_position(self, position):
         x, y = position
