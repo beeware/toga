@@ -255,6 +255,12 @@ class Window:
         # Update the actual position.
         self.update_position()
 
+        # If we ended up off screen, or not where requested,
+        # fall back to the "main" screen.
+        if screen is None or not self.interface._position == position:
+            frame = NSScreen.mainScreen.frame
+            self.set_position((frame.origin.x + 100, frame.origin.y + 100))
+
     def set_size(self, size):
         frame = self.native.frame
         frame.size = NSSize(self.interface._size[0], self.interface._size[1])
