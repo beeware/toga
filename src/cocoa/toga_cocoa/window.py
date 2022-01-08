@@ -222,6 +222,18 @@ class Window:
     def set_title(self, title):
         self.native.title = title
 
+    def update_position(self):
+        screen = self.native.screen
+        window = self.native
+        if screen is not None:
+            y = screen.frame.size.height - (
+                window.frame.origin.y + window.frame.size.height
+            )
+            self.interface._position = (
+                screen.frame.origin.x + window.frame.origin.x,
+                screen.frame.origin.y + y
+            )
+
     def set_position(self, position):
         x, y = position
         # The "principal" screen has index 0 and origin (0, 0).
@@ -241,20 +253,13 @@ class Window:
         self.native.setFrameTopLeftPoint(NSPoint(x, y))
 
         # Update the actual position.
-        screen = self.native.screen
-        window = self.native
-        y = screen.frame.size.height - (
-            window.frame.origin.y + window.frame.size.height
-        )
-        self.interface._position = (
-            screen.frame.origin.x + window.frame.origin.x,
-            screen.frame.origin.y + y
-        )
+        self.update_position()
 
     def set_size(self, size):
         frame = self.native.frame
         frame.size = NSSize(self.interface._size[0], self.interface._size[1])
         self.native.setFrame(frame, display=True, animate=True)
+        self.update_position()
 
     def set_app(self, app):
         pass

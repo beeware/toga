@@ -89,6 +89,8 @@ class ExampleButtonApp(toga.App):
         button9 = toga.Button('Not quite the origin', style=Pack(padding=5), on_press=self.seek_origin)
         button10 = toga.Button('To the left screen', style=Pack(padding=5), on_press=self.seek_left_screen)
         button11 = toga.Button('To the right screen', style=Pack(padding=5), on_press=self.seek_right_screen)
+        button12 = toga.Button('Bump left', style=Pack(padding=5), on_press=self.bump_left)
+        button13 = toga.Button('Bump right', style=Pack(padding=5), on_press=self.bump_right)
 
         # Add components for the fourth row of the outer box
         inner_box4 = toga.Box(
@@ -97,6 +99,8 @@ class ExampleButtonApp(toga.App):
                 button9,
                 button10,
                 button11,
+                button12,
+                button13,
             ]
         )
 
@@ -151,6 +155,16 @@ class ExampleButtonApp(toga.App):
         # If the user has multiple monitors with a screen to the left
         # of the main screen, the window should appear there.
         self.main_window.position = (-1000, 300)
+
+    def bump_left(self, button):
+        # Move the window to the left a bit.
+        x, y = self.main_window.position
+        self.main_window.position = (x - 50, y)
+
+    def bump_right(self, button):
+        # Move the window to the right a bit.
+        x, y = self.main_window.position
+        self.main_window.position = (x + 50, y)
 
 
 def main():
