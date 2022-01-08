@@ -237,12 +237,9 @@ class Window:
     def set_position(self, position):
         x, y = position
         # The "principal" screen has index 0 and origin (0, 0).
-        screen = NSScreen.screens[0]
-
-        # If the window isn't visible, it won't be on a screen;
-        # don't try to set the position.
-        if screen is None:
+        if len(NSScreen.screens) == 0:
             return
+        screen = NSScreen.screens[0]
 
         frame = screen.frame
 
