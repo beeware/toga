@@ -11,9 +11,15 @@ button, that prints to the console when you press the button.
 Set up your development environment
 ===================================
 
-Make sure you installed the `Toga prerequisites <https://github.com/beeware/toga#prerequisites>`_, such as Python 3 and the other libraries. Then create a working directory for your code and change to it.
+Make sure you installed the `Toga prerequisites
+<https://github.com/beeware/toga#prerequisites>`_, such as Python 3 and the
+other libraries. Then create a working directory for your code and change to it.
 
-If Python 3 is *not* installed, you can do so via `the official installer <https://www.python.org/downloads>`_, or via `pyenv <https://github.com/pyenv/pyenv#simple-python-version-management-pyenv>`_, as described in the `environment page <https://beeware.org/contributing/how/first-time/setup>`_.
+If Python 3 is *not* installed, you can do so via `the official installer
+<https://www.python.org/downloads>`_, or via `pyenv
+<https://github.com/pyenv/pyenv#simple-python-version-management-pyenv>`_, as
+described in the `environment page
+<https://beeware.org/contributing/how/first-time/setup>`_.
 
 The recommended way of setting up your development environment for Toga
 is to install a virtual environment, install the required dependencies and
@@ -89,23 +95,20 @@ Next, install Toga into your virtual environment:
 
   .. group-tab:: Windows
 
-    Before you install Toga, you'll need to install the `.NET 6.0 SDK
-    <https://dotnet.microsoft.com/download>`__. Once you've installed
-    that SDK, open a new terminal, re-activate your virtual environment,
-    and run:
-
     .. code-block:: doscon
 
       (venv) C:\...>pip install --pre toga
 
-If you get other errors, please check that you followed `the prerequisite <https://github.com/beeware/toga#prerequisites>`_ instructions.
+If you get other errors, please check that you followed `the prerequisite
+<https://github.com/beeware/toga#prerequisites>`_ instructions.
 
 After a successful installation of Toga you are ready to get coding.
 
 Write the app
 =============
 
-Create a new file called ``helloworld.py`` and add the following code for the "Hello world" app:
+Create a new file called ``helloworld.py`` and add the following code for the
+"Hello world" app:
 
 .. literalinclude:: /../examples/tutorial0/tutorial/app.py
    :language: python
@@ -126,7 +129,10 @@ of a simple button press, however, there are no extra arguments::
     def button_handler(widget):
         print("hello")
 
-When the app gets instantiated (in `main()`, discussed below), Toga will create a window with a menu. We need to provide a method that tells Toga what content to display in the window. The method can be named anything, it just needs to accept an app instance::
+When the app gets instantiated (in `main()`, discussed below), Toga will create
+a window with a menu. We need to provide a method that tells Toga what content
+to display in the window. The method can be named anything, it just needs to
+accept an app instance::
 
     def build(app):
 
@@ -163,29 +169,30 @@ Now we will make the button take up all the available width::
 The ``flex`` attribute specifies how an element is sized with respect to other
 elements along its direction. The default direction is row (horizontal) and
 since the button is the only element here, it will take up the whole width.
-Check out `style docs <https://toga.readthedocs.io/en/latest/reference/style/pack.html#flex>`_
-for more information on how to use the ``flex`` attribute.
+Check out `style docs
+<https://toga.readthedocs.io/en/latest/reference/style/pack.html#flex>`_ for
+more information on how to use the ``flex`` attribute.
 
 The next step is to add the button to the box::
 
         box.add(button)
 
-The button has a default height, defined by
-the way that the underlying platform draws buttons. As a result, this means
-we'll see a single button in the app window that stretches to the width of the
-screen, but has a 50 pixel space surrounding it.
+The button has a default height, defined by the way that the underlying platform
+draws buttons. As a result, this means we'll see a single button in the app
+window that stretches to the width of the screen, but has a 50 pixel space
+surrounding it.
 
-Now we've set up the box, we return the outer box that holds all
-the UI content. This box will be the content of the app's main window::
+Now we've set up the box, we return the outer box that holds all the UI content.
+This box will be the content of the app's main window::
 
         return box
 
 Lastly, we instantiate the app itself. The app is a high level container
 representing the executable. The app has a name and a unique identifier. The
 identifier is used when registering any app-specific system resources. By
-convention, the identifier is a "reversed domain name". The app also accepts
-our method defining the main window contents. We wrap this creation process
-into a method called `main()`, which returns a new instance of our application::
+convention, the identifier is a "reversed domain name". The app also accepts our
+method defining the main window contents. We wrap this creation process into a
+method called `main()`, which returns a new instance of our application::
 
     def main():
         return toga.App('First App', 'org.beeware.helloworld', startup=build)
@@ -202,7 +209,9 @@ And that's it! Save this script as ``helloworld.py``, and you're ready to go.
 Running the app
 ---------------
 
-The app acts as a Python module, which means you need to run it in a different manner than running a regular Python script: You need to specify the :code:`-m` flag and *not* include the :code:`.py` extension for the script name.
+The app acts as a Python module, which means you need to run it in a different
+manner than running a regular Python script: You need to specify the :code:`-m`
+flag and *not* include the :code:`.py` extension for the script name.
 
 Here is the command to run for your platform from your working directory:
 
@@ -247,7 +256,8 @@ toga by just running::
     $ pip install --pre toga
 
 We strongly suggest that you **don't** do this. We'd suggest creating a `virtual
-environment`_ first, and installing toga in that virtual environment as directed at the top of this guide.
+environment`_ first, and installing toga in that virtual environment as directed
+at the top of this guide.
 
 .. _virtual environment: http://docs.python-guide.org/en/latest/dev/virtualenvs/
 
@@ -255,10 +265,12 @@ environment`_ first, and installing toga in that virtual environment as directed
 
     Toga has some minimum requirements:
 
-    * If you're on OS X, you need to be on 10.7 (Lion) or newer.
+    * If you're on OS X, you need to be on 10.10 (Yosemite) or newer.
 
-    * If you're on Linux, you need to have GTK+ 3.4 or later. This is the
-      version that ships starting with Ubuntu 12.04 and Fedora 17.
+    * If you're on Linux, you need to have GTK+ 3.10 or newer. This is the
+      version that ships starting with Ubuntu 14.04 and Fedora 20.
+
+    * If you're on Windows, you need to have Windows 10 or newer.
 
     If these requirements aren't met, Toga either won't work at all, or won't
     have full functionality.

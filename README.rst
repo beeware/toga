@@ -5,7 +5,7 @@
 Toga
 ====
 
-.. image:: https://img.shields.io/badge/python-3.6%20|%203.7%20|%203.8%20|%203.9-blue.svg
+.. image:: https://img.shields.io/badge/python-3.7%20|%203.8%20|%203.9%20|%203.10-blue.svg
     :target: https://pypi.python.org/pypi/toga
     :alt: Python Versions
 
@@ -41,7 +41,7 @@ Prerequisites
 Minimum requirements
 ^^^^^^^^^^^^^^^^^^^^
 
-* Toga requires **Python 3**. Python 2 is not supported.
+* Toga requires **Python 3.7 or higher**. Python 2 is not supported.
 
 * If you're on macOS, you need to be on 10.10 (Yosemite) or newer.
 
