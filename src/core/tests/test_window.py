@@ -3,6 +3,7 @@ from unittest.mock import MagicMock, patch
 import toga
 import toga_dummy
 from toga.command import CommandSet
+from toga.platform import current_platform
 from toga_dummy.utils import TestCase
 
 
@@ -57,6 +58,18 @@ class TestWindow(TestCase):
         with patch.object(self.window, '_impl'):
             self.window.position = new_position
             self.window._impl.set_position.assert_called_once_with(new_position)
+
+        # The Window.set_position method is only implemented in toga_cocoa
+        # at the moment.
+        if current_platform in ['darwin']:
+            window = toga.Window()
+            window.app = self.app
+            window.content = toga.Box()
+            window.show()
+            x, y = window.position
+            x, y = (x + 100, y + 100)
+            window.position = (x, y)
+            self.assertEqual((x, y), window.position)
 
     def test_full_screen_set(self):
         self.assertFalse(self.window.full_screen)
