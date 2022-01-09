@@ -112,6 +112,9 @@ class Widget:
         if self.container:
             child.container = self.container
 
+    def insert_child(self, index, child):
+        self.add_child(child)
+
     def remove_child(self, child):
         child.container = None
 
