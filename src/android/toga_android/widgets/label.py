@@ -23,7 +23,7 @@ class Label(Widget):
     def rehint(self):
         # Refuse to rehint an Android TextView if it has no LayoutParams yet.
         # Calling measure() on an Android TextView w/o LayoutParams raises NullPointerException.
-        if self.native.getLayoutParams() is None:
+        if not self.native.getLayoutParams():
             return
         # Ask the Android TextView first for the height it would use in its
         # wildest dreams. This is the height of one line of text.
@@ -48,6 +48,6 @@ class Label(Widget):
         # Refuse to set alignment if widget has no container.
         # On Android, calling setGravity() when the widget has no LayoutParams
         # results in a NullPointerException.
-        if self.native.getLayoutParams() is None:
+        if not self.native.getLayoutParams():
             return
         self.native.setGravity(Gravity.CENTER_VERTICAL | align(value))
