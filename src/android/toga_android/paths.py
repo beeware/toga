@@ -10,20 +10,24 @@ class Paths:
     Path = Path
 
     @property
+    def __context(self):
+        return App.app._impl.native.getApplicationContext()
+
+    @property
     def app(self):
         return Path(sys.modules[App.app.module_name].__file__).parent
 
     @property
     def data(self):
-        return Path(App.app._impl.native.getApplicationContext().getFilesDir().getPath())
+        return Path(self.__context.getFilesDir().getPath())
 
     @property
     def cache(self):
-        return Path(App.app._impl.native.getApplicationContext().getCacheDir().getPath())
+        return Path(self.__context.getCacheDir().getPath())
 
     @property
     def logs(self):
-        return Path(App.app._impl.native.getApplicationContext().getCacheDir().getPath()) / 'log'
+        return self.data
 
     @property
     def toga(self):
