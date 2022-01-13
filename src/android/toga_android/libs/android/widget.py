@@ -8,6 +8,8 @@ ArrayAdapter._alternates.append(b'Landroid/widget/SpinnerAdapter;')
 
 Button = JavaClass("android/widget/Button")
 CompoundButton__OnCheckedChangeListener = JavaInterface("android/widget/CompoundButton$OnCheckedChangeListener")
+DatePickerDialog = JavaClass("android/app/DatePickerDialog")
+DatePickerDialog__OnDateSetListener = JavaInterface("android/app/DatePickerDialog$OnDateSetListener")
 EditText = JavaClass("android/widget/EditText")
 HorizontalScrollView = JavaClass("android/widget/HorizontalScrollView")
 ImageView = JavaClass("android/widget/ImageView")

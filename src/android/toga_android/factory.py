@@ -7,6 +7,7 @@ from .paths import paths
 from .widgets.box import Box
 from .widgets.button import Button
 from .widgets.canvas import Canvas
+from .widgets.datepicker import DatePicker
 from .widgets.detailedlist import DetailedList
 from .widgets.imageview import ImageView
 from .widgets.label import Label
@@ -34,6 +35,7 @@ __all__ = [
     "Button",
     "Canvas",
     "Command",
+    "DatePicker",
     "Font",
     "Icon",
     "Image",
