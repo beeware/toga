@@ -6,6 +6,7 @@ from toga_cocoa.libs import (
     NSTextAlignment,
     NSTextField,
     NSTextFieldSquareBezel,
+    c_void_p,
     objc_method,
     send_super,
 )
@@ -44,7 +45,7 @@ class TogaTextField(NSTextField):
         else:
             self._configured = True
 
-        send_super(__class__, self, 'textDidEndEditing:', textObject)
+        send_super(__class__, self, 'textDidEndEditing:', textObject, argtypes=[c_void_p])
 
 
 class TextInput(Widget):
