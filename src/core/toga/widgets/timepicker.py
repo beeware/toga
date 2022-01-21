@@ -43,9 +43,11 @@ class TimePicker(Widget):
     @value.setter
     def value(self, value):
         if value is None:
-            v = str(datetime.datetime.today().time().replace(microsecond=0))
+            v = datetime.datetime.now().time().replace(microsecond=0)
+        elif isinstance(value, str):
+            v = datetime.time.fromisoformat(value)
         else:
-            v = str(value)
+            v = value
         self._impl.set_value(v)
 
     @property

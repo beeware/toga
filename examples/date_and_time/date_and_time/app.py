@@ -66,56 +66,56 @@ class DateAndTimeApp(toga.App):
             style=Pack(direction=ROW),
         )
 
-        # any_time_box = toga.Box(
-        #     children=[
-        #         toga.Label("Any time:", style=Pack(width=150, text_align=RIGHT)),
-        #         toga.TimePicker(
-        #             id="Any time",
-        #             initial=None,
-        #             on_change=self.changed_time,
-        #         ),
-        #     ],
-        #     style=Pack(direction=ROW),
-        # )
-        # min_time_box = toga.Box(
-        #     children=[
-        #         toga.Label("With min:", style=Pack(width=150, text_align=RIGHT)),
-        #         toga.TimePicker(
-        #             id="Min time",
-        #             initial=None,
-        #             on_change=self.changed_time,
-        #             min_time="2021-01-01",
-        #         ),
-        #     ],
-        #     style=Pack(direction=ROW),
-        # )
-        # max_time_box = toga.Box(
-        #     children=[
-        #         toga.Label("With max:", style=Pack(width=150, text_align=RIGHT)),
-        #         toga.TimePicker(
-        #             id="Max time",
-        #             initial=time(10, 42),
-        #             on_change=self.changed_time,
-        #             max_time=time(21, 30),
-        #         ),
-        #     ],
-        #     style=Pack(direction=ROW),
-        # )
-        # min_max_time_box = toga.Box(
-        #     children=[
-        #         toga.Label(
-        #             "With min and max:", style=Pack(width=150, text_align=RIGHT)
-        #         ),
-        #         toga.TimePicker(
-        #             id="Min-max time",
-        #             initial=time(10, 42),
-        #             on_change=self.changed_time,
-        #             min_time=time(8, 15),
-        #             max_time=time(21, 30),
-        #         ),
-        #     ],
-        #     style=Pack(direction=ROW),
-        # )
+        any_time_box = toga.Box(
+            children=[
+                toga.Label("Any time:", style=Pack(width=150, text_align=RIGHT)),
+                toga.TimePicker(
+                    id="Any time",
+                    initial=None,
+                    on_change=self.changed_time,
+                ),
+            ],
+            style=Pack(direction=ROW),
+        )
+        min_time_box = toga.Box(
+            children=[
+                toga.Label("With min:", style=Pack(width=150, text_align=RIGHT)),
+                toga.TimePicker(
+                    id="Min time",
+                    initial=None,
+                    on_change=self.changed_time,
+                    min_time="2021-01-01",
+                ),
+            ],
+            style=Pack(direction=ROW),
+        )
+        max_time_box = toga.Box(
+            children=[
+                toga.Label("With max:", style=Pack(width=150, text_align=RIGHT)),
+                toga.TimePicker(
+                    id="Max time",
+                    initial=time(10, 42),
+                    on_change=self.changed_time,
+                    max_time=time(21, 30),
+                ),
+            ],
+            style=Pack(direction=ROW),
+        )
+        min_max_time_box = toga.Box(
+            children=[
+                toga.Label(
+                    "With min and max:", style=Pack(width=150, text_align=RIGHT)
+                ),
+                toga.TimePicker(
+                    id="Min-max time",
+                    initial=time(10, 42),
+                    on_change=self.changed_time,
+                    min_time=time(8, 15),
+                    max_time=time(21, 30),
+                ),
+            ],
+            style=Pack(direction=ROW),
+        )
 
         self.main_window.content = toga.Box(
             children=[
@@ -123,10 +123,10 @@ class DateAndTimeApp(toga.App):
                 min_date_box,
                 max_date_box,
                 min_max_date_box,
-                # any_time_box,
-                # min_time_box,
-                # max_time_box,
-                # min_max_time_box,
+                any_time_box,
+                min_time_box,
+                max_time_box,
+                min_max_time_box,
             ],
             style=Pack(direction=COLUMN),
         )

@@ -21,6 +21,7 @@ from .widgets.slider import Slider
 from .widgets.switch import Switch
 from .widgets.table import Table
 from .widgets.textinput import TextInput
+from .widgets.timepicker import TimePicker
 from .widgets.webview import WebView
 from .window import Window
 
@@ -52,6 +53,7 @@ __all__ = [
     "Switch",
     "Table",
     "TextInput",
+    "TimePicker",
     "WebView",
     "Window",
     "DetailedList",
