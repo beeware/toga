@@ -4,15 +4,19 @@ from toga.constants import COLUMN, ROW
 
 
 class ExampleNumberInputApp(toga.App):
+    ni1 = None
+
     # Button callback functions
     def do_stuff(self, widget, **kwargs):
-        self.label.text = "You entered following value: " + str(self.ni1.value)
+        if self.ni1:
+            self.label.text = "You entered following value: " + str(self.ni1.value)
 
     def do_clear(self, widget, **kwargs):
         self.label.text = "Ready."
 
     def handle_numberinput(self, widget):
-        self.label.text = "You entered following value: " + str(self.ni1.value)
+        if self.ni1:
+            self.label.text = "You entered following value: " + str(self.ni1.value)
 
     def startup(self):
         # Set up main window
@@ -29,13 +33,7 @@ class ExampleNumberInputApp(toga.App):
             on_change=self.handle_numberinput,
             style=Pack(font_size=16, font_weight="bold", flex=1),
         )
-        box1 = toga.Box(
-            style=Pack(direction=ROW),
-            children=[
-                label1,
-                self.ni1
-            ]
-        )
+        box1 = toga.Box(style=Pack(direction=ROW), children=[label1, self.ni1])
         # Buttons
         btn_style = Pack(flex=1)
         btn_do_stuff = toga.Button("Get value", on_press=self.do_stuff, style=btn_style)
