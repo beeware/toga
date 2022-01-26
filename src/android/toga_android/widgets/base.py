@@ -57,7 +57,6 @@ class Widget:
                 self._container = None
         elif container:
             self._container = container
-            # self.viewport = container.viewport
             if self.native:
                 # When initially setting the container and adding widgets to the container,
                 # we provide no `LayoutParams`. Those are promptly added when Toga
