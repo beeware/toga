@@ -415,6 +415,9 @@ class App:
     def open_document(self, fileURL):
         """No-op when the app is not a ``DocumentApp``."""
 
+    def select_file(self, **kwargs):
+        """No-op when the app is not a ``DocumentApp``."""
+
 
 class DocumentApp(App):
     def _create_app_commands(self):
