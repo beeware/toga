@@ -290,7 +290,7 @@ class Canvas(Box):
             _, height = self.measure_text(line, font)
             origin = PointF(x, y + full_height - height)
             draw_context.current_path.AddString(
-                line, font_family, font_style, float(height), origin, StringFormat()
+                line, font_family, font_style.value__, float(height), origin, StringFormat()
             )
             full_height += height
 
