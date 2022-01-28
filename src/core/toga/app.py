@@ -543,6 +543,17 @@ class App:
         self._impl.set_on_exit(self._on_exit)
 
     def add_background_task(self, handler):
+        """Schedule a task to run in the background.
+
+        Schedules a coroutine or a generator to run in the background. Control will be
+        returned to the event loop during await or yield statements, respectively. Use
+        this to run background tasks without blocking the GUI. If a regular callable is
+        passed, it will be called as is and will still block the GUI until the call
+        returns.
+
+        Args:
+            handler (:obj:`callable`): Coroutine, generator or callable.
+        """
         self._impl.add_background_task(handler)
 
 
