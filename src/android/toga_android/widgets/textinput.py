@@ -1,12 +1,9 @@
 from travertino.size import at_least
 
-from ..libs.android_widgets import (
-    EditText,
-    Gravity,
-    TextWatcher,
-    TypedValue,
-    View__MeasureSpec,
-)
+from ..libs.android.text import InputType, TextWatcher
+from ..libs.android.util import TypedValue
+from ..libs.android.view import Gravity, View__MeasureSpec
+from ..libs.android.widget import EditText
 from .base import Widget, align
 
 
@@ -31,6 +28,7 @@ class TextInput(Widget):
     def create(self):
         self.native = EditText(self._native_activity)
         self.native.addTextChangedListener(TogaTextWatcher(self))
+        self.native.setInputType(InputType.TYPE_CLASS_TEXT)
 
     def get_value(self):
         return self.native.getText().toString()
@@ -46,7 +44,7 @@ class TextInput(Widget):
         # Refuse to set alignment unless widget has been added to a container.
         # This is because Android EditText requires LayoutParams before
         # setGravity() can be called.
-        if self.native.getLayoutParams() is None:
+        if not self.native.getLayoutParams():
             return
         self.native.setGravity(Gravity.CENTER_VERTICAL | align(value))
 
@@ -74,7 +72,7 @@ class TextInput(Widget):
         # Refuse to call measure() if widget has no container, i.e., has no LayoutParams.
         # On Android, EditText's measure() throws NullPointerException if the widget has no
         # LayoutParams.
-        if self.native.getLayoutParams() is None:
+        if not self.native.getLayoutParams():
             return
         self.native.measure(
             View__MeasureSpec.UNSPECIFIED, View__MeasureSpec.UNSPECIFIED

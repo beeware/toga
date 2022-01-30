@@ -26,6 +26,7 @@ from toga_cocoa.libs import (
     core_graphics,
     kCGScrollEventUnitLine,
     objc_method,
+    c_void_p,
     send_super
 )
 
@@ -192,7 +193,7 @@ class RefreshableScrollView(NSScrollView):
             if self.refreshTriggered and not self.isRefreshing:
                 self.reload()
 
-        send_super(__class__, self, 'scrollWheel:', event)
+        send_super(__class__, self, 'scrollWheel:', event, argtypes=[c_void_p])
 
     @objc_method
     def viewBoundsChanged_(self, note) -> None:

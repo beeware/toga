@@ -49,8 +49,8 @@ class CocoaViewport:
 
 class WindowDelegate(NSObject):
     @objc_method
-    def windowWillClose_(self, notification) -> None:
-        self.interface.on_close()
+    def windowShouldClose_(self, notification) -> bool:
+        return self.impl.cocoa_windowShouldClose()
 
     @objc_method
     def windowDidResize_(self, notification) -> None:
@@ -109,6 +109,11 @@ class WindowDelegate(NSObject):
             native.setAction_(SEL('onToolbarButtonPress:'))
         except KeyError:
             pass
+
+        # Prevent the toolbar item from being deallocated when
+        # no Python references remain
+        native.retain()
+        native.autorelease()
         return native
 
     @objc_method
@@ -246,11 +251,25 @@ class Window:
     def set_full_screen(self, is_full_screen):
         self.interface.factory.not_implemented('Window.set_full_screen()')
 
-    def on_close(self):
+    def set_on_close(self, handler):
         pass
 
+    def cocoa_windowShouldClose(self):
+        if self.interface.on_close:
+            should_close = self.interface.on_close(self)
+        else:
+            should_close = True
+
+        if should_close:
+            self.interface.app.windows -= self.interface
+
+        return should_close
+
     def close(self):
-        self.native.close()
+        # Close window directly here, don't use `NSWindow.performClose()`
+        # because it won't work if the window does not have a close button.
+        if self.cocoa_windowShouldClose():
+            self.native.close()
 
     def info_dialog(self, title, message):
         return dialogs.info(self.interface, title, message)

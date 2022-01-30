@@ -1,9 +1,12 @@
 from travertino.size import at_least
 
+from toga_cocoa.colors import native_color
 from toga_cocoa.libs import (
+    NSColor,
     NSTextAlignment,
     NSTextField,
     NSTextFieldSquareBezel,
+    c_void_p,
     objc_method,
     send_super,
 )
@@ -42,6 +45,8 @@ class TogaTextField(NSTextField):
         else:
             self._configured = True
 
+        send_super(__class__, self, 'textDidEndEditing:', textObject, argtypes=[c_void_p])
+
 
 class TextInput(Widget):
     def create(self):
@@ -68,6 +73,12 @@ class TextInput(Widget):
     def set_font(self, font):
         if font:
             self.native.font = font.bind(self.interface.factory).native
+
+    def set_color(self, color):
+        if color:
+            self.native.textColor = native_color(color)
+        else:
+            self.native.textColor = NSColor.labelColor
 
     def get_value(self):
         return str(self.native.stringValue)

@@ -29,10 +29,12 @@
 Toga
 ====
 
-Toga is a Python native, OS native, cross platform GUI toolkit. Toga consists of a library of base components with a shared
-interface to simplify platform-agnostic GUI development.
+Toga is a Python native, OS native, cross platform GUI toolkit. Toga consists of
+a library of base components with a shared interface to simplify
+platform-agnostic GUI development.
 
-Toga is available on Mac OS, Windows, Linux (GTK), and mobile platforms such as Android and iOS.
+Toga is available on Mac OS, Windows, Linux (GTK), and mobile platforms such as
+Android and iOS.
 
 .. figure:: tutorial/screenshots/tutorial-2.png
     :align: center
@@ -87,14 +89,14 @@ Community
 
 Toga is part of the `BeeWare suite`_. You can talk to the community through:
 
- * `@pybeeware on Twitter`_
+ * `@pybeeware on Twitter <https://twitter.com/pybeeware>`__
 
- * `beeware/general on Gitter`_
+ * `Discord <https://beeware.org/bee/chat/>`__
+
+ * The Toga `Github Discussions forum <https://github.com/beeware/toga/discussions>`__
 
 .. _BeeWare suite: http://beeware.org
 .. _Read The Docs: https://toga.readthedocs.io
-.. _@pybeeware on Twitter: https://twitter.com/pybeeware
-.. _beeware/general on Gitter: https://gitter.im/beeware/general
 
 
 .. toctree::

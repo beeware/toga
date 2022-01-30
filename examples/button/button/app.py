@@ -59,7 +59,7 @@ class ExampleButtonApp(toga.App):
         )
 
         # Button with label and margin style
-        button5 = toga.Button('Far from home', style=Pack(padding=50))
+        button5 = toga.Button('Far from home', style=Pack(padding=50, color=BLUE))
 
         # Button with label and RGB color
         button6 = toga.Button('RGB : Fashion', style=Pack(background_color=RED))
@@ -123,3 +123,8 @@ def main():
     #   App name and namespace
     app = ExampleButtonApp('Button', 'org.beeware.widgets.buttons')
     return app
+
+
+if __name__ == '__main__':
+    app = main()
+    app.main_loop()

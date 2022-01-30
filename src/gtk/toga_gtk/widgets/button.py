@@ -1,8 +1,7 @@
 from travertino.size import at_least
 
-from ..libs import (
-    Gtk,
-)
+from ..libs import Gtk
+
 from .base import Widget
 
 

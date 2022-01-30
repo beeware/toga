@@ -57,7 +57,7 @@ class Widget:
         self.native.set_sensitive(self.interface.enabled)
 
     def focus(self):
-        self.interface.factory.not_implemented("Widget.focus()")
+        self.native.grab_focus()
 
     ######################################################################
     # APPLICATOR

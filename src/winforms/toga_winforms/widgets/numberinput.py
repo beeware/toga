@@ -30,13 +30,13 @@ class NumberInput(Widget):
         if self.interface.min_value is None:
             self.native.Minimum = Convert.ToDecimal(-sys.maxsize - 1)
         else:
-            self.native.Minimum = Convert.ToDecimal(self.interface.min_value)
+            self.native.Minimum = Convert.ToDecimal(float(self.interface.min_value))
 
     def set_max_value(self, value):
         if self.interface.max_value is None:
             self.native.Maximum = Convert.ToDecimal(sys.maxsize)
         else:
-            self.native.Maximum = Convert.ToDecimal(self.interface.max_value)
+            self.native.Maximum = Convert.ToDecimal(float(self.interface.max_value))
 
     def set_value(self, value):
         if value is None or value == '':
