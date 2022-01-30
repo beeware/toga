@@ -27,6 +27,7 @@ class Widget:
         self.interface = interface
         self.interface._impl = self
         self._container = None
+        self.viewport = None
         self.native = None
         self._native_activity = _get_activity()
         self.create()
@@ -56,7 +57,6 @@ class Widget:
                 self._container = None
         elif container:
             self._container = container
-            self.viewport = container.viewport
             if self.native:
                 # When initially setting the container and adding widgets to the container,
                 # we provide no `LayoutParams`. Those are promptly added when Toga
@@ -109,7 +109,10 @@ class Widget:
     # INTERFACE
 
     def add_child(self, child):
-        if self.container:
+        if self.viewport:
+            # we are the top level widget
+            child.container = self
+        else:
             child.container = self.container
 
     def insert_child(self, index, child):
