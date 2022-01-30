@@ -92,6 +92,10 @@ class NumberInput(Widget):
         pass
 
     def rehint(self):
+        # On Android, EditText's measure() throws NullPointerException if the widget has no
+        # LayoutParams.
+        if not self.native.getLayoutParams():
+            return
         self.native.measure(
             View__MeasureSpec.UNSPECIFIED, View__MeasureSpec.UNSPECIFIED
         )
