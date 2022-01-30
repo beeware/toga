@@ -24,16 +24,17 @@ class ExampleNumberInputApp(toga.App):
 
         # Label to show responses.
         self.label = toga.Label("Ready.")
-        my_style = Pack(font_size=16, font_weight="bold")
-        label1 = toga.Label("Enter value from 12 to 72", style=my_style)
+        label1 = toga.Label("Enter value from 12 to 72:")
         self.ni1 = toga.NumberInput(
             min_value=12,
             max_value=72,
             default=12,
             on_change=self.handle_numberinput,
-            style=Pack(font_size=16, font_weight="bold", flex=1),
         )
-        box1 = toga.Box(style=Pack(direction=ROW), children=[label1, self.ni1])
+        box1 = toga.Box(
+            children=[label1, self.ni1],
+            style=Pack(direction=ROW, padding=5),
+        )
         # Buttons
         btn_style = Pack(flex=1)
         btn_do_stuff = toga.Button("Get value", on_press=self.do_stuff, style=btn_style)
