@@ -39,11 +39,9 @@ class DatePicker(Widget):
     @value.setter
     def value(self, value):
         if value is None:
-            v = datetime.date.today()
-        elif isinstance(value, str):
-            v = datetime.date.fromisoformat(value)
+            v = str(datetime.date.today())
         else:
-            v = value
+            v = str(value)
         self._impl.set_value(v)
 
     @property

@@ -1,6 +1,7 @@
-from ..libs.android.view import OnClickListener, View__MeasureSpec
-from ..libs.android.widget import EditText
-from .base import Widget
+from ...libs.android.view import OnClickListener, View__MeasureSpec
+from ...libs.android.widget import EditText
+from ..base import Widget
+from abc import ABC, abstractclassmethod, abstractmethod
 
 
 class TogaPickerClickListener(OnClickListener):
@@ -18,7 +19,7 @@ class TogaPickerSetListener:
         self.picker_impl = picker_impl
 
     def listen(self, _, *args):
-        new_value = self.picker_impl._to_obj_converter_class(*self.picker_impl._value_pack_fn(*args))
+        new_value = self.picker_impl.args_to_obj(*args)
 
         self.picker_impl._showing = False
         self.picker_impl._dialog = None
@@ -30,35 +31,46 @@ class TogaPickerSetListener:
     onTimeSet = listen
 
 
-class PickerBase(Widget):
-    _icon = None
-    _hint = None
-    _to_obj_converter_class = None
-    _to_str_converter_kwargs = None
-    _dialog_class = None
-    _update_dialog_name = None
-    _value_unpack_fn = None
-    _value_pack_fn = None
-    _extra_dialog_setters = None
-    _extra_dialog_args = None
-    _dialog_listener_class = None
+class PickerBase(Widget, ABC):
+    @abstractclassmethod
+    def _get_icon(cls):
+        raise NotImplementedError
 
-    def __init__(self, interface):
-        super().__init__(interface)
-        if None in (
-            self._icon,
-            self._hint,
-            self._to_obj_converter_class,
-            self._to_str_converter_kwargs,
-            self._dialog_class,
-            self._update_dialog_name,
-            self._value_unpack_fn,
-            self._value_pack_fn,
-            self._extra_dialog_setters,
-            self._extra_dialog_args,
-            self._dialog_listener_class
-        ):
-            raise ValueError("You have to subclass the picker class and define some fields!")
+    @abstractclassmethod
+    def _get_hint(cls):
+        raise NotImplementedError
+
+    @abstractclassmethod
+    def _get_dialog_constructor(cls):
+        raise NotImplementedError
+
+    @abstractclassmethod
+    def _get_dialog_listener_class(cls):
+        raise NotImplementedError
+
+    @abstractclassmethod
+    def obj_to_args(cls, value):
+        raise NotImplementedError
+
+    @abstractclassmethod
+    def args_to_obj(cls, *args):
+        raise NotImplementedError
+
+    @abstractclassmethod
+    def obj_to_str(cls, value):
+        raise NotImplementedError
+
+    @abstractclassmethod
+    def str_to_obj(cls, value):
+        raise NotImplementedError
+
+    @abstractmethod
+    def _extra_dialog_setup(self):
+        raise NotImplementedError
+
+    @abstractmethod
+    def _get_update_fn(self):
+        raise NotImplementedError
 
     def create(self):
         self._value = None
@@ -71,18 +83,18 @@ class PickerBase(Widget):
         self.native.setFocusableInTouchMode(False)
         self.native.setLongClickable(False)
         self.native.setOnClickListener(TogaPickerClickListener(self))
-        self.native.setCompoundDrawablesWithIntrinsicBounds(self._icon, 0, 0, 0)
-        self.native.setHint(self._hint)
+        self.native.setCompoundDrawablesWithIntrinsicBounds(self._get_icon(), 0, 0, 0)
+        self.native.setHint(self._get_hint())
 
     def set_value(self, value):
         if isinstance(value, str):
-            value = self._to_obj_converter_class.fromisoformat(value)
+            value = self.str_to_obj(value)
         self._value = value
         if value is not None:
-            self.native.setText(value.isoformat(**self._to_str_converter_kwargs))
+            self.native.setText(self.obj_to_str(value))
             if self._dialog is not None and self._showing:
-                fn = getattr(self._dialog, self._update_dialog_name)
-                fn(*self._value_unpack_fn(value))
+                fn = self._get_update_fn()
+                fn(*self.obj_to_args(value))
 
     def get_value(self):
         return self._value
@@ -104,10 +116,9 @@ class PickerBase(Widget):
         self.interface.intrinsic.height = self.native.getMeasuredHeight()
 
     def _create_dialog(self):
-        listener = type("Listener", (TogaPickerSetListener, self._dialog_listener_class), {})
-        self._dialog = self._dialog_class(self._native_activity, listener(self), *self._value_unpack_fn(self._value), *self._extra_dialog_args)
+        dialog_constructor = self._get_dialog_constructor()
+        listener = type("Listener", (TogaPickerSetListener, self._get_dialog_listener_class()), {})
+        self._dialog = dialog_constructor(self._native_activity, listener(self), *self.obj_to_args(self._value))
         self._showing = True
-        for setter_name in self._extra_dialog_setters:
-            setter = getattr(self, f"set_{setter_name}")
-            setter(getattr(self.interface, f"_{setter_name}"))
+        self._extra_dialog_setup()
         self._dialog.show()
