@@ -1,4 +1,5 @@
 from asyncio import get_event_loop
+from ctypes import c_void_p
 
 from travertino.size import at_least
 
@@ -24,7 +25,7 @@ class TogaWebView(WKWebView):
     def keyDown_(self, event) -> None:
         if self.interface.on_key_down:
             self.interface.on_key_down(self.interface, **toga_key(event))
-        send_super(__class__, self, 'keyDown:', event)
+        send_super(__class__, self, 'keyDown:', event, argtypes=[c_void_p])
 
     @objc_method
     def touchBar(self):
