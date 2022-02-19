@@ -25,6 +25,18 @@ class TimePickerTests(TestCase):
         none_default = datetime.datetime.today().time().replace(microsecond=0)
         self.assertValueSet(self.time_picker, 'value', none_default)
 
+    def test_set_value_with_string(self):
+        self.time_picker.value = "06:07:08"
+        self.assertValueSet(self.time_picker, 'value', datetime.time(6, 7, 8))
+
+    def test_set_value_with_invalid_string(self):
+        with self.assertRaises(ValueError):
+            self.time_picker.value = "Not a time"
+
+    def test_set_value_with_non_time(self):
+        with self.assertRaises(TypeError):
+            self.time_picker.value = 1.2345
+
     def test_set_value_with_an_hour_ago(self):
         hour_ago = (datetime.datetime.today() - datetime.timedelta(hours=1)).time()
         self.time_picker.value = hour_ago
@@ -49,6 +61,11 @@ class TimePickerTests(TestCase):
         self.time_picker.max_time = hour_ago
         self.assertEqual(self.time_picker.min_time, hour_ago)
         self.assertEqual(self.time_picker.max_time, hour_ago)
+
+        self.time_picker.min_time = None
+        self.time_picker.max_time = None
+        self.assertEqual(self.time_picker.min_time, None)
+        self.assertEqual(self.time_picker.max_time, None)
 
     def test_on_change_callback_set(self):
         def dummy_function():

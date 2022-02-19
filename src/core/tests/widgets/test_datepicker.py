@@ -24,6 +24,18 @@ class DatePickerTests(TestCase):
         self.date_picker.value = None
         self.assertValueSet(self.date_picker, 'value', datetime.date.today())
 
+    def test_set_value_with_string(self):
+        self.date_picker.value = "2021-02-19"
+        self.assertValueSet(self.date_picker, 'value', datetime.date(2021, 2, 19))
+
+    def test_set_value_with_invalid_string(self):
+        with self.assertRaises(ValueError):
+            self.date_picker.value = "Not a date"
+
+    def test_set_value_with_non_time(self):
+        with self.assertRaises(TypeError):
+            self.date_picker.value = 1.2345
+
     def test_set_value_with_yesterdays_date(self):
         yesterday = datetime.date.today() - datetime.timedelta(days=1)
         self.date_picker.value = yesterday
@@ -48,6 +60,11 @@ class DatePickerTests(TestCase):
         self.date_picker.max_date = yesterday
         self.assertEqual(self.date_picker.min_date, yesterday)
         self.assertEqual(self.date_picker.max_date, yesterday)
+
+        self.date_picker.min_date = None
+        self.date_picker.max_date = None
+        self.assertEqual(self.date_picker.min_date, None)
+        self.assertEqual(self.date_picker.max_date, None)
 
     def test_on_change_callback_set(self):
         def dummy_function():
