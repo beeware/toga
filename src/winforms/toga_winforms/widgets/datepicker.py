@@ -12,19 +12,25 @@ class DatePicker(Widget):
         self.native = WinForms.DateTimePicker()
 
     def get_value(self):
-        date = datetime.datetime.strptime(self.native.Text, '%A, %B %d, %Y').date()
-        return date
+        return datetime.datetime.strptime(self.native.Text, '%A, %B %d, %Y').date()
 
     def set_value(self, value):
-        value = WinDateTime.Parse(value)
-        self.native.Value = value
+        self.native.Value = WinDateTime(value.year, value.month, value.day)
 
     def set_min_date(self, value):
-        value = WinDateTime.Parse(value)
+        if value is None:
+            value = self.native.MinDateTime
+        else:
+            value = WinDateTime(value.year, value.month, value.day)
+
         self.native.MinDate = value
 
     def set_max_date(self, value):
-        value = WinDateTime.Parse(value)
+        if value is None:
+            value = self.native.MaxDateTime
+        else:
+            value = WinDateTime(value.year, value.month, value.day)
+
         self.native.MaxDate = value
 
     def rehint(self):

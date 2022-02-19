@@ -36,13 +36,21 @@ class DatePicker(Widget):
         """
         return self._impl.get_value()
 
+    def _convert_date(self, value):
+        if value is None:
+            return datetime.date.today()
+        elif isinstance(value, datetime.datetime):
+            return value.date()
+        elif isinstance(value, datetime.date):
+            return value
+        elif isinstance(value, str):
+            return datetime.date.fromisoformat(value)
+        else:
+            raise TypeError("not a valid date value")
+
     @value.setter
     def value(self, value):
-        if value is None:
-            v = str(datetime.date.today())
-        else:
-            v = str(value)
-        self._impl.set_value(v)
+        self._impl.set_value(self._convert_date(value))
 
     @property
     def min_date(self):
@@ -55,10 +63,12 @@ class DatePicker(Widget):
 
     @min_date.setter
     def min_date(self, value):
-        self._min_date = None
-        if value is not None:
-            self._min_date = str(value)
-            self._impl.set_min_date(self._min_date)
+        if value is None:
+            self._min_date = None
+        else:
+            self._min_date = self._convert_date(value)
+
+        self._impl.set_min_date(self._min_date)
 
     @property
     def max_date(self):
@@ -71,10 +81,12 @@ class DatePicker(Widget):
 
     @max_date.setter
     def max_date(self, value):
-        self._max_date = None
-        if value is not None:
-            self._max_date = str(value)
-            self._impl.set_max_date(self._max_date)
+        if value is None:
+            self._max_date = None
+        else:
+            self._max_date = self._convert_date(value)
+
+        self._impl.set_max_date(self._max_date)
 
     @property
     def on_change(self):
