@@ -1,5 +1,5 @@
 Date & Time Pickers Example
-===================
+===========================
 
 Test app for the Date & Time Pickers Example widget.
 
