@@ -30,6 +30,16 @@ class TimePicker(PickerBase):
     def _get_hint(cls):
         return "HH:MM"
 
+    def create(self):
+        return super().create()
+
+    def set_on_change(self, handler):
+        # nothing to do here, but it just has to exist
+        pass
+
+    def get_value(self):
+        return self._value
+
     def set_value(self, value):
         if isinstance(value, str):
             value = time.fromisoformat(value)
@@ -54,3 +64,6 @@ class TimePicker(PickerBase):
             True,
         )
         self._dialog.show()
+
+    def rehint(self):
+        return super().rehint()

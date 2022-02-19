@@ -35,13 +35,6 @@ class PickerBase(Widget, ABC):
         self.native.setCompoundDrawablesWithIntrinsicBounds(self._get_icon(), 0, 0, 0)
         self.native.setHint(self._get_hint())
 
-    def get_value(self):
-        return self._value
-
-    def set_on_change(self, handler):
-        # nothing to do here, but it just has to exist
-        pass
-
     def rehint(self):
         self.interface.intrinsic.width = self.native.getMeasuredWidth()
         # Refuse to call measure() if widget has no container, i.e., has no LayoutParams.

@@ -31,8 +31,15 @@ class DatePicker(PickerBase):
     def _get_hint(cls):
         return "YYYY-MM-DD"
 
-    def _get_update_fn(self):
-        return self._dialog.updateDate
+    def create(self):
+        return super().create()
+
+    def set_on_change(self, handler):
+        # nothing to do here, but it just has to exist
+        pass
+
+    def get_value(self):
+        return self._value
 
     def set_value(self, value):
         if isinstance(value, str):
@@ -70,3 +77,6 @@ class DatePicker(PickerBase):
         self.set_min_date(self.interface._min_date)
         self.set_max_date(self.interface._max_date)
         self._dialog.show()
+
+    def rehint(self):
+        return super().rehint()
