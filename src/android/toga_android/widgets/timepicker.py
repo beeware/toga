@@ -15,7 +15,6 @@ class TimePickerListener(OnTimeSetListener):
     def onTimeSet(self, _, *args):
         new_value = time(*args)
 
-        self.picker_impl._showing = False
         self.picker_impl._dialog = None
         self.picker_impl.interface.value = new_value
         if self.picker_impl.interface.on_change:
@@ -37,7 +36,7 @@ class TimePicker(PickerBase):
         self._value = value
         if value is not None:
             self.native.setText(value.isoformat(timespec="minutes"))
-            if self._dialog is not None and self._showing:
+            if self._dialog is not None:
                 self._dialog.updateTime(value.hour, value.minute)
 
     def set_min_time(self, value):
@@ -54,5 +53,4 @@ class TimePicker(PickerBase):
             self._value.minute,
             True,
         )
-        self._showing = True
         self._dialog.show()

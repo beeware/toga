@@ -16,7 +16,6 @@ class DatePickerListener(OnDateSetListener):
         day, month, year = args
         new_value = date(day, month + 1, year)
 
-        self.picker_impl._showing = False
         self.picker_impl._dialog = None
         self.picker_impl.interface.value = new_value
         if self.picker_impl.interface.on_change:
@@ -41,15 +40,15 @@ class DatePicker(PickerBase):
         self._value = value
         if value is not None:
             self.native.setText(value.isoformat())
-            if self._dialog is not None and self._showing:
+            if self._dialog is not None:
                 self._dialog.updateDate(value.year, value.month - 1, value.day)
 
     def set_min_date(self, value):
-        if value is not None and self._dialog is not None and self._showing:
+        if value is not None and self._dialog is not None:
             self._dialog.getDatePicker().setMinDate(self._date_to_milli(value))
 
     def set_max_date(self, value):
-        if value is not None and self._dialog is not None and self._showing:
+        if value is not None and self._dialog is not None:
             self._dialog.getDatePicker().setMaxDate(self._date_to_milli(value))
 
     @classmethod
@@ -68,7 +67,6 @@ class DatePicker(PickerBase):
             self._value.month - 1,
             self._value.day,
         )
-        self._showing = True
         self.set_min_date(self.interface._min_date)
         self.set_max_date(self.interface._max_date)
         self._dialog.show()

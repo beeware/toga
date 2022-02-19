@@ -25,7 +25,6 @@ class PickerBase(Widget, ABC):
     def create(self):
         self._value = None
         self._dialog = None
-        self._showing = False
         self.native = EditText(self._native_activity)
         self.native.setFocusable(False)
         self.native.setClickable(False)
