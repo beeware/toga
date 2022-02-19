@@ -4,11 +4,22 @@ from ..libs.android import R__drawable
 from ..libs.android.widget import TimePickerDialog
 from ..libs.android.widget import \
     TimePickerDialog__OnTimeSetListener as OnTimeSetListener
-from .internal.pickers import PickerBase, TogaPickerSetListener
+from .internal.pickers import PickerBase
 
 
-class TimePickerListener(TogaPickerSetListener, OnTimeSetListener):
-    pass
+class TimePickerListener(OnTimeSetListener):
+    def __init__(self, picker_impl):
+        super().__init__()
+        self.picker_impl = picker_impl
+
+    def onTimeSet(self, _, *args):
+        new_value = time(*args)
+
+        self.picker_impl._showing = False
+        self.picker_impl._dialog = None
+        self.picker_impl.interface.value = new_value
+        if self.picker_impl.interface.on_change:
+            self.picker_impl.interface.on_change(self.picker_impl)
 
 
 class TimePicker(PickerBase):
@@ -20,24 +31,14 @@ class TimePicker(PickerBase):
     def _get_hint(cls):
         return "HH:MM"
 
-    @classmethod
-    def obj_to_args(cls, value):
-        return value.hour, value.minute
-
-    @classmethod
-    def args_to_obj(cls, *args):
-        return time(*args)
-
-    @classmethod
-    def obj_to_str(cls, value):
-        return value.isoformat(timespec="minutes")
-
-    @classmethod
-    def str_to_obj(cls, value):
-        return time.fromisoformat(value)
-
-    def _get_update_fn(self):
-        return self._dialog.updateTime
+    def set_value(self, value):
+        if isinstance(value, str):
+            value = time.fromisoformat(value)
+        self._value = value
+        if value is not None:
+            self.native.setText(value.isoformat(timespec="minutes"))
+            if self._dialog is not None and self._showing:
+                self._dialog.updateTime(value.hour, value.minute)
 
     def set_min_time(self, value):
         self.interface.factory.not_implemented("TimePicker.set_min_time()")
@@ -49,7 +50,9 @@ class TimePicker(PickerBase):
         self._dialog = TimePickerDialog(
             self._native_activity,
             TimePickerListener(self),
-            *(self.obj_to_args(self._value) + (True,))
+            self._value.hour,
+            self._value.minute,
+            True,
         )
         self._showing = True
         self._dialog.show()

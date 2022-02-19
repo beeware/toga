@@ -1,7 +1,7 @@
 from ...libs.android.view import OnClickListener, View__MeasureSpec
 from ...libs.android.widget import EditText
 from ..base import Widget
-from abc import ABC, abstractclassmethod, abstractmethod
+from abc import ABC, abstractclassmethod
 
 
 class TogaPickerClickListener(OnClickListener):
@@ -13,24 +13,6 @@ class TogaPickerClickListener(OnClickListener):
         self.picker_impl._create_dialog()
 
 
-class TogaPickerSetListener:
-    def __init__(self, picker_impl):
-        super().__init__()
-        self.picker_impl = picker_impl
-
-    def listen(self, _, *args):
-        new_value = self.picker_impl.args_to_obj(*args)
-
-        self.picker_impl._showing = False
-        self.picker_impl._dialog = None
-        self.picker_impl.interface.value = new_value
-        if self.picker_impl.interface.on_change:
-            self.picker_impl.interface.on_change(self.picker_impl)
-
-    onDateSet = listen
-    onTimeSet = listen
-
-
 class PickerBase(Widget, ABC):
     @abstractclassmethod
     def _get_icon(cls):
@@ -38,26 +20,6 @@ class PickerBase(Widget, ABC):
 
     @abstractclassmethod
     def _get_hint(cls):
-        raise NotImplementedError
-
-    @abstractclassmethod
-    def obj_to_args(cls, value):
-        raise NotImplementedError
-
-    @abstractclassmethod
-    def args_to_obj(cls, *args):
-        raise NotImplementedError
-
-    @abstractclassmethod
-    def obj_to_str(cls, value):
-        raise NotImplementedError
-
-    @abstractclassmethod
-    def str_to_obj(cls, value):
-        raise NotImplementedError
-
-    @abstractmethod
-    def _get_update_fn(self):
         raise NotImplementedError
 
     def create(self):
@@ -73,16 +35,6 @@ class PickerBase(Widget, ABC):
         self.native.setOnClickListener(TogaPickerClickListener(self))
         self.native.setCompoundDrawablesWithIntrinsicBounds(self._get_icon(), 0, 0, 0)
         self.native.setHint(self._get_hint())
-
-    def set_value(self, value):
-        if isinstance(value, str):
-            value = self.str_to_obj(value)
-        self._value = value
-        if value is not None:
-            self.native.setText(self.obj_to_str(value))
-            if self._dialog is not None and self._showing:
-                fn = self._get_update_fn()
-                fn(*self.obj_to_args(value))
 
     def get_value(self):
         return self._value

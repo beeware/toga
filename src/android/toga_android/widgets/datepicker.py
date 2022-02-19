@@ -4,11 +4,23 @@ from ..libs.android import R__drawable
 from ..libs.android.widget import DatePickerDialog
 from ..libs.android.widget import \
     DatePickerDialog__OnDateSetListener as OnDateSetListener
-from .internal.pickers import PickerBase, TogaPickerSetListener
+from .internal.pickers import PickerBase
 
 
-class DatePickerListener(TogaPickerSetListener, OnDateSetListener):
-    pass
+class DatePickerListener(OnDateSetListener):
+    def __init__(self, picker_impl):
+        super().__init__()
+        self.picker_impl = picker_impl
+
+    def onDateSet(self, _, *args):
+        day, month, year = args
+        new_value = date(day, month + 1, year)
+
+        self.picker_impl._showing = False
+        self.picker_impl._dialog = None
+        self.picker_impl.interface.value = new_value
+        if self.picker_impl.interface.on_change:
+            self.picker_impl.interface.on_change(self.picker_impl)
 
 
 class DatePicker(PickerBase):
@@ -20,25 +32,17 @@ class DatePicker(PickerBase):
     def _get_hint(cls):
         return "YYYY-MM-DD"
 
-    @classmethod
-    def obj_to_args(cls, value):
-        return value.year, value.month - 1, value.day
-
-    @classmethod
-    def args_to_obj(cls, *args):
-        day, month, year = args
-        return date(day, month + 1, year)
-
-    @classmethod
-    def obj_to_str(cls, value):
-        return value.isoformat()
-
-    @classmethod
-    def str_to_obj(cls, value):
-        return date.fromisoformat(value)
-
     def _get_update_fn(self):
         return self._dialog.updateDate
+
+    def set_value(self, value):
+        if isinstance(value, str):
+            value = date.fromisoformat(value)
+        self._value = value
+        if value is not None:
+            self.native.setText(value.isoformat())
+            if self._dialog is not None and self._showing:
+                self._dialog.updateDate(value.year, value.month - 1, value.day)
 
     def set_min_date(self, value):
         if value is not None and self._dialog is not None and self._showing:
@@ -60,7 +64,9 @@ class DatePicker(PickerBase):
         self._dialog = DatePickerDialog(
             self._native_activity,
             DatePickerListener(self),
-            *self.obj_to_args(self._value)
+            self._value.year,
+            self._value.month - 1,
+            self._value.day,
         )
         self._showing = True
         self.set_min_date(self.interface._min_date)
