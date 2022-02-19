@@ -4,7 +4,11 @@ from ..libs.android import R__drawable
 from ..libs.android.widget import TimePickerDialog
 from ..libs.android.widget import \
     TimePickerDialog__OnTimeSetListener as OnTimeSetListener
-from .internal.pickers import PickerBase
+from .internal.pickers import PickerBase, TogaPickerSetListener
+
+
+class TimePickerListener(TogaPickerSetListener, OnTimeSetListener):
+    pass
 
 
 class TimePicker(PickerBase):
@@ -15,21 +19,6 @@ class TimePicker(PickerBase):
     @classmethod
     def _get_hint(cls):
         return "HH:MM"
-
-    @classmethod
-    def _get_dialog_constructor(cls):
-        def partial_constructor(*args, **kwargs):
-            # The `True` value is for required argument `is2HourView`,
-            # which is needed by Android Dialog, and needs to be last
-            # However, Rubicon does not allow for kwargs,
-            # so the standard partial solution would not work
-            return TimePickerDialog(*args, True, **kwargs)
-
-        return partial_constructor
-
-    @classmethod
-    def _get_dialog_listener_class(cls):
-        return OnTimeSetListener
 
     @classmethod
     def obj_to_args(cls, value):
@@ -47,9 +36,6 @@ class TimePicker(PickerBase):
     def str_to_obj(cls, value):
         return time.fromisoformat(value)
 
-    def _extra_dialog_setup(self):
-        pass
-
     def _get_update_fn(self):
         return self._dialog.updateTime
 
@@ -58,3 +44,12 @@ class TimePicker(PickerBase):
 
     def set_max_time(self, value):
         self.interface.factory.not_implemented("TimePicker.set_max_time()")
+
+    def _create_dialog(self):
+        self._dialog = TimePickerDialog(
+            self._native_activity,
+            TimePickerListener(self),
+            *(self.obj_to_args(self._value) + (True,))
+        )
+        self._showing = True
+        self._dialog.show()

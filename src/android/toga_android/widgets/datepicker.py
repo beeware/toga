@@ -4,7 +4,11 @@ from ..libs.android import R__drawable
 from ..libs.android.widget import DatePickerDialog
 from ..libs.android.widget import \
     DatePickerDialog__OnDateSetListener as OnDateSetListener
-from .internal.pickers import PickerBase
+from .internal.pickers import PickerBase, TogaPickerSetListener
+
+
+class DatePickerListener(TogaPickerSetListener, OnDateSetListener):
+    pass
 
 
 class DatePicker(PickerBase):
@@ -15,14 +19,6 @@ class DatePicker(PickerBase):
     @classmethod
     def _get_hint(cls):
         return "YYYY-MM-DD"
-
-    @classmethod
-    def _get_dialog_constructor(cls):
-        return DatePickerDialog
-
-    @classmethod
-    def _get_dialog_listener_class(cls):
-        return OnDateSetListener
 
     @classmethod
     def obj_to_args(cls, value):
@@ -40,10 +36,6 @@ class DatePicker(PickerBase):
     @classmethod
     def str_to_obj(cls, value):
         return date.fromisoformat(value)
-
-    def _extra_dialog_setup(self):
-        self.set_min_date(self.interface._min_date)
-        self.set_max_date(self.interface._max_date)
 
     def _get_update_fn(self):
         return self._dialog.updateDate
@@ -63,3 +55,14 @@ class DatePicker(PickerBase):
         datetime_value = datetime.combine(value, datetime.min.time())
         timestamp = datetime_value.timestamp()
         return int(timestamp * 1000)
+
+    def _create_dialog(self):
+        self._dialog = DatePickerDialog(
+            self._native_activity,
+            DatePickerListener(self),
+            *self.obj_to_args(self._value)
+        )
+        self._showing = True
+        self.set_min_date(self.interface._min_date)
+        self.set_max_date(self.interface._max_date)
+        self._dialog.show()

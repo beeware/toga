@@ -41,14 +41,6 @@ class PickerBase(Widget, ABC):
         raise NotImplementedError
 
     @abstractclassmethod
-    def _get_dialog_constructor(cls):
-        raise NotImplementedError
-
-    @abstractclassmethod
-    def _get_dialog_listener_class(cls):
-        raise NotImplementedError
-
-    @abstractclassmethod
     def obj_to_args(cls, value):
         raise NotImplementedError
 
@@ -62,10 +54,6 @@ class PickerBase(Widget, ABC):
 
     @abstractclassmethod
     def str_to_obj(cls, value):
-        raise NotImplementedError
-
-    @abstractmethod
-    def _extra_dialog_setup(self):
         raise NotImplementedError
 
     @abstractmethod
@@ -114,11 +102,3 @@ class PickerBase(Widget, ABC):
             View__MeasureSpec.UNSPECIFIED, View__MeasureSpec.UNSPECIFIED
         )
         self.interface.intrinsic.height = self.native.getMeasuredHeight()
-
-    def _create_dialog(self):
-        dialog_constructor = self._get_dialog_constructor()
-        listener = type("Listener", (TogaPickerSetListener, self._get_dialog_listener_class()), {})
-        self._dialog = dialog_constructor(self._native_activity, listener(self), *self.obj_to_args(self._value))
-        self._showing = True
-        self._extra_dialog_setup()
-        self._dialog.show()
