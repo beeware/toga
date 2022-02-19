@@ -24,11 +24,15 @@ class TimePicker(Widget):
 
     def __init__(self, id=None, style=None, factory=None, initial=None, min_time=None, max_time=None, on_change=None):
         super().__init__(id=id, style=style, factory=factory)
+        self._on_change = None
+
         # Create a platform specific implementation of a TimePicker
         self._impl = self.factory.TimePicker(interface=self)
-        self.value = initial
         self.min_time = min_time
         self.max_time = max_time
+        # Set the value after the min/max has been set
+        self.value = initial
+        # Set the change handler after the initial value has been set
         self.on_change = on_change
 
     @property
@@ -40,13 +44,21 @@ class TimePicker(Widget):
         """
         return self._impl.get_value()
 
+    def _convert_time(self, value):
+        if value is None:
+            return datetime.datetime.today().time().replace(microsecond=0)
+        elif isinstance(value, datetime.time):
+            return value
+        elif isinstance(value, datetime.datetime):
+            return value.time()
+        elif isinstance(value, str):
+            return datetime.time.fromisoformat(value)
+        else:
+            raise TypeError("not a valid time value")
+
     @value.setter
     def value(self, value):
-        if value is None:
-            v = str(datetime.datetime.today().time().replace(microsecond=0))
-        else:
-            v = str(value)
-        self._impl.set_value(v)
+        self._impl.set_value(self._convert_time(value))
 
     @property
     def min_time(self):
@@ -61,10 +73,11 @@ class TimePicker(Widget):
 
     @min_time.setter
     def min_time(self, value):
-        self._min_time = None
-        if value is not None:
-            self._min_time = str(value)
-            self._impl.set_min_time(self._min_time)
+        if value is None:
+            self._min_time = None
+        else:
+            self._min_time = self._convert_time(value)
+        self._impl.set_min_time(self._min_time)
 
     @property
     def max_time(self):
@@ -79,10 +92,12 @@ class TimePicker(Widget):
 
     @max_time.setter
     def max_time(self, value):
-        self._max_time = None
-        if value is not None:
-            self._max_time = str(value)
-            self._impl.set_max_time(self._max_time)
+        if value is None:
+            self._max_time = None
+        else:
+            self._max_time = self._convert_time(value)
+
+        self._impl.set_max_time(self._max_time)
 
     @property
     def on_change(self):

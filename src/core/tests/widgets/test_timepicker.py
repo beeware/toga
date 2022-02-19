@@ -23,27 +23,32 @@ class TimePickerTests(TestCase):
     def test_set_value_with_None(self):
         self.time_picker.value = None
         none_default = datetime.datetime.today().time().replace(microsecond=0)
-        self.assertValueSet(self.time_picker, 'value', none_default.strftime('%H:%M:%S'))
+        self.assertValueSet(self.time_picker, 'value', none_default)
 
     def test_set_value_with_an_hour_ago(self):
-        hour_ago = datetime.datetime.today() - datetime.timedelta(hours=1)
-        self.time_picker.value = hour_ago.time()
-        self.assertValueSet(self.time_picker, 'value', hour_ago.strftime('%H:%M:%S.%f'))
+        hour_ago = (datetime.datetime.today() - datetime.timedelta(hours=1)).time()
+        self.time_picker.value = hour_ago
+        self.assertValueSet(self.time_picker, 'value', hour_ago)
+
+    def test_set_value_with_an_hour_ago_datetime(self):
+        hour_ago = datetime.datetime.now() - datetime.timedelta(hours=1)
+        self.time_picker.value = hour_ago
+        self.assertValueSet(self.time_picker, 'value', hour_ago.time())
 
     def test_setting_value_invokes_impl_method(self):
-        new_value = 'New Value'
+        new_value = '06:07:08'
         self.time_picker.value = new_value
-        self.assertValueSet(self.time_picker, 'value', new_value)
+        self.assertValueSet(self.time_picker, 'value', datetime.time(6, 7, 8))
 
     def test_min_max_time(self):
         self.assertEqual(self.time_picker.min_time, None)
         self.assertEqual(self.time_picker.max_time, None)
 
-        hour_ago = datetime.datetime.today() - datetime.timedelta(hours=1)
-        self.time_picker.min_time = hour_ago.time()
-        self.time_picker.max_time = hour_ago.time()
-        self.assertEqual(self.time_picker.min_time, hour_ago.strftime('%H:%M:%S.%f'))
-        self.assertEqual(self.time_picker.max_time, hour_ago.strftime('%H:%M:%S.%f'))
+        hour_ago = (datetime.datetime.today() - datetime.timedelta(hours=1)).time()
+        self.time_picker.min_time = hour_ago
+        self.time_picker.max_time = hour_ago
+        self.assertEqual(self.time_picker.min_time, hour_ago)
+        self.assertEqual(self.time_picker.max_time, hour_ago)
 
     def test_on_change_callback_set(self):
         def dummy_function():

@@ -42,8 +42,6 @@ class DatePicker(PickerBase):
         return self._value
 
     def set_value(self, value):
-        if isinstance(value, str):
-            value = date.fromisoformat(value)
         self._value = value
         if value is not None:
             self.native.setText(value.isoformat())
@@ -60,8 +58,6 @@ class DatePicker(PickerBase):
 
     @classmethod
     def _date_to_milli(cls, value):
-        if isinstance(value, str):
-            value = date.fromisoformat(value)
         datetime_value = datetime.combine(value, datetime.min.time())
         timestamp = datetime_value.timestamp()
         return int(timestamp * 1000)

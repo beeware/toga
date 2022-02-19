@@ -84,7 +84,7 @@ class DateAndTimeApp(toga.App):
                     id="Min time",
                     initial=None,
                     on_change=self.changed_time,
-                    min_time="2021-01-01",
+                    min_time="06:35:00",
                 ),
             ],
             style=Pack(direction=ROW),

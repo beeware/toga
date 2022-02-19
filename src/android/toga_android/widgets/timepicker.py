@@ -41,13 +41,10 @@ class TimePicker(PickerBase):
         return self._value
 
     def set_value(self, value):
-        if isinstance(value, str):
-            value = time.fromisoformat(value)
         self._value = value
-        if value is not None:
-            self.native.setText(value.isoformat(timespec="minutes"))
-            if self._dialog is not None:
-                self._dialog.updateTime(value.hour, value.minute)
+        self.native.setText(value.isoformat(timespec="minutes"))
+        if self._dialog is not None:
+            self._dialog.updateTime(value.hour, value.minute)
 
     def set_min_time(self, value):
         self.interface.factory.not_implemented("TimePicker.set_min_time()")
