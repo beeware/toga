@@ -27,8 +27,12 @@ class TogaTextWatcher(TextWatcher):
 class TextInput(Widget):
     def create(self):
         self.native = EditText(self._native_activity)
-        self.native.addTextChangedListener(TogaTextWatcher(self))
         self.native.setInputType(InputType.TYPE_CLASS_TEXT)
+
+        # Add the listener last; some actions (such as setting the input type)
+        # emit a change message, and we don't want to pass those on until
+        # the widget is fully configured.
+        self.native.addTextChangedListener(TogaTextWatcher(self))
 
     def get_value(self):
         return self.native.getText().toString()
