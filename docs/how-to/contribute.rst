@@ -4,7 +4,13 @@
 How to contribute to Toga
 =========================
 
-If you experience problems with Toga, `log them on GitHub`_. If you want to contribute code, please `fork the code`_ and `submit a pull request`_.  If you feel like it, have a look at how Dan `made a major contribution <https://youtu.be/sWt_sEZUiY8>`__.  In his talk, he gives a good overview of Toga as well.  
+If you experience problems with Toga, `log them on GitHub`_. If you want to
+contribute code, please `fork the code`_ and `submit a pull request`_.  You may
+also find `this presentation by BeeWare team member Dan Yeaw
+<https://youtu.be/sWt_sEZUiY8>`__ helpful. This talk gives an architectural
+overview of Toga, as well as providing a guide to the process of adding new
+widgets.  
+
 
 .. _log them on Github: https://github.com/beeware/toga/issues
 .. _fork the code: https://github.com/beeware/toga
