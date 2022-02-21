@@ -156,6 +156,15 @@ class AppTests(TestCase):
         for window in self.app.windows:
             self.assertIn(window, test_windows)
 
+    def test_run_later(self):
+        test_button = toga.Button('Click me!', factory=toga_dummy.factory)
+
+        def update_label_text(test_button):
+            test_button.label = 'Clicked!'
+
+        self.app.run_later(1, update_label_text(test_button))
+        self.assertEqual(test_button.label, 'Clicked!')
+
 
 class DocumentAppTests(TestCase):
     def setUp(self):

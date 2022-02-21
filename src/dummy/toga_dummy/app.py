@@ -58,6 +58,9 @@ class App(LoggedObject):
     def add_background_task(self, handler):
         self._action('add_background_task', handler=handler)
 
+    def run_later(self, timeout, handler):
+        self._action('run_later', timeout=timeout, method=handler)
+
 
 @not_required_on('mobile', 'web')
 class DocumentApp(App):
