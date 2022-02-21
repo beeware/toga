@@ -34,8 +34,8 @@ Debugging
 ---------
 
 If you need to debug the HTML, JavaScript or CSS content of a view, you may want
-to use the "inspect element" feature of the WebView. This is not be turned on by
-default on some platforms. To enable WebView debugging:
+to use the "inspect element" feature of the WebView. Beware, this is not turned on by
+default on macOS. To enable WebView debugging:
 
 * macOS
 
