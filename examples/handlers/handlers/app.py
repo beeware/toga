@@ -52,6 +52,14 @@ class HandlerApp(toga.App):
             self.label.text = "Background: Iteration {}".format(self.counter)
             await asyncio.sleep(1)
 
+    async def do_run_later(self, widget, **kwargs):
+        "A delayed background task"
+        # This will run Clear in the background after waiting for 3 secs without
+        # blocking the main event loop
+        self.run_later_label.text = 'Will be restarted after 3 seconds.'
+        await self.run_later(3, self.do_clear)
+        self.run_later_label.text = 'Restarted.'
+
     def startup(self):
         # Set up main window
         self.main_window = toga.MainWindow(title=self.name)
@@ -61,6 +69,7 @@ class HandlerApp(toga.App):
         self.function_label = toga.Label('Ready.', style=Pack(padding=10))
         self.generator_label = toga.Label('Ready.', style=Pack(padding=10))
         self.async_label = toga.Label('Ready.', style=Pack(padding=10))
+        self.run_later_label = toga.Label('Ready.', style=Pack(padding=10))
 
         # Add a background task.
         self.counter = 0
@@ -72,6 +81,7 @@ class HandlerApp(toga.App):
         btn_generator = toga.Button('Generator callback', on_press=self.do_generator, style=btn_style)
         btn_async = toga.Button('Async callback', on_press=self.do_async, style=btn_style)
         btn_clear = toga.Button('Clear', on_press=self.do_clear, style=btn_style)
+        btn_run_later = toga.Button('Restart after 3 secs', on_press=self.do_run_later, style=btn_style)
 
         # Outermost box
         box = toga.Box(
@@ -84,6 +94,8 @@ class HandlerApp(toga.App):
                 btn_async,
                 self.async_label,
                 btn_clear,
+                self.run_later_label,
+                btn_run_later,
             ],
             style=Pack(
                 flex=1,

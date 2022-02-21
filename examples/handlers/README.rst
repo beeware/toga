@@ -8,4 +8,4 @@ Quickstart
 
 To run this example:
 
-    $ python -m dialogs
+    $ python -m handlers

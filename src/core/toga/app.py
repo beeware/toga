@@ -2,6 +2,7 @@ import signal
 import sys
 import warnings
 import webbrowser
+import asyncio
 from builtins import id as identifier
 from collections.abc import MutableSet
 from email.message import Message
@@ -555,6 +556,21 @@ class App:
             handler (:obj:`callable`): Coroutine, generator or callable.
         """
         self._impl.add_background_task(handler)
+
+    async def run_later(self, timeout, method):
+        """Run a task in the background after the timeout.
+
+        Waits for the specified time, then schedules the task in the background using
+        'add_background_task' function.
+
+        Args:
+            timeout (numeric): Wait time in seconds before running the task
+            method (:obj:`callable`): Coroutine, generator or callable.
+        """
+        await asyncio.sleep(timeout)
+
+        handler = wrapped_handler(self, method)
+        self.add_background_task(handler)
 
 
 class DocumentApp(App):
