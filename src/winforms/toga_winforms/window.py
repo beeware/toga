@@ -41,9 +41,12 @@ class Window:
         self.native = WinForms.Form(self)
         self.native.ClientSize = Size(*self.interface._size)
         self.native.interface = self.interface
-        self.native.Resize += self.winforms_resize
         self.toolbar_native = None
         self.toolbar_items = None
+        if not self.native.interface.resizeable:
+            self.native.FormBorderStyle = self.native.FormBorderStyle.FixedSingle;
+        elif self.native.interface.resizeable:
+            self.native.Resize += self.winforms_resize
 
     def create_toolbar(self):
         self.toolbar_native = WinForms.ToolStrip()
