@@ -44,7 +44,8 @@ class Window:
         self.toolbar_native = None
         self.toolbar_items = None
         if not self.native.interface.resizeable:
-            self.native.FormBorderStyle = self.native.FormBorderStyle.FixedSingle;
+            self.native.FormBorderStyle = self.native.FormBorderStyle.FixedSingle
+            self.native.MaximizeBox = False
         elif self.native.interface.resizeable:
             self.native.Resize += self.winforms_resize
 
