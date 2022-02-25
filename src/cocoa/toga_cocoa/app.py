@@ -7,7 +7,7 @@ from urllib.parse import unquote, urlparse
 from rubicon.objc.eventloop import CocoaLifecycle, EventLoopPolicy
 
 import toga
-from toga.handlers import wrapped_handler, NativeHandler
+from toga.handlers import NativeHandler
 
 from .keys import cocoa_key
 from .libs import (

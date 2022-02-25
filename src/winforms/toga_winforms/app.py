@@ -5,7 +5,6 @@ import traceback
 
 import toga
 from toga import Key
-from toga.handlers import wrapped_handler
 from .keys import toga_to_winforms_key
 
 from .libs import Threading, WinForms, shcore, user32, win_version

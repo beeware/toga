@@ -3,7 +3,6 @@ import toga
 
 from rubicon.java import android_events
 from toga.command import Group
-from toga.handlers import wrapped_handler
 
 from .libs.activity import IPythonApp, MainActivity
 from .libs.android.view import Menu, MenuItem
