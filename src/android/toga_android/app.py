@@ -197,7 +197,7 @@ class App:
         pass
 
     def add_background_task(self, handler):
-        self.loop.call_soon(wrapped_handler(self, handler), self)
+        self.loop.call_soon(handler, self)
 
     async def intent_result(self, intent):
         """
