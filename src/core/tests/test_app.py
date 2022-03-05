@@ -158,15 +158,14 @@ class AppTests(TestCase):
             self.assertIn(window, test_windows)
 
     def test_run_later(self):
-        value = 1
 
-        def delay_run(value):
-            value = 2
+        async def delay_run():
+            pass
 
         self.app.run_later(1, delay_run)
-        yield 1
+        yield 2
 
-        self.assertEqual(value, 2)
+        self.assertActionPerformed(self.app, 'run_later')
 
 
 class DocumentAppTests(TestCase):
