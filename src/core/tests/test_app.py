@@ -90,6 +90,7 @@ class AppTests(TestCase):
     def test_app_exit(self):
         def exit_handler(widget):
             return True
+
         self.app.on_exit = exit_handler
         self.assertIs(self.app.on_exit._raw, exit_handler)
         self.app.exit()
@@ -157,13 +158,15 @@ class AppTests(TestCase):
             self.assertIn(window, test_windows)
 
     def test_run_later(self):
-        test_button = toga.Button('Click me!', factory=toga_dummy.factory)
+        value = 1
 
-        def update_label_text(test_button):
-            test_button.label = 'Clicked!'
+        def delay_run(value):
+            value = 2
 
-        self.app.run_later(1, update_label_text(test_button))
-        self.assertEqual(test_button.label, 'Clicked!')
+        self.app.run_later(1, delay_run)
+        yield 1
+
+        self.assertEqual(value, 2)
 
 
 class DocumentAppTests(TestCase):
