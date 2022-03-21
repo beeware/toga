@@ -22,6 +22,7 @@ requires = [
 [tool.briefcase.app.scrollcontainer.macOS]
 requires = [
     '../../src/cocoa',
+    'std-nslog>=1.0.0',
 ]
 
 [tool.briefcase.app.scrollcontainer.linux]
@@ -38,6 +39,7 @@ requires = [
 [tool.briefcase.app.scrollcontainer.iOS]
 requires = [
     '../../src/iOS',
+    'std-nslog>=1.0.0',
 ]
 
 [tool.briefcase.app.scrollcontainer.android]

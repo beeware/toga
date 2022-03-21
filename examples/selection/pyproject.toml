@@ -22,6 +22,7 @@ requires = [
 [tool.briefcase.app.selection.macOS]
 requires = [
     '../../src/cocoa',
+    'std-nslog>=1.0.0',
 ]
 
 [tool.briefcase.app.selection.linux]
@@ -38,6 +39,7 @@ requires = [
 [tool.briefcase.app.selection.iOS]
 requires = [
     '../../src/iOS',
+    'std-nslog>=1.0.0',
 ]
 
 [tool.briefcase.app.selection.android]
