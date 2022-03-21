@@ -22,6 +22,7 @@ requires = [
 [tool.briefcase.app.dialogs.macOS]
 requires = [
     '../../src/cocoa',
+    'std-nslog>=1.0.0',
 ]
 
 [tool.briefcase.app.dialogs.linux]
@@ -38,6 +39,7 @@ requires = [
 [tool.briefcase.app.dialogs.iOS]
 requires = [
     '../../src/iOS',
+    'std-nslog>=1.0.0',
 ]
 
 [tool.briefcase.app.dialogs.android]

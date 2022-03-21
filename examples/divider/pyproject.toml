@@ -22,6 +22,7 @@ requires = [
 [tool.briefcase.app.divider.macOS]
 requires = [
     '../../src/cocoa',
+    'std-nslog>=1.0.0',
 ]
 
 [tool.briefcase.app.divider.linux]
@@ -38,6 +39,7 @@ requires = [
 [tool.briefcase.app.divider.iOS]
 requires = [
     '../../src/iOS',
+    'std-nslog>=1.0.0',
 ]
 
 [tool.briefcase.app.divider.android]
