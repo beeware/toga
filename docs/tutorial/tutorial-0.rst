@@ -58,7 +58,7 @@ Next, install Toga into your virtual environment:
 
     .. code-block:: bash
 
-      (venv) $ pip install --pre toga
+      (venv) $ python -m pip install --pre toga
 
   .. group-tab:: Linux
 
@@ -91,13 +91,13 @@ Next, install Toga into your virtual environment:
 
     .. code-block:: bash
 
-      (venv) $ pip install --pre toga
+      (venv) $ python -m pip install --pre toga
 
   .. group-tab:: Windows
 
     .. code-block:: doscon
 
-      (venv) C:\...>pip install --pre toga
+      (venv) C:\...>python -m pip install --pre toga
 
 If you get other errors, please check that you followed `the prerequisite
 <https://github.com/beeware/toga#prerequisites>`_ instructions.
@@ -253,7 +253,7 @@ Occasionally you might run into issues running Toga on your computer.
 Before you run the app, you'll need to install toga. Although you *can* install
 toga by just running::
 
-    $ pip install --pre toga
+    $ python -m pip install --pre toga
 
 We strongly suggest that you **don't** do this. We'd suggest creating a `virtual
 environment`_ first, and installing toga in that virtual environment as directed
