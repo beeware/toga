@@ -1,3 +1,4 @@
+from ctypes import c_void_p
 from travertino.size import at_least
 
 import toga
@@ -168,7 +169,7 @@ class TogaTree(NSOutlineView):
                 self.selectAll(self)
         else:
             # forward call to super
-            send_super(__class__, self, 'keyDown:', event)
+            send_super(__class__, self, 'keyDown:', event, argtypes=[c_void_p])
 
     # OutlineViewDelegate methods
     @objc_method

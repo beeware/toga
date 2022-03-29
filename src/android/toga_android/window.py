@@ -68,7 +68,6 @@ class Window:
         # Attach child widgets to widget as their container.
         for child in widget.interface.children:
             child._impl.container = widget
-            child._impl.viewport = widget.viewport
 
     def set_title(self, title):
         pass

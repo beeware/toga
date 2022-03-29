@@ -37,6 +37,8 @@ class Window:
         self.create()
 
     def create(self):
+        self.layout = None
+
         self.native = self._IMPL_CLASS()
         self.native._impl = self
 
@@ -87,6 +89,9 @@ class Window:
         # Construct the top-level layout, and set the window's view to
         # the be the widget's native object.
         # Alaway avoid using deprecated widgets and methods.
+        if self.layout:
+            self.native.remove(self.layout)
+
         self.layout = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
 
         if self.toolbar_native:

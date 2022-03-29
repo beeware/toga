@@ -45,8 +45,7 @@ class ExampleLayoutApp(toga.App):
             on_press=self.add_label,
         )
 
-        self.scroll_box = toga.Box(children=[], style=Pack(direction=COLUMN, padding=10, flex=1))
-        self.scroll_view = toga.ScrollContainer(content=self.scroll_box, style=Pack(width=120))
+        self.content_box = toga.Box(children=[], style=Pack(direction=COLUMN, padding=10, flex=1))
 
         image = toga.Image('resources/tiberius.png')
         self.image_view = toga.ImageView(image, style=Pack(padding=10, width=60, height=60))
@@ -71,7 +70,7 @@ class ExampleLayoutApp(toga.App):
 
         # this tests adding children when we already have an impl but no window or app
         self.box.add(self.button_box)
-        self.box.add(self.scroll_view)
+        self.box.add(self.content_box)
 
         # add a couple of labels to get us started
         self.labels = []
@@ -91,7 +90,7 @@ class ExampleLayoutApp(toga.App):
             self.button_hide.label = "Show label"
 
     def add_image(self, sender):
-        self.scroll_box.add(self.image_view)
+        self.content_box.add(self.image_view)
 
         self.button_reparent.enabled = True
         self.button_remove.enabled = True
@@ -99,7 +98,7 @@ class ExampleLayoutApp(toga.App):
         self.button_insert.enabled = False
 
     def insert_image(self, sender):
-        self.scroll_box.insert(1, self.image_view)
+        self.content_box.insert(1, self.image_view)
 
         self.button_reparent.enabled = True
         self.button_remove.enabled = True
@@ -116,17 +115,17 @@ class ExampleLayoutApp(toga.App):
 
     def reparent_image(self, sender):
         if self.image_view.parent is self.button_box:
-            self.scroll_box.insert(0, self.image_view)
-        elif self.image_view.parent is self.scroll_box:
+            self.content_box.insert(0, self.image_view)
+        elif self.image_view.parent is self.content_box:
             self.button_box.add(self.image_view)
 
     def add_label(self, sender=None):
         # this tests adding children when we already have an impl, window and app
         new_label = toga.Label(
-            'Label {}'.format(len(self.scroll_box.children)),
+            'Label {}'.format(len(self.content_box.children)),
             style=Pack(padding=2, width=70)
         )
-        self.scroll_box.add(new_label)
+        self.content_box.add(new_label)
         self.labels.append(new_label)
 
 

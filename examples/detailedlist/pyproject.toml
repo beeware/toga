@@ -4,7 +4,7 @@ requires = ["briefcase"]
 [tool.briefcase]
 project_name = "DetailedList Demo"
 bundle = "org.beeware"
-version = "0.3.0.dev30"
+version = "0.3.0.dev33"
 url = "https://beeware.org"
 license = "BSD license"
 author = 'Tiberius Yak'
@@ -22,6 +22,7 @@ requires = [
 [tool.briefcase.app.detailedlist.macOS]
 requires = [
     '../../src/cocoa',
+    'std-nslog>=1.0.0',
 ]
 
 [tool.briefcase.app.detailedlist.linux]
@@ -38,6 +39,7 @@ requires = [
 [tool.briefcase.app.detailedlist.iOS]
 requires = [
     '../../src/iOS',
+    'std-nslog>=1.0.0',
 ]
 
 [tool.briefcase.app.detailedlist.android]

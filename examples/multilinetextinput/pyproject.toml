@@ -4,7 +4,7 @@ requires = ["briefcase"]
 [tool.briefcase]
 project_name = "MultilineTextInput Demo"
 bundle = "org.beeware"
-version = "0.3.0.dev30"
+version = "0.3.0.dev33"
 url = "https://beeware.org"
 license = "BSD license"
 author = 'Tiberius Yak'
@@ -22,6 +22,7 @@ requires = [
 [tool.briefcase.app.multilinetextinput.macOS]
 requires = [
     '../../src/cocoa',
+    'std-nslog>=1.0.0',
 ]
 
 [tool.briefcase.app.multilinetextinput.linux]
@@ -38,6 +39,7 @@ requires = [
 [tool.briefcase.app.multilinetextinput.iOS]
 requires = [
     '../../src/iOS',
+    'std-nslog>=1.0.0',
 ]
 
 [tool.briefcase.app.multilinetextinput.android]
