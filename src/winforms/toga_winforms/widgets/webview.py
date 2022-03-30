@@ -1,5 +1,4 @@
 from asyncio import get_event_loop
-from unittest import registerResult
 
 from travertino.size import at_least
 
@@ -56,7 +55,7 @@ class WebView(Widget):
                 else:
                     self.set_url(self.interface.url)
 
-            except Exception as e:
+            except Exception:
                 import traceback
                 traceback.print_exc()
         else:
@@ -104,7 +103,9 @@ class WebView(Widget):
                 Action[Task[String]](callback),
                 task_scheduler
             )
-        except Exception as e:
+        except Exception:
+            import traceback
+            traceback.print_exc()
             future.set_result(None)
 
         return await future

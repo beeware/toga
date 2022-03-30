@@ -15,7 +15,6 @@ class ExampleWebView(toga.App):
             + '+ ' + 'navigator.userAgent' ';')
 
     def on_webview_button_press(self, _whatever, key, modifiers):
-        print("button press", key, modifiers)
         self.top_label.text = "got key={key} mod={modifiers}".format(
             key=key.value,
             modifiers=', '.join(m.value for m in modifiers)

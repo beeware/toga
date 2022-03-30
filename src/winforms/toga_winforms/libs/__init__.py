@@ -39,7 +39,7 @@ from .winforms import (  # noqa: F401
     user32,
     win_version
 )
-from .extensions import (
+from .extensions import (  # noqa: F401
     CoreWebView2CreationProperties,
     WebView2
 )

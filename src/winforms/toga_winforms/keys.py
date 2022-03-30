@@ -24,6 +24,7 @@ WINFORMS_KEYS_MAP.update({
     for letter in ascii_uppercase
 })
 
+
 def toga_to_winforms_key(key):
     codes = []
     for modifier, modifier_code in WINFORMS_NON_PRINTABLES_MAP.items():
@@ -44,6 +45,7 @@ TOGA_KEYS_MAP.update({
     getattr(WinForms.Keys, modifier.title()): getattr(Key, modifier.upper())
     for modifier in ["shift", "up", "down", "left", "right", "home"]
 })
+
 
 def toga_key(event):
     """Convert a Cocoa NSKeyEvent into a Toga event."""
@@ -68,4 +70,3 @@ def toga_key(event):
         'key': key,
         'modifiers': modifiers
     }
-
