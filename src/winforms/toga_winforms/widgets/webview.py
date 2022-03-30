@@ -20,6 +20,7 @@ class WebView(Widget):
         self.native = WebView2()
         self.native.CoreWebView2InitializationCompleted += self.winforms_initialization_completed
         self.native.NavigationCompleted += self.winforms_navigation_completed
+        self.native.KeyDown += self.winforms_key_down
 
         props = CoreWebView2CreationProperties()
         props.UserDataFolder = None
@@ -64,6 +65,10 @@ class WebView(Widget):
     def winforms_navigation_completed(self, sender, args):
         if self.interface.on_webview_load:
             self.interface.on_webview_load(self.interface)
+
+    def winforms_key_down(self, sender, args):
+        if self.interface.on_key_down:
+            self.interface.on_key_down(self.interface, **toga_key(args))
 
     def set_on_key_down(self, handler):
         pass
