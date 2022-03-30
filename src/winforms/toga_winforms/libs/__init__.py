@@ -4,6 +4,7 @@ from .fonts import (  # noqa: F401
     win_font_family
 )
 from .winforms import (  # noqa: F401
+    Action,
     Bitmap,
     Color,
     Convert,
@@ -22,8 +23,11 @@ from .winforms import (  # noqa: F401
     Single,
     Size,
     SolidBrush,
+    String,
     StringFormat,
     SystemColors,
+    Task,
+    TaskScheduler,
     Threading,
     Uri,
     WinDateTime,
@@ -34,4 +38,8 @@ from .winforms import (  # noqa: F401
     shcore,
     user32,
     win_version
+)
+from .extensions import (
+    CoreWebView2CreationProperties,
+    WebView2
 )
