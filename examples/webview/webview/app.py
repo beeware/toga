@@ -15,6 +15,7 @@ class ExampleWebView(toga.App):
             + '+ ' + 'navigator.userAgent' ';')
 
     def on_webview_button_press(self, _whatever, key, modifiers):
+        print("button press", key, modifiers)
         self.top_label.text = "got key={key} mod={modifiers}".format(
             key=key.value,
             modifiers=', '.join(m.value for m in modifiers)
@@ -22,6 +23,10 @@ class ExampleWebView(toga.App):
 
     def on_webview_load(self, _interface):
         self.top_label.text = "www loaded!"
+
+    def set_url(self, _interface):
+        self.top_label.text = "Loading page..."
+        self.webview.url = 'https://beeware.org/'
 
     def set_content(self, _interface):
         self.webview.set_content(
@@ -35,12 +40,14 @@ class ExampleWebView(toga.App):
     def startup(self):
         self.main_window = toga.MainWindow(title=self.name)
         self.top_label = toga.Label('www is loading |', style=Pack(flex=1, padding_left=10))
+        self.set_url_button = toga.Button("set url!", on_press=self.set_url)
         self.math_button = toga.Button("2 + 2? ", on_press=self.do_math_in_js)
         self.mutate_page_button = toga.Button("mutate page!", on_press=self.mutate_page)
         self.set_content_button = toga.Button("set content!", on_press=self.set_content)
         self.set_agent_button = toga.Button("set agent!", on_press=self.set_agent)
         self.top_box = toga.Box(
             children=[
+                self.set_url_button,
                 self.math_button,
                 self.mutate_page_button,
                 self.set_content_button,
@@ -49,6 +56,7 @@ class ExampleWebView(toga.App):
             ],
             style=Pack(flex=0, direction=ROW)
         )
+
         self.webview = toga.WebView(
             url='https://beeware.org/',
             on_key_down=self.on_webview_button_press,
