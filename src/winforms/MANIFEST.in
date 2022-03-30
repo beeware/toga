@@ -1,5 +1,7 @@
 include CONTRIBUTING.md
 include LICENSE
 include README.rst
+include toga_winforms/libs/WebView2/LICENSE.md
 recursive-include toga_winforms *.py
 recursive-include tests *.py
+recursive-include toga_winforms/libs/WebView2 *.dll
