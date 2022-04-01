@@ -17,7 +17,6 @@ venv
 Pipfile*
 .tox
 node_modules
-README.md
 src/django/toga.js
 src/django/toga.min.js
 src/django/toga.js.map

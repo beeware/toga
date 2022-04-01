@@ -57,7 +57,11 @@ Minimum requirements
 
   * **Arch / Manjaro** ``sudo pacman -Syu git pkgconf cairo python-cairo pango gobject-introspection gobject-introspection-runtime python-gobject webkit2gtk``
 
-* If you're on Windows, you'll need Windows 10 or newer.
+* If you're on Windows, you'll need Windows 10 or newer. If you are using
+  Windows 10 and want to use a WebView to display web content, you will also
+  need to install the [Edge WebView2 Evergreen
+  Runtime.](https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download-section)
+  Windows 11 has this runtime installed by default.
 
 Quickstart
 ~~~~~~~~~~
