@@ -41,5 +41,6 @@ from .winforms import (  # noqa: F401
 )
 from .extensions import (  # noqa: F401
     CoreWebView2CreationProperties,
-    WebView2
+    WebView2,
+    WebView2RuntimeNotFoundException
 )

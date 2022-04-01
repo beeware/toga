@@ -1,9 +1,21 @@
 from asyncio import get_event_loop
+import traceback
+import webbrowser
 
 from travertino.size import at_least
 
 from toga_winforms.keys import toga_key
-from toga_winforms.libs import Action, String, Task, TaskScheduler, Uri, WebView2, CoreWebView2CreationProperties
+from toga_winforms.libs import (
+    Action,
+    CoreWebView2CreationProperties,
+    String,
+    Task,
+    TaskScheduler,
+    Uri,
+    WebView2,
+    WebView2RuntimeNotFoundException,
+    WinForms
+)
 
 from .base import Widget
 
@@ -12,11 +24,12 @@ class TogaWebBrowser(WebView2):
     def __init__(self, interface):
         super().__init__()
         self.interface = interface
+        self._edge_runtime_available = None  # Set to an unknown state initially
 
 
 class WebView(Widget):
     def create(self):
-        self.native = WebView2()
+        self.native = TogaWebBrowser(self.interface)
         self.native.CoreWebView2InitializationCompleted += self.winforms_initialization_completed
         self.native.NavigationCompleted += self.winforms_navigation_completed
         self.native.KeyDown += self.winforms_key_down
@@ -34,8 +47,9 @@ class WebView(Widget):
         # completed initialization, and that isn't done until an explicit
         # request is made (EnsureCoreWebView2Async).
         if args.IsSuccess:
+            # We've initialized, so we must have the runtime
+            self.native._edge_runtime_available = True
             try:
-                # settings = sender.CoreWebView2.Settings
                 settings = self.native.CoreWebView2.Settings
 
                 debug = True
@@ -56,10 +70,30 @@ class WebView(Widget):
                     self.set_url(self.interface.url)
 
             except Exception:
-                import traceback
                 traceback.print_exc()
         else:
-            print(args.InitializationException)
+            if isinstance(
+                args.InitializationException,
+                WebView2RuntimeNotFoundException
+            ):
+                print("Could not find the Microsoft Edge WebView2 Runtime.")
+                if self.native._edge_runtime_available is None:
+                    # The initialize message is sent twice on failure.
+                    # We only want to show the dialog once, so track that we
+                    # know the runtime is missing.
+                    self.native._edge_runtime_available = False
+                    WinForms.MessageBox.Show(
+                        "The Microsoft Edge WebView2 Runtime is not installed. "
+                        "Web content will not be displayed.\n\n"
+                        "Click OK to download the WebView2 Evergreen Runtime "
+                        "Bootstrapper from Microsoft.",
+                        "Missing Edge Webview2 runtime",
+                        WinForms.MessageBoxButtons.OK,
+                        WinForms.MessageBoxIcon.Error,
+                    )
+                    webbrowser.open("https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download-section")
+            else:
+                print(args.InitializationException)
 
     def winforms_navigation_completed(self, sender, args):
         if self.interface.on_webview_load:
@@ -104,7 +138,6 @@ class WebView(Widget):
                 task_scheduler
             )
         except Exception:
-            import traceback
             traceback.print_exc()
             future.set_result(None)
 

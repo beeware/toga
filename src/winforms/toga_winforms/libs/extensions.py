@@ -19,3 +19,6 @@ from Microsoft.Web.WebView2.WinForms import (  # noqa: F401, E402
     WebView2,
     CoreWebView2CreationProperties
 )
+from Microsoft.Web.WebView2.Core import (  # noqa: F401, E402
+    WebView2RuntimeNotFoundException
+)
