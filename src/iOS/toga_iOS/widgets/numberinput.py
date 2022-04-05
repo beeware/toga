@@ -1,7 +1,7 @@
 from ctypes import c_int
 from decimal import Decimal
 
-from rubicon.objc import SEL, CGSize, NSRange, objc_method, send_message
+from rubicon.objc import SEL, CGSize, NSRange, objc_method, objc_property, send_message
 from travertino.size import at_least
 
 from toga_iOS.libs import (
@@ -15,6 +15,10 @@ from toga_iOS.widgets.base import Widget
 
 
 class TogaNumericTextField(UITextField):
+
+    interface = objc_property(object, weak=True)
+    impl = objc_property(object, weak=True)
+
     @objc_method
     def textFieldDidChange_(self, notification) -> None:
         if self.text:
@@ -41,6 +45,7 @@ class NumberInput(Widget):
     def create(self):
         self.native = TogaNumericTextField.alloc().init()
         self.native.interface = self.interface
+        self.native.impl = self
         self.native.delegate = self.native
         self.native.borderStyle = UITextBorderStyle.RoundedRect
         # FIXME: See Rubicon #96

@@ -1,4 +1,4 @@
-from rubicon.objc import SEL, objc_method
+from rubicon.objc import SEL, objc_method, objc_property
 
 from toga_iOS.libs import (
     NSIndexPath,
@@ -18,6 +18,10 @@ from toga_iOS.widgets.base import Widget
 
 
 class TogaTableViewController(UITableViewController):
+
+    interface = objc_property(object, weak=True)
+    impl = objc_property(object, weak=True)
+
     @objc_method
     def numberOfSectionsInTableView_(self) -> int:
         return 1
@@ -86,6 +90,7 @@ class DetailedList(Widget):
     def create(self):
         self.controller = TogaTableViewController.alloc().init()
         self.controller.interface = self.interface
+        self.controller.impl = self
         self.native = self.controller.tableView
 
         self.native.separatorStyle = UITableViewCellSeparatorStyleNone

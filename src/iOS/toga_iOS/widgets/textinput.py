@@ -1,4 +1,4 @@
-from rubicon.objc import SEL, CGSize, objc_method
+from rubicon.objc import SEL, CGSize, objc_method, objc_property
 from travertino.size import at_least
 
 from toga_iOS.libs import (
@@ -11,6 +11,10 @@ from toga_iOS.widgets.base import Widget
 
 
 class TogaTextField(UITextField):
+
+    interface = objc_property(object, weak=True)
+    impl = objc_property(object, weak=True)
+
     @objc_method
     def textFieldDidChange_(self, notification) -> None:
         if self.interface.on_change:
@@ -21,6 +25,7 @@ class TextInput(Widget):
     def create(self):
         self.native = TogaTextField.new()
         self.native.interface = self.interface
+        self.native.impl
 
         self.native.borderStyle = UITextBorderStyle.RoundedRect
 

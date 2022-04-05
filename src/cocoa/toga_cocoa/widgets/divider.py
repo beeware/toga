@@ -8,8 +8,6 @@ from .base import Widget
 class Divider(Widget):
     def create(self):
         self.native = NSBox.alloc().init()
-        self.native.interface = self.interface
-
         self.native.boxType = NSBoxType.NSBoxSeparator.value
 
         # Add the layout constraints

@@ -2,9 +2,14 @@ from toga_cocoa.libs import NSObject, NSTabView, NSTabViewItem, objc_method
 from toga_cocoa.window import CocoaViewport
 
 from .base import Widget
+from ..libs import objc_property
 
 
 class TogaTabViewDelegate(NSObject):
+
+    interface = objc_property(object, weak=True)
+    impl = objc_property(object, weak=True)
+
     @objc_method
     def tabView_didSelectTabViewItem_(self, view, item) -> None:
         # If the widget is part of a visible layout, and a resize event has
@@ -27,7 +32,7 @@ class OptionContainer(Widget):
         self.native = NSTabView.alloc().init()
         self.delegate = TogaTabViewDelegate.alloc().init()
         self.delegate.interface = self.interface
-        self.delegate._impl = self
+        self.delegate.impl = self
         self.native.delegate = self.delegate
 
         # Cocoa doesn't provide an explicit (public) API for tracking

@@ -9,12 +9,17 @@ from toga_cocoa.libs import (
     c_void_p,
     objc_method,
     send_super,
+    objc_property,
 )
 
 from .base import Widget
 
 
 class TogaTextField(NSTextField):
+
+    interface = objc_property(object, weak=True)
+    impl = objc_property(object, weak=True)
+
     @objc_method
     def textDidChange_(self, notification) -> None:
         if self.interface.on_change:
@@ -52,6 +57,7 @@ class TextInput(Widget):
     def create(self):
         self.native = TogaTextField.new()
         self.native.interface = self.interface
+        self.native.impl = self
 
         self.native.bezeled = True
         self.native.bezelStyle = NSTextFieldSquareBezel

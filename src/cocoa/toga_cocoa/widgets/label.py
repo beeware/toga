@@ -9,8 +9,6 @@ from .base import Widget
 class Label(Widget):
     def create(self):
         self.native = NSTextField.alloc().init()
-        self.native.impl = self
-        self.native.interface = self.interface
 
         self.native.drawsBackground = False
         self.native.editable = False

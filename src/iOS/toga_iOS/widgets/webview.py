@@ -1,10 +1,14 @@
-from rubicon.objc import objc_method
+from rubicon.objc import objc_method, objc_property
 
 from toga_iOS.libs import NSURL, NSURLRequest, WKWebView
 from toga_iOS.widgets.base import Widget
 
 
 class TogaWebView(WKWebView):
+
+    interface = objc_property(object, weak=True)
+    impl = objc_property(object, weak=True)
+
     @objc_method
     def webView_didFinishLoadForFrame_(self, sender, frame) -> None:
         if self.interface.on_webview_load:
@@ -24,6 +28,7 @@ class WebView(Widget):
     def create(self):
         self.native = TogaWebView.alloc().init()
         self.native.interface = self.interface
+        self.native.impl = self
         self.native.delegate = self.native
 
         # Add the layout constraints

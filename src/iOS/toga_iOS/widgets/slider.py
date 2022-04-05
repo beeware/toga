@@ -1,4 +1,4 @@
-from rubicon.objc import SEL, CGSize, objc_method
+from rubicon.objc import SEL, CGSize, objc_method, objc_property
 from travertino.size import at_least
 
 from toga_iOS.libs import UIControlEventValueChanged, UISlider
@@ -6,6 +6,10 @@ from toga_iOS.widgets.base import Widget
 
 
 class TogaSlider(UISlider):
+
+    interface = objc_property(object, weak=True)
+    impl = objc_property(object, weak=True)
+
     @objc_method
     def onSlide_(self, obj) -> None:
         if self.interface.on_change:
@@ -16,6 +20,7 @@ class Slider(Widget):
     def create(self):
         self.native = TogaSlider.alloc().init()
         self.native.interface = self.interface
+        self.native.impl = self
 
         self.native.continuous = True
         self.native.addTarget(

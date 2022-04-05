@@ -26,6 +26,7 @@ from toga_cocoa.libs import (
     core_graphics,
     kCGScrollEventUnitLine,
     objc_method,
+    objc_property,
     c_void_p,
     send_super
 )
@@ -34,6 +35,10 @@ HEADER_HEIGHT = 45.0
 
 
 class RefreshableClipView(NSClipView):
+
+    interface = objc_property(object, weak=True)
+    impl = objc_property(object, weak=True)
+
     @objc_method
     def constrainScrollPoint_(self, proposedNewOrigin: NSPoint) -> NSPoint:
         constrained = send_super(
@@ -62,6 +67,10 @@ class RefreshableClipView(NSClipView):
 
 
 class RefreshableScrollView(NSScrollView):
+
+    interface = objc_property(object, weak=True)
+    impl = objc_property(object, weak=True)
+
     # Create Header View
     @objc_method
     def viewDidMoveToWindow(self) -> None:

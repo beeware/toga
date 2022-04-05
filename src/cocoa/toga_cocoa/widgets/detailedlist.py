@@ -7,7 +7,8 @@ from toga_cocoa.libs import (
     NSTableColumn,
     NSTableView,
     NSTableViewColumnAutoresizingStyle,
-    objc_method
+    objc_method,
+    objc_property,
 )
 from toga_cocoa.widgets.base import Widget
 from toga_cocoa.widgets.internal.cells import TogaDetailedCell
@@ -26,6 +27,10 @@ def attr_impl(value, attr, factory):
 
 
 class TogaList(NSTableView):
+
+    interface = objc_property(object, weak=True)
+    impl = objc_property(object, weak=True)
+
     @objc_method
     def menuForEvent_(self, event):
         if self.interface.on_delete:
@@ -96,6 +101,7 @@ class DetailedList(Widget):
         # The scroll view is the _impl, because it's the outer container.
         self.native = RefreshableScrollView.alloc().init()
         self.native.interface = self.interface
+        self.native.impl = self
         self.native.hasVerticalScroller = True
         self.native.hasHorizontalScroller = False
         self.native.autohidesScrollers = False
@@ -104,7 +110,7 @@ class DetailedList(Widget):
         # Create the List widget
         self.detailedlist = TogaList.alloc().init()
         self.detailedlist.interface = self.interface
-        self.detailedlist._impl = self
+        self.detailedlist.impl = self
         self.detailedlist.columnAutoresizingStyle = NSTableViewColumnAutoresizingStyle.Uniform
 
         # TODO: Optionally enable multiple selection
