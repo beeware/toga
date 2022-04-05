@@ -7,7 +7,7 @@ from urllib.parse import unquote, urlparse
 from rubicon.objc.eventloop import CocoaLifecycle, EventLoopPolicy
 
 import toga
-from toga.handlers import wrapped_handler, NativeHandler
+from toga.handlers import NativeHandler
 
 from .keys import cocoa_key
 from .libs import (
@@ -410,7 +410,7 @@ class App:
         self._cursor_visible = False
 
     def add_background_task(self, handler):
-        self.loop.call_soon(wrapped_handler(self, handler), self)
+        self.loop.call_soon(handler, self)
 
     def open_document(self, fileURL):
         """No-op when the app is not a ``DocumentApp``."""
