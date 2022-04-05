@@ -3,6 +3,7 @@ from travertino.size import at_least
 from ..libs.activity import MainActivity
 from ..libs.android import R__attr
 from ..libs.android.graphics import Typeface
+from ..libs.android.util import TypedValue
 from ..libs.android.view import Gravity, OnClickListener, View__MeasureSpec
 from ..libs.android.widget import (
     HorizontalScrollView,
@@ -47,6 +48,7 @@ class Table(Widget):
     color_unselected = None
     selection = {}
     _deleted_column = None
+    _font_impl = None
 
     def create(self):
         # get the selection color from the current theme
@@ -123,7 +125,11 @@ class Table(Widget):
                 continue
             text_view = TextView(MainActivity.singletonThis)
             text_view.setText(self.interface.headings[col_index])
-            text_view.setTypeface(text_view.getTypeface(), Typeface.BOLD)
+            if self._font_impl:
+                text_view.setTextSize(TypedValue.COMPLEX_UNIT_SP, self._font_impl.get_size())
+                text_view.setTypeface(self._font_impl.get_typeface(), Typeface.BOLD)
+            else:
+                text_view.setTypeface(text_view.getTypeface(), Typeface.BOLD)
             text_view_params = TableRow__Layoutparams(
                 TableRow__Layoutparams.MATCH_PARENT,
                 TableRow__Layoutparams.WRAP_CONTENT
@@ -149,6 +155,9 @@ class Table(Widget):
                 continue
             text_view = TextView(MainActivity.singletonThis)
             text_view.setText(self.get_data_value(row_index, col_index))
+            if self._font_impl:
+                text_view.setTextSize(TypedValue.COMPLEX_UNIT_SP, self._font_impl.get_size())
+                text_view.setTypeface(self._font_impl.get_typeface(), self._font_impl.get_style())
             text_view_params = TableRow__Layoutparams(
                 TableRow__Layoutparams.MATCH_PARENT,
                 TableRow__Layoutparams.WRAP_CONTENT
@@ -209,10 +218,16 @@ class Table(Widget):
         self.change_source(self.interface.data)
         self._deleted_column = None
 
+    def set_font(self, font):
+        if font:
+            self._font_impl = font.bind(self.interface.factory)
+        if self.interface.data is not None:
+            self.change_source(self.interface.data)
+
     def rehint(self):
         # Android can crash when rendering some widgets until
         # they have their layout params set. Guard for that case.
-        if self.native.getLayoutParams() is None:
+        if not self.native.getLayoutParams():
             return
 
         self.native.measure(

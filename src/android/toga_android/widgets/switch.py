@@ -51,7 +51,7 @@ class Switch(Widget):
         pass
 
     def rehint(self):
-        if self.native.getLayoutParams() is None:
+        if not self.native.getLayoutParams():
             return
         self.native.measure(
             View__MeasureSpec.UNSPECIFIED, View__MeasureSpec.UNSPECIFIED

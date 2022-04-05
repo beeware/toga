@@ -118,3 +118,8 @@ class SelectionApp(toga.App):
 def main():
     # App name and namespace
     return SelectionApp("Selection", "org.beeware.selection")
+
+
+if __name__ == '__main__':
+    app = main()
+    app.main_loop()

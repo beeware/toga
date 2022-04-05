@@ -1,4 +1,4 @@
-sphinx<4
+sphinx
 sphinxcontrib-spelling
 pyenchant
 sphinx-autobuild

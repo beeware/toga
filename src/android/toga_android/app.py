@@ -3,7 +3,6 @@ import toga
 
 from rubicon.java import android_events
 from toga.command import Group
-from toga.handlers import wrapped_handler
 
 from .libs.activity import IPythonApp, MainActivity
 from .libs.android.view import Menu, MenuItem
@@ -125,22 +124,23 @@ class TogaApp(IPythonApp):
             self.menuitem_mapping[itemid] = cmd  # store itemid for use in onOptionsItemSelected
 
         # create toolbar actions
-        for cmd in self._impl.interface.main_window.toolbar:
-            if cmd == toga.SECTION_BREAK or cmd == toga.GROUP_BREAK:
-                continue
-            itemid += 1
-            order = Menu.NONE if cmd.order is None else cmd.order
-            menuitem = menu.add(Menu.NONE, itemid, order, cmd.label)  # groupId, itemId, order, title
-            menuitem.setShowAsActionFlags(
-                MenuItem.SHOW_AS_ACTION_IF_ROOM)  # toolbar button / item in options menu on overflow
-            menuitem.setEnabled(cmd.enabled)
-            if cmd.icon:
-                icon = Drawable.createFromPath(str(cmd.icon._impl.path))
-                if icon:
-                    menuitem.setIcon(icon)
-                else:
-                    print('Could not create icon: ' + str(cmd.icon._impl.path))
-            self.menuitem_mapping[itemid] = cmd  # store itemid for use in onOptionsItemSelected
+        if self._impl.interface.main_window:
+            for cmd in self._impl.interface.main_window.toolbar:
+                if cmd == toga.SECTION_BREAK or cmd == toga.GROUP_BREAK:
+                    continue
+                itemid += 1
+                order = Menu.NONE if cmd.order is None else cmd.order
+                menuitem = menu.add(Menu.NONE, itemid, order, cmd.label)  # groupId, itemId, order, title
+                menuitem.setShowAsActionFlags(
+                    MenuItem.SHOW_AS_ACTION_IF_ROOM)  # toolbar button / item in options menu on overflow
+                menuitem.setEnabled(cmd.enabled)
+                if cmd.icon:
+                    icon = Drawable.createFromPath(str(cmd.icon._impl.path))
+                    if icon:
+                        menuitem.setIcon(icon)
+                    else:
+                        print('Could not create icon: ' + str(cmd.icon._impl.path))
+                self.menuitem_mapping[itemid] = cmd  # store itemid for use in onOptionsItemSelected
 
         return True
 
@@ -196,7 +196,7 @@ class App:
         pass
 
     def add_background_task(self, handler):
-        self.loop.call_soon(wrapped_handler(self, handler), self)
+        self.loop.call_soon(handler, self)
 
     async def intent_result(self, intent):
         """
@@ -208,7 +208,7 @@ class App:
         :returns: A Dictionary containing "resultCode" (int) and "resultData" (Intent or None)
         :rtype: dict
         """
-        if intent.resolveActivity(self.native.getPackageManager()) is None:
+        if not intent.resolveActivity(self.native.getPackageManager()):
             raise RuntimeError('No appropriate Activity found to handle this intent.')
         self._listener.last_intent_requestcode += 1
         code = self._listener.last_intent_requestcode

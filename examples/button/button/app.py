@@ -123,3 +123,8 @@ def main():
     #   App name and namespace
     app = ExampleButtonApp('Button', 'org.beeware.widgets.buttons')
     return app
+
+
+if __name__ == '__main__':
+    app = main()
+    app.main_loop()

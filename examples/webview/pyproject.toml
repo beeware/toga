@@ -4,7 +4,7 @@ requires = ["briefcase"]
 [tool.briefcase]
 project_name = "WebView Demo"
 bundle = "org.beeware"
-version = "0.3.0.dev30"
+version = "0.3.0.dev33"
 url = "https://beeware.org"
 license = "BSD license"
 author = 'Tiberius Yak'
@@ -14,30 +14,34 @@ author_email = "tiberius@beeware.org"
 formal_name = "WebView Demo"
 description = "A demo app using all WebView features"
 sources = ['webview']
-requires = []
+requires = [
+    '../../src/core',
+]
 
 [tool.briefcase.app.webview.macOS]
 requires = [
-    'toga-cocoa',
+    '../../src/cocoa',
+    'std-nslog>=1.0.0',
 ]
 
 [tool.briefcase.app.webview.linux]
 requires = [
-    'toga-gtk',
+    '../../src/gtk',
 ]
 
 [tool.briefcase.app.webview.windows]
 requires = [
-    'toga-winforms',
+    '../../src/winforms',
 ]
 
 # Mobile deployments
 [tool.briefcase.app.webview.iOS]
 requires = [
-    'toga-ios',
+    '../../src/iOS',
+    'std-nslog>=1.0.0',
 ]
 
 [tool.briefcase.app.webview.android]
 requires = [
-    'toga-android',
+    '../../src/android',
 ]

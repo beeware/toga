@@ -14,8 +14,6 @@ function bump {
         # and update the version of toga required.
         find examples -name pyproject.toml | while read f; do
             mv "$f" temp
-            sed "s/==.*\"/==$2\"/g" temp > "$f"
-            mv "$f" temp
             sed "s/^version = \".*\"/version = \"$2\"/g" temp > "$f"
             git add "$f"
         done

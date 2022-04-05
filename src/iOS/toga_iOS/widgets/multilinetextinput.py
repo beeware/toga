@@ -118,10 +118,10 @@ class MultilineTextInput(Widget):
         self.placeholder_label.text = value
 
     def set_readonly(self, value):
-        self.native.editable = not self.interface._readonly
+        self.native.editable = value
 
     def set_value(self, value):
-        self.native.text = self.interface._value
+        self.native.text = value
         self.placeholder_label.setHidden_(len(self.native.text) > 0)
 
     def get_value(self):

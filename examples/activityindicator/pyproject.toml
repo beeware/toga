@@ -4,7 +4,7 @@ requires = ["briefcase"]
 [tool.briefcase]
 project_name = "Activity Indicator"
 bundle = "org.beeware"
-version = "0.3.0.dev30"
+version = "0.3.0.dev33"
 url = "https://beeware.org"
 license = "BSD license"
 author = 'Tiberius Yak'
@@ -14,31 +14,35 @@ author_email = "tiberius@beeware.org"
 formal_name = "Activity Indicator"
 description = "A testing app"
 sources = ['activityindicator']
-requires = []
+requires = [
+    '../../src/core',
+]
 
 
 [tool.briefcase.app.activityindicator.macOS]
 requires = [
-    'toga-cocoa',
+    '../../src/cocoa',
+    'std-nslog>=1.0.0',
 ]
 
 [tool.briefcase.app.activityindicator.linux]
 requires = [
-    'toga-gtk',
+    '../../src/gtk',
 ]
 
 [tool.briefcase.app.activityindicator.windows]
 requires = [
-    'toga-winforms',
+    '../../src/winforms',
 ]
 
 # Mobile deployments
 [tool.briefcase.app.activityindicator.iOS]
 requires = [
-    'toga-iOS',
+    '../../src/iOS',
+    'std-nslog>=1.0.0',
 ]
 
 [tool.briefcase.app.activityindicator.android]
 requires = [
-    'toga-android',
+    '../../src/android',
 ]

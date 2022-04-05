@@ -156,6 +156,14 @@ class AppTests(TestCase):
         for window in self.app.windows:
             self.assertIn(window, test_windows)
 
+    def test_add_background_task(self):
+
+        async def handler(sender):
+            pass
+
+        self.app.add_background_task(handler)
+        self.assertActionPerformed(self.app, 'add_background_task')
+
 
 class DocumentAppTests(TestCase):
     def setUp(self):
