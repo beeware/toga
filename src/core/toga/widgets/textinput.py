@@ -173,7 +173,7 @@ class TextInput(Widget):
             if self.error_message is None:
                 self.error_message = validator(self.value)
 
-        if error_message is None:
+        if self.error_message is None:
             self._impl.clear_error()
             return True
         else:
