@@ -76,8 +76,8 @@ class ExampledialogsApp(toga.App):
     def action_open_file_dialog_with_inital_folder(self, widget):
         try:
             fname = self.main_window.open_file_dialog(
-                title="Open file with Toga in current folder",
-                initial_directory=Path.cwd(),
+                title="Open file with Toga in home folder",
+                initial_directory=Path.home(),
                 multiselect=False
             )
             if fname is not None:
