@@ -1,3 +1,4 @@
+from pathlib import Path
 from .libs import (
     NSAlert,
     NSAlertFirstButtonReturn,
@@ -9,7 +10,8 @@ from .libs import (
     NSOpenPanel,
     NSSavePanel,
     NSScrollView,
-    NSTextView
+    NSTextView,
+    NSURL
 )
 
 
@@ -113,7 +115,7 @@ def save_file(window, title, suggested_filename, file_types=None):
     return None
 
 
-def open_file(window, title, file_types, multiselect):
+def open_file(window, title, initial_directory, file_types, multiselect):
     """Cocoa open file dialog implementation.
 
     We restrict the panel invocation to only choose files. We also allow
@@ -122,6 +124,7 @@ def open_file(window, title, file_types, multiselect):
     Args:
         window: The window this dialog belongs to.
         title: Title of the modal.
+        initial_directory: directory where modal shall open with
         file_types: Ignored for now.
         multiselect: Flag to allow multiple file selection.
     Returns:
@@ -131,6 +134,8 @@ def open_file(window, title, file_types, multiselect):
     # Initialize and configure the panel.
     panel = NSOpenPanel.alloc().init()
     panel.title = title
+    if initial_directory is not None:
+        panel.directoryURL = NSURL.URLWithString(str(Path(initial_directory).as_uri()))
     panel.allowedFileTypes = file_types
     panel.allowsMultipleSelection = multiselect
     panel.canChooseDirectories = False
@@ -146,19 +151,21 @@ def open_file(window, title, file_types, multiselect):
         return filename_or_filenames
 
 
-def select_folder(window, title, multiselect):
+def select_folder(window, title, initial_directory, multiselect):
     """Cocoa select folder dialog implementation.
 
     Args:
         window: Window dialog belongs to.
         title: Title of the dialog.
+        initial_directory: directory where modal shall open with
         multiselect: Flag to allow multiple folder selection.
     Returns:
         (list) A list of folder paths.
     """
     dialog = NSOpenPanel.alloc().init()
     dialog.title = title
-
+    if initial_directory is not None:
+        dialog.directoryURL = NSURL.URLWithString(str(Path(initial_directory).as_uri()))
     dialog.canChooseFiles = False
     dialog.canChooseDirectories = True
     dialog.resolvesAliases = True
