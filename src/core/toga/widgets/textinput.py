@@ -168,16 +168,14 @@ class TextInput(Widget):
         self._impl.set_on_lose_focus(self._on_lose_focus)
 
     def validate(self):
-        error_message = None
+        self.error_message = None
         for validator in self.validators:
-            if error_message is None:
-                error_message = validator(self.value)
+            if self.error_message is None:
+                self.error_message = validator(self.value)
 
         if error_message is None:
             self._impl.clear_error()
-            self.error_message = None
             return True
         else:
             self._impl.set_error(error_message)
-            self.error_message = error_message
             return False
