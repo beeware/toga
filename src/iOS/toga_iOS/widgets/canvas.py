@@ -4,7 +4,8 @@ from rubicon.objc import (
     CGSize,
     NSMutableDictionary,
     NSPoint,
-    objc_method
+    objc_method,
+    objc_property,
 )
 from travertino.size import at_least
 
@@ -29,6 +30,10 @@ from toga_iOS.widgets.base import Widget
 
 
 class TogaCanvas(UIView):
+
+    interface = objc_property(object, weak=True)
+    impl = objc_property(object, weak=True)
+
     @objc_method
     def drawRect_(self, rect: CGRect) -> None:
         context = uikit.UIGraphicsGetCurrentContext()
@@ -41,7 +46,7 @@ class Canvas(Widget):
     def create(self):
         self.native = TogaCanvas.alloc().init()
         self.native.interface = self.interface
-        self.native._impl = self
+        self.native.impl = self
         self.native.backgroundColor = UIColor.whiteColor
 
         # Add the layout constraints

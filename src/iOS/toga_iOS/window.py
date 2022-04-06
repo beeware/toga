@@ -37,7 +37,6 @@ class Window:
 
     def create(self):
         self.native = UIWindow.alloc().initWithFrame(UIScreen.mainScreen.bounds)
-        self.native.interface = self.interface
 
     def set_content(self, widget):
         widget.viewport = iOSViewport(self.native)

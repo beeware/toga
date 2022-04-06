@@ -37,6 +37,8 @@ recursive-include examples *.ttf
 recursive-include examples README
 prune examples/*/.vscode
 
+include src/winforms/toga_winforms/libs/WebView2/LICENSE.md
+include src/winforms/toga_winforms/libs/WebView2/README.md
 recursive-include src *.html
 recursive-include src *.icns
 recursive-include src *.ico
@@ -47,5 +49,7 @@ recursive-include src *.rst
 recursive-include src CONTRIBUTING.md
 recursive-include src LICENSE
 recursive-include src MANIFEST.in
+recursive-include src/winforms/toga_winforms/libs/WebView2 *.dll
 prune src/*/build
 prune src/*/.eggs
+

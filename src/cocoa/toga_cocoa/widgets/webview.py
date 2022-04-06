@@ -3,15 +3,25 @@ from ctypes import c_void_p
 
 from travertino.size import at_least
 
-from toga_cocoa.keys import toga_key
-from toga_cocoa.libs import NSURL, NSURLRequest, WKWebView
-from rubicon.objc import objc_method, py_from_ns, send_super
-from rubicon.objc.runtime import objc_id
-
 from .base import Widget
+from ..keys import toga_key
+from ..libs import (
+    NSURL,
+    NSURLRequest,
+    WKWebView,
+    objc_method,
+    objc_property,
+    py_from_ns,
+    send_super,
+    objc_id,
+)
 
 
 class TogaWebView(WKWebView):
+
+    interface = objc_property(object, weak=True)
+    impl = objc_property(object, weak=True)
+
     @objc_method
     def webView_didFinish_navigation_(self, sender, wkNavigation) -> None:
         if self.interface.on_webview_load:
@@ -37,6 +47,7 @@ class WebView(Widget):
     def create(self):
         self.native = TogaWebView.alloc().init()
         self.native.interface = self.interface
+        self.native.impl = self
 
         self.native.downloadDelegate = self.native
         self.native.frameLoadDelegate = self.native

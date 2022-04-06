@@ -7,7 +7,7 @@ from urllib.parse import unquote, urlparse
 from rubicon.objc.eventloop import CocoaLifecycle, EventLoopPolicy
 
 import toga
-from toga.handlers import wrapped_handler, NativeHandler
+from toga.handlers import NativeHandler
 
 from .keys import cocoa_key
 from .libs import (
@@ -30,7 +30,8 @@ from .libs import (
     NSOpenPanel,
     NSScreen,
     NSString,
-    objc_method
+    objc_method,
+    objc_property,
 )
 from .window import Window
 
@@ -47,6 +48,10 @@ class MainWindow(Window):
 
 
 class AppDelegate(NSObject):
+
+    interface = objc_property(object, weak=True)
+    impl = objc_property(object, weak=True)
+
     @objc_method
     def applicationDidFinishLaunching_(self, notification):
         self.native.activateIgnoringOtherApps(True)
@@ -92,13 +97,13 @@ class AppDelegate(NSObject):
 
     @objc_method
     def selectMenuItem_(self, sender) -> None:
-        cmd = self.interface._impl._menu_items[sender]
+        cmd = self.impl._menu_items[sender]
         if cmd.action:
             cmd.action(None)
 
     @objc_method
     def validateMenuItem_(self, sender) -> bool:
-        cmd = self.interface._impl._menu_items[sender]
+        cmd = self.impl._menu_items[sender]
         return cmd.enabled
 
 
@@ -410,7 +415,7 @@ class App:
         self._cursor_visible = False
 
     def add_background_task(self, handler):
-        self.loop.call_soon(wrapped_handler(self, handler), self)
+        self.loop.call_soon(handler, self)
 
     def open_document(self, fileURL):
         """No-op when the app is not a ``DocumentApp``."""

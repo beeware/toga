@@ -23,8 +23,8 @@ class DetailedList(Widget):
 
     Examples:
         >>> import toga
-        >>> def selection_handler(widget, selection):
-        >>>     print('Row {} of widget {} was selected.'.format(selection, widget))
+        >>> def selection_handler(widget, row):
+        >>>     print('Row {} of widget {} was selected.'.format(row, widget))
         >>>
         >>> dlist = toga.DetailedList(
         ...     data=[

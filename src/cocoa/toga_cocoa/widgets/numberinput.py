@@ -16,7 +16,8 @@ from toga_cocoa.libs import (
     NSTextAlignment,
     NSTextField,
     NSTextFieldSquareBezel,
-    objc_method
+    objc_method,
+    objc_property,
 )
 
 from .base import Widget
@@ -24,6 +25,10 @@ from .box import TogaView
 
 
 class TogaStepper(NSStepper):
+
+    interface = objc_property(object, weak=True)
+    impl = objc_property(object, weak=True)
+
     @objc_method
     def onChange_(self, stepper) -> None:
         self.interface.value = Decimal(stepper.floatValue).quantize(self.interface.step)
@@ -47,7 +52,7 @@ class TogaStepper(NSStepper):
             # If the string value isn't valid, reset the widget
             # to the widget's stored value. This will update the
             # display, removing any invalid values from view.
-            self._impl.set_value(self.interface.value)
+            self.impl.set_value(self.interface.value)
 
 
 class NumberInput(Widget):
@@ -55,14 +60,13 @@ class NumberInput(Widget):
         self.native = TogaView.alloc().init()
 
         self.input = NSTextField.new()
-        self.input.interface = self.interface
         self.input.bezeled = True
         self.input.bezelStyle = NSTextFieldSquareBezel
         self.input.translatesAutoresizingMaskIntoConstraints = False
 
         self.stepper = TogaStepper.alloc().init()
         self.stepper.interface = self.interface
-        self.stepper._impl = self
+        self.stepper.impl = self
         self.stepper.translatesAutoresizingMaskIntoConstraints = False
 
         self.stepper.target = self.stepper

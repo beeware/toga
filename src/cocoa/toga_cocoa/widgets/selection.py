@@ -3,9 +3,14 @@ from travertino.size import at_least
 from toga_cocoa.libs import SEL, NSPopUpButton, objc_method
 
 from .base import Widget
+from ..libs import objc_property
 
 
 class TogaPopupButton(NSPopUpButton):
+
+    interface = objc_property(object, weak=True)
+    impl = objc_property(object, weak=True)
+
     @objc_method
     def onSelect_(self, obj) -> None:
         if self.interface.on_select:
@@ -16,6 +21,7 @@ class Selection(Widget):
     def create(self):
         self.native = TogaPopupButton.alloc().init()
         self.native.interface = self.interface
+        self.native.impl = self
 
         self.native.target = self.native
         self.native.action = SEL('onSelect:')

@@ -7,13 +7,18 @@ from toga_cocoa.libs import (
     NSBezelStyle,
     NSButton,
     NSMomentaryPushInButton,
-    objc_method
+    objc_method,
+    objc_property,
 )
 
 from .base import Widget
 
 
 class TogaButton(NSButton):
+
+    interface = objc_property(object, weak=True)
+    impl = objc_property(object, weak=True)
+
     @objc_method
     def onPress_(self, obj) -> None:
         if self.interface.on_press:
@@ -24,6 +29,7 @@ class Button(Widget):
     def create(self):
         self.native = TogaButton.alloc().init()
         self.native.interface = self.interface
+        self.native.impl = self
 
         self.native.bezelStyle = NSBezelStyle.Rounded
         self.native.buttonType = NSMomentaryPushInButton

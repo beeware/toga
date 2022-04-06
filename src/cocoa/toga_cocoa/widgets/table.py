@@ -12,6 +12,7 @@ from toga_cocoa.libs import (
     NSTableViewColumnAutoresizingStyle,
     at,
     objc_method,
+    objc_property,
     SEL
 )
 
@@ -20,6 +21,10 @@ from .internal.cells import TogaIconView
 
 
 class TogaTable(NSTableView):
+
+    interface = objc_property(object, weak=True)
+    impl = objc_property(object, weak=True)
+
     # TableDataSource methods
     @objc_method
     def numberOfRowsInTableView_(self, table) -> int:
@@ -86,7 +91,7 @@ class TogaTable(NSTableView):
             tcv.setImage(None)
 
         # Keep track of last visible view for row
-        self._impl._view_for_row[data_row] = tcv
+        self.impl._view_for_row[data_row] = tcv
 
         return tcv
 
@@ -163,7 +168,7 @@ class Table(Widget):
 
         self.table = TogaTable.alloc().init()
         self.table.interface = self.interface
-        self.table._impl = self
+        self.table.impl = self
         self.table.columnAutoresizingStyle = NSTableViewColumnAutoresizingStyle.Uniform
         self.table.usesAlternatingRowBackgroundColors = True
         self.table.allowsMultipleSelection = self.interface.multiple_select

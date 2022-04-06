@@ -1,10 +1,18 @@
-from toga_cocoa.libs import NSSecureTextField, NSTextFieldSquareBezel, objc_method
-
 
 from .textinput import TextInput
+from ..libs import (
+    NSSecureTextField,
+    NSTextFieldSquareBezel,
+    objc_method,
+    objc_property,
+)
 
 
 class TogaSecureTextField(NSSecureTextField):
+
+    interface = objc_property(object, weak=True)
+    impl = objc_property(object, weak=True)
+
     @objc_method
     def textDidChange_(self, notification) -> None:
         if self.interface.on_change:
@@ -19,6 +27,7 @@ class PasswordInput(TextInput):
     def create(self):
         self.native = TogaSecureTextField.new()
         self.native.interface = self.interface
+        self.native.impl = self
 
         self.native.bezeled = True
         self.native.bezelStyle = NSTextFieldSquareBezel

@@ -1,4 +1,4 @@
-from rubicon.objc import CGPoint, objc_method
+from rubicon.objc import CGPoint, objc_method, objc_property
 from travertino.size import at_least
 
 from toga_iOS.libs import (
@@ -15,6 +15,10 @@ from toga_iOS.widgets.base import Widget
 
 
 class TogaMultilineTextView(UITextView):
+
+    interface = objc_property(object, weak=True)
+    impl = objc_property(object, weak=True)
+
     @objc_method
     def pointInside_withEvent_(self, point: CGPoint, event) -> bool:
         # To keep consistency with non-mobile platforms, we'll resign the
@@ -43,6 +47,8 @@ class TogaMultilineTextView(UITextView):
 class MultilineTextInput(Widget):
     def create(self):
         self.native = TogaMultilineTextView.alloc().init()
+        self.native.interface = self.interface
+        self.native.impl = self
         self.native.delegate = self.native
 
         # Placeholder isn't natively supported, so we create our
