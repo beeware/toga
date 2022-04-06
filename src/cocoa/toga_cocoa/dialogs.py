@@ -147,7 +147,7 @@ def open_file(window, title, initial_directory, file_types, multiselect):
     if result == NSFileHandlingPanelOKButton:
         paths = [str(url.path) for url in panel.URLs]
         filename_or_filenames = (paths if multiselect else
-                                 panel.URL.path)
+                                 str(panel.URL.path))
         return filename_or_filenames
 
 

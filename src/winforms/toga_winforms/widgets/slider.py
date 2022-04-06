@@ -39,10 +39,20 @@ class Slider(Widget):
             self.interface.on_change(self.interface)
 
     def winforms_mouse_down(self, sender, event):
+        """
+        Since picking and releasing the slider is also a change, calling the
+            on_change method.
+        """
         if self.container and self.interface.on_press:
             self.interface.on_press(self.interface)
+        self.winforms_scroll(sender, event)
 
     def winforms_mouse_up(self, sender, event):
+        """
+        Since picking and releasing the slider is also a change, calling the
+            on_change method.
+        """
+        self.winforms_scroll(sender, event)
         if self.container and self.interface.on_release:
             self.interface.on_release(self.interface)
 

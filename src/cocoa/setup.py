@@ -20,7 +20,7 @@ with open('toga_cocoa/__init__.py', encoding='utf8') as version_file:
 setup(
     version=version,
     install_requires=[
-        'rubicon-objc>=0.3.0',
+        'rubicon-objc>=0.4.2',
         'toga-core==%s' % version,
     ],
     test_suite='tests',

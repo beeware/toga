@@ -186,9 +186,6 @@ class Widget(Node):
 
         self._set_window(window)
 
-    def _set_window(self, window):
-        pass
-
     @property
     def enabled(self):
         return self._enabled
@@ -213,3 +210,6 @@ class Widget(Node):
     def focus(self):
         if self._impl is not None:
             self._impl.focus()
+
+    def _set_window(self, window):
+        pass

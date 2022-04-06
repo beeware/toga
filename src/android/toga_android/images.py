@@ -1,4 +1,4 @@
-from .libs.android_widgets import BitmapFactory
+from .libs.android.graphics import BitmapFactory
 
 
 class Image:

@@ -1,6 +1,7 @@
 ##########################################################################
 # System/Library/Frameworks/AppKit.framework
 ##########################################################################
+import platform
 from ctypes import Structure, c_void_p
 from enum import Enum, IntEnum
 
@@ -66,11 +67,19 @@ NSEventTrackingRunLoopMode = c_void_p.in_dll(appkit, 'NSEventTrackingRunLoopMode
 NSApplicationDidHideNotification = c_void_p.in_dll(appkit, 'NSApplicationDidHideNotification')
 NSApplicationDidUnhideNotification = c_void_p.in_dll(appkit, 'NSApplicationDidUnhideNotification')
 
-NSAboutPanelOptionApplicationIcon = NSString(c_void_p.in_dll(appkit, "NSAboutPanelOptionApplicationIcon"))
-NSAboutPanelOptionApplicationName = NSString(c_void_p.in_dll(appkit, "NSAboutPanelOptionApplicationName"))
-NSAboutPanelOptionApplicationVersion = NSString(c_void_p.in_dll(appkit, "NSAboutPanelOptionApplicationVersion"))
-NSAboutPanelOptionCredits = NSString(c_void_p.in_dll(appkit, "NSAboutPanelOptionCredits"))
-NSAboutPanelOptionVersion = NSString(c_void_p.in_dll(appkit, "NSAboutPanelOptionVersion"))
+# NSAboutPanelOption* keys are available only 10.13+
+try:
+    NSAboutPanelOptionApplicationIcon = NSString(c_void_p.in_dll(appkit, "NSAboutPanelOptionApplicationIcon"))
+    NSAboutPanelOptionApplicationName = NSString(c_void_p.in_dll(appkit, "NSAboutPanelOptionApplicationName"))
+    NSAboutPanelOptionApplicationVersion = NSString(c_void_p.in_dll(appkit, "NSAboutPanelOptionApplicationVersion"))
+    NSAboutPanelOptionCredits = NSString(c_void_p.in_dll(appkit, "NSAboutPanelOptionCredits"))
+    NSAboutPanelOptionVersion = NSString(c_void_p.in_dll(appkit, "NSAboutPanelOptionVersion"))
+except ValueError:
+    NSAboutPanelOptionApplicationIcon = None
+    NSAboutPanelOptionApplicationName = None
+    NSAboutPanelOptionApplicationVersion = None
+    NSAboutPanelOptionCredits = None
+    NSAboutPanelOptionVersion = None
 
 ######################################################################
 # NSAttributedString.h
@@ -153,20 +162,24 @@ NSRadioButton = 4
 NSMomentaryChangeButton = 5
 NSOnOffButton = 6
 NSMomentaryPushInButton = 7
-NSRoundedBezelStyle = 1
-NSRegularSquareBezelStyle = 2
-NSThickSquareBezelStyle = 3
-NSThickerSquareBezelStyle = 4
-NSDisclosureBezelStyle = 5
-NSShadowlessSquareBezelStyle = 6
-NSCircularBezelStyle = 7
-NSTexturedSquareBezelStyle = 8
-NSHelpButtonBezelStyle = 9
-NSSmallSquareBezelStyle = 10
-NSTexturedRoundedBezelStyle = 11
-NSRoundRectBezelStyle = 12
-NSRecessedBezelStyle = 13
-NSRoundedDisclosureBezelStyle = 14
+
+
+class NSBezelStyle(IntEnum):
+    Rounded = 1
+    RegularSquare = 2
+    ThickSquare = 3
+    ThickerSquare = 4
+    Disclosure = 5
+    ShadowlessSquare = 6
+    Circular = 7
+    TexturedSquare = 8
+    HelpButton = 9
+    SmallSquare = 10
+    TexturedRounded = 11
+    RoundRect = 12
+    Recessed = 13
+    RoundedDisclosure = 14
+
 
 ######################################################################
 # NSCell.h
@@ -331,6 +344,23 @@ class NSEventType(IntEnum):
 ######################################################################
 # NSFont.h
 NSFont = ObjCClass('NSFont')
+NSFontManager = ObjCClass('NSFontManager')
+
+
+class NSFontMask(Enum):
+    Italic = 0x01
+    Bold = 0x02
+    Unbold = 0x04
+    NonStandardCharacterSet = 0x08
+    Narrow = 0x10
+    Expanded = 0x20
+    Condensed = 0x40
+    SmallCaps = 0x80
+    Poster = 0x100
+    Compressed = 0x200
+    FixedPitch = 0x400
+    Unitalic = 0x01000000
+
 
 ######################################################################
 # NSGraphics.h
@@ -370,6 +400,19 @@ NSImageScaleProportionallyDown = 0
 NSImageScaleAxesIndependently = 1
 NSImageScaleNone = 2
 NSImageScaleProportionallyUpOrDown = 3
+
+if platform.machine() == 'arm64':
+    NSImageResizingModeTile = 1
+    NSImageResizingModeStretch = 0
+else:
+    NSImageResizingModeTile = 0
+    NSImageResizingModeStretch = 1
+
+
+class NSImageResizingMode(Enum):
+    Tile = NSImageResizingModeTile
+    Stretch = NSImageResizingModeStretch
+
 
 ######################################################################
 # NSImageCell.h
@@ -639,8 +682,13 @@ NSTabViewItem = ObjCClass('NSTabViewItem')
 ######################################################################
 # NSText.h
 NSLeftTextAlignment = 0
-NSRightTextAlignment = 1
-NSCenterTextAlignment = 2
+if platform.machine() == 'arm64':
+    NSRightTextAlignment = 2
+    NSCenterTextAlignment = 1
+else:
+    NSRightTextAlignment = 1
+    NSCenterTextAlignment = 2
+
 NSJustifiedTextAlignment = 3
 NSNaturalTextAlignment = 4
 

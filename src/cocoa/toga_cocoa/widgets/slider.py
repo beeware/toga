@@ -3,9 +3,14 @@ from travertino.size import at_least
 from toga_cocoa.libs import NSEventType, NSSlider, SEL, objc_method
 
 from .base import Widget
+from ..libs import objc_property
 
 
 class TogaSlider(NSSlider):
+
+    interface = objc_property(object, weak=True)
+    impl = objc_property(object, weak=True)
+
     @objc_method
     def onSlide_(self, sender) -> None:
         event_type = sender.window.currentEvent().type
@@ -24,6 +29,7 @@ class Slider(Widget):
     def create(self):
         self.native = TogaSlider.alloc().init()
         self.native.interface = self.interface
+        self.native.impl = self
 
         self.native.target = self.native
         self.native.action = SEL('onSlide:')

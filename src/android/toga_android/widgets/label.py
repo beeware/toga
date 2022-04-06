@@ -1,6 +1,10 @@
 from travertino.size import at_least
 
-from ..libs.android_widgets import Gravity, TextView, TypedValue, View__MeasureSpec
+from toga_android.colors import native_color
+
+from ..libs.android.util import TypedValue
+from ..libs.android.view import Gravity, View__MeasureSpec
+from ..libs.android.widget import TextView
 from .base import Widget, align
 
 
@@ -18,10 +22,14 @@ class Label(Widget):
             self.native.setTextSize(TypedValue.COMPLEX_UNIT_SP, font_impl.get_size())
             self.native.setTypeface(font_impl.get_typeface(), font_impl.get_style())
 
+    def set_color(self, color):
+        if color:
+            self.native.setTextColor(native_color(color))
+
     def rehint(self):
         # Refuse to rehint an Android TextView if it has no LayoutParams yet.
         # Calling measure() on an Android TextView w/o LayoutParams raises NullPointerException.
-        if self.native.getLayoutParams() is None:
+        if not self.native.getLayoutParams():
             return
         # Ask the Android TextView first for the height it would use in its
         # wildest dreams. This is the height of one line of text.
@@ -46,6 +54,6 @@ class Label(Widget):
         # Refuse to set alignment if widget has no container.
         # On Android, calling setGravity() when the widget has no LayoutParams
         # results in a NullPointerException.
-        if self.native.getLayoutParams() is None:
+        if not self.native.getLayoutParams():
             return
         self.native.setGravity(Gravity.CENTER_VERTICAL | align(value))

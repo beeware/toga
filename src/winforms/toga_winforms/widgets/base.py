@@ -8,13 +8,16 @@ class Widget:
 
         self._container = None
         self.native = None
+        self.viewport = None
         self.create()
         self.interface.style.reapply()
 
     def set_app(self, app):
+        # No special handling required
         pass
 
     def set_window(self, window):
+        # No special handling required
         pass
 
     @property
@@ -40,6 +43,14 @@ class Widget:
             child._impl.container = container
 
         self.rehint()
+
+    @property
+    def viewport(self):
+        return self._viewport
+
+    @viewport.setter
+    def viewport(self, viewport):
+        self._viewport = viewport
 
     def set_enabled(self, value):
         if self.native:
@@ -90,7 +101,10 @@ class Widget:
     # INTERFACE
 
     def add_child(self, child):
-        if self.container:
+        if self.viewport:
+            # we are the the top level container
+            child.container = self
+        else:
             child.container = self.container
 
     def insert_child(self, index, child):

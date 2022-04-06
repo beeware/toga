@@ -1,4 +1,4 @@
-from rubicon.objc import SEL, objc_method
+from rubicon.objc import SEL, objc_method, objc_property
 
 from toga.interface import NavigationView as NavigationViewInterface
 from toga_iOS.libs import (
@@ -15,6 +15,10 @@ def button_for_action(callback):
 
 
 class TogaNavigationController(UINavigationController):
+
+    interface = objc_property(object, weak=True)
+    impl = objc_property(object, weak=True)
+
     # @objc_method
     # def viewDidAppear_(self, animated: bool) -> None:
     #     print("VIEW APPEARED", animated)

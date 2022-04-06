@@ -100,7 +100,8 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
 
     def enqueue_tick(self):
         # Queue a call to tick in 5ms.
-        Task.Delay(5).ContinueWith(Action[Task](self.tick))
+        self.task = Action[Task](self.tick)
+        Task.Delay(5).ContinueWith(self.task)
 
     def tick(self, *args, **kwargs):
         """
@@ -124,7 +125,8 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
         # If the app context has a main form, invoke run_once_recurring()
         # on the thread associated with that form.
         if self.app_context.MainForm:
-            self.app_context.MainForm.Invoke(Action(self.run_once_recurring))
+            action = Action(self.run_once_recurring)
+            self.app_context.MainForm.Invoke(action)
 
     def run_once_recurring(self):
         """

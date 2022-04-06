@@ -6,7 +6,6 @@ class ImageView(Widget):
 
     def create(self):
         self.native = UIImageView.alloc().init()
-        self.native.interface = self.interface
         self.native.contentMode = UIViewContentMode.ScaleAspectFit
         self.native.clipsToBounds = 1
 

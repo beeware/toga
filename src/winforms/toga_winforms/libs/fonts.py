@@ -15,8 +15,8 @@ from .winforms import (
     FontFamily,
     FontStyle,
     SystemFonts,
-    Text,
-    WinForms
+    WinForms,
+    ArgumentException
 )
 
 
@@ -51,24 +51,22 @@ def win_font_family(value):
             MONOSPACE: FontFamily.GenericMonospace,
         }[value]
     except KeyError:
-        if value in Text.InstalledFontCollection().Families:
+        try:
             return FontFamily(value)
-    else:
-        print(
-            "Unable to load font-family '{}', loading {} instead".format(
-                value, SystemFonts.DefaultFont.FontFamily)
-        )
-        return SystemFonts.DefaultFont.FontFamily
+        except ArgumentException:
+            print(
+                "Unable to load font-family '{}', loading '{}' instead".format(
+                    value, SystemFonts.DefaultFont.FontFamily.Name)
+            )
+            return SystemFonts.DefaultFont.FontFamily
 
 
 def win_font_style(weight, style, font_family):
     font_style = FontStyle.Regular
-    if weight.lower() == "bold" and font_family.IsStyleAvailable(
-            FontStyle.Bold):
-        font_style += FontStyle.Bold
-    if style.lower() == "italic" and font_family.IsStyleAvailable(
-            FontStyle.Italic):
-        font_style += FontStyle.Italic
+    if weight.lower() == "bold" and font_family.IsStyleAvailable(FontStyle.Bold):
+        font_style |= FontStyle.Bold
+    if style.lower() == "italic" and font_family.IsStyleAvailable(FontStyle.Italic):
+        font_style |= FontStyle.Italic
     return font_style
 
 

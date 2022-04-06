@@ -12,13 +12,17 @@ class Button(Widget):
         style (:obj:`Style`): An optional style object. If no style is provided then
             a new one will be created for the widget.
         on_press (:obj:`callable`): Function to execute when pressed.
-        enabled (bool): Whether or not interaction with the button is possible, defaults to `True`.
+        enabled (bool): Whether or not interaction with the button is possible,
+            defaults to `True`.
         factory (:obj:`module`): A python module that is capable to return a
-            implementation of this class with the same name. (optional & normally not needed)
+            implementation of this class with the same name. (optional & normally not
+            needed)
     """
 
-    def __init__(self, label, id=None, style=None, on_press=None, enabled=True, factory=None):
-        super().__init__(id=id, enabled=enabled, style=style, factory=factory)
+    def __init__(
+            self, label, id=None, style=None, on_press=None, enabled=True, factory=None
+    ):
+        super().__init__(id=id, style=style, enabled=enabled, factory=factory)
 
         # Create a platform specific implementation of a Button
         self._impl = self.factory.Button(interface=self)

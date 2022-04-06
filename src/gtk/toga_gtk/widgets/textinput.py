@@ -25,7 +25,7 @@ class TextInput(Widget):
         self.interface.factory.not_implemented('TextInput.set_alignment()')
 
     def set_font(self, font):
-        self.interface.factory.not_implemented('TextInput.set_font()')
+        super().set_font(font)
 
     def get_value(self):
         return self.native.get_text()
@@ -47,6 +47,12 @@ class TextInput(Widget):
     def set_on_change(self, handler):
         # No special handling required
         pass
+
+    def set_on_gain_focus(self, handler):
+        self.interface.factory.not_implemented("TextInput.set_on_gain_focus()")
+
+    def set_on_lose_focus(self, handler):
+        self.interface.factory.not_implemented("TextInput.set_on_lose_focus()")
 
     def set_error(self, error_message):
         self.interface.factory.not_implemented("TextInput.set_error()")

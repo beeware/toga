@@ -15,7 +15,6 @@ except ImportError:
         Gtk = None
 
 import toga
-from .utils import TreeModelListener
 
 
 def handle_events():
@@ -40,7 +39,7 @@ class TestGtkDetailedList(unittest.TestCase):
 
     def assertRowEqual(self, row, data):
         for attr in ('icon', 'title', 'subtitle'):
-            self.assertEqual(getattr(row[0], attr), data[attr])
+            self.assertEqual(getattr(row, attr), data[attr])
 
     def test_change_source(self):
         # Clear the table directly
@@ -71,81 +70,56 @@ class TestGtkDetailedList(unittest.TestCase):
         self.assertEqual(len(store), 0)
 
     def test_insert(self):
-        listener = TreeModelListener(self.gtk_dl.store)
-
         # Insert a row
         row_data = dict(icon=None, title='A', subtitle='a subtitle')
+
+        INSERTED_AT = 0
+        self.dl.data.insert(INSERTED_AT, **row_data)
+
+        # Make sure it's in there
+        self.assertEqual(len(self.gtk_dl.store), 1)
+
+        # Make sure the row got stored correctly
+        result_row = self.gtk_dl.store[INSERTED_AT]
+        self.assertRowEqual(result_row, row_data)
+
+    def test_remove(self):
+        # Insert a row
+        row_data = dict(icon=None, title='1', subtitle='2')
 
         INSERTED_AT = 0
         row = self.dl.data.insert(INSERTED_AT, **row_data)
 
         # Make sure it's in there
-        self.assertIsNotNone(listener.inserted_it)
-
-        # Get the Gtk.TreeIter
-        tree_iter = listener.inserted_it
-
-        # Make sure it's a Gtk.TreeIter
-        self.assertTrue(isinstance(tree_iter, Gtk.TreeIter))
-
-        # Make sure it's the correct Gtk.TreeIter
-        self.assertEqual(row, self.gtk_dl.store.get(tree_iter, 0)[0])
-
-        # Get the Gtk.TreePath of the Gtk.TreeIter
-        path = self.gtk_dl.store.get_path(tree_iter)
-
-        # Make sure it's the correct Gtk.TreePath
-        self.assertTrue(isinstance(path, Gtk.TreePath))
-        self.assertEqual(str(path), str(INSERTED_AT))
-        self.assertEqual(tuple(path), (INSERTED_AT,))
-        self.assertEqual(path, Gtk.TreePath(INSERTED_AT))
-        self.assertEqual(path, listener.inserted_path)
-
-        # Make sure the row got stored correctly
-        result_row = self.gtk_dl.store[path]
-        self.assertRowEqual(result_row, row_data)
-
-    def test_remove(self):
-        listener = TreeModelListener(self.gtk_dl.store)
-        # Insert a row
-        row = self.dl.data.insert(0, icon=None, title="1", subtitle="2")
-
-        # Make sure it's in there
-        self.assertIsNotNone(listener.inserted_it)
+        self.assertEqual(len(self.gtk_dl.store), 1)
 
         # Then remove it
-        self.gtk_dl.remove(row, index=0)
+        self.gtk_dl.remove(row, index=INSERTED_AT)
 
         # Make sure its gone
-        self.assertIsNotNone(listener.deleted_path)
+        self.assertIsNone(self.gtk_dl.store.get_item(INSERTED_AT))
 
     def test_change(self):
-        listener = TreeModelListener(self.gtk_dl.store)
-
         # Insert a row
-        row = self.dl.data.insert(0, icon=None, title="1", subtitle="2")
+        row_data = dict(icon=None, title='1', subtitle='2')
+
+        INSERTED_AT = 0
+        row = self.dl.data.insert(INSERTED_AT, **row_data)
 
         # Make sure it's in there
-        self.assertIsNotNone(listener.inserted_it)
+        self.assertEqual(len(self.gtk_dl.store), 1)
 
         # Change a column
         row.title = "something changed"
         # (not testing that self.gtk_dl.change is called. The Core API
         # unit tests should ensure this already.)
 
-        # Get the Gtk.TreeIter
-        tree_iter = listener.changed_it
-
-        # Make sure it's a Gtk.TreeIter
-        self.assertTrue(isinstance(tree_iter, Gtk.TreeIter))
-
-        # Make sure it's the correct Gtk.TreeIter
-        self.assertEqual(row, self.gtk_dl.store.get(tree_iter, 0)[0])
-
         # Make sure the value changed
-        path = self.gtk_dl.store.get_path(tree_iter)
-        result_row = self.gtk_dl.store[path]
+        result_row = self.gtk_dl.store[INSERTED_AT]
         self.assertRowEqual(result_row, dict(icon=None, title="something changed", subtitle="2"))
+
+        # Make sure the row was replaced and not appended
+        self.assertEqual(len(self.gtk_dl.store), 1)
 
     def test_row_persistence(self):
         self.dl.data.insert(0, icon=None, title="A1", subtitle="A2")
@@ -176,7 +150,8 @@ class TestGtkDetailedList(unittest.TestCase):
         self.dl.on_select = on_select
 
         # Select row B
-        self.gtk_dl.selection.select_path(1)
+        self.gtk_dl.list_box.select_row(
+            self.gtk_dl.list_box.get_row_at_index(1))
 
         # Allow on_select to call
         handle_events()
@@ -187,10 +162,7 @@ class TestGtkDetailedList(unittest.TestCase):
         # Insert two nodes
         self.dl.data = []
 
-        listener = TreeModelListener(self.gtk_dl.store)
-
         self.dl.data.append(None, icon=None, title="A1", subtitle="A2")
-        listener.clear()
         b = self.dl.data.append(None,  icon=None, title="B1", subtitle="B2")
 
         # Create a flag
@@ -211,7 +183,7 @@ class TestGtkDetailedList(unittest.TestCase):
         self.dl.on_select = on_select
 
         # Select row B
-        self.gtk_dl.selection.select_iter(listener.inserted_it)
+        self.gtk_dl.list_box.select_row(b._impl)
 
         # Allow on_select to call
         handle_events()

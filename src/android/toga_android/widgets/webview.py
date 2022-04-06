@@ -3,11 +3,12 @@ import base64
 
 from travertino.size import at_least
 
-from ..libs import android_widgets
+from ..libs.android.view import Gravity, View__MeasureSpec
+from ..libs.android.webkit import ValueCallback, WebView as A_WebView, WebViewClient
 from .base import Widget, align
 
 
-class ReceiveString(android_widgets.ValueCallback):
+class ReceiveString(ValueCallback):
     def __init__(self, fn=None):
         super().__init__()
         self._fn = fn
@@ -23,10 +24,10 @@ class ReceiveString(android_widgets.ValueCallback):
 
 class WebView(Widget):
     def create(self):
-        self.native = android_widgets.WebView(self._native_activity)
+        self.native = A_WebView(self._native_activity)
         # Set a WebViewClient so that new links open in this activity,
         # rather than triggering the phone's web browser.
-        self.native.setWebViewClient(android_widgets.WebViewClient())
+        self.native.setWebViewClient(WebViewClient())
         # Enable JS.
         self.native.getSettings().setJavaScriptEnabled(True)
 
@@ -49,8 +50,10 @@ class WebView(Widget):
     def set_content(self, root_url, content):
         # Android WebView lacks an underlying set_content() primitive, so we navigate to
         # a data URL. This means we ignore the root_url parameter.
-        data_url = ("data:text/html; charset=utf-8; base64," +
-                    base64.b64encode(content.encode('utf-8')).decode('ascii'))
+        data_url = (
+            "data:text/html; charset=utf-8; base64," +
+            base64.b64encode(content.encode('utf-8')).decode('ascii')
+        )
         self.set_url(data_url)
 
     def set_user_agent(self, value):
@@ -63,25 +66,24 @@ class WebView(Widget):
         return await js_value
 
     def invoke_javascript(self, javascript):
-        print("omg trying to invoke " + repr(javascript))
         self.native.evaluateJavascript(str(javascript), ReceiveString())
 
     def set_alignment(self, value):
         # Refuse to set alignment unless widget has been added to a container.
         # This is because this widget's setGravity() requires LayoutParams before it can be called.
-        if self.native.getLayoutParams() is None:
+        if not self.native.getLayoutParams():
             return
-        self.native.setGravity(android_widgets.Gravity.CENTER_VERTICAL | align(value))
+        self.native.setGravity(Gravity.CENTER_VERTICAL | align(value))
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
         # Refuse to call measure() if widget has no container, i.e., has no LayoutParams.
         # Android's measure() throws NullPointerException if the widget has no LayoutParams.
-        if self.native.getLayoutParams() is None:
+        if not self.native.getLayoutParams():
             return
         self.native.measure(
-            android_widgets.View__MeasureSpec.UNSPECIFIED,
-            android_widgets.View__MeasureSpec.UNSPECIFIED,
+            View__MeasureSpec.UNSPECIFIED,
+            View__MeasureSpec.UNSPECIFIED,
         )
         self.interface.intrinsic.width = at_least(self.native.getMeasuredWidth())
         self.interface.intrinsic.height = self.native.getMeasuredHeight()

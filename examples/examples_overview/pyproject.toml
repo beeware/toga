@@ -1,0 +1,48 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name = "Examples Overview"
+bundle = "org.beeware"
+version = "0.3.0.dev33"
+url = "https://beeware.org"
+license = "BSD license"
+author = 'Tiberius Yak'
+author_email = "tiberius@beeware.org"
+
+[tool.briefcase.app.examples_overview]
+formal_name = "Examples Overview"
+description = "A testing app"
+sources = ['examples_overview']
+requires = [
+    '../../src/core',
+]
+
+
+[tool.briefcase.app.examples_overview.macOS]
+requires = [
+    '../../src/cocoa',
+    'std-nslog>=1.0.0',
+]
+
+[tool.briefcase.app.examples_overview.linux]
+requires = [
+    '../../src/gtk',
+]
+
+[tool.briefcase.app.examples_overview.windows]
+requires = [
+    '../../src/winforms',
+]
+
+# Mobile deployments
+[tool.briefcase.app.examples_overview.iOS]
+requires = [
+    '../../src/iOS',
+    'std-nslog>=1.0.0',
+]
+
+[tool.briefcase.app.examples_overview.android]
+requires = [
+    '../../src/android',
+]

@@ -3,7 +3,6 @@ import asyncio
 from rubicon.objc import SEL, objc_method
 from rubicon.objc.eventloop import EventLoopPolicy, iOSLifecycle
 
-from toga.handlers import wrapped_handler
 from toga_iOS.libs import (
     NSNotificationCenter,
     UIKeyboardFrameEndUserInfoKey,
@@ -144,4 +143,4 @@ class App:
         pass
 
     def add_background_task(self, handler):
-        self.loop.call_soon(wrapped_handler(self, handler), self)
+        self.loop.call_soon(handler, self)

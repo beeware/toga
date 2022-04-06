@@ -21,7 +21,8 @@ from toga_cocoa.libs import (
     NSToolbar,
     NSToolbarItem,
     NSWindow,
-    objc_method
+    objc_method,
+    objc_property,
 )
 
 
@@ -48,9 +49,13 @@ class CocoaViewport:
 
 
 class WindowDelegate(NSObject):
+
+    interface = objc_property(object, weak=True)
+    impl = objc_property(object, weak=True)
+
     @objc_method
-    def windowWillClose_(self, notification) -> None:
-        self.interface.on_close()
+    def windowShouldClose_(self, notification) -> bool:
+        return self.impl.cocoa_windowShouldClose()
 
     @objc_method
     def windowDidResize_(self, notification) -> None:
@@ -94,7 +99,7 @@ class WindowDelegate(NSObject):
         "Create the requested toolbar button"
         native = NSToolbarItem.alloc().initWithItemIdentifier_(identifier)
         try:
-            item = self.interface._impl._toolbar_items[str(identifier)]
+            item = self.impl._toolbar_items[str(identifier)]
             if item.label:
                 native.setLabel(item.label)
                 native.setPaletteLabel(item.label)
@@ -109,12 +114,17 @@ class WindowDelegate(NSObject):
             native.setAction_(SEL('onToolbarButtonPress:'))
         except KeyError:
             pass
+
+        # Prevent the toolbar item from being deallocated when
+        # no Python references remain
+        native.retain()
+        native.autorelease()
         return native
 
     @objc_method
     def validateToolbarItem_(self, item) -> bool:
         "Confirm if the toolbar item should be enabled"
-        return self.interface._impl._toolbar_items[str(item.itemIdentifier)].enabled
+        return self.impl._toolbar_items[str(item.itemIdentifier)].enabled
 
     ######################################################################
     # Toolbar button press delegate methods
@@ -123,7 +133,7 @@ class WindowDelegate(NSObject):
     @objc_method
     def onToolbarButtonPress_(self, obj) -> None:
         "Invoke the action tied to the toolbar button"
-        item = self.interface._impl._toolbar_items[str(obj.itemIdentifier)]
+        item = self.impl._toolbar_items[str(obj.itemIdentifier)]
         item.action(obj)
 
 
@@ -161,8 +171,6 @@ class Window:
             defer=False
         )
         self.native.setFrame(position, display=True, animate=False)
-        self.native.interface = self.interface
-        self.native.impl = self
 
         self.delegate = WindowDelegate.alloc().init()
         self.delegate.interface = self.interface
@@ -246,11 +254,25 @@ class Window:
     def set_full_screen(self, is_full_screen):
         self.interface.factory.not_implemented('Window.set_full_screen()')
 
-    def on_close(self):
+    def set_on_close(self, handler):
         pass
 
+    def cocoa_windowShouldClose(self):
+        if self.interface.on_close:
+            should_close = self.interface.on_close(self)
+        else:
+            should_close = True
+
+        if should_close:
+            self.interface.app.windows -= self.interface
+
+        return should_close
+
     def close(self):
-        self.native.close()
+        # Close window directly here, don't use `NSWindow.performClose()`
+        # because it won't work if the window does not have a close button.
+        if self.cocoa_windowShouldClose():
+            self.native.close()
 
     def info_dialog(self, title, message):
         return dialogs.info(self.interface, title, message)

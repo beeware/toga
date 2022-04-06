@@ -1,3 +1,4 @@
+from ctypes import c_void_p
 from travertino.size import at_least
 
 import toga
@@ -14,6 +15,7 @@ from toga_cocoa.libs import (  # NSSortDescriptor,
     NSTableViewColumnAutoresizingStyle,
     at,
     objc_method,
+    objc_property,
     send_super,
     SEL
 )
@@ -23,6 +25,10 @@ from toga_cocoa.widgets.internal.data import TogaData
 
 
 class TogaTree(NSOutlineView):
+
+    interface = objc_property(object, weak=True)
+    impl = objc_property(object, weak=True)
+
     # OutlineViewDataSource methods
     @objc_method
     def outlineView_child_ofItem_(self, tree, child: int, item):
@@ -109,6 +115,11 @@ class TogaTree(NSOutlineView):
             tcv = TogaIconView.alloc().initWithFrame_(CGRectMake(0, 0, column.width, 16))
             tcv.identifier = identifier
 
+            # Prevent tcv from being deallocated prematurely when no Python references
+            # are left
+            tcv.retain()
+            tcv.autorelease()
+
         tcv.setText(str(value))
         if icon:
             tcv.setImage(icon.native)
@@ -163,7 +174,7 @@ class TogaTree(NSOutlineView):
                 self.selectAll(self)
         else:
             # forward call to super
-            send_super(__class__, self, 'keyDown:', event)
+            send_super(__class__, self, 'keyDown:', event, argtypes=[c_void_p])
 
     # OutlineViewDelegate methods
     @objc_method
@@ -201,7 +212,7 @@ class Tree(Widget):
         # Create the Tree widget
         self.tree = TogaTree.alloc().init()
         self.tree.interface = self.interface
-        self.tree._impl = self
+        self.tree.impl = self
         self.tree.columnAutoresizingStyle = NSTableViewColumnAutoresizingStyle.Uniform
         self.tree.usesAlternatingRowBackgroundColors = True
         self.tree.allowsMultipleSelection = self.interface.multiple_select

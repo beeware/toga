@@ -41,9 +41,13 @@ class Window:
         self.native = WinForms.Form(self)
         self.native.ClientSize = Size(*self.interface._size)
         self.native.interface = self.interface
-        self.native.Resize += self.winforms_resize
         self.toolbar_native = None
         self.toolbar_items = None
+        if self.native.interface.resizeable:
+            self.native.Resize += self.winforms_resize
+        else:
+            self.native.FormBorderStyle = self.native.FormBorderStyle.FixedSingle
+            self.native.MaximizeBox = False
 
     def create_toolbar(self):
         self.toolbar_native = WinForms.ToolStrip()
@@ -126,16 +130,27 @@ class Window:
         )
         self.interface.content.refresh()
 
-        self.native.Show()
+        self.native.FormClosing += self.winforms_FormClosing
 
-    def winforms_FormClosing(self, event, handler):
-        if self.interface.app.on_exit:
-            self.interface.app.on_exit(self.interface.app)
+        if self.interface is not self.interface.app._main_window:
+            self.native.Icon = self.interface.app.icon._impl.native
+            self.native.Show()
+
+    def winforms_FormClosing(self, sender, event):
+        if self.interface.on_close:
+            should_close = self.interface.on_close(self)
+        else:
+            should_close = True
+
+        if should_close:
+            self.interface.app.windows -= self.interface
+        else:
+            event.Cancel = True
 
     def set_full_screen(self, is_full_screen):
         self.interface.factory.not_implemented('Window.set_full_screen()')
 
-    def on_close(self):
+    def set_on_close(self, handler):
         pass
 
     def close(self):
@@ -150,8 +165,10 @@ class Window:
         return WinForms.MessageBox.Show(message, title, WinForms.MessageBoxButtons.OK)
 
     def question_dialog(self, title, message):
-        result = WinForms.MessageBox.Show(message, title, WinForms.MessageBoxButtons.YesNo)
-        return result
+        result = WinForms.MessageBox.Show(
+            message, title, WinForms.MessageBoxButtons.YesNo
+        )
+        return result == WinForms.DialogResult.Yes
 
     def confirm_dialog(self, title, message):
         result = WinForms.MessageBox.Show(message, title, WinForms.MessageBoxButtons.OKCancel)
@@ -203,6 +220,18 @@ class Window:
             raise ValueError("No folder provided in the select folder dialog")
 
     def build_filter(self, file_types):
-        file_string = "{0} files (*.{0})|*.{0}"
-        return '|'.join([file_string.format(ext) for ext in file_types]) + \
-            "|All files (*.*)|*.*"
+        filters = [
+            "{0} files (*.{0})|*.{0}".format(ext)
+            for ext in file_types
+        ] + [
+            "All files (*.*)|*.*"
+        ]
+
+        if len(file_types) > 1:
+            filters.insert(0, "All matching files ({0})|{0}".format(
+                ';'.join([
+                    '*.{0}'.format(ext)
+                    for ext in file_types
+                ])
+            ))
+        return '|'.join(filters)

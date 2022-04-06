@@ -25,6 +25,11 @@ class WebView(Widget):
                  url=None, user_agent=None, on_key_down=None, on_webview_load=None):
         super().__init__(id=id, style=style, factory=factory)
 
+        # Prime some internal property-backing variables
+        self._url = None
+        self._html_content = None
+        self._user_agent = None
+
         self._impl = self.factory.WebView(interface=self)
         self.user_agent = user_agent
         self.url = url
@@ -52,6 +57,7 @@ class WebView(Widget):
     @url.setter
     def url(self, value):
         self._url = value
+        self._html_content = None
         self._impl.set_url(value)
 
     @property
@@ -117,6 +123,7 @@ class WebView(Widget):
 
         """
         self._url = root_url
+        self._html_content = content
         self._impl.set_content(root_url, content)
 
     async def evaluate_javascript(self, javascript):

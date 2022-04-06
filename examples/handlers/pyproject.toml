@@ -4,7 +4,7 @@ requires = ["briefcase"]
 [tool.briefcase]
 project_name = "Handler Demo"
 bundle = "org.beeware"
-version = "0.3.0.dev25"
+version = "0.3.0.dev33"
 url = "https://beeware.org"
 license = "BSD license"
 author = 'Tiberius Yak'
@@ -14,31 +14,35 @@ author_email = "tiberius@beeware.org"
 formal_name = "Handler Demo"
 description = "A testing app"
 sources = ['handlers']
-requires = []
+requires = [
+    '../../src/core',
+]
 
 
 [tool.briefcase.app.handlers.macOS]
 requires = [
-    'toga-cocoa',
+    '../../src/cocoa',
+    'std-nslog>=1.0.0',
 ]
 
 [tool.briefcase.app.handlers.linux]
 requires = [
-    'toga-gtk',
+    '../../src/gtk',
 ]
 
 [tool.briefcase.app.handlers.windows]
 requires = [
-    'toga-winforms',
+    '../../src/winforms',
 ]
 
 # Mobile deployments
 [tool.briefcase.app.handlers.iOS]
 requires = [
-    'toga-iOS',
+    '../../src/iOS',
+    'std-nslog>=1.0.0',
 ]
 
 [tool.briefcase.app.handlers.android]
 requires = [
-    'toga-android',
+    '../../src/android',
 ]

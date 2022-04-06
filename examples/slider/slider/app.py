@@ -28,12 +28,11 @@ class SliderApp(toga.App):
         # Add the content on the main window
         self.discrete_slider = toga.Slider(
             on_change=self.my_discrete_on_change,
-            on_press=self.my_discrete_on_press,
-            on_release=self.my_discrete_on_release,
             range=(MIN_VAL, MAX_VAL),
             tick_count=MAX_VAL - MIN_VAL + 1,
             style=slider_style
         )
+        self.scared_label = toga.Label("Try to catch me!", style=label_style)
         self.main_window.content = toga.Box(
             children=[
 
@@ -75,6 +74,15 @@ class SliderApp(toga.App):
                     self.discrete_slider_value_label,
                     self.discrete_slider,
                 ]),
+
+                toga.Box(style=box_style, children=[
+                    self.scared_label,
+                    toga.Slider(
+                        on_press=self.scared_on_press,
+                        on_release=self.scared_on_release,
+                        style=slider_style
+                    ),
+                ]),
             ],
             style=Pack(direction=COLUMN, padding=24)
         )
@@ -108,15 +116,11 @@ class SliderApp(toga.App):
             slider.value
         )
 
-    def my_discrete_on_press(self, slider):
-        # get the current value of the slider with `slider.value`
-        self.discrete_slider_value_label.text = "Oh no! they got me!"
+    def scared_on_press(self, slider):
+        self.scared_label.text = "Oh no! they got me!"
 
-    def my_discrete_on_release(self, slider):
-        # get the current value of the slider with `slider.value`
-        self.discrete_slider_value_label.text = "I am free! Changed to {0}".format(
-            slider.value
-        )
+    def scared_on_release(self, slider):
+        self.scared_label.text = "I am free! Changed to {0}".format(slider.value)
 
     def increase_discrete_slider(self, widget):
         if self.discrete_slider.tick_value != self.discrete_slider.tick_count:

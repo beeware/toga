@@ -1,16 +1,27 @@
 from asyncio import get_event_loop
+from ctypes import c_void_p
 
 from travertino.size import at_least
 
-from toga_cocoa.keys import toga_key
-from toga_cocoa.libs import NSURL, NSURLRequest, WKWebView
-from rubicon.objc import objc_method, py_from_ns
-from rubicon.objc.runtime import objc_id
-
 from .base import Widget
+from ..keys import toga_key
+from ..libs import (
+    NSURL,
+    NSURLRequest,
+    WKWebView,
+    objc_method,
+    objc_property,
+    py_from_ns,
+    send_super,
+    objc_id,
+)
 
 
 class TogaWebView(WKWebView):
+
+    interface = objc_property(object, weak=True)
+    impl = objc_property(object, weak=True)
+
     @objc_method
     def webView_didFinish_navigation_(self, sender, wkNavigation) -> None:
         if self.interface.on_webview_load:
@@ -24,6 +35,7 @@ class TogaWebView(WKWebView):
     def keyDown_(self, event) -> None:
         if self.interface.on_key_down:
             self.interface.on_key_down(self.interface, **toga_key(event))
+        send_super(__class__, self, 'keyDown:', event, argtypes=[c_void_p])
 
     @objc_method
     def touchBar(self):
@@ -35,6 +47,7 @@ class WebView(Widget):
     def create(self):
         self.native = TogaWebView.alloc().init()
         self.native.interface = self.interface
+        self.native.impl = self
 
         self.native.downloadDelegate = self.native
         self.native.frameLoadDelegate = self.native
@@ -68,7 +81,7 @@ class WebView(Widget):
 
     def set_user_agent(self, value):
         user_agent = value if value else "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/603.3.8 (KHTML, like Gecko) Version/10.1.2 Safari/603.3.8"  # NOQA
-        # self.native.customUserAgent = user_agent
+        self.native.customUserAgent = user_agent
 
     async def evaluate_javascript(self, javascript):
         """
