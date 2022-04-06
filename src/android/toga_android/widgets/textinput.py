@@ -1,5 +1,7 @@
 from travertino.size import at_least
 
+from toga_android.colors import native_color
+
 from ..libs.android.text import InputType, TextWatcher
 from ..libs.android.util import TypedValue
 from ..libs.android.view import Gravity, View__MeasureSpec
@@ -57,6 +59,10 @@ class TextInput(Widget):
             font_impl = font.bind(self.interface.factory)
             self.native.setTextSize(TypedValue.COMPLEX_UNIT_SP, font_impl.get_size())
             self.native.setTypeface(font_impl.get_typeface(), font_impl.get_style())
+
+    def set_color(self, color):
+        if color:
+            self.native.setTextColor(native_color(color))
 
     def set_value(self, value):
         self.native.setText(value)
