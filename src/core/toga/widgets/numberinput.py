@@ -72,7 +72,7 @@ class NumberInput(Widget):
     @step.setter
     def step(self, step):
         try:
-            self._step = Decimal(step)
+            self._step = Decimal(str(step))
         except (ValueError, TypeError, InvalidOperation):
             raise ValueError("step must be an number")
         self._impl.set_step(self._step)
@@ -90,7 +90,7 @@ class NumberInput(Widget):
     @min_value.setter
     def min_value(self, value):
         try:
-            self._min_value = Decimal(value)
+            self._min_value = Decimal(str(value))
         except (ValueError, InvalidOperation):
             raise ValueError("min_value must be a number")
         except TypeError:
@@ -110,7 +110,7 @@ class NumberInput(Widget):
     @max_value.setter
     def max_value(self, value):
         try:
-            self._max_value = Decimal(value)
+            self._max_value = Decimal(str(value))
         except (ValueError, InvalidOperation):
             raise ValueError("max_value must be a number")
         except TypeError:
@@ -130,7 +130,7 @@ class NumberInput(Widget):
     @value.setter
     def value(self, value):
         try:
-            self._value = Decimal(value)
+            self._value = Decimal(str(value))
 
             if self.min_value is not None and self._value < self.min_value:
                 self._value = self.min_value
