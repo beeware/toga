@@ -175,6 +175,7 @@ class TextInput(Widget):
 
         if error_message is None:
             self._impl.clear_error()
+            self.error_message = None
             return True
         else:
             self._impl.set_error(error_message)
