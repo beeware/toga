@@ -110,10 +110,11 @@ class WebView(Widget):
         pass
 
     def set_url(self, value):
-        self.native.Source = Uri(self.interface.url)
+        if value:
+            self.native.Source = Uri(self.interface.url)
 
     def set_content(self, root_url, content):
-        if self.native.CoreWebView2:
+        if content and self.native.CoreWebView2:
             self.native.CoreWebView2.NavigateToString(content)
 
     def get_dom(self):
