@@ -36,7 +36,7 @@ class TogaCanvas(NSView):
         # Save the "clean" state of the graphics context.
         core_graphics.CGContextSaveGState(context)
         if self.interface.redraw:
-            self.interface._draw(self._impl, draw_context=context)
+            self.interface._draw(self.impl, draw_context=context)
 
     @objc_method
     def isFlipped(self) -> bool:
