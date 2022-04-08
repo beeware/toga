@@ -36,7 +36,7 @@ class WebView(Widget):
         self.native.KeyDown += self.winforms_key_down
 
         props = CoreWebView2CreationProperties()
-        props.UserDataFolder = str(toga.App.app.paths.cache/ "WebView2")
+        props.UserDataFolder = str(toga.App.app.paths.cache / "WebView2")
         self.native.CreationProperties = props
 
         # Trigger the configuration of the webview
