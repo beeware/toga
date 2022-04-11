@@ -1,6 +1,6 @@
 from toga import GROUP_BREAK, SECTION_BREAK
 
-from .libs import Size, WinForms
+from .libs import Point, Size, WinForms
 
 
 class WinFormsViewport:
@@ -32,15 +32,17 @@ class WinFormsViewport:
 
 
 class Window:
-    def __init__(self, interface):
+    def __init__(self, interface, title, position, size):
         self.interface = interface
         self.interface._impl = self
-        self.create()
 
-    def create(self):
-        self.native = WinForms.Form(self)
-        self.native.ClientSize = Size(*self.interface._size)
+        self.native = WinForms.Form()
         self.native.interface = self.interface
+
+        self.set_title(title)
+        self.set_size(size)
+        self.set_position(position)
+
         self.toolbar_native = None
         self.toolbar_items = None
         if self.native.interface.resizeable:
@@ -66,11 +68,17 @@ class Window:
                 cmd._impl.native.append(item)
             self.toolbar_native.Items.Add(item)
 
+    def get_position(self):
+        return (self.native.Location.X, self.native.Location.Y)
+
     def set_position(self, position):
-        pass
+        self.native.Location = Point(*position)
+
+    def get_size(self):
+        return (self.native.ClientSize.Width, self.native.ClientSize.Height)
 
     def set_size(self, size):
-        self.native.ClientSize = Size(*self.interface._size)
+        self.native.ClientSize = Size(*size)
 
     def set_app(self, app):
         if app is None:
@@ -108,6 +116,9 @@ class Window:
         # Add all children to the content widget.
         for child in widget.interface.children:
             child._impl.container = widget
+
+    def get_title(self):
+        return self.native.Text
 
     def set_title(self, title):
         self.native.Text = title

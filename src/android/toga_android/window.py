@@ -46,13 +46,11 @@ class AndroidViewport:
 
 
 class Window:
-    def __init__(self, interface):
+    def __init__(self, interface, title, position, size):
         self.interface = interface
         self.interface._impl = self
-        self.create()
 
-    def create(self):
-        pass
+        # self.set_title(title)
 
     def set_app(self, app):
         self.app = app
@@ -69,13 +67,27 @@ class Window:
         for child in widget.interface.children:
             child._impl.container = widget
 
+    def get_title(self):
+        self.interface.factory.not_implemented("Window.get_title()")
+        return "?"
+
     def set_title(self, title):
+        self.interface.factory.not_implemented("Window.set_title()")
         pass
+
+    def get_position(self):
+        return (0, 0)
 
     def set_position(self, position):
+        # Does nothing on mobile
         pass
 
+    def get_size(self):
+        display_metrics = self.interface.content._impl.native.getContext().getResources().getDisplayMetrics()
+        return (display_metrics.widthPixels, display_metrics.heightPixels)
+
     def set_size(self, size):
+        # Does nothing on mobile
         pass
 
     def create_toolbar(self):

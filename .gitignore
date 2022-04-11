@@ -12,7 +12,7 @@ _build
 distribute-*
 docs/env
 local
-venv
+*venv*
 .idea
 Pipfile*
 .tox

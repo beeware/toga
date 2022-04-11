@@ -1,0 +1,48 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name = "Window Demo"
+bundle = "org.beeware"
+version = "0.3.0.dev33"
+url = "https://beeware.org"
+license = "BSD license"
+author = 'Tiberius Yak'
+author_email = "tiberius@beeware.org"
+
+[tool.briefcase.app.window]
+formal_name = "Window Demo"
+description = "A testing app"
+sources = ['window']
+requires = [
+    '../../src/core',
+]
+
+
+[tool.briefcase.app.window.macOS]
+requires = [
+    '../../src/cocoa',
+    'std-nslog>=1.0.0',
+]
+
+[tool.briefcase.app.window.linux]
+requires = [
+    '../../src/gtk',
+]
+
+[tool.briefcase.app.window.windows]
+requires = [
+    '../../src/winforms',
+]
+
+# Mobile deployments
+[tool.briefcase.app.window.iOS]
+requires = [
+    '../../src/iOS',
+    'std-nslog>=1.0.0',
+]
+
+[tool.briefcase.app.window.android]
+requires = [
+    '../../src/android',
+]

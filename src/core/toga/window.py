@@ -31,8 +31,6 @@ class Window:
         self._impl = None
         self._app = None
         self._content = None
-        self._position = position
-        self._size = size
         self._is_full_screen = False
 
         self.resizeable = resizeable
@@ -40,7 +38,12 @@ class Window:
         self.minimizable = minimizable
 
         self.factory = get_platform_factory(factory)
-        self._impl = getattr(self.factory, self._WINDOW_CLASS)(interface=self)
+        self._impl = getattr(self.factory, self._WINDOW_CLASS)(
+            interface=self,
+            title='Toga' if title is None else title,
+            position=position,
+            size=size,
+        )
 
         self._toolbar = CommandSet(
             factory=self.factory,
@@ -48,9 +51,6 @@ class Window:
             on_change=self._impl.create_toolbar
         )
 
-        self.position = position
-        self.size = size
-        self.title = title
         self._on_close = None
         if on_close is not None:
             self.on_close = on_close
@@ -92,14 +92,13 @@ class Window:
         Returns:
             The current title of the window as a ``str``.
         """
-        return self._title
+        return self._impl.get_title()
 
     @title.setter
     def title(self, title):
         if not title:
             title = "Toga"
 
-        self._title = title
         self._impl.set_title(title)
 
     @property
@@ -146,11 +145,10 @@ class Window:
             A ``tuple`` of (``int``, ``int``) where the first value is
             the width and the second it the height of the window.
         """
-        return self._size
+        return self._impl.get_size()
 
     @size.setter
     def size(self, size):
-        self._size = size
         self._impl.set_size(size)
         if self.content:
             self.content.refresh()
@@ -162,11 +160,10 @@ class Window:
         Returns:
             A ``tuple`` of (``int``, ``int``) int the from (x, y).
         """
-        return self._position
+        return self._impl.get_position()
 
     @position.setter
     def position(self, position):
-        self._position = position
         self._impl.set_position(position)
 
     def show(self):
