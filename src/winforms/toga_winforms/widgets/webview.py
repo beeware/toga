@@ -1,4 +1,5 @@
 from asyncio import get_event_loop
+import toga
 import traceback
 import webbrowser
 
@@ -35,7 +36,7 @@ class WebView(Widget):
         self.native.KeyDown += self.winforms_key_down
 
         props = CoreWebView2CreationProperties()
-        props.UserDataFolder = None
+        props.UserDataFolder = str(toga.App.app.paths.cache / "WebView2")
         self.native.CreationProperties = props
 
         # Trigger the configuration of the webview
