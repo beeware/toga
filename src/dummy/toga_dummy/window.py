@@ -17,27 +17,21 @@ class Window(LoggedObject):
         self._action('set content', widget=widget)
 
     def get_title(self):
-        self._get_value('title')
-        return self._title
+        return self._get_value('title')
 
     def set_title(self, title):
-        self._title = title
         self._set_value('title', title)
 
     def get_position(self):
-        self._get_value('position')
-        return self._position
+        return self._get_value('position')
 
     def set_position(self, position):
-        self._position = position
         self._set_value('position', position)
 
     def get_size(self):
-        self._get_value('size')
-        return self._size
+        return self._get_value('size')
 
     def set_size(self, size):
-        self._size = size
         self._set_value('size', size)
 
     def set_app(self, app):
