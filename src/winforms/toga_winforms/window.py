@@ -36,7 +36,7 @@ class Window:
         self.interface = interface
         self.interface._impl = self
 
-        self.native = WinForms.Form(self)
+        self.native = WinForms.Form()
         self.native.interface = self.interface
 
         self.set_title(title)
