@@ -68,6 +68,7 @@ class Window:
             child._impl.container = widget
 
     def get_title(self):
+        self.interface.factory.not_implemented("Window.get_title()")
         return "?"
 
     def set_title(self, title):
@@ -82,7 +83,7 @@ class Window:
         pass
 
     def get_size(self):
-        display_metrics = self.app.contentView.getContext().getResources().getDisplayMetrics()
+        display_metrics = self.interface.content._impl.native.getContext().getResources().getDisplayMetrics()
         return (display_metrics.widthPixels, display_metrics.heightPixels)
 
     def set_size(self, size):
