@@ -31,25 +31,28 @@ class GtkViewport:
 class Window:
     _IMPL_CLASS = Gtk.Window
 
-    def __init__(self, interface):
+    def __init__(self, interface, title, position, size):
         self.interface = interface
         self.interface._impl = self
-        self.create()
 
-    def create(self):
         self.layout = None
 
         self.native = self._IMPL_CLASS()
         self.native._impl = self
 
         self.native.connect("delete-event", self.gtk_delete_event)
-        self.native.set_default_size(self.interface.size[0], self.interface.size[1])
+        self.native.set_default_size(size[0], size[1])
+
+        self.set_position(position)
 
         # Set the window deletable/closeable.
         self.native.set_deletable(self.interface.closeable)
 
         self.toolbar_native = None
         self.toolbar_items = None
+
+    def get_title(self):
+        self.native.get_title()
 
     def set_title(self, title):
         self.native.set_title(title)
@@ -149,11 +152,17 @@ class Window:
     def close(self):
         self.native.close()
 
+    def get_position(self):
+        return self.native.get_position()
+
     def set_position(self, position):
-        pass
+        self.native.move(position[0], position[1])
+
+    def get_size(self):
+        self.native.get_size()
 
     def set_size(self, size):
-        pass
+        self.native.resize(size[0], size[1])
 
     def set_full_screen(self, is_full_screen):
         if is_full_screen:

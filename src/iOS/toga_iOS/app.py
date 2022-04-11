@@ -14,12 +14,7 @@ from toga_iOS.window import Window
 
 
 class MainWindow(Window):
-    def __init__(self, interface):
-        super().__init__(interface)
-
-    # def startup(self):
-    #     super().startup()
-    #     self.native.setBackgroundColor_(UIColor.whiteColor())
+    pass
 
 
 class PythonAppDelegate(UIResponder):
