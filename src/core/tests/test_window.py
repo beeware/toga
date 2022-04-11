@@ -39,6 +39,15 @@ class TestWindow(TestCase):
         self.assertValueGet(self.window, 'title')
         self.assertEqual(title, 'New title')
 
+        # Set a default window title
+        self.window.title = None
+        self.assertValueSet(self.window, 'title', "Toga")
+
+        # New window title can be retrieved
+        title = self.window.title
+        self.assertValueGet(self.window, 'title')
+        self.assertEqual(title, 'Toga')
+
     def test_toolbar(self):
         toolbar = self.window.toolbar
         self.assertIsInstance(toolbar, CommandSet)
@@ -100,6 +109,18 @@ class TestWindow(TestCase):
                 self.window.on_close('widget', a=1),
                 "called <class 'toga.window.Window'> with {'a': 1}"
             )
+
+    def test_on_close_at_create(self):
+        def callback(window, **extra):
+            return 'called {} with {}'.format(type(window), extra)
+
+        window = toga.Window(factory=toga_dummy.factory, on_close=callback)
+
+        self.assertEqual(window.on_close._raw, callback)
+        self.assertEqual(
+            window.on_close('widget', a=1),
+            "called <class 'toga.window.Window'> with {'a': 1}"
+        )
 
     def test_close(self):
         with patch.object(self.window, "_impl"):
