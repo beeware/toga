@@ -43,6 +43,7 @@ class Window:
         self.native.connect("delete-event", self.gtk_delete_event)
         self.native.set_default_size(size[0], size[1])
 
+        self.set_title(title)
         self.set_position(position)
 
         # Set the window deletable/closeable.
@@ -52,7 +53,7 @@ class Window:
         self.toolbar_items = None
 
     def get_title(self):
-        self.native.get_title()
+        return self.native.get_title()
 
     def set_title(self, title):
         self.native.set_title(title)
@@ -153,13 +154,15 @@ class Window:
         self.native.close()
 
     def get_position(self):
-        return self.native.get_position()
+        pos = self.native.get_position()
+        return (pos.root_x, pos.root_y)
 
     def set_position(self, position):
         self.native.move(position[0], position[1])
 
     def get_size(self):
-        self.native.get_size()
+        size = self.native.get_size()
+        return (size.width, size.height)
 
     def set_size(self, size):
         self.native.resize(size[0], size[1])
