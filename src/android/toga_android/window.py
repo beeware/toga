@@ -75,14 +75,15 @@ class Window:
         pass
 
     def get_position(self):
-        return (0,0)
+        return (0, 0)
 
     def set_position(self, position):
         # Does nothing on mobile
         pass
 
     def get_size(self):
-        return (self.viewport.width, self.viewport.height)
+        display_metrics = self.app.contentView.getContext().getResources().getDisplayMetrics()
+        return (display_metrics.widthPixels, display_metrics.heightPixels)
 
     def set_size(self, size):
         # Does nothing on mobile

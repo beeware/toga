@@ -2,7 +2,7 @@ from datetime import datetime
 
 import toga
 from toga.style import Pack
-from toga.constants import COLUMN, ROW
+from toga.constants import COLUMN
 
 
 class WindowDemoApp(toga.App):
@@ -26,13 +26,27 @@ class WindowDemoApp(toga.App):
         self.main_window.title = f"Time is {datetime.now()}"
 
     def do_new_windows(self, widget, **kwargs):
-        non_resize_window = toga.Window("Non-resizable Window", position=(200,200), size=(300,300), resizeable=False)
-        non_resize_window.content = toga.Box(children=[toga.Label("This window is not resizable")])
+        non_resize_window = toga.Window(
+            "Non-resizable Window",
+            position=(200, 200),
+            size=(300, 300),
+            resizeable=False,
+        )
+        non_resize_window.content = toga.Box(
+            children=[toga.Label("This window is not resizable")]
+        )
         self.app.windows += non_resize_window
         non_resize_window.show()
 
-        non_close_window = toga.Window("Non-closeable Window", position=(300,300), size=(300,300), closeable=False)
-        non_close_window.content = toga.Box(children=[toga.Label("This window is not closeable")])
+        non_close_window = toga.Window(
+            "Non-closeable Window",
+            position=(300, 300),
+            size=(300, 300),
+            closeable=False,
+        )
+        non_close_window.content = toga.Box(
+            children=[toga.Label("This window is not closeable")]
+        )
         self.app.windows += non_close_window
         non_close_window.show()
 

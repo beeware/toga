@@ -38,7 +38,6 @@ class Window:
 
         self.set_title(title)
 
-
     def set_content(self, widget):
         widget.viewport = iOSViewport(self.native)
 
