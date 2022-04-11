@@ -75,10 +75,10 @@ class Window:
         self.native.Location = Point(*position)
 
     def get_size(self):
-        return self.native.ClientSize
+        return (self.native.ClientSize.Width, self.native.ClientSize.Height)
 
     def set_size(self, size):
-        self.native.ClientSize = Size(*self.interface._size)
+        self.native.ClientSize = Size(*size)
 
     def set_app(self, app):
         if app is None:
@@ -116,6 +116,9 @@ class Window:
         # Add all children to the content widget.
         for child in widget.interface.children:
             child._impl.container = widget
+
+    def get_title(self):
+        return self.native.Text
 
     def set_title(self, title):
         self.native.Text = title
