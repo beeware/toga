@@ -6,57 +6,113 @@ from .libs.android.content import DialogInterface__OnClickListener
 
 
 class OnClickListener(DialogInterface__OnClickListener):
-    def __init__(self, fn=None):
+    def __init__(self, fn=None, value=None):
         super().__init__()
         self._fn = fn
+        self._value = value
 
     def onClick(self, _dialog, _which):
         if self._fn:
-            self._fn()
+            self._fn(self._value)
 
 
-async def _dialog(window, title, message, positive_text, negative_text, icon):
-    '''Create Android textual dialog. Parameters:
-    - window: Toga Window
-    - title: Title of dialog
-    - message: Message of dialog
-    - positive_text: Button label where clicking it returns True (or None to skip)
-    - negative_text: Button label where clicking it returns False (or None to skip)
-    - icon: Integer used as an Android resource ID number for dialog icon (or None to skip)'''
-    builder = AlertDialog__Builder(window.app.native)
-    builder.setCancelable(False)
-    builder.setTitle(title)
-    builder.setMessage(message)
-    if icon is not None:
-        builder.setIcon(icon)
-    result_future = asyncio.Future()
-    if positive_text is not None:
-        builder.setPositiveButton(positive_text, OnClickListener(lambda: result_future.set_result(True)))
-    if negative_text is not None:
-        builder.setNegativeButton(negative_text, OnClickListener(lambda: result_future.set_result(False)))
-    builder.show()
-    return await result_future
+class BaseDialog:
+    def __init__(self):
+        loop = asyncio.get_event_loop()
+        self.future = loop.create_future()
+        # self.future = asyncio.create_future()
+
+    def __eq__(self, other):
+        raise RuntimeError("Can't check dialog result directly; use await or an on_result handler")
+
+    def __bool__(self):
+        raise RuntimeError("Can't check dialog result directly; use await or an on_result handler")
+
+    def __await__(self):
+        return self.future.__await__()
 
 
-async def info(window, title, message):
-    await _dialog(window, title, message, "OK", None, None)
+class TextDialog(BaseDialog):
+    def __init__(self, window, title, message, positive_text, negative_text=None, icon=None, on_result=None):
+        """Create Android textual dialog.
+
+        - window: Toga Window
+        - title: Title of dialog
+        - message: Message of dialog
+        - positive_text: Button label where clicking it returns True (or None to skip)
+        - negative_text: Button label where clicking it returns False (or None to skip)
+        - icon: Integer used as an Android resource ID number for dialog icon (or None to skip)
+        """
+        super().__init__()
+
+        builder = AlertDialog__Builder(window.app.native)
+        builder.setCancelable(False)
+        builder.setTitle(title)
+        builder.setMessage(message)
+        if icon is not None:
+            builder.setIcon(icon)
+
+        if positive_text is not None:
+            builder.setPositiveButton(
+                positive_text,
+                OnClickListener(self.completion_handler, True)
+            )
+        if negative_text is not None:
+            builder.setNegativeButton(
+                negative_text,
+                OnClickListener(self.completion_handler, False)
+            )
+        builder.show()
+
+    def completion_handler(self, return_value: bool) -> None:
+        if self.on_result:
+            self.on_result(self, return_value)
+
+        self.future.set_result(return_value)
 
 
-async def question(window, title, message):
-    return await _dialog(window, title, message, "Yes", "No", None)
+class InfoDialog(TextDialog):
+    def __init__(self, window, title, message, on_result=None):
+        super().__init__(
+            window=window,
+            title=title,
+            message=message,
+            positive_text="OK",
+            on_result=on_result,
+        )
 
 
-async def confirm(window, title, message):
-    return await _dialog(window, title, message, "OK", "Cancel", None)
+class QuestionDialog(TextDialog):
+    def __init__(self, window, title, message, on_result=None):
+        super().__init__(
+            window=window,
+            title=title,
+            message=message,
+            positive_text="Yes",
+            negative_text="No",
+            on_result=on_result,
+        )
 
 
-async def error(window, title, message):
-    return await _dialog(window, title, message, "OK", None, R__drawable.ic_dialog_alert)
+class ConfirmDialog(TextDialog):
+    def __init__(self, window, title, message, on_result=None):
+        super().__init__(
+            window=window,
+            title=title,
+            message=message,
+            positive_text="OK",
+            negative_text="Cancel",
+            on_result=on_result,
+        )
 
 
-def stack_trace(window, title, message, content, retry=False):
-    window.platform.not_implemented("dialogs.stack_trace()")
-
-
-def save_file(window, title, suggested_filename, file_types):
-    window.platform.not_implemented("dialogs.save_file()")
+class ConfirmDialog(TextDialog):
+    def __init__(self, window, title, message, on_result=None):
+        super().__init__(
+            window=window,
+            title=title,
+            message=message,
+            positive_text="OK",
+            icon=R__drawable.ic_dialog_alert,
+            on_result=on_result,
+        )

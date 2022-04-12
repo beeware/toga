@@ -102,17 +102,17 @@ class Window:
     def set_full_screen(self, is_full_screen):
         self.interface.factory.not_implemented('Window.set_full_screen()')
 
-    async def info_dialog(self, title, message):
-        await dialogs.info(self, title, message)
+    def info_dialog(self, title, message):
+        return dialogs.InfoDialog(self, title, message)
 
-    async def question_dialog(self, title, message):
-        return await dialogs.question(self, title, message)
+    def question_dialog(self, title, message):
+        return dialogs.QuestionDialog(self, title, message)
 
-    async def confirm_dialog(self, title, message):
-        return await dialogs.confirm(self, title, message)
+    def confirm_dialog(self, title, message):
+        return dialogs.ConfirmDialog(self, title, message)
 
-    async def error_dialog(self, title, message):
-        return await dialogs.error(self, title, message)
+    def error_dialog(self, title, message):
+        return dialogs.ErrorDialog(self, title, message)
 
     def stack_trace_dialog(self, title, message, content, retry=False):
         self.interface.factory.not_implemented('Window.stack_trace_dialog()')
