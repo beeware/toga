@@ -314,7 +314,9 @@ class Window:
         return dialogs.SaveFileDialog(self.interface, title, suggested_filename, file_types, on_result=None)
 
     def open_file_dialog(self, title, initial_directory, file_types, multiselect, on_result=None):
-        return dialogs.OpenFileDialog(self.interface, title, initial_directory, file_types, multiselect, on_result=None)
+        return dialogs.OpenFileDialog(
+            self.interface, title, initial_directory, file_types, multiselect, on_result=None
+        )
 
     def select_folder_dialog(self, title, initial_directory, multiselect, on_result=None):
         return dialogs.SelectFolderDialog(self.interface, title, initial_directory, multiselect, on_result=None)

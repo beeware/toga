@@ -106,7 +106,7 @@ class ConfirmDialog(TextDialog):
         )
 
 
-class ConfirmDialog(TextDialog):
+class ErrorDialog(TextDialog):
     def __init__(self, window, title, message, on_result=None):
         super().__init__(
             window=window,
