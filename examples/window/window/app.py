@@ -60,18 +60,14 @@ class WindowDemoApp(toga.App):
 
     def exit_handler(self, app, **kwargs):
         self.close_count += 1
-        print("exit?", self.close_count)
         if self.close_count % 2 == 1:
-            print("no exit")
             self.main_window.info_dialog("Can't close app", "Try that again")
             return False
         return True
 
     def close_handler(self, window, **kwargs):
         self.close_count += 1
-        print("close?", self.close_count)
         if self.close_count % 2 == 1:
-            print("no close")
             self.main_window.info_dialog("Can't close window", "Try that again")
             return False
         return True
@@ -82,7 +78,7 @@ class WindowDemoApp(toga.App):
 
         # Set up main window
         self.main_window = toga.MainWindow(title=self.name)
-        self.on_exit=self.exit_handler
+        self.on_exit = self.exit_handler
 
         # Label to show responses.
         self.label = toga.Label('Ready.')

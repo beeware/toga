@@ -1,4 +1,3 @@
-import asyncio
 import signal
 import sys
 import warnings
