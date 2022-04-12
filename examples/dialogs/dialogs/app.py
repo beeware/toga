@@ -1,5 +1,7 @@
-import toga
+import traceback
 from pathlib import Path
+
+import toga
 from toga.constants import COLUMN
 from toga.style import Pack
 
@@ -31,6 +33,14 @@ class ExampledialogsApp(toga.App):
         await self.main_window.error_dialog('Toga', "Well that didn't work... or did it?")
         self.label.text = 'Oh noes...'
 
+    async def action_stack_trace(self, widget):
+        await self.main_window.stack_trace_dialog(
+            'Toga',
+            "Here's where you were when it went bad:",
+            ''.join(traceback.format_stack())
+        )
+        self.label.text = 'Stack traced...'
+
     async def action_open_file_dialog(self, widget):
         try:
             fname = await self.main_window.open_file_dialog(
@@ -38,7 +48,7 @@ class ExampledialogsApp(toga.App):
                 multiselect=False
             )
             if fname is not None:
-                self.label.text = "File to open:" + fname
+                self.label.text = f"File to open: {fname}"
             else:
                 self.label.text = "No file selected!"
         except ValueError:
@@ -52,7 +62,7 @@ class ExampledialogsApp(toga.App):
                 file_types=['doc', 'txt'],
             )
             if fname is not None:
-                self.label.text = "File to open:" + fname
+                self.label.text = f"File to open: {fname}"
             else:
                 self.label.text = "No file selected!"
         except ValueError:
@@ -65,7 +75,7 @@ class ExampledialogsApp(toga.App):
                 multiselect=True
             )
             if filenames is not None:
-                msg = "Files to open: {}".format(', '.join(filenames))
+                msg = f"Files to open: {', '.join(str(f) for f in filenames)}"
                 self.label.text = msg
             else:
                 self.label.text = "No files selected!"
@@ -81,7 +91,7 @@ class ExampledialogsApp(toga.App):
                 multiselect=False
             )
             if fname is not None:
-                self.label.text = "File to open:" + fname
+                self.label.text = f"File to open: {fname}"
             else:
                 self.label.text = "No file selected!"
         except ValueError:
@@ -89,11 +99,11 @@ class ExampledialogsApp(toga.App):
 
     async def action_select_folder_dialog(self, widget):
         try:
-            path_names = await self.main_window.select_folder_dialog(
+            path_name = await self.main_window.select_folder_dialog(
                 title="Select folder with Toga"
             )
-            if path_names is not None:
-                self.label.text = "Folder selected:" + ','.join([path for path in path_names])
+            if path_name is not None:
+                self.label.text = f"Folder selected: {path_name}"
             else:
                 self.label.text = "No folder selected!"
         except ValueError:
@@ -105,17 +115,20 @@ class ExampledialogsApp(toga.App):
                 title="Select multiple folders with Toga",
                 multiselect=True
             )
-            self.label.text = "Folders selected:" + ','.join([path for path in path_names])
+            if path_names is not None:
+                self.label.text = f"Folders selected: {','.join([str(p) for p in path_names])}"
+            else:
+                self.label.text = "No fodlers selected!"
         except ValueError:
             self.label.text = "Folders select dialog was canceled"
 
     async def action_select_folder_dialog_with_initial_folder(self, widget):
         try:
-            path_names = await self.main_window.select_folder_dialog(
+            path_name = await self.main_window.select_folder_dialog(
                 title="Select folder with Toga in current folder",
                 initial_directory=Path.cwd(),
             )
-            self.label.text = "Folder selected:" + ','.join([path for path in path_names])
+            self.label.text = f"Folder selected: {path_name}"
         except ValueError:
             self.label.text = "Folder select dialog was canceled"
 
@@ -124,12 +137,13 @@ class ExampledialogsApp(toga.App):
         try:
             save_path = await self.main_window.save_file_dialog(
                 "Save file with Toga",
-                suggested_filename=fname
+                suggested_filename=fname,
             )
             if save_path is not None:
-                self.label.text = "File saved with Toga:" + save_path
+                self.label.text = f"File saved with Toga: {save_path}"
             else:
                 self.label.text = "Save file dialog was canceled"
+
         except ValueError:
             self.label.text = "Save file dialog was canceled"
 
@@ -209,6 +223,7 @@ class ExampledialogsApp(toga.App):
         btn_question = toga.Button('Question', on_press=self.action_question_dialog, style=btn_style)
         btn_confirm = toga.Button('Confirm', on_press=self.action_confirm_dialog, style=btn_style)
         btn_error = toga.Button('Error', on_press=self.action_error_dialog, style=btn_style)
+        btn_stack_trace = toga.Button('Stack Trace', on_press=self.action_stack_trace, style=btn_style)
         btn_open = toga.Button('Open File', on_press=self.action_open_file_dialog, style=btn_style)
         btn_open_filtered = toga.Button(
             'Open File (Filtered)',
@@ -221,7 +236,7 @@ class ExampledialogsApp(toga.App):
             style=btn_style
         )
         btn_open_init_folder = toga.Button(
-            'Open File In Current Folder',
+            'Open File In Home Folder',
             on_press=self.action_open_file_dialog_with_inital_folder,
         )
 
@@ -258,6 +273,7 @@ class ExampledialogsApp(toga.App):
                 btn_question,
                 btn_confirm,
                 btn_error,
+                btn_stack_trace,
                 btn_open,
                 btn_open_filtered,
                 btn_open_multi,
