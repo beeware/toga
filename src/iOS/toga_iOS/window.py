@@ -86,6 +86,9 @@ class Window:
         # Refresh with the actual viewport to do the proper rendering.
         self.interface.content.refresh()
 
+    def close(self):
+        pass
+
     def info_dialog(self, title, message):
         return dialogs.info_dialog(self.interface, title, message)
 

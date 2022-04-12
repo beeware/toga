@@ -92,7 +92,10 @@ class ExampledialogsApp(toga.App):
             path_names = self.main_window.select_folder_dialog(
                 title="Select folder with Toga"
             )
-            self.label.text = "Folder selected:" + ','.join([path for path in path_names])
+            if path_names is not None:
+                self.label.text = "Folder selected:" + ','.join([path for path in path_names])
+            else:
+                self.label.text = "No folder selected!"
         except ValueError:
             self.label.text = "Folder select dialog was canceled"
 
@@ -121,7 +124,8 @@ class ExampledialogsApp(toga.App):
         try:
             save_path = self.main_window.save_file_dialog(
                 "Save file with Toga",
-                suggested_filename=fname)
+                suggested_filename=fname
+            )
             if save_path is not None:
                 self.label.text = "File saved with Toga:" + save_path
             else:
@@ -129,7 +133,7 @@ class ExampledialogsApp(toga.App):
         except ValueError:
             self.label.text = "Save file dialog was canceled"
 
-    def window_close_handler(self, window):
+    async def window_close_handler(self, window):
         # This handler is called before the window is closed, so there
         # still are 1 more windows than the number of secondary windows
         # after it is closed
@@ -175,7 +179,7 @@ class ExampledialogsApp(toga.App):
             if not isinstance(window, toga.MainWindow):
                 window.close()
 
-    def exit_handler(self, app):
+    async def exit_handler(self, app):
         # Return True if app should close, and False if it should remain open
         if self.main_window.confirm_dialog('Toga', 'Are you sure you want to quit?'):
             print(f"Label text was '{self.label.text}' when you quit the app")

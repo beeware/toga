@@ -14,8 +14,15 @@ from .window import Window
 
 class MainWindow(Window):
     def winforms_FormClosing(self, sender, event):
+        # Differentiate between the handling that occurs when the user
+        # requests the app to exit, and the actual application exiting.
         if not self.interface.app._impl._is_exiting:
-            event.Cancel = not self.interface.app.exit()
+            # If there's an event handler, process it. The decision to
+            # actually exit the app will be processed in the on_exit handler.
+            # If there's no exit handler, assume the close/exit can proceed.
+            if self.interface.app.on_exit:
+                self.interface.app.on_exit(self.interface.app)
+                event.Cancel = True
 
 
 class App:
@@ -26,10 +33,9 @@ class App:
         self.interface._impl = self
 
         # Winforms app exit is tightly bound to the close of the MainWindow.
-        # The FormClosing message on MainWindow calls app.exit(), which
-        # will then trigger the "on_exit" handler (which might abort the
-        # close). However, if app.exit() succeeds, it will request the
-        # Main Window to close... which calls app.exit().
+        # The FormClosing message on MainWindow triggers the "on_exit" handler
+        # (which might abort the exit). However, on success, it will request the
+        # app (and thus the Main Window) to close, causing another close event.
         # So - we have a flag that is only ever sent once a request has been
         # made to exit the native app. This flag can be used to shortcut any
         # window-level close handling.

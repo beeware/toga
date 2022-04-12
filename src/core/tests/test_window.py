@@ -115,6 +115,7 @@ class TestWindow(TestCase):
             return 'called {} with {}'.format(type(window), extra)
 
         window = toga.Window(factory=toga_dummy.factory, on_close=callback)
+        self.app.windows += window
 
         self.assertEqual(window.on_close._raw, callback)
         self.assertEqual(
@@ -122,7 +123,11 @@ class TestWindow(TestCase):
             "called <class 'toga.window.Window'> with {'a': 1}"
         )
 
+        self.assertActionPerformed(window, 'close')
+
     def test_close(self):
+        # Ensure the window is associated with an app
+        self.app.windows += self.window
         with patch.object(self.window, "_impl"):
             self.window.close()
             self.window._impl.close.assert_called_once_with()

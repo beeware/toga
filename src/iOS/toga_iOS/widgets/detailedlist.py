@@ -111,7 +111,7 @@ class DetailedList(Widget):
                 self.controller.refreshControl.removeFromSuperview()
             self.controller.refreshControl = None
 
-    def after_on_refresh(self):
+    def after_on_refresh(self, widget, result):
         self.controller.refreshControl.endRefreshing()
         self.controller.tableView.reloadData()
 

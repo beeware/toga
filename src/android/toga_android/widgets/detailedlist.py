@@ -152,7 +152,7 @@ class DetailedList(Widget):
         # No special handling needed.
         pass
 
-    def after_on_refresh(self):
+    def after_on_refresh(self, widget, result):
         if self._swipe_refresh_layout:
             self._swipe_refresh_layout.setRefreshing(False)
 
