@@ -10,15 +10,14 @@ from ctypes import (
     c_uint32,
     c_void_p,
     c_wchar_p,
-    cdll,
-    util
 )
 
 from rubicon.objc import CGFloat, CGRect
 from rubicon.objc.types import register_preferred_encoding
+from rubicon.objc.runtime import load_library
 
 ######################################################################
-core_graphics = cdll.LoadLibrary(util.find_library('CoreGraphics'))
+core_graphics = load_library('CoreGraphics')
 ######################################################################
 
 ######################################################################

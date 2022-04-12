@@ -1,6 +1,6 @@
 from toga import GROUP_BREAK, SECTION_BREAK
 
-from .libs import Size, WinForms
+from .libs import Point, Size, WinForms
 
 
 class WinFormsViewport:
@@ -32,18 +32,24 @@ class WinFormsViewport:
 
 
 class Window:
-    def __init__(self, interface):
+    def __init__(self, interface, title, position, size):
         self.interface = interface
         self.interface._impl = self
-        self.create()
 
-    def create(self):
-        self.native = WinForms.Form(self)
-        self.native.ClientSize = Size(*self.interface._size)
+        self.native = WinForms.Form()
         self.native.interface = self.interface
-        self.native.Resize += self.winforms_resize
+
+        self.set_title(title)
+        self.set_size(size)
+        self.set_position(position)
+
         self.toolbar_native = None
         self.toolbar_items = None
+        if self.native.interface.resizeable:
+            self.native.Resize += self.winforms_resize
+        else:
+            self.native.FormBorderStyle = self.native.FormBorderStyle.FixedSingle
+            self.native.MaximizeBox = False
 
     def create_toolbar(self):
         self.toolbar_native = WinForms.ToolStrip()
@@ -62,14 +68,25 @@ class Window:
                 cmd._impl.native.append(item)
             self.toolbar_native.Items.Add(item)
 
+    def get_position(self):
+        return (self.native.Location.X, self.native.Location.Y)
+
     def set_position(self, position):
-        pass
+        self.native.Location = Point(*position)
+
+    def get_size(self):
+        return (self.native.ClientSize.Width, self.native.ClientSize.Height)
 
     def set_size(self, size):
-        self.native.ClientSize = Size(*self.interface._size)
+        self.native.ClientSize = Size(*size)
 
     def set_app(self, app):
-        pass
+        if app is None:
+            return
+        icon_impl = app.interface.icon._impl
+        if icon_impl is None:
+            return
+        self.native.Icon = icon_impl.native
 
     @property
     def vertical_shift(self):
@@ -100,6 +117,9 @@ class Window:
         for child in widget.interface.children:
             child._impl.container = widget
 
+    def get_title(self):
+        return self.native.Text
+
     def set_title(self, title):
         self.native.Text = title
 
@@ -121,16 +141,27 @@ class Window:
         )
         self.interface.content.refresh()
 
-        self.native.Show()
+        self.native.FormClosing += self.winforms_FormClosing
 
-    def winforms_FormClosing(self, event, handler):
-        if self.interface.app.on_exit:
-            self.interface.app.on_exit(self.interface.app)
+        if self.interface is not self.interface.app._main_window:
+            self.native.Icon = self.interface.app.icon._impl.native
+            self.native.Show()
+
+    def winforms_FormClosing(self, sender, event):
+        if self.interface.on_close:
+            should_close = self.interface.on_close(self)
+        else:
+            should_close = True
+
+        if should_close:
+            self.interface.app.windows -= self.interface
+        else:
+            event.Cancel = True
 
     def set_full_screen(self, is_full_screen):
         self.interface.factory.not_implemented('Window.set_full_screen()')
 
-    def on_close(self):
+    def set_on_close(self, handler):
         pass
 
     def close(self):
@@ -145,8 +176,10 @@ class Window:
         return WinForms.MessageBox.Show(message, title, WinForms.MessageBoxButtons.OK)
 
     def question_dialog(self, title, message):
-        result = WinForms.MessageBox.Show(message, title, WinForms.MessageBoxButtons.YesNo)
-        return result
+        result = WinForms.MessageBox.Show(
+            message, title, WinForms.MessageBoxButtons.YesNo
+        )
+        return result == WinForms.DialogResult.Yes
 
     def confirm_dialog(self, title, message):
         result = WinForms.MessageBox.Show(message, title, WinForms.MessageBoxButtons.OKCancel)
@@ -165,6 +198,8 @@ class Window:
         dialog.Title = title
         if suggested_filename is not None:
             dialog.FileName = suggested_filename
+        if file_types is not None:
+            dialog.Filter = self.build_filter(file_types)
         if dialog.ShowDialog() == WinForms.DialogResult.OK:
             return dialog.FileName
         else:
@@ -180,7 +215,7 @@ class Window:
         if multiselect:
             dialog.Multiselect = True
         if dialog.ShowDialog() == WinForms.DialogResult.OK:
-            return dialog.FileName
+            return dialog.FileNames if multiselect else dialog.FileName
         else:
             raise ValueError("No filename provided in the open file dialog")
 
@@ -196,6 +231,18 @@ class Window:
             raise ValueError("No folder provided in the select folder dialog")
 
     def build_filter(self, file_types):
-        file_string = "{0} files (*.{0})|*.{0}"
-        return '|'.join([file_string.format(ext) for ext in file_types]) + \
-            "|All files (*.*)|*.*"
+        filters = [
+            "{0} files (*.{0})|*.{0}".format(ext)
+            for ext in file_types
+        ] + [
+            "All files (*.*)|*.*"
+        ]
+
+        if len(file_types) > 1:
+            filters.insert(0, "All matching files ({0})|{0}".format(
+                ';'.join([
+                    '*.{0}'.format(ext)
+                    for ext in file_types
+                ])
+            ))
+        return '|'.join(filters)

@@ -1,3 +1,4 @@
+from travertino.constants import TRANSPARENT
 from travertino.size import at_least
 
 from toga_winforms.colors import native_color
@@ -21,6 +22,10 @@ class Button(Widget):
         self.native.Text = self.interface.label
         self.rehint()
 
+    def set_font(self, font):
+        if font:
+            self.native.Font = font.bind(self.interface.factory).native
+
     def set_enabled(self, value):
         self.native.Enabled = self.interface._enabled
 
@@ -31,10 +36,14 @@ class Button(Widget):
     def set_color(self, value):
         if value:
             self.native.ForeColor = native_color(value)
+        else:
+            self.native.ForeColor = native_color(TRANSPARENT)
 
     def set_background_color(self, value):
         if value:
             self.native.BackColor = native_color(value)
+        else:
+            self.native.BackColor = native_color(TRANSPARENT)
 
     def rehint(self):
         # self.native.Size = Size(0, 0)

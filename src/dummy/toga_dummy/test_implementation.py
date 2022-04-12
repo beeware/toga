@@ -77,7 +77,11 @@ class DefinitionExtractor:
         if node.decorator_list:  # check if a decorator list exists
             for decorator in node.decorator_list:
                 try:
-                    if decorator.func.id == 'not_required':
+                    # @not_required is a bare decorator, so the decorator node
+                    # has an `id` attribute.
+                    # @not_required_on is a decorator factory, so the decorator
+                    # node contains a function that has an id.
+                    if getattr(decorator, 'id', None) == 'not_required':
                         return False
                     elif decorator.func.id == 'not_required_on':
                         platforms_to_skip = [arg.s for arg in decorator.args]

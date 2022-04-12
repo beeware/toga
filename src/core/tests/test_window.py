@@ -10,48 +10,82 @@ class TestWindow(TestCase):
     def setUp(self):
         super().setUp()
         self.window = toga.Window(factory=toga_dummy.factory)
+        self.app = toga.App('test_name', 'id.app', factory=toga_dummy.factory)
+
+    def test_raises_error_when_app_not_set(self):
+        self.app = None
+        with self.assertRaises(AttributeError):
+            self.window.show()
 
     def test_widget_created(self):
         self.assertIsNotNone(self.window.id)
-        app = toga.App('test_name', 'id.app', factory=toga_dummy.factory)
         new_app = toga.App('error_name', 'id.error', factory=toga_dummy.factory)
-        self.window.app = app
+        self.window.app = self.app
         with self.assertRaises(Exception):
             self.window.app = new_app
 
     def test_window_title(self):
+        # Assert default value
         title = self.window.title
+        self.assertEqual(title, 'Toga')
+        self.assertValueGet(self.window, 'title')
+
+        # Set a new window title
+        self.window.title = "New title"
+        self.assertValueSet(self.window, 'title', "New title")
+
+        # New window title can be retrieved
+        title = self.window.title
+        self.assertValueGet(self.window, 'title')
+        self.assertEqual(title, 'New title')
+
+        # Set a default window title
+        self.window.title = None
+        self.assertValueSet(self.window, 'title', "Toga")
+
+        # New window title can be retrieved
+        title = self.window.title
+        self.assertValueGet(self.window, 'title')
         self.assertEqual(title, 'Toga')
 
     def test_toolbar(self):
         toolbar = self.window.toolbar
         self.assertIsInstance(toolbar, CommandSet)
 
-    def test_size_getter_and_setter(self):
+    def test_size(self):
         # Add some content
         mock_content = MagicMock(toga.Box(factory=toga_dummy.factory))
         self.window.content = mock_content
 
         # Confirm defaults
-        self.assertEqual((640, 480), self.window.size)
+        self.assertEqual(self.window.size, (640, 480))
+        self.assertValueGet(self.window, 'size')
 
-        # Test setter
-        new_size = (1200, 40)
+        # A new size can be assigned
         mock_content.reset_mock()
-        with patch.object(self.window, '_impl'):
-            self.window.size = new_size
-            self.window._impl.set_size.assert_called_once_with(new_size)
-            self.window.content.refresh.assert_called_once_with()
+        new_size = (1200, 40)
+        self.window.size = new_size
+        self.assertValueSet(self.window, 'size', new_size)
 
-    def test_position_getter_and_setter(self):
+        # Side effect of setting window size is a refresh on window content
+        self.window.content.refresh.assert_called_once_with()
+
+        # New size can be retrieved
+        self.assertEqual(self.window.size, new_size)
+        self.assertValueGet(self.window, 'size')
+
+    def test_position(self):
         # Confirm defaults
-        self.assertEqual((100, 100), self.window.position)
+        self.assertEqual(self.window.position, (100, 100))
 
-        # Test setter
+        # A new position can be assigned
         new_position = (40, 79)
-        with patch.object(self.window, '_impl'):
-            self.window.position = new_position
-            self.window._impl.set_position.assert_called_once_with(new_position)
+        self.window.position = new_position
+        self.assertValueSet(self.window, 'position', new_position)
+
+        # New position can be retrieved
+        self.assertEqual(self.window.position, new_position)
+        self.assertValueGet(self.window, 'position')
 
     def test_full_screen_set(self):
         self.assertFalse(self.window.full_screen)
@@ -62,8 +96,31 @@ class TestWindow(TestCase):
 
     def test_on_close(self):
         with patch.object(self.window, '_impl'):
-            self.window.on_close()
-            self.window._impl.on_close.assert_called_once_with()
+            self.app.windows += self.window
+            self.assertIsNone(self.window._on_close)
+
+            # set a new callback
+            def callback(window, **extra):
+                return 'called {} with {}'.format(type(window), extra)
+
+            self.window.on_close = callback
+            self.assertEqual(self.window.on_close._raw, callback)
+            self.assertEqual(
+                self.window.on_close('widget', a=1),
+                "called <class 'toga.window.Window'> with {'a': 1}"
+            )
+
+    def test_on_close_at_create(self):
+        def callback(window, **extra):
+            return 'called {} with {}'.format(type(window), extra)
+
+        window = toga.Window(factory=toga_dummy.factory, on_close=callback)
+
+        self.assertEqual(window.on_close._raw, callback)
+        self.assertEqual(
+            window.on_close('widget', a=1),
+            "called <class 'toga.window.Window'> with {'a': 1}"
+        )
 
     def test_close(self):
         with patch.object(self.window, "_impl"):

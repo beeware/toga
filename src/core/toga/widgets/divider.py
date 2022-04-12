@@ -30,7 +30,7 @@ class Divider(Widget):
         """ The direction of the split
 
         Returns:
-            True if `True` for vertical, `False` for horizontal.
+            0 for vertical, 1 for horizontal.
         """
         return self._direction
 

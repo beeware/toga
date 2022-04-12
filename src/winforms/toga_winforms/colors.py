@@ -1,8 +1,10 @@
-from travertino.colors import NAMED_COLOR
+from travertino.colors import NAMED_COLOR, TRANSPARENT
 
 from .libs import Color
 
-CACHE = {None: Color.Empty}
+CACHE = {
+    TRANSPARENT: Color.Empty
+}
 
 
 def native_color(c):

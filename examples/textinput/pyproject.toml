@@ -2,43 +2,47 @@
 requires = ["briefcase"]
 
 [tool.briefcase]
-project_name = "Handler Demo"
+project_name = "Text Input Demo"
 bundle = "org.beeware"
-version = "0.3.0.dev23"
+version = "0.3.0.dev33"
 url = "https://beeware.org"
 license = "BSD license"
 author = 'Tiberius Yak'
 author_email = "tiberius@beeware.org"
 
-[tool.briefcase.app.handlers]
-formal_name = "Handler Demo"
+[tool.briefcase.app.textinput]
+formal_name = "Text Input Demo"
 description = "A testing app"
-sources = ['handlers']
-requires = []
-
-
-[tool.briefcase.app.handlers.macOS]
+sources = ['textinput']
 requires = [
-    'toga-cocoa',
+    '../../src/core',
 ]
 
-[tool.briefcase.app.handlers.linux]
+
+[tool.briefcase.app.textinput.macOS]
 requires = [
-    'toga-gtk',
+    '../../src/cocoa',
+    'std-nslog>=1.0.0',
 ]
 
-[tool.briefcase.app.handlers.windows]
+[tool.briefcase.app.textinput.linux]
 requires = [
-    'toga-winforms',
+    '../../src/gtk',
+]
+
+[tool.briefcase.app.textinput.windows]
+requires = [
+    '../../src/winforms',
 ]
 
 # Mobile deployments
-[tool.briefcase.app.handlers.iOS]
+[tool.briefcase.app.textinput.iOS]
 requires = [
-    'toga-iOS',
+    '../../src/iOS',
+    'std-nslog>=1.0.0',
 ]
 
-[tool.briefcase.app.handlers.android]
+[tool.briefcase.app.textinput.android]
 requires = [
-    'toga-android',
+    '../../src/android',
 ]

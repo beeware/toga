@@ -3,6 +3,7 @@ from string import ascii_lowercase, ascii_uppercase, digits
 import toga
 from toga.constants import COLUMN
 from toga.style import Pack
+from toga import validators
 
 EMPTY_PASSWORD = 'Empty password'
 
@@ -70,13 +71,25 @@ class TextInputApp(toga.App):
         self.password_input = toga.PasswordInput(
             placeholder='Password...',
             style=Pack(padding=10),
-            on_change=self.on_password_change
+            on_change=self.on_password_change,
+            validators=[
+                validators.MinLength(10),
+                validators.ContainsUppercase(),
+                validators.ContainsLowercase(),
+                validators.ContainsSpecial(),
+                validators.ContainsDigit()
+            ]
+        )
+        self.email_input = toga.TextInput(
+            placeholder='Email...',
+            style=Pack(padding=10),
+            validators=[validators.Email()]
         )
         self.number_input = toga.NumberInput(style=Pack(padding=10))
         btn_extract = toga.Button(
             'Extract values',
             on_press=self.do_extract_values,
-            style=Pack(flex=1)
+            style=Pack(flex=1),
         )
 
         # Outermost box
@@ -86,6 +99,7 @@ class TextInputApp(toga.App):
                 self.text_input,
                 self.password_input,
                 self.password_content_label,
+                self.email_input,
                 self.number_input,
                 self.text_label,
                 self.password_label,

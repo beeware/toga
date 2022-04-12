@@ -11,7 +11,9 @@ from toga_cocoa.libs import (
     NSTableViewAnimation,
     NSTableViewColumnAutoresizingStyle,
     at,
-    objc_method
+    objc_method,
+    objc_property,
+    SEL
 )
 
 from .base import Widget
@@ -19,6 +21,10 @@ from .internal.cells import TogaIconView
 
 
 class TogaTable(NSTableView):
+
+    interface = objc_property(object, weak=True)
+    impl = objc_property(object, weak=True)
+
     # TableDataSource methods
     @objc_method
     def numberOfRowsInTableView_(self, table) -> int:
@@ -73,6 +79,11 @@ class TogaTable(NSTableView):
             tcv = TogaIconView.alloc().init()
             tcv.identifier = identifier
 
+            # Prevent tcv from being deallocated prematurely when no Python references
+            # are left
+            tcv.retain()
+            tcv.autorelease()
+
         tcv.setText(str(value))
         if icon:
             tcv.setImage(icon.native)
@@ -80,9 +91,14 @@ class TogaTable(NSTableView):
             tcv.setImage(None)
 
         # Keep track of last visible view for row
-        self._impl._view_for_row[data_row] = tcv
+        self.impl._view_for_row[data_row] = tcv
 
         return tcv
+
+    @objc_method
+    def tableView_pasteboardWriterForRow_(self, table, row) -> None:
+        # this seems to be required to prevent issue 21562075 in AppKit
+        return None
 
     # TableDelegate methods
     @objc_method
@@ -93,20 +109,6 @@ class TogaTable(NSTableView):
 
     @objc_method
     def tableViewSelectionDidChange_(self, notification) -> None:
-        selection = []
-        current_index = self.selectedRowIndexes.firstIndex
-        for i in range(self.selectedRowIndexes.count):
-            selection.append(self.interface.data[current_index])
-            current_index = self.selectedRowIndexes.indexGreaterThanIndex(current_index)
-
-        if not self.interface.multiple_select:
-            try:
-                self.interface._selection = selection[0]
-            except IndexError:
-                self.interface._selection = None
-        else:
-            self.interface._selection = selection
-
         if notification.object.selectedRow == -1:
             selected = None
         else:
@@ -115,17 +117,40 @@ class TogaTable(NSTableView):
         if self.interface.on_select:
             self.interface.on_select(self.interface, row=selected)
 
+    # 2021-09-04: Commented out this method because it appears to be a
+    # source of significant slowdown when the table has a lot of data
+    # (10k rows). AFAICT, it's only needed if we want custom row heights
+    # for each row. Since we don't currently support custom row heights,
+    # we're paying the cost for no benefit.
+    # @objc_method
+    # def tableView_heightOfRow_(self, table, row: int) -> float:
+    #     default_row_height = self.rowHeight
+    #     margin = 2
+    #
+    #     # get all views in column
+    #     data_row = self.interface.data[row]
+    #
+    #     heights = [default_row_height]
+    #
+    #     for column in self.tableColumns:
+    #         col_identifier = str(column.identifier)
+    #         value = getattr(data_row, col_identifier, None)
+    #         if isinstance(value, toga.Widget):
+    #             # if the cell value is a widget, use its height
+    #             heights.append(value._impl.native.intrinsicContentSize().height + margin)
+    #
+    #     return max(heights)
+
+    # target methods
     @objc_method
-    def tableView_heightOfRow_(self, table, row: int) -> float:
+    def onDoubleClick_(self, sender) -> None:
+        if self.clickedRow == -1:
+            clicked = None
+        else:
+            clicked = self.interface.data[self.clickedRow]
 
-        min_row_height = self.rowHeight
-        margin = 2
-
-        # get all views in column
-        views = [self.tableView_viewForTableColumn_row_(table, col, row) for col in self.tableColumns]
-
-        max_widget_height = max(view.intrinsicContentSize().height + margin for view in views)
-        return max(min_row_height, max_widget_height)
+        if self.interface.on_double_click:
+            self.interface.on_double_click(self.interface, row=clicked)
 
 
 class Table(Widget):
@@ -143,7 +168,7 @@ class Table(Widget):
 
         self.table = TogaTable.alloc().init()
         self.table.interface = self.interface
-        self.table._impl = self
+        self.table.impl = self
         self.table.columnAutoresizingStyle = NSTableViewColumnAutoresizingStyle.Uniform
         self.table.usesAlternatingRowBackgroundColors = True
         self.table.allowsMultipleSelection = self.interface.multiple_select
@@ -159,6 +184,8 @@ class Table(Widget):
 
         self.table.delegate = self.table
         self.table.dataSource = self.table
+        self.table.target = self.table
+        self.table.doubleAction = SEL('onDoubleClick:')
 
         # Embed the table view in the scroll view
         self.native.documentView = self.table
@@ -187,27 +214,38 @@ class Table(Widget):
             columnIndexes=column_indexes
         )
 
-    def remove(self, item):
-        try:
-            # We can't get the index from self.interface.data because the
-            # row has already been removed. Instead we look up the index
-            # from an associated view.
-            view = self._view_for_row.pop(item)
-            index = self.table.rowForView(view)
-        except KeyError:
-            pass
-        else:
-            indexes = NSIndexSet.indexSetWithIndex(index)
-            self.table.removeRowsAtIndexes(
-                indexes,
-                withAnimation=NSTableViewAnimation.EffectNone
-            )
+    def remove(self, index, item):
+        indexes = NSIndexSet.indexSetWithIndex(index)
+        self.table.removeRowsAtIndexes(
+            indexes,
+            withAnimation=NSTableViewAnimation.EffectNone
+        )
 
     def clear(self):
         self._view_for_row.clear()
         self.table.reloadData()
 
+    def get_selection(self):
+        if self.interface.multiple_select:
+            selection = []
+
+            current_index = self.table.selectedRowIndexes.firstIndex
+            for i in range(self.table.selectedRowIndexes.count):
+                selection.append(self.interface.data[current_index])
+                current_index = self.table.selectedRowIndexes.indexGreaterThanIndex(current_index)
+
+            return selection
+        else:
+            index = self.table.selectedRow
+            if index != -1:
+                return self.interface.data[index]
+            else:
+                return None
+
     def set_on_select(self, handler):
+        pass
+
+    def set_on_double_click(self, handler):
         pass
 
     def scroll_to_row(self, row):
@@ -221,6 +259,7 @@ class Table(Widget):
         column_identifier = at(accessor)
         self.column_identifiers[accessor] = column_identifier
         column = NSTableColumn.alloc().initWithIdentifier(column_identifier)
+        column.minWidth = 16
         self.table.addTableColumn(column)
         self.columns.append(column)
 

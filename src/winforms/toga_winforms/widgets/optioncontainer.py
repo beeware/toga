@@ -50,6 +50,19 @@ class OptionContainer(Widget):
     def get_option_label(self, index):
         return self.native.TabPages[index].Text
 
+    def get_current_tab_index(self):
+        return self.native.SelectedIndex
+
+    def set_current_tab_index(self, current_tab_index):
+        self.native.SelectedIndex = current_tab_index
+
     def winforms_selected(self, sender, event):
         if self.interface.on_select:
-            self.interface.on_select(self.interface)
+            self.interface.on_select(
+                self.interface,
+                option=self.interface.content[self.native.SelectedIndex]
+            )
+
+    def set_font(self, font):
+        if font:
+            self.native.Font = font.bind(self.interface.factory).native

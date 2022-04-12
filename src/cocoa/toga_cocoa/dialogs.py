@@ -1,4 +1,6 @@
 import asyncio
+from pathlib import Path
+
 from .libs import (
     NSAlert,
     NSAlertFirstButtonReturn,
@@ -10,7 +12,8 @@ from .libs import (
     NSOpenPanel,
     NSSavePanel,
     NSScrollView,
-    NSTextView
+    NSTextView,
+    NSURL
 )
 
 
@@ -160,7 +163,7 @@ async def save_file(window, title, suggested_filename, file_types=None):
     return await future
 
 
-async def open_file(window, title, file_types, multiselect):
+async def open_file(window, title, initial_directory, file_types, multiselect):
     """Cocoa open file dialog implementation.
 
     We restrict the panel invocation to only choose files. We also allow
@@ -169,6 +172,7 @@ async def open_file(window, title, file_types, multiselect):
     Args:
         window: The window this dialog belongs to.
         title: Title of the modal.
+        initial_directory: directory where modal shall open with
         file_types: Ignored for now.
         multiselect: Flag to allow multiple file selection.
     Returns:
@@ -179,6 +183,8 @@ async def open_file(window, title, file_types, multiselect):
     # Initialize and configure the panel.
     panel = NSOpenPanel.alloc().init()
     panel.title = title
+    if initial_directory is not None:
+        panel.directoryURL = NSURL.URLWithString(str(Path(initial_directory).as_uri()))
     panel.allowedFileTypes = file_types
     panel.allowsMultipleSelection = multiselect
     panel.canChooseDirectories = False
@@ -205,12 +211,13 @@ async def open_file(window, title, file_types, multiselect):
     return await future
 
 
-async def select_folder(window, title, multiselect):
+async def select_folder(window, title, initial_directory, multiselect):
     """Cocoa select folder dialog implementation.
 
     Args:
         window: Window dialog belongs to.
         title: Title of the dialog.
+        initial_directory: directory where modal shall open with
         multiselect: Flag to allow multiple folder selection.
     Returns:
         A list of absolute paths(str) if multiselect is True, a single path(str)
@@ -218,7 +225,8 @@ async def select_folder(window, title, multiselect):
     """
     panel = NSOpenPanel.alloc().init()
     panel.title = title
-
+    if initial_directory is not None:
+        panel.directoryURL = NSURL.URLWithString(str(Path(initial_directory).as_uri()))
     panel.canChooseFiles = False
     panel.canChooseDirectories = True
     panel.resolvesAliases = True
@@ -229,7 +237,6 @@ async def select_folder(window, title, multiselect):
     future = loop.create_future()
 
     def completion_handler(r: int) -> None:
-
         # Ensure regardless of the result, return types remain the same so as to not
         # require type checking logic in user code.
         # Convert types from 'ObjCStrInstance' to 'str'.

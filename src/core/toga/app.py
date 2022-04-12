@@ -1,6 +1,9 @@
 import signal
 import sys
+import warnings
+import webbrowser
 from builtins import id as identifier
+from collections.abc import MutableSet
 from email.message import Message
 
 from toga.command import CommandSet
@@ -16,17 +19,75 @@ except ImportError:
     import importlib_metadata
 
 
+# Make sure deprecation warnings are shown by default
+warnings.filterwarnings("default", category=DeprecationWarning)
+
+
+class WindowSet(MutableSet):
+    """
+    This class represents windows of a toga app. A window can be added to app
+    by using `app.windows.add(toga.Window(...))` or `app.windows += toga.Window(...)`
+    notations. Adding a window to app automatically sets `window.app` property to the app.
+    """
+
+    def __init__(self, app, iterable=None):
+        self.app = app
+        self.elements = set() if iterable is None else set(iterable)
+
+    def add(self, window: Window) -> None:
+        if not isinstance(window, Window):
+            raise TypeError("Toga app.windows can only add objects of toga.Window type")
+        # Silently not add if duplicate
+        if window not in self.elements:
+            self.elements.add(window)
+            window.app = self.app
+
+    def discard(self, window: Window) -> None:
+        if not isinstance(window, Window):
+            raise TypeError("Toga app.windows can only discard an object of a toga.Window type")
+        if window not in self.elements:
+            raise AttributeError("The window you are trying to remove is not associated with this app")
+        self.elements.remove(window)
+
+    def __iadd__(self, window):
+        self.add(window)
+        return self
+
+    def __isub__(self, other):
+        self.discard(other)
+        return self
+
+    def __iter__(self):
+        return iter(self.elements)
+
+    def __contains__(self, value):
+        return value in self.elements
+
+    def __len__(self):
+        return len(self.elements)
+
+
 class MainWindow(Window):
     _WINDOW_CLASS = 'MainWindow'
 
     def __init__(self, id=None, title=None, position=(100, 100), size=(640, 480),
                  toolbar=None, resizeable=True, minimizable=True,
-                 factory=None):
+                 factory=None, on_close=None):
         super().__init__(
             id=id, title=title, position=position, size=size, toolbar=toolbar,
             resizeable=resizeable, closeable=True, minimizable=minimizable,
-            factory=factory
+            factory=factory, on_close=on_close,
         )
+
+    @Window.on_close.setter
+    def on_close(self, handler):
+        """Raise an exception: on_exit for the app should be used instead of
+        on_close on main window.
+
+        Args:
+            handler (:obj:`callable`): The handler passed.
+        """
+        raise AttributeError("Cannot set on_close handler for the main window. Use the app on_exit handler instead")
 
 
 class App:
@@ -77,6 +138,8 @@ class App:
     :param startup: The callback method before starting the app, typically to
         add the components. Must be a ``callable`` that expects a single
         argument of :class:`toga.App`.
+    :param windows: An iterable with objects of :class:`toga.Window` that will
+        be the app's secondary windows.
     :param factory: A python module that is capable to return a implementation
         of this class with the same name. (optional & normally not needed)
     """
@@ -94,6 +157,7 @@ class App:
         home_page=None,
         description=None,
         startup=None,
+        windows=None,
         on_exit=None,
         factory=None,
     ):
@@ -168,7 +232,7 @@ class App:
         if app_id:
             self._app_id = app_id
         else:
-            self._app_id = self.metadata['App-ID']
+            self._app_id = self.metadata.get('App-ID', None)
 
         if self._app_id is None:
             raise RuntimeError('Toga application must have an App ID')
@@ -177,29 +241,29 @@ class App:
         # the module metadata.
         if author:
             self._author = author
-        elif self.metadata['Author']:
-            self._author = self.metadata['Author']
+        else:
+            self._author = self.metadata.get('Author', None)
 
         # If a version has been provided, use it; otherwise, look to
         # the module metadata.
         if version:
             self._version = version
-        elif self.metadata['Version']:
-            self._version = self.metadata['Version']
+        else:
+            self._version = self.metadata.get('Version', None)
 
         # If a home_page has been provided, use it; otherwise, look to
         # the module metadata.
         if home_page:
             self._home_page = home_page
-        elif self.metadata['Home-page']:
-            self._home_page = self.metadata['home_page']
+        else:
+            self._home_page = self.metadata.get('Home-page', None)
 
         # If a description has been provided, use it; otherwise, look to
         # the module metadata.
         if description:
             self._description = description
-        elif self.metadata['description']:
-            self._description = self.metadata['Summary']
+        else:
+            self._description = self.metadata.get('Summary', None)
 
         # Set the application DOM ID; create an ID if one hasn't been provided.
         self._id = id if id else identifier(self)
@@ -220,6 +284,11 @@ class App:
         self._startup_method = startup
 
         self._main_window = None
+        # In this world, TogaApp.windows would be a set-like object
+        # that has add/remove methods (including support for
+        # the + and += operators); adding a window to TogaApp.windows
+        # would assign the window to the app.
+        self.windows = WindowSet(self, windows)
         self._on_exit = None
 
         self._full_screen_windows = None
@@ -349,7 +418,7 @@ class App:
     @property
     def main_window(self):
         """
-        The main windows for the app.
+        The main window for the app.
 
         :returns: The main Window of the app.
         """
@@ -358,7 +427,7 @@ class App:
     @main_window.setter
     def main_window(self, window):
         self._main_window = window
-        window.app = self
+        self.windows += window
         self._impl.set_main_window(window)
 
     @property
@@ -406,7 +475,7 @@ class App:
         self._impl.hide_cursor()
 
     def startup(self):
-        """ Create and show the main window for the application
+        """Create and show the main window for the application
         """
         self.main_window = MainWindow(title=self.formal_name, factory=self.factory)
 
@@ -414,6 +483,23 @@ class App:
             self.main_window.content = self._startup_method(self)
 
         self.main_window.show()
+
+    def about(self):
+        """Display the About dialog for the app.
+
+        Default implementation shows a platform-appropriate about dialog
+        using app metadata. Override if you want to display a custom About
+        dialog.
+        """
+        self._impl.show_about_dialog()
+
+    def visit_homepage(self):
+        """Open the application's homepage in the default browser.
+
+        If the application metadata doesn't define a homepage, this is a no-op.
+        """
+        if self.home_page is not None:
+            webbrowser.open(self.home_page)
 
     def main_loop(self):
         """ Invoke the application to handle user input.
@@ -427,7 +513,15 @@ class App:
     def exit(self):
         """ Quit the application gracefully.
         """
-        self._impl.exit()
+        if self.on_exit:
+            should_exit = self.on_exit(self)
+        else:
+            should_exit = True
+
+        if should_exit:
+            self._impl.exit()
+
+        return should_exit
 
     @property
     def on_exit(self):

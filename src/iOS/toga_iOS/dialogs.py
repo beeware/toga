@@ -1,4 +1,4 @@
-from rubicon.objc import SEL, Block, objc_method
+from rubicon.objc import SEL, Block, objc_method, objc_property
 from rubicon.objc.runtime import objc_id
 
 from toga_iOS.libs import (
@@ -16,6 +16,9 @@ from toga_iOS.libs import (
 
 
 class TogaDialog(UIViewController):
+
+    interface = objc_property(object, weak=True)
+
     @objc_method
     def loadView(self) -> None:
         self.title = self.interface.title
@@ -112,7 +115,7 @@ class TogaModalDialog:
         )
 
         while self.response is None:
-            NSRunLoop.currentRunLoop().runUntilDate(NSDate.alloc().init())
+            NSRunLoop.currentRunLoop.runUntilDate(NSDate.alloc().init())
 
         return self.response
 

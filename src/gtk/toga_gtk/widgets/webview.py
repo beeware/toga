@@ -1,12 +1,13 @@
+from travertino.size import at_least
+
 from ..keys import toga_key
-from ..libs import Gtk, WebKit2
+from ..libs import WebKit2
 from .base import Widget
 
 
 class WebView(Widget):
     """ GTK WebView implementation.
 
-    TODO: WebView is not displaying anything when setting a url.
     """
     def create(self):
         if WebKit2 is None:
@@ -14,20 +15,11 @@ class WebView(Widget):
                 "Import 'from gi.repository import WebKit' failed;" +
                 " may need to install gir1.2-webkit2-4.0 or gir1.2-webkit2-3.0.")
 
-        self.native = Gtk.ScrolledWindow()
-        self.native.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
+        self.native = WebKit2.WebView()
         self.native.interface = self.interface
 
-        self.webview = WebKit2.WebView()
-
-        self.native.add(self.webview)
-        self.native.set_min_content_width(200)
-        self.native.set_min_content_height(200)
-
-        self.webview.connect('key-press-event', self.gtk_on_key)
+        self.native.connect('key-press-event', self.gtk_on_key)
         self._last_key_time = 0
-
-        # self.native.connect('show', lambda event: self.rehint())
 
     def set_on_key_down(self, handler):
         pass
@@ -46,15 +38,14 @@ class WebView(Widget):
 
     def set_url(self, value):
         if value:
-            self.webview.load_uri(self.interface.url)
+            self.native.load_uri(self.interface.url)
 
     def set_user_agent(self, value):
-        self.interface.factory.not_implemented('Window.info_dialog()')
-        # user_agent = value if value else "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.101 Safari/537.36"  # NOQA
-        # self.native.user_agent = user_agent
+        # replace user agent of webview (webview has own one)
+        self.native.get_settings().props.user_agent = value
 
     def set_content(self, root_url, content):
-        self.webview.load_html(content, root_url)
+        self.native.load_html(content, root_url)
 
     def get_dom(self):
         self.interface.factory.not_implemented('WebView.get_dom()')
@@ -77,7 +68,7 @@ class WebView(Widget):
 
         # Invoke the javascript method, with a callback that will set
         # the future when a result is available.
-        self.webview.run_javascript(javascript, None, gtk_js_finished)
+        self.native.run_javascript(javascript, None, gtk_js_finished)
 
         # wait for the future, and return the result
         await future
@@ -85,4 +76,8 @@ class WebView(Widget):
 
     def invoke_javascript(self, javascript):
         # Invoke the javascript without a callback.
-        self.webview.run_javascript(javascript, None, None)
+        self.native.run_javascript(javascript, None, None)
+
+    def rehint(self):
+        self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
+        self.interface.intrinsic.height = at_least(self.interface.MIN_HEIGHT)

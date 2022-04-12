@@ -4,7 +4,9 @@ from .base import Widget
 
 
 class Switch(Widget):
-    """ Switch widget, a clickable button with two stable states, True (on, checked) and False (off, unchecked)
+    """
+    Switch widget, a clickable button with two stable states, True (on, checked)
+        and False (off, unchecked).
 
     Args:
         label (str): Text to be shown next to the switch.
@@ -18,7 +20,16 @@ class Switch(Widget):
             implementation of this class with the same name. (optional & normally not needed)
     """
 
-    def __init__(self, label, id=None, style=None, on_toggle=None, is_on=False, enabled=True, factory=None):
+    def __init__(
+            self,
+            label,
+            id=None,
+            style=None,
+            on_toggle=None,
+            is_on=False,
+            enabled=True,
+            factory=None,
+    ):
         super().__init__(id=id, style=style, factory=factory)
 
         self._impl = self.factory.Switch(interface=self)
@@ -71,7 +82,12 @@ class Switch(Widget):
 
     @is_on.setter
     def is_on(self, value):
-        if value is True:
-            self._impl.set_is_on(True)
-        elif value is False:
-            self._impl.set_is_on(False)
+        if not isinstance(value, bool):
+            raise ValueError("Switch.is_on can only be set to true or false")
+        self._impl.set_is_on(value)
+
+    def toggle(self):
+        """Reverse the value of `Slider.is_on` property from true to false and
+        vice versa.
+        """
+        self.is_on = not self.is_on

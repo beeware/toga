@@ -77,3 +77,7 @@ class NumberInputTests(TestCase):
         value = 5
         nr_input = toga.NumberInput(default=value, factory=toga_dummy.factory)
         self.assertEqual(nr_input.value, value)
+
+    def test_focus(self):
+        self.nr_input.focus()
+        self.assertActionPerformed(self.nr_input, "focus")

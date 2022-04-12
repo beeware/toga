@@ -360,6 +360,12 @@ class TestCase(unittest.TestCase):
         except AttributeError:
             self.fail('Widget {} is not a logged object'.format(_widget))
 
+    def assertValueNotSet(self, _widget, attr):
+        self.assertTrue(
+            attr not in _widget._impl._sets,
+            msg="Expected {attr} not to be set, but it was.".format(attr=attr)
+        )
+
     def assertActionNotPerformed(self, _widget, action):
         """Assert that the named action was *not* performed by a widget.
 

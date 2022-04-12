@@ -10,7 +10,9 @@ class DetailedList(Widget):
 
     Args:
         id (str): An identifier for this widget.
-        data (list of `str`): List of strings which to display on the widget.
+        data (list of `dict`): List of dictionaries with required 'icon', 'title', and
+            'subtitle' keys as well as optional custom keys to store additional
+            info like 'pk' for a database primary key (think django ORM)
         on_delete (``callable``): Function that is invoked on row deletion.
         on_refresh (``callable``): Function that is invoked on user initialised refresh.
         on_select (``callable``): Function that is invoked on row selection.
@@ -21,10 +23,20 @@ class DetailedList(Widget):
 
     Examples:
         >>> import toga
-        >>> def selection_handler(widget, selection):
-        >>>     print('Row {} of widget {} was selected.'.format(selection, widget))
+        >>> def selection_handler(widget, row):
+        >>>     print('Row {} of widget {} was selected.'.format(row, widget))
         >>>
-        >>> dlist = toga.DetailedList(data=['Item 0', 'Item 1', 'Item 2'], on_select=selection_handler)
+        >>> dlist = toga.DetailedList(
+        ...     data=[
+        ...         {
+        ...             'icon': '',
+        ...             'title': 'John Doe',
+        ...             'subtitle': 'Employee of the Month',
+        ...             'pk': 100
+        ...          }
+        ...      ],
+        ...      on_select=selection_handler
+        ... )
     """
 
     MIN_HEIGHT = 100
@@ -42,6 +54,10 @@ class DetailedList(Widget):
     ):
         super().__init__(id=id, style=style, factory=factory)
         self._data = None
+        self._on_delete = None
+        self._on_refresh = None
+        # at least _on_select must be defined before setting data for the Gtk impl
+        self._on_select = None
         self._impl = self.factory.DetailedList(interface=self)
 
         self.data = data
@@ -51,8 +67,8 @@ class DetailedList(Widget):
 
     @property
     def data(self):
-        """ The data source of the widget. It accepts table data
-        in the form of ``list``, ``tuple``, or :obj:`ListSource`
+        """ The data source of the widget. It accepts data
+        in the form of ``list`` of ``dict`` or :obj:`ListSource`
 
         Returns:
             Returns a (:obj:`ListSource`).
@@ -125,6 +141,14 @@ class DetailedList(Widget):
     def on_refresh(self, handler: callable):
         self._on_refresh = wrapped_handler(self, handler, self._impl.after_on_refresh)
         self._impl.set_on_refresh(self._on_refresh)
+
+    @property
+    def selection(self):
+        """The current selection.
+
+        A value of None indicates no selection.
+        """
+        return self._impl.get_selection()
 
     @property
     def on_select(self):

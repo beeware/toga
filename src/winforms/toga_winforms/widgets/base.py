@@ -8,13 +8,16 @@ class Widget:
 
         self._container = None
         self.native = None
+        self.viewport = None
         self.create()
         self.interface.style.reapply()
 
     def set_app(self, app):
+        # No special handling required
         pass
 
     def set_window(self, window):
+        # No special handling required
         pass
 
     @property
@@ -41,9 +44,21 @@ class Widget:
 
         self.rehint()
 
+    @property
+    def viewport(self):
+        return self._viewport
+
+    @viewport.setter
+    def viewport(self, viewport):
+        self._viewport = viewport
+
     def set_enabled(self, value):
         if self.native:
             self.native.Enabled = self.interface.enabled
+
+    def focus(self):
+        if self.native:
+            self.native.Focus()
 
     # APPLICATOR
 
@@ -86,8 +101,16 @@ class Widget:
     # INTERFACE
 
     def add_child(self, child):
+        if self.viewport:
+            # we are the the top level container
+            child.container = self
+        else:
+            child.container = self.container
+
+    def insert_child(self, index, child):
         if self.container:
             child.container = self.container
+            self.container.native.Controls.SetChildIndex(child.native, index)
 
     def remove_child(self, child):
         child.container = None

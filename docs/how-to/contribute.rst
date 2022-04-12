@@ -4,7 +4,13 @@
 How to contribute to Toga
 =========================
 
-If you experience problems with Toga, `log them on GitHub`_. If you want to contribute code, please `fork the code`_ and `submit a pull request`_.
+If you experience problems with Toga, `log them on GitHub`_. If you want to
+contribute code, please `fork the code`_ and `submit a pull request`_.  You may
+also find `this presentation by BeeWare team member Dan Yeaw
+<https://youtu.be/sWt_sEZUiY8>`__ helpful. This talk gives an architectural
+overview of Toga, as well as providing a guide to the process of adding new
+widgets.  
+
 
 .. _log them on Github: https://github.com/beeware/toga/issues
 .. _fork the code: https://github.com/beeware/toga
@@ -394,7 +400,7 @@ One error you might see...
 
 When you're running these tests - especially when you submit your PR, and the
 tests run on our continous integration (CI) server - it's possible you might get
-and error that reads::
+an error that reads::
 
     ModuleNotFoundError: No module named 'toga_gtk'.
 

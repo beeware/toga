@@ -31,23 +31,29 @@ class GtkViewport:
 class Window:
     _IMPL_CLASS = Gtk.Window
 
-    def __init__(self, interface):
+    def __init__(self, interface, title, position, size):
         self.interface = interface
         self.interface._impl = self
-        self.create()
 
-    def create(self):
+        self.layout = None
+
         self.native = self._IMPL_CLASS()
         self.native._impl = self
 
-        self.native.connect("delete-event", self.gtk_on_close)
-        self.native.set_default_size(self.interface.size[0], self.interface.size[1])
+        self.native.connect("delete-event", self.gtk_delete_event)
+        self.native.set_default_size(size[0], size[1])
+
+        self.set_title(title)
+        self.set_position(position)
 
         # Set the window deletable/closeable.
         self.native.set_deletable(self.interface.closeable)
 
         self.toolbar_native = None
         self.toolbar_items = None
+
+    def get_title(self):
+        return self.native.get_title()
 
     def set_title(self, title):
         self.native.set_title(title)
@@ -86,7 +92,11 @@ class Window:
     def set_content(self, widget):
         # Construct the top-level layout, and set the window's view to
         # the be the widget's native object.
-        self.layout = Gtk.VBox()
+        # Alaway avoid using deprecated widgets and methods.
+        if self.layout:
+            self.native.remove(self.layout)
+
+        self.layout = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
 
         if self.toolbar_native:
             self.layout.pack_start(self.toolbar_native, False, False, 0)
@@ -95,7 +105,7 @@ class Window:
         self.native.add(self.layout)
 
         # Make the window sensitive to size changes
-        widget.native.connect('size-allocate', self.on_size_allocate)
+        widget.native.connect('size-allocate', self.gtk_size_allocate)
 
         # Set the widget's viewport to be based on the window's content.
         widget.viewport = GtkViewport(widget.native)
@@ -117,25 +127,45 @@ class Window:
         self.interface.content._impl.min_width = self.interface.content.layout.width
         self.interface.content._impl.min_height = self.interface.content.layout.height
 
-    def gtk_on_close(self, widget, data):
+    def gtk_delete_event(self, widget, data):
         if self.interface.on_close:
-            self.interface.on_close()
+            should_close = self.interface.on_close(self.interface.app)
+        else:
+            should_close = True
 
-    def on_close(self, *args):
+        if should_close:
+            self.interface.app.windows -= self.interface
+
+        # Return value of the GTK on_close handler indicates
+        # whether the event has been fully handled. Returning
+        # False indicates the event handling is *not* complete,
+        # so further event processing (including actually
+        # closing the window) should be performed.
+        return not should_close
+
+    def set_on_close(self, handler):
         pass
 
-    def on_size_allocate(self, widget, allocation):
+    def gtk_size_allocate(self, widget, allocation):
         #  ("ON WINDOW SIZE ALLOCATION", allocation.width, allocation.height)
         pass
 
     def close(self):
         self.native.close()
 
+    def get_position(self):
+        pos = self.native.get_position()
+        return (pos.root_x, pos.root_y)
+
     def set_position(self, position):
-        pass
+        self.native.move(position[0], position[1])
+
+    def get_size(self):
+        size = self.native.get_size()
+        return (size.width, size.height)
 
     def set_size(self, size):
-        pass
+        self.native.resize(size[0], size[1])
 
     def set_full_screen(self, is_full_screen):
         if is_full_screen:

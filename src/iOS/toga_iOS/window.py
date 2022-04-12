@@ -30,14 +30,13 @@ class iOSViewport:
 
 
 class Window:
-    def __init__(self, interface):
+    def __init__(self, interface, title, position, size):
         self.interface = interface
         self.interface._impl = self
-        self.create()
 
-    def create(self):
         self.native = UIWindow.alloc().initWithFrame(UIScreen.mainScreen.bounds)
-        self.native.interface = self.interface
+
+        self.set_title(title)
 
     def set_content(self, widget):
         widget.viewport = iOSViewport(self.native)
@@ -54,13 +53,25 @@ class Window:
         self.native.rootViewController = self.controller
         self.controller.view = widget.native
 
+    def get_title(self):
+        self.interface.factory.not_implemented("Window.get_title()")
+        return "?"
+
     def set_title(self, title):
-        pass
+        self.interface.factory.not_implemented("Window.set_title()")
+
+    def get_position(self):
+        return (0, 0)
 
     def set_position(self, position):
+        # Does nothing on mobile
         pass
 
+    def get_size(self):
+        return (UIScreen.mainScreen.bounds.size.width, UIScreen.mainScreen.bounds.size.height)
+
     def set_size(self, size):
+        # Does nothing on mobile
         pass
 
     def set_app(self, app):

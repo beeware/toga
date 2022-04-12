@@ -2,25 +2,36 @@ from toga_cocoa.libs import NSObject, NSSize, NSSplitView, objc_method
 from toga_cocoa.window import CocoaViewport
 
 from .base import Widget
+from ..libs import objc_property
 
 
 class TogaSplitViewDelegate(NSObject):
+
+    interface = objc_property(object, weak=True)
+    impl = objc_property(object, weak=True)
+
     @objc_method
     def splitView_resizeSubviewsWithOldSize_(self, view, size: NSSize) -> None:
-        if size.width and size.height:
-            # count = len(self.interface.content)
+        # Turn all the weights into a fraction of 1.0
+        total = sum(self.interface._weight)
+        self.interface._weight = [
+            weight / total
+            for weight in self.interface._weight
+        ]
 
-            # Turn all the weights into a fraction of 1.0
-            total = sum(self.interface._weight)
-            self.interface._weight = [
-                weight / total
-                for weight in self.interface._weight
-            ]
-
-            # Set the splitter positions based on the new weight fractions.
-            for i, weight in enumerate(self.interface._weight[:-1]):
-                view.setPosition(size.width * self.interface._weight[i], ofDividerAtIndex=i)
+        # Mark the subviews as needing adjustment
         view.adjustSubviews()
+
+        # Set the splitter positions based on the new weight fractions.
+        cumulative = 0.0
+        if self.interface.direction == self.interface.VERTICAL:
+            for i, weight in enumerate(self.interface._weight[:-1]):
+                cumulative += weight
+                view.setPosition(view.frame.size.width * cumulative, ofDividerAtIndex=i)
+        else:
+            for i, weight in enumerate(self.interface._weight[:-1]):
+                cumulative += weight
+                view.setPosition(view.frame.size.height * cumulative, ofDividerAtIndex=i)
 
     @objc_method
     def splitViewDidResizeSubviews_(self, notification) -> None:
@@ -30,7 +41,7 @@ class TogaSplitViewDelegate(NSObject):
         # as the splitview may not be the root container.
         if self.interface.window and self.interface.window._impl.native.isVisible:
             self.interface.refresh()
-            self._impl.on_resize()
+            self.impl.on_resize()
 
 
 class SplitContainer(Widget):
@@ -44,13 +55,14 @@ class SplitContainer(Widget):
 
         self.delegate = TogaSplitViewDelegate.alloc().init()
         self.delegate.interface = self.interface
-        self.delegate._impl = self
+        self.delegate.impl = self
         self.native.delegate = self.delegate
 
         # Add the layout constraints
         self.add_constraints()
 
-    def add_content(self, position, widget):
+    def add_content(self, position, widget, flex):
+        # TODO: add flex option to the implementation
         widget.viewport = CocoaViewport(widget.native)
 
         for child in widget.interface.children:

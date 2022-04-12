@@ -1,0 +1,7 @@
+[run]
+source = src/core/toga
+omit =
+    src/core/toga/**/__init__.py
+
+[report]
+show_missing = True

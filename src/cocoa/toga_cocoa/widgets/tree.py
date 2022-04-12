@@ -1,3 +1,4 @@
+from ctypes import c_void_p
 from travertino.size import at_least
 
 import toga
@@ -14,7 +15,9 @@ from toga_cocoa.libs import (  # NSSortDescriptor,
     NSTableViewColumnAutoresizingStyle,
     at,
     objc_method,
-    send_super
+    objc_property,
+    send_super,
+    SEL
 )
 from toga_cocoa.widgets.base import Widget
 from toga_cocoa.widgets.internal.cells import TogaIconView
@@ -22,6 +25,10 @@ from toga_cocoa.widgets.internal.data import TogaData
 
 
 class TogaTree(NSOutlineView):
+
+    interface = objc_property(object, weak=True)
+    impl = objc_property(object, weak=True)
+
     # OutlineViewDataSource methods
     @objc_method
     def outlineView_child_ofItem_(self, tree, child: int, item):
@@ -65,7 +72,8 @@ class TogaTree(NSOutlineView):
 
     @objc_method
     def outlineView_viewForTableColumn_item_(self, tree, column, item):
-        col_identifier = self._impl.column_identifiers[id(column.identifier)]
+
+        col_identifier = str(column.identifier)
 
         try:
             value = getattr(item.attrs['node'], col_identifier)
@@ -107,6 +115,11 @@ class TogaTree(NSOutlineView):
             tcv = TogaIconView.alloc().initWithFrame_(CGRectMake(0, 0, column.width, 16))
             tcv.identifier = identifier
 
+            # Prevent tcv from being deallocated prematurely when no Python references
+            # are left
+            tcv.retain()
+            tcv.autorelease()
+
         tcv.setText(str(value))
         if icon:
             tcv.setImage(icon.native)
@@ -118,16 +131,26 @@ class TogaTree(NSOutlineView):
     @objc_method
     def outlineView_heightOfRowByItem_(self, tree, item) -> float:
 
-        min_row_height = self.rowHeight
+        default_row_height = self.rowHeight
 
         if item is self:
-            return min_row_height
+            return default_row_height
 
-        # get all views in column
-        views = [self.outlineView_viewForTableColumn_item_(tree, col, item) for col in self.tableColumns]
+        heights = [default_row_height]
 
-        max_widget_height = max(view.intrinsicContentSize().height for view in views)
-        return max(min_row_height, max_widget_height)
+        for column in self.tableColumns:
+            value = getattr(item.attrs['node'], str(column.identifier))
+
+            if isinstance(value, toga.Widget):
+                # if the cell value is a widget, use its height
+                heights.append(value._impl.native.intrinsicContentSize().height)
+
+        return max(heights)
+
+    @objc_method
+    def outlineView_pasteboardWriterForItem_(self, tree, item) -> None:
+        # this seems to be required to prevent issue 21562075 in AppKit
+        return None
 
     # @objc_method
     # def outlineView_sortDescriptorsDidChange_(self, tableView, oldDescriptors) -> None:
@@ -150,26 +173,12 @@ class TogaTree(NSOutlineView):
             if self.interface.multiple_select:
                 self.selectAll(self)
         else:
-            # forawrd call to super
-            send_super(__class__, self, 'keyDown:', event)
+            # forward call to super
+            send_super(__class__, self, 'keyDown:', event, argtypes=[c_void_p])
 
     # OutlineViewDelegate methods
     @objc_method
     def outlineViewSelectionDidChange_(self, notification) -> None:
-        selection = []
-        current_index = self.selectedRowIndexes.firstIndex
-        for i in range(self.selectedRowIndexes.count):
-            selection.append(self.itemAtRow(current_index).attrs['node'])
-            current_index = self.selectedRowIndexes.indexGreaterThanIndex(current_index)
-
-        if not self.interface.multiple_select:
-            try:
-                self.interface._selection = selection[0]
-            except IndexError:
-                self.interface._selection = None
-        else:
-            self.interface._selection = selection
-
         if notification.object.selectedRow == -1:
             selected = None
         else:
@@ -177,6 +186,17 @@ class TogaTree(NSOutlineView):
 
         if self.interface.on_select:
             self.interface.on_select(self.interface, node=selected)
+
+    # target methods
+    @objc_method
+    def onDoubleClick_(self, sender) -> None:
+        if self.clickedRow == -1:
+            node = None
+        else:
+            node = self.itemAtRow(self.clickedRow).attrs['node']
+
+        if self.interface.on_select:
+            self.interface.on_double_click(self.interface, node=node)
 
 
 class Tree(Widget):
@@ -192,7 +212,7 @@ class Tree(Widget):
         # Create the Tree widget
         self.tree = TogaTree.alloc().init()
         self.tree.interface = self.interface
-        self.tree._impl = self
+        self.tree.impl = self
         self.tree.columnAutoresizingStyle = NSTableViewColumnAutoresizingStyle.Uniform
         self.tree.usesAlternatingRowBackgroundColors = True
         self.tree.allowsMultipleSelection = self.interface.multiple_select
@@ -209,7 +229,7 @@ class Tree(Widget):
             self.column_identifiers[id(column_identifier)] = accessor
             column = NSTableColumn.alloc().initWithIdentifier(column_identifier)
             # column.editable = False
-            column.midWidth = 100
+            column.minWidth = 16
             # if self.interface.sorting:
             #     sort_descriptor = NSSortDescriptor.sortDescriptorWithKey(column_identifier, ascending=True)
             #     column.sortDescriptorPrototype = sort_descriptor
@@ -223,6 +243,8 @@ class Tree(Widget):
 
         self.tree.delegate = self.tree
         self.tree.dataSource = self.tree
+        self.tree.target = self.tree
+        self.tree.doubleAction = SEL('onDoubleClick:')
 
         # Embed the tree view in the scroll view
         self.native.documentView = self.tree
@@ -234,7 +256,6 @@ class Tree(Widget):
         self.tree.reloadData()
 
     def insert(self, parent, index, item):
-
         # set parent = None if inserting to the root item
         index_set = NSIndexSet.indexSetWithIndex(index)
         if parent is self.interface.data:
@@ -254,7 +275,7 @@ class Tree(Widget):
         except AttributeError:
             pass
 
-    def remove(self, item):
+    def remove(self, parent, index, item):
         try:
             index = self.tree.childIndexForItem(item._impl)
         except AttributeError:
@@ -271,7 +292,27 @@ class Tree(Widget):
     def clear(self):
         self.tree.reloadData()
 
+    def get_selection(self):
+        if self.interface.multiple_select:
+            selection = []
+
+            current_index = self.tree.selectedRowIndexes.firstIndex
+            for i in range(self.tree.selectedRowIndexes.count):
+                selection.append(self.tree.itemAtRow(current_index).attrs['node'])
+                current_index = self.tree.selectedRowIndexes.indexGreaterThanIndex(current_index)
+
+            return selection
+        else:
+            index = self.tree.selectedRow
+            if index != -1:
+                return self.tree.itemAtRow(index).attrs['node']
+            else:
+                return None
+
     def set_on_select(self, handler):
+        pass
+
+    def set_on_double_click(self, handler):
         pass
 
     def rehint(self):

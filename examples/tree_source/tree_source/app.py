@@ -1,3 +1,6 @@
+import os
+import subprocess
+import platform
 from datetime import datetime
 from pathlib import Path
 
@@ -22,7 +25,7 @@ class LoadingFailedNode:
     """A node to represent failed loading of children"""
 
     def __init__(self, parent):
-        self.parent = parent
+        self._parent = parent
         self.children = []
         self.name = 'loading failed'
         self.date_modified = ''
@@ -44,8 +47,7 @@ class Node:
 
     def __init__(self, path, parent):
         super().__init__()
-
-        self.parent = parent
+        self._parent = parent
         self._children = []
 
         self.path = path
@@ -55,6 +57,9 @@ class Node:
         else:
             self._icon = toga.Icon('resources/folder')
         self._did_start_loading = False
+
+    def __repr__(self):
+        return "<Node {0}>".format(self.path)
 
     # Methods required for the data source interface
     def __len__(self):
@@ -94,13 +99,16 @@ class Node:
         except OSError:
             self._children = [LoadingFailedNode(self)]
 
+    def index(self, node):
+        if node._parent:
+            return node._parent._children.index(node)
+        else:
+            return self.children.index(node)
+
 
 class FileSystemSource(Node, Source):
     def __init__(self, path):
-        super().__init__(path, parent=self)
-        self.path = path
-        self._parent = None
-        self._children = []
+        super().__init__(path, parent=None)
 
 
 class ExampleTreeSourceApp(toga.App):
@@ -112,13 +120,26 @@ class ExampleTreeSourceApp(toga.App):
         # If you iterate over widget.selection, you can get the names and the
         # paths of everything selected (if multiple_select is enabled.)
         # filepaths = [node.path for node in widget.selection]
-        files = len(widget.selection)
+        if isinstance(widget.selection, list):
+            files = len(widget.selection)
+        else:
+            files = 0 if widget.selection is None else 1
         if files == 0:
             self.label.text = 'A view of the current directory!'
         elif files == 1:
             self.label.text = 'You selected {0} item'.format(files)
         else:
             self.label.text = 'You selected {0} items'.format(files)
+
+    def double_click_handler(self, widget, node):
+        # open the file or folder in the platform's default app
+        self.label.text = 'You started {0}'.format(node.path)
+        if platform.system() == 'Darwin':
+            subprocess.call(('open', node.path))
+        elif platform.system() == 'Windows':
+            os.startfile(node.path)
+        else:
+            subprocess.call(('xdg-open', node.path))
 
     def startup(self):
         # Set up main window
@@ -132,6 +153,7 @@ class ExampleTreeSourceApp(toga.App):
             style=Pack(flex=1),
             multiple_select=True,
             on_select=self.selection_handler,
+            on_double_click=self.double_click_handler
         )
         self.label = toga.Label('A view of the current directory!', style=Pack(padding=10))
 

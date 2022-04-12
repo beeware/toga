@@ -8,19 +8,89 @@ class Group:
     Args:
         label:
         order:
+        parent:
     """
-    def __init__(self, label, order=None):
+    def __init__(self, label, order=None, section=None, parent=None):
         self.label = label
         self.order = order if order else 0
+        if parent is None and section is not None:
+            raise ValueError("Section cannot be set without parent group")
+        self.section = section if section else 0
+
+        # First initialization needed for later
+        self._parent = None
+        self.parent = parent
+
+    @property
+    def parent(self):
+        return self._parent
+
+    @parent.setter
+    def parent(self, parent):
+        if parent is None:
+            self._parent = None
+            self._root = self
+            return
+        if parent == self or self.is_parent_of(parent):
+            error_message = (
+                'Cannot set {} to be a parent of {} '
+                'because it causes a cyclic parenting.').format(
+                parent.label, self.label
+            )
+            raise ValueError(error_message)
+        self._parent = parent
+        self._root = parent.root
+
+    @property
+    def root(self):
+        return self._root
+
+    def is_parent_of(self, child):
+        if child is None:
+            return False
+        if child.parent is None:
+            return False
+        if child.parent == self:
+            return True
+        return self.is_parent_of(child.parent)
+
+    def is_child_of(self, parent):
+        return parent.is_parent_of(self)
+
+    def __hash__(self):
+        return hash(self.key)
 
     def __lt__(self, other):
-        return (
-            self.order < other.order
-            or self.order == other.order and self.label < other.label
-        )
+        return self.key < other.key
+
+    def __gt__(self, other):
+        return other < self
 
     def __eq__(self, other):
-        return self.order == other.order and self.label == other.label
+        if other is None:
+            return False
+        return self.key == other.key
+
+    def __repr__(self):
+        parent_string = "None" if self.parent is None else self.parent.label
+        return "<Group label={} order={} parent={}>".format(
+            self.label, self.order, parent_string
+        )
+
+    @property
+    def key(self):
+        "A unique tuple describing the path to this group"
+        self_tuple = (self.section, self.order, self.label)
+        if self.parent is None:
+            return tuple([self_tuple])
+        return tuple([*self.parent.key, self_tuple])
+
+    @property
+    def path(self):
+        "A list containing the chain of groups that contain this group"
+        if self.parent is None:
+            return [self]
+        return [*self.parent.path, self]
 
 
 Group.APP = Group('*', order=0)
@@ -50,10 +120,13 @@ class Command:
         order: (optional) an integer indicating where a command falls within a
             section. If a Command doesn't have an order, it will be sorted
             alphabetically by label within its section.
+        enabled: whether to enable the command or not.
     """
-    def __init__(self, action, label,
-                 shortcut=None, tooltip=None, icon=None,
-                 group=None, section=None, order=None, factory=None):
+    def __init__(
+        self, action, label,
+        shortcut=None, tooltip=None, icon=None,
+        group=None, section=None, order=None, enabled=True, factory=None,
+    ):
         self.factory = factory
 
         self.action = wrapped_handler(self, action)
@@ -67,9 +140,14 @@ class Command:
         self.section = section if section else 0
         self.order = order if order else 0
 
-        self._enabled = self.action is not None
-
         self._impl = None
+
+        self.enabled = enabled and self.action is not None
+
+    @property
+    def key(self):
+        "A unique tuple describing the path to this command"
+        return tuple([*self.group.key, (self.section, self.order, self.label)])
 
     def bind(self, factory):
         self.factory = factory
@@ -111,13 +189,31 @@ class Command:
         if self._icon and self.factory:
             self._icon.bind(self.factory)
 
+    def __lt__(self, other):
+        return self.key < other.key
 
-GROUP_BREAK = object()
-SECTION_BREAK = object()
+    def __gt__(self, other):
+        return other < self
+
+    def __repr__(self):
+        return "<Command label={} group={} section={} order={}>".format(
+            self.label,
+            self.group,
+            self.section,
+            self.order,
+        )
 
 
-def cmd_sort_key(value):
-    return (value.group, value.section, value.order, value.label)
+class Break:
+    def __init__(self, name):
+        self.name = name
+
+    def __repr__(self):
+        return "<{self.name} break>".format(self=self)
+
+
+GROUP_BREAK = Break('Group')
+SECTION_BREAK = Break('Section')
 
 
 class CommandSet:
@@ -148,7 +244,7 @@ class CommandSet:
 
     def __iter__(self):
         prev_cmd = None
-        for cmd in sorted(self._commands, key=cmd_sort_key):
+        for cmd in sorted(self._commands):
             if prev_cmd:
                 if cmd.group != prev_cmd.group:
                     yield GROUP_BREAK

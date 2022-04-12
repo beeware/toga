@@ -1,13 +1,10 @@
 from toga.constants import LEFT
-
 from travertino.size import at_least
 
-from ..libs.android_widgets import (
-    EditText,
-    Gravity,
-    InputType,
-    TypedValue,
-)
+from ..libs.android.text import InputType
+from ..libs.android.util import TypedValue
+from ..libs.android.view import Gravity
+from ..libs.android.widget import EditText
 from .base import Widget, align
 
 
@@ -41,6 +38,9 @@ class MultilineTextInput(Widget):
 
     def set_value(self, value):
         self.native.setText(value)
+
+    def set_on_change(self, handler):
+        self.interface.factory.not_implemented('MultilineTextInput.set_on_change()')
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)

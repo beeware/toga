@@ -4,7 +4,7 @@ requires = ["briefcase"]
 [tool.briefcase]
 project_name = "Layout Test"
 bundle = "org.beeware"
-version = "0.3.0.dev23"
+version = "0.3.0.dev33"
 url = "https://beeware.org"
 license = "BSD license"
 author = 'Tiberius Yak'
@@ -14,31 +14,35 @@ author_email = "tiberius@beeware.org"
 formal_name = "Layout Test"
 description = "A testing app"
 sources = ['layout']
-requires = []
+requires = [
+    '../../src/core',
+]
 
 
 [tool.briefcase.app.layout.macOS]
 requires = [
-    'toga-cocoa',
+    '../../src/cocoa',
+    'std-nslog>=1.0.0',
 ]
 
 [tool.briefcase.app.layout.linux]
 requires = [
-    'toga-gtk',
+    '../../src/gtk',
 ]
 
 [tool.briefcase.app.layout.windows]
 requires = [
-    'toga-winforms',
+    '../../src/winforms',
 ]
 
 # Mobile deployments
 [tool.briefcase.app.layout.iOS]
 requires = [
-    'toga-iOS',
+    '../../src/iOS',
+    'std-nslog>=1.0.0',
 ]
 
 [tool.briefcase.app.layout.android]
 requires = [
-    'toga-android',
+    '../../src/android',
 ]

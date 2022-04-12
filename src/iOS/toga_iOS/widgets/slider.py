@@ -1,4 +1,4 @@
-from rubicon.objc import SEL, CGSize, objc_method
+from rubicon.objc import SEL, CGSize, objc_method, objc_property
 from travertino.size import at_least
 
 from toga_iOS.libs import UIControlEventValueChanged, UISlider
@@ -6,19 +6,28 @@ from toga_iOS.widgets.base import Widget
 
 
 class TogaSlider(UISlider):
+
+    interface = objc_property(object, weak=True)
+    impl = objc_property(object, weak=True)
+
     @objc_method
     def onSlide_(self, obj) -> None:
-        if self.interface.on_slide:
-            self.interface.on_slide(self.interface)
+        if self.interface.on_change:
+            self.interface.on_change(self.interface)
 
 
 class Slider(Widget):
     def create(self):
         self.native = TogaSlider.alloc().init()
         self.native.interface = self.interface
+        self.native.impl = self
 
         self.native.continuous = True
-        self.native.addTarget_action_forControlEvents_(self.native, SEL('onSlide:'), UIControlEventValueChanged)
+        self.native.addTarget(
+            self.native,
+            action=SEL('onSlide:'),
+            forControlEvents=UIControlEventValueChanged
+        )
 
         # Add the layout constraints
         self.add_constraints()
@@ -41,6 +50,12 @@ class Slider(Widget):
         self.interface.intrinsic.width = at_least(fitting_size.width)
         self.interface.intrinsic.height = fitting_size.height
 
-    def set_on_slide(self, handler):
+    def set_on_change(self, handler):
         # No special handling required
         pass
+
+    def set_on_press(self, handler):
+        self.interface.factory.not_implemented("Slider.set_on_press()")
+
+    def set_on_release(self, handler):
+        self.interface.factory.not_implemented("Slider.set_on_release()")

@@ -26,7 +26,7 @@ class Icon:
         """
         Bind the Icon to a factory.
 
-        Creates the underlying platform implemenation of the Icon. If the
+        Creates the underlying platform implementation of the Icon. If the
         image cannot be found, it will fall back to the default icon.
 
         :param factory: The platform factory to bind to.

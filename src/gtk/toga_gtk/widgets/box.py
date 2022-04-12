@@ -12,26 +12,40 @@ class TogaBox(Gtk.Fixed):
         # Calculate the minimum and natural width of the container.
         # print("GET PREFERRED WIDTH", self._impl.native)
         width = self._impl.interface.layout.width
-        min_width = self._impl.min_width
-        if min_width is None:
-            min_width = 0
-        elif min_width > width:
+        min_width = 0 if self._impl.min_width is None else self._impl.min_width
+        for widget in self.get_children():
+            if (
+                min_width
+                <= widget.interface.layout.absolute_content_right
+                + widget.interface.style.padding_right
+            ):
+                min_width = (
+                    widget.interface.layout.absolute_content_right
+                    + widget.interface.style.padding_right
+                )
+        if min_width > width:
             width = min_width
 
-        # print(min_width, width)
         return min_width, width
 
     def do_get_preferred_height(self):
         # Calculate the minimum and natural height of the container.
-        # height = self._impl.layout.height
         # print("GET PREFERRED HEIGHT", self._impl.native)
         height = self._impl.interface.layout.height
-        min_height = self._impl.min_height
-        if min_height is None:
-            min_height = 0
-        elif min_height > height:
+        min_height = 0 if self._impl.min_height is None else self._impl.min_height
+        for widget in self.get_children():
+            if (
+                min_height
+                <= widget.interface.layout.absolute_content_bottom
+                + widget.interface.style.padding_bottom
+            ):
+                min_height = (
+                    widget.interface.layout.absolute_content_bottom
+                    + widget.interface.style.padding_bottom
+                )
+        if min_height > height:
             height = min_height
-        # print(min_height, height)
+
         return min_height, height
 
     def do_size_allocate(self, allocation):

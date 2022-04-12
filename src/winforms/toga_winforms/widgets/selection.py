@@ -32,8 +32,7 @@ class Selection(Widget):
             self.native.SelectedIndex = 0
 
     def select_item(self, item):
-        index = self.native.FindString(item)
-        self.native.SelectedIndex = index
+        self.native.SelectedItem = item
 
     def get_selected_item(self):
         return self.native.SelectedItem

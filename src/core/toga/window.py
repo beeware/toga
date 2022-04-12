@@ -1,6 +1,7 @@
 from builtins import id as identifier
 
 from toga.command import CommandSet
+from toga.handlers import wrapped_handler
 from toga.platform import get_platform_factory
 
 
@@ -24,14 +25,12 @@ class Window:
     def __init__(self, id=None, title=None,
                  position=(100, 100), size=(640, 480),
                  toolbar=None, resizeable=True,
-                 closeable=True, minimizable=True, factory=None):
+                 closeable=True, minimizable=True, factory=None, on_close=None):
 
         self._id = id if id else identifier(self)
         self._impl = None
         self._app = None
         self._content = None
-        self._position = position
-        self._size = size
         self._is_full_screen = False
 
         self.resizeable = resizeable
@@ -39,7 +38,12 @@ class Window:
         self.minimizable = minimizable
 
         self.factory = get_platform_factory(factory)
-        self._impl = getattr(self.factory, self._WINDOW_CLASS)(interface=self)
+        self._impl = getattr(self.factory, self._WINDOW_CLASS)(
+            interface=self,
+            title='Toga' if title is None else title,
+            position=position,
+            size=size,
+        )
 
         self._toolbar = CommandSet(
             factory=self.factory,
@@ -47,9 +51,9 @@ class Window:
             on_change=self._impl.create_toolbar
         )
 
-        self.position = position
-        self.size = size
-        self.title = title
+        self._on_close = None
+        if on_close is not None:
+            self.on_close = on_close
 
     @property
     def id(self):
@@ -88,14 +92,13 @@ class Window:
         Returns:
             The current title of the window as a ``str``.
         """
-        return self._title
+        return self._impl.get_title()
 
     @title.setter
     def title(self, title):
         if not title:
             title = "Toga"
 
-        self._title = title
         self._impl.set_title(title)
 
     @property
@@ -142,11 +145,10 @@ class Window:
             A ``tuple`` of (``int``, ``int``) where the first value is
             the width and the second it the height of the window.
         """
-        return self._size
+        return self._impl.get_size()
 
     @size.setter
     def size(self, size):
-        self._size = size
         self._impl.set_size(size)
         if self.content:
             self.content.refresh()
@@ -158,15 +160,16 @@ class Window:
         Returns:
             A ``tuple`` of (``int``, ``int``) int the from (x, y).
         """
-        return self._position
+        return self._impl.get_position()
 
     @position.setter
     def position(self, position):
-        self._position = position
         self._impl.set_position(position)
 
     def show(self):
         """ Show window, if hidden """
+        if self.app is None:
+            raise AttributeError("Can't show a window that doesn't have an associated app")
         self._impl.show()
 
     @property
@@ -178,11 +181,29 @@ class Window:
         self._is_full_screen = is_full_screen
         self._impl.set_full_screen(is_full_screen)
 
+    @property
+    def on_close(self):
+        """The handler to invoke before the window is closed.
+
+        Returns:
+            The function ``callable`` that is called before the window is closed.
+        """
+        return self._on_close
+
+    @on_close.setter
+    def on_close(self, handler):
+        """Set the handler to invoke when before window is closed. If the handler
+        returns ``False``, the window will not be closed. This can be used for example
+        for confirmation dialogs.
+
+        Args:
+            handler (:obj:`callable`): The handler to invoke before the window is closed.
+        """
+        self._on_close = wrapped_handler(self, handler)
+        self._impl.set_on_close(self._on_close)
+
     def close(self):
         self._impl.close()
-
-    def on_close(self):
-        self._impl.on_close()
 
     ############################################################
     # Dialogs

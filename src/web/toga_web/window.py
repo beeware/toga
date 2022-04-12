@@ -21,13 +21,11 @@ class WebViewport:
 
 
 class Window:
-    def __init__(self, interface):
+    def __init__(self, interface, title, position, size):
         self.interface = interface
         self.interface._impl = self
-        self.create()
 
-    def create(self):
-        pass
+        self.set_title(title)
 
     def __html__(self):
         return """
@@ -38,6 +36,10 @@ class Window:
             id=self.interface.id,
             content=self.interface.content._impl.__html__()
         )
+
+    def get_title(self):
+        self.interface.factory.not_implemented('Window.get_title()')
+        return "?"
 
     def set_title(self, title):
         self.interface.factory.not_implemented('Window.set_title()')
@@ -75,11 +77,19 @@ class Window:
     def close(self):
         self.interface.factory.not_implemented('Window.close()')
 
+    def get_position(self):
+        return (0, 0)
+
     def set_position(self, position):
-        self.interface.factory.not_implemented('Window.set_position()')
+        # Does nothing on web
+        pass
+
+    def get_size(self):
+        return (self.content.viewport.width, self.content.viewport.height)
 
     def set_size(self, size):
-        self.interface.factory.not_implemented('Window.set_size()')
+        # Does nothing on web
+        pass
 
     def set_full_screen(self, is_full_screen):
         self.interface.factory.not_implemented('Window.set_full_screen()')

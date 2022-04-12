@@ -644,7 +644,7 @@ class TreeSourceTests(TestCase):
         self.assertEqual(len(source), 2)
         self.assertEqual(len(source[1]), 2)
 
-        listener.remove.assert_called_once_with(item=node)
+        listener.remove.assert_called_once_with(item=node, index=1, parent=None)
 
     def test_remove_child(self):
         "A child can be removed"
@@ -666,13 +666,21 @@ class TreeSourceTests(TestCase):
         listener = Mock()
         source.add_listener(listener)
 
-        # Remove the child element
+        # Remove "third.two"
         node = source.remove(source[2][1])
 
         self.assertEqual(len(source), 3)
         self.assertEqual(len(source[2]), 1)
 
-        listener.remove.assert_called_once_with(item=node)
+        listener.remove.assert_called_once_with(item=node, index=1, parent=source[2])
+
+        # Remove "third.one"
+        node = source.remove(source[2][0])
+
+        self.assertEqual(len(source), 3)
+        self.assertEqual(len(source[2]), 0)
+
+        listener.remove.assert_any_call(item=node, index=0, parent=source[2])
 
     def test___setitem___for_root(self):
         "A root can be set (changed) with __setitem__"

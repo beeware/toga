@@ -37,17 +37,20 @@ class MovieSource(Source):
     def __getitem__(self, index):
         return self._movies[index]
 
+    def index(self, entry):
+        return self._movies.index(entry)
+
     def add(self, entry):
         movie = Movie(*entry)
         self._movies.append(movie)
         self._movies.sort(key=lambda m: m.year)
         self._notify('insert', index=self._movies.index(movie), item=movie)
 
-    def remove(self, index):
-        item = self._movies[index]
-        self._notify('pre_remove', item=item)
+    def remove(self, item):
+        index = self.index(item)
+        self._notify('pre_remove', index=index, item=item)
         del self._movies[index]
-        self._notify('remove', item=item)
+        self._notify('remove', index=index, item=item)
 
     def clear(self):
         self._movies = []
@@ -61,7 +64,7 @@ class GoodMovieSource(Source):
         super().__init__()
         self._source = source
         self._source.add_listener(self)
-        self._removals = set()
+        self._removals = {}
 
     # Implement the filtering of the underlying data source
     def _filtered(self):
@@ -81,6 +84,9 @@ class GoodMovieSource(Source):
     def __getitem__(self, index):
         return self._filtered()[index]
 
+    def index(self, entry):
+        return self._filtered().index(entry)
+
     # A listener that passes on all notifications, but only if the apply
     # to the filtered data source
     def insert(self, index, item):
@@ -91,21 +97,21 @@ class GoodMovieSource(Source):
                 # *filtered* list.
                 self._notify('insert', index=i, item=item)
 
-    def pre_remove(self, item):
+    def pre_remove(self, index, item):
         # If the item exists in the filtered list, track that it is being
         # removed; but don't propegate the removal notification until it has
         # been removed from the base data source
         for i, filtered_item in enumerate(self._filtered()):
             if filtered_item == item:
                 # Track that the object *was* in the data source
-                self._removals.add(item)
+                self._removals[item] = i
 
-    def remove(self, item):
+    def remove(self, index, item):
         # If the removed item previously existed in the filtered data source,
         # propegate the removal notification.
         try:
-            self._removals.remove(item)
-            self._notify('remove', item=item)
+            i = self._removals.pop(item)
+            self._notify('remove', index=i, item=item)
         except KeyError:
             # object wasn't previously in the data source
             pass
@@ -124,8 +130,10 @@ class ExampleTableSourceApp(toga.App):
         self.table1.data.add(choice(bee_movies))
 
     def delete_handler(self, widget, **kwargs):
-        if len(self.table1.data) > 0:
-            self.table1.data.remove(0)
+        if self.table1.selection:
+            self.table1.data.remove(self.table1.selection)
+        elif len(self.table1.data) > 0:
+            self.table1.data.remove(self.table1.data[0])
         else:
             print('Table is empty!')
 

@@ -14,11 +14,18 @@ class Tree(Widget):
     def change(self, item):
         self._action('change node', item=item)
 
-    def remove(self, item):
-        self._action('remove node', item=item)
+    def remove(self, parent, item, index):
+        self._action('remove node', parent=parent, index=index, item=item)
 
     def clear(self):
         self._action('clear')
 
+    def get_selection(self):
+        self._action('get selection')
+        return None
+
     def set_on_select(self, handler):
         self._set_value('on_select', handler)
+
+    def set_on_double_click(self, handler):
+        self._set_value('on_double_click', handler)

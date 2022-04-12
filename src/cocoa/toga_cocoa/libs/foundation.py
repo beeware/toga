@@ -1,12 +1,13 @@
 ##########################################################################
 # System/Library/Frameworks/Foundation.framework
 ##########################################################################
-from ctypes import c_bool, cdll, util
+from ctypes import c_bool
 
 from rubicon.objc import NSPoint, NSRect, ObjCClass
+from rubicon.objc.runtime import load_library
 
 ######################################################################
-foundation = cdll.LoadLibrary(util.find_library('Foundation'))
+foundation = load_library('Foundation')
 ######################################################################
 
 foundation.NSMouseInRect.restype = c_bool

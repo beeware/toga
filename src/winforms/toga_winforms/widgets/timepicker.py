@@ -15,24 +15,28 @@ class TimePicker(Widget):
         self.native.ShowUpDown = True
 
     def get_value(self):
-        time = datetime.datetime.strptime(self.native.Text, '%I:%M:%S %p').time()
-        return time
+        return datetime.datetime.strptime(self.native.Text, '%I:%M:%S %p').time()
 
     def set_value(self, value):
-        value = WinDateTime.Parse(value)
-        self.native.Value = value
+        # Jan 1 1970 is a dummy date; we don't need the date component
+        self.native.Value = WinDateTime(1970, 1, 1, value.hour, value.minute, value.second)
 
     def set_min_time(self, value):
         if value is None:
-            value = str(self.native.MinDateTime)
-        value = WinDateTime.Parse(value)
+            value = self.native.MinDateTime
+        else:
+            # Jan 1 1970 is a dummy date; we don't need the date component
+            value = WinDateTime(1970, 1, 1, value.hour, value.minute, value.second)
         if self.native.Value < value:
             self.native.Value = value
 
     def set_max_time(self, value):
         if value is None:
-            value = str(self.native.MaxDateTime)
-        value = WinDateTime.Parse(value)
+            value = self.native.MaxDateTime
+        else:
+            # Jan 1 1970 is a dummy date; we don't need the date component
+            value = WinDateTime(1970, 1, 1, value.hour, value.minute, value.second)
+
         if self.native.Value > value:
             self.native.Value = value
 

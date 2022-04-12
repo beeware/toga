@@ -3,7 +3,6 @@ import asyncio
 from rubicon.objc import SEL, objc_method
 from rubicon.objc.eventloop import EventLoopPolicy, iOSLifecycle
 
-from toga.handlers import wrapped_handler
 from toga_iOS.libs import (
     NSNotificationCenter,
     UIKeyboardFrameEndUserInfoKey,
@@ -15,12 +14,7 @@ from toga_iOS.window import Window
 
 
 class MainWindow(Window):
-    def __init__(self, interface):
-        super().__init__(interface)
-
-    # def startup(self):
-    #     super().startup()
-    #     self.native.setBackgroundColor_(UIColor.whiteColor())
+    pass
 
 
 class PythonAppDelegate(UIResponder):
@@ -134,6 +128,9 @@ class App:
     def set_main_window(self, window):
         pass
 
+    def show_about_dialog(self):
+        self.interface.factory.not_implemented("App.show_about_dialog()")
+
     def exit(self):
         pass
 
@@ -141,4 +138,4 @@ class App:
         pass
 
     def add_background_task(self, handler):
-        self.loop.call_soon(wrapped_handler(self, handler), self)
+        self.loop.call_soon(handler, self)

@@ -1,6 +1,13 @@
 import toga
 import toga_dummy
-from toga.fonts import BOLD, ITALIC, SANS_SERIF, SMALL_CAPS
+from toga.fonts import (
+    NORMAL,
+    BOLD,
+    ITALIC,
+    SANS_SERIF,
+    SMALL_CAPS,
+    _REGISTERED_FONT_CACHE,
+)
 from toga_dummy.utils import TestCase
 
 
@@ -13,16 +20,22 @@ class FontTests(TestCase):
         self.style = ITALIC
         self.variant = SMALL_CAPS
         self.weight = BOLD
+        self.custom_family = "customFamily"
+        self.custom_path = "resource/custom-font.otf"
 
         self.font = toga.Font(
             family=self.family,
             size=self.size,
             style=self.style,
             variant=self.variant,
-            weight=self.weight)
+            weight=self.weight,
+        )
 
         # Bind the font to the dummy factory
         self.font.bind(toga_dummy.factory)
+
+        # Register a file-based custom font
+        toga.Font.register(self.custom_family, self.custom_path)
 
     def test_family(self):
         self.assertEqual(self.font.family, self.family)
@@ -38,3 +51,11 @@ class FontTests(TestCase):
 
     def test_weight(self):
         self.assertEqual(self.font.weight, self.weight)
+
+    def test_register(self):
+        font_key = toga.Font.registered_font_key(
+            self.custom_family, NORMAL, NORMAL, NORMAL
+        )
+
+        self.assertIn(font_key, _REGISTERED_FONT_CACHE)
+        self.assertEqual(self.custom_path, _REGISTERED_FONT_CACHE[font_key])

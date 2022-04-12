@@ -6,13 +6,14 @@ from toga_cocoa.libs import (
     NSScrollView,
     NSTextView,
     NSViewWidthSizable,
-    objc_method
+    objc_method,
 )
 
 from .base import Widget
 
 
 class TogaTextView(NSTextView):
+
     @objc_method
     def touchBar(self):
         # Disable the touchbar.
@@ -70,3 +71,6 @@ class MultilineTextInput(Widget):
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
         self.interface.intrinsic.height = at_least(self.interface.MIN_HEIGHT)
+
+    def set_on_change(self, handler):
+        self.interface.factory.not_implemented('MultilineTextInput.set_on_change()')

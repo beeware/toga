@@ -5,18 +5,18 @@
 *.dist-info
 .eggs
 .coverage
+coverage.xml
 dist
 build
 _build
 distribute-*
 docs/env
 local
-venv
+*venv*
 .idea
 Pipfile*
 .tox
 node_modules
-README.md
 src/django/toga.js
 src/django/toga.min.js
 src/django/toga.js.map
@@ -40,3 +40,5 @@ examples/*/android/
 examples/*/django/
 examples/*/windows/
 
+# Memory Profiler
+mprofile_*.dat

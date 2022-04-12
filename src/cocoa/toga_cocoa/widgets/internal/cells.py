@@ -1,5 +1,4 @@
 from toga_cocoa.libs import (
-    CGRect,
     NSAffineTransform,
     NSBezierPath,
     NSColor,
@@ -20,32 +19,30 @@ from toga_cocoa.libs import (
     NSLayoutAttributeLeft,
     NSLayoutAttributeRight,
     NSLayoutAttributeCenterY,
+    NSLayoutAttributeWidth,
+    NSLayoutAttributeNotAnAttribute,
     NSLayoutConstraint,
     NSLayoutRelationEqual,
     NSLineBreakMode,
-    ObjCInstance,
     at,
     objc_method,
-    send_super
 )
 
 
 class TogaIconView(NSTableCellView):
 
     @objc_method
-    def initWithFrame_(self, frame: CGRect):
-        self = ObjCInstance(send_super(__class__, self, 'initWithFrame:', frame))
-        return self.setup()
-
-    @objc_method
-    def init(self):
-        self = ObjCInstance(send_super(__class__, self, 'init'))
-        return self.setup()
-
-    @objc_method
     def setup(self):
-        self.imageView = NSImageView.alloc().init()
-        self.textField = NSTextField.alloc().init()
+        image_view = NSImageView.alloc().init()
+        text_field = NSTextField.alloc().init()
+
+        # this will retain image_view and text_field without needing to keep
+        # a Python reference
+        self.addSubview(image_view)
+        self.addSubview(text_field)
+
+        self.imageView = image_view
+        self.textField = text_field
 
         self.textField.cell.lineBreakMode = NSLineBreakMode.byTruncatingTail
         self.textField.bordered = False
@@ -53,9 +50,6 @@ class TogaIconView(NSTableCellView):
 
         self.imageView.translatesAutoresizingMaskIntoConstraints = False
         self.textField.translatesAutoresizingMaskIntoConstraints = False
-
-        self.addSubview(self.imageView)
-        self.addSubview(self.textField)
 
         # center icon vertically in cell
         self.iv_vertical_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # NOQA:E501
@@ -70,6 +64,13 @@ class TogaIconView(NSTableCellView):
             NSLayoutRelationEqual,
             self, NSLayoutAttributeLeft,
             1, 0
+        )
+        # set fixed width of icon
+        self.iv_width_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # NOQA:E501
+            self.imageView, NSLayoutAttributeWidth,
+            NSLayoutRelationEqual,
+            None, NSLayoutAttributeNotAnAttribute,
+            1, 16
         )
         # align text vertically in cell
         self.tv_vertical_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # NOQA:E501
@@ -95,25 +96,36 @@ class TogaIconView(NSTableCellView):
 
         self.addConstraint(self.iv_vertical_constraint)
         self.addConstraint(self.iv_left_constraint)
+        self.addConstraint(self.iv_width_constraint)
         self.addConstraint(self.tv_vertical_constraint)
         self.addConstraint(self.tv_left_constraint)
         self.addConstraint(self.tv_right_constraint)
 
-        return self
-
     @objc_method
-    def setImage(self, image):
+    def setImage_(self, image):
+
+        if not self.imageView:
+            self.setup()
+
         if image:
-            self.imageView.image = image.resizeTo(16)
+            self.imageView.image = image
+            # set icon width to 16
+            self.iv_width_constraint.constant = 16
             # add padding between icon and text
             self.tv_left_constraint.constant = 5
         else:
             self.imageView.image = None
+            # set icon width to 0
+            self.iv_width_constraint.constant = 0
             # remove padding between icon and text
             self.tv_left_constraint.constant = 0
 
     @objc_method
-    def setText(self, text):
+    def setText_(self, text):
+
+        if not self.imageView:
+            self.setup()
+
         self.textField.stringValue = text
 
 

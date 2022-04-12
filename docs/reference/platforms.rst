@@ -13,7 +13,7 @@ macOS
 
 .. image:: /reference/screenshots/cocoa.png
 
-The backend for macOS is named `toga-cocoa`_. It supports macOS 10.7 (Lion)
+The backend for macOS is named `toga-cocoa`_. It supports macOS 10.10 (Yosemite)
 and later. It is installed automatically on macOS machines (machines that
 report ``sys.platform == 'darwin'``), or can be manually installed by invoking::
 
@@ -42,18 +42,20 @@ with widget layout. It uses the native GObject Python bindings.
 
 .. _toga-gtk: https://github.com/beeware/toga/tree/master/src/gtk
 
-Winforms
+Windows
 ~~~~~~~~
 
-The backend for Windows is named `toga-winforms`_. It supports Windows XP or
-later with .NET installed. It is installed automatically on Windows machines
+.. image:: /reference/screenshots/winforms.png
+
+The backend for Windows is named `toga-winforms`_. It supports Windows 10 with
+.NET 4 installed. It is installed automatically on Windows machines
 (machines that report ``sys.platform == 'win32'``), or can be manually
 installed by invoking::
 
     $ pip install toga-winforms
 
-The Windows backend is currently proof-of-concept only. Most widgets have not been
-implemented. It uses `Python.net`_
+It uses `Python.net`_. Unfortunately, python.net has not been packaged for
+Python 3.9 or higher, so you'll need to use Python 3.8 or earlier in your app.
 
 .. _toga-winforms: https://github.com/beeware/toga/tree/master/src/winforms
 .. _Python.net: https://pythonnet.github.io
@@ -130,10 +132,9 @@ Eventually, the Toga project would like to provide support for the following pla
  * Curses (for console)
 
 If you are interested in these platforms and would like to contribute, please
-get in touch on Twitter_ or Gitter_.
+get in touch on `Twitter <https://twitter.com/pybeeware>`__ or
+`Discord <https://beeware.org/bee/chat/>`__).
 
-.. _Twitter: https://twitter.com/pybeeware
-.. _Gitter: https://gitter.im/beeware/general
 
 Unofficial platform support
 ===========================

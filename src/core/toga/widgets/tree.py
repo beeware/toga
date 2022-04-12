@@ -31,6 +31,7 @@ class Tree(Widget):
         multiple rows. Defaults to ``False``.
     :param on_select: A handler to be invoked when the user selects one or
         multiple rows.
+    :param on_double_click: A handler to be invoked when the user double clicks a row.
     :param factory:: A python module that is capable to return a implementation
         of this class with the same name. (optional; used only for testing)
     """
@@ -38,19 +39,20 @@ class Tree(Widget):
     MIN_HEIGHT = 100
 
     def __init__(self, headings, id=None, style=None, data=None, accessors=None,
-                 multiple_select=False, on_select=None, factory=None):
+                 multiple_select=False, on_select=None, on_double_click=None, factory=None):
         super().__init__(id=id, style=style, factory=factory)
         self.headings = headings
         self._accessors = build_accessors(headings, accessors)
         self._multiple_select = multiple_select
-        self._selection = None
         self._data = None
         self._on_select = None
+        self._on_double_click = None
 
         self._impl = self.factory.Tree(interface=self)
         self.data = data
 
         self.on_select = on_select
+        self.on_double_click = on_double_click
 
     @property
     def data(self):
@@ -88,15 +90,17 @@ class Tree(Widget):
         """The current selection of the table.
 
         A value of None indicates no selection.
-        If the table allows multiple selection, returns a list of
+        If the tree allows multiple selection, returns a list of
         selected data nodes. Otherwise, returns a single data node.
         """
-        return self._selection
+        return self._impl.get_selection()
 
     @property
     def on_select(self):
         """
-        The callable function for when a node on the Tree is selected
+        The callable function for when a node on the Tree is selected. The provided
+        callback function has to accept two arguments tree (:obj:`Tree`) and node
+        (``Node`` or ``None``).
 
         :rtype: ``callable``
         """
@@ -112,3 +116,25 @@ class Tree(Widget):
         """
         self._on_select = wrapped_handler(self, handler)
         self._impl.set_on_select(self._on_select)
+
+    @property
+    def on_double_click(self):
+        """
+        The callable function for when a node on the Tree is selected. The provided
+        callback function has to accept two arguments tree (:obj:`Tree`) and node
+        (``Node`` or ``None``).
+
+        :rtype: ``callable``
+        """
+        return self._on_double_click
+
+    @on_double_click.setter
+    def on_double_click(self, handler):
+        """
+        Set the function to be executed on node double click
+
+        :param handler:     callback function
+        :type handler:      ``callable``
+        """
+        self._on_double_click = wrapped_handler(self, handler)
+        self._impl.set_on_double_click(self._on_double_click)

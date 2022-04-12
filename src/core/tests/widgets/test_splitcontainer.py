@@ -48,15 +48,44 @@ class SplitContainerTests(TestCase):
     def test_setting_direction_property_invokes_impl_method(self):
         new_value = False
         self.split.direction = new_value
-        self.assertValueSet(self.split, 'direction', new_value)
+        self.assertValueSet(self.split, "direction", new_value)
 
-    def test_setting_content_valid_input_with_tuple(self):
-
+    def test_setting_content_valid_input_with_tuple_of2(self):
         new_content = [
             (toga.Box(style=TestStyle(), factory=toga_dummy.factory), 1.2),
-            (toga.Box(style=TestStyle(), factory=toga_dummy.factory), 2.5)
+            (toga.Box(style=TestStyle(), factory=toga_dummy.factory), 2.5),
         ]
-
         self.split.content = new_content
         self.assertEqual(self.split._weight[0], 1.2)
         self.assertEqual(self.split._weight[1], 2.5)
+
+    def test_setting_content_valid_input_with_tuple_of3(self):
+        new_content = [
+            (toga.Box(style=TestStyle(), factory=toga_dummy.factory), 1.2),
+            (toga.Box(style=TestStyle(), factory=toga_dummy.factory), 2.5, False),
+        ]
+        self.split.content = new_content
+        self.assertEqual(self.split._weight[0], 1.2)
+        self.assertEqual(self.split._weight[1], 2.5)
+        self.assertActionPerformedWith(
+            self.split,
+            "add content",
+            position=0,
+            widget=new_content[0][0]._impl,
+            flex=True,
+        )
+        self.assertActionPerformedWith(
+            self.split,
+            "add content",
+            position=1,
+            widget=new_content[1][0]._impl,
+            flex=False,
+        )
+
+    def test_setting_content_valid_input_with_tuple_of_more3(self):
+        new_content = [
+            (toga.Box(style=TestStyle(), factory=toga_dummy.factory), 1.2, True, True),
+            (toga.Box(style=TestStyle(), factory=toga_dummy.factory), 2.5, False, True),
+        ]
+        with self.assertRaises(ValueError):
+            self.split.content = new_content

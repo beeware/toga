@@ -47,3 +47,7 @@ class SelectionTests(TestCase):
     def test_on_select(self):
         on_select = self.selection.on_select
         self.assertEqual(on_select, None)
+
+    def test_focus(self):
+        self.selection.focus()
+        self.assertActionPerformed(self.selection, "focus")

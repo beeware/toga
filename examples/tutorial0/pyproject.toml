@@ -4,7 +4,7 @@ requires = ["briefcase"]
 [tool.briefcase]
 project_name = "Tutorial 0"
 bundle = "org.beeware"
-version = "0.3.0.dev23"
+version = "0.3.0.dev33"
 url = "https://beeware.org"
 license = "BSD license"
 author = 'Tiberius Yak'
@@ -14,31 +14,35 @@ author_email = "tiberius@beeware.org"
 formal_name = "Tutorial 0"
 description = "A testing app"
 sources = ['tutorial']
-requires = []
+requires = [
+    '../../src/core',
+]
 
 
 [tool.briefcase.app.tutorial.macOS]
 requires = [
-    'toga-cocoa',
+    '../../src/cocoa',
+    'std-nslog>=1.0.0',
 ]
 
 [tool.briefcase.app.tutorial.linux]
 requires = [
-    'toga-gtk',
+    '../../src/gtk',
 ]
 
 [tool.briefcase.app.tutorial.windows]
 requires = [
-    'toga-winforms',
+    '../../src/winforms',
 ]
 
 # Mobile deployments
 [tool.briefcase.app.tutorial.iOS]
 requires = [
-    'toga-iOS',
+    '../../src/iOS',
+    'std-nslog>=1.0.0',
 ]
 
 [tool.briefcase.app.tutorial.android]
 requires = [
-    'toga-android',
+    '../../src/android',
 ]

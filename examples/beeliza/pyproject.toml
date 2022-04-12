@@ -4,7 +4,7 @@ requires = ["briefcase"]
 [tool.briefcase]
 project_name = "Beeliza"
 bundle = "org.beeware"
-version = "0.3.0.dev23"
+version = "0.3.0.dev33"
 url = "https://beeware.org"
 license = "BSD license"
 author = 'Tiberius Yak'
@@ -14,31 +14,35 @@ author_email = "tiberius@beeware.org"
 formal_name = "Beeliza"
 description = "A testing app"
 sources = ['beeliza']
-requires = []
+requires = [
+    '../../src/core',
+]
 
 
 [tool.briefcase.app.beeliza.macOS]
 requires = [
-    'toga-cocoa',
+    '../../src/cocoa',
+    'std-nslog>=1.0.0',
 ]
 
 [tool.briefcase.app.beeliza.linux]
 requires = [
-    'toga-gtk',
+    '../../src/gtk',
 ]
 
 [tool.briefcase.app.beeliza.windows]
 requires = [
-    'toga-winforms',
+    '../../src/winforms',
 ]
 
 # Mobile deployments
 [tool.briefcase.app.beeliza.iOS]
 requires = [
-    'toga-iOS',
+    '../../src/iOS',
+    'std-nslog>=1.0.0',
 ]
 
 [tool.briefcase.app.beeliza.android]
 requires = [
-    'toga-android',
+    '../../src/android',
 ]

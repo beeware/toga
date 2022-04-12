@@ -5,7 +5,7 @@
 Toga
 ====
 
-.. image:: https://img.shields.io/badge/python-3.5%2C%203.6%2C%203.7-blue.svg
+.. image:: https://img.shields.io/badge/python-3.7%20|%203.8%20|%203.9%20|%203.10-blue.svg
     :target: https://pypi.python.org/pypi/toga
     :alt: Python Versions
 
@@ -25,9 +25,13 @@ Toga
    :target: https://github.com/beeware/toga/actions
    :alt: Build Status
 
-.. image:: https://badges.gitter.im/beeware/general.svg
-   :target: https://gitter.im/beeware/general
-   :alt: Gitter chat room
+.. image:: https://codecov.io/gh/beeware/toga/branch/master/graph/badge.svg
+   :target: https://codecov.io/gh/beeware/toga
+   :alt: Codecov
+
+.. image:: https://img.shields.io/discord/836455665257021440?label=Discord%20Chat&logo=discord&style=plastic
+   :target: https://beeware.org/bee/chat/
+   :alt: Discord server
 
 A Python native, OS native GUI toolkit.
 
@@ -37,26 +41,27 @@ Prerequisites
 Minimum requirements
 ^^^^^^^^^^^^^^^^^^^^
 
-* Toga requires **Python 3**. Python 2 is not supported.
+* Toga requires **Python 3.7 or higher**. Python 2 is not supported.
 
-* If you're on macOS, you need to be on 10.7 (Lion) or newer.
+* If you're on macOS, you need to be on 10.10 (Yosemite) or newer.
 
-* If you're on Linux, you need to have GTK+ 3.10 or later. This is the version
+* If you're on Linux, you need to have GTK+ 3.10 or newer. This is the version
   that ships starting with Ubuntu 14.04 and Fedora 20. You also need to install
   the Python 3 bindings and development files for GTK+.
 
-  * **Ubuntu 16.04 / Debian 9** ``sudo apt-get install python3-dev python3-gi python3-gi-cairo libgirepository1.0-dev libcairo2-dev libwebkitgtk-3.0-0 gir1.2-webkit2-3.0``
+  * **Ubuntu 16.04 / Debian 9** ``sudo apt-get install python3-dev python3-gi python3-gi-cairo libgirepository1.0-dev libcairo2-dev libpango1.0-dev libwebkitgtk-3.0-0 gir1.2-webkit2-3.0``
 
-  * **Ubuntu 18.04 / Debian 10** ``sudo apt-get install python3-dev python3-gi python3-gi-cairo libgirepository1.0-dev libcairo2-dev libwebkitgtk-4.0-37 gir1.2-webkit2-4.0``
+  * **Ubuntu 18.04, 20.04 / Debian 10, 11** ``sudo apt-get install python3-dev python3-gi python3-gi-cairo libgirepository1.0-dev libcairo2-dev libpango1.0-dev libwebkit2gtk-4.0-37 gir1.2-webkit2-4.0``
 
   * **Fedora** ``sudo dnf install pygobject3 python3-gobject python3-cairo-devel cairo-gobject-devel gobject-introspection-devel pywebkitgtk``
 
   * **Arch / Manjaro** ``sudo pacman -Syu git pkgconf cairo python-cairo pango gobject-introspection gobject-introspection-runtime python-gobject webkit2gtk``
 
-* We're working on Windows support, but not all features and widgets are
-  supported. At a minimum, you'll need Python 3 and .NET Framework 4. This has
-  been tested on Windows 10, but should work on 7 and 8. Pull requests, help and
-  corrections are most welcome.
+* If you're on Windows, you'll need Windows 10 or newer. If you are using
+  Windows 10 and want to use a WebView to display web content, you will also
+  need to install the [Edge WebView2 Evergreen
+  Runtime.](https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download-section)
+  Windows 11 has this runtime installed by default.
 
 Quickstart
 ~~~~~~~~~~
@@ -78,9 +83,11 @@ Community
 
 Toga is part of the `BeeWare suite`_. You can talk to the community through:
 
-* `@pybeeware on Twitter`_
+* `@pybeeware on Twitter <https://twitter.com/pybeeware>`__
 
-* The `beeware/general`_ channel on Gitter.
+* `Discord <https://beeware.org/bee/chat/>`__
+
+* The Toga `Github Discussions forum <https://github.com/beeware/toga/discussions>`__
 
 Contributing
 ~~~~~~~~~~~~
@@ -93,8 +100,6 @@ contribute code, please `fork the code`_ and `submit a pull request`_.
 
 .. _BeeWare suite: https://beeware.org/
 .. _Read The Docs: https://toga.readthedocs.io
-.. _@pybeeware on Twitter: https://twitter.com/pybeeware
-.. _beeware/general: https://gitter.im/beeware/general
 .. _guide for first time contributors: https://toga.readthedocs.io/en/latest/how-to/contribute.html
 .. _log them on Github: https://github.com/beeware/toga/issues
 .. _fork the code: https://github.com/beeware/toga

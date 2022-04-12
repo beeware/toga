@@ -7,7 +7,8 @@ from toga_cocoa.libs import (
     NSTableColumn,
     NSTableView,
     NSTableViewColumnAutoresizingStyle,
-    objc_method
+    objc_method,
+    objc_property,
 )
 from toga_cocoa.widgets.base import Widget
 from toga_cocoa.widgets.internal.cells import TogaDetailedCell
@@ -26,6 +27,10 @@ def attr_impl(value, attr, factory):
 
 
 class TogaList(NSTableView):
+
+    interface = objc_property(object, weak=True)
+    impl = objc_property(object, weak=True)
+
     @objc_method
     def menuForEvent_(self, event):
         if self.interface.on_delete:
@@ -57,6 +62,7 @@ class TogaList(NSTableView):
             data = value._impl
         except AttributeError:
             data = TogaData.alloc().init()
+            data.retain()
             value._impl = data
 
         data.attrs = {
@@ -79,11 +85,14 @@ class TogaList(NSTableView):
 
     @objc_method
     def tableViewSelectionDidChange_(self, notification) -> None:
-        self.interface.selection = notification.object.selectedRow
-        self.interface.selected = self.interface.data[notification.object.selectedRow]
+        index = notification.object.selectedRow
+        if index == -1:
+            selection = None
+        else:
+            selection = self.interface.data[index]
+
         if self.interface.on_select:
-            row = notification.object.selectedRow if notification.object.selectedRow != -1 else None
-            self.interface.on_select(self.interface, row=row)
+            self.interface.on_select(self.interface, row=selection)
 
 
 class DetailedList(Widget):
@@ -92,6 +101,7 @@ class DetailedList(Widget):
         # The scroll view is the _impl, because it's the outer container.
         self.native = RefreshableScrollView.alloc().init()
         self.native.interface = self.interface
+        self.native.impl = self
         self.native.hasVerticalScroller = True
         self.native.hasHorizontalScroller = False
         self.native.autohidesScrollers = False
@@ -100,7 +110,7 @@ class DetailedList(Widget):
         # Create the List widget
         self.detailedlist = TogaList.alloc().init()
         self.detailedlist.interface = self.interface
-        self.detailedlist._impl = self
+        self.detailedlist.impl = self
         self.detailedlist.columnAutoresizingStyle = NSTableViewColumnAutoresizingStyle.Uniform
 
         # TODO: Optionally enable multiple selection
@@ -137,8 +147,14 @@ class DetailedList(Widget):
     def change(self, item):
         self.detailedlist.reloadData()
 
-    def remove(self, item):
+    def remove(self, index, item):
         self.detailedlist.reloadData()
+
+        # After deletion, the selection changes, but Cocoa doesn't send
+        # a tableViewSelectionDidChange: message.
+        selection = self.get_selection()
+        if selection and self.interface.on_select:
+            self.interface.on_select(self.interface, row=selection)
 
     def clear(self):
         self.detailedlist.reloadData()
@@ -148,6 +164,13 @@ class DetailedList(Widget):
 
     def after_on_refresh(self):
         self.native.finishedLoading()
+
+    def get_selection(self):
+        index = self.detailedlist.selectedRow
+        if index != -1:
+            return self.interface.data[index]
+        else:
+            return None
 
     def set_on_select(self, handler):
         pass

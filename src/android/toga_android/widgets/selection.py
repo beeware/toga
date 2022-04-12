@@ -1,13 +1,8 @@
 from travertino.size import at_least
 
-from ..libs.android_widgets import (
-    ArrayAdapter,
-    Gravity,
-    OnItemSelectedListener,
-    R__layout,
-    Spinner,
-    View__MeasureSpec
-)
+from ..libs.android import R__layout
+from ..libs.android.view import Gravity, View__MeasureSpec
+from ..libs.android.widget import ArrayAdapter, OnItemSelectedListener, Spinner
 from .base import Widget, align
 
 
@@ -48,10 +43,14 @@ class Selection(Widget):
         self.native.setSelection(self._indexByItem[item])
 
     def get_selected_item(self):
-        return self.native.getSelectedItem().toString()
+        selected = self.native.getSelectedItem()
+        if selected:
+            return selected.toString()
+        else:
+            return None
 
     def remove_all_items(self):
-        self.native.getAdapter().clear()
+        self.adapter.clear()
 
     def rehint(self):
         self.native.measure(
