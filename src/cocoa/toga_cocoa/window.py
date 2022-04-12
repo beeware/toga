@@ -226,14 +226,15 @@ class Window:
         if len(NSScreen.screens) == 0:
             return (0, 0)
 
+        # The "primary" screen has index 0 and origin (0, 0).
         primary_screen = NSScreen.screens[0].frame
         window_frame = self.native.frame
 
         # macOS origin is bottom left of screen, and the screen might be
         # offset relative to other screens. Adjust for this.
         return (
-            primary_screen.origin.x + window_frame.origin.x,
-            primary_screen.origin.y + primary_screen.size.height - (
+            window_frame.origin.x,
+            primary_screen.size.height - (
                 window_frame.origin.y + window_frame.size.height
             )
         )
@@ -243,13 +244,13 @@ class Window:
         if len(NSScreen.screens) == 0:
             return
 
-        # The "principal" screen has index 0 and origin (0, 0).
+        # The "primary" screen has index 0 and origin (0, 0).
         primary_screen = NSScreen.screens[0].frame
 
         # macOS origin is bottom left of screen, and the screen might be
         # offset relative to other screens. Adjust for this.
-        x = primary_screen.origin.x + position[0]
-        y = primary_screen.origin.y + primary_screen.size.height - position[1]
+        x = position[0]
+        y = primary_screen.size.height - position[1]
 
         self.native.setFrameTopLeftPoint(NSPoint(x, y))
 
