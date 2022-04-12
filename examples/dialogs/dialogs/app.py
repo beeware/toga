@@ -9,31 +9,31 @@ class ExampledialogsApp(toga.App):
     def do_clear(self, widget, **kwargs):
         self.label.text = "Ready."
 
-    def action_info_dialog(self, widget):
-        self.main_window.info_dialog('Toga', 'THIS! IS! TOGA!!')
+    async def action_info_dialog(self, widget):
+        await self.main_window.info_dialog('Toga', 'THIS! IS! TOGA!!')
         self.label.text = 'Information was provided.'
 
-    def action_question_dialog(self, widget):
-        if self.main_window.question_dialog('Toga', 'Is this cool or what?'):
+    async def action_question_dialog(self, widget):
+        if await self.main_window.question_dialog('Toga', 'Is this cool or what?'):
             self.label.text = 'User said yes!'
-            self.main_window.info_dialog('Happiness', 'I know, right! :-)')
+            await self.main_window.info_dialog('Happiness', 'I know, right! :-)')
         else:
             self.label.text = 'User says no...'
-            self.main_window.info_dialog('Shucks...', "Well aren't you a spoilsport... :-(")
+            await self.main_window.info_dialog('Shucks...', "Well aren't you a spoilsport... :-(")
 
-    def action_confirm_dialog(self, widget):
-        if self.main_window.question_dialog('Toga', 'Are you sure you want to?'):
+    async def action_confirm_dialog(self, widget):
+        if await self.main_window.question_dialog('Toga', 'Are you sure you want to?'):
             self.label.text = 'Lets do it!'
         else:
             self.label.text = "Left it as it was."
 
-    def action_error_dialog(self, widget):
-        self.main_window.error_dialog('Toga', "Well that didn't work... or did it?")
+    async def action_error_dialog(self, widget):
+        await self.main_window.error_dialog('Toga', "Well that didn't work... or did it?")
         self.label.text = 'Oh noes...'
 
-    def action_open_file_dialog(self, widget):
+    async def action_open_file_dialog(self, widget):
         try:
-            fname = self.main_window.open_file_dialog(
+            fname = await self.main_window.open_file_dialog(
                 title="Open file with Toga",
                 multiselect=False
             )
@@ -44,9 +44,9 @@ class ExampledialogsApp(toga.App):
         except ValueError:
             self.label.text = "Open file dialog was canceled"
 
-    def action_open_file_filtered_dialog(self, widget):
+    async def action_open_file_filtered_dialog(self, widget):
         try:
-            fname = self.main_window.open_file_dialog(
+            fname = await self.main_window.open_file_dialog(
                 title="Open file with Toga",
                 multiselect=False,
                 file_types=['doc', 'txt'],
@@ -58,9 +58,9 @@ class ExampledialogsApp(toga.App):
         except ValueError:
             self.label.text = "Open file dialog was canceled"
 
-    def action_open_file_dialog_multi(self, widget):
+    async def action_open_file_dialog_multi(self, widget):
         try:
-            filenames = self.main_window.open_file_dialog(
+            filenames = await self.main_window.open_file_dialog(
                 title="Open file with Toga",
                 multiselect=True
             )
@@ -73,9 +73,9 @@ class ExampledialogsApp(toga.App):
         except ValueError:
             self.label.text = "Open file dialog was canceled"
 
-    def action_open_file_dialog_with_inital_folder(self, widget):
+    async def action_open_file_dialog_with_inital_folder(self, widget):
         try:
-            fname = self.main_window.open_file_dialog(
+            fname = await self.main_window.open_file_dialog(
                 title="Open file with Toga in home folder",
                 initial_directory=Path.home(),
                 multiselect=False
@@ -87,18 +87,21 @@ class ExampledialogsApp(toga.App):
         except ValueError:
             self.label.text = "Open file dialog was canceled"
 
-    def action_select_folder_dialog(self, widget):
+    async def action_select_folder_dialog(self, widget):
         try:
-            path_names = self.main_window.select_folder_dialog(
+            path_names = await self.main_window.select_folder_dialog(
                 title="Select folder with Toga"
             )
-            self.label.text = "Folder selected:" + ','.join([path for path in path_names])
+            if path_names is not None:
+                self.label.text = "Folder selected:" + ','.join([path for path in path_names])
+            else:
+                self.label.text = "No folder selected!"
         except ValueError:
             self.label.text = "Folder select dialog was canceled"
 
-    def action_select_folder_dialog_multi(self, widget):
+    async def action_select_folder_dialog_multi(self, widget):
         try:
-            path_names = self.main_window.select_folder_dialog(
+            path_names = await self.main_window.select_folder_dialog(
                 title="Select multiple folders with Toga",
                 multiselect=True
             )
@@ -106,9 +109,9 @@ class ExampledialogsApp(toga.App):
         except ValueError:
             self.label.text = "Folders select dialog was canceled"
 
-    def action_select_folder_dialog_with_initial_folder(self, widget):
+    async def action_select_folder_dialog_with_initial_folder(self, widget):
         try:
-            path_names = self.main_window.select_folder_dialog(
+            path_names = await self.main_window.select_folder_dialog(
                 title="Select folder with Toga in current folder",
                 initial_directory=Path.cwd(),
             )
@@ -116,12 +119,13 @@ class ExampledialogsApp(toga.App):
         except ValueError:
             self.label.text = "Folder select dialog was canceled"
 
-    def action_save_file_dialog(self, widget):
+    async def action_save_file_dialog(self, widget):
         fname = 'Toga_file.txt'
         try:
-            save_path = self.main_window.save_file_dialog(
+            save_path = await self.main_window.save_file_dialog(
                 "Save file with Toga",
-                suggested_filename=fname)
+                suggested_filename=fname
+            )
             if save_path is not None:
                 self.label.text = "File saved with Toga:" + save_path
             else:
@@ -129,7 +133,7 @@ class ExampledialogsApp(toga.App):
         except ValueError:
             self.label.text = "Save file dialog was canceled"
 
-    def window_close_handler(self, window):
+    async def window_close_handler(self, window):
         # This handler is called before the window is closed, so there
         # still are 1 more windows than the number of secondary windows
         # after it is closed
@@ -144,7 +148,7 @@ class ExampledialogsApp(toga.App):
             self.set_window_label_text(len(self.windows) - 2)
             return True
         else:
-            window.info_dialog(f'Abort {window.title}!', 'Maybe try that again...')
+            await window.info_dialog(f'Abort {window.title}!', 'Maybe try that again...')
             self.close_attempts.add(window)
             return False
 
@@ -175,9 +179,9 @@ class ExampledialogsApp(toga.App):
             if not isinstance(window, toga.MainWindow):
                 window.close()
 
-    def exit_handler(self, app):
+    async def exit_handler(self, app):
         # Return True if app should close, and False if it should remain open
-        if self.main_window.confirm_dialog('Toga', 'Are you sure you want to quit?'):
+        if await self.main_window.confirm_dialog('Toga', 'Are you sure you want to quit?'):
             print(f"Label text was '{self.label.text}' when you quit the app")
             return True
         else:
