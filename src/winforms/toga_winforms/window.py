@@ -36,8 +36,17 @@ class Window:
         self.interface = interface
         self.interface._impl = self
 
+        # Winforms close handling is caught on the FormClosing handler. To allow
+        # for async close handling, we need to be able to abort this close
+        # event, and then manually cause the close as part of the async result
+        # handling. However, this then causes an is_closing event, which we need
+        # to ignore. The `_is_closing` flag lets us easily identify if the
+        # window is in the process of closing.
+        self._is_closing = False
+
         self.native = WinForms.Form()
         self.native.interface = self.interface
+        self.native.FormClosing += self.winforms_FormClosing
 
         self.set_title(title)
         self.set_size(size)
@@ -141,22 +150,25 @@ class Window:
         )
         self.interface.content.refresh()
 
-        self.native.FormClosing += self.winforms_FormClosing
-
         if self.interface is not self.interface.app._main_window:
             self.native.Icon = self.interface.app.icon._impl.native
             self.native.Show()
 
     def winforms_FormClosing(self, sender, event):
-        if self.interface.on_close:
-            should_close = self.interface.on_close(self)
-        else:
-            should_close = True
-
-        if should_close:
-            self.interface.app.windows -= self.interface
-        else:
-            event.Cancel = True
+        # If the app is exiting, or a manual close has been requested,
+        # don't get confirmation; just close.
+        if not self.interface.app._impl._is_exiting and not self._is_closing:
+            if not self.interface.closeable:
+                # Closeability is implemented by shortcutting the close handler.
+                event.Cancel = True
+            elif self.interface.on_close:
+                # If there is an on_close event handler, process it;
+                # but then cancel the close event. If the result of
+                # on_close handling indicates the window should close,
+                # then it will be manually triggered as part of that
+                # result handling.
+                self.interface.on_close(self)
+                event.Cancel = True
 
     def set_full_screen(self, is_full_screen):
         self.interface.factory.not_implemented('Window.set_full_screen()')
@@ -165,6 +177,7 @@ class Window:
         pass
 
     def close(self):
+        self._is_closing = True
         self.native.Close()
 
     def winforms_resize(self, sender, args):
