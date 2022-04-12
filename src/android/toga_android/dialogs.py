@@ -44,6 +44,7 @@ class TextDialog(BaseDialog):
         - icon: Integer used as an Android resource ID number for dialog icon (or None to skip)
         """
         super().__init__()
+        self.on_result = on_result
 
         builder = AlertDialog__Builder(window.app.native)
         builder.setCancelable(False)

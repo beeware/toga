@@ -102,20 +102,32 @@ class Window:
     def set_full_screen(self, is_full_screen):
         self.interface.factory.not_implemented('Window.set_full_screen()')
 
-    def info_dialog(self, title, message):
-        return dialogs.InfoDialog(self, title, message)
+    def info_dialog(self, title, message, on_result=None):
+        return dialogs.InfoDialog(self, title, message, on_result=on_result)
 
-    def question_dialog(self, title, message):
-        return dialogs.QuestionDialog(self, title, message)
+    def question_dialog(self, title, message, on_result=None):
+        return dialogs.QuestionDialog(self, title, message, on_result=on_result)
 
-    def confirm_dialog(self, title, message):
-        return dialogs.ConfirmDialog(self, title, message)
+    def confirm_dialog(self, title, message, on_result=None):
+        return dialogs.ConfirmDialog(self, title, message, on_result=on_result)
 
-    def error_dialog(self, title, message):
-        return dialogs.ErrorDialog(self, title, message)
+    def error_dialog(self, title, message, on_result=None):
+        return dialogs.ErrorDialog(self, title, message, on_result=on_result)
 
-    def stack_trace_dialog(self, title, message, content, retry=False):
+    def stack_trace_dialog(self, title, message, content, retry=False, on_result=None):
         self.interface.factory.not_implemented('Window.stack_trace_dialog()')
+        # return dialogs.StackTraceDialog(self.interface, title, message, content=content, retry=retry, on_result=on_result)
 
-    def save_file_dialog(self, title, suggested_filename, file_types):
+    def save_file_dialog(self, title, suggested_filename, file_types, on_result=None):
         self.interface.factory.not_implemented('Window.save_file_dialog()')
+        # return dialogs.SaveFileDialog(self.interface, title, suggested_filename, file_types, on_result=on_result)
+
+    def open_file_dialog(self, title, initial_directory, file_types, multiselect, on_result=None):
+        self.interface.factory.not_implemented('Window.open_file_dialog()')
+        # return dialogs.OpenFileDialog(
+        #     self.interface, title, initial_directory, file_types, multiselect, on_result=on_result
+        # )
+
+    def select_folder_dialog(self, title, initial_directory, multiselect, on_result=None):
+        self.interface.factory.not_implemented('Window.select_folder_dialog()')
+        # return dialogs.SelectFolderDialog(self.interface, title, initial_directory, multiselect, on_result=None)
