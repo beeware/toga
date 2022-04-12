@@ -518,9 +518,6 @@ class App:
         else:
             should_exit = True
 
-        if should_exit:
-            self._impl.exit()
-
         return should_exit
 
     @property
@@ -539,7 +536,11 @@ class App:
         Args:
             handler (:obj:`callable`): The handler to invoke before the app exits.
         """
-        self._on_exit = wrapped_handler(self, handler)
+        def cleanup(app, should_exit):
+            if should_exit:
+                app._impl.exit()
+
+        self._on_exit = wrapped_handler(self, handler, cleanup=cleanup)
         self._impl.set_on_exit(self._on_exit)
 
     def add_background_task(self, handler):

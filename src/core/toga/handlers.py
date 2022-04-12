@@ -27,9 +27,9 @@ async def long_running_task(generator, cleanup):
 
 async def handler_with_cleanup(handler, cleanup, interface, *args, **kwargs):
     try:
-        await handler(interface, *args, **kwargs)
+        result = await handler(interface, *args, **kwargs)
         if cleanup:
-            cleanup()
+            cleanup(interface, result)
     except Exception as e:
         print('Error in async handler:', e, file=sys.stderr)
         traceback.print_exc()
@@ -71,7 +71,7 @@ def wrapped_handler(interface, handler, cleanup=None):
                 else:
                     try:
                         if cleanup:
-                            cleanup()
+                            cleanup(interface, result)
                         return result
                     except Exception as e:
                         print('Error in handler:', e, file=sys.stderr)

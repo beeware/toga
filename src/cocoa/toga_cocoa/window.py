@@ -289,20 +289,11 @@ class Window:
 
     def cocoa_windowShouldClose(self):
         if self.interface.on_close:
-            should_close = self.interface.on_close(self)
-        else:
-            should_close = True
-
-        if should_close:
-            self.interface.app.windows -= self.interface
-
-        return should_close
+            self.interface.on_close(self)
+        return False
 
     def close(self):
-        # Close window directly here, don't use `NSWindow.performClose()`
-        # because it won't work if the window does not have a close button.
-        if self.cocoa_windowShouldClose():
-            self.native.close()
+        self.native.close()
 
     async def info_dialog(self, title, message):
         return await dialogs.info(self.interface, title, message)

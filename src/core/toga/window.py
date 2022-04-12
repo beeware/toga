@@ -199,10 +199,15 @@ class Window:
         Args:
             handler (:obj:`callable`): The handler to invoke before the window is closed.
         """
-        self._on_close = wrapped_handler(self, handler)
+        def cleanup(window, should_close):
+            if should_close:
+                window.close()
+
+        self._on_close = wrapped_handler(self, handler, cleanup=cleanup)
         self._impl.set_on_close(self._on_close)
 
     def close(self):
+        self.app.windows -= self
         self._impl.close()
 
     ############################################################

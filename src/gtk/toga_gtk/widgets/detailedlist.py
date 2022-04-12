@@ -168,7 +168,7 @@ class DetailedList(Widget):
     def set_on_delete(self, handler: callable):
         pass
 
-    def after_on_refresh(self):
+    def after_on_refresh(self, widget, result):
         # No special handling required
         pass
 

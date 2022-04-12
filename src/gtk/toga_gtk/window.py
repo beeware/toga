@@ -35,6 +35,8 @@ class Window:
         self.interface = interface
         self.interface._impl = self
 
+        self._is_closing = False
+
         self.layout = None
 
         self.native = self._IMPL_CLASS()
@@ -128,13 +130,12 @@ class Window:
         self.interface.content._impl.min_height = self.interface.content.layout.height
 
     def gtk_delete_event(self, widget, data):
-        if self.interface.on_close:
+        if self._is_closing:
+            should_close = True
+        elif self.interface.on_close:
             should_close = self.interface.on_close(self.interface.app)
         else:
             should_close = True
-
-        if should_close:
-            self.interface.app.windows -= self.interface
 
         # Return value of the GTK on_close handler indicates
         # whether the event has been fully handled. Returning
@@ -151,6 +152,7 @@ class Window:
         pass
 
     def close(self):
+        self._is_closing = True
         self.native.close()
 
     def get_position(self):

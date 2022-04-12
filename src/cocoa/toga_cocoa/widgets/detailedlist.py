@@ -162,7 +162,7 @@ class DetailedList(Widget):
     def set_on_refresh(self, handler):
         pass
 
-    def after_on_refresh(self):
+    def after_on_refresh(self, widget, result):
         self.native.finishedLoading()
 
     def get_selection(self):
