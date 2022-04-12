@@ -31,6 +31,7 @@ class WindowDemoApp(toga.App):
             position=(200, 200),
             size=(300, 300),
             resizeable=False,
+            on_close=self.close_handler,
         )
         non_resize_window.content = toga.Box(
             children=[toga.Label("This window is not resizable")]
@@ -57,9 +58,31 @@ class WindowDemoApp(toga.App):
             f"at {self.main_window.position!r}"
         )
 
+    def exit_handler(self, app, **kwargs):
+        self.close_count += 1
+        print("exit?", self.close_count)
+        if self.close_count % 2 == 1:
+            print("no exit")
+            self.main_window.info_dialog("Can't close app", "Try that again")
+            return False
+        return True
+
+    def close_handler(self, window, **kwargs):
+        self.close_count += 1
+        print("close?", self.close_count)
+        if self.close_count % 2 == 1:
+            print("no close")
+            self.main_window.info_dialog("Can't close window", "Try that again")
+            return False
+        return True
+
     def startup(self):
+        # Track in-app closes
+        self.close_count = 0
+
         # Set up main window
         self.main_window = toga.MainWindow(title=self.name)
+        self.on_exit=self.exit_handler
 
         # Label to show responses.
         self.label = toga.Label('Ready.')
