@@ -1,4 +1,3 @@
-from . import dialogs
 from .libs.android import R__attr
 from .libs.android.util import TypedValue
 
@@ -101,21 +100,3 @@ class Window:
 
     def set_full_screen(self, is_full_screen):
         self.interface.factory.not_implemented('Window.set_full_screen()')
-
-    def info_dialog(self, title, message):
-        dialogs.info(self, title, message)
-
-    def question_dialog(self, title, message):
-        self.interface.factory.not_implemented('Window.question_dialog()')
-
-    def confirm_dialog(self, title, message):
-        self.interface.factory.not_implemented('Window.confirm_dialog()')
-
-    def error_dialog(self, title, message):
-        self.interface.factory.not_implemented('Window.error_dialog()')
-
-    def stack_trace_dialog(self, title, message, content, retry=False):
-        self.interface.factory.not_implemented('Window.stack_trace_dialog()')
-
-    def save_file_dialog(self, title, suggested_filename, file_types):
-        self.interface.factory.not_implemented('Window.save_file_dialog()')

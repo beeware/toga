@@ -4,6 +4,8 @@ from .fonts import Font
 from .icons import Icon
 from .images import Image
 from .paths import paths
+from . import dialogs
+
 from .widgets.box import Box
 from .widgets.button import Button
 from .widgets.canvas import Canvas
@@ -45,6 +47,7 @@ __all__ = [
     'Icon',
     'Image',
     'paths',
+    "dialogs",
 
     # Widgets
     'Box',

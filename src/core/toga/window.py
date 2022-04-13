@@ -1,4 +1,5 @@
 from builtins import id as identifier
+from pathlib import Path
 
 from toga.command import CommandSet
 from toga.handlers import wrapped_handler
@@ -214,7 +215,7 @@ class Window:
     # Dialogs
     ############################################################
 
-    def info_dialog(self, title, message):
+    def info_dialog(self, title, message, on_result=None):
         """ Opens a info dialog with a 'OK' button to close the dialog.
 
         Args:
@@ -224,9 +225,11 @@ class Window:
         Returns:
             Returns `None` after the user pressed the 'OK' button.
         """
-        return self._impl.info_dialog(title, message)
+        return self.factory.dialogs.InfoDialog(
+            self, title, message, on_result=wrapped_handler(self, on_result)
+        )
 
-    def question_dialog(self, title, message):
+    def question_dialog(self, title, message, on_result=None):
         """ Opens a dialog with a 'YES' and 'NO' button.
 
         Args:
@@ -236,9 +239,11 @@ class Window:
         Returns:
             Returns `True` when the 'YES' button was pressed, `False` when the 'NO' button was pressed.
         """
-        return self._impl.question_dialog(title, message)
+        return self.factory.dialogs.QuestionDialog(
+            self, title, message, on_result=wrapped_handler(self, on_result)
+        )
 
-    def confirm_dialog(self, title, message):
+    def confirm_dialog(self, title, message, on_result=None):
         """ Opens a dialog with a 'Cancel' and 'OK' button.
 
         Args:
@@ -248,9 +253,11 @@ class Window:
         Returns:
             Returns `True` when the 'OK' button was pressed, `False` when the 'CANCEL' button was pressed.
         """
-        return self._impl.confirm_dialog(title, message)
+        return self.factory.dialogs.ConfirmDialog(
+            self, title, message, on_result=wrapped_handler(self, on_result)
+        )
 
-    def error_dialog(self, title, message):
+    def error_dialog(self, title, message, on_result=None):
         """ Opens a error dialog with a 'OK' button to close the dialog.
 
         Args:
@@ -260,9 +267,11 @@ class Window:
         Returns:
             Returns `None` after the user pressed the 'OK' button.
         """
-        return self._impl.error_dialog(title, message)
+        return self.factory.dialogs.ErrorDialog(
+            self, title, message, on_result=wrapped_handler(self, on_result)
+        )
 
-    def stack_trace_dialog(self, title, message, content, retry=False):
+    def stack_trace_dialog(self, title, message, content, retry=False, on_result=None):
         """ Calling this function opens a dialog that allows to display a
         large text body in a scrollable fashion.
 
@@ -275,9 +284,14 @@ class Window:
         Returns:
             Returns `None` after the user pressed the 'OK' button.
         """
-        return self._impl.stack_trace_dialog(title, message, content, retry)
+        return self.factory.dialogs.StackTraceDialog(
+            self, title, message,
+            content=content,
+            retry=retry,
+            on_result=wrapped_handler(self, on_result),
+        )
 
-    def save_file_dialog(self, title, suggested_filename, file_types=None):
+    def save_file_dialog(self, title, suggested_filename, file_types=None, on_result=None):
         """ This opens a native dialog where the user can select a place to save a file.
         It is possible to suggest a filename and force the user to use a specific file extension.
         If no path is returned (eg. dialog is canceled), a ValueError is raised.
@@ -288,11 +302,25 @@ class Window:
             file_types: A list of strings with the allowed file extensions.
 
         Returns:
-            The absolute path(str) to the selected location.
+            The absolute path(str) to the selected location. May be None.
         """
-        return self._impl.save_file_dialog(title, suggested_filename, file_types)
+        # Convert suggested filename to a path (if it isn't already),
+        # and break it into a filename and a directory
+        suggested_path = Path(suggested_filename)
+        initial_directory = suggested_path.parent
+        if initial_directory == Path("."):
+            initial_directory = None
+        filename = suggested_path.name
 
-    def open_file_dialog(self, title, initial_directory=None, file_types=None, multiselect=False):
+        return self.factory.dialogs.SaveFileDialog(
+            self, title,
+            filename=filename,
+            initial_directory=initial_directory,
+            file_types=file_types,
+            on_result=wrapped_handler(self, on_result),
+        )
+
+    def open_file_dialog(self, title, initial_directory=None, file_types=None, multiselect=False, on_result=None):
         """ This opens a native dialog where the user can select the file to open.
         It is possible to set the initial folder and only show files with specified file extensions.
         If no path is returned (eg. dialog is canceled), a ValueError is raised.
@@ -303,11 +331,18 @@ class Window:
             multiselect: Value showing whether a user can select multiple files.
 
         Returns:
-            The absolute path(str) to the selected file or a list(str) if multiselect
+            A list of absolute paths(str) if multiselect is True, a single path(str)
+            otherwise. Returns None if no file is selected.
         """
-        return self._impl.open_file_dialog(title, initial_directory, file_types, multiselect)
+        return self.factory.dialogs.OpenFileDialog(
+            self, title,
+            initial_directory=Path(initial_directory) if initial_directory else None,
+            file_types=file_types,
+            multiselect=multiselect,
+            on_result=wrapped_handler(self, on_result)
+        )
 
-    def select_folder_dialog(self, title, initial_directory=None, multiselect=False):
+    def select_folder_dialog(self, title, initial_directory=None, multiselect=False, on_result=None):
         """ This opens a native dialog where the user can select a folder.
         It is possible to set the initial folder.
         If no path is returned (eg. dialog is canceled), a ValueError is raised.
@@ -317,6 +352,12 @@ class Window:
             multiselect (bool): Value showing whether a user can select multiple files.
 
         Returns:
-            The absolute path(str) to the selected file or None.
+            A list of absolute paths(str) if multiselect is True, a single path(str)
+            otherwise. Returns None if no folder is selected.
         """
-        return self._impl.select_folder_dialog(title, initial_directory, multiselect)
+        return self.factory.dialogs.SelectFolderDialog(
+            self, title,
+            initial_directory=Path(initial_directory) if initial_directory else None,
+            multiselect=multiselect,
+            on_result=wrapped_handler(self, on_result),
+        )
