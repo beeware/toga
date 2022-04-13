@@ -1,4 +1,3 @@
-from toga_iOS import dialogs
 from toga_iOS.libs import UIApplication, UIScreen, UIViewController, UIWindow
 
 
@@ -88,18 +87,3 @@ class Window:
 
     def close(self):
         pass
-
-    def info_dialog(self, title, message):
-        return dialogs.info_dialog(self.interface, title, message)
-
-    def question_dialog(self, title, message):
-        return dialogs.question_dialog(self.interface, title, message)
-
-    def confirm_dialog(self, title, message):
-        return dialogs.confirm_dialog(self.interface, title, message)
-
-    def error_dialog(self, title, message):
-        return dialogs.error_dialog(self.interface, title, message)
-
-    def stack_trace_dialog(self, title, message, content, retry=False):
-        self.interface.factory.not_implemented('Window.stack_trace_dialog()')

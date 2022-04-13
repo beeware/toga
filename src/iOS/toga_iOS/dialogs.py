@@ -1,146 +1,152 @@
-from rubicon.objc import SEL, Block, objc_method, objc_property
+import asyncio
+
+from rubicon.objc import Block
 from rubicon.objc.runtime import objc_id
 
 from toga_iOS.libs import (
-    NSDate,
-    NSRunLoop,
     UIAlertAction,
     UIAlertActionStyle,
     UIAlertController,
     UIAlertControllerStyle,
-    UIBarButtonItem,
-    UIBarButtonSystemItem,
-    UIScreen,
-    UIViewController
 )
 
 
-class TogaDialog(UIViewController):
+class BaseDialog:
+    def __init__(self):
+        loop = asyncio.get_event_loop()
+        self.future = loop.create_future()
 
-    interface = objc_property(object, weak=True)
-
-    @objc_method
-    def loadView(self) -> None:
-        self.title = self.interface.title
-
-        self.cancelButton = UIBarButtonItem.alloc().initWithBarButtonSystemItem_target_action_(
-            UIBarButtonSystemItem.Cancel,
-            self,
-            SEL('cancelClicked')
-        )
-        self.navigationController.navigationBar.topItem.leftBarButtonItem = self.cancelButton
-
-        self.doneButton = UIBarButtonItem.alloc().initWithBarButtonSystemItem_target_action_(
-            UIBarButtonSystemItem.Done,
-            SEL('doneClicked')
-        )
-        self.navigationController.navigationBar.topItem.rightBarButtonItem = self.doneButton
-
-        self.interface.content._update_layout(
-            width=UIScreen.mainScreen().bounds.size.width,
-            height=UIScreen.mainScreen().bounds.size.height,
-            padding_top=12
+    def __eq__(self, other):
+        raise RuntimeError(
+            "Can't check dialog result directly; use await or an on_result handler"
         )
 
-        self.view = self.interface.content._impl
-
-    @objc_method
-    def cancelClicked(self):
-        self.dismissModalViewControllerAnimated_(True)
-        if self.interface.on_cancel:
-            self.interface.on_cancel(self.interface)
-
-    @objc_method
-    def doneClicked(self):
-        self.dismissModalViewControllerAnimated_(True)
-        if self.interface.on_accept:
-            self.interface.on_accept(self.interface)
-
-
-class Dialog:
-    def __init__(self, title, content, on_accept=None, on_cancel=None):
-        self.title = title
-        self.content = content
-
-        self.on_accept = on_accept
-        self.on_cancel = on_cancel
-
-        self._create()
-
-    def _create(self):
-        self.content.startup()
-        self._native = TogaDialog.alloc().init()
-        self._native.interface = self
-
-
-class TogaModalDialog:
-    def __init__(self, title, message):
-        self.native = UIAlertController.alertControllerWithTitle(
-            title,
-            message=message,
-            preferredStyle=UIAlertControllerStyle.Alert
+    def __bool__(self):
+        raise RuntimeError(
+            "Can't check dialog result directly; use await or an on_result handler"
         )
 
-        self.response = None
+    def __await__(self):
+        return self.future.__await__()
 
-    def true_response(self, action: objc_id) -> None:
-        self.response = True
 
-    def false_response(self, action: objc_id) -> None:
-        self.response = False
+class AlertDialog(BaseDialog):
+    def __init__(self, window, title, message, on_result=None):
+        super().__init__()
+        self.on_result = on_result
 
-    def add_ok_button(self):
-        self.native.addAction(
-            UIAlertAction.actionWithTitle(
-                "OK",
-                style=UIAlertActionStyle.Default,
-                handler=Block(self.true_response, None, objc_id)
-            )
+        self.dialog = UIAlertController.alertControllerWithTitle(
+            title, message=message, preferredStyle=UIAlertControllerStyle.Alert
         )
 
-    def add_cancel_button(self):
-        self.native.addAction(
-            UIAlertAction.actionWithTitle(
-                "Cancel",
-                style=UIAlertActionStyle.Cancel,
-                handler=Block(self.false_response, None, objc_id)
-            )
-        )
+        self.populate_dialog()
 
-    def runModal(self, window):
         window._impl.controller.presentViewController(
-            self.native,
+            self.dialog,
             animated=False,
             completion=None,
         )
 
-        while self.response is None:
-            NSRunLoop.currentRunLoop.runUntilDate(NSDate.alloc().init())
+    def populate_dialog(
+        self,
+        dialog,
+    ):
+        pass
 
-        return self.response
+    def response(self, value):
+        if self.on_result:
+            self.on_result(self, value)
+
+        self.future.set_result(value)
+
+    def null_response(self, action: objc_id) -> None:
+        self.response(None)
+
+    def true_response(self, action: objc_id) -> None:
+        self.response(True)
+
+    def false_response(self, action: objc_id) -> None:
+        self.response(False)
+
+    def add_null_response_button(self, label):
+        self.dialog.addAction(
+            UIAlertAction.actionWithTitle(
+                label,
+                style=UIAlertActionStyle.Default,
+                handler=Block(self.null_response, None, objc_id),
+            )
+        )
+
+    def add_true_response_button(self, label):
+        self.dialog.addAction(
+            UIAlertAction.actionWithTitle(
+                label,
+                style=UIAlertActionStyle.Default,
+                handler=Block(self.true_response, None, objc_id),
+            )
+        )
+
+    def add_false_response_button(self, label):
+        self.dialog.addAction(
+            UIAlertAction.actionWithTitle(
+                label,
+                style=UIAlertActionStyle.Cancel,
+                handler=Block(self.false_response, None, objc_id),
+            )
+        )
 
 
-def info_dialog(window, title, message):
-    dialog = TogaModalDialog(title=title, message=message)
-    dialog.add_ok_button()
-    return dialog.runModal(window)
+class InfoDialog(AlertDialog):
+    def populate_dialog(self):
+        self.add_null_response_button("OK")
 
 
-def question_dialog(window, title, message):
-    dialog = TogaModalDialog(title=title, message=message)
-    dialog.add_yes_button()
-    dialog.add_no_button()
-    return dialog.runModal(window)
+class QuestionDialog(AlertDialog):
+    def populate_dialog(self):
+        self.add_true_response_button("Yes")
+        self.add_false_response_button("No")
 
 
-def confirm_dialog(window, title, message):
-    dialog = TogaModalDialog(title=title, message=message)
-    dialog.add_ok_button()
-    dialog.add_cancel_button()
-    return dialog.runModal(window)
+class ConfirmDialog(AlertDialog):
+    def populate_dialog(self):
+        self.add_true_response_button("OK")
+        self.add_false_response_button("Cancel")
 
 
-def error_dialog(window, title, message):
-    dialog = TogaModalDialog(title=title, message=message)
-    dialog.add_ok_button()
-    return dialog.runModal(window)
+class ErrorDialog(AlertDialog):
+    def populate_dialog(self):
+        self.add_null_response_button("OK")
+
+
+class StackTraceDialog(BaseDialog):
+    def __init__(self, window, title, message, on_result=None, **kwargs):
+        super().__init__()
+        window.factory.not_implemented("Window.stack_trace_dialog()")
+
+
+class SaveFileDialog(BaseDialog):
+    def __init__(
+        self,
+        window,
+        title,
+        filename,
+        initial_directory,
+        file_types=None,
+        on_result=None,
+    ):
+        super().__init__()
+        window.factory.not_implemented("Window.save_file_dialog()")
+
+
+class OpenFileDialog(BaseDialog):
+    def __init__(
+        self, window, title, initial_directory, file_types, multiselect, on_result=None
+    ):
+        super().__init__()
+        window.factory.not_implemented("Window.open_file_dialog()")
+
+
+class SelectFolderDialog(BaseDialog):
+    def __init__(self, window, title, initial_directory, multiselect, on_result=None):
+        super().__init__()
+        window.factory.not_implemented("Window.select_folder_dialog()")
