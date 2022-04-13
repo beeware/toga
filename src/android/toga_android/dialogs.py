@@ -32,7 +32,16 @@ class BaseDialog:
 
 
 class TextDialog(BaseDialog):
-    def __init__(self, window, title, message, positive_text, negative_text=None, icon=None, on_result=None):
+    def __init__(
+        self,
+        window,
+        title,
+        message,
+        positive_text,
+        negative_text=None,
+        icon=None,
+        on_result=None,
+    ):
         """Create Android textual dialog.
 
         - window: Toga Window
@@ -53,15 +62,9 @@ class TextDialog(BaseDialog):
             builder.setIcon(icon)
 
         if positive_text is not None:
-            builder.setPositiveButton(
-                positive_text,
-                OnClickListener(self.completion_handler, True)
-            )
+            builder.setPositiveButton(positive_text, OnClickListener(self.completion_handler, True))
         if negative_text is not None:
-            builder.setNegativeButton(
-                negative_text,
-                OnClickListener(self.completion_handler, False)
-            )
+            builder.setNegativeButton(negative_text, OnClickListener(self.completion_handler, False))
         builder.show()
 
     def completion_handler(self, return_value: bool) -> None:

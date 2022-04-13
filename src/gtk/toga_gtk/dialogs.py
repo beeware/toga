@@ -20,7 +20,16 @@ class BaseDialog:
 
 
 class MessageDialog(BaseDialog):
-    def __init__(self, window, title, message, message_type, buttons, success_result=None, on_result=None):
+    def __init__(
+        self,
+        window,
+        title,
+        message,
+        message_type,
+        buttons,
+        success_result=None,
+        on_result=None,
+    ):
         super().__init__()
         self.on_result = on_result
 
@@ -105,7 +114,18 @@ class StackTraceDialog(BaseDialog):
 
 
 class FileDialog(BaseDialog):
-    def __init__(self, window, title, filename, folder, file_types, multiselect, action, ok_icon, on_result=None):
+    def __init__(
+        self,
+        window,
+        title,
+        filename,
+        folder,
+        file_types,
+        multiselect,
+        action,
+        ok_icon,
+        on_result=None,
+    ):
         super().__init__()
         self.on_result = on_result
 
@@ -157,7 +177,7 @@ class SaveFileDialog(FileDialog):
         # a filename,
         suggested_path = Path(suggested_filename)
         folder = suggested_path.parent
-        if folder == Path('.'):
+        if folder == Path("."):
             folder = None
         filename = suggested_path.name
 
@@ -202,4 +222,3 @@ class SelectFolderDialog(FileDialog):
             ok_icon=Gtk.STOCK_OPEN,
             on_result=on_result,
         )
-

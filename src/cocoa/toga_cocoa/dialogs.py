@@ -13,7 +13,7 @@ from .libs import (
     NSSavePanel,
     NSScrollView,
     NSTextView,
-    NSURL
+    NSURL,
 )
 
 
@@ -45,10 +45,7 @@ class NSAlertDialog(BaseDialog):
 
         self.build_dialog(alert, **kwargs)
 
-        alert.beginSheetModalForWindow(
-            window._impl.native,
-            completionHandler=completion_handler
-        )
+        alert.beginSheetModalForWindow(window._impl.native, completionHandler=completion_handler)
 
     def build_dialog(self, alert):
         pass
@@ -92,8 +89,8 @@ class QuestionDialog(NSAlertDialog):
         )
 
     def build_dialog(self, alert):
-        alert.addButtonWithTitle('Yes')
-        alert.addButtonWithTitle('No')
+        alert.addButtonWithTitle("Yes")
+        alert.addButtonWithTitle("No")
 
 
 class ConfirmDialog(NSAlertDialog):
@@ -108,8 +105,8 @@ class ConfirmDialog(NSAlertDialog):
         )
 
     def build_dialog(self, alert):
-        alert.addButtonWithTitle('OK')
-        alert.addButtonWithTitle('Cancel')
+        alert.addButtonWithTitle("OK")
+        alert.addButtonWithTitle("Cancel")
 
 
 class ErrorDialog(NSAlertDialog):
@@ -126,12 +123,17 @@ class ErrorDialog(NSAlertDialog):
 
 class StackTraceDialog(NSAlertDialog):
     def __init__(self, window, title, message, on_result=None, **kwargs):
+        if kwargs.get("retry"):
+            completion_handler = self.bool_completion_handler
+        else:
+            completion_handler = self.completion_handler
+
         super().__init__(
             window=window,
             title=title,
             message=message,
             alert_style=NSAlertStyle.Critical,
-            completion_handler=self.bool_completion_handler if kwargs.get('retry') else self.completion_handler,
+            completion_handler=completion_handler,
             on_result=on_result,
             **kwargs,
         )
@@ -155,8 +157,8 @@ class StackTraceDialog(NSAlertDialog):
         alert.accessoryView = scroll
 
         if retry:
-            alert.addButtonWithTitle('Retry')
-            alert.addButtonWithTitle('Quit')
+            alert.addButtonWithTitle("Retry")
+            alert.addButtonWithTitle("Quit")
 
 
 class FileDialog(BaseDialog):
@@ -216,7 +218,7 @@ class SaveFileDialog(FileDialog):
         # a filename,
         suggested_path = Path(suggested_filename)
         folder = suggested_path.parent
-        if folder == Path('.'):
+        if folder == Path("."):
             folder = None
         filename = suggested_path.name
 

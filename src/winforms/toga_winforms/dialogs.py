@@ -95,7 +95,17 @@ class StackTraceDialog(BaseDialog):
 
 
 class FileDialog(BaseDialog):
-    def __init__(self, dialog, window, title, filename, folder, file_types, multiselect, on_result=None):
+    def __init__(
+        self,
+        dialog,
+        window,
+        title,
+        filename,
+        folder,
+        file_types,
+        multiselect,
+        on_result=None,
+    ):
         super().__init__()
         self.on_result = on_result
 
@@ -108,21 +118,13 @@ class FileDialog(BaseDialog):
             dialog.InitialDirectory = str(folder)
 
         if file_types is not None:
-            filters = [
-                "{0} files (*.{0})|*.{0}".format(ext)
-                for ext in file_types
-            ] + [
-                "All files (*.*)|*.*"
-            ]
+            filters = [f"{ext} files (*.{ext})|*.{ext}" for ext in file_types] + ["All files (*.*)|*.*"]
 
             if len(file_types) > 1:
-                filters.insert(0, "All matching files ({0})|{0}".format(
-                    ';'.join([
-                        '*.{0}'.format(ext)
-                        for ext in file_types
-                    ])
-                ))
-            dialog.Filter = '|'.join(filters)
+                pattern = ";".join([f"*.{ext}" for ext in file_types])
+                filters.insert(0, f"All matching files ({pattern})|{pattern}")
+
+            dialog.Filter = "|".join(filters)
 
         if multiselect:
             dialog.Multiselect = True
@@ -149,7 +151,7 @@ class SaveFileDialog(FileDialog):
         # a filename,
         suggested_path = Path(suggested_filename)
         folder = suggested_path.parent
-        if folder == Path('.'):
+        if folder == Path("."):
             folder = None
         filename = suggested_path.name
 

@@ -1,7 +1,6 @@
 from toga.command import GROUP_BREAK, SECTION_BREAK
 from toga.handlers import wrapped_handler
 
-from . import dialogs
 from .libs import Gtk
 
 
