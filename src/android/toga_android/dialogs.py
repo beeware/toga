@@ -20,7 +20,6 @@ class BaseDialog:
     def __init__(self):
         loop = asyncio.get_event_loop()
         self.future = loop.create_future()
-        # self.future = asyncio.create_future()
 
     def __eq__(self, other):
         raise RuntimeError("Can't check dialog result directly; use await or an on_result handler")
@@ -46,7 +45,7 @@ class TextDialog(BaseDialog):
         super().__init__()
         self.on_result = on_result
 
-        builder = AlertDialog__Builder(window.app.native)
+        builder = AlertDialog__Builder(window._impl.app.native)
         builder.setCancelable(False)
         builder.setTitle(title)
         builder.setMessage(message)
@@ -117,3 +116,27 @@ class ErrorDialog(TextDialog):
             icon=R__drawable.ic_dialog_alert,
             on_result=on_result,
         )
+
+
+class StackTraceDialog(BaseDialog):
+    def __init__(self, window, title, message, on_result=None, **kwargs):
+        super().__init__()
+        window.factory.not_implemented("Window.stack_trace_dialog()")
+
+
+class SaveFileDialog(BaseDialog):
+    def __init__(self, window, title, suggested_filename, file_types=None, on_result=None):
+        super().__init__()
+        window.factory.not_implemented("Window.save_file_dialog()")
+
+
+class OpenFileDialog(BaseDialog):
+    def __init__(self, window, title, initial_directory, file_types, multiselect, on_result=None):
+        super().__init__()
+        window.factory.not_implemented("Window.open_file_dialog()")
+
+
+class SelectFolderDialog(BaseDialog):
+    def __init__(self, window, title, initial_directory, multiselect, on_result=None):
+        super().__init__()
+        window.factory.not_implemented("Window.select_folder_dialog()")
