@@ -216,12 +216,11 @@ class SaveFileDialog(FileDialog):
         # a filename,
         suggested_path = Path(suggested_filename)
         folder = suggested_path.parent
-        if folder != Path('.'):
+        if folder == Path('.'):
             folder = None
         filename = suggested_path.name
 
         super().__init__(
-            PanelClass=NSSavePanel,
             window=window,
             title=title,
             filename=filename,

@@ -116,11 +116,15 @@ class Window:
 
     def stack_trace_dialog(self, title, message, content, retry=False, on_result=None):
         self.interface.factory.not_implemented('Window.stack_trace_dialog()')
-        # return dialogs.StackTraceDialog(self.interface, title, message, content=content, retry=retry, on_result=on_result)
+        # return dialogs.StackTraceDialog(
+        #     self.interface, title, message, content=content, retry=retry, on_result=on_result
+        # )
 
     def save_file_dialog(self, title, suggested_filename, file_types, on_result=None):
         self.interface.factory.not_implemented('Window.save_file_dialog()')
-        # return dialogs.SaveFileDialog(self.interface, title, suggested_filename, file_types, on_result=on_result)
+        # return dialogs.SaveFileDialog(
+        #     self.interface, title, suggested_filename, file_types, on_result=on_result
+        # )
 
     def open_file_dialog(self, title, initial_directory, file_types, multiselect, on_result=None):
         self.interface.factory.not_implemented('Window.open_file_dialog()')

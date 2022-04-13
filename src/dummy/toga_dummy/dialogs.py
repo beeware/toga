@@ -1,22 +1,75 @@
-def info(window, title, message):
-    pass
+class InfoDialog:
+    def __init__(self, window, title, message, on_result=None):
+        window._impl._action(
+            "info_dialog", title=title, message=message, on_result=on_result
+        )
 
 
-def question(window, title, message):
-    pass
+class QuestionDialog:
+    def __init__(self, window, title, message, on_result=None):
+        window._impl._action(
+            "question_dialog", title=title, message=message, on_result=on_result
+        )
 
 
-def confirm(window, title, message):
-    pass
+class ConfirmDialog:
+    def __init__(self, window, title, message, on_result=None):
+        window._impl._action(
+            "confirm_dialog", title=title, message=message, on_result=on_result
+        )
 
 
-def error(window, title, message):
-    pass
+class ErrorDialog:
+    def __init__(self, window, title, message, on_result=None):
+        window._impl._action(
+            "error_dialog", title=title, message=message, on_result=on_result
+        )
 
 
-def stack_trace(window, title, message, content, retry=False):
-    pass
+class StackTraceDialog:
+    def __init__(self, window, title, message, on_result=None, **kwargs):
+        window._impl._action(
+            "stack_trace_dialog",
+            title=title,
+            message=message,
+            on_result=on_result,
+            **kwargs
+        )
 
 
-def save_file(window, title, suggested_filename, file_types):
-    pass
+class SaveFileDialog:
+    def __init__(
+        self, window, title, suggested_filename, file_types=None, on_result=None
+    ):
+        window._impl._action(
+            "save_file_dialog",
+            title=title,
+            suggested_filename=suggested_filename,
+            file_types=file_types,
+            on_result=on_result,
+        )
+
+
+class OpenFileDialog:
+    def __init__(
+        self, window, title, initial_directory, file_types, multiselect, on_result=None
+    ):
+        window._impl._action(
+            "open_file_dialog",
+            title=title,
+            initial_directory=initial_directory,
+            file_types=file_types,
+            multiselect=multiselect,
+            on_result=on_result,
+        )
+
+
+class SelectFolderDialog:
+    def __init__(self, window, title, initial_directory, multiselect, on_result=None):
+        window._impl._action(
+            "select_folder_dialog",
+            title=title,
+            initial_directory=initial_directory,
+            multiselect=multiselect,
+            on_result=on_result,
+        )

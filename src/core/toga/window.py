@@ -224,7 +224,9 @@ class Window:
         Returns:
             Returns `None` after the user pressed the 'OK' button.
         """
-        return self._impl.info_dialog(title, message, on_result=on_result)
+        return self.factory.dialogs.InfoDialog(
+            self, title, message, on_result=wrapped_handler(self, on_result)
+        )
 
     def question_dialog(self, title, message, on_result=None):
         """ Opens a dialog with a 'YES' and 'NO' button.
@@ -236,7 +238,9 @@ class Window:
         Returns:
             Returns `True` when the 'YES' button was pressed, `False` when the 'NO' button was pressed.
         """
-        return self._impl.question_dialog(title, message, on_result=on_result)
+        return self.factory.dialogs.QuestionDialog(
+            self, title, message, on_result=wrapped_handler(self, on_result)
+        )
 
     def confirm_dialog(self, title, message, on_result=None):
         """ Opens a dialog with a 'Cancel' and 'OK' button.
@@ -248,7 +252,9 @@ class Window:
         Returns:
             Returns `True` when the 'OK' button was pressed, `False` when the 'CANCEL' button was pressed.
         """
-        return self._impl.confirm_dialog(title, message, on_result=on_result)
+        return self.factory.dialogs.ConfirmDialog(
+            self, title, message, on_result=wrapped_handler(self, on_result)
+        )
 
     def error_dialog(self, title, message, on_result=None):
         """ Opens a error dialog with a 'OK' button to close the dialog.
@@ -260,7 +266,9 @@ class Window:
         Returns:
             Returns `None` after the user pressed the 'OK' button.
         """
-        return self._impl.error_dialog(title, message, on_result=on_result)
+        return self.factory.dialogs.ErrorDialog(
+            self, title, message, on_result=wrapped_handler(self, on_result)
+        )
 
     def stack_trace_dialog(self, title, message, content, retry=False, on_result=None):
         """ Calling this function opens a dialog that allows to display a
@@ -275,7 +283,12 @@ class Window:
         Returns:
             Returns `None` after the user pressed the 'OK' button.
         """
-        return self._impl.stack_trace_dialog(title, message, content, retry, on_result=on_result)
+        return self.factory.dialogs.StackTraceDialog(
+            self, title, message,
+            content=content,
+            retry=retry,
+            on_result=wrapped_handler(self, on_result),
+        )
 
     def save_file_dialog(self, title, suggested_filename, file_types=None, on_result=None):
         """ This opens a native dialog where the user can select a place to save a file.
@@ -290,7 +303,12 @@ class Window:
         Returns:
             The absolute path(str) to the selected location. May be None.
         """
-        return self._impl.save_file_dialog(title, suggested_filename, file_types, on_result=on_result)
+        return self.factory.dialogs.SaveFileDialog(
+            self, title,
+            suggested_filename=suggested_filename,
+            file_types=file_types,
+            on_result=wrapped_handler(self, on_result),
+        )
 
     def open_file_dialog(self, title, initial_directory=None, file_types=None, multiselect=False, on_result=None):
         """ This opens a native dialog where the user can select the file to open.
@@ -306,7 +324,13 @@ class Window:
             A list of absolute paths(str) if multiselect is True, a single path(str)
             otherwise. Returns None if no file is selected.
         """
-        return self._impl.open_file_dialog(title, initial_directory, file_types, multiselect, on_result=on_result)
+        return self.factory.dialogs.OpenFileDialog(
+            self, title,
+            initial_directory=initial_directory,
+            file_types=file_types,
+            multiselect=multiselect,
+            on_result=wrapped_handler(self, on_result)
+        )
 
     def select_folder_dialog(self, title, initial_directory=None, multiselect=False, on_result=None):
         """ This opens a native dialog where the user can select a folder.
@@ -321,4 +345,9 @@ class Window:
             A list of absolute paths(str) if multiselect is True, a single path(str)
             otherwise. Returns None if no folder is selected.
         """
-        return self._impl.select_folder_dialog(title, initial_directory, multiselect, on_result=on_result)
+        return self.factory.dialogs.SelectFolderDialog(
+            self, title,
+            initial_directory=initial_directory,
+            multiselect=multiselect,
+            on_result=wrapped_handler(self, on_result),
+        )

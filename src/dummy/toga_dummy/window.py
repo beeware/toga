@@ -54,24 +54,3 @@ class Window(LoggedObject):
     @not_required_on('mobile')
     def set_on_close(self, handler):
         self._set_value('on_close', handler)
-
-    def info_dialog(self, title, message):
-        self._action('show info dialog', title=title, message=message)
-
-    def question_dialog(self, title, message):
-        self._action('show question dialog', title=title, message=message)
-
-    def confirm_dialog(self, title, message):
-        self._action('show confirm dialog', title=title, message=message)
-
-    def error_dialog(self, title, message):
-        self._action('show error dialog', title=title, message=message)
-
-    def stack_trace_dialog(self, title, message, content, retry=False):
-        self._action('show stack trace dialog', title=title, message=message, content=content, retry=retry)
-
-    @not_required_on('mobile')
-    def save_file_dialog(self, title, suggested_filename, file_types):
-        self._action(
-            'show save file dialog', title=title, suggested_filename=suggested_filename, file_types=file_types
-        )

@@ -1,5 +1,4 @@
 from toga.command import Command as BaseCommand
-from toga_cocoa import dialogs
 from toga_cocoa.libs import (
     SEL,
     NSBackingStoreBuffered,
@@ -294,29 +293,3 @@ class Window:
 
     def close(self):
         self.native.close()
-
-    def info_dialog(self, title, message, on_result=None):
-        return dialogs.InfoDialog(self.interface, title, message, on_result=None)
-
-    def question_dialog(self, title, message, on_result=None):
-        return dialogs.QuestionDialog(self.interface, title, message, on_result=None)
-
-    def confirm_dialog(self, title, message, on_result=None):
-        return dialogs.ConfirmDialog(self.interface, title, message, on_result=None)
-
-    def error_dialog(self, title, message, on_result=None):
-        return dialogs.ErrorDialog(self.interface, title, message, on_result=None)
-
-    def stack_trace_dialog(self, title, message, content, retry=False, on_result=None):
-        return dialogs.StackTraceDialog(self.interface, title, message, content=content, retry=retry, on_result=None)
-
-    def save_file_dialog(self, title, suggested_filename, file_types, on_result=None):
-        return dialogs.SaveFileDialog(self.interface, title, suggested_filename, file_types, on_result=None)
-
-    def open_file_dialog(self, title, initial_directory, file_types, multiselect, on_result=None):
-        return dialogs.OpenFileDialog(
-            self.interface, title, initial_directory, file_types, multiselect, on_result=None
-        )
-
-    def select_folder_dialog(self, title, initial_directory, multiselect, on_result=None):
-        return dialogs.SelectFolderDialog(self.interface, title, initial_directory, multiselect, on_result=None)
