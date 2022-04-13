@@ -97,23 +97,35 @@ class AlertDialog(BaseDialog):
 
 
 class InfoDialog(AlertDialog):
+    def __init__(self, window, title, message, on_result=None):
+        super().__init__(window, title, message, on_result=on_result)
+
     def populate_dialog(self):
         self.add_null_response_button("OK")
 
 
 class QuestionDialog(AlertDialog):
+    def __init__(self, window, title, message, on_result=None):
+        super().__init__(window, title, message, on_result=on_result)
+
     def populate_dialog(self):
         self.add_true_response_button("Yes")
         self.add_false_response_button("No")
 
 
 class ConfirmDialog(AlertDialog):
+    def __init__(self, window, title, message, on_result=None):
+        super().__init__(window, title, message, on_result=on_result)
+
     def populate_dialog(self):
         self.add_true_response_button("OK")
         self.add_false_response_button("Cancel")
 
 
 class ErrorDialog(AlertDialog):
+    def __init__(self, window, title, message, on_result=None):
+        super().__init__(window, title, message, on_result=on_result)
+
     def populate_dialog(self):
         self.add_null_response_button("OK")
 
