@@ -1,153 +1,205 @@
+import asyncio
+from pathlib import Path
+
 from .libs import Gtk
 
 
-def _set_filetype_filter(dialog, file_type):
-    '''Mutating function that Takes a dialog and inserts a Gtk.FileFilter
+class BaseDialog:
+    def __init__(self):
+        loop = asyncio.get_event_loop()
+        self.future = loop.create_future()
 
-    Args:
-        dialog: Gtk.FileChooserDialog to apply the filter
-        file_type: (str) the file type to filter
-    '''
-    filter_filetype = Gtk.FileFilter()
-    filter_filetype.set_name("." + file_type + " files")
-    filter_filetype.add_pattern("*." + file_type)
-    dialog.add_filter(filter_filetype)
+    def __eq__(self, other):
+        raise RuntimeError("Can't check dialog result directly; use await or an on_result handler")
 
+    def __bool__(self):
+        raise RuntimeError("Can't check dialog result directly; use await or an on_result handler")
 
-def info(window, title, message):
-    dialog = Gtk.MessageDialog(
-        transient_for=window._impl.native,
-        flags=0,
-        message_type=Gtk.MessageType.INFO,
-        buttons=Gtk.ButtonsType.OK,
-        text=title,
-    )
-    dialog.format_secondary_text(message)
-
-    dialog.run()
-    dialog.destroy()
+    def __await__(self):
+        return self.future.__await__()
 
 
-def question(window, title, message):
-    dialog = Gtk.MessageDialog(
-        transient_for=window._impl.native,
-        flags=0,
-        message_type=Gtk.MessageType.QUESTION,
-        buttons=Gtk.ButtonsType.YES_NO,
-        text=title
-    )
-    dialog.format_secondary_text(message)
+class MessageDialog(BaseDialog):
+    def __init__(self, window, title, message, message_type, buttons, success_result=None, on_result=None):
+        super().__init__()
+        self.on_result = on_result
 
-    result = dialog.run()
-    dialog.destroy()
+        dialog = Gtk.MessageDialog(
+            transient_for=window._impl.native,
+            flags=0,
+            message_type=message_type,
+            buttons=buttons,
+            text=title,
+        )
+        dialog.format_secondary_text(message)
 
-    return result == Gtk.ResponseType.YES
+        return_value = dialog.run()
+        dialog.destroy()
 
+        if success_result:
+            result = return_value == success_result
+        else:
+            result = None
 
-def confirm(window, title, message):
-    dialog = Gtk.MessageDialog(
-        transient_for=window._impl.native,
-        flags=0,
-        message_type=Gtk.MessageType.WARNING,
-        buttons=Gtk.ButtonsType.OK_CANCEL,
-        text=title
-    )
-    dialog.format_secondary_text(message)
+        # def completion_handler(self, return_value: bool) -> None:
+        if self.on_result:
+            self.on_result(self, result)
 
-    result = dialog.run()
-    dialog.destroy()
-
-    return result == Gtk.ResponseType.OK
+        self.future.set_result(result)
 
 
-def error(window, title, message):
-    dialog = Gtk.MessageDialog(
-        transient_for=window._impl.native,
-        flags=0,
-        message_type=Gtk.MessageType.ERROR,
-        buttons=Gtk.ButtonsType.CANCEL,
-        text=title
-    )
-    dialog.format_secondary_text(message)
-
-    dialog.run()
-    dialog.destroy()
+class InfoDialog(MessageDialog):
+    def __init__(self, window, title, message, on_result=None):
+        super().__init__(
+            window=window,
+            title=title,
+            message=message,
+            message_type=Gtk.MessageType.INFO,
+            buttons=Gtk.ButtonsType.OK,
+            on_result=on_result,
+        )
 
 
-def stack_trace(window, title, message, content, retry=False):
-    window.platform.not_implemented('dialogs.stack_trace()')
+class QuestionDialog(MessageDialog):
+    def __init__(self, window, title, message, on_result=None):
+        super().__init__(
+            window=window,
+            title=title,
+            message=message,
+            message_type=Gtk.MessageType.QUESTION,
+            buttons=Gtk.ButtonsType.YES_NO,
+            success_result=Gtk.ResponseType.YES,
+            on_result=on_result,
+        )
 
 
-def save_file(window, title, suggested_filename, file_types):
-
-    filename = None
-    dialog = Gtk.FileChooserDialog(
-        title=title,
-        transient_for=window._impl.native,
-        action=Gtk.FileChooserAction.SAVE,
-    )
-    dialog.add_button(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
-    dialog.add_button(Gtk.STOCK_SAVE, Gtk.ResponseType.OK)
-
-    for file_type in file_types or []:
-        _set_filetype_filter(dialog, file_type)
-
-    dialog.set_current_name(suggested_filename if not file_types else
-                            suggested_filename + "." + file_types[0])
-
-    response = dialog.run()
-
-    if response == Gtk.ResponseType.OK:
-        filename = dialog.get_filename()
-
-    dialog.destroy()
-    return filename
+class ConfirmDialog(MessageDialog):
+    def __init__(self, window, title, message, on_result=None):
+        super().__init__(
+            window=window,
+            title=title,
+            message=message,
+            message_type=Gtk.MessageType.WARNING,
+            buttons=Gtk.ButtonsType.OK_CANCEL,
+            success_result=Gtk.ResponseType.OK,
+            on_result=on_result,
+        )
 
 
-def open_file(window, title, file_types, multiselect):
-    filename_or_filenames = None
-    dialog = Gtk.FileChooserDialog(
-        title=title,
-        transient_for=window._impl.native,
-        action=Gtk.FileChooserAction.OPEN,
-    )
-    dialog.add_button(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
-    dialog.add_button(Gtk.STOCK_OPEN, Gtk.ResponseType.OK)
-
-    for file_type in file_types or []:
-        _set_filetype_filter(dialog, file_type)
-    if multiselect:
-        dialog.set_select_multiple(True)
-
-    response = dialog.run()
-
-    if response == Gtk.ResponseType.OK:
-        filename_or_filenames = (dialog.get_filenames() if multiselect else
-                                 dialog.get_filename())
-    dialog.destroy()
-    if filename_or_filenames is None:
-        raise ValueError('No filename provided in the open file dialog')
-    return filename_or_filenames
+class ErrorDialog(MessageDialog):
+    def __init__(self, window, title, message, on_result=None):
+        super().__init__(
+            window=window,
+            title=title,
+            message=message,
+            message_type=Gtk.MessageType.ERROR,
+            buttons=Gtk.ButtonsType.CANCEL,
+            on_result=on_result,
+        )
 
 
-def select_folder(window, title, multiselect):
-    '''This function is very similar to the open_file function but more limited
-    in scope. If broadening scope here, or aligning features with the other
-    dialogs, consider refactoring around a common base function or set of
-    functions'''
-    filename = None
-    dialog = Gtk.FileChooserDialog(
-        title=title,
-        transient_for=window._impl.native,
-        action=Gtk.FileChooserAction.SELECT_FOLDER,
-    )
-    dialog.add_button(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
-    dialog.add_button(Gtk.STOCK_OPEN, Gtk.ResponseType.OK)
+class StackTraceDialog(BaseDialog):
+    def __init__(self, window, title, message, on_result=None, **kwargs):
+        super().__init__()
+        window.factory.not_implemented("Window.stack_trace_dialog()")
 
-    response = dialog.run()
-    if response == Gtk.ResponseType.OK:
-        filename = dialog.get_filename()
-    dialog.destroy()
-    if filename is None:
-        raise ValueError("No folder provided in the select folder dialog")
-    return [filename]
+
+class FileDialog(BaseDialog):
+    def __init__(self, window, title, filename, folder, file_types, multiselect, action, ok_icon, on_result=None):
+        super().__init__()
+        self.on_result = on_result
+
+        dialog = Gtk.FileChooserDialog(
+            transient_for=window._impl.native,
+            title=title,
+            action=action,
+        )
+        dialog.add_button(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL)
+        dialog.add_button(ok_icon, Gtk.ResponseType.OK)
+
+        if filename:
+            dialog.set_current_name(str(filename))
+
+        if folder:
+            dialog.set_current_folder(str(folder))
+
+        if file_types:
+            for file_type in file_types:
+                filter_filetype = Gtk.FileFilter()
+                filter_filetype.set_name("." + file_type + " files")
+                filter_filetype.add_pattern("*." + file_type)
+                dialog.add_filter(filter_filetype)
+
+        if multiselect:
+            dialog.set_select_multiple(True)
+
+        response = dialog.run()
+
+        if response == Gtk.ResponseType.OK:
+            if multiselect:
+                result = [Path(filename) for filename in dialog.get_filenames()]
+            else:
+                result = Path(dialog.get_filename())
+        else:
+            result = None
+
+        dialog.destroy()
+
+        if self.on_result:
+            self.on_result(self, result)
+
+        self.future.set_result(result)
+
+
+class SaveFileDialog(FileDialog):
+    def __init__(self, window, title, suggested_filename, file_types=None, on_result=None):
+        # Convert suggested filename to a path, and break it into
+        # a filename,
+        suggested_path = Path(suggested_filename)
+        folder = suggested_path.parent
+        if folder == Path('.'):
+            folder = None
+        filename = suggested_path.name
+
+        super().__init__(
+            window=window,
+            title=title,
+            filename=filename,
+            folder=folder,
+            file_types=file_types,
+            multiselect=False,
+            action=Gtk.FileChooserAction.SAVE,
+            ok_icon=Gtk.STOCK_SAVE,
+            on_result=on_result,
+        )
+
+
+class OpenFileDialog(FileDialog):
+    def __init__(self, window, title, initial_directory, file_types, multiselect, on_result=None):
+        super().__init__(
+            window=window,
+            title=title,
+            filename=None,
+            folder=initial_directory,
+            file_types=file_types,
+            multiselect=multiselect,
+            action=Gtk.FileChooserAction.OPEN,
+            ok_icon=Gtk.STOCK_OPEN,
+            on_result=on_result,
+        )
+
+
+class SelectFolderDialog(FileDialog):
+    def __init__(self, window, title, initial_directory, multiselect, on_result=None):
+        super().__init__(
+            window=window,
+            title=title,
+            filename=None,
+            folder=initial_directory,
+            file_types=None,
+            multiselect=multiselect,
+            action=Gtk.FileChooserAction.SELECT_FOLDER,
+            ok_icon=Gtk.STOCK_OPEN,
+            on_result=on_result,
+        )
+
