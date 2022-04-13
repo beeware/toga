@@ -1,3 +1,4 @@
+from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import toga
@@ -191,7 +192,7 @@ class TestWindow(TestCase):
 
     def test_save_file_dialog(self):
         title = "save_file_dialog_test"
-        suggested_filename = "sample_filename_test"
+        suggested_filename = "/path/to/initial_filename.doc"
         file_types = ["test"]
 
         self.window.save_file_dialog(title, suggested_filename, file_types)
@@ -200,13 +201,14 @@ class TestWindow(TestCase):
             self.window,
             "save_file_dialog",
             title=title,
-            suggested_filename=suggested_filename,
+            filename="initial_filename.doc",
+            initial_directory=Path("/path/to"),
             file_types=file_types,
         )
 
     def test_open_file_dialog(self):
         title = "title_test"
-        initial_directory = "initial_directory_test"
+        initial_directory = "/path/to/initial_directory"
         file_types = ["test"]
         multiselect = True
 
@@ -216,14 +218,14 @@ class TestWindow(TestCase):
             self.window,
             "open_file_dialog",
             title=title,
-            initial_directory=initial_directory,
+            initial_directory=Path(initial_directory),
             file_types=file_types,
             multiselect=multiselect,
         )
 
     def test_select_folder_dialog(self):
         title = ""
-        initial_directory = ""
+        initial_directory = "/path/to/initial_directory"
         multiselect = True
 
         self.window.select_folder_dialog(title, initial_directory, multiselect)
@@ -232,6 +234,6 @@ class TestWindow(TestCase):
             self.window,
             "select_folder_dialog",
             title=title,
-            initial_directory=initial_directory,
+            initial_directory=Path(initial_directory),
             multiselect=multiselect,
         )
