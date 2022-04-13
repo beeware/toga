@@ -101,7 +101,7 @@ class FileDialog(BaseDialog):
         window,
         title,
         filename,
-        folder,
+        initial_directory,
         file_types,
         multiselect,
         on_result=None,
@@ -112,10 +112,10 @@ class FileDialog(BaseDialog):
         dialog.Title = title
 
         if filename is not None:
-            dialog.FileName = str(filename)
+            dialog.FileName = filename
 
-        if folder is not None:
-            dialog.InitialDirectory = str(folder)
+        if initial_directory is not None:
+            dialog.InitialDirectory = str(initial_directory)
 
         if file_types is not None:
             filters = [f"{ext} files (*.{ext})|*.{ext}" for ext in file_types] + ["All files (*.*)|*.*"]
@@ -146,21 +146,13 @@ class FileDialog(BaseDialog):
 
 
 class SaveFileDialog(FileDialog):
-    def __init__(self, window, title, suggested_filename, file_types=None, on_result=None):
-        # Convert suggested filename to a path, and break it into
-        # a filename,
-        suggested_path = Path(suggested_filename)
-        folder = suggested_path.parent
-        if folder == Path("."):
-            folder = None
-        filename = suggested_path.name
-
+    def __init__(self, window, title, filename, initial_directory, file_types=None, on_result=None):
         super().__init__(
             dialog=WinForms.SaveFileDialog(),
             window=window,
             title=title,
             filename=filename,
-            folder=folder,
+            initial_directory=initial_directory,
             file_types=file_types,
             multiselect=False,
             on_result=on_result,
@@ -174,7 +166,7 @@ class OpenFileDialog(FileDialog):
             window=window,
             title=title,
             filename=None,
-            folder=initial_directory,
+            initial_directory=initial_directory,
             file_types=file_types,
             multiselect=multiselect,
             on_result=on_result,
@@ -188,7 +180,7 @@ class SelectFolderDialog(FileDialog):
             window=window,
             title=title,
             filename=None,
-            folder=initial_directory,
+            initial_directory=initial_directory,
             file_types=None,
             multiselect=multiselect,
             on_result=on_result,

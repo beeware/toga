@@ -162,7 +162,7 @@ class StackTraceDialog(NSAlertDialog):
 
 
 class FileDialog(BaseDialog):
-    def __init__(self, window, title, filename, folder, file_types, multiselect, on_result=None):
+    def __init__(self, window, title, filename, initial_directory, file_types, multiselect, on_result=None):
         super().__init__()
         self.on_result = on_result
 
@@ -172,10 +172,11 @@ class FileDialog(BaseDialog):
         # Set all the
         self.panel.title = title
 
-        if folder:
-            self.panel.directoryURL = NSURL.URLWithString(str(folder.as_uri()))
         if filename:
-            self.panel.nameFieldStringValue = str(filename)
+            self.panel.nameFieldStringValue = filename
+
+        if initial_directory:
+            self.panel.directoryURL = NSURL.URLWithString(str(initial_directory.as_uri()))
 
         self.panel.allowedFileTypes = file_types
 
@@ -213,20 +214,12 @@ class FileDialog(BaseDialog):
 
 
 class SaveFileDialog(FileDialog):
-    def __init__(self, window, title, suggested_filename, file_types=None, on_result=None):
-        # Convert suggested filename to a path, and break it into
-        # a filename,
-        suggested_path = Path(suggested_filename)
-        folder = suggested_path.parent
-        if folder == Path("."):
-            folder = None
-        filename = suggested_path.name
-
+    def __init__(self, window, title, filename, initial_directory, file_types=None, on_result=None):
         super().__init__(
             window=window,
             title=title,
             filename=filename,
-            folder=folder,
+            initial_directory=initial_directory,
             file_types=file_types,
             multiselect=False,
             on_result=None,
@@ -242,7 +235,7 @@ class OpenFileDialog(FileDialog):
             window=window,
             title=title,
             filename=None,
-            folder=Path(initial_directory) if initial_directory else None,
+            initial_directory=initial_directory,
             file_types=file_types,
             multiselect=multiselect,
             on_result=None,
@@ -262,7 +255,7 @@ class SelectFolderDialog(FileDialog):
             window=window,
             title=title,
             filename=None,
-            folder=Path(initial_directory) if initial_directory else None,
+            initial_directory=initial_directory,
             file_types=None,
             multiselect=multiselect,
             on_result=None,

@@ -119,7 +119,7 @@ class FileDialog(BaseDialog):
         window,
         title,
         filename,
-        folder,
+        initial_directory,
         file_types,
         multiselect,
         action,
@@ -138,10 +138,10 @@ class FileDialog(BaseDialog):
         dialog.add_button(ok_icon, Gtk.ResponseType.OK)
 
         if filename:
-            dialog.set_current_name(str(filename))
+            dialog.set_current_name(filename)
 
-        if folder:
-            dialog.set_current_folder(str(folder))
+        if initial_directory:
+            dialog.set_current_folder(str(initial_directory))
 
         if file_types:
             for file_type in file_types:
@@ -172,20 +172,12 @@ class FileDialog(BaseDialog):
 
 
 class SaveFileDialog(FileDialog):
-    def __init__(self, window, title, suggested_filename, file_types=None, on_result=None):
-        # Convert suggested filename to a path, and break it into
-        # a filename,
-        suggested_path = Path(suggested_filename)
-        folder = suggested_path.parent
-        if folder == Path("."):
-            folder = None
-        filename = suggested_path.name
-
+    def __init__(self, window, title, filename, initial_directory, file_types=None, on_result=None):
         super().__init__(
             window=window,
             title=title,
             filename=filename,
-            folder=folder,
+            initial_directory=initial_directory,
             file_types=file_types,
             multiselect=False,
             action=Gtk.FileChooserAction.SAVE,
@@ -200,7 +192,7 @@ class OpenFileDialog(FileDialog):
             window=window,
             title=title,
             filename=None,
-            folder=initial_directory,
+            initial_directory=initial_directory,
             file_types=file_types,
             multiselect=multiselect,
             action=Gtk.FileChooserAction.OPEN,
@@ -215,7 +207,7 @@ class SelectFolderDialog(FileDialog):
             window=window,
             title=title,
             filename=None,
-            folder=initial_directory,
+            initial_directory=initial_directory,
             file_types=None,
             multiselect=multiselect,
             action=Gtk.FileChooserAction.SELECT_FOLDER,

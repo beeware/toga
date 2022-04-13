@@ -128,7 +128,7 @@ class StackTraceDialog(BaseDialog):
 
 
 class SaveFileDialog(BaseDialog):
-    def __init__(self, window, title, suggested_filename, file_types=None, on_result=None):
+    def __init__(self, window, title, filename, initial_directory, file_types=None, on_result=None):
         super().__init__()
         window.factory.not_implemented("Window.save_file_dialog()")
 

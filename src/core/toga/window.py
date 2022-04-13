@@ -1,4 +1,5 @@
 from builtins import id as identifier
+from pathlib import Path
 
 from toga.command import CommandSet
 from toga.handlers import wrapped_handler
@@ -303,9 +304,18 @@ class Window:
         Returns:
             The absolute path(str) to the selected location. May be None.
         """
+        # Convert suggested filename to a path (if it isn't already),
+        # and break it into a filename and a directory
+        suggested_path = Path(suggested_filename)
+        initial_directory = suggested_path.parent
+        if initial_directory == Path("."):
+            initial_directory = None
+        filename = suggested_path.name
+
         return self.factory.dialogs.SaveFileDialog(
             self, title,
-            suggested_filename=suggested_filename,
+            filename=filename,
+            initial_directory=initial_directory,
             file_types=file_types,
             on_result=wrapped_handler(self, on_result),
         )
@@ -326,7 +336,7 @@ class Window:
         """
         return self.factory.dialogs.OpenFileDialog(
             self, title,
-            initial_directory=initial_directory,
+            initial_directory=Path(initial_directory) if initial_directory else None,
             file_types=file_types,
             multiselect=multiselect,
             on_result=wrapped_handler(self, on_result)
@@ -347,7 +357,7 @@ class Window:
         """
         return self.factory.dialogs.SelectFolderDialog(
             self, title,
-            initial_directory=initial_directory,
+            initial_directory=Path(initial_directory) if initial_directory else None,
             multiselect=multiselect,
             on_result=wrapped_handler(self, on_result),
         )
