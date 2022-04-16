@@ -544,10 +544,15 @@ class App:
         self._impl.set_on_exit(self._on_exit)
 
     def add_background_task(self, handler):
-        """Add a background async task to the asyncio loop handler, to be executed concurrently with the App.
+        """Add a background async task to the asyncio loop handler, to be executed
+        concurrently with the App.
         
         Args:
-            handler (:obj:`coroutine factory function`): a coroutine declared with ``async``, but not yet instantiated. It should have one argument ``widget`` wich represents the current App instance. As usual in python, it may be a bound class member coroutine, with both the ``self`` and the ``widget`` arguments.
+            handler (:obj:`coroutine factory function`): a coroutine declared with
+                ``async``, but not yet instantiated. It should have one argument 
+                ``widget`` wich represents the current App instance. As usual in 
+                python, it may be a bound class member coroutine, with both the 
+                ``self`` and the ``widget`` arguments.
         """
         self._impl.add_background_task(handler)
 
