@@ -20,7 +20,7 @@ with open('toga_flask/__init__.py', encoding='utf8') as version_file:
 setup(
     version=version,
     install_requires=[
-        'flask~=1.1',
+        'flask~=2.1.1',
         'toga-web==%s' % version,
     ],
 )
