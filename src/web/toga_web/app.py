@@ -24,7 +24,7 @@ class App:
         formal_name = self.interface.formal_name
         self.interface.commands.add(
             toga.Command(
-                self.interface.about_command,
+                None,
                 'About ' + formal_name,
                 group=toga.Group.APP
             ),
@@ -71,7 +71,7 @@ class App:
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="shortcut icon" type="image/png" href="/static/favicon.ico"/>
+    <link rel="icon" type="image/png" href="/static/logo-32.png"/>
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet"
@@ -79,6 +79,8 @@ class App:
           integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
           crossorigin="anonymous">
     <link rel="stylesheet" href="/static/toga.css">
+
+    <script defer src="/static/pyscript/pyscript.js"></script>
 
     <title>{self.interface.formal_name}</title>
   </head>
@@ -141,6 +143,28 @@ class App:
         crossorigin="anonymous">
         </script>
   </body>
+  <py-script>
+import asyncio
+import micropip
+
+await micropip.install([
+    '/static/wheels/travertino-0.1.3-py3-none-any.whl',
+    '/static/wheels/toga_core-0.3.0.dev33-py3-none-any.whl',
+    '/static/wheels/toga_web-0.3.0.dev33-py3-none-any.whl',
+    '/static/wheels/freedom-0.0.1-py3-none-any.whl',
+])
+
+
+from toga_web.dom import handle as dom_handle
+from toga import platform
+
+platform.current_platform = 'web'
+
+from freedom.__main__ import main
+
+main().main_loop()
+
+  </py-script>
 </html>""".format(
             self=self,
             main_window=self.interface.main_window._impl.__html__(),

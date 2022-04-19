@@ -27,7 +27,7 @@ class Window:
 
     def __html__(self):
         return """
-            <main id="toga_{id}" class="container" role="main">
+            <main id="toga_{id}" class="toga window container" role="main">
             {content}
             </main>
         """.format(
