@@ -20,6 +20,6 @@ with open('toga_web/__init__.py', encoding='utf8') as version_file:
 setup(
     version=version,
     install_requires=[
-        'toga-core==%s' % version,
+        # 'toga-core==%s' % version,
     ],
 )
