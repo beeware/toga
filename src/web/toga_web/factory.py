@@ -12,7 +12,7 @@ from .widgets.button import Button
 # from .widgets.canvas import Canvas
 # from .widgets.detailedlist import DetailedList
 # from .widgets.imageview import ImageView
-# from .widgets.label import Label
+from .widgets.label import Label
 # from .widgets.multilinetextinput import MultilineTextInput
 # from .widgets.numberinput import NumberInput
 # from .widgets.optioncontainer import OptionContainer
@@ -24,7 +24,7 @@ from .widgets.button import Button
 # from .widgets.splitcontainer import SplitContainer
 # from .widgets.switch import Switch
 # from .widgets.table import Table
-# from .widgets.textinput import TextInput
+from .widgets.textinput import TextInput
 # from .widgets.tree import Tree
 # from .widgets.webview import WebView
 # from .window import Window
