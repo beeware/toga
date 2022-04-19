@@ -1,16 +1,17 @@
-from .base import Widget
+from toga_web.dom import register_handler
 
+from .base import Widget
 
 class Button(Widget):
     def __html__(self):
         return """
-            <button id="toga_{id}" class="toga button btn-block" style="{style}">
+            <button id="toga_{id}" class="toga button btn-block" style="{style}" pys-onClick="dom_handle">
             {label}
             </button>
         """.format(
             id=self.interface.id,
             label=self.interface.label,
-            style='',
+            style=self.interface.style.__css__(),
         )
 
     def create(self):
@@ -26,7 +27,7 @@ class Button(Widget):
         pass
 
     def set_on_press(self, handler):
-        pass
+        register_handler('mouse_press', self.interface, handler)
 
     def rehint(self):
         pass

@@ -13,7 +13,7 @@ class Box(Widget):
                 child._impl.__html__()
                 for child in self.interface.children
             ),
-            style=''
+            style=self.interface.style.__css__()
         )
 
     def create(self):
