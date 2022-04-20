@@ -153,8 +153,8 @@ elif [ "$action" = "release" ]; then
     done
 
     git tag v$VERSION
-    git push upstream release:master
-    git push --tags upstream release:master
+    git push upstream release:main
+    git push --tags upstream release:main
 
 elif [ "$action" = "bump" ]; then
     version=$1
@@ -183,5 +183,5 @@ elif [ "$action" == "dev" ]; then
     done
 
     git commit -m "Bumped version number for v$version.dev$dev development."
-    git push upstream release:master
+    git push upstream release:main
 fi
