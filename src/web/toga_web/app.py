@@ -157,20 +157,16 @@ class App:
         crossorigin="anonymous">
         </script>
   </body>
+  <py-env>
+ - '/static/wheels/travertino-0.1.3-py3-none-any.whl'
+ - '/static/wheels/toga_core-{toga.__version__}-py3-none-any.whl'
+ - '/static/wheels/toga_web-{toga.__version__}-py3-none-any.whl'
+ - '/static/wheels/{self.interface.app_name}-{self.interface.version}-py3-none-any.whl'
+  </py-env>
   <py-script>
-import asyncio
-import micropip
-
-await micropip.install([
-    '/static/wheels/travertino-0.1.3-py3-none-any.whl',
-    '/static/wheels/toga_core-0.3.0.dev33-py3-none-any.whl',
-    '/static/wheels/toga_web-0.3.0.dev33-py3-none-any.whl',
-    '/static/wheels/{self.app_name}-{self.version}-py3-none-any.whl',
-])
-
 from toga_web.dom import handle as dom_handle
 
-from {self.app_name}.__main__ import main
+from {self.interface.app_name}.__main__ import main
 
 main().main_loop()
 
