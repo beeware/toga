@@ -1,8 +1,3 @@
-try:
-    import js
-except ImportError:
-    js = None
-
 from .base import Widget
 
 
@@ -17,11 +12,7 @@ class TextInput(Widget):
         )
 
     def create(self):
-        if js:
-            self.native = js.document.getElementById(f'toga_{self.interface.id}')
-            print(f"mapping ID {self.interface.id} to DOM element {self.native}")
-        else:
-            self.native = None
+        pass
 
     def set_readonly(self, value):
         pass

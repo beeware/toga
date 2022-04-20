@@ -1,10 +1,32 @@
+try:
+    import js
+except ImportError:
+    js = None
+
 
 class Widget:
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
         self._container = None
+        self._native = None
+
         self.create()
+
+    @property
+    def native(self):
+        if js:
+            if self._native is None:
+                native = js.document.getElementById(f'toga_{self.interface.id}')
+                if native:
+                    print(f"mapping ID {self.interface.id} to DOM element {native}")
+                    self._native = native
+                else:
+                    print("No native element yet")
+            return self._native
+        else:
+            print("Running serverside")
+            self._native = None
 
     def handler(self, fn, name):
         if hasattr(fn, '__self__'):

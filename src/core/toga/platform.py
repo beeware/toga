@@ -6,6 +6,8 @@ from functools import lru_cache
 # https://github.com/beeware/Python-Android-support/issues/8
 if hasattr(sys, 'getandroidapilevel'):
     current_platform = 'android'
+elif sys.platform == 'emscripten':
+    current_platform = 'web'
 else:
     current_platform = sys.platform
 

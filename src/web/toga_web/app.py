@@ -1,3 +1,8 @@
+try:
+    import js
+except ImportError:
+    js = None
+
 import toga
 
 from .window import Window
@@ -31,9 +36,12 @@ class App:
             toga.Command(None, 'Preferences', group=toga.Group.APP),
         )
 
-    def main_loop(self):
-        # Main loop is a no-op
-        pass
+    def main_loop(self, spa=False, **kwargs):
+        if spa:
+            content = self.body()
+            js.document.getElementById("toga-placeholder").innerHTML = content
+            js.document.title = self.interface.formal_name
+
 
     def set_main_window(self, window):
         pass
@@ -65,31 +73,13 @@ class App:
     def add_background_task(self, handler):
         self.interface.factory.not_implemented('App.add_background_task()')
 
-    def render(self, state, headers):
-        return """<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="icon" type="image/png" href="/static/logo-32.png"/>
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet"
-          href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
-          integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
-          crossorigin="anonymous">
-    <link rel="stylesheet" href="/static/toga.css">
-
-    <script defer src="/static/pyscript/pyscript.js"></script>
-
-    <title>{self.interface.formal_name}</title>
-  </head>
-  <body>
+    def body(self):
+        return f"""
     <header>
         <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
             <div class="container">
                 <a class="navbar-brand" href="#">
-                    <img src="/static/logo-32.png"
+                    <img src="static/logo-32.png"
                         class="d-inline-block align-top"
                         alt=""
                         loading="lazy">
@@ -128,7 +118,31 @@ class App:
             </div>
         </nav>
     </header>
-{main_window}
+{self.interface.main_window._impl.__html__()}
+"""
+
+    def render(self, state, headers):
+        return f"""
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" type="image/png" href="/static/logo-32.png"/>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+          integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
+          crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/toga.css">
+
+    <script defer src="/static/pyscript/pyscript.js"></script>
+
+    <title>{self.interface.formal_name}</title>
+  </head>
+  <body>
+    {self.body()}
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
         integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
@@ -151,21 +165,14 @@ await micropip.install([
     '/static/wheels/travertino-0.1.3-py3-none-any.whl',
     '/static/wheels/toga_core-0.3.0.dev33-py3-none-any.whl',
     '/static/wheels/toga_web-0.3.0.dev33-py3-none-any.whl',
-    '/static/wheels/freedom-0.0.1-py3-none-any.whl',
+    '/static/wheels/{self.app_name}-{self.version}-py3-none-any.whl',
 ])
 
-
 from toga_web.dom import handle as dom_handle
-from toga import platform
 
-platform.current_platform = 'web'
-
-from freedom.__main__ import main
+from {self.app_name}.__main__ import main
 
 main().main_loop()
 
   </py-script>
-</html>""".format(
-            self=self,
-            main_window=self.interface.main_window._impl.__html__(),
-        )
+</html>"""
