@@ -18,6 +18,9 @@ class WebView(Widget):
         self.native = WebKit2.WebView()
         self.native.interface = self.interface
 
+        settings = self.native.get_settings();
+        settings.set_property("enable-developer-extras", True)
+
         self.native.connect('key-press-event', self.gtk_on_key)
         self._last_key_time = 0
 
