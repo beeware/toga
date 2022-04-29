@@ -34,8 +34,6 @@ class Font(BaseFont):
             self._impl = factory.Font(self)
         return self._impl
 
-    def measure(self, text, dpi, tight=False):
-        return self._impl.measure(text, dpi=dpi, tight=tight)
 
     @staticmethod
     def register(family, path, weight=NORMAL, style=NORMAL, variant=NORMAL):
