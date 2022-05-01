@@ -18,7 +18,6 @@ class SourceTreeModel(GObject.Object, Gtk.TreeModel):
         """
         super().__init__()
         self.source = None
-        self.columns = []
         self.is_tree = is_tree
         # by storing the row and calling index later, we can opt-in for this performance
         # boost and don't have to track iterators (we would have to if we stored indices).
@@ -51,7 +50,6 @@ class SourceTreeModel(GObject.Object, Gtk.TreeModel):
         if self.source:
             self.clear()
         self.source = source
-        self.columns = [{"type": str, "accessor": a} for a in source._accessors]
         self.stamp += 1
 
     def insert(self, row):
@@ -117,9 +115,7 @@ class SourceTreeModel(GObject.Object, Gtk.TreeModel):
 
     def do_get_column_type(self, index_):
         """ Gtk.TreeModel """
-        if index_ == 0:
-            return object
-        return self.columns[index_ - 1]['type']
+        return object
 
     def do_get_flags(self):
         """ Gtk.TreeModel """
@@ -135,7 +131,7 @@ class SourceTreeModel(GObject.Object, Gtk.TreeModel):
 
     def do_get_n_columns(self):
         """ Gtk.TreeModel """
-        return len(self.columns) + 1
+        return 1
 
     def do_get_path(self, iter_):
         """ Gtk.TreeModel """
@@ -151,16 +147,7 @@ class SourceTreeModel(GObject.Object, Gtk.TreeModel):
         """ Gtk.TreeModel """
         if iter_ is None or iter_.stamp != self.stamp:
             return None
-        row = self._get_user_data(iter_)
-        if column == 0:
-            return row
-        if row is None:
-            return None
-
-        accessor = self.columns[column - 1]["accessor"]
-        ret = getattr(row, accessor)
-
-        return str(ret)
+        return self._get_user_data(iter_)
 
     def do_iter_children(self, parent):
         """ Gtk.TreeModel """
