@@ -26,6 +26,7 @@ from .widgets.slider import Slider
 from .widgets.splitcontainer import SplitContainer
 from .widgets.switch import Switch
 from .widgets.table import Table
+from .widgets.tablecolumn import Column
 from .widgets.textinput import TextInput
 from .widgets.tree import Tree
 from .widgets.webview import WebView
@@ -55,6 +56,7 @@ __all__ = [
     'Box',
     'Button',
     'Canvas',
+    'Column',
     'DetailedList',
     'Divider',
     'ImageView',
