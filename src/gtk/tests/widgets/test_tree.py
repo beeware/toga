@@ -37,7 +37,7 @@ class TestGtkTree(unittest.TestCase):
         self.window.add(self.tree._impl.native)
 
     def assertNodeEqual(self, node, data):
-        self.assertEqual(tuple(node)[1:], data)
+        self.assertIs(tuple(node)[0], data)
 
     def test_change_source(self):
         # Clear the tree directly
@@ -53,9 +53,9 @@ class TestGtkTree(unittest.TestCase):
 
         # Make sure the data was stored correctly
         store = self.gtk_tree.store
-        self.assertNodeEqual(store[0], ("A1", "A2"))
-        self.assertNodeEqual(store[1], ("B1", "B2"))
-        self.assertNodeEqual(store[(1, 0)], ("B1.1", "B2.1"))
+        self.assertNodeEqual(store[0], self.tree.data[0])
+        self.assertNodeEqual(store[1], self.tree.data[1])
+        self.assertNodeEqual(store[(1, 0)], self.tree.data[1][0])
 
         # Clear the table with empty assignment
         self.tree.data = []
@@ -96,11 +96,9 @@ class TestGtkTree(unittest.TestCase):
         self.assertTrue(isinstance(path, Gtk.TreePath))
         self.assertEqual(path, Gtk.TreePath(0))
         self.assertEqual(listener.inserted_path, Gtk.TreePath(0))
-        # self.assertEqual(str(path), "0")
-        # self.assertNodeEqual(path), (0,))
 
         # Make sure the node got stored correctly
-        self.assertNodeEqual(self.gtk_tree.store[path], node_data)
+        self.assertNodeEqual(self.gtk_tree.store[path], node)
 
     def test_insert_child_node(self):
         listener = TreeModelListener(self.gtk_tree.store)
@@ -139,7 +137,7 @@ class TestGtkTree(unittest.TestCase):
         self.assertEqual(listener.inserted_path, Gtk.TreePath((0, 0)))
 
         # Make sure the node got stored correctly
-        self.assertNodeEqual(self.gtk_tree.store[path], node_data)
+        self.assertNodeEqual(self.gtk_tree.store[path], node)
 
     def test_remove(self):
         listener = TreeModelListener(self.gtk_tree.store)
@@ -183,28 +181,27 @@ class TestGtkTree(unittest.TestCase):
 
         # Make sure the value changed
         path = self.gtk_tree.store.get_path(tree_iter)
-        self.assertNodeEqual(self.gtk_tree.store[path], (node.one, node.two))
+        self.assertNodeEqual(self.gtk_tree.store[path], node)
 
     def test_node_persistence_for_replacement(self):
         self.tree.data = []
-        self.tree.data.insert(None, 0, one="A1", two="A2")
-        self.tree.data.insert(None, 0, one="B1", two="B2")
+        node0 = self.tree.data.insert(None, 0, one="A1", two="A2")
+        node1 = self.tree.data.insert(None, 0, one="B1", two="B2")
 
-        # B should now precede A
-        # test passes if A "knows" it has moved to index 1
+        # node1 should now precede node0
 
-        self.assertNodeEqual(self.gtk_tree.store[0], ("B1", "B2"))
-        self.assertNodeEqual(self.gtk_tree.store[1], ("A1", "A2"))
+        self.assertNodeEqual(self.gtk_tree.store[0], node1)
+        self.assertNodeEqual(self.gtk_tree.store[1], node0)
 
     def test_node_persistence_for_deletion(self):
         self.tree.data = []
-        a = self.tree.data.append(None, one="A1", two="A2")
-        self.tree.data.append(None, one="B1", two="B2")
+        node0 = self.tree.data.append(None, one="A1", two="A2")
+        node1 = self.tree.data.append(None, one="B1", two="B2")
 
-        self.tree.data.remove(a)
+        self.tree.data.remove(node0)
 
-        # test passes if B "knows" it has moved to index 0
-        self.assertNodeEqual(self.gtk_tree.store[0], ("B1", "B2"))
+        # test passes if node1 has moved to index 0
+        self.assertNodeEqual(self.gtk_tree.store[0], node1)
 
     def test_on_select_root_node(self):
         listener = TreeModelListener(self.gtk_tree.store)

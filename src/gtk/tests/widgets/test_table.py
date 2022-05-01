@@ -35,8 +35,8 @@ class TestGtkTable(unittest.TestCase):
         self.window = Gtk.Window()
         self.window.add(self.table._impl.native)
 
-    def assertRowEqual(self, row, data):
-        self.assertEqual(tuple(row)[1:], data)
+    def assertRowEqual(self, node, data):
+        self.assertIs(tuple(node)[0], data)
 
     def test_change_source(self):
         # Clear the table directly
@@ -50,8 +50,8 @@ class TestGtkTable(unittest.TestCase):
 
         # Make sure the data was stored correctly
         store = self.gtk_table.store
-        self.assertRowEqual(store[0], ("A1", "A2"))
-        self.assertRowEqual(store[1], ("B1", "B2"))
+        self.assertRowEqual(store[0], self.table.data[0])
+        self.assertRowEqual(store[1], self.table.data[1])
 
         # Clear the table with empty assignment
         self.table.data = []
@@ -98,7 +98,7 @@ class TestGtkTable(unittest.TestCase):
 
         # Make sure the row got stored correctly
         result_row = self.gtk_table.store[path]
-        self.assertRowEqual(result_row, row_data)
+        self.assertRowEqual(result_row, row)
 
     def test_remove(self):
         listener = TreeModelListener(self.gtk_table.store)
@@ -123,7 +123,7 @@ class TestGtkTable(unittest.TestCase):
         # Make sure it's in there
         self.assertIsNotNone(listener.inserted_it)
 
-        # Change a column
+        # Change the field of a now
         row.one = "something_changed"
         # (not testing that self.gtk_table.change is called. The Core API
         # unit tests should ensure this already.)
@@ -140,17 +140,16 @@ class TestGtkTable(unittest.TestCase):
         # Make sure the value changed
         path = self.gtk_table.store.get_path(tree_iter)
         result_row = self.gtk_table.store[path]
-        self.assertRowEqual(result_row, (row.one, row.two))
+        self.assertRowEqual(result_row, row)
 
     def test_row_persistence(self):
-        self.table.data.insert(0, one="A1", two="A2")
-        self.table.data.insert(0, one="B1", two="B2")
+        row0 = self.table.data.insert(0, one="A1", two="A2")
+        row1 = self.table.data.insert(0, one="B1", two="B2")
 
-        # B should now precede A
-        # tests passes if A "knows" it has moved to index 1
+        # row1 should now precede row0
 
-        self.assertRowEqual(self.gtk_table.store[0], ("B1", "B2"))
-        self.assertRowEqual(self.gtk_table.store[1], ("A1", "A2"))
+        self.assertRowEqual(self.gtk_table.store[0], row1)
+        self.assertRowEqual(self.gtk_table.store[1], row0)
 
     def test_on_select_root_row(self):
         # Insert two dummy rows
