@@ -1,23 +1,20 @@
 from travertino.size import at_least
+from rubicon.objc import py_from_ns, objc_property
 
-import toga
 from toga_cocoa.libs import (
     NSBezelBorder,
     NSIndexSet,
     NSRange,
     NSScrollView,
-    NSTableColumn,
     NSTableView,
     NSTableViewAnimation,
     NSTableViewColumnAutoresizingStyle,
-    at,
     objc_method,
-    objc_property,
-    SEL
+    SEL,
 )
 
 from .base import Widget
-from .internal.cells import TogaIconView
+from .internal.cells import TogaTableCellView
 
 
 class TogaTable(NSTableView):
@@ -33,62 +30,34 @@ class TogaTable(NSTableView):
     @objc_method
     def tableView_viewForTableColumn_row_(self, table, column, row: int):
         data_row = self.interface.data[row]
-        col_identifier = str(column.identifier)
-
-        try:
-            value = getattr(data_row, col_identifier)
-
-            # if the value is a widget itself, just draw the widget!
-            if isinstance(value, toga.Widget):
-                return value._impl.native
-
-            # Allow for an (icon, value) tuple as the simple case
-            # for encoding an icon in a table cell. Otherwise, look
-            # for an icon attribute.
-            elif isinstance(value, tuple):
-                icon_iface, value = value
-            else:
-                try:
-                    icon_iface = value.icon
-                except AttributeError:
-                    icon_iface = None
-        except AttributeError:
-            # The accessor doesn't exist in the data. Use the missing value.
-            try:
-                value = self.interface.missing_value
-            except ValueError as e:
-                # There is no explicit missing value. Warn the user.
-                message, value = e.args
-                print(message.format(row, col_identifier))
-            icon_iface = None
-
-        # If the value has an icon, get the _impl.
-        # Icons are deferred resources, so we provide the factory.
-        if icon_iface:
-            icon = icon_iface.bind(self.interface.factory)
-        else:
-            icon = None
 
         # creates a NSTableCellView from interface-builder template (does not exist)
         # or reuses an existing view which is currently not needed for painting
         # returns None (nil) if both fails
-        identifier = at('CellView_{}'.format(self.interface.id))
-        tcv = self.makeViewWithIdentifier(identifier, owner=self)
+        tcv = self.makeViewWithIdentifier(column.identifier, owner=self)
 
         if not tcv:  # there is no existing view to reuse so create a new one
-            tcv = TogaIconView.alloc().init()
-            tcv.identifier = identifier
+            tcv = TogaTableCellView.alloc().initWithLayout()
+            tcv.identifier = column.identifier
 
             # Prevent tcv from being deallocated prematurely when no Python references
             # are left
             tcv.retain()
             tcv.autorelease()
 
-        tcv.setText(str(value))
-        if icon:
-            tcv.setImage(icon.native)
-        else:
-            tcv.setImage(None)
+            tcv.checkbox.target = self
+            tcv.textField.target = self
+            tcv.checkbox.action = SEL('onToggled:')
+            tcv.textField.action = SEL('onTextEdited:')
+
+        text = column.interface.get_data_for_node(data_row, "text")
+        checked_state = column.interface.get_data_for_node(data_row, "checked_state")
+        icon = column.interface.get_data_for_node(data_row, "icon")
+        native_icon = icon.bind(self.interface.factory).native if icon else None
+
+        tcv.setText(text)
+        tcv.setImage(native_icon)
+        tcv.setCheckState(checked_state)
 
         # Keep track of last visible view for row
         self.impl._view_for_row[data_row] = tcv
@@ -117,30 +86,6 @@ class TogaTable(NSTableView):
         if self.interface.on_select:
             self.interface.on_select(self.interface, row=selected)
 
-    # 2021-09-04: Commented out this method because it appears to be a
-    # source of significant slowdown when the table has a lot of data
-    # (10k rows). AFAICT, it's only needed if we want custom row heights
-    # for each row. Since we don't currently support custom row heights,
-    # we're paying the cost for no benefit.
-    # @objc_method
-    # def tableView_heightOfRow_(self, table, row: int) -> float:
-    #     default_row_height = self.rowHeight
-    #     margin = 2
-    #
-    #     # get all views in column
-    #     data_row = self.interface.data[row]
-    #
-    #     heights = [default_row_height]
-    #
-    #     for column in self.tableColumns:
-    #         col_identifier = str(column.identifier)
-    #         value = getattr(data_row, col_identifier, None)
-    #         if isinstance(value, toga.Widget):
-    #             # if the cell value is a widget, use its height
-    #             heights.append(value._impl.native.intrinsicContentSize().height + margin)
-    #
-    #     return max(heights)
-
     # target methods
     @objc_method
     def onDoubleClick_(self, sender) -> None:
@@ -151,6 +96,29 @@ class TogaTable(NSTableView):
 
         if self.interface.on_double_click:
             self.interface.on_double_click(self.interface, row=clicked)
+
+    @objc_method
+    def onTextEdited_(self, sender) -> None:
+        row_index = self.rowForView(sender)
+        column_index = self.columnForView(sender)
+
+        column = self.interface.columns[column_index]
+        node = self.interface.data[row_index]
+
+        new_text = py_from_ns(sender.stringValue)
+        column.set_data_for_node(node, "text", new_text)
+
+    @objc_method
+    def onToggled_(self, sender) -> None:
+        row_index = self.rowForView(sender)
+        column_index = self.columnForView(sender)
+
+        column = self.interface.columns[column_index]
+        node = self.interface.data[row_index]
+
+        # don't allow setting intermediate state through GUI
+        checked_state = abs(int(py_from_ns(sender.state)))
+        column.set_data_for_node(node, "checked_state", checked_state)
 
 
 class Table(Widget):
@@ -173,19 +141,17 @@ class Table(Widget):
         self.table.usesAlternatingRowBackgroundColors = True
         self.table.allowsMultipleSelection = self.interface.multiple_select
 
-        # Create columns for the table
-        self.columns = []
-        # Cocoa identifies columns by an accessor; to avoid repeated
-        # conversion from ObjC string to Python String, create the
-        # ObjC string once and cache it.
-        self.column_identifiers = {}
-        for heading, accessor in zip(self.interface.headings, self.interface._accessors):
-            self._add_column(heading, accessor)
+        for column in self.interface._columns:
+            self.table.addTableColumn(column._impl.native)
 
         self.table.delegate = self.table
         self.table.dataSource = self.table
         self.table.target = self.table
-        self.table.doubleAction = SEL('onDoubleClick:')
+
+        # If no double_click handler is set, override the Cocoa
+        # default of double-click to edit.
+        if self.interface.on_double_click:
+            self.table.doubleAction = SEL("onDoubleClick:")
 
         # Embed the table view in the scroll view
         self.native.documentView = self.table
@@ -201,24 +167,21 @@ class Table(Widget):
         index_set = NSIndexSet.indexSetWithIndex(index)
 
         self.table.insertRowsAtIndexes(
-            index_set,
-            withAnimation=NSTableViewAnimation.EffectNone
+            index_set, withAnimation=NSTableViewAnimation.EffectNone
         )
 
     def change(self, item):
         row_index = self.table.rowForView(self._view_for_row[item])
         row_indexes = NSIndexSet.indexSetWithIndex(row_index)
-        column_indexes = NSIndexSet.indexSetWithIndexesInRange(NSRange(0, len(self.columns)))
-        self.table.reloadDataForRowIndexes(
-            row_indexes,
-            columnIndexes=column_indexes
+        column_indexes = NSIndexSet.indexSetWithIndexesInRange(
+            NSRange(0, len(self.interface.columns))
         )
+        self.table.reloadDataForRowIndexes(row_indexes, columnIndexes=column_indexes)
 
     def remove(self, index, item):
         indexes = NSIndexSet.indexSetWithIndex(index)
         self.table.removeRowsAtIndexes(
-            indexes,
-            withAnimation=NSTableViewAnimation.EffectNone
+            indexes, withAnimation=NSTableViewAnimation.EffectNone
         )
 
     def clear(self):
@@ -246,7 +209,12 @@ class Table(Widget):
         pass
 
     def set_on_double_click(self, handler):
-        pass
+        # If no double_click handler is set, override the Cocoa
+        # default of double-click to edit.
+        if handler:
+            self.table.doubleAction = SEL("onDoubleClick:")
+        else:
+            self.table.doubleAction = None
 
     def scroll_to_row(self, row):
         self.table.scrollRowToVisible(row)
@@ -255,27 +223,10 @@ class Table(Widget):
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
         self.interface.intrinsic.height = at_least(self.interface.MIN_HEIGHT)
 
-    def _add_column(self, heading, accessor):
-        column_identifier = at(accessor)
-        self.column_identifiers[accessor] = column_identifier
-        column = NSTableColumn.alloc().initWithIdentifier(column_identifier)
-        column.minWidth = 16
-        self.table.addTableColumn(column)
-        self.columns.append(column)
-
-        column.headerCell.stringValue = heading
-
-    def add_column(self, heading, accessor):
-        self._add_column(heading, accessor)
+    def add_column(self, column):
+        self.table.addTableColumn(column._impl.native)
         self.table.sizeToFit()
 
-    def remove_column(self, accessor):
-        column_identifier = self.column_identifiers[accessor]
-        column = self.table.tableColumnWithIdentifier(column_identifier)
-        self.table.removeTableColumn(column)
-
-        # delete column and identifier
-        self.columns.remove(column)
-        del self.column_identifiers[accessor]
-
+    def remove_column(self, column):
+        self.table.removeTableColumn(column._impl.native)
         self.table.sizeToFit()

@@ -1,27 +1,23 @@
-from ctypes import c_void_p
 from travertino.size import at_least
+from rubicon.objc import py_from_ns, objc_property
+from ctypes import c_void_p
 
-import toga
 from toga.keys import Key
-from toga_cocoa.keys import toga_key
-from toga_cocoa.libs import (  # NSSortDescriptor,
-    CGRectMake,
+from ..keys import toga_key
+from ..libs import (
     NSBezelBorder,
     NSIndexSet,
     NSOutlineView,
     NSScrollView,
-    NSTableColumn,
     NSTableViewAnimation,
     NSTableViewColumnAutoresizingStyle,
-    at,
     objc_method,
-    objc_property,
     send_super,
-    SEL
+    SEL,
 )
-from toga_cocoa.widgets.base import Widget
-from toga_cocoa.widgets.internal.cells import TogaIconView
-from toga_cocoa.widgets.internal.data import TogaData
+from .base import Widget
+from .internal.cells import TogaTableCellView
+from .internal.data import TogaData
 
 
 class TogaTree(NSOutlineView):
@@ -38,7 +34,7 @@ class TogaTree(NSOutlineView):
         else:
             node = item.attrs['node'][child]
 
-        # Get the Cocoa implementation for the row. If an _impl
+        # Get the Cocoa implementation for the row. If an impl
         # doesn't exist, create a data object for it, and
         # populate it with initial values for each column.
         try:
@@ -72,80 +68,56 @@ class TogaTree(NSOutlineView):
 
     @objc_method
     def outlineView_viewForTableColumn_item_(self, tree, column, item):
-
-        col_identifier = str(column.identifier)
-
-        try:
-            value = getattr(item.attrs['node'], col_identifier)
-
-            # if the value is a widget itself, just draw the widget!
-            if isinstance(value, toga.Widget):
-                return value._impl.native
-
-            # Allow for an (icon, value) tuple as the simple case
-            # for encoding an icon in a table cell. Otherwise, look
-            # for an icon attribute.
-            elif isinstance(value, tuple):
-                icon_iface, value = value
-            else:
-                try:
-                    icon_iface = value.icon
-                except AttributeError:
-                    icon_iface = None
-        except AttributeError:
-            # If the node doesn't have a property with the
-            # accessor name, assume an empty string value.
-            value = ''
-            icon_iface = None
-
-        # If the value has an icon, get the _impl.
-        # Icons are deferred resources, so we provide the factory.
-        if icon_iface:
-            icon = icon_iface.bind(self.interface.factory)
-        else:
-            icon = None
+        node = item.attrs["node"]
 
         # creates a NSTableCellView from interface-builder template (does not exist)
         # or reuses an existing view which is currently not needed for painting
         # returns None (nil) if both fails
-        identifier = at('CellView_{}'.format(self.interface.id))
-        tcv = self.makeViewWithIdentifier(identifier, owner=self)
+        tcv = self.makeViewWithIdentifier(column.identifier, owner=self)
 
         if not tcv:  # there is no existing view to reuse so create a new one
-            tcv = TogaIconView.alloc().initWithFrame_(CGRectMake(0, 0, column.width, 16))
-            tcv.identifier = identifier
+            tcv = TogaTableCellView.alloc().initWithLayout()
+            tcv.identifier = column.identifier
 
             # Prevent tcv from being deallocated prematurely when no Python references
             # are left
             tcv.retain()
             tcv.autorelease()
 
-        tcv.setText(str(value))
-        if icon:
-            tcv.setImage(icon.native)
-        else:
-            tcv.setImage(None)
+            tcv.checkbox.target = self
+            tcv.textField.target = self
+            tcv.checkbox.action = SEL("onToggled:")
+            tcv.textField.action = SEL("onTextEdited:")
+
+        text = column.interface.get_data_for_node(node, "text")
+        checked_state = column.interface.get_data_for_node(node, "checked_state")
+        icon = column.interface.get_data_for_node(node, "icon")
+        native_icon = icon.bind(self.interface.factory).native if icon else None
+
+        tcv.setText(text)
+        tcv.setImage(native_icon)
+        tcv.setCheckState(checked_state)
 
         return tcv
 
-    @objc_method
-    def outlineView_heightOfRowByItem_(self, tree, item) -> float:
-
-        default_row_height = self.rowHeight
-
-        if item is self:
-            return default_row_height
-
-        heights = [default_row_height]
-
-        for column in self.tableColumns:
-            value = getattr(item.attrs['node'], str(column.identifier))
-
-            if isinstance(value, toga.Widget):
-                # if the cell value is a widget, use its height
-                heights.append(value._impl.native.intrinsicContentSize().height)
-
-        return max(heights)
+    # @objc_method
+    # def outlineView_heightOfRowByItem_(self, tree, item) -> float:
+    #
+    #     default_row_height = self.rowHeight
+    #
+    #     if item is self:
+    #         return default_row_height
+    #
+    #     heights = [default_row_height]
+    #
+    #     for column in self.tableColumns:
+    #         value = getattr(item.attrs['node'], str(column.identifier))
+    #
+    #         if isinstance(value, toga.Widget):
+    #             # if the cell value is a widget, use its height
+    #             heights.append(value.impl.native.intrinsicContentSize().height)
+    #
+    #     return max(heights)
 
     @objc_method
     def outlineView_pasteboardWriterForItem_(self, tree, item) -> None:
@@ -195,14 +167,37 @@ class TogaTree(NSOutlineView):
         else:
             node = self.itemAtRow(self.clickedRow).attrs['node']
 
-        if self.interface.on_select:
+        if self.interface.on_double_click:
             self.interface.on_double_click(self.interface, node=node)
+
+    @objc_method
+    def onTextEdited_(self, sender) -> None:
+        row_index = self.rowForView(sender)
+        column_index = self.columnForView(sender)
+
+        column = self.interface.columns[column_index]
+        node = self.itemAtRow(row_index).attrs["node"]
+
+        new_text = py_from_ns(sender.textField.stringValue)
+        column.set_data_for_node(node, "text", new_text)
+
+    @objc_method
+    def onToggled_(self, sender) -> None:
+        row_index = self.rowForView(sender)
+        column_index = self.columnForView(sender)
+
+        column = self.interface.columns[column_index]
+        node = self.itemAtRow(row_index).attrs["node"]
+
+        # don't allow setting intermediate state through GUI
+        checked_state = abs(int(py_from_ns(sender.state)))
+        column.set_data_for_node(node, "checked_state", checked_state)
 
 
 class Tree(Widget):
     def create(self):
         # Create a tree view, and put it in a scroll view.
-        # The scroll view is the _impl, because it's the outer container.
+        # The scroll view is the impl, because it's the outer container.
         self.native = NSScrollView.alloc().init()
         self.native.hasVerticalScroller = True
         self.native.hasHorizontalScroller = False
@@ -217,29 +212,11 @@ class Tree(Widget):
         self.tree.usesAlternatingRowBackgroundColors = True
         self.tree.allowsMultipleSelection = self.interface.multiple_select
 
-        # Create columns for the tree
-        self.columns = []
-        # Cocoa identifies columns by an accessor; to avoid repeated
-        # conversion from ObjC string to Python String, create the
-        # ObjC string once and cache it.
-        self.column_identifiers = {}
-        for i, (heading, accessor) in enumerate(zip(self.interface.headings, self.interface._accessors)):
-
-            column_identifier = at(accessor)
-            self.column_identifiers[id(column_identifier)] = accessor
-            column = NSTableColumn.alloc().initWithIdentifier(column_identifier)
-            # column.editable = False
-            column.minWidth = 16
-            # if self.interface.sorting:
-            #     sort_descriptor = NSSortDescriptor.sortDescriptorWithKey(column_identifier, ascending=True)
-            #     column.sortDescriptorPrototype = sort_descriptor
-            self.tree.addTableColumn(column)
-            self.columns.append(column)
-
-            column.headerCell.stringValue = heading
+        for column in self.interface.columns:
+            self.tree.addTableColumn(column._impl.native)
 
         # Put the tree arrows in the first column.
-        self.tree.outlineTableColumn = self.columns[0]
+        self.tree.outlineTableColumn = self.tree.tableColumns[0]
 
         self.tree.delegate = self.tree
         self.tree.dataSource = self.tree
@@ -261,7 +238,7 @@ class Tree(Widget):
         if parent is self.interface.data:
             parent = None
         else:
-            parent = getattr(parent, '_impl', None)
+            parent = getattr(parent, "_impl", None)
 
         self.tree.insertItemsAtIndexes(
             index_set,

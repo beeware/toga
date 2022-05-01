@@ -75,7 +75,7 @@ class Node:
     # Property that returns the first column value as (icon, label)
     @property
     def name(self):
-        return self._icon, self.path.name
+        return self.path.name
 
     # Property that returns modified date as str
     @property

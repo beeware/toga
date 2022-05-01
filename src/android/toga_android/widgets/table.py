@@ -43,14 +43,13 @@ class TogaOnClickListener(OnClickListener):
 
 
 class Table(Widget):
-    table_layout = None
-    color_selected = None
-    color_unselected = None
-    selection = {}
-    _deleted_column = None
     _font_impl = None
 
     def create(self):
+
+        self.selection = {}
+        self._deleted_column = None
+
         # get the selection color from the current theme
         current_theme = MainActivity.singletonThis.getApplication().getTheme()
         attrs = [R__attr.colorBackground, R__attr.colorControlHighlight]
@@ -68,6 +67,7 @@ class Table(Widget):
         parent_layout_params.gravity = Gravity.TOP
         parent.setLayoutParams(parent_layout_params)
         vscroll_view = ScrollView(self._native_activity)
+
         # add vertical scroll view
         vscroll_view_layout_params = LinearLayout__LayoutParams(
             LinearLayout__LayoutParams.MATCH_PARENT,
@@ -79,6 +79,7 @@ class Table(Widget):
             TableLayout__Layoutparams.MATCH_PARENT,
             TableLayout__Layoutparams.WRAP_CONTENT
         )
+
         # add horizontal scroll view
         hscroll_view = HorizontalScrollView(self._native_activity)
         hscroll_view_layout_params = LinearLayout__LayoutParams(
@@ -91,6 +92,7 @@ class Table(Widget):
         # add table layout to scrollbox
         self.table_layout.setLayoutParams(table_layout_params)
         hscroll_view.addView(self.table_layout)
+
         # add scroll box to parent layout
         parent.addView(vscroll_view, vscroll_view_layout_params)
         self.native = parent
@@ -98,7 +100,7 @@ class Table(Widget):
             self.change_source(self.interface.data)
 
     def change_source(self, source):
-        self.selection = {}
+        self.selection.clear()
         self.table_layout.removeAllViews()
         if source is not None:
             self.table_layout.addView(self.create_table_header())
@@ -111,7 +113,7 @@ class Table(Widget):
         for i in range(self.table_layout.getChildCount()):
             row = self.table_layout.getChildAt(i)
             row.setBackgroundColor(self.color_unselected)
-        self.selection = {}
+        self.selection.clear()
 
     def create_table_header(self):
         table_row = TableRow(MainActivity.singletonThis)
@@ -120,16 +122,20 @@ class Table(Widget):
             TableRow__Layoutparams.WRAP_CONTENT
         )
         table_row.setLayoutParams(table_row_params)
-        for col_index in range(len(self.interface._accessors)):
-            if self.interface._accessors[col_index] == self._deleted_column:
+
+        for column in self.interface.columns:
+            if column is self._deleted_column:
                 continue
+
             text_view = TextView(MainActivity.singletonThis)
-            text_view.setText(self.interface.headings[col_index])
+            text_view.setText(column.title)
+
             if self._font_impl:
                 text_view.setTextSize(TypedValue.COMPLEX_UNIT_SP, self._font_impl.get_size())
                 text_view.setTypeface(self._font_impl.get_typeface(), Typeface.BOLD)
             else:
                 text_view.setTypeface(text_view.getTypeface(), Typeface.BOLD)
+
             text_view_params = TableRow__Layoutparams(
                 TableRow__Layoutparams.MATCH_PARENT,
                 TableRow__Layoutparams.WRAP_CONTENT
@@ -138,9 +144,13 @@ class Table(Widget):
             text_view_params.gravity = Gravity.START
             text_view.setLayoutParams(text_view_params)
             table_row.addView(text_view)
+
         return table_row
 
     def create_table_row(self, row_index):
+
+        row = self.interface.data[row_index]
+
         table_row = TableRow(MainActivity.singletonThis)
         table_row_params = TableRow__Layoutparams(
             TableRow__Layoutparams.MATCH_PARENT,
@@ -150,14 +160,18 @@ class Table(Widget):
         table_row.setClickable(True)
         table_row.setOnClickListener(TogaOnClickListener(impl=self))
         table_row.setId(row_index)
-        for col_index in range(len(self.interface._accessors)):
-            if self.interface._accessors[col_index] == self._deleted_column:
+
+        for column in self.interface.columns:
+            if column is self._deleted_column:
                 continue
+
             text_view = TextView(MainActivity.singletonThis)
-            text_view.setText(self.get_data_value(row_index, col_index))
+            text_view.setText(column.get_data_for_node(row, "text"))
+
             if self._font_impl:
                 text_view.setTextSize(TypedValue.COMPLEX_UNIT_SP, self._font_impl.get_size())
                 text_view.setTypeface(self._font_impl.get_typeface(), self._font_impl.get_style())
+
             text_view_params = TableRow__Layoutparams(
                 TableRow__Layoutparams.MATCH_PARENT,
                 TableRow__Layoutparams.WRAP_CONTENT
@@ -166,14 +180,8 @@ class Table(Widget):
             text_view_params.gravity = Gravity.START
             text_view.setLayoutParams(text_view_params)
             table_row.addView(text_view)
-        return table_row
 
-    def get_data_value(self, row_index, col_index):
-        if self.interface.data is None or self.interface._accessors is None:
-            return None
-        row_object = self.interface.data[row_index]
-        value = getattr(row_object, self.interface._accessors[col_index])
-        return value
+        return table_row
 
     def get_selection(self):
         selection = []
@@ -210,11 +218,11 @@ class Table(Widget):
     def set_on_double_click(self, handler):
         self.interface.factory.not_implemented('Table.set_on_double_click()')
 
-    def add_column(self, heading, accessor):
+    def add_column(self, column):
         self.change_source(self.interface.data)
 
-    def remove_column(self, accessor):
-        self._deleted_column = accessor
+    def remove_column(self, column):
+        self._deleted_column = column
         self.change_source(self.interface.data)
         self._deleted_column = None
 

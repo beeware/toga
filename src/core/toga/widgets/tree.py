@@ -1,6 +1,7 @@
 from toga.handlers import wrapped_handler
 from toga.sources import TreeSource
 from toga.sources.accessors import build_accessors
+from toga.widgets.table import Column
 
 from .base import Widget
 
@@ -38,21 +39,36 @@ class Tree(Widget):
     MIN_WIDTH = 100
     MIN_HEIGHT = 100
 
+    Column = Column
+
     def __init__(self, headings, id=None, style=None, data=None, accessors=None,
                  multiple_select=False, on_select=None, on_double_click=None, factory=None):
         super().__init__(id=id, style=style, factory=factory)
-        self.headings = headings
-        self._accessors = build_accessors(headings, accessors)
+
+        accessors = build_accessors(headings, accessors)
+        self._columns = [
+            Tree.Column(title=heading, text=text_accessor, factory=factory)
+            for heading, text_accessor in zip(headings, accessors)
+        ]
+
         self._multiple_select = multiple_select
-        self._data = None
+        self._data = TreeSource([], [])
         self._on_select = None
         self._on_double_click = None
 
         self._impl = self.factory.Tree(interface=self)
-        self.data = data
 
+        self.data = data
         self.on_select = on_select
         self.on_double_click = on_double_click
+
+    @property
+    def columns(self):
+        return self._columns
+
+    @property
+    def headings(self):
+        return [col.title for col in self.columns]
 
     @property
     def data(self):
@@ -70,10 +86,11 @@ class Tree(Widget):
         :param data: Data source
         :type  data: ``dict`` or ``class``
         '''
+        accessors = [col.text for col in self.columns]
         if data is None:
-            self._data = TreeSource(accessors=self._accessors, data=[])
+            self._data = TreeSource(accessors=accessors, data=[])
         elif isinstance(data, (list, tuple, dict)):
-            self._data = TreeSource(accessors=self._accessors, data=data)
+            self._data = TreeSource(accessors=accessors, data=data)
         else:
             self._data = data
 

@@ -1,3 +1,7 @@
+
+from rubicon.objc import objc_property, send_super
+from rubicon.objc.runtime import objc_id
+
 from toga_cocoa.libs import (
     NSAffineTransform,
     NSBezierPath,
@@ -24,31 +28,39 @@ from toga_cocoa.libs import (
     NSLayoutConstraint,
     NSLayoutRelationEqual,
     NSLineBreakMode,
+    NSButton,
+    NSSwitchButton,
     at,
     objc_method,
 )
 
 
-class TogaIconView(NSTableCellView):
+class TogaTableCellView(NSTableCellView):
+
+    imageView = objc_property(objc_id)
+    checkbox = objc_property(objc_id)
+    textField = objc_property(objc_id)
 
     @objc_method
-    def setup(self):
-        image_view = NSImageView.alloc().init()
-        text_field = NSTextField.alloc().init()
+    def initWithLayout(self):
+        send_super(__class__, self, "init")
+        self.imageView = NSImageView.alloc().init()
+        self.checkbox = NSButton.alloc().init()
+        self.textField = NSTextField.alloc().init()
 
-        # this will retain image_view and text_field without needing to keep
-        # a Python reference
-        self.addSubview(image_view)
-        self.addSubview(text_field)
+        self.addSubview(self.imageView)
+        self.addSubview(self.checkbox)
+        self.addSubview(self.textField)
 
-        self.imageView = image_view
-        self.textField = text_field
+        self.checkbox.setButtonType(NSSwitchButton)
+        self.checkbox.setAllowsMixedState(True)
 
         self.textField.cell.lineBreakMode = NSLineBreakMode.byTruncatingTail
         self.textField.bordered = False
         self.textField.drawsBackground = False
 
         self.imageView.translatesAutoresizingMaskIntoConstraints = False
+        self.checkbox.translatesAutoresizingMaskIntoConstraints = False
         self.textField.translatesAutoresizingMaskIntoConstraints = False
 
         # center icon vertically in cell
@@ -72,6 +84,27 @@ class TogaIconView(NSTableCellView):
             None, NSLayoutAttributeNotAnAttribute,
             1, 16
         )
+        # center checkbox vertically in cell
+        self.cb_vertical_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # NOQA:E501
+            self.checkbox, NSLayoutAttributeCenterY,
+            NSLayoutRelationEqual,
+            self, NSLayoutAttributeCenterY,
+            1, 0
+            )
+        # align left edge of checkbox with right edge of icon
+        self.cb_left_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # NOQA:E501
+            self.checkbox, NSLayoutAttributeLeft,
+            NSLayoutRelationEqual,
+            self.imageView, NSLayoutAttributeRight,
+            1, 5
+        )
+        # set fixed width of checkbox
+        self.cb_width_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # NOQA:E501
+            self.checkbox, NSLayoutAttributeWidth,
+            NSLayoutRelationEqual,
+            None, NSLayoutAttributeNotAnAttribute,
+            1, 16
+        )
         # align text vertically in cell
         self.tv_vertical_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # NOQA:E501
             self.textField, NSLayoutAttributeCenterY,
@@ -79,12 +112,12 @@ class TogaIconView(NSTableCellView):
             self, NSLayoutAttributeCenterY,
             1, 0,
         )
-        # align left edge of text with right edge of icon
+        # align left edge of text with right edge of checkbox
         self.tv_left_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # NOQA:E501
             self.textField, NSLayoutAttributeLeft,
             NSLayoutRelationEqual,
-            self.imageView, NSLayoutAttributeRight,
-            1, 5  # 5 pixels padding between icon and text
+            self.checkbox, NSLayoutAttributeRight,
+            1, 5  # 5 pixels padding between checkbox and text
         )
         # align right edge of text with right edge of cell
         self.tv_right_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # NOQA:E501
@@ -97,36 +130,40 @@ class TogaIconView(NSTableCellView):
         self.addConstraint(self.iv_vertical_constraint)
         self.addConstraint(self.iv_left_constraint)
         self.addConstraint(self.iv_width_constraint)
+        self.addConstraint(self.cb_vertical_constraint)
+        self.addConstraint(self.cb_left_constraint)
+        self.addConstraint(self.cb_width_constraint)
         self.addConstraint(self.tv_vertical_constraint)
         self.addConstraint(self.tv_left_constraint)
         self.addConstraint(self.tv_right_constraint)
 
+        return self
+
     @objc_method
     def setImage_(self, image):
-
-        if not self.imageView:
-            self.setup()
-
         if image:
             self.imageView.image = image
-            # set icon width to 16
             self.iv_width_constraint.constant = 16
-            # add padding between icon and text
-            self.tv_left_constraint.constant = 5
+            self.cb_left_constraint.constant = 5
         else:
             self.imageView.image = None
-            # set icon width to 0
             self.iv_width_constraint.constant = 0
-            # remove padding between icon and text
+            self.cb_left_constraint.constant = 0
+
+    @objc_method
+    def setCheckState_(self, value):
+        if isinstance(value, int):
+            self.cb_width_constraint.constant = 16
+            self.tv_left_constraint.constant = 5
+            self.checkbox.state = value
+
+        if value is None:
+            self.cb_width_constraint.constant = 0
             self.tv_left_constraint.constant = 0
 
     @objc_method
     def setText_(self, text):
-
-        if not self.imageView:
-            self.setup()
-
-        self.textField.stringValue = text
+        self.textField.stringValue = text or ""
 
 
 # A TogaDetailedCell contains:

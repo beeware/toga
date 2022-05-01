@@ -1,8 +1,9 @@
 from toga.handlers import wrapped_handler
 from toga.sources import ListSource
-from toga.sources.accessors import build_accessors, to_accessor
+from toga.sources.accessors import to_accessor, build_accessors
 
 from .base import Widget
+from .internal.tablecolumn import Column
 
 
 class Table(Widget):
@@ -48,26 +49,47 @@ class Table(Widget):
     MIN_WIDTH = 100
     MIN_HEIGHT = 100
 
+    Column = Column
+
     def __init__(self, headings, id=None, style=None, data=None, accessors=None,
                  multiple_select=False, on_select=None, on_double_click=None,
                  missing_value=None, factory=None):
         super().__init__(id=id, style=style, factory=factory)
-        self.headings = headings[:]
-        self._accessors = build_accessors(self.headings, accessors)
+
+        if missing_value is None:
+            print("WARNING: Using empty string for missing value in data. "
+                  "Define a 'missing_value' on the table to silence this message")
+
+        headings = headings[:]
+        accessors = build_accessors(headings, accessors)
+        self._columns = [
+            Table.Column(
+                title=heading,
+                text=text_accessor,
+                factory=factory,
+                text_fallback=missing_value or '',
+            )
+            for heading, text_accessor in zip(headings, accessors)
+        ]
+
         self._multiple_select = multiple_select
         self._on_select = None
         self._on_double_click = None
         self._data = None
-        if missing_value is None:
-            print("WARNING: Using empty string for missing value in data. "
-                  "Define a 'missing_value' on the table to silence this message")
-        self._missing_value = missing_value or ''
 
         self._impl = self.factory.Table(interface=self)
-        self.data = data
 
+        self.data = data
         self.on_select = on_select
         self.on_double_click = on_double_click
+
+    @property
+    def columns(self):
+        return self._columns
+
+    @property
+    def headings(self):
+        return [col.title for col in self.columns]
 
     @property
     def data(self):
@@ -81,10 +103,13 @@ class Table(Widget):
 
     @data.setter
     def data(self, data):
+
+        text_accessors = [col.text for col in self.columns]
+
         if data is None:
-            self._data = ListSource(accessors=self._accessors, data=[])
+            self._data = ListSource(accessors=text_accessors, data=[])
         elif isinstance(data, (list, tuple)):
-            self._data = ListSource(accessors=self._accessors, data=data)
+            self._data = ListSource(accessors=text_accessors, data=data)
         else:
             self._data = data
 
@@ -193,44 +218,38 @@ class Table(Widget):
         if not accessor:
             accessor = to_accessor(heading)
 
-        if accessor in self._accessors:
-            raise ValueError('Accessor "{}" is already in use'.format(accessor))
+        column = Column(heading, accessor, factory=self.factory)
 
-        self.headings.append(heading)
-        self._accessors.append(accessor)
-
-        self._impl.add_column(heading, accessor)
+        self._columns.append(column)
+        self._impl.add_column(column)
 
     def remove_column(self, column):
         """
         Remove a table column.
 
-        :param column: accessor or position (>0)
+        :param column: accessor, position (>0) or Column instance
         :type column: ``string``
         :type column: ``int``
+        :type column: ``Table.Column``
         """
 
         if isinstance(column, str):
-            # Column is a string; use as-is
-            accessor = column
-        else:
             try:
-                accessor = self._accessors[column]
+                column = next(col for col in self._columns if col.text == column)
+            except StopIteration:
+                raise ValueError(f"No column with accessor '{column}'")
+        elif isinstance(column, int):
+            try:
+                column = self._columns[column]
             except IndexError:
                 # Column specified as an integer, but the integer is out of range.
                 raise ValueError("Column {} does not exist".format(column))
-            except TypeError:
-                # Column specified as something other than int or str
-                raise ValueError("Column must be an integer or string")
+        elif not isinstance(column, Column):
+            raise ValueError("Column must be an integer or string")
 
         try:
             # Remove column
-            self._impl.remove_column(accessor)
-            del self.headings[self._accessors.index(accessor)]
-            self._accessors.remove(accessor)
+            self._columns.remove(column)
+            self._impl.remove_column(column)
         except KeyError:
             raise ValueError('Invalid column: "{}"'.format(column))
-
-    @property
-    def missing_value(self):
-        return self._missing_value
