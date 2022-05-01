@@ -514,11 +514,9 @@ class App:
         """ Quit the application gracefully.
         """
         if self.on_exit:
-            should_exit = self.on_exit(self)
+            self.on_exit(self)
         else:
-            should_exit = True
-
-        return should_exit
+            self._impl.exit()
 
     @property
     def on_exit(self):
@@ -544,7 +542,17 @@ class App:
         self._impl.set_on_exit(self._on_exit)
 
     def add_background_task(self, handler):
-        self._impl.add_background_task(handler)
+        """Schedule a task to run in the background.
+
+         Schedules a coroutine or a generator to run in the background. Control
+         will be returned to the event loop during await or yield statements,
+         respectively. Use this to run background tasks without blocking the
+         GUI. If a regular callable is passed, it will be called as is and will
+         block the GUI until the call returns.
+
+         :param handler: A coroutine, generator or callable.
+         """
+        self._impl.add_background_task(wrapped_handler(self, handler))
 
 
 class DocumentApp(App):
