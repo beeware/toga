@@ -24,7 +24,7 @@ class Selection(Widget):
         if items is None:
             self._items = []
         else:
-            self._items = items
+            self._items = [str(i) for i in items]
             for item in self._items:
                 self._impl.add_item(item)
 
