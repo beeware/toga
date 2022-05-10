@@ -87,8 +87,8 @@ class TogaDemo(toga.App):
     def action1(self, widget):
         self.main_window.info_dialog('Toga', 'THIS! IS! TOGA!!')
 
-    def action2(self, widget):
-        if self.main_window.question_dialog('Toga', 'Is this cool or what?'):
+    async def action2(self, widget):
+        if await self.main_window.question_dialog('Toga', 'Is this cool or what?'):
             self.main_window.info_dialog('Happiness', 'I know, right! :-)')
         else:
             self.main_window.info_dialog('Shucks...', "Well aren't you a spoilsport... :-(")
