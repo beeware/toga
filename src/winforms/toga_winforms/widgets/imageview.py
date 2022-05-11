@@ -8,7 +8,7 @@ class ImageView(Widget):
     def create(self):
         self.native = WinForms.PictureBox()
         self.native.interface = self.interface
-        self.native.SizeMode = WinForms.PictureBoxSizeMode.StretchImage
+        self.native.SizeMode = WinForms.PictureBoxSizeMode.Zoom
 
     def set_image(self, image):
         # If an image already exists, ensure it is destroyed

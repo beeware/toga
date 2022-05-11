@@ -55,6 +55,7 @@ from System.Runtime.InteropServices import ExternalException  # noqa: F401, E402
 
 from System.Threading.Tasks import Task, TaskScheduler  # noqa: F401, E402
 
+from System.Net import SecurityProtocolType, ServicePointManager  # noqa: F401, E402
 
 user32 = ctypes.windll.user32
 # shcore dll not exist on some Windows versions
