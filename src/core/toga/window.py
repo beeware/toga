@@ -18,6 +18,7 @@ class Window:
         resizeable (bool): Toggle if the window is resizable by the user, defaults to `True`.
         closeable (bool): Toggle if the window is closable by the user, defaults to `True`.
         minimizable (bool): Toggle if the window is minimizable by the user, defaults to `True`.
+        on_close: A callback to invoke when the user makes a request to close the window.
         factory (:obj:`module`): A python module that is capable to return a
             implementation of this class with the same name. (optional; normally not needed)
     """
