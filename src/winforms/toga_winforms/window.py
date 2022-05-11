@@ -151,7 +151,7 @@ class Window:
         self.interface.content.refresh()
 
         if self.interface is not self.interface.app._main_window:
-            self.native.Icon = self.interface.app.icon._impl.native
+            self.native.Icon = self.interface.app.icon.bind(self.interface.factory).native
             self.native.Show()
 
     def winforms_FormClosing(self, sender, event):
