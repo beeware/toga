@@ -7,7 +7,15 @@ import toga
 from toga import Key
 from .keys import toga_to_winforms_key
 
-from .libs import Threading, WinForms, shcore, user32, win_version
+from .libs import (
+    SecurityProtocolType,
+    ServicePointManager,
+    Threading,
+    WinForms,
+    shcore,
+    user32,
+    win_version
+)
 from .libs.proactor import WinformsProactorEventLoop
 from .window import Window
 
@@ -68,6 +76,14 @@ class App:
 
         self.native.EnableVisualStyles()
         self.native.SetCompatibleTextRenderingDefault(False)
+
+        # Ensure that TLS1.2 and TLS1.3 are enabled for HTTPS connections.
+        # For some reason, some Windows installs have these protocols
+        # turned off by default. SSL3, TLS1.0 and TLS1.1 are *not* enabled
+        # as they are deprecated protocols and their use should *not* be
+        # encouraged.
+        ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12
+        ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls13
 
         self.interface.commands.add(
             toga.Command(
