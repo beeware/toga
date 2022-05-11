@@ -216,73 +216,86 @@ class Window:
     ############################################################
 
     def info_dialog(self, title, message, on_result=None):
-        """ Opens a info dialog with a 'OK' button to close the dialog.
+        """Ask the user to acknowledge some information.
 
-        Args:
-            title (str): The title of the dialog window.
-            message (str): The dialog message to display.
+        Presents as a dialog with a single 'OK' button to close the dialog.
 
-        Returns:
-            Returns `None` after the user pressed the 'OK' button.
+        :param title: The title of the dialog window.
+        :param message: The message to display.
+        :param on_result: A callback that will be invoked when the user
+            selects an option on the dialog.
+        :returns: An awaitable Dialog object. The Dialog object returns
+            ``None`` after the user pressed the 'OK' button.
         """
         return self.factory.dialogs.InfoDialog(
             self, title, message, on_result=wrapped_handler(self, on_result)
         )
 
     def question_dialog(self, title, message, on_result=None):
-        """ Opens a dialog with a 'YES' and 'NO' button.
+        """Ask the user a yes/no question.
 
-        Args:
-            title (str): The title of the dialog window.
-            message (str): The dialog message to display.
+        Presents as a dialog with a 'YES' and 'NO' button.
 
-        Returns:
-            Returns `True` when the 'YES' button was pressed, `False` when the 'NO' button was pressed.
+        :param title: The title of the dialog window.
+        :param message: The question to be answered.
+        :param on_result: A callback that will be invoked when the user
+            selects an option on the dialog.
+        :returns: An awaitable Dialog object. The Dialog object returns
+            ``True`` when the 'YES' button was pressed, ``False`` when
+            the 'NO' button was pressed.
         """
         return self.factory.dialogs.QuestionDialog(
             self, title, message, on_result=wrapped_handler(self, on_result)
         )
 
     def confirm_dialog(self, title, message, on_result=None):
-        """ Opens a dialog with a 'Cancel' and 'OK' button.
+        """Ask the user to confirm if they wish to proceed with an action.
 
-        Args:
-            title (str): The title of the dialog window.
-            message (str): The dialog message to display.
+        Presents as a dialog with 'Cancel' and 'OK' buttons (or whatever labels
+        are appropriate on the current platform)
 
-        Returns:
-            Returns `True` when the 'OK' button was pressed, `False` when the 'CANCEL' button was pressed.
+        :param title: The title of the dialog window.
+        :param message: A message describing the action to be confirmed.
+        :param on_result: A callback that will be invoked when the user
+            selects an option on the dialog.
+        :returns: An awaitable Dialog object. The Dialog object returns
+            ``True`` when the 'OK' button was pressed, ``False`` when
+            the 'CANCEL' button was pressed.
         """
         return self.factory.dialogs.ConfirmDialog(
             self, title, message, on_result=wrapped_handler(self, on_result)
         )
 
     def error_dialog(self, title, message, on_result=None):
-        """ Opens a error dialog with a 'OK' button to close the dialog.
+        """Ask the user to acknowledge an error state
 
-        Args:
-            title (str): The title of the dialog window.
-            message (str): The dialog message to display.
+        Presents as an error dialog with a 'OK' button to close the dialog.
 
-        Returns:
-            Returns `None` after the user pressed the 'OK' button.
+        :param title: The title of the dialog window.
+        :param message: The error message to display.
+        :param on_result: A callback that will be invoked when the user
+            selects an option on the dialog.
+        :returns: An awaitable Dialog object. The Dialog object returns
+            ``None`` after the user pressed the 'OK' button.
         """
         return self.factory.dialogs.ErrorDialog(
             self, title, message, on_result=wrapped_handler(self, on_result)
         )
 
     def stack_trace_dialog(self, title, message, content, retry=False, on_result=None):
-        """ Calling this function opens a dialog that allows to display a
-        large text body in a scrollable fashion.
+        """Open a dialog that allows to display a large text body, such as a stack trace.
 
-        Args:
-            title (str): The title of the dialog window.
-            message (str): The dialog message to display.
-            content (str):
-            retry (bool):
-
-        Returns:
-            Returns `None` after the user pressed the 'OK' button.
+        :param title: The title of the dialog window.
+        :param message: Contextual information about the source of the stack trace.
+        :param content: The stack trace, pre-formatted as a multi-line string.
+        :param retry: A boolean; if True, the user will be given the a "Retry" and
+            "Quit" option; if False, a single option to acknowledge the error will
+            be displayed.
+        :param on_result: A callback that will be invoked when the user
+            selects an option on the dialog.
+        :returns: An awaitable Dialog object. If retry is enabled, the Dialog object
+            returns ``True`` if the user selected retry, and ``False`` otherwise;
+            if retry is not enabled, the dialog object returns ``None``.
         """
         return self.factory.dialogs.StackTraceDialog(
             self, title, message,
@@ -292,17 +305,22 @@ class Window:
         )
 
     def save_file_dialog(self, title, suggested_filename, file_types=None, on_result=None):
-        """ This opens a native dialog where the user can select a place to save a file.
+        """Prompt the user for a location to save a file.
+
+        Presents the user a system-native "Save file" dialog.
+
+        This opens a native dialog where the user can select a place to save a file.
         It is possible to suggest a filename and force the user to use a specific file extension.
         If no path is returned (eg. dialog is canceled), a ValueError is raised.
 
-        Args:
-            title (str): The title of the dialog window.
-            suggested_filename(str): The automatically filled in filename.
-            file_types: A list of strings with the allowed file extensions.
-
-        Returns:
-            The absolute path(str) to the selected location. May be None.
+        :param title: The title of the dialog window
+        :param suggested_filename: A default filename
+        :param file_types: A list of strings with the allowed file extensions.
+        :param on_result: A callback that will be invoked when the user
+            selects an option on the dialog.
+        :returns: An awaitable Dialog object. The Dialog object returns
+            a path object for the selected file location, or ``None`` if
+            the user cancelled the save operation.
         """
         # Convert suggested filename to a path (if it isn't already),
         # and break it into a filename and a directory
@@ -321,18 +339,23 @@ class Window:
         )
 
     def open_file_dialog(self, title, initial_directory=None, file_types=None, multiselect=False, on_result=None):
-        """ This opens a native dialog where the user can select the file to open.
-        It is possible to set the initial folder and only show files with specified file extensions.
-        If no path is returned (eg. dialog is canceled), a ValueError is raised.
-        Args:
-            title (str): The title of the dialog window.
-            initial_directory(str): Initial folder displayed in the dialog.
-            file_types: A list of strings with the allowed file extensions.
-            multiselect: Value showing whether a user can select multiple files.
+        """Ask the user to select a file (or files) to open.
 
-        Returns:
-            A list of absolute paths(str) if multiselect is True, a single path(str)
-            otherwise. Returns None if no file is selected.
+        Presents the user a system-native "Open file" dialog.
+
+        :param title: The title of the dialog window
+        :param initial_directory: The initial folder in which to open the dialog.
+            If ``None``, use the default location provided by the operating system
+            (which will often be "last used location")
+        :param file_types: A list of strings with the allowed file extensions.
+        :param multiselect: If True, the user will be able to select multiple
+            files; if False, the selection will be restricted to a single file/
+        :param on_result: A callback that will be invoked when the user
+            selects an option on the dialog.
+        :returns: An awaitable Dialog object. The Dialog object returns
+            a list of ``Path`` objects if multiselect is ``True``, or a single
+            ``Path`` otherwise. Returns ``None`` if the open operation is
+            cancelled by the user.
         """
         return self.factory.dialogs.OpenFileDialog(
             self, title,
@@ -343,17 +366,22 @@ class Window:
         )
 
     def select_folder_dialog(self, title, initial_directory=None, multiselect=False, on_result=None):
-        """ This opens a native dialog where the user can select a folder.
-        It is possible to set the initial folder.
-        If no path is returned (eg. dialog is canceled), a ValueError is raised.
-        Args:
-            title (str): The title of the dialog window.
-            initial_directory(str): Initial folder displayed in the dialog.
-            multiselect (bool): Value showing whether a user can select multiple files.
+        """Ask the user to select a directory/folder (or folders) to open.
 
-        Returns:
-            A list of absolute paths(str) if multiselect is True, a single path(str)
-            otherwise. Returns None if no folder is selected.
+        Presents the user a system-native "Open folder" dialog.
+
+        :param title: The title of the dialog window
+        :param initial_directory: The initial folder in which to open the dialog.
+            If ``None``, use the default location provided by the operating system
+            (which will often be "last used location")
+        :param multiselect: If True, the user will be able to select multiple
+            files; if False, the selection will be restricted to a single file/
+        :param on_result: A callback that will be invoked when the user
+            selects an option on the dialog.
+        :returns: An awaitable Dialog object. The Dialog object returns
+            a list of ``Path`` objects if multiselect is ``True``, or a single
+            ``Path`` otherwise. Returns ``None`` if the open operation is
+            cancelled by the user.
         """
         return self.factory.dialogs.SelectFolderDialog(
             self, title,
