@@ -173,15 +173,23 @@ class OpenFileDialog(FileDialog):
         )
 
 
-class SelectFolderDialog(FileDialog):
+class SelectFolderDialog(BaseDialog):
     def __init__(self, window, title, initial_directory, multiselect, on_result=None):
-        super().__init__(
-            dialog=WinForms.FolderBrowserDialog(),
-            window=window,
-            title=title,
-            filename=None,
-            initial_directory=initial_directory,
-            file_types=None,
-            multiselect=multiselect,
-            on_result=on_result,
-        )
+        super().__init__()
+        self.on_result = on_result
+
+        dialog = WinForms.FolderBrowserDialog()
+        dialog.Title = title
+        if initial_directory is not None:
+            dialog.InitialDirectory = str(initial_directory)
+
+        response = dialog.ShowDialog()
+        if response == WinForms.DialogResult.OK:
+            result = Path(dialog.SelectedPath)
+        else:
+            result = None
+
+        if self.on_result:
+            self.on_result(self, result)
+
+        self.future.set_result(result)
