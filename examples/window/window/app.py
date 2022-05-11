@@ -51,6 +51,17 @@ class WindowDemoApp(toga.App):
         self.app.windows += non_close_window
         non_close_window.show()
 
+        no_close_handler_window = toga.Window(
+            "No close handler",
+            position=(400, 400),
+            size=(300, 300),
+        )
+        no_close_handler_window.content = toga.Box(
+            children=[toga.Label("This window has no close handler")]
+        )
+        self.app.windows += no_close_handler_window
+        no_close_handler_window.show()
+
     def do_report(self, widget, **kwargs):
         self.label.text = (
             f"Window {self.main_window.title!r} "

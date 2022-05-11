@@ -289,8 +289,8 @@ class Window:
 
     def cocoa_windowShouldClose(self):
         if self.interface.on_close:
-            self.interface.on_close(self)
-        return False
+            return self.interface.on_close(self)
+        return True
 
     def close(self):
         self.native.close()
