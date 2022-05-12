@@ -132,10 +132,7 @@ class FileDialog(BaseDialog):
         response = dialog.ShowDialog()
 
         if response == WinForms.DialogResult.OK:
-            if multiselect:
-                result = [Path(filename) for filename in dialog.FileNames]
-            else:
-                result = Path(dialog.FileName)
+            result = self._get_filenames(dialog, multiselect)
         else:
             result = None
 
@@ -143,6 +140,13 @@ class FileDialog(BaseDialog):
             self.on_result(self, result)
 
         self.future.set_result(result)
+
+    @classmethod
+    def _get_filenames(cls, dialog, multiselect):
+        if multiselect:
+            return [Path(filename) for filename in dialog.FileNames]
+        else:
+            return Path(dialog.FileName)
 
 
 class SaveFileDialog(FileDialog):
@@ -185,3 +189,8 @@ class SelectFolderDialog(FileDialog):
             multiselect=multiselect,
             on_result=on_result,
         )
+
+    @classmethod
+    def _get_filenames(cls, dialog, multiselect):
+        filename = Path(dialog.SelectedPath)
+        return [filename] if multiselect else filename
