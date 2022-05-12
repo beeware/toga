@@ -25,7 +25,7 @@ class TextInput(Widget):
     def create(self):
         self.native = TogaTextField.new()
         self.native.interface = self.interface
-        self.native.impl
+        self.native.impl = self
 
         self.native.borderStyle = UITextBorderStyle.RoundedRect
 
