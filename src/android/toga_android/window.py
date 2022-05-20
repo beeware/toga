@@ -67,12 +67,10 @@ class Window:
             child._impl.container = widget
 
     def get_title(self):
-        self.interface.factory.not_implemented("Window.get_title()")
-        return "?"
+        return str(self.app.native.getTitle())
 
     def set_title(self, title):
-        self.interface.factory.not_implemented("Window.set_title()")
-        pass
+        self.app.native.setTitle(title)
 
     def get_position(self):
         return (0, 0)
