@@ -138,7 +138,7 @@ class NumberInput(Widget):
         else:
             self._value = None
 
-        self._impl.set_value(value)
+        self._impl.set_value(self._value)
 
     @property
     def on_change(self):
