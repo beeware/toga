@@ -26,3 +26,42 @@ class LabelTests(TestCase):
         self.assertEqual(self.label.text, '')
 
         self.assertValueSet(self.label, 'text', '')
+
+    def test_wrap(self):
+        text = "one\ntwo\n\nthree"
+        unwrapped = "one two  three"
+
+        # Property
+        self.label.text = text
+        self.assertEqual(self.label.wrap, None)  # Default value.
+        self.assertEqual(self.label.text, text)  # Always returns the original string.
+        self.assertValueSet(self.label, "text", unwrapped)
+
+        self.label.wrap = "line"
+        self.assertEqual(self.label.wrap, "line")
+        self.assertEqual(self.label.text, text)
+        self.assertValueSet(self.label, "text", text)
+
+        self.label.wrap = None
+        self.assertEqual(self.label.wrap, None)
+        self.assertEqual(self.label.text, text)
+        self.assertValueSet(self.label, "text", unwrapped)
+
+        invalid_wrap = self.assertRaisesRegex(ValueError,
+                                              r"wrap must be one of \[None, 'line'\]")
+        with invalid_wrap:
+            self.label.wrap = "invalid"
+
+        # Constructor
+        self.label = toga.Label(text, factory=toga_dummy.factory)
+        self.assertEqual(self.label.wrap, None)  # Default value.
+        self.assertEqual(self.label.text, text)
+        self.assertValueSet(self.label, "text", unwrapped)
+
+        self.label = toga.Label(text, factory=toga_dummy.factory, wrap="line")
+        self.assertEqual(self.label.wrap, "line")
+        self.assertEqual(self.label.text, text)
+        self.assertValueSet(self.label, "text", text)
+
+        with invalid_wrap:
+            toga.Label(text, factory=toga_dummy.factory, wrap="invalid")
