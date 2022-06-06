@@ -112,6 +112,9 @@ class Window:
         return result
 
     def set_content(self, widget):
+        for control in self.native.Controls:
+            self.native.Controls.Remove(control)
+
         if self.toolbar_native:
             self.native.Controls.Add(self.toolbar_native)
             # Create the lookup table of menu items,
