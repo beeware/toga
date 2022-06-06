@@ -48,6 +48,8 @@ class Window:
         self.native.interface = self.interface
         self.native.FormClosing += self.winforms_FormClosing
 
+        self.native.MinimizeBox = self.native.interface.minimizable
+
         self.set_title(title)
         self.set_size(size)
         self.set_position(position)
