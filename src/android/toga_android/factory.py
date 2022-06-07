@@ -22,7 +22,7 @@ from .widgets.selection import Selection
 from .widgets.slider import Slider
 from .widgets.switch import Switch
 from .widgets.table import Table
-from .widgets.tablecolumn import Column
+from .widgets.column import Column
 from .widgets.textinput import TextInput
 from .widgets.timepicker import TimePicker
 from .widgets.webview import WebView
