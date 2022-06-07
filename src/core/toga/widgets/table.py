@@ -103,13 +103,12 @@ class Table(Widget):
 
     @data.setter
     def data(self, data):
-
-        text_accessors = [col.text for col in self.columns]
-
         if data is None:
-            self._data = ListSource(accessors=text_accessors, data=[])
+            self._data = ListSource([])
         elif isinstance(data, (list, tuple)):
-            self._data = ListSource(accessors=text_accessors, data=data)
+            if not all(isinstance(row, dict) for row in data):
+                data = [{key: value for key, value in zip(self._accessors, row)} for row in data]
+            self._data = ListSource(data)
         else:
             self._data = data
 

@@ -72,25 +72,24 @@ class Tree(Widget):
 
     @property
     def data(self):
-        '''
+        """
         :returns: The data source of the tree
         :rtype: ``dict``
-        '''
+        """
         return self._data
 
     @data.setter
     def data(self, data):
-        '''
+        """
         Set the data source of the data
 
         :param data: Data source
         :type  data: ``dict`` or ``class``
-        '''
-        accessors = [col.text for col in self.columns]
+        """
         if data is None:
-            self._data = TreeSource(accessors=accessors, data=[])
+            self._data = TreeSource(data=[], accessors=[])
         elif isinstance(data, (list, tuple, dict)):
-            self._data = TreeSource(accessors=accessors, data=data)
+            self._data = TreeSource(data=data, accessors=self._accessors)
         else:
             self._data = data
 

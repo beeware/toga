@@ -23,14 +23,11 @@ class ListSource(Source):
     """A data source to store a list of multiple data values, in a row-like fashion.
 
     Args:
-        data (`list`): The data in the list. Each entry in the list should have the
-            same number of entries as there are accessors.
-        accessors (`list`): A list of attribute names for accessing the value
-            in each column of the row.
+        data (`list` of `dict`): The data for the list. Each entry in the list should
+            be dict of accessors as keys and the data as values.
     """
-    def __init__(self, data, accessors):
+    def __init__(self, data):
         super().__init__()
-        self._accessors = accessors.copy()
         self._data = []
         for value in data:
             self._data.append(self._create_row(value))
@@ -52,18 +49,9 @@ class ListSource(Source):
     def _create_row(self, data):
         """Create a Row object from the given data.
         Args:
-            data (any): The type of `data` determines how it is handled
-                ``dict``: each key corresponds to a column accessor
-                iterables, except ``str`` and ``dict``: each item corresponds to a column
-                all else: `data` will fill the first column
+            data (``dict`): Each key corresponds to a column accessor.
         """
-
-        if isinstance(data, dict):
-            row = Row(**data)
-        elif hasattr(data, '__iter__') and not isinstance(data, str):
-            row = Row(**dict(zip(self._accessors, data)))
-        else:
-            row = Row(**{self._accessors[0]: data})
+        row = Row(**data)
         row._source = self
         return row
 
