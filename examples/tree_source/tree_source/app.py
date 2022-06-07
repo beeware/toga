@@ -72,10 +72,15 @@ class Node:
         # this will trigger loading of children, if not yet done
         return len(self.children) > 0
 
-    # Property that returns the first column value as (icon, label)
+    # Property that returns the item name
     @property
     def name(self):
         return self.path.name
+
+    # Property that returns the item name
+    @property
+    def icon(self):
+        return self._icon
 
     # Property that returns modified date as str
     @property
@@ -147,8 +152,20 @@ class ExampleTreeSourceApp(toga.App):
 
         self.fs_source = FileSystemSource(Path.cwd())
 
+        columns = [
+            toga.Tree.Column(
+                title="Name",
+                text_accessor="name",
+                icon_accessor="icon",
+            ),
+            toga.Tree.Column(
+                title="Date Modified",
+                text_accessor="date_modified",
+            ),
+        ]
+
         self.tree = toga.Tree(
-            headings=['Name', 'Date Modified'],
+            columns,
             data=self.fs_source,
             style=Pack(flex=1),
             multiple_select=True,
