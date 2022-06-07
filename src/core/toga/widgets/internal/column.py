@@ -1,6 +1,14 @@
+import enum
+
 import toga
 from toga.style import Pack
 from toga.widgets.base import Widget
+
+
+class DataRole(enum.Enum):
+    Text = "text_accessor"
+    Icon = "icon_accessor"
+    CheckedState = "checked_state_accessor"
 
 
 class Column(Widget):
@@ -8,9 +16,9 @@ class Column(Widget):
     def __init__(
         self,
         title,
-        text=None,
-        icon=None,
-        checked_state=None,
+        text_accessor=None,
+        icon_accessor=None,
+        checked_state_accessor=None,
         editable=True,
         text_fallback='',
         id=None,
@@ -22,12 +30,12 @@ class Column(Widget):
 
         Args:
             title (str): Column title.
-            text (str): Name of attribute in data source to be used as cell text. The
-                corresponding data source value should be a string.
-            icon (str): Name of attribute in data source to be used as cell icon. The
-                corresponding data source value should be a toga.Icon.
-            checked_state: Name of attribute in data source to be used as checked state.
-                The corresponding data source value should be a boolean.
+            text_accessor (str): Name of attribute in data source to be used as cell text.
+                The corresponding data source value should be a string.
+            icon_accessor (str): Name of attribute in data source to be used as cell icon.
+                The corresponding data source value should be a toga.Icon.
+            checked_state_accessor: Name of attribute in data source to be used as checked
+                state. The corresponding data source value should be an int or boolean.
             editable (bool): Whether the column is editable / will change the data source.
             text_fallback (str): String to show when the data source does not provide a value.
             id (str): An identifier for this widget.
@@ -41,12 +49,38 @@ class Column(Widget):
         self._impl = self.factory.Column(interface=self)
 
         self.title = title
-        self.text = text
-        self.icon = icon
-        self.checked_state = checked_state
+        self._accessors = {
+            DataRole.Text: text_accessor,
+            DataRole.Icon: icon_accessor,
+            DataRole.CheckedState: checked_state_accessor
+        }
         self.editable = editable
         self._text_fallback = text_fallback
         self.style = style or Pack()
+
+    @property
+    def text_accessor(self):
+        return self._accessors[DataRole.Text]
+
+    @text_accessor.setter
+    def text_accessor(self, value):
+        self._accessors[DataRole.Text] = value
+
+    @property
+    def icon_accessor(self):
+        return self._accessors[DataRole.Icon]
+
+    @icon_accessor.setter
+    def icon_accessor(self, value):
+        self._accessors[DataRole.Icon] = value
+
+    @property
+    def checked_state_accessor(self):
+        return self._accessors[DataRole.CheckedState]
+
+    @checked_state_accessor.setter
+    def checked_state_accessor(self, value):
+        self._accessors[DataRole.CheckedState] = value
 
     def get_data_for_node(self, node, role):
         """
@@ -57,12 +91,14 @@ class Column(Widget):
         Args:
             node (``Node`` or ``Row``): A Node in a TreeSource or a Row in a ListSource
                 that holds the data for this row.
-            role (str): The type of data to query. Can be "text", "icon" or "checked_state".
+            role (``DataRole``): The type of data to query.
+
+        Returns:
+            string if role is Role.Text
+            toga.Icon if role is Role.Icon
+            int if role is Role.CheckedState
         """
-        try:
-            accessor = getattr(self, role)
-        except AttributeError:
-            raise ValueError(f"Column has no '{role}' data")
+        accessor = self._accessors[role]
 
         # Return None if this column does not provide data for the
         # requested role.
@@ -77,22 +113,20 @@ class Column(Widget):
             return self._fallback_data(role)
 
         # Convert value to expected type.
-        if role == "text":
+        if role is DataRole.Text:
             value = str(value)
-        elif role == "icon":
-            if isinstance(value, str):
+        elif role is DataRole.Icon:
+            if not isinstance(value, toga.Icon):
                 value = toga.Icon(value)
-            elif not isinstance(value, toga.Icon):
-                raise ValueError(f"Don't know how to convert {value} to Icon ")
-        elif role == "checked_state":
+        elif role is DataRole.CheckedState:
             value = int(value)
 
         return value
 
     def _fallback_data(self, role):
-        if role == "text":
+        if role is DataRole.Text:
             return self._text_fallback
-        elif role == "icon":
+        elif role is DataRole.Icon:
             return toga.Icon.TOGA_ICON
         else:
             return None
@@ -100,21 +134,25 @@ class Column(Widget):
     def set_data_for_node(self, node, role, value):
         """
         Sets the data of the given node from column data. This is used by implementations
-        to update the data source on user edits of the column data.
+        to update the data source on user edits of the column data. Try to cast value
+        back to the original type found in the source.
 
         Args:
             node (``Node`` or ``Row``): A Node in a TreeSource or a Row in a ListSource
                 that holds the data for this row.
-            role (str): The type of data to query. Can be "text", "icon" or "checked_state".
+            role (``DataRole``): The type of data to set.
             value: The new value of the colum data.
         """
-        try:
-            accessor = getattr(self, role)
-        except AttributeError:
-            raise ValueError(f"Column has no '{role}' data")
+        if not self.editable:
+            raise RuntimeError("Column is not editable")
 
+        accessor = self._accessors[role]
         if accessor is not None:
-            setattr(node, accessor, value)
+            old_value = getattr(node, accessor)
+            # Try to cast new value to original type.
+            new_value = type(old_value)(value)
+            # Use __setattr__ to trigger notification service.
+            node.__setattr__(accessor, new_value)
 
     @property
     def title(self):

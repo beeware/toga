@@ -1,4 +1,5 @@
 from travertino.size import at_least
+from toga.widgets.internal.column import DataRole
 
 from toga_winforms.libs import WinForms
 
@@ -63,7 +64,7 @@ class Table(Widget):
         self.update_data()
 
     def row_data(self, row):
-        return [col.get_data_for_node(row, "text") for col in self.interface.columns]
+        return [col.get_data_for_node(row, DataRole.Text) for col in self.interface.columns]
 
     def update_data(self):
         self.native.VirtualListSize = len(self.interface.data)

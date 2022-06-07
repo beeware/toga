@@ -1,6 +1,6 @@
 from travertino.size import at_least
 from rubicon.objc import py_from_ns, objc_property
-
+from toga.widgets.internal.column import DataRole
 from toga_cocoa.libs import (
     NSBezelBorder,
     NSIndexSet,
@@ -50,9 +50,9 @@ class TogaTable(NSTableView):
             tcv.checkbox.action = SEL('onToggled:')
             tcv.textField.action = SEL('onTextEdited:')
 
-        text = column.interface.get_data_for_node(data_row, "text")
-        checked_state = column.interface.get_data_for_node(data_row, "checked_state")
-        icon = column.interface.get_data_for_node(data_row, "icon")
+        text = column.interface.get_data_for_node(data_row, DataRole.Text)
+        checked_state = column.interface.get_data_for_node(data_row, DataRole.CheckedState)
+        icon = column.interface.get_data_for_node(data_row, DataRole.Icon)
         native_icon = icon.bind(self.interface.factory).native if icon else None
 
         tcv.setText(text)
@@ -106,7 +106,7 @@ class TogaTable(NSTableView):
         node = self.interface.data[row_index]
 
         new_text = py_from_ns(sender.stringValue)
-        column.set_data_for_node(node, "text", new_text)
+        column.set_data_for_node(node, DataRole.Text, new_text)
 
     @objc_method
     def onToggled_(self, sender) -> None:
@@ -118,7 +118,7 @@ class TogaTable(NSTableView):
 
         # don't allow setting intermediate state through GUI
         checked_state = abs(int(py_from_ns(sender.state)))
-        column.set_data_for_node(node, "checked_state", checked_state)
+        column.set_data_for_node(node, DataRole.CheckedState, checked_state)
 
 
 class Table(Widget):

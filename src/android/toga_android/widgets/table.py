@@ -1,4 +1,5 @@
 from travertino.size import at_least
+from toga.widgets.internal.column import DataRole
 
 from ..libs.activity import MainActivity
 from ..libs.android import R__attr
@@ -166,7 +167,7 @@ class Table(Widget):
                 continue
 
             text_view = TextView(MainActivity.singletonThis)
-            text_view.setText(column.get_data_for_node(row, "text"))
+            text_view.setText(column.get_data_for_node(row, DataRole.Text))
 
             if self._font_impl:
                 text_view.setTextSize(TypedValue.COMPLEX_UNIT_SP, self._font_impl.get_size())

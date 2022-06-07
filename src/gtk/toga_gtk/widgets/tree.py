@@ -1,5 +1,6 @@
 import toga
 from toga.constants import ON, OFF, MIXED
+from toga.widgets.internal.column import DataRole
 
 from ..libs import Gtk, Gdk
 from .base import Widget
@@ -99,18 +100,18 @@ class Tree(Widget):
     def gtk_on_edited(self, renderer, path, new_text, column):
         iter_ = self.store.get_iter(path)
         node = self.store.get_value(iter_, 0)
-        column.set_data_for_node(node, "text", new_text)
+        column.set_data_for_node(node, DataRole.Text, new_text)
 
     def gtk_on_toggled(self, renderer, path, column):
         iter_ = self.store.get_iter(path)
         node = self.store.get_value(iter_, 0)
-        old_checked_state = column.get_data_for_node(node, "checked_state")
-        column.set_data_for_node(node, "checked_state", int(not old_checked_state))
+        old_checked_state = column.get_data_for_node(node, DataRole.CheckedState)
+        column.set_data_for_node(node, DataRole.CheckedState, int(not old_checked_state))
 
     def _set_icon(self, col, cell, model, iter_, user_data):
         node = model.get_value(iter_, 0)
 
-        icon = col.interface.get_data_for_node(node, "icon")
+        icon = col.interface.get_data_for_node(node, DataRole.Icon)
 
         # bind icon and draw in hi-dpi on cairo surface
         pixbuf = icon.bind(self.interface.factory).native_32.get_pixbuf()
@@ -122,7 +123,7 @@ class Tree(Widget):
 
     def _set_toggle(self, col, cell, model, iter_, user_data):
         node = model.get_value(iter_, 0)
-        checked_state = col.interface.get_data_for_node(node, "checked_state")
+        checked_state = col.interface.get_data_for_node(node, DataRole.CheckedState)
 
         if checked_state in (ON, OFF):
             cell.set_property("active", bool(checked_state))
@@ -131,7 +132,7 @@ class Tree(Widget):
 
     def _set_text(self, col, cell, model, iter_, user_data):
         node = model.get_value(iter_, 0)
-        text = col.interface.get_data_for_node(node, "text")
+        text = col.interface.get_data_for_node(node, DataRole.Text)
 
         cell.set_property("text", text)
         cell.set_property("editable", col.interface.editable)

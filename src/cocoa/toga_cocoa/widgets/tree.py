@@ -3,6 +3,7 @@ from rubicon.objc import py_from_ns, objc_property
 from ctypes import c_void_p
 
 from toga.keys import Key
+from toga.widgets.internal.column import DataRole
 from ..keys import toga_key
 from ..libs import (
     NSBezelBorder,
@@ -89,9 +90,9 @@ class TogaTree(NSOutlineView):
             tcv.checkbox.action = SEL("onToggled:")
             tcv.textField.action = SEL("onTextEdited:")
 
-        text = column.interface.get_data_for_node(node, "text")
-        checked_state = column.interface.get_data_for_node(node, "checked_state")
-        icon = column.interface.get_data_for_node(node, "icon")
+        text = column.interface.get_data_for_node(node, DataRole.Text)
+        checked_state = column.interface.get_data_for_node(node, DataRole.CheckedState)
+        icon = column.interface.get_data_for_node(node, DataRole.Icon)
         native_icon = icon.bind(self.interface.factory).native if icon else None
 
         tcv.setText(text)
@@ -99,25 +100,6 @@ class TogaTree(NSOutlineView):
         tcv.setCheckState(checked_state)
 
         return tcv
-
-    # @objc_method
-    # def outlineView_heightOfRowByItem_(self, tree, item) -> float:
-    #
-    #     default_row_height = self.rowHeight
-    #
-    #     if item is self:
-    #         return default_row_height
-    #
-    #     heights = [default_row_height]
-    #
-    #     for column in self.tableColumns:
-    #         value = getattr(item.attrs['node'], str(column.identifier))
-    #
-    #         if isinstance(value, toga.Widget):
-    #             # if the cell value is a widget, use its height
-    #             heights.append(value.impl.native.intrinsicContentSize().height)
-    #
-    #     return max(heights)
 
     @objc_method
     def outlineView_pasteboardWriterForItem_(self, tree, item) -> None:
@@ -178,8 +160,8 @@ class TogaTree(NSOutlineView):
         column = self.interface.columns[column_index]
         node = self.itemAtRow(row_index).attrs["node"]
 
-        new_text = py_from_ns(sender.textField.stringValue)
-        column.set_data_for_node(node, "text", new_text)
+        new_text = py_from_ns(sender.stringValue)
+        column.set_data_for_node(node, DataRole.Text, new_text)
 
     @objc_method
     def onToggled_(self, sender) -> None:
@@ -191,7 +173,7 @@ class TogaTree(NSOutlineView):
 
         # don't allow setting intermediate state through GUI
         checked_state = abs(int(py_from_ns(sender.state)))
-        column.set_data_for_node(node, "checked_state", checked_state)
+        column.set_data_for_node(node, DataRole.CheckedState, checked_state)
 
 
 class Tree(Widget):
