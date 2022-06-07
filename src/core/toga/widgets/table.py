@@ -1,20 +1,26 @@
 from toga.handlers import wrapped_handler
 from toga.sources import ListSource
-from toga.sources.accessors import to_accessor, build_accessors
+from toga.sources.accessors import to_accessor
 
 from .base import Widget
-from .internal.tablecolumn import Column
+from .internal.column import Column
 
 
 class Table(Widget):
     """ A Table Widget allows the display of data in the form of columns and rows.
 
     Args:
-        headings (``list`` of ``str``): The list of headings for the table.
+        columns (``list`` of ``Column`` or ``list`` of ``str``): The list of columns for
+            the table or a list of column titles. If only column titles are given, the
+            content of the columns will be fetches by matching the column titles against
+            attributes of the data source.
         id (str): An identifier for this widget.
-        data (``list`` of ``tuple``): The data to be displayed on the table.
-        accessors: A list of methods, same length as ``headings``, that describes
-            how to extract the data value for each column from the row. (Optional)
+        data (``list`` of ``tuple``, ``list`` of ``dict``, or ``toga.sources.ListSource``):
+            The data to be displayed on the table. If a list of dictionaries is provided,
+            the keys will be used to access the values of the data.
+        accessors: A list of strings, same length as ``data``, that describes how to extract
+            the data value for each row. Required when providing a list of tuples as data,
+            otherwise ignored.
         style (:obj:`Style`): An optional style object.
             If no style is provided` then a new one will be created for the widget.
         on_select (``callable``): A function to be invoked on selecting a row of the table.
@@ -27,17 +33,17 @@ class Table(Widget):
             implementation of this class with the same name. (optional & normally not needed)
 
     Examples:
-        >>> headings = ['Head 1', 'Head 2', 'Head 3']
+        >>> columns = ['Head 1', 'Head 2', 'Head 3']
         >>> data = []
-        >>> table = Table(headings, data=data)
+        >>> table = Table(columns, data=data)
 
-        Data can be in several forms.
-        A list of dictionaries, where the keys match the heading names:
+        The data should be structured as a list rows and can be passed in several forms.
+        A list of dictionaries, where the keys match :
 
         >>> data = [{'head_1': 'value 1', 'head_2': 'value 2', 'head_3': 'value3'}),
         >>>         {'head_1': 'value 1', 'head_2': 'value 2', 'head_3': 'value3'}]
 
-        A list of lists. These will be mapped to the headings in order:
+        A list of lists. These will be mapped to the accessors in order:
 
         >>> data = [('value 1', 'value 2', 'value3'),
         >>>         ('value 1', 'value 2', 'value3')]
@@ -51,7 +57,7 @@ class Table(Widget):
 
     Column = Column
 
-    def __init__(self, headings, id=None, style=None, data=None, accessors=None,
+    def __init__(self, columns, id=None, style=None, data=None, accessors=None,
                  multiple_select=False, on_select=None, on_double_click=None,
                  missing_value=None, factory=None):
         super().__init__(id=id, style=style, factory=factory)
@@ -60,17 +66,21 @@ class Table(Widget):
             print("WARNING: Using empty string for missing value in data. "
                   "Define a 'missing_value' on the table to silence this message")
 
-        headings = headings[:]
-        accessors = build_accessors(headings, accessors)
-        self._columns = [
-            Table.Column(
-                title=heading,
-                text=text_accessor,
-                factory=factory,
-                text_fallback=missing_value or '',
-            )
-            for heading, text_accessor in zip(headings, accessors)
-        ]
+        self._columns = []
+        self._accessors = accessors
+
+        for column in columns:
+            if isinstance(column, Column):
+                self._columns.append(column)
+            elif isinstance(column, str):
+                self._columns.append(
+                    Table.Column(
+                        title=column,
+                        text_accessor=to_accessor(column),
+                        factory=factory,
+                        text_fallback=missing_value or "",
+                    )
+                )
 
         self._multiple_select = multiple_select
         self._on_select = None
