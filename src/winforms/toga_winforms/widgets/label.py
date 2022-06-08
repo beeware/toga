@@ -15,7 +15,7 @@ class Label(Widget):
         self.native.TextAlign = TextAlignment(value)
 
     def set_text(self, value):
-        self.native.Text = value
+        self.native.Text = self.interface._text
 
     def set_font(self, font):
         if font:
