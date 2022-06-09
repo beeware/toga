@@ -131,5 +131,5 @@ def align(value):
         LEFT: Gravity.LEFT,
         RIGHT: Gravity.RIGHT,
         CENTER: Gravity.CENTER_HORIZONTAL,
-        JUSTIFY: Gravity.CENTER_HORIZONTAL,
+        JUSTIFY: Gravity.LEFT,
     }[value]
