@@ -11,7 +11,6 @@ from .base import Widget, align
 class Label(Widget):
     def create(self):
         self.native = TextView(self._native_activity)
-        self.native.setSingleLine()
 
     def set_text(self, value):
         self.native.setText(value)
@@ -31,18 +30,18 @@ class Label(Widget):
         # Calling measure() on an Android TextView w/o LayoutParams raises NullPointerException.
         if not self.native.getLayoutParams():
             return
-        # Ask the Android TextView first for the height it would use in its
-        # wildest dreams. This is the height of one line of text.
+        # Ask the Android TextView first for its minimum possible height.
+        # This is the height with word-wrapping disabled.
         self.native.measure(
             View__MeasureSpec.UNSPECIFIED, View__MeasureSpec.UNSPECIFIED
         )
-        one_line_height = self.native.getMeasuredHeight()
-        self.interface.intrinsic.height = one_line_height
-        # Ask it how wide it would be if it had to be just one line tall.
+        min_height = self.native.getMeasuredHeight()
+        self.interface.intrinsic.height = min_height
+        # Ask it how wide it would be if it had to be the minimum height.
         self.native.measure(
             View__MeasureSpec.UNSPECIFIED,
             View__MeasureSpec.makeMeasureSpec(
-                one_line_height, View__MeasureSpec.AT_MOST
+                min_height, View__MeasureSpec.AT_MOST
             ),
         )
         self.interface.intrinsic.width = at_least(self.native.getMeasuredWidth())
