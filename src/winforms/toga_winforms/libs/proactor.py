@@ -6,27 +6,6 @@ from asyncio import events
 from .winforms import Action, Task, WinForms, user32
 
 
-class AsyncIOTickMessageFilter(WinForms.IMessageFilter):
-    """
-    A Winforms message filter that will catch the request to tick the Asyncio
-    event loop.
-    """
-    __namespace__ = 'System.Windows.Forms'
-
-    def __init__(self, loop, msg_id):
-        self.loop = loop
-        self.msg_id = msg_id
-
-    def PreFilterMessage(self, message):
-        print('ping', message)
-        if message.Msg == self.msg_id:
-            print("asyncio tick message!!")
-            self.loop.run_once_recurring()
-            return True
-        # print("Filter message", message)
-        return False
-
-
 class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
     def run_forever(self, app_context):
         """Set up the asyncio event loop, integrate it with the Winforms
@@ -49,13 +28,6 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
 
         # Remember the application context.
         self.app_context = app_context
-
-        # Register a custom user window message.
-        self.msg_id = user32.RegisterWindowMessageA("Python asyncio tick")
-        # Add a message filter to listen for the asyncio tick message
-        # FIXME: Actually install the message filter.
-        # msg_filter = AsyncIOTickMessageFilter(self, self.msg_id)
-        # WinForms.Application.AddMessageFilter(msg_filter)
 
         # Setup the Proactor.
         # The code between the following markers should be exactly the same as
@@ -107,21 +79,9 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
         """
         Cause a single iteration of the event loop to run on the main GUI thread.
         """
-        # Post a userspace message that will trigger running an iteration
-        # of the asyncio event loop. This can't be done directly, because the
-        # tick() will be executing in a threadpool, and we need the asyncio
-        # handling to occur in the main GUI thread. However, by positing a
-        # message, it will be caught by the MessageFilter we installed on the
-        # Application thread.
-
-        # The message is sent with:
-        # * HWND 0xfff (all windows),
-        # * MSG self.msg_id (a message ID in the WM_USER range)
-        # * LPARAM and WPARAM empty (no extra details needed; just tick!)
-        user32.PostMessageA(0xffff, self.msg_id, None, None)
-
-        # FIXME: Once we have a working message filter, this invoke call
-        # can be removed.
+        # FIXME: this only works if there is a "main window" registered with the
+        # app (#750).
+        #
         # If the app context has a main form, invoke run_once_recurring()
         # on the thread associated with that form.
         if self.app_context.MainForm:
