@@ -115,7 +115,7 @@ class WebView(Widget):
 
     def set_url(self, value):
         if value:
-            self.native.Source = Uri(self.interface._url)
+            self.native.Source = Uri(value)
 
     def set_content(self, root_url, content):
         if content and self.native.CoreWebView2:
