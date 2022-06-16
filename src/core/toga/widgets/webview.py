@@ -52,6 +52,9 @@ class WebView(Widget):
         Returns:
             The current URL as a ``str``.
         """
+        if hasattr(self._impl, 'get_url'):
+            self._url = self._impl.get_url()
+            # once get_url is implemented on all platforms, we can call it unconditionally and remove self._url
         return self._url
 
     @url.setter
