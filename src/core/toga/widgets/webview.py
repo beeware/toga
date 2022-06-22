@@ -26,7 +26,6 @@ class WebView(Widget):
         super().__init__(id=id, style=style, factory=factory)
 
         # Prime some internal property-backing variables
-        self._url = None
         self._html_content = None
         self._user_agent = None
 
@@ -52,14 +51,10 @@ class WebView(Widget):
         Returns:
             The current URL as a ``str``.
         """
-        if hasattr(self._impl, 'get_url'):
-            self._url = self._impl.get_url()
-            # once get_url is implemented on all platforms, we can call it unconditionally and remove self._url
-        return self._url
+        return self._impl.get_url()
 
     @url.setter
     def url(self, value):
-        self._url = value
         self._html_content = None
         self._impl.set_url(value)
 
@@ -125,7 +120,6 @@ class WebView(Widget):
         Returns:
 
         """
-        self._url = root_url
         self._html_content = content
         self._impl.set_content(root_url, content)
 

@@ -21,6 +21,9 @@ class WebView(Widget):
     def set_user_agent(self, value):
         self._set_value('user_agent', value)
 
+    def get_url(self):
+        return self._get_value('url')
+
     def set_url(self, value):
         self._set_value('url', value)
 
