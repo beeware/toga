@@ -9,6 +9,7 @@ from toga_winforms.keys import toga_key
 from toga_winforms.libs import (
     Action,
     CoreWebView2CreationProperties,
+    CoreWebView2WebResourceContext,
     String,
     Task,
     TaskScheduler,
@@ -63,6 +64,9 @@ class WebView(Widget):
                 settings.IsStatusBarEnabled = debug
                 settings.IsZoomControlEnabled = True
 
+                self.native.CoreWebView2.AddWebResourceRequestedFilter("*", CoreWebView2WebResourceContext.All)
+                self.native.CoreWebView2.WebResourceRequested += self.winforms_web_resource_requested
+                                
                 self.set_user_agent(self.interface.user_agent)
 
                 if self.interface._html_content:
@@ -96,6 +100,14 @@ class WebView(Widget):
             else:
                 print(args.InitializationException)
 
+    def winforms_web_resource_requested(self, sender, args):
+        if self.interface.on_webview_loading:
+            event_args = {}
+            event_args["request"] = args.Request
+            event_args["resource_context"] = args.ResourceContext
+            event_args["response"] = args.Response
+            self.interface.on_webview_loading(self.interface, event_args)
+    
     def winforms_navigation_completed(self, sender, args):
         if self.interface.on_webview_load:
             self.interface.on_webview_load(self.interface)
@@ -105,6 +117,9 @@ class WebView(Widget):
             self.interface.on_key_down(self.interface, **toga_key(args))
 
     def set_on_key_down(self, handler):
+        pass
+
+    def set_on_webview_loading(self, handler):
         pass
 
     def set_on_webview_load(self, handler):
