@@ -30,6 +30,7 @@ class WebView(Widget):
         context = self.native.get_context()
         context.set_cache_model(WebKit2.CacheModel.DOCUMENT_VIEWER)
 
+        self.native.connect('load-changed', self.gtk_on_load_changed)
         self.native.connect('key-press-event', self.gtk_on_key)
         self._last_key_time = 0
 
@@ -38,6 +39,11 @@ class WebView(Widget):
 
     def set_on_webview_load(self, handler):
         pass
+
+    def gtk_on_load_changed(self, widget, load_event, *args):
+        if load_event == WebKit2.LoadEvent.FINISHED:
+            if self.interface.on_webview_load:
+                self.interface.on_webview_load(self.interface)
 
     def gtk_on_key(self, widget, event, *args):
         # key-press-event on WebKit on GTK double-sends events, but they have
@@ -48,9 +54,12 @@ class WebView(Widget):
             if toga_event:
                 self.interface.on_key_down(self.interface, **toga_event)
 
+    def get_url(self):
+        return self.native.get_uri()
+
     def set_url(self, value):
         if value:
-            self.native.load_uri(self.interface.url)
+            self.native.load_uri(value)
 
     def set_user_agent(self, value):
         # replace user agent of webview (webview has own one)

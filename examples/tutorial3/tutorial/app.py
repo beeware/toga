@@ -6,7 +6,7 @@ class Graze(toga.App):
     def startup(self):
         self.main_window = toga.MainWindow(title=self.name)
 
-        self.webview = toga.WebView(style=Pack(flex=1))
+        self.webview = toga.WebView(on_webview_load=self.on_webview_loaded, style=Pack(flex=1))
         self.url_input = toga.TextInput(
             initial='https://beeware.org/',
             style=Pack(flex=1)
@@ -40,6 +40,9 @@ class Graze(toga.App):
 
     def load_page(self, widget):
         self.webview.url = self.url_input.value
+
+    def on_webview_loaded(self, widget):
+        self.url_input.value = self.webview.url
 
 
 def main():
