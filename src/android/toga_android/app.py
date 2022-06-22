@@ -66,6 +66,11 @@ class TogaApp(IPythonApp):
         except KeyError:
             print("No intent matching request code {requestCode}")
 
+    def onConfigurationChanged(self, new_config):
+        interface = self._impl.interface
+        if interface.main_window and interface.main_window.content:
+            interface.main_window.content.refresh()
+
     def onOptionsItemSelected(self, menuitem):
         consumed = False
         try:
