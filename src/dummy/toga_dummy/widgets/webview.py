@@ -12,6 +12,9 @@ class WebView(Widget):
     def set_on_key_down(self, handler):
         self._action('set on_key_down', handler=handler)
 
+    def set_on_webview_loading(self, handler):
+        self._action('set on_webview_loading', handler=handler)
+
     def set_on_webview_load(self, handler):
         self._action('set on_webview_load', handler=handler)
 

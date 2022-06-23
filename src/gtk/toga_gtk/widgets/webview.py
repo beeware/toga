@@ -37,6 +37,9 @@ class WebView(Widget):
     def set_on_key_down(self, handler):
         pass
 
+    def set_on_webview_loading(self, handler):
+        self.interface.factory.not_implemented('WebView.set_on_webview_loading()')
+
     def set_on_webview_load(self, handler):
         pass
 

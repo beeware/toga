@@ -35,6 +35,10 @@ class WebView(Widget):
         # Android isn't a platform that usually has a keyboard attached, so this is unimplemented for now.
         self.interface.factory.not_implemented('WebView.set_on_key_down()')
 
+    def set_on_webview_loading(self, handler):
+        # This requires subclassing WebViewClient, which is not yet possible with rubicon-java.
+        self.interface.factory.not_implemented('WebView.set_on_webview_loading()')
+
     def set_on_webview_load(self, handler):
         # This requires subclassing WebViewClient, which is not yet possible with rubicon-java.
         self.interface.factory.not_implemented('WebView.set_on_webview_load()')
