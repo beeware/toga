@@ -54,6 +54,7 @@ class Window:
         self.set_size(size)
         self.set_position(position)
 
+        self.content = None
         self.toolbar_native = None
         self.toolbar_items = None
         if self.native.interface.resizeable:
@@ -114,13 +115,12 @@ class Window:
         return result
 
     def set_content(self, widget):
-        for control in self.native.Controls:
-            self.native.Controls.Remove(control)
-
         if self.toolbar_native:
             self.native.Controls.Add(self.toolbar_native)
-            # Create the lookup table of menu items,
-            # then force the creation of the menus.
+
+        if self.content:
+            self.native.Controls.Remove(self.content.native)
+        self.content = widget
         self.native.Controls.Add(widget.native)
 
         # Set the widget's viewport to be based on the window's content.
