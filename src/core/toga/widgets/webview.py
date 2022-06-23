@@ -23,7 +23,7 @@ class WebView(Widget):
     MIN_HEIGHT = 100
 
     def __init__(self, id=None, style=None, factory=None,
-                 url=None, user_agent=None, on_key_down=None, 
+                 url=None, user_agent=None, on_key_down=None,
                  on_webview_loading=None, on_webview_load=None):
         super().__init__(id=id, style=style, factory=factory)
 
