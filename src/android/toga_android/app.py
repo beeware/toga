@@ -67,9 +67,7 @@ class TogaApp(IPythonApp):
             print("No intent matching request code {requestCode}")
 
     def onConfigurationChanged(self, new_config):
-        interface = self._impl.interface
-        if interface.main_window and interface.main_window.content:
-            interface.main_window.content.refresh()
+        pass
 
     def onOptionsItemSelected(self, menuitem):
         consumed = False

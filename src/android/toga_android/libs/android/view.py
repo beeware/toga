@@ -10,3 +10,6 @@ View = JavaClass("android/view/View")
 ViewGroup__LayoutParams = JavaClass("android/view/ViewGroup$LayoutParams")
 View__MeasureSpec = JavaClass("android/view/View$MeasureSpec")
 View__OnTouchListener = JavaInterface("android/view/View$OnTouchListener")
+ViewTreeObserver__OnGlobalLayoutListener = JavaInterface(
+    "android/view/ViewTreeObserver$OnGlobalLayoutListener"
+)
