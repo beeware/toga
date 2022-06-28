@@ -1,3 +1,5 @@
+import os
+
 import toga
 from toga.style.pack import COLUMN, Pack
 
@@ -34,9 +36,16 @@ def action6(widget):
     print("action 6")
 
 
+def rebase_path(path):
+    if __name__ == '__main__':
+        return os.path.abspath(path)
+    else:
+        return path
+
+
 def build(app):
-    brutus_icon = "icons/brutus"
-    cricket_icon = "icons/cricket-72.png"
+    brutus_icon = rebase_path("icons/brutus")
+    cricket_icon = rebase_path("icons/cricket-72.png")
 
     data = [
         ('root%s' % i, 'value %s' % i)
