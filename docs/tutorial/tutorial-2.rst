@@ -27,10 +27,15 @@ Here's the source code:
 .. literalinclude:: /../examples/tutorial2/tutorial/app.py
    :language: python
 
-In order to render the icons, you will need to move the icons folder into the
-same directory as your app file.
+In order to render the icons, you will need to have the icon files inside a
+``icons`` folder in the same directory as your app file.
 
 Here are the :download:`Icons <./resources/icons.zip>`
+
+The ``rebase_path`` function handles two cases: when your application is
+launched as a single file module, Toga needs an absolute file path; but when
+launched as a package module, or through briefcase, it should be a relative
+file path. On a real world scenario, you would be using only relative paths.
 
 In this example, we see a couple of new Toga widgets - :class:`.Table`,
 :class:`.SplitContainer`, and :class:`.ScrollContainer`. You can also see that
