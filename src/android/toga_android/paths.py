@@ -1,6 +1,6 @@
-import sys
 from pathlib import Path
 
+import __main__
 import toga
 from toga import App
 
@@ -15,7 +15,7 @@ class Paths:
 
     @property
     def app(self):
-        return Path(sys.modules[App.app.module_name].__file__).parent
+        return Path(__main__.__file__).parent
 
     @property
     def data(self):
