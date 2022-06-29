@@ -4,6 +4,7 @@ from pathlib import Path
 from .libs import WinForms
 from .libs.winforms import ContentAlignment
 
+
 class BaseDialog:
     def __init__(self):
         loop = asyncio.get_event_loop()
@@ -173,15 +174,12 @@ class StackTraceDialog(BaseDialog):
         self.dialog.Close()
 
     def winforms_Click_quit(self, sender, event):
-        print("Quit clicked")
         self.handle_result(False)
 
     def winforms_Click_retry(self, sender, event):
-        print("Retry clicked")
         self.handle_result(True)
 
     def winforms_Click_accept(self, sender, event):
-        print("Accept clicked")
         self.handle_result(None)
 
 
