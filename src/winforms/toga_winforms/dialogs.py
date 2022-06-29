@@ -120,6 +120,7 @@ class StackTraceDialog(BaseDialog):
         trace.Width = 504
         trace.Height = 210
         trace.Multiline = True
+        trace.ReadOnly = True
         trace.Text = content + content
 
         self.dialog.Controls.Add(trace)
