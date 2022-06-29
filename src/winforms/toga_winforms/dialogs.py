@@ -1,8 +1,8 @@
 import asyncio
 from pathlib import Path
 
-from .libs import WinForms
-from .libs.winforms import ContentAlignment
+from .libs import WinFont, WinForms
+from .libs.winforms import ContentAlignment, FontFamily, FontStyle, SystemFonts
 
 
 class BaseDialog:
@@ -121,6 +121,11 @@ class StackTraceDialog(BaseDialog):
         trace.Height = 210
         trace.Multiline = True
         trace.ReadOnly = True
+        trace.Font = WinFont(
+            FontFamily.GenericMonospace,
+            float(SystemFonts.DefaultFont.Size),
+            FontStyle.Regular
+        )
         trace.Text = content
 
         self.dialog.Controls.Add(trace)
