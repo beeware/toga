@@ -35,11 +35,23 @@ class ExampledialogsApp(toga.App):
 
     async def action_stack_trace(self, widget):
         await self.main_window.stack_trace_dialog(
-            'Toga',
+            "Well that wasn't good",
             "Here's where you were when it went bad:",
             ''.join(traceback.format_stack())
         )
         self.label.text = 'Stack traced...'
+
+    async def action_stack_trace_retry(self, widget):
+        retry = await self.main_window.stack_trace_dialog(
+            'Want a do-over?',
+            "Here's where you were when it went bad:",
+            ''.join(traceback.format_stack()),
+            retry=True,
+        )
+        if retry:
+            self.label.text = "Lets try that again..."
+        else:
+            self.label.text = "Quit while you're ahead..."
 
     async def action_open_file_dialog(self, widget):
         try:
@@ -224,6 +236,11 @@ class ExampledialogsApp(toga.App):
         btn_confirm = toga.Button('Confirm', on_press=self.action_confirm_dialog, style=btn_style)
         btn_error = toga.Button('Error', on_press=self.action_error_dialog, style=btn_style)
         btn_stack_trace = toga.Button('Stack Trace', on_press=self.action_stack_trace, style=btn_style)
+        btn_stack_trace_retry = toga.Button(
+            'Stack Trace (with retry)',
+            on_press=self.action_stack_trace_retry,
+            style=btn_style,
+        )
         btn_open = toga.Button('Open File', on_press=self.action_open_file_dialog, style=btn_style)
         btn_open_filtered = toga.Button(
             'Open File (Filtered)',
@@ -274,6 +291,7 @@ class ExampledialogsApp(toga.App):
                 btn_confirm,
                 btn_error,
                 btn_stack_trace,
+                btn_stack_trace_retry,
                 btn_open,
                 btn_open_filtered,
                 btn_open_multi,
