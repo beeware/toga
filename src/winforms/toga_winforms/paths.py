@@ -25,7 +25,7 @@ class Paths:
     @property
     def author(self):
         if App.app.author is None:
-            return "Unknown Developer"
+            return "Toga"
         return App.app.author
 
     @property
@@ -34,11 +34,11 @@ class Paths:
 
     @property
     def cache(self):
-        return Path.home() / 'Library' / 'Local' / self.author / App.app.formal_name / 'Cache'
+        return Path.home() / 'AppData' / 'Local' / self.author / App.app.formal_name / 'Cache'
 
     @property
     def logs(self):
-        return Path.home() / 'Library' / 'Local' / self.author / App.app.formal_name / 'Logs'
+        return Path.home() / 'AppData' / 'Local' / self.author / App.app.formal_name / 'Logs'
 
     @property
     def toga(self):
