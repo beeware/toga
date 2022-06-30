@@ -19,11 +19,11 @@ except IndexError:
 def main():
     app = toga.App(factory=factory)
 
-    print(f"app.paths.app={app.paths.app}")
-    print(f"app.paths.data={app.paths.data}")
-    print(f"app.paths.cache={app.paths.cache}")
-    print(f"app.paths.logs={app.paths.logs}")
-    print(f"app.paths.toga={app.paths.toga}")
+    print(f"app.paths.app={app.paths.app.resolve()}")
+    print(f"app.paths.data={app.paths.data.resolve()}")
+    print(f"app.paths.cache={app.paths.cache.resolve()}")
+    print(f"app.paths.logs={app.paths.logs.resolve()}")
+    print(f"app.paths.toga={app.paths.toga.resolve()}")
 
 
 if __name__ == '__main__':
