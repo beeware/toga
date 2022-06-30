@@ -24,7 +24,7 @@ except IndexError:
 
 
 def main():
-    app = toga.App('Testbed App', 'org.testbed.standalone-app', factory=factory)
+    app = toga.App('Standalone App', 'org.testbed.standalone-app', factory=factory)
 
     print(f"app.paths.app={app.paths.app.resolve()}")
     print(f"app.paths.data={app.paths.data.resolve()}")
