@@ -108,7 +108,7 @@ jobs:
     - name: Test
       run: |
         cd src/winforms
-        python setup.py test
+        pytest
 
   macOS:
     name: macOS backend tests
@@ -131,7 +131,7 @@ jobs:
     - name: Test
       run: |
         cd src/cocoa
-        python setup.py test
+        pytest
 
   iOS:
     name: iOS backend tests
@@ -154,7 +154,7 @@ jobs:
     - name: Test
       run: |
         cd src/iOS
-        python setup.py test
+        pytest
 
   gtk:
     name: GTK+ backend tests
@@ -179,7 +179,7 @@ jobs:
     - name: Test
       run: |
         cd src/gtk
-        xvfb-run -a -s '-screen 0 2048x1536x24' python setup.py test
+        xvfb-run -a -s '-screen 0 2048x1536x24' pytest
 
   android:
     name: Android backend tests
@@ -202,7 +202,7 @@ jobs:
     - name: Test
       run: |
         cd src/android
-        python setup.py test
+        pytest
 
   web:
     name: Web backend tests
@@ -225,4 +225,4 @@ jobs:
     - name: Test
       run: |
         cd src/web
-        python setup.py test
+        pytest
