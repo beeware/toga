@@ -8,6 +8,14 @@ import toga_dummy
 
 
 class TestPaths(unittest.TestCase):
+    def setUp(self):
+        # We use the existence of a __main__ module as a proxy for being in test
+        # conditions. This isn't *great*, but the __main__ module isn't meaningful
+        # during tests, and removing it allows us to avoid having explicit "if
+        # under test conditions" checks in paths.py.
+        if '__main__' in sys.modules:
+            del sys.modules['__main__']
+
     def test_as_test(self):
         "During test conditions, the app path is the current working directory"
         app = toga.App(
