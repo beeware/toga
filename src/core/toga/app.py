@@ -178,14 +178,20 @@ class App:
             # If the code is contained in a folder, and you start the app
             # using `python -m appname`, the main module will report as the
             # name of the folder.
-            main_module_pkg = sys.modules['__main__'].__package__
-            if main_module_pkg == '':
+            try:
+                main_module_pkg = sys.modules['__main__'].__package__
+                if main_module_pkg == '':
+                    self._app_name = None
+                else:
+                    self._app_name = main_module_pkg
+            except KeyError:
+                # We use the existence of a __main__ module as a proxy for
+                # being in test conditions. This isn't *great*, but the __main__
+                # module isn't meaningful during tests, and removing it allows
+                # us to avoid having explicit "if under test conditions" checks.
+                # If there's no __main__ module, we're in a test, and we can't
+                # imply an app name from that module name.
                 self._app_name = None
-            else:
-                self._app_name = main_module_pkg
-
-            # During tests, and when running from a prompt, there won't be
-            # a __main__ module.
 
             # Try deconstructing the app name from the app ID
             if self._app_name is None and app_id:

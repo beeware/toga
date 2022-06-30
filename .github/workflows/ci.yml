@@ -20,7 +20,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Set up Python 3.7
-      uses: actions/setup-python@v1
+      uses: actions/setup-python@v3.1.2
       with:
         python-version: "3.7"
     - name: Install dependencies
@@ -40,7 +40,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Set up Python 3.7
-      uses: actions/setup-python@v1
+      uses: actions/setup-python@v3.1.2
       with:
         python-version: "3.7"
     - name: Install dependencies
@@ -55,7 +55,7 @@ jobs:
       uses: codecov/codecov-action@v1
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
-        file: ./coverage.xml
+        file: ./src/core/coverage.xml
         flags: unittests
         fail_ci_if_error: true
 
@@ -69,11 +69,11 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        python-version: ["3.8", "3.9", "3.10"]
+        python-version: ["3.8", "3.9", "3.10", "3.11.0-alpha - 3.11.0"]
     steps:
     - uses: actions/checkout@v1
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v1
+      uses: actions/setup-python@v3.1.2
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
@@ -92,7 +92,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Set up Python 3.9
-      uses: actions/setup-python@v1
+      uses: actions/setup-python@v3.1.2
       with:
         # Py3.9 is the first Python version for which
         # a wheel of pythonnet isn't available on PyPI.
@@ -108,7 +108,7 @@ jobs:
     - name: Test
       run: |
         cd src/winforms
-        python setup.py test
+        pytest
 
   macOS:
     name: macOS backend tests
@@ -117,7 +117,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Set up Python 3.7
-      uses: actions/setup-python@v1
+      uses: actions/setup-python@v3.1.2
       with:
         python-version: "3.7"
     - name: Install dependencies
@@ -131,7 +131,7 @@ jobs:
     - name: Test
       run: |
         cd src/cocoa
-        python setup.py test
+        pytest
 
   iOS:
     name: iOS backend tests
@@ -140,7 +140,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Set up Python 3.7
-      uses: actions/setup-python@v1
+      uses: actions/setup-python@v3.1.2
       with:
         python-version: "3.7"
     - name: Install dependencies
@@ -154,7 +154,7 @@ jobs:
     - name: Test
       run: |
         cd src/iOS
-        python setup.py test
+        pytest
 
   gtk:
     name: GTK+ backend tests
@@ -163,7 +163,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Set up Python 3.7
-      uses: actions/setup-python@v1
+      uses: actions/setup-python@v3.1.2
       with:
         python-version: "3.7"
     - name: Install dependencies
@@ -179,7 +179,7 @@ jobs:
     - name: Test
       run: |
         cd src/gtk
-        xvfb-run -a -s '-screen 0 2048x1536x24' python setup.py test
+        xvfb-run -a -s '-screen 0 2048x1536x24' pytest
 
   android:
     name: Android backend tests
@@ -188,7 +188,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Set up Python 3.7
-      uses: actions/setup-python@v1
+      uses: actions/setup-python@v3.1.2
       with:
         python-version: "3.7"
     - name: Install dependencies
@@ -202,7 +202,7 @@ jobs:
     - name: Test
       run: |
         cd src/android
-        python setup.py test
+        pytest
 
   web:
     name: Web backend tests
@@ -211,7 +211,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Set up Python 3.7
-      uses: actions/setup-python@v1
+      uses: actions/setup-python@v3.1.2
       with:
         python-version: "3.7"
     - name: Install dependencies
@@ -225,4 +225,4 @@ jobs:
     - name: Test
       run: |
         cd src/web
-        python setup.py test
+        pytest

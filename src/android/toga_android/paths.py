@@ -15,7 +15,16 @@ class Paths:
 
     @property
     def app(self):
-        return Path(sys.modules[App.app.module_name].__file__).parent
+        try:
+            return Path(sys.modules["__main__"].__file__).parent
+        except KeyError:
+            # If we're running in test conditions,
+            # there is no __main__ module.
+            return Path.cwd()
+        except AttributeError:
+            # If we're running at an interactive prompt,
+            # the __main__ module isn't file-based.
+            return Path.cwd()
 
     @property
     def data(self):
