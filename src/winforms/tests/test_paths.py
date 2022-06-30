@@ -55,16 +55,17 @@ class TestPaths(unittest.TestCase):
             f"app.paths.app={TESTBED_PATH.resolve()}",
             results,
         )
+        win_app_path = (Path.home() / 'AppData' / 'Local' / 'Toga' / 'Standalone App').resolve()
         self.assertIn(
-            f"app.paths.data={(Path.home() / 'AppData' / 'Local' / 'Toga' / 'Standalone App').resolve()}",
+            f"app.paths.data={win_app_path}",
             results,
         )
         self.assertIn(
-            f"app.paths.cache={(Path.home() / 'AppData' / 'Local' / 'Toga' / 'Standalone App' / 'Cache').resolve()}",
+            f"app.paths.cache={win_app_path / 'Cache'}",
             results,
         )
         self.assertIn(
-            f"app.paths.logs={(Path.home() / 'AppData' / 'Local' / 'Toga' / 'Standalone App' / 'Logs').resolve()}",
+            f"app.paths.logs={win_app_path / 'Logs'}",
             results,
         )
         self.assertIn(
@@ -109,16 +110,17 @@ class TestPaths(unittest.TestCase):
             f"app.paths.app={(TESTBED_PATH / 'simple').resolve()}",
             results,
         )
+        win_app_path = (Path.home() / 'AppData' / 'Local' / 'Toga' / 'Simple App').resolve()
         self.assertIn(
-            f"app.paths.data={(Path.home() / 'AppData' / 'Local' / 'Toga' / 'Simple App').resolve()}",
+            f"app.paths.data={win_app_path}",
             results,
         )
         self.assertIn(
-            f"app.paths.cache={(Path.home() / 'AppData' / 'Local' / 'Toga' / 'Simple App' / 'Cache').resolve()}",
+            f"app.paths.cache={win_app_path / 'Cache'}",
             results,
         )
         self.assertIn(
-            f"app.paths.logs={(Path.home() / 'AppData' / 'Local' / 'Toga' / 'Simple App' / 'Logs').resolve()}",
+            f"app.paths.logs={win_app_path / 'Logs'}",
             results,
         )
         self.assertIn(
@@ -182,16 +184,17 @@ class TestPaths(unittest.TestCase):
             f"app.paths.app={(TESTBED_PATH / 'installed').resolve()}",
             results,
         )
+        win_app_path = (Path.home() / 'AppData' / 'Local' / 'Tiberius Yak' / 'Installed App').resolve()
         self.assertIn(
-            f"app.paths.data={(Path.home() / 'AppData' / 'Local' / 'Tiberius Yak' / 'Installed App').resolve()}",
+            f"app.paths.data={win_app_path}",
             results,
         )
         self.assertIn(
-            f"app.paths.cache={(Path.home() / 'AppData' / 'Local' / 'Tiberius Yak' / 'Installed App' / 'Cache').resolve()}",
+            f"app.paths.cache={win_app_path / 'Cache'}",
             results,
         )
         self.assertIn(
-            f"app.paths.logs={(Path.home() / 'AppData' / 'Local' / 'Tiberius Yak' / 'Installed App' / 'Logs').resolve()}",
+            f"app.paths.logs={win_app_path / 'Logs'}",
             results,
         )
         self.assertIn(
