@@ -1,6 +1,6 @@
+import sys
 from pathlib import Path
 
-import __main__
 import toga
 from toga import App
 
@@ -15,7 +15,12 @@ class Paths:
 
     @property
     def app(self):
-        return Path(__main__.__file__).parent
+        try:
+            return Path(sys.modules["__main__"].__file__).parent
+        except AttributeError:
+            # If we're running in a test suite, or at an interactive prompt,
+            # the __main__ module isn't file-based.
+            return Path.cwd()
 
     @property
     def data(self):
