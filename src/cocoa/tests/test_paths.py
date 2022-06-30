@@ -7,7 +7,7 @@ from pathlib import Path
 import toga
 
 
-TESTBED_PATH = Path(__file__).parent.parent.parent / "core" / 'tests' / 'testbed'
+TESTBED_PATH = Path(__file__).parent.parent.parent / "core" / "tests" / "testbed"
 
 
 class TestPaths(unittest.TestCase):
@@ -19,20 +19,50 @@ class TestPaths(unittest.TestCase):
             author="Jane Developer",
         )
 
-        self.assertEqual(app.paths.app, Path.cwd())
-        self.assertEqual(app.paths.data, Path.home() / "Library" / "Application Support" / "org.beeware.test-app")
-        self.assertEqual(app.paths.cache, Path.home() / "Library" / "Caches" / "org.beeware.test-app")
-        self.assertEqual(app.paths.logs, Path.home() / "Library" / "Logs" / "org.beeware.test-app")
-        self.assertEqual(app.paths.toga, Path(toga.__file__).parent)
+        self.assertEqual(
+            app.paths.app,
+            Path.cwd(),
+        )
+        self.assertEqual(
+            app.paths.data,
+            Path.home() / "Library" / "Application Support" / "org.beeware.test-app",
+        )
+        self.assertEqual(
+            app.paths.cache,
+            Path.home() / "Library" / "Caches" / "org.beeware.test-app",
+        )
+        self.assertEqual(
+            app.paths.logs,
+            Path.home() / "Library" / "Logs" / "org.beeware.test-app",
+        )
+        self.assertEqual(
+            app.paths.toga,
+            Path(toga.__file__).parent,
+        )
 
     def assert_standalone_paths(self, output):
         "Assert the paths for the standalone app are consistent"
         results = output.splitlines()
-        self.assertIn(f"app.paths.app={TESTBED_PATH}", results)
-        self.assertIn(f"app.paths.data={Path.home() / 'Library' / 'Application Support' / 'org.testbed.standalone-app'}", results)
-        self.assertIn(f"app.paths.cache={Path.home() / 'Library' / 'Caches' / 'org.testbed.standalone-app'}", results)
-        self.assertIn(f"app.paths.logs={Path.home() / 'Library' / 'Logs' / 'org.testbed.standalone-app'}", results)
-        self.assertIn(f"app.paths.toga={Path(toga.__file__).parent}", results)
+        self.assertIn(
+            f"app.paths.app={TESTBED_PATH}",
+            results,
+        )
+        self.assertIn(
+            f"app.paths.data={Path.home() / 'Library' / 'Application Support' / 'org.testbed.standalone-app'}",
+            results,
+        )
+        self.assertIn(
+            f"app.paths.cache={Path.home() / 'Library' / 'Caches' / 'org.testbed.standalone-app'}",
+            results,
+        )
+        self.assertIn(
+            f"app.paths.logs={Path.home() / 'Library' / 'Logs' / 'org.testbed.standalone-app'}",
+            results,
+        )
+        self.assertIn(
+            f"app.paths.toga={Path(toga.__file__).parent}",
+            results,
+        )
 
     def test_as_interactive(self):
         "At an interactive prompt, the app path is the current working directory"
@@ -67,14 +97,30 @@ class TestPaths(unittest.TestCase):
     def assert_simple_paths(self, output):
         "Assert the paths for the simple app are consistent"
         results = output.splitlines()
-        self.assertIn(f"app.paths.app={TESTBED_PATH / 'simple'}", results)
-        self.assertIn(f"app.paths.data={Path.home() / 'Library' / 'Application Support' / 'org.testbed.simple-app'}", results)
-        self.assertIn(f"app.paths.cache={Path.home() / 'Library' / 'Caches' / 'org.testbed.simple-app'}", results)
-        self.assertIn(f"app.paths.logs={Path.home() / 'Library' / 'Logs' / 'org.testbed.simple-app'}", results)
-        self.assertIn(f"app.paths.toga={Path(toga.__file__).parent}", results)
+        self.assertIn(
+            f"app.paths.app={TESTBED_PATH / 'simple'}",
+            results,
+        )
+        self.assertIn(
+            f"app.paths.data={Path.home() / 'Library' / 'Application Support' / 'org.testbed.simple-app'}",
+            results,
+        )
+        self.assertIn(
+            f"app.paths.cache={Path.home() / 'Library' / 'Caches' / 'org.testbed.simple-app'}",
+            results,
+        )
+        self.assertIn(
+            f"app.paths.logs={Path.home() / 'Library' / 'Logs' / 'org.testbed.simple-app'}",
+            results,
+        )
+        self.assertIn(
+            f"app.paths.toga={Path(toga.__file__).parent}",
+            results,
+        )
 
     def test_simple_as_file_in_module(self):
-        "When a simple app is started as `python app.py` inside a runnable module, the app path is the folder holding app.py"
+        """When a simple app is started as `python app.py` inside a runnable module,
+        the app path is the folder holding app.py"""
         # Spawn the simple testbed app using `app.py`
         output = subprocess.check_output(
             [sys.executable, "app.py"],
@@ -84,7 +130,8 @@ class TestPaths(unittest.TestCase):
         self.assert_simple_paths(output)
 
     def test_simple_as_module(self):
-        "When a simple app is started as `python -m app` inside a runnable module, the app path is the folder holding app.py"
+        """When a simple app is started as `python -m app` inside a runnable module,
+        the app path is the folder holding app.py"""
         # Spawn the simple testbed app using `-m app`
         output = subprocess.check_output(
             [sys.executable, "-m", "app"],
@@ -123,8 +170,23 @@ class TestPaths(unittest.TestCase):
         )
 
         results = output.splitlines()
-        self.assertIn(f"app.paths.app={TESTBED_PATH / 'installed'}", results)
-        self.assertIn(f"app.paths.data={Path.home() / 'Library' / 'Application Support' / 'org.testbed.installed'}", results)
-        self.assertIn(f"app.paths.cache={Path.home() / 'Library' / 'Caches' / 'org.testbed.installed'}", results)
-        self.assertIn(f"app.paths.logs={Path.home() / 'Library' / 'Logs' / 'org.testbed.installed'}", results)
-        self.assertIn(f"app.paths.toga={Path(toga.__file__).parent}", results)
+        self.assertIn(
+            f"app.paths.app={TESTBED_PATH / 'installed'}",
+            results,
+        )
+        self.assertIn(
+            f"app.paths.data={Path.home() / 'Library' / 'Application Support' / 'org.testbed.installed'}",
+            results,
+        )
+        self.assertIn(
+            f"app.paths.cache={Path.home() / 'Library' / 'Caches' / 'org.testbed.installed'}",
+            results,
+        )
+        self.assertIn(
+            f"app.paths.logs={Path.home() / 'Library' / 'Logs' / 'org.testbed.installed'}",
+            results,
+        )
+        self.assertIn(
+            f"app.paths.toga={Path(toga.__file__).parent}",
+            results,
+        )
