@@ -1,9 +1,6 @@
 from toga.fonts import _REGISTERED_FONT_CACHE
 
 from toga_winforms.libs import (
-    FontFamily,
-    FontStyle,
-    Single,
     WinFont,
     WinForms,
     win_font_family
