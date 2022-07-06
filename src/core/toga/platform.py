@@ -55,4 +55,4 @@ def get_platform_factory(factory=None):
         from toga_winforms import factory
         return factory
     else:
-        raise RuntimeError("Couldn't identify a supported host platform.")
+        raise RuntimeError(f"Unsupported host platform {current_platform!r}.")
