@@ -121,9 +121,3 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
             # queue, the select() call will block, locking the app.
             self.enqueue_tick()
             self.call_soon(self._loop_self_reading)
-
-
-# Python 3.7 changed the name of an internal wrapper function.
-# Install an alias for the old name at the new name.
-if sys.version_info < (3, 7):
-    WinformsProactorEventLoop._set_coroutine_origin_tracking = WinformsProactorEventLoop._set_coroutine_wrapper
