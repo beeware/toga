@@ -1,7 +1,8 @@
 import asyncio
 from pathlib import Path
 
-from .libs import WinForms
+from .libs import WinFont, WinForms
+from .libs.winforms import ContentAlignment, FontFamily, FontStyle, SystemFonts
 
 
 class BaseDialog:
@@ -89,9 +90,103 @@ class ErrorDialog(MessageDialog):
 
 
 class StackTraceDialog(BaseDialog):
-    def __init__(self, window, title, message, on_result=None, **kwargs):
+    def __init__(self, window, title, message, content, retry, on_result=None, **kwargs):
         super().__init__()
-        window.factory.not_implemented("Window.stack_trace_dialog()")
+        self.on_result = on_result
+
+        self.dialog = WinForms.Form()
+        self.dialog.MinimizeBox = False
+        self.dialog.FormBorderStyle = self.dialog.FormBorderStyle.FixedSingle
+        self.dialog.MaximizeBox = False
+        self.dialog.FormClosing += self.winforms_FormClosing
+        self.dialog.Width = 540
+        self.dialog.Height = 320
+        self.dialog.Text = title
+
+        # The top-of-page introductory message
+        textLabel = WinForms.Label()
+        textLabel.Left = 10
+        textLabel.Top = 10
+        textLabel.Width = 520
+        textLabel.Alignment = ContentAlignment.MiddleCenter
+        textLabel.Text = message
+
+        self.dialog.Controls.Add(textLabel)
+
+        # A scrolling text box for the stack trace.
+        trace = WinForms.RichTextBox()
+        trace.Left = 10
+        trace.Top = 30
+        trace.Width = 504
+        trace.Height = 210
+        trace.Multiline = True
+        trace.ReadOnly = True
+        trace.Font = WinFont(
+            FontFamily.GenericMonospace,
+            float(SystemFonts.DefaultFont.Size),
+            FontStyle.Regular
+        )
+        trace.Text = content
+
+        self.dialog.Controls.Add(trace)
+
+        # Add acceptance/close buttons
+        if retry:
+            retry = WinForms.Button()
+            retry.Left = 290
+            retry.Top = 250
+            retry.Width = 100
+            retry.Text = "Retry"
+            retry.Click += self.winforms_Click_retry
+
+            self.dialog.Controls.Add(retry)
+
+            quit = WinForms.Button()
+            quit.Left = 400
+            quit.Top = 250
+            quit.Width = 100
+            quit.Text = "Quit"
+            quit.Click += self.winforms_Click_quit
+
+            self.dialog.Controls.Add(quit)
+        else:
+            accept = WinForms.Button()
+            accept.Left = 400
+            accept.Top = 250
+            accept.Width = 100
+            accept.Text = "Ok"
+            accept.Click += self.winforms_Click_accept
+
+            self.dialog.Controls.Add(accept)
+
+        self.dialog.ShowDialog()
+
+    def winforms_FormClosing(self, sender, event):
+        # If the close button is pressed, there won't be a future yet.
+        # We cancel this event to prevent the dialog from closing.
+        # If a button is pressed, the future will be set, and a close
+        # event will be triggered.
+        try:
+            self.future.result()
+        except asyncio.InvalidStateError:
+            event.Cancel = True
+
+    def handle_result(self, result):
+        if self.on_result:
+            self.on_result(self, result)
+
+        self.future.set_result(result)
+
+        self.dialog.Close()
+
+    def winforms_Click_quit(self, sender, event):
+        self.handle_result(False)
+
+    def winforms_Click_retry(self, sender, event):
+        self.handle_result(True)
+
+    def winforms_Click_accept(self, sender, event):
+        self.handle_result(None)
 
 
 class FileDialog(BaseDialog):
@@ -132,10 +227,7 @@ class FileDialog(BaseDialog):
         response = dialog.ShowDialog()
 
         if response == WinForms.DialogResult.OK:
-            if multiselect:
-                result = [Path(filename) for filename in dialog.FileNames]
-            else:
-                result = Path(dialog.FileName)
+            result = self._get_filenames(dialog, multiselect)
         else:
             result = None
 
@@ -143,6 +235,13 @@ class FileDialog(BaseDialog):
             self.on_result(self, result)
 
         self.future.set_result(result)
+
+    @classmethod
+    def _get_filenames(cls, dialog, multiselect):
+        if multiselect:
+            return [Path(filename) for filename in dialog.FileNames]
+        else:
+            return Path(dialog.FileName)
 
 
 class SaveFileDialog(FileDialog):
@@ -185,3 +284,8 @@ class SelectFolderDialog(FileDialog):
             multiselect=multiselect,
             on_result=on_result,
         )
+
+    @classmethod
+    def _get_filenames(cls, dialog, multiselect):
+        filename = Path(dialog.SelectedPath)
+        return [filename] if multiselect else filename

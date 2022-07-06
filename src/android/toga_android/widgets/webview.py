@@ -43,6 +43,9 @@ class WebView(Widget):
         # Android has no straightforward way to get the DOM from the browser synchronously.
         self.interface.factory.not_implemented('WebView.get_dom()')
 
+    def get_url(self):
+        return self.native.getUrl()
+
     def set_url(self, value):
         if value:
             self.native.loadUrl(str(value))

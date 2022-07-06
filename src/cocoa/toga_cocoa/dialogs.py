@@ -148,7 +148,7 @@ class StackTraceDialog(NSAlertDialog):
         trace = NSTextView.alloc().init()
         trace.insertText(content)
         trace.editable = False
-        trace.werticallyResizable = True
+        trace.verticallyResizable = True
         trace.horizontallyResizable = True
         trace.font = NSFont.fontWithName("Menlo", size=12)
 

@@ -20,6 +20,8 @@ from .winforms import (  # noqa: F401
     PointF,
     Rectangle,
     RectangleF,
+    SecurityProtocolType,
+    ServicePointManager,
     Single,
     Size,
     SolidBrush,

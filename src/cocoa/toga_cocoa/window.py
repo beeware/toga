@@ -289,8 +289,13 @@ class Window:
 
     def cocoa_windowShouldClose(self):
         if self.interface.on_close:
+            # The on_close handler has a cleanup method that will enforce
+            # the close if the on_close handler requests it; this initial
+            # "should close" request can always return False.
             self.interface.on_close(self)
-        return False
+            return False
+        else:
+            return True
 
     def close(self):
         self.native.close()

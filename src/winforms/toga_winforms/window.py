@@ -48,6 +48,8 @@ class Window:
         self.native.interface = self.interface
         self.native.FormClosing += self.winforms_FormClosing
 
+        self.native.MinimizeBox = self.native.interface.minimizable
+
         self.set_title(title)
         self.set_size(size)
         self.set_position(position)
@@ -112,6 +114,9 @@ class Window:
         return result
 
     def set_content(self, widget):
+        for control in self.native.Controls:
+            self.native.Controls.Remove(control)
+
         if self.toolbar_native:
             self.native.Controls.Add(self.toolbar_native)
             # Create the lookup table of menu items,
@@ -151,7 +156,7 @@ class Window:
         self.interface.content.refresh()
 
         if self.interface is not self.interface.app._main_window:
-            self.native.Icon = self.interface.app.icon._impl.native
+            self.native.Icon = self.interface.app.icon.bind(self.interface.factory).native
             self.native.Show()
 
     def winforms_FormClosing(self, sender, event):

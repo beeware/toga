@@ -1,9 +1,6 @@
 from toga.fonts import _REGISTERED_FONT_CACHE
 
 from toga_winforms.libs import (
-    FontFamily,
-    FontStyle,
-    Single,
     WinFont,
     WinForms,
     win_font_family
@@ -36,36 +33,30 @@ class Font:
                 style=self.interface.style,
                 variant=self.interface.variant,
             )
-            if font_key in _REGISTERED_FONT_CACHE:
+            try:
                 font_path = str(
                     self.interface.factory.paths.app / _REGISTERED_FONT_CACHE[font_key]
                 )
                 try:
                     self._pfc = PrivateFontCollection()
                     self._pfc.AddFontFile(font_path)
-                    font_size = win_font_size(self.interface.size)
-                    font_style = win_font_style(
-                        self.interface.weight,
-                        self.interface.style,
-                        self._pfc.Families[0],
-                    )
-                    font = WinFont(self._pfc.Families[0], float(font_size), font_style)
+                    font_family = self._pfc.Families[0]
                 except FileNotFoundException as e:
                     print(f"Registered font path {font_path!r} could not be found: {e}")
                 except ExternalException as e:
                     print(f"Registered font path {font_path!r} could not be loaded: {e}")
                 except IndexError as e:
                     print(f"Registered font {font_key} could not be loaded: {e}")
-
-            if font is None:
+            except KeyError:
                 font_family = win_font_family(self.interface.family)
-                font_style = win_font_style(
-                    self.interface.weight, self.interface.style, font_family
-                )
-                font_size = win_font_size(self.interface.size)
-                font = WinFont.Overloads[FontFamily, Single, FontStyle](
-                    font_family, font_size, font_style
-                )
+
+            font_style = win_font_style(
+                self.interface.weight,
+                self.interface.style,
+                font_family,
+            )
+            font_size = win_font_size(self.interface.size)
+            font = WinFont(font_family, font_size, font_style)
             _FONT_CACHE[self.interface] = font
 
         self.native = font

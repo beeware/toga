@@ -6,3 +6,5 @@ recursive-include toga/resources *.png
 recursive-include toga/resources *.icns
 recursive-include toga/resources *.ico
 recursive-include tests *.py
+include tests/testbed/installed.dist-info/INSTALLER
+include tests/testbed/installed.dist-info/METADATA

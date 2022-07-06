@@ -105,7 +105,10 @@ class ExampleFontExampleApp(toga.App):
                 font_style=ITALIC,
             ),
         )
-
+        lbl9 = toga.Label(
+            "Unknown font",
+            style=Pack(font_family="Unknown", font_size=14)
+        )
         self.textpanel = toga.MultilineTextInput(
             readonly=False, style=Pack(flex=1), placeholder="Ready."
         )
@@ -122,6 +125,7 @@ class ExampleFontExampleApp(toga.App):
                 lbl6,
                 lbl7,
                 lbl8,
+                lbl9,
                 self.textpanel,
             ],
             style=Pack(flex=1, direction=COLUMN, padding=10),

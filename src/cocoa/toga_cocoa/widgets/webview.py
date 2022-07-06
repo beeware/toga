@@ -3,27 +3,25 @@ from ctypes import c_void_p
 
 from travertino.size import at_least
 
+from rubicon.objc import objc_method, objc_property, py_from_ns
+from rubicon.objc.runtime import objc_id
+
 from .base import Widget
 from ..keys import toga_key
 from ..libs import (
     NSURL,
     NSURLRequest,
     WKWebView,
-    objc_method,
-    objc_property,
-    py_from_ns,
     send_super,
-    objc_id,
 )
 
 
 class TogaWebView(WKWebView):
-
     interface = objc_property(object, weak=True)
     impl = objc_property(object, weak=True)
 
     @objc_method
-    def webView_didFinish_navigation_(self, sender, wkNavigation) -> None:
+    def webView_didFinishNavigation_(self, navigation) -> None:
         if self.interface.on_webview_load:
             self.interface.on_webview_load(self.interface)
 
@@ -49,10 +47,7 @@ class WebView(Widget):
         self.native.interface = self.interface
         self.native.impl = self
 
-        self.native.downloadDelegate = self.native
-        self.native.frameLoadDelegate = self.native
-        self.native.policyDelegate = self.native
-        self.native.resourceLoadDelegate = self.native
+        self.native.navigationDelegate = self.native
         self.native.uIDelegate = self.native
 
         # Add the layout constraints
@@ -71,9 +66,14 @@ class WebView(Widget):
         html = self.native.mainframe.DOMDocument.documentElement.outerHTML
         return html
 
+    def get_url(self):
+        url = self.native.URL
+        if url:
+            return str(url)
+
     def set_url(self, value):
         if value:
-            request = NSURLRequest.requestWithURL(NSURL.URLWithString(self.interface.url))
+            request = NSURLRequest.requestWithURL(NSURL.URLWithString(value))
             self.native.loadRequest(request)
 
     def set_content(self, root_url, content):
