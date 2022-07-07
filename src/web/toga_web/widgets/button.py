@@ -5,7 +5,7 @@ from .base import Widget
 class Button(Widget):
     def __html__(self):
         return """
-            <button id="toga_{id}" class="toga button btn-block" style="{style}" pys-onClick="dom_handle">
+            <button id="toga_{id}" class="toga button btn-block" style="{style}" py-onClick="dom_handle">
             {label}
             </button>
         """.format(
