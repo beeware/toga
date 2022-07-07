@@ -21,7 +21,7 @@ class TextInput(Widget):
         pass
 
     def get_value(self):
-        print(f"client get value")
+        print("client get value")
         if self.native:
             return self.native.value
         else:

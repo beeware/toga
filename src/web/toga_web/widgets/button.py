@@ -2,6 +2,7 @@ from toga_web.dom import register_handler
 
 from .base import Widget
 
+
 class Button(Widget):
     def __html__(self):
         return """

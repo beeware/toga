@@ -480,7 +480,6 @@ class Pack(BaseStyle):
 
         return width, height
 
-
     def __css__(self):
         css = []
         if self.padding_top:

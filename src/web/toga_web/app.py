@@ -42,7 +42,6 @@ class App:
             js.document.getElementById("toga-placeholder").innerHTML = content
             js.document.title = self.interface.formal_name
 
-
     def set_main_window(self, window):
         pass
 

@@ -1,6 +1,5 @@
 from pathlib import Path
 
-import __main__
 import toga
 from toga import App
 
