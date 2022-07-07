@@ -137,7 +137,7 @@ class App:
           crossorigin="anonymous">
     <link rel="stylesheet" href="/static/toga.css">
 
-    <script defer src="/static/pyscript/pyscript.js"></script>
+    <script defer src="https://pyscript.net/unstable/pyscript.js"></script>
 
     <title>{self.interface.formal_name}</title>
   </head>
