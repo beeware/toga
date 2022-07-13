@@ -1,7 +1,6 @@
 import asyncio
 import re
 import sys
-import traceback
 
 import toga
 from toga import Key
