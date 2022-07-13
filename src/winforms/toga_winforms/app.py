@@ -1,7 +1,6 @@
 import asyncio
 import re
 import sys
-import traceback
 
 import toga
 from toga import Key
@@ -215,17 +214,30 @@ class App:
         try:
             self.create()
 
+            # This catches errors in handlers, and prints them
+            # in a usable form.
             self.native.ThreadException += self.winforms_thread_exception
 
             self.loop.run_forever(self.app_context)
-        except:  # NOQA
-            traceback.print_exc()
+        except Exception as e:
+            # In case of an unhandled error at the level of the app,
+            # preserve the Python stacktrace
+            self._exception = e
+        else:
+            self._exception = None
 
     def main_loop(self):
         thread = Threading.Thread(Threading.ThreadStart(self.run_app))
         thread.SetApartmentState(Threading.ApartmentState.STA)
         thread.Start()
         thread.Join()
+
+        # If the thread has exited, the _exception attribute will exist.
+        # If it's non-None, raise it, as it indicates the underlying
+        # app thread had a problem; this is effectibely a re-raise over
+        # a thread boundary.
+        if self._exception:
+            raise self._exception
 
     def show_about_dialog(self):
         message_parts = []
