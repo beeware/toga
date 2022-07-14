@@ -72,7 +72,7 @@ class NumberInput(Widget):
     @step.setter
     def step(self, step):
         try:
-            self._step = Decimal(step)
+            self._step = Decimal(str(step))
         except (ValueError, TypeError, InvalidOperation):
             raise ValueError("step must be an number")
         self._impl.set_step(self._step)
@@ -90,11 +90,9 @@ class NumberInput(Widget):
     @min_value.setter
     def min_value(self, value):
         try:
-            self._min_value = Decimal(value)
+            self._min_value = Decimal(str(value)) if value is not None else None
         except (ValueError, InvalidOperation):
             raise ValueError("min_value must be a number")
-        except TypeError:
-            self._min_value = None
         self._impl.set_min_value(self._min_value)
 
     @property
@@ -110,11 +108,9 @@ class NumberInput(Widget):
     @max_value.setter
     def max_value(self, value):
         try:
-            self._max_value = Decimal(value)
+            self._max_value = Decimal(str(value)) if value is not None else None
         except (ValueError, InvalidOperation):
             raise ValueError("max_value must be a number")
-        except TypeError:
-            self._max_value = None
         self._impl.set_max_value(self._max_value)
 
     @property
@@ -129,19 +125,20 @@ class NumberInput(Widget):
 
     @value.setter
     def value(self, value):
-        try:
-            self._value = Decimal(value)
+        if value is not None:
+            try:
+                self._value = Decimal(str(value))
 
-            if self.min_value is not None and self._value < self.min_value:
-                self._value = self.min_value
-            elif self.max_value is not None and self._value > self.max_value:
-                self._value = self.max_value
-        except (ValueError, InvalidOperation):
-            raise ValueError("value must be a number")
-        except TypeError:
+                if self.min_value is not None and self._value < self.min_value:
+                    self._value = self.min_value
+                elif self.max_value is not None and self._value > self.max_value:
+                    self._value = self.max_value
+            except (ValueError, InvalidOperation):
+                raise ValueError("value must be a number")
+        else:
             self._value = None
 
-        self._impl.set_value(value)
+        self._impl.set_value(self._value)
 
     @property
     def on_change(self):
