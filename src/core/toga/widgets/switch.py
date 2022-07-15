@@ -29,6 +29,7 @@ class Switch(Widget):
             style=None,
             on_change=None,
             on_toggle=None,  # DEPRECATED!
+            is_on=None,
             value=False,
             enabled=True,
             factory=None,
@@ -42,7 +43,10 @@ class Switch(Widget):
             self.on_toggle = on_toggle
         else:
             self.on_change = on_change
-        self.value = value
+        if is_on is not None:
+            self.is_on = is_on
+        else:
+            self.value = value
         self.enabled = enabled
 
     @property
