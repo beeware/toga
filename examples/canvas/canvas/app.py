@@ -139,11 +139,11 @@ class ExampleCanvasApp(toga.App):
         )
         self.italic_switch = toga.Switch(
             label="italic",
-            on_toggle=self.refresh_canvas
+            on_change=self.refresh_canvas
         )
         self.bold_switch = toga.Switch(
             label="bold",
-            on_toggle=self.refresh_canvas
+            on_change=self.refresh_canvas
         )
         label_style = Pack(font_size=10, padding_left=5)
 

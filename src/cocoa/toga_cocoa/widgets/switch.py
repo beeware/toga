@@ -21,8 +21,8 @@ class TogaSwitch(NSButton):
 
     @objc_method
     def onPress_(self, obj) -> None:
-        if self.interface.on_toggle:
-            self.interface.on_toggle(self.interface)
+        if self.interface.on_change:
+            self.interface.on_change(self.interface)
 
 
 class Switch(Widget):
@@ -66,5 +66,5 @@ class Switch(Widget):
         self.interface.intrinsic.height = content_size.height
         self.interface.intrinsic.width = at_least(content_size.width)
 
-    def set_on_toggle(self, handler):
+    def set_on_change(self, handler):
         pass

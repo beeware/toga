@@ -13,17 +13,17 @@ class Switch(Widget):
         self.label.set_line_wrap(True)
 
         self.switch = Gtk.Switch()
-        self.switch.connect("notify::active", self.gtk_on_toggle)
+        self.switch.connect("notify::active", self.gtk_on_change)
 
         self.native.pack_start(self.label, True, True, 0)
         self.native.pack_start(self.switch, False, False, 0)
         self.native.connect('show', lambda event: self.rehint())
 
-    def gtk_on_toggle(self, widget, state):
-        if self.interface.on_toggle:
-            self.interface.on_toggle(self.interface)
+    def gtk_on_change(self, widget, state):
+        if self.interface.on_change:
+            self.interface.on_change(self.interface)
 
-    def set_on_toggle(self, handler):
+    def set_on_change(self, handler):
         pass
 
     def set_label(self, label):

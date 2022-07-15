@@ -53,10 +53,10 @@ class ProgressBarApp(toga.App):
                         ),
                         toga.Switch(
                             "Toggle indeterminate mode",
-                            on_toggle=self.toggle_indeterminate,
+                            on_change=self.toggle_indeterminate,
                         ),
                         toga.Switch(
-                            "Toggle running mode", on_toggle=self.toggle_running
+                            "Toggle running mode", on_change=self.toggle_running
                         ),
                     ],
                 ),

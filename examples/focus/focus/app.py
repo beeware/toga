@@ -31,7 +31,7 @@ class ExampleFocusApp(toga.App):
             placeholder="A non-focussed text input.",
             style=Pack(height=25, width=200, font_size=10),
         )
-        self.switch = toga.Switch("Switch", on_toggle=self.on_switch_toggle)
+        self.switch = toga.Switch("Switch", on_change=self.on_switch_toggle)
         self.info_label = toga.Label(
             "Use keyboard shortcuts to focus on the different widgets",
             style=Pack(font_size=10)

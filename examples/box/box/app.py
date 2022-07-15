@@ -58,7 +58,7 @@ class ExampleBoxApp(toga.App):
                 self.inner_box,
                 toga.Label(text="Hello to my world!", style=Pack(text_align=CENTER)),
                 toga.Switch(
-                    "Enable yellow", value=True, on_toggle=self.toggle_yellow_button
+                    "Enable yellow", value=True, on_change=self.toggle_yellow_button
                 ),
             ],
         )

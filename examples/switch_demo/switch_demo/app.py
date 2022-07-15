@@ -14,7 +14,7 @@ class SwitchApp(toga.App):
         self.main_window.content = toga.Box(
             children=[
                 # Simple switch with label and callback function called toggled
-                toga.Switch('Change Label', on_toggle=self.callbackLabel),
+                toga.Switch('Change Label', on_change=self.callbackLabel),
 
                 # Switch with initial state
                 toga.Switch('Initial state', value=True, style=Pack(padding_top=24)),

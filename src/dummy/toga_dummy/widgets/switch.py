@@ -17,5 +17,5 @@ class Switch(Widget):
     def rehint(self):
         self._action('rehint Switch')
 
-    def set_on_toggle(self, handler):
-        self._set_value('on_toggle', handler)
+    def set_on_change(self, handler):
+        self._set_value('on_change', handler)

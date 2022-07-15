@@ -15,7 +15,7 @@ class Switch(Widget):
         id (str): AN identifier for this widget.
         style (:obj:`Style`): An optional style object.
             If no style is provided then a new one will be created for the widget.
-        on_toggle (``callable``): Function to execute when pressed.
+        on_change (``callable``): Function to execute when pressed.
         value (bool): Current on or off state of the switch.
         enabled (bool): Whether or not interaction with the button is possible, defaults to `True`.
         factory (:obj:`module`): A python module that is capable to return a
@@ -27,7 +27,8 @@ class Switch(Widget):
             label,
             id=None,
             style=None,
-            on_toggle=None,
+            on_change=None,
+            on_toggle=None, # DEPRECATED!
             value=False,
             enabled=True,
             factory=None,
@@ -37,7 +38,10 @@ class Switch(Widget):
         self._impl = self.factory.Switch(interface=self)
 
         self.label = label
-        self.on_toggle = on_toggle
+        if on_toggle:
+            self.on_toggle = on_toggle
+        else:
+            self.on_change = on_change
         self.value = value
         self.enabled = enabled
 
@@ -60,18 +64,39 @@ class Switch(Widget):
         self._impl.rehint()
 
     @property
+    def on_change(self):
+        """ The callable function for when the switch is pressed
+
+        Returns:
+            The ``callable`` on_change function.
+        """
+        return self._on_change
+
+    @on_change.setter
+    def on_change(self, handler):
+        self._on_change = wrapped_handler(self, handler)
+        self._impl.set_on_change(self._on_change)
+
+    @property
     def on_toggle(self):
         """ The callable function for when the switch is pressed
+
+        **DEPRECATED: renamed as on_change**
 
         Returns:
             The ``callable`` on_toggle function.
         """
-        return self._on_toggle
+        warnings.warn(
+            "Switch.on_toggle has been renamed Switch.on_change", DeprecationWarning
+        )
+        return self.on_change
 
     @on_toggle.setter
     def on_toggle(self, handler):
-        self._on_toggle = wrapped_handler(self, handler)
-        self._impl.set_on_toggle(self._on_toggle)
+        warnings.warn(
+            "Switch.on_toggle has been renamed Switch.on_change", DeprecationWarning
+        )
+        self.on_change = handler
 
     @property
     def is_on(self):

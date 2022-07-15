@@ -18,8 +18,8 @@ class TogaSwitch(UISwitch):
 
     @objc_method
     def onPress_(self, obj) -> None:
-        if self.interface.on_toggle:
-            self.interface.on_toggle(self.interface)
+        if self.interface.on_change:
+            self.interface.on_change(self.interface)
 
 
 class Switch(Widget):
@@ -52,7 +52,7 @@ class Switch(Widget):
     def get_value(self):
         return self.native_switch.isOn()
 
-    def set_on_toggle(self, handler):
+    def set_on_change(self, handler):
         # No special handling required
         pass
 

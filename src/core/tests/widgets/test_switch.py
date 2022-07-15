@@ -12,11 +12,11 @@ class SwitchTests(TestCase):
         def callback(widget):
             pass
 
-        self.on_toggle = callback
+        self.on_change = callback
         self.value = True
         self.enabled = True
         self.switch = toga.Switch(self.label,
-                                  on_toggle=self.on_toggle,
+                                  on_change=self.on_change,
                                   value=self.value,
                                   enabled=self.enabled,
                                   factory=toga_dummy.factory)
@@ -28,7 +28,7 @@ class SwitchTests(TestCase):
     def test_arguments_are_all_set_properly(self):
         self.assertEqual(self.switch.label, self.label)
         self.assertEqual(self.switch._label, self.label)
-        self.assertEqual(self.switch.on_toggle._raw, self.on_toggle)
+        self.assertEqual(self.switch.on_change._raw, self.on_change)
         self.assertEqual(self.switch.enabled, self.enabled)
 
     def test_label_with_None(self):
@@ -77,5 +77,21 @@ class SwitchTests(TestCase):
     def test_get_is_on(self):
         with self.assertWarns(DeprecationWarning):
             self.switch.is_on
-        # self.assertWarns(DeprecationWarning, self.switch.is_on)
         self.assertValueGet(self.switch, 'value')
+
+    def test_on_change(self):
+        def my_callback(widget):
+            pass
+        
+        self.switch.on_change = my_callback
+        self.assertEqual(self.switch.on_change._raw, my_callback)
+
+    def test_on_toggle(self):
+        def my_callback(widget):
+            pass
+        
+        with self.assertWarns(DeprecationWarning):
+            self.switch.on_toggle = my_callback
+        with self.assertWarns(DeprecationWarning):
+            self.assertEqual(self.switch.on_toggle._raw, my_callback)
+        self.assertEqual(self.switch.on_change._raw, my_callback)
