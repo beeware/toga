@@ -82,14 +82,14 @@ class SwitchTests(TestCase):
     def test_on_change(self):
         def my_callback(widget):
             pass
-        
+
         self.switch.on_change = my_callback
         self.assertEqual(self.switch.on_change._raw, my_callback)
 
     def test_on_toggle(self):
         def my_callback(widget):
             pass
-        
+
         with self.assertWarns(DeprecationWarning):
             self.switch.on_toggle = my_callback
         with self.assertWarns(DeprecationWarning):

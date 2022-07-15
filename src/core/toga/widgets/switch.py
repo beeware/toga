@@ -28,7 +28,7 @@ class Switch(Widget):
             id=None,
             style=None,
             on_change=None,
-            on_toggle=None, # DEPRECATED!
+            on_toggle=None,  # DEPRECATED!
             value=False,
             enabled=True,
             factory=None,
