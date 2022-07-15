@@ -7,7 +7,7 @@ class SwitchTests(TestCase):
     def setUp(self):
         super().setUp()
 
-        self.label = 'Test Label'
+        self.text = 'Test Label'
 
         def callback(widget):
             pass
@@ -15,7 +15,7 @@ class SwitchTests(TestCase):
         self.on_change = callback
         self.value = True
         self.enabled = True
-        self.switch = toga.Switch(self.label,
+        self.switch = toga.Switch(self.text,
                                   on_change=self.on_change,
                                   value=self.value,
                                   enabled=self.enabled,
@@ -26,20 +26,20 @@ class SwitchTests(TestCase):
         self.assertActionPerformed(self.switch, 'create Switch')
 
     def test_arguments_are_all_set_properly(self):
-        self.assertEqual(self.switch.label, self.label)
-        self.assertEqual(self.switch._label, self.label)
+        self.assertEqual(self.switch.text, self.text)
+        self.assertEqual(self.switch._text, self.text)
         self.assertEqual(self.switch.on_change._raw, self.on_change)
         self.assertEqual(self.switch.enabled, self.enabled)
 
-    def test_label_with_None(self):
-        self.switch.label = None
-        self.assertEqual(self.switch.label, '')
-        self.assertEqual(self.switch._label, '')
+    def test_text_with_None(self):
+        self.switch.text = None
+        self.assertEqual(self.switch.text, '')
+        self.assertEqual(self.switch._text, '')
 
-    def test_setting_label_invokes_impl_method(self):
-        new_label = 'New Label'
-        self.switch.label = new_label
-        self.assertValueSet(self.switch, 'label', new_label)
+    def test_setting_text_invokes_impl_method(self):
+        new_text = 'New Label'
+        self.switch.text = new_text
+        self.assertValueSet(self.switch, 'text', new_text)
 
     def test_setting_value_invokes_impl_method(self):
         new_value = False
@@ -95,3 +95,11 @@ class SwitchTests(TestCase):
         with self.assertWarns(DeprecationWarning):
             self.assertEqual(self.switch.on_toggle._raw, my_callback)
         self.assertEqual(self.switch.on_change._raw, my_callback)
+
+    def test_label_deprecated(self):
+        new_text = 'New Label'
+        with self.assertWarns(DeprecationWarning):
+            self.switch.label = new_text
+        with self.assertWarns(DeprecationWarning):
+            self.assertEqual(self.switch.label, new_text)
+        self.assertValueSet(self.switch, 'text', new_text)

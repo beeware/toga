@@ -24,14 +24,14 @@ class Switch(Widget):
         self.native = A_Switch(self._native_activity)
         self.native.setOnCheckedChangeListener(OnCheckedChangeListener(self))
 
-    def set_label(self, label):
+    def set_text(self, text):
         # When changing the text, Android needs a `setSingleLine(False)` call in order
         # to be willing to recompute the width of the text. Without the call, it will
         # constrain the new text to have the same line width as the old text, resulting
         # in unnecessary creation of new lines. In other words, `setSingleLine(False)`
         # is required to get the text to truly **use** one single line!
         self.native.setSingleLine(False)
-        self.native.setText(str(self.interface.label))
+        self.native.setText(str(self.interface.text))
         self.rehint()
 
     def set_value(self, value):

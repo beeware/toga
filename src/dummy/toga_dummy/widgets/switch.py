@@ -5,8 +5,8 @@ class Switch(Widget):
     def create(self):
         self._action('create Switch')
 
-    def set_label(self, label):
-        self._set_value('label', label)
+    def set_text(self, text):
+        self._set_value('text', text)
 
     def set_value(self, value):
         self._set_value('value', value)

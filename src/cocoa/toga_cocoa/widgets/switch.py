@@ -39,8 +39,8 @@ class Switch(Widget):
         # Add the layout constraints
         self.add_constraints()
 
-    def set_label(self, label):
-        self.native.title = self.interface.label
+    def set_text(self, text):
+        self.native.title = self.interface.text
 
     def set_font(self, font):
         if font:

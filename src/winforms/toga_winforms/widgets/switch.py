@@ -15,8 +15,8 @@ class Switch(Widget):
             if self.interface.on_change:
                 self.interface.on_change(self.interface)
 
-    def set_label(self, label):
-        self.native.Text = self.interface.label
+    def set_text(self, text):
+        self.native.Text = self.interface.text
 
     def set_value(self, value):
         if value is True:

@@ -26,8 +26,8 @@ class Switch(Widget):
     def set_on_change(self, handler):
         pass
 
-    def set_label(self, label):
-        self.label.set_text(self.interface.label)
+    def set_text(self, text):
+        self.label.set_text(self.interface.text)
 
     def get_value(self):
         return self.switch.get_active()

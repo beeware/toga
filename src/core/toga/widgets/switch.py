@@ -11,7 +11,7 @@ class Switch(Widget):
         and False (off, unchecked).
 
     Args:
-        label (str): Text to be shown next to the switch.
+        text (str): Text to be shown next to the switch.
         id (str): AN identifier for this widget.
         style (:obj:`Style`): An optional style object.
             If no style is provided then a new one will be created for the widget.
@@ -24,7 +24,7 @@ class Switch(Widget):
 
     def __init__(
             self,
-            label,
+            text,
             id=None,
             style=None,
             on_change=None,
@@ -38,7 +38,7 @@ class Switch(Widget):
 
         self._impl = self.factory.Switch(interface=self)
 
-        self.label = label
+        self.text = text
         if on_toggle:
             self.on_toggle = on_toggle
         else:
@@ -50,21 +50,21 @@ class Switch(Widget):
         self.enabled = enabled
 
     @property
-    def label(self):
+    def text(self):
         """ Accompanying text label of the Switch.
 
         Returns:
             The label text of the widget as a ``str``.
         """
-        return self._label
+        return self._text
 
-    @label.setter
-    def label(self, value):
+    @text.setter
+    def text(self, value):
         if value is None:
-            self._label = ''
+            self._text = ''
         else:
-            self._label = str(value)
-        self._impl.set_label(value)
+            self._text = str(value)
+        self._impl.set_text(value)
         self._impl.rehint()
 
     @property
@@ -143,3 +143,24 @@ class Switch(Widget):
         vice versa.
         """
         self.value = not self.value
+
+    @property
+    def label(self):
+        """ Button Off/On state.
+
+        **DEPRECATED: renamed as text**
+
+        Returns:
+            ``True`` if on and ``False`` if the switch is off.
+        """
+        warnings.warn(
+            "Switch.label has been renamed Switch.text", DeprecationWarning
+        )
+        return self.text
+
+    @label.setter
+    def label(self, label):
+        warnings.warn(
+            "Switch.label has been renamed Switch.text", DeprecationWarning
+        )
+        self.text = label
