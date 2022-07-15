@@ -34,10 +34,10 @@ class Switch(Widget):
         self.native.setText(str(self.interface.label))
         self.rehint()
 
-    def set_is_on(self, value):
+    def set_value(self, value):
         self.native.setChecked(bool(value))
 
-    def get_is_on(self):
+    def get_value(self):
         return self.native.isChecked()
 
     def set_font(self, font):

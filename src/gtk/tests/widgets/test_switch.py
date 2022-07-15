@@ -38,7 +38,7 @@ class TestGtkSwitch(unittest.TestCase):
         self.assertEqual(self.switch.label, 'New')
         self.assertEqual(self.switch._label, 'New')
 
-    def test_set_is_on(self):
-        self.assertEqual(self.switch.is_on, False)
-        self.switch.is_on = True
-        self.assertEqual(self.switch.is_on, True)
+    def test_set_value(self):
+        self.assertEqual(self.switch.value, False)
+        self.switch.value = True
+        self.assertEqual(self.switch.value, True)

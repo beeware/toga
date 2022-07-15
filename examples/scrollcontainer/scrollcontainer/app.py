@@ -27,8 +27,8 @@ class ScrollContainerApp(toga.App):
         box.style.padding = 10
         self.scroller = toga.ScrollContainer(horizontal=self.hscrolling, vertical=self.vscrolling)
         switch_box = toga.Box(style=Pack(direction=ROW))
-        switch_box.add(toga.Switch('vertical scrolling', is_on=self.vscrolling, on_toggle=self.handle_vscrolling))
-        switch_box.add(toga.Switch('horizontal scrolling', is_on=self.hscrolling, on_toggle=self.handle_hscrolling))
+        switch_box.add(toga.Switch('vertical scrolling', value=self.vscrolling, on_toggle=self.handle_vscrolling))
+        switch_box.add(toga.Switch('horizontal scrolling', value=self.hscrolling, on_toggle=self.handle_hscrolling))
         box.add(switch_box)
 
         for x in range(100):
@@ -72,11 +72,11 @@ class ScrollContainerApp(toga.App):
         )
 
     def handle_hscrolling(self, widget):
-        self.hscrolling = widget.is_on
+        self.hscrolling = widget.value
         self.scroller.horizontal = self.hscrolling
 
     def handle_vscrolling(self, widget):
-        self.vscrolling = widget.is_on
+        self.vscrolling = widget.value
         self.scroller.vertical = self.vscrolling
 
     def toggle_up(self, widget):

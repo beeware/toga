@@ -29,10 +29,10 @@ class Switch(Widget):
     def set_label(self, label):
         self.label.set_text(self.interface.label)
 
-    def get_is_on(self):
+    def get_value(self):
         return self.switch.get_active()
 
-    def set_is_on(self, value):
+    def set_value(self, value):
         self.switch.set_active(value)
 
     def rehint(self):

@@ -8,11 +8,11 @@ class Switch(Widget):
     def set_label(self, label):
         self._set_value('label', label)
 
-    def set_is_on(self, value):
-        self._set_value('is_on', value)
+    def set_value(self, value):
+        self._set_value('value', value)
 
-    def get_is_on(self):
-        return self._get_value('is_on')
+    def get_value(self):
+        return self._get_value('value')
 
     def rehint(self):
         self._action('rehint Switch')

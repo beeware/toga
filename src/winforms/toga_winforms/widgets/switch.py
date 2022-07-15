@@ -18,13 +18,13 @@ class Switch(Widget):
     def set_label(self, label):
         self.native.Text = self.interface.label
 
-    def set_is_on(self, value):
+    def set_value(self, value):
         if value is True:
             self.native.Checked = True
         elif value is False:
             self.native.Checked = False
 
-    def get_is_on(self):
+    def get_value(self):
         return self.native.Checked
 
     def set_on_toggle(self, handler):

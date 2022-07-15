@@ -13,11 +13,11 @@ class SwitchTests(TestCase):
             pass
 
         self.on_toggle = callback
-        self.is_on = True
+        self.value = True
         self.enabled = True
         self.switch = toga.Switch(self.label,
                                   on_toggle=self.on_toggle,
-                                  is_on=self.is_on,
+                                  value=self.value,
                                   enabled=self.enabled,
                                   factory=toga_dummy.factory)
 
@@ -41,29 +41,41 @@ class SwitchTests(TestCase):
         self.switch.label = new_label
         self.assertValueSet(self.switch, 'label', new_label)
 
-    def test_setting_is_on_invokes_impl_method(self):
+    def test_setting_value_invokes_impl_method(self):
         new_value = False
-        self.switch.is_on = new_value
-        self.assertValueSet(self.switch, 'is_on', False)
+        self.switch.value = new_value
+        self.assertValueSet(self.switch, 'value', False)
 
-    def test_getting_is_on_invokes_impl_method(self):
-        self.switch.is_on
-        self.assertValueGet(self.switch, 'is_on')
+    def test_getting_value_invokes_impl_method(self):
+        self.switch.value
+        self.assertValueGet(self.switch, 'value')
 
     def test_focus(self):
         self.switch.focus()
         self.assertActionPerformed(self.switch, "focus")
 
     def test_toggle_from_true_to_false(self):
-        self.switch.is_on = True
+        self.switch.value = True
         self.switch.toggle()
-        self.assertValueSet(self.switch, 'is_on', False)
+        self.assertValueSet(self.switch, 'value', False)
 
     def test_toggle_from_false_to_true(self):
-        self.switch.is_on = False
+        self.switch.value = False
         self.switch.toggle()
-        self.assertValueSet(self.switch, 'is_on', True)
+        self.assertValueSet(self.switch, 'value', True)
 
-    def test_set_is_on_with_non_boolean(self):
+    def test_set_value_with_non_boolean(self):
         with self.assertRaises(ValueError):
-            self.switch.is_on = "on"
+            self.switch.value = "on"
+
+    def test_set_is_on(self):
+        new_value = False
+        with self.assertWarns(DeprecationWarning):
+            self.switch.is_on = new_value
+        self.assertValueSet(self.switch, 'value', False)
+
+    def test_get_is_on(self):
+        with self.assertWarns(DeprecationWarning):
+            self.switch.is_on
+        # self.assertWarns(DeprecationWarning, self.switch.is_on)
+        self.assertValueGet(self.switch, 'value')

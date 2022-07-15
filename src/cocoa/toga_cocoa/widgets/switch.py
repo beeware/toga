@@ -46,20 +46,20 @@ class Switch(Widget):
         if font:
             self.native.font = font.bind(self.interface.factory).native
 
-    def set_is_on(self, value):
+    def set_value(self, value):
         if value is True:
             self.native.state = NSOnState
         elif value is False:
             self.native.state = NSOffState
 
-    def get_is_on(self):
-        is_on = self.native.state
-        if is_on == 1:
+    def get_value(self):
+        value = self.native.state
+        if value == 1:
             return True
-        elif is_on == 0:
+        elif value == 0:
             return False
         else:
-            raise Exception('Undefined value for is_on of {}'.format(__class__))
+            raise Exception('Undefined value for value of {}'.format(__class__))
 
     def rehint(self):
         content_size = self.native.intrinsicContentSize()

@@ -17,7 +17,7 @@ class SwitchApp(toga.App):
                 toga.Switch('Change Label', on_toggle=self.callbackLabel),
 
                 # Switch with initial state
-                toga.Switch('Initial state', is_on=True, style=Pack(padding_top=24)),
+                toga.Switch('Initial state', value=True, style=Pack(padding_top=24)),
 
                 # Switch with label and enable option
                 toga.Switch('Disabled', enabled=False, style=Pack(padding_top=24)),
@@ -35,7 +35,7 @@ class SwitchApp(toga.App):
     def callbackLabel(self, switch):
         # Some action when you hit the switch
         #   In this case the label will change
-        switch.label = "switch is %s" % {0: "off", 1: "on"}[switch.is_on]
+        switch.label = "switch is %s" % {0: "off", 1: "on"}[switch.value]
 
 
 def main():

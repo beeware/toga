@@ -1,3 +1,5 @@
+import warnings
+
 from toga.handlers import wrapped_handler
 
 from .base import Widget
@@ -14,7 +16,7 @@ class Switch(Widget):
         style (:obj:`Style`): An optional style object.
             If no style is provided then a new one will be created for the widget.
         on_toggle (``callable``): Function to execute when pressed.
-        is_on (bool): Current on or off state of the switch.
+        value (bool): Current on or off state of the switch.
         enabled (bool): Whether or not interaction with the button is possible, defaults to `True`.
         factory (:obj:`module`): A python module that is capable to return a
             implementation of this class with the same name. (optional & normally not needed)
@@ -26,7 +28,7 @@ class Switch(Widget):
             id=None,
             style=None,
             on_toggle=None,
-            is_on=False,
+            value=False,
             enabled=True,
             factory=None,
     ):
@@ -36,7 +38,7 @@ class Switch(Widget):
 
         self.label = label
         self.on_toggle = on_toggle
-        self.is_on = is_on
+        self.value = value
         self.enabled = enabled
 
     @property
@@ -75,19 +77,40 @@ class Switch(Widget):
     def is_on(self):
         """ Button Off/On state.
 
+        **DEPRECATED: renamed as value**
+
         Returns:
             ``True`` if on and ``False`` if the switch is off.
         """
-        return self._impl.get_is_on()
+        warnings.warn(
+            "Switch.is_on has been renamed Switch.value", DeprecationWarning
+        )
+        return self.value
 
     @is_on.setter
     def is_on(self, value):
+        warnings.warn(
+            "Switch.is_on has been renamed Switch.value", DeprecationWarning
+        )
+        self.value = value
+
+    @property
+    def value(self):
+        """ Button Off/On state.
+
+        Returns:
+            ``True`` if on and ``False`` if the switch is off.
+        """
+        return self._impl.get_value()
+
+    @value.setter
+    def value(self, value):
         if not isinstance(value, bool):
-            raise ValueError("Switch.is_on can only be set to true or false")
-        self._impl.set_is_on(value)
+            raise ValueError("Switch.value can only be set to true or false")
+        self._impl.set_value(value)
 
     def toggle(self):
-        """Reverse the value of `Slider.is_on` property from true to false and
+        """Reverse the value of `Switch.value` property from true to false and
         vice versa.
         """
-        self.is_on = not self.is_on
+        self.value = not self.value
