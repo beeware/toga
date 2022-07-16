@@ -21,7 +21,7 @@ Usage
 
 Toga Flask defines a ``TogaApp`` class that can be used to mount a Toga Web
 instance in a Flask app. If you have Toga application named `myapp`, Flask
-deployment is acheived by putting the following into ``flaskapp.py``::
+deployment is achieved by putting the following into ``flaskapp.py``::
 
     from flask import Flask
     flask_app = Flask(__name__)
