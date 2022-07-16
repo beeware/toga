@@ -21,7 +21,7 @@ Usage
 
 Toga Django defines a ``TogaApp`` class that can be used to mount a Toga Web
 instance in a Django app. If you have Toga application named `myapp`, Django
-deployment is acheived by putting the following into your project's
+deployment is achieved by putting the following into your project's
 ``urls.py``::
 
     from django.conf import settings
