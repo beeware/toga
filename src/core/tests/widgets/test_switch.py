@@ -67,7 +67,17 @@ class SwitchTests(TestCase):
     def test_set_value_with_non_boolean(self):
         with self.assertRaises(ValueError):
             self.switch.value = "on"
+        with self.assertRaises(ValueError):
+            self.switch.value = None
 
+    def test_on_change(self):
+        def my_callback(widget):
+            pass
+
+        self.switch.on_change = my_callback
+        self.assertEqual(self.switch.on_change._raw, my_callback)
+
+    # 2022-07: Backwards compatibility
     def test_set_is_on(self):
         new_value = False
         with self.assertWarns(DeprecationWarning):
@@ -78,13 +88,6 @@ class SwitchTests(TestCase):
         with self.assertWarns(DeprecationWarning):
             self.switch.is_on
         self.assertValueGet(self.switch, 'value')
-
-    def test_on_change(self):
-        def my_callback(widget):
-            pass
-
-        self.switch.on_change = my_callback
-        self.assertEqual(self.switch.on_change._raw, my_callback)
 
     def test_on_toggle(self):
         def my_callback(widget):
@@ -103,3 +106,59 @@ class SwitchTests(TestCase):
         with self.assertWarns(DeprecationWarning):
             self.assertEqual(self.switch.label, new_text)
         self.assertValueSet(self.switch, 'text', new_text)
+
+    def test_init_with_deprecated(self):
+        with self.assertWarns(DeprecationWarning):
+            toga.Switch(
+                label=self.text,
+                on_change=self.on_change,
+                value=self.value,
+                enabled=self.enabled,
+                factory=toga_dummy.factory
+            )
+        with self.assertRaises(ValueError):
+            toga.Switch(
+                label=self.text,
+                text=self.text,
+                on_change=self.on_change,
+                value=self.value,
+                enabled=self.enabled,
+                factory=toga_dummy.factory
+            )
+        with self.assertWarns(DeprecationWarning):
+            toga.Switch(
+                self.text,
+                on_toggle=self.on_change,
+                value=self.value,
+                enabled=self.enabled,
+                factory=toga_dummy.factory
+            )
+        with self.assertRaises(ValueError):
+            toga.Switch(
+                self.text,
+                on_change=self.on_change,
+                on_toggle=self.on_change,
+                value=self.value,
+                enabled=self.enabled,
+                factory=toga_dummy.factory
+            )
+
+        with self.assertWarns(DeprecationWarning):
+            toga.Switch(
+                self.text,
+                on_change=self.on_change,
+                is_on=self.value,
+                enabled=self.enabled,
+                factory=toga_dummy.factory
+            )
+        with self.assertWarns(DeprecationWarning):
+            toga.Switch(
+                self.text,
+                on_change=self.on_change,
+                value=self.value,
+                is_on=self.value,
+                enabled=self.enabled,
+                factory=toga_dummy.factory
+            )
+
+    # end backwards compatibility.

@@ -24,29 +24,56 @@ class Switch(Widget):
 
     def __init__(
             self,
-            text,
+            text=None,  # BACKWARDS COMPATIBILITY: change to positional argument when the deprecated `label` is removed
             id=None,
             style=None,
             on_change=None,
-            on_toggle=None,  # DEPRECATED!
-            is_on=None,
             value=False,
             enabled=True,
             factory=None,
+            label=None,  # DEPRECATED!
+            on_toggle=None,  # DEPRECATED!
+            is_on=None,  # DEPRECATED!
     ):
         super().__init__(id=id, style=style, factory=factory)
 
         self._impl = self.factory.Switch(interface=self)
 
-        self.text = text
+        # 2022-07: Backwards compatibility
+        # label replaced with text
+        if label is not None:
+            if text is not None:
+                raise ValueError(
+                    "Cannot specify both `label` and `text`; `label` has been deprecated, use `text`"
+                )
+            else:
+                warnings.warn(
+                    "Switch.label has been renamed Switch.text", DeprecationWarning
+                )
+                text = label
+        # on_toggle replaced with on_change
         if on_toggle:
-            self.on_toggle = on_toggle
-        else:
-            self.on_change = on_change
+            if on_change:
+                raise ValueError(
+                    "Cannot specify both `on_toggle` and `on_change`; `on_toggle` has been deprecated, use `on_change`"
+                )
+            else:
+                warnings.warn(
+                    "Switch.on_toggle has been renamed Switch.on_change", DeprecationWarning
+                )
+                on_change = on_toggle
+        # is_on replaced with value
         if is_on is not None:
-            self.is_on = is_on
-        else:
-            self.value = value
+            # Note: since `value` has a default, there is no defense against setting both `value` and `is_on`
+            warnings.warn(
+                "Switch.is_on has been renamed Switch.value", DeprecationWarning
+            )
+            value = is_on
+        # end backwards compatibility.
+
+        self.text = text
+        self.value = value
+        self.on_change = on_change
         self.enabled = enabled
 
     @property
@@ -82,6 +109,51 @@ class Switch(Widget):
         self._impl.set_on_change(self._on_change)
 
     @property
+    def value(self):
+        """ Button Off/On state.
+
+        Returns:
+            ``True`` if on and ``False`` if the switch is off.
+        """
+        return self._impl.get_value()
+
+    @value.setter
+    def value(self, value):
+        if not isinstance(value, bool):
+            raise ValueError("Switch.value can only be set to true or false")
+        self._impl.set_value(value)
+
+    def toggle(self):
+        """Reverse the value of `Switch.value` property from true to false and
+        vice versa.
+        """
+        self.value = not self.value
+
+    # 2022-07: Backwards compatibility
+    # label replaced with text
+    @property
+    def label(self):
+        """ Button Off/On state.
+
+        **DEPRECATED: renamed as text**
+
+        Returns:
+            ``True`` if on and ``False`` if the switch is off.
+        """
+        warnings.warn(
+            "Switch.label has been renamed Switch.text", DeprecationWarning
+        )
+        return self.text
+
+    @label.setter
+    def label(self, label):
+        warnings.warn(
+            "Switch.label has been renamed Switch.text", DeprecationWarning
+        )
+        self.text = label
+
+    # on_toggle replaced with on_change
+    @property
     def on_toggle(self):
         """ The callable function for when the switch is pressed
 
@@ -102,6 +174,7 @@ class Switch(Widget):
         )
         self.on_change = handler
 
+    # is_on replaced with value
     @property
     def is_on(self):
         """ Button Off/On state.
@@ -123,44 +196,4 @@ class Switch(Widget):
         )
         self.value = value
 
-    @property
-    def value(self):
-        """ Button Off/On state.
-
-        Returns:
-            ``True`` if on and ``False`` if the switch is off.
-        """
-        return self._impl.get_value()
-
-    @value.setter
-    def value(self, value):
-        if not isinstance(value, bool):
-            raise ValueError("Switch.value can only be set to true or false")
-        self._impl.set_value(value)
-
-    def toggle(self):
-        """Reverse the value of `Switch.value` property from true to false and
-        vice versa.
-        """
-        self.value = not self.value
-
-    @property
-    def label(self):
-        """ Button Off/On state.
-
-        **DEPRECATED: renamed as text**
-
-        Returns:
-            ``True`` if on and ``False`` if the switch is off.
-        """
-        warnings.warn(
-            "Switch.label has been renamed Switch.text", DeprecationWarning
-        )
-        return self.text
-
-    @label.setter
-    def label(self, label):
-        warnings.warn(
-            "Switch.label has been renamed Switch.text", DeprecationWarning
-        )
-        self.text = label
+    # end backwards compatibility.
