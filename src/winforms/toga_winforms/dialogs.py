@@ -210,8 +210,13 @@ class FileDialog(BaseDialog):
             dialog.FileName = filename
 
         if initial_directory is not None:
-            dialog.SelectedPath = str(initial_directory)
-            dialog.InitialDirectory = str(initial_directory)
+            # On Windows, FolderBrowserDialog works in a different way than
+            # other file dialogs, so a different attribute needs to be set
+            # when specifying the initial directory.
+            if isinstance(dialog, WinForms.FolderBrowserDialog):
+                dialog.SelectedPath = str(initial_directory)
+            else:
+                dialog.InitialDirectory = str(initial_directory)
 
         if file_types is not None:
             filters = [f"{ext} files (*.{ext})|*.{ext}" for ext in file_types] + ["All files (*.*)|*.*"]
