@@ -210,6 +210,7 @@ class FileDialog(BaseDialog):
             dialog.FileName = filename
 
         if initial_directory is not None:
+            dialog.SelectedPath = str(initial_directory)
             dialog.InitialDirectory = str(initial_directory)
 
         if file_types is not None:
