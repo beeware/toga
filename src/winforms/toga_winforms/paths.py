@@ -30,15 +30,15 @@ class Paths:
 
     @property
     def data(self):
-        return Path.home() / 'AppData' / 'Local' / self.author / App.app.formal_name
+        return Path.home() / 'AppData' / 'Local' / self.app_id / App.app.formal_name
 
     @property
     def cache(self):
-        return Path.home() / 'AppData' / 'Local' / self.author / App.app.formal_name / 'Cache'
+        return Path.home() / 'AppData' / 'Local' / self.app_id / App.app.formal_name / 'Cache'
 
     @property
     def logs(self):
-        return Path.home() / 'AppData' / 'Local' / self.author / App.app.formal_name / 'Logs'
+        return Path.home() / 'AppData' / 'Local' / self.app_id / App.app.formal_name / 'Logs'
 
     @property
     def toga(self):
