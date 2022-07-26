@@ -82,11 +82,11 @@ class SwitchTests(TestCase):
     def test_no_args(self):
         "A text label must be provided"
         with self.assertRaises(TypeError):
-            toga.Switch()
+            toga.Switch(factory=toga_dummy.factory)
 
     def test_default_value(self):
         "The switch value defaults to False"
-        switch = toga.Switch("My Switch")
+        switch = toga.Switch("My Switch", factory=toga_dummy.factory)
         self.assertEqual(switch.value, False)
 
     ######################################################################
