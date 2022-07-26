@@ -35,7 +35,7 @@ class SwitchApp(toga.App):
     def callbackLabel(self, switch):
         # Some action when you hit the switch
         #   In this case the label will change
-        switch.label = "switch is %s" % {0: "off", 1: "on"}[switch.value]
+        switch.text = "switch is %s" % {0: "off", 1: "on"}[switch.value]
 
 
 def main():
