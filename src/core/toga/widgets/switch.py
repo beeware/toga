@@ -4,6 +4,11 @@ from toga.handlers import wrapped_handler
 
 from .base import Widget
 
+# BACKWARDS COMPATIBILITY: a token object that can be used to differentiate
+# between an explicitly provided ``None``, and a unspecified value falling
+# back to a default.
+NOT_PROVIDED = object()
+
 
 class Switch(Widget):
     """
@@ -24,11 +29,16 @@ class Switch(Widget):
 
     def __init__(
             self,
-            text=None,  # BACKWARDS COMPATIBILITY: change to positional argument when the deprecated `label` is removed
+            text=NOT_PROVIDED,  # BACKWARDS COMPATIBILITY: The default value
+                                # can be removed when the handling for
+                                # `label`` is removed
             id=None,
             style=None,
             on_change=None,
-            value=False,
+            value=NOT_PROVIDED,  # BACKWARDS COMPATIBILITY: The default value
+                                 # *should* be False, but we use a temp value
+                                 # and overwrite to detect the specification
+                                 # of both value *and* is_on
             enabled=True,
             factory=None,
             label=None,  # DEPRECATED!
@@ -39,37 +49,60 @@ class Switch(Widget):
 
         self._impl = self.factory.Switch(interface=self)
 
+        ##################################################################
         # 2022-07: Backwards compatibility
+        ##################################################################
+        # When deleting this block, also delete the NOT_PROVIDED
+        # placeholder, and replace it's usage in default values.
+
         # label replaced with text
         if label is not None:
-            if text is not None:
+            if text is not NOT_PROVIDED:
                 raise ValueError(
-                    "Cannot specify both `label` and `text`; `label` has been deprecated, use `text`"
+                    "Cannot specify both `label` and `text`; "
+                    "`label` has been deprecated, use `text`"
                 )
             else:
                 warnings.warn(
                     "Switch.label has been renamed Switch.text", DeprecationWarning
                 )
                 text = label
+        elif text is NOT_PROVIDED:
+            # This would be raised by Python itself; however, we need to use a placeholder
+            # value as part of the migration from text->value.
+            raise TypeError("Switch.__init__ missing 1 required positional argument: 'text'")
+
         # on_toggle replaced with on_change
         if on_toggle:
             if on_change:
                 raise ValueError(
-                    "Cannot specify both `on_toggle` and `on_change`; `on_toggle` has been deprecated, use `on_change`"
+                    "Cannot specify both `on_toggle` and `on_change`; "
+                    "`on_toggle` has been deprecated, use `on_change`"
                 )
             else:
                 warnings.warn(
                     "Switch.on_toggle has been renamed Switch.on_change", DeprecationWarning
                 )
                 on_change = on_toggle
+
         # is_on replaced with value
         if is_on is not None:
-            # Note: since `value` has a default, there is no defense against setting both `value` and `is_on`
-            warnings.warn(
-                "Switch.is_on has been renamed Switch.value", DeprecationWarning
-            )
+            if value is not NOT_PROVIDED:
+                raise ValueError(
+                    "Cannot specify both `is_on` and `value`; "
+                    "`is_on` has been deprecated, use `value`"
+                )
+            else:
+                warnings.warn(
+                    "Switch.is_on has been renamed Switch.value", DeprecationWarning
+                )
             value = is_on
-        # end backwards compatibility.
+        elif value is NOT_PROVIDED:
+            value = False
+
+        ##################################################################
+        # End backwards compatibility.
+        ##################################################################
 
         self.text = text
         self.value = value
@@ -129,7 +162,9 @@ class Switch(Widget):
         """
         self.value = not self.value
 
+    ######################################################################
     # 2022-07: Backwards compatibility
+    ######################################################################
     # label replaced with text
     @property
     def label(self):
@@ -196,4 +231,6 @@ class Switch(Widget):
         )
         self.value = value
 
-    # end backwards compatibility.
+    ######################################################################
+    # End backwards compatibility.
+    ######################################################################
