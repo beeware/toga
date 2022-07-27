@@ -138,12 +138,12 @@ class ExampleCanvasApp(toga.App):
             on_change=self.refresh_canvas
         )
         self.italic_switch = toga.Switch(
-            label="italic",
-            on_toggle=self.refresh_canvas
+            text="italic",
+            on_change=self.refresh_canvas
         )
         self.bold_switch = toga.Switch(
-            label="bold",
-            on_toggle=self.refresh_canvas
+            text="bold",
+            on_change=self.refresh_canvas
         )
         label_style = Pack(font_size=10, padding_left=5)
 
@@ -539,12 +539,12 @@ class ExampleCanvasApp(toga.App):
         context.write_text(text, self.x_middle - width / 2, self.y_middle, font)
 
     def get_weight(self):
-        if self.bold_switch.is_on:
+        if self.bold_switch.value:
             return BOLD
         return NORMAL
 
     def get_style(self):
-        if self.italic_switch.is_on:
+        if self.italic_switch.value:
             return ITALIC
         return NORMAL
 

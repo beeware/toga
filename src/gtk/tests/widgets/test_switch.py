@@ -24,7 +24,7 @@ def handle_events():
 @unittest.skipIf(Gtk is None, "Can't run GTK implementation tests on a non-Linux platform")
 class TestGtkSwitch(unittest.TestCase):
     def setUp(self):
-        self.switch = toga.Switch(label='A switch')
+        self.switch = toga.Switch(text='A switch')
 
         # make a shortcut for easy use
         self.gtk_switch = self.switch._impl
@@ -32,13 +32,13 @@ class TestGtkSwitch(unittest.TestCase):
         self.window = Gtk.Window()
         self.window.add(self.switch._impl.native)
 
-    def test_set_label(self):
-        self.assertEqual(self.switch.label, 'A switch')
-        self.switch.label = 'New'
-        self.assertEqual(self.switch.label, 'New')
-        self.assertEqual(self.switch._label, 'New')
+    def test_set_text(self):
+        self.assertEqual(self.switch.text, 'A switch')
+        self.switch.text = 'New'
+        self.assertEqual(self.switch.text, 'New')
+        self.assertEqual(self.switch._text, 'New')
 
-    def test_set_is_on(self):
-        self.assertEqual(self.switch.is_on, False)
-        self.switch.is_on = True
-        self.assertEqual(self.switch.is_on, True)
+    def test_set_value(self):
+        self.assertEqual(self.switch.value, False)
+        self.switch.value = True
+        self.assertEqual(self.switch.value, True)

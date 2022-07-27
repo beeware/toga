@@ -12,22 +12,22 @@ class Switch(Widget):
 
     def winforms_checked_changed(self, sender, event):
         if self.container:
-            if self.interface.on_toggle:
-                self.interface.on_toggle(self.interface)
+            if self.interface.on_change:
+                self.interface.on_change(self.interface)
 
-    def set_label(self, label):
-        self.native.Text = self.interface.label
+    def set_text(self, text):
+        self.native.Text = self.interface.text
 
-    def set_is_on(self, value):
+    def set_value(self, value):
         if value is True:
             self.native.Checked = True
         elif value is False:
             self.native.Checked = False
 
-    def get_is_on(self):
+    def get_value(self):
         return self.native.Checked
 
-    def set_on_toggle(self, handler):
+    def set_on_change(self, handler):
         pass
 
     def rehint(self):

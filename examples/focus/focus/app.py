@@ -31,7 +31,7 @@ class ExampleFocusApp(toga.App):
             placeholder="A non-focussed text input.",
             style=Pack(height=25, width=200, font_size=10),
         )
-        self.switch = toga.Switch("Switch", on_toggle=self.on_switch_toggle)
+        self.switch = toga.Switch("Switch", on_change=self.on_switch_toggle)
         self.info_label = toga.Label(
             "Use keyboard shortcuts to focus on the different widgets",
             style=Pack(font_size=10)
@@ -90,7 +90,7 @@ class ExampleFocusApp(toga.App):
         )
 
     def on_switch_toggle(self, widget: toga.Switch):
-        on_off = "on" if widget.is_on else "off"
+        on_off = "on" if widget.value else "off"
         self.info_label.text = "Switch turned {on_off}!".format(on_off=on_off)
 
     def on_textinput_gain_focus(self, widget: toga.TextInput):

@@ -58,7 +58,7 @@ class ExampleBoxApp(toga.App):
                 self.inner_box,
                 toga.Label(text="Hello to my world!", style=Pack(text_align=CENTER)),
                 toga.Switch(
-                    "Enable yellow", is_on=True, on_toggle=self.toggle_yellow_button
+                    "Enable yellow", value=True, on_change=self.toggle_yellow_button
                 ),
             ],
         )
@@ -85,7 +85,7 @@ class ExampleBoxApp(toga.App):
         self.outer_box.style.background_color = None
 
     def toggle_yellow_button(self, widget):
-        if widget.is_on:
+        if widget.value:
             self.inner_box.insert(1, self.yellow_button)
         else:
             self.inner_box.remove(self.yellow_button)
