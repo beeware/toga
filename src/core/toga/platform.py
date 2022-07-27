@@ -28,6 +28,9 @@ def get_platform_factory(factory=None):
     if factory is not None:
         return factory
 
+    if current_platform == 'dummy':
+        from toga_dummy import factory
+        return factory
     if current_platform == 'android':
         from toga_android import factory
         return factory
