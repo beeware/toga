@@ -19,3 +19,8 @@ class Box(Widget):
         layout_params.topMargin = y
         layout_params.leftMargin = x
         self.native.updateViewLayout(widget.native, layout_params)
+    
+    def set_background_color(self, value):
+        if value:
+            self.native.setBackgroundColor(native_color(value))
+            
