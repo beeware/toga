@@ -1,6 +1,7 @@
 from ..libs.activity import MainActivity
 from ..libs.android.widget import RelativeLayout, RelativeLayout__LayoutParams
 from .base import Widget
+from toga_android.colors import native_color
 
 
 class Box(Widget):
