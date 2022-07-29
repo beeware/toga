@@ -3,6 +3,9 @@ from .libs.android.view import ViewTreeObserver__OnGlobalLayoutListener
 
 
 class AndroidViewport:
+    # `content_parent` should be the view that will become the parent of the widget passed to
+    # `Window.set_content`. This ensures that the viewport `width` and `height` attributes
+    # return the usable area of the app, not including the action bar or status bar.
     def __init__(self, content_parent):
         self.content_parent = content_parent
         self.dpi = content_parent.getContext().getResources().getDisplayMetrics().densityDpi
@@ -25,7 +28,7 @@ class Window(ViewTreeObserver__OnGlobalLayoutListener):
         super().__init__()
         self.interface = interface
         self.interface._impl = self
-        self.size = (None, None)
+        self.last_size = (None, None)
 
         # self.set_title(title)
 
@@ -40,8 +43,8 @@ class Window(ViewTreeObserver__OnGlobalLayoutListener):
         changed, the new values will be visible here.
         """
         new_size = (self.viewport.width, self.viewport.height)
-        if self.size != new_size:
-            self.size = new_size
+        if self.last_size != new_size:
+            self.last_size = new_size
             if self.interface.content:
                 self.interface.content.refresh()
 
@@ -71,8 +74,7 @@ class Window(ViewTreeObserver__OnGlobalLayoutListener):
         pass
 
     def get_size(self):
-        display_metrics = self.interface.content._impl.native.getContext().getResources().getDisplayMetrics()
-        return (display_metrics.widthPixels, display_metrics.heightPixels)
+        return self.last_size
 
     def set_size(self, size):
         # Does nothing on mobile
