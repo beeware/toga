@@ -10,6 +10,19 @@ else:
     current_platform = sys.platform
 
 
+_default_factory = None
+def default_factory(factory):
+    """ This function specifies the default factory ``get_platform_factory`` will use.
+
+    Args:
+        factory (:obj:`module`): Provide a custom factory that ``get_platform_factory`` will return.
+            Specify ``None`` to revert to ``get_platform_factory`` normal behaviour.
+    """
+    global _default_factory
+    _default_factory = factory
+    get_platform_factory.cache_clear()
+
+
 @lru_cache(maxsize=8)
 def get_platform_factory(factory=None):
     """ This function figures out what the current host platform is and
@@ -28,9 +41,9 @@ def get_platform_factory(factory=None):
     if factory is not None:
         return factory
 
-    if current_platform == 'dummy':
-        from toga_dummy import factory
-        return factory
+    if _default_factory:
+        return _default_factory
+
     if current_platform == 'android':
         from toga_android import factory
         return factory

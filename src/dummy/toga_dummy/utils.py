@@ -2,11 +2,10 @@ import sys
 import unittest
 
 import toga.platform
+from toga_dummy import factory
 from travertino.declaration import BaseStyle
 from travertino.layout import BaseBox
 from travertino.size import BaseIntrinsicSize
-
-toga.platform.current_platform = 'dummy'
 
 
 def not_required(method_or_class):
@@ -194,6 +193,11 @@ class TestCase(unittest.TestCase):
         # under test conditions" checks in paths.py.
         if '__main__' in sys.modules:
             del sys.modules['__main__']
+        
+        toga.platform.default_factory(factory)
+
+    def tearDown(self):
+        toga.platform.default_factory(None)
 
     def reset_event_log(self):
         EventLog.reset()
