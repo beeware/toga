@@ -8,25 +8,25 @@ class ButtonTests(TestCase):
         super().setUp()
 
         # Create a button with the dummy factory
-        self.initial_label = 'Test Button'
-        self.btn = toga.Button(self.initial_label, factory=toga_dummy.factory)
+        self.initial_text = 'Test Button'
+        self.btn = toga.Button(self.initial_text, factory=toga_dummy.factory)
 
     def test_widget_created(self):
         self.assertEqual(self.btn._impl.interface, self.btn)
         self.assertActionPerformed(self.btn, 'create Button')
 
-    def test_button_label(self):
-        self.assertEqual(self.btn._label, self.initial_label)
-        self.btn.label = 'New Label'
-        self.assertEqual(self.btn.label, 'New Label')
+    def test_button_text(self):
+        self.assertEqual(self.btn._text, self.initial_text)
+        self.btn.text = 'New Text'
+        self.assertEqual(self.btn.text, 'New Text')
 
-        # test if backend gets called with the right label
-        self.assertValueSet(self.btn, 'label', 'New Label')
+        # test if backend gets called with the right text
+        self.assertValueSet(self.btn, 'text', 'New Text')
 
-    def test_button_label_with_None(self):
-        self.btn.label = None
-        self.assertEqual(self.btn.label, '')
-        self.assertValueSet(self.btn, 'label', '')
+    def test_button_text_with_None(self):
+        self.btn.text = None
+        self.assertEqual(self.btn.text, '')
+        self.assertValueSet(self.btn, 'text', '')
 
     def test_button_on_press(self):
         self.assertIsNone(self.btn._on_press)
@@ -46,3 +46,41 @@ class ButtonTests(TestCase):
     def test_focus(self):
         self.btn.focus()
         self.assertActionPerformed(self.btn, "focus")
+
+    ######################################################################
+    # 2022-07: Backwards compatibility
+    ######################################################################
+
+    def test_label_deprecated(self):
+        new_text = 'New Label'
+        with self.assertWarns(DeprecationWarning):
+            self.btn.label = new_text
+        with self.assertWarns(DeprecationWarning):
+            self.assertEqual(self.btn.label, new_text)
+        self.assertValueSet(self.btn, 'text', new_text)
+
+    def test_init_with_deprecated(self):
+        # label is a deprecated argument
+        with self.assertWarns(DeprecationWarning):
+            toga.Button(
+                label='Test Button',
+                factory=toga_dummy.factory
+            )
+
+        # can't specify both label *and* text
+        with self.assertRaises(ValueError):
+            toga.Button(
+                label='Test Button',
+                text='Test Button',
+                factory=toga_dummy.factory
+            )
+
+        # label/text is mandatory
+        with self.assertRaises(TypeError):
+            toga.Button(
+                factory=toga_dummy.factory
+            )
+
+    ######################################################################
+    # End backwards compatibility.
+    ######################################################################

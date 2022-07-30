@@ -176,7 +176,7 @@ class ExampleCanvasApp(toga.App):
                         toga.Label("Y Scale:", style=label_style),
                         self.scale_y_slider,
                         toga.Button(
-                            label="Reset transform",
+                            text="Reset transform",
                             on_press=self.reset_transform
                         )
                     ]

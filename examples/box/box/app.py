@@ -21,7 +21,7 @@ class ExampleBoxApp(toga.App):
             title=self.name, size=(800, 500), resizeable=False, minimizable=False
         )
         self.yellow_button = toga.Button(
-            label="Set yellow color",
+            text="Set yellow color",
             on_press=self.set_yellow_color,
             style=Pack(background_color=YELLOW),
         )
@@ -29,23 +29,23 @@ class ExampleBoxApp(toga.App):
             style=Pack(direction=ROW),
             children=[
                 toga.Button(
-                    label="Set red color",
+                    text="Set red color",
                     on_press=self.set_red_color,
                     style=Pack(background_color=RED),
                 ),
                 self.yellow_button,
                 toga.Button(
-                    label="Set blue color",
+                    text="Set blue color",
                     on_press=self.set_blue_color,
                     style=Pack(background_color=BLUE),
                 ),
                 toga.Button(
-                    label="Set green color",
+                    text="Set green color",
                     on_press=self.set_green_color,
                     style=Pack(background_color=GREEN),
                 ),
                 toga.Button(
-                    label="Reset color",
+                    text="Reset color",
                     on_press=self.reset_color,
                     style=Pack(background_color=WHITE),
                 ),
