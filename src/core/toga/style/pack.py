@@ -323,6 +323,12 @@ class Pack(BaseStyle):
 
         # Pass 4: set vertical position of each child.
         for child in node.children:
+            if not self.height and not child.intrinsic.height:
+                child.layout.content_height = (
+                    height
+                    - scale(child.style.padding_top)
+                    - scale(child.style.padding_bottom)
+                )
             extra = (
                 height
                 - child.layout.content_height
@@ -461,6 +467,12 @@ class Pack(BaseStyle):
 
         # Pass 4: set horizontal position of each child.
         for child in node.children:
+            if not self.width and not child.intrinsic.width:
+                child.layout.content_width = (
+                    width
+                    - scale(child.style.padding_left)
+                    - scale(child.style.padding_right)
+                )
             extra = (
                 width
                 - child.layout.content_width

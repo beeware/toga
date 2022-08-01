@@ -18,9 +18,9 @@ class Divider(Widget):
 
         if self.interface.direction == self.interface.VERTICAL:
             self.interface.intrinsic.width = content_size.width
-            self.interface.intrinsic.height = at_least(content_size.height)
+            self.interface.intrinsic.height = 0
         else:
-            self.interface.intrinsic.width = at_least(content_size.width)
+            self.interface.intrinsic.width = 0
             self.interface.intrinsic.height = content_size.height
 
     def set_direction(self, value):
