@@ -329,12 +329,14 @@ class Pack(BaseStyle):
                     - scale(child.style.padding_top)
                     - scale(child.style.padding_bottom)
                 )
-            extra = (
-                height
-                - child.layout.content_height
-                + scale(child.style.padding_top)
-                + scale(child.style.padding_bottom)
-            )
+                extra = 0
+            else:
+                extra = (
+                    height
+                    - child.layout.content_height
+                    + scale(child.style.padding_top)
+                    + scale(child.style.padding_bottom)
+                )
             # self._debug("row extra height", extra)
             if self.alignment is BOTTOM:
                 child.layout.content_top = extra + scale(child.style.padding_top)
@@ -473,12 +475,14 @@ class Pack(BaseStyle):
                     - scale(child.style.padding_left)
                     - scale(child.style.padding_right)
                 )
-            extra = (
-                width
-                - child.layout.content_width
-                + scale(child.style.padding_left)
-                + scale(child.style.padding_right)
-            )
+                extra = 0
+            else:
+                extra = (
+                    width
+                    - child.layout.content_width
+                    + scale(child.style.padding_left)
+                    + scale(child.style.padding_right)
+                )
             # self._debug("row extra width", extra)
             if self.alignment is LEFT:
                 child.layout.content_left = extra + scale(child.style.padding_left)
