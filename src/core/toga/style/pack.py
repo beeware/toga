@@ -27,7 +27,7 @@ from travertino.constants import (
 )
 from travertino.declaration import BaseStyle, Choices
 from travertino.layout import BaseBox
-from travertino.size import BaseIntrinsicSize
+from travertino.size import BaseIntrinsicSize, at_least
 
 from toga.fonts import SYSTEM_DEFAULT_FONT_SIZE, Font
 
@@ -321,9 +321,9 @@ class Pack(BaseStyle):
                 )
                 height = max(height, child_height)
 
-        # Pass 4: set vertical position of each child.
+        # Pass 4: set vertical position of each child, and extend flexible children to the full height.
         for child in node.children:
-            if not self.height and not child.intrinsic.height:
+            if child.style.flex or type(child.intrinsic.height) is at_least:
                 child.layout.content_height = (
                     height
                     - scale(child.style.padding_top)
@@ -467,9 +467,9 @@ class Pack(BaseStyle):
             )
             width = max(width, child_width)
 
-        # Pass 4: set horizontal position of each child.
+        # Pass 4: set horizontal position of each child, and extend flexible children to full width.
         for child in node.children:
-            if not self.width and not child.intrinsic.width:
+            if child.style.flex or type(child.intrinsic.width) is at_least:
                 child.layout.content_width = (
                     width
                     - scale(child.style.padding_left)
