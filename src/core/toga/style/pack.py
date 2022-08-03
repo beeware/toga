@@ -449,7 +449,7 @@ class Pack(BaseStyle):
         width = 0
         for child in node.children:
             # self._debug("START CHILD AT VERTICAL OFFSET", offset)
-            offset += child.style.padding_top
+            offset += scale(child.style.padding_top)
             child.layout.content_top = offset
             offset += child.layout.content_height + scale(child.style.padding_bottom)
             child_width = (
