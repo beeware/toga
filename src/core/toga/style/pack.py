@@ -146,7 +146,7 @@ class Pack(BaseStyle):
                 try:
                     available_width = max(available_width, node.intrinsic.width.value)
                 except AttributeError:
-                    available_width = min(available_width, node.intrinsic.width)
+                    available_width = node.intrinsic.width
 
                 # self._debug("ADJUSTED WIDTH", available_width)
             else:
