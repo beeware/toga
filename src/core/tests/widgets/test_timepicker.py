@@ -77,3 +77,30 @@ class TimePickerTests(TestCase):
     def test_focus(self):
         self.time_picker.focus()
         self.assertActionPerformed(self.time_picker, "focus")
+
+    ######################################################################
+    # 2022-07: Backwards compatibility
+    ######################################################################
+
+    def test_init_with_deprecated(self):
+        value = datetime.time(6, 7, 8)
+
+        # initial is a deprecated argument
+        with self.assertWarns(DeprecationWarning):
+            my_text_input = toga.TimePicker(
+                initial=value,
+                factory=toga_dummy.factory
+            )
+        self.assertEqual(my_text_input.value, value)
+
+        # can't specify both initial *and* value
+        with self.assertRaises(ValueError):
+            toga.TimePicker(
+                initial=value,
+                value=value,
+                factory=toga_dummy.factory
+            )
+
+    ######################################################################
+    # End backwards compatibility.
+    ######################################################################

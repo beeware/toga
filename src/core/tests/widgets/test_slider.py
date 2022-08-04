@@ -9,7 +9,7 @@ class SliderTests(TestCase):
     def setUp(self):
         super().setUp()
 
-        self.default = 50
+        self.value = 50
         self.min_val = 0
         self.max_val = 100
         self.default_tick = 6
@@ -20,7 +20,7 @@ class SliderTests(TestCase):
         self.enabled = True
 
         self.slider = toga.Slider(
-            default=self.default,
+            value=self.value,
             range=self.range,
             on_change=self.on_change,
             enabled=self.enabled,
@@ -59,22 +59,22 @@ class SliderTests(TestCase):
     def test_set_value_to_be_too_small(self):
         with self.assertRaises(ValueError):
             self.slider.value = self.min_val - 1
-        self.assert_slider_value(tick_value=self.default_tick, value=self.default)
+        self.assert_slider_value(tick_value=self.default_tick, value=self.value)
 
     def test_set_value_to_be_too_big(self):
         with self.assertRaises(ValueError):
             self.slider.value = self.max_val + 1
-        self.assert_slider_value(tick_value=self.default_tick, value=self.default)
+        self.assert_slider_value(tick_value=self.default_tick, value=self.value)
 
     def test_set_tick_value_to_be_too_small(self):
         with self.assertRaises(ValueError):
             self.slider.tick_value = 0
-        self.assert_slider_value(tick_value=self.default_tick, value=self.default)
+        self.assert_slider_value(tick_value=self.default_tick, value=self.value)
 
     def test_set_tick_value_to_be_too_big(self):
         with self.assertRaises(ValueError):
             self.slider.tick_value = self.max_val + 1
-        self.assert_slider_value(tick_value=self.default_tick, value=self.default)
+        self.assert_slider_value(tick_value=self.default_tick, value=self.value)
 
     def test_new_value_is_None(self):
         self.slider.value = None
@@ -85,7 +85,7 @@ class SliderTests(TestCase):
         tick_delta = 2
         self.slider.value += delta
         self.assert_slider_value(
-            value=self.default + delta,
+            value=self.value + delta,
             tick_value=self.default_tick + tick_delta,
             on_change_call_count=1,
         )
@@ -95,7 +95,7 @@ class SliderTests(TestCase):
         tick_delta = 2
         self.slider.value -= delta
         self.assert_slider_value(
-            value=self.default - delta,
+            value=self.value - delta,
             tick_value=self.default_tick - tick_delta,
             on_change_call_count=1,
         )
@@ -105,7 +105,7 @@ class SliderTests(TestCase):
         tick_delta = 2
         self.slider.tick_value += tick_delta
         self.assert_slider_value(
-            value=self.default + delta,
+            value=self.value + delta,
             tick_value=self.default_tick + tick_delta,
             on_change_call_count=1,
         )
@@ -115,7 +115,7 @@ class SliderTests(TestCase):
         tick_delta = 2
         self.slider.tick_value -= tick_delta
         self.assert_slider_value(
-            value=self.default - delta,
+            value=self.value - delta,
             tick_value=self.default_tick - tick_delta,
             on_change_call_count=1,
         )
@@ -172,3 +172,36 @@ class SliderTests(TestCase):
         self.assertEqual(self.slider.max, max_val)
         self.assertEqual(self.slider.range, (min_val, max_val))
         self.assertValueSet(self.slider, "range", (min_val, max_val))
+
+    ######################################################################
+    # 2022-07: Backwards compatibility
+    ######################################################################
+
+    def test_init_with_deprecated(self):
+        # default is a deprecated argument
+        with self.assertWarns(DeprecationWarning):
+            my_slider = toga.Slider(
+                default=self.value,
+                range=self.range,
+                on_change=self.on_change,
+                enabled=self.enabled,
+                factory=toga_dummy.factory,
+                tick_count=self.tick_count,
+            )
+        self.assertEqual(my_slider.value, self.value)
+
+        # can't specify both default *and* value
+        with self.assertRaises(ValueError):
+            toga.Slider(
+                default=self.value,
+                value=self.value,
+                range=self.range,
+                on_change=self.on_change,
+                enabled=self.enabled,
+                factory=toga_dummy.factory,
+                tick_count=self.tick_count,
+            )
+
+    ######################################################################
+    # End backwards compatibility.
+    ######################################################################

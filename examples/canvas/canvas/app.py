@@ -97,7 +97,7 @@ class ExampleCanvasApp(toga.App):
         )
         self.line_width_slider = toga.Slider(
             range=(1, 10),
-            default=1,
+            value=1,
             on_change=self.refresh_canvas
         )
         self.dash_pattern_selection = toga.Selection(
@@ -109,13 +109,13 @@ class ExampleCanvasApp(toga.App):
         self.rotation = 0
         self.scale_x_slider = toga.Slider(
             range=(0, 2),
-            default=1,
+            value=1,
             tick_count=10,
             on_change=self.refresh_canvas
         )
         self.scale_y_slider = toga.Slider(
             range=(0, 2),
-            default=1,
+            value=1,
             tick_count=10,
             on_change=self.refresh_canvas
         )
@@ -134,7 +134,7 @@ class ExampleCanvasApp(toga.App):
         self.font_size = toga.NumberInput(
             min_value=10,
             max_value=72,
-            default=20,
+            value=20,
             on_change=self.refresh_canvas
         )
         self.italic_switch = toga.Switch(

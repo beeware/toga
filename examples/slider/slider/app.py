@@ -52,7 +52,7 @@ class SliderApp(toga.App):
 
                     toga.Slider(
                         range=(1, 10),
-                        default=10,
+                        value=10,
                         style=Pack(width=150),
                         tick_count=10
                     ),

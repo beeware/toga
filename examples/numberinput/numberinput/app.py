@@ -28,7 +28,7 @@ class ExampleNumberInputApp(toga.App):
         self.ni1 = toga.NumberInput(
             min_value=12,
             max_value=72,
-            default=12,
+            value=12,
             on_change=self.handle_numberinput,
         )
         box1 = toga.Box(

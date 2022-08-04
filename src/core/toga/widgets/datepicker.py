@@ -1,4 +1,5 @@
 import datetime
+import warnings
 
 from toga.handlers import wrapped_handler
 
@@ -18,11 +19,43 @@ class DatePicker(Widget):
     """
     MIN_WIDTH = 200
 
-    def __init__(self, id=None, style=None, factory=None, initial=None, min_date=None, max_date=None, on_change=None):
+    def __init__(
+        self,
+        id=None,
+        style=None,
+        factory=None,
+        value=None,
+        min_date=None,
+        max_date=None,
+        on_change=None,
+        initial=None,  # DEPRECATED!
+    ):
         super().__init__(id=id, style=style, factory=factory)
         # Create a platform specific implementation of a DatePicker
         self._impl = self.factory.DatePicker(interface=self)
-        self.value = initial
+
+        ##################################################################
+        # 2022-07: Backwards compatibility
+        ##################################################################
+
+        # initial replaced with value
+        if initial is not None:
+            if value is not None:
+                raise ValueError(
+                    "Cannot specify both `initial` and `value`; "
+                    "`initial` has been deprecated, use `value`"
+                )
+            else:
+                warnings.warn(
+                    "`initial` has been renamed `value`", DeprecationWarning
+                )
+            value = initial
+
+        ##################################################################
+        # End backwards compatibility.
+        ##################################################################
+
+        self.value = value
         self.min_date = min_date
         self.max_date = max_date
         self.on_change = on_change
