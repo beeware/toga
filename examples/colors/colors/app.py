@@ -22,7 +22,7 @@ class ExamplecolorsApp(toga.App):
         wMultilineTextInput = toga.MultilineTextInput(initial = 'This is a Multiline Text Input field!')
         wNumberInput = toga.NumberInput(default = 1337)
         wPasswordInput = toga.PasswordInput(initial = 'adminadmin')
-        wProgressBar = toga.ProgressBar(max = 100, value = 50, running=  True)
+        wProgressBar = toga.ProgressBar(max = 100, value = 50, running =  True)
         wSelection = toga.Selection(items = ['item 1', 'item 2', 'item 3', 'item 4', 'item 5', 'item 6'])
         wSlider = toga.Slider()
         wSwitch = toga.Switch('Switch')
@@ -69,7 +69,7 @@ class ExamplecolorsApp(toga.App):
         #setup control box
         self.ColorSelection = toga.Selection(items = colors.NAMED_COLOR)
         self.ColorBackgroundSelection = toga.Selection(items = colors.NAMED_COLOR)
-        button_Changecollor = toga.Button('Change color', on_press=self.fChange_color)
+        button_Changecollor = toga.Button('Change color', on_press = self.fChange_color)
         control_box = toga.Box(
             children = [
                 toga.Label('Color selection:'),
