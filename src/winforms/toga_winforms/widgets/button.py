@@ -18,8 +18,8 @@ class Button(Widget):
             if self.interface.on_press:
                 self.interface.on_press(self.interface)
 
-    def set_label(self, label):
-        self.native.Text = self.interface.label
+    def set_text(self, text):
+        self.native.Text = self.interface.text
         self.rehint()
 
     def set_font(self, font):

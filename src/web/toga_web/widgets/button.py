@@ -5,18 +5,18 @@ class Button(Widget):
     def __html__(self):
         return """
             <button id="toga_{id}" class="toga button btn-block" style="{style}">
-            {label}
+            {text}
             </button>
         """.format(
             id=self.interface.id,
-            label=self.interface.label,
+            text=self.interface.text,
             style='',
         )
 
     def create(self):
         pass
 
-    def set_label(self, label):
+    def set_text(self, text):
         pass
 
     def set_enabled(self, value):

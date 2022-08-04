@@ -24,8 +24,8 @@ class Button(Widget):
         self.native = A_Button(self._native_activity)
         self.native.setOnClickListener(TogaOnClickListener(button_impl=self))
 
-    def set_label(self, label):
-        self.native.setText(self.interface.label)
+    def set_text(self, text):
+        self.native.setText(self.interface.text)
 
     def set_enabled(self, value):
         self.native.setEnabled(value)

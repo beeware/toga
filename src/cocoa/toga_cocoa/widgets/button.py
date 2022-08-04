@@ -43,8 +43,8 @@ class Button(Widget):
         if font:
             self.native.font = font.bind(self.interface.factory).native
 
-    def set_label(self, label):
-        self.native.title = self.interface.label
+    def set_text(self, text):
+        self.native.title = self.interface.text
 
     def set_on_press(self, handler):
         # No special handling required

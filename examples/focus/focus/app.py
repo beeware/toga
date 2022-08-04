@@ -85,8 +85,8 @@ class ExampleFocusApp(toga.App):
         self.text_input.focus()
 
     def on_button_press(self, widget: toga.Button):
-        self.info_label.text = "{widget_label} was pressed!".format(
-            widget_label=widget.label
+        self.info_label.text = "{widget_text} was pressed!".format(
+            widget_text=widget.text
         )
 
     def on_switch_toggle(self, widget: toga.Switch):
@@ -104,7 +104,7 @@ class ExampleFocusApp(toga.App):
 
     def focus_with_label(self, widget: toga.Widget):
         widget.focus()
-        self.info_label.text = "{name} is focused!".format(name=widget.label)
+        self.info_label.text = "{name} is focused!".format(name=widget.text)
 
 
 def main():
