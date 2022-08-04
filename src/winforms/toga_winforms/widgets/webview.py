@@ -102,11 +102,7 @@ class WebView(Widget):
 
     def winforms_web_resource_requested(self, sender, args):
         if self.interface.on_webview_loading:
-            event_args = {}
-            event_args["request"] = args.Request
-            event_args["resource_context"] = args.ResourceContext
-            event_args["response"] = args.Response
-            self.interface.on_webview_loading(self.interface, event_args)
+            self.interface.on_webview_loading(self.interface, args.Request.Uri)
 
     def winforms_navigation_completed(self, sender, args):
         if self.interface.on_webview_load:
