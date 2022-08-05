@@ -1,4 +1,5 @@
 from decimal import Decimal, InvalidOperation
+import warnings
 
 from toga.handlers import wrapped_handler
 
@@ -22,19 +23,51 @@ class NumberInput(Widget):
         step (number): Step size of the adjustment buttons.
         min_value (number): The minimum bound for the widget's value.
         max_value (number): The maximum bound for the widget's value.
-        default (number): Default value for the widget
+        value (number): Initial value for the widget
         readonly (bool):  Whether a user can write/change the number input, defaults to `False`.
         on_change (``callable``): The handler to invoke when the value changes.
         **ex:
     """
     MIN_WIDTH = 100
 
-    def __init__(self, id=None, style=None, factory=None, step=1,
-                 min_value=None, max_value=None, default=None, readonly=False, on_change=None):
+    def __init__(
+        self,
+        id=None,
+        style=None,
+        factory=None,
+        step=1,
+        min_value=None,
+        max_value=None,
+        value=None,
+        readonly=False,
+        on_change=None,
+        default=None,  # DEPRECATED!
+    ):
         super().__init__(id=id, style=style, factory=factory)
         self._value = None
         self._on_change = None
         self._impl = self.factory.NumberInput(interface=self)
+
+        ##################################################################
+        # 2022-07: Backwards compatibility
+        ##################################################################
+
+        # default replaced with value
+        if default is not None:
+            if value is not None:
+                raise ValueError(
+                    "Cannot specify both `default` and `value`; "
+                    "`default` has been deprecated, use `value`"
+                )
+            else:
+                warnings.warn(
+                    "`default` has been renamed `value`", DeprecationWarning
+                )
+            value = default
+
+        ##################################################################
+        # End backwards compatibility.
+        ##################################################################
 
         self.readonly = readonly
         self.step = step
@@ -42,8 +75,8 @@ class NumberInput(Widget):
         self.max_value = max_value
         self.on_change = on_change
 
-        if default is not None:
-            self.value = default
+        if value is not None:
+            self.value = value
 
     @property
     def readonly(self):
