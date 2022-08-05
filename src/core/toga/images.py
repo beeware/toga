@@ -7,7 +7,7 @@ class Image:
         will be interpreted relative to the application module directory.
     """
     def __init__(self, path):
-        self.path = path
+        self.path = str(path)
 
         # Resource is late bound.
         self._impl = None
