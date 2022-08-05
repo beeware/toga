@@ -4,92 +4,164 @@ from toga.style import Pack
 from toga.constants import COLUMN, ROW
 from travertino import colors
 
+
 class ExamplecolorsApp(toga.App):
 
-    def fChange_color(self, widget):
+    def change_color_foreground(self, widget):
+        if widget.id == 'reset':
+            self.change_color(colors.BLACK, None)
+        else:
+            self.change_color(widget.id, None)
+
+    def change_color_background(self, widget):
+        if widget.id == 'reset':
+            self.change_color(None, colors.TRANSPARENT)
+        else:
+            self.change_color(None, widget.id)
+
+    def change_color_both(self, widget):
+        self.change_color(self.color_selection.value, self.color_background_selection.value)
+
+    def change_color(self, color, background_color):
         for x in self.widget_box.children:
-            if isinstance(x, toga.Widget) and not x in self.ignore_listWidgets: 
-                x.style.color = self.ColorSelection.value
-                x.style.background_color = self.ColorBackgroundSelection.value
+            if isinstance(x, toga.Widget) and x not in self.ignore_list_widgets:
+                if color:
+                    x.style.color = color
+                if background_color:
+                    x.style.background_color = background_color
 
     def startup(self):
         # Set up main window
-        self.main_window = toga.MainWindow(title = self.name, size = (640, 640))
+        self.main_window = toga.MainWindow(title=self.name, size=(640, 640))
 
         # create widgets to test colors on
-        wButton = toga.Button('This is a button')
-        wLabel = toga.Label('This is a Label')
-        wMultilineTextInput = toga.MultilineTextInput(initial = 'This is a Multiline Text Input field!')
-        wNumberInput = toga.NumberInput(default = 1337)
-        wPasswordInput = toga.PasswordInput(initial = 'adminadmin')
-        wProgressBar = toga.ProgressBar(max = 100, value = 50, running =  True)
-        wSelection = toga.Selection(items = ['item 1', 'item 2', 'item 3', 'item 4', 'item 5', 'item 6'])
-        wSlider = toga.Slider()
-        wSwitch = toga.Switch('Switch')
-        wTable = toga.Table(['Heading 1', 'Heading 2'])
-        wTextInput = toga.TextInput(initial = 'This is a Text input field!')
-        wScrollContainer = toga.ScrollContainer(horizontal = True, vertical = True, style = Pack(direction = COLUMN, height = 70, padding = 20))
-        tempBox = toga.Box(
-            children = [toga.Label('Scrollcontainer example! filled with labels.')],
-            style = Pack(direction = COLUMN)
+        button = toga.Button('This is a button')
+        label = toga.Label('This is a Label')
+        multiline_text_input = toga.MultilineTextInput(initial='This is a Multiline Text Input field!')
+        number_input = toga.NumberInput(default=1337)
+        password_input = toga.PasswordInput(initial='adminadmin')
+        progress_bar = toga.ProgressBar(max=100, value=50, running=True)
+        selection = toga.Selection(items=['item 1', 'item 2', 'item 3', 'item 4', 'item 5', 'item 6'])
+        slider = toga.Slider()
+        switch = toga.Switch('Switch')
+        table = toga.Table(
+            headings=['Heading 1', 'Heading 2'],
+            data=[
+                ('value 1', 'value 2'),
+                ('value 1', 'value 2'),
+                ('value 1', 'value 2'),
+                ('value 1', 'value 2'),
+                ('value 1', 'value 2'),
+                ('value 1', 'value 2')
+            ],
+            missing_value='none'
+        )
+        text_input = toga.TextInput(initial='This is a Text input field!')
+        scroll_container = toga.ScrollContainer(
+            horizontal=True,
+            vertical=True,
+            style=Pack(direction=COLUMN, height=70, padding=20)
+        )
+        temp_box = toga.Box(
+            children=[toga.Label('Scrollcontainer example! filled with labels.')],
+            style=Pack(direction=COLUMN)
         )
         for x in range(20):
-            tempBox.add(toga.Label('Label'))
-        wScrollContainer.content = tempBox
-        self.wBoxLabel = toga.Label('This is a Box:')
-        wBox = toga.Box(style = Pack(height = 50) )
+            temp_box.add(toga.Label('Label'))
+        scroll_container.content = temp_box
+        self.box_label = toga.Label('This is a Box:')
+        box = toga.Box(style=Pack(height=50))
 
         self.widget_box = toga.Box(
-            children = [
-                wButton,
-                wLabel,
-                wMultilineTextInput,
-                wNumberInput,
-                wPasswordInput,
-                wProgressBar,
-                wSelection,
-                wSlider,
-                wSwitch,
-                wTable,
-                wTextInput,
-                wScrollContainer,
-                self.wBoxLabel,
-                wBox
+            children=[
+                button,
+                label,
+                multiline_text_input,
+                number_input,
+                password_input,
+                progress_bar,
+                selection,
+                slider,
+                switch,
+                table,
+                text_input,
+                scroll_container,
+                self.box_label,
+                box
             ],
-            style = Pack(direction = COLUMN, flex = 2)
+            style=Pack(direction=COLUMN, flex=2)
         )
-        self.ignore_listWidgets = [
-            self.wBoxLabel,
+        self.ignore_list_widgets = [
+            self.box_label,
         ]
 
+        # set small padding space between widgets
         for x in self.widget_box.children:
-            if isinstance(x, toga.Widget) and not x in self.ignore_listWidgets: 
+            if isinstance(x, toga.Widget) and x not in self.ignore_list_widgets:
                 x.style.padding_top = 2
 
-        #setup control box
-        self.ColorSelection = toga.Selection(items = colors.NAMED_COLOR)
-        self.ColorBackgroundSelection = toga.Selection(items = colors.NAMED_COLOR)
-        button_Changecollor = toga.Button('Change color', on_press = self.fChange_color)
+        # setup control box
+        b_change_fcollor_r = toga.Button(
+            'color: red', id=colors.RED, on_press=self.change_color_foreground)
+        b_change_fcollor_g = toga.Button(
+            'color: green', id=colors.GREEN, on_press=self.change_color_foreground)
+        b_change_fcollor_b = toga.Button(
+            'color: blue', id=colors.BLUE, on_press=self.change_color_foreground)
+        b_change_fcollor_t = toga.Button(
+            'color: transparent', id=colors.TRANSPARENT, on_press=self.change_color_foreground, enabled=False)
+        b_change_fcollor_reset = toga.Button(
+            'color: reset', id='reset', on_press=self.change_color_foreground)
+        b_change_bcollor_r = toga.Button(
+            'color: red', id=colors.RED, on_press=self.change_color_background)
+        b_change_bcollor_g = toga.Button(
+            'color: green', id=colors.GREEN, on_press=self.change_color_background)
+        b_change_bcollor_b = toga.Button(
+            'color: blue', id=colors.BLUE, on_press=self.change_color_background)
+        b_change_bcollor_t = toga.Button(
+            'color: transparent', id=colors.TRANSPARENT, on_press=self.change_color_background)
+        b_change_bcollor_reset = toga.Button(
+            'color: reset', id='reset', on_press=self.change_color_background)
+
+        self.color_selection = toga.Selection(items=colors.NAMED_COLOR)
+        self.color_selection.value = colors.BLUE
+        self.color_background_selection = toga.Selection(items=colors.NAMED_COLOR)
+        self.color_background_selection.value = colors.ORANGE
+        button_changecollor = toga.Button('Change color', on_press=self.change_color_both)
         control_box = toga.Box(
-            children = [
+            children=[
                 toga.Label('Color selection:'),
-                self.ColorSelection,
+                b_change_fcollor_r,
+                b_change_fcollor_g,
+                b_change_fcollor_b,
+                b_change_fcollor_t,
+                b_change_fcollor_reset,
                 toga.Label(' '),
                 toga.Label('Background color selection:'),
-                self.ColorBackgroundSelection,
+                b_change_bcollor_r,
+                b_change_bcollor_g,
+                b_change_bcollor_b,
+                b_change_bcollor_t,
+                b_change_bcollor_reset,
                 toga.Label(' '),
-                button_Changecollor
+                toga.Label('Color selection:'),
+                self.color_selection,
+                toga.Label(' '),
+                toga.Label('Background color selection:'),
+                self.color_background_selection,
+                toga.Label(' '),
+                button_changecollor
             ],
-            style = Pack(direction = COLUMN, padding = 30, flex = 1)
+            style=Pack(direction=COLUMN, padding=30, flex=1)
         )
 
         # Outermost box
         outer_box = toga.Box(
-            children = [self.widget_box, control_box],
-            style = Pack(
-                flex = 1,
-                direction = ROW,
-                padding = 10
+            children=[self.widget_box, control_box],
+            style=Pack(
+                flex=1,
+                direction=ROW,
+                padding=10,
+                background_color='lightgray'
             )
         )
 
