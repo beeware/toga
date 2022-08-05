@@ -11,13 +11,20 @@ class ImageViewApp(toga.App):
         box.style.update(alignment=CENTER)
         box.style.update(direction=COLUMN)
 
-        # image from local path
+        # image from local path (string)
         # load brutus.png from the package
         # We set the style width/height parameters for this one
         image_from_path = toga.Image('resources/pride-brutus.png')
         imageview_from_path = toga.ImageView(image_from_path)
         imageview_from_path.style.update(height=72)
         box.add(imageview_from_path)
+
+        # image from local path (pathlib.Path)
+        # same as the above image, just with a different argument type
+        image_from_pathlib_path = toga.Image(self.paths.app / 'resources/pride-brutus.png')
+        imageview_from_pathlib_path = toga.ImageView(image_from_pathlib_path)
+        imageview_from_pathlib_path.style.update(height=72)
+        box.add(imageview_from_pathlib_path)
 
         # image from remote URL
         # no style parameters - we let Pack determine how to allocate
