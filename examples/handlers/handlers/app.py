@@ -28,8 +28,8 @@ class HandlerApp(toga.App):
         # to yield to the main event loop before processing is resumed.
         widget.enabled = False
         for i in range(1, 10):
-            self.generator_label.text = "Iteration {}".format(i)
-            yield 1
+            self.generator_label.text = "Iteration number & yield in seconds: {}".format(i)
+            yield i
         self.generator_label.text = "Ready."
         widget.enabled = True
 
@@ -39,7 +39,7 @@ class HandlerApp(toga.App):
         # await yields control so that other OS events can be processed.
         widget.enabled = False
         for i in range(1, 10):
-            self.async_label.text = "Iteration {}".format(i)
+            self.async_label.text = "Iteration: {}".format(i)
             await asyncio.sleep(2)
         self.async_label.text = "Ready."
         widget.enabled = True
