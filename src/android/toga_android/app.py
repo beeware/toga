@@ -5,8 +5,13 @@ from rubicon.java import android_events
 from toga.command import Group
 
 from .libs.activity import IPythonApp, MainActivity
+from .libs.android import R__id
 from .libs.android.view import Menu, MenuItem
 from .libs.android.graphics import Drawable
+from .libs.android.widget import FrameLayout, LinearLayout, LinearLayout__LayoutParams
+from .libs.android.view import ViewGroup, Window as A_Window
+from .libs.androidx.appcompat import Toolbar
+
 from .window import Window
 
 
@@ -67,7 +72,8 @@ class TogaApp(IPythonApp):
             print("No intent matching request code {requestCode}")
 
     def onConfigurationChanged(self, new_config):
-        pass
+        if self._impl.toolbar:
+            self._impl.refresh_toolbar()
 
     def onOptionsItemSelected(self, menuitem):
         consumed = False
@@ -161,8 +167,8 @@ class App:
         self.interface = interface
         self.interface._impl = self
         self._listener = None
-
         self.loop = android_events.AndroidEventLoop()
+        self.toolbar = None
 
     @property
     def native(self):
@@ -172,8 +178,48 @@ class App:
         # The `_listener` listens for activity event callbacks. For simplicity,
         # the app's `.native` is the listener's native Java class.
         self._listener = TogaApp(self)
+
+        # Call findViewById on the Window rather than the Activity, to avoid triggering
+        # creation of the default toolbar.
+        self.content_parent = ViewGroup.__cast__(
+            self.native.getWindow().findViewById(R__id.content)
+        )
+        if self.content_parent.getChildCount():
+            # The default toolbar has already been created by the call to setContentView in old
+            # versions of the template, and there's no way to remove it.
+            pass
+        else:
+            # The default toolbar doesn't respond to configuration changes, so disable it
+            # and create our own.
+            self.native.supportRequestWindowFeature(A_Window.FEATURE_NO_TITLE)
+            self.linear_layout = LinearLayout(self.native)
+            self.linear_layout.setOrientation(LinearLayout.VERTICAL)
+            self.native.setContentView(self.linear_layout)
+            self.refresh_toolbar()
+            self.content_parent = FrameLayout(self.native)
+            self.linear_layout.addView(
+                self.content_parent,
+                LinearLayout__LayoutParams.MATCH_PARENT,
+                LinearLayout__LayoutParams.MATCH_PARENT
+            )
+
         # Call user code to populate the main window
         self.interface.startup()
+
+    # See https://developer.android.com/training/appbar/setting-up#add-toolbar
+    def refresh_toolbar(self):
+        if self.toolbar:
+            self.linear_layout.removeView(self.toolbar)
+        self.toolbar = Toolbar(self.native)
+        self.linear_layout.addView(
+            self.toolbar,
+            0,
+            LinearLayout__LayoutParams(
+                LinearLayout__LayoutParams.MATCH_PARENT,
+                LinearLayout__LayoutParams.WRAP_CONTENT
+            )
+        )
+        self.native.setSupportActionBar(self.toolbar)
 
     def open_document(self, fileURL):
         print("Can't open document %s (yet)" % fileURL)
