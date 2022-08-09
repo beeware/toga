@@ -68,6 +68,9 @@ class WebView(Widget):
         user_agent = value if value else "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/603.3.8 (KHTML, like Gecko) Version/10.1.2 Safari/603.3.8"  # NOQA
         self.native.customUserAgent = user_agent
 
+    def set_on_resource_requested(self, handler):
+        self.interface.factory.not_implemented('WebView.set_on_resource_requested()')
+
     async def evaluate_javascript(self, javascript):
         loop = get_event_loop()
         future = loop.create_future()

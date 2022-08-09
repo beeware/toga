@@ -71,6 +71,9 @@ class WebView(Widget):
     def set_content(self, root_url, content):
         self.native.load_html(content, root_url)
 
+    def set_on_resource_requested(self, handler):
+        self.interface.factory.not_implemented('WebView.set_on_resource_requested()')
+
     def get_dom(self):
         self.interface.factory.not_implemented('WebView.get_dom()')
 

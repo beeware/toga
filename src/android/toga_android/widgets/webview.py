@@ -67,6 +67,9 @@ class WebView(Widget):
         if value is not None:
             self.native.getSettings().setUserAgentString(value)
 
+    def set_on_resource_requested(self, handler):
+        self.interface.factory.not_implemented('WebView.set_on_resource_requested()')
+
     async def evaluate_javascript(self, javascript):
         js_value = asyncio.Future()
         self.native.evaluateJavascript(str(javascript), ReceiveString(js_value.set_result))

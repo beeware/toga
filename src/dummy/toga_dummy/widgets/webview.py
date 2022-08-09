@@ -30,6 +30,9 @@ class WebView(Widget):
     def set_url(self, value):
         self._set_value('url', value)
 
+    def set_on_resource_requested(self, value):
+        self._set_value('set_on_resource_requested', value)
+
     async def evaluate_javascript(self, javascript):
         self._action('evaluate_javascript', javascript=javascript)
         return 'JS RESULT'
