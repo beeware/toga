@@ -101,8 +101,8 @@ class WebView(Widget):
                 print(args.InitializationException)
 
     def winforms_web_resource_requested(self, sender, args):
-        if self.interface.on_webview_loading:
-            self.interface.on_webview_loading(self.interface, args.Request.Uri)
+        if self.interface.on_resource_requested:
+            self.interface.on_resource_requested(self.interface, args.Request.Uri)
 
     def winforms_navigation_completed(self, sender, args):
         if self.interface.on_webview_load:
@@ -115,7 +115,7 @@ class WebView(Widget):
     def set_on_key_down(self, handler):
         pass
 
-    def set_on_webview_loading(self, handler):
+    def set_on_resource_requested(self, handler):
         pass
 
     def set_on_webview_load(self, handler):

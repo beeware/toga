@@ -23,8 +23,8 @@ class ExampleWebView(toga.App):
     def on_webview_load(self, _interface):
         self.top_label.text = "www loaded!"
 
-    def on_webview_loading(self, widget, url):
-        print("on_webview_loading: URL to be loaded = {}".format(url))
+    def on_resource_requested(self, widget, url):
+        print("on_resource_requested: Resource to be loaded = {}".format(url))
 
     def set_url(self, _interface):
         self.top_label.text = "Loading page..."
@@ -63,7 +63,7 @@ class ExampleWebView(toga.App):
             url='https://beeware.org/',
             on_key_down=self.on_webview_button_press,
             on_webview_load=self.on_webview_load,
-            on_webview_loading=self.on_webview_loading,
+            on_resource_requested=self.on_resource_requested,
             style=Pack(flex=1)
         )
 

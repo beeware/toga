@@ -16,7 +16,7 @@ class WebView(Widget):
         user_agent (str): The user agent for the web view.
         on_key_down (``callable``): The callback method for when a key is pressed within
             the web view
-        on_webview_loading (``callable``): The callback method for when the webview starts load (or reload)
+        on_resource_requested (``callable``): The callback method for when the webview starts load (or reload)
         on_webview_load (``callable``): The callback method for when the webview finished load (or reload).
     """
     MIN_WIDTH = 100
@@ -24,7 +24,7 @@ class WebView(Widget):
 
     def __init__(self, id=None, style=None, factory=None,
                  url=None, user_agent=None, on_key_down=None,
-                 on_webview_loading=None, on_webview_load=None):
+                 on_resource_requested=None, on_webview_load=None):
         super().__init__(id=id, style=style, factory=factory)
 
         # Prime some internal property-backing variables
@@ -35,7 +35,7 @@ class WebView(Widget):
         self.user_agent = user_agent
         self.url = url
         self.on_key_down = on_key_down
-        self.on_webview_loading = on_webview_loading
+        self.on_resource_requested = on_resource_requested
         self.on_webview_load = on_webview_load
 
     @property
@@ -81,23 +81,23 @@ class WebView(Widget):
         self._impl.set_on_key_down(self._on_key_down)
 
     @property
-    def on_webview_loading(self):
+    def on_resource_requested(self):
         """The handler to invoke when the webview starts loading.
 
         Returns:
             The function ``callable`` that is called when the webview starts loading.
         """
-        return self._on_webview_loading
+        return self._on_resource_requested
 
-    @on_webview_loading.setter
-    def on_webview_loading(self, handler):
+    @on_resource_requested.setter
+    def on_resource_requested(self, handler):
         """Set the handler to invoke when the webview starts loading.
 
         Args:
             handler (:obj:`callable`): The handler to invoke when the webview starts loading.
         """
-        self._on_webview_loading = wrapped_handler(self, handler)
-        self._impl.set_on_webview_loading(self._on_webview_loading)
+        self._on_resource_requested = wrapped_handler(self, handler)
+        self._impl.set_on_resource_requested(self._on_resource_requested)
 
     @property
     def on_webview_load(self):
