@@ -273,10 +273,12 @@ class Canvas(Box):
         draw_context.matrix.Rotate(math.degrees(radians))
 
     def scale(self, sx, sy, draw_context, *args, **kwargs):
-        draw_context.matrix.Scale(sx, sy)
+        # Workaround for Pythonnet#1833 requires an explicit cast to float
+        draw_context.matrix.Scale(float(sx), float(sy))
 
     def translate(self, tx, ty, draw_context, *args, **kwargs):
-        draw_context.matrix.Translate(tx, ty)
+        # Workaround for Pythonnet#1833 requires an explicit cast to float
+        draw_context.matrix.Translate(float(tx), float(ty))
 
     def reset_transform(self, draw_context, *args, **kwargs):
         draw_context.matrix = None
