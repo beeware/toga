@@ -193,7 +193,6 @@ class TestCase(unittest.TestCase):
         # under test conditions" checks in paths.py.
         if '__main__' in sys.modules:
             del sys.modules['__main__']
-        
         toga.platform.default_factory(factory)
 
     def tearDown(self):

@@ -11,6 +11,8 @@ else:
 
 
 _default_factory = None
+
+
 def default_factory(factory):
     """ This function specifies the default factory ``get_platform_factory`` will use.
 
