@@ -7,7 +7,7 @@ class PlatformTests(TestCase):
     def setUp(self):
         # We can't test the default behaviour of ``get_platform_factory()`` in CI:
         # the CI environment is only installing toga_core and toga_dummy.
-        # This test must be done before the call to super().setUp(), which will set 
+        # This test must be done before the call to super().setUp(), which will set
         # the default_factory.
         try:
             get_platform_factory()
