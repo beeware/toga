@@ -32,7 +32,7 @@ class ImageTests(TestCase):
             pass
 
         # self.assertEqual(self.path_file_image._impl.interface, self.path_file_image)
-        # self.assertActionPerformedWith(self.path_file_image, 'load image', path=self.file_path)
+        # self.assertActionPerformedWith(self.path_file_image, 'load image file', path=self.file_path)
 
     def test_str_file_image_binding(self):
         # Image is initially unbound
@@ -46,7 +46,18 @@ class ImageTests(TestCase):
             pass
 
         # self.assertEqual(self.str_file_image._impl.interface, self.str_file_image)
-        # self.assertActionPerformedWith(self.str_file_image, 'load image', path=str(self.file_path))
+        # self.assertActionPerformedWith(self.str_file_image, 'load image file', path=self.file_path)
+
+    def test_url_image_binding(self):
+        # Image is initially unbound
+        self.assertIsNone(self.url_image._impl)
+
+        # Bind the image
+        self.url_image.bind(factory=toga_dummy.factory)
+
+        self.assertEqual(self.url_image._impl.interface, self.url_image)
+        self.assertActionPerformedWith(self.url_image, 'load image url', url=self.url_path)
+
 
     def test_path_file_image_path(self):
         self.assertEqual(self.path_file_image.path, self.file_path)
