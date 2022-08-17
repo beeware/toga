@@ -58,7 +58,6 @@ class ImageTests(TestCase):
         self.assertEqual(self.url_image._impl.interface, self.url_image)
         self.assertActionPerformedWith(self.url_image, 'load image url', url=self.url_path)
 
-
     def test_path_file_image_path(self):
         self.assertEqual(self.path_file_image.path, self.file_path)
 
