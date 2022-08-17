@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import toga
 import toga_dummy
 from toga_dummy.utils import TestCase
@@ -30,4 +32,4 @@ class ImageTests(TestCase):
         # self.assertActionPerformedWith(self.image, 'load image', path=self.path)
 
     def test_path(self):
-        self.assertEqual(self.image.path, self.path)
+        self.assertEqual(self.image.path, Path(self.path))
