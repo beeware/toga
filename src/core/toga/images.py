@@ -1,3 +1,6 @@
+import pathlib
+
+
 class Image:
     """
     A representation of graphical content.
@@ -7,7 +10,12 @@ class Image:
         will be interpreted relative to the application module directory.
     """
     def __init__(self, path):
-        self.path = str(path)
+        if isinstance(path, pathlib.Path):
+            self.path = path
+        elif path.startswith('http://') or path.startswith('https://'):
+            self.path = path
+        else:
+            self.path = pathlib.Path(path)
 
         # Resource is late bound.
         self._impl = None
@@ -23,10 +31,8 @@ class Image:
         :returns: The platform implementation
         """
         if self._impl is None:
-            if self.path.startswith('http://') or self.path.startswith('https://'):
-                self._impl = factory.Image(interface=self, url=self.path)
-            else:
-                full_path = factory.paths.app / factory.paths.Path(self.path)
+            if isinstance(self.path, pathlib.Path):
+                full_path = factory.paths.app / self.path
                 if not full_path.exists():
                     raise FileNotFoundError(
                         'Image file {full_path!r} does not exist'.format(
@@ -34,5 +40,7 @@ class Image:
                         )
                     )
                 self._impl = factory.Image(interface=self, path=full_path)
+            else:
+                self._impl = factory.Image(interface=self, url=self.path)
 
         return self._impl
