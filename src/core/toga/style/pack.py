@@ -139,7 +139,8 @@ class Pack(BaseStyle):
             available_width = max(0, (
                 alloc_width -
                 scale(self.padding_left) -
-                scale(self.padding_right)))
+                scale(self.padding_right))
+            )
             # self._debug("INITIAL AVAILABLE WIDTH", available_width)
             if node.intrinsic.width:
                 # self._debug("INTRINSIC WIDTH", node.intrinsic.width)
