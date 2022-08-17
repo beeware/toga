@@ -6,11 +6,19 @@ from toga_dummy.utils import TestCase
 class NumberInputTests(TestCase):
     def setUp(self):
         super().setUp()
+        # We can't test the default behaviour of ``get_platform_factory()`` in CI:
+        # the CI environment is only installing toga_core and toga_dummy.
+        try:
+            get_platform_factory()
+            self.native_platform_factory_available = True
+        except ModuleNotFoundError:
+            self.native_platform_factory_available = False
 
     def test_get_platform_factory(self):
-        factory = get_platform_factory()
-        self.assertIsNotNone(factory)
-        self.assertIsNotNone(factory.App)
+        if self.native_platform_factory_available:
+            factory = get_platform_factory()
+            self.assertIsNotNone(factory)
+            self.assertIsNotNone(factory.App)
 
     def test_get_platform_factory_defined(self):
         factory = get_platform_factory(factory=toga_dummy.factory)
@@ -21,6 +29,11 @@ class NumberInputTests(TestCase):
         factory = get_platform_factory()
         self.assertEquals(factory, toga_dummy.factory)
         default_factory(None)
-        factory = get_platform_factory()
-        self.assertIsNotNone(factory)
-        self.assertNotEquals(factory, toga_dummy.factory)
+
+        if self.native_platform_factory_available:
+            factory = get_platform_factory()
+            self.assertIsNotNone(factory)
+            self.assertNotEquals(factory, toga_dummy.factory)
+        else:
+            with self.assertRaises(ModuleNotFoundError):
+                get_platform_factory()
