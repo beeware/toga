@@ -1,6 +1,7 @@
 from travertino.size import at_least
 
 from toga_winforms.libs import WinForms, SystemColors
+from toga_winforms.colors import native_color
 
 from .base import Widget
 
@@ -14,6 +15,7 @@ class MultilineTextInput(Widget):
         self.native.Enter += self.winforms_enter
         self.native.Leave += self.winforms_leave
         self._placeholder = None
+        self._color = SystemColors.WindowText
 
     def winforms_enter(self, sender, event):
         if self._placeholder != '' and self.native.Text == self._placeholder:
@@ -63,7 +65,16 @@ class MultilineTextInput(Widget):
             self._update_text_color()
 
     def _update_text_color(self):
-        self.native.ForeColor = SystemColors.WindowText
+        self.native.ForeColor = self._color
 
     def _update_placeholder_color(self):
         self.native.ForeColor = SystemColors.GrayText
+
+    def set_color(self, color):
+        if color:
+            self._color = native_color(color)
+            self._update_text_color()
+
+    def set_background_color(self, value):
+        if value:
+            self.native.BackColor = native_color(value)

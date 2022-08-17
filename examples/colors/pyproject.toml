@@ -2,7 +2,7 @@
 requires = ["briefcase"]
 
 [tool.briefcase]
-project_name = "TreeSource Demo"
+project_name = "colors"
 bundle = "org.beeware"
 version = "0.3.0.dev37"
 url = "https://beeware.org"
@@ -10,39 +10,39 @@ license = "BSD license"
 author = 'Tiberius Yak'
 author_email = "tiberius@beeware.org"
 
-[tool.briefcase.app.tree_source]
-formal_name = "TreeSource Demo"
+[tool.briefcase.app.colors]
+formal_name = "colors"
 description = "A testing app"
-sources = ['tree_source']
+sources = ['colors']
 requires = [
     '../../src/core',
 ]
 
 
-[tool.briefcase.app.tree_source.macOS]
+[tool.briefcase.app.colors.macOS]
 requires = [
     '../../src/cocoa',
     'std-nslog>=1.0.0',
 ]
 
-[tool.briefcase.app.tree_source.linux]
+[tool.briefcase.app.colors.linux]
 requires = [
     '../../src/gtk',
 ]
 
-[tool.briefcase.app.tree_source.windows]
+[tool.briefcase.app.colors.windows]
 requires = [
     '../../src/winforms',
 ]
 
 # Mobile deployments
-[tool.briefcase.app.tree_source.iOS]
+[tool.briefcase.app.colors.iOS]
 requires = [
     '../../src/iOS',
     'std-nslog>=1.0.0',
 ]
 
-[tool.briefcase.app.tree_source.android]
+[tool.briefcase.app.colors.android]
 requires = [
     '../../src/android',
 ]
