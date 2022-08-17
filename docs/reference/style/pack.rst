@@ -243,7 +243,7 @@ specifying the allocated width and allocated height.
    value less than 0, the adjusted view width is set to 0.
 
    If the element has a fixed intrinsic width, the available width is set to
-   the minimum of the adjusted view width and the intrinsic width.
+   the intrinsic width.
 
    If the element has a minimum intrinsic width, the available width is fixed
    to the maximum of the adjusted view width and the intrinsic minimum width.
@@ -261,7 +261,7 @@ specifying the allocated width and allocated height.
    value less than 0, the adjusted view height is set to 0.
 
    If the element has a fixed intrinsic height, the available height is set to
-   the minimum of the adjusted view height and the intrinsic height.
+   the intrinsic height.
 
    If the element has a minimum intrinsic height, the available height is
    fixed to the maximum of the adjusted view height and the intrinsic minimum
