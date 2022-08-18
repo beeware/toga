@@ -58,21 +58,21 @@ class ExampleTestCommandApp(toga.App):
         things = toga.Group('Things')
         cmd0 = toga.Command(
             self.action0,
-            label='Action 0',
+            text='Action 0',
             tooltip='Perform action 0',
             icon=brutus_icon_256,
             group=things
         )
         cmd1 = toga.Command(
             self.action1,
-            label='Action 1',
+            text='Action 1',
             tooltip='Perform action 1',
             icon=brutus_icon_256,
             group=things
         )
         cmd2 = toga.Command(
             self.action2,
-            label='TB Action 2',
+            text='TB Action 2',
             tooltip='Perform toolbar action 2',
             icon=brutus_icon_256,
             group=things
@@ -83,7 +83,7 @@ class ExampleTestCommandApp(toga.App):
         # alphabetical ordering
         cmd3 = toga.Command(
             self.action3,
-            label='Action 3',
+            text='Action 3',
             tooltip='Perform action 3',
             shortcut=toga.Key.MOD_1 + 'k',
             icon=cricket_icon_256,
@@ -98,14 +98,14 @@ class ExampleTestCommandApp(toga.App):
         sub_menu = toga.Group("Sub Menu", parent=toga.Group.COMMANDS, order=1)
         cmd5 = toga.Command(
             self.action5,
-            label='TB Action 5',
+            text='TB Action 5',
             tooltip='Perform toolbar action 5',
             order=2,
             group=sub_menu
         )  # there is deliberately no icon to show that a toolbar action also works with text
         cmd6 = toga.Command(
             self.action6,
-            label='Action 6',
+            text='Action 6',
             tooltip='Perform action 6',
             order=1,
             icon=cricket_icon_256,
@@ -113,7 +113,7 @@ class ExampleTestCommandApp(toga.App):
         )
         cmd7 = toga.Command(
             self.action7,
-            label='TB action 7',
+            text='TB action 7',
             tooltip='Perform toolbar action 7',
             order=30,
             icon=tiberius_icon_256,
@@ -127,7 +127,7 @@ class ExampleTestCommandApp(toga.App):
 
         cmd4 = toga.Command(
             action4,
-            label='Action 4',
+            text='Action 4',
             tooltip='Perform action 4',
             icon=brutus_icon_256,
             order=3

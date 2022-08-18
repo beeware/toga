@@ -50,31 +50,31 @@ class ExampleFocusApp(toga.App):
         self.commands.add(
             toga.Command(
                 lambda widget: self.focus_with_label(self.a_button),
-                label="Focus on A",
+                text="Focus on A",
                 shortcut=toga.Key.MOD_1 + "a",
                 group=WIDGETS_GROUP
             ),
             toga.Command(
                 lambda widget: self.focus_with_label(self.b_button),
-                label="Focus on B",
+                text="Focus on B",
                 shortcut=toga.Key.MOD_1 + "b",
                 group=WIDGETS_GROUP
             ),
             toga.Command(
                 lambda widget: self.focus_with_label(self.c_button),
-                label="Focus on C",
+                text="Focus on C",
                 shortcut=toga.Key.MOD_1 + "c",
                 group=WIDGETS_GROUP
             ),
             toga.Command(
                 lambda widget: self.text_input.focus(),
-                label="Focus on text input",
+                text="Focus on text input",
                 shortcut=toga.Key.MOD_1 + "t",
                 group=WIDGETS_GROUP
             ),
             toga.Command(
                 lambda widget: self.focus_with_label(self.switch),
-                label="Focus on switch",
+                text="Focus on switch",
                 shortcut=toga.Key.MOD_1 + "s",
                 group=WIDGETS_GROUP
             )
