@@ -27,12 +27,12 @@ class ImageTests(TestCase):
         # Bind the image; the file doesn't exist, so it raises an error.
         try:
             self.path_file_image.bind(factory=toga_dummy.factory)
-            self.fail('The image should not bind')
+            self.fail('The image should not bind')  # pragma: nocover
         except FileNotFoundError:
             pass
 
-        # self.assertEqual(self.path_file_image._impl.interface, self.path_file_image)
-        # self.assertActionPerformedWith(self.path_file_image, 'load image file', path=self.file_path)
+        # Image remains unbound
+        self.assertIsNone(self.path_file_image._impl)
 
     def test_str_file_image_binding(self):
         # Image is initially unbound
@@ -41,12 +41,12 @@ class ImageTests(TestCase):
         # Bind the image; the file doesn't exist, so it raises an error.
         try:
             self.str_file_image.bind(factory=toga_dummy.factory)
-            self.fail('The image should not bind')
+            self.fail('The image should not bind')  # pragma: nocover
         except FileNotFoundError:
             pass
 
-        # self.assertEqual(self.str_file_image._impl.interface, self.str_file_image)
-        # self.assertActionPerformedWith(self.str_file_image, 'load image file', path=self.file_path)
+        # Image remains unbound
+        self.assertIsNone(self.str_file_image._impl)
 
     def test_url_image_binding(self):
         # Image is initially unbound
@@ -55,6 +55,7 @@ class ImageTests(TestCase):
         # Bind the image
         self.url_image.bind(factory=toga_dummy.factory)
 
+        # Image is bound correctly
         self.assertEqual(self.url_image._impl.interface, self.url_image)
         self.assertActionPerformedWith(self.url_image, 'load image url', url=self.url_path)
 
