@@ -44,7 +44,7 @@ class OptionContainer(Widget):
         # Add the layout constraints
         self.add_constraints()
 
-    def add_content(self, label, widget):
+    def add_content(self, label, widget, index=None):
         """ Adds a new option to the option container.
 
         Args:
@@ -65,7 +65,10 @@ class OptionContainer(Widget):
         widget.native.translatesAutoresizingMaskIntoConstraints = True
 
         item.view = widget.native
-        self.native.addTabViewItem(item)
+        if index is None:
+            self.native.addTabViewItem(item)
+        else:
+            self.native.insertTabViewItem(item, atIndex=index)
 
     def remove_content(self, index):
         tabview = self.native.tabViewItemAtIndex(index)

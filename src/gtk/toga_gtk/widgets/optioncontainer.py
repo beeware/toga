@@ -17,14 +17,19 @@ class OptionContainer(Widget):
                 option=self.interface.content[page_num]
             )
 
-    def add_content(self, label, widget):
+    def add_content(self, label, widget, index=None):
         widget.viewport = GtkViewport(widget.native)
 
         # Add all children to the content widget.
         for child in widget.interface.children:
             child._impl.container = widget
 
-        self.native.append_page(widget.native, Gtk.Label(label=label))
+        if index is None:
+            self.native.append_page(widget.native, Gtk.Label(label=label))
+        else:
+            # FIXME: insert at correct position
+            self.native.append_page(widget.native, Gtk.Label(label=label))
+
         # Tabs aren't visible by default;
         # tell the notebook to show all content.
         self.native.show_all()
