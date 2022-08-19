@@ -191,3 +191,21 @@ class OptionContainerTests(TestCase):
         self.op_container.window = window
         for item in self.op_container.content:
             self.assertEqual(item._content.window, window)
+
+    def test_set_tab_title(self):
+        new_label = 'New Title'
+        self.op_container.content[0].label = new_label
+        self.assertEqual(self.op_container.content[0].label, new_label)
+
+    def test_insert_tab(self):
+        self.op_container.content.insert(0, label=self.label2, widget=self.widget2)
+        self.assertEqual(self.op_container.content[0].label, self.label2)
+
+    def test_swap_tabs(self):
+        self.add_widgets()
+        tab1 = self.op_container.content[1]
+        tab2 = self.op_container.content[2]
+        self.op_container.content[1] = tab2
+        self.op_container.content[2] = tab1
+        self.assertEqual(self.op_container.content[1], tab2)
+        self.assertEqual(self.op_container.content[2], tab1)
