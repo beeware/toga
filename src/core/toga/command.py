@@ -142,8 +142,12 @@ class Group:
     # label replaced with text
     @property
     def label(self):
-        """
+        """Group text
+
         **DEPRECATED: renamed as text**
+
+        Returns:
+            The button text as a ``str``
         """
         warnings.warn(
             "Group.label has been renamed Group.text", DeprecationWarning
@@ -316,8 +320,12 @@ class Command:
     # label replaced with text
     @property
     def label(self):
-        """
+        """ Command text.
+
         **DEPRECATED: renamed as text**
+
+        Returns:
+            The command text as a ``str``
         """
         warnings.warn(
             "Command.label has been renamed Command.text", DeprecationWarning
