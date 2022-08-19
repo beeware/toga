@@ -117,8 +117,8 @@ class OptionList:
         # Add the option to the list maintained on the interface,
         # and increment the index of all items after the one that was added.
         self._options.insert(index, option)
-        for option in self._options[index + 1:]:
-            option._index += 1
+        for opt in self._options[index + 1:]:
+            opt._index += 1
 
         # Add the content to the implementation.
         # This will cause the native implementation to be created.
