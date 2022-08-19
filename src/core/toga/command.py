@@ -21,7 +21,7 @@ class Group:
         self,
         text=NOT_PROVIDED,  # BACKWARDS COMPATIBILITY: The default value
                             # can be removed when the handling for
-                            # `label`` is removed
+                            # `label` is removed
         order=None,
         section=None,
         parent=None,
@@ -196,7 +196,7 @@ class Command:
         action,
         text=NOT_PROVIDED,  # BACKWARDS COMPATIBILITY: The default value
                             # can be removed when the handling for
-                            # `label`` is removed
+                            # `label` is removed
         shortcut=None,
         tooltip=None,
         icon=None,
