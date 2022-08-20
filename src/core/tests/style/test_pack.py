@@ -7,7 +7,7 @@ from travertino.size import at_least
 from toga.colors import rgb
 from toga.fonts import Font
 from toga.style.applicator import TogaApplicator
-from toga.style.pack import CENTER, COLUMN, HIDDEN, LEFT, RIGHT, ROW, RTL, Pack
+from toga.style.pack import BOTTOM, CENTER, COLUMN, HIDDEN, LEFT, RIGHT, ROW, RTL, Pack, TOP
 
 
 class TestNode(Node):
@@ -409,5 +409,260 @@ class PackLayoutTests(TestCase):
                     {'origin': (7, 458), 'content': (572, 15)},
                     {'origin': (593, 458), 'content': (40, 10)},
                 ]},
+            ]}
+        )
+
+    def test_alignment_with_padding(self):
+        root = TestNode(
+            'app', style=Pack(), children=[
+                TestNode('row_e_box', style=Pack(direction=COLUMN), children=[
+                    TestNode('top_alignment_row_box', style=Pack(direction=ROW, alignment=TOP), children=[
+                        TestNode('row_top_stretched', style=Pack(
+                            height=120, width=30, padding_top=0, padding_bottom=0)),
+                        TestNode('row_top_padded_0', style=Pack(
+                            height=30, width=30, padding_top=0, padding_bottom=0)),
+                        TestNode('row_top_padded_1', style=Pack(
+                            height=30, width=30, padding_top=30, padding_bottom=0)),
+                        TestNode('row_top_padded_2', style=Pack(
+                            height=30, width=30, padding_top=0, padding_bottom=30)),
+                        TestNode('row_top_padded_3', style=Pack(
+                            height=30, width=30, padding_top=30, padding_bottom=30)),
+                    ]),
+                    TestNode('center_alignment_row_box', style=Pack(direction=ROW, alignment=CENTER), children=[
+                        TestNode('row_center_stretched', style=Pack(
+                            height=120, width=30, padding_top=0, padding_bottom=0)),
+                        TestNode('row_center_padded_0', style=Pack(
+                            height=30, width=30, padding_top=0, padding_bottom=0)),
+                        TestNode('row_center_padded_1', style=Pack(
+                            height=30, width=30, padding_top=30, padding_bottom=0)),
+                        TestNode('row_center_padded_2', style=Pack(
+                            height=30, width=30, padding_top=0, padding_bottom=30)),
+                        TestNode('row_center_padded_3', style=Pack(
+                            height=30, width=30, padding_top=30, padding_bottom=30)),
+                    ]),
+                    TestNode('bottom_alignment_row_box', style=Pack(direction=ROW, alignment=BOTTOM), children=[
+                        TestNode('row_bottom_stretched', style=Pack(
+                            height=120, width=30, padding_top=0, padding_bottom=0)),
+                        TestNode('row_bottom_padded_0', style=Pack(
+                            height=30, width=30, padding_top=0, padding_bottom=0)),
+                        TestNode('row_bottom_padded_1', style=Pack(
+                            height=30, width=30, padding_top=30, padding_bottom=0)),
+                        TestNode('row_bottom_padded_2', style=Pack(
+                            height=30, width=30, padding_top=0, padding_bottom=30)),
+                        TestNode('row_bottom_padded_3', style=Pack(
+                            height=30, width=30, padding_top=30, padding_bottom=30)),
+                    ]),
+                ]),
+                TestNode('spacer_between', style=Pack(width=30)),
+                TestNode('column_e_box', style=Pack(direction=ROW), children=[
+                    TestNode('left_alignment_column_box', style=Pack(direction=COLUMN, alignment=LEFT), children=[
+                        TestNode('column_left_stretched', style=Pack(
+                            width=120, height=30, padding_left=0, padding_right=0)),
+                        TestNode('column_left_padded_0', style=Pack(
+                            width=30, height=30, padding_left=0, padding_right=0)),
+                        TestNode('column_left_padded_1', style=Pack(
+                            width=30, height=30, padding_left=30, padding_right=0)),
+                        TestNode('column_left_padded_2', style=Pack(
+                            width=30, height=30, padding_left=0, padding_right=30)),
+                        TestNode('column_left_padded_3', style=Pack(
+                            width=30, height=30, padding_left=30, padding_right=30)),
+                    ]),
+                    TestNode('center_alignment_column_box', style=Pack(direction=COLUMN, alignment=CENTER), children=[
+                        TestNode('column_center_stretched', style=Pack(
+                            width=120, height=30, padding_left=0, padding_right=0)),
+                        TestNode('column_center_padded_0', style=Pack(
+                            width=30, height=30, padding_left=0, padding_right=0)),
+                        TestNode('column_center_padded_1', style=Pack(
+                            width=30, height=30, padding_left=30, padding_right=0)),
+                        TestNode('column_center_padded_2', style=Pack(
+                            width=30, height=30, padding_left=0, padding_right=30)),
+                        TestNode('column_center_padded_3', style=Pack(
+                            width=30, height=30, padding_left=30, padding_right=30)),
+                    ]),
+                    TestNode('right_alignment_column_box', style=Pack(direction=COLUMN, alignment=RIGHT), children=[
+                        TestNode('column_right_stretched', style=Pack(
+                            width=120, height=30, padding_left=0, padding_right=0)),
+                        TestNode('column_right_padded_0', style=Pack(
+                            width=30, height=30, padding_left=0, padding_right=0)),
+                        TestNode('column_right_padded_1', style=Pack(
+                            width=30, height=30, padding_left=30, padding_right=0)),
+                        TestNode('column_right_padded_2', style=Pack(
+                            width=30, height=30, padding_left=0, padding_right=30)),
+                        TestNode('column_right_padded_3', style=Pack(
+                            width=30, height=30, padding_left=30, padding_right=30)),
+                    ]),
+                ]),
+                TestNode('spacer_after', style=Pack(width=30)),
+            ]
+        )
+
+        # Minimum size
+        root.style.layout(root, TestViewport(0, 0, dpi=96))
+        self.assertLayout(
+            root,
+            (570, 360),
+            {'origin': (0, 0), 'content': (570, 360), 'children': [
+                {'origin': (0, 0), 'content': (150, 360), 'children': [
+                    {'origin': (0, 0), 'content': (150, 120), 'children': [
+                        {'origin': (0, 0), 'content': (30, 120)},
+                        {'origin': (30, 0), 'content': (30, 30)},
+                        {'origin': (60, 30), 'content': (30, 30)},
+                        {'origin': (90, 0), 'content': (30, 30)},
+                        {'origin': (120, 30), 'content': (30, 30)},
+                    ]},
+                    {'origin': (0, 120), 'content': (150, 120), 'children': [
+                        {'origin': (0, 120), 'content': (30, 120)},
+                        {'origin': (30, 165), 'content': (30, 30)},
+                        {'origin': (60, 180), 'content': (30, 30)},
+                        {'origin': (90, 150), 'content': (30, 30)},
+                        {'origin': (120, 165), 'content': (30, 30)},
+                    ]},
+                    {'origin': (0, 240), 'content': (150, 120), 'children': [
+                        {'origin': (0, 240), 'content': (30, 120)},
+                        {'origin': (30, 330), 'content': (30, 30)},
+                        {'origin': (60, 330), 'content': (30, 30)},
+                        {'origin': (90, 300), 'content': (30, 30)},
+                        {'origin': (120, 300), 'content': (30, 30)},
+                    ]},
+                ]},
+                {'origin': (150, 0), 'content': (30, 0)},
+                {'origin': (180, 0), 'content': (360, 150), 'children': [
+                    {'origin': (180, 0), 'content': (120, 150), 'children': [
+                        {'origin': (180, 0), 'content': (120, 30)},
+                        {'origin': (180, 30), 'content': (30, 30)},
+                        {'origin': (210, 60), 'content': (30, 30)},
+                        {'origin': (180, 90), 'content': (30, 30)},
+                        {'origin': (210, 120), 'content': (30, 30)},
+                    ]},
+                    {'origin': (300, 0), 'content': (120, 150), 'children': [
+                        {'origin': (300, 0), 'content': (120, 30)},
+                        {'origin': (345, 30), 'content': (30, 30)},
+                        {'origin': (360, 60), 'content': (30, 30)},
+                        {'origin': (330, 90), 'content': (30, 30)},
+                        {'origin': (345, 120), 'content': (30, 30)},
+                    ]},
+                    {'origin': (420, 0), 'content': (120, 150), 'children': [
+                        {'origin': (420, 0), 'content': (120, 30)},
+                        {'origin': (510, 30), 'content': (30, 30)},
+                        {'origin': (510, 60), 'content': (30, 30)},
+                        {'origin': (480, 90), 'content': (30, 30)},
+                        {'origin': (480, 120), 'content': (30, 30)},
+                    ]},
+                ]},
+                {'origin': (540, 0), 'content': (30, 0)},
+            ]}
+        )
+
+        # Normal size
+        root.style.layout(root, TestViewport(640, 480, dpi=96))
+        self.assertLayout(
+            root,
+            (570, 480),
+            {'origin': (0, 0), 'content': (570, 480), 'children': [
+                {'origin': (0, 0), 'content': (150, 360), 'children': [
+                    {'origin': (0, 0), 'content': (150, 120), 'children': [
+                        {'origin': (0, 0), 'content': (30, 120)},
+                        {'origin': (30, 0), 'content': (30, 30)},
+                        {'origin': (60, 30), 'content': (30, 30)},
+                        {'origin': (90, 0), 'content': (30, 30)},
+                        {'origin': (120, 30), 'content': (30, 30)},
+                    ]},
+                    {'origin': (0, 120), 'content': (150, 120), 'children': [
+                        {'origin': (0, 120), 'content': (30, 120)},
+                        {'origin': (30, 165), 'content': (30, 30)},
+                        {'origin': (60, 180), 'content': (30, 30)},
+                        {'origin': (90, 150), 'content': (30, 30)},
+                        {'origin': (120, 165), 'content': (30, 30)},
+                    ]},
+                    {'origin': (0, 240), 'content': (150, 120), 'children': [
+                        {'origin': (0, 240), 'content': (30, 120)},
+                        {'origin': (30, 330), 'content': (30, 30)},
+                        {'origin': (60, 330), 'content': (30, 30)},
+                        {'origin': (90, 300), 'content': (30, 30)},
+                        {'origin': (120, 300), 'content': (30, 30)},
+                    ]},
+                ]},
+                {'origin': (150, 0), 'content': (30, 480)},
+                {'origin': (180, 0), 'content': (360, 150), 'children': [
+                    {'origin': (180, 0), 'content': (120, 150), 'children': [
+                        {'origin': (180, 0), 'content': (120, 30)},
+                        {'origin': (180, 30), 'content': (30, 30)},
+                        {'origin': (210, 60), 'content': (30, 30)},
+                        {'origin': (180, 90), 'content': (30, 30)},
+                        {'origin': (210, 120), 'content': (30, 30)},
+                    ]},
+                    {'origin': (300, 0), 'content': (120, 150), 'children': [
+                        {'origin': (300, 0), 'content': (120, 30)},
+                        {'origin': (345, 30), 'content': (30, 30)},
+                        {'origin': (360, 60), 'content': (30, 30)},
+                        {'origin': (330, 90), 'content': (30, 30)},
+                        {'origin': (345, 120), 'content': (30, 30)},
+                    ]},
+                    {'origin': (420, 0), 'content': (120, 150), 'children': [
+                        {'origin': (420, 0), 'content': (120, 30)},
+                        {'origin': (510, 30), 'content': (30, 30)},
+                        {'origin': (510, 60), 'content': (30, 30)},
+                        {'origin': (480, 90), 'content': (30, 30)},
+                        {'origin': (480, 120), 'content': (30, 30)},
+                    ]},
+                ]},
+                {'origin': (540, 0), 'content': (30, 480)},
+            ]}
+        )
+
+        # HiDPI Normal size
+        root.style.layout(root, TestViewport(640, 480, dpi=144))
+        self.assertLayout(
+            root,
+            (855, 540),
+            {'origin': (0, 0), 'content': (855, 540), 'children': [
+                {'origin': (0, 0), 'content': (225, 540), 'children': [
+                    {'origin': (0, 0), 'content': (225, 180), 'children': [
+                        {'origin': (0, 0), 'content': (45, 180)},
+                        {'origin': (45, 0), 'content': (45, 45)},
+                        {'origin': (90, 45), 'content': (45, 45)},
+                        {'origin': (135, 0), 'content': (45, 45)},
+                        {'origin': (180, 45), 'content': (45, 45)},
+                    ]},
+                    {'origin': (0, 180), 'content': (225, 180), 'children': [
+                        {'origin': (0, 180), 'content': (45, 180)},
+                        {'origin': (45, 247), 'content': (45, 45)},
+                        {'origin': (90, 270), 'content': (45, 45)},
+                        {'origin': (135, 225), 'content': (45, 45)},
+                        {'origin': (180, 247), 'content': (45, 45)},
+                    ]},
+                    {'origin': (0, 360), 'content': (225, 180), 'children': [
+                        {'origin': (0, 360), 'content': (45, 180)},
+                        {'origin': (45, 495), 'content': (45, 45)},
+                        {'origin': (90, 495), 'content': (45, 45)},
+                        {'origin': (135, 450), 'content': (45, 45)},
+                        {'origin': (180, 450), 'content': (45, 45)},
+                    ]},
+                ]},
+                {'origin': (225, 0), 'content': (45, 480)},
+                {'origin': (270, 0), 'content': (540, 225), 'children': [
+                    {'origin': (270, 0), 'content': (180, 225), 'children': [
+                        {'origin': (270, 0), 'content': (180, 45)},
+                        {'origin': (270, 45), 'content': (45, 45)},
+                        {'origin': (315, 90), 'content': (45, 45)},
+                        {'origin': (270, 135), 'content': (45, 45)},
+                        {'origin': (315, 180), 'content': (45, 45)},
+                    ]},
+                    {'origin': (450, 0), 'content': (180, 225), 'children': [
+                        {'origin': (450, 0), 'content': (180, 45)},
+                        {'origin': (517, 45), 'content': (45, 45)},
+                        {'origin': (540, 90), 'content': (45, 45)},
+                        {'origin': (495, 135), 'content': (45, 45)},
+                        {'origin': (517, 180), 'content': (45, 45)},
+                    ]},
+                    {'origin': (630, 0), 'content': (180, 225), 'children': [
+                        {'origin': (630, 0), 'content': (180, 45)},
+                        {'origin': (765, 45), 'content': (45, 45)},
+                        {'origin': (765, 90), 'content': (45, 45)},
+                        {'origin': (720, 135), 'content': (45, 45)},
+                        {'origin': (720, 180), 'content': (45, 45)},
+                    ]},
+                ]},
+                {'origin': (810, 0), 'content': (45, 480)},
             ]}
         )
