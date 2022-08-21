@@ -234,3 +234,8 @@ class OptionContainer(Widget):
         """
         self._on_select = wrapped_handler(self, handler)
         self._impl.set_on_select(self._on_select)
+
+    def _set_app(self, app):
+        super()._set_app(app)
+        for item in self.content:
+            item.content.app = app

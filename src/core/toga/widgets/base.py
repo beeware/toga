@@ -153,15 +153,7 @@ class Widget(Node):
 
     @app.setter
     def app(self, app):
-        # raise an error when we already have an app and attempt to override it
-        # with a different app
-        if self._app and app and self._app != app:
-            raise ValueError("Widget %s is already associated with an App" % self)
-        elif self._impl:
-            self._app = app
-            self._impl.set_app(app)
-            for child in self.children:
-                child.app = app
+        self._set_app(app)
 
     @property
     def window(self):
@@ -213,3 +205,14 @@ class Widget(Node):
 
     def _set_window(self, window):
         pass
+
+    def _set_app(self, app):
+        # raise an error when we already have an app and attempt to override it
+        # with a different app
+        if self._app and app and self._app != app:
+            raise ValueError("Widget %s is already associated with an App" % self)
+        elif self._impl:
+            self._app = app
+            self._impl.set_app(app)
+            for child in self.children:
+                child.app = app
