@@ -10,6 +10,7 @@ except ModuleNotFoundError:
     # toga_gtk is not installed in the CI environment; we need to mock it.
     toga_gtk = MagicMock()
 
+
 @patch.dict('sys.modules', toga_gtk=toga_gtk)
 class PlatformTests(unittest.TestCase):
 
