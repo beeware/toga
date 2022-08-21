@@ -109,5 +109,7 @@ class SplitContainer(Widget):
 
     def _set_app(self, app):
         super()._set_app(app)
+        if self.content is None:
+            return
         for content in self.content:
             content.app = app

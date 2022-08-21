@@ -1,3 +1,5 @@
+from unittest import mock
+
 import toga
 import toga_dummy
 from toga_dummy.utils import TestCase, TestStyle
@@ -89,3 +91,14 @@ class SplitContainerTests(TestCase):
         ]
         with self.assertRaises(ValueError):
             self.split.content = new_content
+
+    def test_set_app(self):
+        self.split.content = self.content
+        for content in self.content:
+            self.assertIsNone(content.app)
+
+        app = mock.Mock()
+        self.split.app = app
+
+        for content in self.content:
+            self.assertEqual(content.app, app)
