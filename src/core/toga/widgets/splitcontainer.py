@@ -106,3 +106,8 @@ class SplitContainer(Widget):
         self._direction = value
         self._impl.set_direction(value)
         self._impl.rehint()
+
+    def _set_app(self, app):
+        super()._set_app(app)
+        for content in self.content:
+            content.app = app
