@@ -92,7 +92,29 @@ class SplitContainerTests(TestCase):
         with self.assertRaises(ValueError):
             self.split.content = new_content
 
-    def test_set_app(self):
+    def test_set_window_without_content(self):
+        window = mock.Mock()
+        self.split.window = window
+        self.assertEqual(self.split.window, window)
+
+    def test_set_window_with_content(self):
+        self.split.content = self.content
+        for content in self.content:
+            self.assertIsNone(content.window)
+
+        window = mock.Mock()
+        self.split.window = window
+
+        self.assertEqual(self.split.window, window)
+        for content in self.content:
+            self.assertEqual(content.window, window)
+
+    def test_set_app_without_content(self):
+        app = mock.Mock()
+        self.split.app = app
+        self.assertEqual(self.split.app, app)
+
+    def test_set_app_with_content(self):
         self.split.content = self.content
         for content in self.content:
             self.assertIsNone(content.app)
@@ -100,5 +122,27 @@ class SplitContainerTests(TestCase):
         app = mock.Mock()
         self.split.app = app
 
+        self.assertEqual(self.split.app, app)
         for content in self.content:
             self.assertEqual(content.app, app)
+
+    def test_refresh_without_content(self):
+        self.split.refresh()
+        self.assertActionPerformedWith(
+            self.split, 'set bounds', x=0, y=0, width=0, height=0
+        )
+
+    def test_refresh_with_content(self):
+        for content in self.content:
+            self.assertActionNotPerformed(content, "set bound")
+
+        self.split.content = self.content
+
+        self.split.refresh()
+        self.assertActionPerformedWith(
+            self.split, 'set bounds', x=0, y=0, width=0, height=0
+        )
+        for content in self.content:
+            self.assertActionPerformedWith(
+                content, 'set bounds', x=0, y=0, width=0, height=0
+            )

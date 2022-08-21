@@ -89,7 +89,9 @@ class SplitContainer(Widget):
 
     def refresh_sublayouts(self):
         """Refresh the layout and appearance of this widget."""
-        for widget in self._content:
+        if self.content is None:
+            return
+        for widget in self.content:
             widget.refresh()
 
     @property
