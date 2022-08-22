@@ -72,9 +72,9 @@ class Window:
             else:
                 if cmd.icon is not None:
                     native_icon = cmd.icon._impl.native
-                    item = WinForms.ToolStripMenuItem(cmd.label, native_icon.ToBitmap())
+                    item = WinForms.ToolStripMenuItem(cmd.text, native_icon.ToBitmap())
                 else:
-                    item = WinForms.ToolStripMenuItem(cmd.label)
+                    item = WinForms.ToolStripMenuItem(cmd.text)
                 item.Click += cmd._impl.as_handler()
                 cmd._impl.native.append(item)
             self.toolbar_native.Items.Add(item)

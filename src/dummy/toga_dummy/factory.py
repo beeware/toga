@@ -8,6 +8,7 @@ from .paths import paths
 from . import dialogs
 
 from .widgets.activityindicator import ActivityIndicator
+from .widgets.base import Widget
 from .widgets.box import Box
 from .widgets.button import Button
 from .widgets.canvas import Canvas
@@ -78,4 +79,8 @@ __all__ = [
     'Tree',
     'WebView',
     'Window',
+
+    # Widget is also required for testing purposes
+    # Real backends shouldn't expose Widget.
+    'Widget'
 ]

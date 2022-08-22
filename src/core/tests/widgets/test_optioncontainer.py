@@ -191,3 +191,9 @@ class OptionContainerTests(TestCase):
         self.op_container.window = window
         for item in self.op_container.content:
             self.assertEqual(item._content.window, window)
+
+    def test_set_app(self):
+        app = mock.Mock()
+        self.op_container.app = app
+        for item in self.op_container.content:
+            self.assertEqual(item._content.app, app)
