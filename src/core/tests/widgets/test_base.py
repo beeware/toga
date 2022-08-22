@@ -4,6 +4,13 @@ from toga.style import Pack
 from toga_dummy.utils import TestCase
 
 
+# Create the simplest possible widget with a concrete implementation
+class Widget(toga.Widget):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._impl = self.factory.Widget(self)
+
+
 class WidgetTests(TestCase):
     def setUp(self):
         super().setUp()
@@ -11,7 +18,7 @@ class WidgetTests(TestCase):
         self.id = 'widget_id'
         self.style = Pack(padding=666)
 
-        self.widget = toga.Widget(
+        self.widget = Widget(
             id=self.id,
             style=self.style,
             factory=toga_dummy.factory
@@ -162,3 +169,68 @@ class WidgetTests(TestCase):
 
         self.widget.remove(child1, child3)
         self.assertEqual(self.widget.children, [child2])
+
+    def test_set_app(self):
+        "A widget can be assigned to an app"
+        app = toga.App("Test App", "org.beeware.test", factory=toga_dummy.factory)
+        self.widget.app = app
+
+        # The app has been assigned
+        self.assertEqual(self.widget.app, app)
+
+        # The app has been assigned to the underlying impl
+        self.assertValueSet(self.widget, 'app', app)
+
+    def test_set_app_with_children(self):
+        "A widget with children can be assigned to an app"
+        # Create 2 children to add to widget, 2 of which will be removed.
+        child1 = Widget(factory=toga_dummy.factory)
+        child2 = Widget(factory=toga_dummy.factory)
+
+        self.widget._children = []
+        self.widget.add(child1, child2)
+
+        app = toga.App("Test App", "org.beeware.test", factory=toga_dummy.factory)
+
+        self.widget.app = app
+
+        # The app has been assigned to all children
+        self.assertEqual(self.widget.app, app)
+        self.assertEqual(child1.app, app)
+        self.assertEqual(child2.app, app)
+
+        # The app has been assigned to the underlying impls
+        self.assertValueSet(self.widget, 'app', app)
+        self.assertValueSet(child1, 'app', app)
+        self.assertValueSet(child2, 'app', app)
+
+    def test_repeat_set_app(self):
+        "If a widget is already assigned to an app, doing so again raises an error"
+        app = toga.App("Test App", "org.beeware.test", factory=toga_dummy.factory)
+        self.widget.app = app
+
+        # The app has been assigned
+        self.assertEqual(self.widget.app, app)
+
+        # Assign the widget to the same app
+        app2 = toga.App("Test App", "org.beeware.test", factory=toga_dummy.factory)
+
+        with self.assertRaises(ValueError, msg="is already associated with an App"):
+            self.widget.app = app2
+
+        # The app is still assigned to the original app
+        self.assertEqual(self.widget.app, app)
+
+    def test_repeat_same_set_app(self):
+        "If a widget is already assigned to an app, re-assigning to the same app is OK"
+        app = toga.App("Test App", "org.beeware.test", factory=toga_dummy.factory)
+        self.widget.app = app
+
+        # The app has been assigned
+        self.assertEqual(self.widget.app, app)
+
+        # Assign the widget to the same app
+        self.widget.app = app
+
+        # The app is still assigned
+        self.assertEqual(self.widget.app, app)
