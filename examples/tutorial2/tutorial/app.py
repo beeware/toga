@@ -83,21 +83,21 @@ def build(app):
     things = toga.Group('Things')
     cmd0 = toga.Command(
         action0,
-        label='Action 0',
+        text='Action 0',
         tooltip='Perform action 0',
         icon=brutus_icon,
         group=things
     )
     cmd1 = toga.Command(
         action1,
-        label='Action 1',
+        text='Action 1',
         tooltip='Perform action 1',
         icon=brutus_icon,
         group=things
     )
     cmd2 = toga.Command(
         action2,
-        label='Action 2',
+        text='Action 2',
         tooltip='Perform action 2',
         icon=toga.Icon.TOGA_ICON,
         group=things
@@ -108,7 +108,7 @@ def build(app):
     # alphabetical ordering
     cmd3 = toga.Command(
         action3,
-        label='Action 3',
+        text='Action 3',
         tooltip='Perform action 3',
         shortcut=toga.Key.MOD_1 + 'k',
         icon=cricket_icon,
@@ -122,14 +122,14 @@ def build(app):
     sub_menu = toga.Group("Sub Menu", parent=toga.Group.COMMANDS, order=2)
     cmd5 = toga.Command(
         action5,
-        label='Action 5',
+        text='Action 5',
         tooltip='Perform action 5',
         order=2,
         group=sub_menu
     )
     cmd6 = toga.Command(
         action6,
-        label='Action 6',
+        text='Action 6',
         tooltip='Perform action 6',
         order=1,
         group=sub_menu
@@ -141,7 +141,7 @@ def build(app):
 
     cmd4 = toga.Command(
         action4,
-        label='Action 4',
+        text='Action 4',
         tooltip='Perform action 4',
         icon=brutus_icon,
         order=1

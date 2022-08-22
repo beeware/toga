@@ -35,6 +35,9 @@ class Widget:
         # they have been added to a container.
         self.interface.style.reapply()
 
+    def create(self):
+        pass
+
     def set_app(self, app):
         pass
 

@@ -298,7 +298,7 @@ class App:
                     action = cmd.action
 
                 item = NSMenuItem.alloc().initWithTitle(
-                    cmd.label,
+                    cmd.text,
                     action=action,
                     keyEquivalent=key,
                 )
@@ -329,9 +329,9 @@ class App:
                 parent_menu = self._submenu(group.parent, menubar)
 
                 menu_item = parent_menu.addItemWithTitle(
-                    group.label, action=None, keyEquivalent=''
+                    group.text, action=None, keyEquivalent=''
                 )
-                submenu = NSMenu.alloc().initWithTitle(group.label)
+                submenu = NSMenu.alloc().initWithTitle(group.text)
                 parent_menu.setSubmenu(submenu, forItem=menu_item)
 
             # Install the item in the group cache.
@@ -429,7 +429,7 @@ class DocumentApp(App):
         self.interface.commands.add(
             toga.Command(
                 lambda _: self.select_file(),
-                label='Open...',
+                text='Open...',
                 shortcut=toga.Key.MOD_1 + 'o',
                 group=toga.Group.FILE,
                 section=0

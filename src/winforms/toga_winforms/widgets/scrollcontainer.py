@@ -39,10 +39,6 @@ class ScrollContainer(Widget):
         self.native.VerticalScroll.Visible = value
         self.native.AutoScroll = True
 
-    def set_app(self, app):
-        if self.interface.content:
-            self.interface.content.app = app
-
     def set_window(self, window):
         if self.interface.content:
             self.interface.content.window = window
