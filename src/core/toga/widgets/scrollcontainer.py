@@ -34,7 +34,13 @@ class ScrollContainer(Widget):
         self.content = content
         self.on_scroll = on_scroll
 
+    def _set_app(self, app):
+        # Also assign the app to the content in the container
+        if self.content:
+            self.content.app = app
+
     def _set_window(self, window):
+        # Also assign the window to the content in the container
         if self._content:
             self._content.window = window
 
@@ -125,8 +131,3 @@ class ScrollContainer(Widget):
                 "Cannot set vertical position when vertical is not set."
             )
         self._impl.set_vertical_position(vertical_position)
-
-    def _set_app(self, app):
-        super()._set_app(app)
-        if self.content:
-            self.content.app = app

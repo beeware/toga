@@ -82,7 +82,14 @@ class SplitContainer(Widget):
             self._impl.add_content(position, widget._impl, flex)
             widget.refresh()
 
+    def _set_app(self, app):
+        # Also assign the app to the content in the container
+        if self.content:
+            for content in self.content:
+                content.app = app
+
     def _set_window(self, window):
+        # Also assign the window to the content in the container
         if self._content:
             for content in self._content:
                 content.window = window
@@ -108,10 +115,3 @@ class SplitContainer(Widget):
         self._direction = value
         self._impl.set_direction(value)
         self._impl.rehint()
-
-    def _set_app(self, app):
-        super()._set_app(app)
-        if self.content is None:
-            return
-        for content in self.content:
-            content.app = app

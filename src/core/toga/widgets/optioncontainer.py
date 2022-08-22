@@ -190,10 +190,15 @@ class OptionContainer(Widget):
             current_tab = current_tab.index
         self._impl.set_current_tab_index(current_tab)
 
+    def _set_app(self, app):
+        # Also assign the app to the content in the container
+        for item in self._content:
+            item._content.app = app
+
     def _set_window(self, window):
-        if self._content:
-            for content in self._content:
-                content._content.window = window
+        # Also assign the window to the content in the container
+        for item in self._content:
+            item._content.window = window
 
     def add(self, label, widget):
         """ Add a new option to the option container.
@@ -234,8 +239,3 @@ class OptionContainer(Widget):
         """
         self._on_select = wrapped_handler(self, handler)
         self._impl.set_on_select(self._on_select)
-
-    def _set_app(self, app):
-        super()._set_app(app)
-        for item in self.content:
-            item.content.app = app

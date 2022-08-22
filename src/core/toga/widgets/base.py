@@ -153,7 +153,22 @@ class Widget(Node):
 
     @app.setter
     def app(self, app):
+        # raise an error when we already have an app and attempt to override it
+        # with a different app
+        if self._app and app and self._app != app:
+            raise ValueError("Widget %s is already associated with an App" % self)
+        elif self._impl:
+            self._app = app
+            self._impl.set_app(app)
+            for child in self.children:
+                child.app = app
+
+        # Provide an extension point for widgets with
+        # more complex widget heirarchies
         self._set_app(app)
+
+    def _set_app(self, app):
+        pass
 
     @property
     def window(self):
@@ -176,7 +191,12 @@ class Widget(Node):
             for child in self._children:
                 child.window = window
 
+        # Provide an extension point for widgets with
+        # more complex widget heirarchies
         self._set_window(window)
+
+    def _set_window(self, window):
+        pass
 
     @property
     def enabled(self):
@@ -202,17 +222,3 @@ class Widget(Node):
     def focus(self):
         if self._impl is not None:
             self._impl.focus()
-
-    def _set_window(self, window):
-        pass
-
-    def _set_app(self, app):
-        # raise an error when we already have an app and attempt to override it
-        # with a different app
-        if self._app and app and self._app != app:
-            raise ValueError("Widget %s is already associated with an App" % self)
-        elif self._impl:
-            self._app = app
-            self._impl.set_app(app)
-            for child in self.children:
-                child.app = app
