@@ -16,12 +16,9 @@ class OptionContainer(Widget):
         self._items = []
         self._current_index = 0
 
-    def add_content(self, label, widget, index=None):
+    def add_content(self, label, widget, index):
         self._action('add content', label=label, widget=widget)
-        if index is None:
-            self._items.append(Option(label, widget, True))
-        else:
-            self._items.insert(index, Option(label, widget, True))
+        self._items.insert(index, Option(label, widget, True))
 
     def remove_content(self, index):
         if index == self._current_index:

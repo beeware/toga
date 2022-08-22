@@ -122,7 +122,7 @@ class OptionList:
 
         # Add the content to the implementation.
         # This will cause the native implementation to be created.
-        self.interface._impl.add_content(label, widget._impl, index=index)
+        self.interface._impl.add_content(label, widget._impl, index)
 
         # The option now exists on the implementation;
         # finalize the display properties that can't be resolved until the
