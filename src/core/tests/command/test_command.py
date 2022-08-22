@@ -105,6 +105,14 @@ class TestCommand(TestCase):
     )
     test_order_commands_by_groups = order_test(*COMMANDS_IN_ORDER)
 
+    def test_missing_argument(self):
+        "If the no text is provided for the group, an error is raised"
+        # This test is only required as part of the backwards compatibility
+        # path renaming label->text; when that shim is removed, this teset
+        # validates default Python behavior
+        with self.assertRaises(TypeError):
+            toga.Command(lambda x: print('Hello World'), factory=toga_dummy.factory)
+
     ######################################################################
     # 2022-07: Backwards compatibility
     ######################################################################

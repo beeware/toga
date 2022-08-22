@@ -149,6 +149,14 @@ class TestCommandsGroup(unittest.TestCase):
         self.assertEqual(group.parent, parent)
         self.assertEqual(group.root, root)
 
+    def test_missing_argument(self):
+        "If the no text is provided for the group, an error is raised"
+        # This test is only required as part of the backwards compatibility
+        # path renaming label->text; when that shim is removed, this teset
+        # validates default Python behavior
+        with self.assertRaises(TypeError):
+            toga.Group()
+
     ######################################################################
     # 2022-07: Backwards compatibility
     ######################################################################
