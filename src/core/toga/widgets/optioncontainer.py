@@ -212,6 +212,19 @@ class OptionContainer(Widget):
 
         self._content.append(label, widget)
 
+    def insert(self, index, label, widget):
+        """ Insert a new option at the specified index.
+
+        Args:
+            index (int): Index for the option.
+            label (str): The label for the option.
+            widget (:class:`toga.Widget`): The widget to add to the option.
+        """
+        widget.app = self.app
+        widget.window = self.window
+
+        self._content.insert(index, label, widget)
+
     def remove(self, index):
         del self._content[index]
 

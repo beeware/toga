@@ -198,7 +198,7 @@ class OptionContainerTests(TestCase):
         self.assertEqual(self.op_container.content[0].label, new_label)
 
     def test_insert_tab(self):
-        self.op_container.content.insert(0, label=self.label2, widget=self.widget2)
+        self.op_container.insert(0, label=self.label2, widget=self.widget2)
         self.assertEqual(self.op_container.content[0].label, self.label2)
 
     def test_swap_tabs(self):
