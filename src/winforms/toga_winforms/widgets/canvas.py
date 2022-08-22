@@ -160,32 +160,31 @@ class Canvas(Box):
         draw_context.last_point = (x, y)
 
     def line_to(self, x, y, draw_context, *args, **kwargs):
-        ox, oy = int(draw_context.last_point[0]), int(draw_context.last_point[1])
-        x, y = int(x), int(y)
-        draw_context.current_path.AddLine(ox, oy, x, y)
+        draw_context.current_path.AddLine(
+            float(draw_context.last_point[0]), float(draw_context.last_point[1]),
+            float(x), float(y)
+        )
         draw_context.last_point = (x, y)
 
     # Basic shapes
 
     def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y, draw_context, *args, **kwargs):
         # Workaround for Pythonnet#1833 requires an explicit cast to float
-        point1, point2, point3, point4 = (
+        draw_context.current_path.AddBezier(
             PointF(float(draw_context.last_point[0]), float(draw_context.last_point[1])),
             PointF(float(cp1x), float(cp1y)),
             PointF(float(cp2x), float(cp2y)),
-            PointF(float(x), float(y))
+            PointF(float(x), float(y)),
         )
-        draw_context.current_path.AddBezier(point1, point2, point3, point4)
         draw_context.last_point = (x, y)
 
     def quadratic_curve_to(self, cpx, cpy, x, y, draw_context, *args, **kwargs):
         # Workaround for Pythonnet#1833 requires an explicit cast to float
-        point1, point2, point3 = (
+        draw_context.current_path.AddCurve([
             PointF(float(draw_context.last_point[0]), float(draw_context.last_point[1])),
             PointF(float(cpx), float(cpy)),
-            PointF(float(x), float(y))
-        )
-        draw_context.current_path.AddCurve([point1, point2, point3])
+            PointF(float(x), float(y)),
+        ])
         draw_context.last_point = (x, y)
 
     def arc(
@@ -227,7 +226,10 @@ class Canvas(Box):
             draw_context,
             *args,
             **kwargs):
-        rect = RectangleF(float(x - radiusx), float(y - radiusy), float(2 * radiusx), float(2 * radiusy))
+        rect = RectangleF(
+            float(x - radiusx), float(y - radiusy),
+            float(2 * radiusx), float(2 * radiusy)
+        )
         draw_context.current_path.AddArc(
             rect,
             math.degrees(startangle),
