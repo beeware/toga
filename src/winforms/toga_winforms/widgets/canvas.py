@@ -141,7 +141,7 @@ class Canvas(Box):
         if line_width is not None:
             pen.Width = line_width
         if line_dash is not None:
-            pen.DashPattern = line_dash
+            pen.DashPattern = tuple(map(float, line_dash))
         return pen
 
     def create_brush(self, color):
