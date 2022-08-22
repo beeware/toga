@@ -129,7 +129,7 @@ class App:
             else:
                 submenu = self._submenu(cmd.group, menubar)
 
-                item = WinForms.ToolStripMenuItem(cmd.label)
+                item = WinForms.ToolStripMenuItem(cmd.text)
 
                 if cmd.action:
                     item.Click += cmd._impl.as_handler()
@@ -158,7 +158,7 @@ class App:
             else:
                 parent_menu = self._submenu(group.parent, menubar)
 
-                submenu = WinForms.ToolStripMenuItem(group.label)
+                submenu = WinForms.ToolStripMenuItem(group.text)
 
                 # Top level menus are added in a different way to submenus
                 if group.parent is None:
@@ -309,7 +309,7 @@ class DocumentApp(App):
         self.interface.commands.add(
             toga.Command(
                 lambda w: self.open_file,
-                label='Open...',
+                text='Open...',
                 shortcut=Key.MOD_1 + 'o',
                 group=toga.Group.FILE,
                 section=0

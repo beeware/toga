@@ -30,7 +30,7 @@ class TestCommandSet(unittest.TestCase):
         grp = toga.Group('Test group', order=10)
         cmd = toga.Command(
             lambda x: print('Hello World'),
-            label='test',
+            text='test',
             tooltip='test command',
             shortcut='t',
             icon='icons/none.png',
