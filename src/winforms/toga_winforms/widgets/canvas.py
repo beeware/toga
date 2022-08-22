@@ -51,17 +51,6 @@ class WinformContext(Context):
     def matrix(self, matrix):
         self._matrix = matrix
 
-    @property
-    def last_point(self):
-        return self._last_point
-
-    @last_point.setter
-    def last_point(self, last_point):
-        if last_point is None:
-            self._last_point = None
-            return
-        self._last_point = tuple(map(float, last_point))
-
 
 class Canvas(Box):
 
@@ -181,7 +170,7 @@ class Canvas(Box):
     def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y, draw_context, *args, **kwargs):
         # Workaround for Pythonnet#1833 requires an explicit cast to float
         point1, point2, point3, point4 = (
-            PointF(*draw_context.last_point),
+            PointF(float(draw_context.last_point[0]), float(draw_context.last_point[1])),
             PointF(float(cp1x), float(cp1y)),
             PointF(float(cp2x), float(cp2y)),
             PointF(float(x), float(y))
@@ -192,7 +181,7 @@ class Canvas(Box):
     def quadratic_curve_to(self, cpx, cpy, x, y, draw_context, *args, **kwargs):
         # Workaround for Pythonnet#1833 requires an explicit cast to float
         point1, point2, point3 = (
-            PointF(*draw_context.last_point),
+            PointF(float(draw_context.last_point[0]), float(draw_context.last_point[1])),
             PointF(float(cpx), float(cpy)),
             PointF(float(x), float(y))
         )
