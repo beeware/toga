@@ -27,7 +27,7 @@ from travertino.constants import (
 )
 from travertino.declaration import BaseStyle, Choices
 from travertino.layout import BaseBox
-from travertino.size import BaseIntrinsicSize
+from travertino.size import BaseIntrinsicSize, at_least
 
 from toga.fonts import SYSTEM_DEFAULT_FONT_SIZE, Font
 
@@ -322,14 +322,22 @@ class Pack(BaseStyle):
                 )
                 height = max(height, child_height)
 
-        # Pass 4: set vertical position of each child.
+        # Pass 4: set vertical position of each child, and extend flexible children to the full height.
         for child in node.children:
-            extra = (
-                height
-                - child.layout.content_height
-                + scale(child.style.padding_top)
-                + scale(child.style.padding_bottom)
-            )
+            if child.style.flex or type(child.intrinsic.height) is at_least:
+                child.layout.content_height = (
+                    height
+                    - scale(child.style.padding_top)
+                    - scale(child.style.padding_bottom)
+                )
+                extra = 0
+            else:
+                extra = (
+                    height
+                    - child.layout.content_height
+                    + scale(child.style.padding_top)
+                    + scale(child.style.padding_bottom)
+                )
             # self._debug("row extra height", extra)
             if self.alignment is BOTTOM:
                 child.layout.content_top = extra + scale(child.style.padding_top)
@@ -460,14 +468,22 @@ class Pack(BaseStyle):
             )
             width = max(width, child_width)
 
-        # Pass 4: set horizontal position of each child.
+        # Pass 4: set horizontal position of each child, and extend flexible children to full width.
         for child in node.children:
-            extra = (
-                width
-                - child.layout.content_width
-                + scale(child.style.padding_left)
-                + scale(child.style.padding_right)
-            )
+            if child.style.flex or type(child.intrinsic.width) is at_least:
+                child.layout.content_width = (
+                    width
+                    - scale(child.style.padding_left)
+                    - scale(child.style.padding_right)
+                )
+                extra = 0
+            else:
+                extra = (
+                    width
+                    - child.layout.content_width
+                    + scale(child.style.padding_left)
+                    + scale(child.style.padding_right)
+                )
             # self._debug("row extra width", extra)
             if self.alignment is LEFT:
                 child.layout.content_left = extra + scale(child.style.padding_left)
