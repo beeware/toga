@@ -17,7 +17,7 @@ class OptionContainer(Widget):
                 option=self.interface.content[page_num]
             )
 
-    def add_content(self, label, widget, index):
+    def add_content(self, index, label, widget):
         widget.viewport = GtkViewport(widget.native)
 
         # Add all children to the content widget.

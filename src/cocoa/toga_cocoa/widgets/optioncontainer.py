@@ -44,10 +44,11 @@ class OptionContainer(Widget):
         # Add the layout constraints
         self.add_constraints()
 
-    def add_content(self, label, widget, index):
+    def add_content(self, index, label, widget):
         """ Adds a new option to the option container.
 
         Args:
+            index: The index in the tab list where the tab should be added.
             label (str): The label for the option container
             widget: The widget or widget tree that belongs to the label.
         """

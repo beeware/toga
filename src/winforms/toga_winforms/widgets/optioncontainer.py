@@ -9,7 +9,7 @@ class OptionContainer(Widget):
         self.native = WinForms.TabControl()
         self.native.Selected += self.winforms_selected
 
-    def add_content(self, label, widget, index):
+    def add_content(self, index, label, widget):
         widget.viewport = WinFormsViewport(self.native, self)
         widget.frame = self
         # Add all children to the content widget.
