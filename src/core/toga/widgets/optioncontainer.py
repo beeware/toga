@@ -83,9 +83,10 @@ class OptionList:
         ])
         return repr_optionlist.format(self.__class__.__name__, repr_items)
 
-    def __setitem__(self, index, option):
-        self._options[index] = option
-        option._index = index
+    # def __setitem__(self, index, option):
+    #     TODO: replace tab content at the given index.
+    #     self._options[index] = option
+    #     option._index = index
 
     def __getitem__(self, index):
         return self._options[index]
