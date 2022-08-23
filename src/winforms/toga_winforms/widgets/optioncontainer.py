@@ -24,7 +24,10 @@ class OptionContainer(Widget):
         widget.AutoSize = True
 
         item.Controls.Add(widget.native)
-        self.native.TabPages.Insert(index, item)
+        if index < self.native.TabPages.Count:
+            self.native.TabPages.Insert(index, item)
+        else:
+            self.native.TabPages.Add(item)
 
     def remove_content(self, index):
         tab_page = self.native.TabPages[index]
