@@ -112,13 +112,13 @@ class OptionList:
 
     def _insert(self, index, label, widget, enabled=True):
         # Create an interface wrapper for the option.
-        option = OptionItem(self.interface, widget, index)
+        item = OptionItem(self.interface, widget, index)
 
         # Add the option to the list maintained on the interface,
         # and increment the index of all items after the one that was added.
-        self._options.insert(index, option)
-        for opt in self._options[index + 1:]:
-            opt._index += 1
+        self._options.insert(index, item)
+        for option in self._options[index + 1:]:
+            option._index += 1
 
         # Add the content to the implementation.
         # This will cause the native implementation to be created.
@@ -128,7 +128,7 @@ class OptionList:
         # finalize the display properties that can't be resolved until the
         # implementation exists.
         widget.refresh()
-        option.enabled = enabled
+        item.enabled = enabled
 
 
 class OptionContainer(Widget):
