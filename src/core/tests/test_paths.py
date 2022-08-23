@@ -26,46 +26,46 @@ class TestPaths(unittest.TestCase):
 
         self.assertEqual(
             app.paths.app,
-            Path.cwd(),
+            Path.cwd().resolve(),
         )
         self.assertEqual(
             app.paths.data,
-            Path.home() / "user_data" / "org.beeware.test-app",
+            Path.home().resolve() / "user_data" / "org.beeware.test-app",
         )
         self.assertEqual(
             app.paths.cache,
-            Path.home() / "cache" / "org.beeware.test-app",
+            Path.home().resolve() / "cache" / "org.beeware.test-app",
         )
         self.assertEqual(
             app.paths.logs,
-            Path.home() / "logs" / "org.beeware.test-app",
+            Path.home().resolve() / "logs" / "org.beeware.test-app",
         )
         self.assertEqual(
             app.paths.toga,
-            Path(toga.__file__).parent,
+            Path(toga.__file__).parent.resolve(),
         )
 
     def assert_standalone_paths(self, output):
         "Assert the paths for the standalone app are consistent"
         results = output.splitlines()
         self.assertIn(
-            f"app.paths.app={Path.cwd() / 'tests' / 'testbed'}",
+            f"app.paths.app={Path.cwd().resolve() / 'tests' / 'testbed'}",
             results,
         )
         self.assertIn(
-            f"app.paths.data={Path.home() / 'user_data' / 'org.testbed.standalone-app'}",
+            f"app.paths.data={Path.home().resolve() / 'user_data' / 'org.testbed.standalone-app'}",
             results,
         )
         self.assertIn(
-            f"app.paths.cache={Path.home() / 'cache' / 'org.testbed.standalone-app'}",
+            f"app.paths.cache={Path.home().resolve() / 'cache' / 'org.testbed.standalone-app'}",
             results,
         )
         self.assertIn(
-            f"app.paths.logs={Path.home() / 'logs' / 'org.testbed.standalone-app'}",
+            f"app.paths.logs={Path.home().resolve() / 'logs' / 'org.testbed.standalone-app'}",
             results,
         )
         self.assertIn(
-            f"app.paths.toga={Path(toga.__file__).parent}",
+            f"app.paths.toga={Path(toga.__file__).parent.resolve()}",
             results,
         )
 
@@ -103,22 +103,22 @@ class TestPaths(unittest.TestCase):
         "Assert the paths for the simple app are consistent"
         results = output.splitlines()
         self.assertIn(
-            f"app.paths.app={Path.cwd() / 'tests' / 'testbed' / 'simple'}",
+            f"app.paths.app={Path.cwd().resolve() / 'tests' / 'testbed' / 'simple'}",
             results,
         )
         self.assertIn(
-            f"app.paths.data={Path.home() / 'user_data' / 'org.testbed.simple-app'}",
+            f"app.paths.data={Path.home().resolve() / 'user_data' / 'org.testbed.simple-app'}",
             results,
         )
         self.assertIn(
-            f"app.paths.cache={Path.home() / 'cache' / 'org.testbed.simple-app'}",
+            f"app.paths.cache={Path.home().resolve() / 'cache' / 'org.testbed.simple-app'}",
             results,
         )
         self.assertIn(
-            f"app.paths.logs={Path.home() / 'logs' / 'org.testbed.simple-app'}", results
+            f"app.paths.logs={Path.home().resolve() / 'logs' / 'org.testbed.simple-app'}", results
         )
         self.assertIn(
-            f"app.paths.toga={Path(toga.__file__).parent}",
+            f"app.paths.toga={Path(toga.__file__).parent.resolve()}",
             results,
         )
 
@@ -175,19 +175,19 @@ class TestPaths(unittest.TestCase):
 
         results = output.splitlines()
         self.assertIn(
-            f"app.paths.app={Path.cwd() / 'tests' / 'testbed' / 'installed'}",
+            f"app.paths.app={Path.cwd().resolve() / 'tests' / 'testbed' / 'installed'}",
             results,
         )
         self.assertIn(
-            f"app.paths.data={Path.home() / 'user_data' / 'org.testbed.installed'}",
+            f"app.paths.data={Path.home().resolve() / 'user_data' / 'org.testbed.installed'}",
             results,
         )
         self.assertIn(
-            f"app.paths.cache={Path.home() / 'cache' / 'org.testbed.installed'}",
+            f"app.paths.cache={Path.home().resolve() / 'cache' / 'org.testbed.installed'}",
             results,
         )
         self.assertIn(
-            f"app.paths.logs={Path.home() / 'logs' / 'org.testbed.installed'}",
+            f"app.paths.logs={Path.home().resolve() / 'logs' / 'org.testbed.installed'}",
             results,
         )
-        self.assertIn(f"app.paths.toga={Path(toga.__file__).parent}", results)
+        self.assertIn(f"app.paths.toga={Path(toga.__file__).parent.resolve()}", results)
