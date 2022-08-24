@@ -112,7 +112,7 @@ class DetailedList(Widget):
     def set_on_refresh(self, handler):
         pass
 
-    def after_on_refresh(self, widget):
+    def after_on_refresh(self, widget, result):
         pass
 
     def scroll_to_row(self, row):
