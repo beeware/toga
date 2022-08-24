@@ -83,9 +83,10 @@ class OptionList:
         ])
         return repr_optionlist.format(self.__class__.__name__, repr_items)
 
-    def __setitem__(self, index, option):
-        self._options[index] = option
-        option._index = index
+    # def __setitem__(self, index, option):
+    #     TODO: replace tab content at the given index.
+    #     self._options[index] = option
+    #     option._index = index
 
     def __getitem__(self, index):
         return self._options[index]
@@ -112,23 +113,23 @@ class OptionList:
 
     def _insert(self, index, label, widget, enabled=True):
         # Create an interface wrapper for the option.
-        option = OptionItem(self.interface, widget, index)
+        item = OptionItem(self.interface, widget, index)
 
         # Add the option to the list maintained on the interface,
         # and increment the index of all items after the one that was added.
-        self._options.insert(index, option)
+        self._options.insert(index, item)
         for option in self._options[index + 1:]:
             option._index += 1
 
         # Add the content to the implementation.
         # This will cause the native implementation to be created.
-        self.interface._impl.add_content(label, widget._impl)
+        self.interface._impl.add_content(index, label, widget._impl)
 
         # The option now exists on the implementation;
         # finalize the display properties that can't be resolved until the
         # implementation exists.
         widget.refresh()
-        option.enabled = enabled
+        item.enabled = enabled
 
 
 class OptionContainer(Widget):
@@ -211,6 +212,19 @@ class OptionContainer(Widget):
         widget.window = self.window
 
         self._content.append(label, widget)
+
+    def insert(self, index, label, widget):
+        """ Insert a new option at the specified index.
+
+        Args:
+            index (int): Index for the option.
+            label (str): The label for the option.
+            widget (:class:`toga.Widget`): The widget to add to the option.
+        """
+        widget.app = self.app
+        widget.window = self.window
+
+        self._content.insert(index, label, widget)
 
     def remove(self, index):
         del self._content[index]

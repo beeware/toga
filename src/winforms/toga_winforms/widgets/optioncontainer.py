@@ -9,7 +9,7 @@ class OptionContainer(Widget):
         self.native = WinForms.TabControl()
         self.native.Selected += self.winforms_selected
 
-    def add_content(self, label, widget):
+    def add_content(self, index, label, widget):
         widget.viewport = WinFormsViewport(self.native, self)
         widget.frame = self
         # Add all children to the content widget.
@@ -24,7 +24,10 @@ class OptionContainer(Widget):
         widget.AutoSize = True
 
         item.Controls.Add(widget.native)
-        self.native.TabPages.Add(item)
+        if index < self.native.TabPages.Count:
+            self.native.TabPages.Insert(index, item)
+        else:
+            self.native.TabPages.Add(item)
 
     def remove_content(self, index):
         tab_page = self.native.TabPages[index]
