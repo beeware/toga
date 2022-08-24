@@ -50,9 +50,8 @@ class Node(Row):
 
 
 class TreeSource(Source):
-    def __init__(self, data, accessors):
+    def __init__(self, data):
         super().__init__()
-        self._accessors = accessors
         self._roots = self._create_nodes(data)
 
     ######################################################################
@@ -73,11 +72,7 @@ class TreeSource(Source):
     ######################################################################
 
     def _create_node(self, data, children=None):
-        if isinstance(data, dict):
-            node = Node(**data)
-        else:
-            node = Node(**dict(zip(self._accessors, data)))
-
+        node = Node(**data)
         node._source = self
 
         if children is not None:
@@ -117,8 +112,8 @@ class TreeSource(Source):
         self._roots = []
         self._notify('clear')
 
-    def insert(self, parent, index, *values, **named):
-        node = self._create_node(dict(zip(self._accessors, values), **named))
+    def insert(self, parent, index, **named):
+        node = self._create_node(**named)
 
         if parent is None:
             self._roots.insert(index, node)
@@ -131,11 +126,11 @@ class TreeSource(Source):
         self._notify('insert', parent=parent, index=index, item=node)
         return node
 
-    def prepend(self, parent, *values, **named):
-        return self.insert(parent, 0, *values, **named)
+    def prepend(self, parent, **named):
+        return self.insert(parent, 0, **named)
 
-    def append(self, parent, *values, **named):
-        return self.insert(parent, len(parent or self), *values, **named)
+    def append(self, parent, **named):
+        return self.insert(parent, len(parent or self), **named)
 
     def remove(self, node):
         i = self.index(node)

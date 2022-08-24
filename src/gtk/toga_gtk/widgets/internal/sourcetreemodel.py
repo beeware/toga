@@ -11,18 +11,13 @@ class SourceTreeModel(GObject.Object, Gtk.TreeModel):
     TODO: If the source is a TreeSource, it uses the Node._parent attribute.
     Maybe an method could be added (like index()) to the TreeSource to access it.
     """
-    def __init__(self, columns, is_tree):
+    def __init__(self, is_tree):
         """
         Args:
-            columns (list(dict(str, any))): the columns excluding first column which is always the row object.
-                each ``dict`` must have have:
-                 - an ``attr`` entry, with a string value naming the attribute to get from the row
-                 - a ``type`` entry, with the column type (``str``, ``Gtk.Pixbuf``, ...)
             is_tree (bool): the model must know if it's for a tree or a list to set flags
         """
         super().__init__()
         self.source = None
-        self.columns = columns
         self.is_tree = is_tree
         # by storing the row and calling index later, we can opt-in for this performance
         # boost and don't have to track iterators (we would have to if we stored indices).
@@ -120,9 +115,7 @@ class SourceTreeModel(GObject.Object, Gtk.TreeModel):
 
     def do_get_column_type(self, index_):
         """ Gtk.TreeModel """
-        if index_ == 0:
-            return object
-        return self.columns[index_ - 1]['type']
+        return object
 
     def do_get_flags(self):
         """ Gtk.TreeModel """
@@ -138,7 +131,7 @@ class SourceTreeModel(GObject.Object, Gtk.TreeModel):
 
     def do_get_n_columns(self):
         """ Gtk.TreeModel """
-        return len(self.columns) + 1
+        return 1
 
     def do_get_path(self, iter_):
         """ Gtk.TreeModel """
@@ -154,17 +147,7 @@ class SourceTreeModel(GObject.Object, Gtk.TreeModel):
         """ Gtk.TreeModel """
         if iter_ is None or iter_.stamp != self.stamp:
             return None
-        row = self._get_user_data(iter_)
-        if column == 0:
-            return row
-        if row is None:
-            return None
-
-        # workaround icon+name tuple breaking gtk tree
-        ret = getattr(row, self.columns[column - 1]['attr'])
-        if isinstance(ret, tuple):
-            ret = ret[1]
-        return ret
+        return self._get_user_data(iter_)
 
     def do_iter_children(self, parent):
         """ Gtk.TreeModel """

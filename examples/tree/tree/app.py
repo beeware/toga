@@ -60,7 +60,7 @@ class ExampleTreeApp(toga.App):
         self.label = toga.Label('Ready.', style=Pack(padding=10))
 
         self.tree = toga.Tree(
-            headings=['Year', 'Title', 'Rating', 'Genre'],
+            columns=['Year', 'Title', 'Rating', 'Genre'],
             on_select=self.on_select_handler,
             style=Pack(flex=1)
         )

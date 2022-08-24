@@ -1,30 +1,25 @@
 from toga.handlers import wrapped_handler
 from toga.sources import TreeSource
-from toga.sources.accessors import build_accessors
+from toga.sources.accessors import to_accessor
 
 from .base import Widget
+from .internal.column import Column
 
 
 class Tree(Widget):
     """Tree Widget
 
-    :param headings: The list of headings for the interface.
-    :param id:  An identifier for this widget.
+    :param columns: ``list`` of ``Column`` or ``list`` of ``str``; The list of columns
+        for the table or a list of column titles. If only column titles are given, the
+        content of the columns will be fetches by matching the column titles against
+        attributes of the data source.
     :param style: An optional style object. If no style is provided then a new
         one will be created for the widget.
     :param data: The data to display in the widget. Can be an instance of
         :class:`toga.sources.TreeSource`, a list, dict or tuple with data to
         display in the tree widget, or a class instance which implements the
-        interface of :class:`toga.sources.TreeSource`. Entries can be:
-
-          - any Python object ``value`` with a string representation. This
-            string will be shown in the widget. If ``value`` has an attribute
-            ``icon``, instance of (:class:`toga.Icon`), the icon will be shown
-            in front of the text.
-
-          - a tuple ``(icon, value)`` where again the string representation of
-            ``value`` will be used as text.
-
+        interface of :class:`toga.sources.TreeSource`. Entries can any Python object
+        ``value`` with a string representation. This string will be shown in the widget.
     :param accessors: Optional; a list of attributes to access the value in the
         columns. If not given, the headings will be taken.
     :param multiple_select: Boolean; if ``True``, allows for the selection of
@@ -38,42 +33,66 @@ class Tree(Widget):
     MIN_WIDTH = 100
     MIN_HEIGHT = 100
 
-    def __init__(self, headings, id=None, style=None, data=None, accessors=None,
+    Column = Column
+
+    def __init__(self, columns, id=None, style=None, data=None, accessors=None,
                  multiple_select=False, on_select=None, on_double_click=None, factory=None):
         super().__init__(id=id, style=style, factory=factory)
-        self.headings = headings
-        self._accessors = build_accessors(headings, accessors)
+
+        self._columns = []
+        self._accessors = accessors
+
+        for column in columns:
+            if isinstance(column, Column):
+                self._columns.append(column)
+            elif isinstance(column, str):
+                self._columns.append(
+                    Tree.Column(
+                        title=column,
+                        text_accessor=to_accessor(column),
+                        factory=factory,
+                    )
+                )
+
         self._multiple_select = multiple_select
-        self._data = None
+        self._data = TreeSource([], [])
         self._on_select = None
         self._on_double_click = None
 
         self._impl = self.factory.Tree(interface=self)
-        self.data = data
 
+        self.data = data
         self.on_select = on_select
         self.on_double_click = on_double_click
 
     @property
+    def columns(self):
+        return self._columns
+
+    @property
+    def headings(self):
+        return [col.title for col in self.columns]
+
+    @property
     def data(self):
-        '''
+        """
         :returns: The data source of the tree
         :rtype: ``dict``
-        '''
+        """
         return self._data
 
     @data.setter
     def data(self, data):
-        '''
+        """
         Set the data source of the data
 
         :param data: Data source
         :type  data: ``dict`` or ``class``
-        '''
+        """
         if data is None:
-            self._data = TreeSource(accessors=self._accessors, data=[])
+            self._data = TreeSource(data=[], accessors=[])
         elif isinstance(data, (list, tuple, dict)):
-            self._data = TreeSource(accessors=self._accessors, data=data)
+            self._data = TreeSource(data=data, accessors=self._accessors)
         else:
             self._data = data
 

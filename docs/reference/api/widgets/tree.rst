@@ -41,3 +41,4 @@ Reference
    :members:
    :undoc-members:
    :inherited-members:
+   :exclude-members: Column

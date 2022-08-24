@@ -107,8 +107,9 @@ class ExampleTableApp(toga.App):
             table_data = bee_movies * 1000
 
         self.table1 = toga.Table(
-            headings=headings,
+            columns=headings,
             data=table_data,
+            accessors=["title", "year", "rating", "genre"],
             style=Pack(
                 flex=1,
                 padding_right=5,
@@ -121,7 +122,7 @@ class ExampleTableApp(toga.App):
         )
 
         self.table2 = toga.Table(
-            headings=headings,
+            columns=headings,
             data=self.table1.data,
             multiple_select=True,
             style=Pack(flex=1, padding_left=5),
@@ -171,14 +172,12 @@ class ExampleTableApp(toga.App):
     def reduce_fontsize(self, widget):
         font_size = int(self.lbl_fontsize.text) - 1
         self.lbl_fontsize.text = str(font_size)
-        font = toga.Font("monospace", font_size, "italic")
-        self.table1._impl.set_font(font)
+        self.table1.style.font_size = font_size
 
     def increase_fontsize(self, widget):
         font_size = int(self.lbl_fontsize.text) + 1
         self.lbl_fontsize.text = str(font_size)
-        font = toga.Font("monospace", font_size, "italic")
-        self.table1._impl.set_font(font)
+        self.table1.style.font_size = font_size
 
 
 def main():
