@@ -79,9 +79,6 @@ class ExampleOptionContainerApp(toga.App):
 
         # styles
         style_flex = Pack(flex=1, padding=5)
-        style_row = Pack(direction=ROW, flex=1)
-        style_select = Pack(direction=ROW, padding_right=10)
-        style_col = Pack(direction=COLUMN, flex=1)
 
         # select
         label_select = toga.Label('Select an Option position:', style=style_flex)
@@ -111,24 +108,16 @@ class ExampleOptionContainerApp(toga.App):
         )
 
         box_select = toga.Box(
-            style=style_select,
+            style=Pack(direction=ROW, padding_right=10, width=200),
             children=[label_select, self.select_option]
         )
-        box_actions_col1 = toga.Box(
-            style=style_row,
+        box_actions_1 = toga.Box(
+            style=Pack(direction=ROW, flex=1),
             children=[btn_activate, btn_remove, btn_enabled]
         )
-        box_actions_col2 = toga.Box(
-            style=style_row,
+        box_actions_2 = toga.Box(
+            style=Pack(direction=ROW, flex=1),
             children=[self.input_change_title, btn_change_title]
-        )
-        box_actions = toga.Box(
-            style=style_col,
-            children=[box_actions_col1, box_actions_col2]
-        )
-        box_container_actions = toga.Box(
-            style=style_row,
-            children=[box_select, box_actions]
         )
 
         self.selected_label = toga.Label("")
@@ -151,7 +140,9 @@ class ExampleOptionContainerApp(toga.App):
         outer_box = toga.Box(
             children=[
                 box_general_actions,
-                box_container_actions,
+                box_select,
+                box_actions_1,
+                box_actions_2,
                 self.selected_label,
                 self.optioncontainer,
             ],
