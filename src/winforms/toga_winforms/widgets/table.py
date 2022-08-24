@@ -114,17 +114,21 @@ class Table(Widget):
         self.native.Items.Clear()
 
     def get_selection(self):
+        # First turning this to list since Pythonnet have problems iterating
+        # over it.
+        selected_indices = list(self.native.SelectedIndices)
+
         if self.interface.multiple_select:
             selected = [
                 row
                 for i, row in enumerate(self.interface.data)
-                if i in self.native.SelectedIndices
+                if i in selected_indices
             ]
             return selected
-        elif not self.native.SelectedIndices.Count:
+        elif len(selected_indices) == 0:
             return None
         else:
-            return self.interface.data[self.native.SelectedIndices[0]]
+            return self.interface.data[selected_indices[0]]
 
     def set_on_select(self, handler):
         pass
