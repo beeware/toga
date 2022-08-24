@@ -109,7 +109,7 @@ class DetailedList(Widget):
     def set_on_double_click(self, handler):
         self.interface.factory.not_implemented('Table.set_on_double_click()')
 
-    def set_on_refresh(self, on_refresh):
+    def set_on_refresh(self, handler):
         pass
 
     def after_on_refresh(self):
