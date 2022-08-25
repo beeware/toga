@@ -1,3 +1,4 @@
+import random
 from random import choice
 
 import toga
@@ -35,6 +36,18 @@ class ExampleTableApp(toga.App):
             )
         else:
             self.label_table2.text = "No row selected"
+
+    def on_double_click1(self, widget, row, **kwargs):
+        self.main_window.info_dialog(
+            title="movie selection",
+            message=self.build_double_click_message(row=row, table_index=1)
+        )
+
+    def on_double_click2(self, widget, row, **kwargs):
+        self.main_window.info_dialog(
+            title="movie selection",
+            message=self.build_double_click_message(row=row, table_index=2)
+        )
 
     # Button callback functions
     def insert_handler(self, widget, **kwargs):
@@ -118,6 +131,7 @@ class ExampleTableApp(toga.App):
             ),
             multiple_select=False,
             on_select=self.on_select_handler1,
+            on_double_click=self.on_double_click1,
         )
 
         self.table2 = toga.Table(
@@ -126,6 +140,7 @@ class ExampleTableApp(toga.App):
             multiple_select=True,
             style=Pack(flex=1, padding_left=5),
             on_select=self.on_select_handler2,
+            on_double_click=self.on_double_click2,
         )
 
         tablebox = toga.Box(children=[self.table1, self.table2], style=Pack(flex=1))
@@ -179,6 +194,14 @@ class ExampleTableApp(toga.App):
         self.lbl_fontsize.text = str(font_size)
         font = toga.Font("monospace", font_size, "italic")
         self.table1._impl.set_font(font)
+
+    @classmethod
+    def build_double_click_message(cls, row, table_index):
+        adjective = random.choice(["magnificent", "amazing", "awesome", "life-changing"])
+        return (
+            f"You selected the {adjective} {row.genre.lower()} movie "
+            f"{row.title} ({row.year}) from Table {table_index}"
+        )
 
 
 def main():
