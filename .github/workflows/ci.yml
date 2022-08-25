@@ -109,6 +109,10 @@ jobs:
       run: |
         cd src/winforms
         pytest
+    - name: Core Test
+      run: |
+        cd src/core
+        pytest
 
   macOS:
     name: macOS backend tests

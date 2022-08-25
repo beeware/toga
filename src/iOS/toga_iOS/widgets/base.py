@@ -13,6 +13,9 @@ class Widget:
         self.interface.style.reapply()
         self.set_enabled(self.interface.enabled)
 
+    def create(self):
+        pass
+
     def set_app(self, app):
         pass
 
@@ -97,12 +100,14 @@ class Widget:
     # INTERFACE
 
     def add_child(self, child):
-
         if self.viewport:
             # we are the the top level UIView
             child.container = self
         else:
             child.container = self.container
+
+    def insert_child(self, index, child):
+        self.add_child(child)
 
     def remove_child(self, child):
         child.container = None

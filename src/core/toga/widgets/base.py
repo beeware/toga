@@ -163,6 +163,13 @@ class Widget(Node):
             for child in self.children:
                 child.app = app
 
+        # Provide an extension point for widgets with
+        # more complex widget heirarchies
+        self._set_app(app)
+
+    def _set_app(self, app):
+        pass
+
     @property
     def window(self):
         """The Window to which this widget belongs.
@@ -184,7 +191,12 @@ class Widget(Node):
             for child in self._children:
                 child.window = window
 
+        # Provide an extension point for widgets with
+        # more complex widget heirarchies
         self._set_window(window)
+
+    def _set_window(self, window):
+        pass
 
     @property
     def enabled(self):
@@ -210,6 +222,3 @@ class Widget(Node):
     def focus(self):
         if self._impl is not None:
             self._impl.focus()
-
-    def _set_window(self, window):
-        pass

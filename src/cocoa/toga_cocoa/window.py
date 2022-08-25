@@ -100,9 +100,9 @@ class WindowDelegate(NSObject):
         native = NSToolbarItem.alloc().initWithItemIdentifier_(identifier)
         try:
             item = self.impl._toolbar_items[str(identifier)]
-            if item.label:
-                native.setLabel(item.label)
-                native.setPaletteLabel(item.label)
+            if item.text:
+                native.setLabel(item.text)
+                native.setPaletteLabel(item.text)
             if item.tooltip:
                 native.setToolTip(item.tooltip)
             if item.icon:

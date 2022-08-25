@@ -83,9 +83,10 @@ class OptionList:
         ])
         return repr_optionlist.format(self.__class__.__name__, repr_items)
 
-    def __setitem__(self, index, option):
-        self._options[index] = option
-        option._index = index
+    # def __setitem__(self, index, option):
+    #     TODO: replace tab content at the given index.
+    #     self._options[index] = option
+    #     option._index = index
 
     def __getitem__(self, index):
         return self._options[index]
@@ -112,23 +113,23 @@ class OptionList:
 
     def _insert(self, index, label, widget, enabled=True):
         # Create an interface wrapper for the option.
-        option = OptionItem(self.interface, widget, index)
+        item = OptionItem(self.interface, widget, index)
 
         # Add the option to the list maintained on the interface,
         # and increment the index of all items after the one that was added.
-        self._options.insert(index, option)
+        self._options.insert(index, item)
         for option in self._options[index + 1:]:
             option._index += 1
 
         # Add the content to the implementation.
         # This will cause the native implementation to be created.
-        self.interface._impl.add_content(label, widget._impl)
+        self.interface._impl.add_content(index, label, widget._impl)
 
         # The option now exists on the implementation;
         # finalize the display properties that can't be resolved until the
         # implementation exists.
         widget.refresh()
-        option.enabled = enabled
+        item.enabled = enabled
 
 
 class OptionContainer(Widget):
@@ -190,10 +191,15 @@ class OptionContainer(Widget):
             current_tab = current_tab.index
         self._impl.set_current_tab_index(current_tab)
 
+    def _set_app(self, app):
+        # Also assign the app to the content in the container
+        for item in self._content:
+            item._content.app = app
+
     def _set_window(self, window):
-        if self._content:
-            for content in self._content:
-                content._content.window = window
+        # Also assign the window to the content in the container
+        for item in self._content:
+            item._content.window = window
 
     def add(self, label, widget):
         """ Add a new option to the option container.
@@ -206,6 +212,19 @@ class OptionContainer(Widget):
         widget.window = self.window
 
         self._content.append(label, widget)
+
+    def insert(self, index, label, widget):
+        """ Insert a new option at the specified index.
+
+        Args:
+            index (int): Index for the option.
+            label (str): The label for the option.
+            widget (:class:`toga.Widget`): The widget to add to the option.
+        """
+        widget.app = self.app
+        widget.window = self.window
+
+        self._content.insert(index, label, widget)
 
     def remove(self, index):
         del self._content[index]
