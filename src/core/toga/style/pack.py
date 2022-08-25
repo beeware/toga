@@ -139,14 +139,15 @@ class Pack(BaseStyle):
             available_width = max(0, (
                 alloc_width -
                 scale(self.padding_left) -
-                scale(self.padding_right)))
+                scale(self.padding_right))
+            )
             # self._debug("INITIAL AVAILABLE WIDTH", available_width)
             if node.intrinsic.width:
                 # self._debug("INTRINSIC WIDTH", node.intrinsic.width)
                 try:
                     available_width = max(available_width, node.intrinsic.width.value)
                 except AttributeError:
-                    available_width = min(available_width, node.intrinsic.width)
+                    available_width = node.intrinsic.width
 
                 # self._debug("ADJUSTED WIDTH", available_width)
             else:
@@ -449,7 +450,7 @@ class Pack(BaseStyle):
         width = 0
         for child in node.children:
             # self._debug("START CHILD AT VERTICAL OFFSET", offset)
-            offset += child.style.padding_top
+            offset += scale(child.style.padding_top)
             child.layout.content_top = offset
             offset += child.layout.content_height + scale(child.style.padding_bottom)
             child_width = (

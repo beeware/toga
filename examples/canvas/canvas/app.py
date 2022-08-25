@@ -97,7 +97,7 @@ class ExampleCanvasApp(toga.App):
         )
         self.line_width_slider = toga.Slider(
             range=(1, 10),
-            default=1,
+            value=1,
             on_change=self.refresh_canvas
         )
         self.dash_pattern_selection = toga.Selection(
@@ -109,13 +109,13 @@ class ExampleCanvasApp(toga.App):
         self.rotation = 0
         self.scale_x_slider = toga.Slider(
             range=(0, 2),
-            default=1,
+            value=1,
             tick_count=10,
             on_change=self.refresh_canvas
         )
         self.scale_y_slider = toga.Slider(
             range=(0, 2),
-            default=1,
+            value=1,
             tick_count=10,
             on_change=self.refresh_canvas
         )
@@ -134,16 +134,16 @@ class ExampleCanvasApp(toga.App):
         self.font_size = toga.NumberInput(
             min_value=10,
             max_value=72,
-            default=20,
+            value=20,
             on_change=self.refresh_canvas
         )
         self.italic_switch = toga.Switch(
-            label="italic",
-            on_toggle=self.refresh_canvas
+            text="italic",
+            on_change=self.refresh_canvas
         )
         self.bold_switch = toga.Switch(
-            label="bold",
-            on_toggle=self.refresh_canvas
+            text="bold",
+            on_change=self.refresh_canvas
         )
         label_style = Pack(font_size=10, padding_left=5)
 
@@ -176,7 +176,7 @@ class ExampleCanvasApp(toga.App):
                         toga.Label("Y Scale:", style=label_style),
                         self.scale_y_slider,
                         toga.Button(
-                            label="Reset transform",
+                            text="Reset transform",
                             on_press=self.reset_transform
                         )
                     ]
@@ -539,12 +539,12 @@ class ExampleCanvasApp(toga.App):
         context.write_text(text, self.x_middle - width / 2, self.y_middle, font)
 
     def get_weight(self):
-        if self.bold_switch.is_on:
+        if self.bold_switch.value:
             return BOLD
         return NORMAL
 
     def get_style(self):
-        if self.italic_switch.is_on:
+        if self.italic_switch.value:
             return ITALIC
         return NORMAL
 

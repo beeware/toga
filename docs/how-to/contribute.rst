@@ -399,7 +399,7 @@ One error you might see...
 --------------------------
 
 When you're running these tests - especially when you submit your PR, and the
-tests run on our continous integration (CI) server - it's possible you might get
+tests run on our continuous integration (CI) server - it's possible you might get
 an error that reads::
 
     ModuleNotFoundError: No module named 'toga_gtk'.

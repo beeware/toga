@@ -9,10 +9,10 @@ class ExampleActivityIndicatorApp(toga.App):
 
         if self.spinner.is_running:
             self.spinner.stop()
-            self.button.label = 'Start'
+            self.button.text = 'Start'
         else:
             self.spinner.start()
-            self.button.label = 'Stop'
+            self.button.text = 'Stop'
 
     def startup(self):
         # Set up main window

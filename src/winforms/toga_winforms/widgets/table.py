@@ -28,6 +28,7 @@ class Table(Widget):
         self.native.ItemSelectionChanged += self.winforms_item_selection_changed
         self.native.RetrieveVirtualItem += self.winforms_retrieve_virtual_item
         self.native.CacheVirtualItems += self.winforms_cache_virtual_items
+        self.native.MouseDoubleClick += self.winforms_double_click
         self.native.VirtualItemsSelectionRangeChanged += self.winforms_virtual_item_selection_range_changed
 
     def winforms_virtual_item_selection_range_changed(self, sender, e):
@@ -65,6 +66,12 @@ class Table(Widget):
     def winforms_item_selection_changed(self, sender, e):
         if self.interface.on_select:
             self.interface.on_select(self.interface, row=self.interface.data[e.ItemIndex])
+
+    def winforms_double_click(self, sender, e):
+        if self.interface.on_double_click is not None:
+            hit_test = self.native.HitTest(e.X, e.Y)
+            item = hit_test.Item
+            self.interface.on_double_click(self.interface, row=self.interface.data[item.Index])
 
     def _create_column(self, heading, accessor):
         col = WinForms.ColumnHeader()
@@ -107,17 +114,21 @@ class Table(Widget):
         self.native.Items.Clear()
 
     def get_selection(self):
+        # First turning this to list since Pythonnet have problems iterating
+        # over it.
+        selected_indices = list(self.native.SelectedIndices)
+
         if self.interface.multiple_select:
             selected = [
                 row
                 for i, row in enumerate(self.interface.data)
-                if i in self.native.SelectedIndices
+                if i in selected_indices
             ]
             return selected
-        elif not self.native.SelectedIndices.Count:
+        elif len(selected_indices) == 0:
             return None
         else:
-            return self.interface.data[self.native.SelectedIndices[0]]
+            return self.interface.data[selected_indices[0]]
 
     def set_on_select(self, handler):
         pass
@@ -127,7 +138,7 @@ class Table(Widget):
             self.native.Font = font.bind(self.interface.factory).native
 
     def set_on_double_click(self, handler):
-        self.interface.factory.not_implemented('Table.set_on_double_click()')
+        pass
 
     def scroll_to_row(self, row):
         self.native.EnsureVisible(row)

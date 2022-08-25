@@ -47,8 +47,8 @@ class TextDialog(BaseDialog):
         - window: Toga Window
         - title: Title of dialog
         - message: Message of dialog
-        - positive_text: Button label where clicking it returns True (or None to skip)
-        - negative_text: Button label where clicking it returns False (or None to skip)
+        - positive_text: Button text where clicking it returns True (or None to skip)
+        - negative_text: Button text where clicking it returns False (or None to skip)
         - icon: Integer used as an Android resource ID number for dialog icon (or None to skip)
         """
         super().__init__()

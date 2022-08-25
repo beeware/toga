@@ -11,7 +11,7 @@ class ExampleFontExampleApp(toga.App):
         self.textpanel.value = ""
 
     def do_monospace_button(self, widget):
-        self.textpanel.value += widget.label + "\n"
+        self.textpanel.value += widget.text + "\n"
 
     def do_icon_button(self, widget):
         self.textpanel.value += widget.id + "\n"

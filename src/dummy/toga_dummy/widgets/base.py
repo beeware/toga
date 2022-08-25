@@ -9,6 +9,9 @@ class Widget(LoggedObject):
         self.viewport = None
         self.create()
 
+    def create(self):
+        pass
+
     def set_app(self, app):
         self._set_value('app', app)
 
@@ -51,6 +54,12 @@ class Widget(LoggedObject):
 
     def add_child(self, child):
         self._action('add child', child=child)
+
+    def insert_child(self, index, child):
+        self._action('insert child', index=index, child=child)
+
+    def remove_child(self, child):
+        self._action('remove child', child=child)
 
     @not_required_on('gtk', 'winforms', 'android', 'web')
     def add_constraints(self):

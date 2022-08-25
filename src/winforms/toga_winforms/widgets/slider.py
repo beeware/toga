@@ -23,7 +23,7 @@ class Slider(Widget):
     and maximum, we trnaslate the value linearly to the desired interval.
 
     When tick_count is not defined, we use 100 as the default number of ticks since
-    it is big enough to make the TrackBar feel continous.
+    it is big enough to make the TrackBar feel continuous.
     """
     def create(self):
         self.native = WinForms.TrackBar()

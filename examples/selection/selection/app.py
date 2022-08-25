@@ -36,9 +36,9 @@ class SelectionApp(toga.App):
                             "Selection value can be set by property setter",
                             style=label_style,
                         ),
-                        toga.Button(label="Set Carbon", on_press=self.set_carbon),
-                        toga.Button(label="Set Ytterbium", on_press=self.set_ytterbium),
-                        toga.Button(label="Set THULIUM", on_press=self.set_thulium),
+                        toga.Button(text="Set Carbon", on_press=self.set_carbon),
+                        toga.Button(text="Set Ytterbium", on_press=self.set_ytterbium),
+                        toga.Button(text="Set THULIUM", on_press=self.set_thulium),
                     ],
                 ),
                 toga.Box(
