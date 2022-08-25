@@ -113,14 +113,18 @@ class Window:
             pass
         return result
 
+    def before_set_content(self):
+        if self.interface.content:
+            self.interface.content._impl.container = None
+
     def set_content(self, widget):
-        for control in self.native.Controls:
-            self.native.Controls.Remove(control)
+        self.native.Controls.Clear()
 
         if self.toolbar_native:
             self.native.Controls.Add(self.toolbar_native)
             # Create the lookup table of menu items,
             # then force the creation of the menus.
+
         self.native.Controls.Add(widget.native)
 
         # Set the widget's viewport to be based on the window's content.
