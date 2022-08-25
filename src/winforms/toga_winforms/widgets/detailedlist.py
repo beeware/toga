@@ -15,6 +15,7 @@ class DetailedList(Widget):
         self._first_item = 0
 
         self.native.Columns.Add(self._create_column("title"))
+        self.native.Columns.Add(self._create_column("subtitle"))
 
         self.native.FullRowSelect = True
         self.native.DoubleBuffered = True
@@ -127,4 +128,6 @@ class DetailedList(Widget):
         image_index = self._list_index_to_image_index.get(index)
         if image_index is not None:
             item.ImageIndex = image_index
+        if row.subtitle is not None:
+            item.SubItems.Add(row.subtitle)
         return item
