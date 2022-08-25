@@ -30,12 +30,14 @@ class Widget:
     @container.setter
     def container(self, container):
         if self.container:
-            # If widget already has a container, first set to None,
-            # removing self from the container.native
-            self._container.native.Controls.Remove(self.native)
-            self._container = None
-        if container is not None:
-            # If the new container is not None, setting it.
+            if container:
+                raise RuntimeError('Already have a container')
+            else:
+                # container is set to None, removing self from the container.native
+                self._container.native.Controls.Remove(self.native)
+                self._container = None
+        elif container:
+            # setting container, adding self to container.native
             self._container = container
             self._container.native.Controls.Add(self.native)
             self.native.BringToFront()

@@ -114,8 +114,8 @@ class Window:
         return result
 
     def set_content(self, widget):
-        # Make sure to clear all controls first
-        self.native.Controls.Clear()
+        for control in self.native.Controls:
+            self.native.Controls.Remove(control)
 
         if self.toolbar_native:
             self.native.Controls.Add(self.toolbar_native)
