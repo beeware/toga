@@ -2,7 +2,7 @@
 requires = ["briefcase"]
 
 [tool.briefcase]
-project_name = "Demo One Window"
+project_name = "Demo NumberInput"
 bundle = "org.beeware"
 version = "0.3.0.dev37"
 url = "https://beeware.org"
@@ -10,39 +10,39 @@ license = "BSD license"
 author = 'Tiberius Yak'
 author_email = "tiberius@beeware.org"
 
-[tool.briefcase.app.one_window]
-formal_name = "Demo One Window"
+[tool.briefcase.app.numberinput]
+formal_name = "Demo NumberInput"
 description = "A testing app"
-sources = ['one_window']
+sources = ['numberinput']
 requires = [
     '../../src/core',
 ]
 
 
-[tool.briefcase.app.one_window.macOS]
+[tool.briefcase.app.numberinput.macOS]
 requires = [
     '../../src/cocoa',
     'std-nslog>=1.0.0',
 ]
 
-[tool.briefcase.app.one_window.linux]
+[tool.briefcase.app.numberinput.linux]
 requires = [
     '../../src/gtk',
 ]
 
-[tool.briefcase.app.one_window.windows]
+[tool.briefcase.app.numberinput.windows]
 requires = [
     '../../src/winforms',
 ]
 
 # Mobile deployments
-[tool.briefcase.app.one_window.iOS]
+[tool.briefcase.app.numberinput.iOS]
 requires = [
     '../../src/iOS',
     'std-nslog>=1.0.0',
 ]
 
-[tool.briefcase.app.one_window.android]
+[tool.briefcase.app.numberinput.android]
 requires = [
     '../../src/android',
 ]
