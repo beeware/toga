@@ -1,17 +1,16 @@
 from unittest import mock
 
 import toga
-import toga_dummy
 from toga_dummy.utils import TestCase, TestStyle
 
 
 class SplitContainerTests(TestCase):
     def setUp(self):
         self.content = [
-            toga.Box(style=TestStyle(), factory=toga_dummy.factory),
-            toga.Box(style=TestStyle(), factory=toga_dummy.factory)
+            toga.Box(style=TestStyle()),
+            toga.Box(style=TestStyle())
         ]
-        self.split = toga.SplitContainer(style=TestStyle(), factory=toga_dummy.factory)
+        self.split = toga.SplitContainer(style=TestStyle())
 
     def test_widget_created(self):
         self.assertEqual(self.split._impl.interface, self.split)
@@ -19,23 +18,23 @@ class SplitContainerTests(TestCase):
 
     def test_setting_content_valid_input(self):
         new_content = [
-            toga.Box(style=TestStyle(), factory=toga_dummy.factory),
-            toga.Box(style=TestStyle(), factory=toga_dummy.factory)
+            toga.Box(style=TestStyle()),
+            toga.Box(style=TestStyle())
         ]
         self.split.content = new_content
         self.assertEqual(self.split.content, new_content)
 
     def test_setting_content_false_input(self):
         with self.assertRaises(Exception):
-            self.split.content = toga.Box(factory=toga_dummy.factory)
+            self.split.content = toga.Box()
 
         with self.assertRaises(ValueError):
-            self.split.content = [toga.Box(factory=toga_dummy.factory)]
+            self.split.content = [toga.Box()]
 
     def test_setting_content_invokes_impl_method(self):
         new_content = [
-            toga.Box(style=TestStyle(), factory=toga_dummy.factory),
-            toga.Box(style=TestStyle(), factory=toga_dummy.factory)
+            toga.Box(style=TestStyle()),
+            toga.Box(style=TestStyle())
         ]
         self.split.content = new_content
         self.assertActionPerformedWith(self.split, 'add content', position=0, widget=new_content[0]._impl)
@@ -54,8 +53,8 @@ class SplitContainerTests(TestCase):
 
     def test_setting_content_valid_input_with_tuple_of2(self):
         new_content = [
-            (toga.Box(style=TestStyle(), factory=toga_dummy.factory), 1.2),
-            (toga.Box(style=TestStyle(), factory=toga_dummy.factory), 2.5),
+            (toga.Box(style=TestStyle()), 1.2),
+            (toga.Box(style=TestStyle()), 2.5),
         ]
         self.split.content = new_content
         self.assertEqual(self.split._weight[0], 1.2)
@@ -63,8 +62,8 @@ class SplitContainerTests(TestCase):
 
     def test_setting_content_valid_input_with_tuple_of3(self):
         new_content = [
-            (toga.Box(style=TestStyle(), factory=toga_dummy.factory), 1.2),
-            (toga.Box(style=TestStyle(), factory=toga_dummy.factory), 2.5, False),
+            (toga.Box(style=TestStyle()), 1.2),
+            (toga.Box(style=TestStyle()), 2.5, False),
         ]
         self.split.content = new_content
         self.assertEqual(self.split._weight[0], 1.2)
@@ -86,8 +85,8 @@ class SplitContainerTests(TestCase):
 
     def test_setting_content_valid_input_with_tuple_of_more3(self):
         new_content = [
-            (toga.Box(style=TestStyle(), factory=toga_dummy.factory), 1.2, True, True),
-            (toga.Box(style=TestStyle(), factory=toga_dummy.factory), 2.5, False, True),
+            (toga.Box(style=TestStyle()), 1.2, True, True),
+            (toga.Box(style=TestStyle()), 2.5, False, True),
         ]
         with self.assertRaises(ValueError):
             self.split.content = new_content

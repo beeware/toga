@@ -1,7 +1,6 @@
 from unittest import mock
 
 import toga
-import toga_dummy
 from toga_dummy.utils import TestCase
 
 
@@ -14,7 +13,6 @@ class MultilineTextInputTests(TestCase):
         self.multiline = toga.MultilineTextInput(
             value=self.value,
             on_change=self.on_change,
-            factory=toga_dummy.factory,
         )
 
     def test_widget_created(self):
@@ -44,7 +42,6 @@ class MultilineTextInputTests(TestCase):
             my_text_input = toga.MultilineTextInput(
                 initial=self.value,
                 on_change=self.on_change,
-                factory=toga_dummy.factory
             )
         self.assertEqual(my_text_input.value, self.value)
 
@@ -54,7 +51,6 @@ class MultilineTextInputTests(TestCase):
                 initial=self.value,
                 value=self.value,
                 on_change=self.on_change,
-                factory=toga_dummy.factory
             )
 
     ######################################################################

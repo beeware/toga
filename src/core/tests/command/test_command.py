@@ -1,5 +1,4 @@
 import toga
-import toga_dummy
 from tests.utils import order_test
 
 from tests.command.constants import PARENT_GROUP1, COMMANDS_IN_ORDER
@@ -8,15 +7,15 @@ from toga_dummy.utils import TestCase
 
 class TestCommand(TestCase):
     def setUp(self):
+        super().setUp()
         # We need to define a test app to instantiate paths.
         self.app = toga.App(
             formal_name='Test App',
             app_id='org.beeware.test-app',
-            factory=toga_dummy.factory,
         )
 
     def test_command_init_defaults(self):
-        cmd = toga.Command(lambda x: print('Hello World'), 'test', factory=toga_dummy.factory)
+        cmd = toga.Command(lambda x: print('Hello World'), 'test')
         self.assertEqual(cmd.text, 'test')
         self.assertEqual(cmd.shortcut, None)
         self.assertEqual(cmd.tooltip, None)
@@ -37,7 +36,6 @@ class TestCommand(TestCase):
             group=grp,
             section=1,
             order=1,
-            factory=toga_dummy.factory
         )
         self.assertEqual(cmd.text, 'test')
         self.assertEqual(cmd.shortcut, 't')
@@ -63,9 +61,8 @@ class TestCommand(TestCase):
             group=grp,
             section=1,
             order=1,
-            factory=toga_dummy.factory
         )
-        retur_val = cmd.bind(factory=toga_dummy.factory)
+        retur_val = cmd.bind(factory=self.app.factory)
         self.assertEqual(retur_val, cmd._impl)
 
     def test_command_enabler(self):
@@ -79,9 +76,8 @@ class TestCommand(TestCase):
             group=grp,
             section=1,
             order=1,
-            factory=toga_dummy.factory,
         )
-        cmd.bind(toga_dummy.factory)
+        cmd.bind(self.app.factory)
         cmd.enabled = False
         self.assertActionPerformedWith(cmd, 'set enabled', value=False)
         cmd.enabled = True
@@ -111,14 +107,14 @@ class TestCommand(TestCase):
         # path renaming label->text; when that shim is removed, this teset
         # validates default Python behavior
         with self.assertRaises(TypeError):
-            toga.Command(lambda x: print('Hello World'), factory=toga_dummy.factory)
+            toga.Command(lambda x: print('Hello World'))
 
     ######################################################################
     # 2022-07: Backwards compatibility
     ######################################################################
 
     def test_label_deprecated(self):
-        cmd = toga.Command(lambda x: print('Hello World'), label='test', factory=toga_dummy.factory)
+        cmd = toga.Command(lambda x: print('Hello World'), label='test')
         new_text = 'New Text'
         with self.assertWarns(DeprecationWarning):
             cmd.label = new_text
@@ -132,7 +128,6 @@ class TestCommand(TestCase):
             toga.Command(
                 lambda x: print('Hello World'),
                 label='test',
-                factory=toga_dummy.factory
             )
 
         # can't specify both label *and* text
@@ -141,7 +136,6 @@ class TestCommand(TestCase):
                 lambda x: print('Hello World'),
                 label='test',
                 text='test',
-                factory=toga_dummy.factory
             )
 
     ######################################################################

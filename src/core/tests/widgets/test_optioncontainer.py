@@ -1,7 +1,6 @@
 from unittest import mock
 
 import toga
-import toga_dummy
 from toga_dummy.utils import TestCase, TestStyle
 
 
@@ -12,16 +11,11 @@ class OptionContainerTests(TestCase):
         self.on_select = mock.Mock()
         self.op_container = toga.OptionContainer(
             style=TestStyle(),
-            factory=toga_dummy.factory,
             on_select=self.on_select
         )
-        self.widget = toga.Box(style=TestStyle(), factory=toga_dummy.factory)
-        self.label2, self.widget2 = "Widget 2", toga.Box(
-            style=TestStyle(), factory=toga_dummy.factory
-        )
-        self.label3, self.widget3 = "Widget 3", toga.Box(
-            style=TestStyle(), factory=toga_dummy.factory
-        )
+        self.widget = toga.Box(style=TestStyle())
+        self.label2, self.widget2 = "Widget 2", toga.Box(style=TestStyle())
+        self.label3, self.widget3 = "Widget 3", toga.Box(style=TestStyle())
         self.label = 'New Container'
         self.op_container.add(self.label, self.widget)
 
@@ -174,7 +168,6 @@ class OptionContainerTests(TestCase):
     def test_set_content_in_constructor(self):
         new_container = toga.OptionContainer(
             style=TestStyle(),
-            factory=toga_dummy.factory,
             content=[
                 (self.label, self.widget),
                 (self.label2, self.widget2),

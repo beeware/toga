@@ -1,7 +1,6 @@
 from unittest.mock import MagicMock, patch
 
 import toga
-import toga_dummy
 from toga_dummy.utils import TestCase
 
 
@@ -25,7 +24,6 @@ class AppTests(TestCase):
             formal_name=self.name,
             app_id=self.app_id,
             startup=test_startup_function,
-            factory=toga_dummy.factory,
             id=self.id
         )
 
@@ -109,7 +107,7 @@ class AppTests(TestCase):
         self.assertFalse(self.app.is_full_screen)
 
     def test_add_window(self):
-        test_window = toga.Window(factory=toga_dummy.factory)
+        test_window = toga.Window()
 
         self.assertEqual(len(self.app.windows), 0)
         self.app.windows += test_window
@@ -123,7 +121,7 @@ class AppTests(TestCase):
             self.app.windows += not_a_window
 
     def test_remove_window(self):
-        test_window = toga.Window(factory=toga_dummy.factory)
+        test_window = toga.Window()
         self.app.windows += test_window
         self.assertEqual(len(self.app.windows), 1)
         self.app.windows -= test_window
@@ -133,21 +131,21 @@ class AppTests(TestCase):
         with self.assertRaises(TypeError):
             self.app.windows -= not_a_window
 
-        test_window_not_in_app = toga.Window(factory=toga_dummy.factory)
+        test_window_not_in_app = toga.Window()
         with self.assertRaises(AttributeError):
             self.app.windows -= test_window_not_in_app
 
     def test_app_contains_window(self):
-        test_window = toga.Window(factory=toga_dummy.factory)
+        test_window = toga.Window()
         self.assertFalse(test_window in self.app.windows)
         self.app.windows += test_window
         self.assertTrue(test_window in self.app.windows)
 
     def test_window_iteration(self):
         test_windows = [
-            toga.Window(id=1, factory=toga_dummy.factory),
-            toga.Window(id=2, factory=toga_dummy.factory),
-            toga.Window(id=3, factory=toga_dummy.factory),
+            toga.Window(id=1),
+            toga.Window(id=2),
+            toga.Window(id=3),
         ]
         for window in test_windows:
             self.app.windows += window
@@ -178,7 +176,6 @@ class DocumentAppTests(TestCase):
         self.app = toga.DocumentApp(
             self.name,
             self.app_id,
-            factory=toga_dummy.factory,
             id=self.id
         )
 

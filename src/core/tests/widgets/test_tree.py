@@ -1,5 +1,4 @@
 import toga
-import toga_dummy
 from toga.sources import TreeSource
 from toga_dummy.utils import TestCase
 
@@ -14,7 +13,6 @@ class TreeTests(TestCase):
         self.tree = toga.Tree(
             headings=self.headings,
             data=self.data,
-            factory=toga_dummy.factory
         )
 
     def test_widget_created(self):
@@ -76,16 +74,18 @@ class TreeTests(TestCase):
         self.headings = ['Heading {}'.format(x) for x in range(3)]
 
         self.data = None
-        self.tree = toga.Tree(headings=self.headings,
-                              data=self.data,
-                              multiple_select=True,
-                              factory=toga_dummy.factory)
+        self.tree = toga.Tree(
+            headings=self.headings,
+            data=self.data,
+            multiple_select=True,
+        )
 
         self.assertEqual(self.tree.multiple_select, True)
 
-        self.tree = toga.Tree(headings=self.headings,
-                              data=self.data,
-                              multiple_select=False,
-                              factory=toga_dummy.factory)
+        self.tree = toga.Tree(
+            headings=self.headings,
+            data=self.data,
+            multiple_select=False,
+        )
 
         self.assertEqual(self.tree.multiple_select, False)

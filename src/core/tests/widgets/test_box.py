@@ -1,15 +1,14 @@
 from unittest.mock import patch
 
 import toga
-import toga_dummy
 from toga_dummy.utils import TestCase
 
 
 class BoxTests(TestCase):
     def setUp(self):
         super().setUp()
-        self.children = [toga.Widget(factory=toga_dummy.factory)]
-        self.box = toga.Box(children=self.children, factory=toga_dummy.factory)
+        self.children = [toga.Widget()]
+        self.box = toga.Box(children=self.children)
 
     def test_widget_created(self):
         self.assertEqual(self.box._impl.interface, self.box)

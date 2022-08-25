@@ -2,7 +2,6 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import toga
-import toga_dummy
 from toga.command import CommandSet
 from toga_dummy.utils import TestCase
 
@@ -10,8 +9,8 @@ from toga_dummy.utils import TestCase
 class TestWindow(TestCase):
     def setUp(self):
         super().setUp()
-        self.window = toga.Window(factory=toga_dummy.factory)
-        self.app = toga.App("test_name", "id.app", factory=toga_dummy.factory)
+        self.window = toga.Window()
+        self.app = toga.App("test_name", "id.app")
 
     def test_raises_error_when_app_not_set(self):
         self.app = None
@@ -20,7 +19,7 @@ class TestWindow(TestCase):
 
     def test_widget_created(self):
         self.assertIsNotNone(self.window.id)
-        new_app = toga.App("error_name", "id.error", factory=toga_dummy.factory)
+        new_app = toga.App("error_name", "id.error")
         self.window.app = self.app
         with self.assertRaises(Exception):
             self.window.app = new_app
@@ -55,7 +54,7 @@ class TestWindow(TestCase):
 
     def test_size(self):
         # Add some content
-        mock_content = MagicMock(toga.Box(factory=toga_dummy.factory))
+        mock_content = MagicMock(toga.Box())
         self.window.content = mock_content
 
         # Confirm defaults
@@ -115,7 +114,7 @@ class TestWindow(TestCase):
         def callback(window, **extra):
             return "called {} with {}".format(type(window), extra)
 
-        window = toga.Window(factory=toga_dummy.factory, on_close=callback)
+        window = toga.Window(on_close=callback)
         self.app.windows += window
 
         self.assertEqual(window.on_close._raw, callback)

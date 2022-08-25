@@ -1,6 +1,5 @@
 from unittest import mock
 import toga
-import toga_dummy
 from toga_dummy.utils import TestCase, TestStyle
 
 
@@ -9,9 +8,7 @@ class ScrollContainerTests(TestCase):
         super().setUp()
 
         self.on_scroll = mock.Mock()
-        self.sc = toga.ScrollContainer(
-            style=TestStyle(), factory=toga_dummy.factory, on_scroll=self.on_scroll
-        )
+        self.sc = toga.ScrollContainer(style=TestStyle(), on_scroll=self.on_scroll)
 
     def test_widget_created(self):
         self.assertEqual(self.sc._impl.interface, self.sc)
@@ -44,7 +41,7 @@ class ScrollContainerTests(TestCase):
             self.sc.content, None, 'The default value of content should be None'
         )
 
-        new_content = toga.Box(style=TestStyle(), factory=toga_dummy.factory)
+        new_content = toga.Box(style=TestStyle())
         self.sc.content = new_content
         self.assertEqual(self.sc.content, new_content)
         self.assertEqual(self.sc._content, new_content)
@@ -90,7 +87,7 @@ class ScrollContainerTests(TestCase):
 
     def test_set_app(self):
 
-        new_content = toga.Box(style=TestStyle(), factory=toga_dummy.factory)
+        new_content = toga.Box(style=TestStyle())
         self.sc.content = new_content
         self.assertIsNone(new_content.app)
 

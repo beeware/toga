@@ -1,5 +1,4 @@
 import toga
-import toga_dummy
 from toga_dummy.utils import TestCase
 
 from ..utils import async_test
@@ -15,10 +14,11 @@ class WebViewTests(TestCase):
             pass
 
         self.on_key_down = callback
-        self.web_view = toga.WebView(url=self.url,
-                                     on_key_down=self.on_key_down,
-                                     factory=toga_dummy.factory,
-                                     user_agent='DUMMY AGENT')
+        self.web_view = toga.WebView(
+            url=self.url,
+            on_key_down=self.on_key_down,
+            user_agent='DUMMY AGENT'
+        )
 
     def test_widget_created(self):
         self.assertEqual(self.web_view._impl.interface, self.web_view)

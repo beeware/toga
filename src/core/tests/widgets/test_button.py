@@ -1,5 +1,4 @@
 import toga
-import toga_dummy
 from toga_dummy.utils import TestCase
 
 
@@ -9,7 +8,7 @@ class ButtonTests(TestCase):
 
         # Create a button with the dummy factory
         self.initial_text = 'Test Button'
-        self.btn = toga.Button(self.initial_text, factory=toga_dummy.factory)
+        self.btn = toga.Button(self.initial_text)
 
     def test_widget_created(self):
         self.assertEqual(self.btn._impl.interface, self.btn)
@@ -64,7 +63,6 @@ class ButtonTests(TestCase):
         with self.assertWarns(DeprecationWarning):
             toga.Button(
                 label='Test Button',
-                factory=toga_dummy.factory
             )
 
         # can't specify both label *and* text
@@ -72,13 +70,11 @@ class ButtonTests(TestCase):
             toga.Button(
                 label='Test Button',
                 text='Test Button',
-                factory=toga_dummy.factory
             )
 
         # label/text is mandatory
         with self.assertRaises(TypeError):
             toga.Button(
-                factory=toga_dummy.factory
             )
 
     ######################################################################

@@ -1,12 +1,11 @@
 import toga
-import toga_dummy
 from toga_dummy.utils import TestCase
 
 
 class ActivityIndicatorTests(TestCase):
     def setUp(self):
         super().setUp()
-        self.activityindicator = toga.ActivityIndicator(factory=toga_dummy.factory)
+        self.activityindicator = toga.ActivityIndicator()
 
     def test_widget_created(self):
         self.assertEqual(self.activityindicator._impl.interface, self.activityindicator)
@@ -45,7 +44,7 @@ class ActivityIndicatorTests(TestCase):
 
     def test_already_running(self):
         # Creating a new progress bar with running=True so it is already running
-        self.activityindicator = toga.ActivityIndicator(factory=toga_dummy.factory, running=True)
+        self.activityindicator = toga.ActivityIndicator(running=True)
 
         # Asserting that start() function is invoked on the underlying widget
         self.assertActionPerformed(self.activityindicator, 'start ActivityIndicator')

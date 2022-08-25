@@ -1,5 +1,4 @@
 import toga
-import toga_dummy
 from toga_dummy.utils import TestCase
 
 
@@ -20,7 +19,6 @@ class SwitchTests(TestCase):
             on_change=self.on_change,
             value=self.value,
             enabled=self.enabled,
-            factory=toga_dummy.factory
         )
 
     def test_widget_created(self):
@@ -82,11 +80,11 @@ class SwitchTests(TestCase):
     def test_no_args(self):
         "A text label must be provided"
         with self.assertRaises(TypeError):
-            toga.Switch(factory=toga_dummy.factory)
+            toga.Switch()
 
     def test_default_value(self):
         "The switch value defaults to False"
-        switch = toga.Switch("My Switch", factory=toga_dummy.factory)
+        switch = toga.Switch("My Switch")
         self.assertEqual(switch.value, False)
 
     ######################################################################
@@ -132,7 +130,6 @@ class SwitchTests(TestCase):
                 on_change=self.on_change,
                 value=self.value,
                 enabled=self.enabled,
-                factory=toga_dummy.factory
             )
 
         # can't specify both label *and* text
@@ -143,7 +140,6 @@ class SwitchTests(TestCase):
                 on_change=self.on_change,
                 value=self.value,
                 enabled=self.enabled,
-                factory=toga_dummy.factory
             )
 
         # on_toggle is deprecated
@@ -153,7 +149,6 @@ class SwitchTests(TestCase):
                 on_toggle=self.on_change,
                 value=self.value,
                 enabled=self.enabled,
-                factory=toga_dummy.factory
             )
 
         # can't specify both on_toggle *and* on_change
@@ -164,7 +159,6 @@ class SwitchTests(TestCase):
                 on_toggle=self.on_change,
                 value=self.value,
                 enabled=self.enabled,
-                factory=toga_dummy.factory
             )
 
         # is_on is deprecated
@@ -174,7 +168,6 @@ class SwitchTests(TestCase):
                 on_change=self.on_change,
                 is_on=self.value,
                 enabled=self.enabled,
-                factory=toga_dummy.factory
             )
 
         # If is_on and value are both specified, warn about is_on;
@@ -185,7 +178,6 @@ class SwitchTests(TestCase):
                 value=self.value,
                 is_on=self.value,
                 enabled=self.enabled,
-                factory=toga_dummy.factory
             )
 
     ######################################################################

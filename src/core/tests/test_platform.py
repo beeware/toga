@@ -11,7 +11,6 @@ try:
 except ImportError:
     from importlib.metadata import EntryPoint
 
-# import toga.platform
 from toga.platform import current_platform, get_platform_factory
 import toga_dummy
 

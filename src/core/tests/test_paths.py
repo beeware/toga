@@ -4,7 +4,6 @@ import sys
 from pathlib import Path
 
 import toga
-import toga_dummy
 
 
 class TestPaths(unittest.TestCase):
@@ -21,7 +20,6 @@ class TestPaths(unittest.TestCase):
         app = toga.App(
             formal_name="Test App",
             app_id="org.beeware.test-app",
-            factory=toga_dummy.factory,
         )
 
         self.assertEqual(
