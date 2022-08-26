@@ -232,26 +232,67 @@ class OptionContainerTests(TestCase):
     def test_append_tab_deprecated(self):
         # label is a deprecated argument
         with self.assertWarns(DeprecationWarning):
-            self.op_container._content.append(label=self.text2, widget=self.widget2)
+            self.op_container.content.append(label=self.text2, widget=self.widget2)
         self.assertEqual(self.op_container.content[1].text, self.text2)
 
         # can't specify both label *and* text
         with self.assertRaises(ValueError):
-            self.op_container._content.append(text=self.text3, widget=self.widget3, label=self.text3)
+            self.op_container.content.append(text=self.text3, widget=self.widget3, label=self.text3)
 
     def test_insert_tab_deprecated(self):
         # label is a deprecated argument
         with self.assertWarns(DeprecationWarning):
-            self.op_container._content.insert(1, label=self.text2, widget=self.widget2)
+            self.op_container.content.insert(1, label=self.text2, widget=self.widget2)
         self.assertEqual(self.op_container.content[1].text, self.text2)
 
         # can't specify both label *and* text
         with self.assertRaises(ValueError):
-            self.op_container._content.insert(1, text=self.text3, widget=self.widget3, label=self.text3)
+            self.op_container.content.insert(1, text=self.text3, widget=self.widget3, label=self.text3)
 
-    # OptionList.append
-    # OptionList.insert
-    # OptionContainer.add (-> OptionList.append)
+    def test_add_mandatory_parameters(self):
+        my_op_container = toga.OptionContainer(
+            style=TestStyle(),
+            factory=toga_dummy.factory,
+            on_select=self.on_select
+        )
+
+        # text and widget parameters are mandatory
+        with self.assertRaises(TypeError):
+            my_op_container.add()
+        with self.assertRaises(TypeError):
+            my_op_container.add(self.text)
+        with self.assertRaises(TypeError):
+            my_op_container.add(widget=self.widget)
+
+    def test_append_mandatory_parameters(self):
+        my_op_container = toga.OptionContainer(
+            style=TestStyle(),
+            factory=toga_dummy.factory,
+            on_select=self.on_select
+        )
+
+        # text and widget parameters are mandatory
+        with self.assertRaises(TypeError):
+            my_op_container.content.append()
+        with self.assertRaises(TypeError):
+            my_op_container.content.append(self.text)
+        with self.assertRaises(TypeError):
+            my_op_container.content.append(widget=self.widget)
+
+    def test_insert_mandatory_parameters(self):
+        my_op_container = toga.OptionContainer(
+            style=TestStyle(),
+            factory=toga_dummy.factory,
+            on_select=self.on_select
+        )
+
+        # text and widget parameters are mandatory
+        with self.assertRaises(TypeError):
+            my_op_container.content.insert(0)
+        with self.assertRaises(TypeError):
+            my_op_container.content.insert(0, self.text)
+        with self.assertRaises(TypeError):
+            my_op_container.content.insert(0, widget=self.widget)
 
     ######################################################################
     # End backwards compatibility.

@@ -157,6 +157,7 @@ class OptionList:
         ##################################################################
         # When deleting this block, also delete the NOT_PROVIDED
         # placeholder, and replace it's usage in default values.
+        missing_arguments = []
 
         # label replaced with text
         if label is not None:
@@ -171,13 +172,23 @@ class OptionList:
                 )
                 text = label
         elif text is NOT_PROVIDED:
-            # This would be raised by Python itself; however, we need to use a placeholder
-            # value as part of the migration from text->value.
-            raise TypeError("OptionContainer.__init__ missing 1 required positional argument: 'text'")
+            missing_arguments.append('text')
 
         if widget is NOT_PROVIDED:
-            raise ValueError(
-                "Please specify a value for `widget`"
+            missing_arguments.append('widget')
+
+        # This would be raised by Python itself; however, we need to use a placeholder
+        # value as part of the migration from text->value.
+        if len(missing_arguments) == 1:
+            raise TypeError(
+                "OptionList.append missing 1 required positional argument: '{}'".format(missing_arguments[0])
+            )
+        elif len(missing_arguments) > 1:
+            raise TypeError(
+                "OptionList.append missing {} required positional arguments: {}".format(
+                    len(missing_arguments),
+                    ' and '.join(["'{}'".format(name) for name in missing_arguments])
+                )
             )
 
         ##################################################################
@@ -203,6 +214,7 @@ class OptionList:
         ##################################################################
         # When deleting this block, also delete the NOT_PROVIDED
         # placeholder, and replace it's usage in default values.
+        missing_arguments = []
 
         # label replaced with text
         if label is not None:
@@ -217,13 +229,23 @@ class OptionList:
                 )
                 text = label
         elif text is NOT_PROVIDED:
-            # This would be raised by Python itself; however, we need to use a placeholder
-            # value as part of the migration from text->value.
-            raise TypeError("OptionContainer.__init__ missing 1 required positional argument: 'text'")
+            missing_arguments.append('text')
 
         if widget is NOT_PROVIDED:
-            raise ValueError(
-                "Please specify a value for `widget`"
+            missing_arguments.append('widget')
+
+        # This would be raised by Python itself; however, we need to use a placeholder
+        # value as part of the migration from text->value.
+        if len(missing_arguments) == 1:
+            raise TypeError(
+                "OptionList.insert missing 1 required positional argument: '{}'".format(missing_arguments[0])
+            )
+        elif len(missing_arguments) > 1:
+            raise TypeError(
+                "OptionList.insert missing {} required positional arguments: {}".format(
+                    len(missing_arguments),
+                    ' and '.join(["'{}'".format(name) for name in missing_arguments])
+                )
             )
 
         ##################################################################
@@ -338,14 +360,12 @@ class OptionContainer(Widget):
             text (str): The text for the option.
             widget (:class:`toga.Widget`): The widget to add to the option.
         """
-        widget.app = self.app
-        widget.window = self.window
-
         ##################################################################
         # 2022-07: Backwards compatibility
         ##################################################################
         # When deleting this block, also delete the NOT_PROVIDED
         # placeholder, and replace it's usage in default values.
+        missing_arguments = []
 
         # label replaced with text
         if label is not None:
@@ -360,18 +380,31 @@ class OptionContainer(Widget):
                 )
                 text = label
         elif text is NOT_PROVIDED:
-            # This would be raised by Python itself; however, we need to use a placeholder
-            # value as part of the migration from text->value.
-            raise TypeError("OptionContainer.__init__ missing 1 required positional argument: 'text'")
+            missing_arguments.append('text')
 
         if widget is NOT_PROVIDED:
-            raise ValueError(
-                "Please specify a value for `widget`"
+            missing_arguments.append('widget')
+
+        # This would be raised by Python itself; however, we need to use a placeholder
+        # value as part of the migration from text->value.
+        if len(missing_arguments) == 1:
+            raise TypeError(
+                "OptionContainer.add missing 1 required positional argument: '{}'".format(missing_arguments[0])
+            )
+        elif len(missing_arguments) > 1:
+            raise TypeError(
+                "OptionContainer.add missing {} required positional arguments: {}".format(
+                    len(missing_arguments),
+                    ' and '.join(["'{}'".format(name) for name in missing_arguments])
+                )
             )
 
         ##################################################################
         # End backwards compatibility.
         ##################################################################
+
+        widget.app = self.app
+        widget.window = self.window
 
         self._content.append(text, widget)
 
