@@ -158,6 +158,44 @@ class PackLayoutTests(TestCase):
             ]}
         )
 
+    def test_tutorial_0_vertical(self):
+        root = TestNode(
+            'app', style=Pack(direction=COLUMN), children=[
+                # TestNode('button', style=Pack(flex=1), size=(30, at_least(120))),
+                TestNode('button', style=Pack(flex=1, padding=50), size=(30, at_least(120))),
+            ]
+        )
+
+        # Minimum size
+        root.style.layout(root, TestViewport(0, 0, dpi=96))
+        self.assertLayout(
+            root,
+            (130, 220),
+            {'origin': (0, 0), 'content': (130, 220), 'children': [
+                {'origin': (50, 50), 'content': (30, 120)}
+            ]}
+        )
+
+        # Normal size
+        root.style.layout(root, TestViewport(480, 640, dpi=96))
+        self.assertLayout(
+            root,
+            (130, 640),
+            {'origin': (0, 0), 'content': (130, 640), 'children': [
+                {'origin': (50, 50), 'content': (30, 540)}
+            ]}
+        )
+
+        # HiDPI normal size
+        root.style.layout(root, TestViewport(480, 640, dpi=144))
+        self.assertLayout(
+            root,
+            (180, 640),
+            {'origin': (0, 0), 'content': (180, 640), 'children': [
+                {'origin': (75, 75), 'content': (30, 490)}
+            ]}
+        )
+
     def test_tutorial_0_high_baseline_dpi(self):
         root = TestNode(
             'app', style=Pack(), children=[
