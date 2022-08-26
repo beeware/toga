@@ -115,7 +115,8 @@ class Window:
 
     def clear_content(self):
         if self.interface.content:
-            self.interface.content._impl.container = None
+            for child in self.interface.content.children:
+                child._impl.container = None
 
     def set_content(self, widget):
         self.native.Controls.Clear()
