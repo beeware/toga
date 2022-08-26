@@ -16,25 +16,25 @@ class OptionContainerTests(TestCase):
             on_select=self.on_select
         )
         self.widget = toga.Box(style=TestStyle(), factory=toga_dummy.factory)
-        self.label2, self.widget2 = "Widget 2", toga.Box(
+        self.text2, self.widget2 = "Widget 2", toga.Box(
             style=TestStyle(), factory=toga_dummy.factory
         )
-        self.label3, self.widget3 = "Widget 3", toga.Box(
+        self.text3, self.widget3 = "Widget 3", toga.Box(
             style=TestStyle(), factory=toga_dummy.factory
         )
-        self.label = 'New Container'
-        self.op_container.add(self.label, self.widget)
+        self.text = 'New Container'
+        self.op_container.add(self.text, self.widget)
 
-    def assert_tab(self, tab, index, label, widget, enabled):
+    def assert_tab(self, tab, index, text, widget, enabled):
         self.assertEqual(tab.index, index)
-        self.assertEqual(tab.label, label)
+        self.assertEqual(tab.text, text)
         self.assertEqual(tab._interface, self.op_container)
         self.assertEqual(tab.enabled, enabled)
         self.assertEqual(tab.content, widget)
 
     def add_widgets(self):
-        self.op_container.add(self.label2, self.widget2)
-        self.op_container.add(self.label3, self.widget3)
+        self.op_container.add(self.text2, self.widget2)
+        self.op_container.add(self.text3, self.widget3)
 
     def test_on_select(self):
         self.assertEqual(self.op_container.on_select._raw, self.on_select)
@@ -45,7 +45,7 @@ class OptionContainerTests(TestCase):
 
     def test_adding_container_invokes_add_content(self):
         self.assertActionPerformedWith(
-            self.op_container, 'add content', label=self.label, widget=self.widget._impl
+            self.op_container, 'add content', text=self.text, widget=self.widget._impl
         )
 
         self.assertActionPerformedWith(
@@ -67,18 +67,18 @@ class OptionContainerTests(TestCase):
         self.assert_tab(
             self.op_container.current_tab,
             index=1,
-            label=self.label2,
+            text=self.text2,
             widget=self.widget2,
             enabled=True,
         )
 
     def test_set_current_tab_as_label(self):
         self.add_widgets()
-        self.op_container.current_tab = self.label3
+        self.op_container.current_tab = self.text3
         self.assert_tab(
             self.op_container.current_tab,
             index=2,
-            label=self.label3,
+            text=self.text3,
             widget=self.widget3,
             enabled=True,
         )
@@ -89,7 +89,7 @@ class OptionContainerTests(TestCase):
         self.assert_tab(
             self.op_container.current_tab,
             index=1,
-            label=self.label2,
+            text=self.text2,
             widget=self.widget2,
             enabled=True,
         )
@@ -101,34 +101,34 @@ class OptionContainerTests(TestCase):
         self.assert_tab(
             self.op_container.current_tab,
             index=2,
-            label=self.label3,
+            text=self.text3,
             widget=self.widget3,
             enabled=True,
         )
 
-    def test_set_current_tab_as_label_raises_an_error(self):
+    def test_set_current_tab_as_text_raises_an_error(self):
         self.add_widgets()
 
-        def set_label():
+        def set_text():
             self.op_container.current_tab = "I do not exist!"
 
-        self.assertRaises(ValueError, set_label)
+        self.assertRaises(ValueError, set_text)
 
     def test_current_tab_string_increment_raises_an_error(self):
         self.add_widgets()
 
-        def set_label():
+        def set_text():
             self.op_container.current_tab += "I do not exist!"
 
-        self.assertRaises(ValueError, set_label)
+        self.assertRaises(ValueError, set_text)
 
     def test_current_tab_string_decrement_raises_an_error(self):
         self.add_widgets()
 
-        def set_label():
+        def set_text():
             self.op_container.current_tab -= "I do not exist!"
 
-        self.assertRaises(ValueError, set_label)
+        self.assertRaises(ValueError, set_text)
 
     def test_current_tab_decrement(self):
         self.add_widgets()
@@ -137,7 +137,7 @@ class OptionContainerTests(TestCase):
         self.assert_tab(
             self.op_container.current_tab,
             index=0,
-            label=self.label,
+            text=self.text,
             widget=self.widget,
             enabled=True,
         )
@@ -176,9 +176,9 @@ class OptionContainerTests(TestCase):
             style=TestStyle(),
             factory=toga_dummy.factory,
             content=[
-                (self.label, self.widget),
-                (self.label2, self.widget2),
-                (self.label3, self.widget3),
+                (self.text, self.widget),
+                (self.text2, self.widget2),
+                (self.text3, self.widget3),
             ]
         )
         self.assertEqual(len(new_container.content), 3)
@@ -193,16 +193,66 @@ class OptionContainerTests(TestCase):
             self.assertEqual(item._content.window, window)
 
     def test_set_tab_title(self):
-        new_label = 'New Title'
-        self.op_container.content[0].label = new_label
-        self.assertEqual(self.op_container.content[0].label, new_label)
+        new_text = 'New Title'
+        self.op_container.content[0].text = new_text
+        self.assertEqual(self.op_container.content[0].text, new_text)
 
     def test_insert_tab(self):
-        self.op_container.insert(0, label=self.label2, widget=self.widget2)
-        self.assertEqual(self.op_container.content[0].label, self.label2)
+        self.op_container.insert(0, text=self.text2, widget=self.widget2)
+        self.assertEqual(self.op_container.content[0].text, self.text2)
 
     def test_set_app(self):
         app = mock.Mock()
         self.op_container.app = app
         for item in self.op_container.content:
             self.assertEqual(item._content.app, app)
+
+    ######################################################################
+    # 2022-07: Backwards compatibility
+    ######################################################################
+
+    def test_tab_label_deprecated(self):
+        new_text = 'New Text'
+        with self.assertWarns(DeprecationWarning):
+            self.assertEqual(self.op_container.current_tab.label, self.text)
+        with self.assertWarns(DeprecationWarning):
+            self.op_container.current_tab.label = new_text
+        self.assertEqual(self.op_container.current_tab.text, new_text)
+
+    def test_add_tab_deprecated(self):
+        # label is a deprecated argument
+        with self.assertWarns(DeprecationWarning):
+            self.op_container.add(label=self.text2, widget=self.widget2)
+        self.assertEqual(self.op_container.content[1].text, self.text2)
+
+        # can't specify both label *and* text
+        with self.assertRaises(ValueError):
+            self.op_container.add(text=self.text3, widget=self.widget3, label=self.text3)
+
+    def test_append_tab_deprecated(self):
+        # label is a deprecated argument
+        with self.assertWarns(DeprecationWarning):
+            self.op_container._content.append(label=self.text2, widget=self.widget2)
+        self.assertEqual(self.op_container.content[1].text, self.text2)
+
+        # can't specify both label *and* text
+        with self.assertRaises(ValueError):
+            self.op_container._content.append(text=self.text3, widget=self.widget3, label=self.text3)
+
+    def test_insert_tab_deprecated(self):
+        # label is a deprecated argument
+        with self.assertWarns(DeprecationWarning):
+            self.op_container._content.insert(1, label=self.text2, widget=self.widget2)
+        self.assertEqual(self.op_container.content[1].text, self.text2)
+
+        # can't specify both label *and* text
+        with self.assertRaises(ValueError):
+            self.op_container._content.insert(1, text=self.text3, widget=self.widget3, label=self.text3)
+
+    # OptionList.append
+    # OptionList.insert
+    # OptionContainer.add (-> OptionList.append)
+
+    ######################################################################
+    # End backwards compatibility.
+    ######################################################################

@@ -4,8 +4,8 @@ from ..utils import not_required
 
 @not_required
 class Option:
-    def __init__(self, label, widget, enabled):
-        self.label = label
+    def __init__(self, text, widget, enabled):
+        self.text = text
         self.widget = widget
         self.enabled = enabled
 
@@ -16,9 +16,9 @@ class OptionContainer(Widget):
         self._items = []
         self._current_index = 0
 
-    def add_content(self, index, label, widget):
-        self._action('add content', index=index, label=label, widget=widget)
-        self._items.insert(index, Option(label, widget, True))
+    def add_content(self, index, text, widget):
+        self._action('add content', index=index, text=text, widget=widget)
+        self._items.insert(index, Option(text, widget, True))
 
     def remove_content(self, index):
         if index == self._current_index:
@@ -40,13 +40,13 @@ class OptionContainer(Widget):
         self._get_value('option_{}_enabled'.format(index))
         return self._items[index].enabled
 
-    def set_option_label(self, index, value):
-        self._set_value('option_{}_label'.format(index), value=value)
-        self._items[index].label = value
+    def set_option_text(self, index, value):
+        self._set_value('option_{}_text'.format(index), value=value)
+        self._items[index].text = value
 
-    def get_option_label(self, index):
-        self._get_value('option_{}_label'.format(index))
-        return self._items[index].label
+    def get_option_text(self, index):
+        self._get_value('option_{}_text'.format(index))
+        return self._items[index].text
 
     def set_current_tab_index(self, current_tab_index):
         self._set_value('current_tab_index', current_tab_index)
