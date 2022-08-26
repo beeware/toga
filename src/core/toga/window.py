@@ -126,7 +126,7 @@ class Window:
     def content(self, widget):
 
         # Manifest the widget
-        self._impl.before_set_content()
+        self._impl.clear_content()
 
         # Assign the content widget to the same app as the window.
         widget.app = self.app

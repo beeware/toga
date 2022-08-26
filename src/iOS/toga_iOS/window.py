@@ -37,7 +37,7 @@ class Window:
 
         self.set_title(title)
 
-    def before_set_content(self):
+    def clear_content(self):
         pass
 
     def set_content(self, widget):

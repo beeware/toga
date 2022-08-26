@@ -48,7 +48,7 @@ class Window(ViewTreeObserver__OnGlobalLayoutListener):
             if self.interface.content:
                 self.interface.content.refresh()
 
-    def before_set_content(self):
+    def clear_content(self):
         pass
 
     def set_content(self, widget):

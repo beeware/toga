@@ -90,7 +90,7 @@ class Window:
             self.toolbar_items[cmd] = item_impl
             self.toolbar_native.insert(item_impl, -1)
 
-    def before_set_content(self):
+    def clear_content(self):
         pass
 
     def set_content(self, widget):

@@ -113,7 +113,7 @@ class Window:
             pass
         return result
 
-    def before_set_content(self):
+    def clear_content(self):
         if self.interface.content:
             self.interface.content._impl.container = None
 

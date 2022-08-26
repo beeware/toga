@@ -182,7 +182,7 @@ class Window:
 
         self.native.setToolbar_(self._toolbar_native)
 
-    def before_set_content(self):
+    def clear_content(self):
         pass
 
     def set_content(self, widget):

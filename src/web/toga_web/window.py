@@ -48,7 +48,7 @@ class Window:
     def create_toolbar(self):
         self.interface.factory.not_implemented('Window.create_toolbar()')
 
-    def before_set_content(self):
+    def clear_content(self):
         pass
 
     def set_content(self, widget):
