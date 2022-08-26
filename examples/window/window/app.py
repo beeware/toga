@@ -69,6 +69,12 @@ class WindowDemoApp(toga.App):
             f"at {self.main_window.position!r}"
         )
 
+    def do_next_content(self, widget):
+        self.main_window.content = self.next_box
+
+    def do_prev_content(self, widget):
+        self.main_window.content = self.main_box
+
     def exit_handler(self, app, **kwargs):
         self.close_count += 1
         if self.close_count % 2 == 1:
@@ -104,7 +110,10 @@ class WindowDemoApp(toga.App):
         btn_do_title = toga.Button('Change title', on_press=self.do_title, style=btn_style)
         btn_do_new_windows = toga.Button('Create Window', on_press=self.do_new_windows, style=btn_style)
         btn_do_report = toga.Button('Report', on_press=self.do_report, style=btn_style)
-        btn_box = toga.Box(
+        btn_change_content = toga.Button(
+            "Change content", on_press=self.do_next_content, style=btn_style
+        )
+        self.main_box = toga.Box(
             children=[
                 self.label,
                 btn_do_origin,
@@ -115,12 +124,21 @@ class WindowDemoApp(toga.App):
                 btn_do_title,
                 btn_do_new_windows,
                 btn_do_report,
+                btn_change_content,
             ],
             style=Pack(direction=COLUMN)
         )
 
+        btn_change_back = toga.Button(
+            "Go back", on_press=self.do_prev_content, style=btn_style
+        )
+        self.next_box = toga.Box(
+            children=[btn_change_back],
+            style=Pack(direction=COLUMN)
+        )
+
         # Add the content on the main window
-        self.main_window.content = btn_box
+        self.main_window.content = self.main_box
 
         # Show the main window
         self.main_window.show()
