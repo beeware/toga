@@ -68,18 +68,19 @@ def get_platform_factory(factory=None):
         backend_name = current_platform
         toga_backends_string = ', '.join([_entry_point_format(backend) for backend in toga_backends])
         my_backends = tuple(filter(lambda backend: backend.name == backend_name, toga_backends))
-        if len(my_backends) != 1:
+        if len(my_backends) == 0:
+            raise RuntimeError(
+                'Several toga backends installed: {}. '
+                'None of them is appropriate for your platform ({}).'
+                .format(toga_backends_string, current_platform)
+            )
+        if len(my_backends) > 1:
             raise RuntimeError(
                 'Several toga backends installed: {}. '
                 'Could not identify which one is more appropriate for your platform ({}).'
                 .format(toga_backends_string, current_platform)
             )
         my_backend = my_backends[0]
-        print(
-            'WARNING: Several toga backends installed: {}. Using {}'.format(
-                toga_backends_string, _entry_point_format(my_backend)
-            )
-        )
 
     factory = importlib.import_module('{}.factory'.format(my_backend.value))
     return factory
