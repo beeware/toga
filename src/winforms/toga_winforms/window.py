@@ -119,13 +119,23 @@ class Window:
                 child._impl.container = None
 
     def set_content(self, widget):
-        self.native.Controls.Clear()
+        has_content = False
+        for control in self.native.Controls:
+            # The main menu and toolbar are normal in-window controls;
+            # however, they shouldn't be removed if window content is
+            # removed.
+            if control != self.native.MainMenuStrip and control != self.toolbar_native:
+                has_content = True
+                self.native.Controls.Remove(control)
 
-        if self.toolbar_native:
+        # The first time content is set for the window, we also need
+        # to add the toolbar as part of the main window content.
+        # We use "did we haev to remove any content" as a marker for
+        # whether this is the first time we're setting content.
+        if not has_content:
             self.native.Controls.Add(self.toolbar_native)
-            # Create the lookup table of menu items,
-            # then force the creation of the menus.
 
+        # Add the actual window content.
         self.native.Controls.Add(widget.native)
 
         # Set the widget's viewport to be based on the window's content.
