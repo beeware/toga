@@ -49,7 +49,9 @@ class Window(ViewTreeObserver__OnGlobalLayoutListener):
                 self.interface.content.refresh()
 
     def clear_content(self):
-        pass
+        if self.interface.content:
+            for child in self.interface.content.children:
+                child._impl.container = None
 
     def set_content(self, widget):
         # Set the widget's viewport to be based on the window's content.

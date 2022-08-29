@@ -183,7 +183,9 @@ class Window:
         self.native.setToolbar_(self._toolbar_native)
 
     def clear_content(self):
-        pass
+        if self.interface.content:
+            for child in self.interface.content.children:
+                child._impl.container = None
 
     def set_content(self, widget):
         # Set the window's view to the be the widget's native object.
