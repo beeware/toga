@@ -124,6 +124,14 @@ class Window:
 
     @content.setter
     def content(self, widget):
+
+        # Set window of old content to None
+        if self._content:
+            self._content.window = None
+
+        # Manifest the widget
+        self._impl.clear_content()
+
         # Assign the content widget to the same app as the window.
         widget.app = self.app
 
