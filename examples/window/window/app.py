@@ -137,6 +137,15 @@ class WindowDemoApp(toga.App):
             style=Pack(direction=COLUMN)
         )
 
+        restore_command = toga.Command(
+            self.do_prev_content,
+            text='Restore content',
+            tooltip='Restore main window content',
+        )
+
+        self.commands.add(restore_command)
+        self.main_window.toolbar.add(restore_command)
+
         # Add the content on the main window
         self.main_window.content = self.main_box
 
