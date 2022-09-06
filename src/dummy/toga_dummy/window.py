@@ -13,6 +13,9 @@ class Window(LoggedObject):
     def create_toolbar(self):
         self._action('create toolbar')
 
+    def clear_content(self):
+        self._action('clear content')
+
     def set_content(self, widget):
         self._action('set content', widget=widget)
 

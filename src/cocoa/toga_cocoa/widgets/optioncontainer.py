@@ -44,13 +44,13 @@ class OptionContainer(Widget):
         # Add the layout constraints
         self.add_constraints()
 
-    def add_content(self, index, label, widget):
+    def add_content(self, index, text, widget):
         """ Adds a new option to the option container.
 
         Args:
             index: The index in the tab list where the tab should be added.
-            label (str): The label for the option container
-            widget: The widget or widget tree that belongs to the label.
+            text (str): The text for the option container
+            widget: The widget or widget tree that belongs to the text.
         """
         widget.viewport = CocoaViewport(widget.native)
 
@@ -58,7 +58,7 @@ class OptionContainer(Widget):
             child._impl.container = widget
 
         item = NSTabViewItem.alloc().init()
-        item.label = label
+        item.label = text
 
         # Turn the autoresizing mask on the widget widget
         # into constraints. This makes the widget fill the
@@ -101,11 +101,11 @@ class OptionContainer(Widget):
     def is_option_enabled(self, index):
         return index not in self._disabled_tabs
 
-    def set_option_label(self, index, value):
+    def set_option_text(self, index, value):
         tabview = self.native.tabViewItemAtIndex(index)
         tabview.label = value
 
-    def get_option_label(self, index):
+    def get_option_text(self, index):
         tabview = self.native.tabViewItemAtIndex(index)
         return tabview.label
 

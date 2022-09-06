@@ -43,7 +43,7 @@ class ExampleOptionContainerApp(toga.App):
 
     def on_change_option_title(self, button):
         index = int(self.select_option.value)
-        self.optioncontainer.content[index].label = self.input_change_title.value
+        self.optioncontainer.content[index].text = self.input_change_title.value
 
     def on_activate_option(self, button):
         try:
@@ -70,7 +70,7 @@ class ExampleOptionContainerApp(toga.App):
 
     def on_select_tab(self, widget, option):
         self.selected_label.text = "Tab {} has been chosen: {}".format(
-            option.index, option.label,
+            option.index, option.text,
         )
 
     def startup(self):
@@ -99,7 +99,7 @@ class ExampleOptionContainerApp(toga.App):
             on_press=self.on_enable_option,
             style=style_flex
         )
-        # change label
+        # change title
         self.input_change_title = toga.TextInput(style=style_flex)
         btn_change_title = toga.Button(
             'Change title',

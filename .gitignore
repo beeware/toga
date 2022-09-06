@@ -42,3 +42,6 @@ examples/*/windows/
 
 # Memory Profiler
 mprofile_*.dat
+
+# Briefcase log files.
+briefcase.*.log

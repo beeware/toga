@@ -1,5 +1,5 @@
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, patch, Mock
 
 import toga
 from toga.command import CommandSet
@@ -236,3 +236,23 @@ class TestWindow(TestCase):
             initial_directory=Path(initial_directory),
             multiselect=multiselect,
         )
+
+    def test_window_set_content_once(self):
+        content = Mock()
+        self.window.content = content
+
+        self.assertEqual(content.window, self.window)
+
+        self.assertActionPerformed(self.window, "clear content")
+        self.assertActionPerformed(self.window, "set content")
+
+    def test_window_set_content_twice(self):
+        content1, content2 = Mock(), Mock()
+        self.window.content = content1
+        self.window.content = content2
+
+        self.assertEqual(content1.window, None)
+        self.assertEqual(content2.window, self.window)
+
+        self.assertActionPerformed(self.window, "clear content")
+        self.assertActionPerformed(self.window, "set content")

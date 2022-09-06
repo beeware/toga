@@ -48,6 +48,11 @@ class Window:
     def create_toolbar(self):
         self.interface.factory.not_implemented('Window.create_toolbar()')
 
+    def clear_content(self):
+        if self.interface.content:
+            for child in self.interface.content.children:
+                child._impl.container = None
+
     def set_content(self, widget):
         self.interface.factory.not_implemented('Window.set_content()')
         widget.viewport = WebViewport()

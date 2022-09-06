@@ -37,6 +37,11 @@ class Window:
 
         self.set_title(title)
 
+    def clear_content(self):
+        if self.interface.content:
+            for child in self.interface.content.children:
+                child._impl.container = None
+
     def set_content(self, widget):
         widget.viewport = iOSViewport(self.native)
 

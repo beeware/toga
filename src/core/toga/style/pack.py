@@ -324,9 +324,8 @@ class Pack(BaseStyle):
 
         # Pass 4: set vertical position of each child.
         for child in node.children:
-            extra = (
-                height
-                - child.layout.content_height
+            extra = height - (
+                child.layout.content_height
                 + scale(child.style.padding_top)
                 + scale(child.style.padding_bottom)
             )
@@ -462,14 +461,13 @@ class Pack(BaseStyle):
 
         # Pass 4: set horizontal position of each child.
         for child in node.children:
-            extra = (
-                width
-                - child.layout.content_width
+            extra = width - (
+                child.layout.content_width
                 + scale(child.style.padding_left)
                 + scale(child.style.padding_right)
             )
             # self._debug("row extra width", extra)
-            if self.alignment is LEFT:
+            if self.alignment is RIGHT:
                 child.layout.content_left = extra + scale(child.style.padding_left)
                 # self._debug("align to right", child, child.layout.content_left)
             elif self.alignment is CENTER:
