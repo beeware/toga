@@ -63,7 +63,7 @@ class PlatformTests(unittest.TestCase):
                 factory = _get_platform_factory()
                 self.assertEqual(factory, current_platform_factory)
 
-    def test_multiple_platforms_installed_fail(self):
+    def test_multiple_platforms_installed_fail_undecided(self):
         current_platform_factory_1 = Mock()
         current_platform_factory_2 = Mock()
         platform_factories = {
@@ -73,6 +73,22 @@ class PlatformTests(unittest.TestCase):
         entry_points = [
             EntryPoint(name=current_platform, value='current_platform_module_1', group=self.group),
             EntryPoint(name=current_platform, value='current_platform_module_2', group=self.group),
+        ]
+        with patch.dict('sys.modules', platform_factories):
+            with patch('toga.platform.entry_points', return_value=entry_points):
+                with self.assertRaises(RuntimeError):
+                    _get_platform_factory()
+
+    def test_multiple_platforms_installed_fail_none_appropriate(self):
+        other_platform_factory_1 = Mock()
+        other_platform_factory_2 = Mock()
+        platform_factories = {
+            'other_platform_module_1.factory': other_platform_factory_1,
+            'other_platform_module_2.factory': other_platform_factory_2,
+        }
+        entry_points = [
+            EntryPoint(name='other_platform', value='other_platform_module_1', group=self.group),
+            EntryPoint(name='other_platform', value='other_platform_module_2', group=self.group),
         ]
         with patch.dict('sys.modules', platform_factories):
             with patch('toga.platform.entry_points', return_value=entry_points):
