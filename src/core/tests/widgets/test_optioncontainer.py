@@ -245,7 +245,6 @@ class OptionContainerTests(TestCase):
     def test_add_mandatory_parameters(self):
         my_op_container = toga.OptionContainer(
             style=TestStyle(),
-            factory=toga_dummy.factory,
             on_select=self.on_select
         )
 
@@ -260,7 +259,6 @@ class OptionContainerTests(TestCase):
     def test_append_mandatory_parameters(self):
         my_op_container = toga.OptionContainer(
             style=TestStyle(),
-            factory=toga_dummy.factory,
             on_select=self.on_select
         )
 
@@ -275,7 +273,6 @@ class OptionContainerTests(TestCase):
     def test_insert_mandatory_parameters(self):
         my_op_container = toga.OptionContainer(
             style=TestStyle(),
-            factory=toga_dummy.factory,
             on_select=self.on_select
         )
 
