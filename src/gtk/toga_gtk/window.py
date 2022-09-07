@@ -133,6 +133,12 @@ class Window:
         self.interface.content._impl.min_width = self.interface.content.layout.width
         self.interface.content._impl.min_height = self.interface.content.layout.height
 
+    def hide(self):
+        self.interface.not_implemented("Window.hide()")
+
+    def get_visible(self):
+        self.interface.not_implemented("Window.get_visible()")
+
     def gtk_delete_event(self, widget, data):
         if self._is_closing:
             should_close = True

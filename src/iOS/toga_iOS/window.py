@@ -90,5 +90,11 @@ class Window:
         # Refresh with the actual viewport to do the proper rendering.
         self.interface.content.refresh()
 
+    def hide(self):
+        self.interface.not_implemented("Window.hide()")
+
+    def get_visible(self):
+        self.interface.not_implemented("Window.get_visible()")
+
     def close(self):
         pass

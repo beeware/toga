@@ -42,6 +42,14 @@ class Window(LoggedObject):
 
     def show(self):
         self._action('show')
+        self._set_value('visible', True)
+
+    def hide(self):
+        self._action('hide')
+        self._set_value('visible', False)
+
+    def get_visible(self):
+        return self._get_value('visible')
 
     def close(self):
         self._action('close')

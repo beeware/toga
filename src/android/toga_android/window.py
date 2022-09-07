@@ -91,6 +91,12 @@ class Window(ViewTreeObserver__OnGlobalLayoutListener):
     def show(self):
         pass
 
+    def hide(self):
+        self.interface.not_implemented("Window.hide()")
+
+    def get_visible(self):
+        self.interface.not_implemented("Window.get_visible()")
+
     def close(self):
         pass
 
