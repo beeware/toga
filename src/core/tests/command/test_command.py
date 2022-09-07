@@ -62,7 +62,7 @@ class TestCommand(TestCase):
             section=1,
             order=1,
         )
-        retur_val = cmd.bind(factory=self.app.factory)
+        retur_val = cmd.bind()
         self.assertEqual(retur_val, cmd._impl)
 
     def test_command_enabler(self):
@@ -77,7 +77,7 @@ class TestCommand(TestCase):
             section=1,
             order=1,
         )
-        cmd.bind(self.app.factory)
+        cmd.bind()
         cmd.enabled = False
         self.assertActionPerformedWith(cmd, 'set enabled', value=False)
         cmd.enabled = True

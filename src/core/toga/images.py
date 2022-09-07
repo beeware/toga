@@ -1,4 +1,7 @@
 import pathlib
+import warnings
+
+from toga.platform import get_platform_factory
 
 
 class Image:
@@ -20,16 +23,29 @@ class Image:
         # Resource is late bound.
         self._impl = None
 
-    def bind(self, factory):
+    def bind(
+        self,
+        factory=None,  # DEPRECATED !
+    ):
         """
         Bind the Image to a factory.
 
         Creates the underlying platform implemenation of the Image. Raises
         FileNotFoundError if the path is a non-existent local file.
 
-        :param factory: The platform factory to bind to.
         :returns: The platform implementation
         """
+        ######################################################################
+        # 2022-09: Backwards compatibility
+        ######################################################################
+        # factory no longer used
+        if factory:
+            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
+        ######################################################################
+        # End backwards compatibility.
+        ######################################################################
+
+        factory = get_platform_factory()
         if self._impl is None:
             if isinstance(self.path, pathlib.Path):
                 full_path = factory.paths.app / self.path

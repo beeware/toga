@@ -47,7 +47,7 @@ class Button(Widget):
         # 2022-07: Backwards compatibility
         ##################################################################
         # When deleting this block, also delete the NOT_PROVIDED
-        # placeholder, and replace it's usage in default values.
+        # placeholder, and replace its usage in default values.
 
         # label replaced with text
         if label is not None:

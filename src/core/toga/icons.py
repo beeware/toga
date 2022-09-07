@@ -1,4 +1,7 @@
 import os
+import warnings
+
+from toga.platform import get_platform_factory
 
 
 class Icon:
@@ -22,17 +25,29 @@ class Icon:
         # Resource is late bound.
         self._impl = None
 
-    def bind(self, factory):
+    def bind(
+        self,
+        factory=None,  # DEPRECATED !
+    ):
         """
         Bind the Icon to a factory.
 
         Creates the underlying platform implementation of the Icon. If the
         image cannot be found, it will fall back to the default icon.
 
-        :param factory: The platform factory to bind to.
         :returns: The platform implementation
         """
-        # `factory` is now available; store it so the `_impl` can access it.
+        ######################################################################
+        # 2022-09: Backwards compatibility
+        ######################################################################
+        # factory no longer used
+        if factory:
+            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
+        ######################################################################
+        # End backwards compatibility.
+        ######################################################################
+
+        factory = get_platform_factory()
         self.factory = factory
         if self._impl is None:
             try:
@@ -62,7 +77,7 @@ class Icon:
                 print("WARNING: Can't find icon {self.path}; falling back to default icon".format(
                     self=self
                 ))
-                self._impl = self.DEFAULT_ICON.bind(factory)
+                self._impl = self.DEFAULT_ICON.bind()
 
         return self._impl
 

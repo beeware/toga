@@ -16,12 +16,12 @@ from toga_cocoa.widgets.internal.data import TogaData
 from toga_cocoa.widgets.internal.refresh import RefreshableScrollView
 
 
-def attr_impl(value, attr, factory):
+def attr_impl(value, attr):
     # If the data value has an _impl attribute, invoke it.
     # This will manifest any impl-specific attributes.
     impl = getattr(value, attr, None)
     try:
-        return impl.bind(factory)
+        return impl.bind()
     except AttributeError:
         return impl
 
@@ -66,7 +66,7 @@ class TogaList(NSTableView):
             value._impl = data
 
         data.attrs = {
-            attr: attr_impl(value, attr, self.interface.factory)
+            attr: attr_impl(value, attr)
             for attr in value._attrs
         }
 

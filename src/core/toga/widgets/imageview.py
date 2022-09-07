@@ -39,7 +39,7 @@ class ImageView(Widget):
 
         if self._image is not None:
             # Bind the image to the widget's factory.
-            self._image.bind(self.factory)
+            self._image.bind()
 
             self._impl.set_image(image)
             self._impl.rehint()

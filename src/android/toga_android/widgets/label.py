@@ -17,7 +17,7 @@ class Label(Widget):
 
     def set_font(self, font):
         if font:
-            font_impl = font.bind(self.interface.factory)
+            font_impl = font.bind()
             self.native.setTextSize(TypedValue.COMPLEX_UNIT_SP, font_impl.get_size())
             self.native.setTypeface(font_impl.get_typeface(), font_impl.get_style())
 

@@ -1,3 +1,5 @@
+import warnings
+
 # Use the Travertino font definitions as-is
 from travertino.constants import (  # noqa: F401
     BOLD,
@@ -17,6 +19,8 @@ from travertino.fonts import Font as BaseFont  # noqa: F401
 from travertino.fonts import font  # noqa: F401
 from travertino import constants  # noqa: F401
 
+from toga.platform import get_platform_factory
+
 
 SYSTEM_DEFAULT_FONT_SIZE = -1
 _REGISTERED_FONT_CACHE = {}
@@ -28,10 +32,23 @@ class Font(BaseFont):
         self.factory = None
         self._impl = None
 
-    def bind(self, factory):
+    def bind(
+        self,
+        factory=None,  # DEPRECATED !
+    ):
+        ######################################################################
+        # 2022-09: Backwards compatibility
+        ######################################################################
+        # factory no longer used
+        if factory:
+            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
+        ######################################################################
+        # End backwards compatibility.
+        ######################################################################
+
         if self._impl is None:
-            self.factory = factory
-            self._impl = factory.Font(self)
+            self.factory = get_platform_factory()
+            self._impl = self.factory.Font(self)
         return self._impl
 
     def measure(self, text, dpi, tight=False):

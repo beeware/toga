@@ -1,4 +1,5 @@
 import html
+import warnings
 
 from toga_gtk.libs import Gtk, Pango
 from .base import HiddenButtonsRow
@@ -51,11 +52,22 @@ class TextIconRow(HiddenButtonsRow):
     def subtitle(self):
         return self.interface.subtitle
 
-    def get_icon(self, row, factory):
+    def get_icon(self, row, factory=None):
+        ######################################################################
+        # 2022-09: Backwards compatibility
+        ######################################################################
+        # factory no longer used
+        if factory:
+            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
+        ######################################################################
+        # End backwards compatibility.
+        ######################################################################
+
+
         if getattr(row, "icon") is None:
             return None
         else:
-            row.icon.bind(factory)
+            row.icon.bind()
             dpr = self.get_scale_factor()
             return getattr(row.icon._impl, "native_" + str(32*dpr))
 

@@ -26,7 +26,7 @@ class ImageTests(TestCase):
 
         # Bind the image; the file doesn't exist, so it raises an error.
         try:
-            self.path_file_image.bind(factory=self.app.factory)
+            self.path_file_image.bind()
             self.fail('The image should not bind')  # pragma: nocover
         except FileNotFoundError:
             pass
@@ -40,7 +40,7 @@ class ImageTests(TestCase):
 
         # Bind the image; the file doesn't exist, so it raises an error.
         try:
-            self.str_file_image.bind(factory=self.app.factory)
+            self.str_file_image.bind()
             self.fail('The image should not bind')  # pragma: nocover
         except FileNotFoundError:
             pass
@@ -53,7 +53,7 @@ class ImageTests(TestCase):
         self.assertIsNone(self.url_image._impl)
 
         # Bind the image
-        self.url_image.bind(factory=self.app.factory)
+        self.url_image.bind()
 
         # Image is bound correctly
         self.assertEqual(self.url_image._impl.interface, self.url_image)

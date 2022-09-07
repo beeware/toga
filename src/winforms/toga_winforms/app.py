@@ -111,7 +111,7 @@ class App:
         # Call user code to populate the main window
         self.interface.startup()
         self.create_menus()
-        self.interface.icon.bind(self.interface.factory)
+        self.interface.icon.bind()
         self.interface.main_window._impl.set_app(self)
 
     def create_menus(self):

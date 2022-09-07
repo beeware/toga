@@ -21,7 +21,7 @@ class TestIcon(unittest.TestCase):
 
     def test_icon_bind(self):
         self.assertEqual(self.icon._impl, None)
-        self.icon.bind(factory=self.app.factory)
+        self.icon.bind()
 
         # Filename doesn't exist, so it binds to the default icon
         self.assertEqual(self.icon._impl.interface, toga.Icon.DEFAULT_ICON)

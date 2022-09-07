@@ -27,7 +27,7 @@ class MultilineTextInput(Widget):
 
     def set_font(self, font):
         if font:
-            self.native.Font = font.bind(self.interface.factory).native
+            self.native.Font = font.bind().native
 
     def set_readonly(self, value):
         self.native.ReadOnly = self.interface.readonly

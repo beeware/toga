@@ -73,7 +73,7 @@ class DetailedList(Widget):
         counter = 0
         for i, item in enumerate(self.interface.data):
             if item.icon is not None:
-                item.icon.bind(self.interface.factory)
+                item.icon.bind()
                 image_list.Images.Add(item.icon._impl.native)
                 self._list_index_to_image_index[i] = counter
                 counter += 1
@@ -105,7 +105,7 @@ class DetailedList(Widget):
 
     def set_font(self, font):
         if font:
-            self.native.Font = font.bind(self.interface.factory).native
+            self.native.Font = font.bind().native
 
     def set_on_double_click(self, handler):
         self.interface.factory.not_implemented('Table.set_on_double_click()')

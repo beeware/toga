@@ -44,7 +44,7 @@ class Switch(Widget):
 
     def set_font(self, font):
         if font:
-            self.native.font = font.bind(self.interface.factory).native
+            self.native.font = font.bind().native
 
     def set_value(self, value):
         if value is True:

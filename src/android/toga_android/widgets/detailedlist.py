@@ -95,7 +95,7 @@ class DetailedList(Widget):
         icon_image_view = ImageView(self._native_activity)
         icon = self.interface.data[i].icon
         if icon is not None:
-            icon.bind(self.interface.factory)
+            icon.bind()
             bitmap = BitmapFactory.decodeFile(str(icon._impl.path))
             icon_image_view.setImageBitmap(bitmap)
         icon_layout_params = RelativeLayout__LayoutParams(
