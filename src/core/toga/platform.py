@@ -1,6 +1,7 @@
 import importlib
 import sys
 from functools import lru_cache
+import warnings
 
 try:
     # Usually, the pattern is "import module; if it doesn't exist,
@@ -39,30 +40,34 @@ def _entry_point_format(backend):
     return '{} ({})'.format(backend.name, backend.value)
 
 
-@lru_cache(maxsize=8)
+@lru_cache(maxsize=1)
 def get_platform_factory(factory=None):
     """ This function figures out what the current host platform is and
     imports the adequate factory. The factory is the interface to all platform
     specific implementations.
 
-    Args:
-        factory (:obj:`module`): (optional) Provide a custom factory that is automatically returned unchanged.
-
-    Returns: The suitable factory for the current host platform
-        or the factory that was given as a argument.
+    Returns: The suitable factory for the current host platform.
 
     Raises:
         RuntimeError: If no supported host platform can be identified.
     """
-    if factory is not None:
-        return factory
+
+    ######################################################################
+    # 2022-09: Backwards compatibility
+    ######################################################################
+    # factory no longer used
+    if factory:
+        warnings.warn("The factory argument is no longer used.", DeprecationWarning)
+    ######################################################################
+    # End backwards compatibility.
+    ######################################################################
 
     toga_backends = entry_points(group='toga.backends')
     if not toga_backends:
         raise RuntimeError("No toga backend could be loaded.")
 
     if len(toga_backends) == 1:
-        my_backend = toga_backends[0]
+        my_backend = tuple(toga_backends)[0]
     else:
         # multiple backends are installed: choose the one that maches the host platform
         backend_name = current_platform

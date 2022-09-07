@@ -39,7 +39,7 @@ class Widget(Node):
 
         self._enabled = enabled
 
-        self.factory = get_platform_factory(factory)
+        self.factory = get_platform_factory()
 
     def __repr__(self):
         return "<%s:0x%x>" % (self.__class__.__name__, identifier(self))

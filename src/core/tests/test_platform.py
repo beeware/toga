@@ -12,22 +12,19 @@ except ImportError:
     from importlib.metadata import EntryPoint
 
 from toga.platform import current_platform, get_platform_factory
-import toga_dummy
 
 
-def _get_platform_factory(factory=None):
+def _get_platform_factory():
     get_platform_factory.cache_clear()
-    return get_platform_factory(factory=factory)
+    factory = get_platform_factory()
+    get_platform_factory.cache_clear()
+    return factory
 
 
 class PlatformTests(unittest.TestCase):
     def setUp(self):
         super().setUp()
         self.group = 'toga.backends'
-
-    def test_get_platform_factory_defined(self):
-        factory = _get_platform_factory(factory=toga_dummy.factory)
-        self.assertEqual(factory, toga_dummy.factory)
 
     def test_no_platforms(self):
         with patch('toga.platform.entry_points', return_value=None):
@@ -63,7 +60,7 @@ class PlatformTests(unittest.TestCase):
                 factory = _get_platform_factory()
                 self.assertEqual(factory, current_platform_factory)
 
-    def test_multiple_platforms_installed_fail_undecided(self):
+    def test_multiple_platforms_installed_fail_both_appropriate(self):
         current_platform_factory_1 = Mock()
         current_platform_factory_2 = Mock()
         platform_factories = {
@@ -87,10 +84,24 @@ class PlatformTests(unittest.TestCase):
             'other_platform_module_2.factory': other_platform_factory_2,
         }
         entry_points = [
-            EntryPoint(name='other_platform', value='other_platform_module_1', group=self.group),
-            EntryPoint(name='other_platform', value='other_platform_module_2', group=self.group),
+            EntryPoint(name='other_platform_1', value='other_platform_module_1', group=self.group),
+            EntryPoint(name='other_platform_2', value='other_platform_module_2', group=self.group),
         ]
         with patch.dict('sys.modules', platform_factories):
             with patch('toga.platform.entry_points', return_value=entry_points):
                 with self.assertRaises(RuntimeError):
                     _get_platform_factory()
+
+    ######################################################################
+    # 2022-09: Backwards compatibility
+    ######################################################################
+
+    def test_factory_deprecated(self):
+        my_factory = object()
+        with self.assertWarns(DeprecationWarning):
+            factory = get_platform_factory(factory=my_factory)
+        self.assertNotEqual(factory, my_factory)
+
+    ######################################################################
+    # End backwards compatibility.
+    ######################################################################

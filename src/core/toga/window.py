@@ -39,7 +39,7 @@ class Window:
         self.closeable = closeable
         self.minimizable = minimizable
 
-        self.factory = get_platform_factory(factory)
+        self.factory = get_platform_factory()
         self._impl = getattr(self.factory, self._WINDOW_CLASS)(
             interface=self,
             title='Toga' if title is None else title,

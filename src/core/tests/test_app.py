@@ -56,11 +56,6 @@ class AppTests(TestCase):
     def test_app_id(self):
         self.assertEqual(self.app.id, self.id)
 
-    @patch('toga.app.get_platform_factory')
-    def test_app_init_with_no_factory(self, mock_function):
-        toga.App(self.name, self.app_id)
-        mock_function.assert_called_once_with(None)
-
     def test_app_main_loop_call_impl_main_loop(self):
         self.app.main_loop()
         self.assertActionPerformed(self.app, 'main loop')

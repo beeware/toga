@@ -275,7 +275,7 @@ class App:
         self._id = id if id else identifier(self)
 
         # Get a platform factory, and a paths instance from the factory.
-        self.factory = get_platform_factory(factory)
+        self.factory = get_platform_factory()
         self.paths = self.factory.paths
 
         # If an icon (or icon name) has been explicitly provided, use it;
