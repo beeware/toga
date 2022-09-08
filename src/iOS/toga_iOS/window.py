@@ -91,10 +91,12 @@ class Window:
         self.interface.content.refresh()
 
     def hide(self):
-        self.interface.not_implemented("Window.hide()")
+        # A no-op, as the window cannot be hidden.
+        pass
 
     def get_visible(self):
-        self.interface.not_implemented("Window.get_visible()")
+        # The window is alays visible
+        return True
 
     def close(self):
         pass
