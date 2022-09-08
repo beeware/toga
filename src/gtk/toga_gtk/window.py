@@ -81,8 +81,9 @@ class Window:
                 item_impl.set_draw(False)
             else:
                 item_impl = Gtk.ToolButton()
-                icon_impl = cmd.icon.bind(self.interface.factory)
-                item_impl.set_icon_widget(icon_impl.native_32)
+                if cmd.icon:
+                    icon_impl = cmd.icon.bind(self.interface.factory)
+                    item_impl.set_icon_widget(icon_impl.native_32)
                 item_impl.set_label(cmd.text)
                 item_impl.set_tooltip_text(cmd.tooltip)
                 item_impl.connect("clicked", wrapped_handler(cmd, cmd.action))
@@ -132,6 +133,12 @@ class Window:
         )
         self.interface.content._impl.min_width = self.interface.content.layout.width
         self.interface.content._impl.min_height = self.interface.content.layout.height
+
+    def hide(self):
+        self.native.hide()
+
+    def get_visible(self):
+        return self.native.get_property("visible")
 
     def gtk_delete_event(self, widget, data):
         if self._is_closing:

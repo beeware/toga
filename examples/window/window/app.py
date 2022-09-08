@@ -75,6 +75,14 @@ class WindowDemoApp(toga.App):
     def do_prev_content(self, widget):
         self.main_window.content = self.main_box
 
+    def do_hide(self, widget):
+        self.main_window.visible = False
+        for i in range(5, 0, -1):
+            print(f"Back in {i}...")
+            yield 1
+        self.main_window.visible = True
+        self.main_window.info_dialog("Here we go again", "I'm back!")
+
     def exit_handler(self, app, **kwargs):
         self.close_count += 1
         if self.close_count % 2 == 1:
@@ -113,6 +121,9 @@ class WindowDemoApp(toga.App):
         btn_change_content = toga.Button(
             "Change content", on_press=self.do_next_content, style=btn_style
         )
+        btn_hide = toga.Button(
+            "Hide", on_press=self.do_hide, style=btn_style
+        )
         self.main_box = toga.Box(
             children=[
                 self.label,
@@ -125,6 +136,7 @@ class WindowDemoApp(toga.App):
                 btn_do_new_windows,
                 btn_do_report,
                 btn_change_content,
+                btn_hide,
             ],
             style=Pack(direction=COLUMN)
         )

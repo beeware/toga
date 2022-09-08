@@ -172,7 +172,13 @@ class Window:
 
         if self.interface is not self.interface.app._main_window:
             self.native.Icon = self.interface.app.icon.bind(self.interface.factory).native
-            self.native.Show()
+        self.native.Show()
+
+    def hide(self):
+        self.native.Hide()
+
+    def get_visible(self):
+        return self.native.Visible
 
     def winforms_FormClosing(self, sender, event):
         # If the app is exiting, or a manual close has been requested,

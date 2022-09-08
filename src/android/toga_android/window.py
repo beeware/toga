@@ -91,6 +91,14 @@ class Window(ViewTreeObserver__OnGlobalLayoutListener):
     def show(self):
         pass
 
+    def hide(self):
+        # A no-op, as the window cannot be hidden.
+        pass
+
+    def get_visible(self):
+        # The window is alays visible
+        return True
+
     def close(self):
         pass
 
