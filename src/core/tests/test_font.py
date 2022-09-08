@@ -1,5 +1,4 @@
 import toga
-import toga_dummy
 from toga.fonts import (
     NORMAL,
     BOLD,

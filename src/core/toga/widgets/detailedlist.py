@@ -1,3 +1,5 @@
+import warnings
+
 from toga.handlers import wrapped_handler
 from toga.sources import ListSource
 
@@ -18,8 +20,6 @@ class DetailedList(Widget):
         on_select (``callable``): Function that is invoked on row selection.
         style (:obj:`Style`): An optional style object. If no style is provided then
             a new one will be created for the widget.
-        factory (:obj:`module`): A python module that is capable to return a
-            implementation of this class with the same name. (optional & normally not needed)
 
     Examples:
         >>> import toga
@@ -50,9 +50,19 @@ class DetailedList(Widget):
         on_refresh=None,
         on_select=None,
         style=None,
-        factory=None,
+        factory=None,  # DEPRECATED!
     ):
-        super().__init__(id=id, style=style, factory=factory)
+        super().__init__(id=id, style=style)
+        ######################################################################
+        # 2022-09: Backwards compatibility
+        ######################################################################
+        # factory no longer used
+        if factory:
+            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
+        ######################################################################
+        # End backwards compatibility.
+        ######################################################################
+
         self._data = None
         self._on_delete = None
         self._on_refresh = None

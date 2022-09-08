@@ -2,6 +2,7 @@ import warnings
 
 from toga.handlers import wrapped_handler
 from toga.icons import Icon
+from toga.platform import get_platform_factory
 
 # BACKWARDS COMPATIBILITY: a token object that can be used to differentiate
 # between an explicitly provided ``None``, and a unspecified value falling
@@ -208,10 +209,18 @@ class Command:
         section=None,
         order=None,
         enabled=True,
-        factory=None,
+        factory=None,  # DEPRECATED!
         label=None,  # DEPRECATED!
     ):
-        self.factory = factory
+        ######################################################################
+        # 2022-09: Backwards compatibility
+        ######################################################################
+        # factory no longer used
+        if factory:
+            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
+        ######################################################################
+        # End backwards compatibility.
+        ######################################################################
 
         ##################################################################
         # 2022-07: Backwards compatibility
@@ -379,8 +388,22 @@ class CommandSet:
     Todo:
         * Add missing Docstrings.
     """
-    def __init__(self, factory, widget=None, on_change=None):
-        self.factory = factory
+    def __init__(
+        self,
+        factory=None,  # DEPRECATED!
+        widget=None,
+        on_change=None,
+    ):
+        ######################################################################
+        # 2022-09: Backwards compatibility
+        ######################################################################
+        # factory no longer used
+        if factory:
+            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
+        ######################################################################
+        # End backwards compatibility.
+        ######################################################################
+
         self.widget = widget
         self._commands = set()
         self.on_change = on_change

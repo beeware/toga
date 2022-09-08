@@ -1,3 +1,4 @@
+import warnings
 from .base import Widget
 
 
@@ -17,14 +18,29 @@ class SplitContainer(Widget):
             widget (:class:`toga.Widget`): The widget that will be added.
             weight (float): Specifying the weighted splits.
             flex (boolean): Should the content expand when the widget is resized. (optional)
-        factory (:obj:`module`): A python module that is capable to return a
-            implementation of this class with the same name. (optional & normally not needed)
     """
     HORIZONTAL = False
     VERTICAL = True
 
-    def __init__(self, id=None, style=None, direction=VERTICAL, content=None, factory=None):
-        super().__init__(id=id, style=style, factory=factory)
+    def __init__(
+        self,
+        id=None,
+        style=None,
+        direction=VERTICAL,
+        content=None,
+        factory=None,  # DEPRECATED!
+    ):
+        super().__init__(id=id, style=style)
+        ######################################################################
+        # 2022-09: Backwards compatibility
+        ######################################################################
+        # factory no longer used
+        if factory:
+            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
+        ######################################################################
+        # End backwards compatibility.
+        ######################################################################
+
         self._direction = direction
         self._content = []
         self._weight = []

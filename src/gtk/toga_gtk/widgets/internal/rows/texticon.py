@@ -52,7 +52,11 @@ class TextIconRow(HiddenButtonsRow):
     def subtitle(self):
         return self.interface.subtitle
 
-    def get_icon(self, row, factory=None):
+    def get_icon(
+        self,
+        row,
+        factory=None,  # DEPRECATED!
+    ):
         ######################################################################
         # 2022-09: Backwards compatibility
         ######################################################################
@@ -62,7 +66,6 @@ class TextIconRow(HiddenButtonsRow):
         ######################################################################
         # End backwards compatibility.
         ######################################################################
-
 
         if getattr(row, "icon") is None:
             return None

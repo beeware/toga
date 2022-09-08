@@ -289,8 +289,25 @@ class OptionContainer(Widget):
     class OptionException(ValueError):
         pass
 
-    def __init__(self, id=None, style=None, content=None, on_select=None, factory=None):
-        super().__init__(id=id, style=style, factory=factory)
+    def __init__(
+        self,
+        id=None,
+        style=None,
+        content=None,
+        on_select=None,
+        factory=None,  # DEPRECATED!
+    ):
+        super().__init__(id=id, style=style)
+        ######################################################################
+        # 2022-09: Backwards compatibility
+        ######################################################################
+        # factory no longer used
+        if factory:
+            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
+        ######################################################################
+        # End backwards compatibility.
+        ######################################################################
+
         self._on_select = None
         self._impl = self.factory.OptionContainer(interface=self)
 

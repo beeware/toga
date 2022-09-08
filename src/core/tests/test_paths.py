@@ -71,7 +71,7 @@ class TestPaths(unittest.TestCase):
         "At an interactive prompt, the app path is the current working directory"
         # Spawn the standalone app using the interactive-mode mocking entry point
         output = subprocess.check_output(
-            [sys.executable, "standalone.py", "--backend:dummy", "--interactive"],
+            [sys.executable, "standalone.py", "--interactive"],
             cwd=Path(__file__).parent / "testbed",
             text=True,
         )
@@ -81,7 +81,7 @@ class TestPaths(unittest.TestCase):
         "When started as `python app.py`, the app path is the folder holding app.py"
         # Spawn the standalone app using `standalone.py`
         output = subprocess.check_output(
-            [sys.executable, "standalone.py", "--backend:dummy"],
+            [sys.executable, "standalone.py"],
             cwd=Path(__file__).parent / "testbed",
             text=True,
         )
@@ -91,7 +91,7 @@ class TestPaths(unittest.TestCase):
         "When started as `python -m app`, the app path is the folder holding app.py"
         # Spawn the standalone app app using `-m standalone`
         output = subprocess.check_output(
-            [sys.executable, "-m", "standalone", "--backend:dummy"],
+            [sys.executable, "-m", "standalone"],
             cwd=Path(__file__).parent / "testbed",
             text=True,
         )
@@ -125,7 +125,7 @@ class TestPaths(unittest.TestCase):
         the app path is the folder holding app.py"""
         # Spawn the simple testbed app using `app.py`
         output = subprocess.check_output(
-            [sys.executable, "app.py", "--backend:dummy"],
+            [sys.executable, "app.py"],
             cwd=Path(__file__).parent / "testbed" / "simple",
             text=True,
         )
@@ -136,7 +136,7 @@ class TestPaths(unittest.TestCase):
         the app path is the folder holding app.py"""
         # Spawn the simple testbed app using `-m app`
         output = subprocess.check_output(
-            [sys.executable, "-m", "app", "--backend:dummy"],
+            [sys.executable, "-m", "app"],
             cwd=Path(__file__).parent / "testbed" / "simple",
             text=True,
         )
@@ -146,7 +146,7 @@ class TestPaths(unittest.TestCase):
         "When a simple app is started as `python simple/app.py`, the app path is the folder holding app.py"
         # Spawn the simple testbed app using `-m simple`
         output = subprocess.check_output(
-            [sys.executable, "simple/app.py", "--backend:dummy"],
+            [sys.executable, "simple/app.py"],
             cwd=Path(__file__).parent / "testbed",
             text=True,
         )
@@ -156,7 +156,7 @@ class TestPaths(unittest.TestCase):
         "When a simple app is started as `python -m simple`, the app path is the folder holding app.py"
         # Spawn the simple testbed app using `-m simple`
         output = subprocess.check_output(
-            [sys.executable, "-m", "simple", "--backend:dummy"],
+            [sys.executable, "-m", "simple"],
             cwd=Path(__file__).parent / "testbed",
             text=True,
         )
@@ -166,7 +166,7 @@ class TestPaths(unittest.TestCase):
         "When the installed app is started, the app path is the folder holding app.py"
         # Spawn the installed testbed app using `-m app`
         output = subprocess.check_output(
-            [sys.executable, "-m", "installed", "--backend:dummy"],
+            [sys.executable, "-m", "installed"],
             cwd=Path(__file__).parent / "testbed",
             text=True,
         )

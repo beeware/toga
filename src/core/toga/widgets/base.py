@@ -1,4 +1,5 @@
 from builtins import id as identifier
+import warnings
 
 from travertino.node import Node
 
@@ -22,11 +23,24 @@ class Widget(Node):
         enabled (bool): Whether or not interaction with the button is possible, defaults to `True`.
         style: An optional style object.
             If no style is provided then a new one will be created for the widget.
-        factory (:obj:`module`): A python module that is capable to return a
-            implementation of this class with the same name (optional & normally not needed).
     """
 
-    def __init__(self, id=None, enabled=True, style=None, factory=None):
+    def __init__(
+        self,
+        id=None,
+        enabled=True,
+        style=None,
+        factory=None,  # DEPRECATED !
+    ):
+        ######################################################################
+        # 2022-09: Backwards compatibility
+        ######################################################################
+        # factory no longer used
+        if factory:
+            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
+        ######################################################################
+        # End backwards compatibility.
+        ######################################################################
         super().__init__(
             style=style if style else Pack(),
             applicator=TogaApplicator(self)

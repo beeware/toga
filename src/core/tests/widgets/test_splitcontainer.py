@@ -6,6 +6,7 @@ from toga_dummy.utils import TestCase, TestStyle
 
 class SplitContainerTests(TestCase):
     def setUp(self):
+        super().setUp()
         self.content = [
             toga.Box(style=TestStyle()),
             toga.Box(style=TestStyle())

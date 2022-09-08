@@ -1,3 +1,4 @@
+import warnings
 from .base import Widget
 
 
@@ -11,15 +12,31 @@ class ScrollContainer(Widget):
         horizontal (bool):  If True enable horizontal scroll bar.
         vertical (bool): If True enable vertical scroll bar.
         content (:class:`toga.Widget`): The content of the scroll window.
-        factory (:module:): A provided factory module will be used to create the
-            implementation of the ScrollContainer.
     """
     MIN_WIDTH = 100
     MIN_HEIGHT = 100
 
-    def __init__(self, id=None, style=None, horizontal=True, vertical=True,
-                 on_scroll=None, content=None, factory=None):
-        super().__init__(id=id, style=style, factory=factory)
+    def __init__(
+        self,
+        id=None,
+        style=None,
+        horizontal=True,
+        vertical=True,
+        on_scroll=None,
+        content=None,
+        factory=None,  # DEPRECATED!
+    ):
+        super().__init__(id=id, style=style)
+
+        ######################################################################
+        # 2022-09: Backwards compatibility
+        ######################################################################
+        # factory no longer used
+        if factory:
+            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
+        ######################################################################
+        # End backwards compatibility.
+        ######################################################################
 
         self._vertical = vertical
         self._horizontal = horizontal

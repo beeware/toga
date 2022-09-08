@@ -1,3 +1,5 @@
+import warnings
+
 from toga.handlers import wrapped_handler
 from toga.sources import ListSource
 from toga.sources.accessors import build_accessors, to_accessor
@@ -22,8 +24,6 @@ class Table(Widget):
         missing_value (``str`` or ``None``): value for replacing a missing value
             in the data source. (Default: None). When 'None', a warning message
             will be shown.
-        factory (:obj:`module`): A python module that is capable to return a
-            implementation of this class with the same name. (optional & normally not needed)
 
     Examples:
         >>> headings = ['Head 1', 'Head 2', 'Head 3']
@@ -48,10 +48,30 @@ class Table(Widget):
     MIN_WIDTH = 100
     MIN_HEIGHT = 100
 
-    def __init__(self, headings, id=None, style=None, data=None, accessors=None,
-                 multiple_select=False, on_select=None, on_double_click=None,
-                 missing_value=None, factory=None):
-        super().__init__(id=id, style=style, factory=factory)
+    def __init__(
+        self,
+        headings,
+        id=None,
+        style=None,
+        data=None,
+        accessors=None,
+        multiple_select=False,
+        on_select=None,
+        on_double_click=None,
+        missing_value=None,
+        factory=None,  # DEPRECATED!
+    ):
+        super().__init__(id=id, style=style)
+        ######################################################################
+        # 2022-09: Backwards compatibility
+        ######################################################################
+        # factory no longer used
+        if factory:
+            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
+        ######################################################################
+        # End backwards compatibility.
+        ######################################################################
+
         self.headings = headings[:]
         self._accessors = build_accessors(self.headings, accessors)
         self._multiple_select = multiple_select

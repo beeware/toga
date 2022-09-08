@@ -3,7 +3,6 @@ import unittest
 from unittest.mock import Mock
 
 import toga
-import toga_dummy
 from tests.command.constants import COMMANDS_IN_ORDER, COMMANDS_IN_SET
 
 
@@ -23,7 +22,6 @@ class TestCommandSet(unittest.TestCase):
         self.changed = False
         test_widget = toga.Widget()
         cs = toga.CommandSet(
-            factory=toga_dummy.factory,
             widget=test_widget,
             on_change=self._changed
         )
@@ -37,7 +35,6 @@ class TestCommandSet(unittest.TestCase):
             group=grp,
             section=1,
             order=1,
-            factory=toga_dummy.factory
         )
         cs.add(cmd)
 
@@ -49,7 +46,6 @@ class TestCommandSet(unittest.TestCase):
         test_widget._impl = Mock()
         test_widget.app = Mock()
         cs = toga.CommandSet(
-            factory=toga_dummy.factory,
             widget=test_widget
         )
         commands = list(COMMANDS_IN_ORDER)

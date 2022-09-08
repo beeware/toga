@@ -35,7 +35,6 @@ class TestFontImplementation(unittest.TestCase):
 
     def test_font_default_has_all_attr_set(self):
         font = toga.Font(self.font_family, self.font_size)
-        #TODO: if tests fail, we'll need to override the factory for the sake of this test...
         native = font.bind().native
         self.assertEqual(native.get_family(), SYSTEM)
         self.assertEqual(native.get_size() / Pango.SCALE, self.font_size)
