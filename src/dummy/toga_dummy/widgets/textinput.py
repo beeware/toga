@@ -37,6 +37,11 @@ class TextInput(Widget):
 
     def set_error(self, error_message):
         self._set_value('error', error_message)
+        self._set_value('valid', False)
 
     def clear_error(self):
         self._action('clear_error')
+        self._set_value('valid', True)
+
+    def is_valid(self):
+        return self._get_value('valid')

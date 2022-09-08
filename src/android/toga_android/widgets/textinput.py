@@ -77,6 +77,9 @@ class TextInput(Widget):
     def clear_error(self):
         self.interface.factory.not_implemented("TextInput.clear_error()")
 
+    def is_valid(self):
+        self.interface.factory.not_implemented("TextInput.is_valid()")
+
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
         # Refuse to call measure() if widget has no container, i.e., has no LayoutParams.

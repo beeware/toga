@@ -117,9 +117,20 @@ class ValidatedTextInputTests(TestCase):
             validators=[validator],
             factory=toga_dummy.factory
         )
+        self.assertTrue(text_input.is_valid)
         self.assertValueNotSet(text_input, "error")
+        self.assertValueSet(text_input, "valid", True)
         self.assertActionPerformed(text_input, "clear_error")
         validator.assert_called_once_with(self.value)
+
+    def test_getting_is_valid_invokes_impl_method(self):
+        text_input = toga.TextInput(
+            value=self.value,
+            factory=toga_dummy.factory
+        )
+        self.assertValueNotGet(text_input, 'valid')
+        text_input.is_valid
+        self.assertValueGet(text_input, 'valid')
 
     def test_validator_run_after_set(self):
         message = "This is an error message"
@@ -129,11 +140,15 @@ class ValidatedTextInputTests(TestCase):
             factory=toga_dummy.factory
         )
 
+        self.assertTrue(text_input.is_valid)
         self.assertValueNotSet(text_input, "error")
+        self.assertValueSet(text_input, "valid", True)
 
         text_input.validators = [validator]
 
+        self.assertFalse(text_input.is_valid)
         self.assertValueSet(text_input, "error", message)
+        self.assertValueSet(text_input, "valid", False)
         validator.assert_called_once_with(self.value)
 
     def test_text_input_with_no_validator_is_valid(self):
@@ -142,6 +157,7 @@ class ValidatedTextInputTests(TestCase):
             factory=toga_dummy.factory
         )
         self.assertTrue(text_input.validate())
+        self.assertTrue(text_input.is_valid)
 
     def test_validate_true_when_valid(self):
         validator = Mock(return_value=None)
@@ -169,9 +185,13 @@ class ValidatedTextInputTests(TestCase):
             validators=[validator],
             factory=toga_dummy.factory
         )
+        self.assertTrue(text_input.is_valid)
+        self.assertValueSet(text_input, "valid", True)
         self.assertValueNotSet(text_input, "error")
 
         text_input.validate()
+        self.assertTrue(text_input.is_valid)
+        self.assertValueSet(text_input, "valid", True)
         self.assertValueNotSet(text_input, "error")
         self.assertEqual(
             validator.call_args_list, [call(self.value), call(self.value)]
@@ -185,10 +205,14 @@ class ValidatedTextInputTests(TestCase):
             validators=[validator],
             factory=toga_dummy.factory
         )
+        self.assertTrue(text_input.is_valid)
         self.assertValueNotSet(text_input, "error")
+        self.assertValueSet(text_input, "valid", True)
 
         text_input.validate()
+        self.assertFalse(text_input.is_valid)
         self.assertValueSet(text_input, "error", message)
+        self.assertValueSet(text_input, "valid", False)
         self.assertEqual(
             validator.call_args_list, [call(self.value), call(self.value)]
         )
