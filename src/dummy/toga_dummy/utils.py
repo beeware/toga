@@ -1,6 +1,7 @@
 import sys
 import unittest
 
+from toga import platform
 from travertino.declaration import BaseStyle
 from travertino.layout import BaseBox
 from travertino.size import BaseIntrinsicSize
@@ -183,7 +184,7 @@ class TestStyle(BaseStyle):
 
 
 class TestCase(unittest.TestCase):
-    def setUp(self):
+    def setUp(self, toga_platform=None):
         EventLog.reset()
         # We use the existence of a __main__ module as a proxy for being in test
         # conditions. This isn't *great*, but the __main__ module isn't meaningful
@@ -191,6 +192,17 @@ class TestCase(unittest.TestCase):
         # under test conditions" checks in paths.py.
         if '__main__' in sys.modules:
             del sys.modules['__main__']
+
+        self.native_toga_platform = None
+        if toga_platform:
+            self.native_toga_platform = platform.current_platform
+            platform.current_platform = toga_platform
+            platform.get_platform_factory.cache_clear()
+
+    def tearDown(self):
+        if self.native_toga_platform:
+            platform.current_platform = self.native_toga_platform
+            platform.get_platform_factory.cache_clear()
 
     def reset_event_log(self):
         EventLog.reset()
