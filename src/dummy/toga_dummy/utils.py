@@ -379,6 +379,12 @@ class TestCase(unittest.TestCase):
         except AttributeError:
             self.fail('Widget {} is not a logged object'.format(_widget))
 
+    def assertValueNotGet(self, _widget, attr):
+        self.assertTrue(
+            attr not in _widget._impl._gets,
+            msg="Expected {attr} not to be get, but it was.".format(attr=attr)
+        )
+
     def assertValueNotSet(self, _widget, attr):
         self.assertTrue(
             attr not in _widget._impl._sets,

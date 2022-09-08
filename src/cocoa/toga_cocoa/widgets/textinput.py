@@ -117,3 +117,7 @@ class TextInput(Widget):
     def clear_error(self):
         # Cocoa TextInput can't ever be in an invalid state, so clear is a no-op
         pass
+
+    def is_valid(self):
+        # Cocoa TextInput can't ever be in an invalid state, so it is always valid
+        return True

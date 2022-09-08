@@ -100,6 +100,9 @@ class TextInput(Widget):
         if self.container and self.interface.on_lose_focus:
             self.interface.on_lose_focus(self.interface)
 
+    def is_valid(self):
+        return self.error_provider.GetError(self.native) == ""
+
     def clear_error(self):
         self.error_provider.SetError(self.native, "")
 

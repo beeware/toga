@@ -136,6 +136,10 @@ class TextInput(Widget):
             v = str(value)
         self._impl.set_value(v)
 
+    @property
+    def is_valid(self):
+        return self._impl.is_valid()
+
     def clear(self):
         """ Clears the text of the widget """
         self.value = ''
