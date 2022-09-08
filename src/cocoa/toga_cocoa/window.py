@@ -287,10 +287,10 @@ class Window:
         self.interface.content.refresh()
 
     def hide(self):
-        self.interface.not_implemented("Window.hide()")
+        self.native.orderOut(self.native)
 
     def get_visible(self):
-        self.interface.not_implemented("Window.get_visible()")
+        return bool(self.native.isVisible)
 
     def set_full_screen(self, is_full_screen):
         self.interface.factory.not_implemented('Window.set_full_screen()')
