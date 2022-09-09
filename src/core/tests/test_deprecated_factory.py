@@ -6,7 +6,7 @@ from toga_dummy.utils import TestCase
 
 class DeprecatedFactoryTests(TestCase):
     def setUp(self):
-        super().setUp(toga_platform='dummy')
+        super().setUp()
         self.factory = object()
         self.callback = lambda x: None
 
@@ -65,8 +65,11 @@ class DeprecatedFactoryTests(TestCase):
         with self.assertWarns(DeprecationWarning):
             try:
                 widget.bind(factory=self.factory)
-            except FileNotFoundError:
-                pass
+            except FileNotFoundError as e:
+                raise FileNotFoundError(
+                    e.args[0],
+                    "\nThis test must be running from 'src/core'"
+                )
         self.assertEqual(widget._impl.interface, widget)
 
     def test_window(self):

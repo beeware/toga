@@ -1,13 +1,14 @@
-import unittest
 import subprocess
 import sys
 from pathlib import Path
 
 import toga
+from toga_dummy.utils import TestCase
 
 
-class TestPaths(unittest.TestCase):
+class TestPaths(TestCase):
     def setUp(self):
+        super().setUp()
         # We use the existence of a __main__ module as a proxy for being in test
         # conditions. This isn't *great*, but the __main__ module isn't meaningful
         # during tests, and removing it allows us to avoid having explicit "if
@@ -71,7 +72,7 @@ class TestPaths(unittest.TestCase):
         "At an interactive prompt, the app path is the current working directory"
         # Spawn the standalone app using the interactive-mode mocking entry point
         output = subprocess.check_output(
-            [sys.executable, "standalone.py", "--interactive"],
+            [sys.executable, "standalone.py", "--backend:dummy", "--interactive"],
             cwd=Path(__file__).parent / "testbed",
             text=True,
         )
@@ -81,7 +82,7 @@ class TestPaths(unittest.TestCase):
         "When started as `python app.py`, the app path is the folder holding app.py"
         # Spawn the standalone app using `standalone.py`
         output = subprocess.check_output(
-            [sys.executable, "standalone.py"],
+            [sys.executable, "standalone.py", "--backend:dummy"],
             cwd=Path(__file__).parent / "testbed",
             text=True,
         )
@@ -91,7 +92,7 @@ class TestPaths(unittest.TestCase):
         "When started as `python -m app`, the app path is the folder holding app.py"
         # Spawn the standalone app app using `-m standalone`
         output = subprocess.check_output(
-            [sys.executable, "-m", "standalone"],
+            [sys.executable, "-m", "standalone", "--backend:dummy"],
             cwd=Path(__file__).parent / "testbed",
             text=True,
         )
@@ -125,7 +126,7 @@ class TestPaths(unittest.TestCase):
         the app path is the folder holding app.py"""
         # Spawn the simple testbed app using `app.py`
         output = subprocess.check_output(
-            [sys.executable, "app.py"],
+            [sys.executable, "app.py", "--backend:dummy"],
             cwd=Path(__file__).parent / "testbed" / "simple",
             text=True,
         )
@@ -136,7 +137,7 @@ class TestPaths(unittest.TestCase):
         the app path is the folder holding app.py"""
         # Spawn the simple testbed app using `-m app`
         output = subprocess.check_output(
-            [sys.executable, "-m", "app"],
+            [sys.executable, "-m", "app", "--backend:dummy"],
             cwd=Path(__file__).parent / "testbed" / "simple",
             text=True,
         )
@@ -146,7 +147,7 @@ class TestPaths(unittest.TestCase):
         "When a simple app is started as `python simple/app.py`, the app path is the folder holding app.py"
         # Spawn the simple testbed app using `-m simple`
         output = subprocess.check_output(
-            [sys.executable, "simple/app.py"],
+            [sys.executable, "simple/app.py", "--backend:dummy"],
             cwd=Path(__file__).parent / "testbed",
             text=True,
         )
@@ -156,7 +157,7 @@ class TestPaths(unittest.TestCase):
         "When a simple app is started as `python -m simple`, the app path is the folder holding app.py"
         # Spawn the simple testbed app using `-m simple`
         output = subprocess.check_output(
-            [sys.executable, "-m", "simple"],
+            [sys.executable, "-m", "simple", "--backend:dummy"],
             cwd=Path(__file__).parent / "testbed",
             text=True,
         )
@@ -166,7 +167,7 @@ class TestPaths(unittest.TestCase):
         "When the installed app is started, the app path is the folder holding app.py"
         # Spawn the installed testbed app using `-m app`
         output = subprocess.check_output(
-            [sys.executable, "-m", "installed"],
+            [sys.executable, "-m", "installed", "--backend:dummy"],
             cwd=Path(__file__).parent / "testbed",
             text=True,
         )

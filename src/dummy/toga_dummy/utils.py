@@ -184,7 +184,7 @@ class TestStyle(BaseStyle):
 
 
 class TestCase(unittest.TestCase):
-    def setUp(self, toga_platform=None):
+    def setUp(self, toga_platform='dummy'):
         EventLog.reset()
         # We use the existence of a __main__ module as a proxy for being in test
         # conditions. This isn't *great*, but the __main__ module isn't meaningful
@@ -193,6 +193,7 @@ class TestCase(unittest.TestCase):
         if '__main__' in sys.modules:
             del sys.modules['__main__']
 
+        # Use the toga_dummy backend by default, instead of the native platform backend.
         self.native_toga_platform = None
         if toga_platform:
             self.native_toga_platform = platform.current_platform

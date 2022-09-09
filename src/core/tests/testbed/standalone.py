@@ -8,6 +8,17 @@ if "--interactive" in sys.argv:
     sys.modules['__main__'] = types.ModuleType('__main__')
 
 import toga
+from toga import platform
+
+
+# If the user provided a --backend:<name> argument,
+# use that backend as the factory.
+backend = [
+    arg.split(":")[1]
+    for arg in sys.argv
+    if arg.startswith("--backend:")
+]
+platform.current_platform = backend[0]
 
 
 def main():
