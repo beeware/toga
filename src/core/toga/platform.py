@@ -69,7 +69,7 @@ def get_platform_factory(factory=None):
     if len(toga_backends) == 1:
         my_backend = tuple(toga_backends)[0]
     else:
-        # multiple backends are installed: choose the one that maches the host platform
+        # multiple backends are installed: choose the one that matches the host platform
         backend_name = current_platform
         toga_backends_string = ', '.join([_entry_point_format(backend) for backend in toga_backends])
         my_backends = tuple(filter(lambda backend: backend.name == backend_name, toga_backends))
