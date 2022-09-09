@@ -18,7 +18,10 @@ backend = [
     for arg in sys.argv
     if arg.startswith("--backend:")
 ]
-platform.current_platform = backend[0]
+try:
+    platform.current_platform = backend[0]
+except IndexError:
+    pass
 
 
 def main():
