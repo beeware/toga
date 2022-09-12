@@ -2,7 +2,7 @@ from toga_winforms.libs import WinImage
 
 
 class Image(object):
-    def __init__(self, interface, path=None, url=None):
+    def __init__(self, interface, path=None, url=None, data=None):
         self.interface = interface
         self.path = path
         self.url = url
@@ -13,3 +13,5 @@ class Image(object):
             # Windows loads URL images in the view,
             # not as standalone resources
             self.native = None
+        elif data:
+            pass

@@ -67,3 +67,10 @@ class ImageTests(TestCase):
 
     def test_url_image_path(self):
         self.assertEqual(self.url_image.path, self.url_path)
+
+    def test_bytes_image(self):
+        data = bytes([1])
+        bytes_image = toga.Image(data)
+        bytes_image.bind(factory=toga_dummy.factory)
+        self.assertEqual(bytes_image._impl.interface, bytes_image)
+        self.assertActionPerformedWith(bytes_image, 'load image data', data=data)

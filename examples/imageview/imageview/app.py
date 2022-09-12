@@ -26,6 +26,14 @@ class ImageViewApp(toga.App):
         imageview_from_pathlib_path.style.update(height=72)
         box.add(imageview_from_pathlib_path)
 
+        # image from bytes
+        with open(self.paths.app / 'resources/pride-brutus.png', 'rb') as f:
+            data = f.read()
+        image_from_bytes = toga.Image(data)
+        imageview_from_bytes = toga.ImageView(image_from_bytes)
+        imageview_from_bytes.style.update(height=72)
+        box.add(imageview_from_bytes)
+
         # image from remote URL
         # no style parameters - we let Pack determine how to allocate
         # the space
