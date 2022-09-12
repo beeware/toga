@@ -193,17 +193,17 @@ class TestCase(unittest.TestCase):
         if '__main__' in sys.modules:
             del sys.modules['__main__']
 
-        # Use the toga_dummy backend by default, instead of the native platform backend.
-        self.native_toga_platform = None
-        if toga_platform:
-            self.native_toga_platform = platform.current_platform
-            platform.current_platform = toga_platform
-            platform.get_platform_factory.cache_clear()
+    #     # Use the toga_dummy backend by default, instead of the native platform backend.
+    #     self.native_toga_platform = None
+    #     if toga_platform:
+    #         self.native_toga_platform = platform.current_platform
+    #         platform.current_platform = toga_platform
+    #         platform.get_platform_factory.cache_clear()
 
-    def tearDown(self):
-        if self.native_toga_platform:
-            platform.current_platform = self.native_toga_platform
-            platform.get_platform_factory.cache_clear()
+    # def tearDown(self):
+    #     if self.native_toga_platform:
+    #         platform.current_platform = self.native_toga_platform
+    #         platform.get_platform_factory.cache_clear()
 
     def reset_event_log(self):
         EventLog.reset()
