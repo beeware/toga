@@ -7,7 +7,7 @@ class Image:
 
     :param path: Path to the image. Allowed values can be local file
         (relative or absolute path) or URL (HTTP or HTTPS). Relative paths
-        will be interpreted relative to the application module directory. 
+        will be interpreted relative to the application module directory.
         TODO: or bytes object containig a valid image...
     """
     def __init__(self, value=None, path=None):
