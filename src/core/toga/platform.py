@@ -1,4 +1,5 @@
 import importlib
+import os
 import sys
 from functools import lru_cache
 import warnings
@@ -34,6 +35,21 @@ if hasattr(sys, 'getandroidapilevel'):
     current_platform = _TOGA_PLATFORMS.get('android')
 else:
     current_platform = _TOGA_PLATFORMS.get(sys.platform)
+
+
+def override_current_platform(platform):
+    '''Override the native platform. A toga backend that supports that platform should be installed.
+
+    Args:
+        platform (str): Platform name to use.
+
+    Returns: The previous platform name.
+    '''
+    global current_platform
+    previous = current_platform
+    current_platform = platform
+    get_platform_factory.cache_clear()
+    return previous
 
 
 def _entry_point_format(backend):
