@@ -29,12 +29,15 @@ _TOGA_PLATFORMS = {
 }
 
 
-# Rely on `sys.getandroidapilevel`, which only exists on Android; see
-# https://github.com/beeware/Python-Android-support/issues/8
-if hasattr(sys, 'getandroidapilevel'):
-    current_platform = _TOGA_PLATFORMS.get('android')
-else:
-    current_platform = _TOGA_PLATFORMS.get(sys.platform)
+try:
+    current_platform = os.environ['TOGA_PLATFORM']
+except KeyError:
+    # Rely on `sys.getandroidapilevel`, which only exists on Android; see
+    # https://github.com/beeware/Python-Android-support/issues/8
+    if hasattr(sys, 'getandroidapilevel'):
+        current_platform = _TOGA_PLATFORMS.get('android')
+    else:
+        current_platform = _TOGA_PLATFORMS.get(sys.platform)
 
 
 def override_current_platform(platform):
