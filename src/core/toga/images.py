@@ -12,7 +12,7 @@ class Image:
     """
     def __init__(self, value=None, path=None):
         if path is not None:
-            value = path  #TODO: code to deprecate path
+            value = path  # TODO: code to deprecate path
         self.data = None
         self.path = None
 
