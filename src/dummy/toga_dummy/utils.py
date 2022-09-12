@@ -1,7 +1,7 @@
 import sys
 import unittest
 
-from toga import platform
+# from toga import platform
 from travertino.declaration import BaseStyle
 from travertino.layout import BaseBox
 from travertino.size import BaseIntrinsicSize
