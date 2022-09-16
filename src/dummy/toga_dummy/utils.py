@@ -184,7 +184,7 @@ class TestStyle(BaseStyle):
 
 
 class TestCase(unittest.TestCase):
-    def setUp(self, toga_platform='dummy'):
+    def setUp(self, toga_platform=None):
         EventLog.reset()
         # We use the existence of a __main__ module as a proxy for being in test
         # conditions. This isn't *great*, but the __main__ module isn't meaningful
