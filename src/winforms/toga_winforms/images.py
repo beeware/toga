@@ -1,4 +1,4 @@
-from toga_winforms.libs import WinImage
+from toga_winforms.libs import WinImage, MemoryStream
 
 
 class Image(object):
@@ -14,4 +14,5 @@ class Image(object):
             # not as standalone resources
             self.native = None
         elif data:
-            pass
+            stream = MemoryStream(data)
+            self.native = WinImage.FromStream(stream)
