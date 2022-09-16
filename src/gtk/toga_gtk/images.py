@@ -17,4 +17,5 @@ class Image:
                 input_stream = Gio.MemoryInputStream.new_from_data(result.read(), None)
                 self.native = GdkPixbuf.Pixbuf.new_from_stream(input_stream, None)
         elif data:
-            pass
+            input_stream = Gio.MemoryInputStream.new_from_data(data, None)
+            self.native = GdkPixbuf.Pixbuf.new_from_stream(input_stream, None)
