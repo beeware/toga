@@ -11,8 +11,7 @@ from .window import Window
 
 
 # `MainWindow` is defined here in `app.py`, not `window.py`, to mollify the test suite.
-class MainWindow(Window):
-    pass
+MainWindow = Window
 
 
 class TogaApp(IPythonApp):
