@@ -29,17 +29,13 @@ class TogaTextWatcher(TextWatcher):
 
 class MultilineTextInput(Widget):
     def create(self):
+        self._textChangedListener = None
         self.native = EditText(self._native_activity)
         self.native.setInputType(
             InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE
         )
         # Set default alignment
         self.set_alignment(LEFT)
-
-        # Add the listener last; some actions (such as setting the input type)
-        # emit a change message, and we don't want to pass those on until
-        # the widget is fully configured.
-        self.native.addTextChangedListener(TogaTextWatcher(self))
 
     def get_value(self):
         return self.native.getText().toString()
@@ -73,8 +69,10 @@ class MultilineTextInput(Widget):
         self.native.setText(value)
 
     def set_on_change(self, handler):
-        # No special handling required.
-        pass
+        if self._textChangedListener:
+            self.native.removeTextChangedListener(self._textChangedListener)
+        self._textChangedListener = TogaTextWatcher(self)
+        self.native.addTextChangedListener(self._textChangedListener)
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
