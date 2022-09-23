@@ -1,7 +1,6 @@
 import toga
 from toga.constants import COLUMN, ROW
 from toga.style import Pack
-from travertino import colors
 
 
 class ExampleMultilineTextInputApp(toga.App):
@@ -18,13 +17,6 @@ class ExampleMultilineTextInputApp(toga.App):
     def clear_pressed(self, widget, **kwargs):
         self.multiline_input.clear()
 
-    def color_toggle_pressed(self, widget, **kwargs):
-        if self.color == colors.BLACK:
-            self.color = colors.RED
-        else:
-            self.color = colors.BLACK
-        self.multiline_input.style.color = self.color
-
     def set_label(self, widget):
         if self.multiline_input.value == "":
             self.label.text = "Nothing has been written yet"
@@ -33,7 +25,6 @@ class ExampleMultilineTextInputApp(toga.App):
         self.label.text = "{} lines has been written".format(number_of_lines)
 
     def startup(self):
-        self.color = colors.BLACK
         self.main_window = toga.MainWindow(title=self.name)
 
         self.multiline_input = toga.MultilineTextInput(
@@ -42,7 +33,6 @@ class ExampleMultilineTextInputApp(toga.App):
             style=Pack(flex=1, font_family='monospace', font_size=14),
             on_change=self.set_label
         )
-        self.multiline_input.style.color = self.color
 
         button_toggle_enabled = toga.Button(
             'Toggle enabled',
@@ -64,17 +54,11 @@ class ExampleMultilineTextInputApp(toga.App):
             on_press=self.clear_pressed,
             style=Pack(flex=1)
         )
-        button_toggle_color = toga.Button(
-            'Toggle color',
-            on_press=self.color_toggle_pressed,
-            style=Pack(flex=1)
-        )
         btn_box = toga.Box(
             children=[
                 button_toggle_enabled,
                 button_toggle_readonly,
                 button_add_content,
-                button_toggle_color,
                 button_clear,
             ],
             style=Pack(
