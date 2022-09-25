@@ -15,6 +15,7 @@ class MultilineTextInput(Widget):
         readonly (bool): Whether a user can write into the text input,
             defaults to `False`.
         placeholder (str): The placeholder text for the widget.
+        on_change (``callable``): The handler to invoke when the text changes.
     """
     MIN_HEIGHT = 100
     MIN_WIDTH = 100
