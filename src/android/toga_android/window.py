@@ -1,4 +1,3 @@
-from .libs.android import R__id
 from .libs.android.view import ViewTreeObserver__OnGlobalLayoutListener
 
 
@@ -6,9 +5,9 @@ class AndroidViewport:
     # `content_parent` should be the view that will become the parent of the widget passed to
     # `Window.set_content`. This ensures that the viewport `width` and `height` attributes
     # return the usable area of the app, not including the action bar or status bar.
-    def __init__(self, content_parent):
-        self.content_parent = content_parent
-        self.dpi = content_parent.getContext().getResources().getDisplayMetrics().densityDpi
+    def __init__(self, app):
+        self.app = app
+        self.dpi = app.native.getResources().getDisplayMetrics().densityDpi
         # Toga needs to know how the current DPI compares to the platform default,
         # which is 160: https://developer.android.com/training/multiscreen/screendensities
         self.baseline_dpi = 160
@@ -16,11 +15,11 @@ class AndroidViewport:
 
     @property
     def width(self):
-        return self.content_parent.getWidth()
+        return self.app.content_parent.getWidth()
 
     @property
     def height(self):
-        return self.content_parent.getHeight()
+        return self.app.content_parent.getHeight()
 
 
 class Window(ViewTreeObserver__OnGlobalLayoutListener):
@@ -34,9 +33,8 @@ class Window(ViewTreeObserver__OnGlobalLayoutListener):
 
     def set_app(self, app):
         self.app = app
-        content_parent = self.app.native.findViewById(R__id.content).__global__()
-        self.viewport = AndroidViewport(content_parent)
-        content_parent.getViewTreeObserver().addOnGlobalLayoutListener(self)
+        self.viewport = AndroidViewport(app)
+        app.content_parent.getViewTreeObserver().addOnGlobalLayoutListener(self)
 
     def onGlobalLayout(self):
         """This listener is run after each native layout pass. If any view's size or position has
@@ -56,10 +54,11 @@ class Window(ViewTreeObserver__OnGlobalLayoutListener):
     def set_content(self, widget):
         # Set the widget's viewport to be based on the window's content.
         widget.viewport = self.viewport
-        # Set the app's entire contentView to the desired widget. This means that
-        # calling Window.set_content() on any Window object automatically updates
-        # the app, meaning that every Window object acts as the MainWindow.
-        self.app.native.setContentView(widget.native)
+
+        # Set the activity's entire content to the desired widget. This means that
+        # every Window object currently acts as the MainWindow.
+        self.app.content_parent.removeAllViews()
+        self.app.content_parent.addView(widget.native)
 
         # Attach child widgets to widget as their container.
         for child in widget.interface.children:

@@ -11,6 +11,7 @@ CompoundButton__OnCheckedChangeListener = JavaInterface("android/widget/Compound
 DatePickerDialog = JavaClass("android/app/DatePickerDialog")
 DatePickerDialog__OnDateSetListener = JavaInterface("android/app/DatePickerDialog$OnDateSetListener")
 EditText = JavaClass("android/widget/EditText")
+FrameLayout = JavaClass("android/widget/FrameLayout")
 HorizontalScrollView = JavaClass("android/widget/HorizontalScrollView")
 ImageView = JavaClass("android/widget/ImageView")
 ImageView__ScaleType = JavaClass("android/widget/ImageView$ScaleType")
