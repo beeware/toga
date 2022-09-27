@@ -106,13 +106,17 @@ jobs:
         python -m pip install -e src/dummy
         python -m pip install -e src/winforms
     - name: Test
+      env:
+        TOGA_PLATFORM: windows
       run: |
         cd src/winforms
-        TOGA_PLATFORM=winforms pytest -v
+        pytest -v
     - name: Core Test
+      env:
+        TOGA_PLATFORM: dummy
       run: |
         cd src/core
-        TOGA_PLATFORM=dummy pytest -v
+        pytest -v
 
   macOS:
     name: macOS backend tests
@@ -133,9 +137,11 @@ jobs:
         python -m pip install -e src/dummy
         python -m pip install -e src/cocoa
     - name: Test
+      env:
+        TOGA_PLATFORM: macOS
       run: |
         cd src/cocoa
-        TOGA_PLATFORM=cocoa pytest -v
+        pytest -v
 
   iOS:
     name: iOS backend tests
@@ -156,9 +162,11 @@ jobs:
         python -m pip install -e src/dummy
         python -m pip install -e src/iOS
     - name: Test
+      env:
+        TOGA_PLATFORM: iOS
       run: |
         cd src/iOS
-        TOGA_PLATFORM=iOS pytest -v
+        pytest -v
 
   gtk:
     name: GTK+ backend tests
@@ -181,9 +189,11 @@ jobs:
         python -m pip install -e src/dummy
         python -m pip install -e src/gtk
     - name: Test
+      env:
+        TOGA_PLATFORM: linux
       run: |
         cd src/gtk
-        TOGA_PLATFORM=gtk xvfb-run -a -s '-screen 0 2048x1536x24' pytest -v
+        xvfb-run -a -s '-screen 0 2048x1536x24' pytest -v
 
   android:
     name: Android backend tests
@@ -204,9 +214,11 @@ jobs:
         python -m pip install -e src/dummy
         python -m pip install -e src/android
     - name: Test
+      env:
+        TOGA_PLATFORM: android
       run: |
         cd src/android
-        TOGA_PLATFORM=android pytest -v
+        pytest -v
 
   web:
     name: Web backend tests
@@ -227,6 +239,8 @@ jobs:
         python -m pip install -e src/dummy
         python -m pip install -e src/web
     - name: Test
+      env:
+        TOGA_PLATFORM: web
       run: |
         cd src/web
-        TOGA_PLATFORM=web pytest -v
+        pytest -v
