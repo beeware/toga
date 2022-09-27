@@ -108,11 +108,11 @@ jobs:
     - name: Test
       run: |
         cd src/winforms
-        pytest
+        TOGA_PLATFORM=winforms pytest -v
     - name: Core Test
       run: |
         cd src/core
-        pytest
+        TOGA_PLATFORM=dummy pytest -v
 
   macOS:
     name: macOS backend tests
@@ -135,7 +135,7 @@ jobs:
     - name: Test
       run: |
         cd src/cocoa
-        pytest
+        TOGA_PLATFORM=cocoa pytest -v
 
   iOS:
     name: iOS backend tests
@@ -158,7 +158,7 @@ jobs:
     - name: Test
       run: |
         cd src/iOS
-        pytest
+        TOGA_PLATFORM=iOS pytest -v
 
   gtk:
     name: GTK+ backend tests
@@ -183,7 +183,7 @@ jobs:
     - name: Test
       run: |
         cd src/gtk
-        xvfb-run -a -s '-screen 0 2048x1536x24' pytest
+        TOGA_PLATFORM=gtk xvfb-run -a -s '-screen 0 2048x1536x24' pytest -v
 
   android:
     name: Android backend tests
@@ -206,7 +206,7 @@ jobs:
     - name: Test
       run: |
         cd src/android
-        pytest
+        TOGA_PLATFORM=android pytest -v
 
   web:
     name: Web backend tests
@@ -229,4 +229,4 @@ jobs:
     - name: Test
       run: |
         cd src/web
-        pytest
+        TOGA_PLATFORM=web pytest -v
