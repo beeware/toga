@@ -192,7 +192,8 @@ class ExampleCanvasApp(toga.App):
                         self.italic_switch
                     ]
                 ),
-                self.canvas
+                self.canvas,
+                toga.Button("Save", on_press=self.on_save_canvas)
             ]
         )
         self.main_window.content = box
@@ -363,6 +364,15 @@ class ExampleCanvasApp(toga.App):
     def on_alt_release(self, widget, x, y, clicks):
         self.clicked_point = None
         self.render_drawing()
+
+    async def on_save_canvas(self, widget):
+        path = await self.main_window.save_file_dialog(
+            "Image save path", suggested_filename="canvas_example", file_types=["jpg", "png"]
+        )
+        if path is None:
+            return
+        self.canvas.as_image().save(path)
+        self.main_window.info_dialog("Image saved", "Canvas was saved properly!")
 
     def move(self, delta_x, delta_y):
         try:
