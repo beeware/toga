@@ -74,12 +74,12 @@ class TextInput(Widget):
         # End backwards compatibility.
         ##################################################################
 
-        self.on_change = on_change
         self.placeholder = placeholder
         self.readonly = readonly
 
-        # Set the actual value after on_change, as it may trigger change events, etc.
+        # Set the actual value before on_change, because we do not want on_change triggered by it
         self.value = value
+        self.on_change = on_change
         self.validators = validators
         self.on_lose_focus = on_lose_focus
         self.on_gain_focus = on_gain_focus

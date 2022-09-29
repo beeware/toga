@@ -1,5 +1,6 @@
 import ast
 import os
+from os.path import join
 import unittest
 from collections import defaultdict, namedtuple
 from itertools import zip_longest
@@ -65,6 +66,12 @@ class DefinitionExtractor:
             if isinstance(node, ast.ClassDef):
                 if self.is_required_for_platform(node):
                     self._classes[node.name] = node  # use the class name as the key
+            elif isinstance(node, ast.Assign):
+                # Allow a class with no new methods to be defined by assigning from an
+                # existing class.
+                for target in node.targets:
+                    if isinstance(target, ast.Name):
+                        self._classes[target.id] = node
 
     def is_required_for_platform(self, node):
         """ Checks if the class or function is required for the given platform.
@@ -389,7 +396,7 @@ def make_toga_impl_check_class(path, dummy_path, platform):
 
 # Files that do not need to be present in mobile implementations of Toga.
 TOGA_MOBILE_EXCLUDED_FILES = [
-    'widgets/splitcontainer.py',
+    join('widgets', 'splitcontainer.py'),
 ]
 
 # Files that do not need to be present in desktop implementations of Toga.
@@ -398,7 +405,7 @@ TOGA_DESKTOP_EXCLUDED_FILES = [
 
 # Files do not need to be present in web implementations of Toga.
 TOGA_WEB_EXCLUDED_FILES = [
-    'widgets/splitcontainer.py',
+    join('widgets', 'splitcontainer.py'),
 ]
 
 # Files that do not need to be present in console implementations of Toga.

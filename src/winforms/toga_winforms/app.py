@@ -81,8 +81,20 @@ class App:
         # turned off by default. SSL3, TLS1.0 and TLS1.1 are *not* enabled
         # as they are deprecated protocols and their use should *not* be
         # encouraged.
-        ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12
-        ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls13
+        try:
+            ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12
+        except AttributeError:
+            print(
+                "WARNING: Your Windows .NET install does not support TLS1.2. "
+                "You may experience difficulties accessing some web server content."
+            )
+        try:
+            ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls13
+        except AttributeError:
+            print(
+                "WARNING: Your Windows .NET install does not support TLS1.3. "
+                "You may experience difficulties accessing some web server content."
+            )
 
         self.interface.commands.add(
             toga.Command(
