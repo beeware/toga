@@ -180,7 +180,7 @@ You can then run the core test suite:
     .. code-block:: bash
 
       (venv) $ cd src/core
-      (venv) $ python setup.py test
+      (venv) $ TOGA_BACKEND=toga_dummy python setup.py test
       ...
       ----------------------------------------------------------------------
       Ran 181 tests in 0.343s
@@ -192,7 +192,7 @@ You can then run the core test suite:
     .. code-block:: bash
 
       (venv) $ cd src/core
-      (venv) $ python setup.py test
+      (venv) $ TOGA_BACKEND=toga_dummy python setup.py test
       ...
       ----------------------------------------------------------------------
       Ran 181 tests in 0.343s
@@ -204,7 +204,9 @@ You can then run the core test suite:
     .. code-block:: doscon
 
       (venv) C:\...>cd src/core
+      (venv) C:\...>set TOGA_BACKEND=toga_dummy
       (venv) C:\...>python setup.py test
+      (venv) C:\...>set TOGA_BACKEND=
       ...
       ----------------------------------------------------------------------
       Ran 181 tests in 0.343s
@@ -217,6 +219,16 @@ merging every patch. If that process discovers any problems, we don’t merge
 the patch. If you do find a test error or failure, either there’s something
 odd in your test environment, or you’ve found an edge case that we haven’t
 seen before - either way, let us know!
+
+Note that we set an environment variable called TOGA_BACKEND. Toga automaticaly
+chooses the appropriate backend for your platform, but when running the tests,
+we need to use a special testing backend. You don’t need to set this variable
+all time: you can set it for the current shell lifetime, or use tools such as
+``direnv`` to  manage your environment variables.
+You could even set up separate virtual environments for testing and running
+applications, installing just one backend in each.
+Just be aware that trying to run a toga application while
+``TOGA_BACKEND=toga_dummy`` is set will not work as you would expect.
 
 Now you are ready to start hacking on Toga!
 
@@ -242,7 +254,7 @@ ask coverage to generate a report of the data that was gathered:
     .. code-block:: bash
 
       (venv) $ pip install coverage
-      (venv) $ coverage run setup.py test
+      (venv) $ TOGA_BACKEND=toga_dummy coverage run setup.py test
       (venv) $ coverage report -m --include="toga/*"
       Name                                 Stmts   Miss  Cover   Missing
       ------------------------------------------------------------------
@@ -258,7 +270,7 @@ ask coverage to generate a report of the data that was gathered:
     .. code-block:: bash
 
       (venv) $ pip install coverage
-      (venv) $ coverage run setup.py test
+      (venv) $ TOGA_BACKEND=toga_dummy coverage run setup.py test
       (venv) $ coverage report -m --include="toga/*"
       Name                                 Stmts   Miss  Cover   Missing
       ------------------------------------------------------------------
@@ -274,7 +286,9 @@ ask coverage to generate a report of the data that was gathered:
     .. code-block:: doscon
 
       (venv) C:\...>pip install coverage
+      (venv) C:\...>set TOGA_BACKEND=toga_dummy
       (venv) C:\...>coverage run setup.py test
+      (venv) C:\...>set TOGA_BACKEND=
       (venv) C:\...>coverage report -m --include=toga/*
       Name                                 Stmts   Miss  Cover   Missing
       ------------------------------------------------------------------
@@ -309,7 +323,7 @@ expect to see something like:
 
     .. code-block:: bash
 
-      (venv) $ coverage run setup.py test
+      (venv) $ TOGA_BACKEND=toga_dummy coverage run setup.py test
       running test
       ...
       ----------------------------------------------------------------------
@@ -330,7 +344,7 @@ expect to see something like:
 
     .. code-block:: bash
 
-      (venv) $ coverage run setup.py test
+      (venv) $ TOGA_BACKEND=toga_dummy coverage run setup.py test
       running test
       ...
       ----------------------------------------------------------------------
@@ -351,7 +365,9 @@ expect to see something like:
 
     .. code-block:: doscon
 
+      (venv) C:\...>set TOGA_BACKEND=toga_dummy
       (venv) C:\...>coverage run setup.py test
+      (venv) C:\...>set TOGA_BACKEND=
       running test
       ...
       ----------------------------------------------------------------------
