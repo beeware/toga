@@ -107,13 +107,13 @@ jobs:
         python -m pip install -e src/winforms
     - name: Test
       env:
-        TOGA_PLATFORM: windows
+        TOGA_BACKEND: toga_winforms
       run: |
         cd src/winforms
         pytest -v
     - name: Core Test
       env:
-        TOGA_PLATFORM: dummy
+        TOGA_BACKEND: toga_dummy
       run: |
         cd src/core
         pytest -v
@@ -138,7 +138,7 @@ jobs:
         python -m pip install -e src/cocoa
     - name: Test
       env:
-        TOGA_PLATFORM: macOS
+        TOGA_BACKEND: toga_cocoa
       run: |
         cd src/cocoa
         pytest -v
@@ -163,7 +163,7 @@ jobs:
         python -m pip install -e src/iOS
     - name: Test
       env:
-        TOGA_PLATFORM: iOS
+        TOGA_BACKEND: toga_iOS
       run: |
         cd src/iOS
         pytest -v
@@ -190,7 +190,7 @@ jobs:
         python -m pip install -e src/gtk
     - name: Test
       env:
-        TOGA_PLATFORM: linux
+        TOGA_BACKEND: toga_gtk
       run: |
         cd src/gtk
         xvfb-run -a -s '-screen 0 2048x1536x24' pytest -v
@@ -215,7 +215,7 @@ jobs:
         python -m pip install -e src/android
     - name: Test
       env:
-        TOGA_PLATFORM: android
+        TOGA_BACKEND: toga_android
       run: |
         cd src/android
         pytest -v
@@ -240,7 +240,7 @@ jobs:
         python -m pip install -e src/web
     - name: Test
       env:
-        TOGA_PLATFORM: web
+        TOGA_BACKEND: toga_web
       run: |
         cd src/web
         pytest -v

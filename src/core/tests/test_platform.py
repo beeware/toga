@@ -1,5 +1,8 @@
+import os
 import unittest
 from unittest.mock import Mock, patch
+
+import toga_dummy
 
 try:
     # Usually, the pattern is "import module; if it doesn't exist,
@@ -21,6 +24,7 @@ def _get_platform_factory():
     return factory
 
 
+@patch.dict(os.environ, {'TOGA_BACKEND': ''})
 class PlatformTests(unittest.TestCase):
     def setUp(self):
         super().setUp()
@@ -91,6 +95,15 @@ class PlatformTests(unittest.TestCase):
             with patch('toga.platform.entry_points', return_value=entry_points):
                 with self.assertRaises(RuntimeError):
                     _get_platform_factory()
+
+    @patch.dict(os.environ, {'TOGA_BACKEND': 'toga_dummy'})
+    def test_environment_variable(self):
+        self.assertEqual(toga_dummy.factory, _get_platform_factory())
+
+    @patch.dict(os.environ, {'TOGA_BACKEND': 'fake_platform_module'})
+    def test_environment_variable_fail(self):
+        with self.assertRaises(RuntimeError):
+            _get_platform_factory()
 
     ######################################################################
     # 2022-09: Backwards compatibility
