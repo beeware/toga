@@ -44,6 +44,7 @@ from System.Drawing.Drawing2D import (  # noqa: F401, E402
     GraphicsPath,
     Matrix,
 )
+from System.Drawing.Imaging import ImageFormat  # noqa: F401, E402
 from System.Drawing.Text import PrivateFontCollection  # noqa: F401, E402
 from System.IO import FileNotFoundException, MemoryStream  # noqa: F401, E402
 from System.Net import SecurityProtocolType, ServicePointManager  # noqa: F401, E402

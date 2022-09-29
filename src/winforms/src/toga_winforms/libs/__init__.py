@@ -15,6 +15,7 @@ from .winforms import (  # noqa: F401
     FontStyle,
     Graphics,
     GraphicsPath,
+    ImageFormat,
     Matrix,
     MemoryStream,
     Pen,
