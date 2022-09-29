@@ -1,3 +1,5 @@
+import uuid
+
 from .base import Widget
 
 
@@ -91,6 +93,16 @@ class Canvas(Widget):
 
     def measure_text(self, text, font, tight=False):
         self._action("measure text", text=text, font=font, tight=tight)
+
+    # Image
+
+    def as_image(self):
+        """
+        Return a dummy uuid string as the "native" image.
+        This has no effect
+        """
+        self._action("as image")
+        return uuid.uuid4()
 
     # Rehint
 

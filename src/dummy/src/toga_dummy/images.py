@@ -14,3 +14,6 @@ class Image(LoggedObject):
             self._action('load image url', url=url)
         elif data:
             self._action('load image data', data=data)
+
+    def save(self, path):
+        self._action("save", path=path)
