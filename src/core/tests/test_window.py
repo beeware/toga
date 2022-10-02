@@ -1,5 +1,5 @@
 from pathlib import Path
-from unittest.mock import MagicMock, patch, Mock,call
+from unittest.mock import MagicMock, patch, Mock, call
 
 import toga
 import toga_dummy

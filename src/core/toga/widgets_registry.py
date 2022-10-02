@@ -1,6 +1,3 @@
-from toga.widgets.base import Widget
-
-
 class WidgetsRegistry:
 
     def __init__(self):
