@@ -92,6 +92,9 @@ class Window:
         self._impl.set_app(app._impl)
         app.widgets.extend(*self.widgets)
 
+        if self.content:
+            self.content.app = app
+
     @property
     def title(self):
         """ Title of the window. If no title is given it defaults to "Toga".
