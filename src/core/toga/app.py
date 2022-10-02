@@ -10,6 +10,7 @@ from toga.command import CommandSet
 from toga.handlers import wrapped_handler
 from toga.icons import Icon
 from toga.platform import get_platform_factory
+from toga.widgets_registry import WidgetsRegistry
 from toga.window import Window
 
 try:
@@ -161,6 +162,9 @@ class App:
         on_exit=None,
         factory=None,
     ):
+        # Initialize empty widgets registry
+        self.widgets = WidgetsRegistry()
+
         # Keep an accessible copy of the app instance
         App.app = self
 

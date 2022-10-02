@@ -4,6 +4,7 @@ from pathlib import Path
 from toga.command import CommandSet
 from toga.handlers import wrapped_handler
 from toga.platform import get_platform_factory
+from toga.widgets_registry import WidgetsRegistry
 
 
 class Window:
@@ -30,6 +31,7 @@ class Window:
                  closeable=True, minimizable=True,
                  factory=None, on_close=None,
                  ):
+        self.widgets = WidgetsRegistry()
 
         self._id = id if id else identifier(self)
         self._impl = None
@@ -88,6 +90,7 @@ class Window:
 
         self._app = app
         self._impl.set_app(app._impl)
+        app.widgets.extend(*self.widgets)
 
     @property
     def title(self):
