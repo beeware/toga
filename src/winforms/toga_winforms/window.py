@@ -82,6 +82,13 @@ class Window:
     def get_position(self):
         return (self.native.Location.X, self.native.Location.Y)
 
+    def get_content_position(self):
+        if self.interface.content is None:
+            return None
+        content_native = self.interface.content._impl.native
+        screen_location = self.native.PointToScreen(content_native.Location)
+        return screen_location.X, screen_location.Y
+
     def set_position(self, position):
         self.native.Location = Point(*position)
 

@@ -507,12 +507,13 @@ class App:
         if self.home_page is not None:
             webbrowser.open(self.home_page)
 
-    def main_loop(self):
+    def main_loop(self, handle_sigint=True):
         """ Invoke the application to handle user input.
         This method typically only returns once the application is exiting.
         """
         # Modify signal handlers to make sure Ctrl-C is caught and handled.
-        signal.signal(signal.SIGINT, signal.SIG_DFL)
+        if handle_sigint:
+            signal.signal(signal.SIGINT, signal.SIG_DFL)
 
         self._impl.main_loop()
 

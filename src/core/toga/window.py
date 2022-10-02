@@ -178,6 +178,15 @@ class Window:
     def position(self, position):
         self._impl.set_position(position)
 
+    @property
+    def content_position(self):
+        """ Position of the content of the window, as x, y
+
+        Returns:
+            A ``tuple`` of (``int``, ``int``) int the from (x, y).
+        """
+        return self._impl.get_content_position()
+
     def show(self):
         """ Show window, if hidden """
         if self.app is None:
