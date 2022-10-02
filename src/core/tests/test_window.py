@@ -123,6 +123,25 @@ class TestWindow(TestCase):
         self.assertEqual(content.window, self.window)
         self.assertEqual(content.app, self.app)
 
+    def test_set_app_adds_window_widgets_to_app(self):
+
+        id1, id2, id3 = "id1", "id2", "id3"
+        widget1, widget2, widget3 = (
+            toga.Widget(factory=toga_dummy.factory, id=id1),
+            toga.Widget(factory=toga_dummy.factory, id=id2),
+            toga.Widget(factory=toga_dummy.factory, id=id3),
+        )
+        self.window.widgets.extend(widget1, widget2, widget3)
+
+        self.assertEqual(len(self.app.widgets), 0)
+
+        self.window.app = self.app
+
+        self.assertEqual(len(self.app.widgets), 3)
+        self.assertEqual(self.app.widgets[id1], widget1)
+        self.assertEqual(self.app.widgets[id2], widget2)
+        self.assertEqual(self.app.widgets[id3], widget3)
+
     def test_size(self):
         # Add some content
         content = MagicMock()
