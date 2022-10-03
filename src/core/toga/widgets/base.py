@@ -169,13 +169,16 @@ class Widget(Node):
             for child in self.children:
                 child.app = app
 
+        if app is not None:
+            # Add this widget to the application widget registry
+            app.widgets.add(self)
+
         # Provide an extension point for widgets with
         # more complex widget heirarchies
         self._set_app(app)
 
     def _set_app(self, app):
-        if app is not None:
-            app.widgets.add(self)
+        pass
 
     @property
     def window(self):
@@ -200,13 +203,16 @@ class Widget(Node):
             for child in self._children:
                 child.window = window
 
+        if window is not None:
+            # Add this widget to the window's widget registry
+            window.widgets.add(self)
+
         # Provide an extension point for widgets with
         # more complex widget heirarchies
         self._set_window(window)
 
     def _set_window(self, window):
-        if window is not None:
-            window.widgets.add(self)
+        pass
 
     @property
     def enabled(self):
