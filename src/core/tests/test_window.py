@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, patch, Mock, call
 import toga
 import toga_dummy
 from toga.command import CommandSet
-from toga.widgets_registry import WidgetsRegistry
+from toga.widget_registry import WidgetRegistry
 from toga_dummy.utils import TestCase
 
 
@@ -15,7 +15,7 @@ class TestWindow(TestCase):
         self.app = toga.App("test_name", "id.app", factory=toga_dummy.factory)
 
     def test_window_widgets_registry_on_constructor(self):
-        self.assertTrue(isinstance(self.window.widgets, WidgetsRegistry))
+        self.assertTrue(isinstance(self.window.widgets, WidgetRegistry))
         self.assertEqual(len(self.window.widgets), 0)
 
     def test_show_is_not_called_in_constructor(self):

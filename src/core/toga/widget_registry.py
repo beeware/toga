@@ -1,4 +1,4 @@
-class WidgetsRegistry:
+class WidgetRegistry:
 
     def __init__(self):
         self._id_to_widget = {}

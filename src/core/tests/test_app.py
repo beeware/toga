@@ -2,7 +2,7 @@ from unittest.mock import MagicMock, patch
 
 import toga
 import toga_dummy
-from toga.widgets_registry import WidgetsRegistry
+from toga.widget_registry import WidgetRegistry
 from toga_dummy.utils import TestCase
 
 
@@ -62,7 +62,7 @@ class AppTests(TestCase):
         self.assertEqual(self.app.id, self.id)
 
     def test_widgets_registry(self):
-        self.assertTrue(isinstance(self.app.widgets, WidgetsRegistry))
+        self.assertTrue(isinstance(self.app.widgets, WidgetRegistry))
         self.assertEqual(len(self.app.widgets), 0)
 
     @patch('toga.app.get_platform_factory')

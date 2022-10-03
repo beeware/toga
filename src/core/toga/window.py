@@ -4,7 +4,7 @@ from pathlib import Path
 from toga.command import CommandSet
 from toga.handlers import wrapped_handler
 from toga.platform import get_platform_factory
-from toga.widgets_registry import WidgetsRegistry
+from toga.widget_registry import WidgetRegistry
 
 
 class Window:
@@ -31,7 +31,7 @@ class Window:
                  closeable=True, minimizable=True,
                  factory=None, on_close=None,
                  ):
-        self.widgets = WidgetsRegistry()
+        self.widgets = WidgetRegistry()
 
         self._id = id if id else identifier(self)
         self._impl = None
