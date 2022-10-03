@@ -55,7 +55,7 @@ jobs:
       uses: codecov/codecov-action@v1
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
-        file: ./src/core/coverage.xml
+        file: ./coverage.xml
         flags: unittests
         fail_ci_if_error: true
 
