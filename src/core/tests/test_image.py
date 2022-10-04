@@ -80,7 +80,7 @@ class ImageTests(TestCase):
             toga.Image(None)
 
     def test_too_many_arguments(self):
-        path='/image.png'
+        path = '/image.png'
         data = bytes([1])
         with self.assertRaises(ValueError):
             toga.Image(path=path, data=data)
