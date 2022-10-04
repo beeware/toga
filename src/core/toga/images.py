@@ -8,22 +8,25 @@ class Image:
     :param path: Path to the image. Allowed values can be local file
         (relative or absolute path) or URL (HTTP or HTTPS). Relative paths
         will be interpreted relative to the application module directory.
-        TODO: or bytes object containig a valid image...
+    :param data: A bytes object with the contents of an image in a supported
+        format.
     """
-    def __init__(self, value=None, path=None):
-        if path is not None:
-            value = path  # TODO: code to deprecate path
-        self.data = None
-        self.path = None
+    def __init__(self, path=None, *, data=None):
+        if path is None and data is None:
+            raise ValueError('Either path or data must be set.')
+        if path is not None and data is not None:
+            raise ValueError('Only either path or data can be set.')
 
-        if isinstance(value, bytes):
-            self.data = value
-        elif isinstance(value, pathlib.Path):
-            self.path = value
-        elif value.startswith('http://') or value.startswith('https://'):
-            self.path = value
+        if path:
+            if isinstance(path, pathlib.Path):
+                self.path = path
+            elif path.startswith('http://') or path.startswith('https://'):
+                self.path = path
+            else:
+                self.path = pathlib.Path(path)
         else:
-            self.path = pathlib.Path(value)
+            self.path = None
+        self.data = data
 
         # Resource is late bound.
         self._impl = None

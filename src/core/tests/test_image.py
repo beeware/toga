@@ -70,7 +70,17 @@ class ImageTests(TestCase):
 
     def test_bytes_image(self):
         data = bytes([1])
-        bytes_image = toga.Image(data)
+        bytes_image = toga.Image(data=data)
         bytes_image.bind(factory=toga_dummy.factory)
         self.assertEqual(bytes_image._impl.interface, bytes_image)
         self.assertActionPerformedWith(bytes_image, 'load image data', data=data)
+
+    def test_not_enough_arguments(self):
+        with self.assertRaises(ValueError):
+            toga.Image(None)
+
+    def test_too_many_arguments(self):
+        path='/image.png'
+        data = bytes([1])
+        with self.assertRaises(ValueError):
+            toga.Image(path=path, data=data)
