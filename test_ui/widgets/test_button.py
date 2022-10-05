@@ -57,11 +57,11 @@ class TestButtonUi(unittest.TestCase):
             target=self.app.main_loop, kwargs=dict(handle_sigint=False)
         )
         self.thread.start()
-        time.sleep(0.2)
+        time.sleep(0.5)
 
     def tearDown(self):
         self.app.exit()
-        time.sleep(0.2)
+        time.sleep(0.5)
 
     def test_button_click_with_on_click(self):
         cx, cy = self.app.main_window.content_position
