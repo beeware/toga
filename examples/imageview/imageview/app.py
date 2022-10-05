@@ -3,6 +3,8 @@ import io
 import toga
 from toga.style.pack import CENTER, COLUMN
 
+from PIL import Image, ImageDraw
+
 
 class ImageViewApp(toga.App):
     def startup(self):
@@ -29,21 +31,15 @@ class ImageViewApp(toga.App):
         box.add(imageview_from_pathlib_path)
 
         # image from bytes
-        try:
-            # generate an image using pillow
-            from PIL import Image, ImageDraw
-            img = Image.new('RGBA', size=(110, 30))
-            d1 = ImageDraw.Draw(img)
-            d1.text((20, 10), "Pillow image", fill='green')
-            # get png bytes
-            buffer = io.BytesIO()
-            img.save(buffer, format='png', compress_level=0)
-            data = buffer.getvalue()
-        except ImportError:
-            # if pillow is not installed, fallback to loading a file
-            with open(self.paths.app / 'resources/pride-brutus.png', 'rb') as f:
-                data = f.read()
-        image_from_bytes = toga.Image(data=data)
+        # generate an image using pillow
+        img = Image.new('RGBA', size=(110, 30))
+        d1 = ImageDraw.Draw(img)
+        d1.text((20, 10), "Pillow image", fill='green')
+        # get png bytes
+        buffer = io.BytesIO()
+        img.save(buffer, format='png', compress_level=0)
+
+        image_from_bytes = toga.Image(data=buffer.getvalue())
         imageview_from_bytes = toga.ImageView(image_from_bytes)
         imageview_from_bytes.style.update(height=72)
         box.add(imageview_from_bytes)
