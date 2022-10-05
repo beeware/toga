@@ -53,5 +53,7 @@ recursive-include src/winforms/toga_winforms/libs/WebView2 *.dll
 prune src/*/build
 prune src/*/.eggs
 
+recursive-include test_ui *.py
+
 include src/core/tests/testbed/installed.dist-info/INSTALLER
 include src/core/tests/testbed/installed.dist-info/METADATA
