@@ -73,3 +73,13 @@ class Image:
                 self._impl = factory.Image(interface=self, url=self.path)
 
         return self._impl
+
+    def save(self, path):
+        """
+        Save image to given path.
+
+        :param path: Path where to save the image.
+        """
+        if self._impl is None:
+            raise RuntimeError("Image cannot be saved if it is not bound.")
+        self._impl.save(path)
