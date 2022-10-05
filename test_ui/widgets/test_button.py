@@ -61,6 +61,7 @@ class TestButtonUi(unittest.TestCase):
 
     def tearDown(self):
         self.app.exit()
+        time.sleep(0.2)
 
     def test_button_click_with_on_click(self):
         cx, cy = self.app.main_window.content_position
@@ -105,8 +106,7 @@ class TestButtonUi(unittest.TestCase):
             self.app.button1.layout.content_width,
             self.app.button1.layout.content_height,
         )
-        pixel = pyautogui.pixel(cx + bx + w // 3, cy + by + h // 3
-        )
+        pixel = pyautogui.pixel(cx + bx + w // 3, cy + by + h // 3)
         self.assertEqual(
             pixel, (0, 128, 0)
         )
