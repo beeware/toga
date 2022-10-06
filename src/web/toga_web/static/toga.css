@@ -9,6 +9,5 @@ div.toga.box {
 }
 
 span.toga.label {
-    flex: 0 0;
     white-space: nowrap;
 }

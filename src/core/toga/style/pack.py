@@ -495,6 +495,8 @@ class Pack(BaseStyle):
             css.append(f'flex-direction: {self.direction.lower()};')
         if self.flex:
             css.append(f'flex: {self.flex};')
+        else:
+            css.append(f'flex: 0;')
 
         return " ".join(css)
 
