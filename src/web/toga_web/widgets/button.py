@@ -8,7 +8,7 @@ class Button(Widget):
     def create(self):
         self.native = create_element(
             "button",
-            id = f"toga_{self.interface.id}",
+            id=f"toga_{self.interface.id}",
             classes=["button", "btn-block"],
             style=self.interface.style.__css__(),
         )

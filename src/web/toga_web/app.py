@@ -86,12 +86,8 @@ class App:
         self.interface.startup()
 
     def create_menus(self):
-
-        # self._menu_items = {}
         self._menu_groups = {}
         submenu = None
-
-        help_menu_items = []
 
         for cmd in self.interface.commands:
             if cmd == toga.GROUP_BREAK:
@@ -100,10 +96,12 @@ class App:
                 # TODO - add a section break
                 pass
             else:
+                # TODO - this doesn't handle submenus properly;
+                # all menu items will appear in their root group.
                 submenu = self._menu_groups.setdefault(cmd.group, [])
 
                 menu_item = create_element(
-                   "a",
+                    "a",
                     classes=["dropdown-item"] + ([] if cmd.enabled else ['disabled']),
                     content=cmd.text,
                 )
@@ -196,7 +194,10 @@ class App:
                                     "a",
                                     classes=["navbar-brand"],
                                     content=f"""
-                                        <img src="static/logo-32.png" class="d-inline-block align-top" alt="{self.interface.formal_name} logo" loading="lazy">
+                                        <img src="static/logo-32.png"
+                                             class="d-inline-block align-top"
+                                             alt="{self.interface.formal_name} logo"
+                                             loading="lazy">
                                         {self.interface.formal_name}
                                     """,
                                 ),

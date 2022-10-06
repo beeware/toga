@@ -26,6 +26,7 @@ class InfoDialog(BaseDialog):
 
         self.future.set_result(None)
 
+
 class QuestionDialog(BaseDialog):
     def __init__(self, window, title, message, on_result=None):
         super().__init__()

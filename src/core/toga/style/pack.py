@@ -496,7 +496,7 @@ class Pack(BaseStyle):
         if self.flex:
             css.append(f'flex: {self.flex};')
         else:
-            css.append(f'flex: 0;')
+            css.append('flex: 0;')
 
         return " ".join(css)
 
