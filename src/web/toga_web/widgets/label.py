@@ -1,23 +1,20 @@
+from toga_web.libs import js
+
 from .base import Widget
 
 
 class Label(Widget):
-    def __html__(self):
-        return """
-            <span id="toga_{id}" class="toga label" style="{style}">
-            {text}
-            </span>
-        """.format(
-            id=self.interface.id,
-            text=self.interface.text,
-            style=self.interface.style.__css__(),
-        )
-
     def create(self):
-        pass
+        self.native = js.document.createElement("span")
+        self.native.id = f"toga_{self.interface.id}"
+
+        self.native.classList.add("toga")
+        self.native.classList.add("label")
+
+        self.native.style = self.interface.style.__css__()
 
     def set_text(self, text):
-        pass
+        self.native.innerHTML = text
 
     def set_alignment(self, alignment):
         pass

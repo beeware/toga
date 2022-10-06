@@ -1,3 +1,5 @@
+from toga_web.libs import js
+
 # from travertino.layout import Viewport
 
 # from toga.command import GROUP_BREAK, SECTION_BREAK
@@ -23,17 +25,16 @@ class Window:
         self.interface = interface
         self.interface._impl = self
 
-        self.set_title(title)
+        self.native = js.document.createElement("main")
+        self.native.id = f"toga_{self.interface.id}"
 
-    def __html__(self):
-        return """
-            <main id="toga_{id}" class="toga window container" role="main">
-            {content}
-            </main>
-        """.format(
-            id=self.interface.id,
-            content=self.interface.content._impl.__html__()
-        )
+        self.native.classList.add("toga")
+        self.native.classList.add("window")
+        self.native.classList.add("container")
+
+        self.native.setAttribute("role", "main")
+
+        self.set_title(title)
 
     def get_title(self):
         self.interface.factory.not_implemented('Window.get_title()')
@@ -54,11 +55,12 @@ class Window:
                 child._impl.container = None
 
     def set_content(self, widget):
-        self.interface.factory.not_implemented('Window.set_content()')
         widget.viewport = WebViewport()
+
         # Add all children to the content widget.
-        for child in widget.interface.children:
-            child._impl.container = widget
+        # for child in widget.interface.children:
+        #     # child._impl.container = widget
+        self.native.append(widget.native)
 
     def show(self):
         self.interface.factory.not_implemented('Window.show()')

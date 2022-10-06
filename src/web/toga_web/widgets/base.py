@@ -1,48 +1,11 @@
-try:
-    import js
-except ImportError:
-    js = None
-
 
 class Widget:
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
         self._container = None
-        self._native = None
 
         self.create()
-
-    @property
-    def native(self):
-        if js:
-            if self._native is None:
-                native = js.document.getElementById(f'toga_{self.interface.id}')
-                if native:
-                    print(f"mapping ID {self.interface.id} to DOM element {native}")
-                    self._native = native
-                else:
-                    print("No native element yet")
-            return self._native
-        else:
-            print("Running serverside")
-            self._native = None
-
-    def handler(self, fn, name):
-        if hasattr(fn, '__self__'):
-            ref = '(%s,%s-%s)' % (fn.__self__.id, self.id, name)
-        else:
-            ref = '%s-%s' % (self.id, name)
-
-        return ref
-
-    @property
-    def ports(self):
-        return ",".join(
-            "%s=%s" % (name, widget.id)
-            for name, widget in self.__dict__.items()
-            if isinstance(widget, Widget)
-        )
 
     def set_app(self, app):
         pass
@@ -72,24 +35,22 @@ class Widget:
     ######################################################################
 
     def set_bounds(self, x, y, width, height):
-        # No implementation required here; the new sizing will be picked up
-        # by the box's allocation handler.
-        pass
+        self.native.style = self.interface.style.__css__()
 
     def set_alignment(self, alignment):
-        self.interface.factory.not_implemented('Widget.set_alignment()')
+        self.native.style = self.interface.style.__css__()
 
     def set_hidden(self, hidden):
-        self.interface.factory.not_implemented('Widget.set_hidden()')
+        self.native.style = self.interface.style.__css__()
 
     def set_font(self, font):
-        self.interface.factory.not_implemented('Widget.set_font()')
+        self.native.style = self.interface.style.__css__()
 
     def set_color(self, color):
-        self.interface.factory.not_implemented('Widget.set_color()')
+        self.native.style = self.interface.style.__css__()
 
     def set_background_color(self, color):
-        self.interface.factory.not_implemented('Widget.set_background_color()')
+        self.native.style = self.interface.style.__css__()
 
     ######################################################################
     # INTERFACE

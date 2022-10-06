@@ -1,23 +1,18 @@
+from toga_web.libs import js
+
 from .base import Widget
 
 
 class Box(Widget):
-    def __html__(self):
-        return """
-            <div id="toga_{id}" class="toga box container" style="{style}">
-            {content}
-            </div>
-        """.format(
-            id=self.interface.id,
-            content="\n".join(
-                child._impl.__html__()
-                for child in self.interface.children
-            ),
-            style=self.interface.style.__css__()
-        )
-
     def create(self):
-        pass
+        self.native = js.document.createElement("div")
+        self.native.id = f"toga_{self.interface.id}"
+
+        self.native.classList.add("toga")
+        self.native.classList.add("box")
+        self.native.classList.add("container")
+
+        self.native.style = self.interface.style.__css__()
 
     def add_child(self, child):
-        pass
+        self.native.appendChild(child.native)

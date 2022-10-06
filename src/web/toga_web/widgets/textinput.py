@@ -1,38 +1,32 @@
+from toga_web.libs import js
+
 from .base import Widget
 
 
 class TextInput(Widget):
-    def __html__(self):
-        return """
-            <input id="toga_{id}" class="toga input btn-block" style="{style}" value="{value}">
-        """.format(
-            id=self.interface.id,
-            style=self.interface.style.__css__(),
-            value=self.interface.value,
-        )
 
     def create(self):
-        pass
+        self.native = js.document.createElement("input")
+        self.native.id = f"toga_{self.interface.id}"
+
+        self.native.classList.add("toga")
+        self.native.classList.add("input")
+        self.native.classList.add("btn-block")
+
+        self.native.style = self.interface.style.__css__()
 
     def set_readonly(self, value):
-        pass
+        self.native.readOnly = value
 
     def set_placeholder(self, value):
-        pass
+        if value:
+            self.native.placeholder = value
 
     def get_value(self):
-        print("client get value")
-        if self.native:
-            return self.native.value
-        else:
-            return ''
+        return self.native.value
 
     def set_value(self, value):
-        if self.native:
-            print(f"client set value {value!r}")
-            self.native.value = value
-        else:
-            print(f"set value {value!r}")
+        self.native.value = value
 
     def set_font(self, font):
         pass
