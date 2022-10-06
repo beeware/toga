@@ -1,4 +1,5 @@
 import datetime
+import warnings
 
 from toga.handlers import wrapped_handler
 
@@ -15,23 +16,55 @@ class TimePicker(Widget):
             a new one will be created for the widget.
         factory (:obj:`module`): A python module that is capable to return a
             implementation of this class with the same name. (optional & normally not needed)
-        initial (str): The initial value to set the widget to. (Defaults to time of program execution)
+        value (str): The initial value to set the widget to. (Defaults to time of program execution)
         min_time (str): The minimum allowable time for the widget.
         max_time (str): The maximum allowable time for the widget.
         on_change (``callable``): Function that is invoked on time value change.
     """
     MIN_WIDTH = 100
 
-    def __init__(self, id=None, style=None, factory=None, initial=None, min_time=None, max_time=None, on_change=None):
+    def __init__(
+        self,
+        id=None,
+        style=None,
+        factory=None,
+        value=None,
+        min_time=None,
+        max_time=None,
+        on_change=None,
+        initial=None,  # DEPRECATED!
+    ):
         super().__init__(id=id, style=style, factory=factory)
         self._on_change = None
 
         # Create a platform specific implementation of a TimePicker
         self._impl = self.factory.TimePicker(interface=self)
+
+        ##################################################################
+        # 2022-07: Backwards compatibility
+        ##################################################################
+
+        # initial replaced with value
+        if initial is not None:
+            if value is not None:
+                raise ValueError(
+                    "Cannot specify both `initial` and `value`; "
+                    "`initial` has been deprecated, use `value`"
+                )
+            else:
+                warnings.warn(
+                    "`initial` has been renamed `value`", DeprecationWarning
+                )
+            value = initial
+
+        ##################################################################
+        # End backwards compatibility.
+        ##################################################################
+
         self.min_time = min_time
         self.max_time = max_time
         # Set the value after the min/max has been set
-        self.value = initial
+        self.value = value
         # Set the change handler after the initial value has been set
         self.on_change = on_change
 

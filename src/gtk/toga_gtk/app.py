@@ -161,7 +161,7 @@ class App:
                 self._menu_items[action] = cmd
                 self.native.add_action(action)
 
-                item = Gio.MenuItem.new(cmd.label, 'app.' + cmd_id)
+                item = Gio.MenuItem.new(cmd.text, 'app.' + cmd_id)
                 if cmd.shortcut:
                     item.set_attribute_value('accel', GLib.Variant('s', gtk_accel(cmd.shortcut)))
 
@@ -182,11 +182,11 @@ class App:
                 submenu = Gio.Menu()
                 self._menu_groups[group] = submenu
 
-                label = group.label
-                if label == '*':
-                    label = self.interface.name
+                text = group.text
+                if text == '*':
+                    text = self.interface.name
 
-                parent_menu.append_submenu(label, submenu)
+                parent_menu.append_submenu(text, submenu)
 
             # Install the item in the group cache.
             self._menu_groups[group] = submenu
@@ -254,7 +254,7 @@ class DocumentApp(App):
         self.interface.commands.add(
             toga.Command(
                 self.open_file,
-                label='Open...',
+                text='Open...',
                 shortcut=toga.Key.MOD_1 + 'o',
                 group=toga.Group.FILE,
                 section=0

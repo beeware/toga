@@ -100,9 +100,9 @@ class WindowDelegate(NSObject):
         native = NSToolbarItem.alloc().initWithItemIdentifier_(identifier)
         try:
             item = self.impl._toolbar_items[str(identifier)]
-            if item.label:
-                native.setLabel(item.label)
-                native.setPaletteLabel(item.label)
+            if item.text:
+                native.setLabel(item.text)
+                native.setPaletteLabel(item.text)
             if item.tooltip:
                 native.setToolTip(item.tooltip)
             if item.icon:
@@ -181,6 +181,11 @@ class Window:
         self._toolbar_native.setDelegate_(self.delegate)
 
         self.native.setToolbar_(self._toolbar_native)
+
+    def clear_content(self):
+        if self.interface.content:
+            for child in self.interface.content.children:
+                child._impl.container = None
 
     def set_content(self, widget):
         # Set the window's view to the be the widget's native object.
@@ -280,6 +285,12 @@ class Window:
 
         # Refresh with the actual viewport to do the proper rendering.
         self.interface.content.refresh()
+
+    def hide(self):
+        self.native.orderOut(self.native)
+
+    def get_visible(self):
+        return bool(self.native.isVisible)
 
     def set_full_screen(self, is_full_screen):
         self.interface.factory.not_implemented('Window.set_full_screen()')

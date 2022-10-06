@@ -1,11 +1,14 @@
-from .libs.android import R__attr
-from .libs.android.util import TypedValue
+from .libs.android import R__id
+from .libs.android.view import ViewTreeObserver__OnGlobalLayoutListener
 
 
 class AndroidViewport:
-    def __init__(self, native):
-        self.native = native
-        self.dpi = self.native.getContext().getResources().getDisplayMetrics().densityDpi
+    # `content_parent` should be the view that will become the parent of the widget passed to
+    # `Window.set_content`. This ensures that the viewport `width` and `height` attributes
+    # return the usable area of the app, not including the action bar or status bar.
+    def __init__(self, content_parent):
+        self.content_parent = content_parent
+        self.dpi = content_parent.getContext().getResources().getDisplayMetrics().densityDpi
         # Toga needs to know how the current DPI compares to the platform default,
         # which is 160: https://developer.android.com/training/multiscreen/screendensities
         self.baseline_dpi = 160
@@ -13,50 +16,46 @@ class AndroidViewport:
 
     @property
     def width(self):
-        return self.native.getContext().getResources().getDisplayMetrics().widthPixels
+        return self.content_parent.getWidth()
 
     @property
     def height(self):
-        screen_height = self.native.getContext().getResources().getDisplayMetrics().heightPixels
-        return screen_height - self._status_bar_height() - self._action_bar_height()
-
-    def _action_bar_height(self):
-        """
-        Get the size of the action bar. The action bar shows the app name and can provide some app actions.
-        """
-        tv = TypedValue()
-        has_action_bar_size = self.native.getContext().getTheme().resolveAttribute(R__attr.actionBarSize, tv, True)
-        if not has_action_bar_size:
-            return 0
-
-        return TypedValue.complexToDimensionPixelSize(
-            tv.data, self.native.getContext().getResources().getDisplayMetrics())
-
-    def _status_bar_height(self):
-        """
-        Get the size of the status bar. The status bar is typically rendered above the app,
-        showing the current time, battery level, etc.
-        """
-        resource_id = self.native.getContext().getResources().getIdentifier("status_bar_height", "dimen", "android")
-        if resource_id <= 0:
-            return 0
-
-        return self.native.getContext().getResources().getDimensionPixelSize(resource_id)
+        return self.content_parent.getHeight()
 
 
-class Window:
+class Window(ViewTreeObserver__OnGlobalLayoutListener):
     def __init__(self, interface, title, position, size):
+        super().__init__()
         self.interface = interface
         self.interface._impl = self
+        self.last_size = (None, None)
 
         # self.set_title(title)
 
     def set_app(self, app):
         self.app = app
+        content_parent = self.app.native.findViewById(R__id.content).__global__()
+        self.viewport = AndroidViewport(content_parent)
+        content_parent.getViewTreeObserver().addOnGlobalLayoutListener(self)
+
+    def onGlobalLayout(self):
+        """This listener is run after each native layout pass. If any view's size or position has
+        changed, the new values will be visible here.
+        """
+        new_size = (self.viewport.width, self.viewport.height)
+        if self.last_size != new_size:
+            self.last_size = new_size
+            if self.interface.content:
+                self.interface.content.refresh()
+
+    def clear_content(self):
+        if self.interface.content:
+            for child in self.interface.content.children:
+                child._impl.container = None
 
     def set_content(self, widget):
         # Set the widget's viewport to be based on the window's content.
-        widget.viewport = AndroidViewport(widget.native)
+        widget.viewport = self.viewport
         # Set the app's entire contentView to the desired widget. This means that
         # calling Window.set_content() on any Window object automatically updates
         # the app, meaning that every Window object acts as the MainWindow.
@@ -80,8 +79,7 @@ class Window:
         pass
 
     def get_size(self):
-        display_metrics = self.interface.content._impl.native.getContext().getResources().getDisplayMetrics()
-        return (display_metrics.widthPixels, display_metrics.heightPixels)
+        return self.last_size
 
     def set_size(self, size):
         # Does nothing on mobile
@@ -92,6 +90,14 @@ class Window:
 
     def show(self):
         pass
+
+    def hide(self):
+        # A no-op, as the window cannot be hidden.
+        pass
+
+    def get_visible(self):
+        # The window is alays visible
+        return True
 
     def close(self):
         pass

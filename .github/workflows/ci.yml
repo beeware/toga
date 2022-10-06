@@ -109,11 +109,15 @@ jobs:
       run: |
         cd src/winforms
         pytest
+    - name: Core Test
+      run: |
+        cd src/core
+        pytest
 
   macOS:
     name: macOS backend tests
     needs: python-versions
-    runs-on: macOS-10.15
+    runs-on: macOS-latest
     steps:
     - uses: actions/checkout@v1
     - name: Set up Python 3.7
@@ -136,7 +140,7 @@ jobs:
   iOS:
     name: iOS backend tests
     needs: python-versions
-    runs-on: macOS-10.15
+    runs-on: macOS-latest
     steps:
     - uses: actions/checkout@v1
     - name: Set up Python 3.7

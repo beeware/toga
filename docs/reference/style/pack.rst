@@ -243,7 +243,7 @@ specifying the allocated width and allocated height.
    value less than 0, the adjusted view width is set to 0.
 
    If the element has a fixed intrinsic width, the available width is set to
-   the minimum of the adjusted view width and the intrinsic width.
+   the intrinsic width.
 
    If the element has a minimum intrinsic width, the available width is fixed
    to the maximum of the adjusted view width and the intrinsic minimum width.
@@ -261,7 +261,7 @@ specifying the allocated width and allocated height.
    value less than 0, the adjusted view height is set to 0.
 
    If the element has a fixed intrinsic height, the available height is set to
-   the minimum of the adjusted view height and the intrinsic height.
+   the intrinsic height.
 
    If the element has a minimum intrinsic height, the available height is
    fixed to the maximum of the adjusted view height and the intrinsic minimum
@@ -356,14 +356,14 @@ specifying the allocated width and allocated height.
       The extra height for a child is defined as the difference between the
       parent elements final height and the child's full height.
 
-      If the parent element has a ``alignment`` value of ``top``, the
+      If the parent element has an ``alignment`` value of ``top``, the
       vertical position of the child is set to 0, relative to the parent.
 
-      If the parent element has a ``alignment`` value of ``bottom``, the
+      If the parent element has an ``alignment`` value of ``bottom``, the
       vertical position of the child is set to the extra height, relative to
       the parent.
 
-      If the parent element has a ``alignment`` value of ``center``, the
+      If the parent element has an ``alignment`` value of ``center``, the
       vertical position of the child is set to 1/2 of the extra height,
       relative to the parent.
 
@@ -438,13 +438,13 @@ specifying the allocated width and allocated height.
       The extra width for a child is defined as the difference between the
       parent element's final width and the child's full width.
 
-      If the parent element has a ``alignment`` value of ``left``, the
+      If the parent element has an ``alignment`` value of ``left``, the
       horizontal position of the child is set to 0, relative to the parent.
 
-      If the parent element has a ``alignment`` value of ``right``, the
+      If the parent element has an ``alignment`` value of ``right``, the
       horizontal position of the child is set to the extra width, relative to
       the parent.
 
-      If the parent element has a ``text_align`` value of ``center``, the
+      If the parent element has an ``alignment`` value of ``center``, the
       horizontal position of the child is set to 1/2 of the extra width,
       relative to the parent.

@@ -48,6 +48,11 @@ class Window:
     def create_toolbar(self):
         self.interface.factory.not_implemented('Window.create_toolbar()')
 
+    def clear_content(self):
+        if self.interface.content:
+            for child in self.interface.content.children:
+                child._impl.container = None
+
     def set_content(self, widget):
         self.interface.factory.not_implemented('Window.set_content()')
         widget.viewport = WebViewport()
@@ -65,6 +70,12 @@ class Window:
         # self.interface.content.style.layout(self.interface.content, Viewport(0, 0))
         # self.interface.content._impl.min_width = self.interface.content.layout.width
         # self.interface.content._impl.min_height = self.interface.content.layout.height
+
+    def hide(self):
+        self.interface.not_implemented("Window.hide()")
+
+    def get_visible(self):
+        self.interface.not_implemented("Window.get_visible()")
 
     def on_close(self, *args):
         pass

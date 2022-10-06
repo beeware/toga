@@ -1,4 +1,7 @@
+import warnings
+
 from toga.handlers import wrapped_handler
+
 from .base import Widget
 
 
@@ -11,24 +14,54 @@ class MultilineTextInput(Widget):
             If no style is provided then a new one will be created for the widget.
         factory: Optional factory that must be able to return a implementation
             of a MulitlineTextInput Widget.
-        initial (str): The initial text of the widget.
+        value (str): The initial text of the widget.
         readonly (bool): Whether a user can write into the text input,
             defaults to `False`.
         placeholder (str): The placeholder text for the widget.
+        on_change (``callable``): The handler to invoke when the text changes.
     """
     MIN_HEIGHT = 100
     MIN_WIDTH = 100
 
-    def __init__(self, id=None, style=None, factory=None,
-                 initial=None, readonly=False, placeholder=None,
-                 on_change=None):
+    def __init__(
+        self,
+        id=None,
+        style=None,
+        factory=None,
+        value=None,
+        readonly=False,
+        placeholder=None,
+        on_change=None,
+        initial=None,  # DEPRECATED!
+    ):
         super().__init__(id=id, style=style, factory=factory)
 
         # Create a platform specific implementation of a MultilineTextInput
         self._impl = self.factory.MultilineTextInput(interface=self)
 
+        ##################################################################
+        # 2022-07: Backwards compatibility
+        ##################################################################
+
+        # initial replaced with value
+        if initial is not None:
+            if value is not None:
+                raise ValueError(
+                    "Cannot specify both `initial` and `value`; "
+                    "`initial` has been deprecated, use `value`"
+                )
+            else:
+                warnings.warn(
+                    "`initial` has been renamed `value`", DeprecationWarning
+                )
+            value = initial
+
+        ##################################################################
+        # End backwards compatibility.
+        ##################################################################
+
         # Set all the properties
-        self.value = initial
+        self.value = value
         self.readonly = readonly
         self.placeholder = placeholder
         self.on_change = on_change

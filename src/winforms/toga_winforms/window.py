@@ -72,9 +72,9 @@ class Window:
             else:
                 if cmd.icon is not None:
                     native_icon = cmd.icon._impl.native
-                    item = WinForms.ToolStripMenuItem(cmd.label, native_icon.ToBitmap())
+                    item = WinForms.ToolStripMenuItem(cmd.text, native_icon.ToBitmap())
                 else:
-                    item = WinForms.ToolStripMenuItem(cmd.label)
+                    item = WinForms.ToolStripMenuItem(cmd.text)
                 item.Click += cmd._impl.as_handler()
                 cmd._impl.native.append(item)
             self.toolbar_native.Items.Add(item)
@@ -113,14 +113,29 @@ class Window:
             pass
         return result
 
-    def set_content(self, widget):
-        for control in self.native.Controls:
-            self.native.Controls.Remove(control)
+    def clear_content(self):
+        if self.interface.content:
+            for child in self.interface.content.children:
+                child._impl.container = None
 
-        if self.toolbar_native:
+    def set_content(self, widget):
+        has_content = False
+        for control in self.native.Controls:
+            # The main menu and toolbar are normal in-window controls;
+            # however, they shouldn't be removed if window content is
+            # removed.
+            if control != self.native.MainMenuStrip and control != self.toolbar_native:
+                has_content = True
+                self.native.Controls.Remove(control)
+
+        # The first time content is set for the window, we also need
+        # to add the toolbar as part of the main window content.
+        # We use "did we haev to remove any content" as a marker for
+        # whether this is the first time we're setting content.
+        if not has_content:
             self.native.Controls.Add(self.toolbar_native)
-            # Create the lookup table of menu items,
-            # then force the creation of the menus.
+
+        # Add the actual window content.
         self.native.Controls.Add(widget.native)
 
         # Set the widget's viewport to be based on the window's content.
@@ -157,7 +172,13 @@ class Window:
 
         if self.interface is not self.interface.app._main_window:
             self.native.Icon = self.interface.app.icon.bind(self.interface.factory).native
-            self.native.Show()
+        self.native.Show()
+
+    def hide(self):
+        self.native.Hide()
+
+    def get_visible(self):
+        return self.native.Visible
 
     def winforms_FormClosing(self, sender, event):
         # If the app is exiting, or a manual close has been requested,

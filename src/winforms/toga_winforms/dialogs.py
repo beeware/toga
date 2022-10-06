@@ -210,7 +210,7 @@ class FileDialog(BaseDialog):
             dialog.FileName = filename
 
         if initial_directory is not None:
-            dialog.InitialDirectory = str(initial_directory)
+            self._set_initial_directory(dialog, str(initial_directory))
 
         if file_types is not None:
             filters = [f"{ext} files (*.{ext})|*.{ext}" for ext in file_types] + ["All files (*.*)|*.*"]
@@ -242,6 +242,22 @@ class FileDialog(BaseDialog):
             return [Path(filename) for filename in dialog.FileNames]
         else:
             return Path(dialog.FileName)
+
+    @classmethod
+    def _set_initial_directory(cls, dialog, initial_directory):
+        """Set the initial directory of the given dialog.
+
+        On Windows, not all file/folder dialogs work the same way,
+        so this method is overridden when a subclass needs to
+        set the initial directory in some other fashion.
+
+        Args:
+            dialog (WinForms.CommonDialog): the dialog to set the
+                initial directory on.
+            initial_directory (str): the path of the initial directory.
+
+        """
+        dialog.InitialDirectory = initial_directory
 
 
 class SaveFileDialog(FileDialog):
@@ -289,3 +305,7 @@ class SelectFolderDialog(FileDialog):
     def _get_filenames(cls, dialog, multiselect):
         filename = Path(dialog.SelectedPath)
         return [filename] if multiselect else filename
+
+    @classmethod
+    def _set_initial_directory(cls, dialog, initial_directory):
+        dialog.SelectedPath = initial_directory

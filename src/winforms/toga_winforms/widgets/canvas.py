@@ -141,7 +141,7 @@ class Canvas(Box):
         if line_width is not None:
             pen.Width = line_width
         if line_dash is not None:
-            pen.DashPattern = line_dash
+            pen.DashPattern = tuple(map(float, line_dash))
         return pen
 
     def create_brush(self, color):
@@ -160,26 +160,31 @@ class Canvas(Box):
         draw_context.last_point = (x, y)
 
     def line_to(self, x, y, draw_context, *args, **kwargs):
-        ox, oy = int(draw_context.last_point[0]), int(draw_context.last_point[1])
-        x, y = int(x), int(y)
-        draw_context.current_path.AddLine(ox, oy, x, y)
+        draw_context.current_path.AddLine(
+            float(draw_context.last_point[0]), float(draw_context.last_point[1]),
+            float(x), float(y)
+        )
         draw_context.last_point = (x, y)
 
     # Basic shapes
 
     def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y, draw_context, *args, **kwargs):
-        point1, point2, point3, point4 = (
-            PointF(*draw_context.last_point),
-            PointF(cp1x, cp1y),
-            PointF(cp2x, cp2y),
-            PointF(x, y)
+        # Workaround for Pythonnet#1833 requires an explicit cast to float
+        draw_context.current_path.AddBezier(
+            PointF(float(draw_context.last_point[0]), float(draw_context.last_point[1])),
+            PointF(float(cp1x), float(cp1y)),
+            PointF(float(cp2x), float(cp2y)),
+            PointF(float(x), float(y)),
         )
-        draw_context.current_path.AddBezier(point1, point2, point3, point4)
         draw_context.last_point = (x, y)
 
     def quadratic_curve_to(self, cpx, cpy, x, y, draw_context, *args, **kwargs):
-        point1, point2, point3 = PointF(*draw_context.last_point), PointF(cpx, cpy), PointF(x, y)
-        draw_context.current_path.AddCurve([point1, point2, point3])
+        # Workaround for Pythonnet#1833 requires an explicit cast to float
+        draw_context.current_path.AddCurve([
+            PointF(float(draw_context.last_point[0]), float(draw_context.last_point[1])),
+            PointF(float(cpx), float(cpy)),
+            PointF(float(x), float(y)),
+        ])
         draw_context.last_point = (x, y)
 
     def arc(
@@ -221,7 +226,10 @@ class Canvas(Box):
             draw_context,
             *args,
             **kwargs):
-        rect = RectangleF(float(x - radiusx), float(y - radiusy), float(2 * radiusx), float(2 * radiusy))
+        rect = RectangleF(
+            float(x - radiusx), float(y - radiusy),
+            float(2 * radiusx), float(2 * radiusy)
+        )
         draw_context.current_path.AddArc(
             rect,
             math.degrees(startangle),
@@ -273,10 +281,12 @@ class Canvas(Box):
         draw_context.matrix.Rotate(math.degrees(radians))
 
     def scale(self, sx, sy, draw_context, *args, **kwargs):
-        draw_context.matrix.Scale(sx, sy)
+        # Workaround for Pythonnet#1833 requires an explicit cast to float
+        draw_context.matrix.Scale(float(sx), float(sy))
 
     def translate(self, tx, ty, draw_context, *args, **kwargs):
-        draw_context.matrix.Translate(tx, ty)
+        # Workaround for Pythonnet#1833 requires an explicit cast to float
+        draw_context.matrix.Translate(float(tx), float(ty))
 
     def reset_transform(self, draw_context, *args, **kwargs):
         draw_context.matrix = None

@@ -1,3 +1,5 @@
+import warnings
+
 from toga.handlers import wrapped_handler
 
 from .base import Widget
@@ -12,7 +14,7 @@ class TextInput(Widget):
             a new one will be created for the widget.
         factory (:obj:`module`): A python module that is capable to return a
             implementation of this class with the same name. (optional & normally not needed)
-        initial (str): The initial text for the input.
+        value (str): The initial text for the input.
         placeholder (str): If no input is present this text is shown.
         readonly (bool):  Whether a user can write into the text input, defaults to `False`.
         on_change (Callable): Method to be called when text is changed in text box
@@ -29,25 +31,47 @@ class TextInput(Widget):
         id=None,
         style=None,
         factory=None,
-        initial=None,
+        value=None,
         placeholder=None,
         readonly=False,
         on_change=None,
         on_gain_focus=None,
         on_lose_focus=None,
-        validators=None
+        validators=None,
+        initial=None,  # DEPRECATED!
     ):
         super().__init__(id=id, style=style, factory=factory)
 
         # Create a platform specific implementation of the widget
         self._create()
 
-        self.on_change = on_change
+        ##################################################################
+        # 2022-07: Backwards compatibility
+        ##################################################################
+
+        # initial replaced with value
+        if initial is not None:
+            if value is not None:
+                raise ValueError(
+                    "Cannot specify both `initial` and `value`; "
+                    "`initial` has been deprecated, use `value`"
+                )
+            else:
+                warnings.warn(
+                    "`initial` has been renamed `value`", DeprecationWarning
+                )
+            value = initial
+
+        ##################################################################
+        # End backwards compatibility.
+        ##################################################################
+
         self.placeholder = placeholder
         self.readonly = readonly
 
-        # Set the actual value after on_change, as it may trigger change events, etc.
-        self.value = initial
+        # Set the actual value before on_change, because we do not want on_change triggered by it
+        self.value = value
+        self.on_change = on_change
         self.validators = validators
         self.on_lose_focus = on_lose_focus
         self.on_gain_focus = on_gain_focus
@@ -103,6 +127,10 @@ class TextInput(Widget):
         else:
             v = str(value)
         self._impl.set_value(v)
+
+    @property
+    def is_valid(self):
+        return self._impl.is_valid()
 
     def clear(self):
         """ Clears the text of the widget """

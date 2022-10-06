@@ -12,6 +12,9 @@ class Widget:
         self.create()
         self.interface.style.reapply()
 
+    def create(self):
+        pass
+
     def set_app(self, app):
         # No special handling required
         pass

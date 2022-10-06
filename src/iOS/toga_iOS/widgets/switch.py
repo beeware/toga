@@ -18,8 +18,8 @@ class TogaSwitch(UISwitch):
 
     @objc_method
     def onPress_(self, obj) -> None:
-        if self.interface.on_toggle:
-            self.interface.on_toggle(self.interface)
+        if self.interface.on_change:
+            self.interface.on_change(self.interface)
 
 
 class Switch(Widget):
@@ -42,17 +42,17 @@ class Switch(Widget):
         # Add the layout constraints
         self.add_constraints()
 
-    def set_label(self, label):
-        self.native_label.text = str(self.interface.label)
+    def set_text(self, text):
+        self.native_label.text = str(self.interface.text)
         self.rehint()
 
-    def set_is_on(self, value):
+    def set_value(self, value):
         self.native_switch.setOn_animated_(value, True)
 
-    def get_is_on(self):
+    def get_value(self):
         return self.native_switch.isOn()
 
-    def set_on_toggle(self, handler):
+    def set_on_change(self, handler):
         # No special handling required
         pass
 

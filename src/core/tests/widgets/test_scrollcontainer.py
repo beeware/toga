@@ -87,3 +87,13 @@ class ScrollContainerTests(TestCase):
             ValueError, "^Cannot set vertical position when vertical is not set.$"
         ):
             self.sc.vertical_position = 0.5
+
+    def test_set_app(self):
+
+        new_content = toga.Box(style=TestStyle(), factory=toga_dummy.factory)
+        self.sc.content = new_content
+        self.assertIsNone(new_content.app)
+
+        app = mock.Mock()
+        self.sc.app = app
+        self.assertEqual(new_content.app, app)

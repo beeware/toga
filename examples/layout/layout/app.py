@@ -8,39 +8,39 @@ class ExampleLayoutApp(toga.App):
     def startup(self):
 
         self.button_hide = toga.Button(
-            label='Hide label',
+            text='Hide label',
             style=Pack(padding=10, width=120),
             on_press=self.hide_label,
         )
 
         self.button_add = toga.Button(
-            label='Add image',
+            text='Add image',
             style=Pack(padding=10, width=120),
             on_press=self.add_image,
         )
 
         self.button_remove = toga.Button(
-            label='Remove image',
+            text='Remove image',
             style=Pack(padding=10, width=120),
             on_press=self.remove_image,
             enabled=False,
         )
 
         self.button_insert = toga.Button(
-            label='Insert image',
+            text='Insert image',
             style=Pack(padding=10, width=120),
             on_press=self.insert_image,
         )
 
         self.button_reparent = toga.Button(
-            label='Reparent image',
+            text='Reparent image',
             style=Pack(padding=10, width=120),
             on_press=self.reparent_image,
             enabled=False,
         )
 
         self.button_add_to_scroll = toga.Button(
-            label='Add new label',
+            text='Add new label',
             style=Pack(padding=10, width=120),
             on_press=self.add_label,
         )
@@ -84,10 +84,10 @@ class ExampleLayoutApp(toga.App):
     def hide_label(self, sender):
         if self.labels[0].style.visibility == HIDDEN:
             self.labels[0].style.visibility = VISIBLE
-            self.button_hide.label = "Hide label"
+            self.button_hide.text = "Hide label"
         else:
             self.labels[0].style.visibility = HIDDEN
-            self.button_hide.label = "Show label"
+            self.button_hide.text = "Show label"
 
     def add_image(self, sender):
         self.content_box.add(self.image_view)

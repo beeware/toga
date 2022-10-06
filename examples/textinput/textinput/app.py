@@ -21,7 +21,8 @@ class TextInputApp(toga.App):
             self.text_input.value
         )
 
-        self.password_label.text = "Your password is: {}".format(
+        self.password_label.text = "Your password is {}: {}".format(
+            "valid" if self.password_input.is_valid else "invalid",
             self.password_input.value
         )
 
@@ -32,16 +33,9 @@ class TextInputApp(toga.App):
             self.number_label.text = "You didn't enter a number"
 
         # Wait 5 seconds
-        self.label.text = 'Counting down from 5...'
-        yield 1
-        self.label.text = 'Counting down from 4...'
-        yield 1
-        self.label.text = 'Counting down from 3...'
-        yield 1
-        self.label.text = 'Counting down from 2...'
-        yield 1
-        self.label.text = 'Counting down from 1...'
-        yield 1
+        for i in range(5, 0, -1):
+            self.label.text = 'Counting down from {}...'.format(i)
+            yield 1
         self.label.text = 'Enter some values and press extract.'
 
         # Renable the inputs again.

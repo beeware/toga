@@ -9,7 +9,7 @@ class OptionContainer(Widget):
         self.native = WinForms.TabControl()
         self.native.Selected += self.winforms_selected
 
-    def add_content(self, label, widget):
+    def add_content(self, index, text, widget):
         widget.viewport = WinFormsViewport(self.native, self)
         widget.frame = self
         # Add all children to the content widget.
@@ -17,14 +17,17 @@ class OptionContainer(Widget):
             child._impl.container = widget
 
         item = WinForms.TabPage()
-        item.Text = label
+        item.Text = text
 
         # Enable AutoSize on the container to fill
         # the available space in the OptionContainer.
         widget.AutoSize = True
 
         item.Controls.Add(widget.native)
-        self.native.TabPages.Add(item)
+        if index < self.native.TabPages.Count:
+            self.native.TabPages.Insert(index, item)
+        else:
+            self.native.TabPages.Add(item)
 
     def remove_content(self, index):
         tab_page = self.native.TabPages[index]
@@ -44,10 +47,10 @@ class OptionContainer(Widget):
     def is_option_enabled(self, index):
         return self.native.TabPages[index].Enabled
 
-    def set_option_label(self, index, value):
+    def set_option_text(self, index, value):
         self.native.TabPages[index].Text = value
 
-    def get_option_label(self, index):
+    def get_option_text(self, index):
         return self.native.TabPages[index].Text
 
     def get_current_tab_index(self):

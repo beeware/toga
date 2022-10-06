@@ -11,8 +11,7 @@ from .window import Window
 
 
 # `MainWindow` is defined here in `app.py`, not `window.py`, to mollify the test suite.
-class MainWindow(Window):
-    pass
+MainWindow = Window
 
 
 class TogaApp(IPythonApp):
@@ -66,6 +65,9 @@ class TogaApp(IPythonApp):
         except KeyError:
             print("No intent matching request code {requestCode}")
 
+    def onConfigurationChanged(self, new_config):
+        pass
+
     def onOptionsItemSelected(self, menuitem):
         consumed = False
         try:
@@ -105,20 +107,20 @@ class TogaApp(IPythonApp):
                     if groupkey in menulist:
                         menugroup = menulist[groupkey]
                     else:
-                        if group.label == toga.Group.COMMANDS.label:
+                        if group.text == toga.Group.COMMANDS.text:
                             menulist[groupkey] = menu
                             menugroup = menu
                         else:
                             itemid += 1
                             order = Menu.NONE if group.order is None else group.order
                             menugroup = parentmenu.addSubMenu(Menu.NONE, itemid, order,
-                                                              group.label)  # groupId, itemId, order, title
+                                                              group.text)  # groupId, itemId, order, title
                             menulist[groupkey] = menugroup
                     parentmenu = menugroup
             # create menu item
             itemid += 1
             order = Menu.NONE if cmd.order is None else cmd.order
-            menuitem = menugroup.add(Menu.NONE, itemid, order, cmd.label)  # groupId, itemId, order, title
+            menuitem = menugroup.add(Menu.NONE, itemid, order, cmd.text)  # groupId, itemId, order, title
             menuitem.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_NEVER)
             menuitem.setEnabled(cmd.enabled)
             self.menuitem_mapping[itemid] = cmd  # store itemid for use in onOptionsItemSelected
@@ -130,7 +132,7 @@ class TogaApp(IPythonApp):
                     continue
                 itemid += 1
                 order = Menu.NONE if cmd.order is None else cmd.order
-                menuitem = menu.add(Menu.NONE, itemid, order, cmd.label)  # groupId, itemId, order, title
+                menuitem = menu.add(Menu.NONE, itemid, order, cmd.text)  # groupId, itemId, order, title
                 menuitem.setShowAsActionFlags(
                     MenuItem.SHOW_AS_ACTION_IF_ROOM)  # toolbar button / item in options menu on overflow
                 menuitem.setEnabled(cmd.enabled)
