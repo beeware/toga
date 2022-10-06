@@ -32,6 +32,10 @@ class Widget:
 
     ######################################################################
     # APPLICATOR
+    #
+    # Web style is a little different to other platforms; we if there's
+    # any change, we can just re-set the CSS styles and the browser
+    # will reflect those changes as needed.
     ######################################################################
 
     def set_bounds(self, x, y, width, height):
@@ -58,8 +62,6 @@ class Widget:
 
     def add_child(self, child):
         pass
-        # if self._container:
-        #     child._set_container(self._container)
 
     def rehint(self):
         pass

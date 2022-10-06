@@ -1,9 +1,4 @@
-from toga_web.libs import js
-
-# from travertino.layout import Viewport
-
-# from toga.command import GROUP_BREAK, SECTION_BREAK
-# from toga.handlers import wrapped_handler
+from toga_web.libs import js, create_element
 
 
 class WebViewport:
@@ -25,26 +20,23 @@ class Window:
         self.interface = interface
         self.interface._impl = self
 
-        self.native = js.document.createElement("main")
-        self.native.id = f"toga_{self.interface.id}"
-
-        self.native.classList.add("toga")
-        self.native.classList.add("window")
-        self.native.classList.add("container")
-
-        self.native.setAttribute("role", "main")
+        self.native = create_element(
+            "main",
+            id=f"toga_{self.interface.id}",
+            classes=["window", "container"],
+            role="main",
+        )
 
         self.set_title(title)
 
     def get_title(self):
-        self.interface.factory.not_implemented('Window.get_title()')
-        return "?"
+        return js.document.title
 
     def set_title(self, title):
-        self.interface.factory.not_implemented('Window.set_title()')
+        js.document.title = title
 
     def set_app(self, app):
-        self.interface.factory.not_implemented('Window.set_app()')
+        pass
 
     def create_toolbar(self):
         self.interface.factory.not_implemented('Window.create_toolbar()')
@@ -60,21 +52,15 @@ class Window:
         # Add all children to the content widget.
         # for child in widget.interface.children:
         #     # child._impl.container = widget
-        self.native.append(widget.native)
+        self.native.appendChild(widget.native)
 
     def show(self):
-        self.interface.factory.not_implemented('Window.show()')
-        # self.native.show_all()
-
-        # # Now that the content is visible, we can do our initial hinting,
-        # # and use that as the basis for setting the minimum window size.
-        # self.interface.content._impl.rehint()
-        # self.interface.content.style.layout(self.interface.content, Viewport(0, 0))
-        # self.interface.content._impl.min_width = self.interface.content.layout.width
-        # self.interface.content._impl.min_height = self.interface.content.layout.height
+        app_placeholder = js.document.getElementById("app-placeholder")
+        app_placeholder.appendChild(self.native)
 
     def hide(self):
-        self.interface.not_implemented("Window.hide()")
+        # No op - content is always visible.
+        pass
 
     def get_visible(self):
         self.interface.not_implemented("Window.get_visible()")

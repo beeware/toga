@@ -7,3 +7,8 @@ main.toga.window {
 div.toga.box {
     display: flex;
 }
+
+span.toga.label {
+    flex: 0 0;
+    white-space: nowrap;
+}
