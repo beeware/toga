@@ -235,7 +235,7 @@ class App:
         app_placeholder = js.document.getElementById("app-placeholder")
         app_placeholder.appendChild(self.menubar)
 
-    def main_loop(self, **kwargs):
+    def main_loop(self):
         self.create()
 
     def set_main_window(self, window):
