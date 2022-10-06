@@ -36,17 +36,16 @@ class App:
             toga.Command(None, 'Preferences', group=toga.Group.APP),
         )
 
-    def main_loop(self, spa=False, **kwargs):
-        if spa:
-            content = self.body()
-            js.document.getElementById("toga-placeholder").innerHTML = content
-            js.document.title = self.interface.formal_name
+    def main_loop(self, **kwargs):
+        js.document.getElementById("placeholder").innerHTML = self.__html__()
+        js.document.title = self.interface.formal_name
 
     def set_main_window(self, window):
         pass
 
     def show_about_dialog(self):
         self.interface.factory.not_implemented("App.show_about_dialog()")
+        js.alert("Hello", "world")
 
     def exit(self):
         pass
@@ -72,7 +71,7 @@ class App:
     def add_background_task(self, handler):
         self.interface.factory.not_implemented('App.add_background_task()')
 
-    def body(self):
+    def __html__(self):
         return f"""
     <header>
         <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
@@ -119,55 +118,3 @@ class App:
     </header>
 {self.interface.main_window._impl.__html__()}
 """
-
-    def render(self, state, headers):
-        return f"""
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="icon" type="image/png" href="/static/logo-32.png"/>
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet"
-          href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
-          integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
-          crossorigin="anonymous">
-    <link rel="stylesheet" href="/static/toga.css">
-
-    <script defer src="https://pyscript.net/unstable/pyscript.js"></script>
-
-    <title>{self.interface.formal_name}</title>
-  </head>
-  <body>
-    {self.body()}
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
-        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-        crossorigin="anonymous">
-        </script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
-        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
-        crossorigin="anonymous">
-        </script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
-        integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
-        crossorigin="anonymous">
-        </script>
-  </body>
-  <py-env>
- - '/static/wheels/travertino-0.1.3-py3-none-any.whl'
- - '/static/wheels/toga_core-{toga.__version__}-py3-none-any.whl'
- - '/static/wheels/toga_web-{toga.__version__}-py3-none-any.whl'
- - '/static/wheels/{self.interface.app_name}-{self.interface.version}-py3-none-any.whl'
-  </py-env>
-  <py-script>
-from toga_web.dom import handle as dom_handle
-
-from {self.interface.app_name}.__main__ import main
-
-main().main_loop()
-
-  </py-script>
-</html>"""
