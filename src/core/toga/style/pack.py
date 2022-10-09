@@ -491,12 +491,13 @@ class Pack(BaseStyle):
             css.append(f'margin-right: {self.padding_right}px;')
         if self.width:
             css.append(f'width: {self.width}px;')
+        else:
+            if self.flex:
+                css.append(f'flex: {self.flex} 0 0%;')
+            else:
+                css.append('flex: 0 0 0%;')
         if self.direction:
             css.append(f'flex-direction: {self.direction.lower()};')
-        if self.flex:
-            css.append(f'flex: {self.flex};')
-        else:
-            css.append('flex: 0;')
 
         return " ".join(css)
 
