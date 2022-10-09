@@ -38,23 +38,26 @@ class Widget:
     # will reflect those changes as needed.
     ######################################################################
 
-    def set_bounds(self, x, y, width, height):
+    def _reapply_style(self):
         self.native.style = self.interface.style.__css__()
+
+    def set_bounds(self, x, y, width, height):
+        self._reapply_style()
 
     def set_alignment(self, alignment):
-        self.native.style = self.interface.style.__css__()
+        self._reapply_style()
 
     def set_hidden(self, hidden):
-        self.native.style = self.interface.style.__css__()
+        self._reapply_style()
 
     def set_font(self, font):
-        self.native.style = self.interface.style.__css__()
+        self._reapply_style()
 
     def set_color(self, color):
-        self.native.style = self.interface.style.__css__()
+        self._reapply_style()
 
     def set_background_color(self, color):
-        self.native.style = self.interface.style.__css__()
+        self._reapply_style()
 
     ######################################################################
     # INTERFACE
