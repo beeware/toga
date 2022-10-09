@@ -27,6 +27,9 @@ class Window:
             role="main",
         )
 
+        app_placeholder = js.document.getElementById("app-placeholder")
+        app_placeholder.appendChild(self.native)
+
         self.set_title(title)
 
     def get_title(self):
@@ -49,18 +52,18 @@ class Window:
     def set_content(self, widget):
         widget.viewport = WebViewport()
 
+        # Remove existing content of the window.
+        for child in self.native.childNodes:
+            self.native.removeChild(child)
+
         # Add all children to the content widget.
-        # for child in widget.interface.children:
-        #     # child._impl.container = widget
         self.native.appendChild(widget.native)
 
     def show(self):
-        app_placeholder = js.document.getElementById("app-placeholder")
-        app_placeholder.appendChild(self.native)
+        self.native.style = "visibility: visible;"
 
     def hide(self):
-        # No op - content is always visible.
-        pass
+        self.native.style = "visibility: hidden;"
 
     def get_visible(self):
         self.interface.not_implemented("Window.get_visible()")
