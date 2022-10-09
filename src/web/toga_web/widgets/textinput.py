@@ -1,16 +1,9 @@
-from toga_web.libs import create_element
-
 from .base import Widget
 
 
 class TextInput(Widget):
     def create(self):
-        self.native = create_element(
-            "input",
-            id=f"toga_{self.interface.id}",
-            classes=["input", "btn-block"],
-            style=self.interface.style.__css__(),
-        )
+        self.native = self._create_native_widget("input", classes=["btn-block"])
 
     def set_readonly(self, value):
         self.native.readOnly = value

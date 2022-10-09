@@ -23,7 +23,7 @@ class Window:
         self.native = create_element(
             "main",
             id=f"toga_{self.interface.id}",
-            classes=["window", "container"],
+            classes=["toga", "window", "container"],
             role="main",
         )
 

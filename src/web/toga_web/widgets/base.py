@@ -1,3 +1,5 @@
+from toga_web.libs import create_element
+
 
 class Widget:
     def __init__(self, interface):
@@ -6,6 +8,42 @@ class Widget:
         self._container = None
 
         self.create()
+
+    def _create_native_widget(self, tag, classes=None, content=None, children=None, **properties):
+        """Create a DOM element representing a native widget.
+
+        The ID and style of the widget will be automatically set;
+        ``toga``, and the name of the widget class (in lower case)
+        will be added as a class name on the widget.
+
+        :param widget: The web implementation being created.
+        :param tag: The HTML tag for t
+        :param classes: (Optional) A list of classes to attach to the
+            new element. Two widgets
+        :param content: (Optional) The innerHTML content of the element.
+        :param children: (Optional) A list of direct descendents to add to
+            the element.
+        :param properties: Any additional properties that should be set.
+            These *must* be HTML DOM properties (e.g., ``readOnly``);
+            they cannot be events or methods.
+        :returns: A newly created DOM element.
+        """
+        if classes is None:
+            classes = []
+
+        classes = ["toga", self.interface.__class__.__name__.lower()] + classes
+
+        native = create_element(
+            tag,
+            id=f"toga_{self.interface.id}",
+            classes=classes,
+            style=self.interface.style.__css__(),
+            content=content,
+            children=children,
+            **properties,
+        )
+
+        return native
 
     def set_app(self, app):
         pass

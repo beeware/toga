@@ -1,16 +1,9 @@
-from toga_web.libs import create_element
-
 from .base import Widget
 
 
 class Label(Widget):
     def create(self):
-        self.native = create_element(
-            "span",
-            id=f"toga_{self.interface.id}",
-            classes=["label"],
-            style=self.interface.style.__css__(),
-        )
+        self.native = self._create_native_widget("span")
 
     def set_text(self, text):
         self.native.innerHTML = text
