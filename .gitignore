@@ -39,6 +39,7 @@ examples/*/linux/
 examples/*/android/
 examples/*/django/
 examples/*/windows/
+examples/*/web/
 
 # Memory Profiler
 mprofile_*.dat
