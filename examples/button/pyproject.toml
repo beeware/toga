@@ -48,7 +48,7 @@ requires = [
 ]
 
 # Web deployment
-[tool.briefcase.app.tutorial.web]
+[tool.briefcase.app.button.web]
 requires = [
     '../../src/web',
 ]
