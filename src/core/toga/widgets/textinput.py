@@ -70,7 +70,10 @@ class TextInput(Widget):
         self.readonly = readonly
 
         # Set the actual value before on_change, because we do not want on_change triggered by it
+        # However, we need to prime the handler property in case it is accessed.
+        self._on_change = None
         self.value = value
+
         self.on_change = on_change
         self.validators = validators
         self.on_lose_focus = on_lose_focus

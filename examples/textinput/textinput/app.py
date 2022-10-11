@@ -13,12 +13,14 @@ class TextInputApp(toga.App):
     def do_extract_values(self, widget, **kwargs):
         # Disable all the text inputs
         self.text_input.enabled = False
+        self.text_input_placeholder.enabled = False
         self.password_input.enabled = False
         self.number_input.enabled = False
 
         # Update the labels with the extracted values
-        self.text_label.text = "Text content: {}".format(
-            self.text_input.value
+        self.text_label.text = "Text content: {}; {}".format(
+            self.text_input.value,
+            self.text_input_placeholder.value,
         )
 
         self.password_label.text = "Your password is {}: {}".format(
@@ -40,6 +42,7 @@ class TextInputApp(toga.App):
 
         # Renable the inputs again.
         self.text_input.enabled = True
+        self.text_input_placeholder.enabled = True
         self.password_input.enabled = True
         self.number_input.enabled = True
 
@@ -60,6 +63,10 @@ class TextInputApp(toga.App):
 
         # Text inputs and a button
         self.text_input = toga.TextInput(
+            value='Initial value',
+            placeholder='Type something...', style=Pack(padding=10)
+        )
+        self.text_input_placeholder = toga.TextInput(
             placeholder='Type something...', style=Pack(padding=10)
         )
         self.password_input = toga.PasswordInput(
@@ -91,6 +98,7 @@ class TextInputApp(toga.App):
             children=[
                 self.label,
                 self.text_input,
+                self.text_input_placeholder,
                 self.password_input,
                 self.password_content_label,
                 self.email_input,
