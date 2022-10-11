@@ -53,7 +53,7 @@ class Window:
         # Added to set Window Resizable - removes Window Maximize button from
         # Window Decorator when resizable == False
         self.native.set_resizable(self.interface.resizeable)
-
+        
         self.toolbar_native = None
         self.toolbar_items = None
 
