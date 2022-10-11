@@ -479,6 +479,28 @@ class Pack(BaseStyle):
 
         return width, height
 
+    def __css__(self):
+        css = []
+        if self.padding_top:
+            css.append(f'margin-top: {self.padding_top}px;')
+        if self.padding_bottom:
+            css.append(f'margin-bottom: {self.padding_bottom}px;')
+        if self.padding_left:
+            css.append(f'margin-left: {self.padding_left}px;')
+        if self.padding_right:
+            css.append(f'margin-right: {self.padding_right}px;')
+        if self.width:
+            css.append(f'width: {self.width}px;')
+        else:
+            if self.flex:
+                css.append(f'flex: {self.flex} 0 0%;')
+            else:
+                css.append('flex: 0 0 0%;')
+        if self.direction:
+            css.append(f'flex-direction: {self.direction.lower()};')
+
+        return " ".join(css)
+
 
 Pack.validated_property('display', choices=DISPLAY_CHOICES, initial=PACK)
 Pack.validated_property('visibility', choices=VISIBILITY_CHOICES, initial=VISIBLE)

@@ -1,8 +1,8 @@
-from .app import App
+from .app import TogaApp
 
 __all__ = [
     '__version__',
-    'App',
+    'TogaApp',
 ]
 
 # Examples of valid version strings

@@ -1,6 +1,5 @@
 from pathlib import Path
 
-import __main__
 import toga
 from toga import App
 
@@ -11,7 +10,9 @@ class Paths:
 
     @property
     def app(self):
-        return Path(__main__.__file__).parent
+        # FIXME: None of the paths are right in a web context.
+        # return Path(__main__.__file__).parent
+        return Path('/')
 
     @property
     def data(self):

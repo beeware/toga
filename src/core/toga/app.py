@@ -508,7 +508,7 @@ class App:
             webbrowser.open(self.home_page)
 
     def main_loop(self):
-        """ Invoke the application to handle user input.
+        """Invoke the application to handle user input.
         This method typically only returns once the application is exiting.
         """
         # Modify signal handlers to make sure Ctrl-C is caught and handled.

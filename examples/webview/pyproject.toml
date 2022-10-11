@@ -45,3 +45,10 @@ requires = [
 requires = [
     '../../src/android',
 ]
+
+# Web deployment
+[tool.briefcase.app.webview.web]
+requires = [
+    '../../src/web',
+]
+style_framework = "Bootstrap v4.6"

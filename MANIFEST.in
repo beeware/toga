@@ -39,6 +39,7 @@ prune examples/*/.vscode
 
 include src/winforms/toga_winforms/libs/WebView2/LICENSE.md
 include src/winforms/toga_winforms/libs/WebView2/README.md
+recursive-include src *.css
 recursive-include src *.html
 recursive-include src *.icns
 recursive-include src *.ico
