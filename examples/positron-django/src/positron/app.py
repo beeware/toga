@@ -26,21 +26,16 @@ class Positron(toga.App):
         wsgi_handler = WSGIHandler()
         self._httpd.set_app(wsgi_handler)
 
-        self.is_serving.set()
+        self.server_exists.set()
         self._httpd.serve_forever()
 
     def cleanup(self, app, **kwargs):
         print("Shutting down...", file=sys.stderr)
-        self._httpd.server_close()
+        self._httpd.shutdown()
         return True
 
-    def wait_for_webserver(self):
-        self.is_serving.wait()
-        return self._httpd.socket.getsockname()
-
     def startup(self):
-        self._httpd = None
-        self.is_serving = Event()
+        self.server_exists = Event()
 
         self.web_view = toga.WebView()
 
@@ -49,7 +44,9 @@ class Positron(toga.App):
 
         self.on_exit = self.cleanup
 
-        host, port = self.wait_for_webserver()
+        self.server_exists.wait()
+        # This will block until the server is active
+        host, port = self._httpd.socket.getsockname()
         self.web_view.url = f'http://{host}:{port}/'
 
         self.main_window = toga.MainWindow(title=self.formal_name)
