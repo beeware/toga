@@ -26,6 +26,8 @@ class Positron(toga.App):
         wsgi_handler = WSGIHandler()
         self._httpd.set_app(wsgi_handler)
 
+        # The server is now listening, but connections will block until
+        # serve_forever is run.
         self.server_exists.set()
         self._httpd.serve_forever()
 
@@ -45,7 +47,6 @@ class Positron(toga.App):
         self.on_exit = self.cleanup
 
         self.server_exists.wait()
-        # This will block until the server is active
         host, port = self._httpd.socket.getsockname()
         self.web_view.url = f'http://{host}:{port}/'
 
