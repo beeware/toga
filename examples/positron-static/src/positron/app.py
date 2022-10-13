@@ -1,4 +1,3 @@
-import sys
 from http.server import SimpleHTTPRequestHandler, HTTPServer
 from threading import Thread, Event
 
@@ -19,13 +18,13 @@ class LocalHTTPServer(HTTPServer):
 
 class Positron(toga.App):
     def web_server(self):
-        print("Starting server...", file=sys.stderr)
+        print("Starting server...")
         self._httpd = LocalHTTPServer(self.paths.app / "resources" / "webapp")
         self.server_exists.set()
         self._httpd.serve_forever()
 
     def cleanup(self, app, **kwargs):
-        print("Shutting down...", file=sys.stderr)
+        print("Shutting down...")
         self._httpd.shutdown()
         return True
 

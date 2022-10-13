@@ -1,5 +1,4 @@
 import os
-import sys
 import socketserver
 from threading import Thread, Event
 from wsgiref.simple_server import WSGIServer
@@ -17,6 +16,7 @@ class ThreadedWSGIServer(socketserver.ThreadingMixIn, WSGIServer):
 
 class Positron(toga.App):
     def web_server(self):
+        print("Starting server...")
         # Use port 0 to let the server select an available port.
         self._httpd = ThreadedWSGIServer(("127.0.0.1", 0), WSGIRequestHandler)
         self._httpd.daemon_threads = True
@@ -30,7 +30,7 @@ class Positron(toga.App):
         self._httpd.serve_forever()
 
     def cleanup(self, app, **kwargs):
-        print("Shutting down...", file=sys.stderr)
+        print("Shutting down...")
         self._httpd.shutdown()
         return True
 
