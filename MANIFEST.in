@@ -34,6 +34,8 @@ recursive-include examples *.rst
 recursive-include examples *.toml
 recursive-include examples *.otf
 recursive-include examples *.ttf
+recursive-include examples *.css
+recursive-include examples *.html
 recursive-include examples README
 prune examples/*/.vscode
 
