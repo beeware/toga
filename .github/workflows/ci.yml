@@ -64,10 +64,9 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: packages
-        path: dist
     - name: Test
       env:
-        TOGA_INSTALL_COMMAND: 'bash -c "pip install dist/toga_{core,dummy}*.whl"'
+        TOGA_INSTALL_COMMAND: 'bash -c "pip install src/{core,dummy}/dist/*.whl"'
       run: |
         tox -e py
     - if: matrix.platform == 'ubuntu' && matrix.python-version == env.min_python_version
