@@ -1,0 +1,37 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  ci:
+    uses: ./.github/workflows/ci.yml
+  release:
+    name: Create Release
+    needs: ci
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Set build variables
+        run: |
+          echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
+      - name: Get packages
+        uses: actions/download-artifact@v3
+        with:
+          name: packages
+          path: dist
+      - name: Create Release
+        uses: ncipollo/release-action@v1.11.1
+        with:
+          name: ${{ env.VERSION }}
+          draft: true
+          artifacts: dist/*
+          artifactErrorsFailBuild: true
+      - name: Publish release to Test PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository_url: https://test.pypi.org/legacy/
+          password: ${{ secrets.TEST_PYPI_PASSWORD }}

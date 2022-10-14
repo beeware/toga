@@ -1,8 +1,15 @@
 [run]
 branch = True
-source = src/core/toga
+source_pkgs = toga
 omit =
-    src/core/toga/**/__init__.py
+    **/__init__.py
+
+[paths]
+# Paths which may contain the packages listed in source_pkgs. The first path will be used
+# to generate the filenames in the report.
+source =
+    src/core
+    **/site-packages
 
 [report]
 show_missing = True

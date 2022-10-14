@@ -4,13 +4,20 @@ on:
   push:
     branches:
       - main
+  workflow_call:
+
+env:
+  min_python_version: "3.7"
+
+defaults:
+  run:
+    shell: bash  # PowerShell doesn't stop after failed commands.
 
 jobs:
   beefore:
     name: Pre-test checks
     runs-on: ubuntu-latest
     strategy:
-      max-parallel: 4
       matrix:
         task:
         - flake8
@@ -19,57 +26,29 @@ jobs:
         - package
     steps:
     - uses: actions/checkout@v1
-    - name: Set up Python 3.7
-      uses: actions/setup-python@v3.1.2
+    - uses: actions/setup-python@v3.1.2
       with:
-        python-version: "3.7"
+        python-version: ${{ env.min_python_version }}
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         python -m pip install --upgrade setuptools
         python -m pip install tox
-    - name: Run pre-test checks
-      run: |
-        tox -e ${{ matrix.task }}
-
-  smoke:
-    name: Smoke test (3.7)
-    needs:
-    - beefore
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v1
-    - name: Set up Python 3.7
-      uses: actions/setup-python@v3.1.2
+    - run: tox -e ${{ matrix.task }}
+    - if: matrix.task == "package"
+      uses: actions/upload-artifact@v3
       with:
-        python-version: "3.7"
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install --upgrade setuptools
-        python -m pip install --upgrade tox
-    - name: Test
-      run: |
-        tox -e py
-    - name: Check coverage
-      uses: codecov/codecov-action@v1
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
-        file: ./coverage.xml
-        flags: unittests
-        fail_ci_if_error: true
+        name: packages
+        path: **/dist
+        if-no-files-found: error
 
-  python-versions:
-    # Only run this and subsequent steps on branches.
-    # `github.head_ref` only exists on pull requests.
-    if: github.head_ref
-    name: Python compatibility test
-    needs: smoke
-    runs-on: ubuntu-latest
+  core:
+    needs: beefore
     strategy:
-      max-parallel: 4
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11.0-alpha - 3.11.0"]
+        platform: ['macos', 'ubuntu', 'windows']
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11.0-alpha - 3.11.0"]
+    runs-on: ${{ matrix.platform }}-latest
     steps:
     - uses: actions/checkout@v1
     - name: Set up Python ${{ matrix.python-version }}
@@ -81,13 +60,27 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install --upgrade setuptools
         python -m pip install --upgrade tox
+    - name: Get packages
+      uses: actions/download-artifact@v3
+      with:
+        name: packages
+        path: dist
     - name: Test
+      env:
+        TOGA_INSTALL_COMMAND: 'bash -c "pip install dist/toga_{core,dummy}*.whl"'
       run: |
         tox -e py
+    - if: matrix.platform == "ubuntu" && matrix.python-version == env.min_python_version
+      uses: codecov/codecov-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        file: ./coverage.xml
+        flags: unittests
+        fail_ci_if_error: true
 
   windows:
     name: Winforms backend tests
-    needs: python-versions
+    needs: core
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v1
@@ -116,7 +109,7 @@ jobs:
 
   macOS:
     name: macOS backend tests
-    needs: python-versions
+    needs: core
     runs-on: macOS-latest
     steps:
     - uses: actions/checkout@v1
@@ -139,7 +132,7 @@ jobs:
 
   iOS:
     name: iOS backend tests
-    needs: python-versions
+    needs: core
     runs-on: macOS-latest
     steps:
     - uses: actions/checkout@v1
@@ -162,7 +155,7 @@ jobs:
 
   gtk:
     name: GTK+ backend tests
-    needs: python-versions
+    needs: core
     runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v1
@@ -187,7 +180,7 @@ jobs:
 
   android:
     name: Android backend tests
-    needs: python-versions
+    needs: core
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
@@ -210,7 +203,7 @@ jobs:
 
   web:
     name: Web backend tests
-    needs: python-versions
+    needs: core
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1

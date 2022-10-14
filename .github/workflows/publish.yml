@@ -1,0 +1,20 @@
+name: Upload Python Package
+
+on:
+  release:
+    types: published
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: dsaltares/fetch-gh-release-asset@1.0.0
+        with:
+          version: tags/${{ github.event.release.tag_name }}
+          file: ${{ github.event.repository.name }}.*
+          regex: true
+          target: dist/
+      - name: Publish release to production PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_PASSWORD }}
