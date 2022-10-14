@@ -22,12 +22,14 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: packages
+      - name: Collect packages
+        run: mv {demo,src/*}/dist/* dist
       - name: Create Release
         uses: ncipollo/release-action@v1.11.1
         with:
           name: ${{ env.VERSION }}
           draft: true
-          artifacts: "**/dist/*"
+          artifacts: "dist/*"
           artifactErrorsFailBuild: true
       - name: Publish release to Test PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
