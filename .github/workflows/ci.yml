@@ -35,11 +35,11 @@ jobs:
         python -m pip install --upgrade setuptools
         python -m pip install tox
     - run: tox -e ${{ matrix.task }}
-    - if: matrix.task == "package"
+    - if: matrix.task == 'package'
       uses: actions/upload-artifact@v3
       with:
         name: packages
-        path: **/dist
+        path: "**/dist"
         if-no-files-found: error
 
   core:
@@ -70,7 +70,7 @@ jobs:
         TOGA_INSTALL_COMMAND: 'bash -c "pip install dist/toga_{core,dummy}*.whl"'
       run: |
         tox -e py
-    - if: matrix.platform == "ubuntu" && matrix.python-version == env.min_python_version
+    - if: matrix.platform == 'ubuntu' && matrix.python-version == env.min_python_version
       uses: codecov/codecov-action@v1
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
