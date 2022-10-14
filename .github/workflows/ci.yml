@@ -119,7 +119,7 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install --upgrade setuptools
         python -m pip install pytest-tldr
-        python -m pip install -e src/{core,dummy,${{ matrix.backend }}}/dist/*.whl
+        python -m pip install src/{core,dummy,${{ matrix.backend }}}/dist/*.whl
     - name: Test
       run: |
         cd src/${{ matrix.backend }}
