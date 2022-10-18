@@ -91,7 +91,7 @@ function install {
 }
 
 
-MODULES="core dummy"  # FIXME android cocoa core dummy gtk iOS web winforms toga demo
+MODULES="android cocoa core dummy gtk iOS web winforms toga demo"
 
 action=$1
 shift

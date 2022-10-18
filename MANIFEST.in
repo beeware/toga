@@ -38,9 +38,15 @@ recursive-include examples *.css
 recursive-include examples *.html
 recursive-include examples README
 prune examples/*/.vscode
+prune examples/*/android
+prune examples/*/cocoa
+prune examples/*/gtk
+prune examples/*/iOS
+prune examples/*/web
+prune examples/*/winforms
 
-include src/winforms/toga_winforms/libs/WebView2/LICENSE.md
-include src/winforms/toga_winforms/libs/WebView2/README.md
+include src/winforms/src/toga_winforms/libs/WebView2/LICENSE.md
+include src/winforms/src/toga_winforms/libs/WebView2/README.md
 recursive-include src *.css
 recursive-include src *.html
 recursive-include src *.icns
@@ -52,7 +58,7 @@ recursive-include src *.rst
 recursive-include src CONTRIBUTING.md
 recursive-include src LICENSE
 recursive-include src MANIFEST.in
-recursive-include src/winforms/toga_winforms/libs/WebView2 *.dll
+recursive-include src/winforms/src/toga_winforms/libs/WebView2 *.dll
 prune src/*/build
 prune src/*/.eggs
 
