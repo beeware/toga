@@ -105,8 +105,13 @@ class Switch(Widget):
         ##################################################################
 
         self.text = text
+
+        # Set the actual value before on_change, because we do not want on_change triggered by it
+        # However, we need to prime the handler property in case it is accessed.
+        self._on_change = None
         self.value = value
         self.on_change = on_change
+
         self.enabled = enabled
 
     @property
