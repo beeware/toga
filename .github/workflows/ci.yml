@@ -11,7 +11,7 @@ env:
 
 defaults:
   run:
-    shell: bash  # PowerShell doesn't stop after failed commands.
+    shell: bash
 
 jobs:
   beefore:
@@ -42,42 +42,42 @@ jobs:
         path: "**/dist"
         if-no-files-found: error
 
-  # FIXME
-  # core:
-  #   needs: beefore
-  #   strategy:
-  #     matrix:
-  #       platform: ['macos', 'ubuntu', 'windows']
-  #       python-version: ["3.7", "3.8", "3.9", "3.10", "3.11.0-alpha - 3.11.0"]
-  #   runs-on: ${{ matrix.platform }}-latest
-  #   steps:
-  #   - uses: actions/checkout@v1
-  #   - name: Set up Python ${{ matrix.python-version }}
-  #     uses: actions/setup-python@v3.1.2
-  #     with:
-  #       python-version: ${{ matrix.python-version }}
-  #   - name: Install dependencies
-  #     run: |
-  #       python -m pip install --upgrade pip
-  #       python -m pip install --upgrade setuptools
-  #       python -m pip install --upgrade tox
-  #   - name: Get packages
-  #     uses: actions/download-artifact@v3
-  #     with:
-  #       name: packages
-  #   - name: Test
-  #     env:
-  #       TOGA_INSTALL_COMMAND: 'bash -c "pip install src/{core,dummy}/dist/*.whl"'
-  #     run: |
-  #       tox -e py
-  #   - if: matrix.platform == 'ubuntu' && matrix.python-version == env.min_python_version
-  #     uses: codecov/codecov-action@v1
-  #     with:
-  #       token: ${{ secrets.CODECOV_TOKEN }}
-  #       file: ./coverage.xml
-  #       flags: unittests
-  #       fail_ci_if_error: true
+  core:
+    needs: beefore
+    strategy:
+      matrix:
+        platform: ['macos', 'ubuntu', 'windows']
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11.0-alpha - 3.11.0"]
+    runs-on: ${{ matrix.platform }}-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v3.1.2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install --upgrade setuptools
+        python -m pip install --upgrade tox
+    - name: Get packages
+      uses: actions/download-artifact@v3
+      with:
+        name: packages
+    - name: Test
+      env:
+        TOGA_INSTALL_COMMAND: 'bash -c "pip install src/{core,dummy}/dist/*.whl"'
+      run: |
+        tox -e py
+    - if: matrix.platform == 'ubuntu' && matrix.python-version == env.min_python_version
+      uses: codecov/codecov-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        file: ./coverage.xml
+        flags: unittests
+        fail_ci_if_error: true
 
+  # FIXME
   # backend:
   #   needs: beefore
   #   strategy:
