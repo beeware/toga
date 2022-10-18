@@ -59,7 +59,7 @@ class ScrollContainer(Widget):
             self.set_content(self.interface.content)
 
     def set_content(self, widget):
-        widget.viewport = AndroidViewport(widget.native)
+        widget.viewport = AndroidViewport(self.native)
         content_view_params = LinearLayout__LayoutParams(
             LinearLayout__LayoutParams.MATCH_PARENT,
             LinearLayout__LayoutParams.MATCH_PARENT
