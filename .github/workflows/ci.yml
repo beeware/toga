@@ -23,7 +23,6 @@ jobs:
         - flake8
         # - towncrier-check
         - docs
-        - package
     steps:
     - uses: actions/checkout@v1
     - uses: actions/setup-python@v3.1.2
@@ -35,15 +34,29 @@ jobs:
         python -m pip install --upgrade setuptools
         python -m pip install tox
     - run: tox -e ${{ matrix.task }}
-    - if: matrix.task == 'package'
-      uses: actions/upload-artifact@v3
+
+  package:
+    needs: beefore
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-python@v3.1.2
+      with:
+        python-version: ${{ env.min_python_version }}
+    - run: pip install tox
+    - run: tox -e package
+    - name: Collect packages
+      run: |
+        mkdir packages
+        mv {.,demo,src/*}/dist/* packages
+    - uses: actions/upload-artifact@v3
       with:
         name: packages
-        path: "**/dist"
+        path: packages
         if-no-files-found: error
 
   core:
-    needs: beefore
+    needs: package
     strategy:
       matrix:
         platform: ['macos', 'ubuntu', 'windows']
@@ -64,9 +77,10 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: packages
+        path: packages
     - name: Test
       env:
-        TOGA_INSTALL_COMMAND: 'bash -c "pip install src/{core,dummy}/dist/*.whl"'
+        TOGA_INSTALL_COMMAND: 'bash -c "pip install packages/toga_{core,dummy}*.whl"'
       run: |
         tox -e py
     - if: matrix.platform == 'ubuntu' && matrix.python-version == env.min_python_version
@@ -78,7 +92,7 @@ jobs:
         fail_ci_if_error: true
 
   backend:
-    needs: beefore
+    needs: package
     strategy:
       matrix:
         backend: [android, cocoa, gtk, iOS, web, winforms]
@@ -112,13 +126,14 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: packages
+        path: packages
     - name: Install dependencies
       run: |
         ${{ matrix.pre-command }}
         python -m pip install --upgrade pip
         python -m pip install --upgrade setuptools
         python -m pip install pytest-tldr
-        python -m pip install src/{core,dummy,${{ matrix.backend }}}/dist/*.whl
+        python -m pip install packages/toga_{core,dummy,${{ matrix.backend }}}*.whl
     - name: Test
       run: |
         cd src/${{ matrix.backend }}

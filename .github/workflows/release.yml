@@ -8,6 +8,7 @@ on:
 jobs:
   ci:
     uses: ./.github/workflows/ci.yml
+
   release:
     name: Create Release
     needs: ci
@@ -22,17 +23,34 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: packages
-      - name: Collect packages
-        run: mv {demo,src/*}/dist/* dist
+          path: packages
       - name: Create Release
         uses: ncipollo/release-action@v1.11.1
         with:
           name: ${{ env.VERSION }}
           draft: true
-          artifacts: "dist/*"
+          artifacts: "packages/*"
           artifactErrorsFailBuild: true
+
+  deploy-test:
+    needs: release
+    strategy:
+      matrix:
+        package: ["toga", "toga_android", "toga_cocoa", "toga_core", "toga_demo",
+                  "toga_dummy", "toga_gtk", "toga_iOS", "toga_web", "toga_winforms"]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get packages
+        uses: actions/download-artifact@v3
+        with:
+          name: packages
+          path: packages
+      - name: Extract ${{ matrix.package }}
+        run: |
+          mkdir dist
+          mv packages/$(echo ${{ matrix.package }} | sed 's/_/?/')* dist
       - name: Publish release to Test PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           repository_url: https://test.pypi.org/legacy/
-          password: ${{ secrets.TEST_PYPI_PASSWORD }}
+          password: ${{ secrets[format('TEST_PYPI_PASSWORD_{0}', matrix.package)] }}
