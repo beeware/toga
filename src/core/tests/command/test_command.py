@@ -17,7 +17,7 @@ class TestCommand(TestCase):
 
     def test_command_init_defaults(self):
         cmd = toga.Command(lambda x: print('Hello World'), 'test', factory=toga_dummy.factory)
-        self.assertEqual(cmd.label, 'test')
+        self.assertEqual(cmd.text, 'test')
         self.assertEqual(cmd.shortcut, None)
         self.assertEqual(cmd.tooltip, None)
         self.assertEqual(cmd.icon, None)
@@ -30,7 +30,7 @@ class TestCommand(TestCase):
         grp = toga.Group('Test group', order=10)
         cmd = toga.Command(
             lambda x: print('Hello World'),
-            label='test',
+            text='test',
             tooltip='test command',
             shortcut='t',
             icon='icons/none.png',
@@ -39,7 +39,7 @@ class TestCommand(TestCase):
             order=1,
             factory=toga_dummy.factory
         )
-        self.assertEqual(cmd.label, 'test')
+        self.assertEqual(cmd.text, 'test')
         self.assertEqual(cmd.shortcut, 't')
         self.assertEqual(cmd.tooltip, 'test command')
         self.assertEqual(cmd.icon.path, 'icons/none.png')
@@ -56,7 +56,7 @@ class TestCommand(TestCase):
         grp = toga.Group('Test group', order=10)
         cmd = toga.Command(
             lambda x: print('Hello World'),
-            label='test',
+            text='test',
             tooltip='test command',
             shortcut='t',
             icon='icons/none.png',
@@ -72,7 +72,7 @@ class TestCommand(TestCase):
         grp = toga.Group('Test group', order=10)
         cmd = toga.Command(
             lambda x: print('Hello World'),
-            label='test',
+            text='test',
             tooltip='test command',
             shortcut='t',
             icon='icons/none.png',
@@ -90,10 +90,10 @@ class TestCommand(TestCase):
     def test_command_repr(self):
         self.assertEqual(
             repr(toga.Command(None, "A", group=PARENT_GROUP1, order=1, section=4)),
-            "<Command label=A group=<Group label=P order=1 parent=None> section=4 order=1>"
+            "<Command text=A group=<Group text=P order=1 parent=None> section=4 order=1>"
         )
 
-    test_order_commands_by_label = order_test(
+    test_order_commands_by_text = order_test(
         toga.Command(None, "A"), toga.Command(None, "B")
     )
     test_order_commands_by_number = order_test(
@@ -104,3 +104,46 @@ class TestCommand(TestCase):
         toga.Command(None, "A", group=PARENT_GROUP1, section=2, order=1)
     )
     test_order_commands_by_groups = order_test(*COMMANDS_IN_ORDER)
+
+    def test_missing_argument(self):
+        "If the no text is provided for the group, an error is raised"
+        # This test is only required as part of the backwards compatibility
+        # path renaming label->text; when that shim is removed, this teset
+        # validates default Python behavior
+        with self.assertRaises(TypeError):
+            toga.Command(lambda x: print('Hello World'), factory=toga_dummy.factory)
+
+    ######################################################################
+    # 2022-07: Backwards compatibility
+    ######################################################################
+
+    def test_label_deprecated(self):
+        cmd = toga.Command(lambda x: print('Hello World'), label='test', factory=toga_dummy.factory)
+        new_text = 'New Text'
+        with self.assertWarns(DeprecationWarning):
+            cmd.label = new_text
+        with self.assertWarns(DeprecationWarning):
+            self.assertEqual(cmd.label, new_text)
+        self.assertEqual(cmd.text, new_text)
+
+    def test_init_with_deprecated(self):
+        # label is a deprecated argument
+        with self.assertWarns(DeprecationWarning):
+            toga.Command(
+                lambda x: print('Hello World'),
+                label='test',
+                factory=toga_dummy.factory
+            )
+
+        # can't specify both label *and* text
+        with self.assertRaises(ValueError):
+            toga.Command(
+                lambda x: print('Hello World'),
+                label='test',
+                text='test',
+                factory=toga_dummy.factory
+            )
+
+    ######################################################################
+    # End backwards compatibility.
+    ######################################################################

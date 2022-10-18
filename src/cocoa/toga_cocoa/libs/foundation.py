@@ -20,6 +20,10 @@ NSBundle.declare_class_property('mainBundle')
 NSBundle.declare_property('bundlePath')
 
 ######################################################################
+# NSData.h
+NSData = ObjCClass('NSData')
+
+######################################################################
 # NSFileWrapper.h
 NSFileWrapper = ObjCClass('NSFileWrapper')
 

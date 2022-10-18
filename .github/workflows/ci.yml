@@ -55,7 +55,7 @@ jobs:
       uses: codecov/codecov-action@v1
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
-        file: ./src/core/coverage.xml
+        file: ./coverage.xml
         flags: unittests
         fail_ci_if_error: true
 
@@ -108,6 +108,10 @@ jobs:
     - name: Test
       run: |
         cd src/winforms
+        pytest
+    - name: Core Test
+      run: |
+        cd src/core
         pytest
 
   macOS:

@@ -22,9 +22,6 @@ class Selection(Widget):
         self.native.setOnItemSelectedListener(TogaOnItemSelectedListener(
             impl=self
         ))
-        # On Android, the list of options is provided to the `Spinner` wrapped in
-        # an `ArrayAdapter`. We store `self.adapter` to avoid having to typecast it
-        # in `add_item()`.
         self.adapter = ArrayAdapter(
             self._native_activity,
             R__layout.simple_spinner_item
@@ -45,7 +42,7 @@ class Selection(Widget):
     def get_selected_item(self):
         selected = self.native.getSelectedItem()
         if selected:
-            return selected.toString()
+            return str(selected)
         else:
             return None
 

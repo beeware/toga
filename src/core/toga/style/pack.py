@@ -139,14 +139,15 @@ class Pack(BaseStyle):
             available_width = max(0, (
                 alloc_width -
                 scale(self.padding_left) -
-                scale(self.padding_right)))
+                scale(self.padding_right))
+            )
             # self._debug("INITIAL AVAILABLE WIDTH", available_width)
             if node.intrinsic.width:
                 # self._debug("INTRINSIC WIDTH", node.intrinsic.width)
                 try:
                     available_width = max(available_width, node.intrinsic.width.value)
                 except AttributeError:
-                    available_width = min(available_width, node.intrinsic.width)
+                    available_width = node.intrinsic.width
 
                 # self._debug("ADJUSTED WIDTH", available_width)
             else:
@@ -323,9 +324,8 @@ class Pack(BaseStyle):
 
         # Pass 4: set vertical position of each child.
         for child in node.children:
-            extra = (
-                height
-                - child.layout.content_height
+            extra = height - (
+                child.layout.content_height
                 + scale(child.style.padding_top)
                 + scale(child.style.padding_bottom)
             )
@@ -449,7 +449,7 @@ class Pack(BaseStyle):
         width = 0
         for child in node.children:
             # self._debug("START CHILD AT VERTICAL OFFSET", offset)
-            offset += child.style.padding_top
+            offset += scale(child.style.padding_top)
             child.layout.content_top = offset
             offset += child.layout.content_height + scale(child.style.padding_bottom)
             child_width = (
@@ -461,14 +461,13 @@ class Pack(BaseStyle):
 
         # Pass 4: set horizontal position of each child.
         for child in node.children:
-            extra = (
-                width
-                - child.layout.content_width
+            extra = width - (
+                child.layout.content_width
                 + scale(child.style.padding_left)
                 + scale(child.style.padding_right)
             )
             # self._debug("row extra width", extra)
-            if self.alignment is LEFT:
+            if self.alignment is RIGHT:
                 child.layout.content_left = extra + scale(child.style.padding_left)
                 # self._debug("align to right", child, child.layout.content_left)
             elif self.alignment is CENTER:
@@ -479,6 +478,28 @@ class Pack(BaseStyle):
                 # self._debug("align to left", child, child.layout.content_left)
 
         return width, height
+
+    def __css__(self):
+        css = []
+        if self.padding_top:
+            css.append(f'margin-top: {self.padding_top}px;')
+        if self.padding_bottom:
+            css.append(f'margin-bottom: {self.padding_bottom}px;')
+        if self.padding_left:
+            css.append(f'margin-left: {self.padding_left}px;')
+        if self.padding_right:
+            css.append(f'margin-right: {self.padding_right}px;')
+        if self.width:
+            css.append(f'width: {self.width}px;')
+        else:
+            if self.flex:
+                css.append(f'flex: {self.flex} 0 0%;')
+            else:
+                css.append('flex: 0 0 0%;')
+        if self.direction:
+            css.append(f'flex-direction: {self.direction.lower()};')
+
+        return " ".join(css)
 
 
 Pack.validated_property('display', choices=DISPLAY_CHOICES, initial=PACK)

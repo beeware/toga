@@ -1,8 +1,8 @@
-from .app import App
+from .app import TogaApp
 
 __all__ = [
     '__version__',
-    'App',
+    'TogaApp',
 ]
 
 # Examples of valid version strings
@@ -13,4 +13,4 @@ __all__ = [
 # __version__ = '1.2.3'       # Final Release
 # __version__ = '1.2.3.post1' # Post Release 1
 
-__version__ = '0.3.0.dev36'
+__version__ = '0.3.0.dev39'

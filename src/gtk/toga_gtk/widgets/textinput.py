@@ -59,3 +59,6 @@ class TextInput(Widget):
 
     def clear_error(self):
         self.interface.factory.not_implemented("TextInput.clear_error()")
+
+    def is_valid(self):
+        self.interface.factory.not_implemented("TextInput.is_valid()")

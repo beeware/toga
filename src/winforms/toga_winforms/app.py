@@ -81,8 +81,20 @@ class App:
         # turned off by default. SSL3, TLS1.0 and TLS1.1 are *not* enabled
         # as they are deprecated protocols and their use should *not* be
         # encouraged.
-        ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12
-        ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls13
+        try:
+            ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12
+        except AttributeError:
+            print(
+                "WARNING: Your Windows .NET install does not support TLS1.2. "
+                "You may experience difficulties accessing some web server content."
+            )
+        try:
+            ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls13
+        except AttributeError:
+            print(
+                "WARNING: Your Windows .NET install does not support TLS1.3. "
+                "You may experience difficulties accessing some web server content."
+            )
 
         self.interface.commands.add(
             toga.Command(
@@ -129,7 +141,7 @@ class App:
             else:
                 submenu = self._submenu(cmd.group, menubar)
 
-                item = WinForms.ToolStripMenuItem(cmd.label)
+                item = WinForms.ToolStripMenuItem(cmd.text)
 
                 if cmd.action:
                     item.Click += cmd._impl.as_handler()
@@ -158,7 +170,7 @@ class App:
             else:
                 parent_menu = self._submenu(group.parent, menubar)
 
-                submenu = WinForms.ToolStripMenuItem(group.label)
+                submenu = WinForms.ToolStripMenuItem(group.text)
 
                 # Top level menus are added in a different way to submenus
                 if group.parent is None:
@@ -309,7 +321,7 @@ class DocumentApp(App):
         self.interface.commands.add(
             toga.Command(
                 lambda w: self.open_file,
-                label='Open...',
+                text='Open...',
                 shortcut=Key.MOD_1 + 'o',
                 group=toga.Group.FILE,
                 section=0

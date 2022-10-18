@@ -30,7 +30,7 @@ class Button(Widget):
             self,
             text=NOT_PROVIDED,  # BACKWARDS COMPATIBILITY: The default value
                                 # can be removed when the handling for
-                                # `label`` is removed
+                                # `label` is removed
             id=None,
             style=None,
             on_press=None,

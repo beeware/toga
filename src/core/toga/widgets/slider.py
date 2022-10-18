@@ -11,7 +11,7 @@ class Slider(Widget):
     Args:
         id: An identifier for this widget.
         style (:obj:`Style`):
-        default (float): Default value of the slider
+        value (float): Initial value of the slider
         range (``tuple``): Min and max values of the slider in this form (min, max).
         tick_count (``int``): How many ticks in range. if None, slider is continuous.
         on_change (``callable``): The handler to invoke when the slider value changes.
@@ -28,7 +28,7 @@ class Slider(Widget):
         self,
         id=None,
         style=None,
-        default=None,
+        value=None,
         range=None,
         tick_count=None,
         on_change=None,
@@ -36,7 +36,8 @@ class Slider(Widget):
         on_press=None,
         on_release=None,
         enabled=True,
-        factory=None
+        factory=None,
+        default=None,  # DEPRECATED!
     ):
         super().__init__(id=id, style=style, factory=factory)
 
@@ -46,12 +47,33 @@ class Slider(Widget):
 
         self._impl = self.factory.Slider(interface=self)
 
+        ##################################################################
+        # 2022-07: Backwards compatibility
+        ##################################################################
+
+        # default replaced with value
+        if default is not None:
+            if value is not None:
+                raise ValueError(
+                    "Cannot specify both `default` and `value`; "
+                    "`default` has been deprecated, use `value`"
+                )
+            else:
+                warnings.warn(
+                    "`default` has been renamed `value`", DeprecationWarning
+                )
+            value = default
+
+        ##################################################################
+        # End backwards compatibility.
+        ##################################################################
+
         self.range = range
         self.tick_count = tick_count
 
         # IMPORTANT NOTE: Setting value before on_change in order to not
         # call it in constructor. Please do not move it from here.
-        self.value = default
+        self.value = value
 
         if on_slide:
             self.on_slide = on_slide

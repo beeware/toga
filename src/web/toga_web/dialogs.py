@@ -1,26 +1,64 @@
-class InfoDialog:
+import asyncio
+
+from toga_web.libs import js
+
+
+class BaseDialog:
+    def __init__(self):
+        loop = asyncio.get_event_loop()
+        self.future = loop.create_future()
+
+    def __eq__(self, other):
+        raise RuntimeError("Can't check dialog result directly; use await or an on_result handler")
+
+    def __bool__(self):
+        raise RuntimeError("Can't check dialog result directly; use await or an on_result handler")
+
+    def __await__(self):
+        return self.future.__await__()
+
+
+class InfoDialog(BaseDialog):
     def __init__(self, window, title, message, on_result=None):
-        window.factory.not_implemented("Window.info_dialog()")
+        super().__init__()
+        # TODO: Replace with something more customized using Bootstrap modals.
+        js.alert(message)
+
+        self.future.set_result(None)
 
 
-class QuestionDialog:
+class QuestionDialog(BaseDialog):
     def __init__(self, window, title, message, on_result=None):
-        window.factory.not_implemented("Window.question_dialog()")
+        super().__init__()
+
+        # TODO: Replace with something more customized using Bootstrap modals.
+        self.future.set_result(js.confirm(message))
 
 
-class ConfirmDialog:
+class ConfirmDialog(BaseDialog):
     def __init__(self, window, title, message, on_result=None):
-        window.factory.not_implemented("Window.confirm_dialog()")
+        super().__init__()
+
+        # TODO: Replace with something more customized using Bootstrap modals.
+        self.future.set_result(js.confirm(message))
 
 
-class ErrorDialog:
+class ErrorDialog(BaseDialog):
     def __init__(self, window, title, message, on_result=None):
-        window.factory.not_implemented("Window.error_dialog()")
+        super().__init__()
+
+        # TODO: Replace with something more customized using Bootstrap modals.
+        self.future.set_result(js.alert(message))
 
 
 class StackTraceDialog:
     def __init__(self, window, title, message, on_result=None, **kwargs):
-        window.factory.not_implemented("Window.stack_trace_dialog()")
+        super().__init__()
+        # TODO: Replace with something more customized using Bootstrap modals.
+        if kwargs.get("retry"):
+            self.future.set_result(js.confirm("Stack trace: \n\n:" + message + "\n\nRetry?"))
+        else:
+            self.future.set_result(js.alert("Stack trace: \n\n:" + message))
 
 
 class SaveFileDialog:

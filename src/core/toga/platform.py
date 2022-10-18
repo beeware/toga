@@ -6,6 +6,8 @@ from functools import lru_cache
 # https://github.com/beeware/Python-Android-support/issues/8
 if hasattr(sys, 'getandroidapilevel'):
     current_platform = 'android'
+elif sys.platform == 'emscripten':
+    current_platform = 'web'
 else:
     current_platform = sys.platform
 
@@ -53,4 +55,4 @@ def get_platform_factory(factory=None):
         from toga_winforms import factory
         return factory
     else:
-        raise RuntimeError("Couldn't identify a supported host platform.")
+        raise RuntimeError(f"Unsupported host platform {current_platform!r}.")

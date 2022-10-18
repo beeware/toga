@@ -1,5 +1,5 @@
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, patch, Mock
 
 import toga
 import toga_dummy
@@ -13,16 +13,58 @@ class TestWindow(TestCase):
         self.window = toga.Window(factory=toga_dummy.factory)
         self.app = toga.App("test_name", "id.app", factory=toga_dummy.factory)
 
-    def test_raises_error_when_app_not_set(self):
+    def test_show_is_not_called_in_constructor(self):
+        self.assertActionNotPerformed(self.window, "show")
+
+    def test_show_raises_error_when_app_not_set(self):
         self.app = None
-        with self.assertRaises(AttributeError):
+        with self.assertRaisesRegex(
+            AttributeError, "^Can't show a window that doesn't have an associated app$"
+        ):
             self.window.show()
+
+    def test_window_show_with_app_set(self):
+        self.window.app = self.app
+        self.window.show()
+        self.assertActionPerformed(self.window, "show")
+        self.assertTrue(self.window.visible)
+        self.assertValueSet(self.window, "visible", True)
+
+    def test_hide_raises_error_when_app_not_set(self):
+        self.app = None
+        with self.assertRaisesRegex(
+            AttributeError, "^Can't hide a window that doesn't have an associated app$"
+        ):
+            self.window.hide()
+
+    def test_window_hide_with_app_set(self):
+        self.window.app = self.app
+        self.window.hide()
+        self.assertActionPerformed(self.window, "hide")
+        self.assertFalse(self.window.visible)
+        self.assertValueSet(self.window, "visible", False)
+
+    def test_window_show_by_setting_visible_to_true(self):
+        self.window.app = self.app
+        self.window.visible = True
+        self.assertActionPerformed(self.window, "show")
+        self.assertTrue(self.window.visible)
+        self.assertValueSet(self.window, "visible", True)
+
+    def test_window_show_by_setting_visible_to_false(self):
+        self.window.app = self.app
+        self.window.visible = False
+        self.assertActionPerformed(self.window, "hide")
+        self.assertFalse(self.window.visible)
+        self.assertValueSet(self.window, "visible", False)
 
     def test_widget_created(self):
         self.assertIsNotNone(self.window.id)
         new_app = toga.App("error_name", "id.error", factory=toga_dummy.factory)
         self.window.app = self.app
-        with self.assertRaises(Exception):
+        with self.assertRaisesRegex(
+            Exception, "^Window is already associated with an App$"
+        ):
             self.window.app = new_app
 
     def test_window_title(self):
@@ -190,7 +232,7 @@ class TestWindow(TestCase):
             retry=retry,
         )
 
-    def test_save_file_dialog(self):
+    def test_save_file_dialog_with_initial_directory(self):
         title = "save_file_dialog_test"
         suggested_filename = "/path/to/initial_filename.doc"
         file_types = ["test"]
@@ -203,6 +245,22 @@ class TestWindow(TestCase):
             title=title,
             filename="initial_filename.doc",
             initial_directory=Path("/path/to"),
+            file_types=file_types,
+        )
+
+    def test_save_file_dialog_with_self_as_initial_directory(self):
+        title = "save_file_dialog_test"
+        suggested_filename = "./initial_filename.doc"
+        file_types = ["test"]
+
+        self.window.save_file_dialog(title, suggested_filename, file_types)
+
+        self.assertActionPerformedWith(
+            self.window,
+            "save_file_dialog",
+            title=title,
+            filename="initial_filename.doc",
+            initial_directory=None,
             file_types=file_types,
         )
 
@@ -237,3 +295,23 @@ class TestWindow(TestCase):
             initial_directory=Path(initial_directory),
             multiselect=multiselect,
         )
+
+    def test_window_set_content_once(self):
+        content = Mock()
+        self.window.content = content
+
+        self.assertEqual(content.window, self.window)
+
+        self.assertActionPerformed(self.window, "clear content")
+        self.assertActionPerformed(self.window, "set content")
+
+    def test_window_set_content_twice(self):
+        content1, content2 = Mock(), Mock()
+        self.window.content = content1
+        self.window.content = content2
+
+        self.assertEqual(content1.window, None)
+        self.assertEqual(content2.window, self.window)
+
+        self.assertActionPerformed(self.window, "clear content")
+        self.assertActionPerformed(self.window, "set content")

@@ -13,6 +13,9 @@ class Window(LoggedObject):
     def create_toolbar(self):
         self._action('create toolbar')
 
+    def clear_content(self):
+        self._action('clear content')
+
     def set_content(self, widget):
         self._action('set content', widget=widget)
 
@@ -39,6 +42,14 @@ class Window(LoggedObject):
 
     def show(self):
         self._action('show')
+        self._set_value('visible', True)
+
+    def hide(self):
+        self._action('hide')
+        self._set_value('visible', False)
+
+    def get_visible(self):
+        return self._get_value('visible')
 
     def close(self):
         self._action('close')

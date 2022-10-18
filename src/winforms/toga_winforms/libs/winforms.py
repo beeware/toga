@@ -50,7 +50,7 @@ from System.Drawing.Drawing2D import (  # noqa: F401, E402
 
 from System.Drawing.Text import PrivateFontCollection  # noqa: F401, E402
 
-from System.IO import FileNotFoundException  # noqa: F401, E402
+from System.IO import FileNotFoundException, MemoryStream  # noqa: F401, E402
 from System.Runtime.InteropServices import ExternalException  # noqa: F401, E402
 
 from System.Threading.Tasks import Task, TaskScheduler  # noqa: F401, E402

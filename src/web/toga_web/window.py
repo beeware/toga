@@ -1,7 +1,4 @@
-# from travertino.layout import Viewport
-
-# from toga.command import GROUP_BREAK, SECTION_BREAK
-# from toga.handlers import wrapped_handler
+from toga_web.libs import js, create_element
 
 
 class WebViewport:
@@ -23,48 +20,53 @@ class Window:
         self.interface = interface
         self.interface._impl = self
 
-        self.set_title(title)
-
-    def __html__(self):
-        return """
-            <main id="toga_{id}" class="container" role="main">
-            {content}
-            </main>
-        """.format(
-            id=self.interface.id,
-            content=self.interface.content._impl.__html__()
+        self.native = create_element(
+            "main",
+            id=f"toga_{self.interface.id}",
+            classes=["toga", "window", "container"],
+            role="main",
         )
 
+        app_placeholder = js.document.getElementById("app-placeholder")
+        app_placeholder.appendChild(self.native)
+
+        self.set_title(title)
+
     def get_title(self):
-        self.interface.factory.not_implemented('Window.get_title()')
-        return "?"
+        return js.document.title
 
     def set_title(self, title):
-        self.interface.factory.not_implemented('Window.set_title()')
+        js.document.title = title
 
     def set_app(self, app):
-        self.interface.factory.not_implemented('Window.set_app()')
+        pass
 
     def create_toolbar(self):
         self.interface.factory.not_implemented('Window.create_toolbar()')
 
+    def clear_content(self):
+        if self.interface.content:
+            for child in self.interface.content.children:
+                child._impl.container = None
+
     def set_content(self, widget):
-        self.interface.factory.not_implemented('Window.set_content()')
         widget.viewport = WebViewport()
+
+        # Remove existing content of the window.
+        for child in self.native.childNodes:
+            self.native.removeChild(child)
+
         # Add all children to the content widget.
-        for child in widget.interface.children:
-            child._impl.container = widget
+        self.native.appendChild(widget.native)
 
     def show(self):
-        self.interface.factory.not_implemented('Window.show()')
-        # self.native.show_all()
+        self.native.style = "visibility: visible;"
 
-        # # Now that the content is visible, we can do our initial hinting,
-        # # and use that as the basis for setting the minimum window size.
-        # self.interface.content._impl.rehint()
-        # self.interface.content.style.layout(self.interface.content, Viewport(0, 0))
-        # self.interface.content._impl.min_width = self.interface.content.layout.width
-        # self.interface.content._impl.min_height = self.interface.content.layout.height
+    def hide(self):
+        self.native.style = "visibility: hidden;"
+
+    def get_visible(self):
+        self.interface.not_implemented("Window.get_visible()")
 
     def on_close(self, *args):
         pass

@@ -27,7 +27,9 @@ class Window:
     def __init__(self, id=None, title=None,
                  position=(100, 100), size=(640, 480),
                  toolbar=None, resizeable=True,
-                 closeable=True, minimizable=True, factory=None, on_close=None):
+                 closeable=True, minimizable=True,
+                 factory=None, on_close=None,
+                 ):
 
         self._id = id if id else identifier(self)
         self._impl = None
@@ -124,6 +126,14 @@ class Window:
 
     @content.setter
     def content(self, widget):
+
+        # Set window of old content to None
+        if self._content:
+            self._content.window = None
+
+        # Manifest the widget
+        self._impl.clear_content()
+
         # Assign the content widget to the same app as the window.
         widget.app = self.app
 
@@ -174,6 +184,12 @@ class Window:
             raise AttributeError("Can't show a window that doesn't have an associated app")
         self._impl.show()
 
+    def hide(self):
+        """ Show window, if hidden """
+        if self.app is None:
+            raise AttributeError("Can't hide a window that doesn't have an associated app")
+        self._impl.hide()
+
     @property
     def full_screen(self):
         return self._is_full_screen
@@ -182,6 +198,17 @@ class Window:
     def full_screen(self, is_full_screen):
         self._is_full_screen = is_full_screen
         self._impl.set_full_screen(is_full_screen)
+
+    @property
+    def visible(self):
+        return self._impl.get_visible()
+
+    @visible.setter
+    def visible(self, visible):
+        if visible:
+            self.show()
+        else:
+            self.hide()
 
     @property
     def on_close(self):

@@ -4,7 +4,7 @@ requires = ["briefcase"]
 [tool.briefcase]
 project_name = "Table Demo"
 bundle = "org.beeware"
-version = "0.3.0.dev36"
+version = "0.3.0.dev39"
 url = "https://beeware.org"
 license = "BSD license"
 author = 'Tiberius Yak'
@@ -45,3 +45,10 @@ requires = [
 requires = [
     '../../src/android',
 ]
+
+# Web deployment
+[tool.briefcase.app.table.web]
+requires = [
+    '../../src/web',
+]
+style_framework = "Bootstrap v4.6"

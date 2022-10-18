@@ -130,7 +130,8 @@ class ScrollContainer(Widget):
             self.update_content_size()
 
     def rehint(self):
-        self.update_content_size()
+        if self.interface.content:
+            self.update_content_size()
 
     def set_on_scroll(self, on_scroll):
         self.interface.factory.not_implemented("ScrollContainer.set_on_scroll()")

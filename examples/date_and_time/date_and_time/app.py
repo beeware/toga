@@ -20,7 +20,7 @@ class DateAndTimeApp(toga.App):
                 toga.Label("Any date:", style=Pack(width=150, text_align=RIGHT)),
                 toga.DatePicker(
                     id="Any",
-                    initial=None,
+                    value=None,
                     on_change=self.changed_date,
                 ),
             ],
@@ -31,7 +31,7 @@ class DateAndTimeApp(toga.App):
                 toga.Label("With min:", style=Pack(width=150, text_align=RIGHT)),
                 toga.DatePicker(
                     id="Min",
-                    initial=None,
+                    value=None,
                     on_change=self.changed_date,
                     min_date="2021-01-01",
                 ),
@@ -43,7 +43,7 @@ class DateAndTimeApp(toga.App):
                 toga.Label("With max:", style=Pack(width=150, text_align=RIGHT)),
                 toga.DatePicker(
                     id="Max",
-                    initial=date(2021, 4, 2),
+                    value=date(2021, 4, 2),
                     on_change=self.changed_date,
                     max_date=date(2022, 2, 1),
                 ),
@@ -57,7 +57,7 @@ class DateAndTimeApp(toga.App):
                 ),
                 toga.DatePicker(
                     id="Min-max",
-                    initial=date(2021, 4, 2),
+                    value=date(2021, 4, 2),
                     on_change=self.changed_date,
                     min_date=date(2021, 1, 1),
                     max_date=date(2022, 2, 1),
@@ -71,7 +71,7 @@ class DateAndTimeApp(toga.App):
                 toga.Label("Any time:", style=Pack(width=150, text_align=RIGHT)),
                 toga.TimePicker(
                     id="Any time",
-                    initial=None,
+                    value=None,
                     on_change=self.changed_time,
                 ),
             ],
@@ -82,7 +82,7 @@ class DateAndTimeApp(toga.App):
                 toga.Label("With min:", style=Pack(width=150, text_align=RIGHT)),
                 toga.TimePicker(
                     id="Min time",
-                    initial=None,
+                    value=None,
                     on_change=self.changed_time,
                     min_time="06:35:00",
                 ),
@@ -94,7 +94,7 @@ class DateAndTimeApp(toga.App):
                 toga.Label("With max:", style=Pack(width=150, text_align=RIGHT)),
                 toga.TimePicker(
                     id="Max time",
-                    initial=time(10, 42),
+                    value=time(10, 42),
                     on_change=self.changed_time,
                     max_time=time(21, 30),
                 ),
@@ -108,7 +108,7 @@ class DateAndTimeApp(toga.App):
                 ),
                 toga.TimePicker(
                     id="Min-max time",
-                    initial=time(10, 42),
+                    value=time(10, 42),
                     on_change=self.changed_time,
                     min_time=time(8, 15),
                     max_time=time(21, 30),

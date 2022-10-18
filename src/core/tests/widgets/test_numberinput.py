@@ -73,11 +73,38 @@ class NumberInputTests(TestCase):
         self.nr_input.value = 2
         self.assertValueSet(self.nr_input, 'on_change', self.nr_input.on_change)
 
-    def test_default(self):
+    def test_value_init(self):
         value = 5
-        nr_input = toga.NumberInput(default=value, factory=toga_dummy.factory)
+        nr_input = toga.NumberInput(value=value, factory=toga_dummy.factory)
         self.assertEqual(nr_input.value, value)
 
     def test_focus(self):
         self.nr_input.focus()
         self.assertActionPerformed(self.nr_input, "focus")
+
+    ######################################################################
+    # 2022-07: Backwards compatibility
+    ######################################################################
+
+    def test_init_with_deprecated(self):
+        # default is a deprecated argument
+        value = 5
+        with self.assertWarns(DeprecationWarning):
+            my_nr_input = toga.NumberInput(
+                default=value,
+                factory=toga_dummy.factory
+            )
+        self.assertValueSet(my_nr_input, 'value', value)
+        self.assertEqual(my_nr_input.value, value)
+
+        # can't specify both default *and* value
+        with self.assertRaises(ValueError):
+            toga.NumberInput(
+                default=value,
+                value=value,
+                factory=toga_dummy.factory
+            )
+
+    ######################################################################
+    # End backwards compatibility.
+    ######################################################################

@@ -17,14 +17,15 @@ class OptionContainer(Widget):
                 option=self.interface.content[page_num]
             )
 
-    def add_content(self, label, widget):
+    def add_content(self, index, text, widget):
         widget.viewport = GtkViewport(widget.native)
 
         # Add all children to the content widget.
         for child in widget.interface.children:
             child._impl.container = widget
 
-        self.native.append_page(widget.native, Gtk.Label(label=label))
+        self.native.insert_page(widget.native, Gtk.Label(label=text), index)
+
         # Tabs aren't visible by default;
         # tell the notebook to show all content.
         self.native.show_all()
@@ -47,11 +48,11 @@ class OptionContainer(Widget):
     def is_option_enabled(self, index):
         self.interface.factory.not_implemented('OptionContainer.is_option_enabled()')
 
-    def set_option_label(self, index, value):
+    def set_option_text(self, index, value):
         tab = self.native.get_nth_page(index)
         self.native.set_tab_label(tab, Gtk.Label(label=value))
 
-    def get_option_label(self, index):
+    def get_option_text(self, index):
         tab = self.native.get_nth_page(index)
         return self.native.get_tab_label(tab).get_label()
 
