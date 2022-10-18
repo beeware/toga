@@ -1,7 +1,8 @@
 from ..libs.activity import MainActivity
 from ..libs.android.widget import RelativeLayout, RelativeLayout__LayoutParams
 from .base import Widget
-from toga_android.colors import native_color
+from ..colors import native_color
+from travertino.constants import TRANSPARENT
 
 
 class Box(Widget):
@@ -22,5 +23,6 @@ class Box(Widget):
         self.native.updateViewLayout(widget.native, layout_params)
 
     def set_background_color(self, value):
-        if value:
-            self.native.setBackgroundColor(native_color(value))
+        self.native.setBackgroundColor(
+            native_color(TRANSPARENT if (value is None) else value)
+        )
