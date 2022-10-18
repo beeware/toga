@@ -10,7 +10,7 @@ jobs:
     uses: ./.github/workflows/ci.yml
 
   release:
-    name: Create Release
+    name: Create GitHub release
     needs: ci
     runs-on: ubuntu-latest
     permissions:
@@ -24,8 +24,7 @@ jobs:
         with:
           name: packages
           path: packages
-      - name: Create Release
-        uses: ncipollo/release-action@v1.11.1
+      - uses: ncipollo/release-action@v1.11.1
         with:
           name: ${{ env.VERSION }}
           draft: true
@@ -48,8 +47,8 @@ jobs:
       - name: Extract ${{ matrix.package }}
         run: |
           mkdir dist
-          mv packages/$(echo ${{ matrix.package }} | sed 's/_/?/')* dist
-      - name: Publish release to Test PyPI
+          mv packages/$(echo ${{ matrix.package }} | sed 's/_/?/')-[0-9]* dist
+      - name: Publish to TestPyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           repository_url: https://test.pypi.org/legacy/
