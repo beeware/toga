@@ -1,6 +1,8 @@
 from ..libs.activity import MainActivity
 from ..libs.android.widget import RelativeLayout, RelativeLayout__LayoutParams
 from .base import Widget
+from ..colors import native_color
+from travertino.constants import TRANSPARENT
 
 
 class Box(Widget):
@@ -19,3 +21,8 @@ class Box(Widget):
         layout_params.topMargin = y
         layout_params.leftMargin = x
         self.native.updateViewLayout(widget.native, layout_params)
+
+    def set_background_color(self, value):
+        self.native.setBackgroundColor(
+            native_color(TRANSPARENT if (value is None) else value)
+        )
