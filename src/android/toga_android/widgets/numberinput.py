@@ -1,4 +1,4 @@
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 
 from travertino.size import at_least
 
@@ -10,11 +10,11 @@ from .base import Widget, align
 
 
 def decimal_from_string(s):
-    """If s is the empty string, return `None`. Otherwise, convert to a `Decimal`,
-    allowing any exceptions to bubble up."""
-    if not s:
+    """Convert s to a `Decimal`, returning `None` if it's not a valid number."""
+    try:
+        return Decimal(s)
+    except InvalidOperation:
         return None
-    return Decimal(s)
 
 
 def string_from_decimal(d):
