@@ -13,18 +13,13 @@ class Paths:
     def __context(self):
         return App.app._impl.native.getApplicationContext()
 
+    def __init__(self):
+        # On Android, __main__ only exists during app startup, so cache its location now.
+        self._app = Path(sys.modules["__main__"].__file__).parent
+
     @property
     def app(self):
-        try:
-            return Path(sys.modules["__main__"].__file__).parent
-        except KeyError:
-            # If we're running in test conditions,
-            # there is no __main__ module.
-            return Path.cwd()
-        except AttributeError:
-            # If we're running at an interactive prompt,
-            # the __main__ module isn't file-based.
-            return Path.cwd()
+        return self._app
 
     @property
     def data(self):
