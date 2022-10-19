@@ -2,51 +2,57 @@ from .libs.android import R__id
 from .libs.android.view import ViewTreeObserver__OnGlobalLayoutListener
 
 
-class AndroidViewport:
-    # `content_parent` should be the view that will become the parent of the widget passed to
-    # `Window.set_content`. This ensures that the viewport `width` and `height` attributes
-    # return the usable area of the app, not including the action bar or status bar.
-    def __init__(self, content_parent):
-        self.content_parent = content_parent
-        self.dpi = content_parent.getContext().getResources().getDisplayMetrics().densityDpi
+class AndroidViewport(ViewTreeObserver__OnGlobalLayoutListener):
+    def __init__(self, native, container):
+        """
+        :param native: A native widget whose size will be tracked.
+        :param container: An object with a ``content`` attribute, which will have
+            ``refresh()`` called on it whenever the native widget's size changes.
+        """
+        super().__init__()
+        self.native = native
+        self.container = container
+        self.last_size = (None, None)
+        native.getViewTreeObserver().addOnGlobalLayoutListener(self)
+
+        self.dpi = native.getContext().getResources().getDisplayMetrics().densityDpi
         # Toga needs to know how the current DPI compares to the platform default,
         # which is 160: https://developer.android.com/training/multiscreen/screendensities
         self.baseline_dpi = 160
         self.scale = float(self.dpi) / self.baseline_dpi
 
+    def onGlobalLayout(self):
+        """This listener is run after each native layout pass. If any view's size or
+        position has changed, the new values will be visible here.
+        """
+        new_size = (self.width, self.height)
+        if self.last_size != new_size:
+            self.last_size = new_size
+            if self.container.content:
+                self.container.content.refresh()
+
     @property
     def width(self):
-        return self.content_parent.getWidth()
+        return self.native.getWidth()
 
     @property
     def height(self):
-        return self.content_parent.getHeight()
+        return self.native.getHeight()
 
 
-class Window(ViewTreeObserver__OnGlobalLayoutListener):
+class Window:
     def __init__(self, interface, title, position, size):
         super().__init__()
         self.interface = interface
         self.interface._impl = self
-        self.last_size = (None, None)
-
         # self.set_title(title)
 
     def set_app(self, app):
         self.app = app
-        content_parent = self.app.native.findViewById(R__id.content).__global__()
-        self.viewport = AndroidViewport(content_parent)
-        content_parent.getViewTreeObserver().addOnGlobalLayoutListener(self)
-
-    def onGlobalLayout(self):
-        """This listener is run after each native layout pass. If any view's size or position has
-        changed, the new values will be visible here.
-        """
-        new_size = (self.viewport.width, self.viewport.height)
-        if self.last_size != new_size:
-            self.last_size = new_size
-            if self.interface.content:
-                self.interface.content.refresh()
+        self.viewport = AndroidViewport(
+            self.app.native.findViewById(R__id.content).__global__(),
+            self.interface
+        )
 
     def clear_content(self):
         if self.interface.content:
@@ -79,7 +85,7 @@ class Window(ViewTreeObserver__OnGlobalLayoutListener):
         pass
 
     def get_size(self):
-        return self.last_size
+        return self.viewport.last_size
 
     def set_size(self, size):
         # Does nothing on mobile
