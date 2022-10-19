@@ -10,3 +10,4 @@ How-to Guides
 
    Get started <get-started>
    Contribute to Toga <contribute>
+   Cut a Toga release <release>

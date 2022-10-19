@@ -1,0 +1,29 @@
+name: Upload Python Package
+
+on:
+  release:
+    types: published
+
+jobs:
+  deploy:
+    strategy:
+      matrix:
+        package: ["toga", "toga_android", "toga_cocoa", "toga_core", "toga_demo",
+                  "toga_dummy", "toga_gtk", "toga_iOS", "toga_web", "toga_winforms"]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get packages
+        uses: dsaltares/fetch-gh-release-asset@1.0.0
+        with:
+          version: tags/${{ github.event.release.tag_name }}
+          file: ${{ github.event.repository.name }}.*
+          regex: true
+          target: packages/
+      - name: Extract ${{ matrix.package }}
+        run: |
+          mkdir dist
+          mv packages/$(echo ${{ matrix.package }} | sed 's/_/?/')-[0-9]* dist
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets[format('PYPI_PASSWORD_{0}', matrix.package)] }}
