@@ -1,0 +1,13 @@
+main.toga.window {
+    margin-top: 5em;
+    display: flex;
+    flex-direction: column;
+}
+
+div.toga.box {
+    display: flex;
+}
+
+span.toga.label {
+    white-space: nowrap;
+}
