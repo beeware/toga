@@ -4,7 +4,7 @@ from pathlib import Path
 from toga.command import CommandSet
 from toga.handlers import wrapped_handler
 from toga.platform import get_platform_factory
-from toga.widget_registry import WidgetRegistry
+from toga.widgets.base import WidgetRegistry
 
 
 class Window:

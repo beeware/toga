@@ -1,6 +1,6 @@
 from unittest.mock import Mock
 
-from toga.widget_registry import WidgetRegistry
+from toga.widgets.base import WidgetRegistry
 from toga_dummy.utils import TestCase
 
 

@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, Mock, call, patch
 import toga
 import toga_dummy
 from toga.command import CommandSet
-from toga.widget_registry import WidgetRegistry
+from toga.widgets.base import WidgetRegistry
 from toga_dummy.utils import TestCase
 
 
