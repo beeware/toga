@@ -1,5 +1,6 @@
-from toga import validators
 import unittest
+
+from toga import validators
 
 
 class TestValidators(unittest.TestCase):

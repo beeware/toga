@@ -1,5 +1,5 @@
-from .base import Widget
 from ..utils import not_required
+from .base import Widget
 
 
 @not_required

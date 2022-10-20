@@ -1,7 +1,4 @@
-from toga_cocoa.libs import (
-    NSProgressIndicator,
-    NSProgressIndicatorSpinningStyle
-)
+from toga_cocoa.libs import NSProgressIndicator, NSProgressIndicatorSpinningStyle
 
 from .base import Widget
 

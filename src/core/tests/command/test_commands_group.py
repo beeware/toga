@@ -1,9 +1,9 @@
 import unittest
 
-import toga
+from tests.command.constants import PARENT_GROUP1, PARENT_GROUP2
 from tests.utils import order_test
 
-from tests.command.constants import PARENT_GROUP1, PARENT_GROUP2
+import toga
 
 
 class TestCommandsGroup(unittest.TestCase):

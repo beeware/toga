@@ -1,10 +1,12 @@
 from ctypes import c_void_p
+
 from travertino.size import at_least
 
 import toga
 from toga.keys import Key
 from toga_cocoa.keys import toga_key
 from toga_cocoa.libs import (  # NSSortDescriptor,
+    SEL,
     CGRectMake,
     NSBezelBorder,
     NSIndexSet,
@@ -16,8 +18,7 @@ from toga_cocoa.libs import (  # NSSortDescriptor,
     at,
     objc_method,
     objc_property,
-    send_super,
-    SEL
+    send_super
 )
 from toga_cocoa.widgets.base import Widget
 from toga_cocoa.widgets.internal.cells import TogaIconView

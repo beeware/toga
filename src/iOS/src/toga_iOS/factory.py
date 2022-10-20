@@ -1,11 +1,10 @@
+from . import dialogs
 from .app import App, MainWindow
 from .colors import native_color
 from .fonts import Font
 from .icons import Icon
 from .images import Image
 from .paths import paths
-from . import dialogs
-
 from .widgets.box import Box
 from .widgets.button import Button
 from .widgets.canvas import Canvas

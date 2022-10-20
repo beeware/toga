@@ -1,5 +1,5 @@
 import toga
-from toga.constants import CENTER, COLUMN, ROW, HIDDEN, VISIBLE
+from toga.constants import CENTER, COLUMN, HIDDEN, ROW, VISIBLE
 from toga.style import Pack
 
 

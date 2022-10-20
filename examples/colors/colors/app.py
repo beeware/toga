@@ -1,7 +1,8 @@
-import toga
-from toga.style import Pack
-from toga.constants import COLUMN, ROW
 from travertino import colors
+
+import toga
+from toga.constants import COLUMN, ROW
+from toga.style import Pack
 
 
 class ColorsApp(toga.App):

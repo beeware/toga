@@ -1,4 +1,4 @@
-from toga_winforms.libs import WinImage, MemoryStream
+from toga_winforms.libs import MemoryStream, WinImage
 
 
 class Image(object):

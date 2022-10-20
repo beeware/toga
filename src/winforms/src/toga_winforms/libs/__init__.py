@@ -1,8 +1,9 @@
-from .fonts import (  # noqa: F401
-    HorizontalTextAlignment,
-    TextAlignment,
-    win_font_family
+from .extensions import (  # noqa: F401
+    CoreWebView2CreationProperties,
+    WebView2,
+    WebView2RuntimeNotFoundException
 )
+from .fonts import HorizontalTextAlignment, TextAlignment, win_font_family  # noqa: F401
 from .winforms import (  # noqa: F401
     Action,
     Bitmap,
@@ -41,9 +42,4 @@ from .winforms import (  # noqa: F401
     shcore,
     user32,
     win_version
-)
-from .extensions import (  # noqa: F401
-    CoreWebView2CreationProperties,
-    WebView2,
-    WebView2RuntimeNotFoundException
 )

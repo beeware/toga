@@ -1,8 +1,8 @@
 import unittest
 
 import toga
-from toga_gtk import factory as gtk_factory
 from toga.constants import BOLD, CURSIVE, ITALIC, OBLIQUE, SMALL_CAPS, SYSTEM
+from toga_gtk import factory as gtk_factory
 from toga_gtk import fonts as gtk_fonts
 
 try:
@@ -11,6 +11,7 @@ try:
     from gi.repository import Gtk
 except ImportError:
     import sys
+
     # If we're on Linux, Gtk *should* be available. If it isn't, make
     # Gtk an object... but in such a way that every test will fail,
     # because the object isn't actually the Gtk interface.

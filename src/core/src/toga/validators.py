@@ -1,6 +1,6 @@
 import re
-from typing import Optional, Union, List
-from string import ascii_uppercase, ascii_lowercase, digits
+from string import ascii_lowercase, ascii_uppercase, digits
+from typing import List, Optional, Union
 
 
 class BooleanValidator:

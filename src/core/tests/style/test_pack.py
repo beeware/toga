@@ -7,7 +7,18 @@ from travertino.size import at_least
 from toga.colors import rgb
 from toga.fonts import Font
 from toga.style.applicator import TogaApplicator
-from toga.style.pack import BOTTOM, CENTER, COLUMN, HIDDEN, LEFT, RIGHT, ROW, RTL, Pack, TOP
+from toga.style.pack import (
+    BOTTOM,
+    CENTER,
+    COLUMN,
+    HIDDEN,
+    LEFT,
+    RIGHT,
+    ROW,
+    RTL,
+    TOP,
+    Pack
+)
 
 
 class TestNode(Node):

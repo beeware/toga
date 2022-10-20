@@ -1,11 +1,11 @@
 
-from .textinput import TextInput
 from ..libs import (
     NSSecureTextField,
     NSTextFieldSquareBezel,
     objc_method,
     objc_property,
 )
+from .textinput import TextInput
 
 
 class TogaSecureTextField(NSSecureTextField):

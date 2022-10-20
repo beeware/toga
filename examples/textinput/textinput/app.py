@@ -1,9 +1,9 @@
 from string import ascii_lowercase, ascii_uppercase, digits
 
 import toga
+from toga import validators
 from toga.constants import COLUMN
 from toga.style import Pack
-from toga import validators
 
 EMPTY_PASSWORD = 'Empty password'
 

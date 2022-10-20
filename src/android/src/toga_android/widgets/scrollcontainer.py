@@ -2,11 +2,7 @@ from travertino.size import at_least
 
 from toga_android.window import AndroidViewport
 
-from ..libs.android.view import (
-    Gravity,
-    View__MeasureSpec,
-    View__OnTouchListener
-)
+from ..libs.android.view import Gravity, View__MeasureSpec, View__OnTouchListener
 from ..libs.android.widget import (
     HorizontalScrollView,
     LinearLayout__LayoutParams,

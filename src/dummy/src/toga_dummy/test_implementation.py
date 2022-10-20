@@ -1,9 +1,9 @@
 import ast
 import os
-from os.path import join
 import unittest
 from collections import defaultdict, namedtuple
 from itertools import zip_longest
+from os.path import join
 from pathlib import Path
 
 import toga_dummy

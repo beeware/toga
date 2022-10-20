@@ -4,8 +4,8 @@ import sys
 
 import toga
 from toga import Key
-from .keys import toga_to_winforms_key
 
+from .keys import toga_to_winforms_key
 from .libs import (
     SecurityProtocolType,
     ServicePointManager,

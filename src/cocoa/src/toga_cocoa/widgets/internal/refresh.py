@@ -23,11 +23,11 @@ from toga_cocoa.libs import (
     NSView,
     NSViewBoundsDidChangeNotification,
     ObjCInstance,
+    c_void_p,
     core_graphics,
     kCGScrollEventUnitLine,
     objc_method,
     objc_property,
-    c_void_p,
     send_super
 )
 

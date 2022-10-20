@@ -1,12 +1,12 @@
-import sys
 import os
-import subprocess
 import platform
+import subprocess
+import sys
 from pathlib import Path
-import toga
-from toga.style import Pack
-from toga.constants import COLUMN
 
+import toga
+from toga.constants import COLUMN
+from toga.style import Pack
 
 examples_dir = Path(__file__).parents[3]
 

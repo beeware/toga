@@ -1,9 +1,9 @@
 import io
 
+from PIL import Image, ImageDraw
+
 import toga
 from toga.style.pack import CENTER, COLUMN
-
-from PIL import Image, ImageDraw
 
 
 class ImageViewApp(toga.App):

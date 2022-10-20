@@ -2,10 +2,8 @@ from travertino.size import at_least
 
 from ..libs.android.util import TypedValue
 from ..libs.android.view import View__MeasureSpec
-from ..libs.android.widget import (
-    CompoundButton__OnCheckedChangeListener,
-    Switch as A_Switch
-)
+from ..libs.android.widget import CompoundButton__OnCheckedChangeListener
+from ..libs.android.widget import Switch as A_Switch
 from .base import Widget
 
 

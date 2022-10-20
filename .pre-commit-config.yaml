@@ -3,9 +3,16 @@ repos:
     rev: v4.3.0
     hooks:
       - id: check-toml
-        exclude: ^examples/.template/
+        exclude: "^examples/.template/"
       - id: check-yaml
       - id: check-case-conflict
       - id: check-docstring-first
       - id: end-of-file-fixer
       - id: trailing-whitespace
+  - repo: https://github.com/PyCQA/isort
+    rev: 12cc5fbd67eebf92eb2213b03c07b138ae1fb448  # For split_on_trailing_comma.
+    hooks:
+      - id: isort
+        additional_dependencies: [toml]
+        args: ["--settings", "setup.cfg"]  # https://github.com/PyCQA/isort/issues/1872
+        exclude: "^(attic|nursery|examples/.template)/"

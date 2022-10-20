@@ -1,13 +1,13 @@
 import toga
 from toga.constants import (
+    BLUE,
     CENTER,
     COLUMN,
     GREEN,
+    RED,
     ROW,
     WHITE,
     YELLOW,
-    BLUE,
-    RED,
 )
 from toga.style import Pack
 

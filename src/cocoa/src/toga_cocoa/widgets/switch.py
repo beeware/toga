@@ -10,8 +10,8 @@ from toga_cocoa.libs import (
     objc_method
 )
 
-from .base import Widget
 from ..libs import objc_property
+from .base import Widget
 
 
 class TogaSwitch(NSButton):

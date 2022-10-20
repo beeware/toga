@@ -2,6 +2,7 @@ from travertino.size import at_least
 
 import toga
 from toga_cocoa.libs import (
+    SEL,
     NSBezelBorder,
     NSIndexSet,
     NSRange,
@@ -12,8 +13,7 @@ from toga_cocoa.libs import (
     NSTableViewColumnAutoresizingStyle,
     at,
     objc_method,
-    objc_property,
-    SEL
+    objc_property
 )
 
 from .base import Widget
