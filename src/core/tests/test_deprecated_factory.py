@@ -60,17 +60,11 @@ class DeprecatedFactoryTests(TestCase):
         self.assertNotEqual(widget.factory, self.factory)
 
     def test_image(self):
-        resource_path = toga_dummy.factory.paths.app
-        widget = toga.Image(resource_path / 'toga/resources/toga-32.png')
+        resource_path = toga_dummy.factory.paths.toga
+        image = toga.Image(resource_path / 'resources/toga-32.png')
         with self.assertWarns(DeprecationWarning):
-            try:
-                widget.bind(factory=self.factory)
-            except FileNotFoundError as e:
-                raise FileNotFoundError(
-                    e.args[0],
-                    "\nThis test must be running from 'src/core'"
-                )
-        self.assertEqual(widget._impl.interface, widget)
+            image.bind(factory=self.factory)
+        self.assertEqual(image._impl.interface, image)
 
     def test_window(self):
         with self.assertWarns(DeprecationWarning):

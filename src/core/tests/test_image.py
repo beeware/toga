@@ -71,7 +71,7 @@ class ImageTests(TestCase):
     def test_bytes_image(self):
         data = bytes([1])
         bytes_image = toga.Image(data=data)
-        bytes_image.bind(factory=toga_dummy.factory)
+        bytes_image.bind()
         self.assertEqual(bytes_image._impl.interface, bytes_image)
         self.assertActionPerformedWith(bytes_image, 'load image data', data=data)
 
