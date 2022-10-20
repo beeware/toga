@@ -1,0 +1,11 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.3.0
+    hooks:
+      - id: check-toml
+        exclude: ^examples/.template/
+      - id: check-yaml
+      - id: check-case-conflict
+      - id: check-docstring-first
+      - id: end-of-file-fixer
+      - id: trailing-whitespace

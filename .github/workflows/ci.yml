@@ -14,29 +14,27 @@ defaults:
     shell: bash
 
 jobs:
-  beefore:
-    name: Pre-test checks
+  pre-commit:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        task:
-        - flake8
-        # - towncrier-check
-        - docs
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-python@v3.1.2
+        with:
+          python-version: ${{ env.min_python_version }}
+      - uses: pre-commit/action@v3.0.0
+
+  docs:
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
     - uses: actions/setup-python@v3.1.2
       with:
         python-version: ${{ env.min_python_version }}
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install --upgrade setuptools
-        python -m pip install tox
-    - run: tox -e ${{ matrix.task }}
+    - run: pip install tox
+    - run: tox -e docs
 
   package:
-    needs: beefore
+    needs: [pre-commit, docs]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1

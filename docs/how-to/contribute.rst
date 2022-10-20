@@ -1,3 +1,5 @@
+FIXME pre-commit
+
 .. _contribute:
 
 =========================
@@ -9,7 +11,7 @@ contribute code, please `fork the code`_ and `submit a pull request`_.  You may
 also find `this presentation by BeeWare team member Dan Yeaw
 <https://youtu.be/sWt_sEZUiY8>`__ helpful. This talk gives an architectural
 overview of Toga, as well as providing a guide to the process of adding new
-widgets.  
+widgets.
 
 
 .. _log them on Github: https://github.com/beeware/toga/issues
