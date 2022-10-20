@@ -86,3 +86,8 @@ class TestWidgetsRegistry(TestCase):
         self.assertEqual(list(self.widget_registry), [widget1])
         self.assertEqual(str(self.widget_registry), "{1234: Widget(id=1234)}")
         self.assertEqual(self.widget_registry[id1], widget1)
+
+    def test_using_setitem_directly(self):
+        id1 = 1234
+        widget = widget_mock(id1)
+        self.assertRaises(RuntimeError, self.widget_registry.__setitem__, id1, widget)
