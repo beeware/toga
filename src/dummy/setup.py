@@ -6,7 +6,7 @@ from setuptools import setup
 # Version handline needs to be programatic because
 # we can't import toga_dummy to compute the version;
 # and to support versioned subpackage dependencies
-with open('toga_dummy/__init__.py', encoding='utf8') as version_file:
+with open('src/toga_dummy/__init__.py', encoding='utf8') as version_file:
     version_match = re.search(
         r"^__version__ = ['\"]([^'\"]*)['\"]",
         version_file.read(),

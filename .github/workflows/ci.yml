@@ -4,72 +4,64 @@ on:
   push:
     branches:
       - main
+  workflow_call:
+
+env:
+  min_python_version: "3.7"
+
+defaults:
+  run:
+    shell: bash
 
 jobs:
   beefore:
     name: Pre-test checks
     runs-on: ubuntu-latest
     strategy:
-      max-parallel: 4
       matrix:
         task:
         - flake8
         # - towncrier-check
         - docs
-        - package
     steps:
     - uses: actions/checkout@v1
-    - name: Set up Python 3.7
-      uses: actions/setup-python@v3.1.2
+    - uses: actions/setup-python@v3.1.2
       with:
-        python-version: "3.7"
+        python-version: ${{ env.min_python_version }}
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         python -m pip install --upgrade setuptools
         python -m pip install tox
-    - name: Run pre-test checks
-      run: |
-        tox -e ${{ matrix.task }}
+    - run: tox -e ${{ matrix.task }}
 
-  smoke:
-    name: Smoke test (3.7)
-    needs:
-    - beefore
+  package:
+    needs: beefore
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
-    - name: Set up Python 3.7
-      uses: actions/setup-python@v3.1.2
+    - uses: actions/setup-python@v3.1.2
       with:
-        python-version: "3.7"
-    - name: Install dependencies
+        python-version: ${{ env.min_python_version }}
+    - run: pip install tox
+    - run: tox -e package
+    - name: Collect packages
       run: |
-        python -m pip install --upgrade pip
-        python -m pip install --upgrade setuptools
-        python -m pip install --upgrade tox
-    - name: Test
-      run: |
-        tox -e py
-    - name: Check coverage
-      uses: codecov/codecov-action@v1
+        mkdir packages
+        mv {.,demo,src/*}/dist/* packages
+    - uses: actions/upload-artifact@v3
       with:
-        token: ${{ secrets.CODECOV_TOKEN }}
-        file: ./src/core/coverage.xml
-        flags: unittests
-        fail_ci_if_error: true
+        name: packages
+        path: packages
+        if-no-files-found: error
 
-  python-versions:
-    # Only run this and subsequent steps on branches.
-    # `github.head_ref` only exists on pull requests.
-    if: github.head_ref
-    name: Python compatibility test
-    needs: smoke
-    runs-on: ubuntu-latest
+  core:
+    needs: package
     strategy:
-      max-parallel: 4
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11.0-alpha - 3.11.0"]
+        platform: ['macos', 'ubuntu', 'windows']
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11.0-alpha - 3.11.0"]
+    runs-on: ${{ matrix.platform }}-latest
     steps:
     - uses: actions/checkout@v1
     - name: Set up Python ${{ matrix.python-version }}
@@ -81,166 +73,68 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install --upgrade setuptools
         python -m pip install --upgrade tox
+    - name: Get packages
+      uses: actions/download-artifact@v3
+      with:
+        name: packages
+        path: packages
     - name: Test
+      env:
+        TOGA_INSTALL_COMMAND: 'bash -c "pip install packages/toga_{core,dummy}*.whl"'
       run: |
         tox -e py
+    - if: matrix.platform == 'ubuntu' && matrix.python-version == env.min_python_version
+      uses: codecov/codecov-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        file: ./coverage.xml
+        flags: unittests
+        fail_ci_if_error: true
 
-  windows:
-    name: Winforms backend tests
-    needs: python-versions
-    runs-on: windows-latest
+  backend:
+    needs: package
+    strategy:
+      matrix:
+        backend: [android, cocoa, gtk, iOS, web, winforms]
+        include:
+          - runs-on: ubuntu-latest
+          - python-version: "3.7"  # Should be env.min_python_version (https://github.com/actions/runner/issues/480)
+          - pre-command:
+          - test-command: pytest -v
+          - backend: cocoa
+            runs-on: macos-latest
+          - backend: gtk
+            pre-command: "sudo apt-get update -y && sudo apt-get install -y python3-gi python3-gi-cairo gir1.2-gtk-3.0 python3-dev libgirepository1.0-dev libcairo2-dev pkg-config"
+            test-command: "xvfb-run -a -s '-screen 0 2048x1536x24' pytest -v"
+          - backend: iOS
+            runs-on: macos-latest
+          - backend: winforms
+            runs-on: windows-latest
+            # Py3.9 is the first Python version for which
+            # a wheel of pythonnet isn't available on PyPI.
+            python-version: "3.9"
+    runs-on: ${{ matrix.runs-on }}
     steps:
     - uses: actions/checkout@v1
-    - name: Set up Python 3.9
+    - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v3.1.2
       with:
         # Py3.9 is the first Python version for which
         # a wheel of pythonnet isn't available on PyPI.
-        python-version: "3.9"
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install --upgrade setuptools
-        python -m pip install pytest-tldr
-        python -m pip install -e src/core
-        python -m pip install -e src/dummy
-        python -m pip install -e src/winforms
-    - name: Test
-      env:
-        TOGA_BACKEND: toga_winforms
-      run: |
-        cd src/winforms
-        pytest -v
-    - name: Core Test
-      env:
-        TOGA_BACKEND: toga_dummy
-      run: |
-        cd src/core
-        pytest -v
-
-  macOS:
-    name: macOS backend tests
-    needs: python-versions
-    runs-on: macOS-latest
-    steps:
-    - uses: actions/checkout@v1
-    - name: Set up Python 3.7
-      uses: actions/setup-python@v3.1.2
+        python-version: ${{ matrix.python-version }}
+    - name: Get packages
+      uses: actions/download-artifact@v3
       with:
-        python-version: "3.7"
+        name: packages
+        path: packages
     - name: Install dependencies
       run: |
+        ${{ matrix.pre-command }}
         python -m pip install --upgrade pip
         python -m pip install --upgrade setuptools
         python -m pip install pytest-tldr
-        python -m pip install -e src/core
-        python -m pip install -e src/dummy
-        python -m pip install -e src/cocoa
+        python -m pip install packages/toga_{core,dummy,${{ matrix.backend }}}*.whl
     - name: Test
-      env:
-        TOGA_BACKEND: toga_cocoa
       run: |
-        cd src/cocoa
-        pytest -v
-
-  iOS:
-    name: iOS backend tests
-    needs: python-versions
-    runs-on: macOS-latest
-    steps:
-    - uses: actions/checkout@v1
-    - name: Set up Python 3.7
-      uses: actions/setup-python@v3.1.2
-      with:
-        python-version: "3.7"
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install --upgrade setuptools
-        python -m pip install pytest-tldr
-        python -m pip install -e src/core
-        python -m pip install -e src/dummy
-        python -m pip install -e src/iOS
-    - name: Test
-      env:
-        TOGA_BACKEND: toga_iOS
-      run: |
-        cd src/iOS
-        pytest -v
-
-  gtk:
-    name: GTK+ backend tests
-    needs: python-versions
-    runs-on: ubuntu-20.04
-    steps:
-    - uses: actions/checkout@v1
-    - name: Set up Python 3.7
-      uses: actions/setup-python@v3.1.2
-      with:
-        python-version: "3.7"
-    - name: Install dependencies
-      run: |
-        sudo apt-get update -y
-        sudo apt-get install -y python3-gi python3-gi-cairo gir1.2-gtk-3.0 python3-dev libgirepository1.0-dev libcairo2-dev pkg-config
-        python -m pip install --upgrade pip
-        python -m pip install --upgrade setuptools
-        python -m pip install pytest-tldr
-        python -m pip install -e src/core
-        python -m pip install -e src/dummy
-        python -m pip install -e src/gtk
-    - name: Test
-      env:
-        TOGA_BACKEND: toga_gtk
-      run: |
-        cd src/gtk
-        xvfb-run -a -s '-screen 0 2048x1536x24' pytest -v
-
-  android:
-    name: Android backend tests
-    needs: python-versions
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v1
-    - name: Set up Python 3.7
-      uses: actions/setup-python@v3.1.2
-      with:
-        python-version: "3.7"
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install --upgrade setuptools
-        python -m pip install pytest-tldr
-        python -m pip install -e src/core
-        python -m pip install -e src/dummy
-        python -m pip install -e src/android
-    - name: Test
-      env:
-        TOGA_BACKEND: toga_android
-      run: |
-        cd src/android
-        pytest -v
-
-  web:
-    name: Web backend tests
-    needs: python-versions
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v1
-    - name: Set up Python 3.7
-      uses: actions/setup-python@v3.1.2
-      with:
-        python-version: "3.7"
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install --upgrade setuptools
-        python -m pip install pytest-tldr
-        python -m pip install -e src/core
-        python -m pip install -e src/dummy
-        python -m pip install -e src/web
-    - name: Test
-      env:
-        TOGA_BACKEND: toga_web
-      run: |
-        cd src/web
-        pytest -v
+        cd src/${{ matrix.backend }}
+        TOGA_BACKEND=toga_${{ matrix.backend }} ${{ matrix.test-command }}
