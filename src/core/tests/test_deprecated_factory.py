@@ -1,6 +1,6 @@
 import toga
-from toga.fonts import SANS_SERIF
 import toga_dummy
+from toga.fonts import SANS_SERIF
 from toga_dummy.utils import TestCase
 
 

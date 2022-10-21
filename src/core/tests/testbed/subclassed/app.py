@@ -3,7 +3,6 @@ import sys
 import toga
 from toga import platform
 
-
 # If the user provided a --backend:<name> argument,
 # use that backend as the factory.
 backend = [

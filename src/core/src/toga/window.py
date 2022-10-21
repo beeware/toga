@@ -1,6 +1,6 @@
+import warnings
 from builtins import id as identifier
 from pathlib import Path
-import warnings
 
 from toga.command import CommandSet
 from toga.handlers import wrapped_handler
