@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-import re
-
 from setuptools import setup
 
 # This is a mock version of the GTK+ backend. It is required because RTD
@@ -11,17 +9,8 @@ from setuptools import setup
 # This package fulfills the pip requirement of `toga-gtk`, without
 # *actually* doing anything.
 
-
-with open('../../src/gtk/toga_gtk/__init__.py', encoding='utf8') as version_file:
-    version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]", version_file.read(), re.M)
-    if version_match:
-        version = version_match.group(1)
-    else:
-        raise RuntimeError("Unable to find version string.")
-
-
 setup(
     name='toga-gtk',
-    version=version,
+    version="0.3.0.dev39",
     description='A mock of the GTK+ backend for the Toga widget toolkit.',
 )
