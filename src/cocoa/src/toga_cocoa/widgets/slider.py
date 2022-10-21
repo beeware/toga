@@ -1,9 +1,9 @@
 from travertino.size import at_least
 
-from toga_cocoa.libs import NSEventType, NSSlider, SEL, objc_method
+from toga_cocoa.libs import SEL, NSEventType, NSSlider, objc_method
 
-from .base import Widget
 from ..libs import objc_property
+from .base import Widget
 
 
 class TogaSlider(NSSlider):

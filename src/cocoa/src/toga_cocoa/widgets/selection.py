@@ -2,8 +2,8 @@ from travertino.size import at_least
 
 from toga_cocoa.libs import SEL, NSPopUpButton, objc_method
 
-from .base import Widget
 from ..libs import objc_property
+from .base import Widget
 
 
 class TogaPopupButton(NSPopUpButton):

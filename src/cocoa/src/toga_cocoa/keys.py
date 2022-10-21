@@ -1,3 +1,5 @@
+"""Utilities to convert Cocoa constants to Toga ones"""
+
 from toga import Key
 from toga_cocoa.libs import (
     NSEventModifierFlagCapsLock,
@@ -7,10 +9,6 @@ from toga_cocoa.libs import (
     NSEventModifierFlagShift
 )
 
-
-######################################################################
-# Utilities to convert Cocoa constants to Toga ones
-######################################################################
 
 def modified_key(key, shift=None):
     def mod_fn(modifierFlags):

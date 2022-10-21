@@ -1,7 +1,7 @@
 from datetime import date, time
 
 import toga
-from toga.constants import COLUMN, ROW, RIGHT
+from toga.constants import COLUMN, RIGHT, ROW
 from toga.style import Pack
 
 

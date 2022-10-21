@@ -1,8 +1,8 @@
-import toga
-import toga_dummy
+from tests.command.constants import COMMANDS_IN_ORDER, PARENT_GROUP1
 from tests.utils import order_test
 
-from tests.command.constants import PARENT_GROUP1, COMMANDS_IN_ORDER
+import toga
+import toga_dummy
 from toga_dummy.utils import TestCase
 
 

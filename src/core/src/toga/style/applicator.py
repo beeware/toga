@@ -1,4 +1,3 @@
-
 class TogaApplicator:
     """Apply styles to a Toga widget"""
     def __init__(self, widget):

@@ -22,7 +22,7 @@ class ExampleMultilineTextInputApp(toga.App):
             self.label.text = "Nothing has been written yet"
             return
         number_of_lines = len(self.multiline_input.value.split("\n"))
-        self.label.text = "{} lines has been written".format(number_of_lines)
+        self.label.text = f"{number_of_lines} lines has been written"
 
     def startup(self):
         self.main_window = toga.MainWindow(title=self.name)

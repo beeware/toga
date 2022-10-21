@@ -1,6 +1,7 @@
 import html
 
 from toga_gtk.libs import Gtk, Pango
+
 from .base import HiddenButtonsRow
 
 

@@ -1,12 +1,10 @@
 from asyncio import get_event_loop
 from ctypes import c_void_p
 
-from travertino.size import at_least
-
 from rubicon.objc import objc_method, objc_property, py_from_ns
 from rubicon.objc.runtime import objc_id
+from travertino.size import at_least
 
-from .base import Widget
 from ..keys import toga_key
 from ..libs import (
     NSURL,
@@ -14,6 +12,7 @@ from ..libs import (
     WKWebView,
     send_super,
 )
+from .base import Widget
 
 
 class TogaWebView(WKWebView):

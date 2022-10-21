@@ -1,8 +1,8 @@
 from datetime import datetime
 
 import toga
-from toga.style import Pack
 from toga.constants import COLUMN
+from toga.style import Pack
 
 
 class WindowDemoApp(toga.App):

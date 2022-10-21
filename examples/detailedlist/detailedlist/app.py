@@ -10,7 +10,7 @@ from .translations import bee_translations
 class ExampleDetailedListApp(toga.App):
     # Detailed list callback functions
     def on_select_handler(self, widget, row, **kwargs):
-        self.label.text = 'Bee is {} in {}'.format(row.title, row.subtitle) \
+        self.label.text = f'Bee is {row.title} in {row.subtitle}' \
             if row is not None else 'No row selected'
 
     async def on_refresh_handler(self, widget, **kwargs):
@@ -22,7 +22,7 @@ class ExampleDetailedListApp(toga.App):
         self.label.text = 'List was refreshed.'
 
     def on_delete_handler(self, widget, row, **kwargs):
-        self.label.text = 'Row {} is going to be deleted.'.format(row.subtitle)
+        self.label.text = f'Row {row.subtitle} is going to be deleted.'
 
     # Button callback functions
     def insert_handler(self, widget, **kwargs):

@@ -2,8 +2,7 @@ from contextlib import contextmanager
 from enum import Enum
 from math import pi
 
-from toga.colors import BLACK
-from toga.colors import color as parse_color
+from toga.colors import BLACK, color as parse_color
 from toga.fonts import SYSTEM, Font
 from toga.handlers import wrapped_handler
 
@@ -29,7 +28,7 @@ class Context:
         self.drawing_objects = []
 
     def __repr__(self):
-        return "{}()".format(self.__class__.__name__)
+        return f"{self.__class__.__name__}()"
 
     def _draw(self, impl, *args, **kwargs):
         """Draw all drawing objects that are on the context or canvas.
@@ -503,7 +502,7 @@ class ClosedPath(Context):
         self.y = y
 
     def __repr__(self):
-        return "{}(x={}, y={})".format(self.__class__.__name__, self.x, self.y)
+        return f"{self.__class__.__name__}(x={self.x}, y={self.y})"
 
     def _draw(self, impl, *args, **kwargs):
         """Used by parent to draw all objects that are part of the context.
@@ -795,7 +794,7 @@ class MoveTo:
         self.y = y
 
     def __repr__(self):
-        return "{}(x={}, y={})".format(self.__class__.__name__, self.x, self.y)
+        return f"{self.__class__.__name__}(x={self.x}, y={self.y})"
 
     def _draw(self, impl, *args, **kwargs):
         """Draw the drawing object using the implementation.
@@ -822,7 +821,7 @@ class LineTo:
         self.y = y
 
     def __repr__(self):
-        return "{}(x={}, y={})".format(self.__class__.__name__, self.x, self.y)
+        return f"{self.__class__.__name__}(x={self.x}, y={self.y})"
 
     def _draw(self, impl, *args, **kwargs):
         """Draw the drawing object using the implementation.
@@ -1099,7 +1098,7 @@ class Rotate:
         self.radians = radians
 
     def __repr__(self):
-        return "{}(radians={})".format(self.__class__.__name__, self.radians)
+        return f"{self.__class__.__name__}(radians={self.radians})"
 
     def _draw(self, impl, *args, **kwargs):
         """Draw the drawing object using the implementation.
@@ -1124,7 +1123,7 @@ class Scale:
         self.sy = sy
 
     def __repr__(self):
-        return "{}(sx={}, sy={})".format(self.__class__.__name__, self.sx, self.sy)
+        return f"{self.__class__.__name__}(sx={self.sx}, sy={self.sy})"
 
     def _draw(self, impl, *args, **kwargs):
         """Draw the drawing object using the implementation.
@@ -1149,7 +1148,7 @@ class Translate:
         self.ty = ty
 
     def __repr__(self):
-        return "{}(tx={}, ty={})".format(self.__class__.__name__, self.tx, self.ty)
+        return f"{self.__class__.__name__}(tx={self.tx}, ty={self.ty})"
 
     def _draw(self, impl, *args, **kwargs):
         """Draw the drawing object using the implementation.
@@ -1168,7 +1167,7 @@ class ResetTransform:
     """
 
     def __repr__(self):
-        return "{}()".format(self.__class__.__name__)
+        return f"{self.__class__.__name__}()"
 
     def _draw(self, impl, *args, **kwargs):
         """Draw the drawing object using the implementation.
@@ -1216,7 +1215,7 @@ class NewPath:
     """
 
     def __repr__(self):
-        return "{}()".format(self.__class__.__name__)
+        return f"{self.__class__.__name__}()"
 
     def _draw(self, impl, *args, **kwargs):
         """Draw the drawing object using the implementation.

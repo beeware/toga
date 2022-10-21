@@ -1,9 +1,9 @@
 from unittest import mock
+from unittest.mock import Mock, call
 
 import toga
 import toga_dummy
 from toga_dummy.utils import TestCase
-from unittest.mock import Mock, call
 
 
 class TextInputTests(TestCase):

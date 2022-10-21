@@ -1,6 +1,6 @@
 import os
-import subprocess
 import platform
+import subprocess
 from datetime import datetime
 from pathlib import Path
 
@@ -59,7 +59,7 @@ class Node:
         self._did_start_loading = False
 
     def __repr__(self):
-        return "<Node {0}>".format(self.path)
+        return f"<Node {self.path}>"
 
     # Methods required for the data source interface
     def __len__(self):
@@ -127,13 +127,13 @@ class ExampleTreeSourceApp(toga.App):
         if files == 0:
             self.label.text = 'A view of the current directory!'
         elif files == 1:
-            self.label.text = 'You selected {0} item'.format(files)
+            self.label.text = f'You selected {files} item'
         else:
-            self.label.text = 'You selected {0} items'.format(files)
+            self.label.text = f'You selected {files} items'
 
     def double_click_handler(self, widget, node):
         # open the file or folder in the platform's default app
-        self.label.text = 'You started {0}'.format(node.path)
+        self.label.text = f'You started {node.path}'
         if platform.system() == 'Darwin':
             subprocess.call(('open', node.path))
         elif platform.system() == 'Windows':

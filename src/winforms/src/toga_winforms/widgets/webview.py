@@ -1,10 +1,10 @@
-from asyncio import get_event_loop
-import toga
 import traceback
 import webbrowser
+from asyncio import get_event_loop
 
 from travertino.size import at_least
 
+import toga
 from toga_winforms.keys import toga_key
 from toga_winforms.libs import (
     Action,

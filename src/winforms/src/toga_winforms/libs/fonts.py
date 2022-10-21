@@ -11,12 +11,12 @@ from toga.fonts import (
 )
 
 from .winforms import (
+    ArgumentException,
     ContentAlignment,
     FontFamily,
     FontStyle,
     SystemFonts,
-    WinForms,
-    ArgumentException
+    WinForms
 )
 
 

@@ -181,13 +181,13 @@ class OptionList:
         # value as part of the migration from text->value.
         if len(missing_arguments) == 1:
             raise TypeError(
-                "OptionList.append missing 1 required positional argument: '{}'".format(missing_arguments[0])
+                f"OptionList.append missing 1 required positional argument: '{missing_arguments[0]}'"
             )
         elif len(missing_arguments) > 1:
             raise TypeError(
                 "OptionList.append missing {} required positional arguments: {}".format(
                     len(missing_arguments),
-                    ' and '.join(["'{}'".format(name) for name in missing_arguments])
+                    ' and '.join([f"'{name}'" for name in missing_arguments])
                 )
             )
 
@@ -238,13 +238,13 @@ class OptionList:
         # value as part of the migration from text->value.
         if len(missing_arguments) == 1:
             raise TypeError(
-                "OptionList.insert missing 1 required positional argument: '{}'".format(missing_arguments[0])
+                f"OptionList.insert missing 1 required positional argument: '{missing_arguments[0]}'"
             )
         elif len(missing_arguments) > 1:
             raise TypeError(
                 "OptionList.insert missing {} required positional arguments: {}".format(
                     len(missing_arguments),
-                    ' and '.join(["'{}'".format(name) for name in missing_arguments])
+                    ' and '.join([f"'{name}'" for name in missing_arguments])
                 )
             )
 
@@ -329,7 +329,7 @@ class OptionContainer(Widget):
                     filter(lambda item: item.text == current_tab, self.content)
                 )
             except StopIteration:
-                raise ValueError("No tab named {}".format(current_tab))
+                raise ValueError(f"No tab named {current_tab}")
         if isinstance(current_tab, OptionItem):
             current_tab = current_tab.index
         self._impl.set_current_tab_index(current_tab)
@@ -389,13 +389,13 @@ class OptionContainer(Widget):
         # value as part of the migration from text->value.
         if len(missing_arguments) == 1:
             raise TypeError(
-                "OptionContainer.add missing 1 required positional argument: '{}'".format(missing_arguments[0])
+                f"OptionContainer.add missing 1 required positional argument: '{missing_arguments[0]}'"
             )
         elif len(missing_arguments) > 1:
             raise TypeError(
                 "OptionContainer.add missing {} required positional arguments: {}".format(
                     len(missing_arguments),
-                    ' and '.join(["'{}'".format(name) for name in missing_arguments])
+                    ' and '.join([f"'{name}'" for name in missing_arguments])
                 )
             )
 

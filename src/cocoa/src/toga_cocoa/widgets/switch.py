@@ -10,8 +10,8 @@ from toga_cocoa.libs import (
     objc_method
 )
 
-from .base import Widget
 from ..libs import objc_property
+from .base import Widget
 
 
 class TogaSwitch(NSButton):
@@ -59,7 +59,7 @@ class Switch(Widget):
         elif value == 0:
             return False
         else:
-            raise Exception('Undefined value for value of {}'.format(__class__))
+            raise Exception(f'Undefined value for value of {__class__}')
 
     def rehint(self):
         content_size = self.native.intrinsicContentSize()
