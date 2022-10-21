@@ -23,18 +23,7 @@ jobs:
           python-version: ${{ env.min_python_version }}
       - uses: pre-commit/action@v3.0.0
 
-  docs:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v1
-    - uses: actions/setup-python@v3.1.2
-      with:
-        python-version: ${{ env.min_python_version }}
-    - run: pip install tox
-    - run: tox -e docs
-
   package:
-    needs: [pre-commit, docs]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
