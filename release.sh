@@ -18,6 +18,11 @@ function bump {
             git add "$f"
         done
 
+        # Update the version in mock_gtk
+        mv docs/mock_gtk/setup.py temp
+        sed "s/version=\".*\"/version=\"$2\"/g" temp > docs/mock_gtk/setup.py
+        git add docs/mock_gtk/setup.py
+
     elif [ "$1" = "demo" ]; then
         pushd demo
         mv setup.cfg temp
