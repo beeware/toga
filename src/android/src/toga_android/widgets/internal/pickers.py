@@ -1,7 +1,8 @@
+from abc import ABC, abstractclassmethod
+
 from ...libs.android.view import OnClickListener, View__MeasureSpec
 from ...libs.android.widget import EditText
 from ..base import Widget
-from abc import ABC, abstractclassmethod
 
 
 class TogaPickerClickListener(OnClickListener):

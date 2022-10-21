@@ -24,7 +24,7 @@ class Font:
             # Set font family
             family = self.interface.family
             if family != SYSTEM:
-                family = '{}, {}'.format(family, SYSTEM)  # Default to system
+                family = f'{family}, {SYSTEM}'  # Default to system
 
             font.set_family(family)
 

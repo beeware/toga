@@ -63,7 +63,7 @@ class Switch(Widget):
         elif value == 0:
             return False
         else:
-            raise RuntimeError('Undefined value for enabled: {} in {}'.format(value, __class__))
+            raise RuntimeError(f'Undefined value for enabled: {value} in {__class__}')
 
     def set_enabled(self, value):
         if value:

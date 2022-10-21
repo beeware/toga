@@ -2,6 +2,7 @@ import asyncio
 from pathlib import Path
 
 from .libs import (
+    NSURL,
     NSAlert,
     NSAlertFirstButtonReturn,
     NSAlertStyle,
@@ -13,7 +14,6 @@ from .libs import (
     NSSavePanel,
     NSScrollView,
     NSTextView,
-    NSURL,
 )
 
 

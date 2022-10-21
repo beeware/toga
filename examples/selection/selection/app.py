@@ -112,7 +112,7 @@ class SelectionApp(toga.App):
 
         # get the current value of the slider with `selection.value`
 
-        print("The selection widget changed to {0}".format(selection.value))
+        print(f"The selection widget changed to {selection.value}")
 
 
 def main():

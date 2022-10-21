@@ -25,7 +25,7 @@ class Document:
         self.native.impl = self
 
         self.native.initWithContentsOfURL(
-            NSURL.URLWithString('file://{}'.format(quote(interface.filename))),
+            NSURL.URLWithString(f'file://{quote(interface.filename)}'),
             ofType=interface.document_type,
             error=None
         )

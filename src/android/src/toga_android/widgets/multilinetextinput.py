@@ -1,6 +1,6 @@
-from toga.constants import LEFT
 from travertino.size import at_least
 
+from toga.constants import LEFT
 from toga_android.colors import native_color
 
 from ..libs.android.text import InputType, TextWatcher

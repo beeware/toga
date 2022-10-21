@@ -1,8 +1,8 @@
 from ctypes import c_uint
 from ctypes.wintypes import HWND, WPARAM
 
-from travertino.size import at_least
 from travertino.constants import TRANSPARENT
+from travertino.size import at_least
 
 from toga_winforms.colors import native_color
 from toga_winforms.libs import HorizontalTextAlignment, WinForms, user32

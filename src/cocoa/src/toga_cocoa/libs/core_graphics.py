@@ -13,8 +13,8 @@ from ctypes import (
 )
 
 from rubicon.objc import CGFloat, CGRect
-from rubicon.objc.types import register_preferred_encoding
 from rubicon.objc.runtime import load_library
+from rubicon.objc.types import register_preferred_encoding
 
 ######################################################################
 core_graphics = load_library('CoreGraphics')

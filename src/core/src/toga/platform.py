@@ -1,7 +1,6 @@
 import sys
 from functools import lru_cache
 
-
 # Rely on `sys.getandroidapilevel`, which only exists on Android; see
 # https://github.com/beeware/Python-Android-support/issues/8
 if hasattr(sys, 'getandroidapilevel'):

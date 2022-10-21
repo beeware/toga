@@ -207,10 +207,10 @@ class TestCase(unittest.TestCase):
             self.assertNotIn(
                 action,
                 _MODULES[_module]._actions,
-                'Action {} unexpectedly performed by {}.'.format(action, _module)
+                f'Action {action} unexpectedly performed by {_module}.'
             )
         except AttributeError:
-            self.fail('Module {} is not a logged object'.format(_module))
+            self.fail(f'Module {_module} is not a logged object')
 
     def assertFunctionPerformed(self, _module, action):
         """Assert that the action function from module was performed.
@@ -231,7 +231,7 @@ class TestCase(unittest.TestCase):
                 )
             )
         except AttributeError:
-            self.fail('Module {} is not a logged object'.format(_module))
+            self.fail(f'Module {_module} is not a logged object')
 
     def assertFunctionPerformedWith(self, _module, action, **test_data):
         """Confirm that the action function form module was performed with specific test data
@@ -285,7 +285,7 @@ class TestCase(unittest.TestCase):
                     sorted(_MODULES[_module]._actions.keys())
                 ))
         except AttributeError:
-            self.fail('Widget {} is not a logged object'.format(_module))
+            self.fail(f'Widget {_module} is not a logged object')
 
 #####
 
@@ -312,10 +312,10 @@ class TestCase(unittest.TestCase):
             self.fail('Widget {} did not have the attribute {!r} set; set attributes were {}.'.format(
                 _widget,
                 attr,
-                ', '.join('{!r}'.format(a) for a in sorted(_widget._impl._sets.keys()))
+                ', '.join(f'{a!r}' for a in sorted(_widget._impl._sets.keys()))
             ))
         except AttributeError:
-            self.fail('Widget {} is not a logged object'.format(_widget))
+            self.fail(f'Widget {_widget} is not a logged object')
 
     def assertValuesSet(self, _widget, attr, values):
         """Assert that the widget implementation has been set to multiple values.
@@ -332,18 +332,18 @@ class TestCase(unittest.TestCase):
                 'Widget {} has not had attribute {!r} set to the values {}; got {}.'.format(
                     _widget,
                     attr,
-                    ', '.join('{!r}'.format(v) for v in values),
-                    ', '.join('{!r}'.format(v) for v in _widget._impl._sets[attr])
+                    ', '.join(f'{v!r}' for v in values),
+                    ', '.join(f'{v!r}' for v in _widget._impl._sets[attr])
                 )
             )
         except KeyError:
             self.fail('Widget {} did not have the attribute {!r} set; set attributes were {}.'.format(
                 _widget,
                 attr,
-                ','.join('{!r}'.format(a) for a in sorted(_widget._impl._sets.keys()))
+                ','.join(f'{a!r}' for a in sorted(_widget._impl._sets.keys()))
             ))
         except AttributeError:
-            self.fail('Widget {} is not a logged object'.format(_widget))
+            self.fail(f'Widget {_widget} is not a logged object')
 
     def assertValueGet(self, _widget, attr):
         """Assert that the widget implementation attempted to retrieve an attribute
@@ -360,23 +360,23 @@ class TestCase(unittest.TestCase):
                     _widget,
                     attr,
                     ','.join(
-                        '{!r}'.format(a) for a in sorted(_widget._impl._gets)
+                        f'{a!r}' for a in sorted(_widget._impl._gets)
                     )
                 )
             )
         except AttributeError:
-            self.fail('Widget {} is not a logged object'.format(_widget))
+            self.fail(f'Widget {_widget} is not a logged object')
 
     def assertValueNotGet(self, _widget, attr):
         self.assertTrue(
             attr not in _widget._impl._gets,
-            msg="Expected {attr} not to be get, but it was.".format(attr=attr)
+            msg=f"Expected {attr} not to be get, but it was."
         )
 
     def assertValueNotSet(self, _widget, attr):
         self.assertTrue(
             attr not in _widget._impl._sets,
-            msg="Expected {attr} not to be set, but it was.".format(attr=attr)
+            msg=f"Expected {attr} not to be set, but it was."
         )
 
     def assertActionNotPerformed(self, _widget, action):
@@ -391,10 +391,10 @@ class TestCase(unittest.TestCase):
             self.assertNotIn(
                 action,
                 _widget._impl._actions,
-                'Action {} unexpectedly performed by {}.'.format(action, _widget)
+                f'Action {action} unexpectedly performed by {_widget}.'
             )
         except AttributeError:
-            self.fail('Widget {} is not a logged object'.format(_widget))
+            self.fail(f'Widget {_widget} is not a logged object')
 
     def assertActionPerformed(self, _widget, action):
         """Assert that the named action performed by a widget.
@@ -415,7 +415,7 @@ class TestCase(unittest.TestCase):
                 )
             )
         except AttributeError:
-            self.fail('Widget {} is not a logged object'.format(_widget))
+            self.fail(f'Widget {_widget} is not a logged object')
 
     def assertActionPerformedWith(self, _widget, action, **test_data):
         """Was the action performed with specific test data
@@ -469,4 +469,4 @@ class TestCase(unittest.TestCase):
                     sorted(_widget._impl._actions.keys())
                 ))
         except AttributeError:
-            self.fail('Widget {} is not a logged object'.format(_widget))
+            self.fail(f'Widget {_widget} is not a logged object')

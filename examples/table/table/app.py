@@ -24,7 +24,7 @@ class ExampleTableApp(toga.App):
     # Table callback functions
     def on_select_handler1(self, widget, row, **kwargs):
         self.label_table1.text = (
-            "You selected row: {}".format(row.title)
+            f"You selected row: {row.title}"
             if row is not None
             else "No row selected"
         )

@@ -91,7 +91,7 @@ class ExampleFocusApp(toga.App):
 
     def on_switch_toggle(self, widget: toga.Switch):
         on_off = "on" if widget.value else "off"
-        self.info_label.text = "Switch turned {on_off}!".format(on_off=on_off)
+        self.info_label.text = f"Switch turned {on_off}!"
 
     def on_textinput_gain_focus(self, widget: toga.TextInput):
         self.info_label.text = (
@@ -104,7 +104,7 @@ class ExampleFocusApp(toga.App):
 
     def focus_with_label(self, widget: toga.Widget):
         widget.focus()
-        self.info_label.text = "{name} is focused!".format(name=widget.text)
+        self.info_label.text = f"{widget.text} is focused!"
 
 
 def main():

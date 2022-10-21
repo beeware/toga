@@ -11,10 +11,8 @@ from toga.handlers import NativeHandler
 
 from .keys import cocoa_key
 from .libs import (
-    SEL,
-    NSMenu,
-    NSMenuItem,
     NSURL,
+    SEL,
     NSAboutPanelOptionApplicationIcon,
     NSAboutPanelOptionApplicationName,
     NSAboutPanelOptionApplicationVersion,
@@ -23,6 +21,8 @@ from .libs import (
     NSBundle,
     NSCursor,
     NSDocumentController,
+    NSMenu,
+    NSMenuItem,
     NSMutableArray,
     NSMutableDictionary,
     NSNumber,

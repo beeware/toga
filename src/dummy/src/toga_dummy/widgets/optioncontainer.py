@@ -1,5 +1,5 @@
-from .base import Widget
 from ..utils import not_required
+from .base import Widget
 
 
 @not_required
@@ -33,19 +33,19 @@ class OptionContainer(Widget):
         self._set_value('on_select', handler)
 
     def set_option_enabled(self, index, enabled):
-        self._set_value('option_{}_enabled'.format(index), value=enabled)
+        self._set_value(f'option_{index}_enabled', value=enabled)
         self._items[index].enabled = enabled
 
     def is_option_enabled(self, index):
-        self._get_value('option_{}_enabled'.format(index))
+        self._get_value(f'option_{index}_enabled')
         return self._items[index].enabled
 
     def set_option_text(self, index, value):
-        self._set_value('option_{}_text'.format(index), value=value)
+        self._set_value(f'option_{index}_text', value=value)
         self._items[index].text = value
 
     def get_option_text(self, index):
-        self._get_value('option_{}_text'.format(index))
+        self._get_value(f'option_{index}_text')
         return self._items[index].text
 
     def set_current_tab_index(self, current_tab_index):

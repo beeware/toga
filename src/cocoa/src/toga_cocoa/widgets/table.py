@@ -2,6 +2,7 @@ from travertino.size import at_least
 
 import toga
 from toga_cocoa.libs import (
+    SEL,
     NSBezelBorder,
     NSIndexSet,
     NSRange,
@@ -12,8 +13,7 @@ from toga_cocoa.libs import (
     NSTableViewColumnAutoresizingStyle,
     at,
     objc_method,
-    objc_property,
-    SEL
+    objc_property
 )
 
 from .base import Widget
@@ -72,7 +72,7 @@ class TogaTable(NSTableView):
         # creates a NSTableCellView from interface-builder template (does not exist)
         # or reuses an existing view which is currently not needed for painting
         # returns None (nil) if both fails
-        identifier = at('CellView_{}'.format(self.interface.id))
+        identifier = at(f'CellView_{self.interface.id}')
         tcv = self.makeViewWithIdentifier(identifier, owner=self)
 
         if not tcv:  # there is no existing view to reuse so create a new one

@@ -1,13 +1,11 @@
+from . import dialogs
 from .app import App, MainWindow  # DocumentApp
 from .command import Command
-
 # from .documents import Document
 # from .fonts import Font
 from .icons import Icon
 # from .images import Image
 from .paths import paths
-from . import dialogs
-
 from .widgets.box import Box
 from .widgets.button import Button
 # from .widgets.canvas import Canvas
@@ -26,13 +24,14 @@ from .widgets.label import Label
 # from .widgets.switch import Switch
 # from .widgets.table import Table
 from .widgets.textinput import TextInput
+
 # from .widgets.tree import Tree
 # from .widgets.webview import WebView
 # from .window import Window
 
 
 def not_implemented(feature):
-    print('[Web] Not implemented: {}'.format(feature))
+    print(f'[Web] Not implemented: {feature}')
 
 
 __all__ = [

@@ -1,6 +1,6 @@
 import toga
+from toga.constants import BOLD, COLUMN, ITALIC, MONOSPACE, ROW
 from toga.style import Pack
-from toga.constants import COLUMN, ROW, BOLD, ITALIC, MONOSPACE
 
 
 class ExampleFontExampleApp(toga.App):

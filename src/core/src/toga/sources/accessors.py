@@ -27,7 +27,7 @@ def to_accessor(heading):
     ).replace(' ', '_')
 
     if len(value) == 0 or value[0].isdigit():
-        raise ValueError("Unable to automatically generate accessor from heading '{}'.".format(heading))
+        raise ValueError(f"Unable to automatically generate accessor from heading '{heading}'.")
 
     return value
 

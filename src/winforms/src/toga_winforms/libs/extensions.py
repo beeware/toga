@@ -15,10 +15,10 @@ os.environ['Path'] = os.path.join(WEBVIEW2_DIR, archpath) + ';' + os.environ['Pa
 clr.AddReference(os.path.join(WEBVIEW2_DIR, 'Microsoft.Web.WebView2.Core.dll'))
 clr.AddReference(os.path.join(WEBVIEW2_DIR, 'Microsoft.Web.WebView2.WinForms.dll'))
 
-from Microsoft.Web.WebView2.WinForms import (  # noqa: F401, E402
-    WebView2,
-    CoreWebView2CreationProperties
-)
 from Microsoft.Web.WebView2.Core import (  # noqa: F401, E402
     WebView2RuntimeNotFoundException
+)
+from Microsoft.Web.WebView2.WinForms import (  # noqa: F401, E402
+    CoreWebView2CreationProperties,
+    WebView2
 )

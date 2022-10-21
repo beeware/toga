@@ -1,8 +1,9 @@
+from travertino.constants import TRANSPARENT
+
+from ..colors import native_color
 from ..libs.activity import MainActivity
 from ..libs.android.widget import RelativeLayout, RelativeLayout__LayoutParams
 from .base import Widget
-from ..colors import native_color
-from travertino.constants import TRANSPARENT
 
 
 class Box(Widget):

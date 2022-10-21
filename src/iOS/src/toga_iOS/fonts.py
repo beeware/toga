@@ -55,7 +55,7 @@ class Font:
                 font = UIFont.fontWithName(full_name, size=size)
 
                 if font is None:
-                    print("Unable to load font: {}pt {}".format(self.interface.size, full_name))
+                    print(f"Unable to load font: {self.interface.size}pt {full_name}")
                 else:
                     _FONT_CACHE[self.interface] = font
 

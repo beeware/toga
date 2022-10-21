@@ -32,7 +32,7 @@ class ScrollContainerApp(toga.App):
         box.add(switch_box)
 
         for x in range(100):
-            label_text = 'Label {}'.format(x)
+            label_text = f'Label {x}'
             box.add(Item(label_text))
 
         self.scroller.content = box

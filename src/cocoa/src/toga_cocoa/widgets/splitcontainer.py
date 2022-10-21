@@ -1,8 +1,8 @@
 from toga_cocoa.libs import NSObject, NSSize, NSSplitView, objc_method
 from toga_cocoa.window import CocoaViewport
 
-from .base import Widget
 from ..libs import objc_property
+from .base import Widget
 
 
 class TogaSplitViewDelegate(NSObject):

@@ -4,8 +4,8 @@ import sys
 
 import toga
 from toga import Key
-from .keys import toga_to_winforms_key
 
+from .keys import toga_to_winforms_key
 from .libs import (
     SecurityProtocolType,
     ServicePointManager,
@@ -99,7 +99,7 @@ class App:
         self.interface.commands.add(
             toga.Command(
                 lambda _: self.interface.about(),
-                'About {}'.format(self.interface.name),
+                f'About {self.interface.name}',
                 group=toga.Group.HELP
             ),
             toga.Command(None, 'Preferences', group=toga.Group.FILE),
@@ -263,16 +263,16 @@ class App:
                 )
             else:
                 message_parts.append(
-                    "{name}".format(name=self.interface.name)
+                    f"{self.interface.name}"
                 )
         elif self.interface.version is not None:
             message_parts.append(
-                "v{version}".format(version=self.interface.version)
+                f"v{self.interface.version}"
             )
 
         if self.interface.author is not None:
             message_parts.append(
-                "Author: {author}".format(author=self.interface.author)
+                f"Author: {self.interface.author}"
             )
         if self.interface.description is not None:
             message_parts.append(
@@ -281,7 +281,7 @@ class App:
                 )
             )
         self.interface.main_window.info_dialog(
-            'About {}'.format(self.interface.name), "\n".join(message_parts)
+            f'About {self.interface.name}', "\n".join(message_parts)
         )
 
     def exit(self):
