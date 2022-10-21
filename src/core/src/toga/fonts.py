@@ -14,8 +14,8 @@ from travertino.constants import (  # noqa: F401
     SMALL_CAPS,
     SYSTEM,
 )
-from travertino.fonts import Font as BaseFont  # noqa: F401
 from travertino.fonts import font  # noqa: F401
+from travertino.fonts import Font as BaseFont  # noqa: F401
 
 SYSTEM_DEFAULT_FONT_SIZE = -1
 _REGISTERED_FONT_CACHE = {}

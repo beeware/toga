@@ -5,34 +5,28 @@ import clr
 clr.AddReference("System.Windows.Forms")
 
 import System.Windows.Forms as WinForms  # noqa: F401, E402
-from System import (
+from System import (  # noqa: F401, E402
     Action,
     ArgumentException,
     Convert,
-)
-from System import DateTime as WinDateTime  # noqa: F401, E402
-from System import (
+    DateTime as WinDateTime,
     Environment,
     Single,
     String,
     Threading,
     Uri,
 )
-from System.Drawing import (
+from System.Drawing import (  # noqa: F401, E402
     Bitmap,
     Color,
     ContentAlignment,
     Drawing2D,
-)
-from System.Drawing import Font as WinFont  # noqa: F401, E402
-from System.Drawing import (
+    Font as WinFont,
     FontFamily,
     FontStyle,
     Graphics,
-)
-from System.Drawing import Icon as WinIcon
-from System.Drawing import Image as WinImage
-from System.Drawing import (
+    Icon as WinIcon,
+    Image as WinImage,
     Pen,
     Point,
     PointF,

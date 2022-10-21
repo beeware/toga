@@ -4,9 +4,7 @@ import base64
 from travertino.size import at_least
 
 from ..libs.android.view import Gravity, View__MeasureSpec
-from ..libs.android.webkit import ValueCallback
-from ..libs.android.webkit import WebView as A_WebView
-from ..libs.android.webkit import WebViewClient
+from ..libs.android.webkit import ValueCallback, WebView as A_WebView, WebViewClient
 from .base import Widget, align
 
 

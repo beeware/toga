@@ -2,8 +2,7 @@ from contextlib import contextmanager
 from enum import Enum
 from math import pi
 
-from toga.colors import BLACK
-from toga.colors import color as parse_color
+from toga.colors import BLACK, color as parse_color
 from toga.fonts import SYSTEM, Font
 from toga.handlers import wrapped_handler
 
