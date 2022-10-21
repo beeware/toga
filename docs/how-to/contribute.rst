@@ -1,5 +1,3 @@
-FIXME pre-commit
-
 .. _contribute:
 
 =========================
@@ -173,7 +171,191 @@ specific order:
       (venv) C:\...>pip install -e src/dummy
       (venv) C:\...>pip install -e src/winforms
 
-You can then run the core test suite:
+This project uses a tool called `Pre-Commit <https://pre-commit.com>`__ to identify
+simple issues and standardize code formatting. It does this by installing a git
+hook that automatically runs a series of code linters prior to finalizing any
+git commit. To enable pre-commit, run:
+
+.. tabs::
+
+  .. group-tab:: macOS
+
+    .. code-block:: bash
+
+      (venv) $ pip install pre-commit
+      (venv) $ pre-commit install
+      pre-commit installed at .git/hooks/pre-commit
+
+  .. group-tab:: Linux
+
+    .. code-block:: bash
+
+      (venv) $ pip install pre-commit
+      (venv) $ pre-commit install
+      pre-commit installed at .git/hooks/pre-commit
+
+  .. group-tab:: Windows
+
+    .. code-block:: doscon
+
+      (venv) C:\...>pip install pre-commit
+      (venv) C:\...>pre-commit install
+      pre-commit installed at .git/hooks/pre-commit
+
+When you commit any change, pre-commit will run automatically. If there are any
+issues found with the commit, this will cause your commit to fail. Where possible,
+pre-commit will make the changes needed to correct the problems it has found:
+
+.. tabs::
+
+  .. group-tab:: macOS
+
+    .. code-block:: bash
+
+      (venv) $ git add some/interesting_file.py
+      (venv) $ git commit -m "Minor change"
+      black....................................................................Failed
+      - hook id: black
+      - files were modified by this hook
+
+      reformatted some/interesting_file.py
+
+      All done! ✨ 🍰 ✨
+      1 file reformatted.
+
+      flake8...................................................................Passed
+      check toml...........................................(no files to check)Skipped
+      check yaml...........................................(no files to check)Skipped
+      check for case conflicts.................................................Passed
+      check docstring is first.................................................Passed
+      fix end of files.........................................................Passed
+      trim trailing whitespace.................................................Passed
+      isort....................................................................Passed
+      pyupgrade................................................................Passed
+      docformatter.............................................................Passed
+
+  .. group-tab:: Linux
+
+    .. code-block:: bash
+
+      (venv) $ git add some/interesting_file.py
+      (venv) $ git commit -m "Minor change"
+      black....................................................................Failed
+      - hook id: black
+      - files were modified by this hook
+
+      reformatted some/interesting_file.py
+
+      All done! ✨ 🍰 ✨
+      1 file reformatted.
+
+      flake8...................................................................Passed
+      check toml...........................................(no files to check)Skipped
+      check yaml...........................................(no files to check)Skipped
+      check for case conflicts.................................................Passed
+      check docstring is first.................................................Passed
+      fix end of files.........................................................Passed
+      trim trailing whitespace.................................................Passed
+      isort....................................................................Passed
+      pyupgrade................................................................Passed
+      docformatter.............................................................Passed
+
+  .. group-tab:: Windows
+
+    .. code-block:: doscon
+
+      (venv) C:\...>git add some/interesting_file.py
+      (venv) C:\...>git commit -m "Minor change"
+      black....................................................................Failed
+      - hook id: black
+      - files were modified by this hook
+
+      reformatted some\interesting_file.py
+
+      All done! ✨ 🍰 ✨
+      1 file reformatted.
+
+      flake8...................................................................Passed
+      check toml...........................................(no files to check)Skipped
+      check yaml...........................................(no files to check)Skipped
+      check for case conflicts.................................................Passed
+      check docstring is first.................................................Passed
+      fix end of files.........................................................Passed
+      trim trailing whitespace.................................................Passed
+      isort....................................................................Passed
+      pyupgrade................................................................Passed
+      docformatter.............................................................Passed
+
+You can then re-add any files that were modified as a result of the pre-commit checks,
+and re-commit the change.
+
+.. tabs::
+
+  .. group-tab:: macOS
+
+    .. code-block:: bash
+
+      (venv) $ git add some/interesting_file.py
+      (venv) $ git commit -m "Minor change"
+      black....................................................................Passed
+      flake8...................................................................Passed
+      check toml...........................................(no files to check)Skipped
+      check yaml...........................................(no files to check)Skipped
+      check for case conflicts.................................................Passed
+      check docstring is first.................................................Passed
+      fix end of files.........................................................Passed
+      trim trailing whitespace.................................................Passed
+      isort....................................................................Passed
+      pyupgrade................................................................Passed
+      docformatter.............................................................Passed
+      [bugfix e3e0f73] Minor change
+      1 file changed, 4 insertions(+), 2 deletions(-)
+
+  .. group-tab:: Linux
+
+    .. code-block:: bash
+
+      (venv) $ git add some/interesting_file.py
+      (venv) $ git commit -m "Minor change"
+      black....................................................................Passed
+      flake8...................................................................Passed
+      check toml...........................................(no files to check)Skipped
+      check yaml...........................................(no files to check)Skipped
+      check for case conflicts.................................................Passed
+      check docstring is first.................................................Passed
+      fix end of files.........................................................Passed
+      trim trailing whitespace.................................................Passed
+      isort....................................................................Passed
+      pyupgrade................................................................Passed
+      docformatter.............................................................Passed
+      [bugfix e3e0f73] Minor change
+      1 file changed, 4 insertions(+), 2 deletions(-)
+
+  .. group-tab:: Windows
+
+    .. code-block:: doscon
+
+      (venv) C:\...>git add some\interesting_file.py
+      (venv) C:\...>git commit -m "Minor change"
+      black....................................................................Passed
+      flake8...................................................................Passed
+      check toml...........................................(no files to check)Skipped
+      check yaml...........................................(no files to check)Skipped
+      check for case conflicts.................................................Passed
+      check docstring is first.................................................Passed
+      fix end of files.........................................................Passed
+      trim trailing whitespace.................................................Passed
+      isort....................................................................Passed
+      pyupgrade................................................................Passed
+      docformatter.............................................................Passed
+
+Now you are ready to start hacking on Toga!
+
+
+What should I do?
+=================
+
+Start by running the core test suite:
 
 .. tabs::
 
@@ -220,12 +402,7 @@ the patch. If you do find a test error or failure, either there’s something
 odd in your test environment, or you’ve found an edge case that we haven’t
 seen before - either way, let us know!
 
-Now you are ready to start hacking on Toga!
-
-What should I do?
-=================
-
-The src/core package of toga has a test suite, but that test suite is
+Although the tests should all pass, the test suite itself is still
 incomplete. There are many aspects of the Toga Core API that aren't currently
 tested (or aren't tested thoroughly). To work out what *isn't* tested, we're
 going to use a tool called `coverage
