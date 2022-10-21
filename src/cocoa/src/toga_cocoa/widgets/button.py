@@ -1,7 +1,6 @@
 from travertino.size import at_least
 
 from toga.fonts import SYSTEM_DEFAULT_FONT_SIZE
-
 from toga_cocoa.libs import (
     SEL,
     NSBezelStyle,

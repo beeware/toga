@@ -1,6 +1,7 @@
 import os
 
 from toga.fonts import (
+    _REGISTERED_FONT_CACHE,
     BOLD,
     CURSIVE,
     FANTASY,
@@ -11,8 +12,6 @@ from toga.fonts import (
     SYSTEM,
     SYSTEM_DEFAULT_FONT_SIZE,
 )
-from toga.fonts import _REGISTERED_FONT_CACHE
-
 from toga_android.libs.android.graphics import Typeface
 
 _FONT_CACHE = {}

@@ -1,10 +1,12 @@
 from ctypes import c_void_p
+
 from travertino.size import at_least
 
 import toga
 from toga.keys import Key
 from toga_cocoa.keys import toga_key
 from toga_cocoa.libs import (  # NSSortDescriptor,
+    SEL,
     CGRectMake,
     NSBezelBorder,
     NSIndexSet,
@@ -16,8 +18,7 @@ from toga_cocoa.libs import (  # NSSortDescriptor,
     at,
     objc_method,
     objc_property,
-    send_super,
-    SEL
+    send_super
 )
 from toga_cocoa.widgets.base import Widget
 from toga_cocoa.widgets.internal.cells import TogaIconView
@@ -108,7 +109,7 @@ class TogaTree(NSOutlineView):
         # creates a NSTableCellView from interface-builder template (does not exist)
         # or reuses an existing view which is currently not needed for painting
         # returns None (nil) if both fails
-        identifier = at('CellView_{}'.format(self.interface.id))
+        identifier = at(f'CellView_{self.interface.id}')
         tcv = self.makeViewWithIdentifier(identifier, owner=self)
 
         if not tcv:  # there is no existing view to reuse so create a new one

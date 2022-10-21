@@ -83,7 +83,7 @@ class DetailedList(Widget):
         scroll_view.addView(
                 dismissable_container, dismissable_container_params
         )
-        for i in range(len((self.interface.data or []))):
+        for i in range(len(self.interface.data or [])):
             self._make_row(dismissable_container, i)
 
     def _make_row(self, container, i):

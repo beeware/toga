@@ -41,4 +41,3 @@ if _debug_win32:
             return f
 else:
     DebugLibrary = lambda lib: lib
-

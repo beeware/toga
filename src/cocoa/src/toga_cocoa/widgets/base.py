@@ -1,8 +1,8 @@
 from travertino.constants import TRANSPARENT
 
+from toga_cocoa.colors import native_color
 from toga_cocoa.constraints import Constraints
 from toga_cocoa.libs import NSColor
-from toga_cocoa.colors import native_color
 
 
 class Widget:

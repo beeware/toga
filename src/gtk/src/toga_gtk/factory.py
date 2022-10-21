@@ -1,3 +1,4 @@
+from . import dialogs
 from .app import App, DocumentApp, MainWindow
 from .command import Command
 from .documents import Document
@@ -5,8 +6,6 @@ from .fonts import Font
 from .icons import Icon
 from .images import Image
 from .paths import paths
-from . import dialogs
-
 from .widgets.activityindicator import ActivityIndicator
 from .widgets.box import Box
 from .widgets.button import Button
@@ -33,7 +32,7 @@ from .window import Window
 
 
 def not_implemented(feature):
-    print('[GTK+] Not implemented: {}'.format(feature))
+    print(f'[GTK+] Not implemented: {feature}')
 
 
 __all__ = [

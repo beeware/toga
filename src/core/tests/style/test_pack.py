@@ -7,7 +7,18 @@ from travertino.size import at_least
 from toga.colors import rgb
 from toga.fonts import Font
 from toga.style.applicator import TogaApplicator
-from toga.style.pack import BOTTOM, CENTER, COLUMN, HIDDEN, LEFT, RIGHT, ROW, RTL, Pack, TOP
+from toga.style.pack import (
+    BOTTOM,
+    CENTER,
+    COLUMN,
+    HIDDEN,
+    LEFT,
+    RIGHT,
+    ROW,
+    RTL,
+    TOP,
+    Pack
+)
 
 
 class TestNode(Node):
@@ -21,7 +32,7 @@ class TestNode(Node):
             self.intrinsic.height = size[1]
 
     def __repr__(self):
-        return '<{} at {}>'.format(self.name, id(self))
+        return f'<{self.name} at {id(self)}>'
 
 
 class TestViewport:
@@ -104,18 +115,18 @@ class PackLayoutTests(TestCase):
         self.assertEqual(
             (node.layout.absolute_content_left, node.layout.absolute_content_top),
             layout['origin'],
-            "origin of {} doesn't match".format(node)
+            f"origin of {node} doesn't match"
         )
         self.assertEqual(
             (node.layout.content_width, node.layout.content_height),
             layout['content'],
-            "content of {} doesn't match".format(node)
+            f"content of {node} doesn't match"
         )
 
         self.assertEqual(
             len(node.children),
             len(layout.get('children', [])),
-            "number of children of {} doesn't match".format(node)
+            f"number of children of {node} doesn't match"
         )
 
         for child, sublayout in zip(node.children, layout.get('children', [])):

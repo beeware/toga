@@ -1,8 +1,8 @@
 import importlib
 import os
 import sys
-from functools import lru_cache
 import warnings
+from functools import lru_cache
 
 try:
     # Usually, the pattern is "import module; if it doesn't exist,
@@ -58,7 +58,7 @@ def override_current_platform(platform):
 
 
 def _entry_point_format(backend):
-    return '{} ({})'.format(backend.name, backend.value)
+    return f'{backend.name} ({backend.value})'
 
 
 @lru_cache(maxsize=1)
@@ -93,7 +93,7 @@ def get_platform_factory(factory=None):
     backend_value = os.environ.get('TOGA_BACKEND')
     if backend_value:
         try:
-            factory = importlib.import_module('{}.factory'.format(backend_value))
+            factory = importlib.import_module(f'{backend_value}.factory')
         except ModuleNotFoundError:
             toga_backends_values = ', '.join([backend.value for backend in toga_backends])
             raise RuntimeError(
@@ -124,5 +124,5 @@ def get_platform_factory(factory=None):
                     "TOGA_BACKEND environment variable to select a backend."
                 )
             backend = matching_backends[0]
-        factory = importlib.import_module('{}.factory'.format(backend.value))
+        factory = importlib.import_module(f'{backend.value}.factory')
     return factory

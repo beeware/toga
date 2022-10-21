@@ -1,6 +1,7 @@
+from travertino.size import at_least
+
 import toga
 from toga_winforms.libs import WinForms
-from travertino.size import at_least
 
 from .base import Widget
 

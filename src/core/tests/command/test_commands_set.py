@@ -2,8 +2,9 @@ import random
 import unittest
 from unittest.mock import Mock
 
-import toga
 from tests.command.constants import COMMANDS_IN_ORDER, COMMANDS_IN_SET
+
+import toga
 
 
 class TestCommandSet(unittest.TestCase):

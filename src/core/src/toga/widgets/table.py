@@ -214,7 +214,7 @@ class Table(Widget):
             accessor = to_accessor(heading)
 
         if accessor in self._accessors:
-            raise ValueError('Accessor "{}" is already in use'.format(accessor))
+            raise ValueError(f'Accessor "{accessor}" is already in use')
 
         self.headings.append(heading)
         self._accessors.append(accessor)
@@ -238,7 +238,7 @@ class Table(Widget):
                 accessor = self._accessors[column]
             except IndexError:
                 # Column specified as an integer, but the integer is out of range.
-                raise ValueError("Column {} does not exist".format(column))
+                raise ValueError(f"Column {column} does not exist")
             except TypeError:
                 # Column specified as something other than int or str
                 raise ValueError("Column must be an integer or string")
@@ -249,7 +249,7 @@ class Table(Widget):
             del self.headings[self._accessors.index(accessor)]
             self._accessors.remove(accessor)
         except KeyError:
-            raise ValueError('Invalid column: "{}"'.format(column))
+            raise ValueError(f'Invalid column: "{column}"')
 
     @property
     def missing_value(self):

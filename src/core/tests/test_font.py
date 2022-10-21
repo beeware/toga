@@ -1,11 +1,11 @@
 import toga
 from toga.fonts import (
-    NORMAL,
+    _REGISTERED_FONT_CACHE,
     BOLD,
     ITALIC,
+    NORMAL,
     SANS_SERIF,
     SMALL_CAPS,
-    _REGISTERED_FONT_CACHE,
 )
 from toga_dummy.utils import TestCase
 

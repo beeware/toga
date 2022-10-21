@@ -1,8 +1,8 @@
-from ..libs import Gtk, GLib, Gdk, Gio
+from ..libs import Gdk, Gio, GLib, Gtk
 from .base import Widget
-from .internal.rows.texticon import TextIconRow
 from .internal.buttons.refresh import RefreshButton
 from .internal.buttons.scroll import ScrollButton
+from .internal.rows.texticon import TextIconRow
 
 
 # TODO: Verify if right clicking a row currently works with touch screens, if not,

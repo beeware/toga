@@ -1,4 +1,3 @@
-
 # Translations of the word bee. !There will be mistakes!
 bee_translations = [
     {"locale": "af", "country": "Afrikaans", "string": "Bee"},

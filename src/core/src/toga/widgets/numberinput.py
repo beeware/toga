@@ -1,5 +1,5 @@
-from decimal import Decimal, InvalidOperation
 import warnings
+from decimal import Decimal, InvalidOperation
 
 from toga.handlers import wrapped_handler
 

@@ -616,7 +616,7 @@ class CanvasTests(TestCase):
 
         # set a new callback
         def callback(widget, **extra):
-            return 'called {} with {}'.format(type(widget), extra)
+            return f'called {type(widget)} with {extra}'
 
         self.testing_canvas.on_resize = callback
         self.assertEqual(self.testing_canvas.on_resize._raw, callback)
@@ -634,7 +634,7 @@ class CanvasTests(TestCase):
 
         # set a new callback
         def callback(widget, **extra):
-            return 'called {} with {}'.format(type(widget), extra)
+            return f'called {type(widget)} with {extra}'
 
         self.testing_canvas.on_press = callback
         self.assertEqual(self.testing_canvas.on_press._raw, callback)
@@ -650,7 +650,7 @@ class CanvasTests(TestCase):
 
         # set a new callback
         def callback(widget, **extra):
-            return 'called {} with {}'.format(type(widget), extra)
+            return f'called {type(widget)} with {extra}'
 
         self.testing_canvas.on_release = callback
         self.assertEqual(self.testing_canvas.on_release._raw, callback)
@@ -666,7 +666,7 @@ class CanvasTests(TestCase):
 
         # set a new callback
         def callback(widget, **extra):
-            return 'called {} with {}'.format(type(widget), extra)
+            return f'called {type(widget)} with {extra}'
 
         self.testing_canvas.on_drag = callback
         self.assertEqual(self.testing_canvas.on_drag._raw, callback)
@@ -682,7 +682,7 @@ class CanvasTests(TestCase):
 
         # set a new callback
         def callback(widget, **extra):
-            return 'called {} with {}'.format(type(widget), extra)
+            return f'called {type(widget)} with {extra}'
 
         self.testing_canvas.on_alt_press = callback
         self.assertEqual(self.testing_canvas.on_alt_press._raw, callback)
@@ -698,7 +698,7 @@ class CanvasTests(TestCase):
 
         # set a new callback
         def callback(widget, **extra):
-            return 'called {} with {}'.format(type(widget), extra)
+            return f'called {type(widget)} with {extra}'
 
         self.testing_canvas.on_alt_release = callback
         self.assertEqual(self.testing_canvas.on_alt_release._raw, callback)
@@ -714,7 +714,7 @@ class CanvasTests(TestCase):
 
         # set a new callback
         def callback(widget, **extra):
-            return 'called {} with {}'.format(type(widget), extra)
+            return f'called {type(widget)} with {extra}'
 
         self.testing_canvas.on_alt_drag = callback
         self.assertEqual(self.testing_canvas.on_alt_drag._raw, callback)

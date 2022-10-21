@@ -6,12 +6,13 @@ import sys
 from urllib.parse import unquote, urlparse
 
 import gbulb
+
 import toga
 from toga import App as toga_App
 from toga.command import GROUP_BREAK, SECTION_BREAK, Command
 
 from .keys import gtk_accel
-from .libs import Gio, GLib, Gtk, Gdk, TOGA_DEFAULT_STYLES
+from .libs import TOGA_DEFAULT_STYLES, Gdk, Gio, GLib, Gtk
 from .window import Window
 
 

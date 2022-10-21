@@ -1,4 +1,5 @@
 import toga
+
 from ..libs import Gtk
 from .base import Widget
 from .internal.sourcetreemodel import SourceTreeModel

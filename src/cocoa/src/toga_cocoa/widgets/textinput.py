@@ -8,8 +8,8 @@ from toga_cocoa.libs import (
     NSTextFieldSquareBezel,
     c_void_p,
     objc_method,
-    send_super,
     objc_property,
+    send_super,
 )
 
 from .base import Widget

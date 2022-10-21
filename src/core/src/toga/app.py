@@ -309,7 +309,7 @@ class App:
         if icon:
             self.icon = icon
         else:
-            self.icon = 'resources/{app_name}'.format(app_name=self.app_name)
+            self.icon = f'resources/{self.app_name}'
 
         self.commands = CommandSet()
 

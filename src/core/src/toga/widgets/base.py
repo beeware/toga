@@ -1,5 +1,5 @@
-from builtins import id as identifier
 import warnings
+from builtins import id as identifier
 
 from travertino.node import Node
 
@@ -56,7 +56,7 @@ class Widget(Node):
         self.factory = get_platform_factory()
 
     def __repr__(self):
-        return "<%s:0x%x>" % (self.__class__.__name__, identifier(self))
+        return f"<{self.__class__.__name__}:0x{identifier(self):x}>"
 
     @property
     def id(self):

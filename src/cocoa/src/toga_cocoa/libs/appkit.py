@@ -8,7 +8,6 @@ from enum import Enum, IntEnum
 from rubicon.objc import CGFloat, ObjCClass, objc_const
 from rubicon.objc.api import NSString
 from rubicon.objc.runtime import load_library
-
 from travertino.colors import (
     BLACK,
     BLUE,

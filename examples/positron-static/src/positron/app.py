@@ -1,5 +1,5 @@
-from http.server import SimpleHTTPRequestHandler, HTTPServer
-from threading import Thread, Event
+from http.server import HTTPServer, SimpleHTTPRequestHandler
+from threading import Event, Thread
 
 import toga
 

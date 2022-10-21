@@ -1,6 +1,5 @@
 import toga
-
-from toga_web.libs import js, create_element
+from toga_web.libs import create_element, js
 from toga_web.window import Window
 
 

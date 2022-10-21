@@ -1,4 +1,4 @@
-from toga_gtk.libs import Gtk, GLib
+from toga_gtk.libs import GLib, Gtk
 
 
 class ScrollableRow(Gtk.ListBoxRow):

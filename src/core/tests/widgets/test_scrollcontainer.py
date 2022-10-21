@@ -1,4 +1,5 @@
 from unittest import mock
+
 import toga
 from toga_dummy.utils import TestCase, TestStyle
 

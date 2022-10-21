@@ -1,11 +1,9 @@
-import unittest
 import subprocess
-
 import sys
+import unittest
 from pathlib import Path
 
 import toga
-
 
 TESTBED_PATH = Path(__file__).parent.parent.parent / "core" / "tests" / "testbed"
 

@@ -370,7 +370,7 @@ class Break:
         self.name = name
 
     def __repr__(self):
-        return "<{self.name} break>".format(self=self)
+        return f"<{self.name} break>"
 
 
 GROUP_BREAK = Break('Group')

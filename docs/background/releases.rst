@@ -60,4 +60,3 @@ Initial public release. Includes:
 * A GTK+ backend
 * A proof-of-concept Win32 backend
 * A proof-of-concept iOS backend
-

@@ -1,8 +1,7 @@
-#/usr/bin/env python
-import io
+#!/usr/bin/env python
 import re
 
-from setuptools import find_packages, setup
+from setuptools import setup
 
 # This is a mock version of the GTK+ backend. It is required because RTD
 # will try to `pip install toga`, which will in turn try to
@@ -13,7 +12,7 @@ from setuptools import find_packages, setup
 # *actually* doing anything.
 
 
-with io.open('../../src/gtk/toga_gtk/__init__.py', encoding='utf8') as version_file:
+with open('../../src/gtk/toga_gtk/__init__.py', encoding='utf8') as version_file:
     version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]", version_file.read(), re.M)
     if version_match:
         version = version_match.group(1)

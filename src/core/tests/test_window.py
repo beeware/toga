@@ -1,5 +1,5 @@
 from pathlib import Path
-from unittest.mock import MagicMock, patch, Mock
+from unittest.mock import MagicMock, Mock, patch
 
 import toga
 from toga.command import CommandSet
@@ -143,7 +143,7 @@ class TestWindow(TestCase):
 
             # set a new callback
             def callback(window, **extra):
-                return "called {} with {}".format(type(window), extra)
+                return f"called {type(window)} with {extra}"
 
             self.window.on_close = callback
             self.assertEqual(self.window.on_close._raw, callback)
@@ -154,7 +154,7 @@ class TestWindow(TestCase):
 
     def test_on_close_at_create(self):
         def callback(window, **extra):
-            return "called {} with {}".format(type(window), extra)
+            return f"called {type(window)} with {extra}"
 
         window = toga.Window(on_close=callback)
         self.app.windows += window
