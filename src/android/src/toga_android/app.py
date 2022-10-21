@@ -56,7 +56,7 @@ class TogaApp(IPythonApp):
         :param Intent resultData: An Intent, which can return result data to the caller (various data can be attached
                                   to Intent "extras").
         """
-        print("Toga app: onActivityResult, requestCode={0}, resultData={1}".format(requestCode, resultData))
+        print(f"Toga app: onActivityResult, requestCode={requestCode}, resultData={resultData}")
         try:
             # remove Intent from the list of running Intents,
             # and set the result of the intent.

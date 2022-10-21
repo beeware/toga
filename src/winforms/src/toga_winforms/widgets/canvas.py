@@ -25,7 +25,7 @@ from .box import Box
 class WinformContext(Context):
 
     def __init__(self):
-        super(WinformContext, self).__init__()
+        super().__init__()
         self.graphics = None
         self.paths = []
         self.start_point = None
@@ -55,7 +55,7 @@ class WinformContext(Context):
 class Canvas(Box):
 
     def create(self):
-        super(Canvas, self).create()
+        super().create()
         self.native.DoubleBuffered = True
         self.native.Paint += self.winforms_paint
         self.native.Resize += self.winforms_resize

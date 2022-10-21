@@ -48,7 +48,7 @@ class TestValidators(unittest.TestCase):
         for valid_input in valid_inputs:
             self.assertIsNone(
                 validator(valid_input),
-                msg='"{}" should be a valid input, but it is not'.format(valid_input),
+                msg=f'"{valid_input}" should be a valid input, but it is not',
             )
         for invalid_input, error_message in invalid_inputs:
             self.assertEqual(

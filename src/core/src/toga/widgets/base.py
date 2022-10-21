@@ -42,7 +42,7 @@ class Widget(Node):
         self.factory = get_platform_factory(factory)
 
     def __repr__(self):
-        return "<%s:0x%x>" % (self.__class__.__name__, identifier(self))
+        return f"<{self.__class__.__name__}:0x{identifier(self):x}>"
 
     @property
     def id(self):

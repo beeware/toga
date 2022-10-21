@@ -106,13 +106,13 @@ class SliderApp(toga.App):
 
     def my_continuous_on_change(self, slider):
         # get the current value of the slider with `slider.value`
-        self.continuous_slider_value_label.text = "The slider value changed to {0}".format(
+        self.continuous_slider_value_label.text = "The slider value changed to {}".format(
             slider.value
         )
 
     def my_discrete_on_change(self, slider):
         # get the current value of the slider with `slider.value`
-        self.discrete_slider_value_label.text = "The slider value changed to {0}".format(
+        self.discrete_slider_value_label.text = "The slider value changed to {}".format(
             slider.value
         )
 
@@ -120,7 +120,7 @@ class SliderApp(toga.App):
         self.scared_label.text = "Oh no! they got me!"
 
     def scared_on_release(self, slider):
-        self.scared_label.text = "I am free! Changed to {0}".format(slider.value)
+        self.scared_label.text = f"I am free! Changed to {slider.value}"
 
     def increase_discrete_slider(self, widget):
         if self.discrete_slider.tick_value != self.discrete_slider.tick_count:

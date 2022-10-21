@@ -1,4 +1,3 @@
-
 from ..libs import (
     NSSecureTextField,
     NSTextFieldSquareBezel,

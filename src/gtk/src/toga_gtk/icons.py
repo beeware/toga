@@ -18,4 +18,4 @@ class Icon:
                     size, size, GdkPixbuf.InterpType.BILINEAR
                 )
             )
-            setattr(self, 'native_{size}'.format(size=size), native)
+            setattr(self, f'native_{size}', native)

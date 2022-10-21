@@ -7,7 +7,7 @@ class SelectionTests(TestCase):
     def setUp(self):
         super().setUp()
 
-        self.items = ['item_{}'.format(x) for x in range(0, 3)]
+        self.items = [f'item_{x}' for x in range(0, 3)]
         self.selection = toga.Selection(factory=toga_dummy.factory)
         self.selection = toga.Selection(items=self.items, factory=toga_dummy.factory)
 
@@ -22,7 +22,7 @@ class SelectionTests(TestCase):
         self.assertActionPerformedWith(self.selection, 'add item', item=self.items[2])
 
     def test_set_items(self):
-        new_items = ['new_item_{}'.format(x) for x in range(0, 3)]
+        new_items = [f'new_item_{x}' for x in range(0, 3)]
         self.selection.items = new_items
         self.assertActionPerformed(self.selection, 'remove all items')
         for item in new_items:

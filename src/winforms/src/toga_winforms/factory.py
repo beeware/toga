@@ -32,7 +32,7 @@ from .window import Window
 
 
 def not_implemented(feature):
-    print('[Winforms] Not implemented: {}'.format(feature))
+    print(f'[Winforms] Not implemented: {feature}')
 
 
 __all__ = [

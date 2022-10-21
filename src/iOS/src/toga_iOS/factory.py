@@ -31,7 +31,7 @@ from .window import Window
 
 
 def not_implemented(feature):
-    print('[iOS] Not implemented: {}'.format(feature))
+    print(f'[iOS] Not implemented: {feature}')
 
 
 __all__ = [

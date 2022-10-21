@@ -44,7 +44,7 @@ class DefinitionExtractor:
 
         if self.exists:
             # open the file and parse it with the ast module.
-            with open(path, 'r') as f:
+            with open(path) as f:
                 lines = f.read()
             self.tree = ast.parse(lines)
             self._extract_file()
@@ -134,7 +134,7 @@ class DefinitionExtractor:
             for node in ast.walk(self._classes[class_name]):
                 if isinstance(node, ast.FunctionDef):
                     if self.is_required_for_platform(node):
-                        function_id = '{}.{}'.format(class_name, node.name)
+                        function_id = f'{class_name}.{node.name}'
                         self._methods[function_id]['node'] = node
                         self._methods[function_id]['arguments'] = self._extract_function_signature(node)
 
@@ -208,7 +208,7 @@ def get_platform_category(path_to_backend):
     elif name in ['toga_watchOS', ]:
         return {'watch', name.split('_')[-1]}
     else:
-        raise RuntimeError('Couldn\'t identify a supported host platform: "{}"'.format(name))
+        raise RuntimeError(f'Couldn\'t identify a supported host platform: "{name}"')
 
 
 def get_required_files(path_to_backend):
@@ -239,7 +239,7 @@ def get_required_files(path_to_backend):
         for f in TOGA_WATCH_EXCLUDED_FILES:
             files.remove(f)
     else:
-        raise RuntimeError('Couldn\'t identify a supported host platform: "{}"'.format(name))
+        raise RuntimeError(f'Couldn\'t identify a supported host platform: "{name}"')
     return files
 
 
@@ -258,9 +258,9 @@ def create_impl_tests(root):
     tests = {}
     for name, dummy_path in dummy_files:
         if 'widgets' in dummy_path:
-            path = os.path.join(root, 'widgets/{}.py'.format(name))
+            path = os.path.join(root, f'widgets/{name}.py')
         else:
-            path = os.path.join(root, '{}.py'.format(name))
+            path = os.path.join(root, f'{name}.py')
 
         tests.update(make_toga_impl_check_class(path, dummy_path, platform_category))
     return tests
@@ -295,7 +295,7 @@ def make_test_function(element, element_list, error_msg=None):
 
 
 def make_test_class(path, cls, expected, actual, skip):
-    class_name = '{}ImplTest'.format(cls)
+    class_name = f'{cls}ImplTest'
     test_class = type(class_name, (unittest.TestCase,), {})
 
     if skip:
@@ -310,11 +310,11 @@ def make_test_class(path, cls, expected, actual, skip):
     for method in expected.methods_of_class(cls):
         # create a test that checks if the method exists in the class.
         fn = make_test_function(method, actual.methods_of_class(cls))
-        fn.__doc__ = 'The method {}.{}(...) exists'.format(cls, method)
-        setattr(test_class, 'test_{}_exists'.format(method), fn)
+        fn.__doc__ = f'The method {cls}.{method}(...) exists'
+        setattr(test_class, f'test_{method}_exists', fn)
 
         # create tests that check for the right method arguments.
-        method_id = '{}.{}'.format(cls, method)
+        method_id = f'{cls}.{method}'
         method_def = expected.get_function_def(method_id)['arguments']
         try:
             actual_method_def = actual.get_function_def(method_id)['arguments']
@@ -340,10 +340,10 @@ def make_test_class(path, cls, expected, actual, skip):
                 vararg = method_def.vararg
                 actual_vararg = actual_method_def.vararg if actual_method_def.vararg else []
                 fn = make_test_function(vararg, actual_vararg)
-                fn.__doc__ = "The vararg {}.{}(..., *{}, ...) exists".format(cls, method, vararg)
+                fn.__doc__ = f"The vararg {cls}.{method}(..., *{vararg}, ...) exists"
                 setattr(
                     test_class,
-                    'test_{}_vararg_{}'.format(method, vararg),
+                    f'test_{method}_vararg_{vararg}',
                     fn
                 )
 
@@ -354,10 +354,10 @@ def make_test_class(path, cls, expected, actual, skip):
                 fn = make_test_function(kwarg, actual_kwarg,
                                         error_msg='The method does not take kwargs or the '
                                                   'variable is not named "{}".'.format(kwarg))
-                fn.__doc__ = "The kw argument {}.{}(..., **{}, ...) exists".format(cls, method, kwarg)
+                fn.__doc__ = f"The kw argument {cls}.{method}(..., **{kwarg}, ...) exists"
                 setattr(
                     test_class,
-                    'test_{}_kw_{}'.format(method, kwarg),
+                    f'test_{method}_kw_{kwarg}',
                     fn
                 )
 
@@ -382,7 +382,7 @@ def make_toga_impl_check_class(path, dummy_path, platform):
         skip = None
         actual = DefinitionExtractor(path)
     else:
-        skip = 'Implementation file {} does not exist'.format(path[len(prefix):])
+        skip = f'Implementation file {path[len(prefix):]} does not exist'
         actual = DefinitionExtractor(path)
 
     test_classes = {}

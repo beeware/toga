@@ -61,7 +61,7 @@ class TestDetailedList(TestCase):
 
         # set a new callback
         def callback(widget, **extra):
-            return 'called {} with {}'.format(type(widget), extra)
+            return f'called {type(widget)} with {extra}'
 
         self.dlist.on_delete = callback
         self.assertEqual(self.dlist.on_delete._raw, callback)
@@ -76,7 +76,7 @@ class TestDetailedList(TestCase):
 
         # set a new callback
         def callback(widget, **extra):
-            return 'called {} with {}'.format(type(widget), extra)
+            return f'called {type(widget)} with {extra}'
 
         self.dlist.on_refresh = callback
         self.assertEqual(self.dlist.on_refresh._raw, callback)
@@ -91,7 +91,7 @@ class TestDetailedList(TestCase):
 
         # set a new callback
         def callback(widget, **extra):
-            return 'called {} with {}'.format(type(widget), extra)
+            return f'called {type(widget)} with {extra}'
 
         self.dlist.on_select = callback
         self.assertEqual(self.dlist.on_select._raw, callback)

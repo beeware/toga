@@ -122,7 +122,7 @@ class ExampleLayoutApp(toga.App):
     def add_label(self, sender=None):
         # this tests adding children when we already have an impl, window and app
         new_label = toga.Label(
-            'Label {}'.format(len(self.content_box.children)),
+            f'Label {len(self.content_box.children)}',
             style=Pack(padding=2, width=70)
         )
         self.content_box.add(new_label)

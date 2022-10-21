@@ -34,7 +34,7 @@ from .window import Window
 
 
 def not_implemented(feature):
-    print('[Cocoa] Not implemented: {}'.format(feature))
+    print(f'[Cocoa] Not implemented: {feature}')
 
 
 __all__ = [

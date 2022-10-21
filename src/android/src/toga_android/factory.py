@@ -28,7 +28,7 @@ from .window import Window
 
 
 def not_implemented(feature):
-    print("[Android] Not implemented: {}".format(feature))
+    print(f"[Android] Not implemented: {feature}")
 
 
 __all__ = [

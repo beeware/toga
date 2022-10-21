@@ -59,7 +59,7 @@ class Switch(Widget):
         elif value == 0:
             return False
         else:
-            raise Exception('Undefined value for value of {}'.format(__class__))
+            raise Exception(f'Undefined value for value of {__class__}')
 
     def rehint(self):
         content_size = self.native.intrinsicContentSize()

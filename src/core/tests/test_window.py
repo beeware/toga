@@ -144,7 +144,7 @@ class TestWindow(TestCase):
 
             # set a new callback
             def callback(window, **extra):
-                return "called {} with {}".format(type(window), extra)
+                return f"called {type(window)} with {extra}"
 
             self.window.on_close = callback
             self.assertEqual(self.window.on_close._raw, callback)
@@ -155,7 +155,7 @@ class TestWindow(TestCase):
 
     def test_on_close_at_create(self):
         def callback(window, **extra):
-            return "called {} with {}".format(type(window), extra)
+            return f"called {type(window)} with {extra}"
 
         window = toga.Window(factory=toga_dummy.factory, on_close=callback)
         self.app.windows += window

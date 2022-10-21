@@ -32,7 +32,7 @@ from .window import Window
 
 
 def not_implemented(feature):
-    print('[GTK+] Not implemented: {}'.format(feature))
+    print(f'[GTK+] Not implemented: {feature}')
 
 
 __all__ = [

@@ -1,7 +1,7 @@
 from toga_winforms.libs import MemoryStream, WinImage
 
 
-class Image(object):
+class Image:
     def __init__(self, interface, path=None, url=None, data=None):
         self.interface = interface
         self.path = path

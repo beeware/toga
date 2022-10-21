@@ -96,7 +96,7 @@ class ExampleButtonApp(toga.App):
     def callback_text(self, button):
         # Some action when you hit the button
         #   In this case the text will change
-        button.text = 'Magic {val}!!'.format(val=random.randint(0, 100))
+        button.text = f'Magic {random.randint(0, 100)}!!'
 
         # If the disabled button isn't enabled, enable it.
         if not self.button2.enabled:

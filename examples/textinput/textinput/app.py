@@ -30,13 +30,13 @@ class TextInputApp(toga.App):
 
         number = self.number_input.value
         if number:
-            self.number_label.text = "Double the number is: {}".format(number * 2)
+            self.number_label.text = f"Double the number is: {number * 2}"
         else:
             self.number_label.text = "You didn't enter a number"
 
         # Wait 5 seconds
         for i in range(5, 0, -1):
-            self.label.text = 'Counting down from {}...'.format(i)
+            self.label.text = f'Counting down from {i}...'
             yield 1
         self.label.text = 'Enter some values and press extract.'
 
