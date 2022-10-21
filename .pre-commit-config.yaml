@@ -20,3 +20,21 @@ repos:
     hooks:
       - id: pyupgrade
         args: [--py37-plus]
+  # Do not enable until we can trust it not to break RST markup
+  # (https://github.com/PyCQA/docformatter/issues/124).
+  # - repo: https://github.com/myint/docformatter
+  #   rev: v1.5.0
+  #   hooks:
+  #   - id: docformatter
+  #     args: [--in-place]
+  # Do not enable until after #1534 is merged.
+  # - repo: https://github.com/psf/black
+  #   rev: 22.8.0
+  #   hooks:
+  #   - id: black
+  #     language_version: python3
+  - repo: https://github.com/PyCQA/flake8
+    rev: 5.0.4
+    hooks:
+      - id: flake8
+        exclude: ^docs/conf.py$
