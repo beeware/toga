@@ -1,11 +1,11 @@
 import time
 import unittest
+from threading import Thread
+
+import pyautogui
 
 import toga
 from toga.style import Pack
-import pyautogui
-
-from threading import Thread
 
 
 class ButtonApp(toga.App):
