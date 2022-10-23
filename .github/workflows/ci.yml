@@ -128,4 +128,5 @@ jobs:
     - if: matrix.backend == 'winforms'
       name: UI Test
       run: |
+        python -m pip install pyautogui
         pytest test_ui
