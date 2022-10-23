@@ -125,3 +125,7 @@ jobs:
       run: |
         cd src/${{ matrix.backend }}
         ${{ matrix.test-command }}
+    - name: UI Test
+      if: matrix.backend == winforms
+      run: |
+        pytest test_ui
