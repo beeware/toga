@@ -8,7 +8,7 @@ class TreeTests(TestCase):
     def setUp(self):
         super().setUp()
 
-        self.headings = ['Heading {}'.format(x) for x in range(3)]
+        self.headings = [f'Heading {x}' for x in range(3)]
 
         self.data = None
         self.tree = toga.Tree(
@@ -33,7 +33,7 @@ class TreeTests(TestCase):
             ('two', 2): None
         }
 
-        accessors = ['heading{}'.format(i) for i in range(3)]
+        accessors = [f'heading{i}' for i in range(3)]
 
         self.tree.data = TreeSource(data=data, accessors=accessors)
 
@@ -73,7 +73,7 @@ class TreeTests(TestCase):
 
     def test_multiselect_getter(self):
         super().setUp()
-        self.headings = ['Heading {}'.format(x) for x in range(3)]
+        self.headings = [f'Heading {x}' for x in range(3)]
 
         self.data = None
         self.tree = toga.Tree(headings=self.headings,

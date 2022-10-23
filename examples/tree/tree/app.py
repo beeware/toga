@@ -21,7 +21,7 @@ class ExampleTreeApp(toga.App):
     # Table callback functions
     def on_select_handler(self, widget, node):
         if node is not None and node.title:
-            self.label.text = 'You selected node: {}'.format(node.title)
+            self.label.text = f'You selected node: {node.title}'
             self.btn_remove.enabled = True
         else:
             self.label.text = 'No node selected'

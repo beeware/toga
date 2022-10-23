@@ -91,7 +91,7 @@ An example
 
 Here's how Toga's three-layer API works on the Button widget.
 
-* ``toga.Button`` is defined in ``src/core/toga/widgets/button.py``. This
+* ``toga.Button`` is defined in ``src/core/src/toga/widgets/button.py``. This
   defines the public interface for the Button widget, describing (amongst other
   things) that there is an ``on_click`` event handler on a Button. It expects
   that there will be *an* implementation, but doesn't care which implementation

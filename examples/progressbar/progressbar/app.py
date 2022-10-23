@@ -1,7 +1,8 @@
+import asyncio
+
 import toga
 from toga.constants import COLUMN, ROW
 from toga.style import Pack
-import asyncio
 
 MAX_PROGRESSBAR_VALUE = 100
 

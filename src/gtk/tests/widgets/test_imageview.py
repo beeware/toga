@@ -6,6 +6,7 @@ try:
     from gi.repository import Gtk
 except ImportError:
     import sys
+
     # If we're on Linux, Gtk *should* be available. If it isn't, make
     # Gtk an object... but in such a way that every test will fail,
     # because the object isn't actually the Gtk interface.

@@ -33,7 +33,7 @@ class ButtonTests(TestCase):
 
         # set a new callback
         def callback(widget, **extra):
-            return 'called {} with {}'.format(type(widget), extra)
+            return f'called {type(widget)} with {extra}'
 
         self.btn.on_press = callback
         self.assertEqual(self.btn.on_press._raw, callback)

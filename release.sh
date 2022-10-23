@@ -18,6 +18,11 @@ function bump {
             git add "$f"
         done
 
+        # Update the version in mock_gtk
+        mv docs/mock_gtk/setup.py temp
+        sed "s/version=\".*\"/version=\"$2\"/g" temp > docs/mock_gtk/setup.py
+        git add docs/mock_gtk/setup.py
+
     elif [ "$1" = "demo" ]; then
         pushd demo
         mv setup.cfg temp
@@ -34,9 +39,9 @@ function bump {
 
     else
         if [ "$1" = "core" ]; then
-            pushd src/$1/toga
+            pushd src/$1/src/toga
         else
-            pushd src/$1/toga_$1
+            pushd src/$1/src/toga_$1
         fi
 
         mv __init__.py temp
@@ -90,31 +95,13 @@ function install {
     fi
 }
 
-function release {
-    echo
-    echo "************************************************************"
-    echo "RELEASE $1 version $2"
-    echo "************************************************************"
-    echo
-    if [ "$1" = "toga" ]; then
-        twine upload "dist/toga-$2-py3-none-any.whl"
-        twine upload "dist/toga-$2.tar.gz"
-    elif [ "$1" = "demo" ]; then
-        twine upload "demo/dist/toga_demo-$2-py3-none-any.whl"
-        twine upload "demo/dist/toga-demo-$2.tar.gz"
-    else
-        twine upload "src/$1/dist/toga_$1-$2-py3-none-any.whl"
-        twine upload "src/$1/dist/toga-$1-$2.tar.gz"
-    fi
-}
 
-
-MODULES="android cocoa core django dummy flask gtk iOS web winforms toga demo"
+MODULES="android cocoa core dummy gtk iOS web winforms toga demo"
 
 action=$1
 shift
 
-VERSION=$(grep "^__version__ = '.*'$" src/core/toga/__init__.py | cut -f 2 -d \')
+VERSION=$(grep "^__version__ = '.*'$" src/core/src/toga/__init__.py | cut -f 2 -d \')
 
 if [ "$action" = "" ]; then
     echo "Usage -"
@@ -145,16 +132,6 @@ elif [ "$action" = "test" ]; then
     for module in $MODULES; do
         install $module
     done
-
-elif [ "$action" = "release" ]; then
-
-    for module in $MODULES; do
-        $action $module $VERSION
-    done
-
-    git tag v$VERSION
-    git push upstream release:main
-    git push --tags upstream release:main
 
 elif [ "$action" = "bump" ]; then
     version=$1
