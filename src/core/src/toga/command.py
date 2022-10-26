@@ -260,7 +260,8 @@ class Command:
         self.section = section if section else 0
         self.order = order if order else 0
 
-        self._impl = None
+        self.factory = get_platform_factory()
+        self._impl = self.factory.Command(interface=self)
 
         self.enabled = enabled and self.action is not None
 
@@ -269,27 +270,8 @@ class Command:
         "A unique tuple describing the path to this command"
         return tuple([*self.group.key, (self.section, self.order, self.text)])
 
-    def bind(
-        self,
-        factory=None,  # DEPRECATED !
-    ):
-        ######################################################################
-        # 2022-09: Backwards compatibility
-        ######################################################################
-        # factory no longer used
-        if factory:
-            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
-        ######################################################################
-        # End backwards compatibility.
-        ######################################################################
-
-        self.factory = get_platform_factory()
-        if self._impl is None:
-            self._impl = self.factory.Command(interface=self)
-
-        if self._icon:
-            self._icon.bind()
-
+    def bind(self, factory=None):
+        warnings.warn("Commands no longer need to be explicitly bound.", DeprecationWarning)
         return self._impl
 
     @property
@@ -317,9 +299,6 @@ class Command:
             self._icon = icon_or_name
         else:
             self._icon = Icon(icon_or_name)
-
-        if self._icon:
-            self._icon.bind()
 
     def __lt__(self, other):
         return self.key < other.key
@@ -409,8 +388,6 @@ class CommandSet:
         self.on_change = on_change
 
     def add(self, *commands):
-        for cmd in commands:
-            cmd.bind()
         if self.widget and self.widget.app is not None:
             self.widget.app.commands.add(*commands)
         self._commands.update(commands)

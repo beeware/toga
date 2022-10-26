@@ -37,11 +37,10 @@ class AppTests(TestCase):
         # App icon will default to a name autodetected from the running module
         self.assertEqual(self.app.icon.path, 'resources/toga')
 
-        # This icon will not be bound, since app icons are bound by the
-        # platform layer.
-        self.assertIsNone(self.app.icon._impl)
+        # This icon will be bound
+        self.assertIsNotNone(self.app.icon._impl)
 
-        # Bind it explicitly to validate binding can succeed.
+        # Binding is a no op.
         self.app.icon.bind()
         self.assertIsNotNone(self.app.icon._impl)
 

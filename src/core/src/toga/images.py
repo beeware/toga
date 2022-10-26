@@ -31,45 +31,21 @@ class Image:
             self.path = None
         self.data = data
 
-        # Resource is late bound.
-        self._impl = None
-
-    def bind(
-        self,
-        factory=None,  # DEPRECATED !
-    ):
-        """
-        Bind the Image to a factory.
-
-        Creates the underlying platform implementation of the Image. Raises
-        FileNotFoundError if the path is a non-existent local file.
-
-        :returns: The platform implementation
-        """
-        ######################################################################
-        # 2022-09: Backwards compatibility
-        ######################################################################
-        # factory no longer used
-        if factory:
-            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
-        ######################################################################
-        # End backwards compatibility.
-        ######################################################################
-
-        factory = get_platform_factory()
-        if self._impl is None:
-            if self.data is not None:
-                self._impl = factory.Image(interface=self, data=self.data)
-            elif isinstance(self.path, pathlib.Path):
-                full_path = factory.paths.app / self.path
-                if not full_path.exists():
-                    raise FileNotFoundError(
-                        'Image file {full_path!r} does not exist'.format(
-                            full_path=full_path
-                        )
+        self.factory = get_platform_factory()
+        if self.data is not None:
+            self._impl = self.factory.Image(interface=self, data=self.data)
+        elif isinstance(self.path, pathlib.Path):
+            full_path = self.factory.paths.app / self.path
+            if not full_path.exists():
+                raise FileNotFoundError(
+                    'Image file {full_path!r} does not exist'.format(
+                        full_path=full_path
                     )
-                self._impl = factory.Image(interface=self, path=full_path)
-            else:
-                self._impl = factory.Image(interface=self, url=self.path)
+                )
+            self._impl = self.factory.Image(interface=self, path=full_path)
+        else:
+            self._impl = self.factory.Image(interface=self, url=self.path)
 
+    def bind(self, factory=None):
+        warnings.warn("Icons no longer need to be explicitly bound.", DeprecationWarning)
         return self._impl

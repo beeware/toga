@@ -28,26 +28,11 @@ _REGISTERED_FONT_CACHE = {}
 class Font(BaseFont):
     def __init__(self, family, size, style=NORMAL, variant=NORMAL, weight=NORMAL):
         super().__init__(family, size, style, variant, weight)
-        self.factory = None
-        self._impl = None
+        self.factory = get_platform_factory()
+        self._impl = self.factory.Font(self)
 
-    def bind(
-        self,
-        factory=None,  # DEPRECATED !
-    ):
-        ######################################################################
-        # 2022-09: Backwards compatibility
-        ######################################################################
-        # factory no longer used
-        if factory:
-            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
-        ######################################################################
-        # End backwards compatibility.
-        ######################################################################
-
-        if self._impl is None:
-            self.factory = get_platform_factory()
-            self._impl = self.factory.Font(self)
+    def bind(self, factory=None):
+        warnings.warn("Fonts no longer need to be explicitly bound.", DeprecationWarning)
         return self._impl
 
     def measure(self, text, dpi, tight=False):

@@ -8,70 +8,55 @@ class ImageTests(TestCase):
     def setUp(self):
         super().setUp()
 
-        # an App must have been created before calling image.bind
-        # because it tries to resolve the image path against the app path.
+        # an App must have been created before creating images because paths
+        # can be relative to the app path.
         self.app = toga.App(
             formal_name='Image Test App',
             app_id='org.beeware.test_image',
         )
-        self.file_path = Path('path/to/image.jpg')
-        self.url_path = 'http://website.com/image.jpg'
-        self.path_file_image = toga.Image(path=self.file_path)
-        self.str_file_image = toga.Image(path=str(self.file_path))
-        self.url_image = toga.Image(path=self.url_path)
 
-    def test_path_file_image_binding(self):
-        # Image is initially unbound
-        self.assertIsNone(self.path_file_image._impl)
-
-        # Bind the image; the file doesn't exist, so it raises an error.
+    def test_path_file_non_existent_image(self):
+        # Creating an image from a path that doesn't exist raises an error.
         try:
-            self.path_file_image.bind()
-            self.fail('The image should not bind')  # pragma: nocover
+            toga.Image(path=Path('does/not/exist/image.jpg'))
+            self.fail('The image does not exist')  # pragma: nocover
         except FileNotFoundError:
             pass
 
-        # Image remains unbound
-        self.assertIsNone(self.path_file_image._impl)
+    def test_path_file_image(self):
+        # Creating an image from a path that doesn't exist raises an error.
+        image = toga.Image(path=Path(toga.__file__).parent / "resources" / "toga-32.png")
+
+        self.assertIsNotNone(image._impl)
+        self.assertEqual(image._impl.interface.path, Path(toga.__file__).parent / "resources" / "toga-32.png")
+
+    def test_str_file_non_existent_image(self):
+        # Creating an image from a string path that doesn't exist raises an error.
+        try:
+            toga.Image(path='does/not/exist/image.jpg')
+            self.fail('The image does not exist')  # pragma: nocover
+        except FileNotFoundError:
+            pass
 
     def test_str_file_image_binding(self):
-        # Image is initially unbound
-        self.assertIsNone(self.str_file_image._impl)
-
-        # Bind the image; the file doesn't exist, so it raises an error.
+        # Creating an image from a string path that doesn't exist raises an error.
         try:
-            self.str_file_image.bind()
-            self.fail('The image should not bind')  # pragma: nocover
+            toga.Image(path="does/not/exist/image.png")
+            self.fail('The image does not exist')  # pragma: nocover
         except FileNotFoundError:
             pass
 
-        # Image remains unbound
-        self.assertIsNone(self.str_file_image._impl)
-
     def test_url_image_binding(self):
-        # Image is initially unbound
-        self.assertIsNone(self.url_image._impl)
-
-        # Bind the image
-        self.url_image.bind()
+        url_image = toga.Image(path="https://example.com/image.png")
 
         # Image is bound correctly
-        self.assertEqual(self.url_image._impl.interface, self.url_image)
-        self.assertActionPerformedWith(self.url_image, 'load image url', url=self.url_path)
-
-    def test_path_file_image_path(self):
-        self.assertEqual(self.path_file_image.path, self.file_path)
-
-    def test_str_file_image_path(self):
-        self.assertEqual(self.str_file_image.path, self.file_path)
-
-    def test_url_image_path(self):
-        self.assertEqual(self.url_image.path, self.url_path)
+        self.assertEqual(url_image._impl.interface.path, "https://example.com/image.png")
+        self.assertActionPerformedWith(url_image, 'load image url', url="https://example.com/image.png")
 
     def test_bytes_image(self):
         data = bytes([1])
         bytes_image = toga.Image(data=data)
-        bytes_image.bind()
+
         self.assertEqual(bytes_image._impl.interface, bytes_image)
         self.assertActionPerformedWith(bytes_image, 'load image data', data=data)
 
@@ -84,3 +69,16 @@ class ImageTests(TestCase):
         data = bytes([1])
         with self.assertRaises(ValueError):
             toga.Image(path=path, data=data)
+
+    def test_bind(self):
+        "Bind is a depreacated no-op"
+        # Creating an image from a path that doesn't exist raises an error.
+        image = toga.Image(path=Path(toga.__file__).parent / "resources" / "toga-32.png")
+
+        bound = image.bind()
+
+        self.assertIsNotNone(image._impl)
+        self.assertEqual(image._impl.interface.path, Path(toga.__file__).parent / "resources" / "toga-32.png")
+
+        # The bound image is the _impl.
+        self.assertEqual(bound, image._impl)
