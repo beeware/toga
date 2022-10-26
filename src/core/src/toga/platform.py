@@ -24,7 +24,7 @@ _TOGA_PLATFORMS = {
     'tvos': 'tvOS',
     'watchos': 'watchOS',
     'wearos': 'wearOS',
-    'web': 'web',
+    'emscripten': 'web',
     'win32': 'windows',
 }
 
@@ -35,30 +35,9 @@ except KeyError:
     # Rely on `sys.getandroidapilevel`, which only exists on Android; see
     # https://github.com/beeware/Python-Android-support/issues/8
     if hasattr(sys, 'getandroidapilevel'):
-        current_platform = _TOGA_PLATFORMS.get('android')
-    elif sys.platform == 'emscripten':
-        current_platform = 'web'
+        current_platform = 'android'
     else:
         current_platform = _TOGA_PLATFORMS.get(sys.platform)
-
-
-def override_current_platform(platform):
-    '''Override the native platform. A toga backend that supports that platform should be installed.
-
-    Args:
-        platform (str): Platform name to use.
-
-    Returns: The previous platform name.
-    '''
-    global current_platform
-    previous = current_platform
-    current_platform = platform
-    get_platform_factory.cache_clear()
-    return previous
-
-
-def _entry_point_format(backend):
-    return f'{backend.name} ({backend.value})'
 
 
 @lru_cache(maxsize=1)
@@ -95,9 +74,9 @@ def get_platform_factory(factory=None):
         try:
             factory = importlib.import_module(f'{backend_value}.factory')
         except ModuleNotFoundError:
-            toga_backends_values = ', '.join([backend.value for backend in toga_backends])
+            toga_backends_values = ', '.join([f'{backend.value!r}' for backend in toga_backends])
             raise RuntimeError(
-                f"The backend specified by the TOGA_BACKEND environment variable ({backend_value}) "
+                f"The backend specified by TOGA_BACKEND ({backend_value!r}) "
                 f"could not be loaded. It should be one of: {toga_backends_values}."
             )
     else:
@@ -111,17 +90,23 @@ def get_platform_factory(factory=None):
                 if backend.name == current_platform
             ]
             if len(matching_backends) == 0:
-                toga_backends_string = ', '.join([_entry_point_format(backend) for backend in toga_backends])
+                toga_backends_string = ', '.join([
+                    f'{backend.value!r} ({backend.name})'
+                    for backend in toga_backends
+                ])
                 raise RuntimeError(
                     f"Multiple Toga backends are installed ({toga_backends_string}), "
-                    f"but none of them match your current platform ({current_platform})."
+                    f"but none of them match your current platform ({current_platform!r})."
                 )
             if len(matching_backends) > 1:
-                toga_backends_string = ', '.join([_entry_point_format(backend) for backend in matching_backends])
+                toga_backends_string = ', '.join([
+                    f'{backend.value!r} ({backend.name})'
+                    for backend in matching_backends
+                ])
                 raise RuntimeError(
                     f"Multiple candidiate toga backends found: ({toga_backends_string}). "
-                    "Uninstall the backends you don't require, or use the "
-                    "TOGA_BACKEND environment variable to select a backend."
+                    "Uninstall the backends you don't require, or use "
+                    "TOGA_BACKEND to specify a backend."
                 )
             backend = matching_backends[0]
         factory = importlib.import_module(f'{backend.value}.factory')
