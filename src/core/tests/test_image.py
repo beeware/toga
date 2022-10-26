@@ -25,10 +25,10 @@ class ImageTests(TestCase):
 
     def test_path_file_image(self):
         # Creating an image from a path that doesn't exist raises an error.
-        image = toga.Image(path=Path(toga.__file__).parent / "resources" / "toga-32.png")
+        image = toga.Image(path=Path(toga.__file__).parent / "resources" / "toga.png")
 
         self.assertIsNotNone(image._impl)
-        self.assertEqual(image._impl.interface.path, Path(toga.__file__).parent / "resources" / "toga-32.png")
+        self.assertEqual(image._impl.interface.path, Path(toga.__file__).parent / "resources" / "toga.png")
 
     def test_str_file_non_existent_image(self):
         # Creating an image from a string path that doesn't exist raises an error.
@@ -73,12 +73,12 @@ class ImageTests(TestCase):
     def test_bind(self):
         "Bind is a depreacated no-op"
         # Creating an image from a path that doesn't exist raises an error.
-        image = toga.Image(path=Path(toga.__file__).parent / "resources" / "toga-32.png")
+        image = toga.Image(path=Path(toga.__file__).parent / "resources" / "toga.png")
 
         bound = image.bind()
 
         self.assertIsNotNone(image._impl)
-        self.assertEqual(image._impl.interface.path, Path(toga.__file__).parent / "resources" / "toga-32.png")
+        self.assertEqual(image._impl.interface.path, Path(toga.__file__).parent / "resources" / "toga.png")
 
         # The bound image is the _impl.
         self.assertEqual(bound, image._impl)

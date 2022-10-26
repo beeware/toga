@@ -61,7 +61,7 @@ class DeprecatedFactoryTests(TestCase):
 
     def test_image(self):
         resource_path = toga_dummy.factory.paths.toga
-        image = toga.Image(resource_path / 'resources/toga-32.png')
+        image = toga.Image(resource_path / 'resources/toga.png')
         with self.assertWarns(DeprecationWarning):
             image.bind(factory=self.factory)
         self.assertEqual(image._impl.interface, image)
