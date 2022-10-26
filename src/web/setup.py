@@ -20,10 +20,6 @@ with open('src/toga_web/__init__.py', encoding='utf8') as version_file:
 setup(
     version=version,
     install_requires=[
-        # TODO: Due to https://github.com/pyodide/pyodide/issues/2408, the name
-        # toga-core is ambigous when on the package hasn't been published to
-        # PyPI. As a workaround, don't specify the dependency, and manually
-        # ensure that toga-core is installed.
-        # 'toga-core==%s' % version,
+        'toga-core==%s' % version,
     ],
 )
