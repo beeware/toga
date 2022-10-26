@@ -21,7 +21,7 @@ def attr_impl(value, attr):
     # This will manifest any impl-specific attributes.
     impl = getattr(value, attr, None)
     try:
-        return impl.bind()
+        return impl._impl
     except AttributeError:
         return impl
 

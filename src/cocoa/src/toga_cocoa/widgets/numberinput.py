@@ -167,7 +167,7 @@ class NumberInput(Widget):
 
     def set_font(self, font):
         if font:
-            self.input.font = font.bind().native
+            self.input.font = font._impl.native
 
     def set_value(self, value):
         if self.interface.value is None:

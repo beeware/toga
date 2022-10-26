@@ -78,7 +78,7 @@ class TextInput(Widget):
 
     def set_font(self, font):
         if font:
-            self.native.font = font.bind().native
+            self.native.font = font._impl.native
 
     def set_color(self, color):
         if color:
