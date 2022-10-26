@@ -220,7 +220,7 @@ class Table(Widget):
 
     def set_font(self, font):
         if font:
-            self._font_impl = font.bind()
+            self._font_impl = font._impl
         if self.interface.data is not None:
             self.change_source(self.interface.data)
 

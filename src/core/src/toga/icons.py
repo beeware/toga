@@ -91,19 +91,13 @@ class Icon:
             # If no extension is provided, look for one of the allowed
             # icon types, in preferred format order.
             for extension in extensions:
-                # look for an icon file with a size in the filename
-                icon_path = resource_path / (
-                    '{basename}-{size}{extension}'.format(
-                        basename=basename,
-                        size=size,
-                        extension=extension
-                    )
-                )
+                icon_path = resource_path / f'{basename}-{size}{extension}'
+
                 if icon_path.exists():
                     return icon_path
 
                 # look for a icon file without a size in the filename
-                icon_path = resource_path / (basename + extension)
+                icon_path = resource_path / f'{basename}{extension}'
                 if icon_path.exists():
                     return icon_path
 
