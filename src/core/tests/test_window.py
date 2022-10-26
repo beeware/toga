@@ -1,8 +1,9 @@
 from pathlib import Path
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import MagicMock, Mock, call, patch
 
 import toga
 from toga.command import CommandSet
+from toga.widgets.base import WidgetRegistry
 from toga_dummy.utils import TestCase
 
 
@@ -12,11 +13,14 @@ class TestWindow(TestCase):
         self.window = toga.Window()
         self.app = toga.App("test_name", "id.app")
 
+    def test_window_widgets_registry_on_constructor(self):
+        self.assertTrue(isinstance(self.window.widgets, WidgetRegistry))
+        self.assertEqual(len(self.window.widgets), 0)
+
     def test_show_is_not_called_in_constructor(self):
         self.assertActionNotPerformed(self.window, "show")
 
     def test_show_raises_error_when_app_not_set(self):
-        self.app = None
         with self.assertRaisesRegex(
             AttributeError, "^Can't show a window that doesn't have an associated app$"
         ):
@@ -30,7 +34,6 @@ class TestWindow(TestCase):
         self.assertValueSet(self.window, "visible", True)
 
     def test_hide_raises_error_when_app_not_set(self):
-        self.app = None
         with self.assertRaisesRegex(
             AttributeError, "^Can't hide a window that doesn't have an associated app$"
         ):
@@ -57,7 +60,7 @@ class TestWindow(TestCase):
         self.assertFalse(self.window.visible)
         self.assertValueSet(self.window, "visible", False)
 
-    def test_widget_created(self):
+    def test_set_window_application_twice(self):
         self.assertIsNotNone(self.window.id)
         new_app = toga.App("error_name", "id.error")
         self.window.app = self.app
@@ -94,23 +97,73 @@ class TestWindow(TestCase):
         toolbar = self.window.toolbar
         self.assertIsInstance(toolbar, CommandSet)
 
+    def test_set_content_without_app(self):
+        content = MagicMock()
+
+        self.window.content = content
+        self.assertEqual(content.window, self.window)
+        self.assertIsNone(content.app)
+
+    def test_set_content_with_app(self):
+        content = MagicMock()
+
+        self.window.app = self.app
+        self.window.content = content
+
+        self.assertEqual(content.window, self.window)
+        self.assertEqual(content.app, self.app)
+
+    def test_set_app_after_content(self):
+        content = MagicMock()
+
+        self.window.content = content
+        self.window.app = self.app
+
+        self.assertEqual(content.window, self.window)
+        self.assertEqual(content.app, self.app)
+
+    def test_set_app_adds_window_widgets_to_app(self):
+
+        id1, id2, id3 = "id1", "id2", "id3"
+        widget1, widget2, widget3 = (
+            toga.Widget(id=id1),
+            toga.Widget(id=id2),
+            toga.Widget(id=id3),
+        )
+        self.window.widgets.update({widget1, widget2, widget3})
+
+        self.assertEqual(len(self.app.widgets), 0)
+
+        self.window.app = self.app
+
+        self.assertEqual(len(self.app.widgets), 3)
+        self.assertEqual(self.app.widgets[id1], widget1)
+        self.assertEqual(self.app.widgets[id2], widget2)
+        self.assertEqual(self.app.widgets[id3], widget3)
+
     def test_size(self):
         # Add some content
-        mock_content = MagicMock(toga.Box())
-        self.window.content = mock_content
+        content = MagicMock()
+        self.window.content = content
 
         # Confirm defaults
         self.assertEqual(self.window.size, (640, 480))
         self.assertValueGet(self.window, "size")
 
+        content.refresh.assert_called_once_with()
+
+    def test_set_size(self):
+        # Add some content
+        content = MagicMock()
+        self.window.content = content
+
         # A new size can be assigned
-        mock_content.reset_mock()
         new_size = (1200, 40)
         self.window.size = new_size
         self.assertValueSet(self.window, "size", new_size)
 
         # Side effect of setting window size is a refresh on window content
-        self.window.content.refresh.assert_called_once_with()
+        self.assertEqual(content.refresh.call_args_list, [call(), call()])
 
         # New size can be retrieved
         self.assertEqual(self.window.size, new_size)

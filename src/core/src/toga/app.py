@@ -10,6 +10,7 @@ from toga.command import CommandSet
 from toga.handlers import wrapped_handler
 from toga.icons import Icon
 from toga.platform import get_platform_factory
+from toga.widgets.base import WidgetRegistry
 from toga.window import Window
 
 try:
@@ -186,6 +187,9 @@ class App:
         ######################################################################
         # End backwards compatibility.
         ######################################################################
+
+        # Initialize empty widgets registry
+        self.widgets = WidgetRegistry()
 
         # Keep an accessible copy of the app instance
         App.app = self

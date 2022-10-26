@@ -5,6 +5,7 @@ from pathlib import Path
 from toga.command import CommandSet
 from toga.handlers import wrapped_handler
 from toga.platform import get_platform_factory
+from toga.widgets.base import WidgetRegistry
 
 
 class Window:
@@ -46,6 +47,8 @@ class Window:
         ######################################################################
         # End backwards compatibility.
         ######################################################################
+
+        self.widgets = WidgetRegistry()
 
         self._id = id if id else identifier(self)
         self._impl = None
@@ -103,6 +106,10 @@ class Window:
 
         self._app = app
         self._impl.set_app(app._impl)
+        app.widgets.update(self.widgets)
+
+        if self.content:
+            self.content.app = app
 
     @property
     def title(self):

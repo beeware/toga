@@ -1,6 +1,7 @@
 from unittest.mock import MagicMock
 
 import toga
+from toga.widgets.base import WidgetRegistry
 from toga_dummy.utils import TestCase
 
 
@@ -13,6 +14,8 @@ class AppTests(TestCase):
         self.id = 'dom-id'
 
         self.content = MagicMock()
+        self.content_id = 'content-id'
+        self.content.id = self.content_id
 
         self.started = False
 
@@ -55,6 +58,10 @@ class AppTests(TestCase):
 
     def test_app_id(self):
         self.assertEqual(self.app.id, self.id)
+
+    def test_widgets_registry(self):
+        self.assertTrue(isinstance(self.app.widgets, WidgetRegistry))
+        self.assertEqual(len(self.app.widgets), 0)
 
     def test_app_main_loop_call_impl_main_loop(self):
         self.app.main_loop()
