@@ -7,6 +7,9 @@ from toga.style import Pack, TogaApplicator
 
 
 class WidgetRegistry(dict):
+    # WidgetRegistry is implemented as a subclass of dict, because it provides
+    # a mapping from ID to widget. However, it exposes a set-like API; add()
+    # and update() take instances to be added, and iteration is over values.
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -18,7 +21,7 @@ class WidgetRegistry(dict):
             "WidgetRegistry does not allow using item settings directly"
         )
 
-    def extend(self, *widgets):
+    def update(self, widgets):
         for widget in widgets:
             self.add(widget)
 
@@ -185,8 +188,10 @@ class Widget(Node):
 
     @app.setter
     def app(self, app):
+        # If the widget is already assigned to an app,
         if self._app:
             if app is None:
+                # Deregister the widget.
                 self._app.widgets.remove(self.id)
             elif self._app != app:
                 # raise an error when we already have an app and attempt to override it
@@ -195,6 +200,7 @@ class Widget(Node):
             else:
                 # If app is the same as the previous app, return
                 return
+
         if self._impl:
             self._app = app
             self._impl.set_app(app)
@@ -225,8 +231,10 @@ class Widget(Node):
 
     @window.setter
     def window(self, window):
+        # Remove the widget from the widget registry it is currently a part of
         if self.window is not None:
             self.window.widgets.remove(self.id)
+
         self._window = window
         if self._impl:
             self._impl.set_window(window)

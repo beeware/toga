@@ -131,7 +131,7 @@ class TestWindow(TestCase):
             toga.Widget(factory=toga_dummy.factory, id=id2),
             toga.Widget(factory=toga_dummy.factory, id=id3),
         )
-        self.window.widgets.extend(widget1, widget2, widget3)
+        self.window.widgets.update({widget1, widget2, widget3})
 
         self.assertEqual(len(self.app.widgets), 0)
 
