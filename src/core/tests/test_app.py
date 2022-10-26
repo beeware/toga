@@ -2,6 +2,7 @@ from unittest.mock import MagicMock, patch
 
 import toga
 import toga_dummy
+from toga.widgets.base import WidgetRegistry
 from toga_dummy.utils import TestCase
 
 
@@ -14,6 +15,8 @@ class AppTests(TestCase):
         self.id = 'dom-id'
 
         self.content = MagicMock()
+        self.content_id = 'content-id'
+        self.content.id = self.content_id
 
         self.started = False
 
@@ -57,6 +60,10 @@ class AppTests(TestCase):
 
     def test_app_id(self):
         self.assertEqual(self.app.id, self.id)
+
+    def test_widgets_registry(self):
+        self.assertTrue(isinstance(self.app.widgets, WidgetRegistry))
+        self.assertEqual(len(self.app.widgets), 0)
 
     @patch('toga.app.get_platform_factory')
     def test_app_init_with_no_factory(self, mock_function):
