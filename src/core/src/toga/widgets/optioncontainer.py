@@ -156,7 +156,7 @@ class OptionList:
         # 2022-07: Backwards compatibility
         ##################################################################
         # When deleting this block, also delete the NOT_PROVIDED
-        # placeholder, and replace it's usage in default values.
+        # placeholder, and replace its usage in default values.
         missing_arguments = []
 
         # label replaced with text
@@ -213,7 +213,7 @@ class OptionList:
         # 2022-07: Backwards compatibility
         ##################################################################
         # When deleting this block, also delete the NOT_PROVIDED
-        # placeholder, and replace it's usage in default values.
+        # placeholder, and replace its usage in default values.
         missing_arguments = []
 
         # label replaced with text
@@ -289,8 +289,25 @@ class OptionContainer(Widget):
     class OptionException(ValueError):
         pass
 
-    def __init__(self, id=None, style=None, content=None, on_select=None, factory=None):
-        super().__init__(id=id, style=style, factory=factory)
+    def __init__(
+        self,
+        id=None,
+        style=None,
+        content=None,
+        on_select=None,
+        factory=None,  # DEPRECATED!
+    ):
+        super().__init__(id=id, style=style)
+        ######################################################################
+        # 2022-09: Backwards compatibility
+        ######################################################################
+        # factory no longer used
+        if factory:
+            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
+        ######################################################################
+        # End backwards compatibility.
+        ######################################################################
+
         self._on_select = None
         self._impl = self.factory.OptionContainer(interface=self)
 
@@ -364,7 +381,7 @@ class OptionContainer(Widget):
         # 2022-07: Backwards compatibility
         ##################################################################
         # When deleting this block, also delete the NOT_PROVIDED
-        # placeholder, and replace it's usage in default values.
+        # placeholder, and replace its usage in default values.
         missing_arguments = []
 
         # label replaced with text

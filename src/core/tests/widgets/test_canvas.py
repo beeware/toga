@@ -1,7 +1,6 @@
 from math import cos, pi, sin
 
 import toga
-import toga_dummy
 from toga.colors import BLANCHEDALMOND, CRIMSON, REBECCAPURPLE, rgb
 from toga.fonts import SANS_SERIF, SERIF
 from toga.widgets.canvas import FillRule
@@ -13,7 +12,7 @@ class CanvasTests(TestCase):
         super().setUp()
 
         # Create a canvas with the dummy factory
-        self.testing_canvas = toga.Canvas(factory=toga_dummy.factory)
+        self.testing_canvas = toga.Canvas()
 
     def test_widget_created(self):
         self.assertEqual(self.testing_canvas._impl.interface, self.testing_canvas)

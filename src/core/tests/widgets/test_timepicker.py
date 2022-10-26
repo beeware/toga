@@ -1,7 +1,6 @@
 import datetime
 
 import toga
-import toga_dummy
 from toga_dummy.utils import TestCase
 
 
@@ -9,7 +8,7 @@ class TimePickerTests(TestCase):
     def setUp(self):
         super().setUp()
 
-        self.time_picker = toga.TimePicker(factory=toga_dummy.factory)
+        self.time_picker = toga.TimePicker()
 
     def test_widget_created(self):
         self.assertEqual(self.time_picker._impl.interface, self.time_picker)
@@ -89,7 +88,6 @@ class TimePickerTests(TestCase):
         with self.assertWarns(DeprecationWarning):
             my_text_input = toga.TimePicker(
                 initial=value,
-                factory=toga_dummy.factory
             )
         self.assertEqual(my_text_input.value, value)
 
@@ -98,7 +96,6 @@ class TimePickerTests(TestCase):
             toga.TimePicker(
                 initial=value,
                 value=value,
-                factory=toga_dummy.factory
             )
 
     ######################################################################

@@ -1,14 +1,14 @@
 import subprocess
 import sys
-import unittest
 from pathlib import Path
 
 import toga
-import toga_dummy
+from toga_dummy.utils import TestCase
 
 
-class TestPaths(unittest.TestCase):
+class TestPaths(TestCase):
     def setUp(self):
+        super().setUp()
         # We use the existence of a __main__ module as a proxy for being in test
         # conditions. This isn't *great*, but the __main__ module isn't meaningful
         # during tests, and removing it allows us to avoid having explicit "if
@@ -45,7 +45,6 @@ class TestPaths(unittest.TestCase):
         app = toga.App(
             formal_name="Test App",
             app_id="org.beeware.test-app",
-            factory=toga_dummy.factory,
         )
 
         self.assertEqual(

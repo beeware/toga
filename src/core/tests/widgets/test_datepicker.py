@@ -1,7 +1,6 @@
 import datetime
 
 import toga
-import toga_dummy
 from toga_dummy.utils import TestCase
 
 
@@ -9,7 +8,7 @@ class DatePickerTests(TestCase):
     def setUp(self):
         super().setUp()
 
-        self.date_picker = toga.DatePicker(factory=toga_dummy.factory)
+        self.date_picker = toga.DatePicker()
 
     def test_widget_created(self):
         self.assertEqual(self.date_picker._impl.interface, self.date_picker)
@@ -86,18 +85,16 @@ class DatePickerTests(TestCase):
 
         # initial is a deprecated argument
         with self.assertWarns(DeprecationWarning):
-            my_text_input = toga.DatePicker(
+            my_date_picker = toga.DatePicker(
                 initial=value,
-                factory=toga_dummy.factory
             )
-        self.assertEqual(my_text_input.value, value)
+        self.assertEqual(my_date_picker.value, value)
 
         # can't specify both initial *and* value
         with self.assertRaises(ValueError):
             toga.DatePicker(
                 initial=value,
                 value=value,
-                factory=toga_dummy.factory
             )
 
     ######################################################################

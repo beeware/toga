@@ -29,7 +29,7 @@ class MainWindow(Window):
     def create(self):
         super().create()
         self.native.set_role("MainWindow")
-        icon = toga_App.app.icon.bind(self.interface.factory)
+        icon = toga_App.app.icon.bind()
         self.native.set_icon(icon.native_72.get_pixbuf())
 
     def set_app(self, app):
@@ -206,7 +206,7 @@ class App:
     def show_about_dialog(self):
         about = Gtk.AboutDialog()
 
-        icon = toga_App.app.icon.bind(self.interface.factory)
+        icon = toga_App.app.icon.bind()
         about.set_logo(icon.native_72.get_pixbuf())
 
         if self.interface.name is not None:

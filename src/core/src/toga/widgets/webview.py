@@ -1,3 +1,5 @@
+import warnings
+
 from toga.handlers import wrapped_handler
 
 from .base import Widget
@@ -10,8 +12,6 @@ class WebView(Widget):
         id (str): An identifier for this widget.
         style (:obj:`Style`): An optional style object. If no style is provided then
             a new one will be created for the widget.
-        factory (:obj:`module`): A python module that is capable to return a
-            implementation of this class with the same name. (optional & normally not needed)
         url (str): The URL to start with.
         user_agent (str): The user agent for the web view.
         on_key_down (``callable``): The callback method for when a key is pressed within
@@ -21,9 +21,27 @@ class WebView(Widget):
     MIN_WIDTH = 100
     MIN_HEIGHT = 100
 
-    def __init__(self, id=None, style=None, factory=None,
-                 url=None, user_agent=None, on_key_down=None, on_webview_load=None):
-        super().__init__(id=id, style=style, factory=factory)
+    def __init__(
+        self,
+        id=None,
+        style=None,
+        factory=None,  # DEPRECATED!
+        url=None,
+        user_agent=None,
+        on_key_down=None,
+        on_webview_load=None
+    ):
+        super().__init__(id=id, style=style)
+
+        ######################################################################
+        # 2022-09: Backwards compatibility
+        ######################################################################
+        # factory no longer used
+        if factory:
+            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
+        ######################################################################
+        # End backwards compatibility.
+        ######################################################################
 
         # Prime some internal property-backing variables
         self._html_content = None

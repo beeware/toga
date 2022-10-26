@@ -1,3 +1,4 @@
+import warnings
 from builtins import id as identifier
 from pathlib import Path
 
@@ -20,17 +21,33 @@ class Window:
         closeable (bool): Toggle if the window is closable by the user, defaults to `True`.
         minimizable (bool): Toggle if the window is minimizable by the user, defaults to `True`.
         on_close: A callback to invoke when the user makes a request to close the window.
-        factory (:obj:`module`): A python module that is capable to return a
-            implementation of this class with the same name. (optional; normally not needed)
     """
     _WINDOW_CLASS = 'Window'
 
-    def __init__(self, id=None, title=None,
-                 position=(100, 100), size=(640, 480),
-                 toolbar=None, resizeable=True,
-                 closeable=True, minimizable=True,
-                 factory=None, on_close=None,
-                 ):
+    def __init__(
+        self,
+        id=None,
+        title=None,
+        position=(100, 100),
+        size=(640, 480),
+        toolbar=None,
+        resizeable=True,
+        closeable=True,
+        minimizable=True,
+        factory=None,  # DEPRECATED !
+        on_close=None
+    ):
+
+        ######################################################################
+        # 2022-09: Backwards compatibility
+        ######################################################################
+        # factory no longer used
+        if factory:
+            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
+        ######################################################################
+        # End backwards compatibility.
+        ######################################################################
+
         self.widgets = WidgetRegistry()
 
         self._id = id if id else identifier(self)
@@ -43,7 +60,7 @@ class Window:
         self.closeable = closeable
         self.minimizable = minimizable
 
-        self.factory = get_platform_factory(factory)
+        self.factory = get_platform_factory()
         self._impl = getattr(self.factory, self._WINDOW_CLASS)(
             interface=self,
             title='Toga' if title is None else title,
@@ -52,7 +69,6 @@ class Window:
         )
 
         self._toolbar = CommandSet(
-            factory=self.factory,
             widget=self,
             on_change=self._impl.create_toolbar
         )

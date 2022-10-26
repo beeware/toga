@@ -1,5 +1,4 @@
 import toga
-import toga_dummy
 from toga_dummy.utils import TestCase
 
 
@@ -8,8 +7,8 @@ class SelectionTests(TestCase):
         super().setUp()
 
         self.items = [f'item_{x}' for x in range(0, 3)]
-        self.selection = toga.Selection(factory=toga_dummy.factory)
-        self.selection = toga.Selection(items=self.items, factory=toga_dummy.factory)
+        self.selection = toga.Selection()
+        self.selection = toga.Selection(items=self.items)
 
     def test_widget_created(self):
         self.assertEqual(self.selection._impl.interface, self.selection)

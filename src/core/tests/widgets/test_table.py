@@ -1,5 +1,4 @@
 import toga
-import toga_dummy
 from toga.sources import ListSource, Source
 from toga_dummy.utils import TestCase
 
@@ -27,7 +26,6 @@ class TableTests(TestCase):
             self.headings,
             on_select=self.on_select,
             on_double_click=self.on_double_click,
-            factory=toga_dummy.factory
         )
 
     def test_widget_created(self):
@@ -88,7 +86,6 @@ class TableTests(TestCase):
         secondtable = toga.Table(
             self.headings,
             multiple_select=True,
-            factory=toga_dummy.factory
         )
         self.assertEqual(secondtable.multiple_select, True)
 

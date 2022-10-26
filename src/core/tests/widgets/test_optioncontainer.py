@@ -1,7 +1,6 @@
 from unittest import mock
 
 import toga
-import toga_dummy
 from toga_dummy.utils import TestCase, TestStyle
 
 
@@ -12,16 +11,11 @@ class OptionContainerTests(TestCase):
         self.on_select = mock.Mock()
         self.op_container = toga.OptionContainer(
             style=TestStyle(),
-            factory=toga_dummy.factory,
             on_select=self.on_select
         )
-        self.widget = toga.Box(style=TestStyle(), factory=toga_dummy.factory)
-        self.text2, self.widget2 = "Widget 2", toga.Box(
-            style=TestStyle(), factory=toga_dummy.factory
-        )
-        self.text3, self.widget3 = "Widget 3", toga.Box(
-            style=TestStyle(), factory=toga_dummy.factory
-        )
+        self.widget = toga.Box(style=TestStyle())
+        self.text2, self.widget2 = "Widget 2", toga.Box(style=TestStyle())
+        self.text3, self.widget3 = "Widget 3", toga.Box(style=TestStyle())
         self.text = 'New Container'
         self.op_container.add(self.text, self.widget)
 
@@ -174,7 +168,6 @@ class OptionContainerTests(TestCase):
     def test_set_content_in_constructor(self):
         new_container = toga.OptionContainer(
             style=TestStyle(),
-            factory=toga_dummy.factory,
             content=[
                 (self.text, self.widget),
                 (self.text2, self.widget2),
@@ -252,7 +245,6 @@ class OptionContainerTests(TestCase):
     def test_add_mandatory_parameters(self):
         my_op_container = toga.OptionContainer(
             style=TestStyle(),
-            factory=toga_dummy.factory,
             on_select=self.on_select
         )
 
@@ -267,7 +259,6 @@ class OptionContainerTests(TestCase):
     def test_append_mandatory_parameters(self):
         my_op_container = toga.OptionContainer(
             style=TestStyle(),
-            factory=toga_dummy.factory,
             on_select=self.on_select
         )
 
@@ -282,7 +273,6 @@ class OptionContainerTests(TestCase):
     def test_insert_mandatory_parameters(self):
         my_op_container = toga.OptionContainer(
             style=TestStyle(),
-            factory=toga_dummy.factory,
             on_select=self.on_select
         )
 

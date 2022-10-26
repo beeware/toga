@@ -1,3 +1,4 @@
+import warnings
 from contextlib import contextmanager
 from enum import Enum
 from math import pi
@@ -534,18 +535,33 @@ class Canvas(Context, Widget):
             (usually the right) button released
         on_alt_drag (:obj:`callable`): Handler to invoke when the cursor is
             dragged with the alternate (usually the right) button pressed.
-        factory (:obj:`module`): A python module that is capable to return a
-            implementation of this class with the same name. (optional &
-            normally not needed)
     """
 
     def __init__(
-            self, id=None, style=None, on_resize=None,
-            on_press=None, on_release=None, on_drag=None,
-            on_alt_press=None, on_alt_release=None, on_alt_drag=None,
-            factory=None):
+        self,
+        id=None,
+        style=None,
+        on_resize=None,
+        on_press=None,
+        on_release=None,
+        on_drag=None,
+        on_alt_press=None,
+        on_alt_release=None,
+        on_alt_drag=None,
+        factory=None,  # DEPRECATED!
+    ):
 
-        super().__init__(id=id, style=style, factory=factory)
+        super().__init__(id=id, style=style)
+        ######################################################################
+        # 2022-09: Backwards compatibility
+        ######################################################################
+        # factory no longer used
+        if factory:
+            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
+        ######################################################################
+        # End backwards compatibility.
+        ######################################################################
+
         self._canvas = self
 
         # Create a platform specific implementation of Canvas

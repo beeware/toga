@@ -1,7 +1,6 @@
 from unittest import mock
 
 import toga
-import toga_dummy
 from toga_dummy.utils import TestCase
 
 
@@ -24,7 +23,6 @@ class SliderTests(TestCase):
             range=self.range,
             on_change=self.on_change,
             enabled=self.enabled,
-            factory=toga_dummy.factory,
             tick_count=self.tick_count,
         )
 
@@ -148,12 +146,12 @@ class SliderTests(TestCase):
 
     def test_set_on_press(self):
         on_press = mock.Mock()
-        slider = toga.Slider(on_press=on_press, factory=toga_dummy.factory)
+        slider = toga.Slider(on_press=on_press)
         self.assertEqual(slider.on_press._raw, on_press)
 
     def test_set_on_release(self):
         on_release = mock.Mock()
-        slider = toga.Slider(on_release=on_release, factory=toga_dummy.factory)
+        slider = toga.Slider(on_release=on_release)
         self.assertEqual(slider.on_release._raw, on_release)
 
     def assert_slider_value(self, tick_value, value, on_change_call_count=0):
@@ -185,7 +183,6 @@ class SliderTests(TestCase):
                 range=self.range,
                 on_change=self.on_change,
                 enabled=self.enabled,
-                factory=toga_dummy.factory,
                 tick_count=self.tick_count,
             )
         self.assertEqual(my_slider.value, self.value)
@@ -198,7 +195,6 @@ class SliderTests(TestCase):
                 range=self.range,
                 on_change=self.on_change,
                 enabled=self.enabled,
-                factory=toga_dummy.factory,
                 tick_count=self.tick_count,
             )
 

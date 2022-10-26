@@ -1,7 +1,6 @@
 from pathlib import Path
 
 import toga
-import toga_dummy
 from toga_dummy.utils import TestCase
 
 
@@ -11,9 +10,10 @@ class ImageTests(TestCase):
 
         # an App must have been created before calling image.bind
         # because it tries to resolve the image path against the app path.
-        toga.App(formal_name='Image Test App',
-                 app_id='org.beeware.test_image',
-                 factory=toga_dummy.factory)
+        self.app = toga.App(
+            formal_name='Image Test App',
+            app_id='org.beeware.test_image',
+        )
         self.file_path = Path('path/to/image.jpg')
         self.url_path = 'http://website.com/image.jpg'
         self.path_file_image = toga.Image(path=self.file_path)
@@ -26,7 +26,7 @@ class ImageTests(TestCase):
 
         # Bind the image; the file doesn't exist, so it raises an error.
         try:
-            self.path_file_image.bind(factory=toga_dummy.factory)
+            self.path_file_image.bind()
             self.fail('The image should not bind')  # pragma: nocover
         except FileNotFoundError:
             pass
@@ -40,7 +40,7 @@ class ImageTests(TestCase):
 
         # Bind the image; the file doesn't exist, so it raises an error.
         try:
-            self.str_file_image.bind(factory=toga_dummy.factory)
+            self.str_file_image.bind()
             self.fail('The image should not bind')  # pragma: nocover
         except FileNotFoundError:
             pass
@@ -53,7 +53,7 @@ class ImageTests(TestCase):
         self.assertIsNone(self.url_image._impl)
 
         # Bind the image
-        self.url_image.bind(factory=toga_dummy.factory)
+        self.url_image.bind()
 
         # Image is bound correctly
         self.assertEqual(self.url_image._impl.interface, self.url_image)
@@ -71,7 +71,7 @@ class ImageTests(TestCase):
     def test_bytes_image(self):
         data = bytes([1])
         bytes_image = toga.Image(data=data)
-        bytes_image.bind(factory=toga_dummy.factory)
+        bytes_image.bind()
         self.assertEqual(bytes_image._impl.interface, bytes_image)
         self.assertActionPerformedWith(bytes_image, 'load image data', data=data)
 

@@ -12,8 +12,6 @@ class MultilineTextInput(Widget):
         id (str): An identifier for this widget.
         style(:obj:`Style`):  An optional style object.
             If no style is provided then a new one will be created for the widget.
-        factory: Optional factory that must be able to return a implementation
-            of a MulitlineTextInput Widget.
         value (str): The initial text of the widget.
         readonly (bool): Whether a user can write into the text input,
             defaults to `False`.
@@ -27,14 +25,24 @@ class MultilineTextInput(Widget):
         self,
         id=None,
         style=None,
-        factory=None,
+        factory=None,  # DEPRECATED!
         value=None,
         readonly=False,
         placeholder=None,
         on_change=None,
         initial=None,  # DEPRECATED!
     ):
-        super().__init__(id=id, style=style, factory=factory)
+        super().__init__(id=id, style=style)
+
+        ######################################################################
+        # 2022-09: Backwards compatibility
+        ######################################################################
+        # factory no longer used
+        if factory:
+            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
+        ######################################################################
+        # End backwards compatibility.
+        ######################################################################
 
         # Create a platform specific implementation of a MultilineTextInput
         self._impl = self.factory.MultilineTextInput(interface=self)

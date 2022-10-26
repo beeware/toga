@@ -1,3 +1,5 @@
+import warnings
+
 from toga.handlers import wrapped_handler
 from toga.sources import TreeSource
 from toga.sources.accessors import build_accessors
@@ -32,15 +34,33 @@ class Tree(Widget):
     :param on_select: A handler to be invoked when the user selects one or
         multiple rows.
     :param on_double_click: A handler to be invoked when the user double clicks a row.
-    :param factory:: A python module that is capable to return a implementation
-        of this class with the same name. (optional; used only for testing)
     """
     MIN_WIDTH = 100
     MIN_HEIGHT = 100
 
-    def __init__(self, headings, id=None, style=None, data=None, accessors=None,
-                 multiple_select=False, on_select=None, on_double_click=None, factory=None):
-        super().__init__(id=id, style=style, factory=factory)
+    def __init__(
+        self,
+        headings,
+        id=None,
+        style=None,
+        data=None,
+        accessors=None,
+        multiple_select=False,
+        on_select=None,
+        on_double_click=None,
+        factory=None,  # DEPRECATED!
+    ):
+        super().__init__(id=id, style=style)
+        ######################################################################
+        # 2022-09: Backwards compatibility
+        ######################################################################
+        # factory no longer used
+        if factory:
+            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
+        ######################################################################
+        # End backwards compatibility.
+        ######################################################################
+
         self.headings = headings
         self._accessors = build_accessors(headings, accessors)
         self._multiple_select = multiple_select

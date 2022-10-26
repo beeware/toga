@@ -12,8 +12,6 @@ class TextInput(Widget):
         id (str): An identifier for this widget.
         style (:obj:`Style`): An optional style object. If no style is provided then
             a new one will be created for the widget.
-        factory (:obj:`module`): A python module that is capable to return a
-            implementation of this class with the same name. (optional & normally not needed)
         value (str): The initial text for the input.
         placeholder (str): If no input is present this text is shown.
         readonly (bool):  Whether a user can write into the text input, defaults to `False`.
@@ -30,7 +28,7 @@ class TextInput(Widget):
         self,
         id=None,
         style=None,
-        factory=None,
+        factory=None,  # DEPRECATED!
         value=None,
         placeholder=None,
         readonly=False,
@@ -40,7 +38,17 @@ class TextInput(Widget):
         validators=None,
         initial=None,  # DEPRECATED!
     ):
-        super().__init__(id=id, style=style, factory=factory)
+        super().__init__(id=id, style=style)
+
+        ######################################################################
+        # 2022-09: Backwards compatibility
+        ######################################################################
+        # factory no longer used
+        if factory:
+            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
+        ######################################################################
+        # End backwards compatibility.
+        ######################################################################
 
         # Create a platform specific implementation of the widget
         self._create()

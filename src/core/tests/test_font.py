@@ -1,5 +1,4 @@
 import toga
-import toga_dummy
 from toga.fonts import (
     _REGISTERED_FONT_CACHE,
     BOLD,
@@ -32,7 +31,7 @@ class FontTests(TestCase):
         )
 
         # Bind the font to the dummy factory
-        self.font.bind(toga_dummy.factory)
+        self.font.bind()
 
         # Register a file-based custom font
         toga.Font.register(self.custom_family, self.custom_path)

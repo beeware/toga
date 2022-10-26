@@ -59,7 +59,7 @@ with open('../src/core/src/toga/__init__.py', encoding='utf8') as version_file:
 version = '.'.join(release.split('.')[:2])
 
 # Fix the autodoc import issues
-os.environ['TOGA_PLATFORM'] = 'dummy'
+os.environ['TOGA_BACKEND'] = 'toga_dummy'
 
 autoclass_content = 'both'
 

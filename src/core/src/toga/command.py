@@ -2,6 +2,7 @@ import warnings
 
 from toga.handlers import wrapped_handler
 from toga.icons import Icon
+from toga.platform import get_platform_factory
 
 # BACKWARDS COMPATIBILITY: a token object that can be used to differentiate
 # between an explicitly provided ``None``, and a unspecified value falling
@@ -32,7 +33,7 @@ class Group:
         # 2022-07: Backwards compatibility
         ##################################################################
         # When deleting this block, also delete the NOT_PROVIDED
-        # placeholder, and replace it's usage in default values.
+        # placeholder, and replace its usage in default values.
 
         # label replaced with text
         if label is not None:
@@ -208,16 +209,24 @@ class Command:
         section=None,
         order=None,
         enabled=True,
-        factory=None,
+        factory=None,  # DEPRECATED!
         label=None,  # DEPRECATED!
     ):
-        self.factory = factory
+        ######################################################################
+        # 2022-09: Backwards compatibility
+        ######################################################################
+        # factory no longer used
+        if factory:
+            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
+        ######################################################################
+        # End backwards compatibility.
+        ######################################################################
 
         ##################################################################
         # 2022-07: Backwards compatibility
         ##################################################################
         # When deleting this block, also delete the NOT_PROVIDED
-        # placeholder, and replace it's usage in default values.
+        # placeholder, and replace its usage in default values.
 
         # label replaced with text
         if label is not None:
@@ -260,14 +269,26 @@ class Command:
         "A unique tuple describing the path to this command"
         return tuple([*self.group.key, (self.section, self.order, self.text)])
 
-    def bind(self, factory):
-        self.factory = factory
+    def bind(
+        self,
+        factory=None,  # DEPRECATED !
+    ):
+        ######################################################################
+        # 2022-09: Backwards compatibility
+        ######################################################################
+        # factory no longer used
+        if factory:
+            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
+        ######################################################################
+        # End backwards compatibility.
+        ######################################################################
 
+        self.factory = get_platform_factory()
         if self._impl is None:
             self._impl = self.factory.Command(interface=self)
 
         if self._icon:
-            self._icon.bind(self.factory)
+            self._icon.bind()
 
         return self._impl
 
@@ -297,8 +318,8 @@ class Command:
         else:
             self._icon = Icon(icon_or_name)
 
-        if self._icon and self.factory:
-            self._icon.bind(self.factory)
+        if self._icon:
+            self._icon.bind()
 
     def __lt__(self, other):
         return self.key < other.key
@@ -367,15 +388,29 @@ class CommandSet:
     Todo:
         * Add missing Docstrings.
     """
-    def __init__(self, factory, widget=None, on_change=None):
-        self.factory = factory
+    def __init__(
+        self,
+        factory=None,  # DEPRECATED!
+        widget=None,
+        on_change=None,
+    ):
+        ######################################################################
+        # 2022-09: Backwards compatibility
+        ######################################################################
+        # factory no longer used
+        if factory:
+            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
+        ######################################################################
+        # End backwards compatibility.
+        ######################################################################
+
         self.widget = widget
         self._commands = set()
         self.on_change = on_change
 
     def add(self, *commands):
         for cmd in commands:
-            cmd.bind(self.factory)
+            cmd.bind()
         if self.widget and self.widget.app is not None:
             self.widget.app.commands.add(*commands)
         self._commands.update(commands)

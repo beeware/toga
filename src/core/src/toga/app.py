@@ -71,13 +71,31 @@ class WindowSet(MutableSet):
 class MainWindow(Window):
     _WINDOW_CLASS = 'MainWindow'
 
-    def __init__(self, id=None, title=None, position=(100, 100), size=(640, 480),
-                 toolbar=None, resizeable=True, minimizable=True,
-                 factory=None, on_close=None):
+    def __init__(
+        self,
+        id=None,
+        title=None,
+        position=(100, 100),
+        size=(640, 480),
+        toolbar=None,
+        resizeable=True,
+        minimizable=True,
+        factory=None,  # DEPRECATED !
+        on_close=None
+    ):
+        ######################################################################
+        # 2022-09: Backwards compatibility
+        ######################################################################
+        # factory no longer used
+        if factory:
+            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
+        ######################################################################
+        # End backwards compatibility.
+        ######################################################################
         super().__init__(
             id=id, title=title, position=position, size=size, toolbar=toolbar,
             resizeable=resizeable, closeable=True, minimizable=minimizable,
-            factory=factory, on_close=on_close,
+            on_close=on_close,
         )
 
     @Window.on_close.setter
@@ -141,8 +159,6 @@ class App:
         argument of :class:`toga.App`.
     :param windows: An iterable with objects of :class:`toga.Window` that will
         be the app's secondary windows.
-    :param factory: A python module that is capable to return a implementation
-        of this class with the same name. (optional & normally not needed)
     """
     app = None
 
@@ -160,8 +176,18 @@ class App:
         startup=None,
         windows=None,
         on_exit=None,
-        factory=None,
+        factory=None,  # DEPRECATED !
     ):
+        ######################################################################
+        # 2022-09: Backwards compatibility
+        ######################################################################
+        # factory no longer used
+        if factory:
+            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
+        ######################################################################
+        # End backwards compatibility.
+        ######################################################################
+
         # Initialize empty widgets registry
         self.widgets = WidgetRegistry()
 
@@ -279,7 +305,7 @@ class App:
         self._id = id if id else identifier(self)
 
         # Get a platform factory, and a paths instance from the factory.
-        self.factory = get_platform_factory(factory)
+        self.factory = get_platform_factory()
         self.paths = self.factory.paths
 
         # If an icon (or icon name) has been explicitly provided, use it;
@@ -289,7 +315,7 @@ class App:
         else:
             self.icon = f'resources/{self.app_name}'
 
-        self.commands = CommandSet(factory=self.factory)
+        self.commands = CommandSet()
 
         self._startup_method = startup
 
@@ -487,7 +513,7 @@ class App:
     def startup(self):
         """Create and show the main window for the application
         """
-        self.main_window = MainWindow(title=self.formal_name, factory=self.factory)
+        self.main_window = MainWindow(title=self.formal_name)
 
         if self._startup_method:
             self.main_window.content = self._startup_method(self)
@@ -590,8 +616,17 @@ class DocumentApp(App):
         startup=None,
         document_types=None,
         on_exit=None,
-        factory=None,
+        factory=None,  # DEPRECATED !
     ):
+        ######################################################################
+        # 2022-09: Backwards compatibility
+        ######################################################################
+        # factory no longer used
+        if factory:
+            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
+        ######################################################################
+        # End backwards compatibility.
+        ######################################################################
 
         self.document_types = document_types
         self._documents = []
@@ -608,7 +643,6 @@ class DocumentApp(App):
             description=description,
             startup=startup,
             on_exit=on_exit,
-            factory=factory,
         )
 
     def _create_impl(self):

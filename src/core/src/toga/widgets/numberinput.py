@@ -17,8 +17,6 @@ class NumberInput(Widget):
         id (str): An identifier for this widget.
         style (:obj:`Style`):  an optional style object.
             If no style is provided then a new one will be created for the widget.
-        factory (:obj:`module`): A python module that is capable to return a
-            implementation of this class with the same name. (optional & normally not needed)
 
         step (number): Step size of the adjustment buttons.
         min_value (number): The minimum bound for the widget's value.
@@ -34,7 +32,7 @@ class NumberInput(Widget):
         self,
         id=None,
         style=None,
-        factory=None,
+        factory=None,  # DEPRECATED!
         step=1,
         min_value=None,
         max_value=None,
@@ -43,7 +41,17 @@ class NumberInput(Widget):
         on_change=None,
         default=None,  # DEPRECATED!
     ):
-        super().__init__(id=id, style=style, factory=factory)
+        super().__init__(id=id, style=style)
+        ######################################################################
+        # 2022-09: Backwards compatibility
+        ######################################################################
+        # factory no longer used
+        if factory:
+            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
+        ######################################################################
+        # End backwards compatibility.
+        ######################################################################
+
         self._value = None
         self._on_change = None
         self._impl = self.factory.NumberInput(interface=self)

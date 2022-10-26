@@ -1,5 +1,4 @@
 import toga
-import toga_dummy
 from toga_dummy.utils import TestCase
 
 # ### ProgressBar truth table
@@ -18,7 +17,7 @@ class ProgressBarTests(TestCase):
     def setUp(self):
         super().setUp()
 
-        self.progress_bar = toga.ProgressBar(factory=toga_dummy.factory)
+        self.progress_bar = toga.ProgressBar()
 
     def test_widget_created(self):
         self.assertEqual(self.progress_bar._impl.interface, self.progress_bar)
@@ -88,7 +87,7 @@ class ProgressBarTests(TestCase):
 
     def test_disabled_cases(self):
         # Start with a default progress bar
-        self.progress_bar = toga.ProgressBar(factory=toga_dummy.factory)
+        self.progress_bar = toga.ProgressBar()
         self.assertTrue(self.progress_bar.enabled)
 
         # It should be disabled if it is stopped and max is None
@@ -114,7 +113,7 @@ class ProgressBarTests(TestCase):
 
     def test_already_running(self):
         # Creating a new progress bar with running=True so it is already running
-        self.progress_bar = toga.ProgressBar(factory=toga_dummy.factory, running=True)
+        self.progress_bar = toga.ProgressBar(running=True)
 
         # Asserting that start() function is invoked on the underlying widget
         self.assertActionPerformed(self.progress_bar, 'start')

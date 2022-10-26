@@ -2,7 +2,6 @@ from unittest import mock
 from unittest.mock import Mock, call
 
 import toga
-import toga_dummy
 from toga_dummy.utils import TestCase
 
 
@@ -21,7 +20,6 @@ class TextInputTests(TestCase):
             readonly=self.readonly,
             on_gain_focus=self.on_gain_focus,
             on_lose_focus=self.on_lose_focus,
-            factory=toga_dummy.factory
         )
 
     def test_widget_created(self):
@@ -83,7 +81,6 @@ class TextInputTests(TestCase):
                 readonly=self.readonly,
                 on_gain_focus=self.on_gain_focus,
                 on_lose_focus=self.on_lose_focus,
-                factory=toga_dummy.factory
             )
         self.assertEqual(my_text_input.value, self.value)
 
@@ -96,7 +93,6 @@ class TextInputTests(TestCase):
                 readonly=self.readonly,
                 on_gain_focus=self.on_gain_focus,
                 on_lose_focus=self.on_lose_focus,
-                factory=toga_dummy.factory
             )
 
     ######################################################################
@@ -115,7 +111,6 @@ class ValidatedTextInputTests(TestCase):
         text_input = toga.TextInput(
             value=self.value,
             validators=[validator],
-            factory=toga_dummy.factory
         )
         self.assertTrue(text_input.is_valid)
         self.assertValueNotSet(text_input, "error")
@@ -126,7 +121,6 @@ class ValidatedTextInputTests(TestCase):
     def test_getting_is_valid_invokes_impl_method(self):
         text_input = toga.TextInput(
             value=self.value,
-            factory=toga_dummy.factory
         )
         self.assertValueNotGet(text_input, 'valid')
         text_input.is_valid
@@ -137,7 +131,6 @@ class ValidatedTextInputTests(TestCase):
         validator = Mock(return_value=message)
         text_input = toga.TextInput(
             value=self.value,
-            factory=toga_dummy.factory
         )
 
         self.assertTrue(text_input.is_valid)
@@ -154,7 +147,6 @@ class ValidatedTextInputTests(TestCase):
     def test_text_input_with_no_validator_is_valid(self):
         text_input = toga.TextInput(
             value=self.value,
-            factory=toga_dummy.factory
         )
         self.assertTrue(text_input.validate())
         self.assertTrue(text_input.is_valid)
@@ -164,7 +156,6 @@ class ValidatedTextInputTests(TestCase):
         text_input = toga.TextInput(
             value=self.value,
             validators=[validator],
-            factory=toga_dummy.factory
         )
         self.assertTrue(text_input.validate())
 
@@ -174,7 +165,6 @@ class ValidatedTextInputTests(TestCase):
         text_input = toga.TextInput(
             value=self.value,
             validators=[validator],
-            factory=toga_dummy.factory
         )
         self.assertFalse(text_input.validate())
 
@@ -183,7 +173,6 @@ class ValidatedTextInputTests(TestCase):
         text_input = toga.TextInput(
             value=self.value,
             validators=[validator],
-            factory=toga_dummy.factory
         )
         self.assertTrue(text_input.is_valid)
         self.assertValueSet(text_input, "valid", True)
@@ -203,7 +192,6 @@ class ValidatedTextInputTests(TestCase):
         text_input = toga.TextInput(
             value=self.value,
             validators=[validator],
-            factory=toga_dummy.factory
         )
         self.assertTrue(text_input.is_valid)
         self.assertValueNotSet(text_input, "error")

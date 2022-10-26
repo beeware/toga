@@ -14,8 +14,6 @@ class TimePicker(Widget):
         id (str): An identifier for this widget.
         style (:obj:`Style`): An optional style object. If no style is provided then
             a new one will be created for the widget.
-        factory (:obj:`module`): A python module that is capable to return a
-            implementation of this class with the same name. (optional & normally not needed)
         value (str): The initial value to set the widget to. (Defaults to time of program execution)
         min_time (str): The minimum allowable time for the widget.
         max_time (str): The maximum allowable time for the widget.
@@ -27,14 +25,24 @@ class TimePicker(Widget):
         self,
         id=None,
         style=None,
-        factory=None,
+        factory=None,  # DEPRECATED!
         value=None,
         min_time=None,
         max_time=None,
         on_change=None,
         initial=None,  # DEPRECATED!
     ):
-        super().__init__(id=id, style=style, factory=factory)
+        super().__init__(id=id, style=style)
+        ######################################################################
+        # 2022-09: Backwards compatibility
+        ######################################################################
+        # factory no longer used
+        if factory:
+            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
+        ######################################################################
+        # End backwards compatibility.
+        ######################################################################
+
         self._on_change = None
 
         # Create a platform specific implementation of a TimePicker

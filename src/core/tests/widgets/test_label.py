@@ -1,5 +1,4 @@
 import toga
-import toga_dummy
 from toga_dummy.utils import TestCase
 
 
@@ -9,7 +8,7 @@ class LabelTests(TestCase):
 
         self.text = 'test text'
 
-        self.label = toga.Label(self.text, factory=toga_dummy.factory)
+        self.label = toga.Label(self.text)
 
     def test_widget_created(self):
         self.assertEqual(self.label._impl.interface, self.label)

@@ -15,7 +15,7 @@ class App:
 
     def create(self):
 
-        self.interface.icon.bind(self.interface.factory)
+        self.interface.icon.bind()
         # self.resource_path = os.path.dirname(os.path.dirname(NSBundle.mainBundle.bundlePath))
 
         formal_name = self.interface.formal_name

@@ -23,29 +23,37 @@ class Switch(Widget):
         on_change (``callable``): Function to execute when pressed.
         value (bool): Current on or off state of the switch.
         enabled (bool): Whether or not interaction with the button is possible, defaults to `True`.
-        factory (:obj:`module`): A python module that is capable to return a
-            implementation of this class with the same name. (optional & normally not needed)
     """
 
     def __init__(
-            self,
-            text=NOT_PROVIDED,  # BACKWARDS COMPATIBILITY: The default value
-                                # can be removed when the handling for
-                                # `label` is removed
-            id=None,
-            style=None,
-            on_change=None,
-            value=NOT_PROVIDED,  # BACKWARDS COMPATIBILITY: The default value
-                                 # *should* be False, but we use a temp value
-                                 # and overwrite to detect the specification
-                                 # of both value *and* is_on
-            enabled=True,
-            factory=None,
-            label=None,  # DEPRECATED!
-            on_toggle=None,  # DEPRECATED!
-            is_on=None,  # DEPRECATED!
+        self,
+        text=NOT_PROVIDED,  # BACKWARDS COMPATIBILITY: The default value
+                            # can be removed when the handling for
+                            # `label` is removed
+        id=None,
+        style=None,
+        on_change=None,
+        value=NOT_PROVIDED,  # BACKWARDS COMPATIBILITY: The default value
+                             # *should* be False, but we use a temp value
+                             # and overwrite to detect the specification
+                             # of both value *and* is_on
+        enabled=True,
+        factory=None,  # DEPRECATED!
+        label=None,  # DEPRECATED!
+        on_toggle=None,  # DEPRECATED!
+        is_on=None,  # DEPRECATED!
     ):
-        super().__init__(id=id, style=style, factory=factory)
+        super().__init__(id=id, style=style)
+
+        ######################################################################
+        # 2022-09: Backwards compatibility
+        ######################################################################
+        # factory no longer used
+        if factory:
+            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
+        ######################################################################
+        # End backwards compatibility.
+        ######################################################################
 
         self._impl = self.factory.Switch(interface=self)
 
@@ -53,7 +61,7 @@ class Switch(Widget):
         # 2022-07: Backwards compatibility
         ##################################################################
         # When deleting this block, also delete the NOT_PROVIDED
-        # placeholder, and replace it's usage in default values.
+        # placeholder, and replace its usage in default values.
 
         # label replaced with text
         if label is not None:

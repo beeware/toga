@@ -43,7 +43,7 @@ class TogaTableViewController(UITableViewController):
         # If the value has an icon attribute, get the _impl.
         # Icons are deferred resources, so we bind to factory.
         try:
-            cell.imageView.image = value.icon.bind(self.interface.factory).native
+            cell.imageView.image = value.icon.bind().native
         except AttributeError:
             pass
 

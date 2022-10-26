@@ -20,9 +20,6 @@ class Slider(Widget):
         on_release (``callable``): The handler to invoke when the slider has been
             released.
         enabled (bool): Whether user interaction is possible or not.
-        factory (:obj:`module`): A python module that is capable to return a
-            implementation of this class with the same name. (optional & normally not
-            needed).
     """
     def __init__(
         self,
@@ -36,10 +33,20 @@ class Slider(Widget):
         on_press=None,
         on_release=None,
         enabled=True,
-        factory=None,
+        factory=None,  # DEPRECATED!
         default=None,  # DEPRECATED!
     ):
-        super().__init__(id=id, style=style, factory=factory)
+        super().__init__(id=id, style=style)
+
+        ######################################################################
+        # 2022-09: Backwards compatibility
+        ######################################################################
+        # factory no longer used
+        if factory:
+            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
+        ######################################################################
+        # End backwards compatibility.
+        ######################################################################
 
         # Needed for _impl initialization
         self._tick_count = None

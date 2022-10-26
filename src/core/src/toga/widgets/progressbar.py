@@ -1,3 +1,5 @@
+import warnings
+
 from .base import Widget
 
 
@@ -7,7 +9,13 @@ class ProgressBar(Widget):
     MIN_WIDTH = 100
 
     def __init__(
-        self, id=None, style=None, max=1, value=0, running=False, factory=None
+        self,
+        id=None,
+        style=None,
+        max=1,
+        value=0,
+        running=False,
+        factory=None,  # DEPRECATED!
     ):
         """
 
@@ -18,10 +26,18 @@ class ProgressBar(Widget):
             max (float): The maximum value of the progressbar.
             value (float): To define the current progress of the progressbar.
             running (bool): Set the initial running mode.
-            factory (:obj:`module`): A python module that is capable to return a
-                implementation of this class with the same name. (optional & normally not needed)
         """
-        super().__init__(id=id, style=style, factory=factory)
+        super().__init__(id=id, style=style)
+
+        ######################################################################
+        # 2022-09: Backwards compatibility
+        ######################################################################
+        # factory no longer used
+        if factory:
+            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
+        ######################################################################
+        # End backwards compatibility.
+        ######################################################################
 
         self._is_running = False
         self._impl = self.factory.ProgressBar(interface=self)

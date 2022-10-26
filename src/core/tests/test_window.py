@@ -2,7 +2,6 @@ from pathlib import Path
 from unittest.mock import MagicMock, Mock, call, patch
 
 import toga
-import toga_dummy
 from toga.command import CommandSet
 from toga.widgets.base import WidgetRegistry
 from toga_dummy.utils import TestCase
@@ -11,8 +10,8 @@ from toga_dummy.utils import TestCase
 class TestWindow(TestCase):
     def setUp(self):
         super().setUp()
-        self.window = toga.Window(factory=toga_dummy.factory)
-        self.app = toga.App("test_name", "id.app", factory=toga_dummy.factory)
+        self.window = toga.Window()
+        self.app = toga.App("test_name", "id.app")
 
     def test_window_widgets_registry_on_constructor(self):
         self.assertTrue(isinstance(self.window.widgets, WidgetRegistry))
@@ -63,7 +62,7 @@ class TestWindow(TestCase):
 
     def test_set_window_application_twice(self):
         self.assertIsNotNone(self.window.id)
-        new_app = toga.App("error_name", "id.error", factory=toga_dummy.factory)
+        new_app = toga.App("error_name", "id.error")
         self.window.app = self.app
         with self.assertRaisesRegex(
             Exception, "^Window is already associated with an App$"
@@ -127,9 +126,9 @@ class TestWindow(TestCase):
 
         id1, id2, id3 = "id1", "id2", "id3"
         widget1, widget2, widget3 = (
-            toga.Widget(factory=toga_dummy.factory, id=id1),
-            toga.Widget(factory=toga_dummy.factory, id=id2),
-            toga.Widget(factory=toga_dummy.factory, id=id3),
+            toga.Widget(id=id1),
+            toga.Widget(id=id2),
+            toga.Widget(id=id3),
         )
         self.window.widgets.update({widget1, widget2, widget3})
 
@@ -210,7 +209,7 @@ class TestWindow(TestCase):
         def callback(window, **extra):
             return f"called {type(window)} with {extra}"
 
-        window = toga.Window(factory=toga_dummy.factory, on_close=callback)
+        window = toga.Window(on_close=callback)
         self.app.windows += window
 
         self.assertEqual(window.on_close._raw, callback)

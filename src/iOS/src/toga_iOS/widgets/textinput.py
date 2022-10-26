@@ -56,7 +56,7 @@ class TextInput(Widget):
 
     def set_font(self, font):
         if font:
-            self.native.font = font.bind(self.interface.factory).native
+            self.native.font = font.bind().native
 
     def rehint(self):
         # Height of a text input is known.

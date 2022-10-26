@@ -124,7 +124,7 @@ class App:
         self.native = NSApplication.sharedApplication
         self.native.setActivationPolicy(NSApplicationActivationPolicyRegular)
 
-        icon = self.interface.icon.bind(self.interface.factory)
+        icon = self.interface.icon.bind()
         self.native.setApplicationIconImage_(icon.native)
 
         self.resource_path = os.path.dirname(os.path.dirname(NSBundle.mainBundle.bundlePath))
@@ -350,7 +350,7 @@ class App:
     def show_about_dialog(self):
         options = NSMutableDictionary.alloc().init()
 
-        options[NSAboutPanelOptionApplicationIcon] = self.interface.icon.bind(self.interface.factory).native
+        options[NSAboutPanelOptionApplicationIcon] = self.interface.icon.bind().native
 
         if self.interface.name is not None:
             options[NSAboutPanelOptionApplicationName] = self.interface.name

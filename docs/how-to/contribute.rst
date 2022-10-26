@@ -364,7 +364,7 @@ Start by running the core test suite:
     .. code-block:: bash
 
       (venv) $ cd src/core
-      (venv) $ python setup.py test
+      (venv) $ TOGA_BACKEND=toga_dummy python setup.py test
       ...
       ----------------------------------------------------------------------
       Ran 181 tests in 0.343s
@@ -376,7 +376,7 @@ Start by running the core test suite:
     .. code-block:: bash
 
       (venv) $ cd src/core
-      (venv) $ python setup.py test
+      (venv) $ TOGA_BACKEND=toga_dummy python setup.py test
       ...
       ----------------------------------------------------------------------
       Ran 181 tests in 0.343s
@@ -388,19 +388,29 @@ Start by running the core test suite:
     .. code-block:: doscon
 
       (venv) C:\...>cd src/core
+      (venv) C:\...>set TOGA_BACKEND=toga_dummy
       (venv) C:\...>python setup.py test
+      (venv) C:\...>set TOGA_BACKEND=
       ...
       ----------------------------------------------------------------------
       Ran 181 tests in 0.343s
 
       OK (skipped=1)
 
-You should get some output indicating that tests have been run. You shouldn’t
+You should get some output indicating that tests have been run. You shouldn't
 ever get any FAIL or ERROR test results. We run our full test suite before
-merging every patch. If that process discovers any problems, we don’t merge
-the patch. If you do find a test error or failure, either there’s something
-odd in your test environment, or you’ve found an edge case that we haven’t
+merging every patch. If that process discovers any problems, we don't merge
+the patch. If you do find a test error or failure, either there's something
+odd in your test environment, or you've found an edge case that we haven't
 seen before - either way, let us know!
+
+Note that when we run the test suite, we set the environment variable
+``TOGA_BACKEND``. Under normal operation, Toga will automatically choose the
+appropriate backend for your platform. However, when running the tests for
+the core platform, we need to use a special "dummy" backend. This dummy backend
+satisfies the interface contract of a Toga backend, but doesn't acutally
+display any widgets. This allows us to test the behavior of the core library
+independent of the behavior of a specific backend.
 
 Although the tests should all pass, the test suite itself is still
 incomplete. There are many aspects of the Toga Core API that aren't currently
@@ -421,7 +431,7 @@ ask coverage to generate a report of the data that was gathered:
     .. code-block:: bash
 
       (venv) $ pip install coverage
-      (venv) $ coverage run setup.py test
+      (venv) $ TOGA_BACKEND=toga_dummy coverage run setup.py test
       (venv) $ coverage report -m --include="toga/*"
       Name                                 Stmts   Miss  Cover   Missing
       ------------------------------------------------------------------
@@ -437,7 +447,7 @@ ask coverage to generate a report of the data that was gathered:
     .. code-block:: bash
 
       (venv) $ pip install coverage
-      (venv) $ coverage run setup.py test
+      (venv) $ TOGA_BACKEND=toga_dummy coverage run setup.py test
       (venv) $ coverage report -m --include="toga/*"
       Name                                 Stmts   Miss  Cover   Missing
       ------------------------------------------------------------------
@@ -453,7 +463,9 @@ ask coverage to generate a report of the data that was gathered:
     .. code-block:: doscon
 
       (venv) C:\...>pip install coverage
+      (venv) C:\...>set TOGA_BACKEND=toga_dummy
       (venv) C:\...>coverage run setup.py test
+      (venv) C:\...>set TOGA_BACKEND=
       (venv) C:\...>coverage report -m --include=toga/*
       Name                                 Stmts   Miss  Cover   Missing
       ------------------------------------------------------------------
@@ -488,7 +500,7 @@ expect to see something like:
 
     .. code-block:: bash
 
-      (venv) $ coverage run setup.py test
+      (venv) $ TOGA_BACKEND=toga_dummy coverage run setup.py test
       running test
       ...
       ----------------------------------------------------------------------
@@ -509,7 +521,7 @@ expect to see something like:
 
     .. code-block:: bash
 
-      (venv) $ coverage run setup.py test
+      (venv) $ TOGA_BACKEND=toga_dummy coverage run setup.py test
       running test
       ...
       ----------------------------------------------------------------------
@@ -530,7 +542,9 @@ expect to see something like:
 
     .. code-block:: doscon
 
+      (venv) C:\...>set TOGA_BACKEND=toga_dummy
       (venv) C:\...>coverage run setup.py test
+      (venv) C:\...>set TOGA_BACKEND=
       running test
       ...
       ----------------------------------------------------------------------
@@ -554,70 +568,6 @@ in the coverage results.
 Submit a pull request for your work, and you're done! Congratulations, you're
 a contributor to Toga!
 
-How does this all work?
-=======================
-
-Since you're writing tests for a GUI toolkit, you might be wondering why you
-haven't seen a GUI yet. The Toga Core package contains the API definitions for
-the Toga widget kit. This is completely platform agnostic - it just provides
-an interface, and defers actually drawing anything on the screen to the
-platform backends.
-
-When you run the test suite, the test runner uses a "dummy" backend - a
-platform backend that *implements* the full API, but doesn’t actually *do*
-anything (i.e., when you say display a button, it creates an object, but
-doesn’t actually display a button).
-
-In this way, it's possible to for the Toga Core tests to exercise every API
-entry point in the Toga Core package, verify that data is stored correctly on
-the interface layer, and sent through to the right endpoints in the Dummy
-backend. If the *dummy* backend is invoked correctly, then any other backend
-will be handled correctly, too.
-
-One error you might see...
---------------------------
-
-When you're running these tests - especially when you submit your PR, and the
-tests run on our continuous integration (CI) server - it's possible you might get
-an error that reads::
-
-    ModuleNotFoundError: No module named 'toga_gtk'.
-
-If this happens, you've found an bug in the way the widget you're testing
-has been constructed.
-
-The Core API is designed to be platform independent. When a widget is created,
-it calls upon a "factory" to instantiate the underlying platform-dependent
-implementation. When a Toga application starts running, it will try to guess
-the right factory to use based on the environment where the code is running.
-So, if you run your code on a Mac, it will use the Cocoa factory; if you're on
-a Linux box, it will use the GTK factory.
-
-However, when writing tests, we want to use the "dummy" factory. The Dummy
-factory isn't the "native" platform anywhere - it's just a placeholder. As a
-result, the  dummy factory won't be used unless you specifically request it -
-which means every widget has to honor that request.
-
-Most Toga widgets create their platform-specific implementation when they are
-created. As a result, most Toga widgets should accept a ``factory`` argument -
-and that factory should be used to instantiate any widget implementations or
-sub-widgets.
-
-However, *some* widgets - like Icon - are "late loaded" - the implementation
-isn't created until the widget is actually *used*. Late loaded widgets don't
-accept a ``factory`` when they're created - but they *do* have an `_impl()`
-method that accepts a factory.
-
-If these factory arguments aren't being passed around correctly, then a test
-suite will attempt to create a widget, but will fall back to the platform-
-default factory, rather than the "dummy" factory. If you've installed the
-appropriate platform default backend, you won't (necessarily) get an error,
-but your tests won't use the dummy backend. On our CI server, we deliberately
-don't install a platform backend so we can find these errors.
-
-If you get the ``ModuleNotFoundError``, you need to audit the code to find out
-where a widget is being created without a factory being specified.
-
 It's not just about coverage!
 =============================
 
@@ -629,8 +579,8 @@ purpose it was intended!
 
 As you develop tests and improve coverage, you should be checking that the
 core module is internally **consistent** as well. If you notice any method
-names that aren’t internally consistent (e.g., something called ``on_select``
-in one module, but called ``on_selected`` in another), or where the data isn’t
+names that aren't internally consistent (e.g., something called ``on_select``
+in one module, but called ``on_selected`` in another), or where the data isn't
 being handled consistently (one widget updates then refreshes, but another
 widget refreshes then updates), flag it and bring it to our attention by
 raising a ticket. Or, if you're confident that you know what needs to be done,

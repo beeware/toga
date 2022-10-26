@@ -1,5 +1,4 @@
 import toga
-import toga_dummy
 from toga_dummy.utils import TestCase
 
 
@@ -10,10 +9,9 @@ class ImageViewTests(TestCase):
         self.app = toga.App(
             formal_name="Test App",
             app_id="org.beeware.test-app",
-            factory=toga_dummy.factory,
         )
 
-        self.image_view = toga.ImageView(factory=toga_dummy.factory)
+        self.image_view = toga.ImageView()
 
     def test_widget_created(self):
         self.assertEqual(self.image_view._impl.interface, self.image_view)
