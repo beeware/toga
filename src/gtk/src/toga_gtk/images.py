@@ -19,3 +19,6 @@ class Image:
         elif data:
             input_stream = Gio.MemoryInputStream.new_from_data(data, None)
             self.native = GdkPixbuf.Pixbuf.new_from_stream(input_stream, None)
+
+    def save(self, path):
+        self.interface.factory.not_implemented("Image.save()")

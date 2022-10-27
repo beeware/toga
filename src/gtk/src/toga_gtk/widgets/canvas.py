@@ -167,6 +167,9 @@ class Canvas(Widget):
     def measure_text(self, text, font, tight=False):
         return font.bind().measure(text, widget=self.native, tight=tight)
 
+    def as_image(self):
+        self.interface.factory.not_implemented("Canvas.as_image()")
+
     # Rehint
 
     def rehint(self):
