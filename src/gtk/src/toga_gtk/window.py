@@ -86,7 +86,7 @@ class Window:
             else:
                 item_impl = Gtk.ToolButton()
                 if cmd.icon:
-                    item_impl.set_icon_widget(icon._impl.native_32)
+                    item_impl.set_icon_widget(cmd.icon._impl.native_32)
                 item_impl.set_label(cmd.text)
                 item_impl.set_tooltip_text(cmd.tooltip)
                 item_impl.connect("clicked", wrapped_handler(cmd, cmd.action))

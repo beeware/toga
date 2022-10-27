@@ -3,10 +3,10 @@ import socketserver
 from threading import Event, Thread
 from wsgiref.simple_server import WSGIServer
 
-import django
 from django.core.handlers.wsgi import WSGIHandler
 from django.core.servers.basehttp import WSGIRequestHandler
 
+import django
 import toga
 
 
