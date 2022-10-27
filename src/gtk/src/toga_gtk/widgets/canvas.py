@@ -165,7 +165,7 @@ class Canvas(Widget):
             y += height
 
     def measure_text(self, text, font, tight=False):
-        return font.bind().measure(text, widget=self.native, tight=tight)
+        return font._impl.measure(text, widget=self.native, tight=tight)
 
     # Rehint
 
