@@ -41,13 +41,13 @@ class AppTests(TestCase):
         self.assertIsNotNone(self.app.icon._impl)
 
         # Binding is a no op.
-        self.app.icon.bind()
+        with self.assertWarns(DeprecationWarning):
+            self.app.icon.bind()
         self.assertIsNotNone(self.app.icon._impl)
 
         # Set the icon to a different resource
         self.app.icon = "other.icns"
         self.assertEqual(self.app.icon.path, "other.icns")
-        self.app.icon.bind()
 
         # This icon name will *not* exist. The Impl will be the DEFAULT_ICON's impl
         self.assertEqual(self.app.icon._impl, toga.Icon.DEFAULT_ICON._impl)

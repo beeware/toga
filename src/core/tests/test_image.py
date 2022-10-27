@@ -75,7 +75,8 @@ class ImageTests(TestCase):
         # Creating an image from a path that doesn't exist raises an error.
         image = toga.Image(path=Path(toga.__file__).parent / "resources" / "toga.png")
 
-        bound = image.bind()
+        with self.assertWarns(DeprecationWarning):
+            bound = image.bind()
 
         self.assertIsNotNone(image._impl)
         self.assertEqual(image._impl.interface.path, Path(toga.__file__).parent / "resources" / "toga.png")

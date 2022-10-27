@@ -24,7 +24,8 @@ class TestIcon(unittest.TestCase):
         self.assertEqual(self.icon._impl.interface, toga.Icon.DEFAULT_ICON)
 
         # Bind is a no-op
-        self.icon.bind()
+        with self.assertWarns(DeprecationWarning):
+            self.icon.bind()
 
         # Icon hasn't changed.
         self.assertEqual(self.icon._impl.interface, toga.Icon.DEFAULT_ICON)

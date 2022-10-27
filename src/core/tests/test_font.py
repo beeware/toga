@@ -30,8 +30,11 @@ class FontTests(TestCase):
             weight=self.weight,
         )
 
-        # Bind the font to the dummy factory
-        self.font.bind()
+        # Bind is a no-op
+        with self.assertWarns(DeprecationWarning):
+            impl = self.font.bind()
+
+        self.assertIsNotNone(impl)
 
         # Register a file-based custom font
         toga.Font.register(self.custom_family, self.custom_path)
