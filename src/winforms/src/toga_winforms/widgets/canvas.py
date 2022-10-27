@@ -306,7 +306,7 @@ class Canvas(Box):
 
     def measure_text(self, text, font, tight=False):
         sizes = [
-            WinForms.TextRenderer.MeasureText(line, font.bind().native)
+            WinForms.TextRenderer.MeasureText(line, font._impl.native)
             for line in text.splitlines()
         ]
         width = max([size.Width for size in sizes])
