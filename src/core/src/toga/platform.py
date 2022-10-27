@@ -65,11 +65,7 @@ def get_platform_factory(factory=None):
     # End backwards compatibility.
     ######################################################################
 
-    # As of Setuptools 65.5, entry points are returned duplicated if the
-    # package is installed editable. Use a set to ensure that each entry point
-    # is only returned once.
-    # See https://github.com/pypa/setuptools/issues/3649
-    toga_backends = sorted(set(entry_points(group='toga.backends')))
+    toga_backends = entry_points(group='toga.backends')
     if not toga_backends:
         raise RuntimeError("No Toga backend could be loaded.")
 
@@ -84,6 +80,12 @@ def get_platform_factory(factory=None):
                 f"could not be loaded. It should be one of: {toga_backends_values}."
             )
     else:
+        # As of Setuptools 65.5, entry points are returned duplicated if the
+        # package is installed editable. Use a set to ensure that each entry point
+        # is only returned once.
+        # See https://github.com/pypa/setuptools/issues/3649
+        toga_backends = sorted(set(toga_backends))
+
         if len(toga_backends) == 1:
             backend = toga_backends[0]
         else:
