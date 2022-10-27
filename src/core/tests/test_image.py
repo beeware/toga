@@ -15,6 +15,7 @@ class ImageTests(TestCase):
             app_id='org.beeware.test_image',
         )
         self.file_path = Path('path/to/image.jpg')
+        self.save_path = Path('path/to/save/image.jpg')
         self.url_path = 'http://website.com/image.jpg'
         self.path_file_image = toga.Image(path=self.file_path)
         self.str_file_image = toga.Image(path=str(self.file_path))
@@ -84,3 +85,24 @@ class ImageTests(TestCase):
         data = bytes([1])
         with self.assertRaises(ValueError):
             toga.Image(path=path, data=data)
+
+    def test_image_bind_twice(self):
+        # Image is initially unbound
+        self.assertIsNone(self.url_image._impl)
+
+        # Bind the image twice
+        self.url_image.bind()
+        self.url_image.bind()
+
+        # Image is bound correctly
+        self.assertEqual(self.url_image._impl.interface, self.url_image)
+        self.assertActionPerformedWith(self.url_image, 'load image url', url=self.url_path)
+
+    def test_image_save_without_binding(self):
+        with self.assertRaises(RuntimeError):
+            self.url_image.save(self.save_path)
+
+    def test_image_save_after_binding(self):
+        self.url_image.bind()
+        self.url_image.save(self.save_path)
+        self.assertActionPerformedWith(self.url_image, "save", path=self.save_path)
