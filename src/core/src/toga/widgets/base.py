@@ -18,9 +18,7 @@ class WidgetRegistry(dict):
     def __setitem__(self, key, value):
         # We do not want to allow setting items directly but to use the "add"
         # method instead.
-        raise RuntimeError(
-            "WidgetRegistry does not allow using item settings directly"
-        )
+        raise RuntimeError("WidgetRegistry does not allow using item settings directly")
 
     def update(self, widgets):
         for widget in widgets:
@@ -30,9 +28,7 @@ class WidgetRegistry(dict):
         if widget.id in self:
             # Prevent from adding the same widget twice
             # or adding 2 widgets with the same id
-            raise KeyError(
-                f'There is already a widget with "{widget.id}" id'
-            )
+            raise KeyError(f'There is already a widget with "{widget.id}" id')
         super().__setitem__(widget.id, widget)
 
     def remove(self, id):
@@ -43,8 +39,8 @@ class WidgetRegistry(dict):
 
 
 class Widget(Node):
-    """ This is the base widget implementation that all widgets in Toga
-    derive from.
+    """This is the base widget implementation that all widgets in Toga derive
+    from.
 
     It defines the interface for core functionality for children, styling,
     layout and ownership by specific App and Window.
@@ -77,8 +73,7 @@ class Widget(Node):
         # End backwards compatibility.
         ######################################################################
         super().__init__(
-            style=style if style else Pack(),
-            applicator=TogaApplicator(self)
+            style=style if style else Pack(), applicator=TogaApplicator(self)
         )
 
         self._id = str(id) if id else str(identifier(self))
@@ -95,7 +90,8 @@ class Widget(Node):
 
     @property
     def id(self):
-        """The node identifier. This id can be used to target styling directives
+        """The node identifier. This id can be used to target styling
+        directives.
 
         Returns:
             The widgets identifier as a ``str``.
@@ -103,8 +99,9 @@ class Widget(Node):
         return self._id
 
     def add(self, *children):
-        """Add nodes as children of this one. If a node already has a different parent,
-        it will be moved over. This does nothing if a node already is a child of this node.
+        """Add nodes as children of this one. If a node already has a different
+        parent, it will be moved over. This does nothing if a node already is a
+        child of this node.
 
         Args:
             children: Nodes to add as children of this node.
@@ -133,9 +130,9 @@ class Widget(Node):
             self.window.content.refresh()
 
     def insert(self, index, child):
-        """Insert a node as a child of this one. If the node already has a different
-        parent, it will be moved over. This does nothing if the node already is a child of
-        this node.
+        """Insert a node as a child of this one. If the node already has a
+        different parent, it will be moved over. This does nothing if the node
+        already is a child of this node.
 
         Args:
             index: Position of child node.
@@ -164,8 +161,8 @@ class Widget(Node):
             self.window.content.refresh()
 
     def remove(self, *children):
-        """Remove child nodes of this node. This does nothing if a given node is not a
-        child of this node.
+        """Remove child nodes of this node. This does nothing if a given node
+        is not a child of this node.
 
         Args:
             children: Child nodes to remove.
@@ -188,9 +185,8 @@ class Widget(Node):
 
     @property
     def app(self):
-        """The App to which this widget belongs.
-        On setting the app we also iterate over all children of this widget and
-        set them to the same app.
+        """The App to which this widget belongs. On setting the app we also
+        iterate over all children of this widget and set them to the same app.
 
         Returns:
             The :class:`toga.App` to which this widget belongs.
@@ -234,9 +230,9 @@ class Widget(Node):
 
     @property
     def window(self):
-        """The Window to which this widget belongs.
-        On setting the window, we automatically update all children of this
-        widget to belong to the same window.
+        """The Window to which this widget belongs. On setting the window, we
+        automatically update all children of this widget to belong to the same
+        window.
 
         Returns:
             The :class:`toga.Window` to which the widget belongs.
@@ -278,7 +274,8 @@ class Widget(Node):
         self._impl.set_enabled(value)
 
     def refresh(self):
-        """Refresh the layout and appearance of the tree this node is contained in."""
+        """Refresh the layout and appearance of the tree this node is contained
+        in."""
         if self._root:
             self._root.refresh()
         else:

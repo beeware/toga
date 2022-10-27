@@ -22,22 +22,22 @@ from travertino.colors import (
     PURPLE,
     RED,
     WHITE,
-    YELLOW
+    YELLOW,
 )
 
 from toga.constants import CENTER, JUSTIFY, LEFT, RIGHT
 
 ######################################################################
-appkit = load_library('AppKit')
+appkit = load_library("AppKit")
 ######################################################################
 
 ######################################################################
 # NSAffineTransform.h
-NSAffineTransform = ObjCClass('NSAffineTransform')
+NSAffineTransform = ObjCClass("NSAffineTransform")
 
 ######################################################################
 # NSAlert.h
-NSAlert = ObjCClass('NSAlert')
+NSAlert = ObjCClass("NSAlert")
 
 
 class NSAlertStyle(Enum):
@@ -52,8 +52,8 @@ NSAlertThirdButtonReturn = 1002
 
 ######################################################################
 # NSApplication.h
-NSApplication = ObjCClass('NSApplication')
-NSApplication.declare_class_property('sharedApplication')
+NSApplication = ObjCClass("NSApplication")
+NSApplication.declare_class_property("sharedApplication")
 
 NSApplicationPresentationDefault = 0
 NSApplicationPresentationHideDock = 1 << 1
@@ -61,18 +61,32 @@ NSApplicationPresentationHideMenuBar = 1 << 3
 NSApplicationPresentationDisableProcessSwitching = 1 << 5
 NSApplicationPresentationDisableHideApplication = 1 << 8
 
-NSEventTrackingRunLoopMode = c_void_p.in_dll(appkit, 'NSEventTrackingRunLoopMode')
+NSEventTrackingRunLoopMode = c_void_p.in_dll(appkit, "NSEventTrackingRunLoopMode")
 
-NSApplicationDidHideNotification = c_void_p.in_dll(appkit, 'NSApplicationDidHideNotification')
-NSApplicationDidUnhideNotification = c_void_p.in_dll(appkit, 'NSApplicationDidUnhideNotification')
+NSApplicationDidHideNotification = c_void_p.in_dll(
+    appkit, "NSApplicationDidHideNotification"
+)
+NSApplicationDidUnhideNotification = c_void_p.in_dll(
+    appkit, "NSApplicationDidUnhideNotification"
+)
 
 # NSAboutPanelOption* keys are available only 10.13+
 try:
-    NSAboutPanelOptionApplicationIcon = NSString(c_void_p.in_dll(appkit, "NSAboutPanelOptionApplicationIcon"))
-    NSAboutPanelOptionApplicationName = NSString(c_void_p.in_dll(appkit, "NSAboutPanelOptionApplicationName"))
-    NSAboutPanelOptionApplicationVersion = NSString(c_void_p.in_dll(appkit, "NSAboutPanelOptionApplicationVersion"))
-    NSAboutPanelOptionCredits = NSString(c_void_p.in_dll(appkit, "NSAboutPanelOptionCredits"))
-    NSAboutPanelOptionVersion = NSString(c_void_p.in_dll(appkit, "NSAboutPanelOptionVersion"))
+    NSAboutPanelOptionApplicationIcon = NSString(
+        c_void_p.in_dll(appkit, "NSAboutPanelOptionApplicationIcon")
+    )
+    NSAboutPanelOptionApplicationName = NSString(
+        c_void_p.in_dll(appkit, "NSAboutPanelOptionApplicationName")
+    )
+    NSAboutPanelOptionApplicationVersion = NSString(
+        c_void_p.in_dll(appkit, "NSAboutPanelOptionApplicationVersion")
+    )
+    NSAboutPanelOptionCredits = NSString(
+        c_void_p.in_dll(appkit, "NSAboutPanelOptionCredits")
+    )
+    NSAboutPanelOptionVersion = NSString(
+        c_void_p.in_dll(appkit, "NSAboutPanelOptionVersion")
+    )
 except ValueError:
     NSAboutPanelOptionApplicationIcon = None
     NSAboutPanelOptionApplicationName = None
@@ -82,7 +96,7 @@ except ValueError:
 
 ######################################################################
 # NSAttributedString.h
-NSAttributedString = ObjCClass('NSAttributedString')
+NSAttributedString = ObjCClass("NSAttributedString")
 
 NSFontAttributeName = objc_const(appkit, "NSFontAttributeName")
 NSParagraphStyleAttributeName = objc_const(appkit, "NSParagraphStyleAttributeName")
@@ -90,7 +104,9 @@ NSForegroundColorAttributeName = objc_const(appkit, "NSForegroundColorAttributeN
 NSBackgroundColorAttributeName = objc_const(appkit, "NSBackgroundColorAttributeName")
 NSLigatureAttributeName = objc_const(appkit, "NSLigatureAttributeName")
 NSKernAttributeName = objc_const(appkit, "NSKernAttributeName")
-NSStrikethroughStyleAttributeName = objc_const(appkit, "NSStrikethroughStyleAttributeName")
+NSStrikethroughStyleAttributeName = objc_const(
+    appkit, "NSStrikethroughStyleAttributeName"
+)
 NSUnderlineStyleAttributeName = objc_const(appkit, "NSUnderlineStyleAttributeName")
 NSStrokeColorAttributeName = objc_const(appkit, "NSStrokeColorAttributeName")
 NSStrokeWidthAttributeName = objc_const(appkit, "NSStrokeWidthAttributeName")
@@ -104,32 +120,42 @@ NSAttachmentAttributeName = objc_const(appkit, "NSAttachmentAttributeName")
 NSLinkAttributeName = objc_const(appkit, "NSLinkAttributeName")
 NSBaselineOffsetAttributeName = objc_const(appkit, "NSBaselineOffsetAttributeName")
 NSUnderlineColorAttributeName = objc_const(appkit, "NSUnderlineColorAttributeName")
-NSStrikethroughColorAttributeName = objc_const(appkit, "NSStrikethroughColorAttributeName")
+NSStrikethroughColorAttributeName = objc_const(
+    appkit, "NSStrikethroughColorAttributeName"
+)
 NSObliquenessAttributeName = objc_const(appkit, "NSObliquenessAttributeName")
 NSExpansionAttributeName = objc_const(appkit, "NSExpansionAttributeName")
 
 NSWritingDirectionAttributeName = objc_const(appkit, "NSWritingDirectionAttributeName")
-NSVerticalGlyphFormAttributeName = objc_const(appkit, "NSVerticalGlyphFormAttributeName")
+NSVerticalGlyphFormAttributeName = objc_const(
+    appkit, "NSVerticalGlyphFormAttributeName"
+)
 
 NSCursorAttributeName = objc_const(appkit, "NSCursorAttributeName")
 NSToolTipAttributeName = objc_const(appkit, "NSToolTipAttributeName")
 
-NSMarkedClauseSegmentAttributeName = objc_const(appkit, "NSMarkedClauseSegmentAttributeName")
+NSMarkedClauseSegmentAttributeName = objc_const(
+    appkit, "NSMarkedClauseSegmentAttributeName"
+)
 NSTextAlternativesAttributeName = objc_const(appkit, "NSTextAlternativesAttributeName")
 
 NSSuperscriptAttributeName = objc_const(appkit, "NSSuperscriptAttributeName")
 NSGlyphInfoAttributeName = objc_const(appkit, "NSGlyphInfoAttributeName")
 
-NSViewBoundsDidChangeNotification = objc_const(appkit, 'NSViewBoundsDidChangeNotification')
-NSViewFrameDidChangeNotification = objc_const(appkit, 'NSViewFrameDidChangeNotification')
+NSViewBoundsDidChangeNotification = objc_const(
+    appkit, "NSViewBoundsDidChangeNotification"
+)
+NSViewFrameDidChangeNotification = objc_const(
+    appkit, "NSViewFrameDidChangeNotification"
+)
 
 ######################################################################
 # NSBezierPath.h
-NSBezierPath = ObjCClass('NSBezierPath')
+NSBezierPath = ObjCClass("NSBezierPath")
 
 ######################################################################
 # NSBox.h
-NSBox = ObjCClass('NSBox')
+NSBox = ObjCClass("NSBox")
 
 
 class NSBoxType(Enum):
@@ -140,11 +166,11 @@ class NSBoxType(Enum):
 
 ######################################################################
 # NSBrowserCell.h
-NSBrowserCell = ObjCClass('NSBrowserCell')
+NSBrowserCell = ObjCClass("NSBrowserCell")
 
 ######################################################################
 # NSButton.h
-NSButton = ObjCClass('NSButton')
+NSButton = ObjCClass("NSButton")
 
 NSOnState = 1
 NSOffState = 0
@@ -182,74 +208,74 @@ class NSBezelStyle(IntEnum):
 
 ######################################################################
 # NSCell.h
-NSCell = ObjCClass('NSCell')
+NSCell = ObjCClass("NSCell")
 
 ######################################################################
 # NSClipView.h
-NSClipView = ObjCClass('NSClipView')
+NSClipView = ObjCClass("NSClipView")
 
 ######################################################################
 # NSColor.h
-NSColor = ObjCClass('NSColor')
+NSColor = ObjCClass("NSColor")
 
 # System colors
-NSColor.declare_class_property('alternateSelectedControlColor')
-NSColor.declare_class_property('alternateSelectedControlTextColor')
-NSColor.declare_class_property('controlBackgroundColor')
-NSColor.declare_class_property('controlColor')
-NSColor.declare_class_property('controlAlternatingRowBackgroundColors')
-NSColor.declare_class_property('controlHighlightColor')
-NSColor.declare_class_property('controlLightHighlightColor')
-NSColor.declare_class_property('controlShadowColor')
-NSColor.declare_class_property('controlDarkShadowColor')
-NSColor.declare_class_property('controlTextColor')
-NSColor.declare_class_property('currentControlTint')
-NSColor.declare_class_property('disabledControlTextColor')
-NSColor.declare_class_property('gridColor')
-NSColor.declare_class_property('headerColor')
-NSColor.declare_class_property('headerTextColor')
-NSColor.declare_class_property('highlightColor')
-NSColor.declare_class_property('keyboardFocusIndicatorColor')
-NSColor.declare_class_property('knobColor')
-NSColor.declare_class_property('scrollBarColor')
-NSColor.declare_class_property('secondarySelectedControlColor')
-NSColor.declare_class_property('selectedControlColor')
-NSColor.declare_class_property('selectedControlTextColor')
-NSColor.declare_class_property('selectedMenuItemColor')
-NSColor.declare_class_property('selectedMenuItemTextColor')
-NSColor.declare_class_property('selectedTextBackgroundColor')
-NSColor.declare_class_property('selectedTextColor')
-NSColor.declare_class_property('selectedKnobColor')
-NSColor.declare_class_property('shadowColor')
-NSColor.declare_class_property('textBackgroundColor')
-NSColor.declare_class_property('textColor')
-NSColor.declare_class_property('windowBackgroundColor')
-NSColor.declare_class_property('windowFrameColor')
-NSColor.declare_class_property('windowFrameTextColor')
-NSColor.declare_class_property('underPageBackgroundColor')
+NSColor.declare_class_property("alternateSelectedControlColor")
+NSColor.declare_class_property("alternateSelectedControlTextColor")
+NSColor.declare_class_property("controlBackgroundColor")
+NSColor.declare_class_property("controlColor")
+NSColor.declare_class_property("controlAlternatingRowBackgroundColors")
+NSColor.declare_class_property("controlHighlightColor")
+NSColor.declare_class_property("controlLightHighlightColor")
+NSColor.declare_class_property("controlShadowColor")
+NSColor.declare_class_property("controlDarkShadowColor")
+NSColor.declare_class_property("controlTextColor")
+NSColor.declare_class_property("currentControlTint")
+NSColor.declare_class_property("disabledControlTextColor")
+NSColor.declare_class_property("gridColor")
+NSColor.declare_class_property("headerColor")
+NSColor.declare_class_property("headerTextColor")
+NSColor.declare_class_property("highlightColor")
+NSColor.declare_class_property("keyboardFocusIndicatorColor")
+NSColor.declare_class_property("knobColor")
+NSColor.declare_class_property("scrollBarColor")
+NSColor.declare_class_property("secondarySelectedControlColor")
+NSColor.declare_class_property("selectedControlColor")
+NSColor.declare_class_property("selectedControlTextColor")
+NSColor.declare_class_property("selectedMenuItemColor")
+NSColor.declare_class_property("selectedMenuItemTextColor")
+NSColor.declare_class_property("selectedTextBackgroundColor")
+NSColor.declare_class_property("selectedTextColor")
+NSColor.declare_class_property("selectedKnobColor")
+NSColor.declare_class_property("shadowColor")
+NSColor.declare_class_property("textBackgroundColor")
+NSColor.declare_class_property("textColor")
+NSColor.declare_class_property("windowBackgroundColor")
+NSColor.declare_class_property("windowFrameColor")
+NSColor.declare_class_property("windowFrameTextColor")
+NSColor.declare_class_property("underPageBackgroundColor")
 
 # System Label Colors
-NSColor.declare_class_property('labelColor')
-NSColor.declare_class_property('secondaryLabelColor')
-NSColor.declare_class_property('tertiaryLabelColor')
-NSColor.declare_class_property('quaternaryLabelColor')
+NSColor.declare_class_property("labelColor")
+NSColor.declare_class_property("secondaryLabelColor")
+NSColor.declare_class_property("tertiaryLabelColor")
+NSColor.declare_class_property("quaternaryLabelColor")
 
 # Predefined Colors
-NSColor.declare_class_property('blackColor')
-NSColor.declare_class_property('blueColor')
-NSColor.declare_class_property('brownColor')
-NSColor.declare_class_property('clearColor')
-NSColor.declare_class_property('cyanColor')
-NSColor.declare_class_property('darkGrayColor')
-NSColor.declare_class_property('grayColor')
-NSColor.declare_class_property('greenColor')
-NSColor.declare_class_property('lightGrayColor')
-NSColor.declare_class_property('magentaColor')
-NSColor.declare_class_property('orangeColor')
-NSColor.declare_class_property('purpleColor')
-NSColor.declare_class_property('redColor')
-NSColor.declare_class_property('whiteColor')
-NSColor.declare_class_property('yellowColor')
+NSColor.declare_class_property("blackColor")
+NSColor.declare_class_property("blueColor")
+NSColor.declare_class_property("brownColor")
+NSColor.declare_class_property("clearColor")
+NSColor.declare_class_property("cyanColor")
+NSColor.declare_class_property("darkGrayColor")
+NSColor.declare_class_property("grayColor")
+NSColor.declare_class_property("greenColor")
+NSColor.declare_class_property("lightGrayColor")
+NSColor.declare_class_property("magentaColor")
+NSColor.declare_class_property("orangeColor")
+NSColor.declare_class_property("purpleColor")
+NSColor.declare_class_property("redColor")
+NSColor.declare_class_property("whiteColor")
+NSColor.declare_class_property("yellowColor")
 
 
 def NSColorUsingColorName(background_color):
@@ -274,20 +300,20 @@ def NSColorUsingColorName(background_color):
 ######################################################################
 # NSCursor.h
 
-NSCursor = ObjCClass('NSCursor')
+NSCursor = ObjCClass("NSCursor")
 
 ######################################################################
 # NSDocument.h
-NSDocument = ObjCClass('NSDocument')
+NSDocument = ObjCClass("NSDocument")
 
 ######################################################################
 # NSDocumentController.h
-NSDocumentController = ObjCClass('NSDocumentController')
-NSDocumentController.declare_class_property('sharedDocumentController')
+NSDocumentController = ObjCClass("NSDocumentController")
+NSDocumentController.declare_class_property("sharedDocumentController")
 
 ######################################################################
 # NSEvent.h
-NSEvent = ObjCClass('NSEvent')
+NSEvent = ObjCClass("NSEvent")
 
 NSEventPhaseNone = 0
 NSEventPhaseBegan = 0x1 << 0
@@ -305,7 +331,7 @@ NSCommandKeyMask = 1 << 20
 NSNumericPadKeyMask = 1 << 21
 NSHelpKeyMask = 1 << 22
 NSFunctionKeyMask = 1 << 23
-NSDeviceIndependentModifierFlagsMask = 0xffff0000
+NSDeviceIndependentModifierFlagsMask = 0xFFFF0000
 
 NSAnyEventMask = 0xFFFFFFFF  # NSUIntegerMax
 
@@ -342,8 +368,8 @@ class NSEventType(IntEnum):
 
 ######################################################################
 # NSFont.h
-NSFont = ObjCClass('NSFont')
-NSFontManager = ObjCClass('NSFontManager')
+NSFont = ObjCClass("NSFont")
+NSFontManager = ObjCClass("NSFontManager")
 
 
 class NSFontMask(Enum):
@@ -370,7 +396,7 @@ NSBackingStoreBuffered = 2
 
 ######################################################################
 # NSGraphicsContext.h
-NSGraphicsContext = ObjCClass('NSGraphicsContext')
+NSGraphicsContext = ObjCClass("NSGraphicsContext")
 
 NSImageInterpolationDefault = 0
 NSImageInterpolationNone = 1
@@ -380,7 +406,7 @@ NSImageInterpolationHigh = 3
 
 ######################################################################
 # NSImage.h
-NSImage = ObjCClass('NSImage')
+NSImage = ObjCClass("NSImage")
 
 
 class NSImageAlignment(Enum):
@@ -400,7 +426,7 @@ NSImageScaleAxesIndependently = 1
 NSImageScaleNone = 2
 NSImageScaleProportionallyUpOrDown = 3
 
-if platform.machine() == 'arm64':
+if platform.machine() == "arm64":
     NSImageResizingModeTile = 1
     NSImageResizingModeStretch = 0
 else:
@@ -424,15 +450,15 @@ NSImageFrameButton = 4
 
 ######################################################################
 # NSImageView.h
-NSImageView = ObjCClass('NSImageView')
+NSImageView = ObjCClass("NSImageView")
 
 ######################################################################
 # NSIndexSet.h
-NSIndexSet = ObjCClass('NSIndexSet')
+NSIndexSet = ObjCClass("NSIndexSet")
 
 ######################################################################
 # NSLayoutConstraint.h
-NSLayoutConstraint = ObjCClass('NSLayoutConstraint')
+NSLayoutConstraint = ObjCClass("NSLayoutConstraint")
 
 NSLayoutRelationLessThanOrEqual = -1
 NSLayoutRelationEqual = 0
@@ -498,8 +524,8 @@ class NSLayoutPriority(Enum):
 
 ######################################################################
 # NSMenu.h
-NSMenu = ObjCClass('NSMenu')
-NSMenuItem = ObjCClass('NSMenuItem')
+NSMenu = ObjCClass("NSMenu")
+NSMenuItem = ObjCClass("NSMenuItem")
 
 ######################################################################
 # NSOpenGL.h
@@ -546,11 +572,11 @@ NSOpenGLCPSwapInterval = 222
 
 ######################################################################
 # NSOpenPanel.h
-NSOpenPanel = ObjCClass('NSOpenPanel')
+NSOpenPanel = ObjCClass("NSOpenPanel")
 
 ######################################################################
 # NSOutlineView.h
-NSOutlineView = ObjCClass('NSOutlineView')
+NSOutlineView = ObjCClass("NSOutlineView")
 
 ######################################################################
 # NSParagraphStyle.h
@@ -572,11 +598,11 @@ NSUtilityWindowMask = 1 << 4
 
 ######################################################################
 # NSPopUpButton.h
-NSPopUpButton = ObjCClass('NSPopUpButton')
+NSPopUpButton = ObjCClass("NSPopUpButton")
 
 ######################################################################
 # NSProgressIndicator.h
-NSProgressIndicator = ObjCClass('NSProgressIndicator')
+NSProgressIndicator = ObjCClass("NSProgressIndicator")
 
 NSProgressIndicatorBarStyle = 0
 NSProgressIndicatorSpinningStyle = 1
@@ -584,7 +610,7 @@ NSProgressIndicatorSpinningStyle = 1
 ######################################################################
 # NSRunLoop.h
 
-NSDefaultRunLoopMode = c_void_p.in_dll(appkit, 'NSDefaultRunLoopMode')
+NSDefaultRunLoopMode = c_void_p.in_dll(appkit, "NSDefaultRunLoopMode")
 
 ######################################################################
 # NSRunningApplication.h
@@ -595,19 +621,19 @@ NSApplicationActivationPolicyProhibited = 2
 
 ######################################################################
 # NSSavePanel.h
-NSSavePanel = ObjCClass('NSSavePanel')
+NSSavePanel = ObjCClass("NSSavePanel")
 
 NSFileHandlingPanelOKButton = 1
 
 ######################################################################
 # NSScreen.h
-NSScreen = ObjCClass('NSScreen')
-NSScreen.declare_class_property('mainScreen')
-NSScreen.declare_property('visibleFrame')
+NSScreen = ObjCClass("NSScreen")
+NSScreen.declare_class_property("mainScreen")
+NSScreen.declare_property("visibleFrame")
 
 ######################################################################
 # NSScrollView.h
-NSScrollView = ObjCClass('NSScrollView')
+NSScrollView = ObjCClass("NSScrollView")
 
 NSScrollElasticityAutomatic = 0
 NSScrollElasticityNone = 1
@@ -615,24 +641,24 @@ NSScrollElasticityAllowed = 2
 
 ######################################################################
 # NSSecureTextField.h
-NSSecureTextField = ObjCClass('NSSecureTextField')
+NSSecureTextField = ObjCClass("NSSecureTextField")
 
 ######################################################################
 # NSSlider.h
-NSSlider = ObjCClass('NSSlider')
-NSSliderCell = ObjCClass('NSSliderCell')
+NSSlider = ObjCClass("NSSlider")
+NSSliderCell = ObjCClass("NSSliderCell")
 
 ######################################################################
 # NSSortDescriptor.h
-NSSortDescriptor = ObjCClass('NSSortDescriptor')
+NSSortDescriptor = ObjCClass("NSSortDescriptor")
 
 ######################################################################
 # NSSplitView.h
-NSSplitView = ObjCClass('NSSplitView')
+NSSplitView = ObjCClass("NSSplitView")
 
 ######################################################################
 # NSStepper.h
-NSStepper = ObjCClass('NSStepper')
+NSStepper = ObjCClass("NSStepper")
 
 ######################################################################
 # NSStringDrawing.h
@@ -646,12 +672,12 @@ NSStringDrawingTruncatesLastVisibleLine = 1 << 5
 
 ######################################################################
 # NSTableCellView.h
-NSTableCellView = ObjCClass('NSTableCellView')
+NSTableCellView = ObjCClass("NSTableCellView")
 
 ######################################################################
 # NSTableView.h
-NSTableColumn = ObjCClass('NSTableColumn')
-NSTableView = ObjCClass('NSTableView')
+NSTableColumn = ObjCClass("NSTableColumn")
+NSTableView = ObjCClass("NSTableView")
 
 
 class NSTableViewColumnAutoresizingStyle(Enum):
@@ -675,13 +701,13 @@ class NSTableViewAnimation(Enum):
 
 ######################################################################
 # NSTabView.h
-NSTabView = ObjCClass('NSTabView')
-NSTabViewItem = ObjCClass('NSTabViewItem')
+NSTabView = ObjCClass("NSTabView")
+NSTabViewItem = ObjCClass("NSTabViewItem")
 
 ######################################################################
 # NSText.h
 NSLeftTextAlignment = 0
-if platform.machine() == 'arm64':
+if platform.machine() == "arm64":
     NSRightTextAlignment = 2
     NSCenterTextAlignment = 1
 else:
@@ -703,11 +729,11 @@ def NSTextAlignment(alignment):
 
 ######################################################################
 # NSTextField.h
-NSTextField = ObjCClass('NSTextField')
-NSTextFieldCell = ObjCClass('NSTextFieldCell')
+NSTextField = ObjCClass("NSTextField")
+NSTextFieldCell = ObjCClass("NSTextFieldCell")
 
-NSTextField.declare_property('editable')
-NSTextField.declare_property('bezeled')
+NSTextField.declare_property("editable")
+NSTextField.declare_property("bezeled")
 
 ######################################################################
 # NSTextFieldCell.h
@@ -717,18 +743,18 @@ NSTextFieldRoundedBezel = 1
 
 ######################################################################
 # NSTextView.h
-NSTextView = ObjCClass('NSTextView')
+NSTextView = ObjCClass("NSTextView")
 
 ######################################################################
 # NSTimer.h
-NSTimer = ObjCClass('NSTimer')
+NSTimer = ObjCClass("NSTimer")
 
 ######################################################################
 # NSToolbar.h
-NSToolbar = ObjCClass('NSToolbar')
-NSToolbarItem = ObjCClass('NSToolbarItem')
+NSToolbar = ObjCClass("NSToolbar")
+NSToolbarItem = ObjCClass("NSToolbarItem")
 
-NSToolbarItem.declare_property('itemIdentifier')
+NSToolbarItem.declare_property("itemIdentifier")
 ######################################################################
 # NSTrackingArea.h
 NSTrackingMouseEnteredAndExited = 0x01
@@ -738,7 +764,7 @@ NSTrackingActiveInActiveApp = 0x40
 
 ######################################################################
 # NSView.h
-NSView = ObjCClass('NSView')
+NSView = ObjCClass("NSView")
 
 NSViewNotSizable = 0
 NSViewMinXMargin = 1
@@ -755,8 +781,8 @@ NSGrooveBorder = 3
 
 ######################################################################
 # NSWindow.h
-NSWindow = ObjCClass('NSWindow')
-NSWindow.declare_property('frame')
+NSWindow = ObjCClass("NSWindow")
+NSWindow.declare_property("frame")
 
 NSBorderlessWindowMask = 0
 NSTitledWindowMask = 1 << 0

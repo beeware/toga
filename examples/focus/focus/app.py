@@ -7,14 +7,12 @@ WIDGETS_GROUP = toga.Group("Widgets", order=2)
 
 
 class ExampleFocusApp(toga.App):
-
     def startup(self):
         # Window class
         #   Main window of the application with title and size
         #   Also make the window non-resizable and non-minimizable.
         self.main_window = toga.MainWindow(
-            title=self.name, size=(800, 500),
-            resizeable=False, minimizable=False
+            title=self.name, size=(800, 500), resizeable=False, minimizable=False
         )
 
         self.a_button = toga.Button("A", on_press=self.on_button_press)
@@ -25,7 +23,7 @@ class ExampleFocusApp(toga.App):
             placeholder="I get focused on startup.",
             style=Pack(height=25, width=200, font_size=10),
             on_gain_focus=self.on_textinput_gain_focus,
-            on_lose_focus=self.on_textinput_lose_focus
+            on_lose_focus=self.on_textinput_lose_focus,
         )
         self.other_text_input = toga.TextInput(
             placeholder="A non-focussed text input.",
@@ -34,17 +32,18 @@ class ExampleFocusApp(toga.App):
         self.switch = toga.Switch("Switch", on_change=self.on_switch_toggle)
         self.info_label = toga.Label(
             "Use keyboard shortcuts to focus on the different widgets",
-            style=Pack(font_size=10)
+            style=Pack(font_size=10),
         )
         # Add the content on the main window
         self.main_window.content = toga.Box(
-            style=Pack(direction=COLUMN), children=[
+            style=Pack(direction=COLUMN),
+            children=[
                 toga.Box(children=[self.a_button, self.b_button, self.c_button]),
                 toga.Box(children=[self.text_input]),
                 toga.Box(children=[self.other_text_input]),
                 toga.Box(children=[self.switch]),
-                toga.Box(children=[self.info_label])
-            ]
+                toga.Box(children=[self.info_label]),
+            ],
         )
 
         self.commands.add(
@@ -52,32 +51,32 @@ class ExampleFocusApp(toga.App):
                 lambda widget: self.focus_with_label(self.a_button),
                 text="Focus on A",
                 shortcut=toga.Key.MOD_1 + "a",
-                group=WIDGETS_GROUP
+                group=WIDGETS_GROUP,
             ),
             toga.Command(
                 lambda widget: self.focus_with_label(self.b_button),
                 text="Focus on B",
                 shortcut=toga.Key.MOD_1 + "b",
-                group=WIDGETS_GROUP
+                group=WIDGETS_GROUP,
             ),
             toga.Command(
                 lambda widget: self.focus_with_label(self.c_button),
                 text="Focus on C",
                 shortcut=toga.Key.MOD_1 + "c",
-                group=WIDGETS_GROUP
+                group=WIDGETS_GROUP,
             ),
             toga.Command(
                 lambda widget: self.text_input.focus(),
                 text="Focus on text input",
                 shortcut=toga.Key.MOD_1 + "t",
-                group=WIDGETS_GROUP
+                group=WIDGETS_GROUP,
             ),
             toga.Command(
                 lambda widget: self.focus_with_label(self.switch),
                 text="Focus on switch",
                 shortcut=toga.Key.MOD_1 + "s",
-                group=WIDGETS_GROUP
-            )
+                group=WIDGETS_GROUP,
+            ),
         )
         # Show the main window
         self.main_window.show()
@@ -94,9 +93,8 @@ class ExampleFocusApp(toga.App):
         self.info_label.text = f"Switch turned {on_off}!"
 
     def on_textinput_gain_focus(self, widget: toga.TextInput):
-        self.info_label.text = (
-            "TextInput has previously had focus "
-            "{} times".format(self.text_input_focus_count)
+        self.info_label.text = "TextInput has previously had focus " "{} times".format(
+            self.text_input_focus_count
         )
 
     def on_textinput_lose_focus(self, widget: toga.TextInput):
@@ -110,10 +108,10 @@ class ExampleFocusApp(toga.App):
 def main():
     # Application class
     #   App name and namespace
-    app = ExampleFocusApp('Focus', 'org.beeware.widgets.focus')
+    app = ExampleFocusApp("Focus", "org.beeware.widgets.focus")
     return app
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app = main()
     app.main_loop()

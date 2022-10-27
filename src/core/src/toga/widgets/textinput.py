@@ -6,7 +6,7 @@ from .base import Widget
 
 
 class TextInput(Widget):
-    """ A widget get user input.
+    """A widget get user input.
 
     Args:
         id (str): An identifier for this widget.
@@ -22,6 +22,7 @@ class TextInput(Widget):
         on_gain_focus (:obj:`callable`): Function to execute when get focused.
         on_lose_focus (:obj:`callable`): Function to execute when lose focus.
     """
+
     MIN_WIDTH = 100
 
     def __init__(
@@ -65,9 +66,7 @@ class TextInput(Widget):
                     "`initial` has been deprecated, use `value`"
                 )
             else:
-                warnings.warn(
-                    "`initial` has been renamed `value`", DeprecationWarning
-                )
+                warnings.warn("`initial` has been renamed `value`", DeprecationWarning)
             value = initial
 
         ##################################################################
@@ -92,7 +91,7 @@ class TextInput(Widget):
 
     @property
     def readonly(self):
-        """ Whether a user can write into the text input
+        """Whether a user can write into the text input.
 
         Returns:
             ``True`` if only read is possible.
@@ -107,7 +106,7 @@ class TextInput(Widget):
 
     @property
     def placeholder(self):
-        """ The placeholder text.
+        """The placeholder text.
 
         Returns:
             The placeholder text as a ``str``.
@@ -117,14 +116,14 @@ class TextInput(Widget):
     @placeholder.setter
     def placeholder(self, value):
         if value is None:
-            self._placeholder = ''
+            self._placeholder = ""
         else:
             self._placeholder = str(value)
         self._impl.set_placeholder(value)
 
     @property
     def value(self):
-        """ The value of the text input field
+        """The value of the text input field.
 
         Returns:
             The current text of the widget as a ``str``.
@@ -134,7 +133,7 @@ class TextInput(Widget):
     @value.setter
     def value(self, value):
         if value is None:
-            v = ''
+            v = ""
         else:
             v = str(value)
         self._impl.set_value(v)
@@ -144,12 +143,12 @@ class TextInput(Widget):
         return self._impl.is_valid()
 
     def clear(self):
-        """ Clears the text of the widget """
-        self.value = ''
+        """Clears the text of the widget."""
+        self.value = ""
 
     @property
     def on_change(self):
-        """The handler to invoke when the value changes
+        """The handler to invoke when the value changes.
 
         Returns:
             The function ``callable`` that is called on a content change.

@@ -13,7 +13,7 @@ from toga_cocoa.libs import (
     NSTableViewColumnAutoresizingStyle,
     at,
     objc_method,
-    objc_property
+    objc_property,
 )
 
 from .base import Widget
@@ -72,7 +72,7 @@ class TogaTable(NSTableView):
         # creates a NSTableCellView from interface-builder template (does not exist)
         # or reuses an existing view which is currently not needed for painting
         # returns None (nil) if both fails
-        identifier = at(f'CellView_{self.interface.id}')
+        identifier = at(f"CellView_{self.interface.id}")
         tcv = self.makeViewWithIdentifier(identifier, owner=self)
 
         if not tcv:  # there is no existing view to reuse so create a new one
@@ -179,13 +179,15 @@ class Table(Widget):
         # conversion from ObjC string to Python String, create the
         # ObjC string once and cache it.
         self.column_identifiers = {}
-        for heading, accessor in zip(self.interface.headings, self.interface._accessors):
+        for heading, accessor in zip(
+            self.interface.headings, self.interface._accessors
+        ):
             self._add_column(heading, accessor)
 
         self.table.delegate = self.table
         self.table.dataSource = self.table
         self.table.target = self.table
-        self.table.doubleAction = SEL('onDoubleClick:')
+        self.table.doubleAction = SEL("onDoubleClick:")
 
         # Embed the table view in the scroll view
         self.native.documentView = self.table
@@ -201,24 +203,21 @@ class Table(Widget):
         index_set = NSIndexSet.indexSetWithIndex(index)
 
         self.table.insertRowsAtIndexes(
-            index_set,
-            withAnimation=NSTableViewAnimation.EffectNone
+            index_set, withAnimation=NSTableViewAnimation.EffectNone
         )
 
     def change(self, item):
         row_index = self.table.rowForView(self._view_for_row[item])
         row_indexes = NSIndexSet.indexSetWithIndex(row_index)
-        column_indexes = NSIndexSet.indexSetWithIndexesInRange(NSRange(0, len(self.columns)))
-        self.table.reloadDataForRowIndexes(
-            row_indexes,
-            columnIndexes=column_indexes
+        column_indexes = NSIndexSet.indexSetWithIndexesInRange(
+            NSRange(0, len(self.columns))
         )
+        self.table.reloadDataForRowIndexes(row_indexes, columnIndexes=column_indexes)
 
     def remove(self, index, item):
         indexes = NSIndexSet.indexSetWithIndex(index)
         self.table.removeRowsAtIndexes(
-            indexes,
-            withAnimation=NSTableViewAnimation.EffectNone
+            indexes, withAnimation=NSTableViewAnimation.EffectNone
         )
 
     def clear(self):
@@ -232,7 +231,9 @@ class Table(Widget):
             current_index = self.table.selectedRowIndexes.firstIndex
             for i in range(self.table.selectedRowIndexes.count):
                 selection.append(self.interface.data[current_index])
-                current_index = self.table.selectedRowIndexes.indexGreaterThanIndex(current_index)
+                current_index = self.table.selectedRowIndexes.indexGreaterThanIndex(
+                    current_index
+                )
 
             return selection
         else:

@@ -4,7 +4,9 @@ import base64
 from travertino.size import at_least
 
 from ..libs.android.view import Gravity, View__MeasureSpec
-from ..libs.android.webkit import ValueCallback, WebView as A_WebView, WebViewClient
+from ..libs.android.webkit import ValueCallback
+from ..libs.android.webkit import WebView as A_WebView
+from ..libs.android.webkit import WebViewClient
 from .base import Widget, align
 
 
@@ -33,15 +35,15 @@ class WebView(Widget):
 
     def set_on_key_down(self, handler):
         # Android isn't a platform that usually has a keyboard attached, so this is unimplemented for now.
-        self.interface.factory.not_implemented('WebView.set_on_key_down()')
+        self.interface.factory.not_implemented("WebView.set_on_key_down()")
 
     def set_on_webview_load(self, handler):
         # This requires subclassing WebViewClient, which is not yet possible with rubicon-java.
-        self.interface.factory.not_implemented('WebView.set_on_webview_load()')
+        self.interface.factory.not_implemented("WebView.set_on_webview_load()")
 
     def get_dom(self):
         # Android has no straightforward way to get the DOM from the browser synchronously.
-        self.interface.factory.not_implemented('WebView.get_dom()')
+        self.interface.factory.not_implemented("WebView.get_dom()")
 
     def get_url(self):
         return self.native.getUrl()
@@ -53,10 +55,9 @@ class WebView(Widget):
     def set_content(self, root_url, content):
         # Android WebView lacks an underlying set_content() primitive, so we navigate to
         # a data URL. This means we ignore the root_url parameter.
-        data_url = (
-            "data:text/html; charset=utf-8; base64," +
-            base64.b64encode(content.encode('utf-8')).decode('ascii')
-        )
+        data_url = "data:text/html; charset=utf-8; base64," + base64.b64encode(
+            content.encode("utf-8")
+        ).decode("ascii")
         self.set_url(data_url)
 
     def set_user_agent(self, value):
@@ -65,7 +66,9 @@ class WebView(Widget):
 
     async def evaluate_javascript(self, javascript):
         js_value = asyncio.Future()
-        self.native.evaluateJavascript(str(javascript), ReceiveString(js_value.set_result))
+        self.native.evaluateJavascript(
+            str(javascript), ReceiveString(js_value.set_result)
+        )
         return await js_value
 
     def invoke_javascript(self, javascript):

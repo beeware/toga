@@ -5,7 +5,7 @@ from toga_iOS.libs import (
     NSTextAlignment,
     UIControlEventEditingChanged,
     UITextBorderStyle,
-    UITextField
+    UITextField,
 )
 from toga_iOS.widgets.base import Widget
 
@@ -31,8 +31,8 @@ class TextInput(Widget):
 
         self.native.addTarget(
             self.native,
-            action=SEL('textFieldDidChange:'),
-            forControlEvents=UIControlEventEditingChanged
+            action=SEL("textFieldDidChange:"),
+            forControlEvents=UIControlEventEditingChanged,
         )
 
         # Add the layout constraints

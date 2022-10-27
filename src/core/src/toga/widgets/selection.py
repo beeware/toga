@@ -6,7 +6,7 @@ from .base import Widget
 
 
 class Selection(Widget):
-    """ The Selection widget lets you pick from a defined selection of options.
+    """The Selection widget lets you pick from a defined selection of options.
 
     Args:
         id (str): An identifier for this widget.
@@ -14,6 +14,7 @@ class Selection(Widget):
             If no style is provided then a new one will be created for the widget.
         items (``list`` of ``str``): The items for the selection.
     """
+
     MIN_WIDTH = 100
 
     def __init__(
@@ -51,7 +52,7 @@ class Selection(Widget):
 
     @property
     def items(self):
-        """ The list of items.
+        """The list of items.
 
         Returns:
              The ``list`` of ``str`` of all selectable items.
@@ -68,7 +69,7 @@ class Selection(Widget):
 
     @property
     def value(self):
-        """ The value of the currently selected item.
+        """The value of the currently selected item.
 
         Returns:
             The selected item as a ``str``.
@@ -84,8 +85,7 @@ class Selection(Widget):
 
     @property
     def on_select(self):
-        """
-        The callable function for when a node on the Tree is selected
+        """The callable function for when a node on the Tree is selected.
 
         :rtype: ``callable``
         """
@@ -93,8 +93,7 @@ class Selection(Widget):
 
     @on_select.setter
     def on_select(self, handler):
-        """
-        Set the function to be executed on node selection
+        """Set the function to be executed on node selection.
 
         :param handler:     callback function
         :type handler:      ``callable``

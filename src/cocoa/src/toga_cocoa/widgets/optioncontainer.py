@@ -22,8 +22,7 @@ class TogaTabViewDelegate(NSObject):
         if self.interface.on_select:
             index = view.indexOfTabViewItem(view.selectedTabViewItem)
             self.interface.on_select(
-                self.interface,
-                option=self.interface.content[index]
+                self.interface, option=self.interface.content[index]
             )
 
 
@@ -45,7 +44,7 @@ class OptionContainer(Widget):
         self.add_constraints()
 
     def add_content(self, index, text, widget):
-        """ Adds a new option to the option container.
+        """Adds a new option to the option container.
 
         Args:
             index: The index in the tab list where the tab should be added.
@@ -73,7 +72,7 @@ class OptionContainer(Widget):
         if tabview == self.native.selectedTabViewItem:
             # Don't allow removal of a selected tab
             raise self.interface.OptionException(
-                'Currently selected option cannot be removed'
+                "Currently selected option cannot be removed"
             )
 
         self.native.removeTabViewItem(tabview)
@@ -92,7 +91,7 @@ class OptionContainer(Widget):
             if tabview == self.native.selectedTabViewItem:
                 # Don't allow disable a selected tab
                 raise self.interface.OptionException(
-                    'Currently selected option cannot be disabled'
+                    "Currently selected option cannot be disabled"
                 )
 
             self._disabled_tabs.add(index)

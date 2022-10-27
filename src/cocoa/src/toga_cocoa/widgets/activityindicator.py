@@ -4,7 +4,6 @@ from .base import Widget
 
 
 class ActivityIndicator(Widget):
-
     def create(self):
         self.native = NSProgressIndicator.new()
         self.native.style = NSProgressIndicatorSpinningStyle

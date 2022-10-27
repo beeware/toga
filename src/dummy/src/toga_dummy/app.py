@@ -5,7 +5,7 @@ from .window import Window
 class MainWindow(Window):
     @not_required
     def toga_on_close(self):
-        self.action('handle MainWindow on_close')
+        self.action("handle MainWindow on_close")
 
 
 class App(LoggedObject):
@@ -14,51 +14,51 @@ class App(LoggedObject):
         self.interface = interface
 
     def create(self):
-        self._action('create')
+        self._action("create")
 
-    @not_required_on('mobile')
+    @not_required_on("mobile")
     def create_menus(self):
-        self._action('create menus')
+        self._action("create menus")
 
     def main_loop(self):
-        self._action('main loop')
+        self._action("main loop")
 
     def set_main_window(self, window):
-        self._set_value('main_window', window)
+        self._set_value("main_window", window)
 
     def show_about_dialog(self):
-        self._action('show_about_dialog')
+        self._action("show_about_dialog")
 
     def exit(self):
-        self._action('exit')
+        self._action("exit")
 
     def set_on_exit(self, value):
-        self._set_value('on_exit', value)
+        self._set_value("on_exit", value)
 
-    @not_required_on('mobile')
+    @not_required_on("mobile")
     def current_window(self):
-        self._action('current_window')
+        self._action("current_window")
 
-    @not_required_on('mobile')
+    @not_required_on("mobile")
     def enter_full_screen(self, windows):
-        self._action('enter_full_screen', windows=windows)
+        self._action("enter_full_screen", windows=windows)
 
-    @not_required_on('mobile')
+    @not_required_on("mobile")
     def exit_full_screen(self, windows):
-        self._action('exit_full_screen', windows=windows)
+        self._action("exit_full_screen", windows=windows)
 
-    @not_required_on('mobile')
+    @not_required_on("mobile")
     def show_cursor(self):
-        self._action('show_cursor')
+        self._action("show_cursor")
 
-    @not_required_on('mobile')
+    @not_required_on("mobile")
     def hide_cursor(self):
-        self._action('hide_cursor')
+        self._action("hide_cursor")
 
     def add_background_task(self, handler):
-        self._action('add_background_task', handler=handler)
+        self._action("add_background_task", handler=handler)
 
 
-@not_required_on('mobile', 'web')
+@not_required_on("mobile", "web")
 class DocumentApp(App):
     pass

@@ -26,8 +26,8 @@ class Button(Widget):
     def __init__(
         self,
         text=NOT_PROVIDED,  # BACKWARDS COMPATIBILITY: The default value
-                            # can be removed when the handling for
-                            # `label` is removed
+        # can be removed when the handling for
+        # `label` is removed
         id=None,
         style=None,
         on_press=None,
@@ -71,7 +71,9 @@ class Button(Widget):
         elif text is NOT_PROVIDED:
             # This would be raised by Python itself; however, we need to use a placeholder
             # value as part of the migration from text->value.
-            raise TypeError("Button.__init__ missing 1 required positional argument: 'text'")
+            raise TypeError(
+                "Button.__init__ missing 1 required positional argument: 'text'"
+            )
 
         ##################################################################
         # End backwards compatibility.
@@ -93,7 +95,7 @@ class Button(Widget):
     @text.setter
     def text(self, value):
         if value is None:
-            self._text = ''
+            self._text = ""
         else:
             self._text = str(value)
         self._impl.set_text(value)
@@ -124,24 +126,21 @@ class Button(Widget):
     # label replaced with text
     @property
     def label(self):
-        """ Button text.
+        """Button text.
 
         **DEPRECATED: renamed as text**
 
         Returns:
             The button text as a ``str``
         """
-        warnings.warn(
-            "Button.label has been renamed Button.text", DeprecationWarning
-        )
+        warnings.warn("Button.label has been renamed Button.text", DeprecationWarning)
         return self.text
 
     @label.setter
     def label(self, label):
-        warnings.warn(
-            "Button.label has been renamed Button.text", DeprecationWarning
-        )
+        warnings.warn("Button.label has been renamed Button.text", DeprecationWarning)
         self.text = label
+
     ######################################################################
     # End backwards compatibility.
     ######################################################################

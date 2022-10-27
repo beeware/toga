@@ -9,12 +9,12 @@ class AppTests(TestCase):
     def setUp(self):
         super().setUp()
 
-        self.name = 'Test App'
-        self.app_id = 'org.beeware.test-app'
-        self.id = 'dom-id'
+        self.name = "Test App"
+        self.app_id = "org.beeware.test-app"
+        self.id = "dom-id"
 
         self.content = MagicMock()
-        self.content_id = 'content-id'
+        self.content_id = "content-id"
         self.content.id = self.content_id
 
         self.started = False
@@ -27,7 +27,7 @@ class AppTests(TestCase):
             formal_name=self.name,
             app_id=self.app_id,
             startup=test_startup_function,
-            id=self.id
+            id=self.id,
         )
 
     def test_app_name(self):
@@ -35,7 +35,7 @@ class AppTests(TestCase):
 
     def test_app_icon(self):
         # App icon will default to a name autodetected from the running module
-        self.assertEqual(self.app.icon.path, 'resources/toga')
+        self.assertEqual(self.app.icon.path, "resources/toga")
 
         # This icon will not be bound, since app icons are bound by the
         # platform layer.
@@ -65,7 +65,7 @@ class AppTests(TestCase):
 
     def test_app_main_loop_call_impl_main_loop(self):
         self.app.main_loop()
-        self.assertActionPerformed(self.app, 'main loop')
+        self.assertActionPerformed(self.app, "main loop")
 
     def test_app_startup(self):
         self.app.startup()
@@ -73,7 +73,7 @@ class AppTests(TestCase):
         self.assertTrue(self.started)
         self.assertEqual(self.app.main_window.content, self.content)
         self.assertEqual(self.app.main_window.app, self.app)
-        self.assertActionPerformed(self.app.main_window, 'show')
+        self.assertActionPerformed(self.app.main_window, "show")
 
     def test_is_full_screen(self):
         self.assertFalse(self.app.is_full_screen)
@@ -90,11 +90,12 @@ class AppTests(TestCase):
     def test_app_exit(self):
         def exit_handler(widget):
             return True
+
         self.app.on_exit = exit_handler
         self.assertIs(self.app.on_exit._raw, exit_handler)
         self.app.exit()
 
-        self.assertActionPerformed(self.app, 'exit')
+        self.assertActionPerformed(self.app, "exit")
 
     def test_full_screen(self):
         # set full screen and exit full screen
@@ -118,7 +119,7 @@ class AppTests(TestCase):
         self.assertEqual(len(self.app.windows), 1)
         self.assertIs(test_window.app, self.app)
 
-        not_a_window = 'not_a_window'
+        not_a_window = "not_a_window"
         with self.assertRaises(TypeError):
             self.app.windows += not_a_window
 
@@ -129,7 +130,7 @@ class AppTests(TestCase):
         self.app.windows -= test_window
         self.assertEqual(len(self.app.windows), 0)
 
-        not_a_window = 'not_a_window'
+        not_a_window = "not_a_window"
         with self.assertRaises(TypeError):
             self.app.windows -= not_a_window
 
@@ -157,29 +158,24 @@ class AppTests(TestCase):
             self.assertIn(window, test_windows)
 
     def test_add_background_task(self):
-
         async def handler(sender):
             pass
 
         self.app.add_background_task(handler)
-        self.assertActionPerformed(self.app, 'add_background_task')
+        self.assertActionPerformed(self.app, "add_background_task")
 
 
 class DocumentAppTests(TestCase):
     def setUp(self):
         super().setUp()
 
-        self.name = 'Test Document App'
-        self.app_id = 'beeware.org'
-        self.id = 'id'
+        self.name = "Test Document App"
+        self.app_id = "beeware.org"
+        self.id = "id"
 
         self.content = MagicMock()
 
-        self.app = toga.DocumentApp(
-            self.name,
-            self.app_id,
-            id=self.id
-        )
+        self.app = toga.DocumentApp(self.name, self.app_id, id=self.id)
 
     def test_app_documents(self):
         self.assertEqual(self.app.documents, [])

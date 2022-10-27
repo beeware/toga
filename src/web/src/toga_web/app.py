@@ -84,7 +84,7 @@ class App:
 
                 menu_item = create_element(
                     "a",
-                    classes=["dropdown-item"] + ([] if cmd.enabled else ['disabled']),
+                    classes=["dropdown-item"] + ([] if cmd.enabled else ["disabled"]),
                     content=cmd.text,
                 )
                 menu_item.onclick = cmd.action

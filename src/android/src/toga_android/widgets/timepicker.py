@@ -1,9 +1,9 @@
 from datetime import time
 
 from ..libs.android import R__drawable
+from ..libs.android.widget import TimePickerDialog
 from ..libs.android.widget import (
-    TimePickerDialog,
-    TimePickerDialog__OnTimeSetListener as OnTimeSetListener
+    TimePickerDialog__OnTimeSetListener as OnTimeSetListener,
 )
 from .internal.pickers import PickerBase
 

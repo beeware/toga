@@ -12,7 +12,7 @@ from toga_iOS.libs import (
     UITableViewCellStyleSubtitle,
     UITableViewController,
     UITableViewRowAnimationLeft,
-    UITableViewScrollPositionNone
+    UITableViewScrollPositionNone,
 )
 from toga_iOS.widgets.base import Widget
 
@@ -34,11 +34,13 @@ class TogaTableViewController(UITableViewController):
     def tableView_cellForRowAtIndexPath_(self, tableView, indexPath):
         cell = tableView.dequeueReusableCellWithIdentifier_("row")
         if cell is None:
-            cell = UITableViewCell.alloc().initWithStyle_reuseIdentifier_(UITableViewCellStyleSubtitle, "row")
+            cell = UITableViewCell.alloc().initWithStyle_reuseIdentifier_(
+                UITableViewCellStyleSubtitle, "row"
+            )
         value = self.interface.data[indexPath.item]
 
-        cell.textLabel.text = str(getattr(value, 'title', ''))
-        cell.detailTextLabel.text = str(getattr(value, 'subtitle', ''))
+        cell.textLabel.text = str(getattr(value, "title", ""))
+        cell.detailTextLabel.text = str(getattr(value, "subtitle", ""))
 
         # If the value has an icon attribute, get the _impl.
         # Icons are deferred resources, so we bind to factory.
@@ -50,7 +52,9 @@ class TogaTableViewController(UITableViewController):
         return cell
 
     @objc_method
-    def tableView_commitEditingStyle_forRowAtIndexPath_(self, tableView, editingStyle: int, indexPath):
+    def tableView_commitEditingStyle_forRowAtIndexPath_(
+        self, tableView, editingStyle: int, indexPath
+    ):
         if editingStyle == UITableViewCellEditingStyleDelete:
             item = self.interface.data[indexPath.row]
             if editingStyle == UITableViewCellEditingStyleDelete:
@@ -59,7 +63,9 @@ class TogaTableViewController(UITableViewController):
 
                 tableView.beginUpdates()
                 self.interface.data.remove(item)
-                tableView.deleteRowsAtIndexPaths_withRowAnimation_([indexPath], UITableViewRowAnimationLeft)
+                tableView.deleteRowsAtIndexPaths_withRowAnimation_(
+                    [indexPath], UITableViewRowAnimationLeft
+                )
                 tableView.endUpdates()
             elif editingStyle == UITableViewCellEditingStyleInsert:
                 pass
@@ -103,8 +109,8 @@ class DetailedList(Widget):
             self.controller.refreshControl = UIRefreshControl.alloc().init()
             self.controller.refreshControl.addTarget(
                 self.controller,
-                action=SEL('refresh'),
-                forControlEvents=UIControlEventValueChanged
+                action=SEL("refresh"),
+                forControlEvents=UIControlEventValueChanged,
             )
         else:
             if self.controller.refreshControl:
@@ -145,5 +151,5 @@ class DetailedList(Widget):
         self.native.scrollToRowAtIndexPath(
             NSIndexPath.indexPathForRow(row, inSection=0),
             atScrollPosition=UITableViewScrollPositionNone,
-            animated=False
+            animated=False,
         )

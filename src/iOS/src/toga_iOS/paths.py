@@ -24,20 +24,19 @@ class Paths:
 
     @property
     def data(self):
-        return Path.home() / 'Library' / 'Application Support' / App.app.app_id
+        return Path.home() / "Library" / "Application Support" / App.app.app_id
 
     @property
     def cache(self):
-        return Path.home() / 'Library' / 'Caches' / App.app.app_id
+        return Path.home() / "Library" / "Caches" / App.app.app_id
 
     @property
     def logs(self):
-        return Path.home() / 'Library' / 'Logs' / App.app.app_id
+        return Path.home() / "Library" / "Logs" / App.app.app_id
 
     @property
     def toga(self):
-        """Return a path to a Toga resources
-        """
+        """Return a path to a Toga resources."""
         return Path(toga.__file__).parent
 
 

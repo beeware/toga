@@ -13,4 +13,4 @@ class Document:
         return self._app
 
     def read(self):
-        raise NotImplementedError('Document class must define read()')
+        raise NotImplementedError("Document class must define read()")

@@ -9,8 +9,8 @@ class Image(LoggedObject):
         self.url = url
 
         if self.path:
-            self._action('load image file', path=path)
+            self._action("load image file", path=path)
         elif self.url:
-            self._action('load image url', url=url)
+            self._action("load image url", url=url)
         elif data:
-            self._action('load image data', data=data)
+            self._action("load image data", data=data)

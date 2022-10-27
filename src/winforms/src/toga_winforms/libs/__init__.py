@@ -1,15 +1,12 @@
-from .extensions import (  # noqa: F401
-    CoreWebView2CreationProperties,
-    WebView2,
-    WebView2RuntimeNotFoundException
-)
+from .extensions import CoreWebView2CreationProperties  # noqa: F401
+from .extensions import WebView2, WebView2RuntimeNotFoundException  # noqa: F401
 from .fonts import HorizontalTextAlignment, TextAlignment, win_font_family  # noqa: F401
+from .winforms import Drawing2D  # noqa: F401
 from .winforms import (  # noqa: F401
     Action,
     Bitmap,
     Color,
     Convert,
-    Drawing2D,
     FillMode,
     FontFamily,
     FontStyle,
@@ -41,5 +38,5 @@ from .winforms import (  # noqa: F401
     WinImage,
     shcore,
     user32,
-    win_version
+    win_version,
 )

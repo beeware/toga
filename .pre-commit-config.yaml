@@ -10,31 +10,28 @@ repos:
       - id: end-of-file-fixer
       - id: trailing-whitespace
   - repo: https://github.com/PyCQA/isort
-    rev: 12cc5fbd67eebf92eb2213b03c07b138ae1fb448  # For split_on_trailing_comma.
+    rev: 5.10.1
     hooks:
       - id: isort
         additional_dependencies: [toml]
-        args: ["--settings", "setup.cfg"]  # https://github.com/PyCQA/isort/issues/1872
   - repo: https://github.com/asottile/pyupgrade
     rev: v2.38.2
     hooks:
       - id: pyupgrade
         args: [--py37-plus]
-  # Do not enable until we can trust it not to break RST markup
-  # (https://github.com/PyCQA/docformatter/issues/124).
-  # - repo: https://github.com/myint/docformatter
-  #   rev: v1.5.0
-  #   hooks:
-  #   - id: docformatter
-  #     args: [--in-place]
-  # Do not enable until after #1534 is merged.
-  # - repo: https://github.com/psf/black
-  #   rev: 22.8.0
-  #   hooks:
-  #   - id: black
-  #     language_version: python3
+  - repo: https://github.com/myint/docformatter
+    rev: v1.5.0
+    hooks:
+    - id: docformatter
+      args: [--in-place]
+  - repo: https://github.com/psf/black
+    rev: 22.8.0
+    hooks:
+    - id: black
+      language_version: python3
   - repo: https://github.com/PyCQA/flake8
     rev: 5.0.4
     hooks:
       - id: flake8
-        exclude: ^docs/conf.py$
+        additional_dependencies:
+          - flake8-black>=0.1.1

@@ -15,12 +15,12 @@ class BeelizaApp(toga.App):
         self.chat.data.append(
             # User's avatar is from http://avatars.adorable.io
             # using user@beeware.org
-            icon=toga.Icon('resources/user.png'),
-            title='You',
+            icon=toga.Icon("resources/user.png"),
+            title="You",
             subtitle=input_text,
         )
         # Clear the current input, ready for more input.
-        self.text_input.value = ''
+        self.text_input.value = ""
         # Scroll so the most recent entry is visible.
         self.chat.scroll_to_bottom()
 
@@ -31,8 +31,8 @@ class BeelizaApp(toga.App):
         response = self.partner.respond(input_text)
         # Display the response
         self.chat.data.append(
-            icon=toga.Icon('resources/brutus.png'),
-            title='Brutus',
+            icon=toga.Icon("resources/brutus.png"),
+            title="Brutus",
             subtitle=response,
         )
 
@@ -48,29 +48,26 @@ class BeelizaApp(toga.App):
         self.chat = toga.DetailedList(
             data=[
                 {
-                    'icon': toga.Icon('resources/brutus.png'),
-                    'title': 'Brutus',
-                    'subtitle': 'Hello. How are you feeling today?',
+                    "icon": toga.Icon("resources/brutus.png"),
+                    "title": "Brutus",
+                    "subtitle": "Hello. How are you feeling today?",
                 }
             ],
-            style=Pack(flex=1)
+            style=Pack(flex=1),
         )
 
         # Buttons
         self.text_input = toga.TextInput(style=Pack(flex=1, padding=5))
-        send_button = toga.Button('Send', on_press=self.handle_input, style=Pack(padding=5))
+        send_button = toga.Button(
+            "Send", on_press=self.handle_input, style=Pack(padding=5)
+        )
         input_box = toga.Box(
-            children=[
-                self.text_input,
-                send_button
-            ],
-            style=Pack(direction=ROW)
+            children=[self.text_input, send_button], style=Pack(direction=ROW)
         )
 
         # Outermost box
         outer_box = toga.Box(
-            children=[self.chat, input_box],
-            style=Pack(direction=COLUMN)
+            children=[self.chat, input_box], style=Pack(direction=COLUMN)
         )
 
         # Add the content on the main window
@@ -81,9 +78,9 @@ class BeelizaApp(toga.App):
 
 
 def main():
-    return BeelizaApp('Beeliza', 'org.beeware.beeliza')
+    return BeelizaApp("Beeliza", "org.beeware.beeliza")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app = main()
     app.main_loop()

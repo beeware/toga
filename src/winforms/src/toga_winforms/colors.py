@@ -2,9 +2,7 @@ from travertino.colors import NAMED_COLOR, TRANSPARENT
 
 from .libs import Color
 
-CACHE = {
-    TRANSPARENT: Color.Empty
-}
+CACHE = {TRANSPARENT: Color.Empty}
 
 
 def native_color(c):
@@ -14,10 +12,7 @@ def native_color(c):
         if isinstance(c, str):
             c = NAMED_COLOR[c]
         color = Color.FromArgb(
-            int(c.rgba.a * 255),
-            int(c.rgba.r),
-            int(c.rgba.g),
-            int(c.rgba.b)
+            int(c.rgba.a * 255), int(c.rgba.r), int(c.rgba.g), int(c.rgba.b)
         )
         CACHE[c] = color
 

@@ -2,11 +2,11 @@ import warnings
 
 # Use the Travertino font definitions as-is
 from travertino import constants  # noqa: F401
+from travertino.constants import ITALIC  # noqa: F401
 from travertino.constants import (  # noqa: F401
     BOLD,
     CURSIVE,
     FANTASY,
-    ITALIC,
     MESSAGE,
     MONOSPACE,
     NORMAL,
@@ -16,8 +16,8 @@ from travertino.constants import (  # noqa: F401
     SMALL_CAPS,
     SYSTEM,
 )
-from travertino.fonts import font  # noqa: F401
 from travertino.fonts import Font as BaseFont  # noqa: F401
+from travertino.fonts import font  # noqa: F401
 
 from toga.platform import get_platform_factory
 
@@ -55,10 +55,9 @@ class Font(BaseFont):
 
     @staticmethod
     def register(family, path, weight=NORMAL, style=NORMAL, variant=NORMAL):
-        """
-        Registers a file-based font with it's family name, style, variant and
-        weight. When invalid values for style, variant or weight are passed,
-        NORMAL will be used.
+        """Registers a file-based font with it's family name, style, variant
+        and weight. When invalid values for style, variant or weight are
+        passed, NORMAL will be used.
 
         When a font file includes multiple font weight/style/etc, each variant
         must be registerered separately:
@@ -85,14 +84,16 @@ class Font(BaseFont):
             variant (str): The font variant: Font.NORMAL (default) or a value
                 from Font.FONT_VARIANTS
         """
-        font_key = Font.registered_font_key(family, weight=weight, style=style, variant=variant)
+        font_key = Font.registered_font_key(
+            family, weight=weight, style=style, variant=variant
+        )
         _REGISTERED_FONT_CACHE[font_key] = path
 
     @staticmethod
     def registered_font_key(family, weight, style, variant):
-        """
-        Creates a key for storing a registered font in the font cache.\n
-        If weight, style or variant contain an invalid value, Font.NORMAL is used instead
+        """Creates a key for storing a registered font in the font cache.\n If
+        weight, style or variant contain an invalid value, Font.NORMAL is used
+        instead.
 
         Args:
             family (str):  The font family name

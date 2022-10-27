@@ -18,7 +18,7 @@ class MultilineTextInput(Widget):
         self.textview.set_wrap_mode(Gtk.WrapMode.WORD_CHAR)
         self.native.add(self.textview)
 
-        self._placeholder = ''
+        self._placeholder = ""
         self.textview.connect("focus-in-event", self.gtk_on_focus_in)
         self.textview.connect("focus-out-event", self.gtk_on_focus_out)
         self.tag_placholder = self.buffer.create_tag("placeholder", foreground="gray")
@@ -27,23 +27,29 @@ class MultilineTextInput(Widget):
         self.buffer.set_text(value)
 
     def get_value(self):
-        return self.buffer.get_text(self.buffer.get_start_iter(), self.buffer.get_end_iter(), True)
+        return self.buffer.get_text(
+            self.buffer.get_start_iter(), self.buffer.get_end_iter(), True
+        )
 
     def set_readonly(self, value):
-        self.textview.set_property('editable', not value)
-        self.textview.set_property('cursor-visible', not value)
+        self.textview.set_property("editable", not value)
+        self.textview.set_property("cursor-visible", not value)
 
     def set_placeholder(self, value):
-        """ Set the placeholder text of the widget.
-        GTK.TextView does not have a placeholder option by default so we have to create one.
-        We do this with the two helper functions `on_focus_in` and `on_focus_out`.
+        """Set the placeholder text of the widget.
+
+        GTK.TextView does not have a placeholder option by default so we
+        have to create one. We do this with the two helper functions
+        `on_focus_in` and `on_focus_out`.
         """
         if self.get_value() == self._placeholder:
             self._placeholder = value
             self.buffer.set_text(self.interface.value)
-            self.buffer.apply_tag(self.tag_placholder,
-                                  self.buffer.get_start_iter(),
-                                  self.buffer.get_end_iter())  # make the placeholder text gray.
+            self.buffer.apply_tag(
+                self.tag_placholder,
+                self.buffer.get_start_iter(),
+                self.buffer.get_end_iter(),
+            )  # make the placeholder text gray.
         else:
             self._placeholder = value
 
@@ -55,9 +61,11 @@ class MultilineTextInput(Widget):
     def gtk_on_focus_out(self, *args):
         if self.get_value() == "":
             self.buffer.set_text(self.interface.placeholder)
-            self.buffer.apply_tag(self.tag_placholder,
-                                  self.buffer.get_start_iter(),
-                                  self.buffer.get_end_iter())  # make the placeholder text gray.
+            self.buffer.apply_tag(
+                self.tag_placholder,
+                self.buffer.get_start_iter(),
+                self.buffer.get_end_iter(),
+            )  # make the placeholder text gray.
         return False
 
     def rehint(self):
@@ -65,4 +73,4 @@ class MultilineTextInput(Widget):
         self.interface.intrinsic.height = at_least(self.interface.MIN_HEIGHT)
 
     def set_on_change(self, handler):
-        self.interface.factory.not_implemented('MultilineTextInput.set_on_change()')
+        self.interface.factory.not_implemented("MultilineTextInput.set_on_change()")

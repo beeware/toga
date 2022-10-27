@@ -9,7 +9,9 @@ class Widget:
 
         self.create()
 
-    def _create_native_widget(self, tag, classes=None, content=None, children=None, **properties):
+    def _create_native_widget(
+        self, tag, classes=None, content=None, children=None, **properties
+    ):
         """Create a DOM element representing a native widget.
 
         The ID and style of the widget will be automatically set;

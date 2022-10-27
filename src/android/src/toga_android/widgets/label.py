@@ -40,9 +40,7 @@ class Label(Widget):
         # Ask it how wide it would be if it had to be the minimum height.
         self.native.measure(
             View__MeasureSpec.UNSPECIFIED,
-            View__MeasureSpec.makeMeasureSpec(
-                min_height, View__MeasureSpec.AT_MOST
-            ),
+            View__MeasureSpec.makeMeasureSpec(min_height, View__MeasureSpec.AT_MOST),
         )
         self.interface.intrinsic.width = at_least(self.native.getMeasuredWidth())
 

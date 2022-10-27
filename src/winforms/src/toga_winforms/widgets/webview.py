@@ -15,7 +15,7 @@ from toga_winforms.libs import (
     Uri,
     WebView2,
     WebView2RuntimeNotFoundException,
-    WinForms
+    WinForms,
 )
 
 from .base import Widget
@@ -31,7 +31,9 @@ class TogaWebBrowser(WebView2):
 class WebView(Widget):
     def create(self):
         self.native = TogaWebBrowser(self.interface)
-        self.native.CoreWebView2InitializationCompleted += self.winforms_initialization_completed
+        self.native.CoreWebView2InitializationCompleted += (
+            self.winforms_initialization_completed
+        )
         self.native.NavigationCompleted += self.winforms_navigation_completed
         self.native.KeyDown += self.winforms_key_down
 
@@ -74,8 +76,7 @@ class WebView(Widget):
                 traceback.print_exc()
         else:
             if isinstance(
-                args.InitializationException,
-                WebView2RuntimeNotFoundException
+                args.InitializationException, WebView2RuntimeNotFoundException
             ):
                 print("Could not find the Microsoft Edge WebView2 Runtime.")
                 if self.native._edge_runtime_available is None:
@@ -92,7 +93,9 @@ class WebView(Widget):
                         WinForms.MessageBoxButtons.OK,
                         WinForms.MessageBoxIcon.Error,
                     )
-                    webbrowser.open("https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download-section")
+                    webbrowser.open(
+                        "https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download-section"
+                    )
             else:
                 print(args.InitializationException)
 
@@ -122,10 +125,17 @@ class WebView(Widget):
             self.native.CoreWebView2.NavigateToString(content)
 
     def get_dom(self):
-        self.interface.factory.not_implemented('WebView.get_dom()')
+        self.interface.factory.not_implemented("WebView.get_dom()")
 
     def set_user_agent(self, value):
-        user_agent = value if value else "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.85 Safari/537.36 Edg/90.0.818.46"  # NOQA
+        user_agent = (
+            value
+            if value
+            else (
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                "(KHTML, like Gecko) Chrome/90.0.4430.85 Safari/537.36 Edg/90.0.818.46"
+            )
+        )
         if self.native.CoreWebView2:
             self.native.CoreWebView2.Settings.UserAgent = user_agent
 
@@ -135,12 +145,12 @@ class WebView(Widget):
 
         task_scheduler = TaskScheduler.FromCurrentSynchronizationContext()
         try:
+
             def callback(task):
                 future.set_result(task.Result)
 
             self.native.ExecuteScriptAsync(javascript).ContinueWith(
-                Action[Task[String]](callback),
-                task_scheduler
+                Action[Task[String]](callback), task_scheduler
             )
         except Exception:
             traceback.print_exc()

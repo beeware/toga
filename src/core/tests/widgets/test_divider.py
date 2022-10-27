@@ -9,11 +9,11 @@ class DividerTests(TestCase):
 
     def test_widget_created(self):
         self.assertEqual(self.divider._impl.interface, self.divider)
-        self.assertActionPerformed(self.divider, 'create Divider')
+        self.assertActionPerformed(self.divider, "create Divider")
 
     def test_update_direction(self):
         new_direction = toga.Divider.HORIZONTAL
         self.divider.direction = new_direction
         self.assertEqual(self.divider.direction, new_direction)
-        self.assertValueSet(self.divider, 'direction', new_direction)
-        self.assertActionPerformed(self.divider, 'rehint Divider')
+        self.assertValueSet(self.divider, "direction", new_direction)
+        self.assertActionPerformed(self.divider, "rehint Divider")

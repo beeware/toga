@@ -3,7 +3,6 @@ from toga_iOS.widgets.base import Widget
 
 
 class ImageView(Widget):
-
     def create(self):
         self.native = UIImageView.alloc().init()
         self.native.contentMode = UIViewContentMode.ScaleAspectFit

@@ -8,7 +8,8 @@ from .base import Widget
 
 
 class Table(Widget):
-    """ A Table Widget allows the display of data in the form of columns and rows.
+    """A Table Widget allows the display of data in the form of columns and
+    rows.
 
     Args:
         headings (``list`` of ``str``): The list of headings for the table.
@@ -45,6 +46,7 @@ class Table(Widget):
 
         >>> data = ['item 1', 'item 2', 'item 3']
     """
+
     MIN_WIDTH = 100
     MIN_HEIGHT = 100
 
@@ -79,9 +81,11 @@ class Table(Widget):
         self._on_double_click = None
         self._data = None
         if missing_value is None:
-            print("WARNING: Using empty string for missing value in data. "
-                  "Define a 'missing_value' on the table to silence this message")
-        self._missing_value = missing_value or ''
+            print(
+                "WARNING: Using empty string for missing value in data. "
+                "Define a 'missing_value' on the table to silence this message"
+            )
+        self._missing_value = missing_value or ""
 
         self._impl = self.factory.Table(interface=self)
         self.data = data
@@ -91,8 +95,8 @@ class Table(Widget):
 
     @property
     def data(self):
-        """ The data source of the widget. It accepts table data
-        in the form of ``list``, ``tuple``, or :obj:`ListSource`
+        """The data source of the widget. It accepts table data in the form of
+        ``list``, ``tuple``, or :obj:`ListSource`
 
         Returns:
             Returns a (:obj:`ListSource`).
@@ -130,8 +134,8 @@ class Table(Widget):
         return self._impl.get_selection()
 
     def scroll_to_top(self):
-        """Scroll the view so that the top of the list (first row) is visible
-        """
+        """Scroll the view so that the top of the list (first row) is
+        visible."""
         self.scroll_to_row(0)
 
     def scroll_to_row(self, row):
@@ -148,15 +152,15 @@ class Table(Widget):
             self._impl.scroll_to_row(len(self.data) + row)
 
     def scroll_to_bottom(self):
-        """Scroll the view so that the bottom of the list (last row) is visible
-        """
+        """Scroll the view so that the bottom of the list (last row) is
+        visible."""
         self.scroll_to_row(-1)
 
     @property
     def on_select(self):
-        """ The callback function that is invoked when a row of the table is selected.
-        The provided callback function has to accept two arguments table (:obj:`Table`)
-        and row (``Row`` or ``None``).
+        """The callback function that is invoked when a row of the table is
+        selected. The provided callback function has to accept two arguments
+        table (:obj:`Table`) and row (``Row`` or ``None``).
 
         The value of a column of row can be accessed with row.accessor_name
 
@@ -167,8 +171,7 @@ class Table(Widget):
 
     @on_select.setter
     def on_select(self, handler):
-        """
-        Set the function to be executed on node selection
+        """Set the function to be executed on node selection.
 
         :param handler: callback function
         :type handler: ``callable``
@@ -178,9 +181,9 @@ class Table(Widget):
 
     @property
     def on_double_click(self):
-        """ The callback function that is invoked when a row of the table is double clicked.
-        The provided callback function has to accept two arguments table (:obj:`Table`)
-        and row (``Row`` or ``None``).
+        """The callback function that is invoked when a row of the table is
+        double clicked. The provided callback function has to accept two
+        arguments table (:obj:`Table`) and row (``Row`` or ``None``).
 
         The value of a column of row can be accessed with row.accessor_name
 
@@ -191,8 +194,7 @@ class Table(Widget):
 
     @on_double_click.setter
     def on_double_click(self, handler):
-        """
-        Set the function to be executed on node double click
+        """Set the function to be executed on node double click.
 
         :param handler: callback function
         :type handler: ``callable``
@@ -201,8 +203,7 @@ class Table(Widget):
         self._impl.set_on_double_click(self._on_double_click)
 
     def add_column(self, heading, accessor=None):
-        """
-        Add a new column to the table
+        """Add a new column to the table.
 
         :param heading: title of the column
         :type heading: ``string``
@@ -222,8 +223,7 @@ class Table(Widget):
         self._impl.add_column(heading, accessor)
 
     def remove_column(self, column):
-        """
-        Remove a table column.
+        """Remove a table column.
 
         :param column: accessor or position (>0)
         :type column: ``string``

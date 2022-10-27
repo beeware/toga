@@ -8,11 +8,11 @@ class ValueSource(Source):
 
     def __str__(self):
         if self.value is None:
-            return ''
+            return ""
         return str(self.value)
 
     def __setattr__(self, attr, value):
         super().__setattr__(attr, value)
-        if not attr.startswith('_'):
+        if not attr.startswith("_"):
             if self._source is not None:
-                self._source._notify('change', item=self)
+                self._source._notify("change", item=self)

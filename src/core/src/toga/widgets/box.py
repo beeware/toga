@@ -4,7 +4,7 @@ from .base import Widget
 
 
 class Box(Widget):
-    """ This is a Widget that contains other widgets, but has no rendering or
+    """This is a Widget that contains other widgets, but has no rendering or
     interaction of its own.
 
     Args:

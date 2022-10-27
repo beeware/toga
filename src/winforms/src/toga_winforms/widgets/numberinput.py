@@ -39,7 +39,7 @@ class NumberInput(Widget):
             self.native.Maximum = Convert.ToDecimal(float(self.interface.max_value))
 
     def set_value(self, value):
-        if value is None or value == '':
+        if value is None or value == "":
             self.native.Value = Convert.ToDecimal(0.0)
         else:
             self.native.Value = Convert.ToDecimal(float(self.interface.value))

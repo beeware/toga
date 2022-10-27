@@ -91,5 +91,5 @@ bee_translations = [
     {"locale": "zh", "country": "Chinese", "string": "蜜蜂"},
     {"locale": "zh-CN", "country": "Chinese (Simplified)", "string": "蜜蜂"},
     {"locale": "zh-TW", "country": "Chinese (Traditional)", "string": "蜜蜂"},
-    {"locale": "zu", "country": "Zulu", "string": "Izinyosi"}
+    {"locale": "zu", "country": "Zulu", "string": "Izinyosi"},
 ]

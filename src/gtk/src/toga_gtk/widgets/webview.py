@@ -6,9 +6,8 @@ from .base import Widget
 
 
 class WebView(Widget):
-    """ GTK WebView implementation.
+    """GTK WebView implementation."""
 
-    """
     def create(self):
         if WebKit2 is None:
             raise RuntimeError(
@@ -30,8 +29,8 @@ class WebView(Widget):
         context = self.native.get_context()
         context.set_cache_model(WebKit2.CacheModel.DOCUMENT_VIEWER)
 
-        self.native.connect('load-changed', self.gtk_on_load_changed)
-        self.native.connect('key-press-event', self.gtk_on_key)
+        self.native.connect("load-changed", self.gtk_on_load_changed)
+        self.native.connect("key-press-event", self.gtk_on_key)
         self._last_key_time = 0
 
     def set_on_key_down(self, handler):
@@ -69,7 +68,7 @@ class WebView(Widget):
         self.native.load_html(content, root_url)
 
     def get_dom(self):
-        self.interface.factory.not_implemented('WebView.get_dom()')
+        self.interface.factory.not_implemented("WebView.get_dom()")
 
     async def evaluate_javascript(self, javascript):
         # Construct a future on the event loop
@@ -78,10 +77,8 @@ class WebView(Widget):
         # Define a callback that will update the future when
         # the Javascript is complete.
         def gtk_js_finished(webview, task, *user_data):
-            """
-            If `run_javascript_finish` from GTK returns a result, unmarshal it,
-            and call back with the result.
-            """
+            """If `run_javascript_finish` from GTK returns a result, unmarshal
+            it, and call back with the result."""
             result = webview.run_javascript_finish(task)
             if result:
                 result = result.get_js_value().to_string()

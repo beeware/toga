@@ -22,7 +22,8 @@ class Window:
         minimizable (bool): Toggle if the window is minimizable by the user, defaults to `True`.
         on_close: A callback to invoke when the user makes a request to close the window.
     """
-    _WINDOW_CLASS = 'Window'
+
+    _WINDOW_CLASS = "Window"
 
     def __init__(
         self,
@@ -35,7 +36,7 @@ class Window:
         closeable=True,
         minimizable=True,
         factory=None,  # DEPRECATED !
-        on_close=None
+        on_close=None,
     ):
 
         ######################################################################
@@ -63,15 +64,12 @@ class Window:
         self.factory = get_platform_factory()
         self._impl = getattr(self.factory, self._WINDOW_CLASS)(
             interface=self,
-            title='Toga' if title is None else title,
+            title="Toga" if title is None else title,
             position=position,
             size=size,
         )
 
-        self._toolbar = CommandSet(
-            widget=self,
-            on_change=self._impl.create_toolbar
-        )
+        self._toolbar = CommandSet(widget=self, on_change=self._impl.create_toolbar)
 
         self._on_close = None
         if on_close is not None:
@@ -79,8 +77,8 @@ class Window:
 
     @property
     def id(self):
-        """ The DOM identifier for the window.
-        This id can be used to target CSS directives
+        """The DOM identifier for the window. This id can be used to target CSS
+        directives.
 
         Returns:
             The identifier as a ``str``.
@@ -89,7 +87,7 @@ class Window:
 
     @property
     def app(self):
-        """ Instance of the :class:`toga.App` that this window belongs to.
+        """Instance of the :class:`toga.App` that this window belongs to.
 
         Returns:
             The app that it belongs to :class:`toga.App`.
@@ -113,7 +111,7 @@ class Window:
 
     @property
     def title(self):
-        """ Title of the window. If no title is given it defaults to "Toga".
+        """Title of the window. If no title is given it defaults to "Toga".
 
         Returns:
             The current title of the window as a ``str``.
@@ -129,7 +127,7 @@ class Window:
 
     @property
     def toolbar(self):
-        """ Toolbar for the window.
+        """Toolbar for the window.
 
         Returns:
             A ``list`` of :class:`toga.Widget`
@@ -138,8 +136,8 @@ class Window:
 
     @property
     def content(self):
-        """ Content of the window.
-        On setting, the content is added to the same app as the window and to the same app.
+        """Content of the window. On setting, the content is added to the same
+        app as the window and to the same app.
 
         Returns:
             A :class:`toga.Widget`
@@ -173,7 +171,7 @@ class Window:
 
     @property
     def size(self):
-        """ Size of the window, as width, height.
+        """Size of the window, as width, height.
 
         Returns:
             A ``tuple`` of (``int``, ``int``) where the first value is
@@ -189,7 +187,7 @@ class Window:
 
     @property
     def position(self):
-        """ Position of the window, as x, y
+        """Position of the window, as x, y.
 
         Returns:
             A ``tuple`` of (``int``, ``int``) int the from (x, y).
@@ -201,15 +199,19 @@ class Window:
         self._impl.set_position(position)
 
     def show(self):
-        """ Show window, if hidden """
+        """Show window, if hidden."""
         if self.app is None:
-            raise AttributeError("Can't show a window that doesn't have an associated app")
+            raise AttributeError(
+                "Can't show a window that doesn't have an associated app"
+            )
         self._impl.show()
 
     def hide(self):
-        """ Show window, if hidden """
+        """Show window, if hidden."""
         if self.app is None:
-            raise AttributeError("Can't hide a window that doesn't have an associated app")
+            raise AttributeError(
+                "Can't hide a window that doesn't have an associated app"
+            )
         self._impl.hide()
 
     @property
@@ -243,13 +245,14 @@ class Window:
 
     @on_close.setter
     def on_close(self, handler):
-        """Set the handler to invoke when before window is closed. If the handler
-        returns ``False``, the window will not be closed. This can be used for example
-        for confirmation dialogs.
+        """Set the handler to invoke when before window is closed. If the
+        handler returns ``False``, the window will not be closed. This can be
+        used for example for confirmation dialogs.
 
         Args:
             handler (:obj:`callable`): The handler to invoke before the window is closed.
         """
+
         def cleanup(window, should_close):
             if should_close:
                 window.close()
@@ -317,7 +320,7 @@ class Window:
         )
 
     def error_dialog(self, title, message, on_result=None):
-        """Ask the user to acknowledge an error state
+        """Ask the user to acknowledge an error state.
 
         Presents as an error dialog with a 'OK' button to close the dialog.
 
@@ -333,7 +336,8 @@ class Window:
         )
 
     def stack_trace_dialog(self, title, message, content, retry=False, on_result=None):
-        """Open a dialog that allows to display a large text body, such as a stack trace.
+        """Open a dialog that allows to display a large text body, such as a
+        stack trace.
 
         :param title: The title of the dialog window.
         :param message: Contextual information about the source of the stack trace.
@@ -348,13 +352,17 @@ class Window:
             if retry is not enabled, the dialog object returns ``None``.
         """
         return self.factory.dialogs.StackTraceDialog(
-            self, title, message,
+            self,
+            title,
+            message,
             content=content,
             retry=retry,
             on_result=wrapped_handler(self, on_result),
         )
 
-    def save_file_dialog(self, title, suggested_filename, file_types=None, on_result=None):
+    def save_file_dialog(
+        self, title, suggested_filename, file_types=None, on_result=None
+    ):
         """Prompt the user for a location to save a file.
 
         Presents the user a system-native "Save file" dialog.
@@ -381,14 +389,22 @@ class Window:
         filename = suggested_path.name
 
         return self.factory.dialogs.SaveFileDialog(
-            self, title,
+            self,
+            title,
             filename=filename,
             initial_directory=initial_directory,
             file_types=file_types,
             on_result=wrapped_handler(self, on_result),
         )
 
-    def open_file_dialog(self, title, initial_directory=None, file_types=None, multiselect=False, on_result=None):
+    def open_file_dialog(
+        self,
+        title,
+        initial_directory=None,
+        file_types=None,
+        multiselect=False,
+        on_result=None,
+    ):
         """Ask the user to select a file (or files) to open.
 
         Presents the user a system-native "Open file" dialog.
@@ -408,14 +424,17 @@ class Window:
             cancelled by the user.
         """
         return self.factory.dialogs.OpenFileDialog(
-            self, title,
+            self,
+            title,
             initial_directory=Path(initial_directory) if initial_directory else None,
             file_types=file_types,
             multiselect=multiselect,
-            on_result=wrapped_handler(self, on_result)
+            on_result=wrapped_handler(self, on_result),
         )
 
-    def select_folder_dialog(self, title, initial_directory=None, multiselect=False, on_result=None):
+    def select_folder_dialog(
+        self, title, initial_directory=None, multiselect=False, on_result=None
+    ):
         """Ask the user to select a directory/folder (or folders) to open.
 
         Presents the user a system-native "Open folder" dialog.
@@ -434,7 +453,8 @@ class Window:
             cancelled by the user.
         """
         return self.factory.dialogs.SelectFolderDialog(
-            self, title,
+            self,
+            title,
             initial_directory=Path(initial_directory) if initial_directory else None,
             multiselect=multiselect,
             on_result=wrapped_handler(self, on_result),

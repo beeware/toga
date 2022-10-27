@@ -166,7 +166,7 @@ class Window:
         )
         self.native.MinimumSize = Size(
             int(self.interface.content.layout.width),
-            int(self.interface.content.layout.height) + TITLEBAR_HEIGHT
+            int(self.interface.content.layout.height) + TITLEBAR_HEIGHT,
         )
         self.interface.content.refresh()
 
@@ -197,7 +197,7 @@ class Window:
                 event.Cancel = True
 
     def set_full_screen(self, is_full_screen):
-        self.interface.factory.not_implemented('Window.set_full_screen()')
+        self.interface.factory.not_implemented("Window.set_full_screen()")
 
     def set_on_close(self, handler):
         pass

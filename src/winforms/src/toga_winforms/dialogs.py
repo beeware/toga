@@ -11,17 +11,23 @@ class BaseDialog:
         self.future = loop.create_future()
 
     def __eq__(self, other):
-        raise RuntimeError("Can't check dialog result directly; use await or an on_result handler")
+        raise RuntimeError(
+            "Can't check dialog result directly; use await or an on_result handler"
+        )
 
     def __bool__(self):
-        raise RuntimeError("Can't check dialog result directly; use await or an on_result handler")
+        raise RuntimeError(
+            "Can't check dialog result directly; use await or an on_result handler"
+        )
 
     def __await__(self):
         return self.future.__await__()
 
 
 class MessageDialog(BaseDialog):
-    def __init__(self, window, title, message, buttons, icon, success_result=None, on_result=None):
+    def __init__(
+        self, window, title, message, buttons, icon, success_result=None, on_result=None
+    ):
         super().__init__()
         self.on_result = on_result
 
@@ -90,7 +96,9 @@ class ErrorDialog(MessageDialog):
 
 
 class StackTraceDialog(BaseDialog):
-    def __init__(self, window, title, message, content, retry, on_result=None, **kwargs):
+    def __init__(
+        self, window, title, message, content, retry, on_result=None, **kwargs
+    ):
         super().__init__()
         self.on_result = on_result
 
@@ -124,7 +132,7 @@ class StackTraceDialog(BaseDialog):
         trace.Font = WinFont(
             FontFamily.GenericMonospace,
             float(SystemFonts.DefaultFont.Size),
-            FontStyle.Regular
+            FontStyle.Regular,
         )
         trace.Text = content
 
@@ -213,7 +221,9 @@ class FileDialog(BaseDialog):
             self._set_initial_directory(dialog, str(initial_directory))
 
         if file_types is not None:
-            filters = [f"{ext} files (*.{ext})|*.{ext}" for ext in file_types] + ["All files (*.*)|*.*"]
+            filters = [f"{ext} files (*.{ext})|*.{ext}" for ext in file_types] + [
+                "All files (*.*)|*.*"
+            ]
 
             if len(file_types) > 1:
                 pattern = ";".join([f"*.{ext}" for ext in file_types])
@@ -255,13 +265,20 @@ class FileDialog(BaseDialog):
             dialog (WinForms.CommonDialog): the dialog to set the
                 initial directory on.
             initial_directory (str): the path of the initial directory.
-
         """
         dialog.InitialDirectory = initial_directory
 
 
 class SaveFileDialog(FileDialog):
-    def __init__(self, window, title, filename, initial_directory, file_types=None, on_result=None):
+    def __init__(
+        self,
+        window,
+        title,
+        filename,
+        initial_directory,
+        file_types=None,
+        on_result=None,
+    ):
         super().__init__(
             dialog=WinForms.SaveFileDialog(),
             window=window,
@@ -275,7 +292,9 @@ class SaveFileDialog(FileDialog):
 
 
 class OpenFileDialog(FileDialog):
-    def __init__(self, window, title, initial_directory, file_types, multiselect, on_result=None):
+    def __init__(
+        self, window, title, initial_directory, file_types, multiselect, on_result=None
+    ):
         super().__init__(
             dialog=WinForms.OpenFileDialog(),
             window=window,

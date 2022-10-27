@@ -6,7 +6,7 @@ from ctypes import POINTER, c_bool, c_double, c_uint32, c_void_p, cdll, util
 from rubicon.objc import CFIndex, CGFloat, CGGlyph, CGRect, CGSize, UniChar
 
 ######################################################################
-core_text = cdll.LoadLibrary(util.find_library('CoreText'))
+core_text = cdll.LoadLibrary(util.find_library("CoreText"))
 ######################################################################
 
 ######################################################################
@@ -23,12 +23,20 @@ CTFontSymbolicTraits = c_uint32
 # CTFont.h
 core_text.CTFontGetBoundingRectsForGlyphs.restype = CGRect
 core_text.CTFontGetBoundingRectsForGlyphs.argtypes = [
-    c_void_p, CTFontOrientation, POINTER(CGGlyph), POINTER(CGRect), CFIndex
+    c_void_p,
+    CTFontOrientation,
+    POINTER(CGGlyph),
+    POINTER(CGRect),
+    CFIndex,
 ]
 
 core_text.CTFontGetAdvancesForGlyphs.restype = c_double
 core_text.CTFontGetAdvancesForGlyphs.argtypes = [
-    c_void_p, CTFontOrientation, POINTER(CGGlyph), POINTER(CGSize), CFIndex
+    c_void_p,
+    CTFontOrientation,
+    POINTER(CGGlyph),
+    POINTER(CGSize),
+    CFIndex,
 ]
 
 core_text.CTFontGetAscent.restype = CGFloat
@@ -41,10 +49,20 @@ core_text.CTFontGetSymbolicTraits.restype = CTFontSymbolicTraits
 core_text.CTFontGetSymbolicTraits.argtypes = [c_void_p]
 
 core_text.CTFontGetGlyphsForCharacters.restype = c_bool
-core_text.CTFontGetGlyphsForCharacters.argtypes = [c_void_p, POINTER(UniChar), POINTER(CGGlyph), CFIndex]
+core_text.CTFontGetGlyphsForCharacters.argtypes = [
+    c_void_p,
+    POINTER(UniChar),
+    POINTER(CGGlyph),
+    CFIndex,
+]
 
 core_text.CTFontCreateWithGraphicsFont.restype = c_void_p
-core_text.CTFontCreateWithGraphicsFont.argtypes = [c_void_p, CGFloat, c_void_p, c_void_p]
+core_text.CTFontCreateWithGraphicsFont.argtypes = [
+    c_void_p,
+    CGFloat,
+    c_void_p,
+    c_void_p,
+]
 
 core_text.CTFontCopyFamilyName.restype = c_void_p
 core_text.CTFontCopyFamilyName.argtypes = [c_void_p]
@@ -61,17 +79,17 @@ core_text.CTFontDescriptorCreateWithAttributes.argtypes = [c_void_p]
 ######################################################################
 # CTFontDescriptor.h
 
-kCTFontFamilyNameAttribute = c_void_p.in_dll(core_text, 'kCTFontFamilyNameAttribute')
-kCTFontTraitsAttribute = c_void_p.in_dll(core_text, 'kCTFontTraitsAttribute')
+kCTFontFamilyNameAttribute = c_void_p.in_dll(core_text, "kCTFontFamilyNameAttribute")
+kCTFontTraitsAttribute = c_void_p.in_dll(core_text, "kCTFontTraitsAttribute")
 
 ######################################################################
 # CTFontTraits.h
 
-kCTFontSymbolicTrait = c_void_p.in_dll(core_text, 'kCTFontSymbolicTrait')
-kCTFontWeightTrait = c_void_p.in_dll(core_text, 'kCTFontWeightTrait')
+kCTFontSymbolicTrait = c_void_p.in_dll(core_text, "kCTFontSymbolicTrait")
+kCTFontWeightTrait = c_void_p.in_dll(core_text, "kCTFontWeightTrait")
 
-kCTFontItalicTrait = (1 << 0)
-kCTFontBoldTrait = (1 << 1)
+kCTFontItalicTrait = 1 << 0
+kCTFontBoldTrait = 1 << 1
 
 ######################################################################
 # CTLine.h
@@ -85,4 +103,4 @@ core_text.CTLineDraw.argtypes = [c_void_p, c_void_p]
 ######################################################################
 # CTStringAttributes.h
 
-kCTFontAttributeName = c_void_p.in_dll(core_text, 'kCTFontAttributeName')
+kCTFontAttributeName = c_void_p.in_dll(core_text, "kCTFontAttributeName")

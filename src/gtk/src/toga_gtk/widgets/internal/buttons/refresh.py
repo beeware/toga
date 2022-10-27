@@ -39,14 +39,10 @@ class RefreshButtonWidget(Gtk.Revealer):
         self.add(self.hbox)
 
     def set_on_refresh(self, gtk_on_refresh: callable):
-        self.refresh_btn.connect(
-            "clicked",
-            gtk_on_refresh)
+        self.refresh_btn.connect("clicked", gtk_on_refresh)
 
     def set_on_close(self, gtk_on_close: callable):
-        self.close_btn.connect(
-            "clicked",
-            gtk_on_close)
+        self.close_btn.connect("clicked", gtk_on_close)
 
     def show(self):
         self.set_reveal_child(True)
@@ -70,18 +66,18 @@ class RefreshButtonWidget(Gtk.Revealer):
 
 
 class RefreshButton(ParentPosition):
-    """
-    Shows a refresh button at the top of a list when the user is at the bottom of the list.
-    Shows a refresh button at the bottom of a list when the user is at the top of the list.
-    When there is not enough content to scroll, show the button at the bottom and have a side
-    button to move it to the top. After moving the button to the top, show a button to move it
-    to the bottom.
+    """Shows a refresh button at the top of a list when the user is at the
+    bottom of the list. Shows a refresh button at the bottom of a list when the
+    user is at the top of the list. When there is not enough content to scroll,
+    show the button at the bottom and have a side button to move it to the top.
+    After moving the button to the top, show a button to move it to the bottom.
 
     Example:
      -------------
     | Refresh | X |
      -------------
     """
+
     def __init__(self, adj: Gtk.Adjustment, margin=12, *args, **kwargs):
         super().__init__(adj, *args, **kwargs)
         self.margin = margin
@@ -97,8 +93,8 @@ class RefreshButton(ParentPosition):
         self.button_bottom.set_on_close(self.gtk_on_close_clicked)
 
         self.gtk_adj_handler = self.adj.connect(
-            "value-changed",
-            self.gtk_on_value_changed)
+            "value-changed", self.gtk_on_value_changed
+        )
 
     def overlay_over(self, parent):
         self._parent = parent
