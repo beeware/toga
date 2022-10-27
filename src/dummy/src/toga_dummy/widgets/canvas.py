@@ -1,3 +1,4 @@
+import random
 import uuid
 
 from .base import Widget
@@ -93,6 +94,7 @@ class Canvas(Widget):
 
     def measure_text(self, text, font, tight=False):
         self._action("measure text", text=text, font=font, tight=tight)
+        return random.randint(100, 300), random.randint(100, 200)
 
     # Image
 
