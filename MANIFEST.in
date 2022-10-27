@@ -9,6 +9,8 @@ include pyproject.toml
 
 prune attic
 
+recursive-include changes *.rst
+
 include demo/AUTHORS
 include demo/CONTRIBUTING.md
 include demo/LICENSE
