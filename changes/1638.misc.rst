@@ -1,0 +1,1 @@
+Towncrier was added to assist with the compilation of release notes.
