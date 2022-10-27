@@ -1,8 +1,10 @@
 Release History
 ===============
 
-0.3.0 - In development
-----------------------
+.. towncrier release notes start
+
+0.3.0
+-----
 
 * Move to a three-layered Interface/Implementation/Native code structure
 * Added a test framework
