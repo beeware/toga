@@ -798,7 +798,7 @@ class Canvas(Context, Widget):
 
     def as_image(self):
         image = Image(data=self._impl.as_image())
-        image.bind(self.factory)
+        image.bind()
         return image
 
 
