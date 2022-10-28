@@ -1,7 +1,19 @@
 import ast
+import importlib
 import os
 import unittest
 from collections import defaultdict, namedtuple
+
+try:
+    # Usually, the pattern is "import module; if it doesn't exist,
+    # import the shim". However, we need the 3.10 API for entry_points,
+    # as the 3.8 didn't support the `groups` argument to entry_points.
+    # Therefore, we try to import the compatibility shim first; and fall
+    # back to the stdlib module if the shim isn't there.
+    from importlib_metadata import entry_points
+except ImportError:
+    from importlib.metadata import entry_points
+
 from itertools import zip_longest
 from os.path import join
 from pathlib import Path
@@ -10,7 +22,7 @@ import toga_dummy
 
 
 class NoDefault:
-    """ This utility class to indicate that no argument default exists.
+    """This utility class to indicate that no argument default exists.
     The use of `None` is not possible because it itself could be a default argument value."""
 
     def __eq__(self, other):
@@ -20,20 +32,22 @@ class NoDefault:
             return False
 
     def __repr__(self):
-        return 'no_default'
+        return "no_default"
 
 
-FunctionArguments = namedtuple('FunctionArguments', ['args', 'vararg', 'kwarg', 'kwonlyargs'])
+FunctionArguments = namedtuple(
+    "FunctionArguments", ["args", "vararg", "kwarg", "kwonlyargs"]
+)
 
 
 class DefinitionExtractor:
-    """ The DefinitionExtractor consumes a .py file and extracts information,
-        with the help of the 'ast' module from it.
-        Non existing files result in a empty DefinitionExtractor, this means the all properties
-        return empty lists or dicts.
+    """The DefinitionExtractor consumes a .py file and extracts information,
+    with the help of the 'ast' module from it.
+    Non existing files result in a empty DefinitionExtractor, this means the all properties
+    return empty lists or dicts.
 
-        Args:
-            path (str): The path to the .py file.
+    Args:
+        path (str): The path to the .py file.
     """
 
     def __init__(self, path, platform_category=None):
@@ -74,7 +88,7 @@ class DefinitionExtractor:
                         self._classes[target.id] = node
 
     def is_required_for_platform(self, node):
-        """ Checks if the class or function is required for the given platform.
+        """Checks if the class or function is required for the given platform.
         It looks for a decorator with the name `not_required_on`.
 
         Returns:
@@ -88,9 +102,9 @@ class DefinitionExtractor:
                     # has an `id` attribute.
                     # @not_required_on is a decorator factory, so the decorator
                     # node contains a function that has an id.
-                    if getattr(decorator, 'id', None) == 'not_required':
+                    if getattr(decorator, "id", None) == "not_required":
                         return False
-                    elif decorator.func.id == 'not_required_on':
+                    elif decorator.func.id == "not_required_on":
                         platforms_to_skip = [arg.s for arg in decorator.args]
                         if self.platform.intersection(set(platforms_to_skip)):
                             return False
@@ -122,21 +136,25 @@ class DefinitionExtractor:
             elif isinstance(default, ast.Name):
                 defaults.append(default.id)
             else:
-                raise RuntimeWarning('ast classes of type "{}" can not be handled at the moment. '
-                                     'Please implement to make this warning disappear.'.format(default))
+                raise RuntimeWarning(
+                    'ast classes of type "{}" can not be handled at the moment. '
+                    "Please implement to make this warning disappear.".format(default)
+                )
         return defaults
 
     def _extract_class_methods(self):
-        """ Extract all the methods from the classes and save them in `self.methods`.
+        """Extract all the methods from the classes and save them in `self.methods`.
         Use the combination of class and method name, like so: `<class_name>.<method_name>` as the key.
         """
         for class_name in self._classes:
             for node in ast.walk(self._classes[class_name]):
                 if isinstance(node, ast.FunctionDef):
                     if self.is_required_for_platform(node):
-                        function_id = f'{class_name}.{node.name}'
-                        self._methods[function_id]['node'] = node
-                        self._methods[function_id]['arguments'] = self._extract_function_signature(node)
+                        function_id = f"{class_name}.{node.name}"
+                        self._methods[function_id]["node"] = node
+                        self._methods[function_id][
+                            "arguments"
+                        ] = self._extract_function_signature(node)
 
     def _extract_function_signature(self, node):
         for node in ast.walk(node):
@@ -150,12 +168,18 @@ class DefinitionExtractor:
 
                 # Combine arguments and their corresponding default values,
                 # if no default value exists fill it with a NoDefault object.
-                args_plus_defaults = list(zip_longest(reversed(args),
-                                                      reversed(args_defaults),
-                                                      fillvalue=NoDefault()))
-                kwonlyargs_plus_defaults = list(zip_longest(reversed(kwonlyargs),
-                                                            reversed(kwonlyargs_defaults),
-                                                            fillvalue=NoDefault()))
+                args_plus_defaults = list(
+                    zip_longest(
+                        reversed(args), reversed(args_defaults), fillvalue=NoDefault()
+                    )
+                )
+                kwonlyargs_plus_defaults = list(
+                    zip_longest(
+                        reversed(kwonlyargs),
+                        reversed(kwonlyargs_defaults),
+                        fillvalue=NoDefault(),
+                    )
+                )
 
                 vararg = node.vararg.arg if node.vararg is not None else None
                 kwarg = node.kwarg.arg if node.kwarg is not None else None
@@ -164,14 +188,14 @@ class DefinitionExtractor:
                     args=args_plus_defaults,
                     vararg=vararg,
                     kwarg=kwarg,
-                    kwonlyargs=kwonlyargs_plus_defaults
+                    kwonlyargs=kwonlyargs_plus_defaults,
                 )
 
     def get_function_def(self, function_id):
         return self._methods[function_id]
 
     def methods_of_class(self, class_name):
-        """ Get all methods names of a class.
+        """Get all methods names of a class.
 
         Args:
             class_name(str): Name of the class to extract the methodes
@@ -194,57 +218,55 @@ class DefinitionExtractor:
 
 
 def get_platform_category(path_to_backend):
-    name = os.path.basename(path_to_backend)
-    if name in ['toga_cocoa', 'toga_gtk', 'toga_winforms', 'toga_win32', 'toga_uwp']:
-        return {'desktop', name.split('_')[-1]}
-    elif name in ['toga_iOS', 'toga_android']:
-        return {'mobile', name.split('_')[-1]}
-    elif name in ['toga_django', 'toga_flask', 'toga_pyramid']:
-        return {'web', name.split('_')[-1]}
-    elif name in ['toga_curses', ]:
-        return {'console', name.split('_')[-1]}
-    elif name in ['toga_tvOS', ]:
-        return {'settop', name.split('_')[-1]}
-    elif name in ['toga_watchOS', ]:
-        return {'watch', name.split('_')[-1]}
-    else:
-        raise RuntimeError(f'Couldn\'t identify a supported host platform: "{name}"')
+    backend_name = os.path.basename(path_to_backend)
+    importlib.import_module(backend_name)
+    platform = {ep.value: ep.name for ep in entry_points(group="toga.backends")}[
+        backend_name
+    ]
+
+    return {
+        # Desktop
+        "macOS": {"desktop", backend_name.split("_")[-1]},
+        "windows": {"desktop", backend_name.split("_")[-1]},
+        "linux": {"desktop", backend_name.split("_")[-1]},
+        # Mobile
+        "iOS": {"mobile", backend_name.split("_")[-1]},
+        "android": {"mobile", backend_name.split("_")[-1]},
+    }.get(platform, {platform, backend_name.split("_")[-1]})
 
 
-def get_required_files(path_to_backend):
+def get_required_files(platform_category, path_to_backend):
     # Find the list of files in the dummy backend
     # that aren't *this* file, or an __init__.py.
     files = [
         str(p.relative_to(Path(__file__).parent))
-        for p in Path(__file__).parent.rglob('**/*.py')
-        if str(p) != __file__ and p.name != '__init__.py'
+        for p in Path(__file__).parent.rglob("**/*.py")
+        if str(p) != __file__ and p.name != "__init__.py"
     ]
-    name = os.path.basename(path_to_backend)
-    if name in ['toga_cocoa', 'toga_gtk', 'toga_winforms', 'toga_win32', 'toga_uwp']:
+    if "desktop" in platform_category:
         for f in TOGA_DESKTOP_EXCLUDED_FILES:
             files.remove(f)
-    elif name in ['toga_iOS', 'toga_android']:
+    if "mobile" in platform_category:
         for f in TOGA_MOBILE_EXCLUDED_FILES:
             files.remove(f)
-    elif name in ['toga_django', 'toga_flask', 'toga_pyramid']:
+    if "web" in platform_category:
         for f in TOGA_WEB_EXCLUDED_FILES:
             files.remove(f)
-    elif name in ['toga_curses', ]:
+    if "console" in platform_category:
         for f in TOGA_CONSOLE_EXCLUDED_FILES:
             files.remove(f)
-    elif name in ['toga_tvOS', ]:
+    if "settop" in platform_category:
         for f in TOGA_SETTOP_EXCLUDED_FILES:
             files.remove(f)
-    elif name in ['toga_watchOS', ]:
+    if "watch" in platform_category:
         for f in TOGA_WATCH_EXCLUDED_FILES:
             files.remove(f)
-    else:
-        raise RuntimeError(f'Couldn\'t identify a supported host platform: "{name}"')
+
     return files
 
 
 def create_impl_tests(root):
-    """ Calling this function with a the path to a Toga backend will return
+    """Calling this function with a the path to a Toga backend will return
     the implementation tests for this backend.
 
     Args:
@@ -254,19 +276,19 @@ def create_impl_tests(root):
         A dictionary of test classes.
     """
     platform_category = get_platform_category(root)
-    dummy_files = collect_dummy_files(get_required_files(root))
+    dummy_files = collect_dummy_files(get_required_files(platform_category, root))
     tests = {}
     for name, dummy_path in dummy_files:
-        if 'widgets' in dummy_path:
-            path = os.path.join(root, f'widgets/{name}.py')
+        if "widgets" in dummy_path:
+            path = os.path.join(root, f"widgets/{name}.py")
         else:
-            path = os.path.join(root, f'{name}.py')
+            path = os.path.join(root, f"{name}.py")
 
         tests.update(make_toga_impl_check_class(path, dummy_path, platform_category))
     return tests
 
 
-TestFile = namedtuple('TestFile', ['name', 'path'])
+TestFile = namedtuple("TestFile", ["name", "path"])
 
 
 def collect_dummy_files(required_files):
@@ -276,10 +298,10 @@ def collect_dummy_files(required_files):
     for root, dirs, filenames in os.walk(toga_dummy_base):
         for filename in filenames:
             # exclude non .py filenames or start with '__'
-            if filename.startswith('__') or not filename.endswith('.py'):
+            if filename.startswith("__") or not filename.endswith(".py"):
                 continue
 
-            full_filename = os.path.join(root, filename)[len(toga_dummy_base) + 1:]
+            full_filename = os.path.join(root, filename)[len(toga_dummy_base) + 1 :]
             if full_filename in required_files:
                 f = TestFile(filename[:-3], os.path.join(root, filename))
                 dummy_files.append(f)
@@ -295,7 +317,7 @@ def make_test_function(element, element_list, error_msg=None):
 
 
 def make_test_class(path, cls, expected, actual, skip):
-    class_name = f'{cls}ImplTest'
+    class_name = f"{cls}ImplTest"
     test_class = type(class_name, (unittest.TestCase,), {})
 
     if skip:
@@ -310,14 +332,14 @@ def make_test_class(path, cls, expected, actual, skip):
     for method in expected.methods_of_class(cls):
         # create a test that checks if the method exists in the class.
         fn = make_test_function(method, actual.methods_of_class(cls))
-        fn.__doc__ = f'The method {cls}.{method}(...) exists'
-        setattr(test_class, f'test_{method}_exists', fn)
+        fn.__doc__ = f"The method {cls}.{method}(...) exists"
+        setattr(test_class, f"test_{method}_exists", fn)
 
         # create tests that check for the right method arguments.
-        method_id = f'{cls}.{method}'
-        method_def = expected.get_function_def(method_id)['arguments']
+        method_id = f"{cls}.{method}"
+        method_def = expected.get_function_def(method_id)["arguments"]
         try:
-            actual_method_def = actual.get_function_def(method_id)['arguments']
+            actual_method_def = actual.get_function_def(method_id)["arguments"]
         except KeyError:
             actual_method_def = None
 
@@ -328,48 +350,53 @@ def make_test_class(path, cls, expected, actual, skip):
             # ARGS
             for arg in method_def.args:
                 fn = make_test_function(arg, actual_method_def.args)
-                fn.__doc__ = "The argument {}.{}(..., {}={}, ...) exists".format(cls, method, *arg)
+                fn.__doc__ = "The argument {}.{}(..., {}={}, ...) exists".format(
+                    cls, method, *arg
+                )
                 setattr(
-                    test_class,
-                    'test_{}_arg_{}_default_{}'.format(method, *arg),
-                    fn
+                    test_class, "test_{}_arg_{}_default_{}".format(method, *arg), fn
                 )
 
             # *varargs
             if method_def.vararg:
                 vararg = method_def.vararg
-                actual_vararg = actual_method_def.vararg if actual_method_def.vararg else []
+                actual_vararg = (
+                    actual_method_def.vararg if actual_method_def.vararg else []
+                )
                 fn = make_test_function(vararg, actual_vararg)
                 fn.__doc__ = f"The vararg {cls}.{method}(..., *{vararg}, ...) exists"
-                setattr(
-                    test_class,
-                    f'test_{method}_vararg_{vararg}',
-                    fn
-                )
+                setattr(test_class, f"test_{method}_vararg_{vararg}", fn)
 
             # **kwarg
             if method_def.kwarg:
                 kwarg = method_def.kwarg
-                actual_kwarg = actual_method_def.kwarg if actual_method_def.kwarg else []
-                fn = make_test_function(kwarg, actual_kwarg,
-                                        error_msg='The method does not take kwargs or the '
-                                                  'variable is not named "{}".'.format(kwarg))
-                fn.__doc__ = f"The kw argument {cls}.{method}(..., **{kwarg}, ...) exists"
-                setattr(
-                    test_class,
-                    f'test_{method}_kw_{kwarg}',
-                    fn
+                actual_kwarg = (
+                    actual_method_def.kwarg if actual_method_def.kwarg else []
                 )
+                fn = make_test_function(
+                    kwarg,
+                    actual_kwarg,
+                    error_msg="The method does not take kwargs or the "
+                    'variable is not named "{}".'.format(kwarg),
+                )
+                fn.__doc__ = (
+                    f"The kw argument {cls}.{method}(..., **{kwarg}, ...) exists"
+                )
+                setattr(test_class, f"test_{method}_kw_{kwarg}", fn)
 
             # kwonlyargs
             if method_def.kwonlyargs:
                 for kwonlyarg in method_def.kwonlyargs:
                     fn = make_test_function(kwonlyarg, actual_method_def.kwonlyargs)
-                    fn.__doc__ = "The kwonly argument {}.{}(..., {}={}, ...) exists".format(cls, method, *kwonlyarg)
+                    fn.__doc__ = (
+                        "The kwonly argument {}.{}(..., {}={}, ...) exists".format(
+                            cls, method, *kwonlyarg
+                        )
+                    )
                     setattr(
                         test_class,
-                        'test_{}_kwonly_{}_default_{}'.format(method, *kwonlyarg),
-                        fn
+                        "test_{}_kwonly_{}_default_{}".format(method, *kwonlyarg),
+                        fn,
                     )
 
     return class_name, test_class
@@ -382,13 +409,15 @@ def make_toga_impl_check_class(path, dummy_path, platform):
         skip = None
         actual = DefinitionExtractor(path)
     else:
-        skip = f'Implementation file {path[len(prefix):]} does not exist'
+        skip = f"Implementation file {path[len(prefix):]} does not exist"
         actual = DefinitionExtractor(path)
 
     test_classes = {}
 
     for cls in expected.class_names:
-        class_name, test_class = make_test_class(path[len(prefix):], cls, expected, actual, skip)
+        class_name, test_class = make_test_class(
+            path[len(prefix) :], cls, expected, actual, skip
+        )
         test_classes[class_name] = test_class
 
     return test_classes
@@ -396,26 +425,22 @@ def make_toga_impl_check_class(path, dummy_path, platform):
 
 # Files that do not need to be present in mobile implementations of Toga.
 TOGA_MOBILE_EXCLUDED_FILES = [
-    join('widgets', 'splitcontainer.py'),
+    join("widgets", "splitcontainer.py"),
 ]
 
 # Files that do not need to be present in desktop implementations of Toga.
-TOGA_DESKTOP_EXCLUDED_FILES = [
-]
+TOGA_DESKTOP_EXCLUDED_FILES = []
 
 # Files do not need to be present in web implementations of Toga.
 TOGA_WEB_EXCLUDED_FILES = [
-    join('widgets', 'splitcontainer.py'),
+    join("widgets", "splitcontainer.py"),
 ]
 
 # Files that do not need to be present in console implementations of Toga.
-TOGA_CONSOLE_EXCLUDED_FILES = [
-]
+TOGA_CONSOLE_EXCLUDED_FILES = []
 
 # Files that do not need to be present in set-top box implementations of Toga.
-TOGA_SETTOP_EXCLUDED_FILES = [
-]
+TOGA_SETTOP_EXCLUDED_FILES = []
 
 # Files that do not need to be present in watch implementations of Toga.
-TOGA_WATCH_EXCLUDED_FILES = [
-]
+TOGA_WATCH_EXCLUDED_FILES = []
