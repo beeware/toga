@@ -141,7 +141,7 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: packages
-        path: packages
+        path: dist
     - name: Install dependencies
       run: |
         ${{ matrix.pre-command }}
