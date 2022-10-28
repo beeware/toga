@@ -1,4 +1,3 @@
-include .coveragerc
 include .pre-commit-config.yaml
 include CONTRIBUTING.md
 include LICENSE
@@ -81,6 +80,7 @@ recursive-include src/winforms/src/toga_winforms/libs/WebView2 *.dll
 prune src/*/build
 prune src/*/dist
 prune src/*/.eggs
+prune src/*/.tox
 
 include src/core/tests/testbed/installed.dist-info/INSTALLER
 include src/core/tests/testbed/installed.dist-info/METADATA

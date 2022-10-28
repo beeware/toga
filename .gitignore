@@ -17,10 +17,6 @@ local
 Pipfile*
 .tox
 node_modules
-src/django/toga.js
-src/django/toga.min.js
-src/django/toga.js.map
-src/django/toga.min.js.map
 src/gtk/gi
 src/gtk/pygtkcompat
 src/gtk/cairo
@@ -40,6 +36,8 @@ examples/*/android/
 examples/*/django/
 examples/*/windows/
 examples/*/web/
+
+src/*/.tox
 
 # Memory Profiler
 mprofile_*.dat
