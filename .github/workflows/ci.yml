@@ -149,6 +149,8 @@ jobs:
         python -m pip install --upgrade setuptools
         python -m pip install tox
     - name: Test
+      env:
+        TOGA_INSTALL_COMMAND: 'bash -c "pip install ../../dist/toga_{core,dummy,${{ matrix.backend }}}*.whl"'
       run: |
         cd src/${{ matrix.backend }}
         ${{ matrix.test-command }}
