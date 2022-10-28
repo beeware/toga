@@ -5,6 +5,7 @@
 *.dist-info
 .eggs
 .coverage
+.coverage.*
 coverage.xml
 dist
 build
@@ -38,6 +39,8 @@ examples/*/windows/
 examples/*/web/
 
 src/*/.tox
+src/*/.coverage
+src/*/.coverage.*
 
 # Memory Profiler
 mprofile_*.dat
