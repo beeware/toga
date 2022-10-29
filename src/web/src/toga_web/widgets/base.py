@@ -9,7 +9,9 @@ class Widget:
 
         self.create()
 
-    def _create_native_widget(self, tag, classes=None, content=None, children=None, **properties):
+    def _create_native_widget(
+        self, tag, classes=None, content=None, children=None, **properties
+    ):
         """Create a DOM element representing a native widget.
 
         The ID and style of the widget will be automatically set;
@@ -44,6 +46,9 @@ class Widget:
         )
 
         return native
+
+    def create(self):
+        raise NotImplementedError()
 
     def set_app(self, app):
         pass
@@ -103,6 +108,12 @@ class Widget:
 
     def add_child(self, child):
         pass
+
+    def insert_child(self, index, child):
+        self.add_child(child)
+
+    def remove_child(self, child):
+        child.container = None
 
     def rehint(self):
         pass
