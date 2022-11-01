@@ -39,3 +39,6 @@ requires = [
 requires = [
     "toga-android==0.3.0.dev39",
 ]
+
+[tool.isort]
+profile = "black"

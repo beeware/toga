@@ -10,11 +10,12 @@ skip_glob = [
     "local",
 ]
 known_first_party = [
+    "toga",
     "toga_android",
     "toga_cocoa",
     "toga_dummy",
     "toga_gtk",
     "toga_iOS",
     "toga_web",
-    "toga_winforms"
+    "toga_winforms",
 ]

@@ -4,3 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [isort]
 profile = "black"
+known_first_party = [
+    "toga",
+    "toga_android",
+]
