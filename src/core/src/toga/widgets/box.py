@@ -9,9 +9,9 @@ class Box(Widget):
 
     Args:
         id (str): An identifier for this widget.
-        style (:class:colosseum.CSSNode`): An optional style object. If no
+        style (:class:~colosseum.CSSNode`): An optional style object. If no
             style is provided then a new one will be created for the widget.
-        children (``list`` of :class:`toga.Widget`):  An optional list of child
+        children (``list`` of :class:`~toga.Widget`):  An optional list of child
             Widgets that will be in this box.
     """
 

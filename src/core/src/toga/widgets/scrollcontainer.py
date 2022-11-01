@@ -12,7 +12,7 @@ class ScrollContainer(Widget):
             If no style is provided then a new one will be created for the widget.
         horizontal (bool):  If True enable horizontal scroll bar.
         vertical (bool): If True enable vertical scroll bar.
-        content (:class:`toga.Widget`): The content of the scroll window.
+        content (:class:`~toga.Widget`): The content of the scroll window.
     """
 
     MIN_WIDTH = 100
@@ -68,7 +68,7 @@ class ScrollContainer(Widget):
         """Content of the scroll container.
 
         Returns:
-            The content of the widget (:class:`toga.Widget`).
+            The content of the widget (:class:`~toga.Widget`).
         """
         return self._content
 

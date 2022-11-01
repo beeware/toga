@@ -169,8 +169,8 @@ class App:
         derived from packaging metadata if not provided.
     :param startup: The callback method before starting the app, typically to
         add the components. Must be a ``callable`` that expects a single
-        argument of :class:`toga.App`.
-    :param windows: An iterable with objects of :class:`toga.Window` that will
+        argument of :class:`~toga.App`.
+    :param windows: An iterable with objects of :class:`~toga.Window` that will
         be the app's secondary windows.
     """
 

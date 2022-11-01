@@ -15,13 +15,13 @@ class Tree(Widget):
     :param style: An optional style object. If no style is provided then a new
         one will be created for the widget.
     :param data: The data to display in the widget. Can be an instance of
-        :class:`toga.sources.TreeSource`, a list, dict or tuple with data to
+        :class:`~toga.sources.TreeSource`, a list, dict or tuple with data to
         display in the tree widget, or a class instance which implements the
-        interface of :class:`toga.sources.TreeSource`. Entries can be:
+        interface of :class:`~toga.sources.TreeSource`. Entries can be:
 
           - any Python object ``value`` with a string representation. This
             string will be shown in the widget. If ``value`` has an attribute
-            ``icon``, instance of (:class:`toga.Icon`), the icon will be shown
+            ``icon``, instance of (:class:`~toga.Icon`), the icon will be shown
             in front of the text.
 
           - a tuple ``(icon, value)`` where again the string representation of

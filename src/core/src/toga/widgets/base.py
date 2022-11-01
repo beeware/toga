@@ -189,7 +189,7 @@ class Widget(Node):
         iterate over all children of this widget and set them to the same app.
 
         Returns:
-            The :class:`toga.App` to which this widget belongs.
+            The :class:`~toga.App` to which this widget belongs.
 
         Raises:
             ValueError: If the widget is already associated with another app.
@@ -235,7 +235,7 @@ class Widget(Node):
         window.
 
         Returns:
-            The :class:`toga.Window` to which the widget belongs.
+            The :class:`~toga.Window` to which the widget belongs.
         """
         return self._window
 

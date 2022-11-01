@@ -276,7 +276,7 @@ class OptionContainer(Widget):
         id (str):   An identifier for this widget.
         style (:obj:`Style`): an optional style object.
             If no style is provided then a new one will be created for the widget.
-        content (``list`` of ``tuple`` (``str``, :class:`toga.Widget`)):
+        content (``list`` of ``tuple`` (``str``, :class:`~toga.Widget`)):
             Each tuple in the list is composed of a title for the option and
             the widget tree that is displayed in the option.
     """
@@ -321,7 +321,7 @@ class OptionContainer(Widget):
         """The sub layouts of the `SplitContainer`.
 
         Returns:
-            A OptionList ``list`` of :class:`toga.OptionItem`. Each element of the list
+            A OptionList ``list`` of :class:`~toga.OptionItem`. Each element of the list
             is a sub layout of the `SplitContainer`
 
         Raises:
@@ -370,7 +370,7 @@ class OptionContainer(Widget):
 
         Args:
             text (str): The text for the option.
-            widget (:class:`toga.Widget`): The widget to add to the option.
+            widget (:class:`~toga.Widget`): The widget to add to the option.
         """
         ##################################################################
         # 2022-07: Backwards compatibility
@@ -424,7 +424,7 @@ class OptionContainer(Widget):
         Args:
             index (int): Index for the option.
             text (str): The text for the option.
-            widget (:class:`toga.Widget`): The widget to add to the option.
+            widget (:class:`~toga.Widget`): The widget to add to the option.
         """
         widget.app = self.app
         widget.window = self.window

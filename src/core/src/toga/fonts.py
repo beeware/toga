@@ -91,9 +91,10 @@ class Font(BaseFont):
 
     @staticmethod
     def registered_font_key(family, weight, style, variant):
-        """Creates a key for storing a registered font in the font cache.\n If
-        weight, style or variant contain an invalid value, Font.NORMAL is used
-        instead.
+        """Creates a key for storing a registered font in the font cache.
+
+        If weight, style or variant contain an invalid value, Font.NORMAL is
+        used instead.
 
         Args:
             family (str):  The font family name
