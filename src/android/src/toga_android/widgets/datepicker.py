@@ -1,8 +1,8 @@
 from datetime import date, datetime
 
 from ..libs.android import R__drawable
-from ..libs.android.widget import DatePickerDialog
 from ..libs.android.widget import (
+    DatePickerDialog,
     DatePickerDialog__OnDateSetListener as OnDateSetListener,
 )
 from .internal.pickers import PickerBase

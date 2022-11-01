@@ -4,6 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [tool.isort]
 profile = "black"
+split_on_trailing_comma = true
+combine_as_imports = true
 known_first_party = [
     "toga",
     "toga_android",

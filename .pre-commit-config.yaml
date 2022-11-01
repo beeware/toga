@@ -10,7 +10,8 @@ repos:
       - id: end-of-file-fixer
       - id: trailing-whitespace
   - repo: https://github.com/PyCQA/isort
-    rev: 5.10.1
+    # For split_on_trailing_comma. Should be in the release after 5.10.1
+    rev: 12cc5fbd67eebf92eb2213b03c07b138ae1fb448
     hooks:
       - id: isort
         additional_dependencies: [toml]
