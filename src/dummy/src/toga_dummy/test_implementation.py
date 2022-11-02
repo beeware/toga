@@ -45,9 +45,10 @@ FunctionArguments = namedtuple(
 
 class DefinitionExtractor:
     """The DefinitionExtractor consumes a .py file and extracts information,
-    with the help of the 'ast' module from it. Non existing files result in a
-    empty DefinitionExtractor, this means the all properties return empty lists
-    or dicts.
+    with the help of the 'ast' module from it.
+
+    Non existing files result in a empty DefinitionExtractor, this means the
+    all properties return empty lists or dicts.
 
     Args:
         path (str): The path to the .py file.
