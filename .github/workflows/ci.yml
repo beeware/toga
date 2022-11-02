@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
-      - uses: actions/setup-python@v3.1.2
+      - uses: actions/setup-python@v4.3.0
         with:
           python-version: ${{ env.min_python_version }}
       - uses: pre-commit/action@v3.0.0
@@ -44,7 +44,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
-    - uses: actions/setup-python@v3.1.2
+    - uses: actions/setup-python@v4.3.0
       with:
         python-version: ${{ env.min_python_version }}
     - run: pip install tox
@@ -69,7 +69,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3.1.2
+      uses: actions/setup-python@v4.3.0
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
@@ -121,7 +121,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3.1.2
+      uses: actions/setup-python@v4.3.0
       with:
         # Py3.9 is the first Python version for which
         # a wheel of pythonnet isn't available on PyPI.
