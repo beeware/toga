@@ -88,7 +88,7 @@ jobs:
       run: |
         tox -e py
     - if: matrix.platform == 'ubuntu' && matrix.python-version == env.min_python_version
-      uses: codecov/codecov-action@v1
+      uses: codecov/codecov-action@v3
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         file: ./coverage.xml
