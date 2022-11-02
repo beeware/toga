@@ -24,7 +24,7 @@ class ImageTests(TestCase):
             pass
 
     def test_path_file_image(self):
-        # Creating an image from a path that doesn't exist raises an error.
+        # Creating an image from a path.
         image = toga.Image(path=Path(toga.__file__).parent / "resources" / "toga.png")
 
         self.assertIsNotNone(image._impl)
@@ -41,18 +41,20 @@ class ImageTests(TestCase):
         except FileNotFoundError:
             pass
 
-    def test_str_file_image_binding(self):
-        # Creating an image from a string path that doesn't exist raises an error.
-        try:
-            toga.Image(path="does/not/exist/image.png")
-            self.fail("The image does not exist")  # pragma: nocover
-        except FileNotFoundError:
-            pass
+    def test_str_file_image(self):
+        # Creating an image from a string path.
+        image = toga.Image(path=f"{Path(toga.__file__).parent}/resources/toga.png")
 
-    def test_url_image_binding(self):
+        self.assertIsNotNone(image._impl)
+        self.assertEqual(
+            image._impl.interface.path,
+            Path(toga.__file__).parent / "resources" / "toga.png",
+        )
+
+    def test_url_image(self):
+        # Creating an image from a URL.
         url_image = toga.Image(path="https://example.com/image.png")
 
-        # Image is bound correctly
         self.assertEqual(
             url_image._impl.interface.path, "https://example.com/image.png"
         )
@@ -78,8 +80,7 @@ class ImageTests(TestCase):
             toga.Image(path=path, data=data)
 
     def test_bind(self):
-        "Bind is a depreacated no-op"
-        # Creating an image from a path that doesn't exist raises an error.
+        # Bind is a deprecated no-op
         image = toga.Image(path=Path(toga.__file__).parent / "resources" / "toga.png")
 
         with self.assertWarns(DeprecationWarning):
