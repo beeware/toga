@@ -5,7 +5,7 @@ from toga import validators
 from toga.constants import COLUMN
 from toga.style import Pack
 
-EMPTY_PASSWORD = 'Empty password'
+EMPTY_PASSWORD = "Empty password"
 
 
 class TextInputApp(toga.App):
@@ -25,7 +25,7 @@ class TextInputApp(toga.App):
 
         self.password_label.text = "Your password is {}: {}".format(
             "valid" if self.password_input.is_valid else "invalid",
-            self.password_input.value
+            self.password_input.value,
         )
 
         number = self.number_input.value
@@ -36,9 +36,9 @@ class TextInputApp(toga.App):
 
         # Wait 5 seconds
         for i in range(5, 0, -1):
-            self.label.text = f'Counting down from {i}...'
+            self.label.text = f"Counting down from {i}..."
             yield 1
-        self.label.text = 'Enter some values and press extract.'
+        self.label.text = "Enter some values and press extract."
 
         # Renable the inputs again.
         self.text_input.enabled = True
@@ -52,25 +52,26 @@ class TextInputApp(toga.App):
 
         # Labels to show responses.
         self.label = toga.Label(
-            'Enter some values and press extract.', style=Pack(padding=10)
+            "Enter some values and press extract.", style=Pack(padding=10)
         )
-        self.text_label = toga.Label('Ready.', style=Pack(padding=10))
-        self.password_label = toga.Label('Ready.', style=Pack(padding=10))
+        self.text_label = toga.Label("Ready.", style=Pack(padding=10))
+        self.password_label = toga.Label("Ready.", style=Pack(padding=10))
         self.password_content_label = toga.Label(
             EMPTY_PASSWORD, style=Pack(padding_bottom=10, font_size=9)
         )
-        self.number_label = toga.Label('Ready.', style=Pack(padding=10))
+        self.number_label = toga.Label("Ready.", style=Pack(padding=10))
 
         # Text inputs and a button
         self.text_input = toga.TextInput(
-            value='Initial value',
-            placeholder='Type something...', style=Pack(padding=10)
+            value="Initial value",
+            placeholder="Type something...",
+            style=Pack(padding=10),
         )
         self.text_input_placeholder = toga.TextInput(
-            placeholder='Type something...', style=Pack(padding=10)
+            placeholder="Type something...", style=Pack(padding=10)
         )
         self.password_input = toga.PasswordInput(
-            placeholder='Password...',
+            placeholder="Password...",
             style=Pack(padding=10),
             on_change=self.on_password_change,
             validators=[
@@ -78,17 +79,17 @@ class TextInputApp(toga.App):
                 validators.ContainsUppercase(),
                 validators.ContainsLowercase(),
                 validators.ContainsSpecial(),
-                validators.ContainsDigit()
-            ]
+                validators.ContainsDigit(),
+            ],
         )
         self.email_input = toga.TextInput(
-            placeholder='Email...',
+            placeholder="Email...",
             style=Pack(padding=10),
-            validators=[validators.Email()]
+            validators=[validators.Email()],
         )
         self.number_input = toga.NumberInput(style=Pack(padding=10))
         btn_extract = toga.Button(
-            'Extract values',
+            "Extract values",
             on_press=self.do_extract_values,
             style=Pack(flex=1),
         )
@@ -112,7 +113,7 @@ class TextInputApp(toga.App):
                 flex=1,
                 direction=COLUMN,
                 padding=10,
-            )
+            ),
         )
 
         # Add the content on the main window
@@ -138,13 +139,13 @@ class TextInputApp(toga.App):
                 contains.add("digits")
             else:
                 contains.add("special characters")
-        return "Password contains: {}".format(', '.join(contains))
+        return "Password contains: {}".format(", ".join(contains))
 
 
 def main():
-    return TextInputApp('TextInput', 'org.beeware.widgets.textinput')
+    return TextInputApp("TextInput", "org.beeware.widgets.textinput")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app = main()
     app.main_loop()

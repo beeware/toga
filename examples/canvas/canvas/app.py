@@ -1,27 +1,10 @@
 import math
 import sys
 
-from travertino.constants import (
-    BLACK,
-    BLUE,
-    BOLD,
-    GREEN,
-    ITALIC,
-    NORMAL,
-    RED,
-    YELLOW,
-)
+from travertino.constants import BLACK, BLUE, BOLD, GREEN, ITALIC, NORMAL, RED, YELLOW
 
 import toga
-from toga.fonts import (
-    CURSIVE,
-    FANTASY,
-    MESSAGE,
-    MONOSPACE,
-    SANS_SERIF,
-    SERIF,
-    SYSTEM,
-)
+from toga.fonts import CURSIVE, FANTASY, MESSAGE, MONOSPACE, SANS_SERIF, SERIF, SYSTEM
 from toga.style import Pack
 from toga.style.pack import COLUMN, ROW
 from toga.widgets.canvas import FillRule
@@ -49,7 +32,6 @@ DASH_2_3_1 = "dash 2-3-1"
 
 
 class ExampleCanvasApp(toga.App):
-
     def startup(self):
         # Set up main window
         self.main_window = toga.MainWindow(title=self.name, size=(750, 500))
@@ -62,9 +44,11 @@ class ExampleCanvasApp(toga.App):
             on_release=self.on_release,
             on_alt_press=self.on_alt_press,
             on_alt_drag=self.on_alt_drag,
-            on_alt_release=self.on_alt_release
+            on_alt_release=self.on_alt_release,
         )
-        self.context_selection = toga.Selection(items=[STROKE, FILL], on_select=self.refresh_canvas)
+        self.context_selection = toga.Selection(
+            items=[STROKE, FILL], on_select=self.refresh_canvas
+        )
         self.drawing_shape_instructions = {
             INSTRUCTIONS: self.draw_instructions,
             TRIANGLE: self.draw_triangle,
@@ -81,70 +65,43 @@ class ExampleCanvasApp(toga.App):
             CONTINUOUS: None,
             DASH_1_1: [1, 1],
             DASH_1_2: [1, 2],
-            DASH_2_3_1: [2, 3, 1]
+            DASH_2_3_1: [2, 3, 1],
         }
         self.shape_selection = toga.Selection(
             items=list(self.drawing_shape_instructions.keys()),
-            on_select=self.on_shape_change
+            on_select=self.on_shape_change,
         )
         self.color_selection = toga.Selection(
-            items=[BLACK, BLUE, GREEN, RED, YELLOW],
-            on_select=self.refresh_canvas
+            items=[BLACK, BLUE, GREEN, RED, YELLOW], on_select=self.refresh_canvas
         )
         self.fill_rule_selection = toga.Selection(
             items=[value.name.lower() for value in FillRule],
-            on_select=self.refresh_canvas
+            on_select=self.refresh_canvas,
         )
         self.line_width_slider = toga.Slider(
-            range=(1, 10),
-            value=1,
-            on_change=self.refresh_canvas
+            range=(1, 10), value=1, on_change=self.refresh_canvas
         )
         self.dash_pattern_selection = toga.Selection(
-            items=list(self.dash_patterns.keys()),
-            on_select=self.refresh_canvas
+            items=list(self.dash_patterns.keys()), on_select=self.refresh_canvas
         )
         self.clicked_point = None
         self.translation = None
         self.rotation = 0
         self.scale_x_slider = toga.Slider(
-            range=(0, 2),
-            value=1,
-            tick_count=10,
-            on_change=self.refresh_canvas
+            range=(0, 2), value=1, tick_count=10, on_change=self.refresh_canvas
         )
         self.scale_y_slider = toga.Slider(
-            range=(0, 2),
-            value=1,
-            tick_count=10,
-            on_change=self.refresh_canvas
+            range=(0, 2), value=1, tick_count=10, on_change=self.refresh_canvas
         )
         self.font_selection = toga.Selection(
-            items=[
-                SYSTEM,
-                MESSAGE,
-                SERIF,
-                SANS_SERIF,
-                CURSIVE,
-                FANTASY,
-                MONOSPACE
-            ],
-            on_select=self.refresh_canvas
+            items=[SYSTEM, MESSAGE, SERIF, SANS_SERIF, CURSIVE, FANTASY, MONOSPACE],
+            on_select=self.refresh_canvas,
         )
         self.font_size = toga.NumberInput(
-            min_value=10,
-            max_value=72,
-            value=20,
-            on_change=self.refresh_canvas
+            min_value=10, max_value=72, value=20, on_change=self.refresh_canvas
         )
-        self.italic_switch = toga.Switch(
-            text="italic",
-            on_change=self.refresh_canvas
-        )
-        self.bold_switch = toga.Switch(
-            text="bold",
-            on_change=self.refresh_canvas
-        )
+        self.italic_switch = toga.Switch(text="italic", on_change=self.refresh_canvas)
+        self.bold_switch = toga.Switch(text="bold", on_change=self.refresh_canvas)
         label_style = Pack(font_size=10, padding_left=5)
 
         # Add the content on the main window
@@ -157,16 +114,16 @@ class ExampleCanvasApp(toga.App):
                         self.context_selection,
                         self.shape_selection,
                         self.color_selection,
-                        self.fill_rule_selection
-                    ]
+                        self.fill_rule_selection,
+                    ],
                 ),
                 toga.Box(
                     style=Pack(direction=ROW, padding=5),
                     children=[
                         toga.Label("Line Width:", style=label_style),
                         self.line_width_slider,
-                        self.dash_pattern_selection
-                    ]
+                        self.dash_pattern_selection,
+                    ],
                 ),
                 toga.Box(
                     style=Pack(direction=ROW, padding=5),
@@ -176,10 +133,9 @@ class ExampleCanvasApp(toga.App):
                         toga.Label("Y Scale:", style=label_style),
                         self.scale_y_slider,
                         toga.Button(
-                            text="Reset transform",
-                            on_press=self.reset_transform
-                        )
-                    ]
+                            text="Reset transform", on_press=self.reset_transform
+                        ),
+                    ],
                 ),
                 toga.Box(
                     style=Pack(direction=ROW, padding=5),
@@ -189,11 +145,11 @@ class ExampleCanvasApp(toga.App):
                         toga.Label("Font Size:", style=label_style),
                         self.font_size,
                         self.bold_switch,
-                        self.italic_switch
-                    ]
+                        self.italic_switch,
+                    ],
                 ),
-                self.canvas
-            ]
+                self.canvas,
+            ],
         )
         self.main_window.content = box
 
@@ -465,7 +421,7 @@ class ExampleCanvasApp(toga.App):
             self.x_middle - factor / 3,
             self.y_middle - factor / 6,
             2 * factor / 3,
-            factor / 3
+            factor / 3,
         )
 
     def draw_ellipse(self, context, factor):
@@ -505,7 +461,8 @@ class ExampleCanvasApp(toga.App):
                 self.x_middle + 1 * factor / 10,
                 self.y_middle - 2 * factor / 5,
                 self.x_middle + 1 * factor / 5,
-                self.y_middle - 1 * factor / 5)
+                self.y_middle - 1 * factor / 5,
+            )
             closer.line_to(
                 self.x_middle + 1 * factor / 5, self.y_middle + 1 * factor / 5
             )
@@ -519,8 +476,10 @@ class ExampleCanvasApp(toga.App):
         rotation_angle = 4 * math.pi / sides
         with context.closed_path(self.x_middle, self.y_middle - radius) as closer:
             for i in range(1, sides):
-                closer.line_to(self.x_middle + radius * math.sin(i * rotation_angle),
-                               self.y_middle - radius * math.cos(i * rotation_angle))
+                closer.line_to(
+                    self.x_middle + radius * math.sin(i * rotation_angle),
+                    self.y_middle - radius * math.cos(i * rotation_angle),
+                )
 
     def draw_instructions(self, context, factor):
         text = """Instructions:
@@ -553,17 +512,16 @@ class ExampleCanvasApp(toga.App):
             return canvas.stroke(
                 color=str(self.color_selection.value),
                 line_width=self.line_width_slider.value,
-                line_dash=self.dash_patterns[self.dash_pattern_selection.value]
+                line_dash=self.dash_patterns[self.dash_pattern_selection.value],
             )
         return canvas.fill(
-            color=self.color_selection.value,
-            fill_rule=self.fill_rule_selection.value
+            color=self.color_selection.value, fill_rule=self.fill_rule_selection.value
         )
 
 
 def main():
-    return ExampleCanvasApp('Canvas', 'org.beeware.widgets.canvas')
+    return ExampleCanvasApp("Canvas", "org.beeware.widgets.canvas")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main().main_loop()

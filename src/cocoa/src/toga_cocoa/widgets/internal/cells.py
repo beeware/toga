@@ -30,7 +30,6 @@ from toga_cocoa.libs import (
 
 
 class TogaIconView(NSTableCellView):
-
     @objc_method
     def setup(self):
         image_view = NSImageView.alloc().init()
@@ -53,45 +52,63 @@ class TogaIconView(NSTableCellView):
 
         # center icon vertically in cell
         self.iv_vertical_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # NOQA:E501
-            self.imageView, NSLayoutAttributeCenterY,
+            self.imageView,
+            NSLayoutAttributeCenterY,
             NSLayoutRelationEqual,
-            self, NSLayoutAttributeCenterY,
-            1, 0
-            )
+            self,
+            NSLayoutAttributeCenterY,
+            1,
+            0,
+        )
         # align left edge of icon with left edge of cell
         self.iv_left_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # NOQA:E501
-            self.imageView, NSLayoutAttributeLeft,
+            self.imageView,
+            NSLayoutAttributeLeft,
             NSLayoutRelationEqual,
-            self, NSLayoutAttributeLeft,
-            1, 0
+            self,
+            NSLayoutAttributeLeft,
+            1,
+            0,
         )
         # set fixed width of icon
         self.iv_width_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # NOQA:E501
-            self.imageView, NSLayoutAttributeWidth,
+            self.imageView,
+            NSLayoutAttributeWidth,
             NSLayoutRelationEqual,
-            None, NSLayoutAttributeNotAnAttribute,
-            1, 16
+            None,
+            NSLayoutAttributeNotAnAttribute,
+            1,
+            16,
         )
         # align text vertically in cell
         self.tv_vertical_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # NOQA:E501
-            self.textField, NSLayoutAttributeCenterY,
+            self.textField,
+            NSLayoutAttributeCenterY,
             NSLayoutRelationEqual,
-            self, NSLayoutAttributeCenterY,
-            1, 0,
+            self,
+            NSLayoutAttributeCenterY,
+            1,
+            0,
         )
         # align left edge of text with right edge of icon
         self.tv_left_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # NOQA:E501
-            self.textField, NSLayoutAttributeLeft,
+            self.textField,
+            NSLayoutAttributeLeft,
             NSLayoutRelationEqual,
-            self.imageView, NSLayoutAttributeRight,
-            1, 5  # 5 pixels padding between icon and text
+            self.imageView,
+            NSLayoutAttributeRight,
+            1,
+            5,  # 5 pixels padding between icon and text
         )
         # align right edge of text with right edge of cell
         self.tv_right_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # NOQA:E501
-            self.textField, NSLayoutAttributeRight,
+            self.textField,
+            NSLayoutAttributeRight,
             NSLayoutRelationEqual,
-            self, NSLayoutAttributeRight,
-            1, -5
+            self,
+            NSLayoutAttributeRight,
+            1,
+            -5,
         )
 
         self.addConstraint(self.iv_vertical_constraint)
@@ -137,9 +154,9 @@ class TogaDetailedCell(NSTextFieldCell):
     @objc_method
     def drawInteriorWithFrame_inView_(self, cellFrame: NSRect, view) -> None:
         # The data to display.
-        icon = self.objectValue.attrs['icon']
-        title = self.objectValue.attrs['title']
-        subtitle = self.objectValue.attrs['subtitle']
+        icon = self.objectValue.attrs["icon"]
+        title = self.objectValue.attrs["title"]
+        subtitle = self.objectValue.attrs["subtitle"]
 
         if icon and icon.native:
             NSGraphicsContext.currentContext.saveGraphicsState()
@@ -152,20 +169,28 @@ class TogaDetailedCell(NSTextFieldCell):
                 yOffset = 0.5 - cellFrame.origin.y
 
             interpolation = NSGraphicsContext.currentContext.imageInterpolation
-            NSGraphicsContext.currentContext.imageInterpolation = NSImageInterpolationHigh
+            NSGraphicsContext.currentContext.imageInterpolation = (
+                NSImageInterpolationHigh
+            )
 
             icon.native.drawInRect(
                 NSRect(NSPoint(cellFrame.origin.x, yOffset + 4), NSSize(40.0, 40.0)),
-                fromRect=NSRect(NSPoint(0, 0), NSSize(icon.native.size.width, icon.native.size.height)),
+                fromRect=NSRect(
+                    NSPoint(0, 0),
+                    NSSize(icon.native.size.width, icon.native.size.height),
+                ),
                 operation=NSCompositingOperationSourceOver,
-                fraction=1.0
+                fraction=1.0,
             )
 
             NSGraphicsContext.currentContext.imageInterpolation = interpolation
             NSGraphicsContext.currentContext.restoreGraphicsState()
         else:
             path = NSBezierPath.bezierPathWithRect(
-                NSRect(NSPoint(cellFrame.origin.x, cellFrame.origin.y + 4), NSSize(40.0, 40.0))
+                NSRect(
+                    NSPoint(cellFrame.origin.x, cellFrame.origin.y + 4),
+                    NSSize(40.0, 40.0),
+                )
             )
             NSColor.grayColor.set()
             path.fill()
@@ -186,7 +211,7 @@ class TogaDetailedCell(NSTextFieldCell):
 
             at(title).drawAtPoint(
                 NSPoint(cellFrame.origin.x + 48, cellFrame.origin.y + 4),
-                withAttributes=textAttributes
+                withAttributes=textAttributes,
             )
 
         if subtitle:
@@ -205,5 +230,5 @@ class TogaDetailedCell(NSTextFieldCell):
 
             at(subtitle).drawAtPoint(
                 NSPoint(cellFrame.origin.x + 48, cellFrame.origin.y + 24),
-                withAttributes=textAttributes
+                withAttributes=textAttributes,
             )

@@ -7,11 +7,11 @@ from .base import Widget
 
 
 class NumberInput(Widget):
-    """ A `NumberInput` widget specifies a fixed range of possible numbers.
-    The user has two buttons to increment/decrement the value by a step size.
-    Step, min and max can be integers, floats, or Decimals; They can also be specified
-    as strings, which will be converted to Decimals internally. The value of the
-    widget will be evaluated as a Decimal.
+    """A `NumberInput` widget specifies a fixed range of possible numbers. The
+    user has two buttons to increment/decrement the value by a step size. Step,
+    min and max can be integers, floats, or Decimals; They can also be
+    specified as strings, which will be converted to Decimals internally. The
+    value of the widget will be evaluated as a Decimal.
 
     Args:
         id (str): An identifier for this widget.
@@ -26,6 +26,7 @@ class NumberInput(Widget):
         on_change (``callable``): The handler to invoke when the value changes.
         **ex:
     """
+
     MIN_WIDTH = 100
 
     def __init__(
@@ -68,9 +69,7 @@ class NumberInput(Widget):
                     "`default` has been deprecated, use `value`"
                 )
             else:
-                warnings.warn(
-                    "`default` has been renamed `value`", DeprecationWarning
-                )
+                warnings.warn("`default` has been renamed `value`", DeprecationWarning)
             value = default
 
         ##################################################################
@@ -88,7 +87,7 @@ class NumberInput(Widget):
 
     @property
     def readonly(self):
-        """ Whether a user can write/change the number input
+        """Whether a user can write/change the number input.
 
         Returns:
             ``True`` if only read is possible.
@@ -103,7 +102,7 @@ class NumberInput(Widget):
 
     @property
     def step(self):
-        """The step value for the widget
+        """The step value for the widget.
 
         Returns:
             The current step value for the widget.
@@ -160,7 +159,7 @@ class NumberInput(Widget):
 
     @property
     def value(self):
-        """Current value contained by the widget
+        """Current value contained by the widget.
 
         Returns:
             The current value(int) of the widget. Returns None
@@ -186,7 +185,7 @@ class NumberInput(Widget):
 
     @property
     def on_change(self):
-        """The handler to invoke when the value changes
+        """The handler to invoke when the value changes.
 
         Returns:
             The function ``callable`` that is called on a content change.

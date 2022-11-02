@@ -38,9 +38,11 @@ class OptionContainer(Widget):
         pass
 
     def set_option_enabled(self, index, enabled):
-        """
-        Winforms documentation states that Enabled is not meaningful for this control.
-        Disabling option only disables the content of the tab, not the tab itself.
+        """Winforms documentation states that Enabled is not meaningful for
+        this control.
+
+        Disabling option only disables the content of the tab, not the
+        tab itself.
         """
         self.native.TabPages[index].Enabled = enabled
 
@@ -62,10 +64,9 @@ class OptionContainer(Widget):
     def winforms_selected(self, sender, event):
         if self.interface.on_select:
             self.interface.on_select(
-                self.interface,
-                option=self.interface.content[self.native.SelectedIndex]
+                self.interface, option=self.interface.content[self.native.SelectedIndex]
             )
 
     def set_font(self, font):
         if font:
-            self.native.Font = font.bind().native
+            self.native.Font = font._impl.native

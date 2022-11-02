@@ -15,10 +15,10 @@ class ImageViewTests(TestCase):
 
     def test_widget_created(self):
         self.assertEqual(self.image_view._impl.interface, self.image_view)
-        self.assertActionPerformed(self.image_view, 'create ImageView')
+        self.assertActionPerformed(self.image_view, "create ImageView")
 
     def test_setting_image_invokes_impl_method(self):
-        new_image = 'not a image'
+        new_image = "not a image"
 
         # Binding a non-existent image raises an exception
         try:

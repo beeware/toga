@@ -15,11 +15,13 @@ class TimePicker(Widget):
         self.native.ShowUpDown = True
 
     def get_value(self):
-        return datetime.datetime.strptime(self.native.Text, '%I:%M:%S %p').time()
+        return datetime.datetime.strptime(self.native.Text, "%I:%M:%S %p").time()
 
     def set_value(self, value):
         # Jan 1 1970 is a dummy date; we don't need the date component
-        self.native.Value = WinDateTime(1970, 1, 1, value.hour, value.minute, value.second)
+        self.native.Value = WinDateTime(
+            1970, 1, 1, value.hour, value.minute, value.second
+        )
 
     def set_min_time(self, value):
         if value is None:

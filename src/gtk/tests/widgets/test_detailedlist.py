@@ -3,7 +3,8 @@ import unittest
 
 try:
     import gi
-    gi.require_version('Gtk', '3.0')
+
+    gi.require_version("Gtk", "3.0")
     from gi.repository import Gtk
 except ImportError:
     import sys
@@ -11,7 +12,7 @@ except ImportError:
     # If we're on Linux, Gtk *should* be available. If it isn't, make
     # Gtk an object... but in such a way that every test will fail,
     # because the object isn't actually the Gtk interface.
-    if sys.platform == 'linux':
+    if sys.platform == "linux":
         Gtk = object()
     else:
         Gtk = None
@@ -24,14 +25,27 @@ def handle_events():
         Gtk.main_iteration_do(blocking=False)
 
 
-@unittest.skipIf(Gtk is None, "Can't run GTK implementation tests on a non-Linux platform")
+@unittest.skipIf(
+    Gtk is None, "Can't run GTK implementation tests on a non-Linux platform"
+)
 class TestGtkDetailedList(unittest.TestCase):
     def setUp(self):
-        icon = toga.Icon(os.path.join(os.path.dirname(__file__), '../../../../demo/toga_demo/resources/brutus-32.png'))
-        self.dl = toga.DetailedList([
-            dict(icon=icon, title='Item %i' % i, subtitle='this is the subtitle for item %i' % i)
-            for i in range(10)
-        ])
+        icon = toga.Icon(
+            os.path.join(
+                os.path.dirname(__file__),
+                "../../../../demo/toga_demo/resources/brutus-32.png",
+            )
+        )
+        self.dl = toga.DetailedList(
+            [
+                dict(
+                    icon=icon,
+                    title="Item %i" % i,
+                    subtitle="this is the subtitle for item %i" % i,
+                )
+                for i in range(10)
+            ]
+        )
 
         # make a shortcut for easy use
         self.gtk_dl = self.dl._impl
@@ -40,7 +54,7 @@ class TestGtkDetailedList(unittest.TestCase):
         self.window.add(self.dl._impl.native)
 
     def assertRowEqual(self, row, data):
-        for attr in ('icon', 'title', 'subtitle'):
+        for attr in ("icon", "title", "subtitle"):
             self.assertEqual(getattr(row, attr), data[attr])
 
     def test_change_source(self):
@@ -48,8 +62,8 @@ class TestGtkDetailedList(unittest.TestCase):
         self.gtk_dl.clear()
 
         # Assign pre-constructed data
-        a = dict(icon=None, title='A', subtitle='a subtitle')
-        b = dict(icon=None, title='B', subtitle='b subtitle')
+        a = dict(icon=None, title="A", subtitle="a subtitle")
+        b = dict(icon=None, title="B", subtitle="b subtitle")
 
         self.dl.data = [a, b]
 
@@ -73,7 +87,7 @@ class TestGtkDetailedList(unittest.TestCase):
 
     def test_insert(self):
         # Insert a row
-        row_data = dict(icon=None, title='A', subtitle='a subtitle')
+        row_data = dict(icon=None, title="A", subtitle="a subtitle")
 
         INSERTED_AT = 0
         self.dl.data.insert(INSERTED_AT, **row_data)
@@ -87,7 +101,7 @@ class TestGtkDetailedList(unittest.TestCase):
 
     def test_remove(self):
         # Insert a row
-        row_data = dict(icon=None, title='1', subtitle='2')
+        row_data = dict(icon=None, title="1", subtitle="2")
 
         INSERTED_AT = 0
         row = self.dl.data.insert(INSERTED_AT, **row_data)
@@ -103,7 +117,7 @@ class TestGtkDetailedList(unittest.TestCase):
 
     def test_change(self):
         # Insert a row
-        row_data = dict(icon=None, title='1', subtitle='2')
+        row_data = dict(icon=None, title="1", subtitle="2")
 
         INSERTED_AT = 0
         row = self.dl.data.insert(INSERTED_AT, **row_data)
@@ -118,7 +132,9 @@ class TestGtkDetailedList(unittest.TestCase):
 
         # Make sure the value changed
         result_row = self.gtk_dl.store[INSERTED_AT]
-        self.assertRowEqual(result_row, dict(icon=None, title="something changed", subtitle="2"))
+        self.assertRowEqual(
+            result_row, dict(icon=None, title="something changed", subtitle="2")
+        )
 
         # Make sure the row was replaced and not appended
         self.assertEqual(len(self.gtk_dl.store), 1)
@@ -130,8 +146,12 @@ class TestGtkDetailedList(unittest.TestCase):
         # B should now precede A
         # tests passes if A "knows" it has moved to index 1
 
-        self.assertRowEqual(self.gtk_dl.store[0], dict(icon=None, title="B1", subtitle="B2"))
-        self.assertRowEqual(self.gtk_dl.store[1], dict(icon=None, title="A1", subtitle="A2"))
+        self.assertRowEqual(
+            self.gtk_dl.store[0], dict(icon=None, title="B1", subtitle="B2")
+        )
+        self.assertRowEqual(
+            self.gtk_dl.store[1], dict(icon=None, title="A1", subtitle="A2")
+        )
 
     def test_on_select_row(self):
         # Insert two dummy rows
@@ -152,8 +172,7 @@ class TestGtkDetailedList(unittest.TestCase):
         self.dl.on_select = on_select
 
         # Select row B
-        self.gtk_dl.list_box.select_row(
-            self.gtk_dl.list_box.get_row_at_index(1))
+        self.gtk_dl.list_box.select_row(self.gtk_dl.list_box.get_row_at_index(1))
 
         # Allow on_select to call
         handle_events()
@@ -165,7 +184,7 @@ class TestGtkDetailedList(unittest.TestCase):
         self.dl.data = []
 
         self.dl.data.append(None, icon=None, title="A1", subtitle="A2")
-        b = self.dl.data.append(None,  icon=None, title="B1", subtitle="B2")
+        b = self.dl.data.append(None, icon=None, title="B1", subtitle="B2")
 
         # Create a flag
         succeed = False

@@ -4,14 +4,13 @@ from toga_cocoa.libs import (
     NSImageFrameNone,
     NSImageScaleProportionallyUpOrDown,
     NSImageView,
-    NSSize
+    NSSize,
 )
 
 from .base import Widget
 
 
 class ImageView(Widget):
-
     def create(self):
         self.native = NSImageView.alloc().init()
 

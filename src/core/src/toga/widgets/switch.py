@@ -11,9 +11,8 @@ NOT_PROVIDED = object()
 
 
 class Switch(Widget):
-    """
-    Switch widget, a clickable button with two stable states, True (on, checked)
-        and False (off, unchecked).
+    """Switch widget, a clickable button with two stable states, True (on,
+    checked) and False (off, unchecked).
 
     Args:
         text (str): Text to be shown next to the switch.
@@ -28,15 +27,15 @@ class Switch(Widget):
     def __init__(
         self,
         text=NOT_PROVIDED,  # BACKWARDS COMPATIBILITY: The default value
-                            # can be removed when the handling for
-                            # `label` is removed
+        # can be removed when the handling for
+        # `label` is removed
         id=None,
         style=None,
         on_change=None,
         value=NOT_PROVIDED,  # BACKWARDS COMPATIBILITY: The default value
-                             # *should* be False, but we use a temp value
-                             # and overwrite to detect the specification
-                             # of both value *and* is_on
+        # *should* be False, but we use a temp value
+        # and overwrite to detect the specification
+        # of both value *and* is_on
         enabled=True,
         factory=None,  # DEPRECATED!
         label=None,  # DEPRECATED!
@@ -78,7 +77,9 @@ class Switch(Widget):
         elif text is NOT_PROVIDED:
             # This would be raised by Python itself; however, we need to use a placeholder
             # value as part of the migration from text->value.
-            raise TypeError("Switch.__init__ missing 1 required positional argument: 'text'")
+            raise TypeError(
+                "Switch.__init__ missing 1 required positional argument: 'text'"
+            )
 
         # on_toggle replaced with on_change
         if on_toggle:
@@ -89,7 +90,8 @@ class Switch(Widget):
                 )
             else:
                 warnings.warn(
-                    "Switch.on_toggle has been renamed Switch.on_change", DeprecationWarning
+                    "Switch.on_toggle has been renamed Switch.on_change",
+                    DeprecationWarning,
                 )
                 on_change = on_toggle
 
@@ -124,7 +126,7 @@ class Switch(Widget):
 
     @property
     def text(self):
-        """ Accompanying text label of the Switch.
+        """Accompanying text label of the Switch.
 
         Returns:
             The label text of the widget as a ``str``.
@@ -134,7 +136,7 @@ class Switch(Widget):
     @text.setter
     def text(self, value):
         if value is None:
-            self._text = ''
+            self._text = ""
         else:
             self._text = str(value)
         self._impl.set_text(value)
@@ -142,7 +144,7 @@ class Switch(Widget):
 
     @property
     def on_change(self):
-        """ The callable function for when the switch is pressed
+        """The callable function for when the switch is pressed.
 
         Returns:
             The ``callable`` on_change function.
@@ -156,7 +158,7 @@ class Switch(Widget):
 
     @property
     def value(self):
-        """ Button Off/On state.
+        """Button Off/On state.
 
         Returns:
             ``True`` if on and ``False`` if the switch is off.
@@ -171,8 +173,7 @@ class Switch(Widget):
 
     def toggle(self):
         """Reverse the value of `Switch.value` property from true to false and
-        vice versa.
-        """
+        vice versa."""
         self.value = not self.value
 
     ######################################################################
@@ -181,29 +182,25 @@ class Switch(Widget):
     # label replaced with text
     @property
     def label(self):
-        """ Button Off/On state.
+        """Button Off/On state.
 
         **DEPRECATED: renamed as text**
 
         Returns:
             ``True`` if on and ``False`` if the switch is off.
         """
-        warnings.warn(
-            "Switch.label has been renamed Switch.text", DeprecationWarning
-        )
+        warnings.warn("Switch.label has been renamed Switch.text", DeprecationWarning)
         return self.text
 
     @label.setter
     def label(self, label):
-        warnings.warn(
-            "Switch.label has been renamed Switch.text", DeprecationWarning
-        )
+        warnings.warn("Switch.label has been renamed Switch.text", DeprecationWarning)
         self.text = label
 
     # on_toggle replaced with on_change
     @property
     def on_toggle(self):
-        """ The callable function for when the switch is pressed
+        """The callable function for when the switch is pressed.
 
         **DEPRECATED: renamed as on_change**
 
@@ -225,23 +222,19 @@ class Switch(Widget):
     # is_on replaced with value
     @property
     def is_on(self):
-        """ Button Off/On state.
+        """Button Off/On state.
 
         **DEPRECATED: renamed as value**
 
         Returns:
             ``True`` if on and ``False`` if the switch is off.
         """
-        warnings.warn(
-            "Switch.is_on has been renamed Switch.value", DeprecationWarning
-        )
+        warnings.warn("Switch.is_on has been renamed Switch.value", DeprecationWarning)
         return self.value
 
     @is_on.setter
     def is_on(self, value):
-        warnings.warn(
-            "Switch.is_on has been renamed Switch.value", DeprecationWarning
-        )
+        warnings.warn("Switch.is_on has been renamed Switch.value", DeprecationWarning)
         self.value = value
 
     ######################################################################

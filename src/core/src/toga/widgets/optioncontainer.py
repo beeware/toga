@@ -36,7 +36,7 @@ class BaseOptionItem:
     # label replaced with text
     @property
     def label(self):
-        """ OptionItem text
+        """OptionItem text.
 
         **DEPRECATED: renamed as text**
 
@@ -61,7 +61,8 @@ class BaseOptionItem:
 
 
 class OptionItem(BaseOptionItem):
-    """OptionItem is an interface wrapper for a tab on the OptionContainer"""
+    """OptionItem is an interface wrapper for a tab on the OptionContainer."""
+
     def __init__(self, interface, widget, index):
         super().__init__(interface)
         self._content = widget
@@ -110,13 +111,10 @@ class OptionList:
         self._options = []
 
     def __repr__(self):
-        repr_optionlist = '{}([{}])'
-        repr_items = ', '.join([
-            '{}(title={})'.format(
-                option.__class__.__name__,
-                option.text)
-            for option in self
-        ])
+        repr_optionlist = "{}([{}])"
+        repr_items = ", ".join(
+            [f"{option.__class__.__name__}(title={option.text})" for option in self]
+        )
         return repr_optionlist.format(self.__class__.__name__, repr_items)
 
     # def __setitem__(self, index, option):
@@ -144,11 +142,11 @@ class OptionList:
     def append(
         self,
         text=NOT_PROVIDED,  # BACKWARDS COMPATIBILITY: The default value
-                            # can be removed when the handling for
-                            # `label`` is removed
+        # can be removed when the handling for
+        # `label`` is removed
         widget=NOT_PROVIDED,  # BACKWARDS COMPATIBILITY: The default value
-                              # can be removed when the handling for
-                              # `label`` is removed
+        # can be removed when the handling for
+        # `label`` is removed
         label=None,  # DEPRECATED!
         enabled=True,
     ):
@@ -167,15 +165,13 @@ class OptionList:
                     "`label` has been deprecated, use `text`"
                 )
             else:
-                warnings.warn(
-                    "label has been renamed text", DeprecationWarning
-                )
+                warnings.warn("label has been renamed text", DeprecationWarning)
                 text = label
         elif text is NOT_PROVIDED:
-            missing_arguments.append('text')
+            missing_arguments.append("text")
 
         if widget is NOT_PROVIDED:
-            missing_arguments.append('widget')
+            missing_arguments.append("widget")
 
         # This would be raised by Python itself; however, we need to use a placeholder
         # value as part of the migration from text->value.
@@ -187,7 +183,7 @@ class OptionList:
             raise TypeError(
                 "OptionList.append missing {} required positional arguments: {}".format(
                     len(missing_arguments),
-                    ' and '.join([f"'{name}'" for name in missing_arguments])
+                    " and ".join([f"'{name}'" for name in missing_arguments]),
                 )
             )
 
@@ -201,11 +197,11 @@ class OptionList:
         self,
         index,
         text=NOT_PROVIDED,  # BACKWARDS COMPATIBILITY: The default value
-                            # can be removed when the handling for
-                            # `label`` is removed
+        # can be removed when the handling for
+        # `label`` is removed
         widget=NOT_PROVIDED,  # BACKWARDS COMPATIBILITY: The default value
-                              # can be removed when the handling for
-                              # `label`` is removed
+        # can be removed when the handling for
+        # `label`` is removed
         label=None,  # DEPRECATED!
         enabled=True,
     ):
@@ -224,15 +220,13 @@ class OptionList:
                     "`label` has been deprecated, use `text`"
                 )
             else:
-                warnings.warn(
-                    "label has been renamed text", DeprecationWarning
-                )
+                warnings.warn("label has been renamed text", DeprecationWarning)
                 text = label
         elif text is NOT_PROVIDED:
-            missing_arguments.append('text')
+            missing_arguments.append("text")
 
         if widget is NOT_PROVIDED:
-            missing_arguments.append('widget')
+            missing_arguments.append("widget")
 
         # This would be raised by Python itself; however, we need to use a placeholder
         # value as part of the migration from text->value.
@@ -244,7 +238,7 @@ class OptionList:
             raise TypeError(
                 "OptionList.insert missing {} required positional arguments: {}".format(
                     len(missing_arguments),
-                    ' and '.join([f"'{name}'" for name in missing_arguments])
+                    " and ".join([f"'{name}'" for name in missing_arguments]),
                 )
             )
 
@@ -261,7 +255,7 @@ class OptionList:
         # Add the option to the list maintained on the interface,
         # and increment the index of all items after the one that was added.
         self._options.insert(index, item)
-        for option in self._options[index + 1:]:
+        for option in self._options[index + 1 :]:
             option._index += 1
 
         # Add the content to the implementation.
@@ -276,16 +270,17 @@ class OptionList:
 
 
 class OptionContainer(Widget):
-    """ The option container widget.
+    """The option container widget.
 
     Args:
         id (str):   An identifier for this widget.
         style (:obj:`Style`): an optional style object.
             If no style is provided then a new one will be created for the widget.
-        content (``list`` of ``tuple`` (``str``, :class:`toga.Widget`)):
+        content (``list`` of ``tuple`` (``str``, :class:`~toga.Widget`)):
             Each tuple in the list is composed of a title for the option and
             the widget tree that is displayed in the option.
     """
+
     class OptionException(ValueError):
         pass
 
@@ -323,10 +318,10 @@ class OptionContainer(Widget):
 
     @property
     def content(self):
-        """ The sub layouts of the `SplitContainer`.
+        """The sub layouts of the `SplitContainer`.
 
         Returns:
-            A OptionList ``list`` of :class:`toga.OptionItem`. Each element of the list
+            A OptionList ``list`` of :class:`~toga.OptionItem`. Each element of the list
             is a sub layout of the `SplitContainer`
 
         Raises:
@@ -364,18 +359,18 @@ class OptionContainer(Widget):
     def add(
         self,
         text=NOT_PROVIDED,  # BACKWARDS COMPATIBILITY: The default value
-                            # can be removed when the handling for
-                            # `label`` is removed
+        # can be removed when the handling for
+        # `label`` is removed
         widget=NOT_PROVIDED,  # BACKWARDS COMPATIBILITY: The default value
-                              # can be removed when the handling for
-                              # `label`` is removed
+        # can be removed when the handling for
+        # `label`` is removed
         label=None,  # DEPRECATED!
     ):
-        """ Add a new option to the option container.
+        """Add a new option to the option container.
 
         Args:
             text (str): The text for the option.
-            widget (:class:`toga.Widget`): The widget to add to the option.
+            widget (:class:`~toga.Widget`): The widget to add to the option.
         """
         ##################################################################
         # 2022-07: Backwards compatibility
@@ -392,15 +387,13 @@ class OptionContainer(Widget):
                     "`label` has been deprecated, use `text`"
                 )
             else:
-                warnings.warn(
-                    "label has been renamed text", DeprecationWarning
-                )
+                warnings.warn("label has been renamed text", DeprecationWarning)
                 text = label
         elif text is NOT_PROVIDED:
-            missing_arguments.append('text')
+            missing_arguments.append("text")
 
         if widget is NOT_PROVIDED:
-            missing_arguments.append('widget')
+            missing_arguments.append("widget")
 
         # This would be raised by Python itself; however, we need to use a placeholder
         # value as part of the migration from text->value.
@@ -412,7 +405,7 @@ class OptionContainer(Widget):
             raise TypeError(
                 "OptionContainer.add missing {} required positional arguments: {}".format(
                     len(missing_arguments),
-                    ' and '.join([f"'{name}'" for name in missing_arguments])
+                    " and ".join([f"'{name}'" for name in missing_arguments]),
                 )
             )
 
@@ -426,12 +419,12 @@ class OptionContainer(Widget):
         self._content.append(text, widget)
 
     def insert(self, index, text, widget):
-        """ Insert a new option at the specified index.
+        """Insert a new option at the specified index.
 
         Args:
             index (int): Index for the option.
             text (str): The text for the option.
-            widget (:class:`toga.Widget`): The widget to add to the option.
+            widget (:class:`~toga.Widget`): The widget to add to the option.
         """
         widget.app = self.app
         widget.window = self.window
@@ -448,7 +441,8 @@ class OptionContainer(Widget):
 
     @property
     def on_select(self):
-        """ The callback function that is invoked when one of the options is selected.
+        """The callback function that is invoked when one of the options is
+        selected.
 
         Returns:
             (``callable``) The callback function.
@@ -457,8 +451,7 @@ class OptionContainer(Widget):
 
     @on_select.setter
     def on_select(self, handler):
-        """
-        Set the function to be executed on option selection
+        """Set the function to be executed on option selection.
 
         :param handler:     callback function
         :type handler:      ``callable``

@@ -22,10 +22,14 @@ class BaseDialog:
         self.future = loop.create_future()
 
     def __eq__(self, other):
-        raise RuntimeError("Can't check dialog result directly; use await or an on_result handler")
+        raise RuntimeError(
+            "Can't check dialog result directly; use await or an on_result handler"
+        )
 
     def __bool__(self):
-        raise RuntimeError("Can't check dialog result directly; use await or an on_result handler")
+        raise RuntimeError(
+            "Can't check dialog result directly; use await or an on_result handler"
+        )
 
     def __await__(self):
         return self.future.__await__()
@@ -62,9 +66,13 @@ class TextDialog(BaseDialog):
             builder.setIcon(icon)
 
         if positive_text is not None:
-            builder.setPositiveButton(positive_text, OnClickListener(self.completion_handler, True))
+            builder.setPositiveButton(
+                positive_text, OnClickListener(self.completion_handler, True)
+            )
         if negative_text is not None:
-            builder.setNegativeButton(negative_text, OnClickListener(self.completion_handler, False))
+            builder.setNegativeButton(
+                negative_text, OnClickListener(self.completion_handler, False)
+            )
         builder.show()
 
     def completion_handler(self, return_value: bool) -> None:
@@ -128,13 +136,23 @@ class StackTraceDialog(BaseDialog):
 
 
 class SaveFileDialog(BaseDialog):
-    def __init__(self, window, title, filename, initial_directory, file_types=None, on_result=None):
+    def __init__(
+        self,
+        window,
+        title,
+        filename,
+        initial_directory,
+        file_types=None,
+        on_result=None,
+    ):
         super().__init__()
         window.factory.not_implemented("Window.save_file_dialog()")
 
 
 class OpenFileDialog(BaseDialog):
-    def __init__(self, window, title, initial_directory, file_types, multiselect, on_result=None):
+    def __init__(
+        self, window, title, initial_directory, file_types, multiselect, on_result=None
+    ):
         super().__init__()
         window.factory.not_implemented("Window.open_file_dialog()")
 

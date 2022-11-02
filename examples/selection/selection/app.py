@@ -120,6 +120,6 @@ def main():
     return SelectionApp("Selection", "org.beeware.selection")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app = main()
     app.main_loop()

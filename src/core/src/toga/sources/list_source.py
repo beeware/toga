@@ -16,11 +16,12 @@ class Row:
         super().__setattr__(attr, value)
         if attr in self._attrs:
             if self._source is not None:
-                self._source._notify('change', item=self)
+                self._source._notify("change", item=self)
 
 
 class ListSource(Source):
-    """A data source to store a list of multiple data values, in a row-like fashion.
+    """A data source to store a list of multiple data values, in a row-like
+    fashion.
 
     Args:
         data (`list`): The data in the list. Each entry in the list should have the
@@ -28,6 +29,7 @@ class ListSource(Source):
         accessors (`list`): A list of attribute names for accessing the value
             in each column of the row.
     """
+
     def __init__(self, data, accessors):
         super().__init__()
         self._accessors = accessors.copy()
@@ -51,6 +53,7 @@ class ListSource(Source):
 
     def _create_row(self, data):
         """Create a Row object from the given data.
+
         Args:
             data (any): The type of `data` determines how it is handled
                 ``dict``: each key corresponds to a column accessor
@@ -60,7 +63,7 @@ class ListSource(Source):
 
         if isinstance(data, dict):
             row = Row(**data)
-        elif hasattr(data, '__iter__') and not isinstance(data, str):
+        elif hasattr(data, "__iter__") and not isinstance(data, str):
             row = Row(**dict(zip(self._accessors, data)))
         else:
             row = Row(**{self._accessors[0]: data})
@@ -74,21 +77,21 @@ class ListSource(Source):
     def __setitem__(self, index, value):
         row = self._create_row(value)
         self._data[index] = row
-        self._notify('insert', index=index, item=row)
+        self._notify("insert", index=index, item=row)
 
     def __iter__(self):
         return iter(self._data)
 
     def clear(self):
         self._data = []
-        self._notify('clear')
+        self._notify("clear")
 
     def insert(self, index, *values, **named):
         # Coalesce values and data into a single data dictionary,
         # and use that to create the data row. Explicitly named data override.
         row = self._create_row(dict(zip(self._accessors, values), **named))
         self._data.insert(index, row)
-        self._notify('insert', index=index, item=row)
+        self._notify("insert", index=index, item=row)
         return row
 
     def prepend(self, *values, **named):
@@ -100,7 +103,7 @@ class ListSource(Source):
     def remove(self, row):
         i = self._data.index(row)
         del self._data[i]
-        self._notify('remove', index=i, item=row)
+        self._notify("remove", index=i, item=row)
         return row
 
     def index(self, row):

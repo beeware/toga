@@ -10,9 +10,7 @@ class NativeHandler:
 
 
 async def long_running_task(generator, cleanup):
-    """Run a generator as an asynchronous coroutine
-
-    """
+    """Run a generator as an asynchronous coroutine."""
     try:
         while True:
             delay = next(generator)
@@ -21,7 +19,7 @@ async def long_running_task(generator, cleanup):
         if cleanup:
             cleanup()
     except Exception as e:
-        print('Error in long running handler:', e, file=sys.stderr)
+        print("Error in long running handler:", e, file=sys.stderr)
         traceback.print_exc()
 
 
@@ -31,7 +29,7 @@ async def handler_with_cleanup(handler, cleanup, interface, *args, **kwargs):
         if cleanup:
             cleanup(interface, result)
     except Exception as e:
-        print('Error in async handler:', e, file=sys.stderr)
+        print("Error in async handler:", e, file=sys.stderr)
         traceback.print_exc()
 
 
@@ -65,16 +63,14 @@ def wrapped_handler(interface, handler, cleanup=None):
             else:
                 result = handler(interface, *args, **kwargs)
                 if inspect.isgenerator(result):
-                    asyncio.ensure_future(
-                        long_running_task(result, cleanup)
-                    )
+                    asyncio.ensure_future(long_running_task(result, cleanup))
                 else:
                     try:
                         if cleanup:
                             cleanup(interface, result)
                         return result
                     except Exception as e:
-                        print('Error in handler:', e, file=sys.stderr)
+                        print("Error in handler:", e, file=sys.stderr)
                         traceback.print_exc()
 
         _handler._raw = handler

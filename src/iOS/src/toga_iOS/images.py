@@ -12,9 +12,7 @@ class Image:
         elif url:
             # If a remote URL is provided, use the download from NSData
             self.native = UIImage.imageWithData_(
-                NSData.dataWithContentsOfURL_(
-                    NSURL.URLWithString_(path)
-                )
+                NSData.dataWithContentsOfURL_(NSURL.URLWithString_(path))
             )
         elif data:
             self.native = UIImage.imageWithData_(

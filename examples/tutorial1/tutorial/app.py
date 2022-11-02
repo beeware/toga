@@ -10,17 +10,17 @@ def build(app):
     c_input = toga.TextInput(readonly=True)
     f_input = toga.TextInput()
 
-    c_label = toga.Label('Celsius', style=Pack(text_align=LEFT))
-    f_label = toga.Label('Fahrenheit', style=Pack(text_align=LEFT))
-    join_label = toga.Label('is equivalent to', style=Pack(text_align=RIGHT))
+    c_label = toga.Label("Celsius", style=Pack(text_align=LEFT))
+    f_label = toga.Label("Fahrenheit", style=Pack(text_align=LEFT))
+    join_label = toga.Label("is equivalent to", style=Pack(text_align=RIGHT))
 
     def calculate(widget):
         try:
             c_input.value = (float(f_input.value) - 32.0) * 5.0 / 9.0
         except ValueError:
-            c_input.value = '???'
+            c_input.value = "???"
 
-    button = toga.Button('Calculate', on_press=calculate)
+    button = toga.Button("Calculate", on_press=calculate)
 
     f_box.add(f_input)
     f_box.add(f_label)
@@ -49,8 +49,8 @@ def build(app):
 
 
 def main():
-    return toga.App('Temperature Converter', 'org.beeware.f_to_c', startup=build)
+    return toga.App("Temperature Converter", "org.beeware.f_to_c", startup=build)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main().main_loop()

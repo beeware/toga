@@ -4,8 +4,8 @@ from .base import Widget
 
 
 class SplitContainer(Widget):
-    """ A SplitContainer displays two widgets vertically or horizontally
-    next to each other with a movable divider.
+    """A SplitContainer displays two widgets vertically or horizontally next to
+    each other with a movable divider.
 
     Args:
         id (str):  An identifier for this widget.
@@ -13,13 +13,14 @@ class SplitContainer(Widget):
             If no style is provided then a new one will be created for the widget.
         direction: The direction for the container split,
             either `SplitContainer.HORIZONTAL` or `SplitContainer.VERTICAL`
-        content(``list`` of :class:`toga.Widget`): The list of components to be
+        content(``list`` of :class:`~toga.Widget`): The list of components to be
             split or tuples of components to be split and adjusting parameters
             in the following order:
-            widget (:class:`toga.Widget`): The widget that will be added.
+            widget (:class:`~toga.Widget`): The widget that will be added.
             weight (float): Specifying the weighted splits.
             flex (boolean): Should the content expand when the widget is resized. (optional)
     """
+
     HORIZONTAL = False
     VERTICAL = True
 
@@ -54,10 +55,10 @@ class SplitContainer(Widget):
 
     @property
     def content(self):
-        """ The sub layouts of the `SplitContainer`.
+        """The sub layouts of the `SplitContainer`.
 
         Returns:
-            A ``list`` of :class:`toga.Widget`. Each element of the list
+            A ``list`` of :class:`~toga.Widget`. Each element of the list
             is a sub layout of the `SplitContainer`
 
         Raises:
@@ -72,7 +73,7 @@ class SplitContainer(Widget):
             return
 
         if len(content) < 2:
-            raise ValueError('SplitContainer content must have at least 2 elements')
+            raise ValueError("SplitContainer content must have at least 2 elements")
 
         self._content = []
         for position, item in enumerate(content):
@@ -83,9 +84,11 @@ class SplitContainer(Widget):
                 elif len(item) == 3:
                     widget, weight, flex = item
                 else:
-                    raise ValueError("The tuple of the content must be the length of "
-                                     "2 or 3 parameters, with the following order: "
-                                     "widget, weight and flex (optional)")
+                    raise ValueError(
+                        "The tuple of the content must be the length of "
+                        "2 or 3 parameters, with the following order: "
+                        "widget, weight and flex (optional)"
+                    )
             else:
                 widget = item
                 weight = 1.0
@@ -120,7 +123,7 @@ class SplitContainer(Widget):
 
     @property
     def direction(self):
-        """ The direction of the split
+        """The direction of the split.
 
         Returns:
             True if `True` for vertical, `False` for horizontal.

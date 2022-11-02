@@ -4,7 +4,7 @@ from ..libs.android.util import TypedValue
 from ..libs.android.view import View__MeasureSpec
 from ..libs.android.widget import (
     CompoundButton__OnCheckedChangeListener,
-    Switch as A_Switch
+    Switch as A_Switch,
 )
 from .base import Widget
 
@@ -42,9 +42,8 @@ class Switch(Widget):
 
     def set_font(self, font):
         if font:
-            font_impl = font.bind()
-            self.native.setTextSize(TypedValue.COMPLEX_UNIT_SP, font_impl.get_size())
-            self.native.setTypeface(font_impl.get_typeface(), font_impl.get_style())
+            self.native.setTextSize(TypedValue.COMPLEX_UNIT_SP, font._impl.get_size())
+            self.native.setTypeface(font._impl.get_typeface(), font._impl.get_style())
 
     def set_on_change(self, handler):
         # No special handling required

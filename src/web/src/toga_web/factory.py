@@ -1,17 +1,21 @@
 from . import dialogs
 from .app import App, MainWindow  # DocumentApp
 from .command import Command
+
 # from .documents import Document
 # from .fonts import Font
 from .icons import Icon
+
 # from .images import Image
 from .paths import paths
 from .widgets.box import Box
 from .widgets.button import Button
+
 # from .widgets.canvas import Canvas
 # from .widgets.detailedlist import DetailedList
 # from .widgets.imageview import ImageView
 from .widgets.label import Label
+
 # from .widgets.multilinetextinput import MultilineTextInput
 # from .widgets.numberinput import NumberInput
 # from .widgets.optioncontainer import OptionContainer
@@ -31,30 +35,28 @@ from .widgets.textinput import TextInput
 
 
 def not_implemented(feature):
-    print(f'[Web] Not implemented: {feature}')
+    print(f"[Web] Not implemented: {feature}")
 
 
 __all__ = [
-    'not_implemented',
-
-    'App', 'MainWindow',  # 'DocumentApp',
-    'Command',
+    "not_implemented",
+    "App",
+    "MainWindow",  # 'DocumentApp',
+    "Command",
     # 'Document',
-
     # # Resources
     # 'Font',
-    'Icon',
+    "Icon",
     # 'Image',
-    'paths',
-    'dialogs',
-
+    "paths",
+    "dialogs",
     # # Widgets
-    'Box',
-    'Button',
+    "Box",
+    "Button",
     # 'Canvas',
     # 'DetailedList',
     # 'ImageView',
-    'Label',
+    "Label",
     # 'MultilineTextInput',
     # 'NumberInput',
     # 'OptionContainer',
@@ -66,7 +68,7 @@ __all__ = [
     # 'SplitContainer',
     # 'Switch',
     # 'Table',
-    'TextInput',
+    "TextInput",
     # 'Tree',
     # 'WebView',
     # 'Window',

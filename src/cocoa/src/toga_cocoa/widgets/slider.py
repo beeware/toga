@@ -32,7 +32,7 @@ class Slider(Widget):
         self.native.impl = self
 
         self.native.target = self.native
-        self.native.action = SEL('onSlide:')
+        self.native.action = SEL("onSlide:")
 
         self.set_tick_count(self.interface.tick_count)
 

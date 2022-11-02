@@ -15,7 +15,7 @@ from toga_winforms.libs import (
     SolidBrush,
     StringFormat,
     WinForms,
-    win_font_family
+    win_font_family,
 )
 
 from ..libs.fonts import win_font_style
@@ -23,7 +23,6 @@ from .box import Box
 
 
 class WinformContext(Context):
-
     def __init__(self):
         super().__init__()
         self.graphics = None
@@ -53,7 +52,6 @@ class WinformContext(Context):
 
 
 class Canvas(Box):
-
     def create(self):
         super().create()
         self.native.DoubleBuffered = True
@@ -94,8 +92,7 @@ class Canvas(Box):
 
     def winforms_resize(self, *args):
         """Called on widget resize, and calls the handler set on the interface,
-        if any.
-        """
+        if any."""
         if self.interface.on_resize:
             self.interface.on_resize(self.interface)
 
@@ -105,7 +102,10 @@ class Canvas(Box):
             self.interface.on_press(
                 self.interface, mouse_event.X, mouse_event.Y, mouse_event.Clicks
             )
-        if mouse_event.Button == WinForms.MouseButtons.Right and self.interface.on_alt_press:
+        if (
+            mouse_event.Button == WinForms.MouseButtons.Right
+            and self.interface.on_alt_press
+        ):
             self.interface.on_alt_press(
                 self.interface, mouse_event.X, mouse_event.Y, mouse_event.Clicks
             )
@@ -117,17 +117,26 @@ class Canvas(Box):
             self.interface.on_drag(
                 self.interface, mouse_event.X, mouse_event.Y, self.clicks
             )
-        if mouse_event.Button == WinForms.MouseButtons.Right and self.interface.on_alt_drag:
+        if (
+            mouse_event.Button == WinForms.MouseButtons.Right
+            and self.interface.on_alt_drag
+        ):
             self.interface.on_alt_drag(
                 self.interface, mouse_event.X, mouse_event.Y, self.clicks
             )
 
     def winforms_mouse_up(self, obj, mouse_event):
-        if mouse_event.Button == WinForms.MouseButtons.Left and self.interface.on_release:
+        if (
+            mouse_event.Button == WinForms.MouseButtons.Left
+            and self.interface.on_release
+        ):
             self.interface.on_release(
                 self.interface, mouse_event.X, mouse_event.Y, self.clicks
             )
-        if mouse_event.Button == WinForms.MouseButtons.Right and self.interface.on_alt_release:
+        if (
+            mouse_event.Button == WinForms.MouseButtons.Right
+            and self.interface.on_alt_release
+        ):
             self.interface.on_alt_release(
                 self.interface, mouse_event.X, mouse_event.Y, self.clicks
             )
@@ -161,14 +170,15 @@ class Canvas(Box):
 
     def line_to(self, x, y, draw_context, *args, **kwargs):
         draw_context.current_path.AddLine(
-            draw_context.last_point[0], draw_context.last_point[1],
-            x, y
+            draw_context.last_point[0], draw_context.last_point[1], x, y
         )
         draw_context.last_point = (x, y)
 
     # Basic shapes
 
-    def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y, draw_context, *args, **kwargs):
+    def bezier_curve_to(
+        self, cp1x, cp1y, cp2x, cp2y, x, y, draw_context, *args, **kwargs
+    ):
         draw_context.current_path.AddBezier(
             PointF(draw_context.last_point[0], draw_context.last_point[1]),
             PointF(cp1x, cp1y),
@@ -178,24 +188,26 @@ class Canvas(Box):
         draw_context.last_point = (x, y)
 
     def quadratic_curve_to(self, cpx, cpy, x, y, draw_context, *args, **kwargs):
-        draw_context.current_path.AddCurve([
-            PointF(draw_context.last_point[0], draw_context.last_point[1]),
-            PointF(cpx, cpy),
-            PointF(x, y),
-        ])
+        draw_context.current_path.AddCurve(
+            [
+                PointF(draw_context.last_point[0], draw_context.last_point[1]),
+                PointF(cpx, cpy),
+                PointF(x, y),
+            ]
+        )
         draw_context.last_point = (x, y)
 
     def arc(
-            self,
-            x,
-            y,
-            radius,
-            startangle,
-            endangle,
-            anticlockwise,
-            draw_context,
-            *args,
-            **kwargs
+        self,
+        x,
+        y,
+        radius,
+        startangle,
+        endangle,
+        anticlockwise,
+        draw_context,
+        *args,
+        **kwargs
     ):
         self.ellipse(
             x,
@@ -212,30 +224,26 @@ class Canvas(Box):
         )
 
     def ellipse(
-            self,
-            x,
-            y,
-            radiusx,
-            radiusy,
-            rotation,
-            startangle,
-            endangle,
-            anticlockwise,
-            draw_context,
-            *args,
-            **kwargs):
-        rect = RectangleF(
-            x - radiusx, y - radiusy,
-            2 * radiusx, 2 * radiusy
-        )
+        self,
+        x,
+        y,
+        radiusx,
+        radiusy,
+        rotation,
+        startangle,
+        endangle,
+        anticlockwise,
+        draw_context,
+        *args,
+        **kwargs
+    ):
+        rect = RectangleF(x - radiusx, y - radiusy, 2 * radiusx, 2 * radiusy)
         draw_context.current_path.AddArc(
-            rect,
-            math.degrees(startangle),
-            math.degrees(endangle - startangle)
+            rect, math.degrees(startangle), math.degrees(endangle - startangle)
         )
         draw_context.last_point = (
             x + radiusx * math.cos(endangle),
-            y + radiusy * math.sin(endangle)
+            y + radiusy * math.sin(endangle),
         )
 
     def rect(self, x, y, width, height, draw_context, *args, **kwargs):
@@ -245,7 +253,7 @@ class Canvas(Box):
     # Drawing Paths
 
     def apply_color(self, color, draw_context, *args, **kwargs):
-        self.interface.factory.not_implemented('Canvas.apply_color()')
+        self.interface.factory.not_implemented("Canvas.apply_color()")
 
     def fill(self, color, fill_rule, preserve, draw_context, *args, **kwargs):
         brush = self.create_brush(color)
@@ -302,7 +310,7 @@ class Canvas(Box):
 
     def measure_text(self, text, font, tight=False):
         sizes = [
-            WinForms.TextRenderer.MeasureText(line, font.bind().native)
+            WinForms.TextRenderer.MeasureText(line, font._impl.native)
             for line in text.splitlines()
         ]
         width = max([size.Width for size in sizes])

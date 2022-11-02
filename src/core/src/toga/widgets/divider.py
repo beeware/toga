@@ -13,6 +13,7 @@ class Divider(Widget):
         direction: The direction for divider, either ``Divider.HORIZONTAL``
             or ``Divider.VERTICAL``. Defaults to `Divider.HORIZONTAL``
     """
+
     HORIZONTAL = 0
     VERTICAL = 1
 
@@ -43,7 +44,7 @@ class Divider(Widget):
 
     @property
     def direction(self):
-        """ The direction of the split
+        """The direction of the split.
 
         Returns:
             0 for vertical, 1 for horizontal.

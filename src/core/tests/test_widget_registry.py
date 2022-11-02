@@ -12,7 +12,6 @@ def widget_mock(id):
 
 
 class TestWidgetsRegistry(TestCase):
-
     def setUp(self):
         super().setUp()
         self.widget_registry = WidgetRegistry()

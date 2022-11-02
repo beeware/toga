@@ -12,7 +12,10 @@ class Tree(Widget):
         # It can't be based on the source, since it determines flags
         # and GtkTreeModel.flags is not allowed to change after creation
         is_tree = isinstance(self.interface, toga.Tree)
-        self.store = SourceTreeModel([{'type': str, 'attr': a} for a in self.interface._accessors], is_tree=is_tree)
+        self.store = SourceTreeModel(
+            [{"type": str, "attr": a} for a in self.interface._accessors],
+            is_tree=is_tree,
+        )
 
         # Create a tree view, and put it in a scroll view.
         # The scroll view is the _impl, because it's the outer container.
@@ -87,8 +90,7 @@ class Tree(Widget):
         if self.interface.multiple_select:
             tree_model, tree_paths = self.selection.get_selected_rows()
             return [
-                tree_model.get(tree_model.get_iter(path), 0)[0]
-                for path in tree_paths
+                tree_model.get(tree_model.get_iter(path), 0)[0] for path in tree_paths
             ]
         else:
             tree_model, tree_iter = self.selection.get_selected()
@@ -104,7 +106,7 @@ class Tree(Widget):
         pass
 
     def set_on_double_click(self, handler):
-        self.interface.factory.not_implemented('Tree.set_on_double_click()')
+        self.interface.factory.not_implemented("Tree.set_on_double_click()")
 
     def scroll_to_node(self, node):
         path = self.store.path_to_node(node)

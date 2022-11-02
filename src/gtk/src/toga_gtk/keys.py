@@ -4,7 +4,6 @@ from .libs import Gdk
 
 GDK_KEYS = {
     Gdk.KEY_Escape: Key.ESCAPE,
-
     Gdk.KEY_F1: Key.F1,
     Gdk.KEY_F2: Key.F2,
     Gdk.KEY_F3: Key.F3,
@@ -24,9 +23,7 @@ GDK_KEYS = {
     Gdk.KEY_F17: Key.F17,
     Gdk.KEY_F18: Key.F18,
     Gdk.KEY_F19: Key.F19,
-
     Gdk.KEY_quoteleft: Key.BACK_QUOTE,
-
     Gdk.KEY_1: Key._1,
     Gdk.KEY_2: Key._2,
     Gdk.KEY_3: Key._3,
@@ -37,11 +34,9 @@ GDK_KEYS = {
     Gdk.KEY_8: Key._8,
     Gdk.KEY_9: Key._9,
     Gdk.KEY_0: Key._0,
-
     Gdk.KEY_minus: Key.MINUS,
     Gdk.KEY_equal: Key.EQUAL,
     Gdk.KEY_BackSpace: Key.BACKSPACE,
-
     Gdk.KEY_asciitilde: Key.TILDE,
     Gdk.KEY_exclam: Key.EXCLAMATION,
     Gdk.KEY_at: Key.AT,
@@ -55,7 +50,6 @@ GDK_KEYS = {
     Gdk.KEY_parenright: Key.CLOSE_PARENTHESIS,
     Gdk.KEY_underscore: Key.UNDERSCORE,
     Gdk.KEY_plus: Key.PLUS,
-
     Gdk.KEY_a: Key.A,
     Gdk.KEY_b: Key.B,
     Gdk.KEY_c: Key.C,
@@ -82,7 +76,6 @@ GDK_KEYS = {
     Gdk.KEY_x: Key.X,
     Gdk.KEY_y: Key.Y,
     Gdk.KEY_z: Key.Z,
-
     Gdk.KEY_A: Key.A,
     Gdk.KEY_B: Key.B,
     Gdk.KEY_C: Key.C,
@@ -109,37 +102,29 @@ GDK_KEYS = {
     Gdk.KEY_X: Key.X,
     Gdk.KEY_Y: Key.Y,
     Gdk.KEY_Z: Key.Z,
-
     Gdk.KEY_Tab: Key.TAB,
     Gdk.KEY_bracketleft: Key.OPEN_BRACKET,
     Gdk.KEY_bracketright: Key.CLOSE_BRACKET,
     Gdk.KEY_backslash: Key.BACKSLASH,
-
     Gdk.KEY_braceleft: Key.OPEN_BRACE,
     Gdk.KEY_braceright: Key.CLOSE_BRACE,
     Gdk.KEY_bar: Key.PIPE,
-
     Gdk.KEY_semicolon: Key.SEMICOLON,
     Gdk.KEY_apostrophe: Key.QUOTE,
     Gdk.KEY_Return: Key.ENTER,
-
     Gdk.KEY_colon: Key.COLON,
     Gdk.KEY_quotedbl: Key.DOUBLE_QUOTE,
-
     Gdk.KEY_comma: Key.COMMA,
     Gdk.KEY_period: Key.FULL_STOP,
     Gdk.KEY_slash: Key.SLASH,
-
     Gdk.KEY_less: Key.LESS_THAN,
     Gdk.KEY_greater: Key.GREATER_THAN,
     Gdk.KEY_question: Key.QUESTION,
-
     Gdk.KEY_Delete: Key.DELETE,
     Gdk.KEY_Home: Key.HOME,
     Gdk.KEY_End: Key.END,
     Gdk.KEY_Page_Up: Key.PAGE_UP,
     Gdk.KEY_Page_Down: Key.PAGE_DOWN,
-
     Gdk.KEY_Left: Key.LEFT,
     Gdk.KEY_Right: Key.RIGHT,
     Gdk.KEY_Up: Key.UP,
@@ -148,100 +133,92 @@ GDK_KEYS = {
 
 # TODO: Confirm these codes are all correct - especially the special keys.
 GTK_KEY_CODES = {
-    Key.A: 'A',
-    Key.B: 'B',
-    Key.C: 'C',
-    Key.D: 'D',
-    Key.E: 'E',
-    Key.F: 'F',
-    Key.G: 'G',
-    Key.H: 'H',
-    Key.I: 'I',
-    Key.J: 'J',
-    Key.K: 'K',
-    Key.L: 'L',
-    Key.M: 'M',
-    Key.N: 'N',
-    Key.O: 'O',
-    Key.P: 'P',
-    Key.Q: 'Q',
-    Key.R: 'R',
-    Key.S: 'S',
-    Key.T: 'T',
-    Key.U: 'U',
-    Key.V: 'V',
-    Key.W: 'W',
-    Key.X: 'X',
-    Key.Y: 'Y',
-    Key.Z: 'Z',
-
-    Key.ESCAPE: 'Escape',
-    Key.TAB: 'Tab',
-
-    Key.BACKSPACE: 'Backspace',
-    Key.ENTER: 'Enter',
-
-    Key.F1: 'F1',
-    Key.F2: 'F2',
-    Key.F3: 'F3',
-    Key.F4: 'F4',
-    Key.F5: 'F5',
-    Key.F6: 'F6',
-    Key.F7: 'F7',
-    Key.F8: 'F8',
-    Key.F9: 'F9',
-    Key.F10: 'F10',
-    Key.F11: 'F11',
-    Key.F12: 'F12',
-    Key.F13: 'F13',
-    Key.F14: 'F14',
-    Key.F15: 'F15',
-    Key.F16: 'F16',
-    Key.F17: 'F17',
-    Key.F18: 'F18',
-    Key.F19: 'F19',
-
+    Key.A: "A",
+    Key.B: "B",
+    Key.C: "C",
+    Key.D: "D",
+    Key.E: "E",
+    Key.F: "F",
+    Key.G: "G",
+    Key.H: "H",
+    Key.I: "I",
+    Key.J: "J",
+    Key.K: "K",
+    Key.L: "L",
+    Key.M: "M",
+    Key.N: "N",
+    Key.O: "O",
+    Key.P: "P",
+    Key.Q: "Q",
+    Key.R: "R",
+    Key.S: "S",
+    Key.T: "T",
+    Key.U: "U",
+    Key.V: "V",
+    Key.W: "W",
+    Key.X: "X",
+    Key.Y: "Y",
+    Key.Z: "Z",
+    Key.ESCAPE: "Escape",
+    Key.TAB: "Tab",
+    Key.BACKSPACE: "Backspace",
+    Key.ENTER: "Enter",
+    Key.F1: "F1",
+    Key.F2: "F2",
+    Key.F3: "F3",
+    Key.F4: "F4",
+    Key.F5: "F5",
+    Key.F6: "F6",
+    Key.F7: "F7",
+    Key.F8: "F8",
+    Key.F9: "F9",
+    Key.F10: "F10",
+    Key.F11: "F11",
+    Key.F12: "F12",
+    Key.F13: "F13",
+    Key.F14: "F14",
+    Key.F15: "F15",
+    Key.F16: "F16",
+    Key.F17: "F17",
+    Key.F18: "F18",
+    Key.F19: "F19",
     # Key.EJECT: '',
-
-    Key.HOME: 'Home',
-    Key.END: 'End',
-    Key.DELETE: 'Del',
-    Key.PAGE_UP: 'PgUp',
-    Key.PAGE_DOWN: 'PgDn',
-
-    Key.UP: 'Up',
-    Key.DOWN: 'Down',
-    Key.LEFT: 'Left',
-    Key.RIGHT: 'Right',
-
-    Key.NUMPAD_0: '0',
-    Key.NUMPAD_1: '1',
-    Key.NUMPAD_2: '2',
-    Key.NUMPAD_3: '3',
-    Key.NUMPAD_4: '4',
-    Key.NUMPAD_5: '5',
-    Key.NUMPAD_6: '6',
-    Key.NUMPAD_7: '7',
-    Key.NUMPAD_8: '8',
-    Key.NUMPAD_9: '9',
+    Key.HOME: "Home",
+    Key.END: "End",
+    Key.DELETE: "Del",
+    Key.PAGE_UP: "PgUp",
+    Key.PAGE_DOWN: "PgDn",
+    Key.UP: "Up",
+    Key.DOWN: "Down",
+    Key.LEFT: "Left",
+    Key.RIGHT: "Right",
+    Key.NUMPAD_0: "0",
+    Key.NUMPAD_1: "1",
+    Key.NUMPAD_2: "2",
+    Key.NUMPAD_3: "3",
+    Key.NUMPAD_4: "4",
+    Key.NUMPAD_5: "5",
+    Key.NUMPAD_6: "6",
+    Key.NUMPAD_7: "7",
+    Key.NUMPAD_8: "8",
+    Key.NUMPAD_9: "9",
     # Key.NUMPAD_CLEAR: '',
-    Key.NUMPAD_DECIMAL_POINT: '.',
-    Key.NUMPAD_DIVIDE: '/',
-    Key.NUMPAD_ENTER: '',
-    Key.NUMPAD_EQUAL: '=',
-    Key.NUMPAD_MINUS: '-',
-    Key.NUMPAD_MULTIPLY: '*',
-    Key.NUMPAD_PLUS: '+',
+    Key.NUMPAD_DECIMAL_POINT: ".",
+    Key.NUMPAD_DIVIDE: "/",
+    Key.NUMPAD_ENTER: "",
+    Key.NUMPAD_EQUAL: "=",
+    Key.NUMPAD_MINUS: "-",
+    Key.NUMPAD_MULTIPLY: "*",
+    Key.NUMPAD_PLUS: "+",
 }
 
 GTK_MODIFIER_CODES = {
-    Key.CAPSLOCK: '<CapsLock>',
-    Key.SHIFT: '<Shift>',
-
+    Key.CAPSLOCK: "<CapsLock>",
+    Key.SHIFT: "<Shift>",
     # TODO: Confirm the mapping of Control, Meta and Hyper are correct.
-    Key.MOD_1: '<Primary>',
-    Key.MOD_2: '<Alt>',
-    Key.MOD_3: '<Hyper>',
+    Key.MOD_1: "<Primary>",
+    Key.MOD_2: "<Alt>",
+    Key.MOD_3: "<Hyper>",
 }
 
 
@@ -264,16 +241,13 @@ def toga_key(event):
         if event.state & Gdk.ModifierType.HYPER_MASK:
             modifiers.add(Key.MOD_3)
 
-        return {
-            'key': key,
-            'modifiers': modifiers
-        }
+        return {"key": key, "modifiers": modifiers}
     except KeyError:
         return None
 
 
 def gtk_accel(shortcut):
-    """Convert a Toga shortcut definition into GTK accelerator definition"""
+    """Convert a Toga shortcut definition into GTK accelerator definition."""
     accel = shortcut
     # Convert the shortcut into string form.
     try:
@@ -285,7 +259,7 @@ def gtk_accel(shortcut):
     # Remove any modifiers from the shortcut definition
     for key, code in GTK_MODIFIER_CODES.items():
         if key.value in accel:
-            accel = accel.replace(key.value, '')
+            accel = accel.replace(key.value, "")
             modifiers.append(code)
 
     # Find the canonical definition of the remaining key.
@@ -293,5 +267,5 @@ def gtk_accel(shortcut):
         if key.value == accel:
             accel = accel.replace(key.value, code)
 
-    accel = ''.join(modifiers) + accel
+    accel = "".join(modifiers) + accel
     return accel
