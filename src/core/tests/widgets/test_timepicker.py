@@ -12,21 +12,21 @@ class TimePickerTests(TestCase):
 
     def test_widget_created(self):
         self.assertEqual(self.time_picker._impl.interface, self.time_picker)
-        self.assertActionPerformed(self.time_picker, 'create TimePicker')
+        self.assertActionPerformed(self.time_picker, "create TimePicker")
 
     def test_getting_value_invokes_impl_method(self):
         # Exercise the value attribute getter for testing only. Actual value not needed.
         self.time_picker.value
-        self.assertValueGet(self.time_picker, 'value')
+        self.assertValueGet(self.time_picker, "value")
 
     def test_set_value_with_None(self):
         self.time_picker.value = None
         none_default = datetime.datetime.today().time().replace(microsecond=0)
-        self.assertValueSet(self.time_picker, 'value', none_default)
+        self.assertValueSet(self.time_picker, "value", none_default)
 
     def test_set_value_with_string(self):
         self.time_picker.value = "06:07:08"
-        self.assertValueSet(self.time_picker, 'value', datetime.time(6, 7, 8))
+        self.assertValueSet(self.time_picker, "value", datetime.time(6, 7, 8))
 
     def test_set_value_with_invalid_string(self):
         with self.assertRaises(ValueError):
@@ -39,17 +39,17 @@ class TimePickerTests(TestCase):
     def test_set_value_with_an_hour_ago(self):
         hour_ago = (datetime.datetime.today() - datetime.timedelta(hours=1)).time()
         self.time_picker.value = hour_ago
-        self.assertValueSet(self.time_picker, 'value', hour_ago)
+        self.assertValueSet(self.time_picker, "value", hour_ago)
 
     def test_set_value_with_an_hour_ago_datetime(self):
         hour_ago = datetime.datetime.now() - datetime.timedelta(hours=1)
         self.time_picker.value = hour_ago
-        self.assertValueSet(self.time_picker, 'value', hour_ago.time())
+        self.assertValueSet(self.time_picker, "value", hour_ago.time())
 
     def test_setting_value_invokes_impl_method(self):
-        new_value = '06:07:08'
+        new_value = "06:07:08"
         self.time_picker.value = new_value
-        self.assertValueSet(self.time_picker, 'value', datetime.time(6, 7, 8))
+        self.assertValueSet(self.time_picker, "value", datetime.time(6, 7, 8))
 
     def test_min_max_time(self):
         self.assertEqual(self.time_picker.min_time, None)

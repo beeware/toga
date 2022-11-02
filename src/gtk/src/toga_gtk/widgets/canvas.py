@@ -13,23 +13,23 @@ class Canvas(Widget):
         self.native = Gtk.DrawingArea()
         self.native.interface = self.interface
         self.native.connect("draw", self.gtk_draw_callback)
-        self.native.connect('size-allocate', self.gtk_on_size_allocate)
+        self.native.connect("size-allocate", self.gtk_on_size_allocate)
 
     def gtk_draw_callback(self, canvas, gtk_context):
-        """Creates a draw callback
+        """Creates a draw callback.
 
-        Gtk+ uses a drawing callback to draw on a DrawingArea. Assignment of the
-        callback function creates a Gtk+ canvas and Gtk+ context automatically
-        using the canvas and gtk_context function arguments. This method calls
-        the draw method on the interface Canvas to draw the objects.
+        Gtk+ uses a drawing callback to draw on a DrawingArea.
+        Assignment of the callback function creates a Gtk+ canvas and
+        Gtk+ context automatically using the canvas and gtk_context
+        function arguments. This method calls the draw method on the
+        interface Canvas to draw the objects.
         """
         self.original_transform_matrix = gtk_context.get_matrix()
         self.interface._draw(self, draw_context=gtk_context)
 
     def gtk_on_size_allocate(self, widget, allocation):
         """Called on widget resize, and calls the handler set on the interface,
-        if any.
-        """
+        if any."""
         if self.interface.on_resize:
             self.interface.on_resize(self.interface)
 
@@ -37,22 +37,22 @@ class Canvas(Widget):
         pass
 
     def set_on_press(self, handler):
-        self.interface.factory.not_implemented('Canvas.set_on_press()')
+        self.interface.factory.not_implemented("Canvas.set_on_press()")
 
     def set_on_release(self, handler):
-        self.interface.factory.not_implemented('Canvas.set_on_release()')
+        self.interface.factory.not_implemented("Canvas.set_on_release()")
 
     def set_on_drag(self, handler):
-        self.interface.factory.not_implemented('Canvas.set_on_drag()')
+        self.interface.factory.not_implemented("Canvas.set_on_drag()")
 
     def set_on_alt_press(self, handler):
-        self.interface.factory.not_implemented('Canvas.set_on_alt_press()')
+        self.interface.factory.not_implemented("Canvas.set_on_alt_press()")
 
     def set_on_alt_release(self, handler):
-        self.interface.factory.not_implemented('Canvas.set_on_alt_release()')
+        self.interface.factory.not_implemented("Canvas.set_on_alt_release()")
 
     def set_on_alt_drag(self, handler):
-        self.interface.factory.not_implemented('Canvas.set_on_alt_drag()')
+        self.interface.factory.not_implemented("Canvas.set_on_alt_drag()")
 
     def redraw(self):
         self.native.queue_draw()
@@ -73,20 +73,45 @@ class Canvas(Widget):
 
     # Basic shapes
 
-    def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y, draw_context, *args, **kwargs):
+    def bezier_curve_to(
+        self, cp1x, cp1y, cp2x, cp2y, x, y, draw_context, *args, **kwargs
+    ):
         draw_context.curve_to(cp1x, cp1y, cp2x, cp2y, x, y)
 
     def quadratic_curve_to(self, cpx, cpy, x, y, draw_context, *args, **kwargs):
         draw_context.curve_to(cpx, cpy, cpx, cpy, x, y)
 
-    def arc(self, x, y, radius, startangle, endangle, anticlockwise, draw_context, *args, **kwargs):
+    def arc(
+        self,
+        x,
+        y,
+        radius,
+        startangle,
+        endangle,
+        anticlockwise,
+        draw_context,
+        *args,
+        **kwargs
+    ):
         if anticlockwise:
             draw_context.arc_negative(x, y, radius, startangle, endangle)
         else:
             draw_context.arc(x, y, radius, startangle, endangle)
 
-    def ellipse(self, x, y, radiusx, radiusy, rotation, startangle, endangle, anticlockwise,
-                draw_context, *args, **kwargs):
+    def ellipse(
+        self,
+        x,
+        y,
+        radiusx,
+        radiusy,
+        rotation,
+        startangle,
+        endangle,
+        anticlockwise,
+        draw_context,
+        *args,
+        **kwargs
+    ):
         draw_context.save()
         draw_context.translate(x, y)
         if radiusx >= radiusy:

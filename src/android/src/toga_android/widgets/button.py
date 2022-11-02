@@ -47,7 +47,9 @@ class Button(Widget):
     def set_background_color(self, value):
         if value:
             # do not use self.native.setBackgroundColor - this messes with the button style!
-            self.native.getBackground().setColorFilter(native_color(value), PorterDuff__Mode.MULTIPLY)
+            self.native.getBackground().setColorFilter(
+                native_color(value), PorterDuff__Mode.MULTIPLY
+            )
 
     def rehint(self):
         # Like other text-viewing widgets, Android crashes when rendering

@@ -1,6 +1,6 @@
 import gi
 
-gi.require_version('Gtk', '3.0')
+gi.require_version("Gtk", "3.0")
 
 from gi.repository import Gdk, GdkPixbuf, Gio, GLib, GObject, Gtk  # noqa: F401, E402
 
@@ -9,10 +9,11 @@ from gi.repository import Gdk, GdkPixbuf, Gio, GLib, GObject, Gtk  # noqa: F401,
 # (see https://github.com/beeware/toga/issues/26)
 # Accept any API version greater than 3.0
 WebKit2 = None
-for version in ['4.0', '3.0']:
+for version in ["4.0", "3.0"]:
     try:
-        gi.require_version('WebKit2', version)
+        gi.require_version("WebKit2", version)
         from gi.repository import WebKit2  # noqa: F401, E402
+
         break
     except (ImportError, ValueError):
         pass

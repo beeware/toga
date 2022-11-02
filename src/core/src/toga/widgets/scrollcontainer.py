@@ -4,7 +4,7 @@ from .base import Widget
 
 
 class ScrollContainer(Widget):
-    """ Instantiate a new instance of the scrollable container widget.
+    """Instantiate a new instance of the scrollable container widget.
 
     Args:
         id (str): An identifier for this widget.
@@ -12,8 +12,9 @@ class ScrollContainer(Widget):
             If no style is provided then a new one will be created for the widget.
         horizontal (bool):  If True enable horizontal scroll bar.
         vertical (bool): If True enable vertical scroll bar.
-        content (:class:`toga.Widget`): The content of the scroll window.
+        content (:class:`~toga.Widget`): The content of the scroll window.
     """
+
     MIN_WIDTH = 100
     MIN_HEIGHT = 100
 
@@ -64,10 +65,10 @@ class ScrollContainer(Widget):
 
     @property
     def content(self):
-        """ Content of the scroll container.
+        """Content of the scroll container.
 
         Returns:
-            The content of the widget (:class:`toga.Widget`).
+            The content of the widget (:class:`~toga.Widget`).
         """
         return self._content
 
@@ -91,7 +92,7 @@ class ScrollContainer(Widget):
 
     @property
     def vertical(self):
-        """ Shows whether vertical scrolling is enabled.
+        """Shows whether vertical scrolling is enabled.
 
         Returns:
             (bool) True if enabled, False if disabled.
@@ -105,7 +106,7 @@ class ScrollContainer(Widget):
 
     @property
     def horizontal(self):
-        """ Shows whether horizontal scrolling is enabled.
+        """Shows whether horizontal scrolling is enabled.
 
         Returns:
             (bool) True if enabled, False if disabled.
@@ -145,7 +146,5 @@ class ScrollContainer(Widget):
     @vertical_position.setter
     def vertical_position(self, vertical_position):
         if not self.vertical:
-            raise ValueError(
-                "Cannot set vertical position when vertical is not set."
-            )
+            raise ValueError("Cannot set vertical position when vertical is not set.")
         self._impl.set_vertical_position(vertical_position)

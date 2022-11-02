@@ -4,7 +4,7 @@ from .libs import (
     NSLayoutAttributeRight,
     NSLayoutAttributeTop,
     NSLayoutConstraint,
-    NSLayoutRelationEqual
+    NSLayoutRelationEqual,
 )
 
 
@@ -48,34 +48,46 @@ class Constraints:
             self._container = value
             # print("Add constraints for", self.widget, 'in', self.container, self.widget.interface.layout)
             self.left_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # NOQA:E501
-                self.widget.native, NSLayoutAttributeLeft,
+                self.widget.native,
+                NSLayoutAttributeLeft,
                 NSLayoutRelationEqual,
-                self.container.native, NSLayoutAttributeLeft,
-                1.0, 10  # Use a dummy, non-zero value for now
+                self.container.native,
+                NSLayoutAttributeLeft,
+                1.0,
+                10,  # Use a dummy, non-zero value for now
             )
             self.container.native.addConstraint(self.left_constraint)
 
             self.top_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # NOQA:E501
-                self.widget.native, NSLayoutAttributeTop,
+                self.widget.native,
+                NSLayoutAttributeTop,
                 NSLayoutRelationEqual,
-                self.container.native, NSLayoutAttributeTop,
-                1.0, 5  # Use a dummy, non-zero value for now
+                self.container.native,
+                NSLayoutAttributeTop,
+                1.0,
+                5,  # Use a dummy, non-zero value for now
             )
             self.container.native.addConstraint(self.top_constraint)
 
             self.width_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # NOQA:E501
-                self.widget.native, NSLayoutAttributeRight,
+                self.widget.native,
+                NSLayoutAttributeRight,
                 NSLayoutRelationEqual,
-                self.widget.native, NSLayoutAttributeLeft,
-                1.0, 50  # Use a dummy, non-zero value for now
+                self.widget.native,
+                NSLayoutAttributeLeft,
+                1.0,
+                50,  # Use a dummy, non-zero value for now
             )
             self.container.native.addConstraint(self.width_constraint)
 
             self.height_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # NOQA:E501
-                self.widget.native, NSLayoutAttributeBottom,
+                self.widget.native,
+                NSLayoutAttributeBottom,
                 NSLayoutRelationEqual,
-                self.widget.native, NSLayoutAttributeTop,
-                1.0, 30  # Use a dummy, non-zero value for now
+                self.widget.native,
+                NSLayoutAttributeTop,
+                1.0,
+                30,  # Use a dummy, non-zero value for now
             )
             self.container.native.addConstraint(self.height_constraint)
 

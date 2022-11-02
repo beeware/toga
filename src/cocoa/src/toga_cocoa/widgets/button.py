@@ -33,7 +33,7 @@ class Button(Widget):
         self.native.bezelStyle = NSBezelStyle.Rounded
         self.native.buttonType = NSMomentaryPushInButton
         self.native.target = self.native
-        self.native.action = SEL('onPress:')
+        self.native.action = SEL("onPress:")
 
         # Add the layout constraints
         self.add_constraints()

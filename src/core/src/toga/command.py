@@ -18,11 +18,12 @@ class Group:
         order:
         parent:
     """
+
     def __init__(
         self,
         text=NOT_PROVIDED,  # BACKWARDS COMPATIBILITY: The default value
-                            # can be removed when the handling for
-                            # `label` is removed
+        # can be removed when the handling for
+        # `label` is removed
         order=None,
         section=None,
         parent=None,
@@ -50,7 +51,9 @@ class Group:
         elif text is NOT_PROVIDED:
             # This would be raised by Python itself; however, we need to use a placeholder
             # value as part of the migration from text->value.
-            raise TypeError("Group.__init__ missing 1 required positional argument: 'text'")
+            raise TypeError(
+                "Group.__init__ missing 1 required positional argument: 'text'"
+            )
 
         ##################################################################
         # End backwards compatibility.
@@ -78,10 +81,9 @@ class Group:
             return
         if parent == self or self.is_parent_of(parent):
             error_message = (
-                'Cannot set {} to be a parent of {} '
-                'because it causes a cyclic parenting.').format(
-                parent.text, self.text
-            )
+                "Cannot set {} to be a parent of {} "
+                "because it causes a cyclic parenting."
+            ).format(parent.text, self.text)
             raise ValueError(error_message)
         self._parent = parent
         self._root = parent.root
@@ -143,23 +145,19 @@ class Group:
     # label replaced with text
     @property
     def label(self):
-        """Group text
+        """Group text.
 
         **DEPRECATED: renamed as text**
 
         Returns:
             The button text as a ``str``
         """
-        warnings.warn(
-            "Group.label has been renamed Group.text", DeprecationWarning
-        )
+        warnings.warn("Group.label has been renamed Group.text", DeprecationWarning)
         return self.text
 
     @label.setter
     def label(self, label):
-        warnings.warn(
-            "Group.label has been renamed Group.text", DeprecationWarning
-        )
+        warnings.warn("Group.label has been renamed Group.text", DeprecationWarning)
         self.text = label
 
     ######################################################################
@@ -167,13 +165,13 @@ class Group:
     ######################################################################
 
 
-Group.APP = Group('*', order=0)
-Group.FILE = Group('File', order=1)
-Group.EDIT = Group('Edit', order=10)
-Group.VIEW = Group('View', order=20)
-Group.COMMANDS = Group('Commands', order=30)
-Group.WINDOW = Group('Window', order=90)
-Group.HELP = Group('Help', order=100)
+Group.APP = Group("*", order=0)
+Group.FILE = Group("File", order=1)
+Group.EDIT = Group("Edit", order=10)
+Group.VIEW = Group("View", order=20)
+Group.COMMANDS = Group("Commands", order=30)
+Group.WINDOW = Group("Window", order=90)
+Group.HELP = Group("Help", order=100)
 
 
 class Command:
@@ -196,12 +194,13 @@ class Command:
             alphabetically by text within its section.
         enabled: whether to enable the command or not.
     """
+
     def __init__(
         self,
         action,
         text=NOT_PROVIDED,  # BACKWARDS COMPATIBILITY: The default value
-                            # can be removed when the handling for
-                            # `label` is removed
+        # can be removed when the handling for
+        # `label` is removed
         shortcut=None,
         tooltip=None,
         icon=None,
@@ -243,7 +242,9 @@ class Command:
         elif text is NOT_PROVIDED:
             # This would be raised by Python itself; however, we need to use a placeholder
             # value as part of the migration from text->value.
-            raise TypeError("Command.__init__ missing 1 required positional argument: 'text'")
+            raise TypeError(
+                "Command.__init__ missing 1 required positional argument: 'text'"
+            )
 
         ##################################################################
         # End backwards compatibility.
@@ -304,8 +305,7 @@ class Command:
 
     @property
     def icon(self):
-        """
-        The Icon for the app.
+        """The Icon for the app.
 
         :returns: A ``toga.Icon`` instance for the app's icon.
         """
@@ -341,23 +341,19 @@ class Command:
     # label replaced with text
     @property
     def label(self):
-        """ Command text.
+        """Command text.
 
         **DEPRECATED: renamed as text**
 
         Returns:
             The command text as a ``str``
         """
-        warnings.warn(
-            "Command.label has been renamed Command.text", DeprecationWarning
-        )
+        warnings.warn("Command.label has been renamed Command.text", DeprecationWarning)
         return self.text
 
     @label.setter
     def label(self, label):
-        warnings.warn(
-            "Command.label has been renamed Command.text", DeprecationWarning
-        )
+        warnings.warn("Command.label has been renamed Command.text", DeprecationWarning)
         self.text = label
 
     ######################################################################
@@ -373,8 +369,8 @@ class Break:
         return f"<{self.name} break>"
 
 
-GROUP_BREAK = Break('Group')
-SECTION_BREAK = Break('Section')
+GROUP_BREAK = Break("Group")
+SECTION_BREAK = Break("Section")
 
 
 class CommandSet:
@@ -388,6 +384,7 @@ class CommandSet:
     Todo:
         * Add missing Docstrings.
     """
+
     def __init__(
         self,
         factory=None,  # DEPRECATED!

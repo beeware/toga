@@ -5,8 +5,7 @@ from toga.platform import get_platform_factory
 
 
 class Icon:
-    """
-    A representation of an Icon image.
+    """A representation of an Icon image.
 
     Icon is a deferred resource - it's impl isn't available until it the icon
     is assigned to perform a role in an app. At the point at which the Icon is
@@ -29,8 +28,7 @@ class Icon:
         self,
         factory=None,  # DEPRECATED !
     ):
-        """
-        Bind the Icon to a factory.
+        """Bind the Icon to a factory.
 
         Creates the underlying platform implementation of the Icon. If the
         image cannot be found, it will fall back to the default icon.
@@ -74,9 +72,11 @@ class Icon:
 
                 self._impl = factory.Icon(interface=self, path=full_path)
             except FileNotFoundError:
-                print("WARNING: Can't find icon {self.path}; falling back to default icon".format(
-                    self=self
-                ))
+                print(
+                    "WARNING: Can't find icon {self.path}; falling back to default icon".format(
+                        self=self
+                    )
+                )
                 self._impl = self.DEFAULT_ICON.bind()
 
         return self._impl
@@ -90,10 +90,8 @@ class Icon:
             for extension in extensions:
                 # look for an icon file with a size in the filename
                 icon_path = resource_path / (
-                    '{basename}-{size}{extension}'.format(
-                        basename=basename,
-                        size=size,
-                        extension=extension
+                    "{basename}-{size}{extension}".format(
+                        basename=basename, size=size, extension=extension
                     )
                 )
                 if icon_path.exists():
@@ -111,18 +109,10 @@ class Icon:
                 return icon_path
         else:
             # An icon has been specified, but it's not a valid format.
-            raise FileNotFoundError(
-                "{self.path} is not a valid icon".format(
-                    self=self
-                )
-            )
+            raise FileNotFoundError(f"{self.path} is not a valid icon")
 
-        raise FileNotFoundError(
-            "Can't find icon {self.path}".format(
-                self=self
-            )
-        )
+        raise FileNotFoundError(f"Can't find icon {self.path}")
 
 
-Icon.TOGA_ICON = Icon('resources/toga', system=True)
-Icon.DEFAULT_ICON = Icon('resources/toga', system=True)
+Icon.TOGA_ICON = Icon("resources/toga", system=True)
+Icon.DEFAULT_ICON = Icon("resources/toga", system=True)

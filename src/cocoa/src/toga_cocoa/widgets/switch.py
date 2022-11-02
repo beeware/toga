@@ -7,7 +7,7 @@ from toga_cocoa.libs import (
     NSOffState,
     NSOnState,
     NSSwitchButton,
-    objc_method
+    objc_method,
 )
 
 from ..libs import objc_property
@@ -34,7 +34,7 @@ class Switch(Widget):
         self.native.bezelStyle = NSBezelStyle.Rounded
         self.native.setButtonType(NSSwitchButton)
         self.native.target = self.native
-        self.native.action = SEL('onPress:')
+        self.native.action = SEL("onPress:")
 
         # Add the layout constraints
         self.add_constraints()
@@ -59,7 +59,7 @@ class Switch(Widget):
         elif value == 0:
             return False
         else:
-            raise Exception(f'Undefined value for value of {__class__}')
+            raise Exception(f"Undefined value for value of {__class__}")
 
     def rehint(self):
         content_size = self.native.intrinsicContentSize()

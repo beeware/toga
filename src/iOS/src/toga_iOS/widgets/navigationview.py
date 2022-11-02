@@ -4,7 +4,7 @@ from toga.interface import NavigationView as NavigationViewInterface
 from toga_iOS.libs import (
     UIBarButtonItem,
     UIBarButtonSystemItemAdd,
-    UINavigationController
+    UINavigationController,
 )
 from toga_iOS.widgets.base import WidgetMixin
 
@@ -37,20 +37,24 @@ class NavigationView(NavigationViewInterface, WidgetMixin):
 
     def create(self):
         self._controller = TogaNavigationController.alloc().initWithRootViewController_(
-            self._config['content']._controller
+            self._config["content"]._controller
         )
         self._controller.interface = self
-        self._controller.navigationBar.topItem.title = self._config['title']
+        self._controller.navigationBar.topItem.title = self._config["title"]
 
         self._impl = self._controller.view
 
-        if self._config['on_action']:
-            self._action_button = UIBarButtonItem.alloc().initWithBarButtonSystemItem_target_action_(
-                button_for_action(self._config['on_action']),
-                self._controller,
-                SEL('onAction')
+        if self._config["on_action"]:
+            self._action_button = (
+                UIBarButtonItem.alloc().initWithBarButtonSystemItem_target_action_(
+                    button_for_action(self._config["on_action"]),
+                    self._controller,
+                    SEL("onAction"),
+                )
             )
-            self._controller.navigationBar.topItem.rightBarButtonItem = self._action_button
+            self._controller.navigationBar.topItem.rightBarButtonItem = (
+                self._action_button
+            )
 
         # Add the layout constraints
         self._add_constraints()

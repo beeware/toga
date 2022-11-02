@@ -17,13 +17,17 @@ class DeprecatedFactoryTests(TestCase):
 
     def test_app(self):
         with self.assertWarns(DeprecationWarning):
-            widget = toga.App(formal_name='Test', app_id='org.beeware.test-app', factory=self.factory)
+            widget = toga.App(
+                formal_name="Test", app_id="org.beeware.test-app", factory=self.factory
+            )
         self.assertEqual(widget._impl.interface, widget)
         self.assertNotEqual(widget.factory, self.factory)
 
     def test_document_app(self):
         with self.assertWarns(DeprecationWarning):
-            widget = toga.DocumentApp(formal_name='Test', app_id='org.beeware.test-app', factory=self.factory)
+            widget = toga.DocumentApp(
+                formal_name="Test", app_id="org.beeware.test-app", factory=self.factory
+            )
         self.assertEqual(widget._impl.interface, widget)
         self.assertNotEqual(widget.factory, self.factory)
 
@@ -35,7 +39,7 @@ class DeprecatedFactoryTests(TestCase):
 
     def test_command(self):
         with self.assertWarns(DeprecationWarning):
-            widget = toga.Command(self.callback, 'Test', factory=self.factory)
+            widget = toga.Command(self.callback, "Test", factory=self.factory)
         with self.assertWarns(DeprecationWarning):
             widget.bind(factory=self.factory)
         self.assertEqual(widget._impl.interface, widget)
@@ -53,7 +57,7 @@ class DeprecatedFactoryTests(TestCase):
         self.assertNotEqual(widget.factory, self.factory)
 
     def test_icon(self):
-        widget = toga.Icon('resources/toga', system=True)
+        widget = toga.Icon("resources/toga", system=True)
         with self.assertWarns(DeprecationWarning):
             widget.bind(factory=self.factory)
         self.assertEqual(widget._impl.interface, widget)
@@ -61,7 +65,7 @@ class DeprecatedFactoryTests(TestCase):
 
     def test_image(self):
         resource_path = toga_dummy.factory.paths.toga
-        image = toga.Image(resource_path / 'resources/toga-32.png')
+        image = toga.Image(resource_path / "resources/toga-32.png")
         with self.assertWarns(DeprecationWarning):
             image.bind(factory=self.factory)
         self.assertEqual(image._impl.interface, image)
@@ -86,7 +90,7 @@ class DeprecatedFactoryTests(TestCase):
 
     def test_button_created(self):
         with self.assertWarns(DeprecationWarning):
-            widget = toga.Button('Test', factory=self.factory)
+            widget = toga.Button("Test", factory=self.factory)
         self.assertEqual(widget._impl.interface, widget)
         self.assertNotEqual(widget.factory, self.factory)
 
@@ -122,7 +126,7 @@ class DeprecatedFactoryTests(TestCase):
 
     def test_label_created(self):
         with self.assertWarns(DeprecationWarning):
-            widget = toga.Label('Test', factory=self.factory)
+            widget = toga.Label("Test", factory=self.factory)
         self.assertEqual(widget._impl.interface, widget)
         self.assertNotEqual(widget.factory, self.factory)
 
@@ -176,13 +180,15 @@ class DeprecatedFactoryTests(TestCase):
 
     def test_switch_created(self):
         with self.assertWarns(DeprecationWarning):
-            widget = toga.Switch('Test', factory=self.factory)
+            widget = toga.Switch("Test", factory=self.factory)
         self.assertEqual(widget._impl.interface, widget)
         self.assertNotEqual(widget.factory, self.factory)
 
     def test_table_created(self):
         with self.assertWarns(DeprecationWarning):
-            widget = toga.Table(headings=['Test'], missing_value='', factory=self.factory)
+            widget = toga.Table(
+                headings=["Test"], missing_value="", factory=self.factory
+            )
         self.assertEqual(widget._impl.interface, widget)
         self.assertNotEqual(widget.factory, self.factory)
 
@@ -200,7 +206,7 @@ class DeprecatedFactoryTests(TestCase):
 
     def test_tree_created(self):
         with self.assertWarns(DeprecationWarning):
-            widget = toga.Tree(headings=['Test'], factory=self.factory)
+            widget = toga.Tree(headings=["Test"], factory=self.factory)
         self.assertEqual(widget._impl.interface, widget)
         self.assertNotEqual(widget.factory, self.factory)
 

@@ -7,11 +7,11 @@ class NumberInputTests(TestCase):
         super().setUp()
 
         self.nr_input = toga.NumberInput()
-        self.non_int_value = 'a'
+        self.non_int_value = "a"
 
     def test_widget_created(self):
         self.assertEqual(self.nr_input._impl.interface, self.nr_input)
-        self.assertActionPerformed(self.nr_input, 'create NumberInput')
+        self.assertActionPerformed(self.nr_input, "create NumberInput")
         self.assertEqual(self.nr_input.readonly, False)
 
     def test_step(self):
@@ -70,7 +70,7 @@ class NumberInputTests(TestCase):
 
         self.nr_input.on_change = dummy_function
         self.nr_input.value = 2
-        self.assertValueSet(self.nr_input, 'on_change', self.nr_input.on_change)
+        self.assertValueSet(self.nr_input, "on_change", self.nr_input.on_change)
 
     def test_value_init(self):
         value = 5
@@ -92,7 +92,7 @@ class NumberInputTests(TestCase):
             my_nr_input = toga.NumberInput(
                 default=value,
             )
-        self.assertValueSet(my_nr_input, 'value', value)
+        self.assertValueSet(my_nr_input, "value", value)
         self.assertEqual(my_nr_input.value, value)
 
         # can't specify both default *and* value

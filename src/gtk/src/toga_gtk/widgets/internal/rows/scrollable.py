@@ -2,13 +2,15 @@ from toga_gtk.libs import GLib, Gtk
 
 
 class ScrollableRow(Gtk.ListBoxRow):
+    """You can use and inherit from this class as if it were Gtk.ListBoxRow,
+    nothing from the original implementation is changed.
+
+    There are three new public methods: scroll_to_top(),
+    scroll_to_center() and scroll_to_bottom(). 'top', 'center' and
+    'bottom' are with respect to where in the visible region the row
+    will move to.
     """
-    You can use and inherit from this class as if it were Gtk.ListBoxRow, nothing
-    from the original implementation is changed.
-    There are three new public methods: scroll_to_top(), scroll_to_center() and
-    scroll_to_bottom(). 'top', 'center' and 'bottom' are with respect to where in the
-    visible region the row will move to.
-    """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # We need to wait until this widget is allocated to scroll it in,
@@ -32,9 +34,9 @@ class ScrollableRow(Gtk.ListBoxRow):
         self.scroll_to_position("BOTTOM")
 
     def scroll_to_position(self, position):
-        """
-        Scrolls the parent Gtk.ListBox until child is in the center of the
+        """Scrolls the parent Gtk.ListBox until child is in the center of the
         view.
+
         `position` is one of "TOP", "CENTER" or "BOTTOM"
         """
         if position not in ("TOP", "CENTER", "BOTTOM"):
@@ -51,9 +53,9 @@ class ScrollableRow(Gtk.ListBoxRow):
             # widget.size_request is already available but that's
             # only the requested size, not the size it will get.
             self._scroll_handler_id = self.connect(
-                'size-allocate',
+                "size-allocate",
                 # We don't need `wdiget` and `gpointer` but we do need to capture `position`
-                lambda widget, gpointer: self.gtk_do_scroll_to_position(position)
+                lambda widget, gpointer: self.gtk_do_scroll_to_position(position),
             )
 
         return True
@@ -78,7 +80,7 @@ class ScrollableRow(Gtk.ListBoxRow):
         offset = page_size - row_height
 
         value_at_top = y
-        value_at_center = value_at_top - offset/2
+        value_at_center = value_at_top - offset / 2
         value_at_bottom = value_at_top - offset
 
         # `value` is the position the parent Gtk.ListBox will put at the
@@ -120,10 +122,7 @@ class ScrollableRow(Gtk.ListBoxRow):
                 self._animation_control = None
                 return False
 
-        self._animation_control = {
-            "last_position": current,
-            "list_height": list_height
-        }
+        self._animation_control = {"last_position": current, "list_height": list_height}
 
         distance = final - current
 

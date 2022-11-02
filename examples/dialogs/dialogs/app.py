@@ -12,40 +12,44 @@ class ExampledialogsApp(toga.App):
         self.label.text = "Ready."
 
     async def action_info_dialog(self, widget):
-        await self.main_window.info_dialog('Toga', 'THIS! IS! TOGA!!')
-        self.label.text = 'Information was provided.'
+        await self.main_window.info_dialog("Toga", "THIS! IS! TOGA!!")
+        self.label.text = "Information was provided."
 
     async def action_question_dialog(self, widget):
-        if await self.main_window.question_dialog('Toga', 'Is this cool or what?'):
-            self.label.text = 'User said yes!'
-            await self.main_window.info_dialog('Happiness', 'I know, right! :-)')
+        if await self.main_window.question_dialog("Toga", "Is this cool or what?"):
+            self.label.text = "User said yes!"
+            await self.main_window.info_dialog("Happiness", "I know, right! :-)")
         else:
-            self.label.text = 'User says no...'
-            await self.main_window.info_dialog('Shucks...', "Well aren't you a spoilsport... :-(")
+            self.label.text = "User says no..."
+            await self.main_window.info_dialog(
+                "Shucks...", "Well aren't you a spoilsport... :-("
+            )
 
     async def action_confirm_dialog(self, widget):
-        if await self.main_window.question_dialog('Toga', 'Are you sure you want to?'):
-            self.label.text = 'Lets do it!'
+        if await self.main_window.question_dialog("Toga", "Are you sure you want to?"):
+            self.label.text = "Lets do it!"
         else:
             self.label.text = "Left it as it was."
 
     async def action_error_dialog(self, widget):
-        await self.main_window.error_dialog('Toga', "Well that didn't work... or did it?")
-        self.label.text = 'Oh noes...'
+        await self.main_window.error_dialog(
+            "Toga", "Well that didn't work... or did it?"
+        )
+        self.label.text = "Oh noes..."
 
     async def action_stack_trace(self, widget):
         await self.main_window.stack_trace_dialog(
             "Well that wasn't good",
             "Here's where you were when it went bad:",
-            ''.join(traceback.format_stack())
+            "".join(traceback.format_stack()),
         )
-        self.label.text = 'Stack traced...'
+        self.label.text = "Stack traced..."
 
     async def action_stack_trace_retry(self, widget):
         retry = await self.main_window.stack_trace_dialog(
-            'Want a do-over?',
+            "Want a do-over?",
             "Here's where you were when it went bad:",
-            ''.join(traceback.format_stack()),
+            "".join(traceback.format_stack()),
             retry=True,
         )
         if retry:
@@ -56,8 +60,7 @@ class ExampledialogsApp(toga.App):
     async def action_open_file_dialog(self, widget):
         try:
             fname = await self.main_window.open_file_dialog(
-                title="Open file with Toga",
-                multiselect=False
+                title="Open file with Toga", multiselect=False
             )
             if fname is not None:
                 self.label.text = f"File to open: {fname}"
@@ -71,7 +74,7 @@ class ExampledialogsApp(toga.App):
             fname = await self.main_window.open_file_dialog(
                 title="Open file with Toga",
                 multiselect=False,
-                file_types=['doc', 'txt'],
+                file_types=["doc", "txt"],
             )
             if fname is not None:
                 self.label.text = f"File to open: {fname}"
@@ -83,8 +86,7 @@ class ExampledialogsApp(toga.App):
     async def action_open_file_dialog_multi(self, widget):
         try:
             filenames = await self.main_window.open_file_dialog(
-                title="Open file with Toga",
-                multiselect=True
+                title="Open file with Toga", multiselect=True
             )
             if filenames is not None:
                 msg = f"Files to open: {', '.join(str(f) for f in filenames)}"
@@ -100,7 +102,7 @@ class ExampledialogsApp(toga.App):
             fname = await self.main_window.open_file_dialog(
                 title="Open file with Toga in home folder",
                 initial_directory=Path.home(),
-                multiselect=False
+                multiselect=False,
             )
             if fname is not None:
                 self.label.text = f"File to open: {fname}"
@@ -124,11 +126,12 @@ class ExampledialogsApp(toga.App):
     async def action_select_folder_dialog_multi(self, widget):
         try:
             path_names = await self.main_window.select_folder_dialog(
-                title="Select multiple folders with Toga",
-                multiselect=True
+                title="Select multiple folders with Toga", multiselect=True
             )
             if path_names is not None:
-                self.label.text = f"Folders selected: {','.join([str(p) for p in path_names])}"
+                self.label.text = (
+                    f"Folders selected: {','.join([str(p) for p in path_names])}"
+                )
             else:
                 self.label.text = "No fodlers selected!"
         except ValueError:
@@ -145,7 +148,7 @@ class ExampledialogsApp(toga.App):
             self.label.text = "Folder select dialog was canceled"
 
     async def action_save_file_dialog(self, widget):
-        fname = 'Toga_file.txt'
+        fname = "Toga_file.txt"
         try:
             save_path = await self.main_window.save_file_dialog(
                 "Save file with Toga",
@@ -174,7 +177,9 @@ class ExampledialogsApp(toga.App):
             self.set_window_label_text(len(self.windows) - 2)
             return True
         else:
-            await window.info_dialog(f'Abort {window.title}!', 'Maybe try that again...')
+            await window.info_dialog(
+                f"Abort {window.title}!", "Maybe try that again..."
+            )
             self.close_attempts.add(window)
             return False
 
@@ -187,14 +192,7 @@ class ExampledialogsApp(toga.App):
         self.set_window_label_text(len(self.windows) - 1)
         secondary_label = toga.Label(text="You are in a secondary window!")
         window.content = toga.Box(
-            children=[
-                secondary_label
-            ],
-            style=Pack(
-                flex=1,
-                direction=COLUMN,
-                padding=10
-            )
+            children=[secondary_label], style=Pack(flex=1, direction=COLUMN, padding=10)
         )
         window.on_close = self.window_close_handler
         window.show()
@@ -207,11 +205,13 @@ class ExampledialogsApp(toga.App):
 
     async def exit_handler(self, app):
         # Return True if app should close, and False if it should remain open
-        if await self.main_window.confirm_dialog('Toga', 'Are you sure you want to quit?'):
+        if await self.main_window.confirm_dialog(
+            "Toga", "Are you sure you want to quit?"
+        ):
             print(f"Label text was '{self.label.text}' when you quit the app")
             return True
         else:
-            self.label.text = 'Exit canceled'
+            self.label.text = "Exit canceled"
             return False
 
     def set_window_label_text(self, num_windows):
@@ -223,65 +223,81 @@ class ExampledialogsApp(toga.App):
         self.on_exit = self.exit_handler
 
         # Label to show responses.
-        self.label = toga.Label('Ready.', style=Pack(padding_top=20))
-        self.window_label = toga.Label('', style=Pack(padding_top=20))
+        self.label = toga.Label("Ready.", style=Pack(padding_top=20))
+        self.window_label = toga.Label("", style=Pack(padding_top=20))
         self.window_counter = 0
         self.close_attempts = set()
         self.set_window_label_text(0)
 
         # Buttons
         btn_style = Pack(flex=1)
-        btn_info = toga.Button('Info', on_press=self.action_info_dialog, style=btn_style)
-        btn_question = toga.Button('Question', on_press=self.action_question_dialog, style=btn_style)
-        btn_confirm = toga.Button('Confirm', on_press=self.action_confirm_dialog, style=btn_style)
-        btn_error = toga.Button('Error', on_press=self.action_error_dialog, style=btn_style)
-        btn_stack_trace = toga.Button('Stack Trace', on_press=self.action_stack_trace, style=btn_style)
+        btn_info = toga.Button(
+            "Info", on_press=self.action_info_dialog, style=btn_style
+        )
+        btn_question = toga.Button(
+            "Question", on_press=self.action_question_dialog, style=btn_style
+        )
+        btn_confirm = toga.Button(
+            "Confirm", on_press=self.action_confirm_dialog, style=btn_style
+        )
+        btn_error = toga.Button(
+            "Error", on_press=self.action_error_dialog, style=btn_style
+        )
+        btn_stack_trace = toga.Button(
+            "Stack Trace", on_press=self.action_stack_trace, style=btn_style
+        )
         btn_stack_trace_retry = toga.Button(
-            'Stack Trace (with retry)',
+            "Stack Trace (with retry)",
             on_press=self.action_stack_trace_retry,
             style=btn_style,
         )
-        btn_open = toga.Button('Open File', on_press=self.action_open_file_dialog, style=btn_style)
+        btn_open = toga.Button(
+            "Open File", on_press=self.action_open_file_dialog, style=btn_style
+        )
         btn_open_filtered = toga.Button(
-            'Open File (Filtered)',
+            "Open File (Filtered)",
             on_press=self.action_open_file_filtered_dialog,
-            style=btn_style
+            style=btn_style,
         )
         btn_open_multi = toga.Button(
-            'Open File (Multiple)',
+            "Open File (Multiple)",
             on_press=self.action_open_file_dialog_multi,
-            style=btn_style
+            style=btn_style,
         )
         btn_open_init_folder = toga.Button(
-            'Open File In Home Folder',
+            "Open File In Home Folder",
             on_press=self.action_open_file_dialog_with_inital_folder,
         )
 
-        btn_save = toga.Button('Save File', on_press=self.action_save_file_dialog, style=btn_style)
-        btn_select = toga.Button('Select Folder', on_press=self.action_select_folder_dialog, style=btn_style)
+        btn_save = toga.Button(
+            "Save File", on_press=self.action_save_file_dialog, style=btn_style
+        )
+        btn_select = toga.Button(
+            "Select Folder", on_press=self.action_select_folder_dialog, style=btn_style
+        )
         btn_select_multi = toga.Button(
-            'Select Folders',
+            "Select Folders",
             on_press=self.action_select_folder_dialog_multi,
-            style=btn_style
+            style=btn_style,
         )
         btn_select_init_folder = toga.Button(
-            'Select Folder In Current Folder ',
+            "Select Folder In Current Folder ",
             on_press=self.action_select_folder_dialog_with_initial_folder,
-            style=btn_style
+            style=btn_style,
         )
 
         btn_open_secondary_window = toga.Button(
-            'Open Secondary Window',
+            "Open Secondary Window",
             on_press=self.action_open_secondary_window,
-            style=btn_style
+            style=btn_style,
         )
         btn_close_secondary_window = toga.Button(
-            'Close All Secondary Windows',
+            "Close All Secondary Windows",
             on_press=self.action_close_secondary_windows,
-            style=btn_style
+            style=btn_style,
         )
 
-        btn_clear = toga.Button('Clear', on_press=self.do_clear, style=btn_style)
+        btn_clear = toga.Button("Clear", on_press=self.do_clear, style=btn_style)
 
         # Outermost box
         box = toga.Box(
@@ -304,13 +320,9 @@ class ExampledialogsApp(toga.App):
                 btn_close_secondary_window,
                 btn_clear,
                 self.label,
-                self.window_label
+                self.window_label,
             ],
-            style=Pack(
-                flex=1,
-                direction=COLUMN,
-                padding=10
-            )
+            style=Pack(flex=1, direction=COLUMN, padding=10),
         )
 
         # Add the content on the main window
@@ -321,9 +333,9 @@ class ExampledialogsApp(toga.App):
 
 
 def main():
-    return ExampledialogsApp('Dialogs', 'org.beeware.widgets.dialogs')
+    return ExampledialogsApp("Dialogs", "org.beeware.widgets.dialogs")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app = main()
     app.main_loop()

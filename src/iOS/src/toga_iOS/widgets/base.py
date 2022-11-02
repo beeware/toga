@@ -30,7 +30,7 @@ class Widget:
     def container(self, container):
         if self.container:
             if container:
-                raise RuntimeError('Already have a container')
+                raise RuntimeError("Already have a container")
             else:
                 # existing container should be removed
                 self.constraints = None
@@ -71,10 +71,7 @@ class Widget:
             offset_y = self.container.viewport.statusbar_height
         elif self.viewport:
             offset_y = self.viewport.statusbar_height
-        self.constraints.update(
-            x, y + offset_y,
-            width, height
-        )
+        self.constraints.update(x, y + offset_y, width, height)
 
     def set_alignment(self, alignment):
         pass

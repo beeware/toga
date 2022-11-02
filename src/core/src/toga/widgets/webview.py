@@ -6,7 +6,7 @@ from .base import Widget
 
 
 class WebView(Widget):
-    """ A widget to display and open html content.
+    """A widget to display and open html content.
 
     Args:
         id (str): An identifier for this widget.
@@ -18,6 +18,7 @@ class WebView(Widget):
             the web view
         on_webview_load (``callable``): The callback method for when the webview loads (or reloads).
     """
+
     MIN_WIDTH = 100
     MIN_HEIGHT = 100
 
@@ -29,7 +30,7 @@ class WebView(Widget):
         url=None,
         user_agent=None,
         on_key_down=None,
-        on_webview_load=None
+        on_webview_load=None,
     ):
         super().__init__(id=id, style=style)
 
@@ -55,7 +56,7 @@ class WebView(Widget):
 
     @property
     def dom(self):
-        """ The current DOM
+        """The current DOM.
 
         Returns:
             The current DOM as a ``str``.
@@ -64,7 +65,7 @@ class WebView(Widget):
 
     @property
     def url(self):
-        """ The current URL
+        """The current URL.
 
         Returns:
             The current URL as a ``str``.
@@ -116,7 +117,7 @@ class WebView(Widget):
 
     @property
     def user_agent(self):
-        """ The user agent for the web view as a ``str``.
+        """The user agent for the web view as a ``str``.
 
         Returns:
             The user agent as a ``str``.
@@ -129,14 +130,13 @@ class WebView(Widget):
         self._impl.set_user_agent(value)
 
     def set_content(self, root_url, content):
-        """ Set the content of the web view.
+        """Set the content of the web view.
 
         Args:
             root_url (str): The URL.
             content (str): The new content.
 
         Returns:
-
         """
         self._html_content = content
         self._impl.set_content(root_url, content)

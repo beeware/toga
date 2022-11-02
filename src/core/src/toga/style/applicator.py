@@ -1,13 +1,16 @@
 class TogaApplicator:
-    """Apply styles to a Toga widget"""
+    """Apply styles to a Toga widget."""
+
     def __init__(self, widget):
         self.widget = widget
 
     def set_bounds(self):
         # print("LAYOUT", self.widget, self.widget.layout)
         self.widget._impl.set_bounds(
-            self.widget.layout.absolute_content_left, self.widget.layout.absolute_content_top,
-            self.widget.layout.content_width, self.widget.layout.content_height
+            self.widget.layout.absolute_content_left,
+            self.widget.layout.absolute_content_top,
+            self.widget.layout.content_width,
+            self.widget.layout.content_height,
         )
         for child in self.widget.children:
             if child.applicator:

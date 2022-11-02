@@ -4,7 +4,7 @@ from toga_winforms.libs.fonts import win_font_size, win_font_style
 from toga_winforms.libs.winforms import (
     ExternalException,
     FileNotFoundException,
-    PrivateFontCollection
+    PrivateFontCollection,
 )
 
 _FONT_CACHE = {}
@@ -39,7 +39,9 @@ class Font:
                 except FileNotFoundException as e:
                     print(f"Registered font path {font_path!r} could not be found: {e}")
                 except ExternalException as e:
-                    print(f"Registered font path {font_path!r} could not be loaded: {e}")
+                    print(
+                        f"Registered font path {font_path!r} could not be loaded: {e}"
+                    )
                 except IndexError as e:
                     print(f"Registered font {font_key} could not be loaded: {e}")
             except KeyError:

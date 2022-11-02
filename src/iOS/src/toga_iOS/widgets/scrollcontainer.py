@@ -8,7 +8,7 @@ from toga_iOS.libs import (
     NSLayoutConstraint,
     NSLayoutRelationEqual,
     UIColor,
-    UIScrollView
+    UIScrollView,
 )
 from toga_iOS.widgets.base import Widget
 from toga_iOS.window import iOSViewport
@@ -41,7 +41,9 @@ class ScrollContainer(Widget):
                 + scrollable_content.interface.style.padding_bottom
             )
             # pad the scrollview for the statusbar offset
-            padding_vertical = padding_vertical + scrollable_content.viewport.statusbar_height
+            padding_vertical = (
+                padding_vertical + scrollable_content.viewport.statusbar_height
+            )
         else:
             content_height = self.native.frame.size.height
 
@@ -57,52 +59,45 @@ class ScrollContainer(Widget):
         # view contained has an intrinsic size and the constraints are
         # not ambiguous in any axis.
         view = widget.native
-        leading_constraint = \
-            NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
-                view,
-                NSLayoutAttributeLeading,
-                NSLayoutRelationEqual,
-                self.native,
-                NSLayoutAttributeLeading,
-                1.0,
-                0
-            )
-        trailing_constraint = \
-            NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
-                self.native,
-                NSLayoutAttributeTrailing,
-                NSLayoutRelationEqual,
-                view,
-                NSLayoutAttributeTrailing,
-                1.0,
-                0
-            )
-        top_constraint = \
-            NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
-                view,
-                NSLayoutAttributeTop,
-                NSLayoutRelationEqual,
-                self.native,
-                NSLayoutAttributeTop,
-                1.0,
-                0
-            )
-        bottom_constraint = \
-            NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
-                self.native,
-                NSLayoutAttributeBottom,
-                NSLayoutRelationEqual,
-                view,
-                NSLayoutAttributeBottom,
-                1.0,
-                0
-            )
-        self.native.addConstraints_([
-            leading_constraint,
-            trailing_constraint,
-            top_constraint,
-            bottom_constraint
-        ])
+        leading_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
+            view,
+            NSLayoutAttributeLeading,
+            NSLayoutRelationEqual,
+            self.native,
+            NSLayoutAttributeLeading,
+            1.0,
+            0,
+        )
+        trailing_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
+            self.native,
+            NSLayoutAttributeTrailing,
+            NSLayoutRelationEqual,
+            view,
+            NSLayoutAttributeTrailing,
+            1.0,
+            0,
+        )
+        top_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
+            view,
+            NSLayoutAttributeTop,
+            NSLayoutRelationEqual,
+            self.native,
+            NSLayoutAttributeTop,
+            1.0,
+            0,
+        )
+        bottom_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
+            self.native,
+            NSLayoutAttributeBottom,
+            NSLayoutRelationEqual,
+            view,
+            NSLayoutAttributeBottom,
+            1.0,
+            0,
+        )
+        self.native.addConstraints_(
+            [leading_constraint, trailing_constraint, top_constraint, bottom_constraint]
+        )
 
     def create(self):
         self.native = UIScrollView.alloc().init()
