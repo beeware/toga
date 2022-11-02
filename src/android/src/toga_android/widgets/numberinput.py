@@ -72,9 +72,8 @@ class NumberInput(Widget):
 
     def set_font(self, font):
         if font:
-            font_impl = font.bind()
-            self.native.setTextSize(TypedValue.COMPLEX_UNIT_SP, font_impl.get_size())
-            self.native.setTypeface(font_impl.get_typeface(), font_impl.get_style())
+            self.native.setTextSize(TypedValue.COMPLEX_UNIT_SP, font._impl.get_size())
+            self.native.setTypeface(font._impl.get_typeface(), font._impl.get_style())
 
     def set_value(self, value):
         # Store a string in the Android widget. The `afterTextChanged` method

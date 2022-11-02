@@ -249,12 +249,12 @@ class Canvas(Widget):
     # Text
 
     def measure_text(self, text, font, tight=False):
-        return font.bind().measure(text, tight=tight)
+        return font._impl.measure(text, tight=tight)
 
     def write_text(self, text, x, y, font, *args, **kwargs):
         width, height = self.measure_text(text, font)
         textAttributes = NSMutableDictionary.alloc().init()
-        textAttributes[NSFontAttributeName] = font.bind().native
+        textAttributes[NSFontAttributeName] = font._impl.native
 
         if "stroke_color" in kwargs and "fill_color" in kwargs:
             textAttributes[NSStrokeColorAttributeName] = native_color(

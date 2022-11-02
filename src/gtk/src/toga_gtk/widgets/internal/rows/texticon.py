@@ -75,7 +75,6 @@ class TextIconRow(HiddenButtonsRow):
         if getattr(row, "icon") is None:
             return None
         else:
-            row.icon.bind()
             dpr = self.get_scale_factor()
             return getattr(row.icon._impl, "native_" + str(32 * dpr))
 

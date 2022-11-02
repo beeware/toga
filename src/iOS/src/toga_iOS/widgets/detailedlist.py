@@ -43,9 +43,8 @@ class TogaTableViewController(UITableViewController):
         cell.detailTextLabel.text = str(getattr(value, "subtitle", ""))
 
         # If the value has an icon attribute, get the _impl.
-        # Icons are deferred resources, so we bind to factory.
         try:
-            cell.imageView.image = value.icon.bind().native
+            cell.imageView.image = value.icon._impl.native
         except AttributeError:
             pass
 

@@ -62,8 +62,10 @@ class TestCommand(TestCase):
             section=1,
             order=1,
         )
-        retur_val = cmd.bind()
-        self.assertEqual(retur_val, cmd._impl)
+
+        with self.assertWarns(DeprecationWarning):
+            return_val = cmd.bind()
+        self.assertEqual(return_val, cmd._impl)
 
     def test_command_enabler(self):
         grp = toga.Group("Test group", order=10)
@@ -77,7 +79,7 @@ class TestCommand(TestCase):
             section=1,
             order=1,
         )
-        cmd.bind()
+
         cmd.enabled = False
         self.assertActionPerformedWith(cmd, "set enabled", value=False)
         cmd.enabled = True

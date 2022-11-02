@@ -126,7 +126,7 @@ class MultilineTextInput(Widget):
 
     def set_font(self, font):
         if font:
-            native_font = font.bind().native
+            native_font = font._impl.native
             self.native.font = native_font
             self.placeholder_label.font = native_font
 

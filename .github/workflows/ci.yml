@@ -43,7 +43,7 @@ jobs:
         if-no-files-found: error
 
   core:
-    needs: package
+    needs: [pre-commit, package]
     strategy:
       matrix:
         platform: ['macos', 'ubuntu', 'windows']
@@ -79,7 +79,7 @@ jobs:
         fail_ci_if_error: true
 
   backend:
-    needs: package
+    needs: core
     strategy:
       matrix:
         backend: [android, cocoa, gtk, iOS, web, winforms]

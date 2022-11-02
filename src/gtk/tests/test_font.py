@@ -36,9 +36,15 @@ class TestFontImplementation(unittest.TestCase):
         self.font_family = SYSTEM
         self.font_size = 12
 
+    def test_font_bind(self):
+        font = toga.Font(self.font_family, self.font_size)
+        font_impl = font.bind()
+
+        self.assertEqual(font._impl, font_impl)
+
     def test_font_default_has_all_attr_set(self):
         font = toga.Font(self.font_family, self.font_size)
-        native = font.bind().native
+        native = font._impl.native
         self.assertEqual(native.get_family(), SYSTEM)
         self.assertEqual(native.get_size() / Pango.SCALE, self.font_size)
         self.assertEqual(native.get_style(), Pango.Style.NORMAL)
@@ -48,27 +54,27 @@ class TestFontImplementation(unittest.TestCase):
     def test_font_size(self):
         self.font_size = 22
         font = toga.Font(self.font_family, self.font_size)
-        native = font.bind().native
+        native = font._impl.native
         self.assertEqual(native.get_size() / Pango.SCALE, self.font_size)
 
     def test_font_style_italic(self):
         font = toga.Font(self.font_family, self.font_size, style=ITALIC)
-        native = font.bind().native
+        native = font._impl.native
         self.assertEqual(native.get_style(), Pango.Style.ITALIC)
 
     def test_font_style_oblique(self):
         font = toga.Font(self.font_family, self.font_size, style=OBLIQUE)
-        native = font.bind().native
+        native = font._impl.native
         self.assertEqual(native.get_style(), Pango.Style.OBLIQUE)
 
     def test_font_variant_small_caps(self):
         font = toga.Font(self.font_family, self.font_size, variant=SMALL_CAPS)
-        native = font.bind().native
+        native = font._impl.native
         self.assertEqual(native.get_variant(), Pango.Variant.SMALL_CAPS)
 
     def test_font_weight_bold(self):
         font = toga.Font(self.font_family, self.font_size, weight=BOLD)
-        native = font.bind().native
+        native = font._impl.native
         self.assertEqual(native.get_weight(), Pango.Weight.BOLD)
 
     def test_font_cache(self):
@@ -79,7 +85,7 @@ class TestFontImplementation(unittest.TestCase):
 
     def test_font_family_defaults_to_system(self):
         font = toga.Font(CURSIVE, self.font_size)
-        native = font.bind().native
+        native = font._impl.native
         self.assertIn(CURSIVE, native.get_family())
         self.assertIn(SYSTEM, native.get_family())
 
