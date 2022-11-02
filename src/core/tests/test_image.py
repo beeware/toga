@@ -94,3 +94,9 @@ class ImageTests(TestCase):
 
         # The bound image is the _impl.
         self.assertEqual(bound, image._impl)
+
+    def test_image_save(self):
+        save_path = Path("/path/to/save.png")
+        image = toga.Image(path=Path(toga.__file__).parent / "resources" / "toga.png")
+        image.save(save_path)
+        self.assertActionPerformedWith(image, "save", path=save_path)
