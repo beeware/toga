@@ -18,7 +18,7 @@ with open("src/toga_iOS/__init__.py", encoding="utf8") as version_file:
 setup(
     version=version,
     install_requires=[
-        "rubicon-objc>=0.4.0",
+        "rubicon-objc>=0.4.1",
         "toga-core==%s" % version,
     ],
     test_suite="tests",
