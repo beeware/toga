@@ -14,10 +14,7 @@ class TogaSplitViewDelegate(NSObject):
     def splitView_resizeSubviewsWithOldSize_(self, view, size: NSSize) -> None:
         # Turn all the weights into a fraction of 1.0
         total = sum(self.interface._weight)
-        self.interface._weight = [
-            weight / total
-            for weight in self.interface._weight
-        ]
+        self.interface._weight = [weight / total for weight in self.interface._weight]
 
         # Mark the subviews as needing adjustment
         view.adjustSubviews()
@@ -31,7 +28,9 @@ class TogaSplitViewDelegate(NSObject):
         else:
             for i, weight in enumerate(self.interface._weight[:-1]):
                 cumulative += weight
-                view.setPosition(view.frame.size.height * cumulative, ofDividerAtIndex=i)
+                view.setPosition(
+                    view.frame.size.height * cumulative, ofDividerAtIndex=i
+                )
 
     @objc_method
     def splitViewDidResizeSubviews_(self, notification) -> None:
@@ -45,11 +44,12 @@ class TogaSplitViewDelegate(NSObject):
 
 
 class SplitContainer(Widget):
-    """ Cocoa SplitContainer implementation
+    """Cocoa SplitContainer implementation.
 
     Todo:
         * update the minimum width of the whole SplitContainer based on the content of its sub layouts.
     """
+
     def create(self):
         self.native = NSSplitView.alloc().init()
 

@@ -12,11 +12,11 @@ from ..libs.android.widget import (
     RelativeLayout,
     RelativeLayout__LayoutParams,
     ScrollView,
-    TextView
+    TextView,
 )
 from ..libs.androidx.swiperefreshlayout import (
     SwipeRefreshLayout,
-    SwipeRefreshLayout__OnRefreshListener
+    SwipeRefreshLayout__OnRefreshListener,
 )
 from .base import Widget
 
@@ -31,7 +31,9 @@ class DetailedListOnClickListener(OnClickListener):
         row = self._impl.interface.data[self._row_number]
         self._impl._selection = row
         if self._impl.interface.on_select:
-            self._impl.interface.on_select(self._impl.interface, row=self._impl.interface.data[self._row_number])
+            self._impl.interface.on_select(
+                self._impl.interface, row=self._impl.interface.data[self._row_number]
+            )
 
 
 class OnRefreshListener(SwipeRefreshLayout__OnRefreshListener):
@@ -64,8 +66,8 @@ class DetailedList(Widget):
         scroll_view = ScrollView(self._native_activity)
         self._scroll_view = scroll_view.__global__()
         scroll_view_layout_params = LinearLayout__LayoutParams(
-                LinearLayout__LayoutParams.MATCH_PARENT,
-                LinearLayout__LayoutParams.MATCH_PARENT
+            LinearLayout__LayoutParams.MATCH_PARENT,
+            LinearLayout__LayoutParams.MATCH_PARENT,
         )
         scroll_view_layout_params.gravity = Gravity.TOP
         swipe_refresh_wrapper = SwipeRefreshLayout(self._native_activity)
@@ -77,12 +79,10 @@ class DetailedList(Widget):
         self._dismissable_container = dismissable_container.__global__()
         dismissable_container.setOrientation(LinearLayout.VERTICAL)
         dismissable_container_params = LinearLayout__LayoutParams(
-                LinearLayout__LayoutParams.MATCH_PARENT,
-                LinearLayout__LayoutParams.MATCH_PARENT
+            LinearLayout__LayoutParams.MATCH_PARENT,
+            LinearLayout__LayoutParams.MATCH_PARENT,
         )
-        scroll_view.addView(
-                dismissable_container, dismissable_container_params
-        )
+        scroll_view.addView(dismissable_container, dismissable_container_params)
         for i in range(len(self.interface.data or [])):
             self._make_row(dismissable_container, i)
 
@@ -99,7 +99,8 @@ class DetailedList(Widget):
             icon_image_view.setImageBitmap(bitmap)
         icon_layout_params = RelativeLayout__LayoutParams(
             RelativeLayout__LayoutParams.WRAP_CONTENT,
-            RelativeLayout__LayoutParams.WRAP_CONTENT)
+            RelativeLayout__LayoutParams.WRAP_CONTENT,
+        )
         icon_layout_params.width = 150
         icon_layout_params.setMargins(25, 0, 25, 0)
         icon_layout_params.height = self.ROW_HEIGHT
@@ -109,8 +110,9 @@ class DetailedList(Widget):
         # Create layout to show top_text and bottom_text.
         text_container = LinearLayout(self._native_activity)
         text_container_params = RelativeLayout__LayoutParams(
-                RelativeLayout__LayoutParams.WRAP_CONTENT,
-                RelativeLayout__LayoutParams.WRAP_CONTENT)
+            RelativeLayout__LayoutParams.WRAP_CONTENT,
+            RelativeLayout__LayoutParams.WRAP_CONTENT,
+        )
         text_container_params.height = self.ROW_HEIGHT
         text_container_params.setMargins(25 + 25 + 150, 0, 0, 0)
         row_foreground.addView(text_container, text_container_params)
@@ -119,22 +121,28 @@ class DetailedList(Widget):
 
         # Create top & bottom text; add them to layout.
         top_text = TextView(self._native_activity)
-        top_text.setText(str(getattr(self.interface.data[i], 'title', '')))
+        top_text.setText(str(getattr(self.interface.data[i], "title", "")))
         top_text.setTextSize(20.0)
-        top_text.setTextColor(self._native_activity.getResources().getColor(R__color.black))
+        top_text.setTextColor(
+            self._native_activity.getResources().getColor(R__color.black)
+        )
         bottom_text = TextView(self._native_activity)
-        bottom_text.setTextColor(self._native_activity.getResources().getColor(R__color.black))
-        bottom_text.setText(str(getattr(self.interface.data[i], 'subtitle', '')))
+        bottom_text.setTextColor(
+            self._native_activity.getResources().getColor(R__color.black)
+        )
+        bottom_text.setText(str(getattr(self.interface.data[i], "subtitle", "")))
         bottom_text.setTextSize(16.0)
         top_text_params = LinearLayout__LayoutParams(
-                RelativeLayout__LayoutParams.WRAP_CONTENT,
-                RelativeLayout__LayoutParams.MATCH_PARENT)
+            RelativeLayout__LayoutParams.WRAP_CONTENT,
+            RelativeLayout__LayoutParams.MATCH_PARENT,
+        )
         top_text_params.weight = 1.0
         top_text.setGravity(Gravity.BOTTOM)
         text_container.addView(top_text, top_text_params)
         bottom_text_params = LinearLayout__LayoutParams(
-                RelativeLayout__LayoutParams.WRAP_CONTENT,
-                RelativeLayout__LayoutParams.MATCH_PARENT)
+            RelativeLayout__LayoutParams.WRAP_CONTENT,
+            RelativeLayout__LayoutParams.MATCH_PARENT,
+        )
         bottom_text_params.weight = 1.0
         bottom_text.setGravity(Gravity.TOP)
         bottom_text_params.gravity = Gravity.TOP
@@ -188,10 +196,11 @@ class DetailedList(Widget):
             hit_rect = Rect()
             row_obj.getHitRect(hit_rect)
             self._scroll_view.requestChildRectangleOnScreen(
-                    self._dismissable_container,
-                    hit_rect,
-                    False,
-                )
+                self._dismissable_container,
+                hit_rect,
+                False,
+            )
+
         Handler().post(PythonRunnable(scroll))
 
     def rehint(self):

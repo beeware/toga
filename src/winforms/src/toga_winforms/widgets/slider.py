@@ -14,8 +14,7 @@ DEFAULT_NUMBER_OF_TICKS = 10000
 
 
 class Slider(Widget):
-    """
-    Implementation details:
+    """Implementation details:
 
     The slider widget is using .Net "TrackBar" class. Since TrackBar can only be
     discrete (ie. have integer values), we implement our slider as a TrackBar
@@ -25,6 +24,7 @@ class Slider(Widget):
     When tick_count is not defined, we use 100 as the default number of ticks since
     it is big enough to make the TrackBar feel continuous.
     """
+
     def create(self):
         self.native = WinForms.TrackBar()
         self.native.Scroll += self.winforms_scroll
@@ -39,19 +39,15 @@ class Slider(Widget):
             self.interface.on_change(self.interface)
 
     def winforms_mouse_down(self, sender, event):
-        """
-        Since picking and releasing the slider is also a change, calling the
-            on_change method.
-        """
+        """Since picking and releasing the slider is also a change, calling the
+        on_change method."""
         if self.container and self.interface.on_press:
             self.interface.on_press(self.interface)
         self.winforms_scroll(sender, event)
 
     def winforms_mouse_up(self, sender, event):
-        """
-        Since picking and releasing the slider is also a change, calling the
-            on_change method.
-        """
+        """Since picking and releasing the slider is also a change, calling the
+        on_change method."""
         self.winforms_scroll(sender, event)
         if self.container and self.interface.on_release:
             self.interface.on_release(self.interface)

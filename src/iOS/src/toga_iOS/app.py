@@ -8,7 +8,7 @@ from toga_iOS.libs import (
     UIKeyboardFrameEndUserInfoKey,
     UIKeyboardWillHideNotification,
     UIKeyboardWillShowNotification,
-    UIResponder
+    UIResponder,
 )
 from toga_iOS.window import Window
 
@@ -35,21 +35,23 @@ class PythonAppDelegate(UIResponder):
         print("App about to enter foreground.")
 
     @objc_method
-    def application_didFinishLaunchingWithOptions_(self, application, launchOptions) -> bool:
+    def application_didFinishLaunchingWithOptions_(
+        self, application, launchOptions
+    ) -> bool:
         print("App finished launching.")
         App.app.create()
 
         NSNotificationCenter.defaultCenter.addObserver(
             self,
-            selector=SEL('keyboardWillShow:'),
+            selector=SEL("keyboardWillShow:"),
             name=UIKeyboardWillShowNotification,
-            object=None
+            object=None,
         )
         NSNotificationCenter.defaultCenter.addObserver(
             self,
-            selector=SEL('keyboardWillHide:'),
+            selector=SEL("keyboardWillHide:"),
             name=UIKeyboardWillHideNotification,
-            object=None
+            object=None,
         )
         # Set the initial keyboard size.
         App.app.interface.main_window.content._impl.viewport.kb_height = 0.0
@@ -61,8 +63,11 @@ class PythonAppDelegate(UIResponder):
         print("App about to Terminate.")
 
     @objc_method
-    def application_didChangeStatusBarOrientation_(self, application, oldStatusBarOrientation: int) -> None:
-        """ This callback is invoked when rotating the device from landscape to portrait and vice versa. """
+    def application_didChangeStatusBarOrientation_(
+        self, application, oldStatusBarOrientation: int
+    ) -> None:
+        """This callback is invoked when rotating the device from landscape to
+        portrait and vice versa."""
         App.app.interface.main_window.content.refresh()
 
     @objc_method
@@ -71,9 +76,11 @@ class PythonAppDelegate(UIResponder):
         # This will fire multiple times - once to display the keyboard,
         # and again to display the autocomplete bar.
         kb_height = App.app.interface.main_window._impl.controller.view.convertRect(
-                notification.userInfo.objectForKey(UIKeyboardFrameEndUserInfoKey).CGRectValue,
-                fromView=None
-            ).size.height
+            notification.userInfo.objectForKey(
+                UIKeyboardFrameEndUserInfoKey
+            ).CGRectValue,
+            fromView=None,
+        ).size.height
         App.app.interface.main_window.content._impl.viewport.kb_height = kb_height
 
         App.app.interface.main_window.content.refresh()
@@ -95,11 +102,11 @@ class App:
         self.loop = asyncio.get_event_loop()
 
     def create(self):
-        """ Calls the startup method on the interface """
+        """Calls the startup method on the interface."""
         self.interface.startup()
 
     def open_document(self, fileURL):
-        """ Add a new document to this app."""
+        """Add a new document to this app."""
         pass
 
     def main_loop(self):
@@ -115,10 +122,12 @@ class App:
         if self.loop.is_running():
             raise RuntimeError(
                 "Recursively calling run_forever is forbidden. "
-                "To recursively run the event loop, call run().")
+                "To recursively run the event loop, call run()."
+            )
 
         self.loop._running = True
         from asyncio import events
+
         if hasattr(events, "_set_running_loop"):
             events._set_running_loop(self.loop)
 

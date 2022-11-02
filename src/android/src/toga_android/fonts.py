@@ -53,7 +53,9 @@ class Font:
                 variant=self.interface.variant,
             )
             if font_key in _REGISTERED_FONT_CACHE:
-                font_path = str(self.interface.factory.paths.app / _REGISTERED_FONT_CACHE[font_key])
+                font_path = str(
+                    self.interface.factory.paths.app / _REGISTERED_FONT_CACHE[font_key]
+                )
                 if os.path.isfile(font_path):
                     family = Typeface.createFromFile(font_path)
                     # If the typeface cannot be created, following Exception is thrown:
@@ -82,7 +84,9 @@ class Font:
                 else:
                     family = Typeface.create(self.interface.family, Typeface.NORMAL)
 
-            family = family.__global__()  # store a JNI global reference to prevent objects from becoming stale
+            family = (
+                family.__global__()
+            )  # store a JNI global reference to prevent objects from becoming stale
             _FONT_CACHE[self.interface] = family
 
         return family

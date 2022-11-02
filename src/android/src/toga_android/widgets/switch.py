@@ -4,7 +4,7 @@ from ..libs.android.util import TypedValue
 from ..libs.android.view import View__MeasureSpec
 from ..libs.android.widget import (
     CompoundButton__OnCheckedChangeListener,
-    Switch as A_Switch
+    Switch as A_Switch,
 )
 from .base import Widget
 

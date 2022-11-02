@@ -27,11 +27,13 @@ def apply_gtk_style(style_context, style, name):
 
 
 def get_color_css(value):
+    # fmt: off
     return (
         ".toga-color {"
         f"color: rgba({value.r}, {value.g}, {value.b}, {value.a});"
         "}"
     )
+    # fmt: on
 
 
 def get_bg_color_css(value):

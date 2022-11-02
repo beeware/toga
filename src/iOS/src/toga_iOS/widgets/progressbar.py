@@ -5,9 +5,10 @@ from toga_iOS.widgets.base import Widget
 
 
 class ProgressBar(Widget):
-
     def create(self):
-        self.native = UIProgressView.alloc().initWithProgressViewStyle_(UIProgressViewStyle.Default)
+        self.native = UIProgressView.alloc().initWithProgressViewStyle_(
+            UIProgressViewStyle.Default
+        )
         self.add_constraints()
 
     def start(self):
@@ -20,8 +21,7 @@ class ProgressBar(Widget):
     def set_value(self, value):
         if self.interface.max is not None:
             self.native.setProgress_animated_(
-                self.interface.value / self.interface.max,
-                True
+                self.interface.value / self.interface.max, True
             )
 
     def set_max(self, value):

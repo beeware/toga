@@ -28,16 +28,22 @@ class DetailedList(Widget):
     def winforms_retrieve_virtual_item(self, sender, e):
         # Because ListView is in VirtualMode, it's necessary implement
         # VirtualItemsSelectionRangeChanged event to create ListViewItem when it's needed
-        if self._cache and e.ItemIndex >= self._first_item and \
-                e.ItemIndex < self._first_item + len(self._cache):
+        if (
+            self._cache
+            and e.ItemIndex >= self._first_item
+            and e.ItemIndex < self._first_item + len(self._cache)
+        ):
             e.Item = self._cache[e.ItemIndex - self._first_item]
         else:
             row = self.interface.data[e.ItemIndex]
             e.Item = self.build_item(row=row, index=e.ItemIndex)
 
     def winforms_cache_virtual_items(self, sender, e):
-        if self._cache and e.StartIndex >= self._first_item and \
-                e.EndIndex < self._first_item + len(self._cache):
+        if (
+            self._cache
+            and e.StartIndex >= self._first_item
+            and e.EndIndex < self._first_item + len(self._cache)
+        ):
             # If the newly requested cache is a subset of the old cache,
             # no need to rebuild everything, so do nothing
             return
@@ -55,7 +61,9 @@ class DetailedList(Widget):
 
     def winforms_item_selection_changed(self, sender, e):
         if self.interface.on_select:
-            self.interface.on_select(self.interface, row=self.interface.data[e.ItemIndex])
+            self.interface.on_select(
+                self.interface, row=self.interface.data[e.ItemIndex]
+            )
 
     def _create_column(self, accessor):
         col = WinForms.ColumnHeader()
@@ -83,7 +91,7 @@ class DetailedList(Widget):
         self.update_data()
 
     def change(self, item):
-        self.interface.factory.not_implemented('Table.change()')
+        self.interface.factory.not_implemented("Table.change()")
 
     def remove(self, item, index):
         self.update_data()
@@ -107,7 +115,7 @@ class DetailedList(Widget):
             self.native.Font = font._impl.native
 
     def set_on_double_click(self, handler):
-        self.interface.factory.not_implemented('Table.set_on_double_click()')
+        self.interface.factory.not_implemented("Table.set_on_double_click()")
 
     def set_on_refresh(self, handler):
         pass

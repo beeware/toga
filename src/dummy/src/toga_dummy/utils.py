@@ -7,8 +7,8 @@ from travertino.size import BaseIntrinsicSize
 
 
 def not_required(method_or_class):
-    """ This decorator function is used to mark methods or classes
-    that they are not required for interface compliance.
+    """This decorator function is used to mark methods or classes that they are
+    not required for interface compliance.
 
     Args:
         method_or_class: The method or class to decorate
@@ -20,9 +20,9 @@ def not_required(method_or_class):
 
 
 def not_required_on(*args):
-    """ This decorator function is used to mark methods or classes
-    that they are not required on certain platforms.
-    This is only used by the implementation checks creation mechanism.
+    """This decorator function is used to mark methods or classes that they are
+    not required on certain platforms. This is only used by the implementation
+    checks creation mechanism.
 
     Args:
         *args (str): Takes arguments in form of strings.
@@ -43,6 +43,7 @@ def not_required_on(*args):
     Returns:
         The method or class being decorated
     """
+
     def _dec(method_or_class):
         return method_or_class
 
@@ -52,6 +53,7 @@ def not_required_on(*args):
 ###########################################################################
 # The event types that can be logged
 ###########################################################################
+
 
 class EventLog:
     # Event types that can be logged
@@ -99,6 +101,7 @@ class LogEntry:
         context: A dictionary of data related to the event. The contents
             of the dictionary will depend on the event that occurred.
     """
+
     def __init__(self, logtype, instance, **context):
         self.sequence = EventLog.next_sequence_value()
         self.logtype = logtype
@@ -107,11 +110,13 @@ class LogEntry:
 
 
 class LoggedObject:
-    """A base class for objects on the dummy backend whose activity will be logged.
+    """A base class for objects on the dummy backend whose activity will be
+    logged.
 
     Objects specified in the dummy backend should extend this class, and
     log any activity they perform using the methods on this object.
     """
+
     def __init__(self):
         self._actions = {}
         self._sets = {}
@@ -148,7 +153,7 @@ class LoggedObject:
         return self._sets.get(attr, [default])[-1]
 
     def _action(self, action, **data):
-        """Record that an action was performed on the object
+        """Record that an action was performed on the object.
 
         Args:
             action: The action that was performed
@@ -162,7 +167,7 @@ _MODULES = {}
 
 
 def log_action(module, action, **data):
-    """Record that an action function was invoked
+    """Record that an action function was invoked.
 
     Args:
         action: The action that was performed
@@ -189,8 +194,8 @@ class TestCase(unittest.TestCase):
         # conditions. This isn't *great*, but the __main__ module isn't meaningful
         # during tests, and removing it allows us to avoid having explicit "if
         # under test conditions" checks in paths.py.
-        if '__main__' in sys.modules:
-            del sys.modules['__main__']
+        if "__main__" in sys.modules:
+            del sys.modules["__main__"]
 
     def reset_event_log(self):
         EventLog.reset()
@@ -201,16 +206,15 @@ class TestCase(unittest.TestCase):
         Args:
             _module: The module with the action that should not have been performed.
             action: The name of the action to check
-
         """
         try:
             self.assertNotIn(
                 action,
                 _MODULES[_module]._actions,
-                f'Action {action} unexpectedly performed by {_module}.'
+                f"Action {action} unexpectedly performed by {_module}.",
             )
         except AttributeError:
-            self.fail(f'Module {_module} is not a logged object')
+            self.fail(f"Module {_module} is not a logged object")
 
     def assertFunctionPerformed(self, _module, action):
         """Assert that the action function from module was performed.
@@ -218,23 +222,21 @@ class TestCase(unittest.TestCase):
         Args:
             _module: The module with the action that should have been performed.
             action: The name of the action to check
-
         """
         try:
             self.assertIn(
                 action,
                 _MODULES[_module]._actions,
-                'Action {} from {} not performed. Actions were: {}'.format(
-                    action,
-                    _module,
-                    sorted(_MODULES[_module]._actions.keys())
-                )
+                "Action {} from {} not performed. Actions were: {}".format(
+                    action, _module, sorted(_MODULES[_module]._actions.keys())
+                ),
             )
         except AttributeError:
-            self.fail(f'Module {_module} is not a logged object')
+            self.fail(f"Module {_module} is not a logged object")
 
     def assertFunctionPerformedWith(self, _module, action, **test_data):
-        """Confirm that the action function form module was performed with specific test data
+        """Confirm that the action function form module was performed with
+        specific test data.
 
         Args:
             _module: The module with the action function that should have been performed.
@@ -271,26 +273,29 @@ class TestCase(unittest.TestCase):
                     found = True
 
             # None of the recorded actions match the test data.
-            self.fail('Action {} not performed by {} with {}. Actions were: {}'.format(
+            self.fail(
+                "Action {} not performed by {} with {}. Actions were: {}".format(
                     action,
                     _module,
                     test_data,
-                    sorted(_MODULES[_module]._actions[action].items())
-                ))
+                    sorted(_MODULES[_module]._actions[action].items()),
+                )
+            )
         except KeyError:
             # The action wasn't performed
-            self.fail('Action {} not performed by {}. Actions were: {}'.format(
-                    action,
-                    _module,
-                    sorted(_MODULES[_module]._actions.keys())
-                ))
+            self.fail(
+                "Action {} not performed by {}. Actions were: {}".format(
+                    action, _module, sorted(_MODULES[_module]._actions.keys())
+                )
+            )
         except AttributeError:
-            self.fail(f'Widget {_module} is not a logged object')
+            self.fail(f"Widget {_module} is not a logged object")
 
-#####
+    #####
 
     def assertValueSet(self, _widget, attr, value):
-        """Assert that the widget implementation has set an attribute to a value.
+        """Assert that the widget implementation has set an attribute to a
+        value.
 
         Args:
             _widget: The interface of the widget to check
@@ -301,24 +306,24 @@ class TestCase(unittest.TestCase):
             self.assertEqual(
                 _widget._impl._sets[attr][-1],
                 value,
-                'Widget {} has not had attribute {!r} set to {!r}; got {!r}.'.format(
-                    _widget,
-                    attr,
-                    value,
-                    _widget._impl._sets[attr][-1]
-                )
+                "Widget {} has not had attribute {!r} set to {!r}; got {!r}.".format(
+                    _widget, attr, value, _widget._impl._sets[attr][-1]
+                ),
             )
         except KeyError:
-            self.fail('Widget {} did not have the attribute {!r} set; set attributes were {}.'.format(
-                _widget,
-                attr,
-                ', '.join(f'{a!r}' for a in sorted(_widget._impl._sets.keys()))
-            ))
+            self.fail(
+                "Widget {} did not have the attribute {!r} set; set attributes were {}.".format(
+                    _widget,
+                    attr,
+                    ", ".join(f"{a!r}" for a in sorted(_widget._impl._sets.keys())),
+                )
+            )
         except AttributeError:
-            self.fail(f'Widget {_widget} is not a logged object')
+            self.fail(f"Widget {_widget} is not a logged object")
 
     def assertValuesSet(self, _widget, attr, values):
-        """Assert that the widget implementation has been set to multiple values.
+        """Assert that the widget implementation has been set to multiple
+        values.
 
         Args:
             _widget: The interface of the widget to check
@@ -329,24 +334,27 @@ class TestCase(unittest.TestCase):
             self.assertEqual(
                 _widget._impl._sets[attr],
                 values,
-                'Widget {} has not had attribute {!r} set to the values {}; got {}.'.format(
+                "Widget {} has not had attribute {!r} set to the values {}; got {}.".format(
                     _widget,
                     attr,
-                    ', '.join(f'{v!r}' for v in values),
-                    ', '.join(f'{v!r}' for v in _widget._impl._sets[attr])
-                )
+                    ", ".join(f"{v!r}" for v in values),
+                    ", ".join(f"{v!r}" for v in _widget._impl._sets[attr]),
+                ),
             )
         except KeyError:
-            self.fail('Widget {} did not have the attribute {!r} set; set attributes were {}.'.format(
-                _widget,
-                attr,
-                ','.join(f'{a!r}' for a in sorted(_widget._impl._sets.keys()))
-            ))
+            self.fail(
+                "Widget {} did not have the attribute {!r} set; set attributes were {}.".format(
+                    _widget,
+                    attr,
+                    ",".join(f"{a!r}" for a in sorted(_widget._impl._sets.keys())),
+                )
+            )
         except AttributeError:
-            self.fail(f'Widget {_widget} is not a logged object')
+            self.fail(f"Widget {_widget} is not a logged object")
 
     def assertValueGet(self, _widget, attr):
-        """Assert that the widget implementation attempted to retrieve an attribute
+        """Assert that the widget implementation attempted to retrieve an
+        attribute.
 
         Args:
             _widget: The interface of the widget to check
@@ -356,27 +364,25 @@ class TestCase(unittest.TestCase):
             self.assertIn(
                 attr,
                 _widget._impl._gets,
-                'Widget {} did not retrieve the attribute {!r}; retrieved attributes were {}.'.format(
+                "Widget {} did not retrieve the attribute {!r}; retrieved attributes were {}.".format(
                     _widget,
                     attr,
-                    ','.join(
-                        f'{a!r}' for a in sorted(_widget._impl._gets)
-                    )
-                )
+                    ",".join(f"{a!r}" for a in sorted(_widget._impl._gets)),
+                ),
             )
         except AttributeError:
-            self.fail(f'Widget {_widget} is not a logged object')
+            self.fail(f"Widget {_widget} is not a logged object")
 
     def assertValueNotGet(self, _widget, attr):
         self.assertTrue(
             attr not in _widget._impl._gets,
-            msg=f"Expected {attr} not to be get, but it was."
+            msg=f"Expected {attr} not to be get, but it was.",
         )
 
     def assertValueNotSet(self, _widget, attr):
         self.assertTrue(
             attr not in _widget._impl._sets,
-            msg=f"Expected {attr} not to be set, but it was."
+            msg=f"Expected {attr} not to be set, but it was.",
         )
 
     def assertActionNotPerformed(self, _widget, action):
@@ -385,16 +391,15 @@ class TestCase(unittest.TestCase):
         Args:
             _widget: The interface of the widget that should not have performed the action.
             action: The name of the action to check
-
         """
         try:
             self.assertNotIn(
                 action,
                 _widget._impl._actions,
-                f'Action {action} unexpectedly performed by {_widget}.'
+                f"Action {action} unexpectedly performed by {_widget}.",
             )
         except AttributeError:
-            self.fail(f'Widget {_widget} is not a logged object')
+            self.fail(f"Widget {_widget} is not a logged object")
 
     def assertActionPerformed(self, _widget, action):
         """Assert that the named action performed by a widget.
@@ -402,23 +407,20 @@ class TestCase(unittest.TestCase):
         Args:
             _widget: The interface of the widget that should have performed the action.
             action: The name of the action to check
-
         """
         try:
             self.assertIn(
                 action,
                 _widget._impl._actions,
-                'Action {} not performed by {}. Actions were: {}'.format(
-                    action,
-                    _widget,
-                    sorted(_widget._impl._actions.keys())
-                )
+                "Action {} not performed by {}. Actions were: {}".format(
+                    action, _widget, sorted(_widget._impl._actions.keys())
+                ),
             )
         except AttributeError:
-            self.fail(f'Widget {_widget} is not a logged object')
+            self.fail(f"Widget {_widget} is not a logged object")
 
     def assertActionPerformedWith(self, _widget, action, **test_data):
-        """Was the action performed with specific test data
+        """Was the action performed with specific test data.
 
         Args:
             _widget: The interface of the widget that should have performed the action.
@@ -455,18 +457,20 @@ class TestCase(unittest.TestCase):
                     found = True
 
             # None of the recorded actions match the test data.
-            self.fail('Action {} not performed by {} with {}. Actions were: {}'.format(
+            self.fail(
+                "Action {} not performed by {} with {}. Actions were: {}".format(
                     action,
                     _widget,
                     test_data,
-                    sorted(_widget._impl._actions[action].items())
-                ))
+                    sorted(_widget._impl._actions[action].items()),
+                )
+            )
         except KeyError:
             # The action wasn't performed
-            self.fail('Action {} not performed by {}. Actions were: {}'.format(
-                    action,
-                    _widget,
-                    sorted(_widget._impl._actions.keys())
-                ))
+            self.fail(
+                "Action {} not performed by {}. Actions were: {}".format(
+                    action, _widget, sorted(_widget._impl._actions.keys())
+                )
+            )
         except AttributeError:
-            self.fail(f'Widget {_widget} is not a logged object')
+            self.fail(f"Widget {_widget} is not a logged object")

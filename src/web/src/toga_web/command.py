@@ -1,6 +1,7 @@
 class Command:
-    """ Command `native` property is a list of native widgets associated with the command.
-    """
+    """Command `native` property is a list of native widgets associated with
+    the command."""
+
     def __init__(self, interface):
         self.interface = interface
         self.native = []

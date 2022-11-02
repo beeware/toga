@@ -48,42 +48,54 @@ class TogaCanvas(NSView):
         """Invoke the on_press handler if configured."""
         if self.interface.on_press:
             position = self.convertPoint(event.locationInWindow, fromView=None)
-            self.interface.on_press(self.interface, position.x, position.y, event.clickCount)
+            self.interface.on_press(
+                self.interface, position.x, position.y, event.clickCount
+            )
 
     @objc_method
     def rightMouseDown_(self, event) -> None:
         """Invoke the on_alt_press handler if configured."""
         if self.interface.on_alt_press:
             position = self.convertPoint(event.locationInWindow, fromView=None)
-            self.interface.on_alt_press(self.interface, position.x, position.y, event.clickCount)
+            self.interface.on_alt_press(
+                self.interface, position.x, position.y, event.clickCount
+            )
 
     @objc_method
     def mouseUp_(self, event) -> None:
         """Invoke the on_release handler if configured."""
         if self.interface.on_release:
             position = self.convertPoint(event.locationInWindow, fromView=None)
-            self.interface.on_release(self.interface, position.x, position.y, event.clickCount)
+            self.interface.on_release(
+                self.interface, position.x, position.y, event.clickCount
+            )
 
     @objc_method
     def rightMouseUp_(self, event) -> None:
         """Invoke the on_alt_release handler if configured."""
         if self.interface.on_alt_release:
             position = self.convertPoint(event.locationInWindow, fromView=None)
-            self.interface.on_alt_release(self.interface, position.x, position.y, event.clickCount)
+            self.interface.on_alt_release(
+                self.interface, position.x, position.y, event.clickCount
+            )
 
     @objc_method
     def mouseDragged_(self, event) -> None:
         """Invoke the on_drag handler if configured."""
         if self.interface.on_drag:
             position = self.convertPoint(event.locationInWindow, fromView=None)
-            self.interface.on_drag(self.interface, position.x, position.y, event.clickCount)
+            self.interface.on_drag(
+                self.interface, position.x, position.y, event.clickCount
+            )
 
     @objc_method
     def rightMouseDragged_(self, event) -> None:
         """Invoke the on_alt_drag handler if configured."""
         if self.interface.on_alt_drag:
             position = self.convertPoint(event.locationInWindow, fromView=None)
-            self.interface.on_alt_drag(self.interface, position.x, position.y, event.clickCount)
+            self.interface.on_alt_drag(
+                self.interface, position.x, position.y, event.clickCount
+            )
 
 
 class Canvas(Widget):
@@ -208,7 +220,9 @@ class Canvas(Widget):
             # Set color to black
             core_graphics.CGContextSetRGBStrokeColor(draw_context, 0, 0, 0, 1)
         if line_dash is not None:
-            core_graphics.CGContextSetLineDash(draw_context, 0, (CGFloat*len(line_dash))(*line_dash), len(line_dash))
+            core_graphics.CGContextSetLineDash(
+                draw_context, 0, (CGFloat * len(line_dash))(*line_dash), len(line_dash)
+            )
         else:
             core_graphics.CGContextSetLineDash(draw_context, 0, None, 0)
         core_graphics.CGContextDrawPath(draw_context, mode)
@@ -263,7 +277,9 @@ class Canvas(Widget):
         else:
             raise ValueError("No stroke or fill of write text")
 
-        text_string = NSAttributedString.alloc().initWithString(text, attributes=textAttributes)
+        text_string = NSAttributedString.alloc().initWithString(
+            text, attributes=textAttributes
+        )
         text_string.drawAtPoint(NSPoint(x, y - height))
 
     # Rehint

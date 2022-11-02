@@ -70,7 +70,7 @@ class NumberInput(Widget):
         self.stepper.translatesAutoresizingMaskIntoConstraints = False
 
         self.stepper.target = self.stepper
-        self.stepper.action = SEL('onChange:')
+        self.stepper.action = SEL("onChange:")
 
         self.stepper.controller = self.input
         self.input.delegate = self.stepper
@@ -83,56 +83,74 @@ class NumberInput(Widget):
         # Stepper is always top right corner.
         self.native.addConstraint(
             NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
-                self.native, NSLayoutAttributeTop,
+                self.native,
+                NSLayoutAttributeTop,
                 NSLayoutRelationEqual,
-                self.stepper, NSLayoutAttributeTop,
-                1.0, 0
+                self.stepper,
+                NSLayoutAttributeTop,
+                1.0,
+                0,
             )
         )
         self.native.addConstraint(
             NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
-                self.native, NSLayoutAttributeRight,
+                self.native,
+                NSLayoutAttributeRight,
                 NSLayoutRelationEqual,
-                self.stepper, NSLayoutAttributeRight,
-                1.0, 0
+                self.stepper,
+                NSLayoutAttributeRight,
+                1.0,
+                0,
             )
         )
 
         # Stepper height matches container box height
         self.native.addConstraint(
             NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
-                self.native, NSLayoutAttributeBottom,
+                self.native,
+                NSLayoutAttributeBottom,
                 NSLayoutRelationEqual,
-                self.stepper, NSLayoutAttributeBottom,
-                1.0, 0
+                self.stepper,
+                NSLayoutAttributeBottom,
+                1.0,
+                0,
             )
         )
 
         # Input is always left, centred vertically on the stepper
         self.native.addConstraint(
             NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
-                self.stepper, NSLayoutAttributeCenterY,
+                self.stepper,
+                NSLayoutAttributeCenterY,
                 NSLayoutRelationEqual,
-                self.input, NSLayoutAttributeCenterY,
-                1.0, 0
+                self.input,
+                NSLayoutAttributeCenterY,
+                1.0,
+                0,
             )
         )
         self.native.addConstraint(
             NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
-                self.native, NSLayoutAttributeLeft,
+                self.native,
+                NSLayoutAttributeLeft,
                 NSLayoutRelationEqual,
-                self.input, NSLayoutAttributeLeft,
-                1.0, 0
+                self.input,
+                NSLayoutAttributeLeft,
+                1.0,
+                0,
             )
         )
 
         # Stepper and input meet in the middle with a small gap
         self.native.addConstraint(
             NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(
-                self.stepper, NSLayoutAttributeLeft,
+                self.stepper,
+                NSLayoutAttributeLeft,
                 NSLayoutRelationEqual,
-                self.input, NSLayoutAttributeRight,
-                1.0, 2
+                self.input,
+                NSLayoutAttributeRight,
+                1.0,
+                2,
             )
         )
 
@@ -172,7 +190,7 @@ class NumberInput(Widget):
     def set_value(self, value):
         if self.interface.value is None:
             self.stepper.floatValue = 0
-            self.input.stringValue = ''
+            self.input.stringValue = ""
         else:
             self.stepper.floatValue = float(self.interface.value)
             # We use the *literal* input value here, not the value

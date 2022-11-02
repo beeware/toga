@@ -13,7 +13,9 @@ class TestIcon(unittest.TestCase):
         )
 
         self.factory = MagicMock()
-        self.factory.Icon = MagicMock(return_value=MagicMock(spec=self.app.factory.Icon))
+        self.factory.Icon = MagicMock(
+            return_value=MagicMock(spec=self.app.factory.Icon)
+        )
 
         self.test_path = "Example.bmp"
         self.icon = toga.Icon(self.test_path)
@@ -41,8 +43,8 @@ class TestIcon(unittest.TestCase):
         self.assertEqual(self.system_icon.path, self.test_path)
 
     def test_TOGA_ICON(self):
-        """Validate TOGA_ICON"""
+        """Validate TOGA_ICON."""
         # Get Tiberius object
         tiberius = toga.Icon.TOGA_ICON
 
-        self.assertEqual(tiberius.path, 'resources/toga')
+        self.assertEqual(tiberius.path, "resources/toga")

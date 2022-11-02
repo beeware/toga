@@ -24,14 +24,16 @@ class Selection(Widget):
         self.native.impl = self
 
         self.native.target = self.native
-        self.native.action = SEL('onSelect:')
+        self.native.action = SEL("onSelect:")
 
         self.add_constraints()
 
     def rehint(self):
         content_size = self.native.intrinsicContentSize()
         self.interface.intrinsic.height = content_size.height
-        self.interface.intrinsic.width = at_least(max(self.interface.MIN_WIDTH, content_size.width))
+        self.interface.intrinsic.width = at_least(
+            max(self.interface.MIN_WIDTH, content_size.width)
+        )
 
     def remove_all_items(self):
         self.native.removeAllItems()

@@ -42,7 +42,7 @@ class Window:
         pass
 
     def create_toolbar(self):
-        self.interface.factory.not_implemented('Window.create_toolbar()')
+        self.interface.factory.not_implemented("Window.create_toolbar()")
 
     def clear_content(self):
         if self.interface.content:
@@ -75,7 +75,7 @@ class Window:
         pass
 
     def close(self):
-        self.interface.factory.not_implemented('Window.close()')
+        self.interface.factory.not_implemented("Window.close()")
 
     def get_position(self):
         return (0, 0)
@@ -92,4 +92,4 @@ class Window:
         pass
 
     def set_full_screen(self, is_full_screen):
-        self.interface.factory.not_implemented('Window.set_full_screen()')
+        self.interface.factory.not_implemented("Window.set_full_screen()")

@@ -10,10 +10,14 @@ class BaseDialog:
         self.future = loop.create_future()
 
     def __eq__(self, other):
-        raise RuntimeError("Can't check dialog result directly; use await or an on_result handler")
+        raise RuntimeError(
+            "Can't check dialog result directly; use await or an on_result handler"
+        )
 
     def __bool__(self):
-        raise RuntimeError("Can't check dialog result directly; use await or an on_result handler")
+        raise RuntimeError(
+            "Can't check dialog result directly; use await or an on_result handler"
+        )
 
     def __await__(self):
         return self.future.__await__()
@@ -172,7 +176,15 @@ class FileDialog(BaseDialog):
 
 
 class SaveFileDialog(FileDialog):
-    def __init__(self, window, title, filename, initial_directory, file_types=None, on_result=None):
+    def __init__(
+        self,
+        window,
+        title,
+        filename,
+        initial_directory,
+        file_types=None,
+        on_result=None,
+    ):
         super().__init__(
             window=window,
             title=title,
@@ -187,7 +199,9 @@ class SaveFileDialog(FileDialog):
 
 
 class OpenFileDialog(FileDialog):
-    def __init__(self, window, title, initial_directory, file_types, multiselect, on_result=None):
+    def __init__(
+        self, window, title, initial_directory, file_types, multiselect, on_result=None
+    ):
         super().__init__(
             window=window,
             title=title,

@@ -4,12 +4,16 @@ ArrayAdapter = JavaClass("android/widget/ArrayAdapter")
 # `ArrayAdapter` can also be typecast into a `SpinnerAdapter`.
 # This is required until `rubicon-java` explores the interfaces
 # implemented by a class's subclasses.
-ArrayAdapter._alternates.append(b'Landroid/widget/SpinnerAdapter;')
+ArrayAdapter._alternates.append(b"Landroid/widget/SpinnerAdapter;")
 
 Button = JavaClass("android/widget/Button")
-CompoundButton__OnCheckedChangeListener = JavaInterface("android/widget/CompoundButton$OnCheckedChangeListener")
+CompoundButton__OnCheckedChangeListener = JavaInterface(
+    "android/widget/CompoundButton$OnCheckedChangeListener"
+)
 DatePickerDialog = JavaClass("android/app/DatePickerDialog")
-DatePickerDialog__OnDateSetListener = JavaInterface("android/app/DatePickerDialog$OnDateSetListener")
+DatePickerDialog__OnDateSetListener = JavaInterface(
+    "android/app/DatePickerDialog$OnDateSetListener"
+)
 EditText = JavaClass("android/widget/EditText")
 HorizontalScrollView = JavaClass("android/widget/HorizontalScrollView")
 ImageView = JavaClass("android/widget/ImageView")
@@ -17,13 +21,17 @@ ImageView__ScaleType = JavaClass("android/widget/ImageView$ScaleType")
 LinearLayout = JavaClass("android/widget/LinearLayout")
 LinearLayout__LayoutParams = JavaClass("android/widget/LinearLayout$LayoutParams")
 NumberPicker = JavaClass("android/widget/NumberPicker")
-OnItemSelectedListener = JavaInterface("android/widget/AdapterView$OnItemSelectedListener")
+OnItemSelectedListener = JavaInterface(
+    "android/widget/AdapterView$OnItemSelectedListener"
+)
 RelativeLayout = JavaClass("android/widget/RelativeLayout")
 RelativeLayout__LayoutParams = JavaClass("android/widget/RelativeLayout$LayoutParams")
 ProgressBar = JavaClass("android/widget/ProgressBar")
 ScrollView = JavaClass("android/widget/ScrollView")
 SeekBar = JavaClass("android/widget/SeekBar")
-SeekBar__OnSeekBarChangeListener = JavaInterface("android/widget/SeekBar$OnSeekBarChangeListener")
+SeekBar__OnSeekBarChangeListener = JavaInterface(
+    "android/widget/SeekBar$OnSeekBarChangeListener"
+)
 Switch = JavaClass("android/widget/Switch")
 Spinner = JavaClass("android/widget/Spinner")
 TableLayout = JavaClass("android/widget/TableLayout")
@@ -32,4 +40,6 @@ TableRow = JavaClass("android/widget/TableRow")
 TableRow__Layoutparams = JavaClass("android/widget/TableRow$LayoutParams")
 TextView = JavaClass("android/widget/TextView")
 TimePickerDialog = JavaClass("android/app/TimePickerDialog")
-TimePickerDialog__OnTimeSetListener = JavaInterface("android/app/TimePickerDialog$OnTimeSetListener")
+TimePickerDialog__OnTimeSetListener = JavaInterface(
+    "android/app/TimePickerDialog$OnTimeSetListener"
+)

@@ -39,7 +39,12 @@ class TextInput(Widget):
             # value 1 means placeholder is hidden only after something is typed into input
             show_placeholder_on_focus = WPARAM(1)
             window_handle = HWND(self.native.Handle.ToInt32())
-            user32.SendMessageW(window_handle, EM_SETCUEBANNER, show_placeholder_on_focus, self.interface.placeholder)
+            user32.SendMessageW(
+                window_handle,
+                EM_SETCUEBANNER,
+                show_placeholder_on_focus,
+                self.interface.placeholder,
+            )
 
     def get_value(self):
         return self.native.Text

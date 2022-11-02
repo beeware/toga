@@ -27,7 +27,7 @@ from toga_cocoa.libs import (
 
 
 def toolbar_identifier(cmd):
-    return 'ToolbarItem-%s' % id(cmd)
+    return "ToolbarItem-%s" % id(cmd)
 
 
 class CocoaViewport:
@@ -95,7 +95,9 @@ class WindowDelegate(NSObject):
         return default
 
     @objc_method
-    def toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar_(self, toolbar, identifier, insert: bool):
+    def toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar_(
+        self, toolbar, identifier, insert: bool
+    ):
         "Create the requested toolbar button"
         native = NSToolbarItem.alloc().initWithItemIdentifier_(identifier)
         try:
@@ -111,7 +113,7 @@ class WindowDelegate(NSObject):
             item._impl.native.append(native)
 
             native.setTarget_(self)
-            native.setAction_(SEL('onToolbarButtonPress:'))
+            native.setAction_(SEL("onToolbarButtonPress:"))
         except KeyError:
             pass
 
@@ -158,7 +160,7 @@ class Window:
             NSMakeRect(0, 0, 0, 0),
             styleMask=mask,
             backing=NSBackingStoreBuffered,
-            defer=False
+            defer=False,
         )
 
         self.set_title(title)
@@ -177,7 +179,9 @@ class Window:
             if isinstance(cmd, BaseCommand):
                 self._toolbar_items[toolbar_identifier(cmd)] = cmd
 
-        self._toolbar_native = NSToolbar.alloc().initWithIdentifier_('Toolbar-%s' % id(self))
+        self._toolbar_native = NSToolbar.alloc().initWithIdentifier_(
+            "Toolbar-%s" % id(self)
+        )
         self._toolbar_native.setDelegate_(self.delegate)
 
         self.native.setToolbar_(self._toolbar_native)
@@ -204,18 +208,24 @@ class Window:
         # be dragged larged; if not resizable, it enforces the smallest
         # size that can be programmattically set on the window.
         self._min_width_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # NOQA: E501
-            widget.native, NSLayoutAttributeRight,
+            widget.native,
+            NSLayoutAttributeRight,
             NSLayoutRelationGreaterThanOrEqual,
-            widget.native, NSLayoutAttributeLeft,
-            1.0, 100
+            widget.native,
+            NSLayoutAttributeLeft,
+            1.0,
+            100,
         )
         widget.native.addConstraint(self._min_width_constraint)
 
         self._min_height_constraint = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # NOQA: E501
-            widget.native, NSLayoutAttributeBottom,
+            widget.native,
+            NSLayoutAttributeBottom,
             NSLayoutRelationGreaterThanOrEqual,
-            widget.native, NSLayoutAttributeTop,
-            1.0, 100
+            widget.native,
+            NSLayoutAttributeTop,
+            1.0,
+            100,
         )
         widget.native.addConstraint(self._min_height_constraint)
 
@@ -238,9 +248,8 @@ class Window:
         # offset relative to other screens. Adjust for this.
         return (
             window_frame.origin.x,
-            primary_screen.size.height - (
-                window_frame.origin.y + window_frame.size.height
-            )
+            primary_screen.size.height
+            - (window_frame.origin.y + window_frame.size.height),
         )
 
     def set_position(self, position):
@@ -293,7 +302,7 @@ class Window:
         return bool(self.native.isVisible)
 
     def set_full_screen(self, is_full_screen):
-        self.interface.factory.not_implemented('Window.set_full_screen()')
+        self.interface.factory.not_implemented("Window.set_full_screen()")
 
     def set_on_close(self, handler):
         pass

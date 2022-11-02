@@ -38,13 +38,14 @@ class Icon:
     :param system: Is this a system resource? Set to ``True`` if the icon is
         one of the Toga-provided icons. Default is False.
     """
+
     @cachedicon
     def TOGA_ICON(cls):
-        return Icon('resources/toga', system=True)
+        return Icon("resources/toga", system=True)
 
     @cachedicon
     def DEFAULT_ICON(cls):
-        return Icon('resources/toga', system=True)
+        return Icon("resources/toga", system=True)
 
     def __init__(self, path, system=False):
         self.path = path
@@ -75,13 +76,17 @@ class Icon:
 
             self._impl = self.factory.Icon(interface=self, path=full_path)
         except FileNotFoundError:
-            print("WARNING: Can't find icon {self.path}; falling back to default icon".format(
-                self=self
-            ))
+            print(
+                "WARNING: Can't find icon {self.path}; falling back to default icon".format(
+                    self=self
+                )
+            )
             self._impl = Icon.DEFAULT_ICON._impl
 
     def bind(self, factory=None):
-        warnings.warn("Icons no longer need to be explicitly bound.", DeprecationWarning)
+        warnings.warn(
+            "Icons no longer need to be explicitly bound.", DeprecationWarning
+        )
         return self._impl
 
     def _full_path(self, size, extensions, resource_path):
@@ -91,13 +96,13 @@ class Icon:
             # If no extension is provided, look for one of the allowed
             # icon types, in preferred format order.
             for extension in extensions:
-                icon_path = resource_path / f'{basename}-{size}{extension}'
+                icon_path = resource_path / f"{basename}-{size}{extension}"
 
                 if icon_path.exists():
                     return icon_path
 
                 # look for a icon file without a size in the filename
-                icon_path = resource_path / f'{basename}{extension}'
+                icon_path = resource_path / f"{basename}{extension}"
                 if icon_path.exists():
                     return icon_path
 
@@ -108,14 +113,6 @@ class Icon:
                 return icon_path
         else:
             # An icon has been specified, but it's not a valid format.
-            raise FileNotFoundError(
-                "{self.path} is not a valid icon".format(
-                    self=self
-                )
-            )
+            raise FileNotFoundError(f"{self.path} is not a valid icon")
 
-        raise FileNotFoundError(
-            "Can't find icon {self.path}".format(
-                self=self
-            )
-        )
+        raise FileNotFoundError(f"Can't find icon {self.path}")

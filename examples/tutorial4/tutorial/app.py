@@ -88,11 +88,11 @@ class StartApp(toga.App):
         x = 32
         y = 185
         font = toga.Font(family=SANS_SERIF, size=20)
-        width, height = self.canvas.measure_text('Tiberius', font, tight=True)
+        width, height = self.canvas.measure_text("Tiberius", font, tight=True)
         with self.canvas.stroke(line_width=4.0) as rect_stroker:
             rect_stroker.rect(x - 2, y - height + 2, width, height + 2)
         with self.canvas.fill(color=rgb(149, 119, 73)) as text_filler:
-            text_filler.write_text('Tiberius', x, y, font)
+            text_filler.write_text("Tiberius", x, y, font)
 
     def draw_tiberius(self):
         self.fill_head()
@@ -104,8 +104,8 @@ class StartApp(toga.App):
 
 
 def main():
-    return StartApp('Tutorial 4', 'org.beeware.helloworld')
+    return StartApp("Tutorial 4", "org.beeware.helloworld")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main().main_loop()

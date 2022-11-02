@@ -7,7 +7,9 @@ except ModuleNotFoundError:
     js = None
 
 
-def create_element(tag, id=None, classes=None, style=None, content=None, children=None, **properties):
+def create_element(
+    tag, id=None, classes=None, style=None, content=None, children=None, **properties
+):
     """Utility method for creating DOM elements.
 
     :param tag: The HTML tag of the element to create
@@ -36,7 +38,7 @@ def create_element(tag, id=None, classes=None, style=None, content=None, childre
         element.style = style
 
     for attr, value in properties.items():
-        element.setAttribute(attr.replace('_', '-'), value)
+        element.setAttribute(attr.replace("_", "-"), value)
 
     if content:
         element.innerHTML = content

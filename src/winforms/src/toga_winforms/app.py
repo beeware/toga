@@ -13,7 +13,7 @@ from .libs import (
     WinForms,
     shcore,
     user32,
-    win_version
+    win_version,
 )
 from .libs.proactor import WinformsProactorEventLoop
 from .window import Window
@@ -62,8 +62,9 @@ class App:
         if win_version.Major >= 6:  # Checks for Windows Vista or later
             # Represents Windows 8.1 up to Windows 10 before Build 1703 which should use
             # SetProcessDpiAwareness(True)
-            if ((win_version.Major == 6 and win_version.Minor == 3) or
-                    (win_version.Major == 10 and win_version.Build < 15063)):
+            if (win_version.Major == 6 and win_version.Minor == 3) or (
+                win_version.Major == 10 and win_version.Build < 15063
+            ):
                 shcore.SetProcessDpiAwareness(True)
             # Represents Windows 10 Build 1703 and beyond which should use
             # SetProcessDpiAwarenessContext(-2)
@@ -99,24 +100,24 @@ class App:
         self.interface.commands.add(
             toga.Command(
                 lambda _: self.interface.about(),
-                f'About {self.interface.name}',
-                group=toga.Group.HELP
+                f"About {self.interface.name}",
+                group=toga.Group.HELP,
             ),
-            toga.Command(None, 'Preferences', group=toga.Group.FILE),
+            toga.Command(None, "Preferences", group=toga.Group.FILE),
             # Quit should always be the last item, in a section on it's own
             toga.Command(
                 lambda _: self.interface.exit(),
-                'Exit ' + self.interface.name,
-                shortcut=Key.MOD_1 + 'q',
+                "Exit " + self.interface.name,
+                shortcut=Key.MOD_1 + "q",
                 group=toga.Group.FILE,
-                section=sys.maxsize
+                section=sys.maxsize,
             ),
             toga.Command(
                 lambda _: self.interface.visit_homepage(),
-                'Visit homepage',
+                "Visit homepage",
                 enabled=self.interface.home_page is not None,
-                group=toga.Group.HELP
-            )
+                group=toga.Group.HELP,
+            ),
         )
         self._create_app_commands()
 
@@ -136,7 +137,7 @@ class App:
             if cmd == toga.GROUP_BREAK:
                 submenu = None
             elif cmd == toga.SECTION_BREAK:
-                submenu.DropDownItems.Add('-')
+                submenu.DropDownItems.Add("-")
             else:
                 submenu = self._submenu(cmd.group, menubar)
 
@@ -185,8 +186,10 @@ class App:
         pass
 
     def open_document(self, fileURL):
-        '''Add a new document to this app.'''
-        print("STUB: If you want to handle opening documents, implement App.open_document(fileURL)")
+        """Add a new document to this app."""
+        print(
+            "STUB: If you want to handle opening documents, implement App.open_document(fileURL)"
+        )
 
     def winforms_thread_exception(self, sender, winforms_exc):
         # The PythonException returned by Winforms doesn't give us
@@ -202,7 +205,7 @@ class App:
         full_stack_trace = py_exc.StackTrace
         regex = re.compile(
             r"^\[(?:'(.*?)', )*(?:'(.*?)')\]   (?:.*?) Python\.Runtime",
-            re.DOTALL | re.UNICODE
+            re.DOTALL | re.UNICODE,
         )
 
         stacktrace_relevant_lines = regex.findall(full_stack_trace)
@@ -261,26 +264,16 @@ class App:
                     )
                 )
             else:
-                message_parts.append(
-                    f"{self.interface.name}"
-                )
+                message_parts.append(f"{self.interface.name}")
         elif self.interface.version is not None:
-            message_parts.append(
-                f"v{self.interface.version}"
-            )
+            message_parts.append(f"v{self.interface.version}")
 
         if self.interface.author is not None:
-            message_parts.append(
-                f"Author: {self.interface.author}"
-            )
+            message_parts.append(f"Author: {self.interface.author}")
         if self.interface.description is not None:
-            message_parts.append(
-                "\n{description}".format(
-                    description=self.interface.description
-                )
-            )
+            message_parts.append(f"\n{self.interface.description}")
         self.interface.main_window.info_dialog(
-            f'About {self.interface.name}', "\n".join(message_parts)
+            f"About {self.interface.name}", "\n".join(message_parts)
         )
 
     def exit(self):
@@ -294,22 +287,22 @@ class App:
         pass
 
     def current_window(self):
-        self.interface.factory.not_implemented('App.current_window()')
+        self.interface.factory.not_implemented("App.current_window()")
 
     def enter_full_screen(self, windows):
-        self.interface.factory.not_implemented('App.enter_full_screen()')
+        self.interface.factory.not_implemented("App.enter_full_screen()")
 
     def exit_full_screen(self, windows):
-        self.interface.factory.not_implemented('App.exit_full_screen()')
+        self.interface.factory.not_implemented("App.exit_full_screen()")
 
     def set_cursor(self, value):
-        self.interface.factory.not_implemented('App.set_cursor()')
+        self.interface.factory.not_implemented("App.set_cursor()")
 
     def show_cursor(self):
-        self.interface.factory.not_implemented('App.show_cursor()')
+        self.interface.factory.not_implemented("App.show_cursor()")
 
     def hide_cursor(self):
-        self.interface.factory.not_implemented('App.hide_cursor()')
+        self.interface.factory.not_implemented("App.hide_cursor()")
 
     def add_background_task(self, handler):
         self.loop.call_soon(handler, self)
@@ -320,10 +313,10 @@ class DocumentApp(App):
         self.interface.commands.add(
             toga.Command(
                 lambda w: self.open_file,
-                text='Open...',
-                shortcut=Key.MOD_1 + 'o',
+                text="Open...",
+                shortcut=Key.MOD_1 + "o",
                 group=toga.Group.FILE,
-                section=0
+                section=0,
             ),
         )
 
@@ -333,4 +326,4 @@ class DocumentApp(App):
         Args:
             fileURL (str): The URL/path to the file to add as a document.
         """
-        self.interface.factory.not_implemented('DocumentApp.open_document()')
+        self.interface.factory.not_implemented("DocumentApp.open_document()")

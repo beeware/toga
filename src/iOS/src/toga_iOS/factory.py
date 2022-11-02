@@ -13,16 +13,20 @@ from .widgets.imageview import ImageView
 from .widgets.label import Label
 from .widgets.multilinetextinput import MultilineTextInput
 from .widgets.numberinput import NumberInput
+
 # from .widgets.optioncontainer import OptionContainer
 from .widgets.passwordinput import PasswordInput
 from .widgets.progressbar import ProgressBar
 from .widgets.scrollcontainer import ScrollContainer
 from .widgets.selection import Selection
 from .widgets.slider import Slider
+
 # from .widgets.splitcontainer import SplitContainer
 from .widgets.switch import Switch
+
 # from .widgets.table import Table
 from .widgets.textinput import TextInput
+
 # from .widgets.tree import Tree
 from .widgets.webview import WebView
 from .window import Window
@@ -31,43 +35,41 @@ from .window import Window
 
 
 def not_implemented(feature):
-    print(f'[iOS] Not implemented: {feature}')
+    print(f"[iOS] Not implemented: {feature}")
 
 
 __all__ = [
-    'not_implemented',
-
-    'App', 'MainWindow',
+    "not_implemented",
+    "App",
+    "MainWindow",
     # 'Command',
-
     # Resources
-    'native_color',  # colors
-    'Font',
-    'Icon',
-    'Image',
-    'paths',
+    "native_color",  # colors
+    "Font",
+    "Icon",
+    "Image",
+    "paths",
     "dialogs",
-
     # Widgets
-    'Box',
-    'Button',
-    'Canvas',
-    'DetailedList',
-    'ImageView',
-    'Label',
-    'MultilineTextInput',
-    'NumberInput',
+    "Box",
+    "Button",
+    "Canvas",
+    "DetailedList",
+    "ImageView",
+    "Label",
+    "MultilineTextInput",
+    "NumberInput",
     # 'OptionContainer',
-    'PasswordInput',
-    'ProgressBar',
-    'ScrollContainer',
-    'Selection',
-    'Slider',
+    "PasswordInput",
+    "ProgressBar",
+    "ScrollContainer",
+    "Selection",
+    "Slider",
     # 'SplitContainer',
-    'Switch',
+    "Switch",
     # 'Table',
-    'TextInput',
+    "TextInput",
     # 'Tree',
-    'WebView',
-    'Window',
+    "WebView",
+    "Window",
 ]

@@ -11,15 +11,15 @@ class ImageTests(TestCase):
         # an App must have been created before creating images because paths
         # can be relative to the app path.
         self.app = toga.App(
-            formal_name='Image Test App',
-            app_id='org.beeware.test_image',
+            formal_name="Image Test App",
+            app_id="org.beeware.test_image",
         )
 
     def test_path_file_non_existent_image(self):
         # Creating an image from a path that doesn't exist raises an error.
         try:
-            toga.Image(path=Path('does/not/exist/image.jpg'))
-            self.fail('The image does not exist')  # pragma: nocover
+            toga.Image(path=Path("does/not/exist/image.jpg"))
+            self.fail("The image does not exist")  # pragma: nocover
         except FileNotFoundError:
             pass
 
@@ -28,13 +28,16 @@ class ImageTests(TestCase):
         image = toga.Image(path=Path(toga.__file__).parent / "resources" / "toga.png")
 
         self.assertIsNotNone(image._impl)
-        self.assertEqual(image._impl.interface.path, Path(toga.__file__).parent / "resources" / "toga.png")
+        self.assertEqual(
+            image._impl.interface.path,
+            Path(toga.__file__).parent / "resources" / "toga.png",
+        )
 
     def test_str_file_non_existent_image(self):
         # Creating an image from a string path that doesn't exist raises an error.
         try:
-            toga.Image(path='does/not/exist/image.jpg')
-            self.fail('The image does not exist')  # pragma: nocover
+            toga.Image(path="does/not/exist/image.jpg")
+            self.fail("The image does not exist")  # pragma: nocover
         except FileNotFoundError:
             pass
 
@@ -42,7 +45,7 @@ class ImageTests(TestCase):
         # Creating an image from a string path that doesn't exist raises an error.
         try:
             toga.Image(path="does/not/exist/image.png")
-            self.fail('The image does not exist')  # pragma: nocover
+            self.fail("The image does not exist")  # pragma: nocover
         except FileNotFoundError:
             pass
 
@@ -50,22 +53,26 @@ class ImageTests(TestCase):
         url_image = toga.Image(path="https://example.com/image.png")
 
         # Image is bound correctly
-        self.assertEqual(url_image._impl.interface.path, "https://example.com/image.png")
-        self.assertActionPerformedWith(url_image, 'load image url', url="https://example.com/image.png")
+        self.assertEqual(
+            url_image._impl.interface.path, "https://example.com/image.png"
+        )
+        self.assertActionPerformedWith(
+            url_image, "load image url", url="https://example.com/image.png"
+        )
 
     def test_bytes_image(self):
         data = bytes([1])
         bytes_image = toga.Image(data=data)
 
         self.assertEqual(bytes_image._impl.interface, bytes_image)
-        self.assertActionPerformedWith(bytes_image, 'load image data', data=data)
+        self.assertActionPerformedWith(bytes_image, "load image data", data=data)
 
     def test_not_enough_arguments(self):
         with self.assertRaises(ValueError):
             toga.Image(None)
 
     def test_too_many_arguments(self):
-        path = '/image.png'
+        path = "/image.png"
         data = bytes([1])
         with self.assertRaises(ValueError):
             toga.Image(path=path, data=data)
@@ -79,7 +86,10 @@ class ImageTests(TestCase):
             bound = image.bind()
 
         self.assertIsNotNone(image._impl)
-        self.assertEqual(image._impl.interface.path, Path(toga.__file__).parent / "resources" / "toga.png")
+        self.assertEqual(
+            image._impl.interface.path,
+            Path(toga.__file__).parent / "resources" / "toga.png",
+        )
 
         # The bound image is the _impl.
         self.assertEqual(bound, image._impl)

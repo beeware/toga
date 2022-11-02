@@ -115,7 +115,7 @@ class Window:
         self.native.add(self.layout)
 
         # Make the window sensitive to size changes
-        widget.native.connect('size-allocate', self.gtk_size_allocate)
+        widget.native.connect("size-allocate", self.gtk_size_allocate)
 
         # Set the widget's viewport to be based on the window's content.
         widget.viewport = GtkViewport(widget.native)
@@ -131,8 +131,7 @@ class Window:
         # and use that as the basis for setting the minimum window size.
         self.interface.content._impl.rehint()
         self.interface.content.style.layout(
-            self.interface.content,
-            GtkViewport(native=None)
+            self.interface.content, GtkViewport(native=None)
         )
         self.interface.content._impl.min_width = self.interface.content.layout.width
         self.interface.content._impl.min_height = self.interface.content.layout.height

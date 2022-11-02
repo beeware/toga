@@ -1,5 +1,6 @@
 class TreeModelListener:
-    """ useful to access paths and iterators from signals """
+    """useful to access paths and iterators from signals."""
+
     def __init__(self, store=None):
         self.changed_path = None
         self.changed_it = None
@@ -21,9 +22,9 @@ class TreeModelListener:
         self.deleted_path = path
 
     def connect(self, store):
-        store.connect('row-changed', self.on_change)
-        store.connect('row-inserted', self.on_inserted)
-        store.connect('row-deleted', self.on_deleted)
+        store.connect("row-changed", self.on_change)
+        store.connect("row-inserted", self.on_inserted)
+        store.connect("row-deleted", self.on_deleted)
 
     def clear(self):
         self.changed_path = None

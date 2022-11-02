@@ -6,7 +6,8 @@ from toga_gtk import fonts as gtk_fonts
 
 try:
     import gi
-    gi.require_version('Gtk', '3.0')
+
+    gi.require_version("Gtk", "3.0")
     from gi.repository import Gtk
 except ImportError:
     import sys
@@ -14,7 +15,7 @@ except ImportError:
     # If we're on Linux, Gtk *should* be available. If it isn't, make
     # Gtk an object... but in such a way that every test will fail,
     # because the object isn't actually the Gtk interface.
-    if sys.platform == 'linux':
+    if sys.platform == "linux":
         Gtk = object()
     else:
         Gtk = None
@@ -26,9 +27,10 @@ except ImportError:
     Pango = None
 
 
-@unittest.skipIf(Pango is None, 'Pango import error')
-@unittest.skipIf(Gtk is None,
-                 "Can't run GTK implementation tests on a non-Linux platform")
+@unittest.skipIf(Pango is None, "Pango import error")
+@unittest.skipIf(
+    Gtk is None, "Can't run GTK implementation tests on a non-Linux platform"
+)
 class TestFontImplementation(unittest.TestCase):
     def setUp(self):
         self.font_family = SYSTEM
@@ -56,26 +58,22 @@ class TestFontImplementation(unittest.TestCase):
         self.assertEqual(native.get_size() / Pango.SCALE, self.font_size)
 
     def test_font_style_italic(self):
-        font = toga.Font(
-            self.font_family, self.font_size, style=ITALIC)
+        font = toga.Font(self.font_family, self.font_size, style=ITALIC)
         native = font._impl.native
         self.assertEqual(native.get_style(), Pango.Style.ITALIC)
 
     def test_font_style_oblique(self):
-        font = toga.Font(
-            self.font_family, self.font_size, style=OBLIQUE)
+        font = toga.Font(self.font_family, self.font_size, style=OBLIQUE)
         native = font._impl.native
         self.assertEqual(native.get_style(), Pango.Style.OBLIQUE)
 
     def test_font_variant_small_caps(self):
-        font = toga.Font(
-            self.font_family, self.font_size, variant=SMALL_CAPS)
+        font = toga.Font(self.font_family, self.font_size, variant=SMALL_CAPS)
         native = font._impl.native
         self.assertEqual(native.get_variant(), Pango.Variant.SMALL_CAPS)
 
     def test_font_weight_bold(self):
-        font = toga.Font(
-            self.font_family, self.font_size, weight=BOLD)
+        font = toga.Font(self.font_family, self.font_size, weight=BOLD)
         native = font._impl.native
         self.assertEqual(native.get_weight(), Pango.Weight.BOLD)
 
@@ -92,5 +90,5 @@ class TestFontImplementation(unittest.TestCase):
         self.assertIn(SYSTEM, native.get_family())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

@@ -7,7 +7,7 @@ from toga.fonts import (
     SANS_SERIF,
     SERIF,
     SYSTEM,
-    SYSTEM_DEFAULT_FONT_SIZE
+    SYSTEM_DEFAULT_FONT_SIZE,
 )
 
 from .winforms import (
@@ -16,7 +16,7 @@ from .winforms import (
     FontFamily,
     FontStyle,
     SystemFonts,
-    WinForms
+    WinForms,
 )
 
 
@@ -56,7 +56,8 @@ def win_font_family(value):
         except ArgumentException:
             print(
                 "Unable to load font-family '{}', loading '{}' instead".format(
-                    value, SystemFonts.DefaultFont.FontFamily.Name)
+                    value, SystemFonts.DefaultFont.FontFamily.Name
+                )
             )
             return SystemFonts.DefaultFont.FontFamily
 
