@@ -23,6 +23,23 @@ jobs:
           python-version: ${{ env.min_python_version }}
       - uses: pre-commit/action@v3.0.0
 
+  towncrier:
+    runs-on: ubuntu-latest
+    steps:
+    # Fetch main branch for comparison, then check out current branch.
+    - uses: actions/checkout@v3.1.0
+      with:
+        fetch-depth: 0
+        ref: main
+    - uses: actions/checkout@v3.1.0
+      with:
+        fetch-depth: 0
+    - uses: actions/setup-python@v4.3.0
+      with:
+        python-version: ${{ env.python_version }}
+    - run: pip install tox
+    - run: tox -e towncrier-check
+
   package:
     runs-on: ubuntu-latest
     steps:
@@ -43,11 +60,11 @@ jobs:
         if-no-files-found: error
 
   core:
-    needs: package
+    needs: [pre-commit, towncrier, package]
     strategy:
       matrix:
         platform: ['macos', 'ubuntu', 'windows']
-        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11.0-alpha - 3.11.0"]
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]  #, "3.12.0-alpha - 3.12.0"]
     runs-on: ${{ matrix.platform }}-latest
     steps:
     - uses: actions/checkout@v1
@@ -79,7 +96,7 @@ jobs:
         fail_ci_if_error: true
 
   backend:
-    needs: package
+    needs: core
     strategy:
       matrix:
         backend: [android, cocoa, gtk, iOS, web, winforms]
@@ -87,12 +104,12 @@ jobs:
           - runs-on: ubuntu-latest
           - python-version: "3.7"  # Should be env.min_python_version (https://github.com/actions/runner/issues/480)
           - pre-command:
-          - test-command: pytest
+          - test-command: pytest -v
           - backend: cocoa
             runs-on: macos-latest
           - backend: gtk
             pre-command: "sudo apt-get update -y && sudo apt-get install -y python3-gi python3-gi-cairo gir1.2-gtk-3.0 python3-dev libgirepository1.0-dev libcairo2-dev pkg-config"
-            test-command: "xvfb-run -a -s '-screen 0 2048x1536x24' pytest"
+            test-command: "xvfb-run -a -s '-screen 0 2048x1536x24' pytest -v"
           - backend: iOS
             runs-on: macos-latest
           - backend: winforms
@@ -124,4 +141,4 @@ jobs:
     - name: Test
       run: |
         cd src/${{ matrix.backend }}
-        ${{ matrix.test-command }}
+        TOGA_BACKEND=toga_${{ matrix.backend }} ${{ matrix.test-command }}

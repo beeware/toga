@@ -1,23 +1,19 @@
-import importlib
 import sys
 
 import toga
+from toga import platform
 
 # If the user provided a --backend:<name> argument,
 # use that backend as the factory.
-backend = [
-    arg.split(":")[1]
-    for arg in sys.argv
-    if arg.startswith("--backend:")
-]
+backend = [arg.split(":")[1] for arg in sys.argv if arg.startswith("--backend:")]
 try:
-    factory = importlib.import_module(f"toga_{backend[0]}").factory
+    platform.current_platform = backend[0]
 except IndexError:
-    factory = None
+    pass
 
 
 def main():
-    app = toga.App('Simple App', 'org.testbed.simple-app', factory=factory)
+    app = toga.App("Simple App", "org.testbed.simple-app")
 
     print(f"app.paths.app={app.paths.app.resolve()}")
     print(f"app.paths.data={app.paths.data.resolve()}")
@@ -26,5 +22,5 @@ def main():
     print(f"app.paths.toga={app.paths.toga.resolve()}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -6,7 +6,7 @@ from .base import Widget
 
 
 class Slider(Widget):
-    """ Slider widget, displays a range of values
+    """Slider widget, displays a range of values.
 
     Args:
         id: An identifier for this widget.
@@ -20,10 +20,8 @@ class Slider(Widget):
         on_release (``callable``): The handler to invoke when the slider has been
             released.
         enabled (bool): Whether user interaction is possible or not.
-        factory (:obj:`module`): A python module that is capable to return a
-            implementation of this class with the same name. (optional & normally not
-            needed).
     """
+
     def __init__(
         self,
         id=None,
@@ -36,10 +34,20 @@ class Slider(Widget):
         on_press=None,
         on_release=None,
         enabled=True,
-        factory=None,
+        factory=None,  # DEPRECATED!
         default=None,  # DEPRECATED!
     ):
-        super().__init__(id=id, style=style, factory=factory)
+        super().__init__(id=id, style=style)
+
+        ######################################################################
+        # 2022-09: Backwards compatibility
+        ######################################################################
+        # factory no longer used
+        if factory:
+            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
+        ######################################################################
+        # End backwards compatibility.
+        ######################################################################
 
         # Needed for _impl initialization
         self._tick_count = None
@@ -59,9 +67,7 @@ class Slider(Widget):
                     "`default` has been deprecated, use `value`"
                 )
             else:
-                warnings.warn(
-                    "`default` has been renamed `value`", DeprecationWarning
-                )
+                warnings.warn("`default` has been renamed `value`", DeprecationWarning)
             value = default
 
         ##################################################################
@@ -87,7 +93,7 @@ class Slider(Widget):
 
     @property
     def value(self):
-        """ Current slider value.
+        """Current slider value.
 
         Returns:
             The current slider value as a ``float``.
@@ -105,8 +111,9 @@ class Slider(Widget):
             final = value
         else:
             raise ValueError(
-                'Slider value ({}) is not in range ({}-{})'.format(
-                    value, self.min, self.max)
+                "Slider value ({}) is not in range ({}-{})".format(
+                    value, self.min, self.max
+                )
             )
         self._impl.set_value(final)
         if self.on_change:
@@ -114,7 +121,7 @@ class Slider(Widget):
 
     @property
     def range(self):
-        """ Range composed of min and max slider value.
+        """Range composed of min and max slider value.
 
         Returns:
             Returns the range in a ``tuple`` like this (min, max)
@@ -126,7 +133,7 @@ class Slider(Widget):
         default_range = (0.0, 1.0)
         _min, _max = default_range if range is None else range
         if _min > _max or _min == _max:
-            raise ValueError('Range min value has to be smaller than max value.')
+            raise ValueError("Range min value has to be smaller than max value.")
         self._min = _min
         self._max = _max
         self._impl.set_range((_min, _max))
@@ -175,7 +182,7 @@ class Slider(Widget):
 
     @property
     def on_change(self):
-        """ The function for when the value of the slider is changed
+        """The function for when the value of the slider is changed.
 
         Returns:
             The ``callable`` that is executed when the value changes.
@@ -189,7 +196,7 @@ class Slider(Widget):
 
     @property
     def on_press(self):
-        """ The function for when the user click the slider before sliding it
+        """The function for when the user click the slider before sliding it.
 
         Returns:
             The ``callable`` that is executed when the slider is clicked.
@@ -203,7 +210,7 @@ class Slider(Widget):
 
     @property
     def on_release(self):
-        """ The function for when the user release the slider after sliding it
+        """The function for when the user release the slider after sliding it.
 
         Returns:
             The ``callable`` that is executed when the slider is released.
@@ -217,7 +224,7 @@ class Slider(Widget):
 
     @property
     def on_slide(self):
-        """ The function for when the value of the slider is changed
+        """The function for when the value of the slider is changed.
 
         **DEPRECATED: renamed as on_change**
 

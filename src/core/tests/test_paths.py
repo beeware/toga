@@ -1,20 +1,20 @@
 import subprocess
 import sys
-import unittest
 from pathlib import Path
 
 import toga
-import toga_dummy
+from toga_dummy.utils import TestCase
 
 
-class TestPaths(unittest.TestCase):
+class TestPaths(TestCase):
     def setUp(self):
+        super().setUp()
         # We use the existence of a __main__ module as a proxy for being in test
         # conditions. This isn't *great*, but the __main__ module isn't meaningful
         # during tests, and removing it allows us to avoid having explicit "if
         # under test conditions" checks in paths.py.
-        if '__main__' in sys.modules:
-            del sys.modules['__main__']
+        if "__main__" in sys.modules:
+            del sys.modules["__main__"]
 
     def assert_paths(self, output, app_path, app_name):
         "Assert the paths for the standalone app are consistent"
@@ -45,7 +45,6 @@ class TestPaths(unittest.TestCase):
         app = toga.App(
             formal_name="Test App",
             app_id="org.beeware.test-app",
-            factory=toga_dummy.factory,
         )
 
         self.assertEqual(
@@ -103,8 +102,8 @@ class TestPaths(unittest.TestCase):
         self.assert_paths(output, app_path=cwd, app_name="standalone-app")
 
     def test_simple_as_file_in_module(self):
-        """When a simple app is started as `python app.py` inside a runnable module,
-        the app path is the folder holding app.py"""
+        """When a simple app is started as `python app.py` inside a runnable
+        module, the app path is the folder holding app.py."""
         # Spawn the simple testbed app using `app.py`
         cwd = Path(__file__).parent / "testbed" / "simple"
         output = subprocess.check_output(
@@ -115,8 +114,8 @@ class TestPaths(unittest.TestCase):
         self.assert_paths(output, app_path=cwd, app_name="simple-app")
 
     def test_simple_as_module(self):
-        """When a simple apps is started as `python -m app` inside a runnable module,
-        the app path is the folder holding app.py"""
+        """When a simple apps is started as `python -m app` inside a runnable
+        module, the app path is the folder holding app.py."""
         # Spawn the simple testbed app using `-m app`
         cwd = Path(__file__).parent / "testbed" / "simple"
         output = subprocess.check_output(

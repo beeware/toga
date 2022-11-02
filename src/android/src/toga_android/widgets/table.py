@@ -14,7 +14,7 @@ from ..libs.android.widget import (
     TableLayout__Layoutparams,
     TableRow,
     TableRow__Layoutparams,
-    TextView
+    TextView,
 )
 from .base import Widget
 
@@ -63,7 +63,7 @@ class Table(Widget):
         parent.setOrientation(LinearLayout.VERTICAL)
         parent_layout_params = LinearLayout__LayoutParams(
             LinearLayout__LayoutParams.MATCH_PARENT,
-            LinearLayout__LayoutParams.MATCH_PARENT
+            LinearLayout__LayoutParams.MATCH_PARENT,
         )
         parent_layout_params.gravity = Gravity.TOP
         parent.setLayoutParams(parent_layout_params)
@@ -71,19 +71,19 @@ class Table(Widget):
         # add vertical scroll view
         vscroll_view_layout_params = LinearLayout__LayoutParams(
             LinearLayout__LayoutParams.MATCH_PARENT,
-            LinearLayout__LayoutParams.MATCH_PARENT
+            LinearLayout__LayoutParams.MATCH_PARENT,
         )
         vscroll_view_layout_params.gravity = Gravity.TOP
         self.table_layout = TableLayout(MainActivity.singletonThis)
         table_layout_params = TableLayout__Layoutparams(
             TableLayout__Layoutparams.MATCH_PARENT,
-            TableLayout__Layoutparams.WRAP_CONTENT
+            TableLayout__Layoutparams.WRAP_CONTENT,
         )
         # add horizontal scroll view
         hscroll_view = HorizontalScrollView(self._native_activity)
         hscroll_view_layout_params = LinearLayout__LayoutParams(
             LinearLayout__LayoutParams.MATCH_PARENT,
-            LinearLayout__LayoutParams.MATCH_PARENT
+            LinearLayout__LayoutParams.MATCH_PARENT,
         )
         hscroll_view_layout_params.gravity = Gravity.LEFT
         vscroll_view.addView(hscroll_view, hscroll_view_layout_params)
@@ -116,8 +116,7 @@ class Table(Widget):
     def create_table_header(self):
         table_row = TableRow(MainActivity.singletonThis)
         table_row_params = TableRow__Layoutparams(
-            TableRow__Layoutparams.MATCH_PARENT,
-            TableRow__Layoutparams.WRAP_CONTENT
+            TableRow__Layoutparams.MATCH_PARENT, TableRow__Layoutparams.WRAP_CONTENT
         )
         table_row.setLayoutParams(table_row_params)
         for col_index in range(len(self.interface._accessors)):
@@ -126,13 +125,14 @@ class Table(Widget):
             text_view = TextView(MainActivity.singletonThis)
             text_view.setText(self.interface.headings[col_index])
             if self._font_impl:
-                text_view.setTextSize(TypedValue.COMPLEX_UNIT_SP, self._font_impl.get_size())
+                text_view.setTextSize(
+                    TypedValue.COMPLEX_UNIT_SP, self._font_impl.get_size()
+                )
                 text_view.setTypeface(self._font_impl.get_typeface(), Typeface.BOLD)
             else:
                 text_view.setTypeface(text_view.getTypeface(), Typeface.BOLD)
             text_view_params = TableRow__Layoutparams(
-                TableRow__Layoutparams.MATCH_PARENT,
-                TableRow__Layoutparams.WRAP_CONTENT
+                TableRow__Layoutparams.MATCH_PARENT, TableRow__Layoutparams.WRAP_CONTENT
             )
             text_view_params.setMargins(10, 5, 10, 5)  # left, top, right, bottom
             text_view_params.gravity = Gravity.START
@@ -143,8 +143,7 @@ class Table(Widget):
     def create_table_row(self, row_index):
         table_row = TableRow(MainActivity.singletonThis)
         table_row_params = TableRow__Layoutparams(
-            TableRow__Layoutparams.MATCH_PARENT,
-            TableRow__Layoutparams.WRAP_CONTENT
+            TableRow__Layoutparams.MATCH_PARENT, TableRow__Layoutparams.WRAP_CONTENT
         )
         table_row.setLayoutParams(table_row_params)
         table_row.setClickable(True)
@@ -156,11 +155,14 @@ class Table(Widget):
             text_view = TextView(MainActivity.singletonThis)
             text_view.setText(self.get_data_value(row_index, col_index))
             if self._font_impl:
-                text_view.setTextSize(TypedValue.COMPLEX_UNIT_SP, self._font_impl.get_size())
-                text_view.setTypeface(self._font_impl.get_typeface(), self._font_impl.get_style())
+                text_view.setTextSize(
+                    TypedValue.COMPLEX_UNIT_SP, self._font_impl.get_size()
+                )
+                text_view.setTypeface(
+                    self._font_impl.get_typeface(), self._font_impl.get_style()
+                )
             text_view_params = TableRow__Layoutparams(
-                TableRow__Layoutparams.MATCH_PARENT,
-                TableRow__Layoutparams.WRAP_CONTENT
+                TableRow__Layoutparams.MATCH_PARENT, TableRow__Layoutparams.WRAP_CONTENT
             )
             text_view_params.setMargins(10, 5, 10, 5)  # left, top, right, bottom
             text_view_params.gravity = Gravity.START
@@ -195,7 +197,7 @@ class Table(Widget):
         self.change_source(self.interface.data)
 
     def change(self, item):
-        self.interface.factory.not_implemented('Table.change()')
+        self.interface.factory.not_implemented("Table.change()")
 
     # data listener method
     def remove(self, item, index):
@@ -208,7 +210,7 @@ class Table(Widget):
         pass
 
     def set_on_double_click(self, handler):
-        self.interface.factory.not_implemented('Table.set_on_double_click()')
+        self.interface.factory.not_implemented("Table.set_on_double_click()")
 
     def add_column(self, heading, accessor):
         self.change_source(self.interface.data)
@@ -220,7 +222,7 @@ class Table(Widget):
 
     def set_font(self, font):
         if font:
-            self._font_impl = font.bind(self.interface.factory)
+            self._font_impl = font._impl
         if self.interface.data is not None:
             self.change_source(self.interface.data)
 

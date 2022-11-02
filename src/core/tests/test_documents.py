@@ -7,11 +7,11 @@ class DocumentTests(TestCase):
     def setUp(self):
         super().setUp()
 
-        self.filename = 'path/to/document.txt'
-        self.document_type = 'path/to/document.txt'
-        self.document = toga.Document(filename=self.filename,
-                                      document_type=self.document_type,
-                                      app=toga_dummy)
+        self.filename = "path/to/document.txt"
+        self.document_type = "path/to/document.txt"
+        self.document = toga.Document(
+            filename=self.filename, document_type=self.document_type, app=toga_dummy
+        )
 
     def test_app(self):
         self.assertEqual(self.filename, self.document.filename)

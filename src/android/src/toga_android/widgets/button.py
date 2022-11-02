@@ -32,9 +32,8 @@ class Button(Widget):
 
     def set_font(self, font):
         if font:
-            font_impl = font.bind(self.interface.factory)
-            self.native.setTextSize(TypedValue.COMPLEX_UNIT_SP, font_impl.get_size())
-            self.native.setTypeface(font_impl.get_typeface(), font_impl.get_style())
+            self.native.setTextSize(TypedValue.COMPLEX_UNIT_SP, font._impl.get_size())
+            self.native.setTypeface(font._impl.get_typeface(), font._impl.get_style())
 
     def set_on_press(self, handler):
         # No special handling required
@@ -47,7 +46,9 @@ class Button(Widget):
     def set_background_color(self, value):
         if value:
             # do not use self.native.setBackgroundColor - this messes with the button style!
-            self.native.getBackground().setColorFilter(native_color(value), PorterDuff__Mode.MULTIPLY)
+            self.native.getBackground().setColorFilter(
+                native_color(value), PorterDuff__Mode.MULTIPLY
+            )
 
     def rehint(self):
         # Like other text-viewing widgets, Android crashes when rendering

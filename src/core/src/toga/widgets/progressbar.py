@@ -1,13 +1,21 @@
+import warnings
+
 from .base import Widget
 
 
 class ProgressBar(Widget):
-    """ """
+    """"""
 
     MIN_WIDTH = 100
 
     def __init__(
-        self, id=None, style=None, max=1, value=0, running=False, factory=None
+        self,
+        id=None,
+        style=None,
+        max=1,
+        value=0,
+        running=False,
+        factory=None,  # DEPRECATED!
     ):
         """
 
@@ -18,10 +26,18 @@ class ProgressBar(Widget):
             max (float): The maximum value of the progressbar.
             value (float): To define the current progress of the progressbar.
             running (bool): Set the initial running mode.
-            factory (:obj:`module`): A python module that is capable to return a
-                implementation of this class with the same name. (optional & normally not needed)
         """
-        super().__init__(id=id, style=style, factory=factory)
+        super().__init__(id=id, style=style)
+
+        ######################################################################
+        # 2022-09: Backwards compatibility
+        ######################################################################
+        # factory no longer used
+        if factory:
+            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
+        ######################################################################
+        # End backwards compatibility.
+        ######################################################################
 
         self._is_running = False
         self._impl = self.factory.ProgressBar(interface=self)
@@ -38,8 +54,7 @@ class ProgressBar(Widget):
 
     @property
     def is_running(self):
-        """
-        Use ``start()`` and ``stop()`` to change the running state.
+        """Use ``start()`` and ``stop()`` to change the running state.
 
         Returns:
             True if this progress bar is running
@@ -49,8 +64,7 @@ class ProgressBar(Widget):
 
     @property
     def is_determinate(self):
-        """
-        Determinate progress bars have a numeric ``max`` value (not None).
+        """Determinate progress bars have a numeric ``max`` value (not None).
 
         Returns:
             True if this progress bar is determinate (``max`` is not None)
@@ -59,18 +73,14 @@ class ProgressBar(Widget):
         return self.max is not None
 
     def start(self):
-        """
-        Starting this progress bar puts it into running mode.
-        """
+        """Starting this progress bar puts it into running mode."""
         self.enabled = True
         if not self.is_running:
             self._impl.start()
         self._is_running = True
 
     def stop(self):
-        """
-        Stop this progress bar (if not already stopped).
-        """
+        """Stop this progress bar (if not already stopped)."""
         self.enabled = bool(self.max)
         if self.is_running:
             self._impl.stop()

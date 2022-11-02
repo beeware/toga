@@ -1,23 +1,42 @@
+import warnings
+
 from toga.handlers import wrapped_handler
 
 from .base import Widget
 
 
 class Selection(Widget):
-    """ The Selection widget lets you pick from a defined selection of options.
+    """The Selection widget lets you pick from a defined selection of options.
 
     Args:
         id (str): An identifier for this widget.
         style ( :obj:`Style`): An optional style object.
             If no style is provided then a new one will be created for the widget.
         items (``list`` of ``str``): The items for the selection.
-        factory (:obj:`module`): A python module that is capable to return a
-            implementation of this class with the same name. (optional & normally not needed)
     """
+
     MIN_WIDTH = 100
 
-    def __init__(self, id=None, style=None, items=None, on_select=None, enabled=True, factory=None):
-        super().__init__(id=id, style=style, factory=factory)
+    def __init__(
+        self,
+        id=None,
+        style=None,
+        items=None,
+        on_select=None,
+        enabled=True,
+        factory=None,  # DEPRECATED!
+    ):
+        super().__init__(id=id, style=style)
+        ######################################################################
+        # 2022-09: Backwards compatibility
+        ######################################################################
+        # factory no longer used
+        if factory:
+            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
+        ######################################################################
+        # End backwards compatibility.
+        ######################################################################
+
         self._on_select = None  # needed for _impl initialization
         self._impl = self.factory.Selection(interface=self)
 
@@ -33,7 +52,7 @@ class Selection(Widget):
 
     @property
     def items(self):
-        """ The list of items.
+        """The list of items.
 
         Returns:
              The ``list`` of ``str`` of all selectable items.
@@ -50,7 +69,7 @@ class Selection(Widget):
 
     @property
     def value(self):
-        """ The value of the currently selected item.
+        """The value of the currently selected item.
 
         Returns:
             The selected item as a ``str``.
@@ -66,8 +85,7 @@ class Selection(Widget):
 
     @property
     def on_select(self):
-        """
-        The callable function for when a node on the Tree is selected
+        """The callable function for when a node on the Tree is selected.
 
         :rtype: ``callable``
         """
@@ -75,8 +93,7 @@ class Selection(Widget):
 
     @on_select.setter
     def on_select(self, handler):
-        """
-        Set the function to be executed on node selection
+        """Set the function to be executed on node selection.
 
         :param handler:     callback function
         :type handler:      ``callable``

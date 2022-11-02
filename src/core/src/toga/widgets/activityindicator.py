@@ -1,9 +1,16 @@
+import warnings
+
 from .base import Widget
 
 
 class ActivityIndicator(Widget):
-
-    def __init__(self, id=None, style=None, running=False, factory=None):
+    def __init__(
+        self,
+        id=None,
+        style=None,
+        running=False,
+        factory=None,  # DEPRECATED !
+    ):
         """
 
         Args:
@@ -13,10 +20,17 @@ class ActivityIndicator(Widget):
             running (bool):  Set the initial running mode. Defaults to False
             hide_when_stopped (bool):  Hide the indicator when not running. Defaults to
                 True.
-            factory (:obj:`module`): A python module that is capable to return a
-                implementation of this class with the same name. (optional & normally not needed)
         """
-        super().__init__(id=id, style=style, factory=factory)
+        ######################################################################
+        # 2022-09: Backwards compatibility
+        ######################################################################
+        # factory no longer used
+        if factory:
+            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
+        ######################################################################
+        # End backwards compatibility.
+        ######################################################################
+        super().__init__(id=id, style=style)
 
         self._is_running = False
 
@@ -29,8 +43,7 @@ class ActivityIndicator(Widget):
 
     @property
     def is_running(self):
-        """
-        Use ``start()`` and ``stop()`` to change the running state.
+        """Use ``start()`` and ``stop()`` to change the running state.
 
         Returns:
             True if this activity indicator is running
@@ -39,17 +52,13 @@ class ActivityIndicator(Widget):
         return self._is_running
 
     def start(self):
-        """
-        Start this activity indicator.
-        """
+        """Start this activity indicator."""
         if not self.is_running:
             self._impl.start()
         self._is_running = True
 
     def stop(self):
-        """
-        Stop this activity indicator (if not already stopped).
-        """
+        """Stop this activity indicator (if not already stopped)."""
         if self.is_running:
             self._impl.stop()
         self._is_running = False

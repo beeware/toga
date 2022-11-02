@@ -8,10 +8,11 @@ from .internal.rows.texticon import TextIconRow
 # TODO: Verify if right clicking a row currently works with touch screens, if not,
 # use Gtk.GestureLongPress
 class DetailedList(Widget):
-    """
-    Gtk DetailedList implementation.
+    """Gtk DetailedList implementation.
+
     Gtk.ListBox inside a Gtk.ScrolledWindow.
     """
+
     def create(self):
         # Not the same as selected row. _active_row is the one with its buttons exposed.
         self._active_row = None
@@ -50,7 +51,7 @@ class DetailedList(Widget):
         self.native.interface = self.interface
 
         self.gtk_on_select_signal_handler = self.list_box.connect(
-            'row-selected', self.gtk_on_row_selected
+            "row-selected", self.gtk_on_row_selected
         )
 
         self.right_click_gesture = Gtk.GestureMultiPress.new(self.list_box)
@@ -78,8 +79,7 @@ class DetailedList(Widget):
         """
         self.store.remove_all()
         for item in source:
-            self.store.append(
-                self.row_factory(item))
+            self.store.append(self.row_factory(item))
 
         # We can't know the dimensions of each row (and thus of the list) until gtk allocates
         # space for it. Gtk does emit `size-allocate` after allocation but I couldn't find any
@@ -122,8 +122,8 @@ class DetailedList(Widget):
         self.store.insert(index, item_impl)
 
     def remove(self, item, index):
-        """
-        Removes a row from the store. Doesn't remove the row from the interface.
+        """Removes a row from the store. Doesn't remove the row from the
+        interface.
 
         Args:
             item (:obj:`Row`)
@@ -206,11 +206,12 @@ class DetailedList(Widget):
             self.list_box.select_row(item_impl)
 
     def _list_items_changed(self):
-        """
-        Some components such as the refresh button and scroll button change their
-        appearance based on how many items there are on the list or the size of the items.
-        If either of those things changes the buttons need to be notified to recalculate
-        their positions.
+        """Some components such as the refresh button and scroll button change
+        their appearance based on how many items there are on the list or the
+        size of the items.
+
+        If either of those things changes the buttons need to be
+        notified to recalculate their positions.
         """
         self.refresh_button.list_changed()
         self.scroll_button.list_changed()

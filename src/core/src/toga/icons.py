@@ -1,4 +1,28 @@
 import os
+import warnings
+
+from toga.platform import get_platform_factory
+
+
+class cachedicon:
+    def __init__(self, f):
+        self.f = f
+
+    def __get__(self, obj, owner):
+        # If you ask for Icon.CACHED_ICON, obj is None, and owner is the Icon class
+        # If you ask for self.CACHED_ICON, obj is self, from which we can get the class.
+        if obj is None:
+            cls = owner
+        else:
+            cls = obj.__class__
+
+        try:
+            # Look for a __CACHED_ICON attribute on the class
+            value = getattr(cls, f"__{self.f.__name__}")
+        except AttributeError:
+            value = self.f(owner)
+            setattr(cls, f"__{self.f.__name__}", value)
+        return value
 
 
 class Icon:
@@ -15,55 +39,54 @@ class Icon:
         one of the Toga-provided icons. Default is False.
     """
 
+    @cachedicon
+    def TOGA_ICON(cls):
+        return Icon("resources/toga", system=True)
+
+    @cachedicon
+    def DEFAULT_ICON(cls):
+        return Icon("resources/toga", system=True)
+
     def __init__(self, path, system=False):
         self.path = path
         self.system = system
 
-        # Resource is late bound.
-        self._impl = None
+        self.factory = get_platform_factory()
+        try:
+            if self.system:
+                resource_path = self.factory.paths.toga
+            else:
+                resource_path = self.factory.paths.app
 
-    def bind(self, factory):
-        """
-        Bind the Icon to a factory.
-
-        Creates the underlying platform implementation of the Icon. If the
-        image cannot be found, it will fall back to the default icon.
-
-        :param factory: The platform factory to bind to.
-        :returns: The platform implementation
-        """
-        # `factory` is now available; store it so the `_impl` can access it.
-        self.factory = factory
-        if self._impl is None:
-            try:
-                if self.system:
-                    resource_path = factory.paths.toga
-                else:
-                    resource_path = factory.paths.app
-
-                if factory.Icon.SIZES:
-                    full_path = {
-                        size: self._full_path(
-                            size=size,
-                            extensions=factory.Icon.EXTENSIONS,
-                            resource_path=resource_path,
-                        )
-                        for size in factory.Icon.SIZES
-                    }
-                else:
-                    full_path = self._full_path(
-                        size=None,
-                        extensions=factory.Icon.EXTENSIONS,
+            if self.factory.Icon.SIZES:
+                full_path = {
+                    size: self._full_path(
+                        size=size,
+                        extensions=self.factory.Icon.EXTENSIONS,
                         resource_path=resource_path,
                     )
+                    for size in self.factory.Icon.SIZES
+                }
+            else:
+                full_path = self._full_path(
+                    size=None,
+                    extensions=self.factory.Icon.EXTENSIONS,
+                    resource_path=resource_path,
+                )
 
-                self._impl = factory.Icon(interface=self, path=full_path)
-            except FileNotFoundError:
-                print("WARNING: Can't find icon {self.path}; falling back to default icon".format(
+            self._impl = self.factory.Icon(interface=self, path=full_path)
+        except FileNotFoundError:
+            print(
+                "WARNING: Can't find icon {self.path}; falling back to default icon".format(
                     self=self
-                ))
-                self._impl = self.DEFAULT_ICON.bind(factory)
+                )
+            )
+            self._impl = Icon.DEFAULT_ICON._impl
 
+    def bind(self, factory=None):
+        warnings.warn(
+            "Icons no longer need to be explicitly bound.", DeprecationWarning
+        )
         return self._impl
 
     def _full_path(self, size, extensions, resource_path):
@@ -73,19 +96,13 @@ class Icon:
             # If no extension is provided, look for one of the allowed
             # icon types, in preferred format order.
             for extension in extensions:
-                # look for an icon file with a size in the filename
-                icon_path = resource_path / (
-                    '{basename}-{size}{extension}'.format(
-                        basename=basename,
-                        size=size,
-                        extension=extension
-                    )
-                )
+                icon_path = resource_path / f"{basename}-{size}{extension}"
+
                 if icon_path.exists():
                     return icon_path
 
                 # look for a icon file without a size in the filename
-                icon_path = resource_path / (basename + extension)
+                icon_path = resource_path / f"{basename}{extension}"
                 if icon_path.exists():
                     return icon_path
 
@@ -96,18 +113,6 @@ class Icon:
                 return icon_path
         else:
             # An icon has been specified, but it's not a valid format.
-            raise FileNotFoundError(
-                "{self.path} is not a valid icon".format(
-                    self=self
-                )
-            )
+            raise FileNotFoundError(f"{self.path} is not a valid icon")
 
-        raise FileNotFoundError(
-            "Can't find icon {self.path}".format(
-                self=self
-            )
-        )
-
-
-Icon.TOGA_ICON = Icon('resources/toga', system=True)
-Icon.DEFAULT_ICON = Icon('resources/toga', system=True)
+        raise FileNotFoundError(f"Can't find icon {self.path}")

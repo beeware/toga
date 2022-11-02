@@ -1,5 +1,4 @@
 import toga
-import toga_dummy
 from toga_dummy.utils import TestCase
 
 
@@ -7,12 +6,12 @@ class NumberInputTests(TestCase):
     def setUp(self):
         super().setUp()
 
-        self.nr_input = toga.NumberInput(factory=toga_dummy.factory)
-        self.non_int_value = 'a'
+        self.nr_input = toga.NumberInput()
+        self.non_int_value = "a"
 
     def test_widget_created(self):
         self.assertEqual(self.nr_input._impl.interface, self.nr_input)
-        self.assertActionPerformed(self.nr_input, 'create NumberInput')
+        self.assertActionPerformed(self.nr_input, "create NumberInput")
         self.assertEqual(self.nr_input.readonly, False)
 
     def test_step(self):
@@ -71,11 +70,11 @@ class NumberInputTests(TestCase):
 
         self.nr_input.on_change = dummy_function
         self.nr_input.value = 2
-        self.assertValueSet(self.nr_input, 'on_change', self.nr_input.on_change)
+        self.assertValueSet(self.nr_input, "on_change", self.nr_input.on_change)
 
     def test_value_init(self):
         value = 5
-        nr_input = toga.NumberInput(value=value, factory=toga_dummy.factory)
+        nr_input = toga.NumberInput(value=value)
         self.assertEqual(nr_input.value, value)
 
     def test_focus(self):
@@ -92,9 +91,8 @@ class NumberInputTests(TestCase):
         with self.assertWarns(DeprecationWarning):
             my_nr_input = toga.NumberInput(
                 default=value,
-                factory=toga_dummy.factory
             )
-        self.assertValueSet(my_nr_input, 'value', value)
+        self.assertValueSet(my_nr_input, "value", value)
         self.assertEqual(my_nr_input.value, value)
 
         # can't specify both default *and* value
@@ -102,7 +100,6 @@ class NumberInputTests(TestCase):
             toga.NumberInput(
                 default=value,
                 value=value,
-                factory=toga_dummy.factory
             )
 
     ######################################################################

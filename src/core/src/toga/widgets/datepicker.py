@@ -7,30 +7,38 @@ from .base import Widget
 
 
 class DatePicker(Widget):
-    """
-    A widget to get user selected datetime object
+    """A widget to get user selected datetime object.
 
     Args:
         id (str): An identifier for this widget.
         style (:obj:`Style`): An optional style object. If no style is provided then
             a new one will be created for the widget.
-        factory (:obj:`module`): A python module that is capable to return a
-            implementation of this class with the same name. (optional & normally not needed)
     """
+
     MIN_WIDTH = 200
 
     def __init__(
         self,
         id=None,
         style=None,
-        factory=None,
+        factory=None,  # DEPRECATED!
         value=None,
         min_date=None,
         max_date=None,
         on_change=None,
         initial=None,  # DEPRECATED!
     ):
-        super().__init__(id=id, style=style, factory=factory)
+        super().__init__(id=id, style=style)
+        ######################################################################
+        # 2022-09: Backwards compatibility
+        ######################################################################
+        # factory no longer used
+        if factory:
+            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
+        ######################################################################
+        # End backwards compatibility.
+        ######################################################################
+
         # Create a platform specific implementation of a DatePicker
         self._impl = self.factory.DatePicker(interface=self)
 
@@ -46,9 +54,7 @@ class DatePicker(Widget):
                     "`initial` has been deprecated, use `value`"
                 )
             else:
-                warnings.warn(
-                    "`initial` has been renamed `value`", DeprecationWarning
-                )
+                warnings.warn("`initial` has been renamed `value`", DeprecationWarning)
             value = initial
 
         ##################################################################
@@ -62,8 +68,7 @@ class DatePicker(Widget):
 
     @property
     def value(self):
-        """
-        The value of the currently selected date.
+        """The value of the currently selected date.
 
         :return: Selected date as Date object
         """
@@ -87,8 +92,8 @@ class DatePicker(Widget):
 
     @property
     def min_date(self):
-        """
-        The minimum allowable date for the widget. All dates prior to the minimum date will be blanked out.
+        """The minimum allowable date for the widget. All dates prior to the
+        minimum date will be blanked out.
 
         :return: The minimum date specified. Returns None if min_date not specified
         """
@@ -105,8 +110,8 @@ class DatePicker(Widget):
 
     @property
     def max_date(self):
-        """
-        The maximum allowable date for the widget. All dates prior to the minimum date will be blanked out.
+        """The maximum allowable date for the widget. All dates prior to the
+        minimum date will be blanked out.
 
         :return: The maximum date specified. Returns None if max_date not specified
         """
@@ -123,7 +128,7 @@ class DatePicker(Widget):
 
     @property
     def on_change(self):
-        """The handler to invoke when the value changes
+        """The handler to invoke when the value changes.
 
         Returns:
             The function ``callable`` that is called on a content change.

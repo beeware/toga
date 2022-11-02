@@ -13,7 +13,9 @@ class TogaDocument(NSDocument):
         return True
 
     @objc_method
-    def readFromFileWrapper_ofType_error_(self, fileWrapper, typeName, outError) -> bool:
+    def readFromFileWrapper_ofType_error_(
+        self, fileWrapper, typeName, outError
+    ) -> bool:
         self.interface.read()
         return True
 
@@ -25,7 +27,7 @@ class Document:
         self.native.impl = self
 
         self.native.initWithContentsOfURL(
-            NSURL.URLWithString(f'file://{quote(interface.filename)}'),
+            NSURL.URLWithString(f"file://{quote(interface.filename)}"),
             ofType=interface.document_type,
-            error=None
+            error=None,
         )

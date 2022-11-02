@@ -124,10 +124,11 @@ class App:
         self.native = NSApplication.sharedApplication
         self.native.setActivationPolicy(NSApplicationActivationPolicyRegular)
 
-        icon = self.interface.icon.bind(self.interface.factory)
-        self.native.setApplicationIconImage_(icon.native)
+        self.native.setApplicationIconImage_(self.interface.icon._impl.native)
 
-        self.resource_path = os.path.dirname(os.path.dirname(NSBundle.mainBundle.bundlePath))
+        self.resource_path = os.path.dirname(
+            os.path.dirname(NSBundle.mainBundle.bundlePath)
+        )
 
         self.appDelegate = AppDelegate.alloc().init()
         self.appDelegate.impl = self
@@ -138,39 +139,38 @@ class App:
         formal_name = self.interface.formal_name
 
         self.interface.commands.add(
-
             # ---- App menu -----------------------------------
             toga.Command(
                 lambda _: self.interface.about(),
-                'About ' + formal_name,
-                group=toga.Group.APP
+                "About " + formal_name,
+                group=toga.Group.APP,
             ),
             toga.Command(
                 None,
-                'Preferences',
-                shortcut=toga.Key.MOD_1 + ',',
+                "Preferences",
+                shortcut=toga.Key.MOD_1 + ",",
                 group=toga.Group.APP,
                 section=20,
             ),
             toga.Command(
-                NativeHandler(SEL('hide:')),
-                'Hide ' + formal_name,
-                shortcut=toga.Key.MOD_1 + 'h',
+                NativeHandler(SEL("hide:")),
+                "Hide " + formal_name,
+                shortcut=toga.Key.MOD_1 + "h",
                 group=toga.Group.APP,
                 order=0,
                 section=sys.maxsize - 1,
             ),
             toga.Command(
-                NativeHandler(SEL('hideOtherApplications:')),
-                'Hide Others',
-                shortcut=toga.Key.MOD_1 + toga.Key.MOD_2 + 'h',
+                NativeHandler(SEL("hideOtherApplications:")),
+                "Hide Others",
+                shortcut=toga.Key.MOD_1 + toga.Key.MOD_2 + "h",
                 group=toga.Group.APP,
                 order=1,
                 section=sys.maxsize - 1,
             ),
             toga.Command(
-                NativeHandler(SEL('unhideAllApplications:')),
-                'Show All',
+                NativeHandler(SEL("unhideAllApplications:")),
+                "Show All",
                 group=toga.Group.APP,
                 order=2,
                 section=sys.maxsize - 1,
@@ -178,83 +178,80 @@ class App:
             # Quit should always be the last item, in a section on its own
             toga.Command(
                 lambda _: self.interface.exit(),
-                'Quit ' + formal_name,
-                shortcut=toga.Key.MOD_1 + 'q',
+                "Quit " + formal_name,
+                shortcut=toga.Key.MOD_1 + "q",
                 group=toga.Group.APP,
-                section=sys.maxsize
+                section=sys.maxsize,
             ),
-
             # ---- Edit menu ----------------------------------
             toga.Command(
-                NativeHandler(SEL('undo:')),
-                'Undo',
-                shortcut=toga.Key.MOD_1 + 'z',
+                NativeHandler(SEL("undo:")),
+                "Undo",
+                shortcut=toga.Key.MOD_1 + "z",
                 group=toga.Group.EDIT,
                 order=10,
             ),
             toga.Command(
-                NativeHandler(SEL('redo:')),
-                'Redo',
-                shortcut=toga.Key.SHIFT + toga.Key.MOD_1 + 'z',
+                NativeHandler(SEL("redo:")),
+                "Redo",
+                shortcut=toga.Key.SHIFT + toga.Key.MOD_1 + "z",
                 group=toga.Group.EDIT,
                 order=20,
             ),
-
             toga.Command(
-                NativeHandler(SEL('cut:')),
-                'Cut',
-                shortcut=toga.Key.MOD_1 + 'x',
+                NativeHandler(SEL("cut:")),
+                "Cut",
+                shortcut=toga.Key.MOD_1 + "x",
                 group=toga.Group.EDIT,
                 section=10,
                 order=10,
             ),
             toga.Command(
-                NativeHandler(SEL('copy:')),
-                'Copy',
-                shortcut=toga.Key.MOD_1 + 'c',
+                NativeHandler(SEL("copy:")),
+                "Copy",
+                shortcut=toga.Key.MOD_1 + "c",
                 group=toga.Group.EDIT,
                 section=10,
                 order=20,
             ),
             toga.Command(
-                NativeHandler(SEL('paste:')),
-                'Paste',
-                shortcut=toga.Key.MOD_1 + 'v',
+                NativeHandler(SEL("paste:")),
+                "Paste",
+                shortcut=toga.Key.MOD_1 + "v",
                 group=toga.Group.EDIT,
                 section=10,
                 order=30,
             ),
             toga.Command(
-                NativeHandler(SEL('pasteAsPlainText:')),
-                'Paste and Match Style',
-                shortcut=toga.Key.MOD_2 + toga.Key.SHIFT + toga.Key.MOD_1 + 'v',
+                NativeHandler(SEL("pasteAsPlainText:")),
+                "Paste and Match Style",
+                shortcut=toga.Key.MOD_2 + toga.Key.SHIFT + toga.Key.MOD_1 + "v",
                 group=toga.Group.EDIT,
                 section=10,
                 order=40,
             ),
             toga.Command(
-                NativeHandler(SEL('delete:')),
-                'Delete',
+                NativeHandler(SEL("delete:")),
+                "Delete",
                 group=toga.Group.EDIT,
                 section=10,
                 order=50,
             ),
             toga.Command(
-                NativeHandler(SEL('selectAll:')),
-                'Select All',
-                shortcut=toga.Key.MOD_1 + 'a',
+                NativeHandler(SEL("selectAll:")),
+                "Select All",
+                shortcut=toga.Key.MOD_1 + "a",
                 group=toga.Group.EDIT,
                 section=10,
                 order=60,
             ),
-
             # ---- Help menu ----------------------------------
             toga.Command(
                 lambda _: self.interface.visit_homepage(),
-                'Visit homepage',
+                "Visit homepage",
                 enabled=self.interface.home_page is not None,
-                group=toga.Group.HELP
-            )
+                group=toga.Group.HELP,
+            ),
         )
         self._create_app_commands()
 
@@ -273,7 +270,7 @@ class App:
         # Recreate the menu
         self._menu_items = {}
         self._menu_groups = {}
-        menubar = NSMenu.alloc().initWithTitle('MainMenu')
+        menubar = NSMenu.alloc().initWithTitle("MainMenu")
         submenu = None
         for cmd in self.interface.commands:
             if cmd == toga.GROUP_BREAK:
@@ -286,14 +283,14 @@ class App:
                 if cmd.shortcut:
                     key, modifier = cocoa_key(cmd.shortcut)
                 else:
-                    key = ''
+                    key = ""
                     modifier = None
 
                 # Native handlers can be invoked directly as menu actions.
                 # Standard wrapped menu items have a `_raw` attribute,
                 # and are invoked using the selectMenuItem:
-                if hasattr(cmd.action, '_raw'):
-                    action = SEL('selectMenuItem:')
+                if hasattr(cmd.action, "_raw"):
+                    action = SEL("selectMenuItem:")
                 else:
                     action = cmd.action
 
@@ -312,13 +309,13 @@ class App:
         self.native.mainMenu = menubar
 
     def _submenu(self, group, menubar):
-        """
-        Obtain the submenu representing the command group.
+        """Obtain the submenu representing the command group.
 
-        This will create the submenu if it doesn't exist. It will call itself
-        recursively to build the full path to menus inside submenus, returning
-        the "leaf" node in the submenu path. Once created, it caches the menu
-        that has been created for future lookup.
+        This will create the submenu if it doesn't exist. It will call
+        itself recursively to build the full path to menus inside
+        submenus, returning the "leaf" node in the submenu path. Once
+        created, it caches the menu that has been created for future
+        lookup.
         """
         try:
             return self._menu_groups[group]
@@ -329,7 +326,7 @@ class App:
                 parent_menu = self._submenu(group.parent, menubar)
 
                 menu_item = parent_menu.addItemWithTitle(
-                    group.text, action=None, keyEquivalent=''
+                    group.text, action=None, keyEquivalent=""
                 )
                 submenu = NSMenu.alloc().initWithTitle(group.text)
                 parent_menu.setSubmenu(submenu, forItem=menu_item)
@@ -350,7 +347,7 @@ class App:
     def show_about_dialog(self):
         options = NSMutableDictionary.alloc().init()
 
-        options[NSAboutPanelOptionApplicationIcon] = self.interface.icon.bind(self.interface.factory).native
+        options[NSAboutPanelOptionApplicationIcon] = self.interface.icon._impl.native
 
         if self.interface.name is not None:
             options[NSAboutPanelOptionApplicationName] = self.interface.name
@@ -385,7 +382,9 @@ class App:
             self.interface.exit_full_screen()
 
         opts = NSMutableDictionary.alloc().init()
-        opts.setObject(NSNumber.numberWithBool(True), forKey="NSFullScreenModeAllScreens")
+        opts.setObject(
+            NSNumber.numberWithBool(True), forKey="NSFullScreenModeAllScreens"
+        )
 
         for window, screen in zip(windows, NSScreen.screens):
             window.content._impl.native.enterFullScreenMode(screen, withOptions=opts)
@@ -397,7 +396,9 @@ class App:
 
     def exit_full_screen(self, windows):
         opts = NSMutableDictionary.alloc().init()
-        opts.setObject(NSNumber.numberWithBool(True), forKey="NSFullScreenModeAllScreens")
+        opts.setObject(
+            NSNumber.numberWithBool(True), forKey="NSFullScreenModeAllScreens"
+        )
 
         for window in windows:
             window.content._impl.native.exitFullScreenModeWithOptions(opts)
@@ -429,10 +430,10 @@ class DocumentApp(App):
         self.interface.commands.add(
             toga.Command(
                 lambda _: self.select_file(),
-                text='Open...',
-                shortcut=toga.Key.MOD_1 + 'o',
+                text="Open...",
+                shortcut=toga.Key.MOD_1 + "o",
                 group=toga.Group.FILE,
-                section=0
+                section=0,
             ),
         )
 
@@ -449,7 +450,9 @@ class DocumentApp(App):
         for filetype in self.interface.document_types:
             fileTypes.addObject(filetype)
 
-        NSDocumentController.sharedDocumentController.runModalOpenPanel(panel, forTypes=fileTypes)
+        NSDocumentController.sharedDocumentController.runModalOpenPanel(
+            panel, forTypes=fileTypes
+        )
 
         # print("Untitled File opened?", panel.URLs)
         self.appDelegate.application_openFiles_(None, panel.URLs)
@@ -461,7 +464,7 @@ class DocumentApp(App):
             fileURL (str): The URL/path to the file to add as a document.
         """
         # Convert a cocoa fileURL to a file path.
-        fileURL = fileURL.rstrip('/')
+        fileURL = fileURL.rstrip("/")
         path = unquote(urlparse(fileURL).path)
         extension = os.path.splitext(path)[1][1:]
 

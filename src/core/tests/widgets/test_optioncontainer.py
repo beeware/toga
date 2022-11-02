@@ -1,7 +1,6 @@
 from unittest import mock
 
 import toga
-import toga_dummy
 from toga_dummy.utils import TestCase, TestStyle
 
 
@@ -11,18 +10,12 @@ class OptionContainerTests(TestCase):
 
         self.on_select = mock.Mock()
         self.op_container = toga.OptionContainer(
-            style=TestStyle(),
-            factory=toga_dummy.factory,
-            on_select=self.on_select
+            style=TestStyle(), on_select=self.on_select
         )
-        self.widget = toga.Box(style=TestStyle(), factory=toga_dummy.factory)
-        self.text2, self.widget2 = "Widget 2", toga.Box(
-            style=TestStyle(), factory=toga_dummy.factory
-        )
-        self.text3, self.widget3 = "Widget 3", toga.Box(
-            style=TestStyle(), factory=toga_dummy.factory
-        )
-        self.text = 'New Container'
+        self.widget = toga.Box(style=TestStyle())
+        self.text2, self.widget2 = "Widget 2", toga.Box(style=TestStyle())
+        self.text3, self.widget3 = "Widget 3", toga.Box(style=TestStyle())
+        self.text = "New Container"
         self.op_container.add(self.text, self.widget)
 
     def assert_tab(self, tab, index, text, widget, enabled):
@@ -41,15 +34,15 @@ class OptionContainerTests(TestCase):
 
     def test_widget_created(self):
         self.assertEqual(self.op_container._impl.interface, self.op_container)
-        self.assertActionPerformed(self.op_container, 'create OptionContainer')
+        self.assertActionPerformed(self.op_container, "create OptionContainer")
 
     def test_adding_container_invokes_add_content(self):
         self.assertActionPerformedWith(
-            self.op_container, 'add content', text=self.text, widget=self.widget._impl
+            self.op_container, "add content", text=self.text, widget=self.widget._impl
         )
 
         self.assertActionPerformedWith(
-            self.widget, 'set bounds', x=0, y=0, width=0, height=0
+            self.widget, "set bounds", x=0, y=0, width=0, height=0
         )
 
     def test_widget_refresh_sublayouts(self):
@@ -58,7 +51,7 @@ class OptionContainerTests(TestCase):
 
         self.op_container.refresh_sublayouts()
         self.assertActionPerformedWith(
-            self.widget, 'set bounds', x=0, y=0, width=0, height=0
+            self.widget, "set bounds", x=0, y=0, width=0, height=0
         )
 
     def test_set_current_tab_as_index(self):
@@ -154,7 +147,7 @@ class OptionContainerTests(TestCase):
                 "OptionItem(title=Widget 2), "
                 "OptionItem(title=Widget 3)])"
             ),
-            repr(self.op_container.content)
+            repr(self.op_container.content),
         )
 
     def test_add_tabs(self):
@@ -174,12 +167,11 @@ class OptionContainerTests(TestCase):
     def test_set_content_in_constructor(self):
         new_container = toga.OptionContainer(
             style=TestStyle(),
-            factory=toga_dummy.factory,
             content=[
                 (self.text, self.widget),
                 (self.text2, self.widget2),
                 (self.text3, self.widget3),
-            ]
+            ],
         )
         self.assertEqual(len(new_container.content), 3)
         self.assertEqual(new_container.content[0]._content, self.widget)
@@ -193,7 +185,7 @@ class OptionContainerTests(TestCase):
             self.assertEqual(item._content.window, window)
 
     def test_set_tab_title(self):
-        new_text = 'New Title'
+        new_text = "New Title"
         self.op_container.content[0].text = new_text
         self.assertEqual(self.op_container.content[0].text, new_text)
 
@@ -212,7 +204,7 @@ class OptionContainerTests(TestCase):
     ######################################################################
 
     def test_tab_label_deprecated(self):
-        new_text = 'New Text'
+        new_text = "New Text"
         with self.assertWarns(DeprecationWarning):
             self.assertEqual(self.op_container.current_tab.label, self.text)
         with self.assertWarns(DeprecationWarning):
@@ -227,7 +219,9 @@ class OptionContainerTests(TestCase):
 
         # can't specify both label *and* text
         with self.assertRaises(ValueError):
-            self.op_container.add(text=self.text3, widget=self.widget3, label=self.text3)
+            self.op_container.add(
+                text=self.text3, widget=self.widget3, label=self.text3
+            )
 
     def test_append_tab_deprecated(self):
         # label is a deprecated argument
@@ -237,7 +231,9 @@ class OptionContainerTests(TestCase):
 
         # can't specify both label *and* text
         with self.assertRaises(ValueError):
-            self.op_container.content.append(text=self.text3, widget=self.widget3, label=self.text3)
+            self.op_container.content.append(
+                text=self.text3, widget=self.widget3, label=self.text3
+            )
 
     def test_insert_tab_deprecated(self):
         # label is a deprecated argument
@@ -247,13 +243,13 @@ class OptionContainerTests(TestCase):
 
         # can't specify both label *and* text
         with self.assertRaises(ValueError):
-            self.op_container.content.insert(1, text=self.text3, widget=self.widget3, label=self.text3)
+            self.op_container.content.insert(
+                1, text=self.text3, widget=self.widget3, label=self.text3
+            )
 
     def test_add_mandatory_parameters(self):
         my_op_container = toga.OptionContainer(
-            style=TestStyle(),
-            factory=toga_dummy.factory,
-            on_select=self.on_select
+            style=TestStyle(), on_select=self.on_select
         )
 
         # text and widget parameters are mandatory
@@ -266,9 +262,7 @@ class OptionContainerTests(TestCase):
 
     def test_append_mandatory_parameters(self):
         my_op_container = toga.OptionContainer(
-            style=TestStyle(),
-            factory=toga_dummy.factory,
-            on_select=self.on_select
+            style=TestStyle(), on_select=self.on_select
         )
 
         # text and widget parameters are mandatory
@@ -281,9 +275,7 @@ class OptionContainerTests(TestCase):
 
     def test_insert_mandatory_parameters(self):
         my_op_container = toga.OptionContainer(
-            style=TestStyle(),
-            factory=toga_dummy.factory,
-            on_select=self.on_select
+            style=TestStyle(), on_select=self.on_select
         )
 
         # text and widget parameters are mandatory

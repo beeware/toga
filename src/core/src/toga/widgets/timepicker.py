@@ -7,34 +7,42 @@ from .base import Widget
 
 
 class TimePicker(Widget):
-    """
-    A widget to get user selected datetime object
+    """A widget to get user selected datetime object.
 
     Args:
         id (str): An identifier for this widget.
         style (:obj:`Style`): An optional style object. If no style is provided then
             a new one will be created for the widget.
-        factory (:obj:`module`): A python module that is capable to return a
-            implementation of this class with the same name. (optional & normally not needed)
         value (str): The initial value to set the widget to. (Defaults to time of program execution)
         min_time (str): The minimum allowable time for the widget.
         max_time (str): The maximum allowable time for the widget.
         on_change (``callable``): Function that is invoked on time value change.
     """
+
     MIN_WIDTH = 100
 
     def __init__(
         self,
         id=None,
         style=None,
-        factory=None,
+        factory=None,  # DEPRECATED!
         value=None,
         min_time=None,
         max_time=None,
         on_change=None,
         initial=None,  # DEPRECATED!
     ):
-        super().__init__(id=id, style=style, factory=factory)
+        super().__init__(id=id, style=style)
+        ######################################################################
+        # 2022-09: Backwards compatibility
+        ######################################################################
+        # factory no longer used
+        if factory:
+            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
+        ######################################################################
+        # End backwards compatibility.
+        ######################################################################
+
         self._on_change = None
 
         # Create a platform specific implementation of a TimePicker
@@ -52,9 +60,7 @@ class TimePicker(Widget):
                     "`initial` has been deprecated, use `value`"
                 )
             else:
-                warnings.warn(
-                    "`initial` has been renamed `value`", DeprecationWarning
-                )
+                warnings.warn("`initial` has been renamed `value`", DeprecationWarning)
             value = initial
 
         ##################################################################
@@ -70,8 +76,7 @@ class TimePicker(Widget):
 
     @property
     def value(self):
-        """
-        The value of the currently selected time.
+        """The value of the currently selected time.
 
         :return: Selected time as time object
         """
@@ -95,10 +100,10 @@ class TimePicker(Widget):
 
     @property
     def min_time(self):
-        """
-        The minimum allowable time for the widget. The widget will not allow the user to enter at time less than the
-        min time. If initial time set is less than the minimum time, the minimum time will be used as
-        the initial value.
+        """The minimum allowable time for the widget. The widget will not allow
+        the user to enter at time less than the min time. If initial time set
+        is less than the minimum time, the minimum time will be used as the
+        initial value.
 
         :return: The minimum time specified. Returns None if min_time not specified
         """
@@ -114,9 +119,9 @@ class TimePicker(Widget):
 
     @property
     def max_time(self):
-        """
-        The maximum allowable time for the widget. The widget will not allow the user to enter at time greater than the
-        max time. If initial time set is greater than the maximum time, the maximum time will be used as
+        """The maximum allowable time for the widget. The widget will not allow
+        the user to enter at time greater than the max time. If initial time
+        set is greater than the maximum time, the maximum time will be used as
         the initial value.
 
         :return: The maximum time specified. Returns None if max_time not specified
@@ -134,7 +139,7 @@ class TimePicker(Widget):
 
     @property
     def on_change(self):
-        """The handler to invoke when the value changes
+        """The handler to invoke when the value changes.
 
         Returns:
             The function ``callable`` that is called on a content change.

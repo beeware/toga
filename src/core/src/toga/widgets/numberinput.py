@@ -7,18 +7,16 @@ from .base import Widget
 
 
 class NumberInput(Widget):
-    """ A `NumberInput` widget specifies a fixed range of possible numbers.
-    The user has two buttons to increment/decrement the value by a step size.
-    Step, min and max can be integers, floats, or Decimals; They can also be specified
-    as strings, which will be converted to Decimals internally. The value of the
-    widget will be evaluated as a Decimal.
+    """A `NumberInput` widget specifies a fixed range of possible numbers. The
+    user has two buttons to increment/decrement the value by a step size. Step,
+    min and max can be integers, floats, or Decimals; They can also be
+    specified as strings, which will be converted to Decimals internally. The
+    value of the widget will be evaluated as a Decimal.
 
     Args:
         id (str): An identifier for this widget.
         style (:obj:`Style`):  an optional style object.
             If no style is provided then a new one will be created for the widget.
-        factory (:obj:`module`): A python module that is capable to return a
-            implementation of this class with the same name. (optional & normally not needed)
 
         step (number): Step size of the adjustment buttons.
         min_value (number): The minimum bound for the widget's value.
@@ -28,13 +26,14 @@ class NumberInput(Widget):
         on_change (``callable``): The handler to invoke when the value changes.
         **ex:
     """
+
     MIN_WIDTH = 100
 
     def __init__(
         self,
         id=None,
         style=None,
-        factory=None,
+        factory=None,  # DEPRECATED!
         step=1,
         min_value=None,
         max_value=None,
@@ -43,7 +42,17 @@ class NumberInput(Widget):
         on_change=None,
         default=None,  # DEPRECATED!
     ):
-        super().__init__(id=id, style=style, factory=factory)
+        super().__init__(id=id, style=style)
+        ######################################################################
+        # 2022-09: Backwards compatibility
+        ######################################################################
+        # factory no longer used
+        if factory:
+            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
+        ######################################################################
+        # End backwards compatibility.
+        ######################################################################
+
         self._value = None
         self._on_change = None
         self._impl = self.factory.NumberInput(interface=self)
@@ -60,9 +69,7 @@ class NumberInput(Widget):
                     "`default` has been deprecated, use `value`"
                 )
             else:
-                warnings.warn(
-                    "`default` has been renamed `value`", DeprecationWarning
-                )
+                warnings.warn("`default` has been renamed `value`", DeprecationWarning)
             value = default
 
         ##################################################################
@@ -80,7 +87,7 @@ class NumberInput(Widget):
 
     @property
     def readonly(self):
-        """ Whether a user can write/change the number input
+        """Whether a user can write/change the number input.
 
         Returns:
             ``True`` if only read is possible.
@@ -95,7 +102,7 @@ class NumberInput(Widget):
 
     @property
     def step(self):
-        """The step value for the widget
+        """The step value for the widget.
 
         Returns:
             The current step value for the widget.
@@ -152,7 +159,7 @@ class NumberInput(Widget):
 
     @property
     def value(self):
-        """Current value contained by the widget
+        """Current value contained by the widget.
 
         Returns:
             The current value(int) of the widget. Returns None
@@ -178,7 +185,7 @@ class NumberInput(Widget):
 
     @property
     def on_change(self):
-        """The handler to invoke when the value changes
+        """The handler to invoke when the value changes.
 
         Returns:
             The function ``callable`` that is called on a content change.

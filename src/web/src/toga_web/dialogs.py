@@ -9,10 +9,14 @@ class BaseDialog:
         self.future = loop.create_future()
 
     def __eq__(self, other):
-        raise RuntimeError("Can't check dialog result directly; use await or an on_result handler")
+        raise RuntimeError(
+            "Can't check dialog result directly; use await or an on_result handler"
+        )
 
     def __bool__(self):
-        raise RuntimeError("Can't check dialog result directly; use await or an on_result handler")
+        raise RuntimeError(
+            "Can't check dialog result directly; use await or an on_result handler"
+        )
 
     def __await__(self):
         return self.future.__await__()
@@ -56,14 +60,22 @@ class StackTraceDialog:
         super().__init__()
         # TODO: Replace with something more customized using Bootstrap modals.
         if kwargs.get("retry"):
-            self.future.set_result(js.confirm("Stack trace: \n\n:" + message + "\n\nRetry?"))
+            self.future.set_result(
+                js.confirm("Stack trace: \n\n:" + message + "\n\nRetry?")
+            )
         else:
             self.future.set_result(js.alert("Stack trace: \n\n:" + message))
 
 
 class SaveFileDialog:
     def __init__(
-        self, window, title, filename, initial_directory, file_types=None, on_result=None
+        self,
+        window,
+        title,
+        filename,
+        initial_directory,
+        file_types=None,
+        on_result=None,
     ):
         window.factory.not_implemented("Window.save_file_dialog()")
 

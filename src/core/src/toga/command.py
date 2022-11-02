@@ -2,6 +2,7 @@ import warnings
 
 from toga.handlers import wrapped_handler
 from toga.icons import Icon
+from toga.platform import get_platform_factory
 
 # BACKWARDS COMPATIBILITY: a token object that can be used to differentiate
 # between an explicitly provided ``None``, and a unspecified value falling
@@ -17,11 +18,12 @@ class Group:
         order:
         parent:
     """
+
     def __init__(
         self,
         text=NOT_PROVIDED,  # BACKWARDS COMPATIBILITY: The default value
-                            # can be removed when the handling for
-                            # `label` is removed
+        # can be removed when the handling for
+        # `label` is removed
         order=None,
         section=None,
         parent=None,
@@ -32,7 +34,7 @@ class Group:
         # 2022-07: Backwards compatibility
         ##################################################################
         # When deleting this block, also delete the NOT_PROVIDED
-        # placeholder, and replace it's usage in default values.
+        # placeholder, and replace its usage in default values.
 
         # label replaced with text
         if label is not None:
@@ -49,7 +51,9 @@ class Group:
         elif text is NOT_PROVIDED:
             # This would be raised by Python itself; however, we need to use a placeholder
             # value as part of the migration from text->value.
-            raise TypeError("Group.__init__ missing 1 required positional argument: 'text'")
+            raise TypeError(
+                "Group.__init__ missing 1 required positional argument: 'text'"
+            )
 
         ##################################################################
         # End backwards compatibility.
@@ -77,10 +81,9 @@ class Group:
             return
         if parent == self or self.is_parent_of(parent):
             error_message = (
-                'Cannot set {} to be a parent of {} '
-                'because it causes a cyclic parenting.').format(
-                parent.text, self.text
-            )
+                "Cannot set {} to be a parent of {} "
+                "because it causes a cyclic parenting."
+            ).format(parent.text, self.text)
             raise ValueError(error_message)
         self._parent = parent
         self._root = parent.root
@@ -142,23 +145,19 @@ class Group:
     # label replaced with text
     @property
     def label(self):
-        """Group text
+        """Group text.
 
         **DEPRECATED: renamed as text**
 
         Returns:
             The button text as a ``str``
         """
-        warnings.warn(
-            "Group.label has been renamed Group.text", DeprecationWarning
-        )
+        warnings.warn("Group.label has been renamed Group.text", DeprecationWarning)
         return self.text
 
     @label.setter
     def label(self, label):
-        warnings.warn(
-            "Group.label has been renamed Group.text", DeprecationWarning
-        )
+        warnings.warn("Group.label has been renamed Group.text", DeprecationWarning)
         self.text = label
 
     ######################################################################
@@ -166,13 +165,13 @@ class Group:
     ######################################################################
 
 
-Group.APP = Group('*', order=0)
-Group.FILE = Group('File', order=1)
-Group.EDIT = Group('Edit', order=10)
-Group.VIEW = Group('View', order=20)
-Group.COMMANDS = Group('Commands', order=30)
-Group.WINDOW = Group('Window', order=90)
-Group.HELP = Group('Help', order=100)
+Group.APP = Group("*", order=0)
+Group.FILE = Group("File", order=1)
+Group.EDIT = Group("Edit", order=10)
+Group.VIEW = Group("View", order=20)
+Group.COMMANDS = Group("Commands", order=30)
+Group.WINDOW = Group("Window", order=90)
+Group.HELP = Group("Help", order=100)
 
 
 class Command:
@@ -195,12 +194,13 @@ class Command:
             alphabetically by text within its section.
         enabled: whether to enable the command or not.
     """
+
     def __init__(
         self,
         action,
         text=NOT_PROVIDED,  # BACKWARDS COMPATIBILITY: The default value
-                            # can be removed when the handling for
-                            # `label` is removed
+        # can be removed when the handling for
+        # `label` is removed
         shortcut=None,
         tooltip=None,
         icon=None,
@@ -208,16 +208,24 @@ class Command:
         section=None,
         order=None,
         enabled=True,
-        factory=None,
+        factory=None,  # DEPRECATED!
         label=None,  # DEPRECATED!
     ):
-        self.factory = factory
+        ######################################################################
+        # 2022-09: Backwards compatibility
+        ######################################################################
+        # factory no longer used
+        if factory:
+            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
+        ######################################################################
+        # End backwards compatibility.
+        ######################################################################
 
         ##################################################################
         # 2022-07: Backwards compatibility
         ##################################################################
         # When deleting this block, also delete the NOT_PROVIDED
-        # placeholder, and replace it's usage in default values.
+        # placeholder, and replace its usage in default values.
 
         # label replaced with text
         if label is not None:
@@ -234,7 +242,9 @@ class Command:
         elif text is NOT_PROVIDED:
             # This would be raised by Python itself; however, we need to use a placeholder
             # value as part of the migration from text->value.
-            raise TypeError("Command.__init__ missing 1 required positional argument: 'text'")
+            raise TypeError(
+                "Command.__init__ missing 1 required positional argument: 'text'"
+            )
 
         ##################################################################
         # End backwards compatibility.
@@ -251,7 +261,8 @@ class Command:
         self.section = section if section else 0
         self.order = order if order else 0
 
-        self._impl = None
+        self.factory = get_platform_factory()
+        self._impl = self.factory.Command(interface=self)
 
         self.enabled = enabled and self.action is not None
 
@@ -260,15 +271,10 @@ class Command:
         "A unique tuple describing the path to this command"
         return tuple([*self.group.key, (self.section, self.order, self.text)])
 
-    def bind(self, factory):
-        self.factory = factory
-
-        if self._impl is None:
-            self._impl = self.factory.Command(interface=self)
-
-        if self._icon:
-            self._icon.bind(self.factory)
-
+    def bind(self, factory=None):
+        warnings.warn(
+            "Commands no longer need to be explicitly bound.", DeprecationWarning
+        )
         return self._impl
 
     @property
@@ -283,8 +289,7 @@ class Command:
 
     @property
     def icon(self):
-        """
-        The Icon for the app.
+        """The Icon for the app.
 
         :returns: A ``toga.Icon`` instance for the app's icon.
         """
@@ -296,9 +301,6 @@ class Command:
             self._icon = icon_or_name
         else:
             self._icon = Icon(icon_or_name)
-
-        if self._icon and self.factory:
-            self._icon.bind(self.factory)
 
     def __lt__(self, other):
         return self.key < other.key
@@ -320,23 +322,19 @@ class Command:
     # label replaced with text
     @property
     def label(self):
-        """ Command text.
+        """Command text.
 
         **DEPRECATED: renamed as text**
 
         Returns:
             The command text as a ``str``
         """
-        warnings.warn(
-            "Command.label has been renamed Command.text", DeprecationWarning
-        )
+        warnings.warn("Command.label has been renamed Command.text", DeprecationWarning)
         return self.text
 
     @label.setter
     def label(self, label):
-        warnings.warn(
-            "Command.label has been renamed Command.text", DeprecationWarning
-        )
+        warnings.warn("Command.label has been renamed Command.text", DeprecationWarning)
         self.text = label
 
     ######################################################################
@@ -352,8 +350,8 @@ class Break:
         return f"<{self.name} break>"
 
 
-GROUP_BREAK = Break('Group')
-SECTION_BREAK = Break('Section')
+GROUP_BREAK = Break("Group")
+SECTION_BREAK = Break("Section")
 
 
 class CommandSet:
@@ -367,15 +365,28 @@ class CommandSet:
     Todo:
         * Add missing Docstrings.
     """
-    def __init__(self, factory, widget=None, on_change=None):
-        self.factory = factory
+
+    def __init__(
+        self,
+        factory=None,  # DEPRECATED!
+        widget=None,
+        on_change=None,
+    ):
+        ######################################################################
+        # 2022-09: Backwards compatibility
+        ######################################################################
+        # factory no longer used
+        if factory:
+            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
+        ######################################################################
+        # End backwards compatibility.
+        ######################################################################
+
         self.widget = widget
         self._commands = set()
         self.on_change = on_change
 
     def add(self, *commands):
-        for cmd in commands:
-            cmd.bind(self.factory)
         if self.widget and self.widget.app is not None:
             self.widget.app.commands.add(*commands)
         self._commands.update(commands)

@@ -28,7 +28,7 @@ from toga_cocoa.libs import (
     kCGScrollEventUnitLine,
     objc_method,
     objc_property,
-    send_super
+    send_super,
 )
 
 HEADER_HEIGHT = 45.0
@@ -42,26 +42,32 @@ class RefreshableClipView(NSClipView):
     @objc_method
     def constrainScrollPoint_(self, proposedNewOrigin: NSPoint) -> NSPoint:
         constrained = send_super(
-            __class__, self, 'constrainScrollPoint:', proposedNewOrigin,
-            restype=NSPoint, argtypes=[NSPoint]
+            __class__,
+            self,
+            "constrainScrollPoint:",
+            proposedNewOrigin,
+            restype=NSPoint,
+            argtypes=[NSPoint],
         )
 
         if self.superview and self.superview.refreshTriggered:
             return NSMakePoint(
                 constrained.x,
-                max(proposedNewOrigin.y, -self.superview.refreshView.frame.size.height)
+                max(proposedNewOrigin.y, -self.superview.refreshView.frame.size.height),
             )
 
         return constrained
 
     @objc_method
     def documentRect(self) -> NSRect:
-        rect = send_super(__class__, self, 'documentRect', restype=NSRect, argtypes=[])
+        rect = send_super(__class__, self, "documentRect", restype=NSRect, argtypes=[])
 
         if self.superview and self.superview.refreshTriggered:
             return NSMakeRect(
-                rect.origin.x, rect.origin.y - self.superview.refreshView.frame.size.height,
-                rect.size.width, rect.size.height + self.superview.refreshView.frame.size.height
+                rect.origin.x,
+                rect.origin.y - self.superview.refreshView.frame.size.height,
+                rect.size.width,
+                rect.size.height + self.superview.refreshView.frame.size.height,
             )
         return rect
 
@@ -82,7 +88,7 @@ class RefreshableScrollView(NSScrollView):
 
     @objc_method
     def createContentView(self):
-        superClipView = ObjCInstance(send_super(__class__, self, 'contentView'))
+        superClipView = ObjCInstance(send_super(__class__, self, "contentView"))
         if not isinstance(superClipView, RefreshableClipView):
             # create new clipview
             documentView = superClipView.documentView
@@ -93,7 +99,7 @@ class RefreshableScrollView(NSScrollView):
             clipView.drawsBackground = False
 
             self.setContentView(clipView)
-            superClipView = ObjCInstance(send_super(__class__, self, 'contentView'))
+            superClipView = ObjCInstance(send_super(__class__, self, "contentView"))
 
         return superClipView
 
@@ -115,7 +121,7 @@ class RefreshableScrollView(NSScrollView):
 
         NSNotificationCenter.defaultCenter.addObserver(
             self,
-            selector=SEL('viewBoundsChanged:'),
+            selector=SEL("viewBoundsChanged:"),
             name=NSViewBoundsDidChangeNotification,
             object=self.contentView,
         )
@@ -138,10 +144,12 @@ class RefreshableScrollView(NSScrollView):
         # Center the spinner in the header
         self.refreshIndicator.setFrame(
             NSMakeRect(
-                self.refreshView.bounds.size.width / 2 - self.refreshIndicator.frame.size.width / 2,
-                self.refreshView.bounds.size.height / 2 - self.refreshIndicator.frame.size.height / 2,
+                self.refreshView.bounds.size.width / 2
+                - self.refreshIndicator.frame.size.width / 2,
+                self.refreshView.bounds.size.height / 2
+                - self.refreshIndicator.frame.size.height / 2,
                 self.refreshIndicator.frame.size.width,
-                self.refreshIndicator.frame.size.height
+                self.refreshIndicator.frame.size.height,
             )
         )
 
@@ -152,42 +160,57 @@ class RefreshableScrollView(NSScrollView):
 
         # set layout constraints
         indicatorHCenter = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
-            self.refreshIndicator, NSLayoutAttributeCenterX,
+            self.refreshIndicator,
+            NSLayoutAttributeCenterX,
             NSLayoutRelationEqual,
-            self.refreshView, NSLayoutAttributeCenterX,
-            1.0, 0,
+            self.refreshView,
+            NSLayoutAttributeCenterX,
+            1.0,
+            0,
         )
         self.refreshView.addConstraint(indicatorHCenter)
 
         indicatorVCenter = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
-            self.refreshIndicator, NSLayoutAttributeCenterY,
+            self.refreshIndicator,
+            NSLayoutAttributeCenterY,
             NSLayoutRelationEqual,
-            self.refreshView, NSLayoutAttributeCenterY,
-            1.0, 0,
+            self.refreshView,
+            NSLayoutAttributeCenterY,
+            1.0,
+            0,
         )
         self.refreshView.addConstraint(indicatorVCenter)
 
         refreshWidth = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
-            self.refreshView, NSLayoutAttributeWidth,
+            self.refreshView,
+            NSLayoutAttributeWidth,
             NSLayoutRelationEqual,
-            self.contentView, NSLayoutAttributeWidth,
-            1.0, 0,
+            self.contentView,
+            NSLayoutAttributeWidth,
+            1.0,
+            0,
         )
         self.contentView.addConstraint(refreshWidth)
 
         refreshHeight = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
-            self.refreshView, NSLayoutAttributeHeight,
+            self.refreshView,
+            NSLayoutAttributeHeight,
             NSLayoutRelationEqual,
-            None, NSLayoutAttributeNotAnAttribute,
-            1.0, HEADER_HEIGHT,
+            None,
+            NSLayoutAttributeNotAnAttribute,
+            1.0,
+            HEADER_HEIGHT,
         )
         self.contentView.addConstraint(refreshHeight)
 
         refreshHeight = NSLayoutConstraint.constraintWithItem_attribute_relatedBy_toItem_attribute_multiplier_constant_(  # noqa: E501
-            self.refreshView, NSLayoutAttributeTop,
+            self.refreshView,
+            NSLayoutAttributeTop,
             NSLayoutRelationEqual,
-            self.contentView, NSLayoutAttributeTop,
-            1.0, -HEADER_HEIGHT,
+            self.contentView,
+            NSLayoutAttributeTop,
+            1.0,
+            -HEADER_HEIGHT,
         )
         self.contentView.addConstraint(refreshHeight)
 
@@ -202,7 +225,7 @@ class RefreshableScrollView(NSScrollView):
             if self.refreshTriggered and not self.isRefreshing:
                 self.reload()
 
-        send_super(__class__, self, 'scrollWheel:', event, argtypes=[c_void_p])
+        send_super(__class__, self, "scrollWheel:", event, argtypes=[c_void_p])
 
     @objc_method
     def viewBoundsChanged_(self, note) -> None:
@@ -215,20 +238,23 @@ class RefreshableScrollView(NSScrollView):
     # Reload
     @objc_method
     def reload(self) -> None:
-        """Start a reload, starting the reload spinner"""
+        """Start a reload, starting the reload spinner."""
         self.isRefreshing = True
         self.refreshIndicator.startAnimation(self)
         self.interface.on_refresh(self.interface)
 
     @objc_method
     def finishedLoading(self):
-        """Invoke to mark the end of a reload, stopping and hiding the reload spinner"""
+        """Invoke to mark the end of a reload, stopping and hiding the reload
+        spinner."""
         self.isRefreshing = False
         self.refreshTriggered = False
         self.refreshIndicator.stopAnimation(self)
         self.detailedlist.reloadData()
 
         # Force a scroll event to make the scroll hide the reload
-        cgEvent = core_graphics.CGEventCreateScrollWheelEvent(None, kCGScrollEventUnitLine, 2, 1, 0)
+        cgEvent = core_graphics.CGEventCreateScrollWheelEvent(
+            None, kCGScrollEventUnitLine, 2, 1, 0
+        )
         scrollEvent = NSEvent.eventWithCGEvent(cgEvent)
         self.scrollWheel(scrollEvent)

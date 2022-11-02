@@ -34,23 +34,25 @@ class TogaTextField(NSTextField):
         # Cocoa gives and then immediately revokes focus when the widget
         # is first displayed. Set a local attribute on the first *loss*
         # of focus, and only trigger Toga events when that attribute exists.
-        if hasattr(self, '_configured'):
+        if hasattr(self, "_configured"):
             if self.interface.on_gain_focus:
                 self.interface.on_gain_focus(self.interface)
-        return send_super(__class__, self, 'becomeFirstResponder')
+        return send_super(__class__, self, "becomeFirstResponder")
 
     @objc_method
     def textDidEndEditing_(self, textObject) -> None:
         # Cocoa gives and then immediately revokes focus when the widget
         # is first displayed. Set a local attribute on the first *loss*
         # of focus, and only trigger Toga events when that attribute exists.
-        if hasattr(self, '_configured'):
+        if hasattr(self, "_configured"):
             if self.interface.on_lose_focus:
                 self.interface.on_lose_focus(self.interface)
         else:
             self._configured = True
 
-        send_super(__class__, self, 'textDidEndEditing:', textObject, argtypes=[c_void_p])
+        send_super(
+            __class__, self, "textDidEndEditing:", textObject, argtypes=[c_void_p]
+        )
 
 
 class TextInput(Widget):
@@ -78,7 +80,7 @@ class TextInput(Widget):
 
     def set_font(self, font):
         if font:
-            self.native.font = font.bind(self.interface.factory).native
+            self.native.font = font._impl.native
 
     def set_color(self, color):
         if color:

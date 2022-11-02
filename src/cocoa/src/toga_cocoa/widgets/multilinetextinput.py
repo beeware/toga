@@ -13,7 +13,6 @@ from .base import Widget
 
 
 class TogaTextView(NSTextView):
-
     @objc_method
     def touchBar(self):
         # Disable the touchbar.
@@ -66,11 +65,11 @@ class MultilineTextInput(Widget):
 
     def set_font(self, font):
         if font:
-            self.text.font = font.bind(self.interface.factory).native
+            self.text.font = font._impl.native
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
         self.interface.intrinsic.height = at_least(self.interface.MIN_HEIGHT)
 
     def set_on_change(self, handler):
-        self.interface.factory.not_implemented('MultilineTextInput.set_on_change()')
+        self.interface.factory.not_implemented("MultilineTextInput.set_on_change()")

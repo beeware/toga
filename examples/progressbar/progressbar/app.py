@@ -149,6 +149,6 @@ def main():
     return ProgressBarApp("ProgressBar", "org.beeware.examples.progressbar")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app = main()
     app.main_loop()

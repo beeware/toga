@@ -3,6 +3,7 @@ import asyncio
 
 def async_test(coroutine):
     """Run an async test to completion."""
+
     def _test(self):
         asyncio.get_event_loop().run_until_complete(coroutine(self))
 
@@ -17,4 +18,5 @@ def order_test(*items):
                 self.assertGreater(items[j], items[i])
                 self.assertFalse(items[j] < items[i])
                 self.assertFalse(items[i] > items[j])
+
     return _test

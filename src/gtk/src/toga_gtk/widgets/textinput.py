@@ -8,21 +8,21 @@ class TextInput(Widget):
     def create(self):
         self.native = Gtk.Entry()
         self.native.interface = self.interface
-        self.native.connect('show', lambda event: self.rehint())
-        self.native.connect('changed', self.gtk_on_change)
+        self.native.connect("show", lambda event: self.rehint())
+        self.native.connect("changed", self.gtk_on_change)
 
     def gtk_on_change(self, entry):
         if self.interface.on_change:
             self.interface.on_change(self.interface)
 
     def set_readonly(self, value):
-        self.native.set_property('editable', not value)
+        self.native.set_property("editable", not value)
 
     def set_placeholder(self, value):
         self.native.set_placeholder_text(value)
 
     def set_alignment(self, value):
-        self.interface.factory.not_implemented('TextInput.set_alignment()')
+        self.interface.factory.not_implemented("TextInput.set_alignment()")
 
     def set_font(self, font):
         super().set_font(font)

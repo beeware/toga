@@ -39,7 +39,13 @@ class StackTraceDialog:
 
 class SaveFileDialog:
     def __init__(
-        self, window, title, filename, initial_directory, file_types=None, on_result=None
+        self,
+        window,
+        title,
+        filename,
+        initial_directory,
+        file_types=None,
+        on_result=None,
     ):
         window._impl._action(
             "save_file_dialog",

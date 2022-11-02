@@ -6,20 +6,19 @@ from .base import Widget
 
 
 class MultilineTextInput(Widget):
-    """ A multi-line text input widget
+    """A multi-line text input widget.
 
     Args:
         id (str): An identifier for this widget.
         style(:obj:`Style`):  An optional style object.
             If no style is provided then a new one will be created for the widget.
-        factory: Optional factory that must be able to return a implementation
-            of a MulitlineTextInput Widget.
         value (str): The initial text of the widget.
         readonly (bool): Whether a user can write into the text input,
             defaults to `False`.
         placeholder (str): The placeholder text for the widget.
         on_change (``callable``): The handler to invoke when the text changes.
     """
+
     MIN_HEIGHT = 100
     MIN_WIDTH = 100
 
@@ -27,14 +26,24 @@ class MultilineTextInput(Widget):
         self,
         id=None,
         style=None,
-        factory=None,
+        factory=None,  # DEPRECATED!
         value=None,
         readonly=False,
         placeholder=None,
         on_change=None,
         initial=None,  # DEPRECATED!
     ):
-        super().__init__(id=id, style=style, factory=factory)
+        super().__init__(id=id, style=style)
+
+        ######################################################################
+        # 2022-09: Backwards compatibility
+        ######################################################################
+        # factory no longer used
+        if factory:
+            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
+        ######################################################################
+        # End backwards compatibility.
+        ######################################################################
 
         # Create a platform specific implementation of a MultilineTextInput
         self._impl = self.factory.MultilineTextInput(interface=self)
@@ -51,9 +60,7 @@ class MultilineTextInput(Widget):
                     "`initial` has been deprecated, use `value`"
                 )
             else:
-                warnings.warn(
-                    "`initial` has been renamed `value`", DeprecationWarning
-                )
+                warnings.warn("`initial` has been renamed `value`", DeprecationWarning)
             value = initial
 
         ##################################################################
@@ -68,7 +75,7 @@ class MultilineTextInput(Widget):
 
     @property
     def placeholder(self):
-        """ The placeholder text
+        """The placeholder text.
 
         Returns:
             The placeholder text as a `str``.
@@ -77,12 +84,12 @@ class MultilineTextInput(Widget):
 
     @placeholder.setter
     def placeholder(self, value):
-        self._placeholder = '' if value is None else str(value)
+        self._placeholder = "" if value is None else str(value)
         self._impl.set_placeholder(self._placeholder)
 
     @property
     def readonly(self):
-        """ Whether a user can write into the text input
+        """Whether a user can write into the text input.
 
         Returns:
             `True` if the user can only read, `False` if the user can read and write the text.
@@ -96,7 +103,7 @@ class MultilineTextInput(Widget):
 
     @property
     def value(self):
-        """ The value of the multi line text input field.
+        """The value of the multi line text input field.
 
         Returns:
             The text of the Widget as a ``str``.
@@ -105,18 +112,17 @@ class MultilineTextInput(Widget):
 
     @value.setter
     def value(self, value):
-        cleaned_value = '' if value is None else str(value)
+        cleaned_value = "" if value is None else str(value)
         self._impl.set_value(cleaned_value)
         self._impl.rehint()
 
     def clear(self):
-        """ Clears the text from the widget.
-        """
-        self.value = ''
+        """Clears the text from the widget."""
+        self.value = ""
 
     @property
     def on_change(self):
-        """The handler to invoke when the value changes
+        """The handler to invoke when the value changes.
 
         Returns:
             The function ``callable`` that is called on a content change.

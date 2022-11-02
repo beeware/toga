@@ -1,4 +1,5 @@
 import html
+import warnings
 
 from toga_gtk.libs import Gtk, Pango
 
@@ -6,10 +7,12 @@ from .base import HiddenButtonsRow
 
 
 class TextIconRow(HiddenButtonsRow):
+    """Create a TextIconRow from a toga.sources.Row.
+
+    A reference to the original row is kept in self.toga_row, this is
+    useful for comparisons.
     """
-    Create a TextIconRow from a toga.sources.Row.
-    A reference to the original row is kept in self.toga_row, this is useful for comparisons.
-    """
+
     def __init__(self, factory: callable, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -40,7 +43,9 @@ class TextIconRow(HiddenButtonsRow):
 
         self.add_content(content)
 
-        self._delete_button = Gtk.Button.new_from_icon_name("user-trash-symbolic", Gtk.IconSize.BUTTON)
+        self._delete_button = Gtk.Button.new_from_icon_name(
+            "user-trash-symbolic", Gtk.IconSize.BUTTON
+        )
         self._delete_button.connect("clicked", self.gtk_on_delete_clicked)
         self.add_button(self._delete_button)
 
@@ -52,22 +57,37 @@ class TextIconRow(HiddenButtonsRow):
     def subtitle(self):
         return self.interface.subtitle
 
-    def get_icon(self, row, factory):
+    def get_icon(
+        self,
+        row,
+        factory=None,  # DEPRECATED!
+    ):
+        ######################################################################
+        # 2022-09: Backwards compatibility
+        ######################################################################
+        # factory no longer used
+        if factory:
+            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
+        ######################################################################
+        # End backwards compatibility.
+        ######################################################################
+
         if getattr(row, "icon") is None:
             return None
         else:
-            row.icon.bind(factory)
             dpr = self.get_scale_factor()
-            return getattr(row.icon._impl, "native_" + str(32*dpr))
+            return getattr(row.icon._impl, "native_" + str(32 * dpr))
 
     @staticmethod
     def markup(row):
         markup = [
-            html.escape(row.title or ''),
-            '\n',
-            '<small>', html.escape(row.subtitle or ''), '</small>',
+            html.escape(row.title or ""),
+            "\n",
+            "<small>",
+            html.escape(row.subtitle or ""),
+            "</small>",
         ]
-        return ''.join(markup)
+        return "".join(markup)
 
     def on_right_click(self, rect):
         handler = self._dl.interface.on_delete

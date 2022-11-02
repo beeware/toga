@@ -15,15 +15,17 @@ MainWindow = Window
 
 
 class TogaApp(IPythonApp):
-    last_intent_requestcode = -1  # always increment before using it for invoking new Intents
-    running_intents = {}          # dictionary for currently running Intents
-    menuitem_mapping = {}         # dictionary for mapping menuitems to commands
+    last_intent_requestcode = (
+        -1
+    )  # always increment before using it for invoking new Intents
+    running_intents = {}  # dictionary for currently running Intents
+    menuitem_mapping = {}  # dictionary for mapping menuitems to commands
 
     def __init__(self, app):
         super().__init__()
         self._impl = app
         MainActivity.setPythonApp(self)
-        print('Python app launched & stored in Android Activity class')
+        print("Python app launched & stored in Android Activity class")
 
     def onCreate(self):
         print("Toga app: onCreate")
@@ -47,8 +49,7 @@ class TogaApp(IPythonApp):
         print("Toga app: onRestart")
 
     def onActivityResult(self, requestCode, resultCode, resultData):
-        """
-        Callback method, called from MainActivity when an Intent ends
+        """Callback method, called from MainActivity when an Intent ends.
 
         :param int requestCode: The integer request code originally supplied to startActivityForResult(),
                                 allowing you to identify who this result came from.
@@ -56,12 +57,16 @@ class TogaApp(IPythonApp):
         :param Intent resultData: An Intent, which can return result data to the caller (various data can be attached
                                   to Intent "extras").
         """
-        print(f"Toga app: onActivityResult, requestCode={requestCode}, resultData={resultData}")
+        print(
+            f"Toga app: onActivityResult, requestCode={requestCode}, resultData={resultData}"
+        )
         try:
             # remove Intent from the list of running Intents,
             # and set the result of the intent.
             result_future = self.running_intents.pop(requestCode)
-            result_future.set_result({"resultCode": resultCode, "resultData": resultData})
+            result_future.set_result(
+                {"resultCode": resultCode, "resultData": resultData}
+            )
         except KeyError:
             print("No intent matching request code {requestCode}")
 
@@ -113,17 +118,22 @@ class TogaApp(IPythonApp):
                         else:
                             itemid += 1
                             order = Menu.NONE if group.order is None else group.order
-                            menugroup = parentmenu.addSubMenu(Menu.NONE, itemid, order,
-                                                              group.text)  # groupId, itemId, order, title
+                            menugroup = parentmenu.addSubMenu(
+                                Menu.NONE, itemid, order, group.text
+                            )  # groupId, itemId, order, title
                             menulist[groupkey] = menugroup
                     parentmenu = menugroup
             # create menu item
             itemid += 1
             order = Menu.NONE if cmd.order is None else cmd.order
-            menuitem = menugroup.add(Menu.NONE, itemid, order, cmd.text)  # groupId, itemId, order, title
+            menuitem = menugroup.add(
+                Menu.NONE, itemid, order, cmd.text
+            )  # groupId, itemId, order, title
             menuitem.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_NEVER)
             menuitem.setEnabled(cmd.enabled)
-            self.menuitem_mapping[itemid] = cmd  # store itemid for use in onOptionsItemSelected
+            self.menuitem_mapping[
+                itemid
+            ] = cmd  # store itemid for use in onOptionsItemSelected
 
         # create toolbar actions
         if self._impl.interface.main_window:
@@ -132,17 +142,22 @@ class TogaApp(IPythonApp):
                     continue
                 itemid += 1
                 order = Menu.NONE if cmd.order is None else cmd.order
-                menuitem = menu.add(Menu.NONE, itemid, order, cmd.text)  # groupId, itemId, order, title
+                menuitem = menu.add(
+                    Menu.NONE, itemid, order, cmd.text
+                )  # groupId, itemId, order, title
                 menuitem.setShowAsActionFlags(
-                    MenuItem.SHOW_AS_ACTION_IF_ROOM)  # toolbar button / item in options menu on overflow
+                    MenuItem.SHOW_AS_ACTION_IF_ROOM
+                )  # toolbar button / item in options menu on overflow
                 menuitem.setEnabled(cmd.enabled)
                 if cmd.icon:
                     icon = Drawable.createFromPath(str(cmd.icon._impl.path))
                     if icon:
                         menuitem.setIcon(icon)
                     else:
-                        print('Could not create icon: ' + str(cmd.icon._impl.path))
-                self.menuitem_mapping[itemid] = cmd  # store itemid for use in onOptionsItemSelected
+                        print("Could not create icon: " + str(cmd.icon._impl.path))
+                self.menuitem_mapping[
+                    itemid
+                ] = cmd  # store itemid for use in onOptionsItemSelected
 
         return True
 
@@ -201,8 +216,7 @@ class App:
         self.loop.call_soon(handler, self)
 
     async def intent_result(self, intent):
-        """
-        Calls an Intent and waits for its result.
+        """Calls an Intent and waits for its result.
 
         A RuntimeError will be raised when the Intent cannot be invoked.
 
@@ -211,7 +225,7 @@ class App:
         :rtype: dict
         """
         if not intent.resolveActivity(self.native.getPackageManager()):
-            raise RuntimeError('No appropriate Activity found to handle this intent.')
+            raise RuntimeError("No appropriate Activity found to handle this intent.")
         self._listener.last_intent_requestcode += 1
         code = self._listener.last_intent_requestcode
 

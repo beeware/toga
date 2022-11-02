@@ -33,14 +33,14 @@ class Button(Widget):
         self.native.bezelStyle = NSBezelStyle.Rounded
         self.native.buttonType = NSMomentaryPushInButton
         self.native.target = self.native
-        self.native.action = SEL('onPress:')
+        self.native.action = SEL("onPress:")
 
         # Add the layout constraints
         self.add_constraints()
 
     def set_font(self, font):
         if font:
-            self.native.font = font.bind(self.interface.factory).native
+            self.native.font = font._impl.native
 
     def set_text(self, text):
         self.native.title = self.interface.text

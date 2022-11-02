@@ -25,8 +25,8 @@ class Slider(Widget):
         self.native.continuous = True
         self.native.addTarget(
             self.native,
-            action=SEL('onSlide:'),
-            forControlEvents=UIControlEventValueChanged
+            action=SEL("onSlide:"),
+            forControlEvents=UIControlEventValueChanged,
         )
 
         # Add the layout constraints
@@ -43,7 +43,7 @@ class Slider(Widget):
         self.native.maximumValue = range[1]
 
     def set_tick_count(self, tick_count):
-        self.interface.factory.not_implemented('Slider.tick_count()')
+        self.interface.factory.not_implemented("Slider.tick_count()")
 
     def rehint(self):
         fitting_size = self.native.systemLayoutSizeFittingSize_(CGSize(0, 0))

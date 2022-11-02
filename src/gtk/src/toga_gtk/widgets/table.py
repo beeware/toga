@@ -2,7 +2,6 @@ from .tree import Tree
 
 
 class Table(Tree):
-
     def gtk_on_select(self, selection):
         if self.interface.on_select:
             if self.interface.multiple_select:
@@ -69,4 +68,4 @@ class Table(Tree):
         super().set_on_select(handler)
 
     def set_on_double_click(self, handler):
-        self.interface.factory.not_implemented('Table.set_on_double_click()')
+        self.interface.factory.not_implemented("Table.set_on_double_click()")

@@ -17,9 +17,8 @@ class Label(Widget):
 
     def set_font(self, font):
         if font:
-            font_impl = font.bind(self.interface.factory)
-            self.native.setTextSize(TypedValue.COMPLEX_UNIT_SP, font_impl.get_size())
-            self.native.setTypeface(font_impl.get_typeface(), font_impl.get_style())
+            self.native.setTextSize(TypedValue.COMPLEX_UNIT_SP, font._impl.get_size())
+            self.native.setTypeface(font._impl.get_typeface(), font._impl.get_style())
 
     def set_color(self, color):
         if color:
@@ -40,9 +39,7 @@ class Label(Widget):
         # Ask it how wide it would be if it had to be the minimum height.
         self.native.measure(
             View__MeasureSpec.UNSPECIFIED,
-            View__MeasureSpec.makeMeasureSpec(
-                min_height, View__MeasureSpec.AT_MOST
-            ),
+            View__MeasureSpec.makeMeasureSpec(min_height, View__MeasureSpec.AT_MOST),
         )
         self.interface.intrinsic.width = at_least(self.native.getMeasuredWidth())
 

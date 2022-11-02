@@ -1,3 +1,5 @@
+import warnings
+
 from .base import Widget
 
 
@@ -10,14 +12,29 @@ class Divider(Widget):
             a new one will be created for the widget.
         direction: The direction for divider, either ``Divider.HORIZONTAL``
             or ``Divider.VERTICAL``. Defaults to `Divider.HORIZONTAL``
-        factory (:obj:`module`): A python module that is capable to return a
-            implementation of this class with the same name. (optional & normally not needed)
     """
+
     HORIZONTAL = 0
     VERTICAL = 1
 
-    def __init__(self, id=None, style=None, direction=HORIZONTAL, factory=None):
-        super().__init__(id=id, style=style, factory=factory)
+    def __init__(
+        self,
+        id=None,
+        style=None,
+        direction=HORIZONTAL,
+        factory=None,  # DEPRECATED!
+    ):
+        super().__init__(id=id, style=style)
+
+        ######################################################################
+        # 2022-09: Backwards compatibility
+        ######################################################################
+        # factory no longer used
+        if factory:
+            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
+        ######################################################################
+        # End backwards compatibility.
+        ######################################################################
 
         self._direction = direction
 
@@ -27,7 +44,7 @@ class Divider(Widget):
 
     @property
     def direction(self):
-        """ The direction of the split
+        """The direction of the split.
 
         Returns:
             0 for vertical, 1 for horizontal.

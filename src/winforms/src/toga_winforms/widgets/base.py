@@ -31,7 +31,7 @@ class Widget:
     def container(self, container):
         if self.container:
             if container:
-                raise RuntimeError('Already have a container')
+                raise RuntimeError("Already have a container")
             else:
                 # container is set to None, removing self from the container.native
                 self._container.native.Controls.Remove(self.native)

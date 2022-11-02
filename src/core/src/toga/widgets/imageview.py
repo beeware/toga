@@ -1,3 +1,5 @@
+import warnings
+
 from toga.images import Image
 from toga.widgets.base import Widget
 
@@ -6,21 +8,32 @@ class ImageView(Widget):
     """
 
     Args:
-        image (:class:`toga.Image`): The image to display.
+        image (:class:`~toga.Image`): The image to display.
         id (str): An identifier for this widget.
         style (:obj:`Style`):
-        factory (:obj:`module`): A python module that is capable to return a
-            implementation of this class with the same name. (optional & normally not needed)
 
     Todo:
         * Finish implementation.
     """
 
     def __init__(
-        self, image=None,
-        id=None, style=None, factory=None,
+        self,
+        image=None,
+        id=None,
+        style=None,
+        factory=None,  # DEPRECATED!
     ):
-        super().__init__(id=id, style=style, factory=factory)
+        super().__init__(id=id, style=style)
+
+        ######################################################################
+        # 2022-09: Backwards compatibility
+        ######################################################################
+        # factory no longer used
+        if factory:
+            warnings.warn("The factory argument is no longer used.", DeprecationWarning)
+        ######################################################################
+        # End backwards compatibility.
+        ######################################################################
 
         self._impl = self.factory.ImageView(interface=self)
         self.image = image
@@ -38,9 +51,6 @@ class ImageView(Widget):
             self._image = image
 
         if self._image is not None:
-            # Bind the image to the widget's factory.
-            self._image.bind(self.factory)
-
             self._impl.set_image(image)
             self._impl.rehint()
 

@@ -13,8 +13,7 @@ class OptionContainer(Widget):
     def gtk_on_switch_page(self, widget, page, page_num):
         if self.interface.on_select:
             self.interface.on_select(
-                self.interface,
-                option=self.interface.content[page_num]
+                self.interface, option=self.interface.content[page_num]
             )
 
     def add_content(self, index, text, widget):
@@ -38,15 +37,15 @@ class OptionContainer(Widget):
         if index == self.native.get_current_page():
             # Don't allow removal of a selected tab
             raise self.interface.OptionException(
-                'Currently selected option cannot be removed'
+                "Currently selected option cannot be removed"
             )
         self.native.remove_page(index)
 
     def set_option_enabled(self, index, enabled):
-        self.interface.factory.not_implemented('OptionContainer.set_option_enabled()')
+        self.interface.factory.not_implemented("OptionContainer.set_option_enabled()")
 
     def is_option_enabled(self, index):
-        self.interface.factory.not_implemented('OptionContainer.is_option_enabled()')
+        self.interface.factory.not_implemented("OptionContainer.is_option_enabled()")
 
     def set_option_text(self, index, value):
         tab = self.native.get_nth_page(index)

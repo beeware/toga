@@ -16,12 +16,12 @@ from toga_cocoa.widgets.internal.data import TogaData
 from toga_cocoa.widgets.internal.refresh import RefreshableScrollView
 
 
-def attr_impl(value, attr, factory):
+def attr_impl(value, attr):
     # If the data value has an _impl attribute, invoke it.
     # This will manifest any impl-specific attributes.
     impl = getattr(value, attr, None)
     try:
-        return impl.bind(factory)
+        return impl._impl
     except AttributeError:
         return impl
 
@@ -38,7 +38,9 @@ class TogaList(NSTableView):
             row = self.rowAtPoint(mousePoint)
 
             popup = NSMenu.alloc().initWithTitle("popup")
-            delete_item = popup.addItemWithTitle("Delete", action=SEL('actionDeleteRow:'), keyEquivalent="")
+            delete_item = popup.addItemWithTitle(
+                "Delete", action=SEL("actionDeleteRow:"), keyEquivalent=""
+            )
             delete_item.tag = row
             # action_item = popup.addItemWithTitle("???", action=SEL('actionRow:'), keyEquivalent="")
             # action_item.tag = row
@@ -65,10 +67,7 @@ class TogaList(NSTableView):
             data.retain()
             value._impl = data
 
-        data.attrs = {
-            attr: attr_impl(value, attr, self.interface.factory)
-            for attr in value._attrs
-        }
+        data.attrs = {attr: attr_impl(value, attr) for attr in value._attrs}
 
         return data
 
@@ -111,7 +110,9 @@ class DetailedList(Widget):
         self.detailedlist = TogaList.alloc().init()
         self.detailedlist.interface = self.interface
         self.detailedlist.impl = self
-        self.detailedlist.columnAutoresizingStyle = NSTableViewColumnAutoresizingStyle.Uniform
+        self.detailedlist.columnAutoresizingStyle = (
+            NSTableViewColumnAutoresizingStyle.Uniform
+        )
 
         # TODO: Optionally enable multiple selection
         self.detailedlist.allowsMultipleSelection = False
@@ -119,7 +120,7 @@ class DetailedList(Widget):
         self.native.detailedlist = self.detailedlist
 
         # Create the column for the detailed list
-        column = NSTableColumn.alloc().initWithIdentifier('data')
+        column = NSTableColumn.alloc().initWithIdentifier("data")
         self.detailedlist.addTableColumn(column)
         self.columns = [column]
 

@@ -13,10 +13,9 @@ class Table(Widget):
         self._first_item = 0
 
         dataColumn = []
-        for i, (heading, accessor) in enumerate(zip(
-                self.interface.headings,
-                self.interface._accessors
-        )):
+        for i, (heading, accessor) in enumerate(
+            zip(self.interface.headings, self.interface._accessors)
+        ):
             dataColumn.append(self._create_column(heading, accessor))
 
         self.native.FullRowSelect = True
@@ -29,7 +28,9 @@ class Table(Widget):
         self.native.RetrieveVirtualItem += self.winforms_retrieve_virtual_item
         self.native.CacheVirtualItems += self.winforms_cache_virtual_items
         self.native.MouseDoubleClick += self.winforms_double_click
-        self.native.VirtualItemsSelectionRangeChanged += self.winforms_virtual_item_selection_range_changed
+        self.native.VirtualItemsSelectionRangeChanged += (
+            self.winforms_virtual_item_selection_range_changed
+        )
 
     def winforms_virtual_item_selection_range_changed(self, sender, e):
         # `Shift` key or Range selection handler
@@ -41,15 +42,23 @@ class Table(Widget):
     def winforms_retrieve_virtual_item(self, sender, e):
         # Because ListView is in VirtualMode, it's necessary implement
         # VirtualItemsSelectionRangeChanged event to create ListViewItem when it's needed
-        if self._cache and e.ItemIndex >= self._first_item and \
-                e.ItemIndex < self._first_item + len(self._cache):
+        if (
+            self._cache
+            and e.ItemIndex >= self._first_item
+            and e.ItemIndex < self._first_item + len(self._cache)
+        ):
             e.Item = self._cache[e.ItemIndex - self._first_item]
         else:
-            e.Item = WinForms.ListViewItem(self.row_data(self.interface.data[e.ItemIndex]))
+            e.Item = WinForms.ListViewItem(
+                self.row_data(self.interface.data[e.ItemIndex])
+            )
 
     def winforms_cache_virtual_items(self, sender, e):
-        if self._cache and e.StartIndex >= self._first_item and \
-                e.EndIndex < self._first_item + len(self._cache):
+        if (
+            self._cache
+            and e.StartIndex >= self._first_item
+            and e.EndIndex < self._first_item + len(self._cache)
+        ):
             # If the newly requested cache is a subset of the old cache,
             # no need to rebuild everything, so do nothing
             return
@@ -61,17 +70,25 @@ class Table(Widget):
 
         # Fill the cache with the appropriate ListViewItems.
         for i in range(new_length):
-            self._cache.append(WinForms.ListViewItem(self.row_data(self.interface.data[i + self._first_item])))
+            self._cache.append(
+                WinForms.ListViewItem(
+                    self.row_data(self.interface.data[i + self._first_item])
+                )
+            )
 
     def winforms_item_selection_changed(self, sender, e):
         if self.interface.on_select:
-            self.interface.on_select(self.interface, row=self.interface.data[e.ItemIndex])
+            self.interface.on_select(
+                self.interface, row=self.interface.data[e.ItemIndex]
+            )
 
     def winforms_double_click(self, sender, e):
         if self.interface.on_double_click is not None:
             hit_test = self.native.HitTest(e.X, e.Y)
             item = hit_test.Item
-            self.interface.on_double_click(self.interface, row=self.interface.data[item.Index])
+            self.interface.on_double_click(
+                self.interface, row=self.interface.data[item.Index]
+            )
 
     def _create_column(self, heading, accessor):
         col = WinForms.ColumnHeader()
@@ -92,10 +109,7 @@ class Table(Widget):
                 return str(val[1])
             return str(val)
 
-        return [
-            strip_icon(item, attr)
-            for attr in self.interface._accessors
-        ]
+        return [strip_icon(item, attr) for attr in self.interface._accessors]
 
     def update_data(self):
         self.native.VirtualListSize = len(self.interface.data)
@@ -105,7 +119,7 @@ class Table(Widget):
         self.update_data()
 
     def change(self, item):
-        self.interface.factory.not_implemented('Table.change()')
+        self.interface.factory.not_implemented("Table.change()")
 
     def remove(self, item, index):
         self.update_data()
@@ -135,7 +149,7 @@ class Table(Widget):
 
     def set_font(self, font):
         if font:
-            self.native.Font = font.bind(self.interface.factory).native
+            self.native.Font = font._impl.native
 
     def set_on_double_click(self, handler):
         pass

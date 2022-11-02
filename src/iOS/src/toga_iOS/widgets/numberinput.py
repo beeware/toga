@@ -9,7 +9,7 @@ from toga_iOS.libs import (
     UIControlEventEditingChanged,
     UIKeyboardType,
     UITextBorderStyle,
-    UITextField
+    UITextField,
 )
 from toga_iOS.widgets.base import Widget
 
@@ -22,20 +22,24 @@ class TogaNumericTextField(UITextField):
     @objc_method
     def textFieldDidChange_(self, notification) -> None:
         if self.text:
-            self.interface._value = Decimal(str(self.text)).quantize(self.interface.step)
+            self.interface._value = Decimal(str(self.text)).quantize(
+                self.interface.step
+            )
         else:
             self.interface._value = None
         if self.interface.on_change:
             self.interface.on_change(self.interface)
 
     @objc_method
-    def textField_shouldChangeCharactersInRange_replacementString_(self, textField, textRange: NSRange, chars) -> bool:
+    def textField_shouldChangeCharactersInRange_replacementString_(
+        self, textField, textRange: NSRange, chars
+    ) -> bool:
         # chars will be zero length in the case of a deletion
         # otherwise, accept any number, or '.' (as long as this is the first one)
         if (
             len(chars) == 0
             or chars.isdigit()
-            or (chars == '.' and '.' not in self.text)
+            or (chars == "." and "." not in self.text)
         ):
             return True
         return False
@@ -52,17 +56,17 @@ class NumberInput(Widget):
         # self.native.keyboardType = UIKeyboardType.DecimalPad
         send_message(
             self.native,
-            'setKeyboardType:',
+            "setKeyboardType:",
             UIKeyboardType.DecimalPad.value,
             restype=None,
-            argtypes=[c_int]
+            argtypes=[c_int],
         )
 
         # Make the text field respond to any content change.
         self.native.addTarget(
             self.native,
-            action=SEL('textFieldDidChange:'),
-            forControlEvents=UIControlEventEditingChanged
+            action=SEL("textFieldDidChange:"),
+            forControlEvents=UIControlEventEditingChanged,
         )
 
         # Add the layout constraints
@@ -96,7 +100,7 @@ class NumberInput(Widget):
 
     def set_font(self, font):
         if font:
-            self.native.font = font.bind(self.interface.factory).native
+            self.native.font = font._impl.native
 
     def rehint(self):
         # Height of a text input is known.
