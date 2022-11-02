@@ -27,9 +27,7 @@ class ExampleFontExampleApp(toga.App):
         toga.Font.register("Endor", "resources/ENDOR___.ttf")
         toga.Font.register("Endor", "resources/ENDOR___.ttf", weight=BOLD)
         toga.Font.register("Endor", "resources/ENDOR___.ttf", style=ITALIC)
-        toga.Font.register(
-            "Endor", "resources/ENDOR___.ttf", weight=BOLD, style=ITALIC
-        )
+        toga.Font.register("Endor", "resources/ENDOR___.ttf", weight=BOLD, style=ITALIC)
         toga.Font.register("Roboto", "resources/Roboto-Regular.ttf")
         toga.Font.register("Roboto", "resources/Roboto-Bold.ttf", weight=BOLD)
         toga.Font.register("Roboto", "resources/Roboto-Italic.ttf", style=ITALIC)
@@ -106,8 +104,7 @@ class ExampleFontExampleApp(toga.App):
             ),
         )
         lbl9 = toga.Label(
-            "Unknown font",
-            style=Pack(font_family="Unknown", font_size=14)
+            "Unknown font", style=Pack(font_family="Unknown", font_size=14)
         )
         self.textpanel = toga.MultilineTextInput(
             readonly=False, style=Pack(flex=1), placeholder="Ready."

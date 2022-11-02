@@ -8,7 +8,7 @@ class ImageView(Widget):
     """
 
     Args:
-        image (:class:`toga.Image`): The image to display.
+        image (:class:`~toga.Image`): The image to display.
         id (str): An identifier for this widget.
         style (:obj:`Style`):
 
@@ -51,9 +51,6 @@ class ImageView(Widget):
             self._image = image
 
         if self._image is not None:
-            # Bind the image to the widget's factory.
-            self._image.bind()
-
             self._impl.set_image(image)
             self._impl.rehint()
 

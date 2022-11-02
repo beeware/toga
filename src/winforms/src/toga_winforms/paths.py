@@ -30,20 +30,33 @@ class Paths:
 
     @property
     def data(self):
-        return Path.home() / 'AppData' / 'Local' / self.author / App.app.formal_name
+        return Path.home() / "AppData" / "Local" / self.author / App.app.formal_name
 
     @property
     def cache(self):
-        return Path.home() / 'AppData' / 'Local' / self.author / App.app.formal_name / 'Cache'
+        return (
+            Path.home()
+            / "AppData"
+            / "Local"
+            / self.author
+            / App.app.formal_name
+            / "Cache"
+        )
 
     @property
     def logs(self):
-        return Path.home() / 'AppData' / 'Local' / self.author / App.app.formal_name / 'Logs'
+        return (
+            Path.home()
+            / "AppData"
+            / "Local"
+            / self.author
+            / App.app.formal_name
+            / "Logs"
+        )
 
     @property
     def toga(self):
-        """Return a path to a Toga system resources
-        """
+        """Return a path to a Toga system resources."""
         return Path(toga.__file__).parent
 
 

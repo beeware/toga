@@ -6,7 +6,7 @@ from toga_iOS.libs import (
     UIColor,
     UIControlEventTouchDown,
     UIControlStateDisabled,
-    UIControlStateNormal
+    UIControlStateNormal,
 )
 from toga_iOS.widgets.base import Widget
 
@@ -30,7 +30,11 @@ class Button(Widget):
 
         self.native.setTitleColor(self.native.tintColor, forState=UIControlStateNormal)
         self.native.setTitleColor(UIColor.grayColor, forState=UIControlStateDisabled)
-        self.native.addTarget(self.native, action=SEL('onPress:'), forControlEvents=UIControlEventTouchDown)
+        self.native.addTarget(
+            self.native,
+            action=SEL("onPress:"),
+            forControlEvents=UIControlEventTouchDown,
+        )
 
         # Add the layout constraints
         self.add_constraints()

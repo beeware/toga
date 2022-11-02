@@ -6,10 +6,11 @@ class Graze(toga.App):
     def startup(self):
         self.main_window = toga.MainWindow(title=self.name)
 
-        self.webview = toga.WebView(on_webview_load=self.on_webview_loaded, style=Pack(flex=1))
+        self.webview = toga.WebView(
+            on_webview_load=self.on_webview_loaded, style=Pack(flex=1)
+        )
         self.url_input = toga.TextInput(
-            value='https://beeware.org/',
-            style=Pack(flex=1)
+            value="https://beeware.org/", style=Pack(flex=1)
         )
 
         box = toga.Box(
@@ -17,19 +18,21 @@ class Graze(toga.App):
                 toga.Box(
                     children=[
                         self.url_input,
-                        toga.Button('Go', on_press=self.load_page, style=Pack(width=50, padding_left=5)),
+                        toga.Button(
+                            "Go",
+                            on_press=self.load_page,
+                            style=Pack(width=50, padding_left=5),
+                        ),
                     ],
                     style=Pack(
                         direction=ROW,
                         alignment=CENTER,
                         padding=5,
-                    )
+                    ),
                 ),
                 self.webview,
             ],
-            style=Pack(
-                direction=COLUMN
-            )
+            style=Pack(direction=COLUMN),
         )
 
         self.main_window.content = box
@@ -46,8 +49,8 @@ class Graze(toga.App):
 
 
 def main():
-    return Graze('Graze', 'org.beeware.graze')
+    return Graze("Graze", "org.beeware.graze")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main().main_loop()

@@ -10,19 +10,23 @@ WINFORMS_NON_PRINTABLES_MAP = {
     Key.MOD_1: WinForms.Keys.Control,
     Key.MOD_2: WinForms.Keys.Alt,
 }
-WINFORMS_NON_PRINTABLES_MAP.update({
-    getattr(Key, modifier.upper()): getattr(WinForms.Keys, modifier.title())
-    for modifier in ["shift", "up", "down", "left", "right", "home"]
-})
+WINFORMS_NON_PRINTABLES_MAP.update(
+    {
+        getattr(Key, modifier.upper()): getattr(WinForms.Keys, modifier.title())
+        for modifier in ["shift", "up", "down", "left", "right", "home"]
+    }
+)
 
 WINFORMS_KEYS_MAP = {
     Key.PLUS.value: WinForms.Keys.Oemplus,
     Key.MINUS.value: WinForms.Keys.OemMinus,
 }
-WINFORMS_KEYS_MAP.update({
-    getattr(Key, letter).value: getattr(WinForms.Keys, letter)
-    for letter in ascii_uppercase
-})
+WINFORMS_KEYS_MAP.update(
+    {
+        getattr(Key, letter).value: getattr(WinForms.Keys, letter)
+        for letter in ascii_uppercase
+    }
+)
 
 
 def toga_to_winforms_key(key):
@@ -37,14 +41,13 @@ def toga_to_winforms_key(key):
     return reduce(operator.or_, codes)
 
 
-TOGA_KEYS_MAP = {
-    w: t
-    for t, w in WINFORMS_KEYS_MAP.items()
-}
-TOGA_KEYS_MAP.update({
-    getattr(WinForms.Keys, modifier.title()): getattr(Key, modifier.upper())
-    for modifier in ["shift", "up", "down", "left", "right", "home"]
-})
+TOGA_KEYS_MAP = {w: t for t, w in WINFORMS_KEYS_MAP.items()}
+TOGA_KEYS_MAP.update(
+    {
+        getattr(WinForms.Keys, modifier.title()): getattr(Key, modifier.upper())
+        for modifier in ["shift", "up", "down", "left", "right", "home"]
+    }
+)
 
 
 def toga_key(event):
@@ -64,9 +67,6 @@ def toga_key(event):
     if event.Alt:
         modifiers.add(Key.MOD_2)
     # if event.Windows?:
-        # modifiers.add(Key.MOD_3)
+    # modifiers.add(Key.MOD_3)
 
-    return {
-        'key': key,
-        'modifiers': modifiers
-    }
+    return {"key": key, "modifiers": modifiers}

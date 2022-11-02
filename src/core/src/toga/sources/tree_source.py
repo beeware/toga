@@ -34,7 +34,7 @@ class Node(Row):
     def __setitem__(self, index, value):
         node = self._source._create_node(value)
         self._children[index] = node
-        self._source._notify('change', item=node)
+        self._source._notify("change", item=node)
 
     def insert(self, index, *values, **named):
         self._source.insert(self, index, *values, **named)
@@ -96,10 +96,7 @@ class TreeSource(Source):
                 for value, children in sorted(data.items())
             ]
         else:
-            return [
-                self._create_node(value)
-                for value in data
-            ]
+            return [self._create_node(value) for value in data]
 
     ######################################################################
     # Utility methods to make TreeSources more dict-like
@@ -108,14 +105,14 @@ class TreeSource(Source):
     def __setitem__(self, index, value):
         root = self._create_node(value)
         self._roots[index] = root
-        self._notify('change', item=root)
+        self._notify("change", item=root)
 
     def __iter__(self):
         return iter(self._roots)
 
     def clear(self):
         self._roots = []
-        self._notify('clear')
+        self._notify("clear")
 
     def insert(self, parent, index, *values, **named):
         node = self._create_node(dict(zip(self._accessors, values), **named))
@@ -128,7 +125,7 @@ class TreeSource(Source):
             parent._children.insert(index, node)
 
         node._parent = parent
-        self._notify('insert', parent=parent, index=index, item=node)
+        self._notify("insert", parent=parent, index=index, item=node)
         return node
 
     def prepend(self, parent, *values, **named):
@@ -147,7 +144,7 @@ class TreeSource(Source):
             # node is not in parent's children so it shouldn't keep a link to parent
             del node._parent
 
-        self._notify('remove', parent=parent, index=i, item=node)
+        self._notify("remove", parent=parent, index=i, item=node)
         return node
 
     def index(self, node):

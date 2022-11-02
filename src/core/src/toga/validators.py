@@ -80,10 +80,7 @@ class LengthBetween(BooleanValidator):
 
 class MinLength(LengthBetween):
     def __init__(
-        self,
-        length: int,
-        error_message: Optional[str] = None,
-        allow_empty: bool = True
+        self, length: int, error_message: Optional[str] = None, allow_empty: bool = True
     ):
         if error_message is None:
             error_message = "Input is too short (length should be at least {})".format(
@@ -93,16 +90,13 @@ class MinLength(LengthBetween):
             min_value=length,
             max_value=None,
             error_message=error_message,
-            allow_empty=allow_empty
+            allow_empty=allow_empty,
         )
 
 
 class MaxLength(LengthBetween):
     def __init__(
-        self,
-        length: int,
-        error_message: Optional[str] = None,
-        allow_empty: bool = True
+        self, length: int, error_message: Optional[str] = None, allow_empty: bool = True
     ):
         if error_message is None:
             error_message = "Input is too long (length should be at most {})".format(
@@ -112,7 +106,7 @@ class MaxLength(LengthBetween):
             min_value=None,
             max_value=length,
             error_message=error_message,
-            allow_empty=allow_empty
+            allow_empty=allow_empty,
         )
 
 
@@ -167,9 +161,10 @@ class Contains(CountValidator):
             if len(substrings) == 1:
                 substrings_string = f'"{substrings[0]}"'
             else:
-                substrings_string = ", ".join(
-                    f'"{substring}"' for substring in substrings[:-1]
-                ) + f' or "{substrings[-1]}"'
+                substrings_string = (
+                    ", ".join(f'"{substring}"' for substring in substrings[:-1])
+                    + f' or "{substrings[-1]}"'
+                )
             expected_existence = f"Input should contain {substrings_string}"
             expected_non_existence = "Input should not contain {}".format(
                 substrings_string

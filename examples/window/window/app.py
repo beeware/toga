@@ -106,24 +106,32 @@ class WindowDemoApp(toga.App):
         self.on_exit = self.exit_handler
 
         # Label to show responses.
-        self.label = toga.Label('Ready.')
+        self.label = toga.Label("Ready.")
 
         # Buttons
         btn_style = Pack(flex=1, padding=5)
-        btn_do_origin = toga.Button('Go to origin', on_press=self.do_origin, style=btn_style)
-        btn_do_left = toga.Button('Go left', on_press=self.do_left, style=btn_style)
-        btn_do_right = toga.Button('Go right', on_press=self.do_right, style=btn_style)
-        btn_do_small = toga.Button('Become small', on_press=self.do_small, style=btn_style)
-        btn_do_large = toga.Button('Become large', on_press=self.do_large, style=btn_style)
-        btn_do_title = toga.Button('Change title', on_press=self.do_title, style=btn_style)
-        btn_do_new_windows = toga.Button('Create Window', on_press=self.do_new_windows, style=btn_style)
-        btn_do_report = toga.Button('Report', on_press=self.do_report, style=btn_style)
+        btn_do_origin = toga.Button(
+            "Go to origin", on_press=self.do_origin, style=btn_style
+        )
+        btn_do_left = toga.Button("Go left", on_press=self.do_left, style=btn_style)
+        btn_do_right = toga.Button("Go right", on_press=self.do_right, style=btn_style)
+        btn_do_small = toga.Button(
+            "Become small", on_press=self.do_small, style=btn_style
+        )
+        btn_do_large = toga.Button(
+            "Become large", on_press=self.do_large, style=btn_style
+        )
+        btn_do_title = toga.Button(
+            "Change title", on_press=self.do_title, style=btn_style
+        )
+        btn_do_new_windows = toga.Button(
+            "Create Window", on_press=self.do_new_windows, style=btn_style
+        )
+        btn_do_report = toga.Button("Report", on_press=self.do_report, style=btn_style)
         btn_change_content = toga.Button(
             "Change content", on_press=self.do_next_content, style=btn_style
         )
-        btn_hide = toga.Button(
-            "Hide", on_press=self.do_hide, style=btn_style
-        )
+        btn_hide = toga.Button("Hide", on_press=self.do_hide, style=btn_style)
         self.main_box = toga.Box(
             children=[
                 self.label,
@@ -138,21 +146,20 @@ class WindowDemoApp(toga.App):
                 btn_change_content,
                 btn_hide,
             ],
-            style=Pack(direction=COLUMN)
+            style=Pack(direction=COLUMN),
         )
 
         btn_change_back = toga.Button(
             "Go back", on_press=self.do_prev_content, style=btn_style
         )
         self.next_box = toga.Box(
-            children=[btn_change_back],
-            style=Pack(direction=COLUMN)
+            children=[btn_change_back], style=Pack(direction=COLUMN)
         )
 
         restore_command = toga.Command(
             self.do_prev_content,
-            text='Restore content',
-            tooltip='Restore main window content',
+            text="Restore content",
+            tooltip="Restore main window content",
         )
 
         self.commands.add(restore_command)
@@ -166,9 +173,9 @@ class WindowDemoApp(toga.App):
 
 
 def main():
-    return WindowDemoApp('Window Demo', 'org.beeware.widgets.window')
+    return WindowDemoApp("Window Demo", "org.beeware.widgets.window")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app = main()
     app.main_loop()

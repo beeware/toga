@@ -6,7 +6,7 @@ from toga_iOS.libs import (
     UILabel,
     UILayoutConstraintAxis,
     UIStackView,
-    UISwitch
+    UISwitch,
 )
 from toga_iOS.widgets.base import Widget
 
@@ -33,8 +33,9 @@ class Switch(Widget):
 
         self.native_switch = TogaSwitch.alloc().init()
         self.native_switch.interface = self.interface
-        self.native_switch.addTarget_action_forControlEvents_(self.native_switch, SEL('onPress:'),
-                                                              UIControlEventValueChanged)
+        self.native_switch.addTarget_action_forControlEvents_(
+            self.native_switch, SEL("onPress:"), UIControlEventValueChanged
+        )
         # Add switch and label to UIStackView
         self.native.addArrangedSubview_(self.native_label)
         self.native.addArrangedSubview_(self.native_switch)
@@ -63,7 +64,7 @@ class Switch(Widget):
         elif value == 0:
             return False
         else:
-            raise RuntimeError(f'Undefined value for enabled: {value} in {__class__}')
+            raise RuntimeError(f"Undefined value for enabled: {value} in {__class__}")
 
     def set_enabled(self, value):
         if value:

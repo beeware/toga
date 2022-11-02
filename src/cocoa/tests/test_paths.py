@@ -125,8 +125,8 @@ class TestPaths(unittest.TestCase):
         )
 
     def test_simple_as_file_in_module(self):
-        """When a simple app is started as `python app.py` inside a runnable module,
-        the app path is the folder holding app.py"""
+        """When a simple app is started as `python app.py` inside a runnable
+        module, the app path is the folder holding app.py."""
         # Spawn the simple testbed app using `app.py`
         output = subprocess.check_output(
             [sys.executable, "app.py"],
@@ -136,8 +136,8 @@ class TestPaths(unittest.TestCase):
         self.assert_simple_paths(output)
 
     def test_simple_as_module(self):
-        """When a simple app is started as `python -m app` inside a runnable module,
-        the app path is the folder holding app.py"""
+        """When a simple app is started as `python -m app` inside a runnable
+        module, the app path is the folder holding app.py."""
         # Spawn the simple testbed app using `-m app`
         output = subprocess.check_output(
             [sys.executable, "-m", "app"],

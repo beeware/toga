@@ -21,7 +21,7 @@ class SplitContainer(Widget):
             child._impl.container = widget
 
         if position >= 2:
-            raise ValueError('SplitContainer content must be a 2-tuple')
+            raise ValueError("SplitContainer content must be a 2-tuple")
 
         if position == 0:
             self.native.Panel1.Controls.Add(widget.native)
@@ -33,7 +33,9 @@ class SplitContainer(Widget):
 
             # Turn all the weights into a fraction of 1.0
             total = sum(self.interface._weight)
-            self.interface._weight = [weight/total for weight in self.interface._weight]
+            self.interface._weight = [
+                weight / total for weight in self.interface._weight
+            ]
 
             # Set the position of splitter depending on the weight of splits.
             total_distance = (
@@ -56,8 +58,9 @@ class SplitContainer(Widget):
                 content.window = self.interface.window
 
     def set_direction(self, value):
-        self.native.Orientation = WinForms.Orientation.Vertical if value \
-            else WinForms.Orientation.Horizontal
+        self.native.Orientation = (
+            WinForms.Orientation.Vertical if value else WinForms.Orientation.Horizontal
+        )
 
     def winforms_resize(self, sender, args):
         if self.interface.content:

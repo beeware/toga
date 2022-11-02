@@ -34,7 +34,7 @@ class Widget:
     def container(self, container):
         if self.container:
             if container:
-                raise RuntimeError('Already have a container')
+                raise RuntimeError("Already have a container")
             else:
                 # existing container should be removed
                 self.constraints.container = None

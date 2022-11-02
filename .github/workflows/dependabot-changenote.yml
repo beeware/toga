@@ -1,0 +1,45 @@
+name: Dependabot Change Note
+on:
+  push:
+    branches:
+      - 'dependabot/**'
+
+permissions:
+  pull-requests: write
+
+jobs:
+  changenote:
+    name: Dependabot Change Note
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    if: github.actor == 'dependabot[bot]'
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v3.1.0
+        with:
+          fetch-depth: 1
+          token: ${{ secrets.BRUTUS_PAT_TOKEN }}
+
+      - name: Configure git
+        run: |
+          git config --local user.email "$(git log --pretty='%ae' -1)"
+          git config --local user.name "Dependabot[bot]"
+
+      - name: Commit Change Note
+        run: |
+          # Fetch PR number for commit from Github API
+          API_URL="${{ github.api_url }}/repos/${{ github.repository }}/commits/${{ github.event.head_commit.id }}/pulls"
+          PR_NUM=$(curl -s -H "Accept: application/vnd.github+json" "${API_URL}" | jq -r '.[].number')
+
+          # Create change note from first line of dependabot commit
+          NEWS=$(printf "${{ github.event.head_commit.message }}" | head -n1 | sed -e 's/Bump/Updated/')
+          printf "${NEWS}.\n" > "./changes/${PR_NUM}.misc.rst"
+
+          # Commit the change note
+          git add "./changes/${PR_NUM}.misc.rst"
+          # "dependabot skip" tells Dependabot to continue rebasing this branch despite foreign commits
+          git commit -m "Add changenote. [dependabot skip]"
+
+      - name: Push
+        run: git push origin

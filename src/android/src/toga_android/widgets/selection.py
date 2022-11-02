@@ -19,12 +19,9 @@ class TogaOnItemSelectedListener(OnItemSelectedListener):
 class Selection(Widget):
     def create(self):
         self.native = Spinner(self._native_activity, Spinner.MODE_DROPDOWN)
-        self.native.setOnItemSelectedListener(TogaOnItemSelectedListener(
-            impl=self
-        ))
+        self.native.setOnItemSelectedListener(TogaOnItemSelectedListener(impl=self))
         self.adapter = ArrayAdapter(
-            self._native_activity,
-            R__layout.simple_spinner_item
+            self._native_activity, R__layout.simple_spinner_item
         )
         self.adapter.setDropDownViewResource(R__layout.simple_spinner_dropdown_item)
         self.native.setAdapter(self.adapter)

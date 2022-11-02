@@ -7,7 +7,7 @@ class TreeTests(TestCase):
     def setUp(self):
         super().setUp()
 
-        self.headings = [f'Heading {x}' for x in range(3)]
+        self.headings = [f"Heading {x}" for x in range(3)]
 
         self.data = None
         self.tree = toga.Tree(
@@ -17,37 +17,31 @@ class TreeTests(TestCase):
 
     def test_widget_created(self):
         self.assertEqual(self.tree._impl.interface, self.tree)
-        self.assertActionPerformed(self.tree, 'create Tree')
+        self.assertActionPerformed(self.tree, "create Tree")
         self.assertIsInstance(self.tree.data, TreeSource)
 
         self.assertEqual(self.tree.headings, self.headings)
 
     def test_setter_creates_tree_with_TreeSource_data(self):
-        data = {
-            ('one', 1): [
-                ('one.one', 1.1),
-                ('one.two', 2.1)
-            ],
-            ('two', 2): None
-        }
+        data = {("one", 1): [("one.one", 1.1), ("one.two", 2.1)], ("two", 2): None}
 
-        accessors = [f'heading{i}' for i in range(3)]
+        accessors = [f"heading{i}" for i in range(3)]
 
         self.tree.data = TreeSource(data=data, accessors=accessors)
 
         self.assertIsInstance(self.tree.data, TreeSource)
-        self.assertEqual(self.tree.data[0].heading0, 'one')
+        self.assertEqual(self.tree.data[0].heading0, "one")
         self.assertEqual(self.tree.data[0][0].heading1, 1.1)
         self.assertEqual(self.tree.data[1].heading1, 2)
 
     def test_setter_creates_tree_with_dict_data(self):
         self.data = {
-            ('first', 111): None,
-            ('second', 222): [],
-            ('third', 333): [
-                ('third.one', 331),
-                {'heading_0': 'third.two', 'heading_1': 332}
-            ]
+            ("first", 111): None,
+            ("second", 222): [],
+            ("third", 333): [
+                ("third.one", 331),
+                {"heading_0": "third.two", "heading_1": 332},
+            ],
         }
         self.tree.data = self.data
 
@@ -71,7 +65,7 @@ class TreeTests(TestCase):
 
     def test_multiselect_getter(self):
         super().setUp()
-        self.headings = [f'Heading {x}' for x in range(3)]
+        self.headings = [f"Heading {x}" for x in range(3)]
 
         self.data = None
         self.tree = toga.Tree(

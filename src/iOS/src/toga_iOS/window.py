@@ -49,7 +49,7 @@ class Window:
         for child in widget.interface.children:
             child._impl.container = widget
 
-        if getattr(widget, 'controller', None):
+        if getattr(widget, "controller", None):
             self.controller = widget.controller
         else:
             self.controller = UIViewController.alloc().init()
@@ -72,7 +72,10 @@ class Window:
         pass
 
     def get_size(self):
-        return (UIScreen.mainScreen.bounds.size.width, UIScreen.mainScreen.bounds.size.height)
+        return (
+            UIScreen.mainScreen.bounds.size.width,
+            UIScreen.mainScreen.bounds.size.height,
+        )
 
     def set_size(self, size):
         # Does nothing on mobile

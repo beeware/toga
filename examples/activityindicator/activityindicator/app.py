@@ -9,24 +9,23 @@ class ExampleActivityIndicatorApp(toga.App):
 
         if self.spinner.is_running:
             self.spinner.stop()
-            self.button.text = 'Start'
+            self.button.text = "Start"
         else:
             self.spinner.start()
-            self.button.text = 'Stop'
+            self.button.text = "Stop"
 
     def startup(self):
         # Set up main window
         self.main_window = toga.MainWindow(title=self.name)
 
         self.spinner = toga.ActivityIndicator(style=Pack(padding_left=10, height=16))
-        self.button = toga.Button('Start', on_press=self.do_stuff, style=Pack(padding_right=10))
+        self.button = toga.Button(
+            "Start", on_press=self.do_stuff, style=Pack(padding_right=10)
+        )
 
         box = toga.Box(
-            children=[
-                self.button,
-                self.spinner
-            ],
-            style=Pack(direction=ROW, height=20, padding=20, alignment=CENTER, flex=1)
+            children=[self.button, self.spinner],
+            style=Pack(direction=ROW, height=20, padding=20, alignment=CENTER, flex=1),
         )
 
         # Add the content on the main window
@@ -38,9 +37,11 @@ class ExampleActivityIndicatorApp(toga.App):
 
 
 def main():
-    return ExampleActivityIndicatorApp('Activity Indicator', 'org.beeware.widgets.activityindicator')
+    return ExampleActivityIndicatorApp(
+        "Activity Indicator", "org.beeware.widgets.activityindicator"
+    )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app = main()
     app.main_loop()

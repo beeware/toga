@@ -5,7 +5,7 @@ from toga_iOS.libs import (
     NSTextAlignment,
     UIControlEventEditingChanged,
     UITextBorderStyle,
-    UITextField
+    UITextField,
 )
 from toga_iOS.widgets.base import Widget
 
@@ -31,8 +31,8 @@ class TextInput(Widget):
 
         self.native.addTarget(
             self.native,
-            action=SEL('textFieldDidChange:'),
-            forControlEvents=UIControlEventEditingChanged
+            action=SEL("textFieldDidChange:"),
+            forControlEvents=UIControlEventEditingChanged,
         )
 
         # Add the layout constraints
@@ -56,7 +56,7 @@ class TextInput(Widget):
 
     def set_font(self, font):
         if font:
-            self.native.font = font.bind().native
+            self.native.font = font._impl.native
 
     def rehint(self):
         # Height of a text input is known.

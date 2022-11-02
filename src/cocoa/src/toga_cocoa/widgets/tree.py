@@ -5,9 +5,9 @@ from travertino.size import at_least
 import toga
 from toga.keys import Key
 from toga_cocoa.keys import toga_key
-from toga_cocoa.libs import (  # NSSortDescriptor,
+from toga_cocoa.libs import CGRectMake  # NSSortDescriptor,
+from toga_cocoa.libs import (
     SEL,
-    CGRectMake,
     NSBezelBorder,
     NSIndexSet,
     NSOutlineView,
@@ -18,7 +18,7 @@ from toga_cocoa.libs import (  # NSSortDescriptor,
     at,
     objc_method,
     objc_property,
-    send_super
+    send_super,
 )
 from toga_cocoa.widgets.base import Widget
 from toga_cocoa.widgets.internal.cells import TogaIconView
@@ -37,7 +37,7 @@ class TogaTree(NSOutlineView):
         if item is None:
             node = self.interface.data[child]
         else:
-            node = item.attrs['node'][child]
+            node = item.attrs["node"][child]
 
         # Get the Cocoa implementation for the row. If an _impl
         # doesn't exist, create a data object for it, and
@@ -46,7 +46,7 @@ class TogaTree(NSOutlineView):
             node_impl = node._impl
         except AttributeError:
             node_impl = TogaData.alloc().init()
-            node_impl.attrs = {'node': node}
+            node_impl.attrs = {"node": node}
             node._impl = node_impl
 
         return node_impl
@@ -54,7 +54,7 @@ class TogaTree(NSOutlineView):
     @objc_method
     def outlineView_isItemExpandable_(self, tree, item) -> bool:
         try:
-            return item.attrs['node'].can_have_children()
+            return item.attrs["node"].can_have_children()
         except AttributeError:
             return False
 
@@ -69,7 +69,7 @@ class TogaTree(NSOutlineView):
                 return 0
         else:
             # How many children does this node have?
-            return len(item.attrs['node'])
+            return len(item.attrs["node"])
 
     @objc_method
     def outlineView_viewForTableColumn_item_(self, tree, column, item):
@@ -77,7 +77,7 @@ class TogaTree(NSOutlineView):
         col_identifier = str(column.identifier)
 
         try:
-            value = getattr(item.attrs['node'], col_identifier)
+            value = getattr(item.attrs["node"], col_identifier)
 
             # if the value is a widget itself, just draw the widget!
             if isinstance(value, toga.Widget):
@@ -96,24 +96,26 @@ class TogaTree(NSOutlineView):
         except AttributeError:
             # If the node doesn't have a property with the
             # accessor name, assume an empty string value.
-            value = ''
+            value = ""
             icon_iface = None
 
         # If the value has an icon, get the _impl.
         # Icons are deferred resources, so we provide the factory.
         if icon_iface:
-            icon = icon_iface.bind()
+            icon = icon_iface._impl
         else:
             icon = None
 
         # creates a NSTableCellView from interface-builder template (does not exist)
         # or reuses an existing view which is currently not needed for painting
         # returns None (nil) if both fails
-        identifier = at(f'CellView_{self.interface.id}')
+        identifier = at(f"CellView_{self.interface.id}")
         tcv = self.makeViewWithIdentifier(identifier, owner=self)
 
         if not tcv:  # there is no existing view to reuse so create a new one
-            tcv = TogaIconView.alloc().initWithFrame_(CGRectMake(0, 0, column.width, 16))
+            tcv = TogaIconView.alloc().initWithFrame_(
+                CGRectMake(0, 0, column.width, 16)
+            )
             tcv.identifier = identifier
 
             # Prevent tcv from being deallocated prematurely when no Python references
@@ -140,7 +142,7 @@ class TogaTree(NSOutlineView):
         heights = [default_row_height]
 
         for column in self.tableColumns:
-            value = getattr(item.attrs['node'], str(column.identifier))
+            value = getattr(item.attrs["node"], str(column.identifier))
 
             if isinstance(value, toga.Widget):
                 # if the cell value is a widget, use its height
@@ -170,12 +172,12 @@ class TogaTree(NSOutlineView):
     @objc_method
     def keyDown_(self, event) -> None:
         # any time this table is in focus and a key is pressed, this method will be called
-        if toga_key(event) == {'key': Key.A, 'modifiers': {Key.MOD_1}}:
+        if toga_key(event) == {"key": Key.A, "modifiers": {Key.MOD_1}}:
             if self.interface.multiple_select:
                 self.selectAll(self)
         else:
             # forward call to super
-            send_super(__class__, self, 'keyDown:', event, argtypes=[c_void_p])
+            send_super(__class__, self, "keyDown:", event, argtypes=[c_void_p])
 
     # OutlineViewDelegate methods
     @objc_method
@@ -183,7 +185,7 @@ class TogaTree(NSOutlineView):
         if notification.object.selectedRow == -1:
             selected = None
         else:
-            selected = self.itemAtRow(notification.object.selectedRow).attrs['node']
+            selected = self.itemAtRow(notification.object.selectedRow).attrs["node"]
 
         if self.interface.on_select:
             self.interface.on_select(self.interface, node=selected)
@@ -194,7 +196,7 @@ class TogaTree(NSOutlineView):
         if self.clickedRow == -1:
             node = None
         else:
-            node = self.itemAtRow(self.clickedRow).attrs['node']
+            node = self.itemAtRow(self.clickedRow).attrs["node"]
 
         if self.interface.on_select:
             self.interface.on_double_click(self.interface, node=node)
@@ -224,7 +226,9 @@ class Tree(Widget):
         # conversion from ObjC string to Python String, create the
         # ObjC string once and cache it.
         self.column_identifiers = {}
-        for i, (heading, accessor) in enumerate(zip(self.interface.headings, self.interface._accessors)):
+        for i, (heading, accessor) in enumerate(
+            zip(self.interface.headings, self.interface._accessors)
+        ):
 
             column_identifier = at(accessor)
             self.column_identifiers[id(column_identifier)] = accessor
@@ -245,7 +249,7 @@ class Tree(Widget):
         self.tree.delegate = self.tree
         self.tree.dataSource = self.tree
         self.tree.target = self.tree
-        self.tree.doubleAction = SEL('onDoubleClick:')
+        self.tree.doubleAction = SEL("onDoubleClick:")
 
         # Embed the tree view in the scroll view
         self.native.documentView = self.tree
@@ -262,12 +266,12 @@ class Tree(Widget):
         if parent is self.interface.data:
             parent = None
         else:
-            parent = getattr(parent, '_impl', None)
+            parent = getattr(parent, "_impl", None)
 
         self.tree.insertItemsAtIndexes(
             index_set,
             inParent=parent,
-            withAnimation=NSTableViewAnimation.SlideDown.value
+            withAnimation=NSTableViewAnimation.SlideDown.value,
         )
 
     def change(self, item):
@@ -287,7 +291,7 @@ class Tree(Widget):
             self.tree.removeItemsAtIndexes(
                 index_set,
                 inParent=parent,
-                withAnimation=NSTableViewAnimation.SlideUp.value
+                withAnimation=NSTableViewAnimation.SlideUp.value,
             )
 
     def clear(self):
@@ -299,14 +303,16 @@ class Tree(Widget):
 
             current_index = self.tree.selectedRowIndexes.firstIndex
             for i in range(self.tree.selectedRowIndexes.count):
-                selection.append(self.tree.itemAtRow(current_index).attrs['node'])
-                current_index = self.tree.selectedRowIndexes.indexGreaterThanIndex(current_index)
+                selection.append(self.tree.itemAtRow(current_index).attrs["node"])
+                current_index = self.tree.selectedRowIndexes.indexGreaterThanIndex(
+                    current_index
+                )
 
             return selection
         else:
             index = self.tree.selectedRow
             if index != -1:
-                return self.tree.itemAtRow(index).attrs['node']
+                return self.tree.itemAtRow(index).attrs["node"]
             else:
                 return None
 

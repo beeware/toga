@@ -45,7 +45,17 @@ class Canvas(Widget):
         )
 
     def ellipse(
-        self, x, y, radiusx, radiusy, rotation, startangle, endangle, anticlockwise, *args, **kwargs
+        self,
+        x,
+        y,
+        radiusx,
+        radiusy,
+        rotation,
+        startangle,
+        endangle,
+        anticlockwise,
+        *args,
+        **kwargs
     ):
         self._action(
             "ellipse",
@@ -95,7 +105,7 @@ class Canvas(Widget):
     # Rehint
 
     def set_on_resize(self, handler):
-        self._set_value('on_resize', handler)
+        self._set_value("on_resize", handler)
 
     # 'Mouse' button handlers
 

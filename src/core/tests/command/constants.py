@@ -19,10 +19,20 @@ Z = toga.Command(None, "Z", group=PARENT_GROUP1, order=1)
 
 COMMANDS_IN_ORDER = [Z, Y, X, W, B, V, U, T, S, A]
 COMMANDS_IN_SET = [
-    Z, toga.GROUP_BREAK,
-    Y, X, W, toga.SECTION_BREAK, B, toga.GROUP_BREAK,
-    V, toga.GROUP_BREAK,
-    U, T, toga.GROUP_BREAK,
-    S, toga.GROUP_BREAK,
+    Z,
+    toga.GROUP_BREAK,
+    Y,
+    X,
+    W,
+    toga.SECTION_BREAK,
+    B,
+    toga.GROUP_BREAK,
+    V,
+    toga.GROUP_BREAK,
+    U,
+    T,
+    toga.GROUP_BREAK,
+    S,
+    toga.GROUP_BREAK,
     A,
 ]

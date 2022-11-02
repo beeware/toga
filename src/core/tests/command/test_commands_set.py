@@ -22,17 +22,14 @@ class TestCommandSet(unittest.TestCase):
     def test_cmdset_add(self):
         self.changed = False
         test_widget = toga.Widget()
-        cs = toga.CommandSet(
-            widget=test_widget,
-            on_change=self._changed
-        )
-        grp = toga.Group('Test group', order=10)
+        cs = toga.CommandSet(widget=test_widget, on_change=self._changed)
+        grp = toga.Group("Test group", order=10)
         cmd = toga.Command(
-            lambda x: print('Hello World'),
-            text='test',
-            tooltip='test command',
-            shortcut='t',
-            icon='icons/none.png',
+            lambda x: print("Hello World"),
+            text="test",
+            tooltip="test command",
+            shortcut="t",
+            icon="icons/none.png",
             group=grp,
             section=1,
             order=1,
@@ -46,9 +43,7 @@ class TestCommandSet(unittest.TestCase):
         test_widget = toga.Widget()
         test_widget._impl = Mock()
         test_widget.app = Mock()
-        cs = toga.CommandSet(
-            widget=test_widget
-        )
+        cs = toga.CommandSet(widget=test_widget)
         commands = list(COMMANDS_IN_ORDER)
         random.shuffle(commands)
         cs.add(*commands)

@@ -42,14 +42,22 @@ class ScrollContainer(Widget):
 
     def set_horizontal(self, value):
         self.native.set_policy(
-            Gtk.PolicyType.AUTOMATIC if self.interface.horizontal else Gtk.PolicyType.NEVER,
-            Gtk.PolicyType.AUTOMATIC if self.interface.vertical else Gtk.PolicyType.NEVER,
+            Gtk.PolicyType.AUTOMATIC
+            if self.interface.horizontal
+            else Gtk.PolicyType.NEVER,
+            Gtk.PolicyType.AUTOMATIC
+            if self.interface.vertical
+            else Gtk.PolicyType.NEVER,
         )
 
     def set_vertical(self, value):
         self.native.set_policy(
-            Gtk.PolicyType.AUTOMATIC if self.interface.horizontal else Gtk.PolicyType.NEVER,
-            Gtk.PolicyType.AUTOMATIC if self.interface.vertical else Gtk.PolicyType.NEVER,
+            Gtk.PolicyType.AUTOMATIC
+            if self.interface.horizontal
+            else Gtk.PolicyType.NEVER,
+            Gtk.PolicyType.AUTOMATIC
+            if self.interface.vertical
+            else Gtk.PolicyType.NEVER,
         )
 
     def set_on_scroll(self, on_scroll):

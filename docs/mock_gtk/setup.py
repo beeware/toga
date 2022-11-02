@@ -10,7 +10,7 @@ from setuptools import setup
 # *actually* doing anything.
 
 setup(
-    name='toga-gtk',
+    name="toga-gtk",
     version="0.3.0.dev39",
-    description='A mock of the GTK+ backend for the Toga widget toolkit.',
+    description="A mock of the GTK+ backend for the Toga widget toolkit.",
 )

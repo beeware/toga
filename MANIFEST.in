@@ -1,3 +1,4 @@
+include .git-blame-ignore-revs
 include .pre-commit-config.yaml
 include CONTRIBUTING.md
 include LICENSE

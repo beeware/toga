@@ -57,10 +57,10 @@ class HandlerApp(toga.App):
         self.main_window = toga.MainWindow(title=self.name)
 
         # Labels to show responses.
-        self.label = toga.Label('Ready.', style=Pack(padding=10))
-        self.function_label = toga.Label('Ready.', style=Pack(padding=10))
-        self.generator_label = toga.Label('Ready.', style=Pack(padding=10))
-        self.async_label = toga.Label('Ready.', style=Pack(padding=10))
+        self.label = toga.Label("Ready.", style=Pack(padding=10))
+        self.function_label = toga.Label("Ready.", style=Pack(padding=10))
+        self.generator_label = toga.Label("Ready.", style=Pack(padding=10))
+        self.async_label = toga.Label("Ready.", style=Pack(padding=10))
 
         # Add a background task.
         self.counter = 0
@@ -68,10 +68,16 @@ class HandlerApp(toga.App):
 
         # Buttons
         btn_style = Pack(flex=1)
-        btn_function = toga.Button('Function callback', on_press=self.do_function, style=btn_style)
-        btn_generator = toga.Button('Generator callback', on_press=self.do_generator, style=btn_style)
-        btn_async = toga.Button('Async callback', on_press=self.do_async, style=btn_style)
-        btn_clear = toga.Button('Clear', on_press=self.do_clear, style=btn_style)
+        btn_function = toga.Button(
+            "Function callback", on_press=self.do_function, style=btn_style
+        )
+        btn_generator = toga.Button(
+            "Generator callback", on_press=self.do_generator, style=btn_style
+        )
+        btn_async = toga.Button(
+            "Async callback", on_press=self.do_async, style=btn_style
+        )
+        btn_clear = toga.Button("Clear", on_press=self.do_clear, style=btn_style)
 
         # Outermost box
         box = toga.Box(
@@ -85,11 +91,7 @@ class HandlerApp(toga.App):
                 self.async_label,
                 btn_clear,
             ],
-            style=Pack(
-                flex=1,
-                direction=COLUMN,
-                padding=10
-            )
+            style=Pack(flex=1, direction=COLUMN, padding=10),
         )
 
         # Add the content on the main window
@@ -100,9 +102,9 @@ class HandlerApp(toga.App):
 
 
 def main():
-    return HandlerApp('Handlers', 'org.beeware.handlers')
+    return HandlerApp("Handlers", "org.beeware.handlers")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app = main()
     app.main_loop()
