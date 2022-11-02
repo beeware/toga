@@ -8,8 +8,8 @@ from .winforms import Action, Task, WinForms
 
 class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
     def run_forever(self, app_context):
-        """Set up the asyncio event loop, integrate it with the Winforms
-        event loop, and start the application.
+        """Set up the asyncio event loop, integrate it with the Winforms event
+        loop, and start the application.
 
         This largely duplicates the setup behavior of the default Proactor
         run_forever implementation.
@@ -37,17 +37,18 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
         # === START BaseEventLoop.run_forever() setup ===
         self._check_closed()
         if self.is_running():
-            raise RuntimeError('This event loop is already running')
+            raise RuntimeError("This event loop is already running")
         if events._get_running_loop() is not None:
             raise RuntimeError(
-                'Cannot run the event loop while another loop is running')
+                "Cannot run the event loop while another loop is running"
+            )
         self._set_coroutine_origin_tracking(self._debug)
         self._thread_id = threading.get_ident()
         try:
             self._old_agen_hooks = sys.get_asyncgen_hooks()
             sys.set_asyncgen_hooks(
                 firstiter=self._asyncgen_firstiter_hook,
-                finalizer=self._asyncgen_finalizer_hook
+                finalizer=self._asyncgen_finalizer_hook,
             )
         except AttributeError:
             # Python < 3.6 didn't have sys.get_asyncgen_hooks();
@@ -76,9 +77,8 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
         Task.Delay(5).ContinueWith(self.task)
 
     def tick(self, *args, **kwargs):
-        """
-        Cause a single iteration of the event loop to run on the main GUI thread.
-        """
+        """Cause a single iteration of the event loop to run on the main GUI
+        thread."""
         # FIXME: this only works if there is a "main window" registered with the
         # app (#750).
         #
@@ -89,12 +89,11 @@ class WinformsProactorEventLoop(asyncio.ProactorEventLoop):
             self.app_context.MainForm.Invoke(action)
 
     def run_once_recurring(self):
-        """
-        Run one iteration of the event loop, and enqueue the next iteration
+        """Run one iteration of the event loop, and enqueue the next iteration
         (if we're not stopping).
 
-        This largely duplicates the "finally" behavior of the default Proactor
-        run_forever implementation.
+        This largely duplicates the "finally" behavior of the default
+        Proactor run_forever implementation.
         """
         # Perform one tick of the event loop.
         self._run_once()

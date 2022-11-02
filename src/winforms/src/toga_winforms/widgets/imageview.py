@@ -4,7 +4,6 @@ from .base import Widget
 
 
 class ImageView(Widget):
-
     def create(self):
         self.native = WinForms.PictureBox()
         self.native.interface = self.interface

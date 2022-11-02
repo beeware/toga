@@ -9,7 +9,7 @@ from toga.fonts import (
     SANS_SERIF,
     SERIF,
     SYSTEM,
-    SYSTEM_DEFAULT_FONT_SIZE
+    SYSTEM_DEFAULT_FONT_SIZE,
 )
 from toga_iOS.libs import NSAttributedString, NSFontAttributeName, UIFont
 
@@ -35,22 +35,26 @@ class Font:
                 font = UIFont.messageFontOfSize(size)
             else:
                 if self.interface.family is SERIF:
-                    family = 'Times-Roman'
+                    family = "Times-Roman"
                 elif self.interface.family is SANS_SERIF:
-                    family = 'Helvetica'
+                    family = "Helvetica"
                 elif self.interface.family is CURSIVE:
-                    family = 'Apple Chancery'
+                    family = "Apple Chancery"
                 elif self.interface.family is FANTASY:
-                    family = 'Papyrus'
+                    family = "Papyrus"
                 elif self.interface.family is MONOSPACE:
-                    family = 'Courier New'
+                    family = "Courier New"
                 else:
                     family = self.interface.family
 
-                full_name = '{family}{weight}{style}'.format(
+                full_name = "{family}{weight}{style}".format(
                     family=family,
-                    weight=(' ' + self.interface.weight.title()) if self.interface.weight is not NORMAL else '',
-                    style=(' ' + self.interface.style.title()) if self.interface.style is not NORMAL else '',
+                    weight=(" " + self.interface.weight.title())
+                    if self.interface.weight is not NORMAL
+                    else "",
+                    style=(" " + self.interface.style.title())
+                    if self.interface.style is not NORMAL
+                    else "",
                 )
                 font = UIFont.fontWithName(full_name, size=size)
 
@@ -64,7 +68,9 @@ class Font:
     def measure(self, text, tight=False):
         textAttributes = NSMutableDictionary.alloc().init()
         textAttributes[NSFontAttributeName] = self.native
-        text_string = NSAttributedString.alloc().initWithString_attributes_(text, textAttributes)
+        text_string = NSAttributedString.alloc().initWithString_attributes_(
+            text, textAttributes
+        )
         size = text_string.size()
 
         # TODO: This is a magic fudge factor...

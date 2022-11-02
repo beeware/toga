@@ -19,11 +19,15 @@ class TogaPickerView(UIPickerView):
         return len(self.interface.items)
 
     @objc_method
-    def pickerView_titleForRow_forComponent_(self, pickerView, row: int, component: int):
+    def pickerView_titleForRow_forComponent_(
+        self, pickerView, row: int, component: int
+    ):
         return str(self.interface.items[row])
 
     @objc_method
-    def pickerView_didSelectRow_inComponent_(self, pickerView, row: int, component: int):
+    def pickerView_didSelectRow_inComponent_(
+        self, pickerView, row: int, component: int
+    ):
         self.native.text = self.interface.items[row]
         if self.interface.on_select:
             self.interface.on_select(self.interface)
@@ -63,7 +67,7 @@ class Selection(Widget):
             self.native.text = item
 
     def select_item(self, item):
-        self.interface.factory.not_implemented('Selection.select_item()')
+        self.interface.factory.not_implemented("Selection.select_item()")
 
     def get_selected_item(self):
         return self.interface.items[self.picker.selectedRowInComponent(0)]

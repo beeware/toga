@@ -11,13 +11,15 @@ class Label(Widget):
 
         self.native.interface = self.interface
 
-        self.native.connect('show', lambda event: self.rehint())
+        self.native.connect("show", lambda event: self.rehint())
 
     def set_alignment(self, value):
         xalign, justify = gtk_alignment(value)
-        self.native.set_xalign(xalign)    # Aligns the whole text block within the widget.
+        self.native.set_xalign(xalign)  # Aligns the whole text block within the widget.
         self.native.set_yalign(0.5)
-        self.native.set_justify(justify)  # Aligns multiple lines relative to each other.
+        self.native.set_justify(
+            justify
+        )  # Aligns multiple lines relative to each other.
 
     def set_text(self, value):
         # FIXME after setting the label the label jumps to the top left

@@ -22,8 +22,10 @@ class AndroidViewport(ViewTreeObserver__OnGlobalLayoutListener):
         self.scale = float(self.dpi) / self.baseline_dpi
 
     def onGlobalLayout(self):
-        """This listener is run after each native layout pass. If any view's size or
-        position has changed, the new values will be visible here.
+        """This listener is run after each native layout pass.
+
+        If any view's size or position has changed, the new values will
+        be visible here.
         """
         new_size = (self.width, self.height)
         if self.last_size != new_size:
@@ -50,8 +52,7 @@ class Window:
     def set_app(self, app):
         self.app = app
         self.viewport = AndroidViewport(
-            self.app.native.findViewById(R__id.content).__global__(),
-            self.interface
+            self.app.native.findViewById(R__id.content).__global__(), self.interface
         )
 
     def clear_content(self):
@@ -109,4 +110,4 @@ class Window:
         pass
 
     def set_full_screen(self, is_full_screen):
-        self.interface.factory.not_implemented('Window.set_full_screen()')
+        self.interface.factory.not_implemented("Window.set_full_screen()")

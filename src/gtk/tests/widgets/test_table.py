@@ -2,7 +2,8 @@ import unittest
 
 try:
     import gi
-    gi.require_version('Gtk', '3.0')
+
+    gi.require_version("Gtk", "3.0")
     from gi.repository import Gtk
 except ImportError:
     import sys
@@ -10,7 +11,7 @@ except ImportError:
     # If we're on Linux, Gtk *should* be available. If it isn't, make
     # Gtk an object... but in such a way that every test will fail,
     # because the object isn't actually the Gtk interface.
-    if sys.platform == 'linux':
+    if sys.platform == "linux":
         Gtk = object()
     else:
         Gtk = None
@@ -25,12 +26,12 @@ def handle_events():
         Gtk.main_iteration_do(blocking=False)
 
 
-@unittest.skipIf(Gtk is None, "Can't run GTK implementation tests on a non-Linux platform")
+@unittest.skipIf(
+    Gtk is None, "Can't run GTK implementation tests on a non-Linux platform"
+)
 class TestGtkTable(unittest.TestCase):
     def setUp(self):
-        self.table = toga.Table(
-            headings=("one", "two")
-        )
+        self.table = toga.Table(headings=("one", "two"))
 
         # make a shortcut for easy use
         self.gtk_table = self.table._impl
@@ -46,10 +47,7 @@ class TestGtkTable(unittest.TestCase):
         self.gtk_table.clear()
 
         # Assign pre-constructed data
-        self.table.data = [
-            ("A1", "A2"),
-            ("B1", "B2")
-        ]
+        self.table.data = [("A1", "A2"), ("B1", "B2")]
 
         # Make sure the data was stored correctly
         store = self.gtk_table.store

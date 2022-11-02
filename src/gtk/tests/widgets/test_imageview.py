@@ -2,7 +2,8 @@ import unittest
 
 try:
     import gi
-    gi.require_version('Gtk', '3.0')
+
+    gi.require_version("Gtk", "3.0")
     from gi.repository import Gtk
 except ImportError:
     import sys
@@ -10,7 +11,7 @@ except ImportError:
     # If we're on Linux, Gtk *should* be available. If it isn't, make
     # Gtk an object... but in such a way that every test will fail,
     # because the object isn't actually the Gtk interface.
-    if sys.platform == 'linux':
+    if sys.platform == "linux":
         Gtk = object()
     else:
         Gtk = None
@@ -18,9 +19,10 @@ except ImportError:
 from toga_gtk.widgets.imageview import ImageView
 
 
-@unittest.skipIf(Gtk is None, "Can't run GTK implementation tests on a non-Linux platform")
+@unittest.skipIf(
+    Gtk is None, "Can't run GTK implementation tests on a non-Linux platform"
+)
 class TestGtkImageView(unittest.TestCase):
-
     def test_resize_max(self):
 
         # Scale up height bound

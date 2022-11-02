@@ -6,7 +6,7 @@ from ..libs.android.view import Gravity, View__MeasureSpec, View__OnTouchListene
 from ..libs.android.widget import (
     HorizontalScrollView,
     LinearLayout__LayoutParams,
-    ScrollView
+    ScrollView,
 )
 from .base import Widget
 
@@ -33,7 +33,7 @@ class ScrollContainer(Widget):
         vScrollView = ScrollView(self._native_activity)
         vScrollView_layout_params = LinearLayout__LayoutParams(
             LinearLayout__LayoutParams.MATCH_PARENT,
-            LinearLayout__LayoutParams.MATCH_PARENT
+            LinearLayout__LayoutParams.MATCH_PARENT,
         )
         vScrollView_layout_params.gravity = Gravity.TOP
         vScrollView.setLayoutParams(vScrollView_layout_params)
@@ -44,7 +44,7 @@ class ScrollContainer(Widget):
         self.hScrollView = HorizontalScrollView(self._native_activity)
         hScrollView_layout_params = LinearLayout__LayoutParams(
             LinearLayout__LayoutParams.MATCH_PARENT,
-            LinearLayout__LayoutParams.MATCH_PARENT
+            LinearLayout__LayoutParams.MATCH_PARENT,
         )
         hScrollView_layout_params.gravity = Gravity.LEFT
         self.hScrollListener = TogaOnTouchListener()
@@ -58,7 +58,7 @@ class ScrollContainer(Widget):
         widget.viewport = AndroidViewport(self.native, self.interface)
         content_view_params = LinearLayout__LayoutParams(
             LinearLayout__LayoutParams.MATCH_PARENT,
-            LinearLayout__LayoutParams.MATCH_PARENT
+            LinearLayout__LayoutParams.MATCH_PARENT,
         )
         if widget.container:
             widget.container = None

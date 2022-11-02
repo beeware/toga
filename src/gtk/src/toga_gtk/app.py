@@ -17,9 +17,11 @@ from .window import Window
 
 
 def gtk_menu_item_activate(cmd):
-    """Convert a GTK menu item activation into a command invocation"""
+    """Convert a GTK menu item activation into a command invocation."""
+
     def _handler(action, data):
         cmd.action(cmd)
+
     return _handler
 
 
@@ -29,8 +31,8 @@ class MainWindow(Window):
     def create(self):
         super().create()
         self.native.set_role("MainWindow")
-        icon = toga_App.app.icon.bind()
-        self.native.set_icon(icon.native_72.get_pixbuf())
+        icon_impl = toga_App.app.icon._impl
+        self.native.set_icon(icon_impl.native_72.get_pixbuf())
 
     def set_app(self, app):
         super().set_app(app)
@@ -58,6 +60,7 @@ class App:
         * Disabling of menu items is not working.
         * App Icon is not showing up
     """
+
     def __init__(self, interface):
         self.interface = interface
         self.interface._impl = self
@@ -70,13 +73,12 @@ class App:
     def create(self):
         # Stimulate the build of the app
         self.native = Gtk.Application(
-            application_id=self.interface.app_id,
-            flags=Gio.ApplicationFlags.FLAGS_NONE
+            application_id=self.interface.app_id, flags=Gio.ApplicationFlags.FLAGS_NONE
         )
 
         # Connect the GTK signal that will cause app startup to occur
-        self.native.connect('startup', self.gtk_startup)
-        self.native.connect('activate', self.gtk_activate)
+        self.native.connect("startup", self.gtk_startup)
+        self.native.connect("activate", self.gtk_activate)
 
         self.actions = None
 
@@ -85,17 +87,17 @@ class App:
         self.interface.commands.add(
             Command(
                 lambda _: self.interface.about(),
-                'About ' + self.interface.name,
-                group=toga.Group.HELP
+                "About " + self.interface.name,
+                group=toga.Group.HELP,
             ),
-            Command(None, 'Preferences', group=toga.Group.APP),
+            Command(None, "Preferences", group=toga.Group.APP),
             # Quit should always be the last item, in a section on it's own
             Command(
                 lambda _: self.interface.exit(),
-                'Quit ' + self.interface.name,
-                shortcut=toga.Key.MOD_1 + 'q',
+                "Quit " + self.interface.name,
+                shortcut=toga.Key.MOD_1 + "q",
                 group=toga.Group.APP,
-                section=sys.maxsize
+                section=sys.maxsize,
             ),
         )
         self._create_app_commands()
@@ -120,9 +122,7 @@ class App:
 
         context = Gtk.StyleContext()
         context.add_provider_for_screen(
-            Gdk.Screen.get_default(),
-            css_provider,
-            Gtk.STYLE_PROVIDER_PRIORITY_USER
+            Gdk.Screen.get_default(), css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER
         )
 
     def _create_app_commands(self):
@@ -162,9 +162,11 @@ class App:
                 self._menu_items[action] = cmd
                 self.native.add_action(action)
 
-                item = Gio.MenuItem.new(cmd.text, 'app.' + cmd_id)
+                item = Gio.MenuItem.new(cmd.text, "app." + cmd_id)
                 if cmd.shortcut:
-                    item.set_attribute_value('accel', GLib.Variant('s', gtk_accel(cmd.shortcut)))
+                    item.set_attribute_value(
+                        "accel", GLib.Variant("s", gtk_accel(cmd.shortcut))
+                    )
 
                 section.append_item(item)
 
@@ -184,7 +186,7 @@ class App:
                 self._menu_groups[group] = submenu
 
                 text = group.text
-                if text == '*':
+                if text == "*":
                     text = self.interface.name
 
                 parent_menu.append_submenu(text, submenu)
@@ -206,8 +208,8 @@ class App:
     def show_about_dialog(self):
         about = Gtk.AboutDialog()
 
-        icon = toga_App.app.icon.bind()
-        about.set_logo(icon.native_72.get_pixbuf())
+        icon_impl = toga_App.app.icon._impl
+        about.set_logo(icon_impl.native_72.get_pixbuf())
 
         if self.interface.name is not None:
             about.set_program_name(self.interface.name)
@@ -241,10 +243,10 @@ class App:
             window._impl.set_full_screen(False)
 
     def show_cursor(self):
-        self.interface.factory.not_implemented('App.show_cursor()')
+        self.interface.factory.not_implemented("App.show_cursor()")
 
     def hide_cursor(self):
-        self.interface.factory.not_implemented('App.hide_cursor()')
+        self.interface.factory.not_implemented("App.hide_cursor()")
 
     def add_background_task(self, handler):
         self.loop.call_soon(handler, self)
@@ -255,10 +257,10 @@ class DocumentApp(App):
         self.interface.commands.add(
             toga.Command(
                 self.open_file,
-                text='Open...',
-                shortcut=toga.Key.MOD_1 + 'o',
+                text="Open...",
+                shortcut=toga.Key.MOD_1 + "o",
                 group=toga.Group.FILE,
-                section=0
+                section=0,
             ),
         )
 
@@ -292,7 +294,7 @@ class DocumentApp(App):
             fileURL (str): The URL/path to the file to add as a document.
         """
         # Convert the fileURL to a file path.
-        fileURL = fileURL.rstrip('/')
+        fileURL = fileURL.rstrip("/")
         path = unquote(urlparse(fileURL).path)
         extension = os.path.splitext(path)[1][1:]
 

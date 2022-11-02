@@ -16,7 +16,7 @@ class WidgetTests(TestCase):
     def setUp(self):
         super().setUp()
 
-        self.id = 'widget_id'
+        self.id = "widget_id"
         self.style = Pack(padding=666)
 
         self.widget = Widget(
@@ -37,16 +37,18 @@ class WidgetTests(TestCase):
         box = toga.Box()
         box.enabled = None
         self.assertFalse(box.enabled)
-        self.assertActionPerformedWith(box, 'set enabled', value=None)
+        self.assertActionPerformedWith(box, "set enabled", value=None)
 
     def test_adding_child(self):
         self.assertIsNone(self.widget.app)
         self.assertIsNone(self.widget.window)
-        self.assertEqual(self.widget.children, [], 'No child was added, should return an empty list.')
+        self.assertEqual(
+            self.widget.children, [], "No child was added, should return an empty list."
+        )
         # Create a child widget to add to widget.
         child = toga.Widget()
 
-        with self.assertRaises(ValueError, msg='Widget cannot have children.'):
+        with self.assertRaises(ValueError, msg="Widget cannot have children."):
             self.widget.add(child)
 
         # Deliberately set widget._children = [] to allow it to have children.
@@ -58,7 +60,9 @@ class WidgetTests(TestCase):
     def test_adding_child_with_app(self):
         app = toga.App("Test App", "org.beeware.test")
         self.widget.app = app
-        self.assertEqual(self.widget.children, [], 'No child was added, should return an empty list.')
+        self.assertEqual(
+            self.widget.children, [], "No child was added, should return an empty list."
+        )
 
         # Create a child widget to add to widget.
         child_id = "child-id"
@@ -80,7 +84,7 @@ class WidgetTests(TestCase):
         window.content = Mock()
         self.widget.window = window
         self.assertEqual(
-            self.widget.children, [], 'No child was added, should return an empty list.'
+            self.widget.children, [], "No child was added, should return an empty list."
         )
 
         # Create a child widget to add to widget.
@@ -99,7 +103,9 @@ class WidgetTests(TestCase):
         self.assertEqual(window.widgets[child_id], child)
 
     def test_adding_children(self):
-        self.assertEqual(self.widget.children, [], 'No children added, should return an empty list.')
+        self.assertEqual(
+            self.widget.children, [], "No children added, should return an empty list."
+        )
         # Create 2 children to add to widget.
         child1 = toga.Widget()
         child2 = toga.Widget()
@@ -124,11 +130,15 @@ class WidgetTests(TestCase):
         self.assertEqual(widget2.children, [])
 
     def test_inserting_child_into_empty_list(self):
-        self.assertEqual(self.widget.children, [], 'No child was inserted, should return an empty list.')
+        self.assertEqual(
+            self.widget.children,
+            [],
+            "No child was inserted, should return an empty list.",
+        )
         # Create a child widget to insert into widget.
         child = toga.Widget()
 
-        with self.assertRaises(ValueError, msg='Widget cannot have children.'):
+        with self.assertRaises(ValueError, msg="Widget cannot have children."):
             self.widget.insert(0, child)
 
         self.widget._children = []
@@ -136,7 +146,11 @@ class WidgetTests(TestCase):
         self.assertEqual(self.widget.children, [child])
 
     def test_inserting_child_into_list_containing_one_child(self):
-        self.assertEqual(self.widget.children, [], 'No child was inserted, should return an empty list.')
+        self.assertEqual(
+            self.widget.children,
+            [],
+            "No child was inserted, should return an empty list.",
+        )
         # Create 2 children to insert into widget.
         child1 = toga.Widget()
         child2 = toga.Widget()
@@ -147,7 +161,11 @@ class WidgetTests(TestCase):
         self.assertEqual(self.widget.children, [child1, child2])
 
     def test_inserting_child_into_list_containing_three_children(self):
-        self.assertEqual(self.widget.children, [], 'No child was inserted, should return an empty list.')
+        self.assertEqual(
+            self.widget.children,
+            [],
+            "No child was inserted, should return an empty list.",
+        )
         # Create 3 children to add to widget.
         child1 = toga.Widget()
         child2 = toga.Widget()
@@ -177,7 +195,9 @@ class WidgetTests(TestCase):
         self.assertEqual(widget2.children, [])
 
     def test_removing_child(self):
-        self.assertEqual(self.widget.children, [], 'No child was added, should return an empty list.')
+        self.assertEqual(
+            self.widget.children, [], "No child was added, should return an empty list."
+        )
         # Create a child widget to add then remove from widget.
         child = toga.Widget()
 
@@ -191,7 +211,9 @@ class WidgetTests(TestCase):
     def test_removing_child_with_app(self):
         app = toga.App("Test App", "org.beeware.test")
         self.widget.app = app
-        self.assertEqual(self.widget.children, [], 'No child was added, should return an empty list.')
+        self.assertEqual(
+            self.widget.children, [], "No child was added, should return an empty list."
+        )
         # Create a child widget to add then remove from widget.
         child = Widget()
 
@@ -209,7 +231,9 @@ class WidgetTests(TestCase):
         window = toga.Window()
         window.content = Mock()
         self.widget.window = window
-        self.assertEqual(self.widget.children, [], 'No child was added, should return an empty list.')
+        self.assertEqual(
+            self.widget.children, [], "No child was added, should return an empty list."
+        )
         # Create a child widget to add then remove from widget.
         child = Widget()
 
@@ -224,7 +248,9 @@ class WidgetTests(TestCase):
         self.assertEqual(window.widgets[self.id], self.widget)
 
     def test_removing_children(self):
-        self.assertEqual(self.widget.children, [], 'No children added, should return an empty list.')
+        self.assertEqual(
+            self.widget.children, [], "No children added, should return an empty list."
+        )
         # Create 2 children to add then remove from widget.
         child1 = toga.Widget()
         child2 = toga.Widget()
@@ -237,7 +263,9 @@ class WidgetTests(TestCase):
         self.assertEqual(self.widget.children, [])
 
     def test_removing_two_out_of_three_children(self):
-        self.assertEqual(self.widget.children, [], 'No children added, should return am empty list.')
+        self.assertEqual(
+            self.widget.children, [], "No children added, should return am empty list."
+        )
         # Create 3 children to add to widget, 2 of which will be removed.
         child1 = toga.Widget()
         child2 = toga.Widget()
@@ -262,7 +290,7 @@ class WidgetTests(TestCase):
         self.assertEqual(app.widgets[self.id], self.widget)
 
         # The app has been assigned to the underlying impl
-        self.assertValueSet(self.widget, 'app', app)
+        self.assertValueSet(self.widget, "app", app)
 
     def test_set_app_with_children(self):
         "A widget with children can be assigned to an app"
@@ -289,9 +317,9 @@ class WidgetTests(TestCase):
         self.assertEqual(app.widgets[child_id2], child2)
 
         # The app has been assigned to the underlying impls
-        self.assertValueSet(self.widget, 'app', app)
-        self.assertValueSet(child1, 'app', app)
-        self.assertValueSet(child2, 'app', app)
+        self.assertValueSet(self.widget, "app", app)
+        self.assertValueSet(child1, "app", app)
+        self.assertValueSet(child2, "app", app)
 
     def test_repeat_set_app(self):
         "If a widget is already assigned to an app, doing so again raises an error"
@@ -339,7 +367,7 @@ class WidgetTests(TestCase):
         self.assertEqual(len(app.widgets), 0)
 
         # The app has been assigned to the underlying impl
-        self.assertValueSet(self.widget, 'app', None)
+        self.assertValueSet(self.widget, "app", None)
 
     def test_set_window(self):
         window = toga.Window()
@@ -350,10 +378,7 @@ class WidgetTests(TestCase):
         self.assertEqual(window.widgets[self.id], self.widget)
 
     def test_replace_window(self):
-        window1, window2 = (
-            toga.Window(),
-            toga.Window()
-        )
+        window1, window2 = (toga.Window(), toga.Window())
         self.widget.window = window1
         self.assertEqual(len(window1.widgets), 1)
         self.assertEqual(len(window2.widgets), 0)

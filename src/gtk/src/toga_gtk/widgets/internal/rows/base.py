@@ -16,10 +16,11 @@ class BaseRow(ScrollableRow):
 
 
 class HiddenButtonsRow(BaseRow):
+    """You can add a content box and a set of buttons to this row.
+
+    You can toggle the content with `toggle_content()`.
     """
-    You can add a content box and a set of buttons to this row. You can toggle the content with
-    `toggle_content()`.
-    """
+
     def __init__(self, dl, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._dl = dl

@@ -2,7 +2,7 @@ from .utils import LoggedObject
 
 
 class Icon(LoggedObject):
-    EXTENSIONS = ['.png', '.ico']
+    EXTENSIONS = [".png", ".ico"]
     SIZES = None
 
     def __init__(self, interface, path):

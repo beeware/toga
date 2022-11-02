@@ -24,7 +24,7 @@ class Button(Widget):
 
     def set_font(self, font):
         if font:
-            self.native.Font = font.bind().native
+            self.native.Font = font._impl.native
 
     def set_enabled(self, value):
         self.native.Enabled = self.interface._enabled

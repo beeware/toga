@@ -12,7 +12,7 @@ class ParentPosition:
     def is_parent_at_top(self):
         value = self.adj.get_value()
         lower = self.adj.get_lower()
-        is_at_top = (value == lower)
+        is_at_top = value == lower
 
         return is_at_top
 
@@ -20,7 +20,7 @@ class ParentPosition:
         page_size = self.adj.get_page_size()
         value = self.adj.get_value()
         upper = self.adj.get_upper()
-        is_at_bottom = (value + page_size == upper)
+        is_at_bottom = value + page_size == upper
 
         return is_at_bottom
 
@@ -35,7 +35,7 @@ class ParentPosition:
         upper = self.adj.get_upper()
         lower = self.adj.get_lower()
 
-        return 2*page_size < upper - lower
+        return 2 * page_size < upper - lower
 
     def is_parent_distant_from_top(self):
         value = self.adj.get_value()
@@ -44,7 +44,7 @@ class ParentPosition:
 
         distance_from_top = value - lower
 
-        return distance_from_top >= 0.5*page_size
+        return distance_from_top >= 0.5 * page_size
 
     def is_parent_distant_from_bottom(self):
         value = self.adj.get_value()
@@ -53,4 +53,4 @@ class ParentPosition:
 
         distance_from_bottom = upper - (value + page_size)
 
-        return distance_from_bottom >= 0.5*page_size
+        return distance_from_bottom >= 0.5 * page_size

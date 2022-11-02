@@ -39,7 +39,7 @@ class NumberInput(Widget):
             self.native.Maximum = Convert.ToDecimal(float(self.interface.max_value))
 
     def set_value(self, value):
-        if value is None or value == '':
+        if value is None or value == "":
             self.native.Value = Convert.ToDecimal(0.0)
         else:
             self.native.Value = Convert.ToDecimal(float(self.interface.value))
@@ -49,7 +49,7 @@ class NumberInput(Widget):
 
     def set_font(self, font):
         if font:
-            self.native.Font = font.bind().native
+            self.native.Font = font._impl.native
 
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)

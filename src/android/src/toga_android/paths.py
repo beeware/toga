@@ -35,8 +35,7 @@ class Paths:
 
     @property
     def toga(self):
-        """Return a path to a Toga resources
-        """
+        """Return a path to a Toga resources."""
         return Path(toga.__file__).parent
 
 

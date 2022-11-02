@@ -1,11 +1,11 @@
 import re
 
-NON_ACCESSOR_CHARS = re.compile(r'[^\w ]')
-WHITESPACE = re.compile(r'\s+')
+NON_ACCESSOR_CHARS = re.compile(r"[^\w ]")
+WHITESPACE = re.compile(r"\s+")
 
 
 def to_accessor(heading):
-    """Convert a human-readable heading into a data attribute accessor
+    """Convert a human-readable heading into a data attribute accessor.
 
     This won't be infallible; for ambiguous cases, you'll need to manually
     specify the accessors.
@@ -22,18 +22,21 @@ def to_accessor(heading):
         the accessor derived from the heading.
     """
     value = WHITESPACE.sub(
-        ' ',
-        NON_ACCESSOR_CHARS.sub('', heading.lower()),
-    ).replace(' ', '_')
+        " ",
+        NON_ACCESSOR_CHARS.sub("", heading.lower()),
+    ).replace(" ", "_")
 
     if len(value) == 0 or value[0].isdigit():
-        raise ValueError(f"Unable to automatically generate accessor from heading '{heading}'.")
+        raise ValueError(
+            f"Unable to automatically generate accessor from heading '{heading}'."
+        )
 
     return value
 
 
 def build_accessors(headings, accessors):
-    """Convert a list of headings (with accessor overrides) to a finalised list of accessors.
+    """Convert a list of headings (with accessor overrides) to a finalised list
+    of accessors.
 
     Args:
         headings: a list of strings to be used as headings
@@ -48,17 +51,15 @@ def build_accessors(headings, accessors):
 
     Returns:
         A finalized list of accessors.
-
     """
     if accessors:
         if isinstance(accessors, dict):
             result = [
-                accessors[h] if h in accessors else to_accessor(h)
-                for h in headings
+                accessors[h] if h in accessors else to_accessor(h) for h in headings
             ]
         else:
             if len(headings) != len(accessors):
-                raise ValueError('Number of accessors must match number of headings')
+                raise ValueError("Number of accessors must match number of headings")
 
             result = [
                 a if a is not None else to_accessor(h)
@@ -68,6 +69,6 @@ def build_accessors(headings, accessors):
         result = [to_accessor(h) for h in headings]
 
     if len(result) != len(set(result)):
-        raise ValueError('Data accessors are not unique.')
+        raise ValueError("Data accessors are not unique.")
 
     return result

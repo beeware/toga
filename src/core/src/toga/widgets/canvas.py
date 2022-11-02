@@ -17,11 +17,11 @@ class FillRule(Enum):
 
 
 class Context:
-    """The user-created :class:`Context <Context>` drawing object to populate a drawing with visual context.
+    """The user-created :class:`Context` drawing object to populate a drawing
+    with visual context.
 
-    The top left corner of the canvas must be painted at the origin of the
-    context and is sized using the rehint() method.
-
+    The top left corner of the canvas must be painted at the origin of
+    the context and is sized using the rehint() method.
     """
 
     def __init__(self, *args, **kwargs):  # kwargs used to support multiple inheritance
@@ -35,10 +35,9 @@ class Context:
     def _draw(self, impl, *args, **kwargs):
         """Draw all drawing objects that are on the context or canvas.
 
-        This method is used by the implementation to tell the interface canvas
-        to draw all objects on it, and used by a context to draw all the
-        objects that are on the context.
-
+        This method is used by the implementation to tell the interface
+        canvas to draw all objects on it, and used by a context to draw
+        all the objects that are on the context.
         """
         for obj in self.drawing_objects:
             obj._draw(impl, *args, **kwargs)
@@ -53,7 +52,6 @@ class Context:
 
         Returns:
             The canvas node. Returns self if this node *is* the canvas node.
-
         """
         return self._canvas if self._canvas else self
 
@@ -63,16 +61,14 @@ class Context:
 
         Args:
             value: The canvas to set.
-
         """
         self._canvas = value
 
     def add_draw_obj(self, draw_obj):
-        """A drawing object to add to the drawing object stack on a context
+        """A drawing object to add to the drawing object stack on a context.
 
         Args:
             draw_obj: (:obj:`Drawing Object`): The drawing object to add
-
         """
         self.drawing_objects.append(draw_obj)
 
@@ -83,12 +79,11 @@ class Context:
         return draw_obj
 
     def redraw(self):
-        """Force a redraw of the Canvas
+        """Force a redraw of the Canvas.
 
-        The Canvas will be automatically redrawn after adding or remove a
-        drawing object. If you modify a drawing object, this method is used to
-        force a redraw.
-
+        The Canvas will be automatically redrawn after adding or remove
+        a drawing object. If you modify a drawing object, this method is
+        used to force a redraw.
         """
         self.canvas._impl.redraw()
 
@@ -97,18 +92,16 @@ class Context:
     ###########################################################################
 
     def remove(self, drawing_object):
-        """Remove a drawing object
+        """Remove a drawing object.
 
         Args:
             drawing_object (:obj:'Drawing Object'): The drawing object to remove
-
         """
         self.drawing_objects.remove(drawing_object)
         self.redraw()
 
     def clear(self):
-        """Remove all drawing objects
-        """
+        """Remove all drawing objects."""
         self.drawing_objects.clear()
         self.redraw()
 
@@ -118,15 +111,14 @@ class Context:
 
     @contextmanager
     def context(self):
-        """Constructs and returns a :class:`Context <Context>`.
+        """Constructs and returns a :class:`Context`.
 
         Makes use of an existing context. The top left corner of the canvas must
         be painted at the origin of the context and is sized using the rehint()
         method.
 
         Yields:
-            :class:`Context <Context>` object.
-
+            :class:`Context` object.
         """
         context = Context()
         self.add_draw_obj(context)
@@ -136,7 +128,7 @@ class Context:
 
     @contextmanager
     def fill(self, color=BLACK, fill_rule=FillRule.NONZERO, preserve=False):
-        """Constructs and yields a :class:`Fill <Fill>`.
+        """Constructs and yields a :class:`Fill`.
 
         A drawing operator that fills the current path according to the current
         fill rule, (each sub-path is implicitly closed before being filled).
@@ -149,8 +141,7 @@ class Context:
                 default to black.
 
         Yields:
-            :class:`Fill <Fill>` object.
-
+            :class:`Fill` object.
         """
         fill = Fill(color, fill_rule, preserve)
         fill.canvas = self.canvas
@@ -159,7 +150,7 @@ class Context:
 
     @contextmanager
     def stroke(self, color=BLACK, line_width=2.0, line_dash=None):
-        """Constructs and yields a :class:`Stroke <Stroke>`.
+        """Constructs and yields a :class:`Stroke`.
 
         Args:
             color (str, optional): color value in any valid color format,
@@ -168,8 +159,7 @@ class Context:
             line_dash (array of floats, optional): stroke line dash pattern, default is None.
 
         Yields:
-            :class:`Stroke <Stroke>` object.
-
+            :class:`Stroke` object.
         """
         stroke = Stroke(color, line_width, line_dash)
         stroke.canvas = self.canvas
@@ -179,14 +169,14 @@ class Context:
     @contextmanager
     def closed_path(self, x, y):
         """Calls move_to(x,y) and then constructs and yields a
-        :class:`ClosedPath <ClosedPath>`.
+        :class:`ClosedPath`.
 
         Args:
             x (float): The x axis of the beginning point.
             y (float): The y axis of the beginning point.
 
         Yields:
-            :class:`ClosedPath <ClosedPath>` object.
+            :class:`ClosedPath` object.
 
         """
         closed_path = ClosedPath(x, y)
@@ -199,45 +189,42 @@ class Context:
     ###########################################################################
 
     def new_path(self):
-        """Constructs and returns a :class:`NewPath <NewPath>`.
+        """Constructs and returns a :class:`NewPath`.
 
         Returns:
-            :class: `NewPath <NewPath>` object.
-
+            :class: `NewPath` object.
         """
         new_path = NewPath()
         return self.add_draw_obj(new_path)
 
     def move_to(self, x, y):
-        """Constructs and returns a :class:`MoveTo <MoveTo>`.
+        """Constructs and returns a :class:`MoveTo`.
 
         Args:
             x (float): The x axis of the point.
             y (float): The y axis of the point.
 
         Returns:
-            :class:`MoveTo <MoveTo>` object.
-
+            :class:`MoveTo` object.
         """
         move_to = MoveTo(x, y)
         return self.add_draw_obj(move_to)
 
     def line_to(self, x, y):
-        """Constructs and returns a :class:`LineTo <LineTo>`.
+        """Constructs and returns a :class:`LineTo`.
 
         Args:
             x (float): The x axis of the coordinate for the end of the line.
             y (float): The y axis of the coordinate for the end of the line.
 
         Returns:
-            :class:`LineTo <LineTo>` object.
-
+            :class:`LineTo` object.
         """
         line_to = LineTo(x, y)
         return self.add_draw_obj(line_to)
 
     def bezier_curve_to(self, cp1x, cp1y, cp2x, cp2y, x, y):
-        """Constructs and returns a :class:`BezierCurveTo <BezierCurveTo>`.
+        """Constructs and returns a :class:`BezierCurveTo`.
 
         Args:
             cp1x (float): x coordinate for the first control point.
@@ -248,14 +235,13 @@ class Context:
             y (float): y coordinate for the end point.
 
         Returns:
-            :class:`BezierCurveTo <BezierCurveTo>` object.
-
+            :class:`BezierCurveTo` object.
         """
         bezier_curve_to = BezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y)
         return self.add_draw_obj(bezier_curve_to)
 
     def quadratic_curve_to(self, cpx, cpy, x, y):
-        """Constructs and returns a :class:`QuadraticCurveTo <QuadraticCurveTo>`.
+        """Constructs and returns a :class:`QuadraticCurveTo.`.
 
         Args:
             cpx (float): The x axis of the coordinate for the control point.
@@ -264,14 +250,13 @@ class Context:
             y (float): The y axis of the coordinate for the end point.
 
         Returns:
-            :class:`QuadraticCurveTo <QuadraticCurveTo>` object.
-
+            :class:`QuadraticCurveTo` object.
         """
         quadratic_curve_to = QuadraticCurveTo(cpx, cpy, x, y)
         return self.add_draw_obj(quadratic_curve_to)
 
     def arc(self, x, y, radius, startangle=0.0, endangle=2 * pi, anticlockwise=False):
-        """Constructs and returns a :class:`Arc <Arc>`.
+        """Constructs and returns a :class:`Arc`.
 
         Args:
             x (float): The x coordinate of the arc's center.
@@ -287,8 +272,7 @@ class Context:
                 default false.
 
         Returns:
-            :class:`Arc <Arc>` object.
-
+            :class:`Arc` object.
         """
         arc = Arc(x, y, radius, startangle, endangle, anticlockwise)
         return self.add_draw_obj(arc)
@@ -304,7 +288,7 @@ class Context:
         endangle=2 * pi,
         anticlockwise=False,
     ):
-        """Constructs and returns a :class:`Ellipse <Ellipse>`.
+        """Constructs and returns a :class:`Ellipse`.
 
         Args:
             x (float): The x axis of the coordinate for the ellipse's center.
@@ -320,8 +304,7 @@ class Context:
                 anticlockwise (counter-clockwise) instead of clockwise, default false.
 
         Returns:
-            :class:`Ellipse <Ellipse>` object.
-
+            :class:`Ellipse` object.
         """
         ellipse = Ellipse(
             x, y, radiusx, radiusy, rotation, startangle, endangle, anticlockwise
@@ -330,7 +313,7 @@ class Context:
         return ellipse
 
     def rect(self, x, y, width, height):
-        """Constructs and returns a :class:`Rect <Rect>`.
+        """Constructs and returns a :class:`Rect`.
 
         Args:
             x (float): x coordinate for the rectangle starting point.
@@ -339,8 +322,7 @@ class Context:
             height (float): The rectangle's width.
 
         Returns:
-            :class:`Rect <Rect>` object.
-
+            :class:`Rect` object.
         """
         rect = Rect(x, y, width, height)
         return self.add_draw_obj(rect)
@@ -350,7 +332,7 @@ class Context:
     ###########################################################################
 
     def write_text(self, text, x=0, y=0, font=None):
-        """Constructs and returns a :class:`WriteText <WriteText>`.
+        """Constructs and returns a :class:`WriteText`.
 
         Writes a given text at the given (x,y) position. If no font is provided,
         then it will use the font assigned to the Canvas Widget, if it exists,
@@ -360,11 +342,10 @@ class Context:
             text (string): The text to fill.
             x (float, optional): The x coordinate of the text. Default to 0.
             y (float, optional): The y coordinate of the text. Default to 0.
-            font (:class:`toga.Font`, optional): The font to write with.
+            font (:class:`~toga.Font`, optional): The font to write with.
 
         Returns:
-            :class:`WriteText <WriteText>` object.
-
+            :class:`WriteText` object.
         """
         if font is None:
             font = Font(family=SYSTEM, size=self._canvas.style.font_size)
@@ -373,7 +354,7 @@ class Context:
 
 
 class Fill(Context):
-    """A user-created :class:`Fill <Fill>` drawing object for a fill context.
+    """A user-created :class:`Fill` drawing object for a fill context.
 
     A drawing object that fills the current path according to the current
     fill rule, (each sub-path is implicitly closed before being filled).
@@ -384,7 +365,6 @@ class Fill(Context):
         fill_rule (str, optional): 'nonzero' if the non-zero winding rule and
                                    'evenodd' if the even-odd winding rule.
         preserve (bool, optional): Preserves the path within the Context.
-
     """
 
     def __init__(self, color=BLACK, fill_rule=FillRule.NONZERO, preserve=False):
@@ -399,9 +379,7 @@ class Fill(Context):
         )
 
     def _draw(self, impl, *args, **kwargs):
-        """Used by parent to draw all objects that are part of the context.
-
-        """
+        """Used by parent to draw all objects that are part of the context."""
         impl.new_path(*args, **kwargs)
         for obj in self.drawing_objects:
             kwargs["fill_color"] = self.color
@@ -438,7 +416,7 @@ class Fill(Context):
 
 
 class Stroke(Context):
-    """A user-created :class:`Stroke <Stroke>` drawing object for a stroke context.
+    """A user-created :class:`Stroke` drawing object for a stroke context.
 
     A drawing operator that strokes the current path according to the
     current line style settings.
@@ -448,7 +426,6 @@ class Stroke(Context):
             default to black.
         line_width (float, optional): Stroke line width, default is 2.0.
         line_dash (array of floats, optional): Stroke line dash pattern, default is None.
-
     """
 
     def __init__(self, color=BLACK, line_width=2.0, line_dash=None):
@@ -464,9 +441,7 @@ class Stroke(Context):
         )
 
     def _draw(self, impl, *args, **kwargs):
-        """Used by parent to draw all objects that are part of the context.
-
-        """
+        """Used by parent to draw all objects that are part of the context."""
         for obj in self.drawing_objects:
             kwargs["stroke_color"] = self.color
             kwargs["text_line_width"] = self.line_width
@@ -487,15 +462,14 @@ class Stroke(Context):
 
 
 class ClosedPath(Context):
-    """A user-created :class:`ClosedPath <ClosedPath>` drawing object for a
-    closed path context.
+    """A user-created :class:`ClosedPath` drawing object for a closed path
+    context.
 
     Creates a new path and then closes it.
 
     Args:
         x (float): The x axis of the beginning point.
         y (float): The y axis of the beginning point.
-
     """
 
     def __init__(self, x, y):
@@ -507,9 +481,7 @@ class ClosedPath(Context):
         return f"{self.__class__.__name__}(x={self.x}, y={self.y})"
 
     def _draw(self, impl, *args, **kwargs):
-        """Used by parent to draw all objects that are part of the context.
-
-        """
+        """Used by parent to draw all objects that are part of the context."""
         impl.move_to(self.x, self.y, *args, **kwargs)
         for obj in self.drawing_objects:
             obj._draw(impl, *args, **kwargs)
@@ -642,8 +614,8 @@ class Canvas(Context, Widget):
 
     @property
     def on_drag(self):
-        """Return the handler invoked when the mouse is dragged with the primary
-        (usually the left) mouse button is pressed.
+        """Return the handler invoked when the mouse is dragged with the
+        primary (usually the left) mouse button is pressed.
 
         Returns:
             The handler that is invoked when the mouse is dragged with
@@ -720,8 +692,8 @@ class Canvas(Context, Widget):
 
     @on_alt_drag.setter
     def on_alt_drag(self, handler):
-        """Set the handler to invoke when the mouse is dragged with the alternate
-        (usually the right) button pressed.
+        """Set the handler to invoke when the mouse is dragged with the
+        alternate (usually the right) button pressed.
 
         Args:
             handler (:obj:`callable`): The handler to invoke when the
@@ -735,52 +707,48 @@ class Canvas(Context, Widget):
     ###########################################################################
 
     def rotate(self, radians):
-        """Constructs and returns a :class:`Rotate <Rotate>`.
+        """Constructs and returns a :class:`Rotate`.
 
         Args:
             radians (float): The angle to rotate clockwise in radians.
 
         Returns:
-            :class:`Rotate <Rotate>` object.
-
+            :class:`Rotate` object.
         """
         rotate = Rotate(radians)
         return self.add_draw_obj(rotate)
 
     def scale(self, sx, sy):
-        """Constructs and returns a :class:`Scale <Scale>`.
+        """Constructs and returns a :class:`Scale`.
 
         Args:
             sx (float): scale factor for the X dimension.
             sy (float): scale factor for the Y dimension.
 
         Returns:
-            :class:`Scale <Scale>` object.
-
+            :class:`Scale` object.
         """
         scale = Scale(sx, sy)
         return self.add_draw_obj(scale)
 
     def translate(self, tx, ty):
-        """Constructs and returns a :class:`Translate <Translate>`.
+        """Constructs and returns a :class:`Translate`.
 
         Args:
             tx (float): X value of coordinate.
             ty (float): Y value of coordinate.
 
         Returns:
-            :class:`Translate <Translate>` object.
-
+            :class:`Translate` object.
         """
         translate = Translate(tx, ty)
         return self.add_draw_obj(translate)
 
     def reset_transform(self):
-        """Constructs and returns a :class:`ResetTransform <ResetTransform>`.
+        """Constructs and returns a :class:`ResetTransform`.
 
         Returns:
-            :class:`ResetTransform <ResetTransform>` object.
-
+            :class:`ResetTransform` object.
         """
         reset_transform = ResetTransform()
         return self.add_draw_obj(reset_transform)
@@ -803,8 +771,8 @@ class Canvas(Context, Widget):
 
 
 class MoveTo:
-    """A user-created :class:`MoveTo <MoveTo>` drawing object which moves the
-    start of the next operation to a point.
+    """A user-created :class:`MoveTo` drawing object which moves the start of
+    the next operation to a point.
 
     Moves the starting point of a new sub-path to the (x, y) coordinates.
 
@@ -812,7 +780,6 @@ class MoveTo:
     Args:
         x (float): The x axis of the point.
         y (float): The y axis of the point.
-
     """
 
     def __init__(self, x, y):
@@ -823,15 +790,13 @@ class MoveTo:
         return f"{self.__class__.__name__}(x={self.x}, y={self.y})"
 
     def _draw(self, impl, *args, **kwargs):
-        """Draw the drawing object using the implementation.
-
-        """
+        """Draw the drawing object using the implementation."""
         impl.move_to(self.x, self.y, *args, **kwargs)
 
 
 class LineTo:
-    """A user-created :class:`LineTo <LineTo>` drawing object which draws a line
-    to a point.
+    """A user-created :class:`LineTo` drawing object which draws a line to a
+    point.
 
     Connects the last point in the sub-path to the (x, y) coordinates
     with a straight line (but does not actually draw it).
@@ -839,7 +804,6 @@ class LineTo:
     Args:
         x (float): The x axis of the coordinate for the end of the line.
         y (float): The y axis of the coordinate for the end of the line.
-
     """
 
     def __init__(self, x, y):
@@ -850,15 +814,13 @@ class LineTo:
         return f"{self.__class__.__name__}(x={self.x}, y={self.y})"
 
     def _draw(self, impl, *args, **kwargs):
-        """Draw the drawing object using the implementation.
-
-        """
+        """Draw the drawing object using the implementation."""
         impl.line_to(self.x, self.y, *args, **kwargs)
 
 
 class BezierCurveTo:
-    """A user-created :class:`BezierCurveTo <BezierCurveTo>` drawing
-    object which adds a Bézier curve.
+    """A user-created :class:`BezierCurveTo` drawing object which adds a Bézier
+    curve.
 
     It requires three points. The first two points are control points
     and the third one is the end point. The starting point is the last
@@ -872,7 +834,6 @@ class BezierCurveTo:
         cp2y (float): y coordinate for the second control point.
         x (float): x coordinate for the end point.
         y (float): y coordinate for the end point.
-
     """
 
     def __init__(self, cp1x, cp1y, cp2x, cp2y, x, y):
@@ -895,17 +856,15 @@ class BezierCurveTo:
         )
 
     def _draw(self, impl, *args, **kwargs):
-        """Draw the drawing object using the implementation.
-
-        """
+        """Draw the drawing object using the implementation."""
         impl.bezier_curve_to(
             self.cp1x, self.cp1y, self.cp2x, self.cp2y, self.x, self.y, *args, **kwargs
         )
 
 
 class QuadraticCurveTo:
-    """A user-created :class:`QuadraticCurveTo <QuadraticCurveTo>` drawing
-    object which adds a quadratic curve.
+    """A user-created :class:`QuadraticCurveTo` drawing object which adds a
+    quadratic curve.
 
     It requires two points. The first point is a control point and the
     second one is the end point. The starting point is the last point in the
@@ -917,7 +876,6 @@ class QuadraticCurveTo:
         cpy (float): The y axis of the coordinate for the control point.
         x (float): The x axis of the coordinate for the end point.
         y (float): he y axis of the coordinate for the end point.
-
     """
 
     def __init__(self, cpx, cpy, x, y):
@@ -932,14 +890,12 @@ class QuadraticCurveTo:
         )
 
     def _draw(self, impl, *args, **kwargs):
-        """Draw the drawing object using the implementation.
-
-        """
+        """Draw the drawing object using the implementation."""
         impl.quadratic_curve_to(self.cpx, self.cpy, self.x, self.y, *args, **kwargs)
 
 
 class Ellipse:
-    """A user-created :class:`Ellipse <Ellipse>` drawing object which adds an ellipse.
+    """A user-created :class:`Ellipse` drawing object which adds an ellipse.
 
     The ellipse is centered at (x, y) position with the radii radiusx and radiusy
     starting at startAngle and ending at endAngle going in the given
@@ -957,7 +913,6 @@ class Ellipse:
             be drawn, default 2*pi.
         anticlockwise (bool, optional): If true, draws the ellipse anticlockwise
             (counter-clockwise) instead of clockwise, default false.
-
     """
 
     def __init__(
@@ -997,9 +952,7 @@ class Ellipse:
         )
 
     def _draw(self, impl, *args, **kwargs):
-        """Draw the drawing object using the implementation.
-
-        """
+        """Draw the drawing object using the implementation."""
         impl.ellipse(
             self.x,
             self.y,
@@ -1010,12 +963,12 @@ class Ellipse:
             self.endangle,
             self.anticlockwise,
             *args,
-            **kwargs
+            **kwargs,
         )
 
 
 class Arc:
-    """A user-created :class:`Arc <Arc>` drawing object which adds an arc.
+    """A user-created :class:`Arc` drawing object which adds an arc.
 
     The arc is centered at (x, y) position with radius r starting at startangle
     and ending at endangle going in the given direction by anticlockwise
@@ -1033,7 +986,6 @@ class Arc:
         anticlockwise (bool, optional): If true, causes the arc to be drawn
             counter-clockwise between the two angles instead of clockwise,
             default false.
-
     """
 
     def __init__(
@@ -1058,9 +1010,7 @@ class Arc:
         )
 
     def _draw(self, impl, *args, **kwargs):
-        """Draw the drawing object using the implementation.
-
-        """
+        """Draw the drawing object using the implementation."""
         impl.arc(
             self.x,
             self.y,
@@ -1069,12 +1019,12 @@ class Arc:
             self.endangle,
             self.anticlockwise,
             *args,
-            **kwargs
+            **kwargs,
         )
 
 
 class Rect:
-    """A user-created :class:`Rect <Rect>` drawing object which adds a rectangle.
+    """A user-created :class:`Rect` drawing object which adds a rectangle.
 
     The rectangle is at position (x, y) with a size that is determined by
     width and height. Those four points are connected by straight lines and
@@ -1086,7 +1036,6 @@ class Rect:
         y (float): y coordinate for the rectangle starting point.
         width (float): The rectangle's width.
         height (float): The rectangle's width.
-
     """
 
     def __init__(self, x, y, width, height):
@@ -1101,14 +1050,12 @@ class Rect:
         )
 
     def _draw(self, impl, *args, **kwargs):
-        """Draw the drawing object using the implementation.
-
-        """
+        """Draw the drawing object using the implementation."""
         impl.rect(self.x, self.y, self.width, self.height, *args, **kwargs)
 
 
 class Rotate:
-    """A user-created :class:`Rotate <Rotate>` to add canvas rotation.
+    """A user-created :class:`Rotate` to add canvas rotation.
 
     Modifies the canvas by rotating the canvas by angle radians. The rotation
     center point is always the canvas origin which is in the upper left of the
@@ -1117,7 +1064,6 @@ class Rotate:
 
     Args:
         radians (float): The angle to rotate clockwise in radians.
-
     """
 
     def __init__(self, radians):
@@ -1127,21 +1073,18 @@ class Rotate:
         return f"{self.__class__.__name__}(radians={self.radians})"
 
     def _draw(self, impl, *args, **kwargs):
-        """Draw the drawing object using the implementation.
-
-        """
+        """Draw the drawing object using the implementation."""
         impl.rotate(self.radians, *args, **kwargs)
 
 
 class Scale:
-    """A user-created :class:`Scale <Scale>` to add canvas scaling.
+    """A user-created :class:`Scale` to add canvas scaling.
 
     Modifies the canvas by scaling the X and Y canvas axes by sx and sy.
 
     Args:
         sx (float): scale factor for the X dimension.
         sy (float): scale factor for the Y dimension.
-
     """
 
     def __init__(self, sx, sy):
@@ -1152,21 +1095,18 @@ class Scale:
         return f"{self.__class__.__name__}(sx={self.sx}, sy={self.sy})"
 
     def _draw(self, impl, *args, **kwargs):
-        """Draw the drawing object using the implementation.
-
-        """
+        """Draw the drawing object using the implementation."""
         impl.scale(self.sx, self.sy, *args, **kwargs)
 
 
 class Translate:
-    """A user-created :class:`Translate <Translate>` to translate the canvas.
+    """A user-created :class:`Translate` to translate the canvas.
 
     Modifies the canvas by translating the canvas origin by (tx, ty).
 
     Args:
         tx (float): X value of coordinate.
         ty (float): Y value of coordinate.
-
     """
 
     def __init__(self, tx, ty):
@@ -1177,33 +1117,27 @@ class Translate:
         return f"{self.__class__.__name__}(tx={self.tx}, ty={self.ty})"
 
     def _draw(self, impl, *args, **kwargs):
-        """Draw the drawing object using the implementation.
-
-        """
+        """Draw the drawing object using the implementation."""
         impl.translate(self.tx, self.ty, *args, **kwargs)
 
 
 class ResetTransform:
-    """A user-created :class:`ResetTransform <ResetTransform>` to reset the
-    canvas.
+    """A user-created :class:`ResetTransform` to reset the canvas.
 
     Resets the canvas by setting it equal to the canvas with no
     transformations.
-
     """
 
     def __repr__(self):
         return f"{self.__class__.__name__}()"
 
     def _draw(self, impl, *args, **kwargs):
-        """Draw the drawing object using the implementation.
-
-        """
+        """Draw the drawing object using the implementation."""
         impl.reset_transform(*args, **kwargs)
 
 
 class WriteText:
-    """A user-created :class:`WriteText <WriteText>` to add text.
+    """A user-created :class:`WriteText` to add text.
 
     Writes a given text at the given (x,y) position. If no font is provided,
     then it will use the font assigned to the Canvas Widget, if it exists,
@@ -1214,7 +1148,6 @@ class WriteText:
         x (float, optional): The x coordinate of the text. Default to 0.
         y (float, optional): The y coordinate of the text. Default to 0.
         font (:class:`toga.Font`, optional): The font to write with.
-
     """
 
     def __init__(self, text, x, y, font):
@@ -1229,22 +1162,16 @@ class WriteText:
         )
 
     def _draw(self, impl, *args, **kwargs):
-        """Draw the drawing object using the implementation.
-
-        """
+        """Draw the drawing object using the implementation."""
         impl.write_text(self.text, self.x, self.y, self.font, *args, **kwargs)
 
 
 class NewPath:
-    """A user-created :class:`NewPath <NewPath>` to add a new path.
-
-    """
+    """A user-created :class:`NewPath` to add a new path."""
 
     def __repr__(self):
         return f"{self.__class__.__name__}()"
 
     def _draw(self, impl, *args, **kwargs):
-        """Draw the drawing object using the implementation.
-
-        """
+        """Draw the drawing object using the implementation."""
         impl.new_path(*args, **kwargs)

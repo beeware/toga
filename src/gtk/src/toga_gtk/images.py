@@ -12,7 +12,7 @@ class Image:
         if path:
             self.native = GdkPixbuf.Pixbuf.new_from_file(str(path))
         elif url:
-            request = Request(url, headers={'User-Agent': ''})
+            request = Request(url, headers={"User-Agent": ""})
             with urlopen(request) as result:
                 input_stream = Gio.MemoryInputStream.new_from_data(result.read(), None)
                 self.native = GdkPixbuf.Pixbuf.new_from_stream(input_stream, None)

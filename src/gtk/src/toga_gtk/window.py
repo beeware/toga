@@ -86,8 +86,7 @@ class Window:
             else:
                 item_impl = Gtk.ToolButton()
                 if cmd.icon:
-                    icon_impl = cmd.icon.bind()
-                    item_impl.set_icon_widget(icon_impl.native_32)
+                    item_impl.set_icon_widget(cmd.icon._impl.native_32)
                 item_impl.set_label(cmd.text)
                 item_impl.set_tooltip_text(cmd.tooltip)
                 item_impl.connect("clicked", wrapped_handler(cmd, cmd.action))
@@ -116,7 +115,7 @@ class Window:
         self.native.add(self.layout)
 
         # Make the window sensitive to size changes
-        widget.native.connect('size-allocate', self.gtk_size_allocate)
+        widget.native.connect("size-allocate", self.gtk_size_allocate)
 
         # Set the widget's viewport to be based on the window's content.
         widget.viewport = GtkViewport(widget.native)
@@ -132,8 +131,7 @@ class Window:
         # and use that as the basis for setting the minimum window size.
         self.interface.content._impl.rehint()
         self.interface.content.style.layout(
-            self.interface.content,
-            GtkViewport(native=None)
+            self.interface.content, GtkViewport(native=None)
         )
         self.interface.content._impl.min_width = self.interface.content.layout.width
         self.interface.content._impl.min_height = self.interface.content.layout.height

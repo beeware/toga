@@ -126,7 +126,6 @@ class CanvasTests(TestCase):
         self.assertActionPerformedWith(self.testing_canvas, "fill")
 
     def test_fill_raises_error_on_invalid_fill_rule(self):
-
         def fill_context():
             with self.testing_canvas.fill(fill_rule="unknown"):
                 pass
@@ -134,7 +133,7 @@ class CanvasTests(TestCase):
         self.assertRaisesRegex(
             ValueError,
             "^fill rule should be one of the followings: evenodd, nonzero$",
-            fill_context
+            fill_context,
         )
         self.assertActionNotPerformed(self.testing_canvas, "fill")
 
@@ -143,14 +142,14 @@ class CanvasTests(TestCase):
         yc = 150
         radius = 0.5 * 50 - 10
         alpha = 0.8
-        subradius = radius * (2 / 3. - 0.1)
+        subradius = radius * (2 / 3.0 - 0.1)
 
         with self.testing_canvas.fill(
             color="rgba(1, 0, 0, " + str(alpha) + ")"
         ) as fill1:
             ellipse1 = fill1.ellipse(
-                xc + radius / 3. * cos(pi * 0.5),
-                yc - radius / 3. * sin(pi * 0.5),
+                xc + radius / 3.0 * cos(pi * 0.5),
+                yc - radius / 3.0 * sin(pi * 0.5),
                 subradius,
                 subradius,
                 2.0 * pi,
@@ -159,8 +158,8 @@ class CanvasTests(TestCase):
         self.assertActionPerformedWith(
             self.testing_canvas,
             "ellipse",
-            x=xc + radius / 3. * cos(pi * 0.5),
-            y=yc - radius / 3. * sin(pi * 0.5),
+            x=xc + radius / 3.0 * cos(pi * 0.5),
+            y=yc - radius / 3.0 * sin(pi * 0.5),
             radiusx=subradius,
             radiusy=subradius,
             rotation=2.0 * pi,
@@ -171,8 +170,8 @@ class CanvasTests(TestCase):
             color="rgba(0, 1, 0, " + str(alpha) + ")"
         ) as fill2:
             ellipse2 = fill2.ellipse(
-                xc + radius / 3. * cos(pi * (0.5 + 2 / .3)),
-                yc - radius / 3. * sin(pi * (0.5 + 2 / .3)),
+                xc + radius / 3.0 * cos(pi * (0.5 + 2 / 0.3)),
+                yc - radius / 3.0 * sin(pi * (0.5 + 2 / 0.3)),
                 subradius,
                 subradius,
             )
@@ -180,8 +179,8 @@ class CanvasTests(TestCase):
         self.assertActionPerformedWith(
             self.testing_canvas,
             "ellipse",
-            x=xc + radius / 3. * cos(pi * (0.5 + 2 / .3)),
-            y=yc - radius / 3. * sin(pi * (0.5 + 2 / .3)),
+            x=xc + radius / 3.0 * cos(pi * (0.5 + 2 / 0.3)),
+            y=yc - radius / 3.0 * sin(pi * (0.5 + 2 / 0.3)),
             radiusx=subradius,
             radiusy=subradius,
         )
@@ -191,8 +190,8 @@ class CanvasTests(TestCase):
             color="rgba(0, 0, 1, " + str(alpha) + ")"
         ) as fill3:
             ellipse3 = fill3.ellipse(
-                xc + radius / 3. * cos(pi * (0.5 + 4 / .3)),
-                yc - radius / 3. * sin(pi * (0.5 + 4 / .3)),
+                xc + radius / 3.0 * cos(pi * (0.5 + 4 / 0.3)),
+                yc - radius / 3.0 * sin(pi * (0.5 + 4 / 0.3)),
                 subradius,
                 subradius,
             )
@@ -200,8 +199,8 @@ class CanvasTests(TestCase):
         self.assertActionPerformedWith(
             self.testing_canvas,
             "ellipse",
-            x=xc + radius / 3. * cos(pi * (0.5 + 4 / .3)),
-            y=yc - radius / 3. * sin(pi * (0.5 + 4 / .3)),
+            x=xc + radius / 3.0 * cos(pi * (0.5 + 4 / 0.3)),
+            y=yc - radius / 3.0 * sin(pi * (0.5 + 4 / 0.3)),
             radiusx=subradius,
             radiusy=subradius,
         )
@@ -489,13 +488,18 @@ class CanvasTests(TestCase):
             stroker.line_dash = [1, 1]
             self.testing_canvas.redraw()
         self.assertActionPerformedWith(
-            self.testing_canvas, "stroke", color=rgb(102, 51, 153), line_width=1, line_dash=[1, 1]
+            self.testing_canvas,
+            "stroke",
+            color=rgb(102, 51, 153),
+            line_width=1,
+            line_dash=[1, 1],
         )
 
     def test_stroke_repr(self):
         with self.testing_canvas.stroke() as stroker1:
             self.assertEqual(
-                repr(stroker1), "Stroke(color=rgb(0, 0, 0), line_width=2.0, line_dash=None)"
+                repr(stroker1),
+                "Stroke(color=rgb(0, 0, 0), line_width=2.0, line_dash=None)",
             )
 
         # Testing to draw a colorless stroke, i.e. with color=None
@@ -617,16 +621,16 @@ class CanvasTests(TestCase):
 
         # set a new callback
         def callback(widget, **extra):
-            return f'called {type(widget)} with {extra}'
+            return f"called {type(widget)} with {extra}"
 
         self.testing_canvas.on_resize = callback
         self.assertEqual(self.testing_canvas.on_resize._raw, callback)
         self.assertEqual(
-            self.testing_canvas.on_resize('widget', a=1),
-            "called <class 'toga.widgets.canvas.Canvas'> with {'a': 1}"
+            self.testing_canvas.on_resize("widget", a=1),
+            "called <class 'toga.widgets.canvas.Canvas'> with {'a': 1}",
         )
         self.assertValueSet(
-            self.testing_canvas, 'on_resize', self.testing_canvas.on_resize
+            self.testing_canvas, "on_resize", self.testing_canvas.on_resize
         )
 
     def test_on_press(self):
@@ -635,15 +639,17 @@ class CanvasTests(TestCase):
 
         # set a new callback
         def callback(widget, **extra):
-            return f'called {type(widget)} with {extra}'
+            return f"called {type(widget)} with {extra}"
 
         self.testing_canvas.on_press = callback
         self.assertEqual(self.testing_canvas.on_press._raw, callback)
         self.assertEqual(
-            self.testing_canvas.on_press('widget', a=1),
-            "called <class 'toga.widgets.canvas.Canvas'> with {'a': 1}"
+            self.testing_canvas.on_press("widget", a=1),
+            "called <class 'toga.widgets.canvas.Canvas'> with {'a': 1}",
         )
-        self.assertValueSet(self.testing_canvas, 'on_press', self.testing_canvas.on_press)
+        self.assertValueSet(
+            self.testing_canvas, "on_press", self.testing_canvas.on_press
+        )
 
     def test_on_release(self):
         """Check on_release handler being invoked."""
@@ -651,15 +657,17 @@ class CanvasTests(TestCase):
 
         # set a new callback
         def callback(widget, **extra):
-            return f'called {type(widget)} with {extra}'
+            return f"called {type(widget)} with {extra}"
 
         self.testing_canvas.on_release = callback
         self.assertEqual(self.testing_canvas.on_release._raw, callback)
         self.assertEqual(
-            self.testing_canvas.on_release('widget', a=1),
-            "called <class 'toga.widgets.canvas.Canvas'> with {'a': 1}"
+            self.testing_canvas.on_release("widget", a=1),
+            "called <class 'toga.widgets.canvas.Canvas'> with {'a': 1}",
         )
-        self.assertValueSet(self.testing_canvas, 'on_release', self.testing_canvas.on_release)
+        self.assertValueSet(
+            self.testing_canvas, "on_release", self.testing_canvas.on_release
+        )
 
     def test_on_drag(self):
         """Check on_drag handler being invoked."""
@@ -667,15 +675,15 @@ class CanvasTests(TestCase):
 
         # set a new callback
         def callback(widget, **extra):
-            return f'called {type(widget)} with {extra}'
+            return f"called {type(widget)} with {extra}"
 
         self.testing_canvas.on_drag = callback
         self.assertEqual(self.testing_canvas.on_drag._raw, callback)
         self.assertEqual(
-            self.testing_canvas.on_drag('widget', a=1),
-            "called <class 'toga.widgets.canvas.Canvas'> with {'a': 1}"
+            self.testing_canvas.on_drag("widget", a=1),
+            "called <class 'toga.widgets.canvas.Canvas'> with {'a': 1}",
         )
-        self.assertValueSet(self.testing_canvas, 'on_drag', self.testing_canvas.on_drag)
+        self.assertValueSet(self.testing_canvas, "on_drag", self.testing_canvas.on_drag)
 
     def test_on_alt_press(self):
         """Check on_alt_press handler being invoked."""
@@ -683,15 +691,17 @@ class CanvasTests(TestCase):
 
         # set a new callback
         def callback(widget, **extra):
-            return f'called {type(widget)} with {extra}'
+            return f"called {type(widget)} with {extra}"
 
         self.testing_canvas.on_alt_press = callback
         self.assertEqual(self.testing_canvas.on_alt_press._raw, callback)
         self.assertEqual(
-            self.testing_canvas.on_alt_press('widget', a=1),
-            "called <class 'toga.widgets.canvas.Canvas'> with {'a': 1}"
+            self.testing_canvas.on_alt_press("widget", a=1),
+            "called <class 'toga.widgets.canvas.Canvas'> with {'a': 1}",
         )
-        self.assertValueSet(self.testing_canvas, 'on_alt_press', self.testing_canvas.on_alt_press)
+        self.assertValueSet(
+            self.testing_canvas, "on_alt_press", self.testing_canvas.on_alt_press
+        )
 
     def test_on_alt_release(self):
         """Check on_alt_release handler being invoked."""
@@ -699,15 +709,17 @@ class CanvasTests(TestCase):
 
         # set a new callback
         def callback(widget, **extra):
-            return f'called {type(widget)} with {extra}'
+            return f"called {type(widget)} with {extra}"
 
         self.testing_canvas.on_alt_release = callback
         self.assertEqual(self.testing_canvas.on_alt_release._raw, callback)
         self.assertEqual(
-            self.testing_canvas.on_alt_release('widget', a=1),
-            "called <class 'toga.widgets.canvas.Canvas'> with {'a': 1}"
+            self.testing_canvas.on_alt_release("widget", a=1),
+            "called <class 'toga.widgets.canvas.Canvas'> with {'a': 1}",
         )
-        self.assertValueSet(self.testing_canvas, 'on_alt_release', self.testing_canvas.on_alt_release)
+        self.assertValueSet(
+            self.testing_canvas, "on_alt_release", self.testing_canvas.on_alt_release
+        )
 
     def test_on_alt_drag(self):
         """Check on_alt_dragged handler being invoked."""
@@ -715,15 +727,17 @@ class CanvasTests(TestCase):
 
         # set a new callback
         def callback(widget, **extra):
-            return f'called {type(widget)} with {extra}'
+            return f"called {type(widget)} with {extra}"
 
         self.testing_canvas.on_alt_drag = callback
         self.assertEqual(self.testing_canvas.on_alt_drag._raw, callback)
         self.assertEqual(
-            self.testing_canvas.on_alt_drag('widget', a=1),
-            "called <class 'toga.widgets.canvas.Canvas'> with {'a': 1}"
+            self.testing_canvas.on_alt_drag("widget", a=1),
+            "called <class 'toga.widgets.canvas.Canvas'> with {'a': 1}",
         )
-        self.assertValueSet(self.testing_canvas, 'on_alt_drag', self.testing_canvas.on_alt_drag)
+        self.assertValueSet(
+            self.testing_canvas, "on_alt_drag", self.testing_canvas.on_alt_drag
+        )
 
     def test_measure_text(self):
         text = "This is text"

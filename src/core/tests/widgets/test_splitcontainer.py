@@ -7,21 +7,15 @@ from toga_dummy.utils import TestCase, TestStyle
 class SplitContainerTests(TestCase):
     def setUp(self):
         super().setUp()
-        self.content = [
-            toga.Box(style=TestStyle()),
-            toga.Box(style=TestStyle())
-        ]
+        self.content = [toga.Box(style=TestStyle()), toga.Box(style=TestStyle())]
         self.split = toga.SplitContainer(style=TestStyle())
 
     def test_widget_created(self):
         self.assertEqual(self.split._impl.interface, self.split)
-        self.assertActionPerformed(self.split, 'create SplitContainer')
+        self.assertActionPerformed(self.split, "create SplitContainer")
 
     def test_setting_content_valid_input(self):
-        new_content = [
-            toga.Box(style=TestStyle()),
-            toga.Box(style=TestStyle())
-        ]
+        new_content = [toga.Box(style=TestStyle()), toga.Box(style=TestStyle())]
         self.split.content = new_content
         self.assertEqual(self.split.content, new_content)
 
@@ -33,16 +27,21 @@ class SplitContainerTests(TestCase):
             self.split.content = [toga.Box()]
 
     def test_setting_content_invokes_impl_method(self):
-        new_content = [
-            toga.Box(style=TestStyle()),
-            toga.Box(style=TestStyle())
-        ]
+        new_content = [toga.Box(style=TestStyle()), toga.Box(style=TestStyle())]
         self.split.content = new_content
-        self.assertActionPerformedWith(self.split, 'add content', position=0, widget=new_content[0]._impl)
-        self.assertActionPerformedWith(self.split, 'add content', position=1, widget=new_content[1]._impl)
+        self.assertActionPerformedWith(
+            self.split, "add content", position=0, widget=new_content[0]._impl
+        )
+        self.assertActionPerformedWith(
+            self.split, "add content", position=1, widget=new_content[1]._impl
+        )
 
-        self.assertActionPerformedWith(new_content[0], 'set bounds', x=0, y=0, width=0, height=0)
-        self.assertActionPerformedWith(new_content[1], 'set bounds', x=0, y=0, width=0, height=0)
+        self.assertActionPerformedWith(
+            new_content[0], "set bounds", x=0, y=0, width=0, height=0
+        )
+        self.assertActionPerformedWith(
+            new_content[1], "set bounds", x=0, y=0, width=0, height=0
+        )
 
     def test_direction_property_default(self):
         self.assertEqual(self.split.direction, True)
@@ -129,7 +128,7 @@ class SplitContainerTests(TestCase):
     def test_refresh_without_content(self):
         self.split.refresh()
         self.assertActionPerformedWith(
-            self.split, 'set bounds', x=0, y=0, width=0, height=0
+            self.split, "set bounds", x=0, y=0, width=0, height=0
         )
 
     def test_refresh_with_content(self):
@@ -140,9 +139,9 @@ class SplitContainerTests(TestCase):
 
         self.split.refresh()
         self.assertActionPerformedWith(
-            self.split, 'set bounds', x=0, y=0, width=0, height=0
+            self.split, "set bounds", x=0, y=0, width=0, height=0
         )
         for content in self.content:
             self.assertActionPerformedWith(
-                content, 'set bounds', x=0, y=0, width=0, height=0
+                content, "set bounds", x=0, y=0, width=0, height=0
             )

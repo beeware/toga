@@ -24,7 +24,7 @@ from toga_iOS.libs import (
     kCGPathEOFill,
     kCGPathFill,
     kCGPathStroke,
-    uikit
+    uikit,
 )
 from toga_iOS.widgets.base import Widget
 
@@ -56,22 +56,22 @@ class Canvas(Widget):
         pass
 
     def set_on_press(self, handler):
-        self.interface.factory.not_implemented('Canvas.set_on_press()')
+        self.interface.factory.not_implemented("Canvas.set_on_press()")
 
     def set_on_release(self, handler):
-        self.interface.factory.not_implemented('Canvas.set_on_release()')
+        self.interface.factory.not_implemented("Canvas.set_on_release()")
 
     def set_on_drag(self, handler):
-        self.interface.factory.not_implemented('Canvas.set_on_drag()')
+        self.interface.factory.not_implemented("Canvas.set_on_drag()")
 
     def set_on_alt_press(self, handler):
-        self.interface.factory.not_implemented('Canvas.set_on_alt_press()')
+        self.interface.factory.not_implemented("Canvas.set_on_alt_press()")
 
     def set_on_alt_release(self, handler):
-        self.interface.factory.not_implemented('Canvas.set_on_alt_release()')
+        self.interface.factory.not_implemented("Canvas.set_on_alt_release()")
 
     def set_on_alt_drag(self, handler):
-        self.interface.factory.not_implemented('Canvas.set_on_alt_drag()')
+        self.interface.factory.not_implemented("Canvas.set_on_alt_drag()")
 
     # Basic paths
 
@@ -178,7 +178,9 @@ class Canvas(Widget):
             # Set color to black
             core_graphics.CGContextSetRGBStrokeColor(draw_context, 0, 0, 0, 1)
         if line_dash is not None:
-            core_graphics.CGContextSetLineDash(draw_context, 0, (CGFloat*len(line_dash))(*line_dash), len(line_dash))
+            core_graphics.CGContextSetLineDash(
+                draw_context, 0, (CGFloat * len(line_dash))(*line_dash), len(line_dash)
+            )
         else:
             core_graphics.CGContextSetLineDash(draw_context, 0, None, 0)
         core_graphics.CGContextDrawPath(draw_context, mode)
@@ -202,12 +204,12 @@ class Canvas(Widget):
     # Text
 
     def measure_text(self, text, font, tight=False):
-        return font.bind().measure(text, tight=tight)
+        return font._impl.measure(text, tight=tight)
 
     def write_text(self, text, x, y, font, *args, **kwargs):
         width, height = self.measure_text(text, font)
         textAttributes = NSMutableDictionary.alloc().init()
-        textAttributes[NSFontAttributeName] = font.bind().native
+        textAttributes[NSFontAttributeName] = font._impl.native
 
         if "stroke_color" in kwargs and "fill_color" in kwargs:
             textAttributes[NSStrokeColorAttributeName] = native_color(
@@ -246,4 +248,4 @@ class Canvas(Widget):
         self.interface.intrinsic.height = at_least(fitting_size.height)
 
     def set_on_resize(self, handler):
-        self.interface.factory.not_implemented('Canvas.on_resize')
+        self.interface.factory.not_implemented("Canvas.on_resize")

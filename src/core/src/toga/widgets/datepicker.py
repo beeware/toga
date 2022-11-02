@@ -7,14 +7,14 @@ from .base import Widget
 
 
 class DatePicker(Widget):
-    """
-    A widget to get user selected datetime object
+    """A widget to get user selected datetime object.
 
     Args:
         id (str): An identifier for this widget.
         style (:obj:`Style`): An optional style object. If no style is provided then
             a new one will be created for the widget.
     """
+
     MIN_WIDTH = 200
 
     def __init__(
@@ -54,9 +54,7 @@ class DatePicker(Widget):
                     "`initial` has been deprecated, use `value`"
                 )
             else:
-                warnings.warn(
-                    "`initial` has been renamed `value`", DeprecationWarning
-                )
+                warnings.warn("`initial` has been renamed `value`", DeprecationWarning)
             value = initial
 
         ##################################################################
@@ -70,8 +68,7 @@ class DatePicker(Widget):
 
     @property
     def value(self):
-        """
-        The value of the currently selected date.
+        """The value of the currently selected date.
 
         :return: Selected date as Date object
         """
@@ -95,8 +92,8 @@ class DatePicker(Widget):
 
     @property
     def min_date(self):
-        """
-        The minimum allowable date for the widget. All dates prior to the minimum date will be blanked out.
+        """The minimum allowable date for the widget. All dates prior to the
+        minimum date will be blanked out.
 
         :return: The minimum date specified. Returns None if min_date not specified
         """
@@ -113,8 +110,8 @@ class DatePicker(Widget):
 
     @property
     def max_date(self):
-        """
-        The maximum allowable date for the widget. All dates prior to the minimum date will be blanked out.
+        """The maximum allowable date for the widget. All dates prior to the
+        minimum date will be blanked out.
 
         :return: The maximum date specified. Returns None if max_date not specified
         """
@@ -131,7 +128,7 @@ class DatePicker(Widget):
 
     @property
     def on_change(self):
-        """The handler to invoke when the value changes
+        """The handler to invoke when the value changes.
 
         Returns:
             The function ``callable`` that is called on a content change.

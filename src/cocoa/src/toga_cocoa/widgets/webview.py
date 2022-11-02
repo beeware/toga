@@ -6,12 +6,7 @@ from rubicon.objc.runtime import objc_id
 from travertino.size import at_least
 
 from ..keys import toga_key
-from ..libs import (
-    NSURL,
-    NSURLRequest,
-    WKWebView,
-    send_super,
-)
+from ..libs import NSURL, NSURLRequest, WKWebView, send_super
 from .base import Widget
 
 
@@ -32,7 +27,7 @@ class TogaWebView(WKWebView):
     def keyDown_(self, event) -> None:
         if self.interface.on_key_down:
             self.interface.on_key_down(self.interface, **toga_key(event))
-        send_super(__class__, self, 'keyDown:', event, argtypes=[c_void_p])
+        send_super(__class__, self, "keyDown:", event, argtypes=[c_void_p])
 
     @objc_method
     def touchBar(self):
@@ -79,12 +74,18 @@ class WebView(Widget):
         self.native.loadHTMLString(content, baseURL=NSURL.URLWithString(root_url))
 
     def set_user_agent(self, value):
-        user_agent = value if value else "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/603.3.8 (KHTML, like Gecko) Version/10.1.2 Safari/603.3.8"  # NOQA
+        user_agent = (
+            value
+            if value
+            else (
+                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/603.3.8 "
+                "(KHTML, like Gecko) Version/10.1.2 Safari/603.3.8"
+            )
+        )
         self.native.customUserAgent = user_agent
 
     async def evaluate_javascript(self, javascript):
-        """
-        Evaluate a JavaScript expression.
+        """Evaluate a JavaScript expression.
 
         **This method is asynchronous**. It will return when the expression has been
         evaluated and a result is available.
@@ -110,8 +111,7 @@ class WebView(Widget):
         return await future
 
     def invoke_javascript(self, javascript):
-        """
-        Invoke a block of javascript.
+        """Invoke a block of javascript.
 
         :param javascript: The javascript expression to invoke
         """

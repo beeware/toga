@@ -24,9 +24,7 @@ class ExampleTableApp(toga.App):
     # Table callback functions
     def on_select_handler1(self, widget, row, **kwargs):
         self.label_table1.text = (
-            f"You selected row: {row.title}"
-            if row is not None
-            else "No row selected"
+            f"You selected row: {row.title}" if row is not None else "No row selected"
         )
 
     def on_select_handler2(self, widget, row, **kwargs):
@@ -40,13 +38,13 @@ class ExampleTableApp(toga.App):
     def on_double_click1(self, widget, row, **kwargs):
         self.main_window.info_dialog(
             title="movie selection",
-            message=self.build_double_click_message(row=row, table_index=1)
+            message=self.build_double_click_message(row=row, table_index=1),
         )
 
     def on_double_click2(self, widget, row, **kwargs):
         self.main_window.info_dialog(
             title="movie selection",
-            message=self.build_double_click_message(row=row, table_index=2)
+            message=self.build_double_click_message(row=row, table_index=2),
         )
 
     # Button callback functions
@@ -197,7 +195,9 @@ class ExampleTableApp(toga.App):
 
     @classmethod
     def build_double_click_message(cls, row, table_index):
-        adjective = random.choice(["magnificent", "amazing", "awesome", "life-changing"])
+        adjective = random.choice(
+            ["magnificent", "amazing", "awesome", "life-changing"]
+        )
         return (
             f"You selected the {adjective} {row.genre.lower()} movie "
             f"{row.title} ({row.year}) from Table {table_index}"

@@ -7,32 +7,31 @@ import toga
 
 
 class TestCommandsGroup(unittest.TestCase):
-
     def test_group_init_no_order(self):
-        grp = toga.Group('text')
-        self.assertEqual(grp.text, 'text')
+        grp = toga.Group("text")
+        self.assertEqual(grp.text, "text")
         self.assertEqual(grp.order, 0)
 
     def test_group_init_with_order(self):
-        grp = toga.Group('text', 2)
-        self.assertEqual(grp.text, 'text')
+        grp = toga.Group("text", 2)
+        self.assertEqual(grp.text, "text")
         self.assertEqual(grp.order, 2)
 
     def test_hashable(self):
-        grp1 = toga.Group('text 1')
-        grp2 = toga.Group('text 2')
+        grp1 = toga.Group("text 1")
+        grp2 = toga.Group("text 2")
 
         # The hash is based on the full path, not just the text.
         # This allows texts to be non-unique, as long as they're in
         # different groups
-        grp1_child = toga.Group('text', parent=grp1)
-        grp2_child = toga.Group('text', parent=grp2)
+        grp1_child = toga.Group("text", parent=grp1)
+        grp2_child = toga.Group("text", parent=grp2)
 
         # Insert the groups as keys in a dict. This is
         # only possible if Group is hashable.
         groups = {
-            grp1: 'First',
-            grp2: 'Second',
+            grp1: "First",
+            grp2: "Second",
             grp1_child: "Child of 1",
             grp2_child: "Child of 2",
         }
@@ -43,12 +42,12 @@ class TestCommandsGroup(unittest.TestCase):
         self.assertEqual(groups[grp2_child], "Child of 2")
 
     def test_group_eq(self):
-        self.assertEqual(toga.Group('A'), toga.Group('A'))
-        self.assertEqual(toga.Group('A', 1), toga.Group('A', 1))
-        self.assertNotEqual(toga.Group('A'), toga.Group('B'))
-        self.assertNotEqual(toga.Group('A'), None)
-        self.assertNotEqual(toga.Group('A', 1), toga.Group('A', 2))
-        self.assertNotEqual(toga.Group('A', 1), toga.Group('B', 1))
+        self.assertEqual(toga.Group("A"), toga.Group("A"))
+        self.assertEqual(toga.Group("A", 1), toga.Group("A", 1))
+        self.assertNotEqual(toga.Group("A"), toga.Group("B"))
+        self.assertNotEqual(toga.Group("A"), None)
+        self.assertNotEqual(toga.Group("A", 1), toga.Group("A", 2))
+        self.assertNotEqual(toga.Group("A", 1), toga.Group("B", 1))
 
     def test_set_parent_in_constructor(self):
         parent = toga.Group("parent")
@@ -95,26 +94,23 @@ class TestCommandsGroup(unittest.TestCase):
         self.assertEqual(top.root, top)
         self.assertEqual(bottom.root, top)
 
-    test_order_by_number = order_test(toga.Group('A', 1), toga.Group('A', 2))
-    test_order_ignore_text = order_test(toga.Group('B', 1), toga.Group('A', 2))
-    test_order_by_text = order_test(toga.Group('A'), toga.Group('B'))
+    test_order_by_number = order_test(toga.Group("A", 1), toga.Group("A", 2))
+    test_order_ignore_text = order_test(toga.Group("B", 1), toga.Group("A", 2))
+    test_order_by_text = order_test(toga.Group("A"), toga.Group("B"))
     test_order_by_groups = order_test(
         PARENT_GROUP1,
-        toga.Group('C', parent=PARENT_GROUP1),
-        toga.Group('D', parent=PARENT_GROUP1),
-        toga.Group('A', parent=PARENT_GROUP1, section=2),
+        toga.Group("C", parent=PARENT_GROUP1),
+        toga.Group("D", parent=PARENT_GROUP1),
+        toga.Group("A", parent=PARENT_GROUP1, section=2),
         PARENT_GROUP2,
         toga.Group("B", parent=PARENT_GROUP2),
     )
 
     def test_group_repr(self):
         parent = toga.Group("P")
+        self.assertEqual(repr(toga.Group("A")), "<Group text=A order=0 parent=None>")
         self.assertEqual(
-            repr(toga.Group("A")), "<Group text=A order=0 parent=None>"
-        )
-        self.assertEqual(
-            repr(toga.Group("A", parent=parent)),
-            "<Group text=A order=0 parent=P>"
+            repr(toga.Group("A", parent=parent)), "<Group text=A order=0 parent=P>"
         )
 
     def test_set_section_without_parent(self):
@@ -162,8 +158,8 @@ class TestCommandsGroup(unittest.TestCase):
     ######################################################################
 
     def test_label_deprecated(self):
-        grp = toga.Group(label='text')
-        new_text = 'New Text'
+        grp = toga.Group(label="text")
+        new_text = "New Text"
         with self.assertWarns(DeprecationWarning):
             grp.label = new_text
         with self.assertWarns(DeprecationWarning):
@@ -173,13 +169,13 @@ class TestCommandsGroup(unittest.TestCase):
     def test_init_with_deprecated(self):
         # label is a deprecated argument
         with self.assertWarns(DeprecationWarning):
-            toga.Group(label='test')
+            toga.Group(label="test")
 
         # can't specify both label *and* text
         with self.assertRaises(ValueError):
             toga.Group(
-                label='test',
-                text='test',
+                label="test",
+                text="test",
             )
 
     ######################################################################

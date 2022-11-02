@@ -4,7 +4,9 @@ from .base import ParentPosition
 
 
 class ScrollButton(ParentPosition):
-    def __init__(self, adj: Gtk.Adjustment, bottom_margin=12, right_margin=20, *args, **kwargs):
+    def __init__(
+        self, adj: Gtk.Adjustment, bottom_margin=12, right_margin=20, *args, **kwargs
+    ):
         super().__init__(adj, *args, **kwargs)
         self.bottom_margin = bottom_margin
         self.right_margin = right_margin
@@ -35,13 +37,9 @@ class ScrollButton(ParentPosition):
         self.revealer.add(self.button)
         self.revealer.set_reveal_child(False)
 
-        self.button.connect(
-            "clicked",
-            self.gtk_on_clicked)
+        self.button.connect("clicked", self.gtk_on_clicked)
 
-        self.adj.connect(
-            "value-changed",
-            self.gtk_on_value_changed)
+        self.adj.connect("value-changed", self.gtk_on_value_changed)
 
     def overlay_over(self, parent):
         self._parent = parent
