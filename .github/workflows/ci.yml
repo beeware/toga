@@ -18,16 +18,33 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
-      - uses: actions/setup-python@v3.1.2
+      - uses: actions/setup-python@v4.3.0
         with:
           python-version: ${{ env.min_python_version }}
       - uses: pre-commit/action@v3.0.0
+
+  towncrier:
+    runs-on: ubuntu-latest
+    steps:
+    # Fetch main branch for comparison, then check out current branch.
+    - uses: actions/checkout@v3.1.0
+      with:
+        fetch-depth: 0
+        ref: main
+    - uses: actions/checkout@v3.1.0
+      with:
+        fetch-depth: 0
+    - uses: actions/setup-python@v4.3.0
+      with:
+        python-version: ${{ env.python_version }}
+    - run: pip install tox
+    - run: tox -e towncrier-check
 
   package:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
-    - uses: actions/setup-python@v3.1.2
+    - uses: actions/setup-python@v4.3.0
       with:
         python-version: ${{ env.min_python_version }}
     - run: pip install tox
@@ -43,16 +60,16 @@ jobs:
         if-no-files-found: error
 
   core:
-    needs: [pre-commit, package]
+    needs: [pre-commit, towncrier, package]
     strategy:
       matrix:
         platform: ['macos', 'ubuntu', 'windows']
-        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11.0-alpha - 3.11.0"]
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]  #, "3.12.0-alpha - 3.12.0"]
     runs-on: ${{ matrix.platform }}-latest
     steps:
     - uses: actions/checkout@v1
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3.1.2
+      uses: actions/setup-python@v4.3.0
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
@@ -71,7 +88,7 @@ jobs:
       run: |
         tox -e py
     - if: matrix.platform == 'ubuntu' && matrix.python-version == env.min_python_version
-      uses: codecov/codecov-action@v1
+      uses: codecov/codecov-action@v3
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         file: ./coverage.xml
@@ -104,7 +121,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3.1.2
+      uses: actions/setup-python@v4.3.0
       with:
         # Py3.9 is the first Python version for which
         # a wheel of pythonnet isn't available on PyPI.

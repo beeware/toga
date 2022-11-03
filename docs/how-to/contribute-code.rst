@@ -1,8 +1,8 @@
 .. _contribute:
 
-=========================
-How to contribute to Toga
-=========================
+==============================
+How to contribute code to Toga
+==============================
 
 If you experience problems with Toga, `log them on GitHub`_. If you want to
 contribute code, please `fork the code`_ and `submit a pull request`_.  You may
@@ -11,11 +11,11 @@ also find `this presentation by BeeWare team member Dan Yeaw
 overview of Toga, as well as providing a guide to the process of adding new
 widgets.
 
-
 .. _log them on Github: https://github.com/beeware/toga/issues
 .. _fork the code: https://github.com/beeware/toga
 .. _submit a pull request: https://github.com/beeware/toga/pulls
 
+.. _setup-dev-environment:
 
 Set up your development environment
 ===================================
@@ -351,7 +351,6 @@ and re-commit the change.
 
 Now you are ready to start hacking on Toga!
 
-
 What should I do?
 =================
 
@@ -565,8 +564,37 @@ expect to see something like:
 That is, one more test has been executed, resulting in one less missing line
 in the coverage results.
 
-Submit a pull request for your work, and you're done! Congratulations, you're
-a contributor to Toga!
+Add change information for release notes
+----------------------------------------
+
+Before you submit this change as a pull request, there's one more thing
+required. Toga uses `towncrier <https://pypi.org/project/towncrier/>`__ to
+automate building release notes. To support this, every pull request needs to
+have a corresponding file in the ``changes/`` directory that provides a short
+description of the change implemented by the pull request.
+
+This description should be a high level summary of the change from the
+perspective of the user, not a deep technical description or implementation
+detail. It is distinct from a commit message - a commit message describes
+what has been done so that future developers can follow the reasoning for
+a change; the change note is a "user facing" description. For example, if
+you fix a bug caused by date handling, the commit message might read:
+
+    Modified date validation to accept US-style MM-DD-YYYY format.
+
+The corresponding change note would read something like:
+
+    Date widgets can now accept US-style MM-DD-YYYY format.
+
+See `News Fragments <https://pypi.org/project/towncrier/#news-fragments>`__
+for more details on the types of news fragments you can add. You can also see
+existing examples of news fragments in the ``changes/`` folder.
+
+Once you've written your code, test, and change note, you can submit your
+changes as a pull request. One of the core team will review your work, and
+give feedback. If any changes are requested, you can make those changes, and
+update your pull request; eventually, the pull request will be accepted and
+merged. Congratulations, you're a contributor to Toga!
 
 It's not just about coverage!
 =============================
