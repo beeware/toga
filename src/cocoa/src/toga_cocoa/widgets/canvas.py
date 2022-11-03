@@ -5,6 +5,7 @@ from toga_cocoa.libs import (
     CGPathDrawingMode,
     CGRectMake,
     NSAttributedString,
+    NSBitmapImageFileType,
     NSFontAttributeName,
     NSForegroundColorAttributeName,
     NSGraphicsContext,
@@ -283,7 +284,15 @@ class Canvas(Widget):
         text_string.drawAtPoint(NSPoint(x, y - height))
 
     def as_image(self):
-        self.interface.factory.not_implemented("Canvas.as_image()")
+        bitmap = self.native.bitmapImageRepForCachingDisplayInRect(self.native.bounds)
+        bitmap.setSize(self.native.bounds.size)
+        self.native.cacheDisplayInRect(self.native.bounds, toBitmapImageRep=bitmap)
+
+        data = bitmap.representationUsingType(
+            NSBitmapImageFileType.PNG,
+            properties=None,
+        )
+        return data
 
     # Rehint
 
