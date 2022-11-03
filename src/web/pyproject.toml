@@ -1,3 +1,26 @@
 [build-system]
 requires = ["setuptools>=60"]
 build-backend = "setuptools.build_meta"
+
+[tool.coverage.run]
+parallel = true
+branch = true
+relative_files = true
+source_pkgs = ["toga_web"]
+
+[tool.coverage.paths]
+source = [
+    "src",
+    "**/site-packages"
+]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+skip_empty = true
+precision = 1
+exclude_lines = [
+    "pragma: no cover",
+    "@(abc\\.)?abstractmethod",
+    "NotImplementedError\\(\\)"
+]

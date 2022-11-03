@@ -47,6 +47,9 @@ class Widget:
 
         return native
 
+    def create(self):
+        raise NotImplementedError()
+
     def set_app(self, app):
         pass
 
@@ -105,6 +108,12 @@ class Widget:
 
     def add_child(self, child):
         pass
+
+    def insert_child(self, index, child):
+        self.add_child(child)
+
+    def remove_child(self, child):
+        child.container = None
 
     def rehint(self):
         pass

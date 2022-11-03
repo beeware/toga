@@ -17,5 +17,4 @@ with open("src/toga/__init__.py", encoding="utf8") as version_file:
 
 setup(
     version=version,
-    tests_require=["toga-dummy==%s" % version],
 )

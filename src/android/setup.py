@@ -21,8 +21,4 @@ setup(
         "rubicon-java>=0.2.6",
         "toga-core==%s" % version,
     ],
-    test_suite="tests",
-    test_require=[
-        "toga-dummy==%s" % version,
-    ],
 )

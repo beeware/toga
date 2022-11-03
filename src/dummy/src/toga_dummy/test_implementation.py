@@ -1,7 +1,19 @@
 import ast
+import importlib
 import os
 import unittest
 from collections import defaultdict, namedtuple
+
+try:
+    # Usually, the pattern is "import module; if it doesn't exist,
+    # import the shim". However, we need the 3.10 API for entry_points,
+    # as the 3.8 didn't support the `groups` argument to entry_points.
+    # Therefore, we try to import the compatibility shim first; and fall
+    # back to the stdlib module if the shim isn't there.
+    from importlib_metadata import entry_points
+except ImportError:
+    from importlib.metadata import entry_points
+
 from itertools import zip_longest
 from os.path import join
 from pathlib import Path
@@ -33,9 +45,10 @@ FunctionArguments = namedtuple(
 
 class DefinitionExtractor:
     """The DefinitionExtractor consumes a .py file and extracts information,
-    with the help of the 'ast' module from it. Non existing files result in a
-    empty DefinitionExtractor, this means the all properties return empty lists
-    or dicts.
+    with the help of the 'ast' module from it.
+
+    Non existing files result in a empty DefinitionExtractor, this means the
+    all properties return empty lists or dicts.
 
     Args:
         path (str): The path to the .py file.
@@ -212,30 +225,24 @@ class DefinitionExtractor:
 
 
 def get_platform_category(path_to_backend):
-    name = os.path.basename(path_to_backend)
-    if name in ["toga_cocoa", "toga_gtk", "toga_winforms", "toga_win32", "toga_uwp"]:
-        return {"desktop", name.split("_")[-1]}
-    elif name in ["toga_iOS", "toga_android"]:
-        return {"mobile", name.split("_")[-1]}
-    elif name in ["toga_django", "toga_flask", "toga_pyramid"]:
-        return {"web", name.split("_")[-1]}
-    elif name in [
-        "toga_curses",
-    ]:
-        return {"console", name.split("_")[-1]}
-    elif name in [
-        "toga_tvOS",
-    ]:
-        return {"settop", name.split("_")[-1]}
-    elif name in [
-        "toga_watchOS",
-    ]:
-        return {"watch", name.split("_")[-1]}
-    else:
-        raise RuntimeError(f'Couldn\'t identify a supported host platform: "{name}"')
+    backend_name = os.path.basename(path_to_backend)
+    importlib.import_module(backend_name)
+    platform = {ep.value: ep.name for ep in entry_points(group="toga.backends")}[
+        backend_name
+    ]
+
+    return {
+        # Desktop
+        "macOS": {"desktop", backend_name.split("_")[-1]},
+        "windows": {"desktop", backend_name.split("_")[-1]},
+        "linux": {"desktop", backend_name.split("_")[-1]},
+        # Mobile
+        "iOS": {"mobile", backend_name.split("_")[-1]},
+        "android": {"mobile", backend_name.split("_")[-1]},
+    }.get(platform, {platform, backend_name.split("_")[-1]})
 
 
-def get_required_files(path_to_backend):
+def get_required_files(platform_category, path_to_backend):
     # Find the list of files in the dummy backend
     # that aren't *this* file, or an __init__.py.
     files = [
@@ -243,33 +250,25 @@ def get_required_files(path_to_backend):
         for p in Path(__file__).parent.rglob("**/*.py")
         if str(p) != __file__ and p.name != "__init__.py"
     ]
-    name = os.path.basename(path_to_backend)
-    if name in ["toga_cocoa", "toga_gtk", "toga_winforms", "toga_win32", "toga_uwp"]:
+    if "desktop" in platform_category:
         for f in TOGA_DESKTOP_EXCLUDED_FILES:
             files.remove(f)
-    elif name in ["toga_iOS", "toga_android"]:
+    if "mobile" in platform_category:
         for f in TOGA_MOBILE_EXCLUDED_FILES:
             files.remove(f)
-    elif name in ["toga_django", "toga_flask", "toga_pyramid"]:
+    if "web" in platform_category:
         for f in TOGA_WEB_EXCLUDED_FILES:
             files.remove(f)
-    elif name in [
-        "toga_curses",
-    ]:
+    if "console" in platform_category:
         for f in TOGA_CONSOLE_EXCLUDED_FILES:
             files.remove(f)
-    elif name in [
-        "toga_tvOS",
-    ]:
+    if "settop" in platform_category:
         for f in TOGA_SETTOP_EXCLUDED_FILES:
             files.remove(f)
-    elif name in [
-        "toga_watchOS",
-    ]:
+    if "watch" in platform_category:
         for f in TOGA_WATCH_EXCLUDED_FILES:
             files.remove(f)
-    else:
-        raise RuntimeError(f'Couldn\'t identify a supported host platform: "{name}"')
+
     return files
 
 
@@ -284,7 +283,7 @@ def create_impl_tests(root):
         A dictionary of test classes.
     """
     platform_category = get_platform_category(root)
-    dummy_files = collect_dummy_files(get_required_files(root))
+    dummy_files = collect_dummy_files(get_required_files(platform_category, root))
     tests = {}
     for name, dummy_path in dummy_files:
         if "widgets" in dummy_path:

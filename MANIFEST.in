@@ -1,4 +1,3 @@
-include .coveragerc
 include .git-blame-ignore-revs
 include .pre-commit-config.yaml
 include CONTRIBUTING.md
@@ -74,14 +73,16 @@ recursive-include src *.js
 recursive-include src *.png
 recursive-include src *.py
 recursive-include src *.rst
-recursive-include src pyproject.toml
 recursive-include src CONTRIBUTING.md
 recursive-include src LICENSE
 recursive-include src MANIFEST.in
+recursive-include src pyproject.toml
+recursive-include src tox.ini
 recursive-include src/winforms/src/toga_winforms/libs/WebView2 *.dll
 prune src/*/build
 prune src/*/dist
 prune src/*/.eggs
+prune src/*/.tox
 
 include src/core/tests/testbed/installed.dist-info/INSTALLER
 include src/core/tests/testbed/installed.dist-info/METADATA

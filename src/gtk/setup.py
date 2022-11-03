@@ -23,8 +23,4 @@ setup(
         "pycairo>=1.17.0",
         "pygobject>=3.14.0",
     ],
-    test_suite="tests",
-    test_require=[
-        "toga-dummy==%s" % version,
-    ],
 )

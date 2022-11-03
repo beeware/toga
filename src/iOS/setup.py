@@ -21,8 +21,4 @@ setup(
         "rubicon-objc>=0.4.1",
         "toga-core==%s" % version,
     ],
-    test_suite="tests",
-    test_require=[
-        "toga-dummy==%s" % version,
-    ],
 )

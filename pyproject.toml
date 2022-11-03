@@ -2,6 +2,74 @@
 requires = ["setuptools>=60"]
 build-backend = "setuptools.build_meta"
 
+[tool.coverage.run]
+parallel = true
+branch = true
+relative_files = true
+source = [
+    "src/android",
+    "src/cocoa",
+    "src/core",
+    "src/dummy",
+    "src/gtk",
+    "src/iOS",
+    "src/web",
+    "src/winforms",
+]
+
+[tool.coverage.paths]
+android = [
+    "src/android/src/toga_android",
+    "src/toga_android",
+    "**/site-packages/toga_android",
+]
+cocoa = [
+    "src/cocoa/src/toga_cocoa",
+    "src/toga_cocoa",
+    "**/site-packages/toga_cocoa",
+]
+core = [
+    "src/core/src/toga",
+    "src/toga",
+    "**/site-packages/toga",
+]
+dummy = [
+    "src/dummy/src/toga_dummy",
+    "src/toga_dummy",
+    "**/site-packages/toga_dummy",
+]
+gtk = [
+    "src/gtk/src/toga_gtk",
+    "src/toga_gtk",
+    "**/site-packages/toga_gtk",
+]
+iOS = [
+    "src/iOS/src/toga_iOS",
+    "src/toga_iOS",
+    "**/site-packages/toga_iOS",
+]
+web = [
+    "src/web/src/toga_web",
+    "src/toga_web",
+    "**/site-packages/toga_web",
+]
+winforms = [
+    "src/winforms/src/toga_winforms",
+    "src/toga_winforms",
+    "**/site-packages/toga_winforms",
+]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+skip_empty = true
+precision = 1
+exclude_lines = [
+    "pragma: no cover",
+    "@(abc\\.)?abstractmethod",
+    "NotImplementedError\\(\\)"
+]
+
 [tool.isort]
 profile = "black"
 split_on_trailing_comma = true
