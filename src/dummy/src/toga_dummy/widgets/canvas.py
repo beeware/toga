@@ -1,3 +1,6 @@
+import random
+import uuid
+
 from .base import Widget
 
 
@@ -101,6 +104,17 @@ class Canvas(Widget):
 
     def measure_text(self, text, font, tight=False):
         self._action("measure text", text=text, font=font, tight=tight)
+        return random.randint(100, 300), random.randint(100, 200)
+
+    # Image
+
+    def get_image_data(self):
+        """
+        Return a dummy uuid string as the "native" image.
+        This has no effect
+        """
+        self._action("get image data")
+        return uuid.uuid4()
 
     # Rehint
 

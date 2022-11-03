@@ -14,3 +14,6 @@ class Image:
             self.native = None
         elif data:
             self.native = BitmapFactory.decodeByteArray(data, 0, len(data))
+
+    def save(self, path):
+        self.interface.factory.not_implemented("Image.save()")

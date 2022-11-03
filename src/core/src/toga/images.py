@@ -52,3 +52,11 @@ class Image:
             "Icons no longer need to be explicitly bound.", DeprecationWarning
         )
         return self._impl
+
+    def save(self, path):
+        """
+        Save image to given path.
+
+        :param path: Path where to save the image.
+        """
+        self._impl.save(path)

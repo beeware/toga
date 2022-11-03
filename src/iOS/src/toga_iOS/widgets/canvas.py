@@ -237,6 +237,9 @@ class Canvas(Widget):
         )
         text_string.drawAtPoint(NSPoint(x, y - height))
 
+    def get_image_data(self):
+        self.interface.factory.not_implemented("Canvas.get_image_data()")
+
     # Rehint
 
     def rehint(self):

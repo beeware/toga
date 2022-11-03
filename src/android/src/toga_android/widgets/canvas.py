@@ -210,6 +210,9 @@ class Canvas(Widget):
     def write_text(self, text, x, y, font, *args, **kwargs):
         self.interface.factory.not_implemented("Canvas.write_text")
 
+    def get_image_data(self):
+        self.interface.factory.not_implemented("Canvas.get_image_data()")
+
     # Rehint
 
     def set_on_resize(self, handler):

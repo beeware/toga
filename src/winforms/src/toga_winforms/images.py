@@ -16,3 +16,6 @@ class Image:
         elif data:
             stream = MemoryStream(data)
             self.native = WinImage.FromStream(stream)
+
+    def save(self, path):
+        self.native.Save(str(path))

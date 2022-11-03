@@ -1,4 +1,5 @@
 from math import cos, pi, sin
+from unittest import mock
 
 import toga
 from toga.colors import BLANCHEDALMOND, CRIMSON, REBECCAPURPLE, rgb
@@ -737,3 +738,23 @@ class CanvasTests(TestCase):
         self.assertValueSet(
             self.testing_canvas, "on_alt_drag", self.testing_canvas.on_alt_drag
         )
+
+    def test_measure_text(self):
+        text = "This is text"
+        font = mock.Mock()
+        self.testing_canvas.measure_text(text, font=font)
+        self.assertActionPerformedWith(
+            self.testing_canvas, "measure text", text=text, font=font, tight=False
+        )
+
+    def test_measure_text_tight(self):
+        text = "This is text"
+        font = mock.Mock()
+        self.testing_canvas.measure_text(text, font=font, tight=True)
+        self.assertActionPerformedWith(
+            self.testing_canvas, "measure text", text=text, font=font, tight=True
+        )
+
+    def test_canvas_as_image(self):
+        self.testing_canvas.as_image()
+        self.assertActionPerformed(self.testing_canvas, "get image data")

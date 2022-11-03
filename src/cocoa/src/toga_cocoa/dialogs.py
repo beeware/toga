@@ -254,7 +254,7 @@ class SaveFileDialog(FileDialog):
             title=title,
             filename=filename,
             initial_directory=initial_directory,
-            file_types=file_types,
+            file_types=None,  # File types aren't offered by Cocoa save panels.
             multiselect=False,
             on_result=None,
         )

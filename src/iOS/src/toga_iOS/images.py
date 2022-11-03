@@ -18,3 +18,6 @@ class Image:
             self.native = UIImage.imageWithData_(
                 NSData.dataWithBytes(data, length=len(data))
             )
+
+    def save(self, path):
+        self.interface.factory.not_implemented("Image.save()")

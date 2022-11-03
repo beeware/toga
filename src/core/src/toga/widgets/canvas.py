@@ -7,6 +7,7 @@ from toga.colors import BLACK, color as parse_color
 from toga.fonts import SYSTEM, Font
 from toga.handlers import wrapped_handler
 
+from .. import Image
 from .base import Widget
 
 
@@ -758,6 +759,13 @@ class Canvas(Context, Widget):
 
     def measure_text(self, text, font, tight=False):
         return self._impl.measure_text(text, font, tight=tight)
+
+    ###########################################################################
+    # As image
+    ###########################################################################
+
+    def as_image(self):
+        return Image(data=self._impl.get_image_data())
 
 
 class MoveTo:

@@ -154,6 +154,20 @@ NSViewFrameDidChangeNotification = objc_const(
 NSBezierPath = ObjCClass("NSBezierPath")
 
 ######################################################################
+# NSBitmapImageRep.h
+NSBitmapImageRep = ObjCClass("NSBitmapImageRep")
+
+
+class NSBitmapImageFileType(Enum):
+    TIFF = 0
+    BMP = 1
+    GIF = 2
+    JPEG = 3
+    PNG = 4
+    JPEG2000 = 5
+
+
+######################################################################
 # NSBox.h
 NSBox = ObjCClass("NSBox")
 

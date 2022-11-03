@@ -5,12 +5,16 @@ from travertino.colors import WHITE
 from toga.widgets.canvas import Context, FillRule
 from toga_winforms.colors import native_color
 from toga_winforms.libs import (
+    Bitmap,
     Drawing2D,
     FillMode,
     GraphicsPath,
+    ImageFormat,
     Matrix,
+    MemoryStream,
     Pen,
     PointF,
+    Rectangle,
     RectangleF,
     SolidBrush,
     StringFormat,
@@ -319,6 +323,18 @@ class Canvas(Box):
             self._points_to_pixels(width),
             self._points_to_pixels(height),
         )
+
+    def get_image_data(self):
+        width, height = (
+            self.interface.layout.content_width,
+            self.interface.layout.content_height,
+        )
+        bitmap = Bitmap(width, height)
+        rect = Rectangle(0, 0, width, height)
+        self.native.DrawToBitmap(bitmap, rect)
+        stream = MemoryStream()
+        bitmap.Save(stream, ImageFormat.Png)
+        return stream.ToArray()
 
     def _points_to_pixels(self, points):
         return points * 72 / self.container.viewport.dpi
