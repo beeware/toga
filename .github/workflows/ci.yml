@@ -200,15 +200,6 @@ jobs:
       run: |
         python -m coverage combine
         python -m coverage report
-        # Generate XML report for CodeCov
-        python -m coverage xml
-    - name: Upload coverage data to CodeCov
-      uses: codecov/codecov-action@v1
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
-        file: ./coverage.xml
-        flags: unittests
-        fail_ci_if_error: true
 
   backend-coverage:
     name: Combine & check backend coverage.
