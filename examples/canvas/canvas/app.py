@@ -324,7 +324,7 @@ class ExampleCanvasApp(toga.App):
     async def on_save_canvas(self, widget):
         path = await self.main_window.save_file_dialog(
             "Image save path",
-            suggested_filename="canvas_example",
+            suggested_filename="canvas_example.png",
             file_types=["jpg", "png"],
         )
         if path is None:
