@@ -283,7 +283,7 @@ class Canvas(Widget):
         )
         text_string.drawAtPoint(NSPoint(x, y - height))
 
-    def as_image(self):
+    def get_image_data(self):
         bitmap = self.native.bitmapImageRepForCachingDisplayInRect(self.native.bounds)
         bitmap.setSize(self.native.bounds.size)
         self.native.cacheDisplayInRect(self.native.bounds, toBitmapImageRep=bitmap)

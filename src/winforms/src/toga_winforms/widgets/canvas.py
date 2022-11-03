@@ -324,7 +324,7 @@ class Canvas(Box):
             self._points_to_pixels(height),
         )
 
-    def as_image(self):
+    def get_image_data(self):
         width, height = (
             self.interface.layout.content_width,
             self.interface.layout.content_height,

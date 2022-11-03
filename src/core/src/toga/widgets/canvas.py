@@ -765,7 +765,7 @@ class Canvas(Context, Widget):
     ###########################################################################
 
     def as_image(self):
-        return Image(data=self._impl.as_image())
+        return Image(data=self._impl.get_image_data())
 
 
 class MoveTo:

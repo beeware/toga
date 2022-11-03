@@ -108,12 +108,12 @@ class Canvas(Widget):
 
     # Image
 
-    def as_image(self):
+    def get_image_data(self):
         """
         Return a dummy uuid string as the "native" image.
         This has no effect
         """
-        self._action("as image")
+        self._action("get image data")
         return uuid.uuid4()
 
     # Rehint

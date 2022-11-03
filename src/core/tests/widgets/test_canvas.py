@@ -757,4 +757,4 @@ class CanvasTests(TestCase):
 
     def test_canvas_as_image(self):
         self.testing_canvas.as_image()
-        self.assertActionPerformed(self.testing_canvas, "as image")
+        self.assertActionPerformed(self.testing_canvas, "get image data")
