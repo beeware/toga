@@ -18,7 +18,7 @@ jobs:
   pre-commit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
       - uses: actions/setup-python@v4.3.0
         with:
           python-version: ${{ env.min_python_version }}
@@ -28,11 +28,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     # Fetch main branch for comparison, then check out current branch.
-    - uses: actions/checkout@v3.1.0
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 0
         ref: main
-    - uses: actions/checkout@v3.1.0
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 0
     - uses: actions/setup-python@v4.3.0
@@ -44,7 +44,7 @@ jobs:
   package:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v3
     - uses: actions/setup-python@v4.3.0
       with:
         python-version: ${{ env.min_python_version }}
@@ -64,7 +64,7 @@ jobs:
         python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]  #, "3.12.0-alpha - 3.12.0"]
     runs-on: ${{ matrix.platform }}-latest
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4.3.0
       with:
@@ -109,7 +109,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: core
     steps:
-    - uses: actions/checkout@v3.1.0
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 0
     - uses: actions/setup-python@v4.3.0
@@ -169,7 +169,7 @@ jobs:
             python-version: "3.9"
     runs-on: ${{ matrix.runs-on }}
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4.3.0
       with:
@@ -207,7 +207,7 @@ jobs:
     needs:
     - backend
     steps:
-    - uses: actions/checkout@v3.1.0
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 0
     - uses: actions/setup-python@v4.3.0
