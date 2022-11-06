@@ -34,7 +34,7 @@ To create boxes within boxes, use the children argument:
     import toga
 
     box_a = toga.Box('box_a')
-    box_b = toga.Box('box_b)
+    box_b = toga.Box('box_b')
 
     box = toga.Box('box', children=[box_a, box_b])
 
