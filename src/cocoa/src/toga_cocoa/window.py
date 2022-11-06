@@ -139,6 +139,11 @@ class WindowDelegate(NSObject):
         item.action(obj)
 
 
+class TogaWindow(NSWindow):
+    interface = objc_property(object, weak=True)
+    impl = objc_property(object, weak=True)
+
+
 class Window:
     def __init__(self, interface, title, position, size):
         self.interface = interface
@@ -156,12 +161,14 @@ class Window:
 
         # Create the window with a default frame;
         # we'll update size and position later.
-        self.native = NSWindow.alloc().initWithContentRect(
+        self.native = TogaWindow.alloc().initWithContentRect(
             NSMakeRect(0, 0, 0, 0),
             styleMask=mask,
             backing=NSBackingStoreBuffered,
             defer=False,
         )
+        self.native.interface = self.interface
+        self.native._impl = self
 
         self.set_title(title)
         self.set_size(size)
