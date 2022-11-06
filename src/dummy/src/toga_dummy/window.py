@@ -1,6 +1,7 @@
 from .utils import LoggedObject, not_required, not_required_on
 
 
+@not_required
 class Viewport:
     def __init__(self, window):
         self.baseline_dpi = 96
