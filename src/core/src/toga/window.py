@@ -104,7 +104,6 @@ class Window:
 
         self._app = app
         self._impl.set_app(app._impl)
-        app.widgets.update(self.widgets)
 
         if self.content:
             self.content.app = app

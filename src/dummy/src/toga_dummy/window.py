@@ -1,6 +1,21 @@
 from .utils import LoggedObject, not_required, not_required_on
 
 
+class Viewport:
+    def __init__(self, window):
+        self.baseline_dpi = 96
+        self.dpi = 96
+        self.window = window
+
+    @property
+    def width(self):
+        return self.window.get_size()[0]
+
+    @property
+    def height(self):
+        return self.window.get_size()[1]
+
+
 class Window(LoggedObject):
     def __init__(self, interface, title, position, size):
         super().__init__()
@@ -18,6 +33,8 @@ class Window(LoggedObject):
 
     def set_content(self, widget):
         self._action("set content", widget=widget)
+        self._set_value("content", widget)
+        widget.viewport = Viewport(self)
 
     def get_title(self):
         return self._get_value("title")

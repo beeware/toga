@@ -124,19 +124,32 @@ class TestWindow(TestCase):
 
     def test_set_app_adds_window_widgets_to_app(self):
 
-        id1, id2, id3 = "id1", "id2", "id3"
+        id0, id1, id2, id3 = "id0", "id1", "id2", "id3"
         widget1, widget2, widget3 = (
-            toga.Widget(id=id1),
-            toga.Widget(id=id2),
-            toga.Widget(id=id3),
+            toga.Label(id=id1, text="label 1"),
+            toga.Label(id=id2, text="label 1"),
+            toga.Label(id=id3, text="label 1"),
         )
-        self.window.widgets.update({widget1, widget2, widget3})
+        content = toga.Box(id=id0, children=[widget1, widget2, widget3])
 
+        self.window.content = content
+
+        # The window has widgets in it's repository
+        self.assertEqual(len(self.window.widgets), 4)
+        self.assertEqual(self.window.widgets[id0], content)
+        self.assertEqual(self.window.widgets[id1], widget1)
+        self.assertEqual(self.window.widgets[id2], widget2)
+        self.assertEqual(self.window.widgets[id3], widget3)
+
+        # The app doesn't know about the widgets
         self.assertEqual(len(self.app.widgets), 0)
 
+        # Assign the window to the app
         self.window.app = self.app
 
-        self.assertEqual(len(self.app.widgets), 3)
+        # The window's content widgets are now known to the app.
+        self.assertEqual(len(self.app.widgets), 4)
+        self.assertEqual(self.app.widgets[id0], content)
         self.assertEqual(self.app.widgets[id1], widget1)
         self.assertEqual(self.app.widgets[id2], widget2)
         self.assertEqual(self.app.widgets[id3], widget3)
