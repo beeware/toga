@@ -16,7 +16,7 @@ repos:
       - id: isort
         additional_dependencies: [toml]
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.38.2
+    rev: v3.2.0
     hooks:
       - id: pyupgrade
         args: [--py37-plus]
@@ -29,7 +29,7 @@ repos:
   #   - id: docformatter
   #     args: [--in-place]
   - repo: https://github.com/psf/black
-    rev: 22.8.0
+    rev: 22.10.0
     hooks:
     - id: black
   - repo: https://github.com/PyCQA/flake8
