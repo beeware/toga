@@ -83,11 +83,11 @@ jobs:
         path: dist
     - name: Test
       env:
-        TOGA_INSTALL_COMMAND: 'bash -c "pip install ../../dist/toga_{core,dummy}*.whl"'
+        TOGA_INSTALL_COMMAND: 'bash -c "pip install ../dist/toga_{core,dummy}*.whl"'
       run: |
         cd core
         tox -e py
-        mv .coverage.* ../..
+        mv .coverage.* ..
     - name: Store coverage data
       uses: actions/upload-artifact@v3
       with:
@@ -189,11 +189,11 @@ jobs:
         python -m pip install tox coverage[toml]
     - name: Test
       env:
-        TOGA_INSTALL_COMMAND: 'bash -c "pip install ../../dist/toga_{core,dummy,${{ matrix.backend }}}*.whl"'
+        TOGA_INSTALL_COMMAND: 'bash -c "pip install ../dist/toga_{core,dummy,${{ matrix.backend }}}*.whl"'
       run: |
         cd ${{ matrix.backend }}
         tox -e py
-        mv .coverage.* ../../
+        mv .coverage.* ..
     - name: Store coverage data
       uses: actions/upload-artifact@v3
       with:

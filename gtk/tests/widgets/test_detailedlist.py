@@ -33,7 +33,7 @@ class TestGtkDetailedList(unittest.TestCase):
         icon = toga.Icon(
             os.path.join(
                 os.path.dirname(__file__),
-                "../../../../demo/toga_demo/resources/brutus-32.png",
+                "../../../demo/toga_demo/resources/brutus-32.png",
             )
         )
         self.dl = toga.DetailedList(
