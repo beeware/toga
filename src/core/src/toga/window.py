@@ -207,7 +207,7 @@ class Window:
         self._impl.show()
 
     def hide(self):
-        """Show window, if hidden."""
+        """Hide window, if shown."""
         if self.app is None:
             raise AttributeError(
                 "Can't hide a window that doesn't have an associated app"
