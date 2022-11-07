@@ -1,3 +1,0 @@
--r requirements.txt
-./core
-docs/mock_gtk
