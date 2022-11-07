@@ -42,6 +42,10 @@ jobs:
     - run: tox -e towncrier-check
 
   package:
+    strategy:
+      matrix:
+        subdir: ["android", "cocoa", "core", "demo", "dummy", "gtk", "iOS", "toga",
+                 "web", "winforms"]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -49,11 +53,11 @@ jobs:
       with:
         python-version: ${{ env.min_python_version }}
     - run: pip install tox
-    - run: tox -e package
+    - run: tox -e package -- ${{ matrix.subdir }}
     - uses: actions/upload-artifact@v3
       with:
         name: packages
-        path: dist
+        path: ${{ matrix.subdir }}/dist/*
         if-no-files-found: error
 
   core:
