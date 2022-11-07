@@ -3,54 +3,54 @@ parallel = true
 branch = true
 relative_files = true
 source = [
-    "src/android",
-    "src/cocoa",
-    "src/core",
-    "src/dummy",
-    "src/gtk",
-    "src/iOS",
-    "src/web",
-    "src/winforms",
+    "android",
+    "cocoa",
+    "core",
+    "dummy",
+    "gtk",
+    "iOS",
+    "web",
+    "winforms",
 ]
 
 [tool.coverage.paths]
 android = [
-    "src/android/src/toga_android",
+    "android/src/toga_android",
     "src/toga_android",
     "**/site-packages/toga_android",
 ]
 cocoa = [
-    "src/cocoa/src/toga_cocoa",
+    "cocoa/src/toga_cocoa",
     "src/toga_cocoa",
     "**/site-packages/toga_cocoa",
 ]
 core = [
-    "src/core/src/toga",
+    "core/src/toga",
     "src/toga",
     "**/site-packages/toga",
 ]
 dummy = [
-    "src/dummy/src/toga_dummy",
+    "dummy/src/toga_dummy",
     "src/toga_dummy",
     "**/site-packages/toga_dummy",
 ]
 gtk = [
-    "src/gtk/src/toga_gtk",
+    "gtk/src/toga_gtk",
     "src/toga_gtk",
     "**/site-packages/toga_gtk",
 ]
 iOS = [
-    "src/iOS/src/toga_iOS",
+    "iOS/src/toga_iOS",
     "src/toga_iOS",
     "**/site-packages/toga_iOS",
 ]
 web = [
-    "src/web/src/toga_web",
+    "web/src/toga_web",
     "src/toga_web",
     "**/site-packages/toga_web",
 ]
 winforms = [
-    "src/winforms/src/toga_winforms",
+    "winforms/src/toga_winforms",
     "src/toga_winforms",
     "**/site-packages/toga_winforms",
 ]
