@@ -168,7 +168,7 @@ class Window:
             defer=False,
         )
         self.native.interface = self.interface
-        self.native._impl = self
+        self.native.impl = self
 
         self.set_title(title)
         self.set_size(size)
