@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from setuptools import setup
 
-version = "0.3.0.dev39"
+version = "0.0.1rc10"
 
 setup(
     version=version,
