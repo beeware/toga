@@ -57,7 +57,9 @@ jobs:
     - uses: actions/upload-artifact@v3
       with:
         name: packages
-        path: ${{ matrix.subdir }}/dist/*
+        # There will only be one dist directory for each matrix sub-job, but using a
+        # leading wildcard preserves the directory structure.
+        path: "*/dist/*"
         if-no-files-found: error
 
   core:
@@ -80,10 +82,9 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: packages
-        path: dist
     - name: Test
       env:
-        TOGA_INSTALL_COMMAND: 'bash -c "pip install ../dist/toga_{core,dummy}*.whl"'
+        TOGA_INSTALL_COMMAND: 'bash -c "pip install ../{core,dummy}/dist/*.whl"'
       run: |
         cd core
         tox -e py
@@ -182,14 +183,13 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: packages
-        path: dist
     - name: Install dependencies
       run: |
         ${{ matrix.pre-command }}
         python -m pip install tox coverage[toml]
     - name: Test
       env:
-        TOGA_INSTALL_COMMAND: 'bash -c "pip install ../dist/toga_{core,dummy,${{ matrix.backend }}}*.whl"'
+        TOGA_INSTALL_COMMAND: 'bash -c "pip install ../{core,dummy,${{ matrix.backend }}}/dist/*.whl"'
       run: |
         cd ${{ matrix.backend }}
         tox -e py
