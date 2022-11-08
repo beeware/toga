@@ -9,7 +9,6 @@ function bump {
     echo "************************************************************"
     echo
     if [ "$1" = "toga" ]; then
-        pushd .
         # Find all the pyproject.toml examples,
         # and update the version of toga required.
         find examples -name pyproject.toml | while read f; do
@@ -17,11 +16,12 @@ function bump {
             sed "s/^version = \".*\"/version = \"$2\"/g" temp > "$f"
             git add "$f"
         done
+        rm temp
 
-        # Update the version in mock_gtk
-        mv docs/mock_gtk/setup.py temp
-        sed "s/version=\".*\"/version=\"$2\"/g" temp > docs/mock_gtk/setup.py
-        git add docs/mock_gtk/setup.py
+        pushd toga
+        mv setup.py temp
+        sed "s/version = .*/version = \"$2\"/g" temp > setup.py
+        git add setup.py
 
     elif [ "$1" = "demo" ]; then
         pushd demo
@@ -39,13 +39,13 @@ function bump {
 
     else
         if [ "$1" = "core" ]; then
-            pushd src/$1/src/toga
+            pushd $1/src/toga
         else
-            pushd src/$1/src/toga_$1
+            pushd $1/src/toga_$1
         fi
 
         mv __init__.py temp
-        sed "s/^__version__ = '.*'/__version__ = '$2'/g" temp > __init__.py
+        sed "s/^__version__ = .*/__version__ = \"$2\"/g" temp > __init__.py
         git add __init__.py
     fi
     rm temp
@@ -101,7 +101,7 @@ MODULES="android cocoa core dummy gtk iOS web winforms toga demo"
 action=$1
 shift
 
-VERSION=$(grep "^__version__ = '.*'$" src/core/src/toga/__init__.py | cut -f 2 -d \')
+VERSION=$(grep "^__version__ = '.*'$" core/src/toga/__init__.py | cut -f 2 -d \')
 
 if [ "$action" = "" ]; then
     echo "Usage -"

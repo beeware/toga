@@ -62,185 +62,185 @@ jobs:
         path: "*/dist/*"
         if-no-files-found: error
 
-  # core:
-  #   needs: [pre-commit, towncrier, package]
-  #   strategy:
-  #     matrix:
-  #       platform: ['macos', 'ubuntu', 'windows']
-  #       python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]  #, "3.12.0-alpha - 3.12.0"]
-  #   runs-on: ${{ matrix.platform }}-latest
-  #   steps:
-  #   - uses: actions/checkout@v3
-  #   - name: Set up Python ${{ matrix.python-version }}
-  #     uses: actions/setup-python@v4.3.0
-  #     with:
-  #       python-version: ${{ matrix.python-version }}
-  #   - name: Install dependencies
-  #     run: |
-  #       python -m pip install tox coverage[toml]
-  #   - name: Get packages
-  #     uses: actions/download-artifact@v3
-  #     with:
-  #       name: packages
-  #   - name: Test
-  #     env:
-  #       TOGA_INSTALL_COMMAND: 'bash -c "pip install ../{core,dummy}/dist/*.whl"'
-  #     run: |
-  #       cd core
-  #       tox -e py
-  #       mv .coverage.* ..
-  #   - name: Store coverage data
-  #     uses: actions/upload-artifact@v3
-  #     with:
-  #       name: core-coverage-data
-  #       path: ".coverage.*"
-  #       if-no-files-found: ignore
-  #   - name: Report platform coverage
-  #     run: |
-  #       python -m coverage combine
-  #       python -m coverage report
-  #       # Generate XML report for CodeCov
-  #       python -m coverage xml
-  #   - name: Upload coverage data to CodeCov
-  #     uses: codecov/codecov-action@v3
-  #     with:
-  #       token: ${{ secrets.CODECOV_TOKEN }}
-  #       file: ./coverage.xml
-  #       flags: unittests
-  #       fail_ci_if_error: true
+  core:
+    needs: [pre-commit, towncrier, package]
+    strategy:
+      matrix:
+        platform: ['macos', 'ubuntu', 'windows']
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]  #, "3.12.0-alpha - 3.12.0"]
+    runs-on: ${{ matrix.platform }}-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4.3.0
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install tox coverage[toml]
+    - name: Get packages
+      uses: actions/download-artifact@v3
+      with:
+        name: packages
+    - name: Test
+      env:
+        TOGA_INSTALL_COMMAND: 'bash -c "pip install ../{core,dummy}/dist/*.whl"'
+      run: |
+        cd core
+        tox -e py
+        mv .coverage.* ..
+    - name: Store coverage data
+      uses: actions/upload-artifact@v3
+      with:
+        name: core-coverage-data
+        path: ".coverage.*"
+        if-no-files-found: ignore
+    - name: Report platform coverage
+      run: |
+        python -m coverage combine
+        python -m coverage report
+        # Generate XML report for CodeCov
+        python -m coverage xml
+    - name: Upload coverage data to CodeCov
+      uses: codecov/codecov-action@v3
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        file: ./coverage.xml
+        flags: unittests
+        fail_ci_if_error: true
 
-  # core-coverage:
-  #   name: Combine & check core coverage.
-  #   runs-on: ubuntu-latest
-  #   needs: core
-  #   steps:
-  #   - uses: actions/checkout@v3
-  #     with:
-  #       fetch-depth: 0
-  #   - uses: actions/setup-python@v4.3.0
-  #     with:
-  #       # Use latest, so it understands all syntax.
-  #       python-version: ${{ env.max_python_version }}
-  #   - name: Install dependencies
-  #     run: |
-  #       python -m pip install coverage[toml]
-  #   - name: Retrieve coverage data
-  #     uses: actions/download-artifact@v3
-  #     with:
-  #       name: core-coverage-data
-  #   - name: Normalize paths in coverage data
-  #     run: |
-  #       # See https://github.com/nedbat/coveragepy/issues/991
-  #       for coverage in `ls .coverage.*`; do
-  #         sqlite3 $coverage "update file set path = replace(path, '\\', '/')"
-  #       done
-  #   - name: Combine coverage
-  #     run: |
-  #       python -m coverage combine
-  #   - name: Generate coverage report
-  #     run: |
-  #       python -m coverage html --skip-covered --skip-empty
-  #       python -m coverage report # --fail-under=100
-  #   - name: Upload HTML report if check failed.
-  #     uses: actions/upload-artifact@v3
-  #     with:
-  #       name: html-coverage-report
-  #       path: htmlcov
-  #     if: ${{ failure() }}
+  core-coverage:
+    name: Combine & check core coverage.
+    runs-on: ubuntu-latest
+    needs: core
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - uses: actions/setup-python@v4.3.0
+      with:
+        # Use latest, so it understands all syntax.
+        python-version: ${{ env.max_python_version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install coverage[toml]
+    - name: Retrieve coverage data
+      uses: actions/download-artifact@v3
+      with:
+        name: core-coverage-data
+    - name: Normalize paths in coverage data
+      run: |
+        # See https://github.com/nedbat/coveragepy/issues/991
+        for coverage in `ls .coverage.*`; do
+          sqlite3 $coverage "update file set path = replace(path, '\\', '/')"
+        done
+    - name: Combine coverage
+      run: |
+        python -m coverage combine
+    - name: Generate coverage report
+      run: |
+        python -m coverage html --skip-covered --skip-empty
+        python -m coverage report # --fail-under=100
+    - name: Upload HTML report if check failed.
+      uses: actions/upload-artifact@v3
+      with:
+        name: html-coverage-report
+        path: htmlcov
+      if: ${{ failure() }}
 
-  # backend:
-  #   needs: core
-  #   strategy:
-  #     matrix:
-  #       backend: [android, cocoa, gtk, iOS, web, winforms]
-  #       include:
-  #         - runs-on: ubuntu-latest
-  #         - python-version: "3.7"  # Should be env.min_python_version (https://github.com/actions/runner/issues/480)
-  #         - pre-command:
+  backend:
+    needs: core
+    strategy:
+      matrix:
+        backend: [android, cocoa, gtk, iOS, web, winforms]
+        include:
+          - runs-on: ubuntu-latest
+          - python-version: "3.7"  # Should be env.min_python_version (https://github.com/actions/runner/issues/480)
+          - pre-command:
 
-  #         - backend: cocoa
-  #           runs-on: macos-latest
+          - backend: cocoa
+            runs-on: macos-latest
 
-  #         - backend: gtk
-  #           pre-command: "sudo apt-get update -y && sudo apt-get install -y python3-gi python3-gi-cairo gir1.2-gtk-3.0 python3-dev libgirepository1.0-dev libcairo2-dev pkg-config"
+          - backend: gtk
+            pre-command: "sudo apt-get update -y && sudo apt-get install -y python3-gi python3-gi-cairo gir1.2-gtk-3.0 python3-dev libgirepository1.0-dev libcairo2-dev pkg-config"
 
-  #         - backend: iOS
-  #           runs-on: macos-latest
+          - backend: iOS
+            runs-on: macos-latest
 
-  #         - backend: winforms
-  #           runs-on: windows-latest
-  #           # Py3.9 is the first Python version for which
-  #           # a wheel of pythonnet isn't available on PyPI.
-  #           python-version: "3.9"
-  #   runs-on: ${{ matrix.runs-on }}
-  #   steps:
-  #   - uses: actions/checkout@v3
-  #   - name: Set up Python ${{ matrix.python-version }}
-  #     uses: actions/setup-python@v4.3.0
-  #     with:
-  #       python-version: ${{ matrix.python-version }}
-  #   - name: Get packages
-  #     uses: actions/download-artifact@v3
-  #     with:
-  #       name: packages
-  #   - name: Install dependencies
-  #     run: |
-  #       ${{ matrix.pre-command }}
-  #       python -m pip install tox coverage[toml]
-  #   - name: Test
-  #     env:
-  #       TOGA_INSTALL_COMMAND: 'bash -c "pip install ../{core,dummy,${{ matrix.backend }}}/dist/*.whl"'
-  #     run: |
-  #       cd ${{ matrix.backend }}
-  #       tox -e py
-  #       mv .coverage.* ..
-  #   - name: Store coverage data
-  #     uses: actions/upload-artifact@v3
-  #     with:
-  #       name: backend-coverage-data
-  #       path: ".coverage.*"
-  #       if-no-files-found: ignore
-  #   - name: Report platform coverage
-  #     run: |
-  #       python -m coverage combine
-  #       python -m coverage report
+          - backend: winforms
+            runs-on: windows-latest
+            # Py3.9 is the first Python version for which
+            # a wheel of pythonnet isn't available on PyPI.
+            python-version: "3.9"
+    runs-on: ${{ matrix.runs-on }}
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4.3.0
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Get packages
+      uses: actions/download-artifact@v3
+      with:
+        name: packages
+    - name: Install dependencies
+      run: |
+        ${{ matrix.pre-command }}
+        python -m pip install tox coverage[toml]
+    - name: Test
+      env:
+        TOGA_INSTALL_COMMAND: 'bash -c "pip install ../{core,dummy,${{ matrix.backend }}}/dist/*.whl"'
+      run: |
+        cd ${{ matrix.backend }}
+        tox -e py
+        mv .coverage.* ..
+    - name: Store coverage data
+      uses: actions/upload-artifact@v3
+      with:
+        name: backend-coverage-data
+        path: ".coverage.*"
+        if-no-files-found: ignore
+    - name: Report platform coverage
+      run: |
+        python -m coverage combine
+        python -m coverage report
 
-  # backend-coverage:
-  #   name: Combine & check backend coverage.
-  #   runs-on: ubuntu-latest
-  #   needs:
-  #   - backend
-  #   steps:
-  #   - uses: actions/checkout@v3
-  #     with:
-  #       fetch-depth: 0
-  #   - uses: actions/setup-python@v4.3.0
-  #     with:
-  #       # Use latest, so it understands all syntax.
-  #       python-version: ${{ env.max_python_version }}
-  #   - name: Install dependencies
-  #     run: |
-  #       python -m pip install coverage[toml]
-  #   - name: Retrieve coverage data
-  #     uses: actions/download-artifact@v3
-  #     with:
-  #       name: backend-coverage-data
-  #   - name: Normalize paths in coverage data
-  #     run: |
-  #       # See https://github.com/nedbat/coveragepy/issues/991
-  #       for coverage in `ls .coverage.*`; do
-  #         sqlite3 $coverage "update file set path = replace(path, '\\', '/')"
-  #       done
-  #   - name: Combine coverage
-  #     run: |
-  #       python -m coverage combine
-  #   - name: Generate coverage report
-  #     run: |
-  #       python -m coverage html --skip-covered --skip-empty
-  #       python -m coverage report # --fail-under=100
-  #   - name: Upload HTML report if check failed.
-  #     uses: actions/upload-artifact@v3
-  #     with:
-  #       name: html-coverage-report
-  #       path: htmlcov
-  #     if: ${{ failure() }}
+  backend-coverage:
+    name: Combine & check backend coverage.
+    runs-on: ubuntu-latest
+    needs:
+    - backend
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - uses: actions/setup-python@v4.3.0
+      with:
+        # Use latest, so it understands all syntax.
+        python-version: ${{ env.max_python_version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install coverage[toml]
+    - name: Retrieve coverage data
+      uses: actions/download-artifact@v3
+      with:
+        name: backend-coverage-data
+    - name: Normalize paths in coverage data
+      run: |
+        # See https://github.com/nedbat/coveragepy/issues/991
+        for coverage in `ls .coverage.*`; do
+          sqlite3 $coverage "update file set path = replace(path, '\\', '/')"
+        done
+    - name: Combine coverage
+      run: |
+        python -m coverage combine
+    - name: Generate coverage report
+      run: |
+        python -m coverage html --skip-covered --skip-empty
+        python -m coverage report # --fail-under=100
+    - name: Upload HTML report if check failed.
+      uses: actions/upload-artifact@v3
+      with:
+        name: html-coverage-report
+        path: htmlcov
+      if: ${{ failure() }}
