@@ -1,14 +1,14 @@
 toga
 ====
 
-A meta-package for the `Toga widget toolkit`_.
+A meta-package for installing the `Toga widget toolkit`_.
 
-This package depends on a different Toga backend depending on which platform it's
-installed on:
+This package installs the ``toga-core`` library, plus a different Toga backend
+depending the platform where it's installed:
 
-* ``toga-cocoa``: for macOS
-* ``toga-gtk``: for Linux
-* ``toga-winforms``: for Windows
+* ``toga-cocoa`` on macOS
+* ``toga-gtk`` on Linux
+* ``toga-winforms`` on Windows
 
 For more details, see the `Toga project on Github`_.
 

@@ -22,7 +22,6 @@ If you have cloned the toga repository, install the dependent packages in your v
 
     $ cd toga
     $ pip install -e ./core
-    $ pip install -e ./dummy
 
 Then install the platform specific code::
 

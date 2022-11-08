@@ -76,8 +76,8 @@ manually installed by invoking::
 The iOS backend is currently proof-of-concept only. Most widgets have not been
 implemented. It uses `Rubicon`_ to provide a bridge to native macOS libraries.
 
-.. _Python-iOS-template cookiecutter: http://github.com/beeware/Python-iOS-template
-.. _toga-iOS: http://github.com/beeware/toga/tree/master/iOS
+.. _Python-iOS-template cookiecutter: https://github.com/beeware/Python-iOS-template
+.. _toga-iOS: https://github.com/beeware/toga/tree/master/iOS
 
 Android
 ~~~~~~~
@@ -88,28 +88,25 @@ by invoking::
     $ pip install toga-android
 
 The android backend is currently proof-of-concept only. Most widgets have not
-been implemented. It uses `VOC`_ to compile Python code to Java class files
-for execution on Android devices.
+been implemented. It uses `Chaquopy`_ to provide a way to access the Android
+Java libraries and implement Java interfaces in Python.
 
-.. _toga-android: http://github.com/beeware/toga/tree/master/android
-.. _VOC: http://github.com/beeware/voc
+.. _toga-android: https://github.com/beeware/toga/tree/master/android
+.. _Chaquopy: https://chaquo.com/chaquopy/
 
-Web platforms
--------------
+Web
+---
 
-Django
-~~~~~~
-
-The backend for Django is named `toga-django`_. It can be manually installed
+The Web backend is named `toga-web`_. It can be manually installed
 by invoking::
 
-    $ pip install toga-django
+    $ pip install toga-web
 
-The Django backend is currently proof-of-concept only. Most widgets have not been
-implemented. It uses `Batavia`_ to run Python code in the browser.
+The Web backend is currently proof-of-concept only. Most widgets have not been
+implemented. It uses `PyScript`_ to run Python code in the browser.
 
-.. _toga-django: http://github.com/beeware/toga/tree/master/django
-.. _Batavia: https://github.com/beeware/batavia
+.. _toga-web: https://github.com/beeware/toga/tree/master/web
+.. _PyScript: https://pyscript.net
 
 The Dummy platform
 ------------------
