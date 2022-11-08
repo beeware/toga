@@ -42,11 +42,10 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: packages
-          path: packages
       - name: Extract ${{ matrix.package }}
         run: |
           mkdir dist
-          mv packages/$(echo ${{ matrix.package }} | sed 's/_/?/')-[0-9]* dist
+          mv */dist/$(echo ${{ matrix.package }} | sed 's/_/?/')-[0-9]* dist
       - name: Publish to TestPyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
