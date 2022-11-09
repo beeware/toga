@@ -77,7 +77,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        python -m pip install tox coverage[toml]
+        python -m pip install tox coverage[toml]~=6.6.0b1
     - name: Get packages
       uses: actions/download-artifact@v3
       with:
@@ -123,17 +123,11 @@ jobs:
         python-version: ${{ env.max_python_version }}
     - name: Install dependencies
       run: |
-        python -m pip install coverage[toml]
+        python -m pip install coverage[toml]~=6.6.0b1
     - name: Retrieve coverage data
       uses: actions/download-artifact@v3
       with:
         name: core-coverage-data
-    - name: Normalize paths in coverage data
-      run: |
-        # See https://github.com/nedbat/coveragepy/issues/991
-        for coverage in `ls .coverage.*`; do
-          sqlite3 $coverage "update file set path = replace(path, '\\', '/')"
-        done
     - name: Combine coverage
       run: |
         python -m coverage combine
@@ -186,7 +180,7 @@ jobs:
     - name: Install dependencies
       run: |
         ${{ matrix.pre-command }}
-        python -m pip install tox coverage[toml]
+        python -m pip install tox coverage[toml]~=6.6.0b1
     - name: Test
       env:
         TOGA_INSTALL_COMMAND: 'bash -c "pip install ../{core,dummy,${{ matrix.backend }}}/dist/*.whl"'
@@ -220,17 +214,11 @@ jobs:
         python-version: ${{ env.max_python_version }}
     - name: Install dependencies
       run: |
-        python -m pip install coverage[toml]
+        python -m pip install coverage[toml]~=6.6.0b1
     - name: Retrieve coverage data
       uses: actions/download-artifact@v3
       with:
         name: backend-coverage-data
-    - name: Normalize paths in coverage data
-      run: |
-        # See https://github.com/nedbat/coveragepy/issues/991
-        for coverage in `ls .coverage.*`; do
-          sqlite3 $coverage "update file set path = replace(path, '\\', '/')"
-        done
     - name: Combine coverage
       run: |
         python -m coverage combine
