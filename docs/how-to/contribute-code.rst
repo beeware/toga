@@ -149,27 +149,27 @@ specific order:
     .. code-block:: bash
 
       (venv) $ cd toga
-      (venv) $ pip install -e src/core
-      (venv) $ pip install -e src/dummy
-      (venv) $ pip install -e src/cocoa
+      (venv) $ pip install -e ./core
+      (venv) $ pip install -e ./dummy
+      (venv) $ pip install -e ./cocoa
 
   .. group-tab:: Linux
 
     .. code-block:: bash
 
       (venv) $ cd toga
-      (venv) $ pip install -e src/core
-      (venv) $ pip install -e src/dummy
-      (venv) $ pip install -e src/gtk
+      (venv) $ pip install -e ./core
+      (venv) $ pip install -e ./dummy
+      (venv) $ pip install -e ./gtk
 
   .. group-tab:: Windows
 
     .. code-block:: doscon
 
       (venv) C:\...>cd toga
-      (venv) C:\...>pip install -e src/core
-      (venv) C:\...>pip install -e src/dummy
-      (venv) C:\...>pip install -e src/winforms
+      (venv) C:\...>pip install -e ./core
+      (venv) C:\...>pip install -e ./dummy
+      (venv) C:\...>pip install -e ./winforms
 
 This project uses a tool called `Pre-Commit <https://pre-commit.com>`__ to identify
 simple issues and standardize code formatting. It does this by installing a git
@@ -362,7 +362,7 @@ Start by running the core test suite:
 
     .. code-block:: bash
 
-      (venv) $ cd src/core
+      (venv) $ cd core
       (venv) $ TOGA_BACKEND=toga_dummy python setup.py test
       ...
       ----------------------------------------------------------------------
@@ -374,7 +374,7 @@ Start by running the core test suite:
 
     .. code-block:: bash
 
-      (venv) $ cd src/core
+      (venv) $ cd core
       (venv) $ TOGA_BACKEND=toga_dummy python setup.py test
       ...
       ----------------------------------------------------------------------
@@ -386,7 +386,7 @@ Start by running the core test suite:
 
     .. code-block:: doscon
 
-      (venv) C:\...>cd src/core
+      (venv) C:\...>cd core
       (venv) C:\...>set TOGA_BACKEND=toga_dummy
       (venv) C:\...>python setup.py test
       (venv) C:\...>set TOGA_BACKEND=
@@ -482,7 +482,7 @@ line of ``toga/app.py`` was executed; but only 77% of lines in
 the next column: lines 58, 75, 87, and so on weren't executed.
 
 That's what you have to fix - ideally, every single line in every single file
-will have 100% coverage. If you look in `src/core/tests`, you should find a
+will have 100% coverage. If you look in `core/tests`, you should find a
 test file that matches the name of the file that has insufficient coverage. If
 you don't, it's possible the entire test file is missing - so you'll have to
 create it!

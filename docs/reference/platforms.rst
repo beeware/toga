@@ -22,7 +22,7 @@ report ``sys.platform == 'darwin'``), or can be manually installed by invoking::
 The macOS backend has seen the most development to date. It uses `Rubicon`_ to
 provide a bridge to native macOS libraries.
 
-.. _toga-cocoa: https://github.com/beeware/toga/tree/master/src/cocoa
+.. _toga-cocoa: https://github.com/beeware/toga/tree/master/cocoa
 .. _Rubicon: https://github.com/beeware/rubicon-objc
 
 Linux
@@ -40,7 +40,7 @@ invoking::
 The GTK+ backend is reasonably well developed, but currently has some known issues
 with widget layout. It uses the native GObject Python bindings.
 
-.. _toga-gtk: https://github.com/beeware/toga/tree/master/src/gtk
+.. _toga-gtk: https://github.com/beeware/toga/tree/master/gtk
 
 Windows
 ~~~~~~~~
@@ -57,7 +57,7 @@ installed by invoking::
 It uses `Python.net`_. Unfortunately, python.net has not been packaged for
 Python 3.9 or higher, so you'll need to use Python 3.8 or earlier in your app.
 
-.. _toga-winforms: https://github.com/beeware/toga/tree/master/src/winforms
+.. _toga-winforms: https://github.com/beeware/toga/tree/master/winforms
 .. _Python.net: https://pythonnet.github.io
 
 Mobile platforms
@@ -76,8 +76,8 @@ manually installed by invoking::
 The iOS backend is currently proof-of-concept only. Most widgets have not been
 implemented. It uses `Rubicon`_ to provide a bridge to native macOS libraries.
 
-.. _Python-iOS-template cookiecutter: http://github.com/beeware/Python-iOS-template
-.. _toga-iOS: http://github.com/beeware/toga/tree/master/src/iOS
+.. _Python-iOS-template cookiecutter: https://github.com/beeware/Python-iOS-template
+.. _toga-iOS: https://github.com/beeware/toga/tree/master/iOS
 
 Android
 ~~~~~~~
@@ -88,28 +88,25 @@ by invoking::
     $ pip install toga-android
 
 The android backend is currently proof-of-concept only. Most widgets have not
-been implemented. It uses `VOC`_ to compile Python code to Java class files
-for execution on Android devices.
+been implemented. It uses `Chaquopy`_ to provide a way to access the Android
+Java libraries and implement Java interfaces in Python.
 
-.. _toga-android: http://github.com/beeware/toga/tree/master/src/android
-.. _VOC: http://github.com/beeware/voc
+.. _toga-android: https://github.com/beeware/toga/tree/master/android
+.. _Chaquopy: https://chaquo.com/chaquopy/
 
-Web platforms
--------------
+Web
+---
 
-Django
-~~~~~~
-
-The backend for Django is named `toga-django`_. It can be manually installed
+The Web backend is named `toga-web`_. It can be manually installed
 by invoking::
 
-    $ pip install toga-django
+    $ pip install toga-web
 
-The Django backend is currently proof-of-concept only. Most widgets have not been
-implemented. It uses `Batavia`_ to run Python code in the browser.
+The Web backend is currently proof-of-concept only. Most widgets have not been
+implemented. It uses `PyScript`_ to run Python code in the browser.
 
-.. _toga-django: http://github.com/beeware/toga/tree/master/src/django
-.. _Batavia: https://github.com/beeware/batavia
+.. _toga-web: https://github.com/beeware/toga/tree/master/web
+.. _PyScript: https://pyscript.net
 
 The Dummy platform
 ------------------

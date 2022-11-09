@@ -21,14 +21,13 @@ This will pop up a GUI window.
 If you have cloned the toga repository, install the dependent packages in your virtualenv::
 
     $ cd toga
-    $ pip install -e src/core
-    $ pip install -e src/dummy
+    $ pip install -e ./core
 
 Then install the platform specific code::
 
-    $ pip install -e src/cocoa      # macOS
-    $ pip install -e src/gtk        # Linux
-    $ pip install -e src/winforms   # Windows
+    $ pip install -e ./cocoa      # macOS
+    $ pip install -e ./gtk        # Linux
+    $ pip install -e ./winforms   # Windows
 
 Finally navigate to the demo directory and run the application::
 

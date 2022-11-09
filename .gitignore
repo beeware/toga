@@ -18,9 +18,9 @@ local
 Pipfile*
 .tox
 node_modules
-src/gtk/gi
-src/gtk/pygtkcompat
-src/gtk/cairo
+gtk/gi
+gtk/pygtkcompat
+gtk/cairo
 .DS_Store
 pip-selfcheck.json
 pyvenv.cfg
@@ -37,10 +37,6 @@ examples/*/android/
 examples/*/django/
 examples/*/windows/
 examples/*/web/
-
-src/*/.tox
-src/*/.coverage
-src/*/.coverage.*
 
 # Memory Profiler
 mprofile_*.dat

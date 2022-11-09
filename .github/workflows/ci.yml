@@ -42,6 +42,10 @@ jobs:
     - run: tox -e towncrier-check
 
   package:
+    strategy:
+      matrix:
+        subdir: ["android", "cocoa", "core", "demo", "dummy", "gtk", "iOS", "toga",
+                 "web", "winforms"]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -49,11 +53,13 @@ jobs:
       with:
         python-version: ${{ env.min_python_version }}
     - run: pip install tox
-    - run: tox -e package
+    - run: tox -e package -- ${{ matrix.subdir }}
     - uses: actions/upload-artifact@v3
       with:
         name: packages
-        path: dist
+        # There will only be one dist directory for each matrix sub-job, but using a
+        # leading wildcard preserves the directory structure.
+        path: "*/dist/*"
         if-no-files-found: error
 
   core:
@@ -76,14 +82,13 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: packages
-        path: dist
     - name: Test
       env:
-        TOGA_INSTALL_COMMAND: 'bash -c "pip install ../../dist/toga_{core,dummy}*.whl"'
+        TOGA_INSTALL_COMMAND: 'bash -c "pip install ../{core,dummy}/dist/*.whl"'
       run: |
-        cd src/core
+        cd core
         tox -e py
-        mv .coverage.* ../..
+        mv .coverage.* ..
     - name: Store coverage data
       uses: actions/upload-artifact@v3
       with:
@@ -178,18 +183,17 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: packages
-        path: dist
     - name: Install dependencies
       run: |
         ${{ matrix.pre-command }}
         python -m pip install tox coverage[toml]
     - name: Test
       env:
-        TOGA_INSTALL_COMMAND: 'bash -c "pip install ../../dist/toga_{core,dummy,${{ matrix.backend }}}*.whl"'
+        TOGA_INSTALL_COMMAND: 'bash -c "pip install ../{core,dummy,${{ matrix.backend }}}/dist/*.whl"'
       run: |
-        cd src/${{ matrix.backend }}
+        cd ${{ matrix.backend }}
         tox -e py
-        mv .coverage.* ../../
+        mv .coverage.* ..
     - name: Store coverage data
       uses: actions/upload-artifact@v3
       with:
