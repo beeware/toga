@@ -48,7 +48,10 @@ jobs:
                  "web", "winforms"]
     runs-on: ubuntu-latest
     steps:
+    # Fetch all refs so setuptools_scm can generate the correct version number.
     - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
     - uses: actions/setup-python@v4.3.0
       with:
         python-version: ${{ env.min_python_version }}
