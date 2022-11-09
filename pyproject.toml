@@ -1,58 +1,58 @@
-[tool.coverage.run]
-parallel = true
-branch = true
-relative_files = true
-source = [
-    "android",
-    "cocoa",
-    "core",
-    "dummy",
-    "gtk",
-    "iOS",
-    "web",
-    "winforms",
-]
+# The coverage settings in this file only control `coverage combine` and `coverage report`.
+# `coverage run` is controlled by the pyproject.toml files in each package's subdirectory.
+#
+# To view coverage reports locally, run something like this in the repository root
+# directory:
+#
+#     tox -c core -e py && coverage combine core/.coverage* && coverage report
 
+[tool.coverage.run]
+relative_files = true
+
+# In each subdirectory's pyproject.toml, we use both of the following settings:
+#   * `source_pkgs`: detects the given packages no matter where they're imported from.
+#   * `source`: detects all files in the given directory, including files that are
+#      never imported by the tests.
+#
+# When running through `tox`, this will produce duplicate entries which must be merged
+# with `coverage combine` using the lists below. In each list, the first item is a path to
+# a source code directory, and the other items are paths in the coverage data which will
+# be mapped to that directory. The order of the lists is significant, but their names are
+# not.
 [tool.coverage.paths]
 android = [
     "android/src/toga_android",
-    "src/toga_android",
-    "**/site-packages/toga_android",
+    "**/toga_android",
 ]
 cocoa = [
     "cocoa/src/toga_cocoa",
-    "src/toga_cocoa",
-    "**/site-packages/toga_cocoa",
-]
-core = [
-    "core/src/toga",
-    "src/toga",
-    "**/site-packages/toga",
+    "**/toga_cocoa",
 ]
 dummy = [
     "dummy/src/toga_dummy",
-    "src/toga_dummy",
-    "**/site-packages/toga_dummy",
+    "**/toga_dummy",
 ]
 gtk = [
     "gtk/src/toga_gtk",
-    "src/toga_gtk",
-    "**/site-packages/toga_gtk",
+    "**/toga_gtk",
 ]
 iOS = [
     "iOS/src/toga_iOS",
-    "src/toga_iOS",
-    "**/site-packages/toga_iOS",
+    "**/toga_iOS",
 ]
 web = [
     "web/src/toga_web",
-    "src/toga_web",
-    "**/site-packages/toga_web",
+    "**/toga_web",
 ]
 winforms = [
     "winforms/src/toga_winforms",
-    "src/toga_winforms",
-    "**/site-packages/toga_winforms",
+    "**/toga_winforms",
+]
+# This one must come last, otherwise the wildcard would match too much, because the
+# repository root directory is probably also called "toga".
+core = [
+    "core/src/toga",
+    "**/toga",
 ]
 
 [tool.coverage.report]
