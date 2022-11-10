@@ -1,3 +1,4 @@
+setuptools-scm
 sphinx
 sphinxcontrib-spelling
 pyenchant
