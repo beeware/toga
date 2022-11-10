@@ -1,8 +1,11 @@
+[build-system]
+requires = ["setuptools>=60", "setuptools_scm[toml]>=7.0"]
+build-backend = "setuptools.build_meta"
 
 [tool.briefcase]
 project_name = "Toga Demo"
 bundle = "org.beeware"
-version = "0.3.0.dev39"
+version = "0.0.1"
 url = "https://beeware.org"
 license = "BSD license"
 author = "Tiberius Yak"
@@ -12,30 +15,30 @@ author_email = "tiberius@beeware.org"
 formal_name = "Toga Demo"
 description = "A demonstration of the capabilities of the Toga widget toolkit."
 sources = ["toga_demo"]
-requires = []
+requires = ["../core"]
 
 [tool.briefcase.app.toga-demo.macOS]
 requires = [
-    "toga-cocoa==0.3.0.dev39",
+    "../cocoa",
 ]
 
 [tool.briefcase.app.toga-demo.linux]
 requires = [
-    "toga-gtk==0.3.0.dev39",
+    "../gtk",
 ]
 
 [tool.briefcase.app.toga-demo.windows]
 requires = [
-    "toga-winforms==0.3.0.dev39",
+    "../winforms",
 ]
 
 # Mobile deployments
 [tool.briefcase.app.toga-demo.iOS]
 requires = [
-    "toga-iOS==0.3.0.dev39",
+    "../iOS",
 ]
 
 [tool.briefcase.app.toga-demo.android]
 requires = [
-    "toga-android==0.3.0.dev39",
+    "../android",
 ]
