@@ -1,10 +1,5 @@
 # The coverage settings in this file only control `coverage combine` and `coverage report`.
 # `coverage run` is controlled by the pyproject.toml files in each package's subdirectory.
-#
-# To view coverage reports locally, run something like this in the repository root
-# directory:
-#
-#     tox -c core -e py && coverage combine core/.coverage* && coverage report
 
 [tool.coverage.run]
 relative_files = true
