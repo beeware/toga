@@ -87,6 +87,7 @@ jobs:
         TOGA_INSTALL_COMMAND: 'bash -c "pip install ../{core,dummy}/dist/*.whl"'
       run: |
         tox -c core -e py
+        python -m coverage xml
         mv .coverage .coverage.${{ matrix.platform }}.${{ matrix.python-version }}
     - name: Store coverage data
       uses: actions/upload-artifact@v3
@@ -94,10 +95,7 @@ jobs:
         name: core-coverage-data
         path: ".coverage.*"
         if-no-files-found: error
-    - name: Create CodeCov report
-      run: |
-        python -m coverage xml
-    - name: Upload CodeCov report
+    - name: Upload coverage data to CodeCov
       uses: codecov/codecov-action@v3
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
