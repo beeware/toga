@@ -90,7 +90,7 @@ __all__ = [
 ]
 
 
-def package_version(file, name):
+def _package_version(file, name):
     try:
         # Read version from SCM metadata
         # This will only exist in a development environment
@@ -111,4 +111,4 @@ def package_version(file, name):
         return version(package)
 
 
-__version__ = package_version(__file__, __name__)
+__version__ = _package_version(__file__, __name__)
