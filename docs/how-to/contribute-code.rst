@@ -362,39 +362,19 @@ Start by running the core test suite:
 
     .. code-block:: bash
 
-      (venv) $ cd core
-      (venv) $ TOGA_BACKEND=toga_dummy python setup.py test
-      ...
-      ----------------------------------------------------------------------
-      Ran 181 tests in 0.343s
-
-      OK (skipped=1)
+      (venv) $ tox -e py-core
 
   .. group-tab:: Linux
 
     .. code-block:: bash
 
-      (venv) $ cd core
-      (venv) $ TOGA_BACKEND=toga_dummy python setup.py test
-      ...
-      ----------------------------------------------------------------------
-      Ran 181 tests in 0.343s
-
-      OK (skipped=1)
+      (venv) $ tox -e py-core
 
   .. group-tab:: Windows
 
     .. code-block:: doscon
 
-      (venv) C:\...>cd core
-      (venv) C:\...>set TOGA_BACKEND=toga_dummy
-      (venv) C:\...>python setup.py test
-      (venv) C:\...>set TOGA_BACKEND=
-      ...
-      ----------------------------------------------------------------------
-      Ran 181 tests in 0.343s
-
-      OK (skipped=1)
+      (venv) C:\...>tox -e py-core
 
 You should get some output indicating that tests have been run. You shouldn't
 ever get any FAIL or ERROR test results. We run our full test suite before
@@ -402,14 +382,6 @@ merging every patch. If that process discovers any problems, we don't merge
 the patch. If you do find a test error or failure, either there's something
 odd in your test environment, or you've found an edge case that we haven't
 seen before - either way, let us know!
-
-Note that when we run the test suite, we set the environment variable
-``TOGA_BACKEND``. Under normal operation, Toga will automatically choose the
-appropriate backend for your platform. However, when running the tests for
-the core platform, we need to use a special "dummy" backend. This dummy backend
-satisfies the interface contract of a Toga backend, but doesn't acutally
-display any widgets. This allows us to test the behavior of the core library
-independent of the behavior of a specific backend.
 
 Although the tests should all pass, the test suite itself is still
 incomplete. There are many aspects of the Toga Core API that aren't currently
@@ -419,53 +391,9 @@ going to use a tool called `coverage
 check which lines of code have (and haven't) been executed - which then gives
 you an idea of what code has (and hasn't) been tested.
 
-Install coverage, and then re-run the test suite -- this time, in a slightly
-different way so that we can gather some data about the test run. Then we can
-ask coverage to generate a report of the data that was gathered:
+At the end of the test output there should be a report of the coverage data that
+was gathered::
 
-.. tabs::
-
-  .. group-tab:: macOS
-
-    .. code-block:: bash
-
-      (venv) $ pip install coverage
-      (venv) $ TOGA_BACKEND=toga_dummy coverage run setup.py test
-      (venv) $ coverage report -m --include="toga/*"
-      Name                                 Stmts   Miss  Cover   Missing
-      ------------------------------------------------------------------
-      toga/__init__.py                        29      0   100%
-      toga/app.py                             50      0   100%
-      ...
-      toga/window.py                          79     18    77%   58, 75, 87, 92, 104, 141, 155, 164, 168, 172-173, 176, 192, 204, 216, 228, 243, 257
-      ------------------------------------------------------------------
-      TOTAL                                 1034    258    75%
-
-  .. group-tab:: Linux
-
-    .. code-block:: bash
-
-      (venv) $ pip install coverage
-      (venv) $ TOGA_BACKEND=toga_dummy coverage run setup.py test
-      (venv) $ coverage report -m --include="toga/*"
-      Name                                 Stmts   Miss  Cover   Missing
-      ------------------------------------------------------------------
-      toga/__init__.py                        29      0   100%
-      toga/app.py                             50      0   100%
-      ...
-      toga/window.py                          79     18    77%   58, 75, 87, 92, 104, 141, 155, 164, 168, 172-173, 176, 192, 204, 216, 228, 243, 257
-      ------------------------------------------------------------------
-      TOTAL                                 1034    258    75%
-
-  .. group-tab:: Windows
-
-    .. code-block:: doscon
-
-      (venv) C:\...>pip install coverage
-      (venv) C:\...>set TOGA_BACKEND=toga_dummy
-      (venv) C:\...>coverage run setup.py test
-      (venv) C:\...>set TOGA_BACKEND=
-      (venv) C:\...>coverage report -m --include=toga/*
       Name                                 Stmts   Miss  Cover   Missing
       ------------------------------------------------------------------
       toga/__init__.py                        29      0   100%
@@ -491,22 +419,8 @@ Your task: create a test that improves coverage - even by one more line.
 
 Once you've written a test, re-run the test suite to generate fresh coverage
 data. Let's say we added a test for line 58 of ``toga/window.py`` - we'd
-expect to see something like:
+expect to see something like::
 
-.. tabs::
-
-  .. group-tab:: macOS
-
-    .. code-block:: bash
-
-      (venv) $ TOGA_BACKEND=toga_dummy coverage run setup.py test
-      running test
-      ...
-      ----------------------------------------------------------------------
-      Ran 101 tests in 0.343s
-
-      OK (skipped=1)
-      (venv) $ coverage report -m --include="toga/*"
       Name                                 Stmts   Miss  Cover   Missing
       ------------------------------------------------------------------
       toga/__init__.py                        29      0   100%
@@ -515,51 +429,6 @@ expect to see something like:
       toga/window.py                          79     17    78%   75, 87, 92, 104, 141, 155, 164, 168, 172-173, 176, 192, 204, 216, 228, 243, 257
       ------------------------------------------------------------------
       TOTAL                                 1034    257    75%
-
-  .. group-tab:: Linux
-
-    .. code-block:: bash
-
-      (venv) $ TOGA_BACKEND=toga_dummy coverage run setup.py test
-      running test
-      ...
-      ----------------------------------------------------------------------
-      Ran 101 tests in 0.343s
-
-      OK (skipped=1)
-      (venv) $ coverage report -m --include="toga/*"
-      Name                                 Stmts   Miss  Cover   Missing
-      ------------------------------------------------------------------
-      toga/__init__.py                        29      0   100%
-      toga/app.py                             50      0   100%
-      ...
-      toga/window.py                          79     17    78%   75, 87, 92, 104, 141, 155, 164, 168, 172-173, 176, 192, 204, 216, 228, 243, 257
-      ------------------------------------------------------------------
-      TOTAL                                 1034    257    75%
-
-  .. group-tab:: Windows
-
-    .. code-block:: doscon
-
-      (venv) C:\...>set TOGA_BACKEND=toga_dummy
-      (venv) C:\...>coverage run setup.py test
-      (venv) C:\...>set TOGA_BACKEND=
-      running test
-      ...
-      ----------------------------------------------------------------------
-      Ran 101 tests in 0.343s
-
-      OK (skipped=1)
-      (venv) $ coverage report -m --include=toga/*
-      Name                                 Stmts   Miss  Cover   Missing
-      ------------------------------------------------------------------
-      toga/__init__.py                        29      0   100%
-      toga/app.py                             50      0   100%
-      ...
-      toga/window.py                          79     17    78%   75, 87, 92, 104, 141, 155, 164, 168, 172-173, 176, 192, 204, 216, 228, 243, 257
-      ------------------------------------------------------------------
-      TOTAL                                 1034    257    75%
-
 
 That is, one more test has been executed, resulting in one less missing line
 in the coverage results.
