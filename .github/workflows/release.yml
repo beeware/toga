@@ -23,7 +23,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: packages
-      - uses: ncipollo/release-action@v1.11.1
+      - uses: ncipollo/release-action@v1.11.2
         with:
           name: ${{ env.VERSION }}
           draft: true
