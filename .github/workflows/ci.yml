@@ -84,6 +84,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
+        # See https://github.com/nedbat/coveragepy/issues/991
         python -m pip install tox coverage[toml]~=6.6.0b1
     - name: Get packages
       uses: actions/download-artifact@v3
@@ -94,19 +95,20 @@ jobs:
         TOGA_INSTALL_COMMAND: 'bash -c "pip install ../{core,dummy}/dist/*.whl"'
       run: |
         tox -e py-core
+        cd core
         python -m coverage xml
         mv .coverage .coverage.${{ matrix.platform }}.${{ matrix.python-version }}
     - name: Store coverage data
       uses: actions/upload-artifact@v3
       with:
         name: core-coverage-data
-        path: ".coverage.*"
+        path: "core/.coverage.*"
         if-no-files-found: error
     - name: Upload coverage data to CodeCov
       uses: codecov/codecov-action@v3
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
-        file: ./coverage.xml
+        file: core/coverage.xml
         flags: unittests
         fail_ci_if_error: true
 
@@ -124,23 +126,24 @@ jobs:
         python-version: ${{ env.max_python_version }}
     - name: Install dependencies
       run: |
+        # See https://github.com/nedbat/coveragepy/issues/991
         python -m pip install coverage[toml]~=6.6.0b1
     - name: Retrieve coverage data
       uses: actions/download-artifact@v3
       with:
         name: core-coverage-data
-    - name: Combine coverage
-      run: |
-        python -m coverage combine
+        path: core
     - name: Generate coverage report
       run: |
+        cd core
+        python -m coverage combine
         python -m coverage html --skip-covered --skip-empty
-        python -m coverage report # --fail-under=100
+        python -m coverage report --rcfile ../pyproject.toml # --fail-under=100
     - name: Upload HTML report if check failed.
       uses: actions/upload-artifact@v3
       with:
         name: html-coverage-report
-        path: htmlcov
+        path: core/htmlcov
       if: ${{ failure() }}
 
   backend:
