@@ -86,7 +86,7 @@ jobs:
       env:
         TOGA_INSTALL_COMMAND: 'bash -c "pip install ../{core,dummy}/dist/*.whl"'
       run: |
-        tox -c core -e py
+        tox -e py-core
         python -m coverage xml
         mv .coverage .coverage.${{ matrix.platform }}.${{ matrix.python-version }}
     - name: Store coverage data
@@ -179,4 +179,4 @@ jobs:
       env:
         TOGA_INSTALL_COMMAND: 'bash -c "pip install ../{core,dummy,${{ matrix.backend }}}/dist/*.whl"'
       run: |
-        tox -c ${{ matrix.backend }} -e py
+        tox -e py-${{ matrix.backend }}

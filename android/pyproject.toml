@@ -10,3 +10,9 @@ relative_files = true
 # See notes in the root pyproject.toml file.
 source = ["src"]
 source_pkgs = ["toga_android"]
+
+[tool.coverage.paths]
+source = [
+    "src/toga_android",
+    "**/toga_android",
+]

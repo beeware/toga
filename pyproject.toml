@@ -1,54 +1,17 @@
-# The coverage settings in this file only control `coverage combine` and `coverage report`.
-# `coverage run` is controlled by the pyproject.toml files in each package's subdirectory.
-
-[tool.coverage.run]
-relative_files = true
-
+# The coverage settings in this file only control `coverage report`. `coverage run` and
+# `coverage combine` are controlled by the pyproject.toml files in each package's
+# subdirectory.
+#
 # In each subdirectory's pyproject.toml, we use both of the following settings:
 #   * `source_pkgs`: detects the given packages no matter where they're imported from.
 #   * `source`: detects all files in the given directory, including files that are
 #      never imported by the tests.
 #
 # When running through `tox`, this will produce duplicate entries which must be merged
-# with `coverage combine` using the lists below. In each list, the first item is a path to
-# a source code directory, and the other items are paths in the coverage data which will
-# be mapped to that directory. The order of the lists is significant, but their names are
-# not.
-[tool.coverage.paths]
-android = [
-    "android/src/toga_android",
-    "**/toga_android",
-]
-cocoa = [
-    "cocoa/src/toga_cocoa",
-    "**/toga_cocoa",
-]
-dummy = [
-    "dummy/src/toga_dummy",
-    "**/toga_dummy",
-]
-gtk = [
-    "gtk/src/toga_gtk",
-    "**/toga_gtk",
-]
-iOS = [
-    "iOS/src/toga_iOS",
-    "**/toga_iOS",
-]
-web = [
-    "web/src/toga_web",
-    "**/toga_web",
-]
-winforms = [
-    "winforms/src/toga_winforms",
-    "**/toga_winforms",
-]
-# This one must come last, otherwise the wildcard would match too much, because the
-# repository root directory is probably also called "toga".
-core = [
-    "core/src/toga",
-    "**/toga",
-]
+# with `coverage combine`.
+
+[tool.coverage.run]
+relative_files = true
 
 [tool.coverage.report]
 show_missing = true
