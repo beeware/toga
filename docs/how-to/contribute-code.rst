@@ -149,7 +149,7 @@ specific order:
     .. code-block:: bash
 
       (venv) $ cd toga
-      (venv) $ pip install -e ./core
+      (venv) $ pip install -e ./core[dev]
       (venv) $ pip install -e ./dummy
       (venv) $ pip install -e ./cocoa
 
@@ -158,7 +158,7 @@ specific order:
     .. code-block:: bash
 
       (venv) $ cd toga
-      (venv) $ pip install -e ./core
+      (venv) $ pip install -e ./core[dev]
       (venv) $ pip install -e ./dummy
       (venv) $ pip install -e ./gtk
 
@@ -167,7 +167,7 @@ specific order:
     .. code-block:: doscon
 
       (venv) C:\...>cd toga
-      (venv) C:\...>pip install -e ./core
+      (venv) C:\...>pip install -e ./core[dev]
       (venv) C:\...>pip install -e ./dummy
       (venv) C:\...>pip install -e ./winforms
 
@@ -182,7 +182,6 @@ git commit. To enable pre-commit, run:
 
     .. code-block:: bash
 
-      (venv) $ pip install pre-commit
       (venv) $ pre-commit install
       pre-commit installed at .git/hooks/pre-commit
 
@@ -190,7 +189,6 @@ git commit. To enable pre-commit, run:
 
     .. code-block:: bash
 
-      (venv) $ pip install pre-commit
       (venv) $ pre-commit install
       pre-commit installed at .git/hooks/pre-commit
 
@@ -198,7 +196,6 @@ git commit. To enable pre-commit, run:
 
     .. code-block:: doscon
 
-      (venv) C:\...>pip install pre-commit
       (venv) C:\...>pre-commit install
       pre-commit installed at .git/hooks/pre-commit
 
