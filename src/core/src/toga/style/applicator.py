@@ -28,3 +28,6 @@ class TogaApplicator:
 
     def set_background_color(self, color):
         self.widget._impl.set_background_color(color)
+        for child in self.widget.children:
+            if child.applicator:
+                child.applicator.set_background_color(color)
