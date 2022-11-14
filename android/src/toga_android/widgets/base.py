@@ -79,6 +79,12 @@ class Widget:
     def focus(self):
         self.native.requestFocus()
 
+    def get_tab_index(self):
+        self.interface.factory.not_implementated("Widget.get_tab_index()")
+
+    def set_tab_index(self):
+        self.interface.factory.not_implementated("Widget.get_tab_index()")
+
     # APPLICATOR
 
     def set_bounds(self, x, y, width, height):
