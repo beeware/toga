@@ -1,59 +1,17 @@
-[tool.coverage.run]
-parallel = true
-branch = true
-relative_files = true
-source = [
-    "android",
-    "cocoa",
-    "core",
-    "dummy",
-    "gtk",
-    "iOS",
-    "web",
-    "winforms",
-]
+# The coverage settings in this file only control `coverage report`. `coverage run` and
+# `coverage combine` are controlled by the pyproject.toml files in each package's
+# subdirectory.
+#
+# In each subdirectory's pyproject.toml, we use both of the following settings:
+#   * `source_pkgs`: detects the given packages no matter where they're imported from.
+#   * `source`: detects all files in the given directory, including files that are
+#      never imported by the tests.
+#
+# When running through `tox`, this will produce duplicate entries which must be merged
+# with `coverage combine`.
 
-[tool.coverage.paths]
-android = [
-    "android/src/toga_android",
-    "src/toga_android",
-    "**/site-packages/toga_android",
-]
-cocoa = [
-    "cocoa/src/toga_cocoa",
-    "src/toga_cocoa",
-    "**/site-packages/toga_cocoa",
-]
-core = [
-    "core/src/toga",
-    "src/toga",
-    "**/site-packages/toga",
-]
-dummy = [
-    "dummy/src/toga_dummy",
-    "src/toga_dummy",
-    "**/site-packages/toga_dummy",
-]
-gtk = [
-    "gtk/src/toga_gtk",
-    "src/toga_gtk",
-    "**/site-packages/toga_gtk",
-]
-iOS = [
-    "iOS/src/toga_iOS",
-    "src/toga_iOS",
-    "**/site-packages/toga_iOS",
-]
-web = [
-    "web/src/toga_web",
-    "src/toga_web",
-    "**/site-packages/toga_web",
-]
-winforms = [
-    "winforms/src/toga_winforms",
-    "src/toga_winforms",
-    "**/site-packages/toga_winforms",
-]
+[tool.coverage.run]
+relative_files = true
 
 [tool.coverage.report]
 show_missing = true
