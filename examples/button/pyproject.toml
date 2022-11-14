@@ -15,41 +15,41 @@ formal_name = "Button Demo"
 description = "A testing app"
 sources = ['button']
 requires = [
-    '../../src/core',
+    '../../core',
 ]
 
 
 [tool.briefcase.app.button.macOS]
 requires = [
-    '../../src/cocoa',
+    '../../cocoa',
     'std-nslog>=1.0.0',
 ]
 
 [tool.briefcase.app.button.linux]
 requires = [
-    '../../src/gtk',
+    '../../gtk',
 ]
 
 [tool.briefcase.app.button.windows]
 requires = [
-    '../../src/winforms',
+    '../../winforms',
 ]
 
 # Mobile deployments
 [tool.briefcase.app.button.iOS]
 requires = [
-    '../../src/iOS',
+    '../../iOS',
     'std-nslog>=1.0.0',
 ]
 
 [tool.briefcase.app.button.android]
 requires = [
-    '../../src/android',
+    '../../android',
 ]
 
 # Web deployment
 [tool.briefcase.app.button.web]
 requires = [
-    '../../src/web',
+    '../../web',
 ]
 style_framework = "Bootstrap v4.6"

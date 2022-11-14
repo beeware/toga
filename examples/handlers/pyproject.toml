@@ -15,41 +15,41 @@ formal_name = "Handler Demo"
 description = "A testing app"
 sources = ['handlers']
 requires = [
-    '../../src/core',
+    '../../core',
 ]
 
 
 [tool.briefcase.app.handlers.macOS]
 requires = [
-    '../../src/cocoa',
+    '../../cocoa',
     'std-nslog>=1.0.0',
 ]
 
 [tool.briefcase.app.handlers.linux]
 requires = [
-    '../../src/gtk',
+    '../../gtk',
 ]
 
 [tool.briefcase.app.handlers.windows]
 requires = [
-    '../../src/winforms',
+    '../../winforms',
 ]
 
 # Mobile deployments
 [tool.briefcase.app.handlers.iOS]
 requires = [
-    '../../src/iOS',
+    '../../iOS',
     'std-nslog>=1.0.0',
 ]
 
 [tool.briefcase.app.handlers.android]
 requires = [
-    '../../src/android',
+    '../../android',
 ]
 
 # Web deployment
 [tool.briefcase.app.handlers.web]
 requires = [
-    '../../src/web',
+    '../../web',
 ]
 style_framework = "Bootstrap v4.6"

@@ -1,14 +1,5 @@
 import toga
-from toga.constants import (
-    BLUE,
-    CENTER,
-    COLUMN,
-    GREEN,
-    RED,
-    ROW,
-    WHITE,
-    YELLOW,
-)
+from toga.constants import BLUE, CENTER, COLUMN, GREEN, RED, ROW, WHITE, YELLOW
 from toga.style import Pack
 
 
@@ -98,6 +89,6 @@ def main():
     return app
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app = main()
     app.main_loop()

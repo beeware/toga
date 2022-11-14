@@ -1,3 +1,48 @@
-[build-system]
-requires = ["setuptools>=60"]
-build-backend = "setuptools.build_meta"
+# The coverage settings in this file only control `coverage report`. `coverage run` and
+# `coverage combine` are controlled by the pyproject.toml files in each package's
+# subdirectory.
+#
+# In each subdirectory's pyproject.toml, we use both of the following settings:
+#   * `source_pkgs`: detects the given packages no matter where they're imported from.
+#   * `source`: detects all files in the given directory, including files that are
+#      never imported by the tests.
+#
+# When running through `tox`, this will produce duplicate entries which must be merged
+# with `coverage combine`.
+
+[tool.coverage.run]
+relative_files = true
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+skip_empty = true
+precision = 1
+exclude_lines = [
+    "pragma: no cover",
+    "@(abc\\.)?abstractmethod",
+    "NotImplementedError\\(\\)"
+]
+
+[tool.isort]
+profile = "black"
+split_on_trailing_comma = true
+combine_as_imports = true
+known_first_party = [
+    "toga",
+    "toga_android",
+    "toga_cocoa",
+    "toga_dummy",
+    "toga_gtk",
+    "toga_iOS",
+    "toga_web",
+    "toga_winforms",
+]
+
+[tool.towncrier]
+directory = "changes"
+package = "toga"
+package_dir = "src"
+filename = "docs/background/releases.rst"
+title_format = "{version} ({project_date})"
+template = "changes/template.rst"

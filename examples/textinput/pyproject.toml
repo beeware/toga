@@ -15,41 +15,41 @@ formal_name = "Text Input Demo"
 description = "A testing app"
 sources = ['textinput']
 requires = [
-    '../../src/core',
+    '../../core',
 ]
 
 
 [tool.briefcase.app.textinput.macOS]
 requires = [
-    '../../src/cocoa',
+    '../../cocoa',
     'std-nslog>=1.0.0',
 ]
 
 [tool.briefcase.app.textinput.linux]
 requires = [
-    '../../src/gtk',
+    '../../gtk',
 ]
 
 [tool.briefcase.app.textinput.windows]
 requires = [
-    '../../src/winforms',
+    '../../winforms',
 ]
 
 # Mobile deployments
 [tool.briefcase.app.textinput.iOS]
 requires = [
-    '../../src/iOS',
+    '../../iOS',
     'std-nslog>=1.0.0',
 ]
 
 [tool.briefcase.app.textinput.android]
 requires = [
-    '../../src/android',
+    '../../android',
 ]
 
 # Web deployment
 [tool.briefcase.app.textinput.web]
 requires = [
-    '../../src/web',
+    '../../web',
 ]
 style_framework = "Bootstrap v4.6"

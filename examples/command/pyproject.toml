@@ -15,19 +15,19 @@ formal_name = "Command Example"
 description = "A testing app"
 sources = ['command']
 requires = [
-    '../../src/core',
+    '../../core',
 ]
 
 
 [tool.briefcase.app.command.macOS]
 requires = [
-    '../../src/cocoa',
+    '../../cocoa',
     'std-nslog>=1.0.0',
 ]
 
 [tool.briefcase.app.command.linux]
 requires = [
-    '../../src/gtk',
+    '../../gtk',
 ]
 
 [tool.briefcase.app.command.windows]
@@ -38,18 +38,18 @@ requires = [
 # Mobile deployments
 [tool.briefcase.app.command.iOS]
 requires = [
-    '../../src/iOS',
+    '../../iOS',
     'std-nslog>=1.0.0',
 ]
 
 [tool.briefcase.app.command.android]
 requires = [
-    '../../src/android',
+    '../../android',
 ]
 
 # Web deployment
 [tool.briefcase.app.command.web]
 requires = [
-    '../../src/web',
+    '../../web',
 ]
 style_framework = "Bootstrap v4.6"

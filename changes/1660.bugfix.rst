@@ -1,0 +1,1 @@
+If a window has existing content when it is added to an app, the widget registry no longer raises an error.

@@ -5,6 +5,7 @@
 *.dist-info
 .eggs
 .coverage
+.coverage.*
 coverage.xml
 dist
 build
@@ -17,13 +18,9 @@ local
 Pipfile*
 .tox
 node_modules
-src/django/toga.js
-src/django/toga.min.js
-src/django/toga.js.map
-src/django/toga.min.js.map
-src/gtk/gi
-src/gtk/pygtkcompat
-src/gtk/cairo
+gtk/gi
+gtk/pygtkcompat
+gtk/cairo
 .DS_Store
 pip-selfcheck.json
 pyvenv.cfg

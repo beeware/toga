@@ -15,42 +15,42 @@ formal_name = "ImageView Demo"
 description = "A testing app"
 sources = ['imageview']
 requires = [
-    '../../src/core',
+    '../../core',
     "Pillow",
 ]
 
 
 [tool.briefcase.app.imageview.macOS]
 requires = [
-    '../../src/cocoa',
+    '../../cocoa',
     'std-nslog>=1.0.0',
 ]
 
 [tool.briefcase.app.imageview.linux]
 requires = [
-    '../../src/gtk',
+    '../../gtk',
 ]
 
 [tool.briefcase.app.imageview.windows]
 requires = [
-    '../../src/winforms',
+    '../../winforms',
 ]
 
 # Mobile deployments
 [tool.briefcase.app.imageview.iOS]
 requires = [
-    '../../src/iOS',
+    '../../iOS',
     'std-nslog>=1.0.0',
 ]
 
 [tool.briefcase.app.imageview.android]
 requires = [
-    '../../src/android',
+    '../../android',
 ]
 
 # Web deployment
 [tool.briefcase.app.imageview.web]
 requires = [
-    '../../src/web',
+    '../../web',
 ]
 style_framework = "Bootstrap v4.6"

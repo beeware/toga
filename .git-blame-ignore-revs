@@ -1,0 +1,5 @@
+# Add pre-commit hook: pyupgrade
+63ddaa623c66d7386ab29a377cacb791fe334106
+
+# Migrate code style to Black
+10c22a3a5453ca24060caaceee5f93ec095959ae

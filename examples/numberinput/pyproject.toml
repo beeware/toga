@@ -15,41 +15,41 @@ formal_name = "Demo NumberInput"
 description = "A testing app"
 sources = ['numberinput']
 requires = [
-    '../../src/core',
+    '../../core',
 ]
 
 
 [tool.briefcase.app.numberinput.macOS]
 requires = [
-    '../../src/cocoa',
+    '../../cocoa',
     'std-nslog>=1.0.0',
 ]
 
 [tool.briefcase.app.numberinput.linux]
 requires = [
-    '../../src/gtk',
+    '../../gtk',
 ]
 
 [tool.briefcase.app.numberinput.windows]
 requires = [
-    '../../src/winforms',
+    '../../winforms',
 ]
 
 # Mobile deployments
 [tool.briefcase.app.numberinput.iOS]
 requires = [
-    '../../src/iOS',
+    '../../iOS',
     'std-nslog>=1.0.0',
 ]
 
 [tool.briefcase.app.numberinput.android]
 requires = [
-    '../../src/android',
+    '../../android',
 ]
 
 # Web deployment
 [tool.briefcase.app.numberinput.web]
 requires = [
-    '../../src/web',
+    '../../web',
 ]
 style_framework = "Bootstrap v4.6"

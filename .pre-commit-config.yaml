@@ -10,31 +10,29 @@ repos:
       - id: end-of-file-fixer
       - id: trailing-whitespace
   - repo: https://github.com/PyCQA/isort
-    rev: 12cc5fbd67eebf92eb2213b03c07b138ae1fb448  # For split_on_trailing_comma.
+    # For split_on_trailing_comma. Should be in the release after 5.10.1
+    rev: 12cc5fbd67eebf92eb2213b03c07b138ae1fb448
     hooks:
       - id: isort
         additional_dependencies: [toml]
-        args: ["--settings", "setup.cfg"]  # https://github.com/PyCQA/isort/issues/1872
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.38.2
+    rev: v3.2.0
     hooks:
       - id: pyupgrade
         args: [--py37-plus]
-  # Do not enable until we can trust it not to break RST markup
-  # (https://github.com/PyCQA/docformatter/issues/124).
+  # Docformatter is RST-unaware, and may break markup by inserting or removing newlines
+  # (see https://github.com/PyCQA/docformatter/issues/124 and linked issues). Until this
+  # is fixed, it's not safe to run it automatically.
   # - repo: https://github.com/myint/docformatter
   #   rev: v1.5.0
   #   hooks:
   #   - id: docformatter
   #     args: [--in-place]
-  # Do not enable until after #1534 is merged.
-  # - repo: https://github.com/psf/black
-  #   rev: 22.8.0
-  #   hooks:
-  #   - id: black
-  #     language_version: python3
+  - repo: https://github.com/psf/black
+    rev: 22.10.0
+    hooks:
+    - id: black
   - repo: https://github.com/PyCQA/flake8
     rev: 5.0.4
     hooks:
       - id: flake8
-        exclude: ^docs/conf.py$
