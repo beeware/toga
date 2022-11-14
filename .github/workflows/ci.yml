@@ -70,8 +70,15 @@ jobs:
     strategy:
       matrix:
         platform: ['macos', 'ubuntu', 'windows']
-        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]  #, "3.12.0-alpha - 3.12.0"]
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12-dev"]
+        include:
+          - experimental: false
+
+          - python-version: "3.12-dev"
+            experimental: true
+
     runs-on: ${{ matrix.platform }}-latest
+    continue-on-error: ${{ matrix.experimental }}
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
@@ -80,7 +87,8 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        python -m pip install tox coverage[toml]
+        # See https://github.com/nedbat/coveragepy/issues/991
+        python -m pip install tox coverage[toml]~=6.6.0b1
     - name: Get packages
       uses: actions/download-artifact@v3
       with:
@@ -89,26 +97,21 @@ jobs:
       env:
         TOGA_INSTALL_COMMAND: 'bash -c "pip install ../{core,dummy}/dist/*.whl"'
       run: |
+        tox -e py-core
         cd core
-        tox -e py
-        mv .coverage.* ..
+        python -m coverage xml
+        mv .coverage .coverage.${{ matrix.platform }}.${{ matrix.python-version }}
     - name: Store coverage data
       uses: actions/upload-artifact@v3
       with:
         name: core-coverage-data
-        path: ".coverage.*"
-        if-no-files-found: ignore
-    - name: Report platform coverage
-      run: |
-        python -m coverage combine
-        python -m coverage report
-        # Generate XML report for CodeCov
-        python -m coverage xml
+        path: "core/.coverage.*"
+        if-no-files-found: error
     - name: Upload coverage data to CodeCov
       uses: codecov/codecov-action@v3
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
-        file: ./coverage.xml
+        file: core/coverage.xml
         flags: unittests
         fail_ci_if_error: true
 
@@ -126,29 +129,24 @@ jobs:
         python-version: ${{ env.max_python_version }}
     - name: Install dependencies
       run: |
-        python -m pip install coverage[toml]
+        # See https://github.com/nedbat/coveragepy/issues/991
+        python -m pip install coverage[toml]~=6.6.0b1
     - name: Retrieve coverage data
       uses: actions/download-artifact@v3
       with:
         name: core-coverage-data
-    - name: Normalize paths in coverage data
-      run: |
-        # See https://github.com/nedbat/coveragepy/issues/991
-        for coverage in `ls .coverage.*`; do
-          sqlite3 $coverage "update file set path = replace(path, '\\', '/')"
-        done
-    - name: Combine coverage
-      run: |
-        python -m coverage combine
+        path: core
     - name: Generate coverage report
       run: |
+        cd core
+        python -m coverage combine
         python -m coverage html --skip-covered --skip-empty
-        python -m coverage report # --fail-under=100
+        python -m coverage report --rcfile ../pyproject.toml # --fail-under=100
     - name: Upload HTML report if check failed.
       uses: actions/upload-artifact@v3
       with:
         name: html-coverage-report
-        path: htmlcov
+        path: core/htmlcov
       if: ${{ failure() }}
 
   backend:
@@ -189,61 +187,9 @@ jobs:
     - name: Install dependencies
       run: |
         ${{ matrix.pre-command }}
-        python -m pip install tox coverage[toml]
+        python -m pip install tox
     - name: Test
       env:
         TOGA_INSTALL_COMMAND: 'bash -c "pip install ../{core,dummy,${{ matrix.backend }}}/dist/*.whl"'
       run: |
-        cd ${{ matrix.backend }}
-        tox -e py
-        mv .coverage.* ..
-    - name: Store coverage data
-      uses: actions/upload-artifact@v3
-      with:
-        name: backend-coverage-data
-        path: ".coverage.*"
-        if-no-files-found: ignore
-    - name: Report platform coverage
-      run: |
-        python -m coverage combine
-        python -m coverage report
-
-  backend-coverage:
-    name: Combine & check backend coverage.
-    runs-on: ubuntu-latest
-    needs:
-    - backend
-    steps:
-    - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-    - uses: actions/setup-python@v4.3.0
-      with:
-        # Use latest, so it understands all syntax.
-        python-version: ${{ env.max_python_version }}
-    - name: Install dependencies
-      run: |
-        python -m pip install coverage[toml]
-    - name: Retrieve coverage data
-      uses: actions/download-artifact@v3
-      with:
-        name: backend-coverage-data
-    - name: Normalize paths in coverage data
-      run: |
-        # See https://github.com/nedbat/coveragepy/issues/991
-        for coverage in `ls .coverage.*`; do
-          sqlite3 $coverage "update file set path = replace(path, '\\', '/')"
-        done
-    - name: Combine coverage
-      run: |
-        python -m coverage combine
-    - name: Generate coverage report
-      run: |
-        python -m coverage html --skip-covered --skip-empty
-        python -m coverage report # --fail-under=100
-    - name: Upload HTML report if check failed.
-      uses: actions/upload-artifact@v3
-      with:
-        name: html-coverage-report
-        path: htmlcov
-      if: ${{ failure() }}
+        tox -e py-${{ matrix.backend }}
