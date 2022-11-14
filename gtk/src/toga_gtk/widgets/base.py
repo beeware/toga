@@ -60,7 +60,7 @@ class Widget:
     def get_tab_index(self):
         self.interface.factory.not_implementated("Widget.get_tab_index()")
 
-    def set_tab_index(self, index):
+    def set_tab_index(self, tab_index):
         self.interface.factory.not_implementated("Widget.set_tab_index()")
 
     ######################################################################

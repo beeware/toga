@@ -35,8 +35,8 @@ class Widget(LoggedObject):
     def get_tab_index(self):
         return self._get_value("tab_index")
 
-    def set_tab_index(self, index):
-        return self._set_value("tab_index", index)
+    def set_tab_index(self, tab_index):
+        return self._set_value("tab_index", tab_index)
 
     ######################################################################
     # APPLICATOR
