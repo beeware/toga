@@ -29,12 +29,14 @@ profile = "black"
 split_on_trailing_comma = true
 combine_as_imports = true
 known_first_party = [
+    "tests",
     "toga",
     "toga_android",
     "toga_cocoa",
     "toga_dummy",
     "toga_gtk",
     "toga_iOS",
+    "toga_test",
     "toga_web",
     "toga_winforms",
 ]

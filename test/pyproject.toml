@@ -19,7 +19,8 @@ sources = [
 requires = [
     '../core',
     '../dummy',
-    'pytest',
+    'pytest==7.2.0',
+    'pytest-asyncio==0.20.2',
 ]
 
 
