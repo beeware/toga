@@ -1,9 +1,12 @@
+import random
+
 from travertino.constants import COLUMN
 
 import toga
 from toga.style import Pack
 
 WIDGETS_GROUP = toga.Group("Widgets", order=2)
+FOCUS_ORDER_GROUP = toga.Group("Focus Order", order=3)
 
 
 class ExampleFocusApp(toga.App):
@@ -77,6 +80,24 @@ class ExampleFocusApp(toga.App):
                 shortcut=toga.Key.MOD_1 + "s",
                 group=WIDGETS_GROUP,
             ),
+            toga.Command(
+                lambda widget: self.order_focus_by_appearance(),
+                text="Order focus by appearance",
+                shortcut=toga.Key.MOD_1 + "o",
+                group=FOCUS_ORDER_GROUP,
+            ),
+            toga.Command(
+                lambda widget: self.order_focus_by_reversed_appearance(),
+                text="Order focus by reversed appearance",
+                shortcut=toga.Key.MOD_1 + "r",
+                group=FOCUS_ORDER_GROUP,
+            ),
+            toga.Command(
+                lambda widget: self.shuffle_focus(),
+                text="Shuffle focus order",
+                shortcut=toga.Key.MOD_1 + "f",
+                group=FOCUS_ORDER_GROUP,
+            ),
         )
         # Show the main window
         self.main_window.show()
@@ -103,6 +124,26 @@ class ExampleFocusApp(toga.App):
     def focus_with_label(self, widget: toga.Widget):
         widget.focus()
         self.info_label.text = f"{widget.text} is focused!"
+
+    def order_focus_by_appearance(self):
+        self.set_focus_order(list(range(1, 7)))
+
+    def order_focus_by_reversed_appearance(self):
+        self.set_focus_order(list(range(6, 0, -1)))
+
+    def shuffle_focus(self):
+        indices = list(range(1, 7))
+        random.shuffle(indices)
+        self.set_focus_order(indices)
+
+    def set_focus_order(self, indices):
+        assert len(indices) == 6
+        self.a_button.tab_index = indices[0]
+        self.b_button.tab_index = indices[1]
+        self.c_button.tab_index = indices[2]
+        self.text_input.tab_index = indices[3]
+        self.other_text_input.tab_index = indices[4]
+        self.switch.tab_index = indices[5]
 
 
 def main():

@@ -396,3 +396,18 @@ class WidgetTests(TestCase):
         self.widget.window = None
 
         self.assertEqual(len(window.widgets), 0)
+
+    def test_focus(self):
+        self.widget.focus()
+        self.assertActionPerformed(self.widget, "focus")
+
+    def test_set_tab_index(self):
+        tab_index = 8
+        self.widget.tab_index = tab_index
+        self.assertValueSet(self.widget, "tab_index", tab_index)
+
+    def test_get_tab_index(self):
+        tab_index = 8
+        self.widget.tab_index = tab_index
+        self.assertEqual(self.widget.tab_index, tab_index)
+        self.assertValueGet(self.widget, "tab_index")

@@ -55,6 +55,12 @@ class Widget:
     def viewport(self, viewport):
         self._viewport = viewport
 
+    def get_tab_index(self):
+        return self.native.TabIndex
+
+    def set_tab_index(self, tab_index):
+        self.native.TabIndex = tab_index
+
     def set_enabled(self, value):
         if self.native:
             self.native.Enabled = self.interface.enabled
