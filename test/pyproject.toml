@@ -55,6 +55,9 @@ flatpak_runtime_version = '42'
 flatpak_sdk = 'org.gnome.Sdk'
 
 [tool.briefcase.app.toga-test.windows]
+sources = [
+    '../winforms/test_probes',
+]
 requires = [
     '../winforms',
 ]
@@ -70,6 +73,9 @@ requires = [
 requires = [
     '../android'
 ]
+
+# TODO: replace with extractPackages
+build_gradle_extra_content = "android.defaultConfig.python.pyc.src false"
 
 [tool.briefcase.app.toga-test.web]
 requires = [

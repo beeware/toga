@@ -25,6 +25,7 @@ class TogaTest(toga.App):
 
 
 def test(app):
+    # TODO: replace with extractPackages.
     if hasattr(sys, "getandroidapilevel"):
         chaquopy_extract_package(tests)
 

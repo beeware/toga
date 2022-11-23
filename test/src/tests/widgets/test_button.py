@@ -1,25 +1,19 @@
 from unittest.mock import Mock
 
 from pytest import fixture
-from System import EventArgs
 
 import toga
 
-from ..test_utils import set_get
-
 
 @fixture
-async def widget(main_box):
-    button = toga.Button("")
-    main_box.add(button)
-    yield button
-    main_box.remove(button)
+async def new_widget():
+    return toga.Button("")
 
 
-async def test_on_press(widget, native):
+async def test_press(widget, probe):
     handler = Mock()
-    # FIXME: getattr returns the wrapped handler, which is an implementation detail that
-    # we shouldn't expose.
-    set_get(widget, "on_press", handler)
-    native.OnClick(EventArgs.Empty)
+    # TODO: can't use set_get, because getattr returns the wrapped handler, which is an
+    # implementation detail that we shouldn't expose.
+    setattr(widget, "on_press", handler)
+    probe.press()
     handler.assert_called_once_with(widget)
