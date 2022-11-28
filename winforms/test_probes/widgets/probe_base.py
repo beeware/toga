@@ -21,9 +21,12 @@ class SimpleProbe:
         return self.native.Enabled
 
     @property
+    def background_color(self):
+        return toga_color(self.native.BackColor)
+
+    @property
     def color(self):
-        c = self.native.ForeColor
-        return rgba(c.R, c.G, c.B, c.A / 255)
+        return toga_color(self.native.ForeColor)
 
     @property
     def hidden(self):
@@ -39,3 +42,7 @@ class SimpleProbe:
 
     def press(self):
         self.native.OnClick(EventArgs.Empty)
+
+
+def toga_color(c):
+    return rgba(c.R, c.G, c.B, c.A / 255)
