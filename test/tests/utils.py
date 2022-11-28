@@ -29,4 +29,4 @@ def assert_set_get(obj, name, value):
 def assert_color(actual, expected):
     for component in ["r", "g", "b"]:
         assert getattr(actual, component) == getattr(expected, component)
-    assert actual.a == approx(expected.a, abs=(1 / 256))
+    assert actual.a == approx(expected.a, abs=(1 / 255))

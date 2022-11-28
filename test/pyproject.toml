@@ -74,6 +74,9 @@ requires = [
 ]
 
 [tool.briefcase.app.toga-test.android]
+test_sources = [
+    '../android/test_probes',
+]
 requires = [
     '../android'
 ]
