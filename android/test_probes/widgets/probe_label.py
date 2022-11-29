@@ -5,7 +5,7 @@ from .probe_base import SimpleProbe
 
 
 class LabelProbe(SimpleProbe):
-    native_class = jclass("android.view.TextView")
+    native_class = jclass("android.widget.TextView")
 
     @property
     def color(self):

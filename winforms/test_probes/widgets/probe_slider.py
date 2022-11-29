@@ -8,13 +8,15 @@ class SliderProbe(SimpleProbe):
 
     @property
     def position(self):
-        min, max = self._range
-        return (self.native.Value - min) / (max - min)
+        return (self.native.Value - self._min) / (self._max - self._min)
 
     def change(self, position):
-        min, max = self._range
-        self.native.Value = min + round(position * (max - min))
+        self.native.Value = self._min + round(position * (self._max - self._min))
 
     @property
-    def _range(self):
-        return self.native.Minimum, self.native.Maximum
+    def _min(self):
+        return self.native.Minimum
+
+    @property
+    def _max(self):
+        return self.native.Maximum

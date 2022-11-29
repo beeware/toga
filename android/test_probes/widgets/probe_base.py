@@ -4,8 +4,8 @@ from pytest import skip
 class SimpleProbe:
     def __init__(self, main_box, widget):
         native_box = main_box._impl.native
-        assert native_box.getChildCount == 1
-        self.native = native_box.getChildAt[0]
+        assert native_box.getChildCount() == 1
+        self.native = native_box.getChildAt(0)
         assert isinstance(self.native, self.native_class)
 
         # Although this isn't part of the public API, we often point users at it to do
