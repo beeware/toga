@@ -13,7 +13,6 @@ async def test_color(widget, probe):
         assert_color(probe.color, color)
 
 
-# FIXME make Android base class call pytest.skip.
 async def test_background_color(widget, probe):
     for color in COLORS:
         widget.style.background_color = color
