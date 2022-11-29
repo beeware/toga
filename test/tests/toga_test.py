@@ -4,8 +4,8 @@ from functools import partial
 from threading import Thread
 
 import pytest
-
 import tests
+
 from toga_test.app import main
 
 
