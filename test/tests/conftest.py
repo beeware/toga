@@ -4,12 +4,12 @@ from dataclasses import dataclass
 
 from pytest import fixture
 
-import toga_test.app
+import toga
 
 
 @fixture(scope="session")
 def app():
-    return toga_test.app.app
+    return toga.App.app
 
 
 @fixture(scope="session")
