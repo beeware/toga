@@ -1,7 +1,7 @@
 from java import jclass
 
-from ..utils import toga_color
 from .probe_base import SimpleProbe
+from .properties import toga_color
 
 
 class LabelProbe(SimpleProbe):

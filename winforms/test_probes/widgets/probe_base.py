@@ -1,6 +1,6 @@
 from System import EventArgs, Object
 
-from ..utils import toga_color
+from .properties import toga_color
 
 
 class SimpleProbe:

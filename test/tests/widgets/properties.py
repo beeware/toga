@@ -1,4 +1,5 @@
-from ..utils import COLORS, TEXTS, assert_color, assert_set_get
+from ..assertions import assert_color, assert_set_get
+from ..data import COLORS, TEXTS
 
 
 async def test_text(widget, probe):

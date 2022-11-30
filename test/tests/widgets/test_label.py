@@ -2,7 +2,11 @@ from pytest import approx, fixture, mark
 
 import toga
 
-from .common import test_background_color, test_color, test_text  # noqa: F401
+from .properties import (  # noqa: F401
+    test_background_color,
+    test_color,
+    test_text,
+)
 
 
 @fixture
