@@ -167,7 +167,7 @@ Containers are widgets that can contain other widgets.
 * NavigationContainer - A container view that holds a navigable tree of subviews
 
     Essentially a view that has a "back" button to return to the previous view
-    in a hierarchy. Example of use: Top level navigation in the OS X System
+    in a hierarchy. Example of use: Top level navigation in the macOS System
     Preferences panel.
 
     - Cocoa: No native control
@@ -232,9 +232,6 @@ features.
 Platforms
 ---------
 
-Toga currently has good support for Cocoa on OS X, GTK+, and iOS.
-Proof-of-concept support exists for Windows Winforms. Support for a more
-modern Windows API would be desirable.
-
-In the mobile space, it would be great if Toga supported Android, Windows
-Phone, or any other phone platform.
+Toga currently has good support for Cocoa on macOS, GTK+, Winforms on Windows,
+iOS and Android, Proof-of-concept support exists for single page web apps.
+Support for a more modern Windows API would be desirable.

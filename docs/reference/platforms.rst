@@ -121,7 +121,6 @@ Planned platform support
 
 Eventually, the Toga project would like to provide support for the following platforms:
 
- * Other Python web frameworks (e.g., Flask, Pyramid)
  * UWP (Native Windows 8 and Windows mobile)
  * Qt (for KDE based desktops)
  * tvOS (for AppleTV devices)

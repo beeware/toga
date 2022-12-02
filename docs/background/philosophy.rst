@@ -18,7 +18,7 @@ end user with the mess.
 
 It's easy to spot apps that have been built using themed widget sets - they're
 the ones that don't behave quite like any other app. Widgets don't look
-*quite* right, or there's a menu bar on a window in an OS X app. Themes can
+*quite* right, or there's a menu bar on a window in a macOS app. Themes can
 get quite close - but there are always tell-tale signs.
 
 On top of that, native widgets are always faster than a themed generic widget.
@@ -34,7 +34,7 @@ It's not enough to just look like a native app, though - you need to *feel*
 like a native app as well.
 
 A "Quit" option under a "File" menu makes sense if you're writing a Windows
-app - but it's completely out of place if you're on OS X - the Quit option
+app - but it's completely out of place if you're on macOS - the Quit option
 should be under the application menu.
 
 And besides - why did the developer have to code the location of a Quit option
@@ -80,7 +80,7 @@ Embrace mobile
 --------------
 
 10 years ago, being a cross-platform widget toolkit meant being available
-for Windows, OS X and Linux. These days, mobile computing is much more
+for Windows, macOS and Linux. These days, mobile computing is much more
 important. But despite this, there aren't many good options for Python
 programming on mobile platforms, and cross-platform mobile coding is still
 elusive. Toga aims to correct this.
