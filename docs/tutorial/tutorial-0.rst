@@ -287,3 +287,19 @@ Once you've got toga installed, you can run your script::
         NotImplementedError: Application does not define open_document()
 
     Toga apps must be executed as modules - hence the ``-m`` flag.
+
+.. note:: ``VS Code Terminal``
+
+    If you get the following error::
+
+        Unhandled Exception: Python.Runtime.PythonException: No method matches given arguments for Form..ctor: (<class 'toga_winforms.app.MainWindow'>)
+        at Python.Runtime.PythonException.ThrowLastAsClrException()
+        at Python.Runtime.Dispatcher.TrueDispatch(Object[] args)
+        at Python.Runtime.Dispatcher.Dispatch(Object[] args)
+        at __System_Threading_ThreadStartDispatcher.Invoke()
+        at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+        at System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean preserveSyncCtx)
+        at System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state)
+        at System.Threading.ThreadHelper.ThreadStart()
+
+    You are not running the code using command prompt. Change your Visual Code Studio Terminal to Command Prompt rather than PowerShell or other possible interpreters.
