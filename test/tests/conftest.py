@@ -13,8 +13,8 @@ def app():
 
 
 @fixture(scope="session")
-def main_box(app):
-    return app.main_box
+def main_window(app):
+    return app.main_window
 
 
 # Controls the event loop used by pytest-asyncio.

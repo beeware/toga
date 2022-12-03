@@ -4,15 +4,14 @@ from .properties import toga_color
 
 
 class SimpleProbe:
-    def __init__(self, main_box, widget):
-        native_box = main_box._impl.native
-        assert native_box.Controls.Count == 1
-        self.native = native_box.Controls[0]
-        assert isinstance(self.native, self.native_class)
-
-        # Although this isn't part of the public API, we often point users at it to do
-        # things that Toga itself doesn't support.
-        assert Object.ReferenceEquals(widget._impl.native, self.native)
+    def __init__(self, widget, container):
+        for control in container._impl.native.Controls:
+            if Object.ReferenceEquals(control, widget._impl.native):
+                self.native = control
+                assert isinstance(self.native, self.native_class)
+                break
+        else:
+            raise ValueError(f"cannot find {widget} in {container}")
 
     @property
     def enabled(self):

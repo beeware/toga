@@ -1,20 +1,19 @@
-from importlib import import_module
+from pytest import fixture
 
-from pytest import fixture, skip
+import toga
 
-
-@fixture
-async def simple_layout(main_box, widget):
-    main_box.add(widget)
-    yield
-    main_box.remove(widget)
+from .probe import get_probe
 
 
 @fixture
-async def probe(main_box, widget, simple_layout):
-    name = type(widget).__name__
-    try:
-        module = import_module(f"tests_backend.widgets.{name.lower()}")
-    except ModuleNotFoundError:
-        skip(f"No probe module for {name}")
-    return getattr(module, f"{name}Probe")(main_box, widget)
+async def widget():
+    raise NotImplementedError("test modules must define a `widget` fixture")
+
+
+@fixture
+async def probe(main_window, widget):
+    box = toga.Box(children=[widget])
+    main_window.content = box
+    yield get_probe(widget, box)
+    # TODO: Window.content doesn't currently accept None.
+    main_window.content = toga.Box()
