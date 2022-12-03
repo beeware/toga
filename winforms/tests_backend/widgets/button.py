@@ -1,6 +1,6 @@
 import System.Windows.Forms
 
-from .probe_base import SimpleProbe
+from .base import SimpleProbe
 
 
 class ButtonProbe(SimpleProbe):

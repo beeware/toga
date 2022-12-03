@@ -59,7 +59,7 @@ flatpak_sdk = 'org.gnome.Sdk'
 
 [tool.briefcase.app.toga-test.windows]
 test_sources = [
-    '../winforms/test_probes',
+    '../winforms/tests_backend',
 ]
 requires = [
     '../winforms',
@@ -74,7 +74,7 @@ requires = [
 
 [tool.briefcase.app.toga-test.android]
 test_sources = [
-    '../android/test_probes',
+    '../android/tests_backend',
 ]
 requires = [
     '../android'

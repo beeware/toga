@@ -14,7 +14,7 @@ async def simple_layout(main_box, widget):
 async def probe(main_box, widget, simple_layout):
     name = type(widget).__name__
     try:
-        module = import_module(f"test_probes.widgets.probe_{name.lower()}")
-    except ImportError:
+        module = import_module(f"tests_backend.widgets.{name.lower()}")
+    except ModuleNotFoundError:
         skip(f"No probe module for {name}")
     return getattr(module, f"{name}Probe")(main_box, widget)

@@ -2,7 +2,7 @@ from java import jclass
 
 from android.os import Build
 
-from .probe_base import SimpleProbe
+from .base import SimpleProbe
 
 
 class SliderProbe(SimpleProbe):

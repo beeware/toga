@@ -1,6 +1,6 @@
 from java import jclass
 
-from .probe_base import SimpleProbe
+from .base import SimpleProbe
 from .properties import toga_color
 
 

@@ -1,6 +1,6 @@
 from java import jclass
 
-from .probe_label import LabelProbe
+from .label import LabelProbe
 
 
 # On Android, a Button is just a TextView with a state-dependent background image.
