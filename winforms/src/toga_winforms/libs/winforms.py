@@ -46,6 +46,7 @@ from System.Drawing.Drawing2D import (  # noqa: F401, E402
 )
 from System.Drawing.Imaging import ImageFormat  # noqa: F401, E402
 from System.Drawing.Text import PrivateFontCollection  # noqa: F401, E402
+from System.Globalization import CultureInfo  # noqa: F401, E402
 from System.IO import FileNotFoundException, MemoryStream  # noqa: F401, E402
 from System.Net import SecurityProtocolType, ServicePointManager  # noqa: F401, E402
 from System.Runtime.InteropServices import ExternalException  # noqa: F401, E402
