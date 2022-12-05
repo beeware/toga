@@ -9,6 +9,7 @@ from .winforms import (  # noqa: F401
     Bitmap,
     Color,
     Convert,
+    CultureInfo,
     Drawing2D,
     FillMode,
     FontFamily,
