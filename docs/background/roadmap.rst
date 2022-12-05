@@ -27,22 +27,6 @@ Inputs are mechanisms for displaying and editing input provided by the user.
     - Winforms: ComboBox
     - Android: Spinner
 
-* DateInput - A widget for selecting a date
-
-    - Cocoa: NSDatePicker, constrained to DMY
-    - GTK: Gtk.Calendar
-    - iOS: UIDatePicker
-    - Winforms: DateTimePicker
-    - Android: ?
-
-* TimeInput - A widget for selecting a time
-
-    - Cocoa: NSDatePicker, Constrained to Time
-    - GTK: Custom Gtk.SpinButton
-    - iOS: UIDatePicker
-    - Winforms: DateTimePicker
-    - Android: ?
-
 * DateTimeInput - A widget for selecting a date and a time.
 
     - Cocoa: NSDatePicker
@@ -80,22 +64,6 @@ Views
 
 Views are mechanisms for displaying rich content,
 usually in a read-only manner.
-
-* Separator - a visual separator; usually a faint line.
-
-    - Cocoa: NSSeparator
-    - GTK: Gtk.Separator
-    - iOS:
-    - Winforms: ?
-    - Android: ?
-
-* ActivityIndicator - A spinner widget showing that something is happening
-
-    - Cocoa: NSProgressIndicator, Spinning style
-    - GTK: Gtk.Spinner
-    - iOS: UIActivityIndicatorView
-    - Winforms: ?
-    - Android: ?
 
 * VideoView - Display a video
 
@@ -156,14 +124,6 @@ Containers are widgets that can contain other widgets.
     - Winforms: ?
     - Android: ?
 
-* TabContainer - A container view for holding an unknown number of subviews, each of which is of the same type - e.g., web browser tabs.
-
-    - Cocoa: ?
-    - GTK: GtkNotebook
-    - iOS: ?
-    - Winforms: ?
-    - Android: ?
-
 * NavigationContainer - A container view that holds a navigable tree of subviews
 
     Essentially a view that has a "back" button to return to the previous view
@@ -198,40 +158,17 @@ One of the aims of Toga is to provide a rich, feature-driven approach to
 app development. This requires the development of APIs to support rich
 features.
 
-* Long running tasks -
-
-    GUI toolkits have a common pattern of needing to
-    periodically update a GUI based on some long running background task.
-    They usually accomplish this with some sort of timer-based API to ensure
-    that the main event loop keeps running. Python has a "yield" keyword that
-    can be repurposed for this.
-
-* Toolbar -
-
-    Support for adding a toolbar to an app definition.
-    Interpretation in mobile will be difficult;
-    maybe some sort of top level action menu available via a slideout tray
-    (e.g., GMail account selection tray)
-
-* Preferences -
-
-    Support for saving app preferences, and visualizing them in a
-    platform native way.
-
-* Easy handling of long running tasks -
-
-    Possibly using generators to yield control back to the event loop.
+* Preferences - Support for saving app preferences, and visualizing them in a
+  platform native way.
 
 * Notification when updates are available
 
-* Easy Licensing/registration of apps -
-
-    Monetization is not a bad thing,
-    and shouldn't be mutually exclusive with open source.
+* Easy Licensing/registration of apps - Monetization is not a bad thing, and
+  shouldn't be mutually exclusive with open source.
 
 Platforms
 ---------
 
 Toga currently has good support for Cocoa on macOS, GTK on Linux, Winforms on
-Windows, iOS and Android, Proof-of-concept support exists for single page web
+Windows, iOS and Android. Proof-of-concept support exists for single page web
 apps. Support for a more modern Windows API would be desirable.
