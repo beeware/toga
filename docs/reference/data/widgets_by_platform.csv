@@ -1,4 +1,4 @@
-Component,Type,Component,Description,macOS,GTK+,Windows,iOS,Android,Web
+Component,Type,Component,Description,macOS,GTK,Windows,iOS,Android,Web
 Application,Core Component,:class:`~toga.app.App`,The application itself,|y|,|y|,|y|,|y|,|y|,|y|
 Window,Core Component,:class:`~toga.window.Window`,Window object,|y|,|y|,|y|,|y|,|y|,|y|
 MainWindow,Core Component,:class:`~toga.app.MainWindow`,Main window of the application,|y|,|y|,|y|,|y|,|y|,|y|
