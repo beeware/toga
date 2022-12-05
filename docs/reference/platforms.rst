@@ -30,14 +30,14 @@ Linux
 
 .. image:: /reference/screenshots/gtk.png
 
-The backend for Linux platforms is named `toga-gtk`_. It supports GTK+ 3.4
+The backend for Linux platforms is named `toga-gtk`_. It supports GTK 3.4
 and later. It is installed automatically on Linux machines (machines that
 report ``sys.platform == 'linux'``), or can be manually installed by
 invoking::
 
     $ pip install toga-gtk
 
-The GTK+ backend is reasonably well developed, but currently has some known issues
+The GTK backend is reasonably well developed, but currently has some known issues
 with widget layout. It uses the native GObject Python bindings.
 
 .. _toga-gtk: https://github.com/beeware/toga/tree/master/gtk
@@ -121,7 +121,6 @@ Planned platform support
 
 Eventually, the Toga project would like to provide support for the following platforms:
 
- * Other Python web frameworks (e.g., Flask, Pyramid)
  * UWP (Native Windows 8 and Windows mobile)
  * Qt (for KDE based desktops)
  * tvOS (for AppleTV devices)

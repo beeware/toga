@@ -265,7 +265,7 @@ at the top of this guide.
 
     Toga has some minimum requirements:
 
-    * If you're on OS X, you need to be on 10.10 (Yosemite) or newer.
+    * If you're on macOS, you need to be on 10.10 (Yosemite) or newer.
 
     * If you're on Linux, you need to have GTK+ 3.10 or newer. This is the
       version that ships starting with Ubuntu 14.04 and Fedora 20.

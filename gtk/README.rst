@@ -1,7 +1,7 @@
 toga-gtk
 ========
 
-A GTK+ backend for the `Toga widget toolkit`_.
+A GTK backend for the `Toga widget toolkit`_.
 
 **Toga requires Python 3**
 
@@ -12,9 +12,9 @@ For more details, see the `Toga project on Github`_.
 Prerequisites
 ~~~~~~~~~~~~~
 
-This backend requires GTK+ 3.10 or later. This is the version that ships
+This backend requires GTK 3.10 or later. This is the version that ships
 starting with Ubuntu 14.04 and Fedora 20. You also need to install the Python
-3 bindings to GTK+. If you want to use the WebView widget, you'll also need to
+3 bindings to GTK. If you want to use the WebView widget, you'll also need to
 have WebKit, plus the GI bindings to WebKit installed. This means you'll need
 to install the following:
 
