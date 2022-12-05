@@ -1,7 +1,7 @@
 import toga
 
 
-class TogaTest(toga.App):
+class Testbed(toga.App):
     def startup(self):
         self.main_window = toga.MainWindow(title=self.formal_name)
         self.main_window.content = toga.Box()
@@ -9,4 +9,4 @@ class TogaTest(toga.App):
 
 
 def main():
-    return TogaTest(app_name="toga_test")
+    return Testbed(app_name="testbed")

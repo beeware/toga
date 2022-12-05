@@ -6,7 +6,7 @@ from threading import Thread
 import pytest
 import tests
 
-from toga_test.app import main
+from testbed.app import main
 
 
 def run_tests(app):
