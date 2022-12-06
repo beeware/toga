@@ -96,7 +96,6 @@ jobs:
       run: |
         tox -e py-core
         cd core
-        python -m coverage xml
         mv .coverage .coverage.${{ matrix.platform }}.${{ matrix.python-version }}
     - name: Store coverage data
       uses: actions/upload-artifact@v3
@@ -104,13 +103,6 @@ jobs:
         name: core-coverage-data
         path: "core/.coverage.*"
         if-no-files-found: error
-    - name: Upload coverage data to CodeCov
-      uses: codecov/codecov-action@v3
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
-        file: core/coverage.xml
-        flags: unittests
-        fail_ci_if_error: true
 
   core-coverage:
     name: Combine & check core coverage.
