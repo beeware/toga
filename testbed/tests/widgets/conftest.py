@@ -15,5 +15,4 @@ async def probe(main_window, widget):
     box = toga.Box(children=[widget])
     main_window.content = box
     yield get_probe(widget, box)
-    # TODO: Window.content doesn't currently accept None.
     main_window.content = toga.Box()
