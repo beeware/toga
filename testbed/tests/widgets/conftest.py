@@ -14,5 +14,9 @@ async def widget():
 async def probe(main_window, widget):
     box = toga.Box(children=[widget])
     main_window.content = box
-    yield get_probe(widget, box)
+
+    probe = get_probe(widget)
+    probe.assert_container(box)
+    yield probe
+
     main_window.content = toga.Box()

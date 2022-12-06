@@ -2,15 +2,18 @@ from pytest import skip
 
 
 class SimpleProbe:
-    def __init__(self, widget, container):
-        for i in range(container._impl.native.getChildCount()):
-            child = container._impl.native.getChildAt(i)
-            if child is widget._impl.native:
-                self.native = child
-                assert isinstance(self.native, self.native_class)
+    def __init__(self, widget):
+        self.native = widget._impl.native
+        assert isinstance(self.native, self.native_class)
+
+    def assert_container(self, container):
+        container_native = container._impl.native
+        for i in range(container_native.getChildCount()):
+            child = container_native.getChildAt(i)
+            if child is self.native:
                 break
         else:
-            raise ValueError(f"cannot find {widget} in {container}")
+            raise AssertionError(f"cannot find {self.native} in {container_native}")
 
     @property
     def enabled(self):

@@ -4,14 +4,17 @@ from .properties import toga_color
 
 
 class SimpleProbe:
-    def __init__(self, widget, container):
-        for control in container._impl.native.Controls:
-            if Object.ReferenceEquals(control, widget._impl.native):
-                self.native = control
-                assert isinstance(self.native, self.native_class)
+    def __init__(self, widget):
+        self.native = widget._impl.native
+        assert isinstance(self.native, self.native_class)
+
+    def assert_container(self, container):
+        container_native = container._impl.native
+        for control in container_native.Controls:
+            if Object.ReferenceEquals(control, self.native):
                 break
         else:
-            raise ValueError(f"cannot find {widget} in {container}")
+            raise ValueError(f"cannot find {self.native} in {container_native}")
 
     @property
     def enabled(self):
