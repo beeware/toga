@@ -1,19 +1,19 @@
 # This project was generated using template: https://github.com/beeware/briefcase-template and branch: v0.3.12
 [tool.briefcase]
-project_name = "Toga test"
-bundle = "org.beeware"
+project_name = "Toga Testbed"
+bundle = "org.beeware.toga"
 version = "0.0.1"
 url = "https://beeware.org"
 license = "BSD license"
 author = 'Tiberius Yak'
 author_email = "tiberius@beeware.org"
 
-[tool.briefcase.app.toga-test]
-formal_name = "Toga test"
-description = "Toga test"
-icon = "src/toga_test/resources/toga_test"
+[tool.briefcase.app.testbed]
+formal_name = "Toga Testbed"
+description = "A testbed for Toga visual tests"
+icon = "src/testbed/resources/testbed"
 sources = [
-    'src/toga_test',
+    'src/testbed',
 ]
 test_sources = [
     'tests',
@@ -27,18 +27,18 @@ test_requires = [
 ]
 
 
-[tool.briefcase.app.toga-test.macOS]
+[tool.briefcase.app.testbed.macOS]
 requires = [
     '../cocoa',
     'std-nslog~=1.0.0'
 ]
 
-[tool.briefcase.app.toga-test.linux]
+[tool.briefcase.app.testbed.linux]
 requires = [
     '../gtk',
 ]
 
-[tool.briefcase.app.toga-test.linux.appimage]
+[tool.briefcase.app.testbed.linux.appimage]
 system_requires = [
     'gir1.2-webkit-3.0',
     'libcairo2-dev',
@@ -52,12 +52,12 @@ linuxdeploy_plugins = [
     'DEPLOY_GTK_VERSION=3 gtk',
 ]
 
-[tool.briefcase.app.toga-test.linux.flatpak]
+[tool.briefcase.app.testbed.linux.flatpak]
 flatpak_runtime = 'org.gnome.Platform'
 flatpak_runtime_version = '42'
 flatpak_sdk = 'org.gnome.Sdk'
 
-[tool.briefcase.app.toga-test.windows]
+[tool.briefcase.app.testbed.windows]
 test_sources = [
     '../winforms/tests_backend',
 ]
@@ -66,13 +66,13 @@ requires = [
 ]
 
 # Mobile deployments
-[tool.briefcase.app.toga-test.iOS]
+[tool.briefcase.app.testbed.iOS]
 requires = [
     '../iOS',
     'std-nslog~=1.0.0'
 ]
 
-[tool.briefcase.app.toga-test.android]
+[tool.briefcase.app.testbed.android]
 test_sources = [
     '../android/tests_backend',
 ]
@@ -83,7 +83,7 @@ requires = [
 # TODO: replace with extractPackages
 build_gradle_extra_content = "android.defaultConfig.python.pyc.src false"
 
-[tool.briefcase.app.toga-test.web]
+[tool.briefcase.app.testbed.web]
 requires = [
     '../web'
 ]

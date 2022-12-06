@@ -1,17 +1,23 @@
+import os
 import sys
 import tempfile
 from functools import partial
+from pathlib import Path
 from threading import Thread
 
 import pytest
-import tests
 
-from toga_test.app import main
+from testbed.app import main
 
 
 def run_tests(app):
+    project_path = Path(__file__).parent.parent
+    os.chdir(project_path)
+
     # TODO: replace with extractPackages.
     if hasattr(sys, "getandroidapilevel"):
+        import tests
+
         chaquopy_extract_package(tests)
 
     pytest.main(
@@ -27,8 +33,8 @@ def run_tests(app):
             # Override the cache directory to be somewhere known writable
             "-o",
             f"cache_dir={tempfile.gettempdir()}/.pytest_cache",
+            project_path / "tests",
         ]
-        + tests.__path__
     )
     app.add_background_task(lambda app: app.exit())
 
