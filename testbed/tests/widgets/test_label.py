@@ -15,7 +15,7 @@ async def widget():
 
 
 # TODO: a `width` test, for any widget whose width depends on its text.
-@mark.skip("Fails on Windows, probably because of #1289")
+@mark.skip("changing text does not trigger a refresh (#1289)")
 async def test_multiline(widget, probe):
     def make_lines(n):
         return "\n".join(f"line{i}" for i in range(n))
