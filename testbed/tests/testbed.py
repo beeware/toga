@@ -26,8 +26,8 @@ def run_tests(app):
             "-vv",
             "--no-header",
             "--tb=native",
-            "-rP",
-            "--color=no",  # Color codes mess up the output on MSYS2, even with `winpty`.
+            "-rP",  # Show stdout from all tests, even if they passed.
+            "--color=no",
             # Run all async tests and fixtures using pytest-asyncio.
             "--asyncio-mode=auto",
             # Override the cache directory to be somewhere known writable
@@ -36,7 +36,7 @@ def run_tests(app):
             project_path / "tests",
         ]
     )
-    app.add_background_task(lambda app: app.exit())
+    app.add_background_task(lambda app, **kwargs: app.exit())
 
 
 def chaquopy_extract_package(pkg):
@@ -57,5 +57,5 @@ def chaquopy_extract_dir(finder, zip_dir):
 if __name__ == "__main__":
     app = main()
     thread = Thread(target=partial(run_tests, app))
-    app.add_background_task(lambda app: thread.start())
+    app.add_background_task(lambda app, *kwargs: thread.start())
     app.main_loop()
