@@ -1,5 +1,6 @@
 import sys
 import unittest
+from unittest.mock import Mock
 
 from travertino.declaration import BaseStyle
 from travertino.layout import BaseBox
@@ -442,8 +443,20 @@ class TestCase(unittest.TestCase):
                 # a match.
                 for key, value in test_data.items():
                     try:
-                        if data[key] != value:
-                            found = False
+                        try:
+                            # Look for a `_raw` attribute, as that will be the
+                            # directly comparable object
+                            raw = data[key]._raw
+                            # If the _raw attribute is a mock, it doesn't actually exist
+                            if isinstance(data[key]._raw, Mock):
+                                raise AttributeError()
+
+                            if raw != value:
+                                found = False
+                        except AttributeError:
+                            # No raw attribute; use the provided value as-is
+                            if data[key] != value:
+                                found = False
                     except KeyError:
                         found = False
 

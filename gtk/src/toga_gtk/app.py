@@ -248,9 +248,6 @@ class App:
     def hide_cursor(self):
         self.interface.factory.not_implemented("App.hide_cursor()")
 
-    def add_background_task(self, handler):
-        self.loop.call_soon(handler, self)
-
 
 class DocumentApp(App):
     def _create_app_commands(self):
