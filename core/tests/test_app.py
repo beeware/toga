@@ -157,11 +157,16 @@ class AppTests(TestCase):
             self.assertIn(window, test_windows)
 
     def test_add_background_task(self):
-        async def handler(sender):
+        async def test_handler(sender):
             pass
 
-        self.app.add_background_task(handler)
-        self.assertActionPerformed(self.app, "add_background_task")
+        self.app.add_background_task(test_handler)
+        self.assertActionPerformedWith(
+            self.app,
+            "loop:call_soon_threadsafe",
+            handler=test_handler,
+            args=(self.app,),
+        )
 
 
 class DocumentAppTests(TestCase):

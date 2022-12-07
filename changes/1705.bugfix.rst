@@ -1,0 +1,1 @@
+Background tasks are now added in threadsafe mode.

@@ -125,6 +125,3 @@ class App:
 
     def set_on_exit(self, value):
         pass
-
-    def add_background_task(self, handler):
-        self.loop.call_soon(handler, self)

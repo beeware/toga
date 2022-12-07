@@ -592,7 +592,7 @@ class App:
 
         :param handler: A coroutine, generator or callable.
         """
-        self._impl.add_background_task(wrapped_handler(self, handler))
+        self._impl.loop.call_soon_threadsafe(wrapped_handler(self, handler), self)
 
 
 class DocumentApp(App):
