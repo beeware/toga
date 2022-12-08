@@ -116,8 +116,6 @@ class Slider(Widget):
                 )
             )
         self._impl.set_value(final)
-        if self.on_change:
-            self.on_change(self)
 
     @property
     def range(self):

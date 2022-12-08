@@ -27,7 +27,7 @@ class Slider(Widget):
 
     def create(self):
         self.native = WinForms.TrackBar()
-        self.native.Scroll += self.winforms_scroll
+        self.native.ValueChanged += self.winforms_scroll
         self.native.MouseDown += self.winforms_mouse_down
         self.native.MouseUp += self.winforms_mouse_up
         self.set_enabled(self.interface._enabled)

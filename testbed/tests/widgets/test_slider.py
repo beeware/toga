@@ -30,36 +30,28 @@ async def test_init(widget, probe, on_change):
     on_change.assert_not_called()
 
 
-@mark.skipif(
-    current_platform in ["windows", "macOS"],
-    reason="on_change called 2 times",
-)
 @mark.skipif(current_platform == "android", reason="position is 0.0")
 async def test_value(widget, probe, on_change):
     for scale in SCALES:
         widget.range = (0, scale)
         for position in POSITIONS:
-            on_change.mock_calls.clear()
+            on_change.reset_mock()
             widget.value = position * scale
             assert probe.position == approx(position, abs=ACCURACY)
             on_change.assert_called_once_with(widget)
 
 
-@mark.skipif(
-    current_platform in ["android", "windows", "macOS"],
-    reason="on_change called 0 times",
-)
+@mark.skipif(current_platform in ["android"], reason="on_change called 0 times")
 async def test_change(widget, probe, on_change):
     for scale in SCALES:
         widget.range = (0, scale)
         for position in POSITIONS:
-            on_change.mock_calls.clear()
+            on_change.reset_mock()
             probe.change(position)
             assert widget.value == approx(position * scale, abs=(ACCURACY * scale))
             on_change.assert_called_once_with(widget)
 
 
-@mark.skipif(current_platform == "windows", reason="value does not remain constant")
 @mark.skipif(current_platform == "android", reason="value is 0.0")
 async def test_min(widget, probe):
     for min in POSITIONS[:4]:
@@ -68,7 +60,6 @@ async def test_min(widget, probe):
         assert probe.position == approx((0.5 - min) / (1 - min), abs=ACCURACY)
 
 
-@mark.skipif(current_platform == "windows", reason="value does not remain constant")
 @mark.skipif(current_platform == "android", reason="value is 0.0")
 async def test_max(widget, probe):
     for max in POSITIONS[-4:]:
