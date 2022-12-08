@@ -46,7 +46,7 @@ class Slider(Widget):
             self.native.numberOfTickMarks = tick_count
 
     def get_value(self):
-        return self.native.floatValue
+        return self.native.doubleValue
 
     def set_value(self, value):
         self.native.doubleValue = value
