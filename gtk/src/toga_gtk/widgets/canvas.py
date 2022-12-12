@@ -20,13 +20,10 @@ class Canvas(Widget):
         self.native.set_events(
             Gdk.EventMask.BUTTON_PRESS_MASK
             | Gdk.EventMask.BUTTON_RELEASE_MASK
-            | Gdk.EventMask.POINTER_MOTION_MASK
+            | Gdk.EventMask.BUTTON_MOTION_MASK
         )
         # count number of active clicks
         self.clicks = 0
-        # pointer motion event has no button attribute
-        # so track which pointer button was clicked
-        self.button = 0
 
     def gtk_draw_callback(self, canvas, gtk_context):
         """Creates a draw callback.
@@ -75,7 +72,6 @@ class Canvas(Widget):
 
     def mouse_down(self, obj, event):
         self.clicks = 2 if event.type == Gdk.EventType._2BUTTON_PRESS else 1
-        self.button = event.button
         if event.button == 1 and self.interface.on_press:
             self.interface.on_press(self.interface, event.x, event.y, self.clicks)
         if event.button == 3 and self.interface.on_alt_press:
@@ -84,9 +80,9 @@ class Canvas(Widget):
     def mouse_move(self, obj, event):
         if self.clicks == 0:
             return
-        if self.button == 1 and self.interface.on_drag:
+        if event.state == Gdk.ModifierType.BUTTON1_MASK and self.interface.on_drag:
             self.interface.on_drag(self.interface, event.x, event.y, self.clicks)
-        if self.button == 3 and self.interface.on_alt_drag:
+        if event.state == Gdk.ModifierType.BUTTON3_MASK and self.interface.on_alt_drag:
             self.interface.on_alt_drag(self.interface, event.x, event.y, self.clicks)
 
     def mouse_up(self, obj, event):
@@ -95,7 +91,6 @@ class Canvas(Widget):
         if event.button == 3 and self.interface.on_alt_release:
             self.interface.on_alt_release(self.interface, event.x, event.y, self.clicks)
         self.clicks = 0
-        self.button = 0
 
     def redraw(self):
         self.native.queue_draw()
