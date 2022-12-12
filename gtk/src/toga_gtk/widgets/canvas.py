@@ -14,6 +14,9 @@ class Canvas(Widget):
         self.native.interface = self.interface
         self.native.connect("draw", self.gtk_draw_callback)
         self.native.connect("size-allocate", self.gtk_on_size_allocate)
+        self.native.connect("button-press-event", self.mouse_down)
+        self.native.connect("button-release-event", self.mouse_up)
+        self.native.connect("motion-notify-event", self.mouse_move)
         self.native.set_events(
             Gdk.EventMask.BUTTON_PRESS_MASK
             | Gdk.EventMask.BUTTON_RELEASE_MASK
@@ -47,22 +50,28 @@ class Canvas(Widget):
         pass
 
     def set_on_press(self, handler):
-        self.native.connect("button-press-event", self.mouse_down)
+        """No special handling required."""
+        pass
 
     def set_on_release(self, handler):
-        self.native.connect("button-release-event", self.mouse_up)
+        """No special handling required."""
+        pass
 
     def set_on_drag(self, handler):
-        self.native.connect("motion-notify-event", self.mouse_move)
+        """No special handling required."""
+        pass
 
     def set_on_alt_press(self, handler):
-        self.native.connect("button-press-event", self.mouse_down)
+        """No special handling required."""
+        pass
 
     def set_on_alt_release(self, handler):
-        self.native.connect("button-release-event", self.mouse_up)
+        """No special handling required."""
+        pass
 
     def set_on_alt_drag(self, handler):
-        self.native.connect("motion-notify-event", self.mouse_move)
+        """No special handling required."""
+        pass
 
     def mouse_down(self, obj, event):
         self.clicks = 2 if event.type == Gdk.EventType._2BUTTON_PRESS else 1
