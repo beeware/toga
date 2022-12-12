@@ -1,6 +1,8 @@
 from travertino.size import at_least
 
+from toga.colors import TRANSPARENT
 from toga.fonts import SYSTEM_DEFAULT_FONT_SIZE
+from toga_cocoa.colors import native_color
 from toga_cocoa.libs import (
     SEL,
     NSBezelStyle,
@@ -48,6 +50,12 @@ class Button(Widget):
     def set_on_press(self, handler):
         # No special handling required
         pass
+
+    def set_background_color(self, color):
+        if color == TRANSPARENT or color is None:
+            self.native.bezelColor = None
+        else:
+            self.native.bezelColor = native_color(color)
 
     def rehint(self):
         # Normal Cocoa "rounded" buttons have a fixed height by definition.

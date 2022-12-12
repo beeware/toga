@@ -1,8 +1,8 @@
 from travertino.size import at_least
 
+from toga.colors import TRANSPARENT
 from toga_cocoa.colors import native_color
 from toga_cocoa.libs import (
-    NSColor,
     NSTextAlignment,
     NSTextField,
     NSTextFieldSquareBezel,
@@ -83,10 +83,14 @@ class TextInput(Widget):
             self.native.font = font._impl.native
 
     def set_color(self, color):
-        if color:
-            self.native.textColor = native_color(color)
+        self.native.textColor = native_color(color)
+
+    def set_background_color(self, color):
+        if color is TRANSPARENT:
+            self.native.drawsBackground = False
         else:
-            self.native.textColor = NSColor.labelColor
+            self.native.backgroundColor = native_color(color)
+            self.native.drawsBackground = True
 
     def get_value(self):
         return str(self.native.stringValue)

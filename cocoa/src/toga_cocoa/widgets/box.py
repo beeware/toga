@@ -1,5 +1,7 @@
 from travertino.size import at_least
 
+from toga.colors import TRANSPARENT
+from toga_cocoa.colors import native_color
 from toga_cocoa.libs import NSView, objc_method
 
 from .base import Widget
@@ -24,6 +26,16 @@ class Box(Widget):
 
         # Add the layout constraints
         self.add_constraints()
+
+    def set_color(self, color):
+        pass
+
+    def set_background_color(self, color):
+        if color is TRANSPARENT:
+            self.native.drawsBackground = False
+        else:
+            self.native.backgroundColor = native_color(color)
+            self.native.drawsBackground = True
 
     def rehint(self):
         content_size = self.native.intrinsicContentSize()

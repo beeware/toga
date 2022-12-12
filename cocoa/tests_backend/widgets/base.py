@@ -1,8 +1,3 @@
-# from System import EventArgs, Object
-
-from .properties import toga_color
-
-
 class SimpleProbe:
     def __init__(self, widget):
         self.native = widget._impl.native
@@ -19,14 +14,6 @@ class SimpleProbe:
     @property
     def enabled(self):
         return self.native.enabled
-
-    @property
-    def background_color(self):
-        return toga_color(self.native.backgroundColor)
-
-    @property
-    def color(self):
-        return toga_color(self.native.textColor)
 
     @property
     def hidden(self):

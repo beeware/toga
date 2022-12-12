@@ -1,5 +1,6 @@
 from travertino.size import at_least
 
+from toga.colors import TRANSPARENT
 from toga_cocoa.colors import native_color
 from toga_cocoa.libs import (
     NSBezelBorder,
@@ -60,8 +61,14 @@ class MultilineTextInput(Widget):
         self.text.string = value
 
     def set_color(self, value):
-        if value:
-            self.text.textColor = native_color(value)
+        self.text.textColor = native_color(value)
+
+    def set_background_color(self, color):
+        if color is TRANSPARENT:
+            self.native.drawsBackground = False
+        else:
+            self.native.backgroundColor = native_color(color)
+            self.native.drawsBackground = True
 
     def set_font(self, font):
         if font:

@@ -1,5 +1,7 @@
 from travertino.size import at_least
 
+from toga.colors import TRANSPARENT
+from toga_cocoa.colors import native_color
 from toga_cocoa.libs import NSColor, NSMakeRect, NSNoBorder, NSScrollView
 from toga_cocoa.window import CocoaViewport
 
@@ -12,13 +14,22 @@ class ScrollContainer(Widget):
         self.native.autohidesScrollers = True
         self.native.borderType = NSNoBorder
         self.native.backgroundColor = NSColor.windowBackgroundColor
-        # self.native.backgroundColor = NSColor.blueColor
 
         self.native.translatesAutoresizingMaskIntoConstraints = False
         self.native.autoresizesSubviews = True
 
         # Add the layout constraints
         self.add_constraints()
+
+    def set_color(self, color):
+        pass
+
+    def set_background_color(self, color):
+        if color is TRANSPARENT:
+            self.native.drawsBackground = False
+        else:
+            self.native.backgroundColor = native_color(color)
+            self.native.drawsBackground = True
 
     def set_content(self, widget):
         self.native.documentView = widget.native
