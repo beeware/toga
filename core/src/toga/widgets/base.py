@@ -91,15 +91,12 @@ class Widget(Node):
     @property
     def id(self):
         """The node identifier. This id can be used to target styling
-        directives.
-
-        Returns:
-            The widgets identifier as a ``str``.
-        """
+        directives."""
         return self._id
 
     @property
     def tab_index(self):
+        """The position of the widget in the focus chain for the window."""
         return self._impl.get_tab_index()
 
     @tab_index.setter
@@ -107,15 +104,14 @@ class Widget(Node):
         self._impl.set_tab_index(tab_index)
 
     def add(self, *children):
-        """Add nodes as children of this one. If a node already has a different
-        parent, it will be moved over. This does nothing if a node already is a
-        child of this node.
+        """Add the provided widgets as children of this widget.
 
-        Args:
-            children: Nodes to add as children of this node.
+        If a node already has a different parent, it will be moved over. This
+        does nothing if a node already is a child of this node.
 
-        Raises:
-            ValueError: If this node is a leaf, and cannot have children.
+        Raises ``ValueError`` if this widget cannot have children.
+
+        :param children: The widgets to add as children of this widget.
         """
         for child in children:
             if child.parent is not self:
@@ -138,16 +134,16 @@ class Widget(Node):
             self.window.content.refresh()
 
     def insert(self, index, child):
-        """Insert a node as a child of this one. If the node already has a
-        different parent, it will be moved over. This does nothing if the node
-        already is a child of this node.
+        """Insert a widget as a child of this widget.
 
-        Args:
-            index: Position of child node.
-            child: A node to insert as a child of this node.
+        If the node already has a parent, ownership of the widget will be
+        transferred.
 
-        Raises:
-            ValueError: If this node is a leaf, and cannot have children.
+        Raises ``ValueError`` if this node cannot have children.
+
+        :param index: The position in the list of children where the new widget
+            should be added.
+        :param child: The child to insert as a child of this node.
         """
         if child.parent is not self:
 
@@ -169,14 +165,13 @@ class Widget(Node):
             self.window.content.refresh()
 
     def remove(self, *children):
-        """Remove child nodes of this node. This does nothing if a given node
-        is not a child of this node.
+        """Remove the provided widgets as children of this node.
 
-        Args:
-            children: Child nodes to remove.
+        This does nothing if a given node is not a child of this node.
 
-        Raises:
-            ValueError: If this node is a leaf, and cannot have children.
+        Raises ``ValueError`` if this node is a leaf, and cannot have children.
+
+        :param children: The Child nodes to remove.
         """
         for child in children:
             if child.parent is self:
@@ -193,14 +188,13 @@ class Widget(Node):
 
     @property
     def app(self):
-        """The App to which this widget belongs. On setting the app we also
-        iterate over all children of this widget and set them to the same app.
+        """The App to which this widget belongs.
 
-        Returns:
-            The :class:`~toga.App` to which this widget belongs.
+        When setting the app for a widget, all children of this widget will be
+        recursively assigned to the same app.
 
-        Raises:
-            ValueError: If the widget is already associated with another app.
+        Raises ``ValueError`` if the widget is already associated with another
+        app.
         """
         return self._app
 
@@ -238,12 +232,10 @@ class Widget(Node):
 
     @property
     def window(self):
-        """The Window to which this widget belongs. On setting the window, we
-        automatically update all children of this widget to belong to the same
-        window.
+        """The window to which this widget belongs.
 
-        Returns:
-            The :class:`~toga.Window` to which the widget belongs.
+        When setting the app for a widget, all children of this widget will be
+        recursively assigned to the same window.
         """
         return self._window
 
@@ -274,6 +266,8 @@ class Widget(Node):
 
     @property
     def enabled(self):
+        """Is the widget currently enabled? i.e., can the user interact with the
+        widget?"""
         return self._enabled
 
     @enabled.setter
@@ -282,8 +276,7 @@ class Widget(Node):
         self._impl.set_enabled(value)
 
     def refresh(self):
-        """Refresh the layout and appearance of the tree this node is contained
-        in."""
+        # Refresh the layout
         if self._root:
             self._root.refresh()
         else:
@@ -295,5 +288,6 @@ class Widget(Node):
             child.refresh_sublayouts()
 
     def focus(self):
+        """Set this widget to have the current input focus."""
         if self._impl is not None:
             self._impl.focus()

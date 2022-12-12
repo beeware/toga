@@ -1,6 +1,16 @@
 Button
 ======
 
+
+A widget that can be pressed or clicked to cause an action in an application.
+
+.. figure:: /reference/images/Button.jpeg
+    :align: center
+    :width: 300
+
+Availability
+------------
+
 .. rst-class:: widget-support
 .. csv-filter::
    :header-rows: 1
@@ -11,16 +21,10 @@ Button
 .. |y| image:: /_static/yes.png
     :width: 16
 
-The button is a clickable node that fires a callback method when pressed or clicked.
-
-.. figure:: /reference/images/Button.jpeg
-    :align: center
-    :width: 300
-
 Usage
 -----
 
-The most basic button has a text label and a callback method for when it is pressed. The callback expects 1 argument, the instance of the button firing the event.
+A button has a text label. A handler can be associated with button press events.
 
 .. code-block:: Python
 
@@ -32,10 +36,18 @@ The most basic button has a text label and a callback method for when it is pres
 
     button = toga.Button('Click me', on_press=my_callback)
 
+Notes
+-----
+
+* A background color of ``TRANSPARENT`` will be treated as a reset of the button
+  to the default system color.
+
+* On macOS, the button text color cannot be set directly; any `color` style
+  directive will be ignored. The text color is automatically selected by macOS
+  the platform to contrast with the background color of the button.
+
 Reference
 ---------
 
 .. autoclass:: toga.widgets.button.Button
    :members:
-   :undoc-members:
-   :inherited-members:
