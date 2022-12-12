@@ -4,6 +4,7 @@ import toga
 
 from .properties import (  # noqa: F401
     test_background_color,
+    test_background_color_transparent,
     test_color,
     test_text,
 )

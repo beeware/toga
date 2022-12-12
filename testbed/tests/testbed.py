@@ -5,6 +5,7 @@ from functools import partial
 from pathlib import Path
 from threading import Thread
 
+import coverage
 import pytest
 
 from testbed.app import main
@@ -55,7 +56,56 @@ def chaquopy_extract_dir(finder, zip_dir):
 
 
 if __name__ == "__main__":
+    # Determine the toga backend. This replicates the behavior in toga/platform.py;
+    # we can't use that module directly because we need to capture all the import
+    # side effects as part of the coverage data.
+    try:
+        toga_backend = os.environ["TOGA_BACKEND"]
+    except KeyError:
+        if hasattr(sys, "getandroidapilevel"):
+            toga_backend = "toga_android"
+        else:
+            toga_backend = {
+                "darwin": "toga_cocoa",
+                "ios": "toga_iOS",
+                "linux": "toga_gtk",
+                "emscripten": "toga_web",
+                "win32": "toga_winforms",
+            }.get(sys.platform)
+
+    # Start coverage tracking
+    cov = coverage.Coverage(
+        # Don't store any coverage data
+        data_file=None,
+        source_pkgs=[toga_backend],
+    )
+    cov.start()
+
+    # Create the test app, starting the test suite as a background task
     app = main()
     thread = Thread(target=partial(run_tests, app))
     app.add_background_task(lambda app, *kwargs: thread.start())
+
+    # Install an on-exit handler that will output the coverage report
+    def report_coverage(app, **kwargs):
+        cov.stop()
+
+        # FIXME: Coverage reporting doesn't work on Android (yet!)
+        # Output an answer that will get picked up by
+        if hasattr(sys, "getandroidapilevel"):
+            print("***No coverage report on Android***")
+            print()
+            print("0 files skipped due to complete coverage.")
+            return True
+
+        cov.report(
+            precision=1,
+            skip_covered=True,
+            show_missing=True,
+        )
+        return True
+
+    app.on_exit = report_coverage
+
+    # Start the test app.
     app.main_loop()
