@@ -91,7 +91,7 @@ if __name__ == "__main__":
         cov.stop()
 
         # FIXME: Coverage reporting doesn't work on Android (yet!)
-        # Output an answer that will get picked up by
+        # Output an answer that will get picked up by the exit pattern.
         if hasattr(sys, "getandroidapilevel"):
             print("***No coverage report on Android***")
             print()
