@@ -21,7 +21,7 @@ def run_tests(app):
 
         chaquopy_extract_package(tests)
 
-    pytest.main(
+    app.returncode = pytest.main(
         [
             # Output formatting
             "-vv",
@@ -94,15 +94,19 @@ if __name__ == "__main__":
         # Output an answer that will get picked up by the exit pattern.
         if hasattr(sys, "getandroidapilevel"):
             print("***No coverage report on Android***")
-            print()
-            print("0 files skipped due to complete coverage.")
-            return True
+        # Only print a coverage report if the test suite passed.
+        elif app.returncode == 0:
+            total = cov.report(
+                precision=1,
+                skip_covered=True,
+                show_missing=True,
+            )
+            if total < 100.0:
+                print("Test coverage is incomplete")
+                # Uncomment the next line to enforce test coverage
+                # TODO: app.return_code = 1
 
-        cov.report(
-            precision=1,
-            skip_covered=True,
-            show_missing=True,
-        )
+        print(f">>>>>>>>>> EXIT {app.returncode} <<<<<<<<<<")
         return True
 
     app.on_exit = report_coverage
