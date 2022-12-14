@@ -6,7 +6,8 @@ from pytest import fixture, register_assert_rewrite
 
 import toga
 
-register_assert_rewrite("tests.assertions")
+register_assert_rewrite("tests")
+register_assert_rewrite("tests_backend")
 
 
 @fixture(scope="session")
