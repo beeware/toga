@@ -82,6 +82,5 @@ async def test_background_color(widget, probe):
     reason="TRANSPARENT not implemented",
 )
 async def test_background_color_transparent(widget, probe):
-    print("CURRENT_PLATFORM", current_platform)
     widget.style.background_color = TRANSPARENT
     assert_color(probe.background_color, TRANSPARENT)
