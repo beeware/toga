@@ -210,3 +210,7 @@ class Window:
         if self.interface.content:
             # Re-layout the content
             self.interface.content.refresh()
+
+    async def redraw(self):
+        """Request a redraw of the app, waiting until that redraw has completed."""
+        self.interface.factory.not_implemented("Window.redraw()")

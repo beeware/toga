@@ -96,3 +96,7 @@ class Window:
 
     def set_on_close(self, handler):
         pass
+
+    async def redraw(self):
+        """Request a redraw of the app, waiting until that redraw has completed."""
+        self.interface.factory.not_implemented("Window.redraw()")

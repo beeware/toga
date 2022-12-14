@@ -187,3 +187,7 @@ class Window:
             self.native.fullscreen()
         else:
             self.native.unfullscreen()
+
+    async def redraw(self):
+        """Request a redraw of the app, waiting until that redraw has completed."""
+        self.interface.factory.not_implemented("Window.redraw()")

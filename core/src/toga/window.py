@@ -263,6 +263,13 @@ class Window:
         self.app.windows -= self
         self._impl.close()
 
+    async def redraw(self):
+        """Request a redraw of the app, waiting until that redraw has completed."""
+        # Refresh the layout
+        self.content.refresh()
+        # Request and wait for a redraw
+        await self._impl.redraw()
+
     ############################################################
     # Dialogs
     ############################################################
