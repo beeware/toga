@@ -6,13 +6,14 @@ from .properties import (  # noqa: F401
     test_background_color,
     test_background_color_transparent,
     test_color,
+    test_font,
     test_text,
 )
 
 
 @fixture
 async def widget():
-    return toga.Label("")
+    return toga.Label("hello")
 
 
 # TODO: a `width` test, for any widget whose width depends on its text.

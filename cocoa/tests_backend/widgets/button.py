@@ -1,9 +1,9 @@
-from pytest import skip
+from pytest import xfail
 
 from toga_cocoa.libs import NSButton
 
 from .base import SimpleProbe
-from .properties import toga_color
+from .properties import toga_color, toga_font
 
 
 class ButtonProbe(SimpleProbe):
@@ -15,7 +15,11 @@ class ButtonProbe(SimpleProbe):
 
     @property
     def color(self):
-        skip("Can't get/set the text color of a button on macOS")
+        xfail("Can't get/set the text color of a button on macOS")
+
+    @property
+    def font(self):
+        return toga_font(self.native.font)
 
     @property
     def background_color(self):

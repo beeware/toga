@@ -1,4 +1,7 @@
+from dataclasses import dataclass
+
 from toga.colors import rgba
+from toga.fonts import FANTASY, NORMAL, SYSTEM
 
 
 def toga_color(color):
@@ -11,3 +14,22 @@ def toga_color(color):
         )
     else:
         return None
+
+
+@dataclass
+class Font:
+    family: str
+    size: int
+    style: str = NORMAL
+    variant: str = NORMAL
+    weight: str = NORMAL
+
+
+def toga_font(font):
+    return Font(
+        family={
+            ".AppleSystemUIFont": SYSTEM,
+            "Papyrus": FANTASY,
+        }.get(str(font.familyName), str(font.familyName)),
+        size=font.pointSize,
+    )

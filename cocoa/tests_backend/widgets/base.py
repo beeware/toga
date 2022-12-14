@@ -21,11 +21,11 @@ class SimpleProbe:
 
     @property
     def width(self):
-        return self.native.frame.width
+        return self.native.frame.size.width
 
     @property
     def height(self):
-        return self.native.frame.height
+        return self.native.frame.size.height
 
     def press(self):
         self.native.performClick(None)
