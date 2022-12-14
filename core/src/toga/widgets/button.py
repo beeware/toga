@@ -103,9 +103,7 @@ class Button(Widget):
     @property
     def on_press(self):
         """The handler to invoke when the button is pressed."""
-        if self._on_press:
-            return self._on_press._raw
-        return None
+        return self._on_press
 
     @on_press.setter
     def on_press(self, handler):

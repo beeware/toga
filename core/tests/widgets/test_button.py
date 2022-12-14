@@ -35,7 +35,7 @@ class ButtonTests(TestCase):
             return f"called {type(widget)} with {extra}"
 
         self.btn.on_press = callback
-        self.assertEqual(self.btn.on_press, callback)
+        self.assertEqual(self.btn.on_press._raw, callback)
         self.assertEqual(
             self.btn.on_press(self.btn, a=1),
             "called <class 'toga.widgets.button.Button'> with {'a': 1}",
