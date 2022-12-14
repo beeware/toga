@@ -47,17 +47,23 @@ async def test_font(widget, probe):
     assert probe.height > orig_height
 
 
+async def test_color(widget, probe):
+    for color in COLORS:
+        widget.style.color = color
+        assert_color(probe.color, color)
+
+
 @mark.skipif(
     current_platform in {"android", "windows"},
     reason="color resets don't work",
 )
-async def test_color(widget, probe):
+async def test_color_reset(widget, probe):
     # Get the original color
     original = probe.color
 
-    for color in COLORS:
-        widget.style.color = color
-        assert_color(probe.color, color)
+    # Set the color to something different
+    widget.style.color = COLORS[0]
+    assert_color(probe.color, COLORS[0])
 
     # Reset the color, and check that it has been restored to the original
     widget.style.color = None

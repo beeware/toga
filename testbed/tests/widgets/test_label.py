@@ -6,6 +6,7 @@ from .properties import (  # noqa: F401
     test_background_color,
     test_background_color_transparent,
     test_color,
+    test_color_reset,
     test_font,
     test_text,
 )
