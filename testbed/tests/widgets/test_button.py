@@ -31,6 +31,10 @@ async def test_press(widget, probe):
     handler.assert_called_once_with(widget)
 
 
+@mark.skipif(
+    current_platform in {"windows"},
+    reason="color reset on transparent not implemented",
+)
 async def test_background_color_transparent(widget, probe):
     "Buttons treat background transparency as a color reset."
     widget.style.background_color = TRANSPARENT
