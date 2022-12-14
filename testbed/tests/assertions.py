@@ -28,9 +28,5 @@ def assert_color(actual, expected):
             fail(f"Expected {expected}, got {actual}")
         else:
             for component in ["r", "g", "b"]:
-                assert getattr(actual, component) == getattr(
-                    expected, component
-                ), f"actual={actual} != expected={expected}"
-            assert actual.a == approx(
-                expected.a, abs=(1 / 255)
-            ), f"actual={actual} != expected={expected}"
+                assert getattr(actual, component) == getattr(expected, component)
+            assert actual.a == approx(expected.a, abs=(1 / 255))

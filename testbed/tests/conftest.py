@@ -2,9 +2,11 @@ import asyncio
 import inspect
 from dataclasses import dataclass
 
-from pytest import fixture
+from pytest import fixture, register_assert_rewrite
 
 import toga
+
+register_assert_rewrite("tests.assertions")
 
 
 @fixture(scope="session")
