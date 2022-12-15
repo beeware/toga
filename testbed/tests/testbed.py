@@ -77,6 +77,7 @@ if __name__ == "__main__":
     cov = coverage.Coverage(
         # Don't store any coverage data
         data_file=None,
+        branch=True,
         source_pkgs=[toga_backend],
     )
     cov.start()

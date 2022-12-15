@@ -32,8 +32,7 @@ class Label(Widget):
             self.native.drawsBackground = True
 
     def set_font(self, font):
-        if font:
-            self.native.font = font._impl.native
+        self.native.font = font._impl.native
 
     def set_text(self, value):
         self.native.stringValue = self.interface._text

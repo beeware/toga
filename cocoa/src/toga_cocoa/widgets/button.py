@@ -59,8 +59,7 @@ class Button(Widget):
         self._set_button_style()
 
     def set_font(self, font):
-        if font:
-            self.native.font = font._impl.native
+        self.native.font = font._impl.native
 
         # Button type is sensitive to font changes
         self._set_button_style()
