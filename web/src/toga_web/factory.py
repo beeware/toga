@@ -35,7 +35,7 @@ from .widgets.textinput import TextInput
 
 
 def not_implemented(feature):
-    print(f"[Web] Not implemented: {feature}")
+    print(f"[Web] Not implemented: {feature}")  # pragma: nocover
 
 
 __all__ = [
