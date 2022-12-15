@@ -23,6 +23,10 @@ async def widget():
 
 
 async def test_press(widget, probe):
+    # Press the button before installing a handler
+    probe.press()
+
+    # Set up a mock handler, and press the button again.
     handler = Mock()
     # TODO: can't use assert_set_get, because getattr returns the wrapped handler, which
     # is an implementation detail that we shouldn't expose.
