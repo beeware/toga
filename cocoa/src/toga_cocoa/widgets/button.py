@@ -32,17 +32,38 @@ class Button(Widget):
         self.native.interface = self.interface
         self.native.impl = self
 
-        self.native.bezelStyle = NSBezelStyle.Rounded
         self.native.buttonType = NSMomentaryPushInButton
+        self._set_button_style()
+
         self.native.target = self.native
         self.native.action = SEL("onPress:")
 
         # Add the layout constraints
         self.add_constraints()
 
+    def _set_button_style(self):
+        # Normal Cocoa "rounded" buttons have a fixed height by definition.
+        # If the user specifies any font size other than the default,
+        # or specifies an explicit height for layout, switch to using a
+        # RegularSquare button.
+        if (
+            self.interface.style.font_size != SYSTEM_DEFAULT_FONT_SIZE
+            or self.interface.style.height
+        ):
+            self.native.bezelStyle = NSBezelStyle.RegularSquare
+        else:
+            self.native.bezelStyle = NSBezelStyle.Rounded
+
+    def set_size(self, width, height):
+        # Button style is sensitive to height
+        self._set_button_style()
+
     def set_font(self, font):
         if font:
             self.native.font = font._impl.native
+
+        # Button type is sensitive to font changes
+        self._set_button_style()
 
     def set_text(self, text):
         self.native.title = self.interface.text
@@ -58,18 +79,6 @@ class Button(Widget):
             self.native.bezelColor = native_color(color)
 
     def rehint(self):
-        # Normal Cocoa "rounded" buttons have a fixed height by definition.
-        # If the user specifies any font size other than the default,
-        # or specifies an explicit height for layout, switch to using a
-        # RegularSquare button.
-        if (
-            self.interface.style.font_size != SYSTEM_DEFAULT_FONT_SIZE
-            or self.interface.style.height
-        ):
-            self.native.bezelStyle = NSBezelStyle.RegularSquare
-        else:
-            self.native.bezelStyle = NSBezelStyle.Rounded
-
         content_size = self.native.intrinsicContentSize()
         self.interface.intrinsic.width = at_least(content_size.width)
         self.interface.intrinsic.height = content_size.height

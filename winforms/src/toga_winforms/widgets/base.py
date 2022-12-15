@@ -71,6 +71,9 @@ class Widget:
 
     # APPLICATOR
 
+    def set_size(self, width, height):
+        pass
+
     @property
     def vertical_shift(self):
         return 0

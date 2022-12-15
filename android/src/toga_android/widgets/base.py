@@ -87,6 +87,9 @@ class Widget:
 
     # APPLICATOR
 
+    def set_size(self, width, height):
+        pass
+
     def set_bounds(self, x, y, width, height):
         if self.container:
             # Ask the container widget to set our bounds.

@@ -90,6 +90,9 @@ class Widget:
     def _reapply_style(self):
         self.native.style = self.interface.style.__css__()
 
+    def set_size(self, width, height):
+        pass
+
     def set_bounds(self, x, y, width, height):
         self._reapply_style()
 
