@@ -61,6 +61,7 @@ async def test_button_size(widget, probe):
     await widget.window.redraw()
     assert probe.width > 600
     assert probe.height <= 50
+    probe.assert_display_properties()
 
     # Make the container a flexible column box
     # This will make the height the flexible axis
@@ -71,6 +72,7 @@ async def test_button_size(widget, probe):
     await widget.window.redraw()
     assert probe.width > 600
     assert probe.height <= 50
+    probe.assert_display_properties()
 
     # Set an explicit height and width
     widget.style.width = 300
@@ -81,3 +83,4 @@ async def test_button_size(widget, probe):
     await widget.window.redraw()
     assert 300 <= probe.width <= 350
     assert 200 <= probe.height <= 250
+    probe.assert_display_properties()
