@@ -14,3 +14,7 @@ class LabelProbe(SimpleProbe):
     @property
     def font(self):
         skip("Font probe not implemented")
+
+    @property
+    def alignment(self):
+        skip("Alignment probe not implemented")

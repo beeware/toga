@@ -1,6 +1,7 @@
 from pytest import approx, fixture, mark
 
 import toga
+from toga.style.pack import CENTER, COLUMN, JUSTIFY, LEFT, LTR, RIGHT, RTL
 
 from .properties import (  # noqa: F401
     test_background_color,
@@ -38,3 +39,29 @@ async def test_multiline(widget, probe):
             (line_height * n) + (line_spacing * (n - 1)),
             rel=0.1,
         )
+
+
+async def test_alignment(widget, probe):
+    # Initial alignment is LEFT
+    widget.parent.style.direction = COLUMN
+    assert probe.alignment == LEFT
+
+    for alignment in [RIGHT, CENTER, JUSTIFY]:
+        widget.style.text_align = alignment
+        await widget.window.redraw()
+        assert probe.alignment == alignment
+
+    # Clearing the alignment reverts to default alignment of LEFT
+    widget.style.text_align = None
+    await widget.window.redraw()
+    assert probe.alignment == LEFT
+
+    # If text direction is RTL, default alignment is RIGHT
+    widget.style.text_direction = RTL
+    await widget.window.redraw()
+    assert probe.alignment == RIGHT
+
+    # If text direction is expliclty LTR, default alignment is LEFT
+    widget.style.text_direction = LTR
+    await widget.window.redraw()
+    assert probe.alignment == LEFT

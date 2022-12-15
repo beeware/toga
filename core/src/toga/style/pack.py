@@ -88,11 +88,13 @@ class Pack(BaseStyle):
         if self._applicator:
             if prop == "text_align":
                 if value is None:
-                    if self.text_direction is RTL:
+                    if self.text_direction == RTL:
                         value = RIGHT
                     else:
                         value = LEFT
                 self._applicator.set_text_alignment(value)
+            if prop == "text_direction":
+                self._applicator.set_text_alignment(RIGHT if value == RTL else LEFT)
             elif prop == "color":
                 self._applicator.set_color(value)
             elif prop == "background_color":

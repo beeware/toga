@@ -2,6 +2,13 @@ from dataclasses import dataclass
 
 from toga.colors import rgba
 from toga.fonts import FANTASY, NORMAL, SYSTEM
+from toga.style.pack import CENTER, JUSTIFY, LEFT, RIGHT
+from toga_cocoa.libs.appkit import (
+    NSCenterTextAlignment,
+    NSJustifiedTextAlignment,
+    NSLeftTextAlignment,
+    NSRightTextAlignment,
+)
 
 
 def toga_color(color):
@@ -33,3 +40,12 @@ def toga_font(font):
         }.get(str(font.familyName), str(font.familyName)),
         size=font.pointSize,
     )
+
+
+def toga_alignment(alignment):
+    return {
+        NSLeftTextAlignment: LEFT,
+        NSRightTextAlignment: RIGHT,
+        NSCenterTextAlignment: CENTER,
+        NSJustifiedTextAlignment: JUSTIFY,
+    }[alignment]
