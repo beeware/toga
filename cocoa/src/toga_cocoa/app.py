@@ -367,7 +367,7 @@ class App:
         self.native.orderFrontStandardAboutPanelWithOptions(options)
 
     def exit(self):
-        self.native.terminate(self.native)
+        self.loop.stop()
 
     def set_on_exit(self, value):
         pass
