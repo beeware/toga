@@ -37,14 +37,21 @@ def run_tests(app, cov):
             project_path / "tests",
         ]
     )
-    cov.stop()
 
     # FIXME: Coverage reporting doesn't work on Android (yet!)
-    # Output an answer that will get picked up by the exit pattern.
+    # This is for two reasons:
+    # 1. The code being covered needs to be unpacked and readable for
+    #    a coverage report to be generated. This should be fixed by
+    #    extractPackages
+    # 2. The main thread where coverage has been started dies before the
+    #    this thread; as a result, the garbage collection on the tracer
+    #    function (coverage.pytracer._trace():123) raises an IndexError
+    #    because the data stack is empty.
     if hasattr(sys, "getandroidapilevel"):
         print("***No coverage report on Android***")
     # Only print a coverage report if the test suite passed.
     elif app.returncode == 0:
+        cov.stop()
         total = cov.report(
             precision=1,
             skip_covered=True,
