@@ -20,7 +20,7 @@ def run_tests(app):
 
         chaquopy_extract_package(tests)
 
-    pytest.main(
+    app.returncode = pytest.main(
         [
             # Output formatting
             "-vv",
@@ -58,4 +58,12 @@ if __name__ == "__main__":
     app = main()
     thread = Thread(target=partial(run_tests, app))
     app.add_background_task(lambda app, *kwargs: thread.start())
+
+    # Add an on_exit handler that will terminate the test suite.
+    def exit_suite(app, **kwargs):
+        print(f">>>>>>>>>> EXIT {app.returncode} <<<<<<<<<<")
+        return True
+
+    app.on_exit = exit_suite
+
     app.main_loop()
