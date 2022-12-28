@@ -1,0 +1,1 @@
+Release history now contains links to GitHub issues.
