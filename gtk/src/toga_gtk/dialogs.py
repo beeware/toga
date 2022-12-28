@@ -6,7 +6,7 @@ from .libs import Gtk
 
 class BaseDialog:
     def __init__(self):
-        loop = asyncio.get_event_loop()
+        loop = asyncio.new_event_loop()
         self.future = loop.create_future()
 
     def __eq__(self, other):
