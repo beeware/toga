@@ -1,1 +1,1 @@
-It fixes the warnings that are caused due to python 3.11 for asyncio
+Usage of asyncio in GTK has been updated to match Python 3.11 APIs.
