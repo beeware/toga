@@ -73,3 +73,9 @@ class MultilineTextInput(Widget):
 
     def set_on_change(self, handler):
         self.interface.factory.not_implemented("MultilineTextInput.set_on_change()")
+
+    def scroll_to_bottom(self):
+        self.interface.factory.not_implemented("MultilineTextInput.scroll_to_bottom()")
+
+    def scroll_to_top(self):
+        self.interface.factory.not_implemented("MultilineTextInput.scroll_to_top()")
