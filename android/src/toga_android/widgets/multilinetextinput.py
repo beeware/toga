@@ -78,7 +78,8 @@ class MultilineTextInput(Widget):
         self.interface.intrinsic.height = at_least(self.interface.MIN_HEIGHT)
 
     def scroll_to_bottom(self):
-        self.interface.factory.not_implemented("MultilineTextInput.scroll_to_bottom()")
+        last_line = (self.native.getLineCount() - 1) * self.native.getLineHeight()
+        self.native.scrollTo(0, last_line)
 
     def scroll_to_top(self):
-        self.interface.factory.not_implemented("MultilineTextInput.scroll_to_top()")
+        self.native.scrollTo(0, 0)
