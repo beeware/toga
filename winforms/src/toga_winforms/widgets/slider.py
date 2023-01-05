@@ -35,8 +35,7 @@ class Slider(Widget):
         self.set_tick_count(self.interface.tick_count)
 
     def winforms_scroll(self, sender, event):
-        if self.container and self.interface.on_change:
-            self.interface.on_change(self.interface)
+        self.interface._sync_value()
 
     def winforms_mouse_down(self, sender, event):
         """Since picking and releasing the slider is also a change, calling the

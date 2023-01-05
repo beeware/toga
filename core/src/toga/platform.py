@@ -66,9 +66,6 @@ def get_platform_factory(factory=None):
     ######################################################################
 
     toga_backends = entry_points(group="toga.backends")
-    if not toga_backends:
-        raise RuntimeError("No Toga backend could be loaded.")
-
     backend_value = os.environ.get("TOGA_BACKEND")
     if backend_value:
         try:
@@ -88,7 +85,9 @@ def get_platform_factory(factory=None):
         # See https://github.com/pypa/setuptools/issues/3649
         toga_backends = sorted(set(toga_backends))
 
-        if len(toga_backends) == 1:
+        if not toga_backends:
+            raise RuntimeError("No Toga backend could be loaded.")
+        elif len(toga_backends) == 1:
             backend = toga_backends[0]
         else:
             # multiple backends are installed: choose the one that matches the host platform

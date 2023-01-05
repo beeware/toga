@@ -11,8 +11,7 @@ class TogaOnSeekBarChangeListener(SeekBar__OnSeekBarChangeListener):
         self.impl = impl
 
     def onProgressChanged(self, _view, _progress, _from_user):
-        if self.impl.interface.on_change:
-            self.impl.interface.on_change(widget=self.impl.interface)
+        self.impl.interface._sync_value()
 
     # Add two unused methods so that the Java interface is completely implemented.
     def onStartTrackingTouch(self, native_seekbar):
@@ -52,7 +51,7 @@ class Slider(Widget):
             toga_tick_count = self.interface.tick_count or DEFAULT_NUMBER_OF_TICKS
             android_slider_max = toga_tick_count - 1
             tick_factor = (maximum - minimum) / android_slider_max
-            android_progress = int((value - minimum) * tick_factor)
+            android_progress = int((value - minimum) / tick_factor)
         self.native.setProgress(android_progress)
 
     def set_range(self, range):

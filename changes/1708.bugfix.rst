@@ -1,0 +1,1 @@
+Fixed several bugs in Slider.

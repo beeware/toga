@@ -1,4 +1,5 @@
 import warnings
+from contextlib import contextmanager
 
 from toga.handlers import wrapped_handler
 
@@ -74,6 +75,8 @@ class Slider(Widget):
         # End backwards compatibility.
         ##################################################################
 
+        self._sync_suppressed = False
+        self._value = None
         self.range = range
         self.tick_count = tick_count
 
@@ -91,6 +94,11 @@ class Slider(Widget):
 
     MIN_WIDTH = 100
 
+    # Normally we would use the native widget as the single source of truth for any
+    # user-modifiable state. However, some of the native widgets are based on ints or
+    # 32-bit floats, and aren't able to store a 64-bit Python float without loss of
+    # accuracy. So we store the value in the interface instead, and require the
+    # implementation to call _sync_value whenever it's changed by the user.
     @property
     def value(self):
         """Current slider value.
@@ -101,7 +109,7 @@ class Slider(Widget):
         Raises:
             ValueError: If the new value is not in the range of min and max.
         """
-        return self._impl.get_value()
+        return self._value
 
     @value.setter
     def value(self, value):
@@ -115,7 +123,23 @@ class Slider(Widget):
                     value, self.min, self.max
                 )
             )
-        self._impl.set_value(final)
+        self._value = final
+        with self._suppress_sync():
+            self._impl.set_value(final)
+        if self.on_change:
+            self.on_change(self)
+
+    @contextmanager
+    def _suppress_sync(self):
+        self._sync_suppressed = True
+        yield
+        self._sync_suppressed = False
+
+    def _sync_value(self):
+        if not self._sync_suppressed:
+            self._value = self._impl.get_value()
+            if self.on_change:
+                self.on_change(self)
 
     @property
     def range(self):
@@ -134,7 +158,20 @@ class Slider(Widget):
             raise ValueError("Range min value has to be smaller than max value.")
         self._min = _min
         self._max = _max
-        self._impl.set_range((_min, _max))
+
+        with self._suppress_sync():
+            self._impl.set_range((_min, _max))
+            old_value = self._value
+            if old_value is not None:
+                # Clip the value within the new range.
+                self._value = max(_min, min(_max, old_value))
+
+                # Even if the value wasn't clipped, this may be necessary to update the
+                # slider position in backends that don't implement set_range.
+                self._impl.set_value(self._value)
+
+        if self.on_change and (old_value != self._value):
+            self.on_change(self)
 
     @property
     def min(self):
