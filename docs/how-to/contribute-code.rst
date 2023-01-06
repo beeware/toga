@@ -464,7 +464,7 @@ See `News Fragments <https://pypi.org/project/towncrier/#news-fragments>`__
 for more details on the types of news fragments you can add. You can also see
 existing examples of news fragments in the ``changes/`` folder. Name the file
 using the nummber of the issue that your pull request is addressing. When there
-isn't an existing issue, you can create the pull request in two passes: First 
+isn't an existing issue, you can create the pull request in two passes: First
 submit it without a change note - this will fail, but will also assign a pull
 request number. You can then push an update to the pull request, adding the
 change note with the assigned number.
