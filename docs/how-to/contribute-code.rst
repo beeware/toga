@@ -354,7 +354,9 @@ Now you are ready to start hacking on Toga!
 What should I do?
 =================
 
-Start by running the core test suite:
+Start by running the core test suite. Toga uses
+`tox <https://tox.readthedocs.io/en/latest/>`__ to manage the testing process.
+To set up a testing environment and run the core test suite:
 
 .. tabs::
 
@@ -362,18 +364,21 @@ Start by running the core test suite:
 
     .. code-block:: bash
 
+      (venv) $ pip install tox
       (venv) $ tox -e py-core
 
   .. group-tab:: Linux
 
     .. code-block:: bash
 
+      (venv) $ pip install tox
       (venv) $ tox -e py-core
 
   .. group-tab:: Windows
 
     .. code-block:: doscon
 
+      (venv) C:\...>pip install tox
       (venv) C:\...>tox -e py-core
 
 You should get some output indicating that tests have been run. You shouldn't
@@ -457,7 +462,12 @@ The corresponding change note would read something like:
 
 See `News Fragments <https://pypi.org/project/towncrier/#news-fragments>`__
 for more details on the types of news fragments you can add. You can also see
-existing examples of news fragments in the ``changes/`` folder.
+existing examples of news fragments in the ``changes/`` folder. Name the file
+using the nummber of the issue that your pull request is addressing. When there
+isn't an existing issue, you can create the pull request in two passes: First 
+submit it without a change note - this will fail, but will also assign a pull
+request number. You can then push an update to the pull request, adding the
+change note with the assigned number.
 
 Once you've written your code, test, and change note, you can submit your
 changes as a pull request. One of the core team will review your work, and
