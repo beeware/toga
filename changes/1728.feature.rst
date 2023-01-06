@@ -1,1 +1,1 @@
-MultilineTextView in Windows, MacOS, Linux and Android can now be set to scroll to top or bottom of the text field.
+MultilineTextView can now be programmatically scrolled to the top or bottom of the text field.
