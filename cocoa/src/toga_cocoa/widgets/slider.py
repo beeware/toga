@@ -25,9 +25,7 @@ class TogaSlider(NSSlider):
         elif event_type == NSEventType.LeftMouseUp:
             if self.interface.on_release:
                 self.interface.on_release(self.interface)
-
-        if self.interface.on_change:
-            self.interface.on_change(self.interface)
+        self.interface._sync_value()
 
 
 class Slider(Widget):
@@ -46,6 +44,7 @@ class Slider(Widget):
     def set_tick_count(self, tick_count):
         if tick_count is None:
             self.native.allowsTickMarkValuesOnly = False
+            self.native.numberOfTickMarks = 0
         else:
             self.native.allowsTickMarkValuesOnly = True
             self.native.numberOfTickMarks = tick_count
