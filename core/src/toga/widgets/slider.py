@@ -187,6 +187,8 @@ class Slider(Widget):
 
     @tick_count.setter
     def tick_count(self, tick_count):
+        if (tick_count is not None) and (tick_count < 2):
+            raise ValueError("Tick count must be at least 2")
         self._tick_count = tick_count
         self._impl.set_tick_count(tick_count)
 

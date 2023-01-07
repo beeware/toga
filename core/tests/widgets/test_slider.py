@@ -30,10 +30,6 @@ class SliderTests(TestCase):
         self.assertEqual(self.slider._impl.interface, self.slider)
         self.assertActionPerformed(self.slider, "create Slider")
 
-    def test_get_value_invokes_impl_method(self):
-        self.slider.value
-        self.assertValueGet(self.slider, "value")
-
     def test_set_value_between_min_and_max(self):
         value = 30
         tick_value = 4
@@ -64,6 +60,26 @@ class SliderTests(TestCase):
             self.slider.value = self.max_val + 1
         self.assert_slider_value(tick_value=self.default_tick, value=self.value)
 
+    def test_set_tick_value_between_min_and_max(self):
+        value = 30
+        tick_value = 4
+        self.slider.tick_value = tick_value
+        self.assert_slider_value(
+            value=value, tick_value=tick_value, on_change_call_count=1
+        )
+
+    def test_set_tick_value_to_be_min(self):
+        self.slider.tick_value = 1
+        self.assert_slider_value(
+            value=self.min_val, tick_value=1, on_change_call_count=1
+        )
+
+    def test_set_tick_value_to_be_max(self):
+        self.slider.tick_value = self.tick_count
+        self.assert_slider_value(
+            value=self.max_val, tick_value=self.tick_count, on_change_call_count=1
+        )
+
     def test_set_tick_value_to_be_too_small(self):
         with self.assertRaises(ValueError):
             self.slider.tick_value = 0
@@ -71,8 +87,15 @@ class SliderTests(TestCase):
 
     def test_set_tick_value_to_be_too_big(self):
         with self.assertRaises(ValueError):
-            self.slider.tick_value = self.max_val + 1
+            self.slider.tick_value = self.tick_count + 1
         self.assert_slider_value(tick_value=self.default_tick, value=self.value)
+
+    def test_tick_value_without_tick_count(self):
+        self.slider.tick_count = None
+        with self.assertRaisesRegex(
+            ValueError, "Cannot set tick value when tick count is None"
+        ):
+            self.slider.tick_value = 4
 
     def test_new_value_is_None(self):
         self.slider.value = None
@@ -122,9 +145,12 @@ class SliderTests(TestCase):
         self.assert_set_range(0, 100)
         self.assert_set_range(100, 1000)
 
-    def test_false_range(self):
-        with self.assertRaises(ValueError):
-            self.slider.range = (100, 0)
+    def test_invalid_range_values(self):
+        for range in [(0, 0), (100, 0)]:
+            with self.assertRaisesRegex(
+                ValueError, "Range min value has to be smaller than max value."
+            ):
+                self.slider.range = range
 
     def test_set_enabled_with_working_values(self):
         self.assertEqual(self.slider.enabled, self.enabled)
@@ -136,9 +162,24 @@ class SliderTests(TestCase):
         self.assertEqual(self.tick_count, tick_count)
 
     def test_set_tick_count(self):
-        new_tick_count = 5
-        self.slider.tick_count = new_tick_count
-        self.assertValueSet(self.slider, "tick_count", new_tick_count)
+        self.slider.range = (10, 110)
+        for tick_count, tick_step, tick_value in [
+            (None, None, None),
+            (11, 10, 5),  # Exactly 50
+            (5, 25, 3),  # Round up to 60
+            (4, 100 / 3, 2),  # Round down to 43.333
+            (2, 100, 1),  # Round down to 10 (2 is the minimum possible tick_count)
+        ]:
+            self.slider.tick_count = tick_count
+            self.assertEqual(self.slider.tick_count, tick_count)
+            self.assertValueSet(self.slider, "tick_count", tick_count)
+            self.assertEqual(self.slider.tick_step, tick_step)
+            self.assert_slider_value(tick_value=tick_value, value=self.value)
+
+    def test_set_tick_count_too_small(self):
+        for tick_count in [1, 0, -1]:
+            with self.assertRaisesRegex(ValueError, "Tick count must be at least 2"):
+                self.slider.tick_count = tick_count
 
     def test_focus(self):
         self.slider.focus()

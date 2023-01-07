@@ -34,6 +34,7 @@ async def test_init(widget, probe, on_change):
     on_change.assert_not_called()
 
 
+# Bounds checks are covered by core tests.
 async def test_value(widget, probe, on_change):
     for scale in SCALES:
         widget.range = (0, scale)
@@ -54,12 +55,11 @@ async def test_change(widget, probe, on_change):
             on_change.assert_called_once_with(widget)
 
 
+# Bounds checks and the `min` property are covered by the core tests.
 async def test_min(widget, probe, on_change):
     for min in POSITIONS[:-1]:
         on_change.reset_mock()
-        range = (min, 1)
-        assert_set_get(widget, "range", range)
-        assert (widget.min, widget.max) == range
+        assert_set_get(widget, "range", (min, 1))
 
         if min <= 0.5:
             # The existing value is in the range, so it should not change.
@@ -73,13 +73,12 @@ async def test_min(widget, probe, on_change):
             on_change.assert_called_once_with(widget)
 
 
+# Bounds checks and the `max` property are covered by the core tests.
 async def test_max(widget, probe, on_change):
     # If the existing value is in the range, it should not change.
     for max in POSITIONS[-1:0:-1]:
         on_change.reset_mock()
-        range = (0, max)
-        assert_set_get(widget, "range", range)
-        assert (widget.min, widget.max) == range
+        assert_set_get(widget, "range", (0, max))
 
         if max >= 0.5:
             # The existing value is in the range, so it should not change.
@@ -91,3 +90,10 @@ async def test_max(widget, probe, on_change):
             assert widget.value == max
             assert probe.position == 1
             on_change.assert_called_once_with(widget)
+
+
+# All other tick functionality is covered by the core tests.
+async def test_ticks(widget, probe):
+    for tick_count in [2, None, 10]:
+        widget.tick_count = tick_count
+        assert probe.tick_count == tick_count
