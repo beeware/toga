@@ -74,7 +74,7 @@ class WebView(Widget):
 
     @url.setter
     def url(self, value):
-    """Set the current URL of the web view.
+        """Set the current URL of the web view.
 
         Args:
             value (str): The URL as a ``str``
