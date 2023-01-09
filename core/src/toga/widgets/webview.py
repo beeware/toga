@@ -74,6 +74,13 @@ class WebView(Widget):
 
     @url.setter
     def url(self, value):
+    """Set the current URL of the web view.
+
+        Args:
+            value (str): The URL as a ``str``
+
+        Returns:
+        """
         self._html_content = None
         self._impl.set_url(value)
 
@@ -98,19 +105,19 @@ class WebView(Widget):
 
     @property
     def on_webview_load(self):
-        """The handler to invoke when the webview finishes loading pressed.
+        """The handler to invoke when the webview finishes loading.
 
         Returns:
-            The function ``callable`` that is called when the webview finished loading.
+            The function ``callable`` that is called when the webview finishes loading.
         """
         return self._on_webview_load
 
     @on_webview_load.setter
     def on_webview_load(self, handler):
-        """Set the handler to invoke when the button is pressed.
+        """Set the handler to invoke when the webview finishes loading.
 
         Args:
-            handler (:obj:`callable`): The handler to invoke when the button is pressed.
+            handler (:obj:`callable`): The handler to invoke when the webview finishes loading.
         """
         self._on_webview_load = wrapped_handler(self, handler)
         self._impl.set_on_webview_load(self._on_webview_load)
