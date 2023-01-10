@@ -76,3 +76,10 @@ class MultilineTextInput(Widget):
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.interface.MIN_WIDTH)
         self.interface.intrinsic.height = at_least(self.interface.MIN_HEIGHT)
+
+    def scroll_to_bottom(self):
+        last_line = (self.native.getLineCount() - 1) * self.native.getLineHeight()
+        self.native.scrollTo(0, last_line)
+
+    def scroll_to_top(self):
+        self.native.scrollTo(0, 0)
