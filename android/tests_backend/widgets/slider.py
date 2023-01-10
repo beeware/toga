@@ -17,10 +17,10 @@ class SliderProbe(SimpleProbe):
 
     @property
     def tick_count(self):
-        # The Android backend does not currently display tick marks, so assume that it's
-        # in continuous mode if the range is very large.
-        range = self._max - self._min + 1
-        return range if range < 10000 else None
+        if self.native.getTickMark():
+            return self._max - self._min + 1
+        else:
+            return None
 
     @property
     def _min(self):
