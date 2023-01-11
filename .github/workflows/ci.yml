@@ -131,7 +131,7 @@ jobs:
     - name: Install dev dependencies
       run: |
         # We don't actually want to install toga-core;
-        # we just want the dev extras so we have a known version of tox
+        # we just want the dev extras so we have a known version of coverage
         python -m pip install ./core[dev]
     - name: Retrieve coverage data
       uses: actions/download-artifact@v3
