@@ -37,7 +37,7 @@ jobs:
         fetch-depth: 0
     - uses: actions/setup-python@v4.4.0
       with:
-        python-version: ${{ env.python_version }}
+        python-version: ${{ env.min_python_version }}
     - name: Install dev dependencies
       run: |
         # We don't actually want to install toga-core;
