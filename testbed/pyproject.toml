@@ -22,9 +22,9 @@ requires = [
     "../core",
 ]
 test_requires = [
-    "coverage~=6.5",
-    "pytest~=7.2",
-    "pytest-asyncio~=0.20",
+    "coverage==7.0.5",
+    "pytest==7.2.0",
+    "pytest-asyncio==0.20.3",
 ]
 test_exit_regex = "\\n\\d+ files skipped due to complete coverage\\.$"
 
