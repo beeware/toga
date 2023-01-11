@@ -326,7 +326,3 @@ class Window:
 
     def close(self):
         self.native.close()
-
-    async def redraw(self):
-        """Request a redraw of the app, waiting until that redraw has completed."""
-        self.interface.content._impl.native.displayIfNeeded()

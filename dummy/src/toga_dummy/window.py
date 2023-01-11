@@ -83,6 +83,3 @@ class Window(LoggedObject):
     @not_required_on("mobile")
     def set_on_close(self, handler):
         self._set_value("on_close", handler)
-
-    async def redraw(self):
-        self._action("redraw")

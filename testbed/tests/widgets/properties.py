@@ -22,7 +22,7 @@ async def test_font(widget, probe):
 
     # Set the font to double it's original size
     widget.style.font_size = orig_font.size * 2
-    await widget.window.redraw()
+    await probe.redraw()
 
     # Widget has a new font size
     new_size_font = probe.font
@@ -34,7 +34,7 @@ async def test_font(widget, probe):
 
     # Change to a different font
     widget.style.font_family = FANTASY
-    await widget.window.redraw()
+    await probe.redraw()
 
     # Font family has been changed
     new_family_font = probe.font

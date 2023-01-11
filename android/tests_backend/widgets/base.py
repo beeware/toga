@@ -15,6 +15,10 @@ class SimpleProbe:
         else:
             raise AssertionError(f"cannot find {self.native} in {container_native}")
 
+    async def redraw(self):
+        """Request a redraw of the app, waiting until that redraw has completed."""
+        pass
+
     @property
     def enabled(self):
         return self.native.isEnabled()
