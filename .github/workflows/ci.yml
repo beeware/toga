@@ -102,10 +102,11 @@ jobs:
       with:
         name: packages
     - name: Test
-      env:
-        TOGA_INSTALL_COMMAND: 'bash -c "python -m pip install $(../core/dist/toga_core-*.whl)[dev] ../dummy/dist/toga_dummy-*.whl"'
       run: |
-        tox -e py-core
+        # The $(ls ...) shell expansion is done in the Github environment;
+        # the value of TOGA_INSTALL_COMMAND will be a literal string,
+        # without any shell expansions to perform
+        TOGA_INSTALL_COMMAND="python -m pip install ../$(ls core/dist/toga_core-*.whl)[dev] ../$(ls dummy/dist/toga_dummy-*.whl)" tox -e py-core
         cd core
         mv .coverage .coverage.${{ matrix.platform }}.${{ matrix.python-version }}
     - name: Store coverage data
@@ -192,10 +193,11 @@ jobs:
         # we just want the dev extras so we have a known version of tox
         python -m pip install ./core[dev]
     - name: Test
-      env:
-        TOGA_INSTALL_COMMAND: 'bash -c "python -m pip install $(../core/dist/toga_core-*.whl)[dev] ../dummy/dist/toga_dummy-*.whl ../${{ matrix.backend }}/dist/toga_${{ matrix.backend }}-*.whl"'
       run: |
-        tox -e py-${{ matrix.backend }}
+        # The $(ls ...) shell expansion is done in the Github environment;
+        # the value of TOGA_INSTALL_COMMAND will be a literal string,
+        # without any shell expansions to perform
+        TOGA_INSTALL_COMMAND="python -m pip install ../$(ls core/dist/toga_core-*.whl)[dev] ../$(ls dummy/dist/toga_dummy-*.whl) ../$(ls ${{ matrix.backend }}/dist/toga_${{ matrix.backend }}-*.whl)" tox -e py-${{ matrix.backend }}
 
   testbed:
     needs: core
