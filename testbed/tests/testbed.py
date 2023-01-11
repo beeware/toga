@@ -45,10 +45,12 @@ def run_tests(app, cov):
     #    extractPackages
     # 2. The main thread where coverage has been started dies before the this
     #    thread; as a result, the garbage collection on the tracer function
-    #    (coverage.pytracer._trace():123) raises an IndexError because the data
+    #    (coverage.pytracer._trace():132) raises an IndexError because the data
     #    stack is empty.
-    if hasattr(sys, "getandroidapilevel") or sys.platform == "ios":
+    if hasattr(sys, "getandroidapilevel"):
         print("***No coverage report on Android***")
+    elif sys.platform == "ios":
+        print("***No coverage report on iOS***")
     # Only print a coverage report if the test suite passed.
     elif app.returncode == 0:
         cov.stop()
