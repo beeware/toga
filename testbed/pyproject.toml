@@ -43,13 +43,13 @@ requires = [
 
 [tool.briefcase.app.testbed.linux.appimage]
 system_requires = [
-    "gir1.2-webkit-3.0",
+    "gir1.2-webkit2-4.0",
     "libcairo2-dev",
     "libgirepository1.0-dev",
     "libgtk-3-dev",
     "libpango1.0-dev",
     "librsvg2-dev",
-    "libwebkitgtk-3.0-0",
+    "libwebkit2gtk-4.0-dev",
 ]
 linuxdeploy_plugins = [
     "DEPLOY_GTK_VERSION=3 gtk",
