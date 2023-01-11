@@ -1,0 +1,1 @@
+An error in a documentation error for commands was corrected.
