@@ -74,3 +74,11 @@ class MultilineTextInput(Widget):
 
     def set_on_change(self, handler):
         self.interface.factory.not_implemented("MultilineTextInput.set_on_change()")
+
+    def scroll_to_bottom(self):
+        self.buffer.place_cursor(self.buffer.get_end_iter())
+        self.textview.scroll_to_mark(self.buffer.get_insert(), 0.0, True, 0.0, 0.0)
+
+    def scroll_to_top(self):
+        self.buffer.place_cursor(self.buffer.get_start_iter())
+        self.textview.scroll_to_mark(self.buffer.get_insert(), 0.0, True, 0.0, 0.0)

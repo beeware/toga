@@ -43,7 +43,8 @@ known_first_party = [
 [tool.towncrier]
 directory = "changes"
 package = "toga"
-package_dir = "src"
+package_dir = "core/src"
 filename = "docs/background/releases.rst"
 title_format = "{version} ({project_date})"
+issue_format = "`#{issue} <https://github.com/beeware/toga/issues/{issue}>`__"
 template = "changes/template.rst"

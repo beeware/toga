@@ -80,3 +80,9 @@ class MultilineTextInput(Widget):
 
     def set_on_change(self, handler):
         self.interface.factory.not_implemented("MultilineTextInput.set_on_change()")
+
+    def scroll_to_bottom(self):
+        self.text.scrollToEndOfDocument(None)
+
+    def scroll_to_top(self):
+        self.text.scrollToBeginningOfDocument(None)

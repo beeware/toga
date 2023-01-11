@@ -19,3 +19,9 @@ class MultilineTextInput(Widget):
 
     def set_on_change(self, handler):
         self._set_value("on_change", handler)
+
+    def scroll_to_bottom(self):
+        self._action("scroll to bottom")
+
+    def scroll_to_top(self):
+        self._action("scroll to top")
