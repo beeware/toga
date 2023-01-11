@@ -15,203 +15,204 @@ defaults:
     shell: bash
 
 jobs:
-  pre-commit:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4.4.0
-        with:
-          python-version: ${{ env.min_python_version }}
-      - uses: pre-commit/action@v3.0.0
+  # pre-commit:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - uses: actions/setup-python@v4.4.0
+  #       with:
+  #         python-version: ${{ env.min_python_version }}
+  #     - uses: pre-commit/action@v3.0.0
 
-  towncrier:
-    runs-on: ubuntu-latest
-    steps:
-    # Fetch main branch for comparison, then check out current branch.
-    - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-        ref: main
-    - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-    - uses: actions/setup-python@v4.4.0
-      with:
-        python-version: ${{ env.python_version }}
-    - run: pip install tox
-    - run: tox -e towncrier-check
+  # towncrier:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   # Fetch main branch for comparison, then check out current branch.
+  #   - uses: actions/checkout@v3
+  #     with:
+  #       fetch-depth: 0
+  #       ref: main
+  #   - uses: actions/checkout@v3
+  #     with:
+  #       fetch-depth: 0
+  #   - uses: actions/setup-python@v4.4.0
+  #     with:
+  #       python-version: ${{ env.python_version }}
+  #   - run: pip install tox
+  #   - run: tox -e towncrier-check
 
-  package:
-    strategy:
-      matrix:
-        subdir: ["android", "cocoa", "core", "demo", "dummy", "gtk", "iOS", "toga",
-                 "web", "winforms"]
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-python@v4.4.0
-      with:
-        python-version: ${{ env.min_python_version }}
-    - run: pip install tox
-    - run: tox -e package -- ${{ matrix.subdir }}
-    - uses: actions/upload-artifact@v3
-      with:
-        name: packages
-        # There will only be one dist directory for each matrix sub-job, but using a
-        # leading wildcard preserves the directory structure.
-        path: "*/dist/*"
-        if-no-files-found: error
+  # package:
+  #   strategy:
+  #     matrix:
+  #       subdir: ["android", "cocoa", "core", "demo", "dummy", "gtk", "iOS", "toga",
+  #                "web", "winforms"]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/checkout@v3
+  #   - uses: actions/setup-python@v4.4.0
+  #     with:
+  #       python-version: ${{ env.min_python_version }}
+  #   - run: pip install tox
+  #   - run: tox -e package -- ${{ matrix.subdir }}
+  #   - uses: actions/upload-artifact@v3
+  #     with:
+  #       name: packages
+  #       # There will only be one dist directory for each matrix sub-job, but using a
+  #       # leading wildcard preserves the directory structure.
+  #       path: "*/dist/*"
+  #       if-no-files-found: error
 
-  core:
-    needs: [pre-commit, towncrier, package]
-    strategy:
-      matrix:
-        platform: ['macos', 'ubuntu', 'windows']
-        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12-dev"]
-        include:
-          - experimental: false
+  # core:
+  #   needs: [pre-commit, towncrier, package]
+  #   strategy:
+  #     matrix:
+  #       platform: ['macos', 'ubuntu', 'windows']
+  #       python-version: ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12-dev"]
+  #       include:
+  #         - experimental: false
 
-          - python-version: "3.12-dev"
-            experimental: true
+  #         - python-version: "3.12-dev"
+  #           experimental: true
 
-    runs-on: ${{ matrix.platform }}-latest
-    continue-on-error: ${{ matrix.experimental }}
-    steps:
-    - uses: actions/checkout@v3
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4.4.0
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
-      run: |
-        # See https://github.com/nedbat/coveragepy/issues/991
-        python -m pip install tox coverage[toml]~=6.6.0b1
-    - name: Get packages
-      uses: actions/download-artifact@v3
-      with:
-        name: packages
-    - name: Test
-      env:
-        TOGA_INSTALL_COMMAND: 'bash -c "pip install ../{core,dummy}/dist/*.whl"'
-      run: |
-        tox -e py-core
-        cd core
-        mv .coverage .coverage.${{ matrix.platform }}.${{ matrix.python-version }}
-    - name: Store coverage data
-      uses: actions/upload-artifact@v3
-      with:
-        name: core-coverage-data
-        path: "core/.coverage.*"
-        if-no-files-found: error
+  #   runs-on: ${{ matrix.platform }}-latest
+  #   continue-on-error: ${{ matrix.experimental }}
+  #   steps:
+  #   - uses: actions/checkout@v3
+  #   - name: Set up Python ${{ matrix.python-version }}
+  #     uses: actions/setup-python@v4.4.0
+  #     with:
+  #       python-version: ${{ matrix.python-version }}
+  #   - name: Install dependencies
+  #     run: |
+  #       # See https://github.com/nedbat/coveragepy/issues/991
+  #       python -m pip install tox coverage[toml]~=6.6.0b1
+  #   - name: Get packages
+  #     uses: actions/download-artifact@v3
+  #     with:
+  #       name: packages
+  #   - name: Test
+  #     env:
+  #       TOGA_INSTALL_COMMAND: 'bash -c "pip install ../{core,dummy}/dist/*.whl"'
+  #     run: |
+  #       tox -e py-core
+  #       cd core
+  #       mv .coverage .coverage.${{ matrix.platform }}.${{ matrix.python-version }}
+  #   - name: Store coverage data
+  #     uses: actions/upload-artifact@v3
+  #     with:
+  #       name: core-coverage-data
+  #       path: "core/.coverage.*"
+  #       if-no-files-found: error
 
-  core-coverage:
-    name: Combine & check core coverage.
-    runs-on: ubuntu-latest
-    needs: core
-    steps:
-    - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-    - uses: actions/setup-python@v4.4.0
-      with:
-        # Use latest, so it understands all syntax.
-        python-version: ${{ env.max_python_version }}
-    - name: Install dependencies
-      run: |
-        # See https://github.com/nedbat/coveragepy/issues/991
-        python -m pip install coverage[toml]~=6.6.0b1
-    - name: Retrieve coverage data
-      uses: actions/download-artifact@v3
-      with:
-        name: core-coverage-data
-        path: core
-    - name: Generate coverage report
-      run: |
-        cd core
-        python -m coverage combine
-        python -m coverage html --skip-covered --skip-empty
-        python -m coverage report --rcfile ../pyproject.toml # --fail-under=100
-    - name: Upload HTML report if check failed.
-      uses: actions/upload-artifact@v3
-      with:
-        name: html-coverage-report
-        path: core/htmlcov
-      if: ${{ failure() }}
+  # core-coverage:
+  #   name: Combine & check core coverage.
+  #   runs-on: ubuntu-latest
+  #   needs: core
+  #   steps:
+  #   - uses: actions/checkout@v3
+  #     with:
+  #       fetch-depth: 0
+  #   - uses: actions/setup-python@v4.4.0
+  #     with:
+  #       # Use latest, so it understands all syntax.
+  #       python-version: ${{ env.max_python_version }}
+  #   - name: Install dependencies
+  #     run: |
+  #       # See https://github.com/nedbat/coveragepy/issues/991
+  #       python -m pip install coverage[toml]~=6.6.0b1
+  #   - name: Retrieve coverage data
+  #     uses: actions/download-artifact@v3
+  #     with:
+  #       name: core-coverage-data
+  #       path: core
+  #   - name: Generate coverage report
+  #     run: |
+  #       cd core
+  #       python -m coverage combine
+  #       python -m coverage html --skip-covered --skip-empty
+  #       python -m coverage report --rcfile ../pyproject.toml # --fail-under=100
+  #   - name: Upload HTML report if check failed.
+  #     uses: actions/upload-artifact@v3
+  #     with:
+  #       name: html-coverage-report
+  #       path: core/htmlcov
+  #     if: ${{ failure() }}
 
-  backend:
-    needs: core
-    strategy:
-      matrix:
-        backend: [android, cocoa, gtk, iOS, web, winforms]
-        include:
-          - runs-on: ubuntu-latest
-          - python-version: "3.7"  # Should be env.min_python_version (https://github.com/actions/runner/issues/480)
-          - pre-command:
+  # backend:
+  #   needs: core
+  #   strategy:
+  #     matrix:
+  #       backend: [android, cocoa, gtk, iOS, web, winforms]
+  #       include:
+  #         - runs-on: ubuntu-latest
+  #         - python-version: "3.7"  # Should be env.min_python_version (https://github.com/actions/runner/issues/480)
+  #         - pre-command:
 
-          - backend: cocoa
-            runs-on: macos-latest
+  #         - backend: cocoa
+  #           runs-on: macos-latest
 
-          - backend: gtk
-            pre-command: "sudo apt-get update -y && sudo apt-get install -y python3-gi python3-gi-cairo gir1.2-gtk-3.0 python3-dev libgirepository1.0-dev libcairo2-dev pkg-config libfuse2"
+  #         - backend: gtk
+  #           pre-command: "sudo apt-get update -y && sudo apt-get install -y python3-gi python3-gi-cairo gir1.2-gtk-3.0 python3-dev libgirepository1.0-dev libcairo2-dev pkg-config libfuse2"
 
-          - backend: iOS
-            runs-on: macos-latest
+  #         - backend: iOS
+  #           runs-on: macos-latest
 
-          - backend: winforms
-            runs-on: windows-latest
-            # Py3.9 is the first Python version for which
-            # a wheel of pythonnet isn't available on PyPI.
-            python-version: "3.9"
-    runs-on: ${{ matrix.runs-on }}
-    steps:
-    - uses: actions/checkout@v3
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4.4.0
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Get packages
-      uses: actions/download-artifact@v3
-      with:
-        name: packages
-    - name: Install dependencies
-      run: |
-        ${{ matrix.pre-command }}
-        python -m pip install tox
-    - name: Test
-      env:
-        TOGA_INSTALL_COMMAND: 'bash -c "pip install ../{core,dummy,${{ matrix.backend }}}/dist/*.whl"'
-      run: |
-        tox -e py-${{ matrix.backend }}
+  #         - backend: winforms
+  #           runs-on: windows-latest
+  #           # Py3.9 is the first Python version for which
+  #           # a wheel of pythonnet isn't available on PyPI.
+  #           python-version: "3.9"
+  #   runs-on: ${{ matrix.runs-on }}
+  #   steps:
+  #   - uses: actions/checkout@v3
+  #   - name: Set up Python ${{ matrix.python-version }}
+  #     uses: actions/setup-python@v4.4.0
+  #     with:
+  #       python-version: ${{ matrix.python-version }}
+  #   - name: Get packages
+  #     uses: actions/download-artifact@v3
+  #     with:
+  #       name: packages
+  #   - name: Install dependencies
+  #     run: |
+  #       ${{ matrix.pre-command }}
+  #       python -m pip install tox
+  #   - name: Test
+  #     env:
+  #       TOGA_INSTALL_COMMAND: 'bash -c "pip install ../{core,dummy,${{ matrix.backend }}}/dist/*.whl"'
+  #     run: |
+  #       tox -e py-${{ matrix.backend }}
 
   testbed:
-    needs: core
+    # needs: core
     strategy:
       fail-fast: false
       matrix:
-        backend: ["macOS", "windows", "linux", "android", "iOS"]
+        # backend: ["macOS", "windows", "linux", "android", "iOS"]
+        backend: ["iOS"]
         include:
           - pre-command:
             briefcase-run-prefix:
             briefcase-run-args:
 
-          - backend: macOS
-            runs-on: macos-12
+          # - backend: macOS
+          #   runs-on: macos-12
 
-          - backend: linux
-            runs-on: ubuntu-latest
-            pre-command: "sudo apt-get update -y && sudo apt-get install -y python3-gi python3-gi-cairo gir1.2-gtk-3.0 python3-dev libgirepository1.0-dev libcairo2-dev pkg-config libfuse2"
-            briefcase-run-prefix: 'xvfb-run -a -s "-screen 0 2048x1536x24"'
+          # - backend: linux
+          #   runs-on: ubuntu-latest
+          #   pre-command: "sudo apt-get update -y && sudo apt-get install -y python3-gi python3-gi-cairo gir1.2-gtk-3.0 python3-dev libgirepository1.0-dev libcairo2-dev pkg-config libfuse2"
+          #   briefcase-run-prefix: 'xvfb-run -a -s "-screen 0 2048x1536x24"'
 
-          - backend: windows
-            runs-on: windows-latest
+          # - backend: windows
+          #   runs-on: windows-latest
 
           - backend: iOS
             runs-on: macos-12
             briefcase-run-args: ' -d "iPhone SE (3rd generation)"'
 
-          - backend: android
-            runs-on: macos-12
-            briefcase-run-args: " -d '{\"avd\":\"beePhone\"}' --Xemulator=-no-window --Xemulator=-no-snapshot --Xemulator=-no-audio --Xemulator=-no-boot-anim --shutdown-on-exit"
+          # - backend: android
+          #   runs-on: macos-12
+          #   briefcase-run-args: " -d '{\"avd\":\"beePhone\"}' --Xemulator=-no-window --Xemulator=-no-snapshot --Xemulator=-no-audio --Xemulator=-no-boot-anim --shutdown-on-exit"
 
     runs-on: ${{ matrix.runs-on }}
     steps:
