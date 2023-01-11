@@ -37,9 +37,14 @@ jobs:
         fetch-depth: 0
     - uses: actions/setup-python@v4.4.0
       with:
-        python-version: ${{ env.python_version }}
-    - run: pip install tox
-    - run: tox -e towncrier-check
+        python-version: ${{ env.min_python_version }}
+    - name: Install dev dependencies
+      run: |
+        # We don't actually want to install toga-core;
+        # we just want the dev extras so we have a known version of tox
+        python -m pip install ./core[dev]
+    - name: Run towncrier check
+      run: tox -e towncrier-check
 
   package:
     strategy:
@@ -52,8 +57,13 @@ jobs:
     - uses: actions/setup-python@v4.4.0
       with:
         python-version: ${{ env.min_python_version }}
-    - run: pip install tox
-    - run: tox -e package -- ${{ matrix.subdir }}
+    - name: Install dev dependencies
+      run: |
+        # We don't actually want to install toga-core;
+        # we just want the dev extras so we have a known version of tox
+        python -m pip install ./core[dev]
+    - name: Build wheels
+      run: tox -e package -- ${{ matrix.subdir }}
     - uses: actions/upload-artifact@v3
       with:
         name: packages
@@ -82,19 +92,21 @@ jobs:
       uses: actions/setup-python@v4.4.0
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
+    - name: Install dev dependencies
       run: |
-        # See https://github.com/nedbat/coveragepy/issues/991
-        python -m pip install tox coverage[toml]~=6.6.0b1
+        # We don't actually want to install toga-core;
+        # we just want the dev extras so we have a known version of tox and coverage
+        python -m pip install ./core[dev]
     - name: Get packages
       uses: actions/download-artifact@v3
       with:
         name: packages
     - name: Test
-      env:
-        TOGA_INSTALL_COMMAND: 'bash -c "pip install ../{core,dummy}/dist/*.whl"'
       run: |
-        tox -e py-core
+        # The $(ls ...) shell expansion is done in the Github environment;
+        # the value of TOGA_INSTALL_COMMAND will be a literal string,
+        # without any shell expansions to perform
+        TOGA_INSTALL_COMMAND="python -m pip install ../$(ls core/dist/toga_core-*.whl)[dev] ../$(ls dummy/dist/toga_dummy-*.whl)" tox -e py-core
         cd core
         mv .coverage .coverage.${{ matrix.platform }}.${{ matrix.python-version }}
     - name: Store coverage data
@@ -116,10 +128,11 @@ jobs:
       with:
         # Use latest, so it understands all syntax.
         python-version: ${{ env.max_python_version }}
-    - name: Install dependencies
+    - name: Install dev dependencies
       run: |
-        # See https://github.com/nedbat/coveragepy/issues/991
-        python -m pip install coverage[toml]~=6.6.0b1
+        # We don't actually want to install toga-core;
+        # we just want the dev extras so we have a known version of coverage
+        python -m pip install ./core[dev]
     - name: Retrieve coverage data
       uses: actions/download-artifact@v3
       with:
@@ -173,15 +186,18 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: packages
-    - name: Install dependencies
+    - name: Install dev dependencies
       run: |
         ${{ matrix.pre-command }}
-        python -m pip install tox
+        # We don't actually want to install toga-core;
+        # we just want the dev extras so we have a known version of tox
+        python -m pip install ./core[dev]
     - name: Test
-      env:
-        TOGA_INSTALL_COMMAND: 'bash -c "pip install ../{core,dummy,${{ matrix.backend }}}/dist/*.whl"'
       run: |
-        tox -e py-${{ matrix.backend }}
+        # The $(ls ...) shell expansion is done in the Github environment;
+        # the value of TOGA_INSTALL_COMMAND will be a literal string,
+        # without any shell expansions to perform
+        TOGA_INSTALL_COMMAND="python -m pip install ../$(ls core/dist/toga_core-*.whl)[dev] ../$(ls dummy/dist/toga_dummy-*.whl) ../$(ls ${{ matrix.backend }}/dist/toga_${{ matrix.backend }}-*.whl)" tox -e py-${{ matrix.backend }}
 
   testbed:
     needs: core
@@ -226,7 +242,7 @@ jobs:
       run: |
         ${{ matrix.pre-command }}
         # Use the development version of Briefcase
-        pip install git+https://github.com/beeware/briefcase.git
+        python -m pip install git+https://github.com/beeware/briefcase.git
     - name: Test App
       run: |
         cd testbed
