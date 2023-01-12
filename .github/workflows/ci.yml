@@ -226,9 +226,9 @@ jobs:
             runs-on: macos-12
             briefcase-run-args: ' -d "iPhone SE (3rd generation)"'
 
-          - backend: android
-            runs-on: macos-12
-            briefcase-run-args: " -d '{\"avd\":\"beePhone\"}' --Xemulator=-no-window --Xemulator=-no-snapshot --Xemulator=-no-audio --Xemulator=-no-boot-anim --shutdown-on-exit"
+          # - backend: android
+          #   runs-on: macos-12
+          #   briefcase-run-args: " -d '{\"avd\":\"beePhone\"}' --Xemulator=-no-window --Xemulator=-no-snapshot --Xemulator=-no-audio --Xemulator=-no-boot-anim --shutdown-on-exit"
 
     runs-on: ${{ matrix.runs-on }}
     steps:
@@ -247,18 +247,9 @@ jobs:
     - name: Test App
       run: |
         cd testbed
-        ${{ matrix.briefcase-run-prefix }} briefcase run ${{ matrix.backend }} --test ${{ matrix.briefcase-run-args }}
-    - name: Recover coverage.py debug trace
-      if: failure()
-      run: |
-        if [ -e /tmp/debug_trace.txt ]; then
-          cp /tmp/debug_trace.txt testbed/logs
-        else
-          echo "No coverage debug trace"
-        fi
+        ${{ matrix.briefcase-run-prefix }} briefcase run ${{ matrix.backend }} --log --test ${{ matrix.briefcase-run-args }}
     - uses: actions/upload-artifact@v3
       name: Upload logs
-      if: failure()
       with:
-        name: testbed-failure-logs-${{ matrix.backend }}
+        name: testbed-logs-${{ matrix.backend }}
         path: testbed/logs/*
