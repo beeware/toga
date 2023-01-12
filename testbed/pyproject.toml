@@ -33,6 +33,8 @@ test_requires = [
 requires = [
     "../cocoa",
     "std-nslog~=1.0.0",
+    # "../../rubicon-objc",
+    "git+https://github.com/beeware/rubicon-objc.git@loop-cleanup",
 ]
 test_sources = [
     "../cocoa/tests_backend",
@@ -75,6 +77,8 @@ requires = [
 requires = [
     "../iOS",
     "std-nslog~=1.0.0",
+    # "../../rubicon-objc",
+    "git+https://github.com/beeware/rubicon-objc.git@loop-cleanup",
 ]
 
 [tool.briefcase.app.testbed.android]

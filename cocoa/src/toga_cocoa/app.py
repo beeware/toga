@@ -116,9 +116,8 @@ class App:
 
         self._cursor_visible = True
 
-        policy = EventLoopPolicy()
-        asyncio.set_event_loop_policy(policy)
-        self.loop = policy.get_event_loop()
+        asyncio.set_event_loop_policy(EventLoopPolicy())
+        self.loop = asyncio.new_event_loop()
 
     def create(self):
         self.native = NSApplication.sharedApplication
