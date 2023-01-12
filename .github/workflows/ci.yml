@@ -250,6 +250,7 @@ jobs:
         ${{ matrix.briefcase-run-prefix }} briefcase run ${{ matrix.backend }} --test ${{ matrix.briefcase-run-args }}
     - name: Recover coverage.py debug trace
       if: failure()
+      run: |
         if [ -e /tmp/debug_trace.txt ]; then
           cp /tmp/debug_trace.txt testbed/logs
         else
