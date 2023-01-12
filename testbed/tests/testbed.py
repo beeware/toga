@@ -81,6 +81,7 @@ if __name__ == "__main__":
         data_file=None,
         branch=True,
         source_pkgs=[toga_backend],
+        timid=True,  # Force use of pytracer
     )
     cov.start()
     print("INITIAL TRACERS")
@@ -110,8 +111,8 @@ if __name__ == "__main__":
             print("STOP COVERAGE", cov)
             for tracer in cov._collector.tracers:
                 print(tracer, tracer.data_stack)
-            # cov.stop()
-            print("COVERAGE STOPPPED")
+            cov.stop()
+            print("COVERAGE STOPPED")
             total = cov.report(
                 precision=1,
                 skip_covered=True,

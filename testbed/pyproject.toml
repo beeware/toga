@@ -22,7 +22,9 @@ requires = [
     "../core",
 ]
 test_requires = [
-    "coverage==7.0.5",
+    # "coverage==7.0.5",
+    "git+https://github.com/freakboy3742/coveragepy.git@empty-stack-on-stop",
+    # "../../../projects/coveragepy",
     "pytest==7.2.0",
     "pytest-asyncio==0.20.3",
 ]
