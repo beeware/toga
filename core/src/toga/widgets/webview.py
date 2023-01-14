@@ -10,18 +10,15 @@ class WebView(Widget):
 
     :param id: An identifier for this widget.
     :type  id: ``str``
-    :param style: An optional style object. If no style is provided then
-        a new one will be created for the widget.
+    :param style: An optional style object. If no style is provided then a new one will be created for the widget.
     :type  style: ``Style``
     :param url: The URL to start with.
     :type  url: ``str``
     :param user_agent: The user agent for the web view.
     :type  user_agent: ``str``
-    :param on_key_down: The callback method for when a key 
-        is pressed within the web view
+    :param on_key_down: The callback method for when a key is pressed within the web view
     :type  on_key_down: ``callable``
-    :param on_webview_load: The callback method for when the webview 
-        loads (or reloads).
+    :param on_webview_load: The callback method for when the webview loads (or reloads).
     :type  on_webview_load: ``callable``
     """
 
