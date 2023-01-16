@@ -1,0 +1,55 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name = "Demo NumberInput"
+bundle = "org.beeware"
+version = "0.3.0.dev39"
+url = "https://beeware.org"
+license = "BSD license"
+author = 'Tiberius Yak'
+author_email = "tiberius@beeware.org"
+
+[tool.briefcase.app.numberinput]
+formal_name = "Demo NumberInput"
+description = "A testing app"
+sources = ['numberinput']
+requires = [
+    '../../core',
+]
+
+
+[tool.briefcase.app.numberinput.macOS]
+requires = [
+    '../../cocoa',
+    'std-nslog>=1.0.0',
+]
+
+[tool.briefcase.app.numberinput.linux]
+requires = [
+    '../../gtk',
+]
+
+[tool.briefcase.app.numberinput.windows]
+requires = [
+    '../../winforms',
+]
+
+# Mobile deployments
+[tool.briefcase.app.numberinput.iOS]
+requires = [
+    '../../iOS',
+    'std-nslog>=1.0.0',
+]
+
+[tool.briefcase.app.numberinput.android]
+requires = [
+    '../../android',
+]
+
+# Web deployment
+[tool.briefcase.app.numberinput.web]
+requires = [
+    '../../web',
+]
+style_framework = "Bootstrap v4.6"

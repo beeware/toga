@@ -4,7 +4,7 @@ requires = ["briefcase"]
 [tool.briefcase]
 project_name = "Table Demo"
 bundle = "org.beeware"
-version = "0.3.0.dev28"
+version = "0.3.0.dev39"
 url = "https://beeware.org"
 license = "BSD license"
 author = 'Tiberius Yak'
@@ -14,31 +14,41 @@ author_email = "tiberius@beeware.org"
 formal_name = "Table Demo"
 description = "A testing app"
 sources = ['table']
-requires = []
-
+requires = [
+    '../../core',
+]
 
 [tool.briefcase.app.table.macOS]
 requires = [
-    'toga-cocoa',
+    '../../cocoa',
+    'std-nslog>=1.0.0',
 ]
 
 [tool.briefcase.app.table.linux]
 requires = [
-    'toga-gtk',
+    '../../gtk',
 ]
 
 [tool.briefcase.app.table.windows]
 requires = [
-    'toga-winforms',
+    '../../winforms',
 ]
 
 # Mobile deployments
 [tool.briefcase.app.table.iOS]
 requires = [
-    'toga-iOS',
+    '../../iOS',
+    'std-nslog>=1.0.0',
 ]
 
 [tool.briefcase.app.table.android]
 requires = [
-    'toga-android',
+    '../../android',
 ]
+
+# Web deployment
+[tool.briefcase.app.table.web]
+requires = [
+    '../../web',
+]
+style_framework = "Bootstrap v4.6"

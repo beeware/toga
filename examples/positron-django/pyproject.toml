@@ -1,0 +1,57 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name = "Positron"
+bundle = "org.beeware"
+version = "0.3.0.dev39"
+url = "https://beeware.org"
+license = "BSD license"
+author = 'Tiberius Yak'
+author_email = "tiberius@beeware.org"
+
+[tool.briefcase.app.positron]
+formal_name = "Positron"
+description = "Electron, but in Python"
+icon = "src/positron/resources/positron"
+sources = ['src/positron', 'src/webapp']
+requires = [
+    '../../core',
+    'django~=4.1',
+]
+
+
+[tool.briefcase.app.positron.macOS]
+requires = [
+    '../../cocoa',
+    'std-nslog>=1.0.0',
+]
+
+[tool.briefcase.app.positron.linux]
+requires = [
+    '../../gtk',
+]
+
+[tool.briefcase.app.positron.windows]
+requires = [
+    '../../winforms',
+]
+
+# Mobile deployments
+[tool.briefcase.app.positron.iOS]
+requires = [
+    '../../iOS',
+    'std-nslog>=1.0.0',
+]
+
+[tool.briefcase.app.positron.android]
+requires = [
+    '../../android',
+]
+
+# Web deployment
+[tool.briefcase.app.positron.web]
+requires = [
+    '../../web',
+]
+style_framework = "Bootstrap v4.6"

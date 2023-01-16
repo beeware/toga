@@ -1,0 +1,10 @@
+Metadata-Version: 2.1
+Briefcase-Version: 0.3.8
+Name: installed
+Formal-Name: Installed App
+App-ID: org.testbed.installed
+Version: 1.2.3
+Home-page: https://beeware.org
+Author: Tiberius Yak
+Author-email: tiberius@beeware.org
+Summary: A testing app

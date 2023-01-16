@@ -91,14 +91,14 @@ An example
 
 Here's how Toga's three-layer API works on the Button widget.
 
-* ``toga.Button`` is defined in ``src/core/toga/widgets/button.py``. This
+* ``toga.Button`` is defined in ``core/src/toga/widgets/button.py``. This
   defines the public interface for the Button widget, describing (amongst other
   things) that there is an ``on_click`` event handler on a Button. It expects
   that there will be *an* implementation, but doesn't care which implementation
   is provided.
 
 * ``toga-gtk.widgets.Button`` is defined in
-  ``src/gtk/toga-gtk/widgets/button.py``. This defines the Button at the
+  ``gtk/src/toga-gtk/widgets/button.py``. This defines the Button at the
   implementation layer. It describes how to create a button on GTK, and how to
   connect the GTK ``clicked`` signal to the ``on_click`` Toga handler.
 

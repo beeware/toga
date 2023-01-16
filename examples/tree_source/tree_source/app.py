@@ -1,6 +1,6 @@
 import os
-import subprocess
 import platform
+import subprocess
 from datetime import datetime
 from pathlib import Path
 
@@ -22,13 +22,13 @@ from toga.style import Pack
 
 
 class LoadingFailedNode:
-    """A node to represent failed loading of children"""
+    """A node to represent failed loading of children."""
 
     def __init__(self, parent):
         self._parent = parent
         self.children = []
-        self.name = 'loading failed'
-        self.date_modified = ''
+        self.name = "loading failed"
+        self.date_modified = ""
 
     # Methods required for the data source interface
     def __len__(self):
@@ -53,13 +53,13 @@ class Node:
         self.path = path
         self._mtime = self.path.stat().st_mtime
         if self.path.is_file():
-            self._icon = toga.Icon('resources/file')
+            self._icon = toga.Icon("resources/file")
         else:
-            self._icon = toga.Icon('resources/folder')
+            self._icon = toga.Icon("resources/folder")
         self._did_start_loading = False
 
     def __repr__(self):
-        return "<Node {0}>".format(self.path)
+        return f"<Node {self.path}>"
 
     # Methods required for the data source interface
     def __len__(self):
@@ -80,7 +80,7 @@ class Node:
     # Property that returns modified date as str
     @property
     def date_modified(self):
-        return datetime.fromtimestamp(self._mtime).strftime('%d %b %Y at %H:%M')
+        return datetime.fromtimestamp(self._mtime).strftime("%d %b %Y at %H:%M")
 
     # on-demand loading of children
     @property
@@ -125,21 +125,21 @@ class ExampleTreeSourceApp(toga.App):
         else:
             files = 0 if widget.selection is None else 1
         if files == 0:
-            self.label.text = 'A view of the current directory!'
+            self.label.text = "A view of the current directory!"
         elif files == 1:
-            self.label.text = 'You selected {0} item'.format(files)
+            self.label.text = f"You selected {files} item"
         else:
-            self.label.text = 'You selected {0} items'.format(files)
+            self.label.text = f"You selected {files} items"
 
     def double_click_handler(self, widget, node):
         # open the file or folder in the platform's default app
-        self.label.text = 'You started {0}'.format(node.path)
-        if platform.system() == 'Darwin':
-            subprocess.call(('open', node.path))
-        elif platform.system() == 'Windows':
+        self.label.text = f"You started {node.path}"
+        if platform.system() == "Darwin":
+            subprocess.call(("open", node.path))
+        elif platform.system() == "Windows":
             os.startfile(node.path)
         else:
-            subprocess.call(('xdg-open', node.path))
+            subprocess.call(("xdg-open", node.path))
 
     def startup(self):
         # Set up main window
@@ -148,14 +148,16 @@ class ExampleTreeSourceApp(toga.App):
         self.fs_source = FileSystemSource(Path.cwd())
 
         self.tree = toga.Tree(
-            headings=['Name', 'Date Modified'],
+            headings=["Name", "Date Modified"],
             data=self.fs_source,
             style=Pack(flex=1),
             multiple_select=True,
             on_select=self.selection_handler,
-            on_double_click=self.double_click_handler
+            on_double_click=self.double_click_handler,
         )
-        self.label = toga.Label('A view of the current directory!', style=Pack(padding=10))
+        self.label = toga.Label(
+            "A view of the current directory!", style=Pack(padding=10)
+        )
 
         # Outermost box
         outer_box = toga.Box(
@@ -163,7 +165,7 @@ class ExampleTreeSourceApp(toga.App):
                 self.label,
                 self.tree,
             ],
-            style=Pack(flex=1, direction=COLUMN)
+            style=Pack(flex=1, direction=COLUMN),
         )
 
         # Add the content on the main window
@@ -174,9 +176,9 @@ class ExampleTreeSourceApp(toga.App):
 
 
 def main():
-    return ExampleTreeSourceApp('Tree Source', 'org.beeware.widgets.tree_source')
+    return ExampleTreeSourceApp("Tree Source", "org.beeware.widgets.tree_source")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app = main()
     app.main_loop()

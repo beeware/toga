@@ -1,0 +1,1 @@
+Usage of asyncio in GTK has been updated to match Python 3.11 APIs.

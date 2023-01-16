@@ -36,9 +36,9 @@ class SelectionApp(toga.App):
                             "Selection value can be set by property setter",
                             style=label_style,
                         ),
-                        toga.Button(label="Set Carbon", on_press=self.set_carbon),
-                        toga.Button(label="Set Ytterbium", on_press=self.set_ytterbium),
-                        toga.Button(label="Set THULIUM", on_press=self.set_thulium),
+                        toga.Button(text="Set Carbon", on_press=self.set_carbon),
+                        toga.Button(text="Set Ytterbium", on_press=self.set_ytterbium),
+                        toga.Button(text="Set THULIUM", on_press=self.set_thulium),
                     ],
                 ),
                 toga.Box(
@@ -112,9 +112,14 @@ class SelectionApp(toga.App):
 
         # get the current value of the slider with `selection.value`
 
-        print("The selection widget changed to {0}".format(selection.value))
+        print(f"The selection widget changed to {selection.value}")
 
 
 def main():
     # App name and namespace
     return SelectionApp("Selection", "org.beeware.selection")
+
+
+if __name__ == "__main__":
+    app = main()
+    app.main_loop()

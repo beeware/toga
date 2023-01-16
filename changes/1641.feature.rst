@@ -1,0 +1,1 @@
+The contents of a Canvas can now be saved as an image, and images can be saved to disk.

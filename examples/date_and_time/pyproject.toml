@@ -1,0 +1,55 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name = "Date And Time"
+bundle = "org.beeware"
+version = "0.3.0.dev39"
+url = "https://beeware.org"
+license = "BSD license"
+author = 'Tiberius Yak'
+author_email = "tiberius@beeware.org"
+
+[tool.briefcase.app.date_and_time]
+formal_name = "Date And Time"
+description = "A testing app"
+sources = ['date_and_time']
+requires = [
+    '../../core',
+]
+
+
+[tool.briefcase.app.date_and_time.macOS]
+requires = [
+    '../../cocoa',
+    'std-nslog>=1.0.0',
+]
+
+[tool.briefcase.app.date_and_time.linux]
+requires = [
+    '../../gtk',
+]
+
+[tool.briefcase.app.date_and_time.windows]
+requires = [
+    '../../winforms',
+]
+
+# Mobile deployments
+[tool.briefcase.app.date_and_time.iOS]
+requires = [
+    '../../iOS',
+    'std-nslog>=1.0.0',
+]
+
+[tool.briefcase.app.date_and_time.android]
+requires = [
+    '../../android',
+]
+
+# Web deployment
+[tool.briefcase.app.date_and_time.web]
+requires = [
+    '../../web',
+]
+style_framework = "Bootstrap v4.6"

@@ -9,16 +9,19 @@ function bump {
     echo "************************************************************"
     echo
     if [ "$1" = "toga" ]; then
-        pushd .
         # Find all the pyproject.toml examples,
         # and update the version of toga required.
         find examples -name pyproject.toml | while read f; do
             mv "$f" temp
-            sed "s/==.*\"/==$2\"/g" temp > "$f"
-            mv "$f" temp
             sed "s/^version = \".*\"/version = \"$2\"/g" temp > "$f"
             git add "$f"
         done
+        rm temp
+
+        pushd toga
+        mv setup.py temp
+        sed "s/version = .*/version = \"$2\"/g" temp > setup.py
+        git add setup.py
 
     elif [ "$1" = "demo" ]; then
         pushd demo
@@ -36,13 +39,13 @@ function bump {
 
     else
         if [ "$1" = "core" ]; then
-            pushd src/$1/toga
+            pushd $1/src/toga
         else
-            pushd src/$1/toga_$1
+            pushd $1/src/toga_$1
         fi
 
         mv __init__.py temp
-        sed "s/^__version__ = '.*'/__version__ = '$2'/g" temp > __init__.py
+        sed "s/^__version__ = .*/__version__ = \"$2\"/g" temp > __init__.py
         git add __init__.py
     fi
     rm temp
@@ -92,31 +95,13 @@ function install {
     fi
 }
 
-function release {
-    echo
-    echo "************************************************************"
-    echo "RELEASE $1 version $2"
-    echo "************************************************************"
-    echo
-    if [ "$1" = "toga" ]; then
-        twine upload "dist/toga-$2-py3-none-any.whl"
-        twine upload "dist/toga-$2.tar.gz"
-    elif [ "$1" = "demo" ]; then
-        twine upload "demo/dist/toga_demo-$2-py3-none-any.whl"
-        twine upload "demo/dist/toga-demo-$2.tar.gz"
-    else
-        twine upload "src/$1/dist/toga_$1-$2-py3-none-any.whl"
-        twine upload "src/$1/dist/toga-$1-$2.tar.gz"
-    fi
-}
 
-
-MODULES="android cocoa core django dummy flask gtk iOS web winforms toga demo"
+MODULES="android cocoa core dummy gtk iOS web winforms toga demo"
 
 action=$1
 shift
 
-VERSION=$(grep "^__version__ = '.*'$" src/core/toga/__init__.py | cut -f 2 -d \')
+VERSION=$(grep "^__version__ = '.*'$" core/src/toga/__init__.py | cut -f 2 -d \')
 
 if [ "$action" = "" ]; then
     echo "Usage -"
@@ -148,16 +133,6 @@ elif [ "$action" = "test" ]; then
         install $module
     done
 
-elif [ "$action" = "release" ]; then
-
-    for module in $MODULES; do
-        $action $module $VERSION
-    done
-
-    git tag v$VERSION
-    git push upstream release:master
-    git push --tags upstream release:master
-
 elif [ "$action" = "bump" ]; then
     version=$1
     shift
@@ -185,5 +160,5 @@ elif [ "$action" == "dev" ]; then
     done
 
     git commit -m "Bumped version number for v$version.dev$dev development."
-    git push upstream release:master
+    git push upstream release:main
 fi

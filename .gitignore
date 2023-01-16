@@ -5,6 +5,7 @@
 *.dist-info
 .eggs
 .coverage
+.coverage.*
 coverage.xml
 dist
 build
@@ -12,19 +13,14 @@ _build
 distribute-*
 docs/env
 local
-venv
+*venv*
 .idea
 Pipfile*
 .tox
 node_modules
-README.md
-src/django/toga.js
-src/django/toga.min.js
-src/django/toga.js.map
-src/django/toga.min.js.map
-src/gtk/gi
-src/gtk/pygtkcompat
-src/gtk/cairo
+gtk/gi
+gtk/pygtkcompat
+gtk/cairo
 .DS_Store
 pip-selfcheck.json
 pyvenv.cfg
@@ -40,6 +36,10 @@ examples/*/linux/
 examples/*/android/
 examples/*/django/
 examples/*/windows/
+examples/*/web/
 
 # Memory Profiler
 mprofile_*.dat
+
+# Briefcase log files.
+briefcase.*.log

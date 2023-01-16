@@ -4,7 +4,7 @@ requires = ["briefcase"]
 [tool.briefcase]
 project_name = "Divider Demo"
 bundle = "org.beeware"
-version = "0.3.0.dev28"
+version = "0.3.0.dev39"
 url = "https://beeware.org"
 license = "BSD license"
 author = 'Tiberius Yak'
@@ -14,31 +14,42 @@ author_email = "tiberius@beeware.org"
 formal_name = "Divider Demo"
 description = "A testing app"
 sources = ['divider']
-requires = []
+requires = [
+    '../../core',
+]
 
 
 [tool.briefcase.app.divider.macOS]
 requires = [
-    'toga-cocoa',
+    '../../cocoa',
+    'std-nslog>=1.0.0',
 ]
 
 [tool.briefcase.app.divider.linux]
 requires = [
-    'toga-gtk',
+    '../../gtk',
 ]
 
 [tool.briefcase.app.divider.windows]
 requires = [
-    'toga-winforms',
+    '../../winforms',
 ]
 
 # Mobile deployments
 [tool.briefcase.app.divider.iOS]
 requires = [
-    'toga-iOS',
+    '../../iOS',
+    'std-nslog>=1.0.0',
 ]
 
 [tool.briefcase.app.divider.android]
 requires = [
-    'toga-android',
+    '../../android',
 ]
+
+# Web deployment
+[tool.briefcase.app.divider.web]
+requires = [
+    '../../web',
+]
+style_framework = "Bootstrap v4.6"

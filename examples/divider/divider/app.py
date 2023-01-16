@@ -4,7 +4,6 @@ from toga.style import Pack
 
 
 class DividerApp(toga.App):
-
     def startup(self):
         # Window class
         #   Main window of the application with title and size
@@ -16,11 +15,11 @@ class DividerApp(toga.App):
         # Add the content on the main window
         self.main_window.content = toga.Box(
             children=[
-                toga.Label('Section 1'),
+                toga.Label("Section 1"),
                 toga.Divider(style=style),
-                toga.Label('Section 2', style=style),
+                toga.Label("Section 2", style=style),
                 toga.Divider(style=style),
-                toga.Label('Section 3', style=style),
+                toga.Label("Section 3", style=style),
                 toga.Box(
                     children=[
                         toga.TextInput(placeholder="First textbox"),
@@ -30,7 +29,7 @@ class DividerApp(toga.App):
                     style=Pack(direction=ROW, padding=24, flex=1),
                 ),
             ],
-            style=Pack(direction=COLUMN, padding=24)
+            style=Pack(direction=COLUMN, padding=24),
         )
 
         # Show the main window
@@ -40,5 +39,10 @@ class DividerApp(toga.App):
 def main():
     # Application class
     #   App name and namespace
-    app = DividerApp('Dividers', 'org.beeware.helloworld')
+    app = DividerApp("Dividers", "org.beeware.helloworld")
     return app
+
+
+if __name__ == "__main__":
+    app = main()
+    app.main_loop()

@@ -1,0 +1,55 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name = "colors"
+bundle = "org.beeware"
+version = "0.3.0.dev39"
+url = "https://beeware.org"
+license = "BSD license"
+author = 'Tiberius Yak'
+author_email = "tiberius@beeware.org"
+
+[tool.briefcase.app.colors]
+formal_name = "colors"
+description = "A testing app"
+sources = ['colors']
+requires = [
+    '../../core',
+]
+
+
+[tool.briefcase.app.colors.macOS]
+requires = [
+    '../../cocoa',
+    'std-nslog>=1.0.0',
+]
+
+[tool.briefcase.app.colors.linux]
+requires = [
+    '../../gtk',
+]
+
+[tool.briefcase.app.colors.windows]
+requires = [
+    '../../winforms',
+]
+
+# Mobile deployments
+[tool.briefcase.app.colors.iOS]
+requires = [
+    '../../iOS',
+    'std-nslog>=1.0.0',
+]
+
+[tool.briefcase.app.colors.android]
+requires = [
+    '../../android',
+]
+
+# Web deployment
+[tool.briefcase.app.colors.web]
+requires = [
+    '../../web',
+]
+style_framework = "Bootstrap v4.6"

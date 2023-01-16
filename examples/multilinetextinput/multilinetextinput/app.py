@@ -12,68 +12,75 @@ class ExampleMultilineTextInputApp(toga.App):
         self.multiline_input.readonly = not self.multiline_input.readonly
 
     def add_content_pressed(self, widget, **kwargs):
-        self.multiline_input.value = "All work and no play makes Jack a dull boy... " * 100
+        self.multiline_input.value = (
+            "All work and no play makes Jack a dull boy... " * 100
+        )
 
     def clear_pressed(self, widget, **kwargs):
         self.multiline_input.clear()
+
+    def scroll_to_top(self, widget):
+        self.multiline_input.scroll_to_top()
+
+    def scroll_to_bottom(self, widget):
+        self.multiline_input.scroll_to_bottom()
 
     def set_label(self, widget):
         if self.multiline_input.value == "":
             self.label.text = "Nothing has been written yet"
             return
         number_of_lines = len(self.multiline_input.value.split("\n"))
-        self.label.text = "{} lines has been written".format(number_of_lines)
+        self.label.text = f"{number_of_lines} lines has been written"
 
     def startup(self):
         self.main_window = toga.MainWindow(title=self.name)
 
         self.multiline_input = toga.MultilineTextInput(
-            placeholder='Enter text here...',
-            initial='Initial value',
-            style=Pack(flex=1, font_family='monospace', font_size=14),
-            on_change=self.set_label
+            placeholder="Enter text here...",
+            value="Initial value",
+            style=Pack(flex=1, font_family="monospace", font_size=14),
+            on_change=self.set_label,
         )
 
         button_toggle_enabled = toga.Button(
-            'Toggle enabled',
-            on_press=self.enable_toggle_pressed,
-            style=Pack(flex=1)
+            "Toggle enabled", on_press=self.enable_toggle_pressed, style=Pack(flex=1)
         )
         button_toggle_readonly = toga.Button(
-            'Toggle readonly',
-            on_press=self.readonly_toggle_pressed,
-            style=Pack(flex=1)
+            "Toggle readonly", on_press=self.readonly_toggle_pressed, style=Pack(flex=1)
         )
         button_add_content = toga.Button(
-            'Add content',
-            on_press=self.add_content_pressed,
-            style=Pack(flex=1)
+            "Add content", on_press=self.add_content_pressed, style=Pack(flex=1)
         )
         button_clear = toga.Button(
-            'Clear',
-            on_press=self.clear_pressed,
-            style=Pack(flex=1)
+            "Clear", on_press=self.clear_pressed, style=Pack(flex=1)
         )
-        btn_box = toga.Box(
+        button_scroll_top = toga.Button(
+            "Go to top", on_press=self.scroll_to_top, style=Pack(flex=1)
+        )
+        button_scroll_bottom = toga.Button(
+            "Go to bottom", on_press=self.scroll_to_bottom, style=Pack(flex=1)
+        )
+        btn_box1 = toga.Box(
             children=[
                 button_toggle_enabled,
                 button_toggle_readonly,
                 button_add_content,
                 button_clear,
             ],
-            style=Pack(
-                direction=ROW,
-                padding=10
-            )
+            style=Pack(direction=ROW, padding=10),
+        )
+        btn_box2 = toga.Box(
+            children=[
+                button_scroll_top,
+                button_scroll_bottom,
+            ],
+            style=Pack(direction=ROW, padding=10),
         )
         self.label = toga.Label("Nothing has been written yet")
 
         outer_box = toga.Box(
-            children=[btn_box, self.multiline_input, self.label],
-            style=Pack(
-                direction=COLUMN,
-                padding=10
-            )
+            children=[btn_box1, btn_box2, self.multiline_input, self.label],
+            style=Pack(direction=COLUMN, padding=10),
         )
 
         self.main_window.content = outer_box
@@ -81,9 +88,11 @@ class ExampleMultilineTextInputApp(toga.App):
 
 
 def main():
-    return ExampleMultilineTextInputApp('Multiline Text Input', 'org.beeware.widgets.multilinetextinput')
+    return ExampleMultilineTextInputApp(
+        "Multiline Text Input", "org.beeware.widgets.multilinetextinput"
+    )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app = main()
     app.main_loop()

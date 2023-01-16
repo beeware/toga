@@ -4,7 +4,7 @@ requires = ["briefcase"]
 [tool.briefcase]
 project_name = "ProgressBar demo"
 bundle = "org.beeware"
-version = "0.3.0.dev28"
+version = "0.3.0.dev39"
 url = "https://beeware.org"
 license = "BSD license"
 author = 'Tiberius Yak'
@@ -14,31 +14,42 @@ author_email = "tiberius@beeware.org"
 formal_name = "ProgressBar demo"
 description = "A testing app"
 sources = ['progressbar']
-requires = []
+requires = [
+    '../../core',
+]
 
 
 [tool.briefcase.app.progressbar.macOS]
 requires = [
-    'toga-cocoa',
+    '../../cocoa',
+    'std-nslog>=1.0.0',
 ]
 
 [tool.briefcase.app.progressbar.linux]
 requires = [
-    'toga-gtk',
+    '../../gtk',
 ]
 
 [tool.briefcase.app.progressbar.windows]
 requires = [
-    'toga-winforms',
+    '../../winforms',
 ]
 
 # Mobile deployments
 [tool.briefcase.app.progressbar.iOS]
 requires = [
-    'toga-iOS',
+    '../../iOS',
+    'std-nslog>=1.0.0',
 ]
 
 [tool.briefcase.app.progressbar.android]
 requires = [
-    'toga-android',
+    '../../android',
 ]
+
+# Web deployment
+[tool.briefcase.app.progressbar.web]
+requires = [
+    '../../web',
+]
+style_framework = "Bootstrap v4.6"

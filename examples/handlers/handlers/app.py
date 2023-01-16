@@ -28,7 +28,7 @@ class HandlerApp(toga.App):
         # to yield to the main event loop before processing is resumed.
         widget.enabled = False
         for i in range(1, 10):
-            self.generator_label.text = "Iteration {}".format(i)
+            self.generator_label.text = f"Iteration {i}"
             yield 1
         self.generator_label.text = "Ready."
         widget.enabled = True
@@ -39,7 +39,7 @@ class HandlerApp(toga.App):
         # await yields control so that other OS events can be processed.
         widget.enabled = False
         for i in range(1, 10):
-            self.async_label.text = "Iteration {}".format(i)
+            self.async_label.text = f"Iteration {i}"
             await asyncio.sleep(2)
         self.async_label.text = "Ready."
         widget.enabled = True
@@ -49,7 +49,7 @@ class HandlerApp(toga.App):
         # This task runs in the background, without blocking the main event loop
         while True:
             self.counter += 1
-            self.label.text = "Background: Iteration {}".format(self.counter)
+            self.label.text = f"Background: Iteration {self.counter}"
             await asyncio.sleep(1)
 
     def startup(self):
@@ -57,10 +57,10 @@ class HandlerApp(toga.App):
         self.main_window = toga.MainWindow(title=self.name)
 
         # Labels to show responses.
-        self.label = toga.Label('Ready.', style=Pack(padding=10))
-        self.function_label = toga.Label('Ready.', style=Pack(padding=10))
-        self.generator_label = toga.Label('Ready.', style=Pack(padding=10))
-        self.async_label = toga.Label('Ready.', style=Pack(padding=10))
+        self.label = toga.Label("Ready.", style=Pack(padding=10))
+        self.function_label = toga.Label("Ready.", style=Pack(padding=10))
+        self.generator_label = toga.Label("Ready.", style=Pack(padding=10))
+        self.async_label = toga.Label("Ready.", style=Pack(padding=10))
 
         # Add a background task.
         self.counter = 0
@@ -68,10 +68,16 @@ class HandlerApp(toga.App):
 
         # Buttons
         btn_style = Pack(flex=1)
-        btn_function = toga.Button('Function callback', on_press=self.do_function, style=btn_style)
-        btn_generator = toga.Button('Generator callback', on_press=self.do_generator, style=btn_style)
-        btn_async = toga.Button('Async callback', on_press=self.do_async, style=btn_style)
-        btn_clear = toga.Button('Clear', on_press=self.do_clear, style=btn_style)
+        btn_function = toga.Button(
+            "Function callback", on_press=self.do_function, style=btn_style
+        )
+        btn_generator = toga.Button(
+            "Generator callback", on_press=self.do_generator, style=btn_style
+        )
+        btn_async = toga.Button(
+            "Async callback", on_press=self.do_async, style=btn_style
+        )
+        btn_clear = toga.Button("Clear", on_press=self.do_clear, style=btn_style)
 
         # Outermost box
         box = toga.Box(
@@ -85,11 +91,7 @@ class HandlerApp(toga.App):
                 self.async_label,
                 btn_clear,
             ],
-            style=Pack(
-                flex=1,
-                direction=COLUMN,
-                padding=10
-            )
+            style=Pack(flex=1, direction=COLUMN, padding=10),
         )
 
         # Add the content on the main window
@@ -100,9 +102,9 @@ class HandlerApp(toga.App):
 
 
 def main():
-    return HandlerApp('Handlers', 'org.beeware.handlers')
+    return HandlerApp("Handlers", "org.beeware.handlers")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app = main()
     app.main_loop()

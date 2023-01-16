@@ -3,7 +3,7 @@ from toga.style.pack import COLUMN, Pack
 
 
 def button_handler(widget):
-    print('button handler')
+    print("button handler")
     for i in range(0, 10):
         print("hello", i)
         yield 1
@@ -38,23 +38,18 @@ def build(app):
     brutus_icon = "icons/brutus"
     cricket_icon = "icons/cricket-72.png"
 
-    data = [
-        ('root%s' % i, 'value %s' % i)
-        for i in range(1, 100)
-    ]
+    data = [("root%s" % i, "value %s" % i) for i in range(1, 100)]
 
-    left_container = toga.Table(headings=['Hello', 'World'], data=data)
+    left_container = toga.Table(headings=["Hello", "World"], data=data)
 
-    right_content = toga.Box(
-        style=Pack(direction=COLUMN, padding_top=50)
-    )
+    right_content = toga.Box(style=Pack(direction=COLUMN, padding_top=50))
 
     for b in range(0, 10):
         right_content.add(
             toga.Button(
-                'Hello world %s' % b,
+                "Hello world %s" % b,
                 on_press=button_handler,
-                style=Pack(width=200, padding=20)
+                style=Pack(width=200, padding=20),
             )
         )
 
@@ -64,34 +59,40 @@ def build(app):
 
     split = toga.SplitContainer()
 
-    split.content = [left_container, right_container]
+    # The content of the split container can be specified as a simple list:
+    #    split.content = [left_container, right_container]
+    # but you can also specify "weight" with each content item, which will
+    # set an initial size of the columns to make a "heavy" column wider than
+    # a narrower one. In this example, the right container will be twice
+    # as wide as the left one.
+    split.content = [(left_container, 1), (right_container, 2)]
 
     # Create a "Things" menu group to contain some of the commands.
     # No explicit ordering is provided on the group, so it will appear
     # after application-level menus, but *before* the Command group.
     # Items in the Things group are not explicitly ordered either, so they
     # will default to alphabetical ordering within the group.
-    things = toga.Group('Things')
+    things = toga.Group("Things")
     cmd0 = toga.Command(
         action0,
-        label='Action 0',
-        tooltip='Perform action 0',
+        text="Action 0",
+        tooltip="Perform action 0",
         icon=brutus_icon,
-        group=things
+        group=things,
     )
     cmd1 = toga.Command(
         action1,
-        label='Action 1',
-        tooltip='Perform action 1',
+        text="Action 1",
+        tooltip="Perform action 1",
         icon=brutus_icon,
-        group=things
+        group=things,
     )
     cmd2 = toga.Command(
         action2,
-        label='Action 2',
-        tooltip='Perform action 2',
+        text="Action 2",
+        tooltip="Perform action 2",
         icon=toga.Icon.TOGA_ICON,
-        group=things
+        group=things,
     )
 
     # Commands without an explicit group end up in the "Commands" group.
@@ -99,11 +100,11 @@ def build(app):
     # alphabetical ordering
     cmd3 = toga.Command(
         action3,
-        label='Action 3',
-        tooltip='Perform action 3',
-        shortcut=toga.Key.MOD_1 + 'k',
+        text="Action 3",
+        tooltip="Perform action 3",
+        shortcut=toga.Key.MOD_1 + "k",
         icon=cricket_icon,
-        order=3
+        order=3,
     )
 
     # Define a submenu inside the Commands group.
@@ -112,18 +113,10 @@ def build(app):
     # alphabetical ordering.
     sub_menu = toga.Group("Sub Menu", parent=toga.Group.COMMANDS, order=2)
     cmd5 = toga.Command(
-        action5,
-        label='Action 5',
-        tooltip='Perform action 5',
-        order=2,
-        group=sub_menu
+        action5, text="Action 5", tooltip="Perform action 5", order=2, group=sub_menu
     )
     cmd6 = toga.Command(
-        action6,
-        label='Action 6',
-        tooltip='Perform action 6',
-        order=1,
-        group=sub_menu
+        action6, text="Action 6", tooltip="Perform action 6", order=1, group=sub_menu
     )
 
     def action4(widget):
@@ -131,11 +124,7 @@ def build(app):
         cmd3.enabled = not cmd3.enabled
 
     cmd4 = toga.Command(
-        action4,
-        label='Action 4',
-        tooltip='Perform action 4',
-        icon=brutus_icon,
-        order=1
+        action4, text="Action 4", tooltip="Perform action 4", icon=brutus_icon, order=1
     )
 
     # The order in which commands are added to the app or the toolbar won't
@@ -147,8 +136,8 @@ def build(app):
 
 
 def main():
-    return toga.App('First App', 'org.beeware.helloworld', startup=build)
+    return toga.App("First App", "org.beeware.helloworld", startup=build)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main().main_loop()

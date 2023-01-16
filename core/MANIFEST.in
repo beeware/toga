@@ -1,0 +1,6 @@
+include CONTRIBUTING.md
+include LICENSE
+include README.rst
+recursive-include tests *.py
+include tests/testbed/installed.dist-info/INSTALLER
+include tests/testbed/installed.dist-info/METADATA
