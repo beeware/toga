@@ -25,10 +25,6 @@ Toga
    :target: https://github.com/beeware/toga/actions
    :alt: Build Status
 
-.. image:: https://codecov.io/gh/beeware/toga/branch/main/graph/badge.svg
-   :target: https://codecov.io/gh/beeware/toga
-   :alt: Codecov
-
 .. image:: https://img.shields.io/discord/836455665257021440?label=Discord%20Chat&logo=discord&style=plastic
    :target: https://beeware.org/bee/chat/
    :alt: Discord server
