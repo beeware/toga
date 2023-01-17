@@ -43,7 +43,7 @@ Notes
   to the default system color.
 
 * On macOS, the button text color cannot be set directly; any `color` style
-  directive will be ignored. The text color is automatically selected by macOS
+  directive will be ignored. The text color is automatically selected by
   the platform to contrast with the background color of the button.
 
 Reference

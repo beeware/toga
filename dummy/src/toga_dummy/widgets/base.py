@@ -42,9 +42,6 @@ class Widget(LoggedObject):
     # APPLICATOR
     ######################################################################
 
-    def set_size(self, width, height):
-        self._action("set size", width=width, height=height)
-
     def set_bounds(self, x, y, width, height):
         self._action("set bounds", x=x, y=y, width=width, height=height)
 

@@ -54,14 +54,17 @@ class Button(Widget):
         else:
             self.native.bezelStyle = NSBezelStyle.Rounded
 
-    def set_size(self, width, height):
-        # Button style is sensitive to height
+    def set_bounds(self, x, y, width, height):
+        # Button style is sensitive to height. If the bounds have changed,
+        # there has possibly been a height change; Ensure that the button's
+        # style is updated.
         self._set_button_style()
+        super().set_bounds(x, y, width, height)
 
     def set_font(self, font):
         self.native.font = font._impl.native
 
-        # Button type is sensitive to font changes
+        # Button style is sensitive to font changes
         self._set_button_style()
 
     def set_text(self, text):

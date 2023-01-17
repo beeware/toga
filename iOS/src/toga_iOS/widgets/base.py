@@ -71,9 +71,6 @@ class Widget:
 
     # APPLICATOR
 
-    def set_size(self, width, height):
-        pass
-
     def set_bounds(self, x, y, width, height):
         offset_y = 0
         if self.container:

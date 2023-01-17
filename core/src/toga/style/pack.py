@@ -121,11 +121,6 @@ class Pack(BaseStyle):
                         weight=self.font_weight,
                     )
                 )
-            elif prop in (
-                "height",
-                "width",
-            ):
-                self._applicator.set_size(self.width, self.height)
 
     def layout(self, node, viewport):
 

@@ -14,7 +14,3 @@ class ButtonProbe(SimpleProbe):
     @property
     def font(self):
         skip("Font probe not implemented")
-
-    def assert_display_properties(self):
-        # No special display properties to assert
-        pass

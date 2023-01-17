@@ -97,24 +97,6 @@ class TestPackStyleApply(TestCase):
         root.style.reapply()
         root._impl.set_hidden.assert_called_once_with(True)
 
-    def test_set_size(self):
-        root = TestNode("app", style=Pack(width=100, height=200))
-
-        # Setting the property to the same value doesn't cause an apply
-        root.style.height = 200
-        root._impl.set_size.assert_not_called()
-
-        root.style.width = 100
-        root._impl.set_size.assert_not_called()
-
-        # Changing a property causes a call to be made.
-        root.style.height = 300
-        root._impl.set_size.assert_called_once_with(100, 300)
-
-        root._impl.set_size.reset_mock()
-        root.style.width = 200
-        root._impl.set_size.assert_called_once_with(200, 300)
-
 
 class PackLayoutTests(TestCase):
     def assertLayout(self, node, size, layout):

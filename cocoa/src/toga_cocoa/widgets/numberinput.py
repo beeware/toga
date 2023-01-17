@@ -3,7 +3,6 @@ from decimal import Decimal, InvalidOperation
 
 from travertino.size import at_least
 
-from toga.colors import TRANSPARENT
 from toga_cocoa.colors import native_color
 from toga_cocoa.libs import (
     SEL,
@@ -161,13 +160,6 @@ class NumberInput(Widget):
 
     def set_color(self, color):
         self.input.textColor = native_color(color)
-
-    def set_background_color(self, color):
-        if color is TRANSPARENT:
-            self.input.drawsBackground = False
-        else:
-            self.input.backgroundColor = native_color(color)
-            self.input.drawsBackground = True
 
     def set_readonly(self, value):
         # Even if it's not editable, it's still selectable.

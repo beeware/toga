@@ -5,11 +5,13 @@ from toga.style.pack import CENTER, COLUMN, JUSTIFY, LEFT, LTR, RIGHT, RTL
 
 from .properties import (  # noqa: F401
     test_background_color,
+    test_background_color_reset,
     test_background_color_transparent,
     test_color,
     test_color_reset,
     test_font,
     test_text,
+    test_text_width_change,
 )
 
 

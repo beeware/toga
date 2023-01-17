@@ -1,4 +1,4 @@
-from pytest import approx, fail
+from pytest import approx
 
 from toga.colors import TRANSPARENT
 
@@ -13,20 +13,9 @@ def assert_set_get(obj, name, value):
 
 
 def assert_color(actual, expected):
-    if expected is None:
-        if actual is None:
-            return
-        else:
-            fail(f"Expected TRANSPARENT, got {actual}")
-    elif expected == TRANSPARENT:
-        if actual == TRANSPARENT:
-            return
-        else:
-            fail(f"Expected TRANSPARENT, got {actual}")
+    if expected in [None, TRANSPARENT]:
+        assert expected == actual
     else:
-        if actual is None or actual == TRANSPARENT:
-            fail(f"Expected {expected}, got {actual}")
-        else:
-            for component in ["r", "g", "b"]:
-                assert getattr(actual, component) == getattr(expected, component)
-            assert actual.a == approx(expected.a, abs=(1 / 255))
+        for component in ["r", "g", "b"]:
+            assert getattr(actual, component) == getattr(expected, component)
+        assert actual.a == approx(expected.a, abs=(1 / 255))

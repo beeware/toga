@@ -4,9 +4,6 @@ class TogaApplicator:
     def __init__(self, widget):
         self.widget = widget
 
-    def set_size(self, width, height):
-        self.widget._impl.set_size(width, height)
-
     def set_bounds(self):
         # print("LAYOUT", self.widget, self.widget.layout)
         self.widget._impl.set_bounds(

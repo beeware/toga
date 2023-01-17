@@ -1,3 +1,5 @@
+from toga.colors import TRANSPARENT
+from toga_cocoa.colors import native_color
 from toga_cocoa.constraints import Constraints
 
 
@@ -60,9 +62,6 @@ class Widget:
 
     # APPLICATOR
 
-    def set_size(self, width, height):
-        pass
-
     def set_bounds(self, x, y, width, height):
         # print("SET BOUNDS ON", self.interface, x, y, width, height)
         self.constraints.update(x, y, width, height)
@@ -81,7 +80,11 @@ class Widget:
         pass
 
     def set_background_color(self, color):
-        pass
+        if color is TRANSPARENT:
+            self.native.drawsBackground = False
+        else:
+            self.native.backgroundColor = native_color(color)
+            self.native.drawsBackground = True
 
     def focus(self):
         self.interface.window._impl.native.makeFirstResponder(self.native)
