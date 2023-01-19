@@ -10,10 +10,12 @@ from toga.style.pack import COLUMN
 from ..assertions import assert_color
 from .properties import (  # noqa: F401
     test_background_color,
+    test_background_color_reset,
     test_color,
     test_color_reset,
     test_font,
     test_text,
+    test_text_width_change,
 )
 
 
@@ -54,7 +56,7 @@ async def test_button_size(widget, probe):
     "Check that the button resizes"
     # Container is initially a non-flex row box.
     # Initial button size is small, based on content size.
-    await widget.window.redraw()
+    await probe.redraw()
     assert 50 <= probe.width <= 100
     assert probe.height <= 50
 
@@ -62,10 +64,9 @@ async def test_button_size(widget, probe):
     widget.style.flex = 1
 
     # Button has expanded width, but has the same height.
-    await widget.window.redraw()
+    await probe.redraw()
     assert probe.width > 600
     assert probe.height <= 50
-    probe.assert_display_properties()
 
     # Make the container a flexible column box
     # This will make the height the flexible axis
@@ -73,10 +74,9 @@ async def test_button_size(widget, probe):
 
     # Button is still the width of the screen
     # and the height hasn't changed
-    await widget.window.redraw()
+    await probe.redraw()
     assert probe.width > 600
     assert probe.height <= 50
-    probe.assert_display_properties()
 
     # Set an explicit height and width
     widget.style.width = 300
@@ -84,7 +84,6 @@ async def test_button_size(widget, probe):
 
     # Button is approximately the requested size
     # (Definitely less than the window size)
-    await widget.window.redraw()
+    await probe.redraw()
     assert 300 <= probe.width <= 350
     assert 200 <= probe.height <= 250
-    probe.assert_display_properties()

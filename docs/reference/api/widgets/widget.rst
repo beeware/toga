@@ -11,7 +11,7 @@ Widget
 .. |y| image:: /_static/yes.png
     :width: 16
 
-The base class all widgets. This class should not be be instantiated directly.
+The base class of all widgets. This class should not be be instantiated directly.
 
 Reference
 ---------

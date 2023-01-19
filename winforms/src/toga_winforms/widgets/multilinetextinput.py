@@ -78,3 +78,11 @@ class MultilineTextInput(Widget):
     def set_background_color(self, value):
         if value:
             self.native.BackColor = native_color(value)
+
+    def scroll_to_bottom(self):
+        self.native.SelectionStart = len(self.native.Text)
+        self.native.ScrollToCaret()
+
+    def scroll_to_top(self):
+        self.native.SelectionStart = 0
+        self.native.ScrollToCaret()

@@ -109,8 +109,6 @@ pygments_style = "sphinx"
 
 # -- Options for HTML output ---------------------------------------------------
 
-html_theme = "furo"
-
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
@@ -183,6 +181,8 @@ html_static_path = ["_static"]
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = "togadoc"
+
+html_theme = "furo"
 
 html_css_files = [
     "custom.css",

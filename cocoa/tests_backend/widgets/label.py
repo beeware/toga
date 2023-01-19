@@ -10,7 +10,7 @@ class LabelProbe(SimpleProbe):
 
     @property
     def text(self):
-        return self.native.stringValue
+        return str(self.native.stringValue)
 
     @property
     def color(self):

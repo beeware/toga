@@ -67,9 +67,6 @@ class Widget:
     # APPLICATOR
     ######################################################################
 
-    def set_size(self, width, height):
-        pass
-
     def set_bounds(self, x, y, width, height):
         # No implementation required here; the new sizing will be picked up
         # by the box's allocation handler.

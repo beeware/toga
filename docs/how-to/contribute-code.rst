@@ -149,7 +149,7 @@ specific order:
     .. code-block:: bash
 
       (venv) $ cd toga
-      (venv) $ pip install -e ./core
+      (venv) $ pip install -e ./core[dev]
       (venv) $ pip install -e ./dummy
       (venv) $ pip install -e ./cocoa
 
@@ -158,7 +158,7 @@ specific order:
     .. code-block:: bash
 
       (venv) $ cd toga
-      (venv) $ pip install -e ./core
+      (venv) $ pip install -e ./core[dev]
       (venv) $ pip install -e ./dummy
       (venv) $ pip install -e ./gtk
 
@@ -167,7 +167,7 @@ specific order:
     .. code-block:: doscon
 
       (venv) C:\...>cd toga
-      (venv) C:\...>pip install -e ./core
+      (venv) C:\...>pip install -e ./core[dev]
       (venv) C:\...>pip install -e ./dummy
       (venv) C:\...>pip install -e ./winforms
 
@@ -182,7 +182,6 @@ git commit. To enable pre-commit, run:
 
     .. code-block:: bash
 
-      (venv) $ pip install pre-commit
       (venv) $ pre-commit install
       pre-commit installed at .git/hooks/pre-commit
 
@@ -190,7 +189,6 @@ git commit. To enable pre-commit, run:
 
     .. code-block:: bash
 
-      (venv) $ pip install pre-commit
       (venv) $ pre-commit install
       pre-commit installed at .git/hooks/pre-commit
 
@@ -198,7 +196,6 @@ git commit. To enable pre-commit, run:
 
     .. code-block:: doscon
 
-      (venv) C:\...>pip install pre-commit
       (venv) C:\...>pre-commit install
       pre-commit installed at .git/hooks/pre-commit
 
@@ -354,7 +351,9 @@ Now you are ready to start hacking on Toga!
 What should I do?
 =================
 
-Start by running the core test suite:
+Start by running the core test suite. Toga uses
+`tox <https://tox.readthedocs.io/en/latest/>`__ to manage the testing process.
+To run the core test suite:
 
 .. tabs::
 
@@ -457,7 +456,12 @@ The corresponding change note would read something like:
 
 See `News Fragments <https://pypi.org/project/towncrier/#news-fragments>`__
 for more details on the types of news fragments you can add. You can also see
-existing examples of news fragments in the ``changes/`` folder.
+existing examples of news fragments in the ``changes/`` folder. Name the file
+using the number of the issue that your pull request is addressing. When there
+isn't an existing issue, you can create the pull request in two passes: First
+submit it without a change note - this will fail, but will also assign a pull
+request number. You can then push an update to the pull request, adding the
+change note with the assigned number.
 
 Once you've written your code, test, and change note, you can submit your
 changes as a pull request. One of the core team will review your work, and

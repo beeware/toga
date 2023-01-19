@@ -171,7 +171,7 @@ class Widget(Node):
 
         Raises ``ValueError`` if this node is a leaf, and cannot have children.
 
-        :param children: The Child nodes to remove.
+        :param children: The child nodes to remove.
         """
         for child in children:
             if child.parent is self:
@@ -234,7 +234,7 @@ class Widget(Node):
     def window(self):
         """The window to which this widget belongs.
 
-        When setting the app for a widget, all children of this widget will be
+        When setting the window for a widget, all children of this widget will be
         recursively assigned to the same window.
         """
         return self._window

@@ -111,7 +111,3 @@ class Window:
 
     def set_full_screen(self, is_full_screen):
         self.interface.factory.not_implemented("Window.set_full_screen()")
-
-    async def redraw(self):
-        """Request a redraw of the app, waiting until that redraw has completed."""
-        self.interface.factory.not_implemented("Window.redraw()")

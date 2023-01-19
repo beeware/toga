@@ -1,0 +1,1 @@
+Updated CI to use the centralized Dependabot changenote workflow in the ``beeware/.github`` repo.

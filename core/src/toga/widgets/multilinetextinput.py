@@ -138,3 +138,11 @@ class MultilineTextInput(Widget):
         """
         self._on_change = wrapped_handler(self, handler)
         self._impl.set_on_change(self._on_change)
+
+    def scroll_to_bottom(self):
+        """Scroll the view to make the bottom of the text field visible."""
+        self._impl.scroll_to_bottom()
+
+    def scroll_to_top(self):
+        """Scroll the view to make the top of the text field visible."""
+        self._impl.scroll_to_top()

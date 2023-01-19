@@ -1,6 +1,6 @@
 from pytest import xfail
 
-from toga_cocoa.libs import NSBezelStyle, NSButton
+from toga_cocoa.libs import NSBezelStyle, NSButton, NSFont
 
 from .base import SimpleProbe
 from .properties import toga_color, toga_font
@@ -11,7 +11,7 @@ class ButtonProbe(SimpleProbe):
 
     @property
     def text(self):
-        return self.native.title
+        return str(self.native.title)
 
     @property
     def color(self):
@@ -28,9 +28,16 @@ class ButtonProbe(SimpleProbe):
         else:
             return None
 
-    def assert_display_properties(self):
-        # If the button is tall (for any reason), it should have a different bezel style.
-        if self.native.frame.size.height > 50:
+    @property
+    def height(self):
+        # If the button has a manual height set, or has a non-default font size
+        # it should have a different bezel style.
+        if (
+            self.widget.style.height
+            or self.native.font.pointSize != NSFont.systemFontSize
+        ):
             assert self.native.bezelStyle == NSBezelStyle.RegularSquare
         else:
             assert self.native.bezelStyle == NSBezelStyle.Rounded
+
+        return self.native.frame.size.height

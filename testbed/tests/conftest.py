@@ -6,7 +6,7 @@ from pytest import fixture, register_assert_rewrite
 
 import toga
 
-# Ideally, we'd regstier rewrites for "tests" and get all the submodules
+# Ideally, we'd register rewrites for "tests" and get all the submodules
 # recursively; however we've already imported "tests", so that raises a warning.
 register_assert_rewrite("tests.assertions")
 register_assert_rewrite("tests.widgets")

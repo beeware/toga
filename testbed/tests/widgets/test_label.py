@@ -5,11 +5,13 @@ from toga.style.pack import CENTER, COLUMN, JUSTIFY, LEFT, LTR, RIGHT, RTL
 
 from .properties import (  # noqa: F401
     test_background_color,
+    test_background_color_reset,
     test_background_color_transparent,
     test_color,
     test_color_reset,
     test_font,
     test_text,
+    test_text_width_change,
 )
 
 
@@ -48,20 +50,20 @@ async def test_alignment(widget, probe):
 
     for alignment in [RIGHT, CENTER, JUSTIFY]:
         widget.style.text_align = alignment
-        await widget.window.redraw()
+        await probe.redraw()
         assert probe.alignment == alignment
 
     # Clearing the alignment reverts to default alignment of LEFT
     widget.style.text_align = None
-    await widget.window.redraw()
+    await probe.redraw()
     assert probe.alignment == LEFT
 
     # If text direction is RTL, default alignment is RIGHT
     widget.style.text_direction = RTL
-    await widget.window.redraw()
+    await probe.redraw()
     assert probe.alignment == RIGHT
 
     # If text direction is expliclty LTR, default alignment is LEFT
     widget.style.text_direction = LTR
-    await widget.window.redraw()
+    await probe.redraw()
     assert probe.alignment == LEFT
