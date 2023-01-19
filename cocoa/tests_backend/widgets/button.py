@@ -11,7 +11,7 @@ class ButtonProbe(SimpleProbe):
 
     @property
     def text(self):
-        return self.native.title
+        return str(self.native.title)
 
     @property
     def color(self):
