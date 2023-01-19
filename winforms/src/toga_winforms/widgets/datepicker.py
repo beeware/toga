@@ -2,7 +2,7 @@ import datetime
 
 from travertino.size import at_least
 
-from toga_winforms.libs import WinDateTime, WinForms
+from toga_winforms.libs import CultureInfo, WinDateTime, WinForms
 
 from .base import Widget
 
@@ -12,7 +12,12 @@ class DatePicker(Widget):
         self.native = WinForms.DateTimePicker()
 
     def get_value(self):
-        return datetime.datetime.strptime(self.native.Text, "%A, %B %d, %Y").date()
+        return datetime.datetime.strptime(
+            self.native.Value.ToString(
+                "yyyy-MM-ddTHH:mm:sszzz", CultureInfo.InvariantCulture
+            ),
+            "%Y-%m-%dT%H:%M:%S%z",
+        ).date()
 
     def set_value(self, value):
         self.native.Value = WinDateTime(value.year, value.month, value.day)

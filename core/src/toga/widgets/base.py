@@ -98,6 +98,14 @@ class Widget(Node):
         """
         return self._id
 
+    @property
+    def tab_index(self):
+        return self._impl.get_tab_index()
+
+    @tab_index.setter
+    def tab_index(self, tab_index):
+        self._impl.set_tab_index(tab_index)
+
     def add(self, *children):
         """Add nodes as children of this one. If a node already has a different
         parent, it will be moved over. This does nothing if a node already is a

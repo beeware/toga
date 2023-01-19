@@ -110,8 +110,10 @@ class App:
         pass
 
     def main_loop(self):
-        # Main loop is a no-op on iOS; the app loop is integrated with the
-        # main iOS event loop.
+        # Main loop is non-blocking on iOS. The app loop is integrated with the
+        # main iOS event loop, so this call will return; however, it will leave
+        # the app in a state such that asyncio events will be scheduled on the
+        # iOS event loop.
         self.loop.run_forever_cooperatively(lifecycle=iOSLifecycle())
 
     def set_main_window(self, window):
@@ -125,6 +127,3 @@ class App:
 
     def set_on_exit(self, value):
         pass
-
-    def add_background_task(self, handler):
-        self.loop.call_soon(handler, self)

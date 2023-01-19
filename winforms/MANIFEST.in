@@ -1,5 +1,5 @@
 include CONTRIBUTING.md
 include LICENSE
 include README.rst
-include tox.ini
 recursive-include tests *.py
+recursive-include tests_backend *.py

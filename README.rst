@@ -18,16 +18,12 @@ Toga
     :alt: Project status
 
 .. image:: https://img.shields.io/pypi/l/toga.svg
-    :target: https://github.com/beeware/toga/blob/master/LICENSE
+    :target: https://github.com/beeware/toga/blob/main/LICENSE
     :alt: License
 
-.. image:: https://github.com/beeware/toga/workflows/CI/badge.svg?branch=master
+.. image:: https://github.com/beeware/toga/workflows/CI/badge.svg?branch=main
    :target: https://github.com/beeware/toga/actions
    :alt: Build Status
-
-.. image:: https://codecov.io/gh/beeware/toga/branch/master/graph/badge.svg
-   :target: https://codecov.io/gh/beeware/toga
-   :alt: Codecov
 
 .. image:: https://img.shields.io/discord/836455665257021440?label=Discord%20Chat&logo=discord&style=plastic
    :target: https://beeware.org/bee/chat/
@@ -100,7 +96,7 @@ contribute code, please `fork the code`_ and `submit a pull request`_.
 
 .. _BeeWare suite: https://beeware.org/
 .. _Read The Docs: https://toga.readthedocs.io
-.. _guide for first time contributors: https://toga.readthedocs.io/en/latest/how-to/contribute.html
+.. _guide for first time contributors: https://toga.readthedocs.io/en/latest/how-to/contribute-code.html
 .. _log them on Github: https://github.com/beeware/toga/issues
 .. _fork the code: https://github.com/beeware/toga
 .. _submit a pull request: https://github.com/beeware/toga/pulls

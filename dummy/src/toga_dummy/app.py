@@ -8,10 +8,20 @@ class MainWindow(Window):
         self.action("handle MainWindow on_close")
 
 
+@not_required
+class EventLoop:
+    def __init__(self, app):
+        self.app = app
+
+    def call_soon_threadsafe(self, handler, *args):
+        self.app._action("loop:call_soon_threadsafe", handler=handler, args=args)
+
+
 class App(LoggedObject):
     def __init__(self, interface):
         super().__init__()
         self.interface = interface
+        self.loop = EventLoop(self)
 
     def create(self):
         self._action("create")
@@ -54,9 +64,6 @@ class App(LoggedObject):
     @not_required_on("mobile")
     def hide_cursor(self):
         self._action("hide_cursor")
-
-    def add_background_task(self, handler):
-        self._action("add_background_task", handler=handler)
 
 
 @not_required_on("mobile", "web")

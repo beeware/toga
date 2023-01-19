@@ -22,7 +22,7 @@ report ``sys.platform == 'darwin'``), or can be manually installed by invoking::
 The macOS backend has seen the most development to date. It uses `Rubicon`_ to
 provide a bridge to native macOS libraries.
 
-.. _toga-cocoa: https://github.com/beeware/toga/tree/master/cocoa
+.. _toga-cocoa: https://github.com/beeware/toga/tree/main/cocoa
 .. _Rubicon: https://github.com/beeware/rubicon-objc
 
 Linux
@@ -30,17 +30,17 @@ Linux
 
 .. image:: /reference/screenshots/gtk.png
 
-The backend for Linux platforms is named `toga-gtk`_. It supports GTK+ 3.4
+The backend for Linux platforms is named `toga-gtk`_. It supports GTK 3.4
 and later. It is installed automatically on Linux machines (machines that
 report ``sys.platform == 'linux'``), or can be manually installed by
 invoking::
 
     $ pip install toga-gtk
 
-The GTK+ backend is reasonably well developed, but currently has some known issues
+The GTK backend is reasonably well developed, but currently has some known issues
 with widget layout. It uses the native GObject Python bindings.
 
-.. _toga-gtk: https://github.com/beeware/toga/tree/master/gtk
+.. _toga-gtk: https://github.com/beeware/toga/tree/main/gtk
 
 Windows
 ~~~~~~~~
@@ -57,7 +57,7 @@ installed by invoking::
 It uses `Python.net`_. Unfortunately, python.net has not been packaged for
 Python 3.9 or higher, so you'll need to use Python 3.8 or earlier in your app.
 
-.. _toga-winforms: https://github.com/beeware/toga/tree/master/winforms
+.. _toga-winforms: https://github.com/beeware/toga/tree/main/winforms
 .. _Python.net: https://pythonnet.github.io
 
 Mobile platforms
@@ -77,7 +77,7 @@ The iOS backend is currently proof-of-concept only. Most widgets have not been
 implemented. It uses `Rubicon`_ to provide a bridge to native macOS libraries.
 
 .. _Python-iOS-template cookiecutter: https://github.com/beeware/Python-iOS-template
-.. _toga-iOS: https://github.com/beeware/toga/tree/master/iOS
+.. _toga-iOS: https://github.com/beeware/toga/tree/main/iOS
 
 Android
 ~~~~~~~
@@ -91,7 +91,7 @@ The android backend is currently proof-of-concept only. Most widgets have not
 been implemented. It uses `Chaquopy`_ to provide a way to access the Android
 Java libraries and implement Java interfaces in Python.
 
-.. _toga-android: https://github.com/beeware/toga/tree/master/android
+.. _toga-android: https://github.com/beeware/toga/tree/main/android
 .. _Chaquopy: https://chaquo.com/chaquopy/
 
 Web
@@ -105,7 +105,7 @@ by invoking::
 The Web backend is currently proof-of-concept only. Most widgets have not been
 implemented. It uses `PyScript`_ to run Python code in the browser.
 
-.. _toga-web: https://github.com/beeware/toga/tree/master/web
+.. _toga-web: https://github.com/beeware/toga/tree/main/web
 .. _PyScript: https://pyscript.net
 
 The Dummy platform
@@ -121,7 +121,6 @@ Planned platform support
 
 Eventually, the Toga project would like to provide support for the following platforms:
 
- * Other Python web frameworks (e.g., Flask, Pyramid)
  * UWP (Native Windows 8 and Windows mobile)
  * Qt (for KDE based desktops)
  * tvOS (for AppleTV devices)

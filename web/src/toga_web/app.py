@@ -208,6 +208,3 @@ class App:
 
     def hide_cursor(self):
         self.interface.factory.not_implemented("App.hide_cursor()")
-
-    def add_background_task(self, handler):
-        self.interface.factory.not_implemented("App.add_background_task()")

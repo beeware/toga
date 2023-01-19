@@ -66,7 +66,7 @@ class App:
         self.interface._impl = self
 
         gbulb.install(gtk=True)
-        self.loop = asyncio.get_event_loop_policy().get_event_loop()
+        self.loop = asyncio.new_event_loop()
 
         self.create()
 
@@ -247,9 +247,6 @@ class App:
 
     def hide_cursor(self):
         self.interface.factory.not_implemented("App.hide_cursor()")
-
-    def add_background_task(self, handler):
-        self.loop.call_soon(handler, self)
 
 
 class DocumentApp(App):

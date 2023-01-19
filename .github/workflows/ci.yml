@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4.3.0
+      - uses: actions/setup-python@v4.5.0
         with:
           python-version: ${{ env.min_python_version }}
       - uses: pre-commit/action@v3.0.0
@@ -35,11 +35,16 @@ jobs:
     - uses: actions/checkout@v3
       with:
         fetch-depth: 0
-    - uses: actions/setup-python@v4.3.0
+    - uses: actions/setup-python@v4.5.0
       with:
-        python-version: ${{ env.python_version }}
-    - run: pip install tox
-    - run: tox -e towncrier-check
+        python-version: ${{ env.min_python_version }}
+    - name: Install dev dependencies
+      run: |
+        # We don't actually want to install toga-core;
+        # we just want the dev extras so we have a known version of tox
+        python -m pip install ./core[dev]
+    - name: Run towncrier check
+      run: tox -e towncrier-check
 
   package:
     strategy:
@@ -52,11 +57,16 @@ jobs:
     - uses: actions/checkout@v3
       with:
         fetch-depth: 0
-    - uses: actions/setup-python@v4.3.0
+    - uses: actions/setup-python@v4.5.0
       with:
         python-version: ${{ env.min_python_version }}
-    - run: pip install tox
-    - run: tox -e package -- ${{ matrix.subdir }}
+    - name: Install dev dependencies
+      run: |
+        # We don't actually want to install toga-core;
+        # we just want the dev extras so we have a known version of tox
+        python -m pip install ./core[dev]
+    - name: Build wheels
+      run: tox -e package -- ${{ matrix.subdir }}
     - uses: actions/upload-artifact@v3
       with:
         name: packages
@@ -82,24 +92,25 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4.3.0
+      uses: actions/setup-python@v4.5.0
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
+    - name: Install dev dependencies
       run: |
-        # See https://github.com/nedbat/coveragepy/issues/991
-        python -m pip install tox coverage[toml]~=6.6.0b1
+        # We don't actually want to install toga-core;
+        # we just want the dev extras so we have a known version of tox and coverage
+        python -m pip install ./core[dev]
     - name: Get packages
       uses: actions/download-artifact@v3
       with:
         name: packages
     - name: Test
-      env:
-        TOGA_INSTALL_COMMAND: 'bash -c "pip install ../{core,dummy}/dist/*.whl"'
       run: |
-        tox -e py-core
+        # The $(ls ...) shell expansion is done in the Github environment;
+        # the value of TOGA_INSTALL_COMMAND will be a literal string,
+        # without any shell expansions to perform
+        TOGA_INSTALL_COMMAND="python -m pip install ../$(ls core/dist/toga_core-*.whl)[dev] ../$(ls dummy/dist/toga_dummy-*.whl)" tox -e py-core
         cd core
-        python -m coverage xml
         mv .coverage .coverage.${{ matrix.platform }}.${{ matrix.python-version }}
     - name: Store coverage data
       uses: actions/upload-artifact@v3
@@ -107,13 +118,6 @@ jobs:
         name: core-coverage-data
         path: "core/.coverage.*"
         if-no-files-found: error
-    - name: Upload coverage data to CodeCov
-      uses: codecov/codecov-action@v3
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
-        file: core/coverage.xml
-        flags: unittests
-        fail_ci_if_error: true
 
   core-coverage:
     name: Combine & check core coverage.
@@ -123,14 +127,15 @@ jobs:
     - uses: actions/checkout@v3
       with:
         fetch-depth: 0
-    - uses: actions/setup-python@v4.3.0
+    - uses: actions/setup-python@v4.5.0
       with:
         # Use latest, so it understands all syntax.
         python-version: ${{ env.max_python_version }}
-    - name: Install dependencies
+    - name: Install dev dependencies
       run: |
-        # See https://github.com/nedbat/coveragepy/issues/991
-        python -m pip install coverage[toml]~=6.6.0b1
+        # We don't actually want to install toga-core;
+        # we just want the dev extras so we have a known version of coverage
+        python -m pip install ./core[dev]
     - name: Retrieve coverage data
       uses: actions/download-artifact@v3
       with:
@@ -163,7 +168,7 @@ jobs:
             runs-on: macos-latest
 
           - backend: gtk
-            pre-command: "sudo apt-get update -y && sudo apt-get install -y python3-gi python3-gi-cairo gir1.2-gtk-3.0 python3-dev libgirepository1.0-dev libcairo2-dev pkg-config"
+            pre-command: "sudo apt-get update -y && sudo apt-get install -y python3-gi python3-gi-cairo gir1.2-gtk-3.0 python3-dev libgirepository1.0-dev libcairo2-dev pkg-config libfuse2"
 
           - backend: iOS
             runs-on: macos-latest
@@ -177,19 +182,77 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4.3.0
+      uses: actions/setup-python@v4.5.0
       with:
         python-version: ${{ matrix.python-version }}
     - name: Get packages
       uses: actions/download-artifact@v3
       with:
         name: packages
+    - name: Install dev dependencies
+      run: |
+        ${{ matrix.pre-command }}
+        # We don't actually want to install toga-core;
+        # we just want the dev extras so we have a known version of tox
+        python -m pip install ./core[dev]
+    - name: Test
+      run: |
+        # The $(ls ...) shell expansion is done in the Github environment;
+        # the value of TOGA_INSTALL_COMMAND will be a literal string,
+        # without any shell expansions to perform
+        TOGA_INSTALL_COMMAND="python -m pip install ../$(ls core/dist/toga_core-*.whl)[dev] ../$(ls dummy/dist/toga_dummy-*.whl) ../$(ls ${{ matrix.backend }}/dist/toga_${{ matrix.backend }}-*.whl)" tox -e py-${{ matrix.backend }}
+
+  testbed:
+    needs: core
+    strategy:
+      fail-fast: false
+      matrix:
+        backend: ["macOS", "windows", "linux", "android", "iOS"]
+        include:
+          - pre-command:
+            briefcase-run-prefix:
+            briefcase-run-args:
+
+          - backend: macOS
+            runs-on: macos-12
+
+          - backend: linux
+            runs-on: ubuntu-latest
+            pre-command: "sudo apt-get update -y && sudo apt-get install -y python3-gi python3-gi-cairo gir1.2-gtk-3.0 python3-dev libgirepository1.0-dev libcairo2-dev pkg-config libfuse2"
+            briefcase-run-prefix: 'xvfb-run -a -s "-screen 0 2048x1536x24"'
+
+          - backend: windows
+            runs-on: windows-latest
+
+          - backend: iOS
+            runs-on: macos-12
+            briefcase-run-args: ' -d "iPhone SE (3rd generation)"'
+
+          - backend: android
+            runs-on: macos-12
+            briefcase-run-args: " -d '{\"avd\":\"beePhone\"}' --Xemulator=-no-window --Xemulator=-no-snapshot --Xemulator=-no-audio --Xemulator=-no-boot-anim --shutdown-on-exit"
+
+    runs-on: ${{ matrix.runs-on }}
+    steps:
+    - uses: actions/checkout@v3.1.0
+      with:
+        fetch-depth: 0
+    - name: Set up Python
+      uses: actions/setup-python@v4.5.0
+      with:
+        python-version: "3.X"
     - name: Install dependencies
       run: |
         ${{ matrix.pre-command }}
-        python -m pip install tox
-    - name: Test
-      env:
-        TOGA_INSTALL_COMMAND: 'bash -c "pip install ../{core,dummy,${{ matrix.backend }}}/dist/*.whl"'
+        # Use the development version of Briefcase
+        python -m pip install git+https://github.com/beeware/briefcase.git
+    - name: Test App
       run: |
-        tox -e py-${{ matrix.backend }}
+        cd testbed
+        ${{ matrix.briefcase-run-prefix }} briefcase run ${{ matrix.backend }} --test ${{ matrix.briefcase-run-args }}
+    - uses: actions/upload-artifact@v3
+      name: Upload logs
+      if: failure()
+      with:
+        name: testbed-failure-logs-${{ matrix.backend }}
+        path: testbed/logs/*
