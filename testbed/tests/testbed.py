@@ -1,5 +1,4 @@
 import os
-import sys
 import tempfile
 from functools import partial
 from pathlib import Path
@@ -13,13 +12,6 @@ from testbed.app import main
 def run_tests(app):
     project_path = Path(__file__).parent.parent
     os.chdir(project_path)
-
-    # TODO: replace with extractPackages.
-    if hasattr(sys, "getandroidapilevel"):
-        import tests
-
-        chaquopy_extract_package(tests)
-
     app.returncode = pytest.main(
         [
             # Output formatting
@@ -37,21 +29,6 @@ def run_tests(app):
         ]
     )
     app.add_background_task(lambda app, **kwargs: app.exit())
-
-
-def chaquopy_extract_package(pkg):
-    finder = pkg.__loader__.finder
-    for path in pkg.__path__:
-        chaquopy_extract_dir(finder, finder.zip_path(path))
-
-
-def chaquopy_extract_dir(finder, zip_dir):
-    for filename in finder.listdir(zip_dir):
-        zip_path = f"{zip_dir}/{filename}"
-        if finder.isdir(zip_path):
-            chaquopy_extract_dir(finder, zip_path)
-        else:
-            finder.extract_if_changed(zip_path)
 
 
 if __name__ == "__main__":
