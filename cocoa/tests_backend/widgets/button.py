@@ -40,4 +40,4 @@ class ButtonProbe(SimpleProbe):
         else:
             assert self.native.bezelStyle == NSBezelStyle.Rounded
 
-        return self.native.frame.size.height
+        return super().height
