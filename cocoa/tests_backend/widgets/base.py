@@ -1,8 +1,3 @@
-from System import EventArgs, Object
-
-from .properties import toga_color
-
-
 class SimpleProbe:
     def __init__(self, widget):
         self.widget = widget
@@ -11,8 +6,8 @@ class SimpleProbe:
 
     def assert_container(self, container):
         container_native = container._impl.native
-        for control in container_native.Controls:
-            if Object.ReferenceEquals(control, self.native):
+        for control in container_native.subviews:
+            if control == self.native:
                 break
         else:
             raise ValueError(f"cannot find {self.native} in {container_native}")
@@ -21,30 +16,24 @@ class SimpleProbe:
         """Request a redraw of the app, waiting until that redraw has completed."""
         # Refresh the layout
         self.widget.window.content.refresh()
+        # Force a repaint
+        self.widget.window.content._impl.native.displayIfNeeded()
 
     @property
     def enabled(self):
-        return self.native.Enabled
-
-    @property
-    def background_color(self):
-        return toga_color(self.native.BackColor)
-
-    @property
-    def color(self):
-        return toga_color(self.native.ForeColor)
+        return self.native.enabled
 
     @property
     def hidden(self):
-        return not self.native.Visible
+        return self.native.hidden
 
     @property
     def width(self):
-        return self.native.Width
+        return self.native.frame.size.width
 
     @property
     def height(self):
-        return self.native.Height
+        return self.native.frame.size.height
 
     def press(self):
-        self.native.OnClick(EventArgs.Empty)
+        self.native.performClick(None)

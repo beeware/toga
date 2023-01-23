@@ -35,7 +35,7 @@ from .window import Window
 
 
 def not_implemented(feature):
-    print(f"[iOS] Not implemented: {feature}")
+    print(f"[iOS] Not implemented: {feature}")  # pragma: nocover
 
 
 __all__ = [

@@ -8,9 +8,9 @@ from toga_cocoa.libs import (
     NSOnState,
     NSSwitchButton,
     objc_method,
+    objc_property,
 )
 
-from ..libs import objc_property
 from .base import Widget
 
 

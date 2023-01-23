@@ -1,4 +1,5 @@
 from java import jclass
+from pytest import skip
 
 from .base import SimpleProbe
 from .properties import toga_color
@@ -14,3 +15,11 @@ class LabelProbe(SimpleProbe):
     @property
     def text(self):
         return str(self.native.getText())
+
+    @property
+    def font(self):
+        skip("Font probe not implemented")
+
+    @property
+    def alignment(self):
+        skip("Alignment probe not implemented")

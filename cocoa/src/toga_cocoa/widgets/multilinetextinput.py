@@ -60,8 +60,7 @@ class MultilineTextInput(Widget):
         self.text.string = value
 
     def set_color(self, value):
-        if value:
-            self.text.textColor = native_color(value)
+        self.text.textColor = native_color(value)
 
     def set_font(self, font):
         if font:

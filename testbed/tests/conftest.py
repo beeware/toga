@@ -2,9 +2,15 @@ import asyncio
 import inspect
 from dataclasses import dataclass
 
-from pytest import fixture
+from pytest import fixture, register_assert_rewrite
 
 import toga
+
+# Ideally, we'd register rewrites for "tests" and get all the submodules
+# recursively; however we've already imported "tests", so that raises a warning.
+register_assert_rewrite("tests.assertions")
+register_assert_rewrite("tests.widgets")
+register_assert_rewrite("tests_backend")
 
 
 @fixture(scope="session")

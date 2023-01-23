@@ -1,10 +1,8 @@
 from toga.colors import rgba
 
-# TODO: add non-ASCII strings.
-TEXTS = ["", " ", "a", "ab", "abc", "hello world", "hello\nworld"]
+TEXTS = ["", " ", "a", "ab", "abc", "hello world", "hello\nworld", "你好, wørłd!"]
 
 
-# TODO: include None
 COLORS = [
     rgba(r, g, b, a)
     for r, g, b in [

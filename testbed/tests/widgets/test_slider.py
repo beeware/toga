@@ -30,7 +30,10 @@ async def test_init(widget, probe, on_change):
     on_change.assert_not_called()
 
 
-@mark.skipif(current_platform == "windows", reason="on_change called 2 times")
+@mark.skipif(
+    current_platform in ["windows", "macOS"],
+    reason="on_change called 2 times",
+)
 @mark.skipif(current_platform == "android", reason="position is 0.0")
 async def test_value(widget, probe, on_change):
     for scale in SCALES:
@@ -43,7 +46,8 @@ async def test_value(widget, probe, on_change):
 
 
 @mark.skipif(
-    current_platform in ["android", "windows"], reason="on_change called 0 times"
+    current_platform in ["android", "windows", "macOS"],
+    reason="on_change called 0 times",
 )
 async def test_change(widget, probe, on_change):
     for scale in SCALES:

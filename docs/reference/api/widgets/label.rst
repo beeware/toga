@@ -1,6 +1,13 @@
 Label
 =====
 
+A text label for annotating forms or interfaces.
+
+.. figure:: /reference/images/Label.jpeg
+    :align: center
+
+Availability
+------------
 .. rst-class:: widget-support
 .. csv-filter::
    :header-rows: 1
@@ -10,11 +17,6 @@ Label
 
 .. |y| image:: /_static/yes.png
     :width: 16
-
-The Label is a text-label for annotating forms or interfaces.
-
-.. figure:: /reference/images/Label.jpeg
-    :align: center
 
 Usage
 -----
@@ -30,5 +32,3 @@ Reference
 
 .. autoclass:: toga.widgets.label.Label
    :members:
-   :undoc-members:
-   :inherited-members:
