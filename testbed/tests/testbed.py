@@ -38,7 +38,7 @@ def run_tests(app, cov):
         ]
     )
 
-    # FIXME: Coverage reporting doesn't work on Android & iOS (yet!) This is for
+    # FIXME: Coverage reporting doesn't work on Android (yet!) This is for
     # two reasons:
     # 1. On Android, the code being covered needs to be unpacked and readable
     #    for a coverage report to be generated. This should be fixed by
@@ -49,8 +49,6 @@ def run_tests(app, cov):
     #    stack is empty.
     if hasattr(sys, "getandroidapilevel"):
         print("***No coverage report on Android***")
-    elif sys.platform == "ios":
-        print("***No coverage report on iOS***")
     # Only print a coverage report if the test suite passed.
     elif app.returncode == 0:
         cov.stop()
