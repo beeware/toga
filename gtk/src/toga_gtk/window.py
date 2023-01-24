@@ -124,6 +124,9 @@ class Window:
         for child in widget.interface.children:
             child._impl.container = widget
 
+        if self.native.get_property("visible"):
+            self.show()
+
     def show(self):
         self.native.show_all()
 
