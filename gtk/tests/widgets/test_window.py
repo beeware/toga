@@ -26,9 +26,9 @@ def handle_events():
 @unittest.skipIf(
     Gtk is None, "Can't run GTK implementation tests on a non-Linux platform"
 )
-
 class TogaAppForWindowDemo(toga.App):
     pass
+
 
 class TestGtkWindow(unittest.TestCase):
     def setUp(self):
@@ -56,4 +56,3 @@ class TestGtkWindow(unittest.TestCase):
 
         self.window.content = self.box1
         self.assertEqual(self.window.content._impl.native.get_property("visible"), True)
-
