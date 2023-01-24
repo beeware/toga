@@ -1,4 +1,5 @@
 import os
+import sys
 import tempfile
 from functools import partial
 from pathlib import Path
@@ -30,21 +31,20 @@ def run_tests(app, cov):
         ]
     )
 
-    # FIXME: Coverage reporting doesn't work on Android & iOS (yet!) This is for
-    # two reasons:
-    # 1. On Android, the code being covered needs to be unpacked and readable
-    #    for a coverage report to be generated. This should be fixed by
-    #    extractPackages
-    # 2. The main thread where coverage has been started dies before the this
-    #    thread; as a result, the garbage collection on the tracer function
-    #    (coverage.pytracer._trace():132) raises an IndexError because the data
-    #    stack is empty.
-    if hasattr(sys, "getandroidapilevel"):
-        print("***No coverage report on Android***")
-    elif sys.platform == "ios":
-        print("***No coverage report on iOS***")
+    # WORKAROUND: On Android, the main thread where coverage has been started
+    # dies before this thread; as a result, the garbage collection on the tracer
+    # function raises an IndexError because the data stack is empty for that
+    # thread. This has been reported as
+    # https://github.com/nedbat/coveragepy/issues/1542 and a PR submitted; This
+    # workaround can be removed once that PR is available in a production
+    # version of coverage.
+    for tracer in cov._collector.tracers:
+        if len(tracer.data_stack) == 0:
+            print("Backfilling empty coverage stack...")
+            tracer.data_stack.append((None, None, None, None))
+
     # Only print a coverage report if the test suite passed.
-    elif app.returncode == 0:
+    if app.returncode == 0:
         cov.stop()
         total = cov.report(
             precision=1,
