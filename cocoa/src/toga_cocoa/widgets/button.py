@@ -1,6 +1,8 @@
 from travertino.size import at_least
 
+from toga.colors import TRANSPARENT
 from toga.fonts import SYSTEM_DEFAULT_FONT_SIZE
+from toga_cocoa.colors import native_color
 from toga_cocoa.libs import (
     SEL,
     NSBezelStyle,
@@ -30,26 +32,16 @@ class Button(Widget):
         self.native.interface = self.interface
         self.native.impl = self
 
-        self.native.bezelStyle = NSBezelStyle.Rounded
         self.native.buttonType = NSMomentaryPushInButton
+        self._set_button_style()
+
         self.native.target = self.native
         self.native.action = SEL("onPress:")
 
         # Add the layout constraints
         self.add_constraints()
 
-    def set_font(self, font):
-        if font:
-            self.native.font = font._impl.native
-
-    def set_text(self, text):
-        self.native.title = self.interface.text
-
-    def set_on_press(self, handler):
-        # No special handling required
-        pass
-
-    def rehint(self):
+    def _set_button_style(self):
         # Normal Cocoa "rounded" buttons have a fixed height by definition.
         # If the user specifies any font size other than the default,
         # or specifies an explicit height for layout, switch to using a
@@ -62,6 +54,33 @@ class Button(Widget):
         else:
             self.native.bezelStyle = NSBezelStyle.Rounded
 
+    def set_bounds(self, x, y, width, height):
+        # Button style is sensitive to height. If the bounds have changed,
+        # there has possibly been a height change; Ensure that the button's
+        # style is updated.
+        self._set_button_style()
+        super().set_bounds(x, y, width, height)
+
+    def set_font(self, font):
+        self.native.font = font._impl.native
+
+        # Button style is sensitive to font changes
+        self._set_button_style()
+
+    def set_text(self, text):
+        self.native.title = self.interface.text
+
+    def set_on_press(self, handler):
+        # No special handling required
+        pass
+
+    def set_background_color(self, color):
+        if color == TRANSPARENT or color is None:
+            self.native.bezelColor = None
+        else:
+            self.native.bezelColor = native_color(color)
+
+    def rehint(self):
         content_size = self.native.intrinsicContentSize()
         self.interface.intrinsic.width = at_least(content_size.width)
         self.interface.intrinsic.height = content_size.height

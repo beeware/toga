@@ -4,15 +4,6 @@ from .base import Widget
 
 
 class Label(Widget):
-    """A text label.
-
-    Args:
-        text (str): Text of the label.
-        id (str): An identifier for this widget.
-        style (:obj:`Style`): An optional style object. If no style is provided then
-            a new one will be created for the widget.
-    """
-
     def __init__(
         self,
         text,
@@ -20,6 +11,16 @@ class Label(Widget):
         style=None,
         factory=None,  # DEPRECATED!
     ):
+        """A text label.
+
+        Inherits from :class:`~toga.widgets.base.Widget`.
+
+        :param text: Text of the label.
+        :param id: The ID for the widget.
+        :param style: A style object. If no style is provided, a default style
+            will be applied to the widget.
+        :param factory: *Deprecated*
+        """
         super().__init__(id=id, style=style)
 
         ######################################################################
@@ -39,11 +40,7 @@ class Label(Widget):
 
     @property
     def text(self):
-        """The text displayed by the label.
-
-        Returns:
-            The text displayed by the label.
-        """
+        """The text displayed by the label."""
         return self._text
 
     @text.setter

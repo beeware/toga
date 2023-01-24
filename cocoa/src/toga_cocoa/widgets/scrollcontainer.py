@@ -12,7 +12,6 @@ class ScrollContainer(Widget):
         self.native.autohidesScrollers = True
         self.native.borderType = NSNoBorder
         self.native.backgroundColor = NSColor.windowBackgroundColor
-        # self.native.backgroundColor = NSColor.blueColor
 
         self.native.translatesAutoresizingMaskIntoConstraints = False
         self.native.autoresizesSubviews = True

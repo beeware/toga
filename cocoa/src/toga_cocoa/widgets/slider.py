@@ -1,8 +1,13 @@
 from travertino.size import at_least
 
-from toga_cocoa.libs import SEL, NSEventType, NSSlider, objc_method
+from toga_cocoa.libs import (
+    SEL,
+    NSEventType,
+    NSSlider,
+    objc_method,
+    objc_property,
+)
 
-from ..libs import objc_property
 from .base import Widget
 
 
@@ -46,7 +51,7 @@ class Slider(Widget):
             self.native.numberOfTickMarks = tick_count
 
     def get_value(self):
-        return self.native.floatValue
+        return self.native.doubleValue
 
     def set_value(self, value):
         self.native.doubleValue = value

@@ -28,7 +28,7 @@ from .window import Window
 
 
 def not_implemented(feature):
-    print(f"[Android] Not implemented: {feature}")
+    print(f"[Android] Not implemented: {feature}")  # pragma: nocover
 
 
 __all__ = [

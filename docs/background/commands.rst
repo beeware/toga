@@ -84,7 +84,7 @@ The following is an example of using menus and commands::
             label='Example command',
             tooltip='Tells you when it has been activated',
             shortcut='k',
-            icon='icons/pretty.png'
+            icon='icons/pretty.png',
             group=stuff_group,
             section=0
         )

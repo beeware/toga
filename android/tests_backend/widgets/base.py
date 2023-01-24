@@ -3,6 +3,7 @@ from pytest import skip
 
 class SimpleProbe:
     def __init__(self, widget):
+        self.widget = widget
         self.native = widget._impl.native
         assert isinstance(self.native, self.native_class)
 
@@ -14,6 +15,11 @@ class SimpleProbe:
                 break
         else:
             raise AssertionError(f"cannot find {self.native} in {container_native}")
+
+    async def redraw(self):
+        """Request a redraw of the app, waiting until that redraw has completed."""
+        # Refresh the layout
+        self.widget.window.content.refresh()
 
     @property
     def enabled(self):
