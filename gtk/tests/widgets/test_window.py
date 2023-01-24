@@ -18,9 +18,6 @@ except ImportError:
 
 import toga
 
-from .utils import TreeModelListener
-
-
 def handle_events():
     while Gtk.events_pending():
         Gtk.main_iteration_do(blocking=False)
