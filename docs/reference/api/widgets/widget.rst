@@ -11,12 +11,11 @@ Widget
 .. |y| image:: /_static/yes.png
     :width: 16
 
-The widget class is a base class for all widgets and not designed to be instantiated directly.
+The base class of all widgets. This class should not be be instantiated directly.
 
 Reference
 ---------
 
 .. autoclass:: toga.widgets.base.Widget
    :members:
-   :undoc-members:
    :inherited-members:

@@ -11,23 +11,10 @@ NOT_PROVIDED = object()
 
 
 class Button(Widget):
-    """A clickable button widget.
-
-    Args:
-        text (str): Text to be shown on the button.
-        id (str): An identifier for this widget.
-        style (:obj:`Style`): An optional style object. If no style is provided then
-            a new one will be created for the widget.
-        on_press (:obj:`callable`): Function to execute when pressed.
-        enabled (bool): Whether or not interaction with the button is possible,
-            defaults to `True`.
-    """
-
     def __init__(
         self,
         text=NOT_PROVIDED,  # BACKWARDS COMPATIBILITY: The default value
-        # can be removed when the handling for
-        # `label` is removed
+        # can be removed when the handling for `label` is removed
         id=None,
         style=None,
         on_press=None,
@@ -35,6 +22,21 @@ class Button(Widget):
         factory=None,  # DEPRECATED!
         label=None,  # DEPRECATED!
     ):
+        """Create a new button widget.
+
+        Inherits from :class:`~toga.widgets.base.Widget`.
+
+        :param text: The text to display on the button.
+        :param id: The ID for the widget.
+        :param style: A style object. If no style is provided, a default style
+            will be applied to the widget.
+        :param on_press: A handler that will be invoked when the button is
+            pressed.
+        :param enabled: Is the button enabled (i.e., can it be pressed?).
+            Optional; by default, buttons are created in an enabled state.
+        :param factory: *Deprecated*
+        :param label: *Deprecated*; renamed ``text``.
+        """
         super().__init__(id=id, style=style, enabled=enabled)
 
         ######################################################################
@@ -86,10 +88,7 @@ class Button(Widget):
 
     @property
     def text(self):
-        """
-        Returns:
-            The button text as a ``str``
-        """
+        """The text displayed on the button."""
         return self._text
 
     @text.setter
@@ -103,20 +102,11 @@ class Button(Widget):
 
     @property
     def on_press(self):
-        """The handler to invoke when the button is pressed.
-
-        Returns:
-            The function ``callable`` that is called on button press.
-        """
+        """The handler to invoke when the button is pressed."""
         return self._on_press
 
     @on_press.setter
     def on_press(self, handler):
-        """Set the handler to invoke when the button is pressed.
-
-        Args:
-            handler (:obj:`callable`): The handler to invoke when the button is pressed.
-        """
         self._on_press = wrapped_handler(self, handler)
         self._impl.set_on_press(self._on_press)
 
@@ -126,13 +116,11 @@ class Button(Widget):
     # label replaced with text
     @property
     def label(self):
-        """Button text.
+        """The text label displayed on the button.
 
-        **DEPRECATED: renamed as text**
-
-        Returns:
-            The button text as a ``str``
+        :deprecated: :py:attr:`label` has been renamed :py:attr:`~text`.
         """
+
         warnings.warn("Button.label has been renamed Button.text", DeprecationWarning)
         return self.text
 

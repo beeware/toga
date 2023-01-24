@@ -6,7 +6,7 @@ version = get_version(root="..")
 setup(
     version=version,
     install_requires=[
-        "rubicon-objc>=0.4.1",
-        "toga-core==%s" % version,
+        "rubicon-objc>=0.4.4",
+        f"toga-core=={version}",
     ],
 )

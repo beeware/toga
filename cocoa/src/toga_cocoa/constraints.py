@@ -15,7 +15,7 @@ class Constraints:
         Args:
             widget (:class: toga-cocoa.Widget): The widget that should be constrained.
         """
-        self._widget = widget
+        self.widget = widget
         self._container = None
 
         self.width_constraint = None
@@ -23,14 +23,6 @@ class Constraints:
 
         self.left_constraint = None
         self.top_constraint = None
-
-    @property
-    def widget(self):
-        return self._widget
-
-    @widget.setter
-    def widget(self, value):
-        self._widget = value
 
     @property
     def container(self):

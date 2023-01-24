@@ -1,5 +1,5 @@
 from unittest import TestCase
-from unittest.mock import Mock
+from unittest.mock import Mock, call
 
 from travertino.node import Node
 from travertino.size import at_least
@@ -48,12 +48,16 @@ class TestPackStyleApply(TestCase):
     def test_set_default_right_textalign_when_rtl(self):
         root = TestNode("app", style=Pack(text_align=None, text_direction=RTL))
         root.style.reapply()
-        root._impl.set_alignment.assert_called_once_with(RIGHT)
+        # Two calls; one caused by text_align, one because text_direction
+        # implies a change to text alignment.
+        assert root._impl.set_alignment.mock_calls == [call(RIGHT), call(RIGHT)]
 
     def test_set_default_left_textalign_when_no_rtl(self):
         root = TestNode("app", style=Pack(text_align=None))
         root.style.reapply()
-        root._impl.set_alignment.assert_called_once_with(LEFT)
+        # Two calls; one caused by text_align, one because text_direction
+        # implies a change to text alignment.
+        assert root._impl.set_alignment.mock_calls == [call(LEFT), call(LEFT)]
 
     def test_set_center_alignment(self):
         root = TestNode("app", style=Pack(text_align="center"))
