@@ -18,7 +18,7 @@ with open("src/toga_cocoa/__init__.py", encoding="utf8") as version_file:
 setup(
     version=version,
     install_requires=[
-        "rubicon-objc>=0.4.5rc1",
-        f"toga-core=={version}",
+        "rubicon-objc >= 0.4.5rc1, < 0.5.0",
+        f"toga-core == {version}",
     ],
 )
