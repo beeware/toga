@@ -104,7 +104,8 @@ class Window:
         # the be the widget's native object.
         # Alaway avoid using deprecated widgets and methods.
         if self.layout:
-            self.layout.remove(self.toolbar_native)
+            if self.toolbar_native:
+                self.layout.remove(self.toolbar_native)
             self.native.remove(self.layout)
 
         self.layout = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
