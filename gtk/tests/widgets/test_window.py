@@ -41,7 +41,7 @@ class TestGtkWindow(unittest.TestCase):
 
     def test_set_content_visibility_effects(self):
         # Window is not showing, boxes cannot be drawn
-        self.assertEqual(self.window._impl.native.get_property("visible"), False)
+        self.assertEqual(self.window._impl.get_visible(), False)
         self.assertEqual(self.box1._impl.native.is_drawable(), False)
         self.assertEqual(self.box2._impl.native.is_drawable(), False)
 
@@ -52,8 +52,8 @@ class TestGtkWindow(unittest.TestCase):
         self.assertEqual(self.window.content._impl.native.is_drawable(), False)
 
         self.window.show()
-        self.assertEqual(self.window._impl.native.get_property("visible"), True)
+        self.assertEqual(self.window._impl.get_visible(), True)
         self.assertEqual(self.window.content._impl.native.is_drawable(), True)
 
         self.window.content = self.box1
-        self.assertEqual(self.window.content._impl.native.get_property("visible"), True)
+        self.assertEqual(self.window._impl.get_visible(), True)
