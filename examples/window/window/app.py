@@ -106,10 +106,10 @@ class WindowDemoApp(toga.App):
         self.on_exit = self.exit_handler
 
         # Label to show responses.
-        self.label = toga.Label("Ready.", style=Pack(font_size=14))
+        self.label = toga.Label("Ready.")
 
         # Buttons
-        btn_style = Pack(flex=1, padding=5, font_size=14)
+        btn_style = Pack(flex=1, padding=5)
         btn_do_origin = toga.Button(
             "Go to origin", on_press=self.do_origin, style=btn_style
         )
@@ -146,14 +146,14 @@ class WindowDemoApp(toga.App):
                 btn_change_content,
                 btn_hide,
             ],
-            style=Pack(direction=COLUMN, font_size=14),
+            style=Pack(direction=COLUMN),
         )
 
         btn_change_back = toga.Button(
             "Go back", on_press=self.do_prev_content, style=btn_style
         )
         self.next_box = toga.Box(
-            children=[btn_change_back], style=Pack(direction=COLUMN, font_size=14)
+            children=[btn_change_back], style=Pack(direction=COLUMN)
         )
 
         restore_command = toga.Command(
