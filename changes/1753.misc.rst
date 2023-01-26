@@ -1,1 +1,0 @@
-A bug on Linux GTK was fixed where setting a window's content after it is showing doesn't make the new content show
