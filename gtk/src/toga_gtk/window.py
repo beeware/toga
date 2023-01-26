@@ -102,7 +102,7 @@ class Window:
     def set_content(self, widget):
         # Construct the top-level layout, and set the window's view to
         # the be the widget's native object.
-        # Alaway avoid using deprecated widgets and methods.
+        # Start by purging any existing content from the existing layout.
         if self.layout:
             if self.toolbar_native:
                 self.layout.remove(self.toolbar_native)
@@ -126,6 +126,8 @@ class Window:
         for child in widget.interface.children:
             child._impl.container = widget
 
+        # If the window is visible, call show() to force a redisplay of window
+        # content.
         if self.get_visible():
             self.show()
 
