@@ -1,3 +1,5 @@
+from toga.colors import TRANSPARENT
+
 from . import Gtk
 
 TOGA_DEFAULT_STYLES = b"""
@@ -37,12 +39,20 @@ def get_color_css(value):
 
 
 def get_bg_color_css(value):
-    return (
-        ".toga-bg-color {"
-        f"background-color: rgba({value.r}, {value.g}, {value.b}, {value.a});"
-        "background-image: none;"
-        "}"
-    )
+    if value == TRANSPARENT:
+        return (
+            ".toga-bg-color {"
+            "background-color: rgba(0, 0, 0, 0);"
+            "background-image: none;"
+            "}"
+        )
+    else:
+        return (
+            ".toga-bg-color {"
+            f"background-color: rgba({value.r}, {value.g}, {value.b}, {value.a});"
+            "background-image: none;"
+            "}"
+        )
 
 
 def get_font_css(value):
