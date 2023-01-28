@@ -11,8 +11,9 @@
 # serve to show the default.
 
 import os
-import re
 import sys
+
+import setuptools_scm
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -54,14 +55,7 @@ copyright = "2013, Russell Keith-Magee"
 # built documents.
 #
 # The full version, including alpha/beta/rc tags.
-with open("../core/src/toga/__init__.py", encoding="utf8") as version_file:
-    version_match = re.search(
-        r"^__version__ = ['\"]([^'\"]*)['\"]", version_file.read(), re.M
-    )
-    if version_match:
-        release = version_match.group(1)
-    else:
-        raise RuntimeError("Unable to find version string.")
+release = setuptools_scm.get_version(root="..", relative_to=__file__)
 
 # The short X.Y version.
 version = ".".join(release.split(".")[:2])

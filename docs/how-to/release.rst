@@ -21,10 +21,6 @@ The procedure for cutting a new release is as follows:
 
    Check that the HEAD of release now matches upstream/main.
 
-#. If necessary, update the version number::
-
-    $ ./release.sh bump 1.2.3
-
 #. Ensure that the release notes are up to date. Run::
 
          $ tox -e towncrier -- --draft
@@ -80,10 +76,6 @@ The procedure for cutting a new release is as follows:
 #. Wait for the packages to appear on PyPI (`toga-core
    <https://pypi.org/project/toga-core/>`__, `toga-cocoa
    <https://pypi.org/project/toga-cocoa/>`__, etc.).
-
-#. Set the version number for the next release::
-
-    $ ./release.sh bump 1.2.4
 
 Congratulations, you've just published a release!
 

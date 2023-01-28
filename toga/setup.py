@@ -1,7 +1,7 @@
-#!/usr/bin/env python
 from setuptools import setup
+from setuptools_scm import get_version
 
-version = "0.3.0.dev39"
+version = get_version(root="..")
 
 setup(
     version=version,
