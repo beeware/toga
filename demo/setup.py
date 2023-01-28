@@ -1,4 +1,11 @@
-#!/usr/bin/env python
 from setuptools import setup
+from setuptools_scm import get_version
 
-setup()
+version = get_version(root="..")
+
+setup(
+    version=version,
+    install_requires=[
+        f"toga=={version}",
+    ],
+)
