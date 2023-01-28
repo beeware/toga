@@ -1,0 +1,1 @@
+Changes in the root content of a window is now correctly applied on GTK.
