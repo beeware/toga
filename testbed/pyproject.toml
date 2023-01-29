@@ -85,9 +85,8 @@ test_sources = [
 requires = [
     "../android"
 ]
-
-# TODO: replace with extractPackages
-build_gradle_extra_content = "android.defaultConfig.python.pyc.src false"
+# Coverage requires access to individual .py files.
+build_gradle_extra_content = "android.defaultConfig.python.extractPackages 'toga_android'"
 
 [tool.briefcase.app.testbed.web]
 requires = [
