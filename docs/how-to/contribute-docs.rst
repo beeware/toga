@@ -43,5 +43,5 @@ To build the documentation locally, :ref:`set up a development environment
 
       C:\...>tox -e docs
 
-The output of the file should be in the ``build/sphinx/html`` folder. If there
+The output of the build should be in the ``docs/_build`` folder. If there
 are any markup problems, they'll raise an error.
