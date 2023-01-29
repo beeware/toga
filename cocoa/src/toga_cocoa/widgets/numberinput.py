@@ -39,7 +39,7 @@ class TogaStepper(NSStepper):
     @objc_method
     def controlTextDidChange_(self, notification) -> None:
         try:
-            value = str(self._impl.input.stringValue)
+            value = str(self.impl.input.stringValue)
             # Try to convert to a decimal. If the value isn't a number,
             # this will raise InvalidOperation
             Decimal(value)

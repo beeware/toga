@@ -1,0 +1,1 @@
+Fix updating the value and calling on_change for NumberInput widgets in Cococa.
