@@ -1,6 +1,7 @@
 from . import dialogs
 from .app import App, MainWindow
 from .colors import native_color
+from .command import Command
 from .fonts import Font
 from .icons import Icon
 from .images import Image
@@ -31,8 +32,6 @@ from .widgets.textinput import TextInput
 from .widgets.webview import WebView
 from .window import Window
 
-# from .command import Command
-
 
 def not_implemented(feature):
     print(f"[iOS] Not implemented: {feature}")  # pragma: nocover
@@ -42,7 +41,7 @@ __all__ = [
     "not_implemented",
     "App",
     "MainWindow",
-    # 'Command',
+    "Command",
     # Resources
     "native_color",  # colors
     "Font",

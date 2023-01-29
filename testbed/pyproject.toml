@@ -70,6 +70,9 @@ requires = [
 
 # Mobile deployments
 [tool.briefcase.app.testbed.iOS]
+test_sources = [
+    "../iOS/tests_backend",
+]
 requires = [
     "../iOS",
     "std-nslog~=1.0.0",

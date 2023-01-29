@@ -40,10 +40,6 @@ class ScrollContainer(Widget):
                 scrollable_content.interface.style.padding_top
                 + scrollable_content.interface.style.padding_bottom
             )
-            # pad the scrollview for the statusbar offset
-            padding_vertical = (
-                padding_vertical + scrollable_content.viewport.statusbar_height
-            )
         else:
             content_height = self.native.frame.size.height
 
@@ -109,7 +105,7 @@ class ScrollContainer(Widget):
         if self.interface.content is not None:
             self.interface.content._impl.native.removeFromSuperview()
         self.native.addSubview(widget.native)
-        widget.viewport = iOSViewport(self.native)
+        widget.viewport = iOSViewport(widget)
 
         for child in widget.interface.children:
             child._impl.container = widget
