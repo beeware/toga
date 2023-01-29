@@ -74,9 +74,9 @@ class Widget:
     def set_bounds(self, x, y, width, height):
         offset_y = 0
         if self.container:
-            offset_y = self.container.viewport.statusbar_height
+            offset_y = self.container.viewport.top_offset
         elif self.viewport:
-            offset_y = self.viewport.statusbar_height
+            offset_y = self.viewport.top_offset
         self.constraints.update(x, y + offset_y, width, height)
 
     def set_alignment(self, alignment):
@@ -116,8 +116,8 @@ class Widget:
         child.container = None
 
     def add_constraints(self):
-        self.native.translatesAutoresizingMaskIntoConstraints = False
         self.constraints = Constraints(self)
+        self.native.translatesAutoresizingMaskIntoConstraints = False
 
     def rehint(self):
         pass

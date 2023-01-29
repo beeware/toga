@@ -18,6 +18,16 @@ from .properties import (  # noqa: F401
     test_text_width_change,
 )
 
+test_font = mark.skipif(
+    current_platform in {"iOS"},
+    reason="font changes don't alter size",
+)(test_font)
+
+test_text = mark.skipif(
+    current_platform in {"iOS"},
+    reason="round trip empty strings don't work",
+)(test_text)
+
 
 @fixture
 async def widget():
@@ -55,7 +65,7 @@ async def test_background_color_transparent(widget, probe):
 
 
 @mark.skipif(
-    current_platform in {"android"},
+    current_platform in {"android", "iOS"},
     reason="await redraw() not implemented",
 )
 @mark.skipif(

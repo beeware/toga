@@ -31,7 +31,7 @@ async def test_init(widget, probe, on_change):
 
 
 @mark.skipif(
-    current_platform in {"windows", "macOS", "linux"},
+    current_platform in ["windows", "macOS", "iOS", "linux"],
     reason="on_change called 2 times",
 )
 @mark.skipif(current_platform == "android", reason="position is 0.0")
@@ -46,7 +46,7 @@ async def test_value(widget, probe, on_change):
 
 
 @mark.skipif(
-    current_platform in {"android", "windows", "macOS"},
+    current_platform in {"android", "windows", "macOS", "iOS"},
     reason="on_change called 0 times",
 )
 @mark.skipif(
