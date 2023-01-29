@@ -15,7 +15,7 @@ class ButtonProbe(SimpleProbe):
 
     @property
     def color(self):
-        xfail("Can't get/set the text color of a button on macOS")
+        xfail("Can't get/set the text color of a button on iOS")
 
     @property
     def font(self):
