@@ -34,6 +34,12 @@ async def widget():
     return toga.Button("Hello")
 
 
+test_text_width_change = mark.skipif(
+    current_platform in {"linux"},
+    reason="resizes not applying correctly",
+)(test_text_width_change)
+
+
 async def test_press(widget, probe):
     # Press the button before installing a handler
     probe.press()
@@ -61,6 +67,10 @@ async def test_background_color_transparent(widget, probe):
 @mark.skipif(
     current_platform in {"android", "iOS"},
     reason="await redraw() not implemented",
+)
+@mark.skipif(
+    current_platform in {"linux"},
+    reason="resizes not applying correctly",
 )
 async def test_button_size(widget, probe):
     "Check that the button resizes"

@@ -37,6 +37,9 @@ test_sources = [
 ]
 
 [tool.briefcase.app.testbed.linux]
+test_sources = [
+    "../gtk/tests_backend",
+]
 requires = [
     "../gtk",
 ]

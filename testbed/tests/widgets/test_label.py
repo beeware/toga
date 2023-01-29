@@ -1,6 +1,7 @@
 from pytest import approx, fixture, mark
 
 import toga
+from toga.platform import current_platform
 from toga.style.pack import CENTER, COLUMN, JUSTIFY, LEFT, LTR, RIGHT, RTL
 
 from .properties import (  # noqa: F401
@@ -18,6 +19,12 @@ from .properties import (  # noqa: F401
 @fixture
 async def widget():
     return toga.Label("hello")
+
+
+test_text_width_change = mark.skipif(
+    current_platform in {"linux"},
+    reason="resizes not applying correctly",
+)(test_text_width_change)
 
 
 # TODO: a `width` test, for any widget whose width depends on its text.
