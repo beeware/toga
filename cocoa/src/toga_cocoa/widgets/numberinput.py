@@ -206,6 +206,10 @@ class NumberInput(Widget):
             # converted to a Decimal.
             self.input.stringValue = value
 
+    def set_enabled(self, value):
+        self.input.enabled = value
+        self.stepper.enabled = value
+
     def rehint(self):
         # Height of a text input is known and fixed.
         stepper_size = self.input.intrinsicContentSize()
