@@ -41,8 +41,10 @@ class SelectionApp(toga.App):
         self.selection = toga.Selection(
             items=self.OPTIONS,
             style=Pack(
-                font_family="monospace", font_size=int(self.lbl_fontsize.text), font_style="italic"
-            )
+                font_family="monospace",
+                font_size=int(self.lbl_fontsize.text),
+                font_style="italic",
+            ),
         )
 
         self.main_window.content = toga.Box(
