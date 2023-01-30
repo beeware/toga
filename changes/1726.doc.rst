@@ -1,1 +1,0 @@
-Corrected link to toga docs for first time contributors.

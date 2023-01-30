@@ -1,1 +1,0 @@
-MultilineTextView can now be programmatically scrolled to the top or bottom of the text field.

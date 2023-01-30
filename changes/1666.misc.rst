@@ -1,1 +1,0 @@
-The docstring for the ``hide`` method was corrected.

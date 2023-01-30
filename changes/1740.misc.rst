@@ -1,1 +1,0 @@
-Stale references to the master branch in README badges was corrected.

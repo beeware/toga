@@ -1,1 +1,0 @@
-Stale references to the master branch was corrected to the main branch in the whole project.

@@ -1,1 +1,0 @@
-Remove Android test discovery workarounds

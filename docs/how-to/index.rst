@@ -16,4 +16,4 @@ stand alone.
    Get started <get-started>
    Contribute code to Toga <contribute-code>
    Contribute documentation to Toga <contribute-docs>
-   Cut a Toga release <release>
+   internal/index

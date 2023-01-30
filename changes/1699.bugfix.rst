@@ -1,1 +1,0 @@
-DateTime widgets on Windows are able to generate dates that are independent of the system locale.

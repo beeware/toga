@@ -1,1 +1,0 @@
-An error caused by retrieving `app.current_window` on macOS has been resolved.

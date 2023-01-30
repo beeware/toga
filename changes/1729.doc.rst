@@ -1,1 +1,0 @@
-Updated documentation for code contributors with installation of tox and information about naming change files.

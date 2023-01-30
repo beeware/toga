@@ -1,1 +1,0 @@
-The Rubicon-ObjC version specifier was updated to an RC version because 0.4.4 was yanked, but we need the new features in the main branch.

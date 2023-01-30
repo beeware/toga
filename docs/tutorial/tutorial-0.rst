@@ -58,7 +58,7 @@ Next, install Toga into your virtual environment:
 
     .. code-block:: bash
 
-      (venv) $ python -m pip install --pre toga
+      (venv) $ python -m pip install toga
 
   .. group-tab:: Linux
 
@@ -72,7 +72,7 @@ Next, install Toga into your virtual environment:
       (venv) $ sudo apt-get update
       (venv) $ sudo apt-get install python3-dev python3-gi python3-gi-cairo libgirepository1.0-dev libcairo2-dev libpango1.0-dev libwebkitgtk-3.0-0 gir1.2-webkit2-3.0
 
-      # Ubuntu 18.04 / Ubuntu 20.04 / Debian 10 / Debian 11
+      # Ubuntu 18.04+ / Debian 10+
       (venv) $ sudo apt-get update
       (venv) $ sudo apt-get install python3-dev python3-gi python3-gi-cairo libgirepository1.0-dev libcairo2-dev libpango1.0-dev libwebkit2gtk-4.0-37 gir1.2-webkit2-4.0
 
@@ -91,13 +91,13 @@ Next, install Toga into your virtual environment:
 
     .. code-block:: bash
 
-      (venv) $ python -m pip install --pre toga
+      (venv) $ python -m pip install toga
 
   .. group-tab:: Windows
 
     .. code-block:: doscon
 
-      (venv) C:\...>python -m pip install --pre toga
+      (venv) C:\...>python -m pip install toga
 
 If you get other errors, please check that you followed `the prerequisite
 <https://github.com/beeware/toga#prerequisites>`_ instructions.
@@ -253,7 +253,7 @@ Occasionally you might run into issues running Toga on your computer.
 Before you run the app, you'll need to install toga. Although you *can* install
 toga by just running::
 
-    $ python -m pip install --pre toga
+    $ python -m pip install toga
 
 We strongly suggest that you **don't** do this. We'd suggest creating a `virtual
 environment`_ first, and installing toga in that virtual environment as directed

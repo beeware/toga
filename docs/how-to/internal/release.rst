@@ -1,6 +1,6 @@
-==============================
+=========================
 How to cut a Toga release
-==============================
+=========================
 
 The release infrastructure for Toga is semi-automated, using GitHub
 Actions to formally publish releases.
@@ -34,7 +34,7 @@ The procedure for cutting a new release is as follows:
 #. Tag the release, and push the branch and tag upstream::
 
     $ git tag v1.2.3
-    $ git push upstream main
+    $ git push upstream HEAD:main
     $ git push upstream v1.2.3
 
 #. Pushing the tag will start a workflow to create a draft release on GitHub.

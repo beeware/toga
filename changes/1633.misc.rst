@@ -1,1 +1,0 @@
-Fixed asyncio warning on iOS, and increased minimum Rubicon version so we can use ``run_forever_cooperatively``.

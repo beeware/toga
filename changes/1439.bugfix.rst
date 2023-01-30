@@ -1,1 +1,0 @@
-Changes in the root content of a window are now correctly applied on GTK and iOS.

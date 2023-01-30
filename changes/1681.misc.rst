@@ -1,1 +1,0 @@
-Updated ncipollo/release-action from 1.11.1 to 1.11.2.

@@ -1,1 +1,0 @@
-Moved all packages to be top-level directories in the repository.

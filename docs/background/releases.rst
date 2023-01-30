@@ -3,12 +3,21 @@ Release History
 
 .. towncrier release notes start
 
-0.3.0
------
+0.3.0 (2023-01-30)
+==================
 
-* Move to a three-layered Interface/Implementation/Native code structure
-* Added a test framework
-* Added a simplified "Pack" layout
+Features
+--------
+
+* Widgets now use a three-layered (Interface/Implementation/Native) structure.
+* A GUI testing framework was added.
+* A simplified "Pack" layout algorithm was added.
+* Added a web backend.
+
+Bugfixes
+--------
+
+* Too many to count!
 
 0.2.15
 ------

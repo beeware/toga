@@ -1,1 +1,0 @@
-Fix setting enabled state on NumberInput widget in Cocoa backend.

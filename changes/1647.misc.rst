@@ -1,1 +1,0 @@
-Bump codecov/codecov-action from 1 to 3.
