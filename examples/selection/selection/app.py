@@ -8,6 +8,7 @@ class SelectionApp(toga.App):
     YTTERBIUM = "Ytterbium"
     THULIUM = "Thulium"
     OPTIONS = [CARBON, YTTERBIUM, THULIUM]
+    lbl_fontsize = None
 
     def startup(self):
         # Main window of the application with title and size
@@ -17,14 +18,39 @@ class SelectionApp(toga.App):
         label_style = Pack(flex=1, padding_right=24)
         box_style = Pack(direction=ROW, padding=10)
 
+        # Change font size
+        lbl_fontlabel = toga.Label("Font size =")
+        self.lbl_fontsize = toga.Label("14")
+        btn_reduce_size = toga.Button(
+            " - ", on_press=self.reduce_fontsize, style=Pack(width=40)
+        )
+        btn_increase_size = toga.Button(
+            " + ", on_press=self.increase_fontsize, style=Pack(width=40)
+        )
+        font_box = toga.Box(
+            children=[
+                lbl_fontlabel,
+                self.lbl_fontsize,
+                btn_reduce_size,
+                btn_increase_size,
+            ],
+            style=box_style,
+        )
+
         # Add the content on the main window
-        self.selection = toga.Selection(items=self.OPTIONS)
+        self.selection = toga.Selection(
+            items=self.OPTIONS,
+            style=Pack(
+                font_family="monospace", font_size=int(self.lbl_fontsize.text), font_style="italic"
+            )
+        )
 
         self.main_window.content = toga.Box(
             children=[
                 toga.Box(
                     style=box_style,
                     children=[
+                        font_box,
                         toga.Label("Select an element", style=label_style),
                         self.selection,
                     ],
@@ -113,6 +139,18 @@ class SelectionApp(toga.App):
         # get the current value of the slider with `selection.value`
 
         print(f"The selection widget changed to {selection.value}")
+
+    def reduce_fontsize(self, widget):
+        font_size = int(self.lbl_fontsize.text) - 1
+        self.lbl_fontsize.text = str(font_size)
+        font = toga.Font("monospace", font_size, style="italic")
+        self.selection._impl.set_font(font)
+
+    def increase_fontsize(self, widget):
+        font_size = int(self.lbl_fontsize.text) + 1
+        self.lbl_fontsize.text = str(font_size)
+        font = toga.Font("monospace", font_size, style="italic")
+        self.selection._impl.set_font(font)
 
 
 def main():

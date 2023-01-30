@@ -40,6 +40,10 @@ class Selection(Widget):
     def set_on_select(self, handler):
         pass
 
+    def set_font(self, font):
+        if font:
+            self.native.Font = font.bind(self.interface.factory).native
+
     def rehint(self):
         self.interface.intrinsic.width = at_least(self.native.PreferredSize.Width)
         self.interface.intrinsic.height = self.native.PreferredSize.Height
