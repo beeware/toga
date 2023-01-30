@@ -1,0 +1,16 @@
+name: Automation Change Note
+
+#######
+# Adds a changenote to PRs from automation such as Dependabot.
+#######
+
+on:
+  push:
+    branches:
+      - 'dependabot/**'
+
+jobs:
+  changenote:
+    name: Automation Change Note
+    uses: beeware/.github/.github/workflows/automation-changenote.yml@main
+    secrets: inherit
