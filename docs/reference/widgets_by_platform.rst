@@ -2,8 +2,8 @@
 Toga APIs by platform
 =====================
 
-* |y| = stable
-* |b| = beta
+| |y| = stable
+| |b| = beta
 
 Core Components
 ===============
