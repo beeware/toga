@@ -1,14 +1,30 @@
-div.body table.widget-descriptions td p
-{
-    text-align: center;
+body {
+    --color-beta: #c8c8c8;
+    --color-beta-dark: #484848;
 }
-div.body table.widget-support th p,
-div.body table.widget-support td p {
+body[data-theme="dark"] {
+    --color-beta: var(--color-beta-dark);
+}
+@media (prefers-color-scheme: dark) {
+    body:not([data-theme="light"]) {
+        --color-beta: var(--color-beta-dark);
+    }
+}
+
+div.widget-descriptions td p,
+div.widget-support td p {
     text-align: center;
 }
 
-div.body table.widget-descriptions td:first-of-type p,
-div.body table.widget-descriptions th:first-of-type p
-{
+div.widget-descriptions th:first-of-type p {
     text-align: left;
+}
+
+span.stable {
+    font-weight: bold;
+}
+
+span.beta {
+    font-weight: bold;
+    color: var(--color-beta);
 }

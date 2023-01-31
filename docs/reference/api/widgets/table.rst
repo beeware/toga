@@ -8,9 +8,6 @@ Table
    :included_cols: 4,5,6,7,8,9
    :exclude: {0: '(?!^(Table|Component)$)'}
 
-.. |y| image:: /_static/yes.png
-    :width: 16
-
 The table widget is a widget for displaying tabular data. It can be instantiated with the list of headings and then data rows
 can be added.
 

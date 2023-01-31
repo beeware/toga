@@ -8,9 +8,6 @@ MainWindow
    :included_cols: 4,5,6,7,8,9
    :exclude: {0: '(?!(MainWindow|Component))'}
 
-.. |y| image:: /_static/yes.png
-    :width: 16
-
 A window for displaying components to the user
 
 Usage

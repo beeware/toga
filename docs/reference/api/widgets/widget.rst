@@ -8,9 +8,6 @@ Widget
    :included_cols: 4,5,6,7,8,9
    :exclude: {0: '(?!^(Widget|Component)$)'}
 
-.. |y| image:: /_static/yes.png
-    :width: 16
-
 The base class of all widgets. This class should not be be instantiated directly.
 
 Reference

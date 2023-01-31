@@ -8,9 +8,6 @@ Image View
    :included_cols: 4,5,6,7,8,9
    :exclude: {0: '(?!^(ImageView|Component)$)'}
 
-.. |y| image:: /_static/yes.png
-    :width: 16
-
 The Image View is a container for an image to be rendered on the display
 
 Usage

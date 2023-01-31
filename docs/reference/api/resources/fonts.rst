@@ -8,9 +8,6 @@ Font
    :included_cols: 4,5,6,7,8,9
    :exclude: {0: '(?!(Font|Component))'}
 
-.. |y| image:: /_static/yes.png
-    :width: 16
-
 The font class is used for abstracting the platforms implementation of fonts.
 
 Reference

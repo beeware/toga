@@ -8,9 +8,6 @@ Text Input
    :included_cols: 4,5,6,7,8,9
    :exclude: {0: '(?!^(TextInput|Component)$)'}
 
-.. |y| image:: /_static/yes.png
-    :width: 16
-
 The text input widget is a simple input field for user entry of text data.
 
 .. figure:: /reference/images/TextInput.jpeg

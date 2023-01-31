@@ -8,9 +8,6 @@ WebView
    :included_cols: 4,5,6,7,8,9
    :exclude: {0: '(?!^(WebView|Component)$)'}
 
-.. |y| image:: /_static/yes.png
-    :width: 16
-
 The Web View widget is used for displaying an embedded browser window within an application.
 
 Both sites served by a web server and local content can be displayed. Due to security

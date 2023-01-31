@@ -8,9 +8,6 @@ Option Container
    :included_cols: 4,5,6,7,8,9
    :exclude: {0: '(?!(OptionContainer|Component))'}
 
-.. |y| image:: /_static/yes.png
-    :width: 16
-
 The Option Container widget is a user-selection control for choosing from a pre-configured list of controls, like a tab view.
 
 .. figure:: /reference/images/OptionContainer.jpeg

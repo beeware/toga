@@ -8,9 +8,6 @@ Tree
    :included_cols: 4,5,6,7,8,9
    :exclude: {0: '(?!^(Tree|Component)$)'}
 
-.. |y| image:: /_static/yes.png
-    :width: 16
-
 The tree widget is still under development.
 
 Usage

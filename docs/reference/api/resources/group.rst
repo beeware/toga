@@ -8,9 +8,6 @@ Group
    :included_cols: 4,5,6,7,8,9
    :exclude: {0: '(?!(Group|Component))'}
 
-.. |y| image:: /_static/yes.png
-    :width: 16
-
 
 
 Usage

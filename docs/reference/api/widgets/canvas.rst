@@ -8,9 +8,6 @@ Canvas
    :included_cols: 4,5,6,7,8,9
    :exclude: {0: '(?!(Canvas|Component))'}
 
-.. |y| image:: /_static/yes.png
-    :width: 16
-
 The canvas is used for creating a blank widget that you can draw on.
 
 Usage

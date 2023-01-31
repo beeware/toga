@@ -8,9 +8,6 @@ Switch
    :included_cols: 4,5,6,7,8,9
    :exclude: {0: '(?!^(Switch|Component)$)'}
 
-.. |y| image:: /_static/yes.png
-    :width: 16
-
 The switch widget is a clickable button with two stable states, True (on,
 checked) and False (off, unchecked).
 

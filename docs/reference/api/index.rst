@@ -67,9 +67,6 @@ Resources
  :doc:`Image </reference/api/resources/images>`      An image
 =================================================== =================================
 
-.. |y| image:: /_static/yes.png
-    :width: 16
-
 .. toctree::
    :hidden:
 

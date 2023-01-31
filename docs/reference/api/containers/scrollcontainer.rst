@@ -8,9 +8,6 @@ Scroll Container
    :included_cols: 4,5,6,7,8,9
    :exclude: {0: '(?!(ScrollContainer|Component))'}
 
-.. |y| image:: /_static/yes.png
-    :width: 16
-
 The Scroll Container is similar to the iframe or scrollable div element in HTML, it contains an object with
 its own scrollable selection.
 

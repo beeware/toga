@@ -1,6 +1,9 @@
-=========================
-Toga widgets by platforms
-=========================
+=====================
+Toga APIs by platform
+=====================
+
+* |y| = stable
+* |b| = beta
 
 Core Components
 ===============
@@ -54,6 +57,3 @@ Resources
    :class: longtable
    :stub-columns: 1
    :widths: 3 1 1 1 1 1 1
-
-.. |y| image:: /_static/yes.png
-    :width: 16
