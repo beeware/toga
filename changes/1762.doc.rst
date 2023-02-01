@@ -1,1 +1,1 @@
-API support tables now indicate beta status using a dimmed check mark.
+API support tables now distinguish stable vs beta status on each platform.
