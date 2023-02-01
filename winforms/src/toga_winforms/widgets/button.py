@@ -18,6 +18,9 @@ class Button(Widget):
             if self.interface.on_press:
                 self.interface.on_press(self.interface)
 
+    def get_text(self):
+        return self.native.Text
+
     def set_text(self, text):
         self.native.Text = self.interface.text
         self.rehint()

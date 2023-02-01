@@ -89,14 +89,14 @@ class Button(Widget):
     @property
     def text(self):
         """The text displayed on the button."""
-        return self._text
+        return self._impl.get_text()
 
     @text.setter
     def text(self, value):
         if value is None:
-            self._text = ""
+            value = ""
         else:
-            self._text = str(value)
+            value = str(value)
         self._impl.set_text(value)
         self._impl.rehint()
 
