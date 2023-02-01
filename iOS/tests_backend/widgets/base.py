@@ -1,5 +1,3 @@
-from pytest import skip
-
 # From UIControl.h
 UIControlEventTouchDown = 1 << 0
 UIControlEventTouchDownRepeat = 1 << 1
@@ -67,5 +65,4 @@ class SimpleProbe:
         return self.native.frame.size.height
 
     def press(self):
-        skip("Can't simulate button presses yet")
-        # ?? self.native.sendActionsForControlEvents(UIControlEventTouchUpInside)
+        self.native.sendActionsForControlEvents(UIControlEventTouchDown)

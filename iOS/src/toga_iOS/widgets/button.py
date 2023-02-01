@@ -42,7 +42,7 @@ class Button(Widget):
         return str(self.native.title)
 
     def set_text(self, text):
-        self.native.setTitle(self.interface.text, forState=UIControlStateNormal)
+        self.native.setTitle(text, forState=UIControlStateNormal)
 
     def set_on_press(self, handler):
         # No special handling required.
