@@ -7,9 +7,15 @@ from toga.colors import TRANSPARENT
 #   * assert_set_get(obj, name, pytest.approx(value)) - for floating point values
 #   * assert_set_get(obj, name, set_value, get_value) - where the two values are different
 def assert_set_get(obj, name, value):
-    """Calls a setter, then asserts that the same value is returned by the getter."""
+    """Calls a setter, then asserts that the same value is returned by the getter.
+
+    :param obj: The object to inspect
+    :param name: The name of the attribute to set and get
+    :param value: The value to set
+    """
     setattr(obj, name, value)
-    assert getattr(obj, name) == value
+    actual = getattr(obj, name)
+    assert actual == value, f"Expected {value!r}, got {actual!r}"
 
 
 def assert_color(actual, expected):

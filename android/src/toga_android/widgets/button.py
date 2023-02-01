@@ -28,15 +28,14 @@ class Button(Widget):
         return str(self.native.getText())
 
     def set_text(self, text):
-        self.native.setText(self.interface.text)
+        self.native.setText(text)
 
     def set_enabled(self, value):
         self.native.setEnabled(value)
 
     def set_font(self, font):
-        if font:
-            self.native.setTextSize(TypedValue.COMPLEX_UNIT_SP, font._impl.get_size())
-            self.native.setTypeface(font._impl.get_typeface(), font._impl.get_style())
+        self.native.setTextSize(TypedValue.COMPLEX_UNIT_SP, font._impl.get_size())
+        self.native.setTypeface(font._impl.get_typeface(), font._impl.get_style())
 
     def set_on_press(self, handler):
         # No special handling required
