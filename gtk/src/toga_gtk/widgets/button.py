@@ -16,7 +16,7 @@ class Button(Widget):
         return self.native.get_label()
 
     def set_text(self, text):
-        self.native.set_label(self.interface.text)
+        self.native.set_label(text)
         self.rehint()
 
     def set_enabled(self, value):

@@ -22,7 +22,7 @@ class Button(Widget):
         return self.native.Text
 
     def set_text(self, text):
-        self.native.Text = self.interface.text
+        self.native.Text = text
         self.rehint()
 
     def set_font(self, font):
