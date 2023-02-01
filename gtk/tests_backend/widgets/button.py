@@ -23,3 +23,6 @@ class ButtonProbe(SimpleProbe):
     @property
     def background_color(self):
         skip("background color probe not implemented")
+
+    def press(self):
+        self.native.clicked()
