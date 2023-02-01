@@ -24,6 +24,9 @@ class Button(Widget):
         self.native = A_Button(self._native_activity)
         self.native.setOnClickListener(TogaOnClickListener(button_impl=self))
 
+    def get_text(self):
+        return str(self.native.getText())
+
     def set_text(self, text):
         self.native.setText(self.interface.text)
 

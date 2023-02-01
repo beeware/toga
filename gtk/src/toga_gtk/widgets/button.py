@@ -12,6 +12,9 @@ class Button(Widget):
         self.native.connect("show", lambda event: self.rehint())
         self.native.connect("clicked", self.gtk_on_press)
 
+    def get_text(self):
+        return self.native.get_label()
+
     def set_text(self, text):
         self.native.set_label(self.interface.text)
         self.rehint()

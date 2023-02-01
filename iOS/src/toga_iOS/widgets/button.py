@@ -38,6 +38,9 @@ class Button(Widget):
         # Add the layout constraints
         self.add_constraints()
 
+    def get_text(self):
+        return str(self.native.title)
+
     def set_text(self, text):
         self.native.setTitle(self.interface.text, forState=UIControlStateNormal)
 
