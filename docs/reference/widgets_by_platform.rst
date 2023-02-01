@@ -2,8 +2,7 @@
 Toga APIs by platform
 =====================
 
-| |y| = stable
-| |b| = beta
+.. include:: api_status_key.rst
 
 Core Components
 ===============

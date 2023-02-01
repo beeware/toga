@@ -8,6 +8,8 @@ A text label for annotating forms or interfaces.
 
 Availability
 ------------
+.. include:: ../../api_status_key.rst
+
 .. rst-class:: widget-support
 .. csv-filter::
    :header-rows: 1

@@ -1,6 +1,8 @@
 Progress Bar
 ============
 
+.. include:: ../../api_status_key.rst
+
 .. rst-class:: widget-support
 .. csv-filter::
    :header-rows: 1

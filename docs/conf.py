@@ -100,12 +100,10 @@ pygments_style = "sphinx"
 # A list of ignored prefixes for module index sorting.
 # modindex_common_prefix = []
 
-# Check marks for API support tables.
+# API status indicators.
 rst_prolog = """
-.. role:: stable
-.. role:: beta
-.. |y| replace:: :stable:`✓`
-.. |b| replace:: :beta:`✓`
+.. |y| replace:: ●
+.. |b| replace:: ○
 """
 
 

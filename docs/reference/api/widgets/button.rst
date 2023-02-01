@@ -11,6 +11,8 @@ A widget that can be pressed or clicked to cause an action in an application.
 Availability
 ------------
 
+.. include:: ../../api_status_key.rst
+
 .. rst-class:: widget-support
 .. csv-filter::
    :header-rows: 1
