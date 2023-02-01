@@ -39,6 +39,3 @@ class SimpleProbe:
     @property
     def height(self):
         return self.native.get_allocation().height
-
-    def press(self):
-        skip("Press probe not implemented")
